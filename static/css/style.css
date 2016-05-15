@@ -1,0 +1,101 @@
+/*
+  Custom fonts
+*/
+
+@font-face {
+  font-family: ComfortaaRegular;
+  src: url(../fonts/Comfortaa-Regular.ttf) format('truetype');
+}
+@font-face {
+  font-family: ComfortaaBold;
+  src: url(../fonts/Comfortaa-Bold.ttf) format('truetype');
+}
+@font-face {
+  font-family: ComfortaaLight;
+  src: url(../fonts/Comfortaa-Light.ttf) format('truetype');
+}
+
+/*
+  Basic style
+*/
+
+h1, h2, h3, h4, h5 {
+  font-family: ComfortaaBold;
+}
+header, footer {
+  height: 5em;
+  background-color: white;
+  width: 100%;
+  position: relative;
+  display: block;
+  text-align: center;
+}
+header {
+  border-bottom: solid 1px lightgray;
+  position: absolute;
+  top: 0;
+}
+footer {
+  margin-top: 3em;
+  background-color: #f4f4f4;
+}
+html, body {
+  overflow-x: hidden;
+}
+body {
+  color: black;
+  background: #f4f4f4;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  font: normal x-normal verdana,arial,helvetica,sans-serif;
+}
+main {
+  background: white;
+  border: 1px solid gray;
+  border-radius: 3px;
+  display: block;
+  margin-top: 8em;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1200px;
+  overflow: hidden;
+  padding: 40px;
+}
+
+/*
+  Navigation bar
+*/
+
+nav {
+  display: block;
+  height: 35px;
+  width: 100%;
+  margin: 10px;
+  padding: 0.25em 0.625em;
+}
+nav ul {
+  list-style: none;
+  padding: 0px 7px;
+}
+nav ul li {
+  display: inline;
+  float: left;
+}
+nav ul li a {
+  display: block;
+  padding: 0 8px;
+  color: black;
+  font-size: 0.9em;
+  font-family: ComfortaaRegular;
+  text-decoration: none;
+  line-height: 35px;
+  margin-right: 6px;
+  -webkit-transition: all 0.2s linear;
+  -moz-transition: all 0.2s linear;
+  transition: all 0.2s linear;
+}
+nav ul li a:hover {
+  color: skyblue;
+}

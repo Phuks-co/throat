@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% block head %}
+    <meta charset="utf-8">
+    <meta name="keywords" content="forum, vote, comment, submit, throat, internet">
+    <meta name="description" content="Throat: Open discussion">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>{% block title %}{% endblock %}</title>
+    {% endblock %}
+  </head>
+  <body>
+    <div id="content">{% block content %}{% endblock %}</div>
+    <footer>
+        {% block footer %}
+        Copyright &copy;2016 Throat. All Rights Reserved.</a>.
+        {% endblock %}
+    </footer>
+  </body>
+</html>
