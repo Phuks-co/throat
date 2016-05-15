@@ -10,10 +10,21 @@
     {% endblock %}
   </head>
   <body>
-    <div id="content">{% block content %}{% endblock %}</div>
+    <header>
+      <nav id="navbar">
+        <ul>
+          <li><a href='#'><img id="logo" src="{{ url_for('static', filename='img/logo.png') }}" alt="Throat" height="30" width="100"></a></li>
+          <li><a href="#">Hot</a></li>
+          <li><a href="#">New</a></li>
+          <li><a href="#">Active</a></li>
+          {% block navbar %}{% endblock %}
+        </ul>
+      </nav>
+    </header>
+    <main>{% block content %}{% endblock %}</main>
     <footer>
         {% block footer %}
-        Copyright &copy;2016 Throat. All Rights Reserved.</a>.
+        Copyright &copy;2016 Throat. All Rights Reserved.
         {% endblock %}
     </footer>
   </body>

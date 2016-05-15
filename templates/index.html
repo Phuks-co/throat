@@ -7,18 +7,6 @@
 {% endblock %}
 
 {% block content %}
-<header>
-  <nav id="navbar">
-    <ul>
-      <li><a href='#'><img id="logo" src="{{ url_for('static', filename='img/logo.png') }}" alt="Throat" height="30" width="100"></a></li>
-      <li><a href="#">Hot</a></li>
-      <li><a href="#">New</a></li>
-      <li><a href="#">Active</a></li>
-    </ul>
-  </nav>
-</header>
-
-<main>
   <h1>{{ self.title() }}</h1>
     {# Insert something here... #}
     Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
@@ -27,5 +15,4 @@
     Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
     fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
     qui officia deserunt mollit anim id est laborum.
-</main>
 {% endblock %}

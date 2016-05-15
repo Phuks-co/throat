@@ -49,7 +49,7 @@ body {
   margin: 0;
   height: 100%;
   width: 100%;
-  font: normal x-normal verdana,arial,helvetica,sans-serif;
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
 }
 main {
   background: white;
