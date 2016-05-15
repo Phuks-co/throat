@@ -53,7 +53,7 @@ body {
 }
 main {
   background: white;
-  border: 1px solid gray;
+  border: 1px solid lightgray;
   border-radius: 3px;
   display: block;
   margin-top: 8em;
@@ -98,4 +98,46 @@ nav ul li a {
 }
 nav ul li a:hover {
   color: skyblue;
+}
+/*
+  Post list styles
+*/
+.post {
+  line-height: 13px;
+  overflow: hidden;
+  padding: 0 8px 0 0;
+  word-wrap: break-word;
+}
+.post-list2 {
+  background-color: #f4f4f4;
+}
+.post-preview {
+  display: inline-block;
+}
+.post-title {
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+  font-size: large;
+}
+.post-title:visited {
+  color: skyblue;
+}
+.post-sub {
+  text-decoration: none;
+  color: gray;
+  font-size: small;
+}
+.post-author {
+  font-size: small;
+  color: gray;
+}
+.post-comments {
+  font-size: small;
+  color: gray;
+  font-weight: bold;
+}
+.post-img {
+  margin: 10px;
+  margin-bottom: 0px;
 }
