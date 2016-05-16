@@ -189,22 +189,19 @@ nav ul li a:hover {
   Post list styles
 */
 
-
-/*
-  TODO: Reestructurate like sidebar
-*/
-
 .post {
-  line-height: 13px;
+  line-height: 8px;
   overflow: hidden;
   padding: 0 8px 0 0;
   word-wrap: break-word;
+  margin: 5px;
 }
-.post .alternate {
+.post.alternate {
   background-color: #f4f4f4;
 }
 .post .preview {
   display: inline-block;
+  vertical-align: middle;
 }
 .post .title {
   text-decoration: none;
@@ -215,23 +212,35 @@ nav ul li a:hover {
 .post .title:visited {
   color: skyblue;
 }
+.post .title:hover {
+  color: #1A6A8B;
+}
 .post .sub {
   text-decoration: none;
   color: gray;
   font-size: small;
+}
+.post .sub:hover {
+  color: #1A6A8B;
 }
 .post .author {
   font-size: small;
   color: gray;
 }
 .post .comments {
+  font-size: x-small;
+  color: gray;
+  font-weight: bold;
+  text-decoration: none;
+}
+.post .hours {
   font-size: small;
   color: gray;
   font-weight: bold;
+  text-decoration: none;
 }
 .post .img {
   margin: 10px;
-  margin-bottom: 0px;
 }
 
 /*
