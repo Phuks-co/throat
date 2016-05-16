@@ -6,8 +6,16 @@
     <meta name="keywords" content="forum, vote, comment, submit, throat, internet">
     <meta name="description" content="Throat: Open discussion">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+
     <title>{% block title %}{% endblock %}</title>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.2.3.min.js') }}" async></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/magnific-popup.js') }}" async></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/login-buttons.js') }}" async></script>
     {% endblock %}
   </head>
   <body>
@@ -25,13 +33,36 @@
       </header>
       <main class="col-7">{% block content %}{% endblock %}</main>
       <div class="col-3 side">
-        {% block sidebar %}{% endblock %}
+        {% block sidebar %}
+        <a href="#login-form" class="btn login">Login</a>
+        <a href="#register-form" class="btn register">Register</a>
+        <a href="#config-form" class="fa fa-cog config" style="font-size: 22px;" aria-hidden="true"></a>
+        {% endblock %}
       </div>
       <footer class="col-12">
           {% block footer %}
-          Copyright &copy;2016 Throat. All Rights Reserved.
+          <p>
+            Copyright &copy;2016 Throat. All Rights Reserved.
+          </p>
           {% endblock %}
       </footer>
     </div>
+    <!-- login form -->
+    <form id="login-form" class="mfp-hide white-popup-block">
+    	<h1>Login</h1>
+    	<p>Do you have an account?</p>
+    	<p><input type="text" name="nick" placeholder="User name"></p>
+      <p><input type="password" name="password" placeholder="Password"></p>
+      <p><input type="button" name="send" value="Login"></p>
+    </form>
+    <!-- register form -->
+    <form id="register-form" class="mfp-hide white-popup-block">
+    	<h1>Register</h1>
+    	<p>Registering is free. All you need is a username and password.</p>
+    	<p><input type="text" name="nick" placeholder="User name"></p>
+      <p><input type="password" name="password" placeholder="Password"></p>
+      <!-- TODO: Add a captcha -->
+      <p><input type="button" name="send" value="Register"></p>
+    </form>
   </body>
 </html>

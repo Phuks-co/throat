@@ -1,37 +1,27 @@
 {% extends "layout.html" %}
 {% block title %}Throat: Open discussion{% endblock %}
 
-{% block head %}
-{{ super() }}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
-{% endblock %}
-
-{% block sidebar %}
-<a href="#" class="btn">Login</a>
-<a href="#" class="btn">Register</a>
-<a href="#" class="fa fa-cog config" style="font-size: 22px;" aria-hidden="true"></a>
-{% endblock %}
-
 {% block content %}
+{{ super() }}
     {# Insert something here... #}
     <article class="post">
-      <a class="post-thumbnail post-preview" href="#">
-        <img class="post-img" src="https://cdn.voat.co/thumbs/86de20cd-bf3c-4c07-be71-cc71a042f9c7.jpg" alt="Thumbnail"/>
+      <a class="thumbnail preview" href="#">
+        <img class="img" src="https://cdn.voat.co/thumbs/86de20cd-bf3c-4c07-be71-cc71a042f9c7.jpg" alt="Thumbnail"/>
       </a>
-      <div class="post-preview">
-        <a class="post-title" href="#">Example post</a> <a class="post-sub" href="#">(sub/example)</a>
-        <p class="post-author">posted XXX hours ago by KernelFreeze to Throat (+999|-0)</p>
-        <p class="post-comments">999 comments</p>
+      <div class="preview">
+        <a class="title" href="#">Example post</a> <a class="post sub" href="#">(sub/example)</a>
+        <p class="author">posted XXX hours ago by KernelFreeze to Throat (+999|-0)</p>
+        <p class="comments">999 comments</p>
       </div>
     </article>
-    <article class="post post-list2">
-      <a class="post-thumbnail post-preview" href="#">
-        <img class="post-img" src="https://cdn.voat.co/thumbs/86de20cd-bf3c-4c07-be71-cc71a042f9c7.jpg" alt="Thumbnail"/>
+    <article class="post alternate">
+      <a class="thumbnail preview" href="#">
+        <img class="img" src="https://cdn.voat.co/thumbs/86de20cd-bf3c-4c07-be71-cc71a042f9c7.jpg" alt="Thumbnail"/>
       </a>
-      <div class="post-preview">
-        <a class="post-title" href="#">Example post</a> <a class="post-sub" href="#">(sub/example)</a>
-        <p class="post-author">posted XXX hours ago by KernelFreeze to Throat (+999|-0)</p>
-        <p class="post-comments">999 comments</p>
+      <div class="preview">
+        <a class="title" href="#">Example post</a> <a class="post sub" href="#">(sub/example)</a>
+        <p class="author">posted XXX hours ago by KernelFreeze to Throat (+999|-0)</p>
+        <p class="comments">999 comments</p>
       </div>
     </article>
 {% endblock %}
