@@ -12,10 +12,6 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
-
-    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.2.3.min.js') }}" async></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/magnific-popup.js') }}" async></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/login-buttons.js') }}" async></script>
     {% endblock %}
   </head>
   <body>
@@ -72,5 +68,10 @@
       <!-- TODO: Add a captcha -->
       <p><input type="button" name="send" value="Register"></p>
     </form>
+
+    <!-- Scripts -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.2.3.min.js') }}" async></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/magnific-popup.js') }}" async></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/login-buttons.js') }}" async></script>
   </body>
 </html>
