@@ -3,7 +3,13 @@
 
 {% block head %}
 {{ super() }}
-<script type="text/javascript"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+{% endblock %}
+
+{% block sidebar %}
+<a href="#" class="btn">Login</a>
+<a href="#" class="btn">Register</a>
+<a href="#" class="fa fa-cog config" style="font-size: 22px;" aria-hidden="true"></a>
 {% endblock %}
 
 {% block content %}

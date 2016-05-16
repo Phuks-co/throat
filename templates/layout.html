@@ -5,27 +5,33 @@
     <meta charset="utf-8">
     <meta name="keywords" content="forum, vote, comment, submit, throat, internet">
     <meta name="description" content="Throat: Open discussion">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <title>{% block title %}{% endblock %}</title>
     {% endblock %}
   </head>
   <body>
-    <header>
-      <nav id="navbar">
-        <ul>
-          <li><a href='#'><img id="logo" src="{{ url_for('static', filename='img/logo.png') }}" alt="Throat" height="30" width="100"></a></li>
-          <li><a href="#">Hot</a></li>
-          <li><a href="#">New</a></li>
-          <li><a href="#">Active</a></li>
-          {% block navbar %}{% endblock %}
-        </ul>
-      </nav>
-    </header>
-    <main>{% block content %}{% endblock %}</main>
-    <footer>
-        {% block footer %}
-        Copyright &copy;2016 Throat. All Rights Reserved.
-        {% endblock %}
-    </footer>
+    <div class="row">
+      <header class="col-12">
+        <nav id="navbar">
+          <ul>
+            <li><a href='#'><img id="logo" src="{{ url_for('static', filename='img/logo.png') }}" alt="Throat" height="30" width="100"></a></li>
+            <li><a href="#">Hot</a></li>
+            <li><a href="#">New</a></li>
+            <li><a href="#">Active</a></li>
+            {% block navbar %}{% endblock %}
+          </ul>
+        </nav>
+      </header>
+      <main class="col-7">{% block content %}{% endblock %}</main>
+      <div class="col-3 side">
+        {% block sidebar %}{% endblock %}
+      </div>
+      <footer class="col-12">
+          {% block footer %}
+          Copyright &copy;2016 Throat. All Rights Reserved.
+          {% endblock %}
+      </footer>
+    </div>
   </body>
 </html>
