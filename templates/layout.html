@@ -61,8 +61,11 @@
     <form id="register-form" class="mfp-hide white-popup-block">
     	<h1>Register</h1>
     	<p>Registering is free. All you need is a username and password.</p>
-    	<p><input type="text" name="nick" placeholder="User name"></p>
+    	<p><input type="text" name="username" placeholder="User name"></p>
+      <p><input type="email" name="email" placeholder="Email"></p>
       <p><input type="password" name="password" placeholder="Password"></p>
+      <p><input type="confirm" name="password" placeholder="Repeat password"></p>
+      <p><input type="checkbox" name="accept_tos" value="yes" id="tos" style="width: auto;"><label for="tos">I accept the Terms of service</label></p>
       <!-- TODO: Add a captcha -->
       <p><input type="button" name="send" value="Register"></p>
     </form>
