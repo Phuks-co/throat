@@ -60,3 +60,7 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+# To prevent Miguel from uploading a metric fuckload of useless shit
+*.scss
+*.less
