@@ -16,6 +16,65 @@
 }
 
 /*
+  Helper styles
+*/
+
+.col-1 {
+  width: 8.33%;
+}
+.col-2 {
+  width: 16.66%;
+}
+.col-3 {
+  width: 25%;
+}
+.col-4 {
+  width: 33.33%;
+}
+.col-5 {
+  width: 41.66%;
+}
+.col-6 {
+  width: 50%;
+}
+.col-7 {
+  width: 58.33%;
+}
+.col-8 {
+  width: 66.66%;
+}
+.col-9 {
+  width: 75%;
+}
+.col-10 {
+  width: 83.33%;
+}
+.col-11 {
+  width: 91.66%;
+}
+.col-12 {
+  width: 100%;
+}
+* {
+  box-sizing: border-box;
+}
+[class*="col-"] {
+  float: left;
+  padding: 15px;
+}
+.row::after {
+  content: "";
+  clear: both;
+  display: block;
+}
+@media only screen and (max-width: 768px) {
+  /* For mobile phones: */
+  [class*="col-"] {
+    width: 100%;
+  }
+}
+
+/*
   Basic style
 */
 
@@ -25,19 +84,14 @@ h1, h2, h3, h4, h5 {
 header, footer {
   height: 5em;
   background-color: white;
-  width: 100%;
-  position: relative;
-  display: block;
   text-align: center;
 }
 header {
   border-bottom: solid 1px lightgray;
-  position: absolute;
-  top: 0;
 }
 footer {
   margin-top: 3em;
-  background-color: #f4f4f4;
+  background-color: transparent;
 }
 html, body {
   overflow-x: hidden;
@@ -55,13 +109,32 @@ main {
   background: white;
   border: 1px solid lightgray;
   border-radius: 3px;
-  display: block;
-  margin-top: 8em;
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 1200px;
+  margin: 5em;
+  margin-right: 2em;
   overflow: hidden;
   padding: 40px;
+}
+@media only screen and (max-width: 768px) {
+  /* For mobile phones: */
+  main {
+    margin: 0px;
+    margin-top: 20px;
+  }
+}
+.config {
+    color: gray;
+    text-decoration: none;
+}
+/*
+  Sidebar
+*/
+
+.side {
+  background-color: white;
+  border: 1px solid lightgray;
+  border-radius: 3px;
+  margin-top: 5em;
+  position: relative;
 }
 
 /*
@@ -71,8 +144,6 @@ main {
 nav {
   display: block;
   height: 35px;
-  width: 100%;
-  margin: 10px;
   padding: 0.25em 0.625em;
 }
 nav ul {
@@ -99,9 +170,16 @@ nav ul li a {
 nav ul li a:hover {
   color: skyblue;
 }
+
 /*
   Post list styles
 */
+
+
+/*
+  TODO: Reestructurate like sidebar
+*/
+
 .post {
   line-height: 13px;
   overflow: hidden;
@@ -140,4 +218,62 @@ nav ul li a:hover {
 .post-img {
   margin: 10px;
   margin-bottom: 0px;
+}
+
+/*
+  Buttons
+*/
+
+a.btn {
+  text-decoration: none;
+  display: inline-block;
+  color: #666;
+  background-color: #eee;
+  letter-spacing: 2px;
+  font-size: 12px;
+  padding: 10px 30px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  font-family: ComfortaaBold;
+}
+a.btn:hover {
+  background-color: #e3e3e3;
+  border-color: rgba(0, 0, 0, 0.5);
+}
+a.btn:active {
+  background-color: #CCC;
+  border-color: rgba(0, 0, 0, 0.9);
+}
+
+/* blue button */
+
+a.btn.btn-blue {
+  background-color: #699DB6;
+  border-color: rgba(0, 0, 0, 0.3);
+  color: #FFF;
+}
+a.btn.btn-blue:hover {
+  background-color: #4F87A2;
+  border-color: rgba(0, 0, 0, 0.5);
+}
+a.btn.btn-blue:active {
+  background-color: #3C677B;
+  border-color: rgba(0, 0, 0, 0.9);
+}
+
+/* red button */
+
+a.btn.btn-red {
+  background-color: #E48681;
+  border-color: rgba(0, 0, 0, 0.3);
+  color: #FFF;
+}
+a.btn.btn-red:hover {
+  background-color: #DA4F49;
+  border-color: rgba(0, 0, 0, 0.5);
+}
+a.btn.btn-red:active {
+  background-color: #B32C24;
+  border-color: rgba(0, 0, 0, 0.9);
 }
