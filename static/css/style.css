@@ -190,14 +190,11 @@ nav ul li a:hover {
 */
 
 .post {
-  line-height: 8px;
+  line-height: 13px;
   overflow: hidden;
   padding: 0 8px 0 0;
   word-wrap: break-word;
   margin: 5px;
-}
-.post.alternate {
-  background-color: #f4f4f4;
 }
 .post .preview {
   display: inline-block;
@@ -206,8 +203,7 @@ nav ul li a:hover {
 .post .title {
   text-decoration: none;
   color: black;
-  font-weight: bold;
-  font-size: large;
+  font-size: medium;
 }
 .post .title:visited {
   color: skyblue;
@@ -233,11 +229,14 @@ nav ul li a:hover {
   font-weight: bold;
   text-decoration: none;
 }
-.post .hours {
+.post .user {
   font-size: small;
   color: gray;
   font-weight: bold;
   text-decoration: none;
+}
+.post .container {
+  margin: 0px;
 }
 .post .img {
   margin: 10px;
@@ -300,6 +299,13 @@ a.btn.btn-red:active {
   background-color: #B32C24;
   border-color: rgba(0, 0, 0, 0.9);
 }
+/* small button */
+a.btn.small {
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+
 /* login, register form */
 .white-popup-block {
     background: #FFF;
