@@ -58,20 +58,33 @@
 * {
   box-sizing: border-box;
 }
-[class*="col-"] {
-  float: left;
-  padding: 15px;
-}
 .row::after {
   content: "";
   clear: both;
   display: block;
 }
-@media only screen and (max-width: 768px) {
-  /* For mobile phones: */
-  [class*="col-"] {
+/* For mobile phones: */
+[class*="col-"] {
     width: 100%;
-  }
+}
+@media only screen and (min-width: 768px) {
+    /* For desktop: */
+    .col-1 {width: 8.33%;}
+    .col-2 {width: 16.66%;}
+    .col-3 {width: 25%;}
+    .col-4 {width: 33.33%;}
+    .col-5 {width: 41.66%;}
+    .col-6 {width: 50%;}
+    .col-7 {width: 58.33%;}
+    .col-8 {width: 66.66%;}
+    .col-9 {width: 75%;}
+    .col-10 {width: 83.33%;}
+    .col-11 {width: 91.66%;}
+    .col-12 {width: 100%;}
+    [class*="col-"] {
+      float: left;
+      padding: 15px;
+    }
 }
 
 /*
@@ -110,8 +123,8 @@ main {
   background: white;
   border: 1px solid lightgray;
   border-radius: 3px;
-  margin: 5em;
   margin-right: 2em;
+  margin-left: 5em;
   overflow: hidden;
   padding: 40px;
 }
@@ -119,12 +132,14 @@ main {
   /* For mobile phones: */
   main {
     margin: 0px;
-    margin-top: 20px;
   }
 }
 .config {
     color: gray;
     text-decoration: none;
+}
+.content {
+  margin-top: 5em;
 }
 /*
   Sidebar
@@ -134,8 +149,6 @@ main {
   background-color: white;
   border: 1px solid lightgray;
   border-radius: 3px;
-  margin-top: 5em;
-  position: relative;
 }
 
 /*
