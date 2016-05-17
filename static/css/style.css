@@ -124,22 +124,25 @@ main {
   border: 1px solid lightgray;
   border-radius: 3px;
   margin-right: 2em;
-  margin-left: 5em;
+  margin-left: 1em;
   overflow: hidden;
   padding: 40px;
+}
+.content {
+  margin-top: 5em;
 }
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
   main {
     margin: 0px;
   }
+  .content {
+    margin-top: 1em;
+  }
 }
 .config {
     color: gray;
     text-decoration: none;
-}
-.content {
-  margin-top: 5em;
 }
 /*
   Sidebar
@@ -149,8 +152,15 @@ main {
   background-color: white;
   border: 1px solid lightgray;
   border-radius: 3px;
+  padding: 7px;
+  text-align: center;
 }
-
+@media only screen and (max-width: 768px) {
+  /* For mobile phones: */
+  .side {
+    margin-top: 1em;
+  }
+}
 /*
   Navigation bar
 */
@@ -258,6 +268,7 @@ a.btn {
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   font-family: ComfortaaBold;
+  border: solid white 2px;
 }
 a.btn:hover {
   background-color: #e3e3e3;
@@ -304,6 +315,7 @@ a.btn.small {
   font-size: 9px;
   padding: 3px 8px;
   border-radius: 2px;
+  border: solid white 1px;
 }
 
 /* login, register form */
