@@ -4,11 +4,11 @@
 {% block content %}
 {{ super() }}
     {# Insert something here... #}
-    <article class="post">
-      <a class="preview" href="#">
-        <img class="img" src="{{url_for('static', filename='test.jpg')}}" alt="Thumbnail"/>
-      </a>
-      <div class="preview">
+    <article class="post row">
+      <div class="col-2">
+        <a href="#"><img src="{{url_for('static', filename='test.jpg')}}" alt="Thumbnail"/></a>
+      </div>
+      <div class="col-10">
         <a class="title" href="#">Example post</a>
         <p class="author">5 hours ago</p>
         <p class="container">
@@ -19,17 +19,17 @@
       </div>
     </article>
     <hr>
-    <article class="post">
-      <a class="preview" href="#">
-        <img class="img" src="{{url_for('static', filename='test.jpg')}}" alt="Thumbnail"/>
-      </a>
-      <div class="preview">
-        <a class="title" href="#">Example post</a>
-        <p class="author">5 hours ago</p>
+    <article class="post row">
+      <div class="col-2">
+        <a href="#"><img src="{{url_for('static', filename='test.jpg')}}" alt="Thumbnail"/></a>
+      </div>
+      <div class="col-10">
+        <a class="title" href="#">Example post 2</a>
+        <p class="author">6 hours ago</p>
         <p class="container">
           <a href="#" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> sub/whoo</a>
           <a href="#" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> Polsaker</a>
-          <a href="#" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments (600)</a>
+          <a href="#" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments (800)</a>
         </p>
       </div>
     </article>

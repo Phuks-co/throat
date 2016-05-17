@@ -32,9 +32,17 @@
       <main class="col-8">{% block content %}{% endblock %}</main>
       <div class="col-3 side">
         {% block sidebar %}
-        <a href="#login-form" class="btn login">Login</a>
-        <a href="#register-form" class="btn register">Register</a>
-        <a href="#config-form" class="fa fa-cog config" style="font-size: 22px;" aria-hidden="true"></a>
+        <div class="row">
+          <div class="col-5">
+            <a href="#login-form" class="btn login">Login</a>
+          </div>
+          <div class="col-5">
+            <a href="#register-form" class="btn register">Register</a>
+          </div>
+          <div class="col-2" style="padding: 5px;">
+            <a href="#config-form" class="config"><i class="fa fa-cog" style="font-size: 18px;" aria-hidden="true"></i></a>
+          </div>
+        </div>
         {% endblock %}
       </div>
       <footer class="col-12">
