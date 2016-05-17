@@ -55,23 +55,27 @@
     </form>
     <!-- register form -->
     <form id="register-form" class="mfp-hide white-popup-block">
-    	<h1>Register</h1>
-    	<p>Registering is free. All you need is a username and password.</p>
-    	<p><input type="text" name="username" placeholder="User name"></p>
-      <p><input type="email" name="email" placeholder="Email"></p>
-      <p><input type="password" name="password" placeholder="Password"></p>
-      <p><input type="confirm" name="password" placeholder="Repeat password"></p>
-      <p>
-        <input type="checkbox" name="accept_tos" value="yes" id="tos" style="width: auto;">
-        <label for="tos">I accept the Terms of service</label>
-      </p>
-      <!-- TODO: Add a captcha -->
-      <p><input type="button" name="send" value="Register"></p>
+        <div id="the-register-form-itself">
+            {{ regform.csrf_token }}
+            <h1>Register</h1>
+            <p>Registering is free. All you need is a username and password.</p>
+            <p>{{regform.username(placeholder=regform.username.label.text, required=True, autofocus=True)}}</p>
+            <p>{{regform.email(placeholder=regform.email.label.text, required=True)}}</p>
+            <p>{{regform.password(placeholder=regform.password.label.text, required=True)}}</p>
+            <p>{{regform.confirm(placeholder=regform.confirm.label.text, required=True)}}</p>
+            <p>
+                {{regform.accept_tos(style="width: auto", required=True)}}
+                <label for="tos">{{regform.accept_tos.label.text}}</label>
+            </p>
+            <!-- TODO: Add a captcha -->
+            <p><input type="submit" value="Register"></p>
+        </div>
     </form>
 
     <!-- Scripts -->
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.2.3.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/magnific-popup.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/login-buttons.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/site.js') }}"></script>
   </body>
 </html>

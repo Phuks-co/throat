@@ -20,7 +20,8 @@ def initialize_database():
 
 @app.route("/")
 def index():
-    return render_template('index.html')
+    register = RegistrationForm()
+    return render_template('index.html', regform=register)
 
 def get_errors(form):
     ret = []

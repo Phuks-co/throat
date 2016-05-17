@@ -338,7 +338,7 @@ a.btn.small {
   border-radius: 2px;
   border: solid 1px lightgray;
 }
-.white-popup-block input[type="button"] {
+.white-popup-block input[type="button"], .white-popup-block input[type="submit"] {
   text-align: center;
   font-family: ComfortaaBold;
   color: gray;
