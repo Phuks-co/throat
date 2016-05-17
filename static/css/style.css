@@ -92,7 +92,7 @@
 */
 
 h1, h2, h3, h4, h5 {
-  font-family: ComfortaaBold;
+  font-family: sans-serif;
 }
 header, footer {
   height: 5em;
@@ -261,13 +261,13 @@ a.btn {
   display: inline-block;
   color: #666;
   background-color: #eee;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   font-size: 12px;
   padding: 10px 30px;
   border-radius: 5px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
-  font-family: ComfortaaBold;
+  font-family: ComfortaaRegular;
   border: solid white 2px;
 }
 a.btn:hover {
@@ -340,6 +340,6 @@ a.btn.small {
 }
 .white-popup-block input[type="button"], .white-popup-block input[type="submit"] {
   text-align: center;
-  font-family: ComfortaaBold;
+  font-family: ComfortaaRegular;
   color: gray;
 }
