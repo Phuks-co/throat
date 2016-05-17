@@ -1,16 +1,28 @@
 // sitewide js.
 $(document).ready(function () {
     $("#register-form").submit(function (e) {
+        $("#reg-btnsubmit").prop('disabled', true);
+        $("#reg-btnsubmit").text('Registering...');
+
         $.ajax({
            type: "POST",
            url: '/do/register', // XXX: Hardcoded URL because this is supposed to be a static file
            data: $("#register-form").serialize(),
-           success: function(data)
-           {
-               alert(data);
+           dataType: 'json',
+           success: function(data){
+                if(data.status != "ok"){
+                    var obj = data.error,
+                        ul = $("<ul>");
+                    for (var i = 0, l = obj.length; i < l; ++i) {
+                        ul.append("<li>" + obj[i] + "</li>");
+                    }
+                    $("#reg-errors").append(ul);
+                }
            }
         });
         e.preventDefault();
+        $("#reg-btnsubmit").prop('disabled', false);
+        $("#reg-btnsubmit").text('Register');
 
     });
     
