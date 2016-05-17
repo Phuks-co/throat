@@ -16,8 +16,15 @@ $(document).ready(function () {
                     for (var i = 0, l = obj.length; i < l; ++i) {
                         ul.append("<li>" + obj[i] + "</li>");
                     }
-                    $("#reg-errors").append(ul);
+                    $("#reg-errors").html(ul);
+                }else{ // success
+                    $('a.btn.register').magnificPopup('close');
+                    $('#login-intro').text("Thanks for registering! Now you can proceed to log in.");
+                    $('a.btn.login').magnificPopup('open');
                 }
+           },
+           error: function(data, err){
+               $("#reg-errors").append("<ul><li>Error while contacting the server</li></ul>");
            }
         });
         e.preventDefault();

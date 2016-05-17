@@ -41,6 +41,11 @@ def test_register():
 def do_register():
     form = RegistrationForm()
     if form.validate():
+        # check if user or email are in use
+        if User.query.filter_by(username=form.username.data).first():
+            return json.dumps({'status': 'error', 'error': ['Username is already registered.']})
+        if User.query.filter_by(email=form.email.data).first():
+            return json.dumps({'status': 'error', 'error': ['Email is alredy in use.']})
         user = User(form.username.data, form.email.data, form.password.data)
         db.session.add(user)
         db.session.commit()
