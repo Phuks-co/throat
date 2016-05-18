@@ -161,6 +161,23 @@ main {
 .content {
   margin-top: 5em;
 }
+input[type=search] {
+  width: 100%;
+  box-sizing: border-box;
+  border: 2px solid lightgray;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: white;
+  background-image: url('../img/searchicon.png');
+  background-position: 10px 10px;
+  background-repeat: no-repeat;
+  padding: 10px 15px 10px 35px;
+  -webkit-transition: width 0.4s ease-in-out;
+  transition: width 0.4s ease-in-out;
+}
+input:focus {
+  border: 2px solid skyblue;
+}
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
   main {
@@ -174,6 +191,7 @@ main {
 .config {
   color: gray;
   text-decoration: none;
+  vertical-align: sub;
 }
 
 /*
@@ -391,9 +409,10 @@ a.btn.small {
   display: none;
 }
 .mfp-close-btn-in .mfp-close {
-    text-align: right;
-    margin-right: 10px;
+  text-align: right;
+  margin-right: 10px;
 }
+
 /* Alerts */
 
 .alert {
