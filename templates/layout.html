@@ -29,8 +29,7 @@
       </header>
     </div>
     <div class="row content">
-      <main class="col-8">{% block content %}{% endblock %}</main>
-      <div class="col-3 side">
+      <div class="col-3 side right">
         {% block sidebar %}
         <div class="row">
           <div class="col-5">
@@ -45,14 +44,13 @@
         </div>
         {% endblock %}
       </div>
-      <footer class="col-12">
-          {% block footer %}
-          <p>
-            Copyright &copy;2016 Throat. All Rights Reserved.
-          </p>
-          {% endblock %}
-      </footer>
+      <main class="col-8 right">{% block content %}{% endblock %}</main>
     </div>
+    <footer>
+        {% block footer %}
+        Copyright &copy;2016 Throat. All Rights Reserved.
+        {% endblock %}
+    </footer>
     <!-- login form -->
     <form id="login-form" class="mfp-hide white-popup-block">
     	<h1>Login</h1>

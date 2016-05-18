@@ -85,6 +85,9 @@
       float: left;
       padding: 2px;
     }
+    [class*="col-"].right {
+      float: right;
+    }
 }
 
 /*
@@ -106,6 +109,7 @@ footer {
   margin-top: 3em;
   background-color: transparent;
   color: gray;
+  font-size: small;
 }
 html, body {
   overflow-x: hidden;
@@ -125,7 +129,6 @@ main {
   border: 1px solid lightgray;
   border-radius: 3px;
   margin-right: 2em;
-  margin-left: 1em;
   overflow: hidden;
   padding: 40px;
 }
@@ -136,6 +139,7 @@ main {
   /* For mobile phones: */
   main {
     margin: 0px;
+    margin-top: 1em;
   }
   .content {
     margin-top: 1em;
@@ -155,6 +159,7 @@ main {
   border-radius: 3px;
   padding: 7px;
   text-align: center;
+  margin-right: 1em;
 }
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */

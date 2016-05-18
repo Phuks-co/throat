@@ -36,7 +36,7 @@ def get_errors(form):
 def test_register():
     form = RegistrationForm()
     return render_template('test.html', form=form)
-    
+
 @app.route("/do/register", methods=['POST'])
 def do_register():
     form = RegistrationForm()
