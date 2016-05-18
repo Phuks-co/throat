@@ -109,6 +109,7 @@ footer {
 }
 html, body {
   overflow-x: hidden;
+  height:100%;
 }
 body {
   color: black;
@@ -233,7 +234,20 @@ nav ul li a:hover {
 .post .container {
   margin: 0px;
 }
-
+.post .image {
+  float: left;
+  margin: 0.5em;
+  width: 16%;
+}
+.post .image img {
+  width: 8vmax;
+  height: 8vmax;
+}
+.post .main {
+  float: left;
+  margin: 0.5em;
+  width: 70%;
+}
 /*
   Buttons
 */
@@ -245,12 +259,14 @@ a.btn {
   background-color: #eee;
   letter-spacing: 1px;
   font-size: 12px;
+  font-size: 1vmax;
   padding: 8px 10px;
   border-radius: 5px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   font-family: ComfortaaRegular;
   border: solid white 2px;
+  text-align: center;
 }
 a.btn:hover {
   background-color: #e3e3e3;
