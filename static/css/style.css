@@ -63,31 +63,57 @@
   clear: both;
   display: block;
 }
+
 /* For mobile phones: */
+
 [class*="col-"] {
-    width: 100%;
+  width: 100%;
 }
 @media only screen and (min-width: 768px) {
-    /* For desktop: */
-    .col-1 {width: 8.33%;}
-    .col-2 {width: 16.66%;}
-    .col-3 {width: 25%;}
-    .col-4 {width: 33.33%;}
-    .col-5 {width: 41.66%;}
-    .col-6 {width: 50%;}
-    .col-7 {width: 58.33%;}
-    .col-8 {width: 66.66%;}
-    .col-9 {width: 75%;}
-    .col-10 {width: 83.33%;}
-    .col-11 {width: 91.66%;}
-    .col-12 {width: 100%;}
-    [class*="col-"] {
-      float: left;
-      padding: 2px;
-    }
-    [class*="col-"].right {
-      float: right;
-    }
+  /* For desktop: */
+  .col-1 {
+    width: 8.33%;
+  }
+  .col-2 {
+    width: 16.66%;
+  }
+  .col-3 {
+    width: 25%;
+  }
+  .col-4 {
+    width: 33.33%;
+  }
+  .col-5 {
+    width: 41.66%;
+  }
+  .col-6 {
+    width: 50%;
+  }
+  .col-7 {
+    width: 58.33%;
+  }
+  .col-8 {
+    width: 66.66%;
+  }
+  .col-9 {
+    width: 75%;
+  }
+  .col-10 {
+    width: 83.33%;
+  }
+  .col-11 {
+    width: 91.66%;
+  }
+  .col-12 {
+    width: 100%;
+  }
+  [class*="col-"] {
+    float: left;
+    padding: 2px;
+  }
+  [class*="col-"].right {
+    float: right;
+  }
 }
 
 /*
@@ -113,7 +139,7 @@ footer {
 }
 html, body {
   overflow-x: hidden;
-  height:100%;
+  height: 100%;
 }
 body {
   color: black;
@@ -146,9 +172,10 @@ main {
   }
 }
 .config {
-    color: gray;
-    text-decoration: none;
+  color: gray;
+  text-decoration: none;
 }
+
 /*
   Sidebar
 */
@@ -170,6 +197,7 @@ main {
 a.btn.login, a.btn.register {
   width: 100%;
 }
+
 /*
   Navigation bar
 */
@@ -211,7 +239,7 @@ nav ul li a:hover {
 .post {
   line-height: 13px;
   overflow: hidden;
-  padding: 0 8px 0 0;
+  padding: 5px;
   word-wrap: break-word;
   margin: 5px;
 }
@@ -253,6 +281,7 @@ nav ul li a:hover {
   margin: 0.5em;
   width: 70%;
 }
+
 /*
   Buttons
 */
@@ -313,7 +342,9 @@ a.btn.btn-red:active {
   background-color: #B32C24;
   border-color: rgba(0, 0, 0, 0.9);
 }
+
 /* small button */
+
 a.btn.small {
   font-size: 9px;
   padding: 3px 8px;
@@ -328,19 +359,20 @@ a.btn.small {
 }
 
 /* login, register form */
+
 .white-popup-block {
-    background: #FFF;
-    padding: 20px 30px;
-    text-align: center;
-    max-width: 650px;
-    margin: 40px auto;
-    position: relative;
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-size: 16px;
-    line-height: 1.6;
-    color: #5A6064;
+  background: #FFF;
+  padding: 20px 30px;
+  text-align: center;
+  max-width: 650px;
+  margin: 40px auto;
+  position: relative;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #5A6064;
 }
-.white-popup-block input,.white-popup-block button {
+.white-popup-block input, .white-popup-block button {
   width: 70%;
   text-align: left;
   padding: 5px;
@@ -351,4 +383,45 @@ a.btn.small {
   text-align: center;
   font-family: ComfortaaRegular;
   color: gray;
+}
+.white-popup-block input[type="button"]:disabled, .white-popup-block input[type="submit"]:disabled, .white-popup-block button:disabled {
+  background: floralwhite;
+}
+#div-errors {
+  display: none;
+}
+.mfp-close-btn-in .mfp-close {
+    text-align: right;
+    margin-right: 10px;
+}
+/* Alerts */
+
+.alert {
+  padding: 20px;
+  background-color: #f44336;
+  /* Red */
+  color: white;
+  margin-bottom: 15px;
+}
+.alert li {
+  text-align: left;
+}
+
+/* The close button */
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* When moving the mouse over the close button */
+
+.closebtn:hover {
+  color: lightgray;
 }

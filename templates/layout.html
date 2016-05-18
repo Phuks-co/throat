@@ -74,7 +74,10 @@
                 <label for="tos">{{regform.accept_tos.label.text}}</label>
             </p>
             <!-- TODO: Add a captcha -->
-            <p id="reg-errors"></p>
+            <div id="div-errors" class="alert">
+              <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+              <p id="reg-errors"></p>
+            </div>
             <p><button type="submit" id="reg-btnsubmit">Register</button></p>
         </div>
     </form>

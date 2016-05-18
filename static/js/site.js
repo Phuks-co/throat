@@ -17,6 +17,7 @@ $(document).ready(function () {
                         ul.append("<li>" + obj[i] + "</li>");
                     }
                     $("#reg-errors").html(ul);
+                    $("#div-errors").show();
                 }else{ // success
                     $('a.btn.register').magnificPopup('close');
                     $('#login-intro').text("Thanks for registering! Now you can proceed to log in.");
@@ -32,7 +33,7 @@ $(document).ready(function () {
         $("#reg-btnsubmit").text('Register');
 
     });
-    
+
     var mpSettings = {
 		type: 'inline',
 		preloader: false,
