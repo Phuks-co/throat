@@ -18,7 +18,6 @@ db.init_app(app)
 def initialize_database():
     db.create_all()
 
-
 @app.route("/")
 def index():
     if 'user' not in session:
@@ -54,7 +53,7 @@ def do_login():
             return json.dumps({'status': 'error', 'error': ['User does not exist.']})
         
         if user.crypto == 1: # bcrypt
-            thash = bcrypt.hashpw(form.password.data, user.password)
+            thash = bcrypt.hashpw(form.password.data.encode(), user.password)
             if thash == user.password:
                 session['user'] = user.id
                 return json.dumps({'status': 'ok'})
