@@ -17,7 +17,7 @@ $(document).ready(function () {
                         ul.append("<li>" + obj[i] + "</li>");
                     }
                     $("#reg-errors").html(ul);
-                    $("#div-errors").show();
+                    $("#register-form .div-error").show();
                 }else{ // success
                     $('a.btn.register').magnificPopup('close');
                     $('#login-intro').text("Thanks for registering! Now you can proceed to log in.");
@@ -26,12 +26,42 @@ $(document).ready(function () {
            },
            error: function(data, err){
                $("#reg-errors").append("<ul><li>Error while contacting the server</li></ul>");
+               $("#register-form .div-error").show();
            }
         });
         e.preventDefault();
         $("#reg-btnsubmit").prop('disabled', false);
         $("#reg-btnsubmit").text('Register');
+    });
+    
+    $("#login-form").submit(function (e) {
+        $("#login-btnsubmit").prop('disabled', true);
+        $("#login-btnsubmit").text('Logging in...');
 
+        $.ajax({
+           type: "POST",
+           url: '/do/login', // XXX: Hardcoded URL because this is supposed to be a static file
+           data: $("#login-form").serialize(),
+           dataType: 'json',
+           success: function(data){
+                if(data.status != "ok"){
+                    var obj = data.error,
+                        ul = $("<ul>");
+                    for (var i = 0, l = obj.length; i < l; ++i) {
+                        ul.append("<li>" + obj[i] + "</li>");
+                    }
+                    $("#login-errors").html(ul);
+                    $("#login-form .div-error").show();
+                }else{ document.location = document.location; }
+           },
+           error: function(data, err){
+               $("#login-errors").html("<ul><li>Error while contacting the server</li></ul>");
+               $("#login-form .div-error").show();
+           }
+        });
+        e.preventDefault();
+        $("#login-btnsubmit").prop('disabled', false);
+        $("#login-btnsubmit").text('Register');
     });
 
     var mpSettings = {

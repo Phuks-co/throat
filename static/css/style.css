@@ -316,7 +316,7 @@ nav ul li a:hover {
   Buttons
 */
 
-a.btn {
+a.btn, button.btn{
   text-decoration: none;
   display: inline-block;
   color: #666;
@@ -332,11 +332,11 @@ a.btn {
   border: solid white 2px;
   text-align: center;
 }
-a.btn:hover {
+a.btn:hover, button.btn:hover{
   background-color: #e3e3e3;
   border-color: rgba(0, 0, 0, 0.5);
 }
-a.btn:active {
+a.btn:active, button.btn:active{
   background-color: #CCC;
   border-color: rgba(0, 0, 0, 0.9);
 }
@@ -375,7 +375,7 @@ a.btn.btn-red:active {
 
 /* small button */
 
-a.btn.small {
+a.btn.small, button.btn.small{
   font-size: 9px;
   padding: 3px 8px;
   border-radius: 2px;
@@ -383,7 +383,7 @@ a.btn.small {
 }
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
-  a.btn {
+  a.btn, button.btn {
     width: 80%;
   }
 }
@@ -417,7 +417,7 @@ a.btn.small {
 .white-popup-block input[type="button"]:disabled, .white-popup-block input[type="submit"]:disabled, .white-popup-block button:disabled {
   background: floralwhite;
 }
-#div-errors {
+.div-error {
   display: none;
 }
 .mfp-close-btn-in .mfp-close {

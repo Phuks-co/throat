@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8
 
-from flask import Flask, render_template, flash, request
+from flask import Flask, render_template, flash, request, session, redirect, url_for
 from models import db, User
 import config
 import json
-from forms import RegistrationForm
+import bcrypt
+from forms import RegistrationForm, LoginForm, LogOutForm
 
 app = Flask(__name__)
 
@@ -20,8 +21,13 @@ def initialize_database():
 
 @app.route("/")
 def index():
-    register = RegistrationForm()
-    return render_template('index.html', regform=register)
+    if 'user' not in session:
+        register = RegistrationForm()
+        login = LoginForm()
+        return render_template('index.html', regform=register, loginform=login)
+    else:
+        logout = LogOutForm()
+        return render_template('index.html', logoutform=logout)
 
 def get_errors(form):
     ret = []
@@ -32,10 +38,32 @@ def get_errors(form):
                 error))
     return ret
 
-@app.route("/test/register")
-def test_register():
-    form = RegistrationForm()
-    return render_template('test.html', form=form)
+@app.route("/do/logout", methods=['POST'])
+def do_logout():
+    form = LogOutForm()
+    if form.validate():
+        session.pop('user', None)
+    return redirect(url_for('index'))
+
+@app.route("/do/login", methods=['POST'])
+def do_login():
+    form = LoginForm()
+    if form.validate():
+        user = User.query.filter_by(username=form.username.data).first()
+        if not user:
+            return json.dumps({'status': 'error', 'error': ['User does not exist.']})
+        
+        if user.crypto == 1: # bcrypt
+            thash = bcrypt.hashpw(form.password.data, user.password)
+            if thash == user.password:
+                session['user'] = user.id
+                return json.dumps({'status': 'ok'})
+            else:
+                return json.dumps({'status': 'error', 'error': ['Invalid password.']})
+        else:
+            return json.dumps({'status': 'error', 'error': ['User has an unknown password hash.']})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
 
 @app.route("/do/register", methods=['POST'])
 def do_register():
