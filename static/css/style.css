@@ -228,8 +228,9 @@ a.btn.login, a.btn.register {
   .side {
     margin-top: 1em;
   }
-  #cfg {
-    text-align: left;
+  #cfg,
+  .side .buttons div {
+    text-align: center;
   }
 }
 /*
@@ -341,43 +342,35 @@ a.btn, button.btn{
 }
 a.btn:hover, button.btn:hover{
   background-color: #e3e3e3;
-  border-color: rgba(0, 0, 0, 0.5);
 }
 a.btn:active, button.btn:active{
   background-color: #CCC;
-  border-color: rgba(0, 0, 0, 0.9);
 }
 
 /* blue button */
 
 a.btn.btn-blue {
   background-color: #699DB6;
-  border-color: rgba(0, 0, 0, 0.3);
   color: #FFF;
 }
 a.btn.btn-blue:hover {
   background-color: #4F87A2;
-  border-color: rgba(0, 0, 0, 0.5);
 }
 a.btn.btn-blue:active {
   background-color: #3C677B;
-  border-color: rgba(0, 0, 0, 0.9);
 }
 
 /* red button */
 
 a.btn.btn-red {
   background-color: #E48681;
-  border-color: rgba(0, 0, 0, 0.3);
   color: #FFF;
 }
 a.btn.btn-red:hover {
   background-color: #DA4F49;
-  border-color: rgba(0, 0, 0, 0.5);
 }
 a.btn.btn-red:active {
   background-color: #B32C24;
-  border-color: rgba(0, 0, 0, 0.9);
 }
 
 /* small button */
@@ -391,7 +384,7 @@ a.btn.small, button.btn.small{
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
   a.btn, button.btn {
-    width: 80%;
+    width: 90%;
   }
 }
 
