@@ -486,7 +486,7 @@ nav ul li a:hover {
 }
 .post .image {
   float: left;
-  margin: 0px;
+  margin: 5px;
   width: auto;
   text-align: center;
 }
@@ -498,7 +498,7 @@ nav ul li a:hover {
 }
 .post .main {
   float: left;
-  margin: 0.5em;
+  margin: 5px;
   width: 70%;
 }
 @media only screen and (max-width: 330px) {
