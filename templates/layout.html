@@ -37,20 +37,20 @@
         </div>
         <div class="row buttons">
         {% if 'user' not in session %}
-          <div class="col-5">
+          <div class="col-6">
             <a href="#login-form" class="btn login">Login</a>
           </div>
-          <div class="col-5">
+          <div class="col-6">
             <a href="#register-form" class="btn register">Register</a>
           </div>
         {% else %}
-          <div class="col-5">
+          <div class="col-10">
              <form method="POST" action="{{ url_for('do_logout') }}">
                  {{ logoutform.csrf_token }}
                  <button type="submit" class="btn">Log out</button>
              </form>
           </div>
-          <div class="col-2">
+          <div class="col-2" style="text-align: right;">
             <a href="#config-form" class="config"><i class="fa fa-cog" aria-hidden="true"></i></a>
           </div>
         {% endif %}
