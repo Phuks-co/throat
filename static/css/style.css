@@ -486,8 +486,8 @@ nav ul li a:hover {
 }
 .post .image {
   float: left;
-  margin: 0.5em;
-  width: 16%;
+  margin: 0px;
+  width: auto;
   text-align: center;
 }
 .post .image img {
