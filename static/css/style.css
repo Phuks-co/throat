@@ -188,11 +188,6 @@ input:focus {
     margin-top: 1em;
   }
 }
-.config {
-  color: gray;
-  text-decoration: none;
-  vertical-align: sub;
-}
 
 /*
   Sidebar
@@ -215,7 +210,19 @@ input:focus {
 a.btn.login, a.btn.register {
   width: 100%;
 }
-
+.side .config {
+  color: darkgray;
+  text-decoration: none;
+  font-size: 20px;
+  vertical-align: middle;
+}
+.side .buttons {
+  margin: 0.5em;
+}
+.side .buttons div {
+  height: 2.5em;
+  overflow: hidden;
+}
 /*
   Navigation bar
 */
@@ -289,10 +296,13 @@ nav ul li a:hover {
   float: left;
   margin: 0.5em;
   width: 16%;
+  text-align: center;
 }
 .post .image img {
   width: 8vmax;
   height: 8vmax;
+  max-width: 70px;
+  max-height: 70px;
 }
 .post .main {
   float: left;

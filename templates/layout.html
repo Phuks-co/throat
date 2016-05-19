@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="keywords" content="forum, vote, comment, submit, throat, internet">
     <meta name="description" content="Throat: Open discussion">
+    <meta name="robots" content="index, follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>{% block title %}{% endblock %}</title>
@@ -34,15 +35,15 @@
         <div style="text-align: left; margin: 0.5em;">
           <input type="search" name="search" placeholder="Search...">
         </div>
-        <div class="row" style="margin: 0.5em;">
+        <div class="row buttons">
           <div class="col-5">
             <a href="#login-form" class="btn login">Login</a>
           </div>
           <div class="col-5">
             <a href="#register-form" class="btn register">Register</a>
           </div>
-          <div class="col-2" style="padding: 5px;">
-            <a href="#config-form" class="config"><i class="fa fa-cog" style="font-size: 18px;" aria-hidden="true"></i></a>
+          <div class="col-2">
+            <a href="#config-form" class="config"><i class="fa fa-cog" aria-hidden="true"></i></a>
           </div>
         </div>
         {% endblock %}
