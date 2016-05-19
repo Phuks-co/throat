@@ -201,12 +201,6 @@ input:focus {
   text-align: center;
   margin-right: 1em;
 }
-@media only screen and (max-width: 768px) {
-  /* For mobile phones: */
-  .side {
-    margin-top: 1em;
-  }
-}
 a.btn.login, a.btn.register {
   width: 100%;
 }
@@ -214,17 +208,29 @@ a.btn.login, a.btn.register {
   color: darkgray;
   text-decoration: none;
   font-size: 20px;
-  vertical-align: middle;
-  vertical-align: -webkit-baseline-middle;
 }
 .side .buttons {
   margin: 0.5em;
+}
+#cfg {
+  text-align: right;
 }
 .side .buttons div {
   height: 2.5em;
   overflow: hidden;
   line-height: 1em;
   text-align: left;
+  vertical-align: middle;
+  vertical-align: -webkit-baseline-middle;
+}
+@media only screen and (max-width: 768px) {
+  /* For mobile phones: */
+  .side {
+    margin-top: 1em;
+  }
+  #cfg {
+    text-align: left;
+  }
 }
 /*
   Navigation bar
