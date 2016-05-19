@@ -214,7 +214,8 @@ a.btn.login, a.btn.register {
   color: darkgray;
   text-decoration: none;
   font-size: 20px;
-  vertical-align: middle;
+  vertical-align: sub;
+  vertical-align: -webkit-baseline-middle;
 }
 .side .buttons {
   margin: 0.5em;
@@ -222,6 +223,7 @@ a.btn.login, a.btn.register {
 .side .buttons div {
   height: 2.5em;
   overflow: hidden;
+  line-height: 1.5em;
 }
 /*
   Navigation bar
