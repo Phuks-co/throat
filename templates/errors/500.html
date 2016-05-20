@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}Throat: Error 500{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/errors.css') }}">
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+    <div class="error internal">
+      <h1>Possible end of the world</h1>
+      <br>
+      <img src="{{ url_for('static', filename='img/errors/500.png') }}" alt="(insert a wtf image here)" align/>
+      <br>
+      <p>We were strangled to death. Please wait until a new generation of admins is born</p>
+      <div style="text-align: center;">
+        <a href="/" class="btn btn-blue">Go to the home page</a>
+      </div>
+    </div>
+{% endblock %}

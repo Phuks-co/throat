@@ -133,12 +133,29 @@ def not_found(error):
     if 'user' not in session:
         register = RegistrationForm()
         login = LoginForm()
-        return render_template('errors/404.html', regform=register, loginform=login)
+        return render_template('errors/404.html', regform=register, loginform=login), 404
     else:
         logout = LogOutForm()
         createsub = CreateSubForm()
         return render_template('errors/404.html', logoutform=logout,
                                csubform=createsub), 404
+
+@app.route("/500")
+def server_error():
+    return server_error(False)
+
+@app.errorhandler(500)
+def server_error(error):
+    """ 500 Internal server error """
+    if 'user' not in session:
+        register = RegistrationForm()
+        login = LoginForm()
+        return render_template('errors/500.html', regform=register, loginform=login), 500
+    else:
+        logout = LogOutForm()
+        createsub = CreateSubForm()
+        return render_template('errors/500.html', logoutform=logout,
+                               csubform=createsub), 500
 
 if __name__ == "__main__":
     app.run()
