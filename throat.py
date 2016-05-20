@@ -27,7 +27,8 @@ def index():
         return render_template('index.html', regform=register, loginform=login)
     else:
         logout = LogOutForm()
-        return render_template('index.html', logoutform=logout)
+        createsub = CreateSubForm()
+        return render_template('index.html', logoutform=logout, csubform=createsub)
 
 def get_errors(form):
     ret = []
@@ -79,7 +80,7 @@ def do_register():
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
-@app.route("/do/create_sub")
+@app.route("/do/create_sub", methods=['POST'])
 def create_sub():
     form = CreateSubForm()
     if form.validate():
@@ -89,7 +90,7 @@ def create_sub():
         sub = Sub(form.subname.data, form.title.data)
         db.session.add(sub)
         db.session.commit()
-        return json.dumps({'status': 'ok'})
+        return json.dumps({'status': 'ok', 'addr': url_for('view_sub', sub=form.subname.data)})
 
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 

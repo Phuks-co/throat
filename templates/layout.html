@@ -54,7 +54,7 @@
             <a href="#config-form" class="config"><i class="fa fa-cog" aria-hidden="true"></i></a>
           </div>
           <div class="col-12">
-            <a href="#mksub" class="btn btn-blue create-sub">Create your own sub</a>
+            <a href="#csub-form" class="btn btn-blue create-sub" style="width:100%;">Create your own sub</a>
           </div>
         {% endif %}
         </div>
@@ -77,7 +77,7 @@
     	<p>{{loginform.password(placeholder=loginform.password.label.text, required=True)}}</p>
         <div class="alert div-error">
           <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-          <p id="login-errors"></p>
+          <p></p>
         </div>
         <p><button type="submit" id="login-btnsubmit">Log in</button></p>
     </form>
@@ -98,16 +98,26 @@
             <!-- TODO: Add a captcha -->
             <div class="alert div-error">
               <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-              <p id="reg-errors"></p>
+              <p></p>
             </div>
             <p><button type="submit" id="reg-btnsubmit">Register</button></p>
         </div>
     </form>
-    {% endif %}
+    {%else%}
     <!-- create sub form -->
-    <form id="mksub" class="mfp-hide white-popup-block">
-      <!-- Insert stuff here -->
+    <form id="csub-form" class="mfp-hide white-popup-block">
+      {{ csubform.csrf_token }}
+      <h1>Create sub</h1>
+      <p>Create a sub. For you, for your friends or your favorite community</p>
+      <p>{{csubform.subname(placeholder=csubform.subname.label.text, required=True, autofocus=True)}}</p>
+      <p>{{csubform.title(placeholder=csubform.title.label.text, required=True)}}</p>
+      <div class="alert div-error">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        <p></p>
+      </div>
+      <p><button type="submit" id="csub-btnsubmit">Create sub</button></p>
     </form>
+    {% endif %}
     <!-- Scripts -->
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.2.3.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/magnific-popup.js') }}"></script>
