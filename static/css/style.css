@@ -317,7 +317,7 @@ header {
   border-bottom: solid 1px lightgray;
 }
 footer {
-  margin-top: 3em;
+  margin: 3em;
   background-color: transparent;
   color: gray;
   font-size: small;
@@ -340,7 +340,7 @@ body {
   margin: 0;
   height: 100%;
   width: 100%;
-  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 main {
   background: white;
@@ -358,12 +358,13 @@ input[type=search] {
   box-sizing: border-box;
   border: 2px solid lightgray;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 0.9em;
+  font-family: Comfortaa;
   background-color: white;
   background-image: url('../img/searchicon.png');
   background-position: 10px 10px;
   background-repeat: no-repeat;
-  padding: 10px 15px 10px 35px;
+  padding: 12px 15px 10px 35px;
   -webkit-transition: width 0.4s ease-in-out;
   transition: width 0.4s ease-in-out;
 }
@@ -538,7 +539,7 @@ a.btn, button.btn {
   background-color: #eee;
   letter-spacing: 1px;
   font-size: 12px;
-  font-size: 0.6em;
+  font-size: 0.65em;
   padding: 6px 10px;
   border-radius: 5px;
   -moz-border-radius: 5px;
@@ -585,7 +586,7 @@ a.btn.btn-red:active {
 
 a.btn.small, button.btn.small {
   font-size: 9px;
-  font-size: 0.5em;
+  font-size: 0.55em;
   padding: 3px 8px;
   border-radius: 2px;
   border: solid white 1px;
@@ -636,6 +637,7 @@ a.btn.small, button.btn.small {
 .white-popup-block p {
   margin: 5px;
 }
+
 /* Alerts */
 
 .alert {
