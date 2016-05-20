@@ -2,10 +2,10 @@
 ignore-mixin-members=yes
 ignored-modules=bcrypt,flask_sqlalchemy,sqlalchemy
 ignored-classes=
-generated-members=query,commit,add,delete
+generated-members=query,commit,add,delete,globals
 
 [BASIC]
 good-names=app,db
 
 [MESSAGES CONTROL]
-disable=R0903,C0103
+disable=R0903,C0103,W0613

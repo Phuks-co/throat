@@ -4,16 +4,17 @@
 
 import json
 import bcrypt
-from flask import Flask, render_template, session, redirect
-from flask import abort, url_for
+from flask import Flask, render_template, session, redirect, url_for, abort
 from models import db, User, Sub
 
 import config
 from forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
+import forms
 
 
 app = Flask(__name__)
 
+app.jinja_env.globals.update(forms=forms)
 app.config.from_object(config)
 
 db.init_app(app)
@@ -26,18 +27,23 @@ def initialize_database():
     db.create_all()
 
 
-@app.route("/")
-def index():
-    """ The index page """
+@app.context_processor
+def utility_processor():
+    """ Here we set some useful stuff for templates """
     if 'user' not in session:
         register = RegistrationForm()
         login = LoginForm()
-        return render_template('index.html', regform=register, loginform=login)
+        return {'loginform': login, 'regform': register}
     else:
         logout = LogOutForm()
         createsub = CreateSubForm()
-        return render_template('index.html', logoutform=logout,
-                               csubform=createsub)
+        return {'logoutform': logout, 'csubform': createsub}
+
+
+@app.route("/")
+def index():
+    """ The index page """
+    return render_template('index.html')
 
 
 def get_errors(form):
@@ -120,42 +126,26 @@ def create_sub():
 
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
+
 @app.route("/s/<sub>")
 def view_sub(sub):
     """ Here we can view subs """
-    abort(404)  # still a WIP
+    sub = Sub.query.filter_by(name=sub).first()
+    if not sub:
+        abort(404)
+    return render_template('sub.html', sub=sub.name, sub_title=sub.title)
 
-# Http errors
 
 @app.errorhandler(404)
 def not_found(error):
     """ 404 Not found error """
-    if 'user' not in session:
-        register = RegistrationForm()
-        login = LoginForm()
-        return render_template('errors/404.html', regform=register, loginform=login), 404
-    else:
-        logout = LogOutForm()
-        createsub = CreateSubForm()
-        return render_template('errors/404.html', logoutform=logout,
-                               csubform=createsub), 404
+    return render_template('errors/404.html'), 404
 
-@app.route("/500")
-def server_error():
-    return server_error(False)
 
 @app.errorhandler(500)
 def server_error(error):
     """ 500 Internal server error """
-    if 'user' not in session:
-        register = RegistrationForm()
-        login = LoginForm()
-        return render_template('errors/500.html', regform=register, loginform=login), 500
-    else:
-        logout = LogOutForm()
-        createsub = CreateSubForm()
-        return render_template('errors/500.html', logoutform=logout,
-                               csubform=createsub), 500
+    return render_template('errors/500.html'), 500
 
 if __name__ == "__main__":
     app.run()

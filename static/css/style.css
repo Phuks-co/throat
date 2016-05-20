@@ -411,7 +411,7 @@ a.btn.login, a.btn.register {
   line-height: 4em;
 }
 .side .buttons button {
-  height: 3.5em;
+  height: 100%;
   width: 100%;
 }
 .create-sub {
