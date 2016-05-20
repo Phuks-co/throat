@@ -136,7 +136,7 @@ def view_sub(sub):
     return render_template('sub.html', sub=sub.name, sub_title=sub.title)
 
 @app.errorhandler(403)
-def not_found(error):
+def Forbidden(error):
     """ 403 Forbidden """
     return render_template('errors/403.html'), 403
 
@@ -145,6 +145,10 @@ def not_found(error):
     """ 404 Not found error """
     return render_template('errors/404.html'), 404
 
+@app.errorhandler(418)
+def teapot(error):
+    """ 404 I'm a teapot """
+    return render_template('errors/418.html'), 404
 
 @app.errorhandler(500)
 def server_error(error):
