@@ -2,11 +2,12 @@
 # -*- coding: utf-8
 
 from flask import Flask, render_template, flash, request, session, redirect, url_for
-from models import db, User
+from flask import abort
+from models import db, User, Sub
 import config
 import json
 import bcrypt
-from forms import RegistrationForm, LoginForm, LogOutForm
+from forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
 
 app = Flask(__name__)
 
@@ -51,7 +52,7 @@ def do_login():
         user = User.query.filter_by(username=form.username.data).first()
         if not user:
             return json.dumps({'status': 'error', 'error': ['User does not exist.']})
-        
+
         if user.crypto == 1: # bcrypt
             thash = bcrypt.hashpw(form.password.data.encode(), user.password)
             if thash == user.password:
@@ -62,7 +63,6 @@ def do_login():
         else:
             return json.dumps({'status': 'error', 'error': ['User has an unknown password hash.']})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
-
 
 @app.route("/do/register", methods=['POST'])
 def do_register():
@@ -78,6 +78,24 @@ def do_register():
         db.session.commit()
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+@app.route("/do/create_sub")
+def create_sub():
+    form = CreateSubForm()
+    if form.validate():
+        if Sub.query.filter_by(name=form.subname.data).first():
+            return json.dumps({'status': 'error', 'error': ['Sub is already registered.']})
+
+        sub = Sub(form.subname.data, form.title.data)
+        db.session.add(sub)
+        db.session.commit()
+        return json.dumps({'status': 'ok'})
+
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+@app.route("/s/<sub>")
+def view_sub(sub):
+    abort(404)
 
 if __name__ == "__main__":
     app.run()
