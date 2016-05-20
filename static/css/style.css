@@ -399,10 +399,12 @@ a.btn.login, a.btn.register {
 }
 .side .config {
   color: darkgray;
-  text-decoration: none;
-  font-size: 1.7vmax;
-  vertical-align: middle;
-  vertical-align: -webkit-baseline-middle;
+  background: none!important;
+  border: none;
+  padding: 0!important;
+}
+.side .config i {
+  font-size: 1.5vmax;
 }
 .side .buttons {
   margin: 0.5em;
@@ -415,16 +417,10 @@ a.btn.login, a.btn.register {
 .create-sub {
   width: 20em;
 }
-#cfg {
-  text-align: center;
-}
 .side .buttons div {
   height: 2.5em;
   overflow: hidden;
   line-height: 1em;
-  text-align: left;
-  vertical-align: middle;
-  vertical-align: -webkit-baseline-middle;
 }
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
@@ -433,9 +429,6 @@ a.btn.login, a.btn.register {
   }
   .side .buttons div {
     text-align: center;
-  }
-  .side .config {
-    font-size: 1.5em;
   }
 }
 
