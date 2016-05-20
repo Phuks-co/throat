@@ -1,184 +1,186 @@
 /********** Start RESET **********
     AUTHOR: Osvaldas Valutis, www.osvaldas.info
 */
+
 * {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
- *behavior: url( '/theme/js/boxsizing.htc' );
-    -webkit-tap-highlight-color: rgba( 0, 0, 0, 0 );
-    -webkit-overflow-scrolling: touch;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  *behavior: url('/theme/js/boxsizing.htc');
+  -webkit-tap-highlight-color: rgba( 0, 0, 0, 0);
+  -webkit-overflow-scrolling: touch;
 }
 html, body, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sup, sub, tt, var, b, u, i, center, ul, ol, li, dl, dt, dd, table, tr, th, td, thead, tbody, tfoot, caption, form, fieldset, legend, input, textarea, select, label, applet, object, iframe, audio, video, canvas, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
-    font-size: 100%;
-    font-family: inherit;
-    font-weight: inherit;
-    font-style: inherit;
-    line-height: inherit;
-    vertical-align: baseline;
-    border: 0;
-    outline: 0;
-    padding: 0;
-    margin: 0;
+  font-size: 100%;
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  line-height: inherit;
+  vertical-align: baseline;
+  border: 0;
+  outline: 0;
+  padding: 0;
+  margin: 0;
 }
 html {
-    font-size: 100%;
-    -webkit-text-size-adjust: 100%;
-    -moz-text-size-adjust: 100%;
-    -ms-text-size-adjust: 100%;
-    -o-text-size-adjust: 100%;
-    text-size-adjust: 100%;
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -o-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 body {
-    font-family: Helvetica, Arial, sans-serif;
-    line-height: 1;
-    color: #000;
-    background-color: #fff;
+  font-family: Helvetica, Arial, sans-serif;
+  line-height: 1;
+  color: #000;
+  background-color: #fff;
 }
 article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
-    display: block;
+  display: block;
 }
 audio, canvas, video {
-    display: inline-block;
-*display: inline;
-*zoom: 1;
+  display: inline-block;
+  *display: inline;
+  *zoom: 1;
 }
 audio:not([controls]) {
-    display: none;
+  display: none;
 }
 canvas {
-    -ms-touch-action: double-tap-zoom;
+  -ms-touch-action: double-tap-zoom;
 }
- [hidden] {
-display: none;
+[hidden] {
+  display: none;
 }
 a {
-    text-decoration: underline;
-    color: #000;
+  text-decoration: underline;
+  color: #000;
 }
 a:hover {
-    text-decoration: none;
+  text-decoration: none;
 }
 small {
-    font-size: 75%;
+  font-size: 75%;
 }
 big {
-    font-size: 125%;
+  font-size: 125%;
 }
 em {
-    font-style: italic;
+  font-style: italic;
 }
 strong {
-    font-weight: bold;
+  font-weight: bold;
 }
 ins {
-    text-decoration: none;
+  text-decoration: none;
 }
 del {
-    text-decoration: line-through;
+  text-decoration: line-through;
 }
 sup, sub {
-    font-size: 75%;
-    line-height: 0;
+  font-size: 75%;
+  line-height: 0;
 }
 sup {
-    vertical-align: super;
+  vertical-align: super;
 }
 sub {
-    vertical-align: sub;
+  vertical-align: sub;
 }
 pre {
-    display: block;
-    overflow: auto;
+  display: block;
+  overflow: auto;
 }
 code {
-    font-family: 'Courier New', Courier, monospace;
+  font-family: 'Courier New', Courier, monospace;
 }
 ul, ol {
-    list-style: none;
+  list-style: none;
 }
 table {
-    table-layout: auto;
-    border-collapse: separate;
-    border-spacing: 0;
-    empty-cells: hide;
+  table-layout: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  empty-cells: hide;
 }
 img {
-    vertical-align: middle;
-    -ms-interpolation-mode: bicubic;
+  vertical-align: middle;
+  -ms-interpolation-mode: bicubic;
 }
 svg:not(:root) {
-    overflow: hidden;
+  overflow: hidden;
 }
 blockquote, q {
-    quotes: none;
+  quotes: none;
 }
 blockquote:before, blockquote:after, q:before, q:after {
-    content: '';
-    content: none;
+  content: '';
+  content: none;
 }
 input, textarea {
-    -webkit-appearance: none;
+  -webkit-appearance: none;
 }
 button, input, select, textarea {
-    vertical-align: baseline;
-*vertical-align: middle;
-    -webkit-border-radius: 0;
+  vertical-align: baseline;
+  *vertical-align: middle;
+  -webkit-border-radius: 0;
 }
 button, input {
-    line-height: normal;
-*overflow: visible;
+  line-height: normal;
+  *overflow: visible;
 }
 table button, table input {
-*overflow: auto;
+  *overflow: auto;
 }
 button, input[type='button'], input[type='reset'], input[type='submit'] {
-    cursor: pointer;
-    -webkit-appearance: button;
+  cursor: pointer;
+  -webkit-appearance: button;
 }
 textarea {
-    overflow: auto;
-    vertical-align: top;
+  overflow: auto;
+  vertical-align: top;
 }
 input[type='search']::-webkit-search-decoration, input[type='search']::-webkit-search-cancel-button, input[type='search']::-webkit-search-results-button, input[type='search']::-webkit-search-results-decoration {
-display: none;
+  display: none;
 }
 input[type='search'] {
-    -webkit-appearance: textfield;
+  -webkit-appearance: textfield;
 }
 input[type='radio'] {
-    -webkit-appearance: radio;
+  -webkit-appearance: radio;
 }
 input[type='checkbox'] {
-    -webkit-appearance: checkbox;
+  -webkit-appearance: checkbox;
 }
 input::-ms-clear {
-display: none;
+  display: none;
 }
 input[type='password']::-ms-reveal {
-display: none;
+  display: none;
 }
 .clearfix:after {
-    visibility: hidden;
-    display: block;
-    font-size: 0;
-    content: " ";
-    clear: both;
-    height: 0;
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
 }
 * html .clearfix {
-    zoom: 1;
+  zoom: 1;
 }
 *:first-child+html .clearfix {
-    zoom: 1;
+  zoom: 1;
 }
 .cleaner {
-    height: 0;
-    line-height: 0;
-    clear: both;
+  height: 0;
+  line-height: 0;
+  clear: both;
 }
 
 /********** End RESET **********/
+
 
 /*
   Custom fonts
@@ -306,7 +308,8 @@ h1, h2, h3, h4, h5 {
   font-family: sans-serif;
 }
 header, footer {
-  height: 5em;
+  height: auto;
+  max-height: 10em;
   background-color: white;
   text-align: center;
 }
@@ -322,6 +325,13 @@ footer {
 html, body {
   overflow-x: hidden;
   height: 100%;
+}
+hr {
+  margin: 0px 0.3em 0px 0.3em;
+  border: 0;
+  height: 1px;
+  background: #333;
+  background-image: linear-gradient(to right, #ccc, #333, #ccc);
 }
 body {
   color: black;
@@ -393,6 +403,14 @@ a.btn.login, a.btn.register {
 }
 .side .buttons {
   margin: 0.5em;
+  line-height: 4em;
+}
+.side .buttons button {
+  height: 3.5em;
+  width: 20em;
+}
+.create-sub {
+  width: 20em;
 }
 #cfg {
   text-align: right;
@@ -410,19 +428,20 @@ a.btn.login, a.btn.register {
   .side {
     margin-top: 1em;
   }
-  #cfg,
-  .side .buttons div {
+  #cfg, .side .buttons div {
     text-align: center;
   }
 }
+
 /*
   Navigation bar
 */
 
 nav {
   display: block;
-  height: 35px;
+  height: auto;
   padding: 1em;
+  overflow: hidden;
 }
 nav ul {
   list-style: none;
@@ -512,7 +531,7 @@ nav ul li a:hover {
   Buttons
 */
 
-a.btn, button.btn{
+a.btn, button.btn {
   text-decoration: none;
   display: inline-block;
   color: #666;
@@ -529,24 +548,24 @@ a.btn, button.btn{
   text-align: center;
   cursor: pointer;
 }
-a.btn:hover, button.btn:hover{
+a.btn:hover, button.btn:hover {
   background-color: #e3e3e3;
 }
-a.btn:active, button.btn:active{
+a.btn:active, button.btn:active {
   background-color: #CCC;
 }
 
 /* blue button */
 
 a.btn.btn-blue {
-  background-color: #699DB6;
+  background-color: #238FC3;
   color: #FFF;
 }
 a.btn.btn-blue:hover {
-  background-color: #4F87A2;
+  background-color: #3C84A7;
 }
 a.btn.btn-blue:active {
-  background-color: #3C677B;
+  background-color: #237FAB;
 }
 
 /* red button */
@@ -564,7 +583,7 @@ a.btn.btn-red:active {
 
 /* small button */
 
-a.btn.small, button.btn.small{
+a.btn.small, button.btn.small {
   font-size: 9px;
   font-size: 0.5em;
   padding: 3px 8px;
@@ -574,7 +593,7 @@ a.btn.small, button.btn.small{
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
   a.btn, button.btn {
-    width: 90%;
+    width: 90% !important;
   }
 }
 

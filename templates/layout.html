@@ -24,7 +24,6 @@
             <li><a href="#">Hot</a></li>
             <li><a href="#">New</a></li>
             <li><a href="#">Active</a></li>
-            <li><a href="#">Create sub</a></li>
             {% block navbar %}{% endblock %}
           </ul>
         </nav>
@@ -53,6 +52,9 @@
           </div>
           <div class="col-2" id="cfg">
             <a href="#config-form" class="config"><i class="fa fa-cog" aria-hidden="true"></i></a>
+          </div>
+          <div class="col-12">
+            <a href="#mksub" class="btn btn-blue create-sub">Create your own sub</a>
           </div>
         {% endif %}
         </div>
@@ -102,6 +104,10 @@
         </div>
     </form>
     {% endif %}
+    <!-- create sub form -->
+    <form id="mksub" class="mfp-hide white-popup-block">
+      <!-- Insert stuff here -->
+    </form>
     <!-- Scripts -->
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.2.3.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/magnific-popup.js') }}"></script>
