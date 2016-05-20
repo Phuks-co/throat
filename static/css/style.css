@@ -400,7 +400,9 @@ a.btn.login, a.btn.register {
 .side .config {
   color: darkgray;
   text-decoration: none;
-  font-size: 20px;
+  font-size: 1.7vmax;
+  vertical-align: middle;
+  vertical-align: -webkit-baseline-middle;
 }
 .side .buttons {
   margin: 0.5em;
@@ -414,7 +416,7 @@ a.btn.login, a.btn.register {
   width: 20em;
 }
 #cfg {
-  text-align: right;
+  text-align: center;
 }
 .side .buttons div {
   height: 2.5em;
@@ -429,8 +431,11 @@ a.btn.login, a.btn.register {
   .side {
     margin-top: 1em;
   }
-  #cfg, .side .buttons div {
+  .side .buttons div {
     text-align: center;
+  }
+  .side .config {
+    font-size: 1.5em;
   }
 }
 
@@ -594,7 +599,7 @@ a.btn.small, button.btn.small {
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
   a.btn, button.btn {
-    width: 90% !important;
+    width: 100% !important;
   }
 }
 

@@ -44,13 +44,13 @@
             <a href="#register-form" class="btn register">Register</a>
           </div>
         {% else %}
-          <div class="col-10">
+          <div class="col-11">
              <form method="POST" action="{{ url_for('do_logout') }}">
                  {{ logoutform.csrf_token }}
                  <button type="submit" class="btn">Log out</button>
              </form>
           </div>
-          <div class="col-2" id="cfg">
+          <div class="col-1" id="cfg">
             <a href="#config-form" class="config"><i class="fa fa-cog" aria-hidden="true"></i></a>
           </div>
           <div class="col-12">
