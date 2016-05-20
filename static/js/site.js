@@ -23,7 +23,8 @@ $(document).ready(function () {
           checkErrors(data, "register-form");
         }else{ // success
           $('a.btn.register').magnificPopup('close');
-          $('#login-intro').text("Thanks for registering! Now you can proceed to log in.");
+          $('#login-intro').addClass('alert ok');
+          $('#login-intro').text("Thanks for registering! Now you can log in.");
           $('a.btn.login').magnificPopup('open');
         }
       },
@@ -58,7 +59,7 @@ $(document).ready(function () {
     });
     e.preventDefault();
     $("#login-btnsubmit").prop('disabled', false);
-    $("#login-btnsubmit").text('Register');
+    $("#login-btnsubmit").text('Log in');
   });
 
   $("#csub-form").submit(function (e) {
