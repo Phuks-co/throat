@@ -407,7 +407,7 @@ a.btn.login, a.btn.register {
 }
 .side .buttons button {
   height: 3.5em;
-  width: 20em;
+  width: 100%;
 }
 .create-sub {
   width: 20em;
