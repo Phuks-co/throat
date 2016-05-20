@@ -7,6 +7,10 @@
 {{ super() }}
 {% endblock %}
 
+{% block search %}
+<input type="search" name="search" placeholder="Maybe we can still find it...">
+{% endblock %}
+
 {% block content %}
 {{ super() }}
     <div class="error not-found">

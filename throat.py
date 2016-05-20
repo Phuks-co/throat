@@ -135,6 +135,10 @@ def view_sub(sub):
         abort(404)
     return render_template('sub.html', sub=sub.name, sub_title=sub.title)
 
+@app.errorhandler(403)
+def not_found(error):
+    """ 403 Forbidden """
+    return render_template('errors/403.html'), 403
 
 @app.errorhandler(404)
 def not_found(error):
