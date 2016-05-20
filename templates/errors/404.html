@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block title %}Throat: Error 404{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/errors.css') }}">
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+    <div class="error 404">
+      <h1>WTF?! 404</h1>
+      <br>
+      <p>It seems that the page you are looking for, does not exist. Are you sure that you are in the right universe?</p>
+      <img src="{{ url_for('static', filename='img/errors/404.gif') }}" alt="(insert a wtf gif here)" />
+      <div style="text-align: center;">
+        <p>Please choose the right universe:</p>
+        <br>
+        <select class="btn">
+          <option>Universe 1</option>
+          <option>Universe 2</option>
+          <option>Universe 3</option>
+        </select>
+        <a href="/" class="btn btn-blue">Go to the home page</a>
+      </div>
+    </div>
+{% endblock %}

@@ -530,7 +530,7 @@ nav ul li a:hover {
   Buttons
 */
 
-a.btn, button.btn {
+.btn, .btn {
   text-decoration: none;
   display: inline-block;
   color: #666;
@@ -584,7 +584,7 @@ a.btn.btn-red:active {
 
 a.btn.small, button.btn.small {
   font-size: 9px;
-  font-size: 0.55em;
+  font-size: 0.6em;
   padding: 3px 8px;
   border-radius: 2px;
   border: solid white 1px;

@@ -120,11 +120,25 @@ def create_sub():
 
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
-
 @app.route("/s/<sub>")
 def view_sub(sub):
     """ Here we can view subs """
     abort(404)  # still a WIP
+
+# Http errors
+
+@app.errorhandler(404)
+def not_found(error):
+    """ 404 Not found error """
+    if 'user' not in session:
+        register = RegistrationForm()
+        login = LoginForm()
+        return render_template('errors/404.html', regform=register, loginform=login)
+    else:
+        logout = LogOutForm()
+        createsub = CreateSubForm()
+        return render_template('errors/404.html', logoutform=logout,
+                               csubform=createsub), 404
 
 if __name__ == "__main__":
     app.run()

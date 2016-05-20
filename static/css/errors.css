@@ -1,0 +1,16 @@
+.error {
+  margin: 2em;
+}
+.error h1 {
+  font-size: xx-large;
+  text-align: center;
+  font-family: Comfortaa;
+}
+.error img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.error > * {
+  margin: 10px;
+}
