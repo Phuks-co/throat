@@ -633,7 +633,9 @@ a.btn.small, button.btn.small {
   text-align: right;
   margin-right: 10px;
 }
-
+.white-popup-block p {
+  margin: 5px;
+}
 /* Alerts */
 
 .alert {
