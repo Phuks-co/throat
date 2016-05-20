@@ -648,6 +648,12 @@ a.btn.small, button.btn.small {
 .alert li {
   text-align: left;
 }
+.alert.ok {
+  background-color: #55AF55;
+}
+.alert.warn {
+  background-color: #CCBB28;
+}
 
 /* The close button */
 
