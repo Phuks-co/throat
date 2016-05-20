@@ -1,12 +1,15 @@
+""" Database table definitions """
+
 from sqlalchemy import Column, Integer, String
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 
 db = SQLAlchemy()
 
+
 class User(db.Model):
     """ Basic user data (Used for login or password recovery) """
-    id = Column(Integer, primary_key=True)
+    uid = Column(Integer, primary_key=True)
     username = Column(String(64), unique=True)
     email = Column(String(128), unique=True)
     # In case we migrate to a different cipher for passwords
@@ -28,9 +31,10 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.username
 
+
 class Sub(db.Model):
-    """ Basic user data (Used for login or password recovery) """
-    id = Column(Integer, primary_key=True)
+    """ Basic sub data """
+    sid = Column(Integer, primary_key=True)
     name = Column(String(32), unique=True)
     title = Column(String(128))
 
