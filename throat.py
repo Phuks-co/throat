@@ -73,7 +73,7 @@ def do_login():
         if user.crypto == 1:  # bcrypt
             thash = bcrypt.hashpw(form.password.data.encode(), user.password)
             if thash == user.password:
-                session['user'] = user.id
+                session['user'] = user.uid
                 return json.dumps({'status': 'ok'})
             else:
                 return json.dumps({'status': 'error',
