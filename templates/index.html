@@ -23,12 +23,12 @@
         {% endif %}
       </div>
       <div class="main">
-        <a class="title" href="#">{{post.title}}</a>
-        <p class="author"><relative-time datetime="{{post.posted.isoformat()}}"></relative-time></p>
+        <a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{post.title}}</a>
+        <p class="author">posted to:  <a href="{{url_for('view_sub', sub=post.sub.name)}}">{{post.sub.name}}</a>,  <relative-time datetime="{{post.posted.isoformat()}}"></relative-time><$
         <p class="container">
           <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
-          <a href="{{url_for('view_post', sub=sub, pid=post.pid)}}" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments</a>
-        </p>
+          <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments</a>
+          </p>
       </div>
     </article>
 {% endfor %}
