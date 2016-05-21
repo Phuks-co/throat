@@ -38,6 +38,9 @@ body {
 article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
   display: block;
 }
+article.post {
+    border-bottom: 1px solid #D3D3D3;
+}
 audio, canvas, video {
   display: inline-block;
   *display: inline;
