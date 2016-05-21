@@ -32,7 +32,7 @@ class User(db.Model):
         self.password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.name
 
 
 class Sub(db.Model):

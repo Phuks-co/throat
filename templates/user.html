@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
-{% block title %}/u/{{user}} | Throat: Open discussion{% endblock %}
+{% block title %}/u/{{user.name}} | Throat: Open discussion{% endblock %}
 {% block navbar %}
 <ul class="right">
-  <li><a href="{{url_for('view_user', user=user.name)}}">{{user}}</a></li>
+  <li><a href="{{url_for('view_user', user=user.name)}}">{{user.name}}</a></li>
 </ul>
 {% endblock %}
 
@@ -24,8 +24,8 @@
         <a href="#"><img src="{{url_for('static', filename='img/textpost.png')}}" alt="User Img"/></a>
       </div>
       <div class="main">
-        <p class="title">{{user}}</p>
-        <p class="joindate">Member for: XX days <relative-time datetime="{# user.joindate.isoformat() #}"></relative-time></p>
+        <p class="title">{{user.name}}</p>
+        <p class="joindate">Member since: <relative-time datetime="{{ user.joindate.isoformat() }}"></relative-time></p>
         <p>
           Badges:
           <ul>
@@ -37,8 +37,8 @@
         <p>
           Recent Posts:
           <ul>
-          {% for UserPost in user %}
-            <li><a href="#">{# post.title #} - Post Title</a></li>
+          {% for post in user.posts %}
+            <li><a href="#">{{ post.title }} - Post Title</a></li>
           {% endfor %}
           </ul>
         </p>

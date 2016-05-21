@@ -210,7 +210,7 @@ def view_user(user):
     if not user:
         abort(404)
 
-    return render_template('user.html', user=user.name)
+    return render_template('user.html', user=user)
 
 
 @app.route("/u/<user>/edit")
