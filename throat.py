@@ -40,8 +40,9 @@ def utility_processor():
 
 @app.route("/")
 def index():
-    """ The index page """
-    return render_template('index.html')
+    """ The index page, makes it /all """
+    subposts = SubPost.query.order_by(SubPost.posted.desc()).all()
+    return render_template('index.html', posts=subposts)
 
 
 def get_errors(form):
