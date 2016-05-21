@@ -178,6 +178,12 @@ def view_post(sub, pid):
 def view_user(user):
     """ WIP: View an user's profile, posts, comments, badges, etc """
     return "WIP!"
+    
+    
+@app.route("/u/<user>/edit")
+def view_user(user):
+    """ WIP: Edit user's profile, slogan, quote, etc """
+    return "WIP!"
 
 
 @app.errorhandler(403)
