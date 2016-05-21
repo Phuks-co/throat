@@ -6,6 +6,7 @@ import json
 import datetime
 import bcrypt
 from flask import Flask, render_template, session, redirect, url_for, abort
+from flask_assets import Environment, Bundle
 from models import db, User, Sub, SubPost
 
 import config
@@ -15,6 +16,15 @@ import forms
 
 
 app = Flask(__name__)
+assets = Environment(app)
+
+js = Bundle('js/jquery.js', 'js/magnific-popup.js', 'js/CustomElements.js',
+            'js/time-elements.js', 'js/site.js', filters='jsmin',
+            output='gen/site.js')
+css = Bundle('css/magnific-popup.css', 'css/style.css', 'css/font-awesome.css',
+             filters='cssmin,datauri', output='gen/site.css')
+assets.register('js_all', js)
+assets.register('css_all', css)
 
 app.jinja_env.globals.update(forms=forms)
 app.config.from_object(config)

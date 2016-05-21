@@ -64,3 +64,7 @@ target/
 # To prevent Miguel from uploading a metric fuckload of useless shit
 *.scss
 *.less
+
+# webassets tmp stuff
+static/gen
+static/.webassets-cache

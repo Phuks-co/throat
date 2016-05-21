@@ -10,9 +10,10 @@
 
     <title>{% block title %}{% endblock %}</title>
 
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+    {% assets "css_all" %}
+    <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
+    {% endassets %}
+
     {% endblock %}
   </head>
   <body>
@@ -118,10 +119,8 @@
     </form>
     {% endif %}
     <!-- Scripts -->
-    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.2.4.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/magnific-popup.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/CustomElements.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/time-elements.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/site.js') }}"></script>
+    {% assets "js_all" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
   </body>
 </html>
