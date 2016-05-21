@@ -173,14 +173,14 @@ def view_sub(sub):
 def edit_sub(sub):
     """ edit sub config """
     return "WIP!"
-    
-    
+
+
 @app.route("/s/<sub>/<pid>")
 def view_post(sub, pid):
     """ WIP: View a post content and its comments """
     return "WIP!"
-    
-    
+
+
 @app.route("/s/<sub>/<pid>/edit")
 def edit_post(sub, pid):
     """ WIP: Edit a post content """
@@ -197,14 +197,15 @@ def view_perm(sub, pid, cid):
 def view_user(user):
     """ WIP: View user's profile, posts, comments, badges, etc """
     return "WIP!"
-# i tried    
+# i tried
 #    user = User.query.filter_by(name=user).first()
 #    if not user:
 #        abort(404)
 #
 #    userinfo = User.query.filter_by(name=user).first()
 #    return render_template('user.html', user=user.name)
-    
+
+
 @app.route("/u/<user>/edit")
 def edit_user(user):
     """ WIP: Edit user's profile, slogan, quote, etc """
