@@ -649,3 +649,7 @@ a.btn.small, button.btn.small {
   margin: 5px;
   text-align: center;
 }
+
+.g-recaptcha{
+  margin: 0 auto;width: 50%;
+}

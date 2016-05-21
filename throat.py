@@ -110,6 +110,9 @@ def do_register():
 @app.route("/do/create_sub", methods=['POST'])
 def create_sub():
     """ Sub creation endpoint """
+    if 'user' not in session:
+        return json.dumps({'status': 'error',
+                           'error': ['You\'re not logged in.']})
     form = CreateSubForm()
     if form.validate():
         if Sub.query.filter_by(name=form.subname.data).first():
@@ -128,6 +131,10 @@ def create_sub():
 @app.route("/do/txtpost/<sub>", methods=['POST'])
 def create_txtpost(sub):
     """ Sub text post creation endpoint """
+    if 'user' not in session:
+        return json.dumps({'status': 'error',
+                           'error': ['You\'re not logged in.']})
+
     form = CreateSubTextPost()
     if form.validate():
         # Put pre-posting checks here

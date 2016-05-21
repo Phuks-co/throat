@@ -2,11 +2,13 @@
 {% block title %}Throat: Open discussion{% endblock %}
 {% block sidebar %}
 {{ super() }}
+{% if 'user' in session %}
 <div class="row buttons">
   <div class="col-12">
     <a href="#csub-form" class="btn btn-blue create-sub" style="width:100%;">Create your own sub</a>
   </div>
 </div>
+{% endif %}
 {% endblock %}
 {% block content %}
 {{ super() }}

@@ -94,7 +94,7 @@
                 {{regform.accept_tos(style="width: auto", required=True)}}
                 <label for="tos">{{regform.accept_tos.label.text}}</label>
             </p>
-            <!-- TODO: Add a captcha -->
+            {{regform.recaptcha}}
             <div class="alert div-error">
               <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
               <p></p>
