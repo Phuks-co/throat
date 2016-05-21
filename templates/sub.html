@@ -30,7 +30,7 @@
         <p class="author"><relative-time datetime="{{post.posted.isoformat()}}"></relative-time></p>
         <p class="container">
           <a href="/u/{{post.user.name}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
-          <a href="#" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments</a>
+          <a href="/s/{{sub}}/{{post.pid}}" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments</a>
         </p>
       </div>
     </article>
