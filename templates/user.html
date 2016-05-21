@@ -25,7 +25,7 @@
       </div>
       <div class="main">
         <p class="title">{{user.name}}</p>
-        <p class="joindate">Member since: <relative-time datetime="{{ user.joindate.isoformat() }}"></relative-time></p>
+        <p class="joindate">Member since: <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
         <p>
           Badges:
           <ul>
