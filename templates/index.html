@@ -24,7 +24,7 @@
       </div>
       <div class="main">
         <a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{post.title}}</a>
-        <p class="author">posted to:  <a href="{{url_for('view_sub', sub=post.sub.name)}}">{{post.sub.name}}</a>, 
+        <p class="author">posted to:  <a href="{{url_for('view_sub', sub=post.sub.name)}}">{{post.sub.name}}</a>,
           <relative-time datetime="{{post.posted.isoformat()}}"></relative-time>
         <p class="container">
           <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
@@ -33,20 +33,4 @@
       </div>
     </article>
 {% endfor %}
-<!-- old index.html piece
-    <article class="post">
-      <div class="image">
-        <a href="#"><img src="{{url_for('static', filename='test.jpg')}}" alt="Thumbnail"/></a>
-      </div>
-      <div class="main">
-        <a class="title" href="#">Example post</a>
-        <p class="author">5 hours ago</p>
-        <p class="container">
-          <a href="#" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> sub/example</a>
-          <a href="#" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> KernelFreeze</a>
-          <a href="#" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments (12)</a>
-        </p>
-      </div>
-    </article>
--->
 {% endblock %}

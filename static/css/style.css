@@ -39,7 +39,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   display: block;
 }
 article.post {
-    border-bottom: 1px solid #D3D3D3;
+  border-bottom: 1px solid #D3D3D3;
 }
 audio, canvas, video {
   display: inline-block;
@@ -111,7 +111,7 @@ img {
   -ms-interpolation-mode: bicubic;
 }
 .post .image img {
-    border-radius: 3px;
+  border-radius: 3px;
 }
 svg:not(:root) {
   overflow: hidden;
@@ -653,12 +653,11 @@ a.btn.small, button.btn.small {
 .closebtn:hover {
   color: lightgray;
 }
-
-.noshit{
+.noshit {
   margin: 5px;
   text-align: center;
 }
-
-.g-recaptcha{
-  margin: 0 auto;width: 50%;
+.g-recaptcha {
+  margin: 0 auto;
+  width: 50%;
 }
