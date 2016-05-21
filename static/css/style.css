@@ -110,6 +110,9 @@ img {
   vertical-align: middle;
   -ms-interpolation-mode: bicubic;
 }
+.post .image img {
+    border-radius: 3px;
+}
 svg:not(:root) {
   overflow: hidden;
 }
