@@ -170,7 +170,7 @@ def view_sub(sub):
 
 
 @app.route("/s/<sub>/edit")
-def view_sub(sub):
+def edit_sub(sub):
     """ edit sub config """
     return "WIP!"
     
@@ -180,6 +180,12 @@ def view_post(sub, pid):
     """ WIP: View a post content and its comments """
     return "WIP!"
     
+    
+@app.route("/s/<sub>/<pid>/edit")
+def edit_post(sub, pid):
+    """ WIP: Edit a post content """
+    return "WIP!"
+
 
 @app.route("/s/<sub>/<pid>/<cid>")
 def view_perm(sub, pid, cid):
@@ -200,7 +206,7 @@ def view_user(user):
 #    return render_template('user.html', user=user.name)
     
 @app.route("/u/<user>/edit")
-def view_user(user):
+def edit_user(user):
     """ WIP: Edit user's profile, slogan, quote, etc """
     return "WIP!"
 
