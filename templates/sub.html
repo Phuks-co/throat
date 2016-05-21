@@ -5,6 +5,16 @@
   <li><a href="{{url_for('view_sub', sub=sub)}}">{{sub}}</a></li>
 </ul>
 {% endblock %}
+
+{% block sidebar %}
+{{ super() }}<hr/>
+<div class="row buttons">
+  <div class="col-12">
+    <a href="#post-form" class="btn btn-blue create-sub" style="width:100%;">Submit a text post</a>
+  </div>
+</div>
+{% endblock %}
+
 {% block content %}
 {{ super() }}
     <article class="post">

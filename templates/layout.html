@@ -46,21 +46,15 @@
             <a href="#register-form" class="btn register">Register</a>
           </div>
         {% else %}
-
-             <form method="POST" action="{{ url_for('do_logout') }}">
-                 {{ logoutform.csrf_token }}
-                 <div class="col-4">
-                 <button type="submit" class="btn">Log out</button>
-                 </div>
-                 <div class="col-1 right">
-                   <button type="button" class="config"><i class="fa fa-cog" aria-hidden="true"></i></button>
-                 </div>
-             </form>
-
-
-          <div class="col-12">
-            <a href="#csub-form" class="btn btn-blue create-sub" style="width:100%;">Create your own sub</a>
-          </div>
+         <form method="POST" action="{{ url_for('do_logout') }}">
+           {{ logoutform.csrf_token }}
+           <div class="col-4">
+           <button type="submit" class="btn">Log out</button>
+           </div>
+           <div class="col-1 right">
+             <button type="button" class="config"><i class="fa fa-cog" aria-hidden="true"></i></button>
+           </div>
+         </form>
         {% endif %}
         </div>
         {% endblock %}
