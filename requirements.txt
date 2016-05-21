@@ -6,3 +6,4 @@ bcrypt
 flask-assets
 webassets
 jsmin
+cssmin
