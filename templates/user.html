@@ -36,10 +36,10 @@
         </p>
         <p>
           Recent Posts:
-                    <ul>
-          {# for SubPost in user #}
-            <li><a href="#">{# post.title #}</a></li>
-          {# endfor #}
+          <ul>
+          {% for UserPost in user %}
+            <li><a href="#">{# post.title #} - Post Title</a></li>
+          {% endfor %}
           </ul>
         </p>
         <p>
