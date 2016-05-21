@@ -25,39 +25,31 @@
       </div>
       <div class="main">
         <p class="title">{{user}}</p>
-        <!-- date joined -- TODO joindate
-        <p class="joindate">Member for: <relative-time datetime="{{user.joindate.isoformat()}}"></relative-time></p>
-        -->
-        <!-- Badges --
+        <p class="joindate">Member for: XX days <relative-time datetime="{# user.joindate.isoformat() #}"></relative-time></p>
         <p>
           Badges:
           <ul>
-          {% for badges in user %}
-            <li><img src="{{url_for('static', filename='img/badges.png')}}" alt="{{badge.name}}"/></li>
-          {% endfor %}
+          {# for badges in user #}
+            <li><img src="{{url_for('static', filename='img/textpost.png')}}" alt="{# badge.name #}"/></li>
+          {# endfor #}
           </ul>
         </p>
-        -->
-        <!-- Recent Posts --
         <p>
           Recent Posts:
-          <ul>
-          {% for SubPost in user %}
-            <li><a href="#">{{post.title}}</a></li>
-          {% endfor %}
+                    <ul>
+          {# for SubPost in user #}
+            <li><a href="#">{# post.title #}</a></li>
+          {# endfor #}
           </ul>
         </p>
-        -->
-        <!-- Recent Comments --
         <p>
           Recent Comments:
           <ul>
-          {% for comments in user %}
-            <li><a href="#">{{post.title}}</a></li>
-          {% endfor %}
+          {# for comments in user #}
+            <li><a href="#">{# post.title #}</a></li>
+          {# endfor #}
           </ul>
         </p>
-        -->
       </div>
     </article>
 {% endblock %}
