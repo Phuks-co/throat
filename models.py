@@ -1,5 +1,6 @@
 """ Database table definitions """
 
+import datetime
 from sqlalchemy import Column, Integer, String, Text, DateTime
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
@@ -19,7 +20,7 @@ class User(db.Model):
     # Account status
     # 0 = OK; 1 = banned; 2 = shadowbanned?; 3 = sent to oblivion?
     status = Column(Integer)
-
+    joindate = Column(DateTime)
     posts = db.relationship('SubPost', backref='user', lazy='dynamic')
 
     def __init__(self, username, email, password):
@@ -27,7 +28,7 @@ class User(db.Model):
         self.email = email
         self.crypto = 1
         self.status = 0
-
+        self.joindate = datetime.datetime.utcnow()
         self.password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
 
     def __repr__(self):
