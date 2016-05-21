@@ -169,7 +169,7 @@ def view_sub(sub):
 
 
 @app.route("/s/<sub>/edit")
-def view_post(sub, pid):
+def view_sub(sub):
     """ edit sub config """
     return "WIP!"
     
@@ -178,11 +178,17 @@ def view_post(sub, pid):
 def view_post(sub, pid):
     """ WIP: View a post content and its comments """
     return "WIP!"
+    
+
+@app.route("/s/<sub>/<pid>/<cid>")
+def view_perm(sub, pid, cid):
+    """ WIP: Permalink to comment """
+    return "WIP!"
 
 
 @app.route("/u/<user>")
 def view_user(user):
-    """ WIP: View an user's profile, posts, comments, badges, etc """
+    """ WIP: View user's profile, posts, comments, badges, etc """
     return "WIP!"
 # i tried    
 #    user = User.query.filter_by(name=user).first()
