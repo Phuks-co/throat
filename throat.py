@@ -168,6 +168,12 @@ def view_sub(sub):
                            txtpostform=CreateSubTextPost(), posts=subposts)
 
 
+@app.route("/s/<sub>/edit")
+def view_post(sub, pid):
+    """ edit sub config """
+    return "WIP!"
+    
+    
 @app.route("/s/<sub>/<pid>")
 def view_post(sub, pid):
     """ WIP: View a post content and its comments """
