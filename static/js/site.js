@@ -84,8 +84,34 @@ $(document).ready(function () {
     });
     e.preventDefault();
     $("#login-btnsubmit").prop('disabled', false);
-    $("#login-btnsubmit").text('Register');
+    $("#login-btnsubmit").text('Create sub');
   });
+
+  $("#post-form").submit(function (e) {
+    $("#txpost-btnsubmit").prop('disabled', true);
+    $("#txpost-btnsubmit").text('Creating sub...');
+    $.ajax({
+      type: "POST",
+      url: '/do/txtpost/' + $("#post-form").data('sub'), // XXX: Hardcoded URL because this is supposed to be a static file
+      data: $("#post-form").serialize(),
+      dataType: 'json',
+      success: function(data){
+        if(data.status != "ok"){
+          checkErrors(data, "post-form");
+        }else{
+          $("#post-form").html("<h1>Post created!</h1>Don't be lazy and put something here when post viewing is finished")
+        }
+      },
+      error: function(data, err){
+        $("#post-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
+        $("#post-form .div-error").show();
+      }
+    });
+    e.preventDefault();
+    $("#txpost-btnsubmit").prop('disabled', false);
+    $("#txpost-btnsubmit").text('Submit post');
+  });
+
 
 
   var mpSettings = {
@@ -105,4 +131,5 @@ $(document).ready(function () {
   $('a.btn.register').magnificPopup(mpSettings);
   $('a.btn.login').magnificPopup(mpSettings);
   $('a.btn.create-sub').magnificPopup(mpSettings);
+  $('a.btn.create-post').magnificPopup(mpSettings);
 });

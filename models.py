@@ -1,6 +1,6 @@
 """ Database table definitions """
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Text
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 
@@ -34,9 +34,9 @@ class User(db.Model):
 
 class Sub(db.Model):
     """ Basic sub data """
-    sid = Column(Integer, primary_key=True)
-    name = Column(String(32), unique=True)
-    title = Column(String(128))
+    sid = Column(Integer, primary_key=True)  # sub id
+    name = Column(String(32), unique=True)  # sub name
+    title = Column(String(128))  # sub title
 
     def __init__(self, name, title):
         self.name = name
@@ -44,3 +44,16 @@ class Sub(db.Model):
 
     def __repr__(self):
         return '<Sub {0}-{1}>'.format(self.name, self.title)
+
+
+class SubPost(db.Model):
+    """ Represents a post on a sub """
+    pid = Column(Integer, primary_key=True)  # post id
+    sid = Column(Integer)  # sub id
+
+    title = Column(String(128))  # post title
+    link = Column(String(128))  # post target (if it is a link post)
+    content = Column(Text)  # post content (if it is a text post)
+
+    def __repr__(self):
+        return '<SubPost {0} (In Sub{1})>'.format(self.title, self.sid)

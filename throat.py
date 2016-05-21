@@ -5,10 +5,11 @@
 import json
 import bcrypt
 from flask import Flask, render_template, session, redirect, url_for, abort
-from models import db, User, Sub
+from models import db, User, Sub, SubPost
 
 import config
 from forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
+from forms import CreateSubTextPost
 import forms
 
 
@@ -31,13 +32,9 @@ def initialize_database():
 def utility_processor():
     """ Here we set some useful stuff for templates """
     if 'user' not in session:
-        register = RegistrationForm()
-        login = LoginForm()
-        return {'loginform': login, 'regform': register}
+        return {'loginform': LoginForm(), 'regform': RegistrationForm()}
     else:
-        logout = LogOutForm()
-        createsub = CreateSubForm()
-        return {'logoutform': logout, 'csubform': createsub}
+        return {'logoutform': LogOutForm(), 'csubform': CreateSubForm()}
 
 
 @app.route("/")
@@ -127,13 +124,35 @@ def create_sub():
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
+@app.route("/do/txtpost/<sub>", methods=['POST'])
+def create_txtpost(sub):
+    """ Sub text post creation endpoint """
+    form = CreateSubTextPost()
+    if form.validate():
+        # Put pre-posting checks here
+        sub = Sub.query.filter_by(name=sub).first()
+        if not sub:
+            return json.dumps({'status': 'error',
+                               'error': ['Sub does not exist']})
+
+        post = SubPost()
+        post.sid = sub.sid
+        post.title = form.title.data
+        post.content = form.content.data
+        db.session.add(post)
+        db.session.commit()
+        return json.dumps({'status': 'ok', 'pid': post.pid, 'sub': sub.name})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
 @app.route("/s/<sub>")
 def view_sub(sub):
     """ Here we can view subs """
     sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
-    return render_template('sub.html', sub=sub.name, sub_title=sub.title)
+    return render_template('sub.html', sub=sub.name, sub_title=sub.title,
+                           txtpostform=CreateSubTextPost())
 
 
 @app.errorhandler(403)

@@ -1,7 +1,7 @@
 """ Sub-related forms """
 
 from flask_wtf import Form
-from wtforms import StringField
+from wtforms import StringField, TextAreaField
 from wtforms.validators import DataRequired, Length
 
 
@@ -12,3 +12,11 @@ class CreateSubForm(Form):
 
     title = StringField('Title',
                         validators=[DataRequired(), Length(min=2, max=128)])
+
+
+class CreateSubTextPost(Form):
+    """ Sub content submission form """
+    title = StringField('Post title',
+                        validators=[DataRequired(), Length(min=4, max=64)])
+    content = TextAreaField('Post content',
+                            validators=[DataRequired()])
