@@ -168,6 +168,18 @@ def view_sub(sub):
                            txtpostform=CreateSubTextPost(), posts=subposts)
 
 
+@app.route("/s/<sub>/<pid>")
+def view_post(sub, pid):
+    """ WIP: View a post content and its comments """
+    return "WIP!"
+
+
+@app.route("/u/<user>")
+def view_user(user):
+    """ WIP: View an user's profile, posts, comments, badges, etc """
+    return "WIP!"
+
+
 @app.errorhandler(403)
 def Forbidden(error):
     """ 403 Forbidden """
