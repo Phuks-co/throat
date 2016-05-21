@@ -1,6 +1,10 @@
 {% extends "layout.html" %}
 {% block title %}{{sub_title}} | Throat: Open discussion{% endblock %}
-
+{% block navbar %}
+<ul class="right">
+  <li><a href="{{url_for('view_sub', sub=sub)}}">{{sub}}</a></li>
+</ul>
+{% endblock %}
 {% block content %}
 {{ super() }}
     <article class="post">
