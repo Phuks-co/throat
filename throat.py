@@ -3,6 +3,7 @@
 """ Here is where all the good stuff happens """
 
 import json
+import datetime
 import bcrypt
 from flask import Flask, render_template, session, redirect, url_for, abort
 from models import db, User, Sub, SubPost
@@ -139,6 +140,7 @@ def create_txtpost(sub):
         post.sid = sub.sid
         post.title = form.title.data
         post.content = form.content.data
+        post.posted = datetime.datetime.utcnow()
         db.session.add(post)
         db.session.commit()
         return json.dumps({'status': 'ok', 'pid': post.pid, 'sub': sub.name})
@@ -151,8 +153,10 @@ def view_sub(sub):
     sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
+
+    subposts = SubPost.query.filter_by(sid=sub.sid).all()
     return render_template('sub.html', sub=sub.name, sub_title=sub.title,
-                           txtpostform=CreateSubTextPost())
+                           txtpostform=CreateSubTextPost(), posts=subposts)
 
 
 @app.errorhandler(403)

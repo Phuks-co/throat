@@ -17,36 +17,25 @@
 
 {% block content %}
 {{ super() }}
+{% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
+{% for post in posts %}
     <article class="post">
       <div class="image">
-        <a href="#"><img src="{{url_for('static', filename='test.jpg')}}" alt="Thumbnail"/></a>
+        {% if not post.link %}
+        <a href="#"><img src="{{url_for('static', filename='img/textpost.png')}}" alt="Text post"/></a>
+        {% endif %}
       </div>
       <div class="main">
-        <a class="title" href="#">Example post</a>
+        <a class="title" href="#">{{post.title}}</a>
         <p class="author">5 hours ago</p>
         <p class="container">
-          <a href="#" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> sub/example</a>
-          <a href="#" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> KernelFreeze</a>
+          <a href="#" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> Author!</a>
           <a href="#" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments (12)</a>
         </p>
       </div>
     </article>
     <hr>
-    <article class="post">
-      <div class="image">
-        <a href="#"><img src="{{url_for('static', filename='test.jpg')}}" alt="Thumbnail"/></a>
-      </div>
-      <div class="main">
-        <a class="title" href="#">Example post</a>
-        <p class="author">5 hours ago</p>
-        <p class="container">
-          <a href="#" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> sub/whoo</a>
-          <a href="#" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> Polsaker</a>
-          <a href="#" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments (800)</a>
-        </p>
-      </div>
-    </article>
-
+{% endfor %}
 <form id="post-form" data-sub="{{sub}}" class="mfp-hide white-popup-block">
   {{txtpostform.csrf_token}}
   <h1>Submit a text post</h1>

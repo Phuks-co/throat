@@ -312,6 +312,7 @@ main {
   margin-right: 2em;
   overflow: hidden;
   padding: 40px;
+  min-height: 20%;
 }
 .content {
   margin-top: 5em;
@@ -641,4 +642,9 @@ a.btn.small, button.btn.small {
 
 .closebtn:hover {
   color: lightgray;
+}
+
+.noshit{
+  margin: 5px;
+  text-align: center;
 }
