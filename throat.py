@@ -138,6 +138,7 @@ def create_txtpost(sub):
 
         post = SubPost()
         post.sid = sub.sid
+        post.uid = session['user']
         post.title = form.title.data
         post.content = form.content.data
         post.posted = datetime.datetime.utcnow()
@@ -154,7 +155,8 @@ def view_sub(sub):
     if not sub:
         abort(404)
 
-    subposts = SubPost.query.filter_by(sid=sub.sid).all()
+    subposts = SubPost.query.filter_by(sid=sub.sid) \
+                            .order_by(SubPost.posted.desc()).all()
     return render_template('sub.html', sub=sub.name, sub_title=sub.title,
                            txtpostform=CreateSubTextPost(), posts=subposts)
 

@@ -48,10 +48,10 @@
         {% else %}
          <form method="POST" action="{{ url_for('do_logout') }}">
            {{ logoutform.csrf_token }}
-           <div class="col-4">
+           <div class="col-6">
            <button type="submit" class="btn">Log out</button>
            </div>
-           <div class="col-1 right">
+           <div class="col-2 right">
              <button type="button" class="config"><i class="fa fa-cog" aria-hidden="true"></i></button>
            </div>
          </form>
@@ -120,6 +120,8 @@
     <!-- Scripts -->
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.2.3.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/magnific-popup.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/CustomElements.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/time-elements.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/site.js') }}"></script>
   </body>
 </html>

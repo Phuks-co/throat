@@ -27,14 +27,13 @@
       </div>
       <div class="main">
         <a class="title" href="#">{{post.title}}</a>
-        <p class="author">5 hours ago</p>
+        <p class="author"><relative-time datetime="{{post.posted.isoformat()}}"></relative-time></p>
         <p class="container">
-          <a href="#" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> Author!</a>
-          <a href="#" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments (12)</a>
+          <a href="#" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.username}}</a>
+          <a href="#" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments</a>
         </p>
       </div>
     </article>
-    <hr>
 {% endfor %}
 <form id="post-form" data-sub="{{sub}}" class="mfp-hide white-popup-block">
   {{txtpostform.csrf_token}}

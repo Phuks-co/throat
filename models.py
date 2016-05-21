@@ -20,6 +20,8 @@ class User(db.Model):
     # 0 = OK; 1 = banned; 2 = shadowbanned?; 3 = sent to oblivion?
     status = Column(Integer)
 
+    posts = db.relationship('SubPost', backref='user', lazy='dynamic')
+
     def __init__(self, username, email, password):
         self.username = username
         self.email = email
@@ -39,7 +41,9 @@ class Sub(db.Model):
     title = Column(String(128))  # sub title
 
     status = Column(Integer)  # Sub status. 0 = ok; 1 = banned; etc
-    
+
+    posts = db.relationship('SubPost', backref='sub', lazy='dynamic')
+
     def __init__(self, name, title):
         self.name = name
         self.title = title
@@ -51,14 +55,19 @@ class Sub(db.Model):
 class SubPost(db.Model):
     """ Represents a post on a sub """
     pid = Column(Integer, primary_key=True)  # post id
-    sid = Column(Integer)  # sub id
+    sid = Column(Integer, db.ForeignKey('sub.sid'))
+    uid = Column(Integer, db.ForeignKey('user.uid'))
 
-    uid = Column(Integer)  # post author
+    # There's a 'sub' field with a reference to the sub and a 'user' one
+    # with a refernece to the user that created this post
+
     title = Column(String(128))  # post title
     link = Column(String(128))  # post target (if it is a link post)
     content = Column(Text)  # post content (if it is a text post)
 
     posted = Column(DateTime)
+
+    ptype = Column(Integer)  # Post type. 0=normal; 1=mod; etc
 
     def __repr__(self):
         return '<SubPost {0} (In Sub{1})>'.format(self.title, self.sid)
