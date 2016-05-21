@@ -69,7 +69,7 @@ def do_login():
     """ Login endpoint """
     form = LoginForm()
     if form.validate():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(name=form.username.data).first()
         if not user:
             return json.dumps({'status': 'error',
                                'error': ['User does not exist.']})
@@ -94,7 +94,7 @@ def do_register():
     form = RegistrationForm()
     if form.validate():
         # check if user or email are in use
-        if User.query.filter_by(username=form.username.data).first():
+        if User.query.filter_by(name=form.username.data).first():
             return json.dumps({'status': 'error',
                                'error': ['Username is already registered.']})
         if User.query.filter_by(email=form.email.data).first():

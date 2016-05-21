@@ -10,7 +10,7 @@ db = SQLAlchemy()
 class User(db.Model):
     """ Basic user data (Used for login or password recovery) """
     uid = Column(Integer, primary_key=True)
-    username = Column(String(64), unique=True)
+    name = Column(String(64), unique=True)
     email = Column(String(128), unique=True)
     # In case we migrate to a different cipher for passwords
     # 1 = bcrypt
@@ -23,7 +23,7 @@ class User(db.Model):
     posts = db.relationship('SubPost', backref='user', lazy='dynamic')
 
     def __init__(self, username, email, password):
-        self.username = username
+        self.name = username
         self.email = email
         self.crypto = 1
         self.status = 0
