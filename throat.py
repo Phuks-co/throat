@@ -184,7 +184,13 @@ def view_post(sub, pid):
 def view_user(user):
     """ WIP: View an user's profile, posts, comments, badges, etc """
     return "WIP!"
-    
+# i tried    
+#    user = User.query.filter_by(name=user).first()
+#    if not user:
+#        abort(404)
+#
+#    userinfo = User.query.filter_by(name=user).first()
+#    return render_template('user.html', user=user.name)
     
 @app.route("/u/<user>/edit")
 def view_user(user):
