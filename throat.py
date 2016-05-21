@@ -196,14 +196,11 @@ def view_perm(sub, pid, cid):
 @app.route("/u/<user>")
 def view_user(user):
     """ WIP: View user's profile, posts, comments, badges, etc """
-    return "WIP!"
-# i tried
-#    user = User.query.filter_by(name=user).first()
-#    if not user:
-#        abort(404)
-#
-#    userinfo = User.query.filter_by(name=user).first()
-#    return render_template('user.html', user=user.name)
+    user = User.query.filter_by(name=user).first()
+    if not user:
+        abort(404)
+
+    return render_template('user.html', user=user.name)
 
 
 @app.route("/u/<user>/edit")
