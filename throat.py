@@ -4,6 +4,7 @@
 
 import json
 import time
+import re
 from wsgiref.handlers import format_date_time
 import datetime
 import bcrypt
@@ -17,6 +18,7 @@ from forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
 from forms import CreateSubTextPost
 import forms
 
+allowedNames = re.compile("^[a-zA-Z0-9_-]+$")
 
 app = Flask(__name__)
 assets = Environment(app)
@@ -136,6 +138,9 @@ def do_register():
     """ Registration endpoint """
     form = RegistrationForm()
     if form.validate():
+        if not allowedNames.match(form.username.data):
+            return json.dumps({'status': 'error',
+                               'error': ['Username has invalid characters']})
         # check if user or email are in use
         if User.query.filter_by(name=form.username.data).first():
             return json.dumps({'status': 'error',
@@ -158,6 +163,10 @@ def create_sub():
                            'error': ['You\'re not logged in.']})
     form = CreateSubForm()
     if form.validate():
+        if not allowedNames.match(form.subname.data):
+            return json.dumps({'status': 'error',
+                               'error': ['Sub name has invalid characters']})
+
         if Sub.query.filter_by(name=form.subname.data).first():
             return json.dumps({'status': 'error',
                                'error': ['Sub is already registered.']})

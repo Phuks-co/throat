@@ -95,7 +95,7 @@ $(document).ready(function () {
 
   $("#post-form").submit(function (e) {
     $("#txpost-btnsubmit").prop('disabled', true);
-    $("#txpost-btnsubmit").text('Creating sub...');
+    $("#txpost-btnsubmit").text('Sending your post...');
     $.ajax({
       type: "POST",
       url: '/do/txtpost/' + $("#post-form").data('sub'), // XXX: Hardcoded URL because this is supposed to be a static file
