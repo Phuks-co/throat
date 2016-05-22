@@ -3,11 +3,11 @@
 ## Dependencies:
 
 | Dependencies  | huh           |
-| ------------- |:-------------:|
+| ------------- | ------------- |
 | gunicorn      | Gunicorn 'Green Unicorn' is a Python WSGI HTTP Server for UNIX |
 | flask | A lightweight Python web framework |
-| flask-wtf | offers simple integration with WTForms |
-| flask-assets | helps you to integrate webassets into your Flask application |
+| flask-wtf | Offers simple integration with WTForms |
+| flask-assets | Helps to integrate webassets into your Flask application |
 | sqlalchemy | Python SQL toolkit and Object Relational Mapper that gives application developers the full power and flexibility of SQL |
 | flask-sqlalchemy | An extension for Flask that adds support for SQLAlchemy to your application |
 | bcrypt | Password hashing function|
@@ -15,7 +15,7 @@
 | jsmin | Removes comments and unnecessary whitespace from JavaScript files |
 | cssmin | Removes comments and unnecessary whitespace from CSS files |
 
-##run local
+##Run local
 
 from ubuntu 16.04
 
@@ -31,4 +31,4 @@ clone and install
 
 run
 
- - python3 throat.py
+ - $ python3 throat.py
