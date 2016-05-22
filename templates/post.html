@@ -1,14 +1,13 @@
 {% extends "layout.html" %}
 {% block title %}Throat: Open discussion{% endblock %}
 
-{% block head %}
+{% block sidebar %}
 {{ super() }}
-<script type="text/javascript"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/posts.css') }}" media="screen" title="no title" charset="utf-8">
 {% endblock %}
 
 {% block content %}
-    {# Insert something here... #}
-    <article>
+    <article class="text-post">
       <h1>WTF?</h1>
       <p>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
@@ -18,5 +17,5 @@
         fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
         qui officia deserunt mollit anim id est laborum.
       </p>
+      {% endblock %}
     </article>
-{% endblock %}

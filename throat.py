@@ -204,7 +204,7 @@ def edit_sub(sub):
 @app.route("/s/<sub>/<pid>")
 def view_post(sub, pid):
     """ WIP: View a post content and its comments """
-    return "WIP!"
+    return render_template('post.html')
 
 
 @app.route("/s/<sub>/<pid>/edit")
