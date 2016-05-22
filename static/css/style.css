@@ -679,6 +679,7 @@ a.btn.small, button.btn.small {
 .time{font-size: 75%;}
 .post-content{margin-top: 25px;margin-left: 20px;}
 .post-content ul{list-style-type: disc;}
+.post-content ol{list-style-type: decimal;}
 
 /* user page */
 
