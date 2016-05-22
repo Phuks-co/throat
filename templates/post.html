@@ -7,24 +7,19 @@
 </ul>
 {% endblock %}
 
-{% block sidebar %}
-{{ super() }}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/posts.css') }}" media="screen" title="no title" charset="utf-8">
-{% endblock %}
-
 {% block content %}
     <article class="text-post">
       <h1 class="title">{{post.title}}</h1>
-      <div class="post-info">
+      <div class="info">
       {% if post.ptype == 1 %}
         <p class="modpost"><i class="fa fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
       {% endif %}
         <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
         <span class="time"><time-ago datetime="{{post.posted.isoformat()}}"></time-ago></span>
-      {# if post.edited == true #}
+      {% if post.edited == true %}
         | <span class="time">Last edited <time-ago datetime="{{post.posted.isoformat()}}"></time-ago></span>
-      {# endif #}
+      {% endif %}
       </div>
-      <div class="post-content">{{markdown(post.content)|safe}}</div>
+      <div class="content">{{markdown(post.content)|safe}}</div>
       {% endblock %}
     </article>

@@ -339,10 +339,10 @@ input:focus {
   border: 2px solid skyblue;
 }
 .pull.right {
-  float:right;
+  float: right;
 }
 .pull.left {
-  float:left;
+  float: left;
 }
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
@@ -456,7 +456,6 @@ nav .right a {
   padding: 5px;
   word-wrap: break-word;
   margin: 5px;
-
 }
 .post+.post {
   border-top: 1px solid #D3D3D3;
@@ -512,7 +511,6 @@ nav .right a {
 .post-info p {
   margin: 5px 0;
 }
-
 @media only screen and (max-width: 330px) {
   /* For small mobile phones: */
   .post .main {
@@ -675,11 +673,30 @@ a.btn.small, button.btn.small {
   margin: 0 auto;
   width: 50%;
 }
+.time {
+  font-size: 75%;
+}
+/* text posts */
+.text-post {
+  margin: 2em;
+}
+.text-post .title {
+  margin-bottom: 1em;
+}
+.text-post + .text-post {
+    border-top: 1px solid #D3D3D3;
+}
 
-.time{font-size: 75%;}
-.post-content{margin-top: 25px;margin-left: 20px;}
-.post-content ul{list-style-type: disc;}
-.post-content ol{list-style-type: decimal;}
+.text-post .content {
+  margin-top: 25px;
+  margin-left: 20px;
+}
+.text-post .content ul {
+  list-style-type: disc;
+}
+.text-post .content ol {
+  list-style-type: decimal;
+}
 
 /* user page */
 
@@ -688,5 +705,6 @@ a.btn.small, button.btn.small {
   padding: 10px;
   border-top: 1px solid #d3d3d3;
 }
-
-button.mfp-close, button.mfp-arrow{z-index:5;}
+button.mfp-close, button.mfp-arrow {
+  z-index: 5;
+}
