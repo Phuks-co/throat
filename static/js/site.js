@@ -26,17 +26,19 @@ $(document).ready(function () {
           $('#login-intro').addClass('alert ok');
           $('#login-intro').text("Thanks for registering! Now you can log in.");
           $('a.btn.login').magnificPopup('open');
+          $("#reg-btnsubmit").prop('disabled', false);
+          $("#reg-btnsubmit").text('Register');
         }
       },
       error: function(data, err){
         $("#register-form .div-error p").append("<ul><li>Error while contacting the server</li></ul>");
         $("#register-form .div-error").show();
+        $("#reg-btnsubmit").prop('disabled', false);
+        $("#reg-btnsubmit").text('Register');
       }
     });
 
     e.preventDefault();
-    $("#reg-btnsubmit").prop('disabled', false);
-    $("#reg-btnsubmit").text('Register');
   });
 
   $("#login-form").submit(function (e) {
@@ -50,16 +52,18 @@ $(document).ready(function () {
       success: function(data){
         if(data.status != "ok"){
           checkErrors(data, "login-form");
+          $("#csub-btnsubmit").prop('disabled', false);
+          $("#csub-btnsubmit").text('Create sub');
         }else{ document.location = document.location; }
       },
       error: function(data, err){
         $("#login-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
         $("#login-form .div-error").show();
+        $("#login-btnsubmit").prop('disabled', false);
+        $("#login-btnsubmit").text('Log in');
       }
     });
     e.preventDefault();
-    $("#login-btnsubmit").prop('disabled', false);
-    $("#login-btnsubmit").text('Log in');
   });
 
   $("#csub-form").submit(function (e) {
@@ -76,15 +80,17 @@ $(document).ready(function () {
         }else{
           $("#csub-form").html("<h1>Sub created!</h1>You can now <a href=\""+ data.addr + "\">visit it</a>.")
         }
+        $("#csub-btnsubmit").prop('disabled', false);
+        $("#csub-btnsubmit").text('Create sub');
       },
       error: function(data, err){
         $("#csub-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
         $("#csub-form .div-error").show();
+        $("#csub-btnsubmit").prop('disabled', false);
+        $("#csub-btnsubmit").text('Create sub');
       }
     });
     e.preventDefault();
-    $("#login-btnsubmit").prop('disabled', false);
-    $("#login-btnsubmit").text('Create sub');
   });
 
   $("#post-form").submit(function (e) {
