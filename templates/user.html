@@ -41,18 +41,32 @@
 
     <div class="user-activity col-12">
       <div class="col-12">
-        Recent Posts:
+        <h3>Recent Posts</h3>
         <ul>
         {% for post in user.posts[::-1][:5] %}
-          <li><a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{ post.title }}</a> - <time-ago datetime="{{ post.posted.isoformat() }}"></time-ago></li>
+          <li>
+            <a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{ post.title }}</a>
+            <br>
+            <a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{{post.sub.name}} </a>
+            <a href="{{url_for('view_post', sub=sub, pid=post.pid)}}" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments</a>
+            <time-ago datetime="{{ post.posted.isoformat() }}"></time-ago>
+          </li>
         {% endfor %}
         </ul>
       </div>
       <div class="col-12">
-        Recent Comments:
+        <h3>Recent Comments</h3>
         <ul>
         {# for comments in user #}
-          <li><a href="#">{# post.title #}</a></li>
+          <li>
+            <a class="title" href="{# url_for('view_post', sub=post.sub.name, pid=post.pid) #}">{# post.title #} Post title here</a>
+            <br>
+            {# recent comment here #} "Something I said"
+            <br>
+            <a href="{# url_for('view_sub', sub=post.sub.name) #}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{# post.sub.name #} </a>
+            <a href="{# url_for('view_post', sub=sub, pid=post.pid) #}" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments</a>
+            <time-ago datetime="{# post.posted.isoformat() #}"></time-ago>
+          </li>
         {# endfor #}
         </ul>
       </div>
