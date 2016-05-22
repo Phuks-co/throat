@@ -65,7 +65,12 @@ def checkSession():
         # a session of a different user after the user was perma-deleted
         # or if the database was emptied.
         user = User.query.filter_by(uid=session['user']).first()
-        jd = user.joindate.replace(microsecond=0)
+        try:
+            jd = user.joindate.replace(microsecond=0)
+        except AttributeError:  # This is to migrate old session cookies.
+            session.pop('user', None)  # Remove before going to production
+            session.pop('joindate', None)
+            return
         if (not user) or session['joindate'] != jd:
             # User does not exist, invalidate session
             session.pop('user', None)
