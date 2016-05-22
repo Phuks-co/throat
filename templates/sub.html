@@ -44,7 +44,7 @@
   {{txtpostform.csrf_token}}
   <h1>Submit a text post</h1>
   <p>{{txtpostform.title(placeholder=txtpostform.title.label.text, required=True, autofocus=True)}}</p>
-  <p>{{txtpostform.content(required=True, placeholder="*The post*")}}</p>
+  <p>{{txtpostform.content(placeholder="*The post*")}}</p>
   <div class="alert div-error">
     <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
     <p></p>
@@ -57,6 +57,6 @@
 {%block pagefoot%}
 
 <script>
-  var simplemde = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false });
+  var simplemde = new SimpleMDE({autoDownloadFontAwesome: false, autosave: {enabled: true, unique_id: "createpost",}});
 </script>
 {%endblock%}
