@@ -55,13 +55,30 @@ def initialize_database():
     db.create_all()
 
 
+def checkSession():
+    """ Helper function that checks if a session is valid. """
+    if 'user' in session:
+        # We also store and check the join date to prevent somebody stealing
+        # a session of a different user after the user was perma-deleted
+        # or if the database was emptied.
+        try:
+            user = User.query.filter_by(uid=session['user']) \
+                             .filter_by(joindate=session['joindate']).first()
+        except KeyError:  # there is no joindate?!
+            session.pop('user', None)
+            session.pop('joindate', None)
+            return
+        if not user:  # User does not exist, invalidate session
+            session.pop('user', None)
+            session.pop('joindate', None)
+
+
 @app.context_processor
 def utility_processor():
     """ Here we set some useful stuff for templates """
-    if 'user' not in session:
-        return {'loginform': LoginForm(), 'regform': RegistrationForm()}
-    else:
-        return {'logoutform': LogOutForm(), 'csubform': CreateSubForm()}
+    return {'loginform': LoginForm(), 'regform': RegistrationForm(),
+            'checkSession': checkSession, 'logoutform': LogOutForm(),
+            'csubform': CreateSubForm()}
 
 
 @app.route("/")
@@ -88,6 +105,7 @@ def do_logout():
     form = LogOutForm()
     if form.validate():
         session.pop('user', None)
+        session.pop('joindate', None)
     return redirect(url_for('index'))
 
 
@@ -105,6 +123,7 @@ def do_login():
             thash = bcrypt.hashpw(form.password.data.encode(), user.password)
             if thash == user.password:
                 session['user'] = user.uid
+                session['joindate'] = user.joindate
                 return json.dumps({'status': 'ok'})
             else:
                 return json.dumps({'status': 'error',
