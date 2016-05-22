@@ -59,6 +59,12 @@ app.config.from_object(config)
 db.init_app(app)
 
 
+def our_markdown(text):
+    return markdown.markdown(text,
+                             extensions=['markdown.extensions.tables'
+                                         'markdown.extensions.footnotes'])
+
+
 @app.before_first_request
 def initialize_database():
     """ This is executed before any request is processed. We use this to
@@ -90,7 +96,7 @@ def utility_processor():
     """ Here we set some useful stuff for templates """
     return {'loginform': LoginForm(), 'regform': RegistrationForm(),
             'checkSession': checkSession, 'logoutform': LogOutForm(),
-            'csubform': CreateSubForm(), 'markdown': markdown.markdown}
+            'csubform': CreateSubForm(), 'markdown': our_markdown}
 
 
 @app.route("/")
