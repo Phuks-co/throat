@@ -3,9 +3,12 @@
 """ Here is where all the good stuff happens """
 
 import json
+import time
+from wsgiref.handlers import format_date_time
 import datetime
 import bcrypt
 from flask import Flask, render_template, session, redirect, url_for, abort
+from flask import make_response
 from flask_assets import Environment, Bundle
 from models import db, User, Sub, SubPost
 
@@ -17,6 +20,19 @@ import forms
 
 app = Flask(__name__)
 assets = Environment(app)
+origstatic = app.view_functions['static']
+
+
+def cache_static(*args, **kwargs):
+    """ Nasty hack to cache more on heroku """
+    response = make_response(origstatic(*args, **kwargs))
+    expires_time = time.mktime(datetime.datetime.now() +
+                               datetime.timedelta(days=365))
+
+    response.headers['Cache-Control'] = 'public, max-age=31536000'
+    response.headers['Expires'] = format_date_time(expires_time.timetuple())
+    return response
+app.view_functions['static'] = cache_static
 
 js = Bundle('js/jquery.js', 'js/magnific-popup.js', 'js/CustomElements.js',
             'js/time-elements.js', 'js/site.js', filters='jsmin',
