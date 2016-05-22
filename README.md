@@ -1,6 +1,9 @@
-# throat
+#throat 
+sshhh  ![Open discussion](https://raw.githubusercontent.com/Polsaker/throat/master/static/img/textpost.png?token=AC5_xaNngvpNAQq2SpNe9bOLRBJquH6eks5XSrEBwA%3D%3D)  just swallow it
 
-## Dependencies:
+A stoat based link and discussion aggregator with snek (python3)
+
+##Dependencies:
 
 | Dependencies  | huh           |
 | ------------- | ------------- |
@@ -15,7 +18,7 @@
 | jsmin | Removes comments and unnecessary whitespace from JavaScript files |
 | cssmin | Removes comments and unnecessary whitespace from CSS files |
 
-##Run local
+##Run local:
 
 from ubuntu 16.04
 
