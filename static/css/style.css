@@ -338,6 +338,12 @@ input[type=search] {
 input:focus {
   border: 2px solid skyblue;
 }
+.pull.right {
+  float:right;
+}
+.pull.left {
+  float:left;
+}
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
   main {
@@ -499,6 +505,9 @@ nav .right a {
 }
 .post a {
   text-decoration: none;
+}
+.post-info p {
+  margin: 5px 0;
 }
 @media only screen and (max-width: 330px) {
   /* For small mobile phones: */
