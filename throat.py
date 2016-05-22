@@ -26,11 +26,11 @@ origstatic = app.view_functions['static']
 def cache_static(*args, **kwargs):
     """ Nasty hack to cache more on heroku """
     response = make_response(origstatic(*args, **kwargs))
-    expires_time = time.mktime(datetime.datetime.now() +
-                               datetime.timedelta(days=365))
+    expires_time = time.mktime((datetime.datetime.now() +
+                                datetime.timedelta(days=365)).timetuple())
 
     response.headers['Cache-Control'] = 'public, max-age=31536000'
-    response.headers['Expires'] = format_date_time(expires_time.timetuple())
+    response.headers['Expires'] = format_date_time(expires_time)
     return response
 app.view_functions['static'] = cache_static
 
