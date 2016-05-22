@@ -679,3 +679,11 @@ a.btn.small, button.btn.small {
 .time{font-size: 75%;}
 .post-content{margin-top: 25px;margin-left: 20px;}
 .post-content ul{list-style-type: disc;}
+
+/* user page */
+
+.user-activity.col-12 div {
+  margin: 5px 0;
+  padding: 10px;
+  border-top: 1px solid #d3d3d3;
+}
