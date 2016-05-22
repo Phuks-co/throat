@@ -7,7 +7,8 @@
 {% endblock %}
 
 {% block sidebar %}
-{{ super() }}<hr/>
+{{ super() }}
+<hr/>
 <div class="row buttons">
   <!-- TODO edit user profile
   <div class="col-12">
@@ -20,39 +21,40 @@
 {% block content %}
 {{ super() }}
   <h1 class="noshit">{{user.name}}</h1>
-
-    <article class="post">
+    <article class="post col-8">
       <div class="image">
         <a href="#"><img src="{{url_for('static', filename='img/textpost.png')}}" alt="User Img"/></a>
       </div>
       <div class="main">
         <p class="joindate">Registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
       </div>
+      <div class="col-4">
+        Badges:
+        <ul>
+          <li><i class="fa fa-bug" aria-hidden="true"></i> Bug squasher</li>
+        {# for badges in user #}
+          <!--<li><img src="{{url_for('static', filename='img/textpost.png')}}" alt="{# badge.name #}"/></li>-->
+        {# endfor #}
+        </ul>
+      </div>
     </article>
-    Recent Posts:
-    <div class="post">
-      <ul>
-      {% for post in user.posts[::-1][:5] %}
-        <li><a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{ post.title }}</a> - <time-ago datetime="{{ post.posted.isoformat() }}"></time-ago></li>
-      {% endfor %}
-      </ul>
-    </div>
-    <hr>
-    <p>
-      Badges:
-      <ul>
-      {# for badges in user #}
-        <!--<li><img src="{{url_for('static', filename='img/textpost.png')}}" alt="{# badge.name #}"/></li>-->
-      {# endfor #}
-      </ul>
-    </p>
 
-    <p>
-      Recent Comments:
-      <ul>
-      {# for comments in user #}
-        <li><a href="#">{# post.title #}</a></li>
-      {# endfor #}
-      </ul>
-    </p>
+    <div class="user-activity col-12">
+      <div class="col-12">
+        Recent Posts:
+        <ul>
+        {% for post in user.posts[::-1][:5] %}
+          <li><a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{ post.title }}</a> - <time-ago datetime="{{ post.posted.isoformat() }}"></time-ago></li>
+        {% endfor %}
+        </ul>
+      </div>
+      <div class="col-12">
+        Recent Comments:
+        <ul>
+        {# for comments in user #}
+          <li><a href="#">{# post.title #}</a></li>
+        {# endfor #}
+        </ul>
+      </div>
+    </div>
 {% endblock %}
