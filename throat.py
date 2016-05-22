@@ -37,11 +37,19 @@ def cache_static(*args, **kwargs):
     return response
 app.view_functions['static'] = cache_static
 
-js = Bundle('js/jquery.js', 'js/magnific-popup.js', 'js/CustomElements.js',
-            'js/time-elements.js', 'js/site.js', filters='jsmin',
-            output='gen/site.js')
-css = Bundle('css/magnific-popup.css', 'css/style.css', 'css/font-awesome.css',
-             filters='cssmin,datauri', output='gen/site.css')
+js = Bundle(
+    Bundle('js/jquery.min.js',
+           'js/magnific-popup.min.js',
+           'js/simplemde.min.js',
+           'js/CustomElements.min.js'),
+    Bundle('js/time-elements.js',
+           'js/site.js', filters='jsmin'),
+    output='gen/site.js')
+css = Bundle(
+    Bundle('css/magnific-popup.css', 'css/style.css',
+           filters='cssmin,datauri'),
+    Bundle('css/font-awesome.min.css', 'css/simplemde.min.css'),
+    output='gen/site.css')
 assets.register('js_all', js)
 assets.register('css_all', css)
 
@@ -60,7 +68,6 @@ def initialize_database():
 
 def checkSession():
     """ Helper function that checks if a session is valid. """
-    print(session)
     if 'user' in session:
         # We also store and check the join date to prevent somebody stealing
         # a session of a different user after the user was perma-deleted
