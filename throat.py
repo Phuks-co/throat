@@ -57,18 +57,15 @@ def initialize_database():
 
 def checkSession():
     """ Helper function that checks if a session is valid. """
+    print(session)
     if 'user' in session:
         # We also store and check the join date to prevent somebody stealing
         # a session of a different user after the user was perma-deleted
         # or if the database was emptied.
-        try:
-            user = User.query.filter_by(uid=session['user']) \
-                             .filter_by(joindate=session['joindate']).first()
-        except KeyError:  # there is no joindate?!
-            session.pop('user', None)
-            session.pop('joindate', None)
-            return
-        if not user:  # User does not exist, invalidate session
+        user = User.query.filter_by(uid=session['user']).first()
+        jd = user.joindate.replace(microsecond=0)
+        if (not user) or session['joindate'] != jd:
+            # User does not exist, invalidate session
             session.pop('user', None)
             session.pop('joindate', None)
 
