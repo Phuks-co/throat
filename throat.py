@@ -61,8 +61,7 @@ db.init_app(app)
 
 def our_markdown(text):
     return markdown.markdown(text,
-                             extensions=['markdown.extensions.tables'
-                                         'markdown.extensions.footnotes'])
+                             extensions=['markdown.extensions.tables'])
 
 
 @app.before_first_request
