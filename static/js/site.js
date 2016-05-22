@@ -105,17 +105,19 @@ $(document).ready(function () {
         if(data.status != "ok"){
           checkErrors(data, "post-form");
         }else{
-          $("#post-form").html("<h1>Post created!</h1>Don't be lazy and put something here when post viewing is finished")
+          document.location = '/s/' + data.sub + '/' + data.pid;
         }
+        $("#txpost-btnsubmit").prop('disabled', false);
+        $("#txpost-btnsubmit").text('Submit post');
       },
       error: function(data, err){
         $("#post-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
         $("#post-form .div-error").show();
+        $("#txpost-btnsubmit").prop('disabled', false);
+        $("#txpost-btnsubmit").text('Submit post');
       }
     });
     e.preventDefault();
-    $("#txpost-btnsubmit").prop('disabled', false);
-    $("#txpost-btnsubmit").text('Submit post');
   });
 
 
