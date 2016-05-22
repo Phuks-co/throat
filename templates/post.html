@@ -1,6 +1,12 @@
 {% extends "layout.html" %}
 {% block title %}Throat: Open discussion{% endblock %}
 
+{% block navbar %}
+<ul class="right">
+  <li><h2><a href="{{url_for('view_sub', sub=sub)}}">/s/{{post.sub.name}}</a></h2></li>
+</ul>
+{% endblock %}
+
 {% block sidebar %}
 {{ super() }}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/posts.css') }}" media="screen" title="no title" charset="utf-8">
