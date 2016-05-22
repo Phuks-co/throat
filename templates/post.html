@@ -12,12 +12,16 @@
       <h1 class="title">{{post.title}}</h1>
       <div class="info">
       {% if post.ptype == 1 %}
-        <p class="modpost"><i class="fa fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
+        <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
       {% endif %}
         <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
-        <span class="time"><time-ago datetime="{{post.posted.isoformat()}}"></time-ago></span>
+        <span class="time btn small">
+          <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
+        </span>
       {% if post.edited == true %}
-        | <span class="time">Last edited <time-ago datetime="{{post.posted.isoformat()}}"></time-ago></span>
+        <span class="time btn small">
+          <i class="fa fa-clock-o" aria-hidden="true"></i> Last edited <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
+        </span>
       {% endif %}
       </div>
       <div class="content">{{markdown(post.content)|safe}}</div>

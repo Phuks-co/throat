@@ -539,42 +539,42 @@ nav .right a {
   text-align: center;
   cursor: pointer;
 }
-a.btn:hover, button.btn:hover {
+.btn:hover {
   background-color: #e3e3e3;
 }
-a.btn:active, button.btn:active {
+.btn:active, .btn:active {
   background-color: #CCC;
 }
 
 /* blue button */
 
-a.btn.btn-blue {
+.btn.btn-blue {
   background-color: #238FC3;
   color: #FFF;
 }
-a.btn.btn-blue:hover {
+.btn.btn-blue:hover {
   background-color: #3C84A7;
 }
-a.btn.btn-blue:active {
+.btn.btn-blue:active {
   background-color: #237FAB;
 }
 
 /* red button */
 
-a.btn.btn-red {
+.btn.btn-red {
   background-color: #E48681;
   color: #FFF;
 }
-a.btn.btn-red:hover {
+.btn.btn-red:hover {
   background-color: #DA4F49;
 }
-a.btn.btn-red:active {
+.btn.btn-red:active {
   background-color: #B32C24;
 }
 
 /* small button */
 
-a.btn.small, button.btn.small {
+.btn.small {
   font-size: 9px;
   font-size: 0.6em;
   padding: 3px 8px;
@@ -583,7 +583,7 @@ a.btn.small, button.btn.small {
 }
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
-  a.btn, button.btn {
+  .btn {
     width: 100% !important;
   }
 }
@@ -681,7 +681,7 @@ a.btn.small, button.btn.small {
   margin: 2em;
 }
 .text-post .title {
-  margin-bottom: 1em;
+  margin-bottom: 0.3em;
 }
 .text-post + .text-post {
     border-top: 1px solid #D3D3D3;
@@ -689,7 +689,7 @@ a.btn.small, button.btn.small {
 
 .text-post .content {
   margin-top: 25px;
-  margin-left: 20px;
+  margin-left: 5px;
 }
 .text-post .content ul {
   list-style-type: disc;
