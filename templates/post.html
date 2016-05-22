@@ -8,17 +8,17 @@
 
 {% block content %}
     <article class="text-post">
-      <div class="post-info pull right">
-      {# if post.ptype == 1 #}
+      <h1 class="title">{{post.title}}</h1>
+      <div class="post-info">
+      {% if post.ptype == 1 %}
         <p class="modpost"><i class="fa fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
-      {# endif #}
-        <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a><br>
-        <p class="time">Posted: <time-ago datetime="{{post.posted.isoformat()}}"></time-ago></p>
+      {% endif %}
+        <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
+        <span class="time"><time-ago datetime="{{post.posted.isoformat()}}"></time-ago></span>
       {# if post.edited == true #}
-        <p class="time">Edited: <time-ago datetime="{{post.posted.isoformat()}}"></time-ago></p>
+        | <span class="time">Last edited <time-ago datetime="{{post.posted.isoformat()}}"></time-ago></span>
       {# endif #}
       </div>
-      <h1 class="title">{{post.title}}</h1>
-      <p class="content">{{post.content}}</p>
+      <div class="post-content">{{markdown(post.content)|safe}}</div>
       {% endblock %}
     </article>

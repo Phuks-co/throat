@@ -8,6 +8,7 @@ import re
 from wsgiref.handlers import format_date_time
 import datetime
 import bcrypt
+import markdown
 from flask import Flask, render_template, session, redirect, url_for, abort
 from flask import make_response
 from flask_assets import Environment, Bundle
@@ -82,7 +83,7 @@ def utility_processor():
     """ Here we set some useful stuff for templates """
     return {'loginform': LoginForm(), 'regform': RegistrationForm(),
             'checkSession': checkSession, 'logoutform': LogOutForm(),
-            'csubform': CreateSubForm()}
+            'csubform': CreateSubForm(), 'markdown': markdown.markdown}
 
 
 @app.route("/")
