@@ -326,7 +326,7 @@ input[type=search] {
   border: 2px solid lightgray;
   border-radius: 4px;
   font-size: 0.9em;
-  font-family: Comfortaa;
+  font-family: ComfortaaRegular;
   background-color: white;
   background-image: url('../img/searchicon.png');
   background-position: 10px 10px;
@@ -687,7 +687,7 @@ nav .right a {
 }
 .text-post .title {
   margin-bottom: 0.3em;
-  font-family: Comfortaa;
+  font-family: ComfortaaRegular;
 }
 .text-post + .text-post {
   border-top: 1px solid #D3D3D3;
