@@ -48,7 +48,7 @@
             <a href="#register-form" class="btn register">Register</a>
           </div>
         {% else %}
-         <form method="POST" action="{{ url_for('do_logout') }}">
+         <form method="POST" action="{{ url_for('do.logout') }}">
            {{ logoutform.csrf_token }}
            <div class="col-6">
            <button type="submit" class="btn">Log out</button>
