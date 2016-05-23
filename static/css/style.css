@@ -344,6 +344,9 @@ input:focus {
 .pull.left {
   float: left;
 }
+.large {
+  font-size: large;
+}
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
   main {
@@ -684,6 +687,7 @@ nav .right a {
 }
 .text-post .title {
   margin-bottom: 0.3em;
+  font-family: Comfortaa;
 }
 .text-post + .text-post {
   border-top: 1px solid #D3D3D3;
