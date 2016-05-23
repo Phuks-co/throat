@@ -477,6 +477,7 @@ nav .right a {
 .post .author {
   font-size: small;
   color: gray;
+  line-height: 0.5em;
 }
 .post .comments {
   font-size: x-small;
