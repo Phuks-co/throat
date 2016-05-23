@@ -676,7 +676,9 @@ nav .right a {
 .time {
   font-size: 75%;
 }
+
 /* text posts */
+
 .text-post {
   margin: 2em;
 }
@@ -684,12 +686,13 @@ nav .right a {
   margin-bottom: 0.3em;
 }
 .text-post + .text-post {
-    border-top: 1px solid #D3D3D3;
+  border-top: 1px solid #D3D3D3;
 }
-
 .text-post .content {
-  margin-top: 25px;
-  margin-left: 5px;
+  margin-top: 1em;
+  border: 1px solid #ddd;
+  padding: 1em;
+  border-radius: 5px;
 }
 .text-post .content ul {
   list-style-type: disc;
