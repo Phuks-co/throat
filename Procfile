@@ -1,1 +1,1 @@
-web: gunicorn throat:app --log-file -
+web: gunicorn app:app --log-file -
