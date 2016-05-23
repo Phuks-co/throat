@@ -271,7 +271,8 @@ input[type='password']::-ms-reveal {
 */
 
 h1, h2, h3, h4, h5 {
-  font-family: sans-serif;
+  font-family: ComfortaaRegular, sans-serif;
+  margin: .3em 0px .3em 0px;
 }
 header, footer {
   height: auto;
@@ -293,11 +294,11 @@ html, body {
   height: 100%;
 }
 hr {
-  margin: 0px 0.3em 0px 0.3em;
+  margin: 0.3em;
   border: 0;
   height: 1px;
   background: #333;
-  background-image: linear-gradient(to right, #ccc, #333, #ccc);
+  background-image: linear-gradient(to right, white, lightgray, white);
 }
 body {
   color: black;
@@ -669,6 +670,9 @@ nav .right a {
 .closebtn:hover {
   color: lightgray;
 }
+button.mfp-close, button.mfp-arrow {
+  z-index: 5;
+}
 .noshit {
   margin: 5px;
   text-align: center;
@@ -680,7 +684,9 @@ nav .right a {
 .time {
   font-size: 75%;
 }
+
 /* send post form */
+
 #post-form .content {
   text-align: left;
   width: 100%;
@@ -694,6 +700,7 @@ nav .right a {
   width: 100%;
   height: 3em;
 }
+
 /* text posts */
 
 .no-padding {
@@ -704,6 +711,7 @@ nav .right a {
 }
 .text-post + .text-post {
   margin-top: 1em;
+  border-top: 1px solid #D3D3D3;
 }
 .text-post .head {
   background: #F2F2F2;
@@ -723,9 +731,6 @@ nav .right a {
 .text-post .title {
   margin-bottom: 0.3em;
   font-family: ComfortaaRegular;
-}
-.text-post + .text-post {
-  border-top: 1px solid #D3D3D3;
 }
 .text-post .content {
   margin: 1em;
@@ -767,11 +772,20 @@ nav .right a {
 
 /* user page */
 
-.user-activity.col-12 div {
-  margin: 5px 0;
+.user-activity .recent {
   padding: 10px;
+}
+.recent + .recent {
   border-top: 1px solid #d3d3d3;
 }
-button.mfp-close, button.mfp-arrow {
-  z-index: 5;
+.user-activity .rpost {
+  margin-left: 1em;
+}
+.user-activity .rpost .title {
+  text-decoration: none;
+  color: darkcyan;
+}
+.user-activity .comment {
+  color: gray;
+  font-size: smaller;
 }

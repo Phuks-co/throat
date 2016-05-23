@@ -16,59 +16,69 @@
   </div>
   -->
 </div>
+<div>
+  <h3>Badges:</h3>
+  <ul style="color: darkcyan;">
+    <li><i class="fa fa-bug" aria-hidden="true"></i> Bug squasher</li>
+    {# for badges in user #}
+      <!--<li><img src="{{url_for('static', filename='img/textpost.png')}}" alt="{# badge.name #}"/></li>-->
+    {# endfor #}
+  </ul>
+  <hr>
+  <p class="joindate">Registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
+</div>
 {% endblock %}
 
 {% block content %}
 {{ super() }}
   <h1 class="noshit">{{user.name}}</h1>
-    <article class="post col-8">
-      <div class="image">
-        <a href="#"><img src="{{url_for('static', filename='img/textpost.png')}}" alt="User Img"/></a>
-      </div>
-      <div class="main">
-        <p class="joindate">Registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
-      </div>
-      <div class="col-4">
-        Badges:
-        <ul>
-          <li><i class="fa fa-bug" aria-hidden="true"></i> Bug squasher</li>
-        {# for badges in user #}
-          <!--<li><img src="{{url_for('static', filename='img/textpost.png')}}" alt="{# badge.name #}"/></li>-->
-        {# endfor #}
-        </ul>
-      </div>
-    </article>
-
-    <div class="user-activity col-12">
-      <div class="col-12">
+    <div class="user-activity col-10">
+      <div class="recent">
         <h3>Recent Posts</h3>
-        <ul>
+        <ul class="rpost">
         {% for post in user.posts[::-1][:5] %}
           <li>
             <a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{ post.title }}</a>
             <br>
-            <a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{{post.sub.name}} </a>
-            <a href="{{url_for('view_post', sub=sub, pid=post.pid)}}" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments</a>
-            <time-ago datetime="{{ post.posted.isoformat() }}"></time-ago>
+            <a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn small">
+              <i class="fa fa-users" aria-hidden="true"></i> /s/{{post.sub.name}}
+            </a>
+            <a href="{{url_for('view_post', sub=sub, pid=post.pid)}}" class="btn small">
+              <i class="fa fa-comment" aria-hidden="true"></i> Comments
+            </a>
+            <span class="time btn small">
+              <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
+            </span>
           </li>
         {% endfor %}
         </ul>
       </div>
-      <div class="col-12">
+      <div class="recent">
         <h3>Recent Comments</h3>
-        <ul>
+        <ul class="rpost">
         {# for comments in user #}
           <li>
             <a class="title" href="{# url_for('view_post', sub=post.sub.name, pid=post.pid) #}">{# post.title #} Post title here</a>
             <br>
-            {# recent comment here #} "Something I said"
+            <span class="comment">
+              {# recent comment here #} "Something I said"
+            </span>
             <br>
-            <a href="{# url_for('view_sub', sub=post.sub.name) #}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{# post.sub.name #} </a>
-            <a href="{# url_for('view_post', sub=sub, pid=post.pid) #}" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments</a>
-            <time-ago datetime="{# post.posted.isoformat() #}"></time-ago>
+            <a href="{# url_for('view_sub', sub=post.sub.name) #}" class="btn small">
+              <i class="fa fa-users" aria-hidden="true"></i> /s/{# post.sub.name #}
+            </a>
+            <a href="{# url_for('view_post', sub=sub, pid=post.pid) #}" class="btn small">
+              <i class="fa fa-comment" aria-hidden="true"></i> Comments
+            </a>
+            <span class="time btn small">
+              <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{#post.posted.isoformat()#}"></time-ago>
+            </span>
           </li>
         {# endfor #}
         </ul>
       </div>
+    </div>
+    <div class="image col-2">
+      <a href="#"><img src="{{url_for('static', filename='img/textpost.png')}}" alt="User Img"/></a>
     </div>
 {% endblock %}
