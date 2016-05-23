@@ -116,14 +116,14 @@ def index():
 
 
 @app.route("/new")
-def index():
+def index_new():
     """ The index page, currently sorts like /all/new """
     subposts = SubPost.query.order_by(SubPost.posted.desc()).all()
     return render_template('index.html', posts=subposts)
 
 
 @app.route("/all/new")
-def index():
+def index_all_new():
     """ The index page, all posts sorted as most recent posted first """
     subposts = SubPost.query.order_by(SubPost.posted.desc()).all()
     return render_template('index.html', posts=subposts)
