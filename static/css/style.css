@@ -682,6 +682,7 @@ nav .right a {
 }
 
 /* text posts */
+
 .no-padding {
   padding: 0px;
 }
@@ -714,7 +715,31 @@ nav .right a {
 .text-post .content ol {
   list-style-type: decimal;
 }
-
+/* sub comments */
+.text-post.sub-1 {
+  margin-left: 2em;
+}
+.text-post.sub-2 {
+  margin-left: 4em;
+}
+.text-post.sub-3 {
+  margin-left: 6em;
+}
+.text-post.sub-4 {
+  margin-left: 8em;
+}
+.text-post.sub-5 {
+  margin-left: 10em;
+}
+.text-post.sub-6 {
+  margin-left: 12em;
+}
+.text-post.sub-7 {
+  margin-left: 14em;
+}
+.text-post.sub-8 {
+  margin-left: 16em;
+}
 /* user page */
 
 .user-activity.col-12 div {
