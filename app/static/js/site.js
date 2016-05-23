@@ -141,3 +141,45 @@ $(document).ready(function () {
   $('a.btn.create-sub').magnificPopup(mpSettings);
   $('a.btn.create-post').magnificPopup(mpSettings);
 });
+
+//dayNight cookie
+function setDayMode() {
+    var d = new Date();
+    d.setTime(d.getTime() + (365*24*60*60*1000)); //365 days
+    var expires = "expires=" + d.toGMTString();
+    document.cookie = "dayNight" + "=" + "light" + "; " + expires;
+    location.reload(); 
+}
+function setNightMode() {
+    var d = new Date();
+    d.setTime(d.getTime() + (365*24*60*60*1000)); //365 days
+    var expires = "expires=" + d.toGMTString();
+    document.cookie = "dayNight" + "=" + "dark" + "; " + expires;
+    location.reload(); 
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function checkMode() {
+    var mode=getCookie("dayNight");
+    if (mode == "dark") {
+    //create <style> in head
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.innerHTML = 'body{background:#101010}';
+    document.getElementsByTagName('head')[0].appendChild(style);    
+    }
+}
