@@ -1,5 +1,5 @@
 #throat
-sshhh  ![Open discussion](https://raw.githubusercontent.com/Polsaker/throat/master/app/static/img/textpost.png?token=AC5_xaNngvpNAQq2SpNe9bOLRBJquH6eks5XSrEBwA%3D%3D)  just swallow it
+sshhh  ![Open discussion](https://i.sli.mg/C1U5Vq.png)  just swallow it
 
 A stoat based link and discussion aggregator with snek (python3)
 
