@@ -30,7 +30,7 @@
           <div class="content">{{markdown(post.content)|safe}}</div>
         </article>
         {# Dear backend developer: the comments will be like this: #}
-        <article class="text-post center no-padding">
+        <article class="text-post center no-padding comment">
           <div class="head">
             <div class="info">
             {% if post.ptype == 1 %}
@@ -51,7 +51,7 @@
         </article>
         {# Dear backend developer: the _SUB_ comments will be like this: #}
         {# Every sub-* will add a sub level (max=8) #}
-        <article class="text-post center no-padding sub-1">
+        <article class="text-post center no-padding comment sub-1">
           <div class="head">
             <div class="info">
             {% if post.ptype == 1 %}

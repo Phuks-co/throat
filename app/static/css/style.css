@@ -693,10 +693,19 @@ nav .right a {
   margin-top: 1em;
 }
 .text-post .head {
-  background: #E2E2E2;
+  background: #E8E8E8;
   width: 100%;
   margin: 0px;
   padding: 1em;
+}
+.text-post .head .btn {
+  background-color: #D5D5D5;
+}
+.text-post.comment .head {
+  padding: 0.3em;
+}
+.text-post.comment .head .info {
+  margin-left: 0.3em;
 }
 .text-post .title {
   margin-bottom: 0.3em;
@@ -715,7 +724,9 @@ nav .right a {
 .text-post .content ol {
   list-style-type: decimal;
 }
+
 /* sub comments */
+
 .text-post.sub-1 {
   margin-left: 2em;
 }
@@ -740,6 +751,7 @@ nav .right a {
 .text-post.sub-8 {
   margin-left: 16em;
 }
+
 /* user page */
 
 .user-activity.col-12 div {
