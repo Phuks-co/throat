@@ -61,7 +61,7 @@
         </div>
         {% endblock %}
       </div>
-      <main class="col-8 right {% block main %}{% endblock %}">{% block content %}{% endblock %}</main>
+      {% block main %}<main class="col-8 right center">{% block content %}{% endblock %}</main>{% endblock %}
     </div>
     <footer>
         {% block footer %}

@@ -309,13 +309,14 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 main {
+  margin-right: 2em;
+  overflow: hidden;
+  min-height: 20%;
+}
+.center {
   background: white;
   border: 1px solid lightgray;
   border-radius: 3px;
-  margin-right: 2em;
-  overflow: hidden;
-  padding: 40px;
-  min-height: 20%;
 }
 .content {
   margin-top: 5em;
@@ -687,11 +688,14 @@ nav .right a {
 .text-post {
   margin: 0px;
 }
+.text-post + .text-post {
+  margin-top: 1em;
+}
 .text-post .head {
-  background: #FAFAFA;
+  background: #E2E2E2;
   width: 100%;
   margin: 0px;
-  padding: 1.5em;
+  padding: 1em;
 }
 .text-post .title {
   margin-bottom: 0.3em;
@@ -702,7 +706,7 @@ nav .right a {
 }
 .text-post .content {
   margin: 1em;
-  padding: 2em;
+  padding: 0px 1.5em 0px 1.5em;
 }
 .text-post .content ul {
   list-style-type: disc;
