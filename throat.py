@@ -17,8 +17,8 @@ from models import db, User, Sub, SubPost
 import config
 from forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
 from forms import CreateSubTextPost
-import forms
 
+# Regex to match allowed names in subs and usernames
 allowedNames = re.compile("^[a-zA-Z0-9_-]+$")
 
 app = Flask(__name__)
@@ -27,7 +27,10 @@ origstatic = app.view_functions['static']
 
 
 def cache_static(*args, **kwargs):
-    """ Nasty hack to cache more on heroku """
+    """ We use this to make a far-expiry cache when we serve the assets
+    directly (like we do in Heroku). This makes the browser just use the cached
+    resources instead of checking if they changed and getting a 302
+    response. """
     response = make_response(origstatic(*args, **kwargs))
     expires_time = time.mktime((datetime.datetime.now() +
                                 datetime.timedelta(days=365)).timetuple())
@@ -37,6 +40,9 @@ def cache_static(*args, **kwargs):
     return response
 app.view_functions['static'] = cache_static
 
+# We use nested bundles here. One of them is for stuff that is already minified
+# And the other is for stuff that we have to minify. This makes the
+# bundle-making process a bit faster.
 js = Bundle(
     Bundle('js/jquery.min.js',
            'js/magnific-popup.min.js',
@@ -53,13 +59,14 @@ css = Bundle(
 assets.register('js_all', js)
 assets.register('css_all', css)
 
-app.jinja_env.globals.update(forms=forms)
 app.config.from_object(config)
 
 db.init_app(app)
 
 
 def our_markdown(text):
+    """ Here we create a custom markdown function where we load all the
+    extensions we need. """
     return markdown.markdown(text,
                              extensions=['markdown.extensions.tables'])
 
@@ -79,6 +86,10 @@ def checkSession():
         # or if the database was emptied.
         user = User.query.filter_by(uid=session['user']).first()
         try:
+            # This line is here because for some reason, when storing the
+            # joindate in a session, the microsecond part is lost, and if we
+            # don't do this, the next 'if' statement will always wipe all the
+            # sessions.
             jd = user.joindate.replace(microsecond=0)
         except AttributeError:  # This is to migrate old session cookies.
             session.pop('user', None)  # Remove before going to production
