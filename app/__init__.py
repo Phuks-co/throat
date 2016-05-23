@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8
 """ Here is where all the good stuff happens """
 
@@ -7,16 +6,16 @@ import time
 import re
 from wsgiref.handlers import format_date_time
 import datetime
+
 import bcrypt
 import markdown
 from flask import Flask, render_template, session, redirect, url_for, abort
 from flask import make_response
 from flask_assets import Environment, Bundle
-from models import db, User, Sub, SubPost
 
-import config
-from forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
-from forms import CreateSubTextPost
+from .models import db, User, Sub, SubPost
+from .forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
+from .forms import CreateSubTextPost
 
 # Regex to match allowed names in subs and usernames
 allowedNames = re.compile("^[a-zA-Z0-9_-]+$")
@@ -59,7 +58,7 @@ css = Bundle(
 assets.register('js_all', js)
 assets.register('css_all', css)
 
-app.config.from_object(config)
+app.config.from_object('config')
 
 db.init_app(app)
 
@@ -314,6 +313,3 @@ def teapot(error):
 def server_error(error):
     """ 500 Internal server error """
     return render_template('errors/500.html'), 500
-
-if __name__ == "__main__":
-    app.run()

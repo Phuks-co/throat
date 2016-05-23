@@ -66,5 +66,5 @@ target/
 *.less
 
 # webassets tmp stuff
-static/gen
-static/.webassets-cache
+app/static/gen
+app/static/.webassets-cache

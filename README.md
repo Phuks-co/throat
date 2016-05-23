@@ -1,32 +1,20 @@
-#throat 
-sshhh  ![Open discussion](https://raw.githubusercontent.com/Polsaker/throat/master/static/img/textpost.png?token=AC5_xaNngvpNAQq2SpNe9bOLRBJquH6eks5XSrEBwA%3D%3D)  just swallow it
+#throat
+sshhh  ![Open discussion](https://raw.githubusercontent.com/Polsaker/throat/master/app/static/img/textpost.png?token=AC5_xaNngvpNAQq2SpNe9bOLRBJquH6eks5XSrEBwA%3D%3D)  just swallow it
 
 A stoat based link and discussion aggregator with snek (python3)
 
 ##Dependencies:
 
-| Dependencies  | huh           |
-| ------------- | ------------- |
-| gunicorn      | Gunicorn 'Green Unicorn' is a Python WSGI HTTP Server for UNIX |
-| flask | A lightweight Python web framework |
-| flask-wtf | Offers simple integration with WTForms |
-| flask-assets | Helps to integrate webassets into your Flask application |
-| sqlalchemy | Python SQL toolkit and Object Relational Mapper that gives application developers the full power and flexibility of SQL |
-| flask-sqlalchemy | An extension for Flask that adds support for SQLAlchemy to your application |
-| bcrypt | Password hashing function|
-| webassets | Asset management application for Python |
-| jsmin | Removes comments and unnecessary whitespace from JavaScript files |
-| cssmin | Removes comments and unnecessary whitespace from CSS files |
+Check `requirements.txt`
 
 ##Run local:
 
 from ubuntu 16.04
 
  - $ apt-get update
- - $ apt-get install git python-pip python3-pip libssl-dev libffi-dev python-dev python3-dev
- - $ pip3 install --upgrade pip
+ - $ apt-get install git python3-pip libssl-dev libffi-dev python3-dev
 
-clone and install 
+clone and install
 
  - $ git clone https://github.com/Polsaker/throat.git
  - $ cd throat
@@ -34,4 +22,4 @@ clone and install
 
 run
 
- - $ python3 throat.py
+ - $ ./run.py
