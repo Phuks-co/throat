@@ -25,6 +25,11 @@
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
 {% for post in posts %}
     <article class="post">
+      {# vote div #}
+      <div class="pull left">
+        <p><i class="fa fa-chevron-up" aria-hidden="true"></i></p>
+        <p><i class="fa fa-chevron-down" aria-hidden="true"></i></p>
+      </div>
       <div class="image">
         {% if not post.link %}
         <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}"><img src="{{url_for('static', filename='img/textpost.png')}}" alt="Text post"/></a>
