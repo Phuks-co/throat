@@ -693,13 +693,13 @@ nav .right a {
   margin-top: 1em;
 }
 .text-post .head {
-  background: #E8E8E8;
+  background: #F2F2F2;
   width: 100%;
   margin: 0px;
   padding: 1em;
 }
 .text-post .head .btn {
-  background-color: #D5D5D5;
+  background-color: #E8E8E8;
 }
 .text-post.comment .head {
   padding: 0.3em;
