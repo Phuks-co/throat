@@ -29,46 +29,48 @@
           </div>
           <div class="content">{{markdown(post.content)|safe}}</div>
         </article>
-        {# Dear backend developer: the comments will be like this: #}
-        <article class="text-post center no-padding comment">
-          <div class="head">
-            <div class="info">
-            {% if post.ptype == 1 %}
-              <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
-            {% endif %}
-              <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
-              <span class="time btn small">
-                <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
-              </span>
-            {% if post.edited == true %}
-              <span class="time btn small">
-                <i class="fa fa-clock-o" aria-hidden="true"></i> Last edited <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
-              </span>
-            {% endif %}
+        <section id="comments">
+          {# Dear backend developer: the comments will be like this: #}
+          <article class="text-post center no-padding comment">
+            <div class="head">
+              <div class="info">
+              {% if post.ptype == 1 %}
+                <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
+              {% endif %}
+                <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
+                <span class="time btn small">
+                  <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
+                </span>
+              {% if post.edited == true %}
+                <span class="time btn small">
+                  <i class="fa fa-clock-o" aria-hidden="true"></i> Last edited <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
+                </span>
+              {% endif %}
+              </div>
             </div>
-          </div>
-          <div class="content">Insert comment content here</div>
-        </article>
-        {# Dear backend developer: the _SUB_ comments will be like this: #}
-        {# Every sub-* will add a sub level (max=8) #}
-        <article class="text-post center no-padding comment sub-1">
-          <div class="head">
-            <div class="info">
-            {% if post.ptype == 1 %}
-              <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
-            {% endif %}
-              <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
-              <span class="time btn small">
-                <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
-              </span>
-            {% if post.edited == true %}
-              <span class="time btn small">
-                <i class="fa fa-clock-o" aria-hidden="true"></i> Last edited <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
-              </span>
-            {% endif %}
+            <div class="content">Insert comment content here</div>
+          </article>
+          {# Dear backend developer: the _SUB_ comments will be like this: #}
+          {# Every sub-* will add a sub level (max=8) #}
+          <article class="text-post center no-padding comment sub-1">
+            <div class="head">
+              <div class="info">
+              {% if post.ptype == 1 %}
+                <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
+              {% endif %}
+                <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
+                <span class="time btn small">
+                  <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
+                </span>
+              {% if post.edited == true %}
+                <span class="time btn small">
+                  <i class="fa fa-clock-o" aria-hidden="true"></i> Last edited <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
+                </span>
+              {% endif %}
+              </div>
             </div>
-          </div>
-          <div class="content">Insert sub comment content here</div>
-        </article>
+            <div class="content">Insert sub comment content here</div>
+          </article>
+        </section>
     </main>
 {% endblock %}

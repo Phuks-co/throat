@@ -741,6 +741,9 @@ button.mfp-close, button.mfp-arrow {
 .text-post .content ol {
   list-style-type: decimal;
 }
+#comments {
+  margin-top: 1em;
+}
 
 /* sub comments */
 

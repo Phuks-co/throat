@@ -19,7 +19,7 @@
     <article class="post">
       <div class="image">
         {% if not post.link %}
-        <a href="#"><img src="{{url_for('static', filename='img/textpost.png')}}" alt="Text post"/></a>
+        <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}"><img src="{{url_for('static', filename='img/textpost.png')}}" alt="Text post"/></a>
         {% endif %}
       </div>
       <div class="main">
@@ -28,7 +28,7 @@
         <p class="container">
           <a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{{post.sub.name}} </a>
           <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
-          <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments</a>
+          <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments</a>
           </p>
       </div>
     </article>
