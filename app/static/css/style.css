@@ -279,7 +279,7 @@ header, footer {
   text-align: center;
 }
 header {
-  border-bottom: solid 1px lightgray;
+  border-bottom: solid 1px #DEDEDE;
 }
 footer {
   margin: 3em;
@@ -300,7 +300,7 @@ hr {
 }
 body {
   color: black;
-  background: #f4f4f4;
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAMUlEQVQIW2NkwAE+fPgwkxGbHEhCQEAgHUMSJgHShCKJLIEiiS4Bl8QmAZbEJQGSBACozBtxLXy9QAAAAABJRU5ErkJggg==) repeat;
   padding: 0;
   margin: 0;
   height: 100%;
@@ -515,6 +515,9 @@ nav .right a {
 .post-info p {
   margin: 5px 0;
 }
+.post .vote {
+  margin-left: 0.4em;
+}
 @media only screen and (max-width: 330px) {
   /* For small mobile phones: */
   .post .main {
@@ -713,7 +716,7 @@ button.mfp-close, button.mfp-arrow {
   border-top: 1px solid #D3D3D3;
 }
 .text-post .head {
-  background: #F2F2F2;
+  background: #F5F5F5;
   width: 100%;
   margin: 0px;
   padding: 1em;
