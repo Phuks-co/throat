@@ -538,7 +538,7 @@ nav .right a {
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   font-family: ComfortaaRegular;
-  border: solid white 2px;
+  border: solid transparent 1px;
   text-align: center;
   cursor: pointer;
 }
@@ -582,7 +582,7 @@ nav .right a {
   font-size: 0.6em;
   padding: 3px 8px;
   border-radius: 2px;
-  border: solid white 1px;
+  border: solid transparent 1px;
 }
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
@@ -681,9 +681,17 @@ nav .right a {
 }
 
 /* text posts */
-
+.no-padding {
+  padding: 0px;
+}
 .text-post {
-  margin: 2em;
+  margin: 0px;
+}
+.text-post .head {
+  background: #FAFAFA;
+  width: 100%;
+  margin: 0px;
+  padding: 1.5em;
 }
 .text-post .title {
   margin-bottom: 0.3em;
@@ -693,10 +701,8 @@ nav .right a {
   border-top: 1px solid #D3D3D3;
 }
 .text-post .content {
-  margin-top: 1em;
-  border: 1px solid #ddd;
-  padding: 1em;
-  border-radius: 5px;
+  margin: 1em;
+  padding: 2em;
 }
 .text-post .content ul {
   list-style-type: disc;
