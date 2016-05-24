@@ -17,7 +17,7 @@
 
     {% endblock %}
   </head>
-  <body onload="checkMode()">
+  <body {%if request.cookies.get("dayNight") == "dark" %}class="dark"{%endif%}>
     <div class="row">
       <header class="col-12">
         <nav id="navbar">
@@ -26,8 +26,6 @@
             <li><a href="#">Hot</a></li>
             <li><a href="#">New</a></li>
             <li><a href="#">Active</a></li>
-            <li> <button class="dayNight" onclick="setDayMode();" value="Day" />day</button></li>
-            <li> <button class="dayNight" onclick="setNightMode();" value="Night" />night</button></li>
             {% block navbar %}{% endblock %}
           </ul>
         </nav>
@@ -52,11 +50,10 @@
         {% else %}
          <form method="POST" action="{{ url_for('do.logout') }}">
            {{ logoutform.csrf_token }}
-           <div class="col-6">
-           <button type="submit" class="btn">Log out</button>
-           </div>
+           <div class="col-6"><button type="submit" class="btn">Log out</button></div>
+           <div class="col-2"><button type="button" id="toggledark" class="lightbtn"><i class="fa fa-lightbulb-o" aria-hidden="true"></i></button></div>
            <div class="col-2 right">
-             <button type="button" class="config"><i class="fa fa-cog" aria-hidden="true"></i></button>
+             <button type="button" class="lightbtn" id="config"><i class="fa fa-cog" aria-hidden="true"></i></button>
            </div>
          </form>
         {% endif %}

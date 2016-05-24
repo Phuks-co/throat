@@ -373,13 +373,13 @@ input:focus {
 a.btn.login, a.btn.register {
   width: 100%;
 }
-.side .config {
+.side .lightbtn {
   color: darkgray;
   background: none!important;
   border: none;
   padding: 0!important;
 }
-.side .config i {
+.side .lightbtn i {
   font-size: 1.5vmax;
 }
 .side .buttons {
@@ -794,3 +794,12 @@ button.mfp-close, button.mfp-arrow {
   color: gray;
   font-size: smaller;
 }
+
+body.dark, body.dark header, body.dark footer, body.dark nav ul li a, body.dark .center, body.dark .post .title, body.dark .text-post, body.dark .side {background: #101010;color: #fff;}
+body.dark .text-post .head{background-color: #555;}
+body.dark .btn.small{background-color: #666; color: #333;}
+body.dark .center{ border: 1px solid #777;}
+body.dark .btn{background-color: #666;color:#333;}
+body.dark input[type=search]{background-color: #555;}
+body.dark #toggledark i{color: #ff0;}
+#toggledark i{color: #000;}

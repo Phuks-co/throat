@@ -120,7 +120,20 @@ $(document).ready(function () {
     e.preventDefault();
   });
 
-
+  $("#toggledark").click(function(){
+    console.log("beep")
+    var mode=getCookie("dayNight");
+    var d = new Date();
+    d.setTime(d.getTime() + (365*24*60*60*1000)); //365 days
+    var expires = "expires=" + d.toGMTString();
+    if(mode=="dark"){
+      document.cookie = "dayNight" + "=" + "light" + "; " + expires + ";path=/";
+      $("body").removeClass("dark");
+    }else{
+      document.cookie = "dayNight" + "=" + "dark" + "; " + expires + ";path=/";
+      $("body").addClass("dark");
+    }
+  });
 
   var mpSettings = {
     type: 'inline',
@@ -142,22 +155,6 @@ $(document).ready(function () {
   $('a.btn.create-post').magnificPopup(mpSettings);
 });
 
-//dayNight cookie
-function setDayMode() {
-    var d = new Date();
-    d.setTime(d.getTime() + (365*24*60*60*1000)); //365 days
-    var expires = "expires=" + d.toGMTString();
-    document.cookie = "dayNight" + "=" + "light" + "; " + expires + ";path=/";
-    location.reload(); 
-}
-function setNightMode() {
-    var d = new Date();
-    d.setTime(d.getTime() + (365*24*60*60*1000)); //365 days
-    var expires = "expires=" + d.toGMTString();
-    document.cookie = "dayNight" + "=" + "dark" + "; " + expires + ";path=/";
-    location.reload(); 
-}
-
 function getCookie(cname) {
     var name = cname + "=";
     var ca = document.cookie.split(';');
@@ -171,15 +168,4 @@ function getCookie(cname) {
         }
     }
     return "";
-}
-
-function checkMode() {
-    var mode=getCookie("dayNight");
-    if (mode == "dark") {
-    //create <style> in head
-    var style = document.createElement('style');
-    style.type = 'text/css';
-    style.innerHTML = 'body, header, footer, nav ul li a, .center, .post .title, .text-post .head, .side {background: #101010;color: #fff;}';
-    document.getElementsByTagName('head')[0].appendChild(style);    
-    }
 }
