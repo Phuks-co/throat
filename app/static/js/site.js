@@ -179,7 +179,7 @@ function checkMode() {
     //create <style> in head
     var style = document.createElement('style');
     style.type = 'text/css';
-    style.innerHTML = 'body, header, footer, nav ul li a, .center, .post .title, .test-post .head, .side {background: #101010;color: #fff;}';
+    style.innerHTML = 'body, header, footer, nav ul li a, .center, .post .title, .text-post .head, .side {background: #101010;color: #fff;}';
     document.getElementsByTagName('head')[0].appendChild(style);    
     }
 }
