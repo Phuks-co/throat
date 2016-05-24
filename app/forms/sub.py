@@ -17,6 +17,6 @@ class CreateSubForm(Form):
 class CreateSubTextPost(Form):
     """ Sub content submission form """
     title = StringField('Post title',
-                        validators=[DataRequired(), Length(min=4, max=64)])
+                        validators=[DataRequired(), Length(min=4, max=128)])
     content = TextAreaField('Post content',
                         validators=[DataRequired()])
