@@ -139,6 +139,7 @@ def view_sub(sub):
     subposts = SubPost.query.filter_by(sid=sub.sid) \
                             .order_by(SubPost.posted.desc()).all()
     return render_template('sub.html', sub=sub.name, sub_title=sub.title,
+                            sub_nsfw=sub.nsfw, sub_createdby=sub.createdby,
                            txtpostform=CreateSubTextPost(), posts=subposts)
 
 

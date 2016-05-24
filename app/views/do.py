@@ -99,7 +99,8 @@ def create_sub():
             return json.dumps({'status': 'error',
                                'error': ['Sub is already registered.']})
 
-        sub = Sub(form.subname.data, form.title.data)
+        sub = Sub(form.subname.data, form.title.data, form.nsfw.data)
+        sub.createdby = session['user']
         db.session.add(sub)
         db.session.commit()
         return json.dumps({'status': 'ok',

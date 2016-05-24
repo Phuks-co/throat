@@ -39,18 +39,21 @@ class Sub(db.Model):
     """ Basic sub data """
     sid = Column(Integer, primary_key=True)  # sub id
     name = Column(String(32), unique=True)  # sub name
-    title = Column(String(128))  # sub title
+    title = Column(String(128))  # sub title/desc
+    createdby = Column(Integer, db.ForeignKey('user.uid'))  # creator is top mod
+    nsfw = Column(Integer)  # 0 = no; 1 = yes; .. 2 = nsfl?;
 
     status = Column(Integer)  # Sub status. 0 = ok; 1 = banned; etc
 
     posts = db.relationship('SubPost', backref='sub', lazy='dynamic')
 
-    def __init__(self, name, title):
+    def __init__(self, name, title, nsfw):
         self.name = name
         self.title = title
+        self.nsfw = nsfw
 
     def __repr__(self):
-        return '<Sub {0}-{1}>'.format(self.name, self.title)
+        return '<Sub {0}-{1}>'.format(self.name, self.title, self.nsfw)
 
 
 class SubPost(db.Model):

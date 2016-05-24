@@ -687,6 +687,11 @@ button.mfp-close, button.mfp-arrow {
   font-size: 75%;
 }
 
+/* create sub form */
+#csub-form #nsfw li {
+    width: 230px;
+}
+
 /* send post form */
 
 #post-form .content {

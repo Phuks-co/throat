@@ -8,11 +8,17 @@
 
 {% block sidebar %}
 {{ super() }}<hr/>
+
+{# temp #}
 <p>
   <br>
-    {{sub_title}}
+    /s/{{sub_title}}
   <br>
+    created by: {{sub_createdby}}
+  <br>
+    nsfw: {{sub_nsfw}}
 </p>
+
 <div class="row buttons">
   <div class="col-12">
     <a href="#post-form" class="btn btn-blue create-post" style="width:100%;">Submit a text post</a>
