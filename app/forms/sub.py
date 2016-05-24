@@ -1,7 +1,7 @@
 """ Sub-related forms """
 
 from flask_wtf import Form
-from wtforms import StringField, TextAreaField, RadioField
+from wtforms import StringField, TextAreaField, BooleanField
 from wtforms.validators import DataRequired, Length
 
 class CreateSubForm(Form):
@@ -12,8 +12,7 @@ class CreateSubForm(Form):
     title = StringField('Title',
                         validators=[DataRequired(), Length(min=2, max=128)])
 
-    nsfw = RadioField('NSFW',
-                        choices=[('0', 'no'), ('1', 'yes')], default='0')
+    nsfw = BooleanField('NSFW?')
 
 class CreateSubTextPost(Form):
     """ Sub content submission form """
