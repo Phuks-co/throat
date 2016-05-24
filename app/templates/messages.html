@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+{% block title %}{{sub_title}} | Throat: Open discussion{% endblock %}
+{% block navbar %}
+<ul class="right">
+  <li><a href="{# url_for('view_user', user=user.name) #}">uid: {{ user }}</a></li>
+</ul>
+{% endblock %}
+
+{% block sidebar %}
+{{ super() }}<hr/>
+<div class="row buttons">
+  <div class="col-12">
+    <a href="#post-form" class="btn btn-blue create-post" style="width:100%;">Send a Message</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+{# if not messages   <h1 class="noshit">There are no messages here, yet.</h1>   endif #}
+{# for message in messages #}
+    <article class="post">
+      <div class="main">
+        <a class="title" href="{# url_for('view_post', sub=sub, pid=post.pid) #}">{# message.title #} Message subject line</a>
+        <p class="author"><time-ago datetime="{# post.posted.isoformat() #}"></time-ago></p>
+        <p class="container">{# message.body #} body content of message </p>
+        <p class="container">
+          <a href="{# url_for('view_user', user=message.user.name) #}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {# message.user.name #} /u/username</a>
+          <a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> mark as read</a>
+          <a class="btn small"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
+          <a class="btn small"><i class="fa fa-mail-forward" aria-hidden="true"></i> forward</a>
+          <a class="btn small"><i class="fa fa-close" aria-hidden="true"></i> delete</a>
+        </p>
+      </div>
+    </article>
+    <article class="post">
+      <div class="main">
+        <a class="title" href="{# url_for('view_post', sub=sub, pid=post.pid) #}">{# message.title #} Message subject line</a>
+        <p class="author"><time-ago datetime="{# post.posted.isoformat() #}"></time-ago></p>
+        <p class="container">{# message.body #} body content of message </p>
+        <p class="container">
+          <a href="{# url_for('view_user', user=message.user.name) #}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {# message.user.name #} /u/username</a>
+          <a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> mark as read</a>
+          <a class="btn small"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
+          <a class="btn small"><i class="fa fa-mail-forward" aria-hidden="true"></i> forward</a>
+          <a class="btn small"><i class="fa fa-close" aria-hidden="true"></i> delete</a>
+        </p>
+      </div>
+    </article>
+    <article class="post">
+      <div class="main">
+        <a class="title" href="{# url_for('view_post', sub=sub, pid=post.pid) #}">{# message.title #} Message subject line</a>
+        <p class="author"><time-ago datetime="{# post.posted.isoformat() #}"></time-ago></p>
+        <p class="container">{# message.body #} body content of message </p>
+        <p class="container">
+          <a href="{# url_for('view_user', user=message.user.name) #}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {# message.user.name #} /u/username</a>
+          <a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> mark as read</a>
+          <a class="btn small"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
+          <a class="btn small"><i class="fa fa-mail-forward" aria-hidden="true"></i> forward</a>
+          <a class="btn small"><i class="fa fa-close" aria-hidden="true"></i> delete</a>
+        </p>
+      </div>
+    </article>
+{# endfor #}
+
+{% endblock %}
+{%block pagefoot%}
+
+<script>
+  var simplemde = new SimpleMDE({autoDownloadFontAwesome: false, autosave: {enabled: true, unique_id: "createpost",}});
+</script>
+{%endblock%}

@@ -199,6 +199,17 @@ def edit_user(user):
     return "WIP!"
 
 
+@app.route("/messages")
+def view_messages():
+    """ WIP: View user's messages """
+    #messages = Messages.query.filter_by(receivedby=session['user']) \
+    #                           .order_by(Messages.posted.desc()).all()
+    #return render_template('messages.html', msgs=messages)
+    if 'user' in session:
+        return render_template('messages.html', user=session['user'])
+    return "Please login"
+
+
 @app.errorhandler(403)
 def Forbidden(error):
     """ 403 Forbidden """

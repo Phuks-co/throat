@@ -52,6 +52,9 @@
            {{ logoutform.csrf_token }}
            <div class="col-6"><button type="submit" class="btn">Log out</button></div>
            <div class="col-2"><button type="button" id="toggledark" class="lightbtn"><i class="fa fa-lightbulb-o" aria-hidden="true"></i></button></div>
+           <div class="col-2">
+             <button type="button" class="lightbtn" id="mail"><a href="{{ url_for('view_messages') }}"><i class="fa fa-envelope-o" aria-hidden="true"></i></a></button>
+           </div>
            <div class="col-2 right">
              <button type="button" class="lightbtn" id="config"><i class="fa fa-cog" aria-hidden="true"></i></button>
            </div>
