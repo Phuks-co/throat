@@ -118,6 +118,11 @@ class SubPostComment(db.Model):
     uid = Column(Integer, db.ForeignKey('user.uid'))
     time = Column(DateTime)
     content = Column(Text)
+    # parent comment id
+    parentcid = Column(Integer, db.ForeignKey('sub_post_comment.cid'),
+                       nullable=True)
+    children = db.relationship("SubPostComment",
+                               backref=db.backref("parent", remote_side=cid))
 
 
 class Message(db.Model):

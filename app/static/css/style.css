@@ -867,3 +867,4 @@ body.dark a {
 #postcomment{margin-top: 15px;}
 
 .CodeMirror .CodeMirror-scroll, .CodeMirror{min-height: 100px;}
+.bottombar{margin-left: 15px; font-size: smaller; margin-top:5px;}
