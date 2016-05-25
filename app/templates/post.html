@@ -38,6 +38,14 @@
             <div class="CommentContent">{{commentform.comment(placeholder="Write your comment here. Styling with Markdown format is supported.")}}</div>
             <button type="submit" class="btn btn-blue">Submit comment</button>
           </form>
+          <form class="comment-form moving" style="display:none">
+            {{commentform.csrf_token}}
+            {{commentform.sub(value=post.sub.name)}}
+            {{commentform.post(value=post.pid)}}
+            {{commentform.parent(value='0')}}
+            <div class="CommentContent">{{commentform.comment(class="commenttxtbox",placeholder="Write your comment here. Styling with Markdown format is supported.")}}</div>
+            <button type="submit" class="btn btn-blue">Submit comment</button>
+          </form>
         </section>
         <section id="comments">
           <h1>Comments</h1>

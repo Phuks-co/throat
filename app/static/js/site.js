@@ -190,7 +190,9 @@ $(document).ready(function() {
 
     $('.lnkreply').click(function(e) {
       console.log(e);
-      $(e.target).parent().parent().after().append($(".comment-form").clone());
+      var x = $($(".comment-form.moving")[0]).clone().show();
+      $(e.target).parent().parent().after().append(x);
+      var l = new SimpleMDE({element: $(x[0]).children('.CommentContent').children('#comment')[0], autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createcomment",}});
       $(e.target).parent().hide();
       // Guesswork to get the right elements..
       var parent = $(e.target).data().to;
