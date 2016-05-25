@@ -331,9 +331,6 @@ input[type=search] {
     font-size: 0.9em;
     font-family: Comfortaa;
     background-color: white;
-    background-image: url('../img/searchicon.png');
-    background-position: 10px 10px;
-    background-repeat: no-repeat;
     padding: 12px 15px 10px 35px;
     -webkit-transition: width 0.4s ease-in-out;
     transition: width 0.4s ease-in-out;
@@ -834,4 +831,17 @@ body.dark a {
 }
 #toggledark i {
     color: #000;
+}
+
+.search {
+  position: relative;
+  color: #000;
+  font-size: 16px;
+}
+
+.search input { text-indent: 32px;}
+.search .fa-search {
+  position: absolute;
+  top: 14px;
+  left: 16px;
 }

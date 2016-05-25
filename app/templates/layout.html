@@ -36,7 +36,11 @@
         {% block sidebar %}
         <div style="text-align: left; margin: 0.5em;">
           {% block search %}
-          <input type="search" name="search" placeholder="Search...">
+          <div class="search">
+            <span class="fa fa-search"></span>
+            <input type="search" name="search" placeholder="Search...">
+          </div>
+
           {% endblock %}
         </div>
         <div class="row buttons">
