@@ -149,7 +149,7 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
-    $(".comment-form").submit(function(e){
+    $(document).on('submit', ".comment-form", function(e){
       // Note for future self: This is a really fucking hacky way to do this.
       // This thing will break if the order of the fields changes >_>
       $(e.target[e.target.length -1]).text("Sending comment...")
@@ -160,7 +160,9 @@ $(document).ready(function() {
           data: $(e.target).serialize(),
           dataType: 'json',
           success: function(data) {
-            if(data.status=="ok"){
+            if(data.status != "ok"){
+            }else{
+              console.log("foo")
               document.location = document.location;
             }
           },
