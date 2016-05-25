@@ -161,7 +161,9 @@ $(document).ready(function() {
           data: $(e.target).serialize(),
           dataType: 'json',
           success: function(data) {
-            console.log("ok");
+            if(data.status=="ok"){
+              document.location = document.location;
+            }
           },
           error: function(data, err) {
               $(e.target[e.target.length -1]).text("Submit comment.");
@@ -184,6 +186,16 @@ $(document).ready(function() {
             document.cookie = "dayNight" + "=" + "dark" + "; " + expires + ";path=/";
             $("body").addClass("dark");
         }
+    });
+
+    $('.lnkreply').click(function(e) {
+      console.log(e);
+      $(e.target).parent().parent().after().append($(".comment-form"));
+      $(e.target).hide();
+      // Guesswork to get the right elements..
+      var parent = $(e.target).data().to;
+      $(e.target).parent().next().children('#parent').prop('value', parent);
+      e.preventDefault();
     });
 
     var mpSettings = {
