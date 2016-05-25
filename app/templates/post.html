@@ -40,7 +40,7 @@
           </form>
         </section>
         <section id="comments">
-          {# Dear backend developer: the comments will be like this: #}
+          <h1>Comments</h1>
           {% for comment in post.comments recursive %}
             {% if (loop.depth == 1 and not comment.parentcid) or loop.depth >1 %}
             <article data-cid="{{comment.cid}}" class="text-post center no-padding comment sub-{{loop.depth0}}">
@@ -61,7 +61,11 @@
                 </div>
               </div>
               <div class="content">{{markdown(comment.content)|safe}}</div>
-              <div class="bottombar"><a href="#reply" class="lnkreply" data-to="{{comment.cid}}">reply</a></div>
+              <span class="bottombar btn small">
+                <a href="#reply" class="lnkreply" data-to="{{comment.cid}}">
+                  <i class="fa fa-reply" aria-hidden="true"></i> reply
+                </a>
+              </span>
 
             </article>
             {% if comment.children %}
@@ -69,8 +73,6 @@
             {%endif%}
             {%endif%}
           {%endfor%}
-          {# Dear backend developer: the _SUB_ comments will be like this: #}
-          {# Every sub-* will add a sub level (max=8) #}
         </section>
     </main>
 {% endblock %}

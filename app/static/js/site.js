@@ -191,7 +191,7 @@ $(document).ready(function() {
     $('.lnkreply').click(function(e) {
       console.log(e);
       $(e.target).parent().parent().after().append($(".comment-form"));
-      $(e.target).hide();
+      $(e.target).parent().hide();
       // Guesswork to get the right elements..
       var parent = $(e.target).data().to;
       $(e.target).parent().next().children('#parent').prop('value', parent);

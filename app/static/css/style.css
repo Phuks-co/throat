@@ -587,6 +587,9 @@ nav .right a {
     border-radius: 2px;
     border: solid transparent 1px;
 }
+.btn.small .fa {
+  font-size: larger;
+}
 @media only screen and (max-width: 768px) {
     /* For mobile phones: */
     .btn {
@@ -721,7 +724,7 @@ button.mfp-close, button.mfp-arrow {
     border-top: 1px solid #D3D3D3;
 }
 .text-post .head {
-    background: #F5F5F5;
+    background: #F9F9F9;
     width: 100%;
     margin: 0px;
     padding: 1em;
@@ -752,6 +755,20 @@ button.mfp-close, button.mfp-arrow {
 #comments {
     margin-top: 1em;
 }
+#postcomment {
+    margin-top: 15px;
+}
+.CodeMirror .CodeMirror-scroll, .CodeMirror {
+    min-height: 100px;
+}
+.bottombar {
+    margin-left: 1em;
+    margin-bottom: 1em;
+}
+.bottombar .lnkreply {
+  text-decoration: none;
+}
+
 
 /* sub comments */
 
@@ -826,7 +843,7 @@ body.dark input[type=search] {
     border: solid transparent 1px;
 }
 body.dark .side .lightbtn i {
-  color: #ccc;
+    color: #ccc;
 }
 body.dark #toggledark i {
     color: #ff0;
@@ -864,7 +881,3 @@ body.dark a {
     position: relative;
     right: 1px;
 }
-#postcomment{margin-top: 15px;}
-
-.CodeMirror .CodeMirror-scroll, .CodeMirror{min-height: 100px;}
-.bottombar{margin-left: 15px; font-size: smaller; margin-top:5px;}
