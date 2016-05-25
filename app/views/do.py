@@ -5,9 +5,9 @@ import re
 import datetime
 import bcrypt
 from flask import Blueprint, redirect, url_for
-from ..models import db, User, Sub, SubPost, Message
-from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm, CreateUserMessageForm
-from ..forms import CreateSubTextPost
+from ..models import db, User, Sub, SubPost, Message, SubPostComment
+from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
+from ..forms import CreateSubTextPost, PostComment, CreateUserMessageForm
 from flask_login import login_user, login_required, logout_user, current_user
 from ..misc import SiteUser
 
@@ -133,6 +133,39 @@ def create_txtpost(sub):
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
+@do.route('/do/sendcomment/<sub>/<pid>', methods=['POST'])
+@login_required
+def create_comment(sub, pid):
+    form = PostComment()
+    if form.validate():
+        # 1 - Check if sub exists.
+        sub = Sub.query.filter_by(name=sub).first()
+        if not sub:
+            return json.dumps({'status': 'error',
+                               'error': ['Sub does not exist']})
+        # 2 - Check if post exists.
+        post = SubPost.query.filter_by(pid=pid).first()
+        if not post:
+            return json.dumps({'status': 'error',
+                               'error': ['Post does not exist']})
+        # 3 - Check if the post is in that sub.
+        if not post.sub.name == sub.name:
+            return json.dumps({'status': 'error',
+                               'error': ['Post does not exist']})
+
+        # 4 - All OK, post dem comment.
+        comment = SubPostComment()
+        comment.uid = current_user.get_id()
+        comment.pid = pid
+        comment.content = form.comment.data
+        comment.time = datetime.datetime.utcnow()
+        db.session.add(comment)
+        db.session.commit()
+        return json.dumps({'status': 'ok'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+
 @do.route("/do/sendmsg/<user>", methods=['POST'])
 @login_required
 def create_sendmsg(user):
@@ -141,8 +174,8 @@ def create_sendmsg(user):
     form = CreateUserMessageForm()
     if form.validate():
         # Put pre-posting checks here
-        #user = User.query.filter_by(name=user).first()
-        #if not user:
+        # user = User.query.filter_by(name=user).first()
+        # if not user:
         #    return json.dumps({'status': 'error',
         #                       'error': ['User does not exist']})
 

@@ -16,7 +16,7 @@ from flask_login import LoginManager, login_required, current_user
 
 from .models import db, User, Sub, SubPost, Message
 from .forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
-from .forms import CreateSubTextPost, CreateUserMessageForm
+from .forms import CreateSubTextPost, CreateUserMessageForm, PostComment
 from .views import do
 from .misc import SiteUser
 
@@ -57,10 +57,10 @@ js = Bundle(
            'js/site.js', filters='jsmin'),
     output='gen/site.js')
 css = Bundle(
-    Bundle('css/magnific-popup.css', 'css/style.css',
-           filters='cssmin,datauri'),
     Bundle('css/font-awesome.min.css', 'css/simplemde.min.css'),
-    output='gen/site.css')
+    Bundle('css/magnific-popup.css', 'css/style.css',
+           filters='cssmin,datauri'), output='gen/site.css')
+
 assets.register('js_all', js)
 assets.register('css_all', css)
 
@@ -118,7 +118,8 @@ def utility_processor():
     """ Here we set some useful stuff for templates """
     return {'loginform': LoginForm(), 'regform': RegistrationForm(),
             'logoutform': LogOutForm(), 'sendmsg': CreateUserMessageForm(),
-            'csubform': CreateSubForm(), 'markdown': our_markdown}
+            'csubform': CreateSubForm(), 'markdown': our_markdown,
+            'commentform': PostComment()}
 
 
 @app.route("/")
@@ -204,7 +205,8 @@ def view_user(user):
     if not user:
         abort(404)
 
-    return render_template('user.html', user=user, msgform=CreateUserMessageForm())
+    return render_template('user.html', user=user,
+                           msgform=CreateUserMessageForm())
 
 
 @app.route("/u/<user>/edit")
@@ -220,11 +222,11 @@ def view_messages():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
-                                .order_by(Message.posted.desc()).all()
+                            .order_by(Message.posted.desc()).all()
     sentmessages = Message.query.filter_by(sentby=user) \
                                 .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
-                                sentmessages=sentmessages)
+                           sentmessages=sentmessages)
 
 
 @app.errorhandler(403)

@@ -858,3 +858,6 @@ body.dark a {
   position: relative;
   right: 1px;
 }
+#postcomment{margin-top: 15px;}
+
+.CodeMirror .CodeMirror-scroll, .CodeMirror{min-height: 100px;}

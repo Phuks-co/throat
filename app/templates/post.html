@@ -29,27 +29,39 @@
           </div>
           <div class="content">{{markdown(post.content)|safe}}</div>
         </article>
+        <section id="postcomment">
+          <form class="comment-form">
+            {{commentform.csrf_token}}
+            {{commentform.sub(value=post.sub.name)}}
+            {{commentform.post(value=post.pid)}}
+            {{commentform.parent(value='0')}}
+            <div class="CommentContent">{{commentform.comment(placeholder="Write your comment here. Styling with Markdown format is supported.")}}</div>
+            <button type="submit" class="btn btn-blue">Submit comment</button>
+          </form>
+        </section>
         <section id="comments">
           {# Dear backend developer: the comments will be like this: #}
+          {% for comment in post.comments %}
           <article class="text-post center no-padding comment">
             <div class="head">
               <div class="info">
-              {% if post.ptype == 1 %}
+              {# if post.ptype == 1 %}
                 <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
-              {% endif %}
-                <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
+              {% endif #}
+                <a href="{{url_for('view_user', user=comment.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{comment.user.name}}</a>
                 <span class="time btn small">
-                  <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
+                  <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{comment.time.isoformat()}}"></time-ago>
                 </span>
-              {% if post.edited == true %}
+              {# if post.edited == true
                 <span class="time btn small">
-                  <i class="fa fa-clock-o" aria-hidden="true"></i> Last edited <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
+                  <i class="fa fa-clock-o" aria-hidden="true"></i> Last edited <time-ago datetime="{{comment.time.isoformat()}}"></time-ago>
                 </span>
-              {% endif %}
+              {% endif #}
               </div>
             </div>
-            <div class="content">Insert comment content here</div>
+            <div class="content">{{markdown(comment.content)|safe}}</div>
           </article>
+          {%endfor%}
           {# Dear backend developer: the _SUB_ comments will be like this: #}
           {# Every sub-* will add a sub level (max=8) #}
           <article class="text-post center no-padding comment sub-1">
@@ -74,3 +86,9 @@
         </section>
     </main>
 {% endblock %}
+{%block pagefoot%}
+<script type="text/javascript" src="{{ url_for('static', filename='js/simplemde.min.js') }}"></script>
+<script>
+  var simplemde = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createcomment",}});
+</script>
+{%endblock%}

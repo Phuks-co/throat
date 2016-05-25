@@ -149,8 +149,30 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
+    $(".comment-form").submit(function(e){
+      console.log(e);
+      $(e.target[e.target.length -1]).text("Sending comment...")
+      $(e.target[e.target.length -1]).prop('disabled', true)
+      // Note for future self: This is a really fucking hacky way to do this.
+      // This thing will break if the order of the fields changes >_>
+      $.ajax({
+          type: "POST",
+          url: '/do/sendcomment/' + $(e.target[1]).prop('value') + '/' + $(e.target[2]).prop('value'),
+          data: $(e.target).serialize(),
+          dataType: 'json',
+          success: function(data) {
+            console.log("ok");
+          },
+          error: function(data, err) {
+              $(e.target[e.target.length -1]).text("Submit comment.");
+              $(e.target[e.target.length -1]).prop('disabled', false);
+          }
+        });
+      e.preventDefault();
+    });
+
     $("#toggledark").click(function() {
-        console.log("beep")
+        console.log("beep");
         var mode = getCookie("dayNight");
         var d = new Date();
         d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); //365 days

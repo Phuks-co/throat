@@ -24,6 +24,8 @@ class User(db.Model):
     posts = db.relationship('SubPost', backref='user', lazy='dynamic')
     properties = db.relationship('UserMetadata',
                                  backref='user', lazy='dynamic')
+    comments = db.relationship('SubPostComment', backref='user',
+                               lazy='dynamic')
 
     def __init__(self, username, email, password):
         self.name = username
@@ -93,6 +95,9 @@ class SubPost(db.Model):
     properties = db.relationship('SubPostMetadata',
                                  backref='post', lazy='dynamic')
 
+    comments = db.relationship('SubPostComment', backref='post',
+                               lazy='dynamic')
+
     def __repr__(self):
         return '<SubPost {0} (In Sub{1})>'.format(self.title, self.sid)
 
@@ -101,9 +106,17 @@ class SubPostMetadata(db.Model):
     """ Post metadata. Here we store if it is a sticky post, mod post, tagged
     as nsfw, etc. """
     xid = Column(Integer, primary_key=True)
-    pid = Column(Integer, db.ForeignKey('sub_post.pid'))  # Subverse id
+    pid = Column(Integer, db.ForeignKey('sub_post.pid'))
     key = Column(String)  # Metadata key
     value = Column(String)
+
+
+class SubPostComment(db.Model):
+    cid = Column(Integer, primary_key=True)
+    pid = Column(Integer, db.ForeignKey('sub_post.pid'))
+    uid = Column(Integer, db.ForeignKey('user.uid'))
+    time = Column(DateTime)
+    content = Column(Text)
 
 
 class Message(db.Model):
@@ -121,4 +134,4 @@ class Message(db.Model):
     mtype = Column(Integer)  # msg type. 0=pm; 1=mod; 2=username mention; etc
 
     def __repr__(self):
-        return '<Messages {0}-{1}>'.format(self.subject, self.content, self.mid)
+        return '<Messages {0}>'.format(self.subject)
