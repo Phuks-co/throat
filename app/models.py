@@ -56,10 +56,9 @@ class Sub(db.Model):
     posts = db.relationship('SubPost', backref='sub', lazy='dynamic')
     properties = db.relationship('SubMetadata', backref='sub', lazy='dynamic')
 
-    def __init__(self, name, title, nsfw):
+    def __init__(self, name, title):
         self.name = name
         self.title = title
-        self.nsfw = nsfw
 
     def __repr__(self):
         return '<Sub {0}-{1}>'.format(self.name, self.title)

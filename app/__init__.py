@@ -139,7 +139,6 @@ def view_sub(sub):
     subposts = SubPost.query.filter_by(sid=sub.sid) \
                             .order_by(SubPost.posted.desc()).all()
     return render_template('sub.html', sub=sub.name, sub_title=sub.title,
-                            sub_nsfw=sub.nsfw, sub_createdby=sub.createdby,
                            txtpostform=CreateSubTextPost(), posts=subposts)
 
 
@@ -153,7 +152,7 @@ def view_sub_new(sub):
     subposts = SubPost.query.filter_by(sid=sub.sid) \
                             .order_by(SubPost.posted.desc()).all()
     return render_template('sub.html', sub=sub.name, sub_title=sub.title,
-                           txtpostform=CreateSubTextPost(), posts=subposts)
+                            txtpostform=CreateSubTextPost(), posts=subposts)
 
 
 @app.route("/s/<sub>/edit")
@@ -202,12 +201,18 @@ def edit_user(user):
 @app.route("/messages")
 def view_messages():
     """ WIP: View user's messages """
-    #messages = Messages.query.filter_by(receivedby=session['user']) \
+    # messages = Messages.query.filter_by(receivedby=session['user']) \
     #                           .order_by(Messages.posted.desc()).all()
-    #return render_template('messages.html', msgs=messages)
+    # return render_template('messages.html', msgs=messages)
     if 'user' in session:
         return render_template('messages.html', user=session['user'])
     return "Please login"
+
+
+@app.route("/u/<user>/edit")
+def edit_user(user):
+    """ WIP: Edit user's profile, slogan, quote, etc """
+    return "WIP!"
 
 
 @app.errorhandler(403)
