@@ -1,6 +1,6 @@
 """ User-related forms """
 from flask_wtf import Form, RecaptchaField
-from wtforms import StringField, PasswordField, TextField, BooleanField
+from wtforms import StringField, PasswordField, TextField, TextAreaField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, Required, EqualTo
 from wtforms.validators import Optional
 from wtforms.fields.html5 import EmailField
@@ -44,6 +44,15 @@ class RegistrationForm(Form):
     confirm = PasswordField('Repeat Password')
     accept_tos = BooleanField('I accept the TOS', [Required()])
     recaptcha = RecaptchaField()
+
+
+class CreateUserMessageForm(Form):
+    """ CreateUserMessage form. """
+    subject = StringField('subject',
+                           validators=[DataRequired(), Length(min=2, max=32)])
+
+    content = TextAreaField('message',
+                           validators=[DataRequired(), Length(min=2, max=128)])
 
 
 class LogOutForm(Form):

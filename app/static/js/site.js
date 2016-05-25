@@ -122,6 +122,33 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
+    $("#msg-form").submit(function(e) {
+        $("#msg-btnsubmit").prop('disabled', true);
+        $("#msg-btnsubmit").text('Sending your msg...');
+        $.ajax({
+            type: "POST",
+            url: '/do/sendmsg/' + $("#msg-form").data('user'), // XXX: Hardcoded URL because this is supposed to be a static file
+            data: $("#msg-form").serialize(),
+            dataType: 'json',
+            success: function(data) {
+                if (data.status != "ok") {
+                    checkErrors(data, "msg-form");
+                } else {
+                    document.location = '/messages';
+                }
+                $("#msg-btnsubmit").prop('disabled', false);
+                $("#msg-btnsubmit").text('Submit message');
+            },
+            error: function(data, err) {
+                $("#msg-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
+                $("#msg-form .div-error").show();
+                $("#msg-btnsubmit").prop('disabled', false);
+                $("#msg-btnsubmit").text('Submit message');
+            }
+        });
+        e.preventDefault();
+    });
+
     $("#toggledark").click(function() {
         console.log("beep")
         var mode = getCookie("dayNight");
@@ -155,6 +182,7 @@ $(document).ready(function() {
     $('a.btn.login').magnificPopup(mpSettings);
     $('a.btn.create-sub').magnificPopup(mpSettings);
     $('a.btn.create-post').magnificPopup(mpSettings);
+    $('a.btn.send-message').magnificPopup(mpSettings);
 });
 
 function getCookie(cname) {

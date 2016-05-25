@@ -14,9 +14,9 @@ from flask import make_response
 from flask_assets import Environment, Bundle
 from flask_login import LoginManager, login_required, current_user
 
-from .models import db, User, Sub, SubPost
+from .models import db, User, Sub, SubPost, Message
 from .forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
-from .forms import CreateSubTextPost
+from .forms import CreateSubTextPost, CreateUserMessageForm
 from .views import do
 from .misc import SiteUser
 
@@ -117,7 +117,7 @@ def checkSession():
 def utility_processor():
     """ Here we set some useful stuff for templates """
     return {'loginform': LoginForm(), 'regform': RegistrationForm(),
-            'logoutform': LogOutForm(),
+            'logoutform': LogOutForm(), 'sendmsg': CreateUserMessageForm(),
             'csubform': CreateSubForm(), 'markdown': our_markdown}
 
 
@@ -204,7 +204,7 @@ def view_user(user):
     if not user:
         abort(404)
 
-    return render_template('user.html', user=user)
+    return render_template('user.html', user=user, msgform=CreateUserMessageForm())
 
 
 @app.route("/u/<user>/edit")
@@ -218,10 +218,13 @@ def edit_user(user):
 @login_required
 def view_messages():
     """ WIP: View user's messages """
-    # messages = Messages.query.filter_by(receivedby=session['user']) \
-    #                           .order_by(Messages.posted.desc()).all()
-    # return render_template('messages.html', msgs=messages)
-    return render_template('messages.html', user=session['user'])
+    user = session['user_id']
+    messages = Message.query.filter_by(receivedby=user) \
+                                .order_by(Message.posted.desc()).all()
+    sentmessages = Message.query.filter_by(sentby=user) \
+                                .order_by(Message.posted.desc()).all()
+    return render_template('messages.html', user=user, messages=messages,
+                                sentmessages=sentmessages)
 
 
 @app.errorhandler(403)

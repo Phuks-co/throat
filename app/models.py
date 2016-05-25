@@ -104,3 +104,21 @@ class SubPostMetadata(db.Model):
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))  # Subverse id
     key = Column(String)  # Metadata key
     value = Column(String)
+
+
+class Message(db.Model):
+    """ Represents a post on a sub """
+    mid = Column(Integer, primary_key=True)  # msg id
+    sentby = Column(Integer, db.ForeignKey('user.uid'))
+    receivedby = Column(Integer, db.ForeignKey('user.uid'))
+
+    subject = Column(String(128))  # msg subject
+    content = Column(Text)  # msg content
+
+    posted = Column(DateTime)  # sent
+    read = Column(DateTime)  # todo markasread time
+
+    mtype = Column(Integer)  # msg type. 0=pm; 1=mod; 2=username mention; etc
+
+    def __repr__(self):
+        return '<Messages {0}-{1}>'.format(self.subject, self.content, self.mid)

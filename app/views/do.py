@@ -5,8 +5,8 @@ import re
 import datetime
 import bcrypt
 from flask import Blueprint, redirect, url_for
-from ..models import db, User, Sub, SubPost
-from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
+from ..models import db, User, Sub, SubPost, Message
+from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm, CreateUserMessageForm
 from ..forms import CreateSubTextPost
 from flask_login import login_user, login_required, logout_user, current_user
 from ..misc import SiteUser
@@ -130,4 +130,29 @@ def create_txtpost(sub):
         db.session.add(post)
         db.session.commit()
         return json.dumps({'status': 'ok', 'pid': post.pid, 'sub': sub.name})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/sendmsg/<user>", methods=['POST'])
+@login_required
+def create_sendmsg(user):
+    """ User PM message creation endpoint """
+
+    form = CreateUserMessageForm()
+    if form.validate():
+        # Put pre-posting checks here
+        #user = User.query.filter_by(name=user).first()
+        #if not user:
+        #    return json.dumps({'status': 'error',
+        #                       'error': ['User does not exist']})
+
+        msg = Message()
+        msg.receivedby = user
+        msg.sentby = current_user.get_id()
+        msg.subject = form.subject.data
+        msg.content = form.content.data
+        msg.posted = datetime.datetime.utcnow()
+        db.session.add(msg)
+        db.session.commit()
+        return json.dumps({'status': 'ok', 'mid': msg.mid, 'sentby': current_user.get_id()})
     return json.dumps({'status': 'error', 'error': get_errors(form)})

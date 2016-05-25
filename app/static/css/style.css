@@ -845,3 +845,16 @@ body.dark a {
   top: 14px;
   left: 16px;
 }
+
+/* message page */
+
+.received-msgs {
+  padding: 4px;
+  border-right: 1px solid lightgray;
+}
+.sent-msgs {
+  padding: 4px;
+  border-left: 1px solid lightgray;
+  position: relative;
+  right: 1px;
+}

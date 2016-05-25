@@ -15,6 +15,10 @@
     <a href="#edituser-form" class="btn btn-blue create-post" style="width:100%;">Edit profile</a>
   </div>
   -->
+  <div class="col-12">
+    <a href="#msg-form" class="btn btn-blue send-message" style="width:100%;">Send a Message to {{user.name}}</a>
+  </div>
+
 </div>
 <div>
   <h3>Badges:</h3>
@@ -81,4 +85,22 @@
     <div class="image col-2">
       <a href="#"><img src="{{url_for('static', filename='img/textpost.png')}}" alt="User Img"/></a>
     </div>
+
+<form id="msg-form" data-user="{{user.uid}}" class="mfp-hide white-popup-block">
+  {{msgform.csrf_token}}
+  <h1>Submit a user message</h1>
+  <p class="subject">{{msgform.subject(placeholder=msgform.subject.label.text, required=True, autofocus=True)}}</p>
+  <p class="content">{{msgform.content(placeholder="Write your message content here. Styling with Markdown format is supported.")}}</p>
+  <div class="alert div-error">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+    <p></p>
+  </div>
+  <p><button type="submit" id="msg-btnsubmit">Send Message</button></p>
+</form>
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/simplemde.min.js') }}"></script>
+<script>
+  var simplemde = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "sendmsg",}});
+</script>
+
 {% endblock %}
