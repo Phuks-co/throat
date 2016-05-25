@@ -40,12 +40,11 @@ class Sub(db.Model):
     sid = Column(Integer, primary_key=True)  # sub id
     name = Column(String(32), unique=True)  # sub name
     title = Column(String(128))  # sub title/desc
-    createdby = Column(Integer, db.ForeignKey('user.uid'))  # creator is top mod
-    nsfw = Column(Integer)  # 0 = no; 1 = yes; .. 2 = nsfl?;
 
     status = Column(Integer)  # Sub status. 0 = ok; 1 = banned; etc
 
     posts = db.relationship('SubPost', backref='sub', lazy='dynamic')
+    properties = db.relationship('SubMetadata', backref='sub', lazy='dynamic')
 
     def __init__(self, name, title, nsfw):
         self.name = name
@@ -53,7 +52,15 @@ class Sub(db.Model):
         self.nsfw = nsfw
 
     def __repr__(self):
-        return '<Sub {0}-{1}>'.format(self.name, self.title, self.nsfw)
+        return '<Sub {0}-{1}>'.format(self.name, self.title)
+
+
+class SubMetadata(db.Model):
+    """ Sub metadata """
+    xid = Column(Integer, primary_key=True)
+    sid = Column(Integer, db.ForeignKey('sub.sid'))  # Subverse id
+    key = Column(String)  # Metadata key
+    value = Column(String)
 
 
 class SubPost(db.Model):
@@ -73,5 +80,16 @@ class SubPost(db.Model):
 
     ptype = Column(Integer)  # Post type. 0=normal; 1=mod; etc
 
+    properties = db.relationship('SubPostMetadata',
+                                 backref='post', lazy='dynamic')
+
     def __repr__(self):
         return '<SubPost {0} (In Sub{1})>'.format(self.title, self.sid)
+
+
+class SubPostMetadata(db.Model):
+    """ Sub metadata """
+    xid = Column(Integer, primary_key=True)
+    pid = Column(Integer, db.ForeignKey('sub_post.pid'))  # Subverse id
+    key = Column(String)  # Metadata key
+    value = Column(String)
