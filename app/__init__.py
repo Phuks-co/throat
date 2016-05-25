@@ -49,7 +49,6 @@ app.view_functions['static'] = cache_static
 js = Bundle(
     Bundle('js/jquery.min.js',
            'js/magnific-popup.min.js',
-           'js/simplemde.min.js',
            'js/CustomElements.min.js'),
     Bundle('js/time-elements.js',
            'js/site.js', filters='jsmin'),
