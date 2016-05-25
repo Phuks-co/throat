@@ -9,3 +9,4 @@ webassets
 jsmin
 cssmin
 markdown
+flask-login

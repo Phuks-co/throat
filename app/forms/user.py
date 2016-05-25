@@ -15,6 +15,7 @@ class LoginForm(Form):
 
 
 class OptionalIfFieldIsEmpty(Optional):
+    """ A custom field validator. """
     def __init__(self, field_name, *args, **kwargs):
         self.field_name = field_name
         super(OptionalIfFieldIsEmpty, self).__init__(*args, **kwargs)

@@ -12,11 +12,13 @@ import markdown
 from flask import Flask, render_template, session, redirect, url_for, abort
 from flask import make_response
 from flask_assets import Environment, Bundle
+from flask_login import LoginManager, login_required, current_user
 
 from .models import db, User, Sub, SubPost
 from .forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
 from .forms import CreateSubTextPost
 from .views import do
+from .misc import SiteUser
 
 
 app = Flask(__name__)
@@ -26,6 +28,7 @@ app.config.from_object('config')
 db.init_app(app)
 
 assets = Environment(app)
+login_manager = LoginManager(app)
 origstatic = app.view_functions['static']
 
 
@@ -67,6 +70,17 @@ def our_markdown(text):
     extensions we need. """
     return markdown.markdown(text,
                              extensions=['markdown.extensions.tables'])
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    """ This is used by flask_login to reload an user from a previously stored
+    unique identifier. Required for the 'remember me' functionality. """
+    user = User.query.filter_by(uid=user_id).first()
+    if not user:
+        return None
+    else:
+        return SiteUser(user)
 
 
 @app.before_first_request
@@ -151,7 +165,7 @@ def view_sub_new(sub):
     subposts = SubPost.query.filter_by(sid=sub.sid) \
                             .order_by(SubPost.posted.desc()).all()
     return render_template('sub.html', sub=sub.name, sub_title=sub.title,
-                            txtpostform=CreateSubTextPost(), posts=subposts)
+                           txtpostform=CreateSubTextPost(), posts=subposts)
 
 
 @app.route("/s/<sub>/edit")
@@ -170,6 +184,7 @@ def view_post(sub, pid):
 
 
 @app.route("/s/<sub>/<pid>/edit")
+@login_required
 def edit_post(sub, pid):
     """ WIP: Edit a post content """
     return "WIP!"
@@ -182,6 +197,7 @@ def view_perm(sub, pid, cid):
 
 
 @app.route("/u/<user>")
+@login_required
 def view_user(user):
     """ WIP: View user's profile, posts, comments, badges, etc """
     user = User.query.filter_by(name=user).first()
@@ -192,20 +208,20 @@ def view_user(user):
 
 
 @app.route("/u/<user>/edit")
+@login_required
 def edit_user(user):
     """ WIP: Edit user's profile, slogan, quote, etc """
     return "WIP!"
 
 
 @app.route("/messages")
+@login_required
 def view_messages():
     """ WIP: View user's messages """
     # messages = Messages.query.filter_by(receivedby=session['user']) \
     #                           .order_by(Messages.posted.desc()).all()
     # return render_template('messages.html', msgs=messages)
-    if 'user' in session:
-        return render_template('messages.html', user=session['user'])
-    return "Please login"
+    return render_template('messages.html', user=session['user'])
 
 
 @app.errorhandler(403)

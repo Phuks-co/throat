@@ -4,10 +4,12 @@ import json
 import re
 import datetime
 import bcrypt
-from flask import Blueprint, session, redirect, url_for
+from flask import Blueprint, redirect, url_for
 from ..models import db, User, Sub, SubPost
 from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
 from ..forms import CreateSubTextPost
+from flask_login import login_user, login_required, logout_user, current_user
+from ..misc import SiteUser
 
 do = Blueprint('do', __name__)
 
@@ -27,12 +29,12 @@ def get_errors(form):
 
 
 @do.route("/do/logout", methods=['POST'])
+@login_required
 def logout():
     """ Logout endpoint """
     form = LogOutForm()
     if form.validate():
-        session.pop('user', None)
-        session.pop('joindate', None)
+        logout_user()
     return redirect(url_for('index'))
 
 
@@ -49,8 +51,8 @@ def login():
         if user.crypto == 1:  # bcrypt
             thash = bcrypt.hashpw(form.password.data.encode(), user.password)
             if thash == user.password:
-                session['user'] = user.uid
-                session['joindate'] = user.joindate
+                theuser = SiteUser(user)
+                login_user(theuser)
                 return json.dumps({'status': 'ok'})
             else:
                 return json.dumps({'status': 'error',
@@ -84,11 +86,9 @@ def register():
 
 
 @do.route("/do/create_sub", methods=['POST'])
+@login_required
 def create_sub():
     """ Sub creation endpoint """
-    if 'user' not in session:
-        return json.dumps({'status': 'error',
-                           'error': ['You\'re not logged in.']})
     form = CreateSubForm()
     if form.validate():
         if not allowedNames.match(form.subname.data):
@@ -109,11 +109,9 @@ def create_sub():
 
 
 @do.route("/do/txtpost/<sub>", methods=['POST'])
+@login_required
 def create_txtpost(sub):
     """ Sub text post creation endpoint """
-    if 'user' not in session:
-        return json.dumps({'status': 'error',
-                           'error': ['You\'re not logged in.']})
 
     form = CreateSubTextPost()
     if form.validate():
@@ -125,7 +123,7 @@ def create_txtpost(sub):
 
         post = SubPost()
         post.sid = sub.sid
-        post.uid = session['user']
+        post.uid = current_user.get_id()
         post.title = form.title.data
         post.content = form.content.data
         post.posted = datetime.datetime.utcnow()
