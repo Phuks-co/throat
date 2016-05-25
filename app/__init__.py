@@ -117,7 +117,7 @@ def checkSession():
 def utility_processor():
     """ Here we set some useful stuff for templates """
     return {'loginform': LoginForm(), 'regform': RegistrationForm(),
-            'checkSession': checkSession, 'logoutform': LogOutForm(),
+            'logoutform': LogOutForm(),
             'csubform': CreateSubForm(), 'markdown': our_markdown}
 
 

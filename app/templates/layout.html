@@ -1,4 +1,3 @@
-{{ checkSession() or '' }}
 <!DOCTYPE html>
 <html>
   <head>
@@ -44,7 +43,7 @@
           {% endblock %}
         </div>
         <div class="row buttons">
-        {% if 'user' not in session %}
+        {% if current_user.is_anonymous %}
           <div class="col-6">
             <a href="#login-form" class="btn login">Login</a>
           </div>
@@ -74,7 +73,7 @@
         Copyright &copy;2016 Throat. All Rights Reserved.
         {% endblock %}
     </footer>
-    {% if 'user' not in session %}
+    {% if current_user.is_anonymous %}
     <!-- login form -->
     <form id="login-form" class="mfp-hide white-popup-block">
     	<h1>Login</h1>
