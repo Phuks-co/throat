@@ -222,11 +222,43 @@ def view_messages():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
-                            .order_by(Message.posted.desc()).all()
-    sentmessages = Message.query.filter_by(sentby=user) \
+                                .order_by(Message.posted.desc()).all()
+
+    return render_template('messages.html', user=user, messages=messages,
+                                box_name="Inbox")
+
+
+@app.route("/messages/sent")
+@login_required
+def view_messages_sent():
+    """ WIP: View user's messages """
+    user = session['user_id']
+    messages = Message.query.filter_by(sentby=user) \
                                 .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
-                           sentmessages=sentmessages)
+                                box_name="Sent")
+
+
+@app.route("/messages/posts")
+@login_required
+def view_messages_posts():
+    """ WIP: View user's messages """
+    user = session['user_id']
+    messages = Message.query.filter_by(receivedby=user) \
+                                .order_by(Message.posted.desc()).all()
+    return render_template('messages.html', user=user, messages=messages,
+                                box_name="Post Replies")
+
+
+@app.route("/messages/comments")
+@login_required
+def view_messages_comments():
+    """ WIP: View user's messages """
+    user = session['user_id']
+    messages = Message.query.filter_by(receivedby=user) \
+                                .order_by(Message.posted.desc()).all()
+    return render_template('messages.html', user=user, messages=messages,
+                                box_name="Comment Replies")
 
 
 @app.errorhandler(403)

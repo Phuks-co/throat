@@ -2,50 +2,31 @@
 {% block title %} | Throat: Open discussion{% endblock %}
 {% block navbar %}
 <ul class="right">
-  <li><a href="{# url_for('view_user', user=user.name) #}">{#user#}</a></li>
+  <li><a href="{# url_for('view_user', user=user.name) #}">{{user}}</a></li>
 </ul>
 {% endblock %}
 
 {% block sidebar %}
 {{ super() }}<hr/>
+<p><a href="/messages">inbox</a><p>
+<p><a href="{{ url_for('view_messages_sent') }}">sent</a><p>
+<p><a href="{{ url_for('view_messages_posts') }}">post replies</a><p>
+<p><a href="{{ url_for('view_messages_comments') }}">comment replies</a><p>
 
 {% endblock %}
 
 {% block content %}
 {{ super() }}
-  <div class="received-msgs col-6">
-    <article class="post">
-    <p>Received:</p>
-    </article>
+<div class="user-activity col-10">
+    <h3>{{box_name}}</h3>
 {% for message in messages %}
     <article class="post">
       <div class="main">
         <p class="title">{{message.subject}}</a>
         <p class="container">{{message.content}}</p>
-        <p class="author">from user {{message.sentby}}, <time-ago datetime="{{message.posted.isoformat()}}"></time-ago></p>
+        <p class="author"><time-ago datetime="{{message.posted.isoformat()}}"></time-ago></p>
         <p class="container">
-          {# <a href="# url_for('view_user', user=message.user) #" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/user</a> #}
-          <a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> mark as read</a>
-          <a class="btn small"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
-          <a class="btn small"><i class="fa fa-mail-forward" aria-hidden="true"></i> forward</a>
-          <a class="btn small"><i class="fa fa-close" aria-hidden="true"></i> delete</a>
-        </p>
-      </div>
-    </article>
-{% endfor %}
-  </div>
-  <div class="sent-msgs col-6">
-    <article class="post">
-    <p>Sent:</p>
-    </article>
-{% for message in sentmessages %}
-    <article class="post">
-      <div class="main">
-        <p class="title">{{message.subject}}</a>
-        <p class="container">{{message.content}}</p>
-        <p class="author">to user {{message.receivedby}}, <time-ago datetime="{{message.posted.isoformat()}}"></time-ago></p>
-        <p class="container">
-          {# <a href="# url_for('view_user', user=message.user) #" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/user</a> #}
+         <a href="{# url_for('view_user', user=message.user) #}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{message.sentby}}</a>
           <a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> mark as read</a>
           <a class="btn small"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
           <a class="btn small"><i class="fa fa-mail-forward" aria-hidden="true"></i> forward</a>
@@ -55,7 +36,6 @@
     </article>
 {% endfor %}
 </div>
-
 {% endblock %}
 {%block pagefoot%}
 
