@@ -43,7 +43,7 @@
         <p class="author"><time-ago datetime="{{post.posted.isoformat()}}"></time-ago></p>
         <p class="container">
           <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
-          <a href="{{url_for('view_post', sub=sub, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments</a>
+          <a href="{{url_for('view_post', sub=sub, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.comments.count()}})</a>
         </p>
       </div>
     </article>
