@@ -190,13 +190,21 @@ $(document).ready(function() {
     });
 
     $('.lnkreply').click(function(e) {
-      console.log(e);
+      // Explaining what this does because it'll be a pain in the ass to maintain
+
+      // We have stored an additional copy of the form, without the MDE initialized.
+      // Here we clone it and remove the 'display: none'
       var x = $($(".comment-form.moving")[0]).clone().show();
+      // Here we append it _next_ to the div that is holding the reply button
       $(e.target).parent().parent().after().append('<span class="close">×</span>', x);
+      // Here we hackishly get the textarea and initialize the MDE
       var l = new SimpleMDE({element: $(x[0]).children('.CommentContent').children('#comment')[0], autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createcomment",}});
+      // Here we hide the reply button...
       $(e.target).parent().hide();
       // Guesswork to get the right elements..
       var parent = $(e.target).data().to;
+      // And here we hackishly set the value of the 'parent' hidden input to the cid
+      // of the parent comment.
       $(e.target).parent().next().children('#parent').prop('value', parent);
       e.preventDefault();
     });

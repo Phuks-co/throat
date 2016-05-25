@@ -870,7 +870,7 @@ body.dark a {
     font-size: 16px;
 }
 .search input {
-    text-indent: 32px;
+    text-indent: 1em;
 }
 .search .fa-search {
     position: absolute;
