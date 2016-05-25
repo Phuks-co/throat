@@ -195,7 +195,7 @@ $(document).ready(function() {
       // We have stored an additional copy of the form, without the MDE initialized.
       // Here we clone it and remove the 'display: none'
       var x = $($(".comment-form.moving")[0]).clone().show();
-      $(x).append('<span class="close">×</span>');
+      $(x).prepend('<span class="close">×</span>');
       // Here we append it _next_ to the div that is holding the reply button
       $(e.target).parent().parent().after().append(x);
       // Here we hackishly get the textarea and initialize the MDE
