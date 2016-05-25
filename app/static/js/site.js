@@ -192,7 +192,7 @@ $(document).ready(function() {
     $('.lnkreply').click(function(e) {
       console.log(e);
       var x = $($(".comment-form.moving")[0]).clone().show();
-      $(e.target).parent().parent().after().append('<span class="close">×</span>', x);
+      $(e.target).parent().parent().after().after().append('<span class="close">×</span>', x);
       var l = new SimpleMDE({element: $(x[0]).children('.CommentContent').children('#comment')[0], autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createcomment",}});
       $(e.target).parent().hide();
       // Guesswork to get the right elements..
