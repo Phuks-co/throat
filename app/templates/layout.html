@@ -8,8 +8,17 @@
     <meta name="robots" content="index, follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- mobile stuff -->
+    <meta name="theme-color" content="lightblue">
+    <meta name="msapplication-navbutton-color" content="lightblue">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="lightblue-translucent">
+
+    <link rel="icon" sizes="192x192" href="{{ url_for('static', filename='img/favicon.png') }}">
+
     <title>{% block title %}{% endblock %}</title>
 
+    <!-- css stuff -->
     {% assets "css_all" %}
     <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
     {% endassets %}
