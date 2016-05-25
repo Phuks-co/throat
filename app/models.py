@@ -112,6 +112,7 @@ class SubPostMetadata(db.Model):
 
 
 class SubPostComment(db.Model):
+    """ A comment. In a post. """
     cid = Column(Integer, primary_key=True)
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))
     uid = Column(Integer, db.ForeignKey('user.uid'))

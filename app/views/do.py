@@ -75,7 +75,8 @@ def register():
         if User.query.filter_by(name=form.username.data).first():
             return json.dumps({'status': 'error',
                                'error': ['Username is already registered.']})
-        if User.query.filter_by(email=form.email.data).first():
+        if User.query.filter_by(email=form.email.data).first() and \
+           form.email.data != '':
             return json.dumps({'status': 'error',
                                'error': ['Email is alredy in use.']})
         user = User(form.username.data, form.email.data, form.password.data)
@@ -136,6 +137,7 @@ def create_txtpost(sub):
 @do.route('/do/sendcomment/<sub>/<pid>', methods=['POST'])
 @login_required
 def create_comment(sub, pid):
+    """ Here we send comments. """
     form = PostComment()
     if form.validate():
         # 1 - Check if sub exists.
@@ -165,7 +167,6 @@ def create_comment(sub, pid):
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
-
 @do.route("/do/sendmsg/<user>", methods=['POST'])
 @login_required
 def create_sendmsg(user):
@@ -187,5 +188,6 @@ def create_sendmsg(user):
         msg.posted = datetime.datetime.utcnow()
         db.session.add(msg)
         db.session.commit()
-        return json.dumps({'status': 'ok', 'mid': msg.mid, 'sentby': current_user.get_id()})
+        return json.dumps({'status': 'ok', 'mid': msg.mid,
+                           'sentby': current_user.get_id()})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
