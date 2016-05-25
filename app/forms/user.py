@@ -12,6 +12,7 @@ class LoginForm(Form):
                            validators=[DataRequired(), Length(min=2, max=32)])
     password = PasswordField('Password', validators=[DataRequired(),
                                                      Length(min=7, max=256)])
+    remember = BooleanField('Remember me')
 
 
 class OptionalIfFieldIsEmpty(Optional):

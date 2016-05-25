@@ -52,7 +52,7 @@ def login():
             thash = bcrypt.hashpw(form.password.data.encode(), user.password)
             if thash == user.password:
                 theuser = SiteUser(user)
-                login_user(theuser)
+                login_user(theuser, remember=form.remember.data)
                 return json.dumps({'status': 'ok'})
             else:
                 return json.dumps({'status': 'error',
