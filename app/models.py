@@ -22,6 +22,8 @@ class User(db.Model):
     status = Column(Integer)
     joindate = Column(DateTime)
     posts = db.relationship('SubPost', backref='user', lazy='dynamic')
+    properties = db.relationship('UserMetadata',
+                                 backref='user', lazy='dynamic')
 
     def __init__(self, username, email, password):
         self.name = username
@@ -33,6 +35,14 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.name
+
+
+class UserMetadata(db.Model):
+    """ User metadata. Here we store badges, admin status, etc. """
+    xid = Column(Integer, primary_key=True)
+    uid = Column(Integer, db.ForeignKey('user.uid'))  # Subverse id
+    key = Column(String)  # Metadata key
+    value = Column(String)
 
 
 class Sub(db.Model):
@@ -56,7 +66,8 @@ class Sub(db.Model):
 
 
 class SubMetadata(db.Model):
-    """ Sub metadata """
+    """ Sub metadata. Here we store if the sub is nsfw, the modlist,
+    the founder, etc. """
     xid = Column(Integer, primary_key=True)
     sid = Column(Integer, db.ForeignKey('sub.sid'))  # Subverse id
     key = Column(String)  # Metadata key
@@ -88,7 +99,8 @@ class SubPost(db.Model):
 
 
 class SubPostMetadata(db.Model):
-    """ Sub metadata """
+    """ Post metadata. Here we store if it is a sticky post, mod post, tagged
+    as nsfw, etc. """
     xid = Column(Integer, primary_key=True)
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))  # Subverse id
     key = Column(String)  # Metadata key
