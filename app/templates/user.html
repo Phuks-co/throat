@@ -60,25 +60,25 @@
       <div class="recent">
         <h3>Recent Comments</h3>
         <ul class="rpost">
-        {# for comments in user #}
+          {% for comments in user.comments[::-1][:5] %}
           <li>
-            <a class="title" href="{# url_for('view_post', sub=post.sub.name, pid=post.pid) #}">{# post.title #} Post title here</a>
+            <a class="title" href="{{ url_for('view_post', sub=comments.post.sub.name, pid=comments.post.pid) }}">{{comments.post.title}}</a>
             <br>
             <span class="comment">
-              {# recent comment here #} "Something I said"
+              {{comments.content}}
             </span>
             <br>
-            <a href="{# url_for('view_sub', sub=post.sub.name) #}" class="btn small">
-              <i class="fa fa-users" aria-hidden="true"></i> /s/{# post.sub.name #}
+            <a href="{{ url_for('view_sub', sub=comments.post.sub.name) }}" class="btn small">
+              <i class="fa fa-users" aria-hidden="true"></i> /s/{{comments.post.sub.name}}
             </a>
-            <a href="{# url_for('view_post', sub=sub, pid=post.pid) #}" class="btn small">
+            <a href="{{ url_for('view_post', sub=comments.post.sub.name, pid=comments.post.pid) }}" class="btn small">
               <i class="fa fa-comment" aria-hidden="true"></i> Comments
             </a>
             <span class="time btn small">
-              <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{#post.posted.isoformat()#}"></time-ago>
+              <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{comments.post.posted.isoformat()}}"></time-ago>
             </span>
           </li>
-        {# endfor #}
+        {% endfor %}
         </ul>
       </div>
     </div>
