@@ -150,11 +150,10 @@ $(document).ready(function() {
     });
 
     $(".comment-form").submit(function(e){
-      console.log(e);
-      $(e.target[e.target.length -1]).text("Sending comment...")
-      $(e.target[e.target.length -1]).prop('disabled', true)
       // Note for future self: This is a really fucking hacky way to do this.
       // This thing will break if the order of the fields changes >_>
+      $(e.target[e.target.length -1]).text("Sending comment...")
+      $(e.target[e.target.length -1]).prop('disabled', true)
       $.ajax({
           type: "POST",
           url: '/do/sendcomment/' + $(e.target[1]).prop('value') + '/' + $(e.target[2]).prop('value'),
@@ -189,13 +188,21 @@ $(document).ready(function() {
     });
 
     $('.lnkreply').click(function(e) {
-      console.log(e);
+      // Explaining what this does because it'll be a pain in the ass to maintain
+
+      // We have stored an additional copy of the form, without the MDE initialized.
+      // Here we clone it and remove the 'display: none'
       var x = $($(".comment-form.moving")[0]).clone().show();
+      // Here we append it _next_ to the div that is holding the reply button
       $(e.target).parent().parent().after().append(x);
+      // Here we hackishly get the textarea and initialize the MDE
       var l = new SimpleMDE({element: $(x[0]).children('.CommentContent').children('#comment')[0], autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createcomment",}});
+      // Here we hide the reply button...
       $(e.target).parent().hide();
       // Guesswork to get the right elements..
       var parent = $(e.target).data().to;
+      // And here we hackishly set the value of the 'parent' hidden input to the cid
+      // of the parent comment.
       $(e.target).parent().next().children('#parent').prop('value', parent);
       e.preventDefault();
     });
