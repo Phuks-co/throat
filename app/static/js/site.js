@@ -190,7 +190,7 @@ $(document).ready(function() {
 
     $('.lnkreply').click(function(e) {
       console.log(e);
-      $(e.target).parent().parent().after().append($(".comment-form"));
+      $(e.target).parent().parent().after().append($(".comment-form").clone());
       $(e.target).parent().hide();
       // Guesswork to get the right elements..
       var parent = $(e.target).data().to;
