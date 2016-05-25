@@ -209,12 +209,6 @@ def view_messages():
     return "Please login"
 
 
-@app.route("/u/<user>/edit")
-def edit_user(user):
-    """ WIP: Edit user's profile, slogan, quote, etc """
-    return "WIP!"
-
-
 @app.errorhandler(403)
 def Forbidden(error):
     """ 403 Forbidden """
