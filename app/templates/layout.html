@@ -16,7 +16,7 @@
 
     {% endblock %}
   </head>
-  <body {%if request.cookies.get("dayNight") == "dark" and 'user' in session %}class="dark"{%endif%}>
+  <body {%if request.cookies.get("dayNight") == "dark" and not current_user.is_anonymous %}class="dark"{%endif%}>
     <div class="row">
       <header class="col-12">
         <nav id="navbar">
@@ -113,25 +113,8 @@
             <p><button type="submit" id="reg-btnsubmit">Register</button></p>
         </div>
     </form>
-    {%else%}
-    <!-- create sub form -->
-    <form id="csub-form" class="mfp-hide white-popup-block">
-      {{ csubform.csrf_token }}
-      <h1>Create sub</h1>
-      <p>Create a sub. For you, for your friends or your favorite community</p>
-      <p>{{csubform.subname(placeholder=csubform.subname.label.text, required=True, autofocus=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}</p>
-      <p>{{csubform.title(placeholder=csubform.title.label.text, required=True)}}</p>
-      <p>
-          {{csubform.nsfw(style="width: auto")}}
-          <label for="nsfw">{{csubform.nsfw.label.text}}</label>
-      </p>
-      <div class="alert div-error">
-        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-        <p></p>
-      </div>
-      <p><button type="submit" id="csub-btnsubmit">Create sub</button></p>
-    </form>
     {% endif %}
+
     <!-- Scripts -->
     {% assets "js_all" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
