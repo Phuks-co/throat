@@ -768,7 +768,17 @@ button.mfp-close, button.mfp-arrow {
 .bottombar .lnkreply {
   text-decoration: none;
 }
-
+.comment .comment-form {
+  padding: 1.5em;
+}
+.comment .close {
+  text-align: right;
+  margin-right: 1em;
+  float: right;
+  cursor: pointer;
+  font-size: 1.5em;
+  color: #333;
+}
 
 /* sub comments */
 
