@@ -16,7 +16,7 @@
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
 
 {% for post in posts %}
-    <article class="post">
+    <article class="post" data-pid="{{post.pid}}">
       {# vote arrow div #}
       <div class="pull left vote">
         <p><i class="fa fa-chevron-up" aria-hidden="true"></i></p>

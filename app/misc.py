@@ -17,3 +17,26 @@ class SiteUser(object):
     def get_id(self):
         """ Returns the unique user id. Used on load_user """
         return str(self.user.uid)
+
+
+def getVoteCount(post):
+    """ Returns the vote count of a post. The parameter is the
+    SubPost object """
+    count = 0
+    for vote in post.votes:
+        if vote.positive:
+            count += 1
+        else:
+            count -= 1
+
+    return count
+
+
+def hasVoted(uid, post, up=True):
+    """ Checks if the user up/downvoted the post. """
+    vote = post.votes.filter_by(uid=uid).first()
+    if vote:
+        if vote.positive == up:
+            return True
+    else:
+        return False

@@ -6,6 +6,7 @@ import datetime
 import bcrypt
 from flask import Blueprint, redirect, url_for
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
+from ..models import SubPostVote
 from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
 from ..forms import CreateSubTextPost, PostComment, CreateUserMessageForm
 from flask_login import login_user, login_required, logout_user, current_user
@@ -132,6 +133,70 @@ def create_txtpost(sub):
         db.session.commit()
         return json.dumps({'status': 'ok', 'pid': post.pid, 'sub': sub.name})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route('/do/upvote/<pid>', methods=['POST'])
+@login_required
+def upvote(pid):
+    """ Logs an upvote to a post. """
+    post = SubPost.query.filter_by(pid=pid).first()
+    if not post:
+        return json.dumps({'status': 'error',
+                           'error': ['Post does not exist']})
+
+    qvote = SubPostVote.query.filter_by(pid=pid) \
+                             .filter_by(uid=current_user.get_id()).first()
+    vote = SubPostVote()
+    vote.pid = pid
+    vote.uid = current_user.get_id()
+    vote.positive = True
+
+    if qvote:
+        if qvote.positive:
+            return json.dumps({'status': 'error',
+                               'error': ['You already voted.']})
+        else:
+            qvote.positive = True
+            db.session.add(qvote)
+            db.session.commit()
+            return json.dumps({'status': 'ok',
+                               'message': 'Negative vote reverted.'})
+
+    db.session.add(vote)
+    db.session.commit()
+    return json.dumps({'status': 'ok'})
+
+
+@do.route('/do/downvote/<pid>', methods=['POST'])
+@login_required
+def downvote(pid):
+    """ Logs a downvote to a post. """
+    post = SubPost.query.filter_by(pid=pid).first()
+    if not post:
+        return json.dumps({'status': 'error',
+                           'error': ['Post does not exist']})
+
+    qvote = SubPostVote.query.filter_by(pid=pid) \
+                             .filter_by(uid=current_user.get_id()).first()
+    vote = SubPostVote()
+    vote.pid = pid
+    vote.uid = current_user.get_id()
+    vote.positive = False
+
+    if qvote:
+        if not qvote.positive:
+            return json.dumps({'status': 'error',
+                               'error': ['You already voted.']})
+        else:
+            qvote.positive = False
+            db.session.add(qvote)
+            db.session.commit()
+            return json.dumps({'status': 'ok',
+                               'message': 'Positive vote reverted.'})
+
+    db.session.add(vote)
+    db.session.commit()
+    return json.dumps({'status': 'ok'})
 
 
 @do.route('/do/sendcomment/<sub>/<pid>', methods=['POST'])

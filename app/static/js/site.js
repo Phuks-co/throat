@@ -232,6 +232,40 @@ $(document).ready(function() {
     $('a.btn.create-sub').magnificPopup(mpSettings);
     $('a.btn.create-post').magnificPopup(mpSettings);
     $('a.btn.send-message').magnificPopup(mpSettings);
+
+    $('.upvote').click(function(e){
+      var pid = $(e.currentTarget).parent().parent().data().pid
+      $.ajax({
+        type: "POST",
+        url: '/do/upvote/' + pid,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).addClass('upvoted');
+            $(e.currentTarget).parent().children('.downvote').removeClass('downvoted');
+            var count = $(e.currentTarget).parent().children('.count');
+            count.text(parseInt(count.text())+1);
+          }
+        }
+      });
+    });
+
+    $('.downvote').click(function(e){
+      var pid = $(e.currentTarget).parent().parent().data().pid
+      $.ajax({
+        type: "POST",
+        url: '/do/downvote/' + pid,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).addClass('downvoted');
+            $(e.currentTarget).parent().children('.upvote').removeClass('upvoted');
+            var count = $(e.currentTarget).parent().children('.count');
+            count.text(parseInt(count.text())-1);
+          }
+        }
+      });
+    });
 });
 
 function getCookie(cname) {

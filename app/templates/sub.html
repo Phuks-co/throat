@@ -27,11 +27,12 @@
 {{ super() }}
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
 {% for post in posts %}
-    <article class="post">
+    <article class="post" data-pid="{{post.pid}}">
       {# vote div #}
       <div class="pull left vote">
-        <p><i class="fa fa-chevron-up" aria-hidden="true"></i></p>
-        <p><i class="fa fa-chevron-down" aria-hidden="true"></i></p>
+        <div class="upvote{%if hasVoted(current_user.get_id(), post)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+        <p class="count">{{getVoteCount(post)}}</p>
+        <div class="downvote{%if hasVoted(current_user.get_id(), post, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
       </div>
       <div class="image">
         {% if not post.link %}

@@ -101,6 +101,9 @@ class SubPost(db.Model):
     comments = db.relationship('SubPostComment', backref='post',
                                lazy='dynamic')
 
+    votes = db.relationship('SubPostVote', backref='post',
+                            lazy='dynamic')
+
     def __repr__(self):
         return '<SubPost {0} (In Sub{1})>'.format(self.title, self.sid)
 

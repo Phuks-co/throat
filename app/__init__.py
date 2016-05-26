@@ -17,8 +17,9 @@ from flask_login import LoginManager, login_required, current_user
 from .models import db, User, Sub, SubPost, Message
 from .forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
 from .forms import CreateSubTextPost, CreateUserMessageForm, PostComment
+from .forms import DummyForm
 from .views import do
-from .misc import SiteUser
+from .misc import SiteUser, getVoteCount, hasVoted
 
 
 app = Flask(__name__)
@@ -119,7 +120,8 @@ def utility_processor():
     return {'loginform': LoginForm(), 'regform': RegistrationForm(),
             'logoutform': LogOutForm(), 'sendmsg': CreateUserMessageForm(),
             'csubform': CreateSubForm(), 'markdown': our_markdown,
-            'commentform': PostComment()}
+            'commentform': PostComment(), 'dummyform': DummyForm(),
+            'getVoteCount': getVoteCount, 'hasVoted': hasVoted}
 
 
 @app.route("/")
@@ -222,10 +224,10 @@ def view_messages():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
-                                .order_by(Message.posted.desc()).all()
+                            .order_by(Message.posted.desc()).all()
 
     return render_template('messages.html', user=user, messages=messages,
-                                box_name="Inbox")
+                           box_name="Inbox")
 
 
 @app.route("/messages/sent")
@@ -234,9 +236,9 @@ def view_messages_sent():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(sentby=user) \
-                                .order_by(Message.posted.desc()).all()
+                            .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
-                                box_name="Sent")
+                           box_name="Sent")
 
 
 @app.route("/messages/posts")
@@ -245,9 +247,9 @@ def view_messages_posts():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
-                                .order_by(Message.posted.desc()).all()
+                            .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
-                                box_name="Post Replies")
+                           box_name="Post Replies")
 
 
 @app.route("/messages/comments")
@@ -256,9 +258,9 @@ def view_messages_comments():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
-                                .order_by(Message.posted.desc()).all()
+                            .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
-                                box_name="Comment Replies")
+                           box_name="Comment Replies")
 
 
 @app.errorhandler(403)

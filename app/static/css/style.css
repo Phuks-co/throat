@@ -890,3 +890,8 @@ body.dark a {
     position: relative;
     right: 1px;
 }
+
+.vote p{margin-top: 10px; margin-bottom: 10px;}
+
+.upvoted{color:#080;}
+.downvoted{color:#800;}
