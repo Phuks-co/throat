@@ -2,7 +2,7 @@
 
 import datetime
 import uuid
-from sqlalchemy import Column, Integer, String, Text, DateTime
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 
@@ -13,7 +13,7 @@ class User(db.Model):
     """ Basic user data (Used for login or password recovery) """
     uid = Column(String, primary_key=True)
     name = Column(String(64), unique=True)
-    email = Column(String(128), unique=True)
+    email = Column(String(128))
     # In case we migrate to a different cipher for passwords
     # 1 = bcrypt
     crypto = Column(Integer)
@@ -129,6 +129,14 @@ class SubPostComment(db.Model):
 
     def __init__(self):
         self.cid = str(uuid.uuid4())
+
+
+class SubPostVote(db.Model):
+    """ Up/Downvotes in a post. """
+    xid = Column(Integer, primary_key=True)
+    pid = Column(Integer, db.ForeignKey('sub_post.pid'))
+    uid = Column(Integer, db.ForeignKey('user.uid'))
+    positive = Column(Boolean)
 
 
 class Message(db.Model):
