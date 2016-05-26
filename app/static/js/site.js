@@ -174,7 +174,6 @@ $(document).ready(function() {
     });
 
     $("#toggledark").click(function() {
-        console.log("beep");
         var mode = getCookie("dayNight");
         var d = new Date();
         d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); //365 days
@@ -190,7 +189,6 @@ $(document).ready(function() {
 
     $('.lnkreply').click(function(e) {
       // Explaining what this does because it'll be a pain in the ass to maintain
-      console.log(e)
       // We have stored an additional copy of the form, without the MDE initialized.
       // Here we clone it and remove the 'display: none'
       var x = $($(".comment-form.moving")[0]).clone().show();
@@ -204,7 +202,6 @@ $(document).ready(function() {
       $(e.target).parent().hide();
       // Guesswork to get the right elements..
       var parent = $(e.target).data().to;
-      console.log(parent)
       // And here we hackishly set the value of the 'parent' hidden input to the cid
       // of the parent comment.
       $(e.target).parent().next().children('#parent').prop('value', parent);
