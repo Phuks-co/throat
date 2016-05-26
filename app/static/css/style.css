@@ -892,6 +892,14 @@ body.dark a {
 }
 
 .vote p{margin-top: 10px; margin-bottom: 10px;}
-
+.vote p.count {text-align: center;}
 .upvoted{color:#080;}
 .downvoted{color:#800;}
+
+button#text-post-icon,
+button#link-post-icon {
+    width: 70px;
+    height: 70px;
+    border: 0;
+    background: transparent;
+}

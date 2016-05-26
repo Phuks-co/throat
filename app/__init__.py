@@ -16,7 +16,8 @@ from flask_login import LoginManager, login_required, current_user
 
 from .models import db, User, Sub, SubPost, Message
 from .forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
-from .forms import CreateSubTextPost, CreateUserMessageForm, PostComment
+from .forms import CreateSubTextPost, CreateSubLinkPost
+from .forms import CreateUserMessageForm, PostComment
 from .forms import DummyForm
 from .views import do
 from .misc import SiteUser, getVoteCount, hasVoted
@@ -155,7 +156,8 @@ def view_sub(sub):
     subposts = SubPost.query.filter_by(sid=sub.sid) \
                             .order_by(SubPost.posted.desc()).all()
     return render_template('sub.html', sub=sub.name, sub_title=sub.title,
-                           txtpostform=CreateSubTextPost(), posts=subposts)
+                           txtpostform=CreateSubTextPost(),
+                           lnkpostform=CreateSubLinkPost(), posts=subposts)
 
 
 @app.route("/s/<sub>/new")
@@ -168,7 +170,8 @@ def view_sub_new(sub):
     subposts = SubPost.query.filter_by(sid=sub.sid) \
                             .order_by(SubPost.posted.desc()).all()
     return render_template('sub.html', sub=sub.name, sub_title=sub.title,
-                           txtpostform=CreateSubTextPost(), posts=subposts)
+                           txtpostform=CreateSubTextPost(),
+                           lnkpostform=CreateSubLinkPost(), posts=subposts)
 
 
 @app.route("/s/<sub>/edit")

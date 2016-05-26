@@ -13,9 +13,9 @@
           <div class="head">
             <h1 class="title">{{post.title}}</h1>
             <div class="info">
-            {% if post.ptype == 1 %}
+            {# if post.ptype == 1 %}
               <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
-            {% endif %}
+            {% endif #}
               <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
               <span class="time btn small">
                 <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
@@ -27,7 +27,11 @@
             {% endif %}
             </div>
           </div>
+          {% if post.ptype == 0 %}
           <div class="content">{{markdown(post.content)|safe}}</div>
+          {% else %}
+          <div class="content"><a href="{{post.link}}" target="_blank" rel="noreferrer noopener">{{post.link}}</a></div>
+          {% endif %}
         </article>
         {%if current_user.is_authenticated %}
         <section id="postcomment">

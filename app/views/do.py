@@ -8,7 +8,8 @@ from flask import Blueprint, redirect, url_for
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote
 from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
-from ..forms import CreateSubTextPost, PostComment, CreateUserMessageForm
+from ..forms import CreateSubTextPost, CreateSubLinkPost
+from ..forms import PostComment, CreateUserMessageForm
 from flask_login import login_user, login_required, logout_user, current_user
 from ..misc import SiteUser
 
@@ -128,6 +129,33 @@ def create_txtpost(sub):
         post.uid = current_user.get_id()
         post.title = form.title.data
         post.content = form.content.data
+        post.ptype = "0"
+        post.posted = datetime.datetime.utcnow()
+        db.session.add(post)
+        db.session.commit()
+        return json.dumps({'status': 'ok', 'pid': post.pid, 'sub': sub.name})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/lnkpost/<sub>", methods=['POST'])
+@login_required
+def create_lnkpost(sub):
+    """ Sub text post creation endpoint """
+
+    form = CreateSubLinkPost()
+    if form.validate():
+        # Put pre-posting checks here
+        sub = Sub.query.filter_by(name=sub).first()
+        if not sub:
+            return json.dumps({'status': 'error',
+                               'error': ['Sub does not exist']})
+
+        post = SubPost()
+        post.sid = sub.sid
+        post.uid = current_user.get_id()
+        post.title = form.title.data
+        post.link = form.link.data
+        post.ptype = "1"
         post.posted = datetime.datetime.utcnow()
         db.session.add(post)
         db.session.commit()

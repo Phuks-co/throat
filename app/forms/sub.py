@@ -24,6 +24,15 @@ class CreateSubTextPost(Form):
                                         Length(min=1, max=16384)])
 
 
+class CreateSubLinkPost(Form):
+    """ Sub content submission form """
+    title = StringField('Post title',
+                        validators=[DataRequired(), Length(min=4, max=128)])
+    link = StringField('Post link',
+                            validators=[DataRequired(),
+                                        Length(min=10, max=128)])
+
+
 class PostComment(Form):
     """ Comment submission form """
     sub = HiddenField()

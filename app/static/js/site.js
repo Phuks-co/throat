@@ -122,6 +122,33 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
+    $("#link-post-form").submit(function(e) {
+        $("#lnkpost-btnsubmit").prop('disabled', true);
+        $("#lnkpost-btnsubmit").text('Sending your link...');
+        $.ajax({
+            type: "POST",
+            url: '/do/lnkpost/' + $("#link-post-form").data('sub'), // XXX: Hardcoded URL because this is supposed to be a static file
+            data: $("#link-post-form").serialize(),
+            dataType: 'json',
+            success: function(data) {
+                if (data.status != "ok") {
+                    checkErrors(data, "link-post-form");
+                } else {
+                    document.location = '/s/' + data.sub + '/' + data.pid;
+                }
+                $("#lnkpost-btnsubmit").prop('disabled', false);
+                $("#lnkpost-btnsubmit").text('Submit link');
+            },
+            error: function(data, err) {
+                $("#link-post-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
+                $("#link-post-form .div-error").show();
+                $("#lnkpost-btnsubmit").prop('disabled', false);
+                $("#lnkpost-btnsubmit").text('Submit link');
+            }
+        });
+        e.preventDefault();
+    });
+
     $("#msg-form").submit(function(e) {
         $("#msg-btnsubmit").prop('disabled', true);
         $("#msg-btnsubmit").text('Sending your msg...');

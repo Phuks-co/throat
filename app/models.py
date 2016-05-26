@@ -93,7 +93,7 @@ class SubPost(db.Model):
 
     posted = Column(DateTime)
 
-    ptype = Column(Integer)  # Post type. 0=normal; 1=mod; etc
+    ptype = Column(Integer)  # Post type. 0=txt; 1=link; etc
 
     properties = db.relationship('SubPostMetadata',
                                  backref='post', lazy='dynamic')
