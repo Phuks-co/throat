@@ -41,14 +41,14 @@
         {% if not post.link %}
         <button type="button" class="lightbtn" id="text-post-icon"><a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}"><i class="fa fa-comments fa-3x" aria-hidden="true"></i></a></button>
         {% else %}
-        <button type="button" class="lightbtn" id="link-post-icon"><a href="{{post.link}}"><i class="fa fa-link fa-3x" aria-hidden="true"></i></a></button>
+        <button type="button" class="lightbtn" id="link-post-icon"><a href="{{post.link}}" rel="noreferrer noopener"><i class="fa fa-link fa-3x" aria-hidden="true"></i></a></button>
         {% endif %}
       </div>
       <div class="main">
         {% if not post.link %}
         <a class="title" href="{{url_for('view_post', sub=sub, pid=post.pid)}}">{{post.title}}</a>
         {% else %}
-        <a class="title" href="{{post.link}}">{{post.title}}</a>
+        <a class="title" href="{{post.link}}" rel="noreferrer noopener">{{post.title}}</a>
         {% endif %}
         <p class="author"><time-ago datetime="{{post.posted.isoformat()}}"></time-ago></p>
         <p class="container">
