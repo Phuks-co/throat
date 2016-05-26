@@ -39,6 +39,7 @@
             <button type="submit" class="btn btn-blue">Submit comment</button>
           </form>
           <form class="comment-form moving" style="display:none">
+            <div class="close">×</div>
             {{commentform.csrf_token}}
             {{commentform.sub(value=post.sub.name)}}
             {{commentform.post(value=post.pid)}}

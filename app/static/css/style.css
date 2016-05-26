@@ -773,11 +773,10 @@ button.mfp-close, button.mfp-arrow {
 }
 .comment .close {
   text-align: right;
-  margin-right: 1em;
-  float: right;
+  padding: 10px;
   cursor: pointer;
   font-size: 1.5em;
-  color: #333;
+  color: #565656;
 }
 
 /* sub comments */
@@ -870,7 +869,7 @@ body.dark a {
     font-size: 16px;
 }
 .search input {
-    text-indent: 32px;
+    text-indent: 1em;
 }
 .search .fa-search {
     position: absolute;

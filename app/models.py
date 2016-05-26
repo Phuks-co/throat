@@ -1,6 +1,7 @@
 """ Database table definitions """
 
 import datetime
+import uuid
 from sqlalchemy import Column, Integer, String, Text, DateTime
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
@@ -10,7 +11,7 @@ db = SQLAlchemy()
 
 class User(db.Model):
     """ Basic user data (Used for login or password recovery) """
-    uid = Column(Integer, primary_key=True)
+    uid = Column(String, primary_key=True)
     name = Column(String(64), unique=True)
     email = Column(String(128), unique=True)
     # In case we migrate to a different cipher for passwords
@@ -28,6 +29,7 @@ class User(db.Model):
                                lazy='dynamic')
 
     def __init__(self, username, email, password):
+        self.uid = str(uuid.uuid4())
         self.name = username
         self.email = email
         self.crypto = 1
@@ -49,7 +51,7 @@ class UserMetadata(db.Model):
 
 class Sub(db.Model):
     """ Basic sub data """
-    sid = Column(Integer, primary_key=True)  # sub id
+    sid = Column(String, primary_key=True)  # sub id
     name = Column(String(32), unique=True)  # sub name
     title = Column(String(128))  # sub title/desc
 
@@ -59,6 +61,7 @@ class Sub(db.Model):
     properties = db.relationship('SubMetadata', backref='sub', lazy='dynamic')
 
     def __init__(self, name, title):
+        self.sid = str(uuid.uuid4())
         self.name = name
         self.title = title
 
@@ -113,7 +116,7 @@ class SubPostMetadata(db.Model):
 
 class SubPostComment(db.Model):
     """ A comment. In a post. """
-    cid = Column(Integer, primary_key=True)
+    cid = Column(String, primary_key=True)
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))
     uid = Column(Integer, db.ForeignKey('user.uid'))
     time = Column(DateTime)
@@ -123,6 +126,9 @@ class SubPostComment(db.Model):
                        nullable=True)
     children = db.relationship("SubPostComment",
                                backref=db.backref("parent", remote_side=cid))
+
+    def __init__(self):
+        self.cid = str(uuid.uuid4())
 
 
 class Message(db.Model):
