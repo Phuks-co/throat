@@ -207,7 +207,7 @@ $(document).ready(function() {
       console.log(parent)
       // And here we hackishly set the value of the 'parent' hidden input to the cid
       // of the parent comment.
-      $(e.target).parent().next().next().children('#parent').prop('value', parent);
+      $(e.target).parent().next().children('#parent').prop('value', parent);
       e.preventDefault();
     });
 
