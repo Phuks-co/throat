@@ -29,6 +29,7 @@
           </div>
           <div class="content">{{markdown(post.content)|safe}}</div>
         </article>
+        {%if current_user.is_authenticated %}
         <section id="postcomment">
           <form class="comment-form">
             {{commentform.csrf_token}}
@@ -48,6 +49,7 @@
             <button type="submit" class="btn btn-blue">Submit comment</button>
           </form>
         </section>
+        {%endif%}
         <section id="comments">
           <h1>Comments</h1>
           {% for comment in post.comments recursive %}
@@ -70,12 +72,13 @@
                 </div>
               </div>
               <div class="content">{{markdown(comment.content)|safe}}</div>
+              {%if current_user.is_authenticated%}
               <span class="bottombar btn small">
                 <a href="#reply" class="lnkreply" data-to="{{comment.cid}}">
                   <i class="fa fa-reply" aria-hidden="true"></i> reply
                 </a>
               </span>
-
+              {%endif%}
             </article>
             {% if comment.children %}
               {{loop(comment.children)}}
@@ -86,8 +89,10 @@
     </main>
 {% endblock %}
 {%block pagefoot%}
+{%if current_user.is_authenticated%}
 <script type="text/javascript" src="{{ url_for('static', filename='js/simplemde.min.js') }}"></script>
 <script>
   var simplemde = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createcomment",}});
 </script>
+{%endif%}
 {%endblock%}
