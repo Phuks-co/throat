@@ -3,7 +3,8 @@ from flask_wtf import Form
 
 from .user import RegistrationForm, LoginForm, LogOutForm
 from .user import CreateUserMessageForm
-from .sub import CreateSubForm, CreateSubTextPost, CreateSubLinkPost
+from .sub import CreateSubForm, EditSubForm
+from .sub import CreateSubTextPost, CreateSubLinkPost
 from .sub import PostComment
 
 

@@ -15,7 +15,8 @@ from flask_assets import Environment, Bundle
 from flask_login import LoginManager, login_required, current_user
 
 from .models import db, User, Sub, SubPost, Message
-from .forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
+from .forms import RegistrationForm, LoginForm, LogOutForm
+from .forms import CreateSubForm, EditSubForm
 from .forms import CreateSubTextPost, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment
 from .forms import DummyForm
@@ -153,11 +154,13 @@ def view_sub(sub):
     if not sub:
         abort(404)
 
+    user = session['user_id']
     subposts = SubPost.query.filter_by(sid=sub.sid) \
                             .order_by(SubPost.posted.desc()).all()
     return render_template('sub.html', sub=sub.name, sub_title=sub.title,
                            txtpostform=CreateSubTextPost(),
-                           lnkpostform=CreateSubLinkPost(), posts=subposts)
+                           lnkpostform=CreateSubLinkPost(),
+                           editsubform=EditSubForm(), posts=subposts)
 
 
 @app.route("/s/<sub>/new")
@@ -167,17 +170,13 @@ def view_sub_new(sub):
     if not sub:
         abort(404)
 
+    user = session['user_id']
     subposts = SubPost.query.filter_by(sid=sub.sid) \
                             .order_by(SubPost.posted.desc()).all()
     return render_template('sub.html', sub=sub.name, sub_title=sub.title,
                            txtpostform=CreateSubTextPost(),
-                           lnkpostform=CreateSubLinkPost(), posts=subposts)
-
-
-@app.route("/s/<sub>/edit")
-def edit_sub(sub):
-    """ edit sub config """
-    return "WIP!"
+                           lnkpostform=CreateSubLinkPost(),
+                           editsubform=EditSubForm(), posts=subposts)
 
 
 @app.route("/s/<sub>/<pid>")

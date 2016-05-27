@@ -14,6 +14,12 @@ class CreateSubForm(Form):
 
     nsfw = BooleanField('NSFW?')
 
+class EditSubForm(Form):
+    title = StringField('Title',
+                        validators=[DataRequired(), Length(min=2, max=128)])
+
+    nsfw = BooleanField('NSFW?')
+
 
 class CreateSubTextPost(Form):
     """ Sub content submission form """

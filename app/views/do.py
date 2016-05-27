@@ -7,7 +7,8 @@ import bcrypt
 from flask import Blueprint, redirect, url_for
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote
-from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubForm
+from ..forms import RegistrationForm, LoginForm, LogOutForm
+from ..forms import CreateSubForm, EditSubForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost
 from ..forms import PostComment, CreateUserMessageForm
 from flask_login import login_user, login_required, logout_user, current_user
@@ -108,6 +109,20 @@ def create_sub():
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_sub', sub=form.subname.data)})
 
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/edit_sub/<sub>", methods=['POST'])
+@login_required
+def edit_sub(sub):
+    """ Edit sub endpoint """
+    form = EditSubForm()
+    if form.validate():
+        rows_changed = Sub.query.filter_by(name=sub) \
+                                .update(dict(title=form.title.data))
+        db.session.commit()
+        return json.dumps({'status': 'ok',
+                           'addr': url_for('view_sub', sub=sub)})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 

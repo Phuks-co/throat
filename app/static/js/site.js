@@ -95,6 +95,33 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
+    $("#edit-sub-form").submit(function(e) {
+        $("#edit-sub-btnsubmit").prop('disabled', true);
+        $("#edit-sub-btnsubmit").text('Creating sub...');
+        $.ajax({
+            type: "POST",
+            url: '/do/edit_sub/'+ $("#edit-sub-form").data('sub'), // XXX: Hardcoded URL because this is supposed to be a static file
+            data: $("#edit-sub-form").serialize(),
+            dataType: 'json',
+            success: function(data) {
+                if (data.status != "ok") {
+                    checkErrors(data, "edit-sub-form");
+                } else {
+                    $("#edit-sub-form").html("<h1>Sub edited!</h1>You can now <a href=\"" + data.addr + "\">visit it</a>.")
+                }
+                $("#editsub-btnsubmit").prop('disabled', false);
+                $("#editsub-btnsubmit").text('Edit sub');
+            },
+            error: function(data, err) {
+                $("#edit-sub-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
+                $("#edit-sub-form .div-error").show();
+                $("#editsub-btnsubmit").prop('disabled', false);
+                $("#editsub-btnsubmit").text('Edit sub');
+            }
+        });
+        e.preventDefault();
+    });
+
     $("#post-form").submit(function(e) {
         $("#txpost-btnsubmit").prop('disabled', true);
         $("#txpost-btnsubmit").text('Sending your post...');
@@ -259,6 +286,7 @@ $(document).ready(function() {
     $('a.btn.create-sub').magnificPopup(mpSettings);
     $('a.btn.create-post').magnificPopup(mpSettings);
     $('a.btn.send-message').magnificPopup(mpSettings);
+    $('a.btn.edit-sub').magnificPopup(mpSettings);
 
     $('.upvote').click(function(e){
       var pid = $(e.currentTarget).parent().parent().data().pid
