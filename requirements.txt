@@ -10,3 +10,4 @@ jsmin
 cssmin
 markdown
 flask-login
+mysqlclient
