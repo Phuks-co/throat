@@ -41,6 +41,34 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
+    $("#edit-user-form").submit(function(e) {
+        $("#edituser-btnsubmit").prop('disabled', true);
+        $("#edituser-btnsubmit").text('editing user info...');
+        $.ajax({
+            type: "POST",
+            url: '/do/edit_user/'+ $("#edit-user-form").data('user'), // XXX: Hardcoded URL because this is supposed to be a static file
+            data: $("#edit-user-form").serialize(),
+            dataType: 'json',
+            success: function(data) {
+                if (data.status != "ok") {
+                    checkErrors(data, "edit-user-form");
+                } else {
+                    $("#edit-user-form").html("<h1>User edited!</h1>You can now <a href=\"" + data.addr + "\">visit your profile</a>.")
+                }
+                $("#edituser-btnsubmit").prop('disabled', false);
+                $("#edituser-btnsubmit").text('Edit user info');
+            },
+            error: function(data, err) {
+                $("#edit-user-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
+                $("#edit-user-form .div-error").show();
+                $("#edituser-btnsubmit").prop('disabled', false);
+                $("#edituser-btnsubmit").text('Edit user info');
+            }
+        });
+        e.preventDefault();
+    });
+
+
     $("#login-form").submit(function(e) {
         $("#login-btnsubmit").prop('disabled', true);
         $("#login-btnsubmit").text('Logging in...');
@@ -97,7 +125,7 @@ $(document).ready(function() {
 
     $("#edit-sub-form").submit(function(e) {
         $("#edit-sub-btnsubmit").prop('disabled', true);
-        $("#edit-sub-btnsubmit").text('Creating sub...');
+        $("#edit-sub-btnsubmit").text('Editing sub info...');
         $.ajax({
             type: "POST",
             url: '/do/edit_sub/'+ $("#edit-sub-form").data('sub'), // XXX: Hardcoded URL because this is supposed to be a static file
@@ -287,6 +315,7 @@ $(document).ready(function() {
     $('a.btn.create-post').magnificPopup(mpSettings);
     $('a.btn.send-message').magnificPopup(mpSettings);
     $('a.btn.edit-sub').magnificPopup(mpSettings);
+    $('a.btn.edit-user').magnificPopup(mpSettings);
 
     $('.upvote').click(function(e){
       var pid = $(e.currentTarget).parent().parent().data().pid

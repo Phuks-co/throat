@@ -46,6 +46,16 @@ class RegistrationForm(Form):
     recaptcha = RecaptchaField()
 
 
+class EditUserForm(Form):
+    """ Edit User info form. """
+    #username = TextField('Username', [Length(min=2, max=32)])
+    email = EmailField('Email Address (optional)',
+                       validators=[OptionalIfFieldIsEmpty('email'),
+                                   Email("Invalid email address.")])
+    accept_tos = BooleanField('I accept the TOS', [Required()])
+    recaptcha = RecaptchaField()
+
+
 class CreateUserMessageForm(Form):
     """ CreateUserMessage form. """
     subject = StringField('subject',

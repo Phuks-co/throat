@@ -8,7 +8,7 @@ from flask import Blueprint, redirect, url_for
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote
 from ..forms import RegistrationForm, LoginForm, LogOutForm
-from ..forms import CreateSubForm, EditSubForm
+from ..forms import CreateSubForm, EditSubForm, EditUserForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost
 from ..forms import PostComment, CreateUserMessageForm
 from flask_login import login_user, login_required, logout_user, current_user
@@ -86,6 +86,19 @@ def register():
         db.session.add(user)
         db.session.commit()
         return json.dumps({'status': 'ok'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+@do.route("/do/edit_user/<user>", methods=['POST'])
+@login_required
+def edit_user(user):
+    """ Edit user endpoint """
+    form = EditUserForm()
+    if form.validate():
+        rows_changed = User.query.filter_by(name=user) \
+                                .update(dict(email=form.email.data))
+        db.session.commit()
+        return json.dumps({'status': 'ok',
+                           'addr': url_for('view_user', user=user)})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 

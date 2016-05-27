@@ -16,7 +16,7 @@ from flask_login import LoginManager, login_required, current_user
 
 from .models import db, User, Sub, SubPost, Message
 from .forms import RegistrationForm, LoginForm, LogOutForm
-from .forms import CreateSubForm, EditSubForm
+from .forms import CreateSubForm, EditSubForm, EditUserForm
 from .forms import CreateSubTextPost, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment
 from .forms import DummyForm
@@ -210,14 +210,15 @@ def view_user(user):
         abort(404)
 
     return render_template('user.html', user=user,
-                           msgform=CreateUserMessageForm())
+                           msgform=CreateUserMessageForm(),
+                           edituserform=EditUserForm())
 
 
-@app.route("/u/<user>/edit")
-@login_required
-def edit_user(user):
-    """ WIP: Edit user's profile, slogan, quote, etc """
-    return "WIP!"
+#@app.route("/u/<user>/edit")
+#@login_required
+#def edit_user(user):
+#    """ WIP: Edit user's profile, slogan, quote, etc """
+#    return "WIP!"
 
 
 @app.route("/messages")
