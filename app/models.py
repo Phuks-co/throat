@@ -11,13 +11,13 @@ db = SQLAlchemy()
 
 class User(db.Model):
     """ Basic user data (Used for login or password recovery) """
-    uid = Column(String, primary_key=True)
+    uid = Column(String(40), primary_key=True)
     name = Column(String(64), unique=True)
     email = Column(String(128))
     # In case we migrate to a different cipher for passwords
     # 1 = bcrypt
     crypto = Column(Integer)
-    password = Column(String)
+    password = Column(String(255))
     # Account status
     # 0 = OK; 1 = banned; 2 = shadowbanned?; 3 = sent to oblivion?
     status = Column(Integer)
@@ -45,8 +45,8 @@ class UserMetadata(db.Model):
     """ User metadata. Here we store badges, admin status, etc. """
     xid = Column(Integer, primary_key=True)
     uid = Column(Integer, db.ForeignKey('user.uid'))  # Subverse id
-    key = Column(String)  # Metadata key
-    value = Column(String)
+    key = Column(String(255))  # Metadata key
+    value = Column(String(255))
 
 
 class Sub(db.Model):
@@ -74,8 +74,8 @@ class SubMetadata(db.Model):
     the founder, etc. """
     xid = Column(Integer, primary_key=True)
     sid = Column(Integer, db.ForeignKey('sub.sid'))  # Subverse id
-    key = Column(String)  # Metadata key
-    value = Column(String)
+    key = Column(String(255))  # Metadata key
+    value = Column(String(255))
 
 
 class SubPost(db.Model):
@@ -113,13 +113,13 @@ class SubPostMetadata(db.Model):
     as nsfw, etc. """
     xid = Column(Integer, primary_key=True)
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))
-    key = Column(String)  # Metadata key
-    value = Column(String)
+    key = Column(String(255))  # Metadata key
+    value = Column(String(255))
 
 
 class SubPostComment(db.Model):
     """ A comment. In a post. """
-    cid = Column(String, primary_key=True)
+    cid = Column(String(64), primary_key=True)
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))
     uid = Column(Integer, db.ForeignKey('user.uid'))
     time = Column(DateTime)
@@ -158,3 +158,4 @@ class Message(db.Model):
 
     def __repr__(self):
         return '<Messages {0}>'.format(self.subject)
+
