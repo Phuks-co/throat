@@ -9,7 +9,7 @@ if os.getenv('OPENSHIFT_MYSQL_DB_HOST'):
                               .format(os.getenv('OPENSHIFT_MYSQL_DB_HOST'),
                                       os.getenv('OPENSHIFT_MYSQL_DB_PORT'))
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    DEBUG = False
+    DEBUG = True
     TESTING = False
 else:
     SQLALCHEMY_DATABASE_URI = os.getenv('THROAT_DB') or \
