@@ -19,3 +19,6 @@ except IOError:
 #
 
 from app import app as application
+from app import db
+with application.app_context():
+    db.create_all()
