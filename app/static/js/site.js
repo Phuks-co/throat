@@ -378,6 +378,21 @@ $(document).ready(function() {
         }
       });
     });
+
+    $('.unread').click(function(e){
+      var mid = $(e.currentTarget).data().mid
+      $.ajax({
+        type: "POST",
+        url: '/do/read_pm/' + mid,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).addClass('read').removeClass('unread').removeClass('btn-blue');
+            $(e.currentTarget).text('read')
+          }
+        }
+      });
+    });
 });
 
 function getCookie(cname) {

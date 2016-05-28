@@ -333,3 +333,15 @@ def create_sendmsg(user):
         return json.dumps({'status': 'ok', 'mid': msg.mid,
                            'sentby': current_user.get_id()})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/read_pm/<mid>", methods=['POST'])
+@login_required
+def read_pm(mid):
+    """ Mark PM as read """
+    read = datetime.datetime.utcnow()
+    rows_changed = Message.query.filter_by(mid=mid) \
+                                .update(dict(read=read))
+    db.session.commit()
+    return json.dumps({'status': 'ok', 'mid': mid})
+    return json.dumps({'status': 'error', 'error': 'something broke'})
