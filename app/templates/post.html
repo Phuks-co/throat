@@ -25,6 +25,9 @@
                 <i class="fa fa-clock-o" aria-hidden="true"></i> Last edited <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
               </span>
             {% endif %}
+            {% if post.ptype == 0 and post.user.uid == session['user_id'] %}
+              <a href="#edit-txtpost-form" class="btn btn-blue edit small edit-txtpost-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
+            {% endif %}
             </div>
           </div>
           {% if post.ptype == 0 %}
@@ -91,6 +94,20 @@
           {%endfor%}
         </section>
     </main>
+
+  {% if post.ptype == 0 and post.user.uid == session['user_id'] %}
+  <form id="edit-txtpost-form" data-sub="{{post.sub.name}}" data-pid="{{post.pid}}" class="mfp-hide white-popup-block">
+    {{edittxtpostform.csrf_token}}
+    <h1>Edit your text post</h1>
+    <p class="content">{{edittxtpostform.content(placeholder="Write your post content here. Styling with Markdown format is supported.")}}</p>
+    <div class="alert div-error">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      <p></p>
+    </div>
+    <p><button type="submit" id="edit-txpost-btnsubmit">Edit post</button></p>
+  </form>
+  {% endif %}
+
 {% endblock %}
 {%block pagefoot%}
 {%if current_user.is_authenticated%}

@@ -9,7 +9,7 @@ from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote
 from ..forms import RegistrationForm, LoginForm, LogOutForm
 from ..forms import CreateSubForm, EditSubForm, EditUserForm
-from ..forms import CreateSubTextPost, CreateSubLinkPost
+from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm
 from flask_login import login_user, login_required, logout_user, current_user
 from ..misc import SiteUser
@@ -162,6 +162,23 @@ def create_txtpost(sub):
         db.session.add(post)
         db.session.commit()
         return json.dumps({'status': 'ok', 'pid': post.pid, 'sub': sub.name})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/edit_txtpost/<sub>/<pid>", methods=['POST'])
+@login_required
+def edit_txtpost(sub, pid):
+    """ Sub text post creation endpoint """
+
+    form = EditSubTextPostForm()
+    if form.validate():
+        post = SubPost()
+        post.content = form.content.data
+        #post.edited = datetime.datetime.utcnow()
+        rows_changed = SubPost.query.filter_by(pid=pid) \
+                                .update(dict(content=form.content.data))
+        db.session.commit()
+        return json.dumps({'status': 'ok', 'sub': sub, 'pid': pid})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 

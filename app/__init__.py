@@ -17,7 +17,7 @@ from flask_login import LoginManager, login_required, current_user
 from .models import db, User, Sub, SubPost, Message
 from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditSubForm, EditUserForm
-from .forms import CreateSubTextPost, CreateSubLinkPost
+from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment
 from .forms import DummyForm
 from .views import do
@@ -185,7 +185,8 @@ def view_post(sub, pid):
     post = SubPost.query.filter_by(pid=pid).first()
     if not post or post.sub.name != sub:
         abort(404)
-    return render_template('post.html', post=post)
+    return render_template('post.html', post=post,
+                            edittxtpostform=EditSubTextPostForm())
 
 
 @app.route("/s/<sub>/<pid>/edit")

@@ -30,6 +30,13 @@ class CreateSubTextPost(Form):
                                         Length(min=1, max=16384)])
 
 
+class EditSubTextPostForm(Form):
+    """ Sub content edit form """
+    content = TextAreaField('Post content',
+                            validators=[DataRequired(),
+                                        Length(min=1, max=16384)])
+
+
 class CreateSubLinkPost(Form):
     """ Sub content submission form """
     title = StringField('Post title',

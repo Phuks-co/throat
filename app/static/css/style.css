@@ -903,3 +903,8 @@ button#link-post-icon {
     border: 0;
     background: transparent;
 }
+
+/* post edit button */
+a.btn.btn-blue.edit.small {
+    background-color: #238FC3;
+}
