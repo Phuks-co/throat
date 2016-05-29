@@ -44,7 +44,7 @@ class User(db.Model):
 class UserMetadata(db.Model):
     """ User metadata. Here we store badges, admin status, etc. """
     xid = Column(Integer, primary_key=True)
-    uid = Column(Integer, db.ForeignKey('user.uid'))  # Subverse id
+    uid = Column(String(40), db.ForeignKey('user.uid'))  # Subverse id
     key = Column(String(255))  # Metadata key
     value = Column(String(255))
 
@@ -82,7 +82,7 @@ class SubPost(db.Model):
     """ Represents a post on a sub """
     pid = Column(Integer, primary_key=True)  # post id
     sid = Column(Integer, db.ForeignKey('sub.sid'))
-    uid = Column(Integer, db.ForeignKey('user.uid'))
+    uid = Column(String(40), db.ForeignKey('user.uid'))
 
     # There's a 'sub' field with a reference to the sub and a 'user' one
     # with a refernece to the user that created this post
@@ -121,7 +121,7 @@ class SubPostComment(db.Model):
     """ A comment. In a post. """
     cid = Column(String(64), primary_key=True)
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))
-    uid = Column(Integer, db.ForeignKey('user.uid'))
+    uid = Column(String(40), db.ForeignKey('user.uid'))
     time = Column(DateTime)
     content = Column(Text)
     # parent comment id
@@ -138,15 +138,15 @@ class SubPostVote(db.Model):
     """ Up/Downvotes in a post. """
     xid = Column(Integer, primary_key=True)
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))
-    uid = Column(Integer, db.ForeignKey('user.uid'))
+    uid = Column(String(40), db.ForeignKey('user.uid'))
     positive = Column(Boolean)
 
 
 class Message(db.Model):
     """ Represents a post on a sub """
     mid = Column(Integer, primary_key=True)  # msg id
-    sentby = Column(Integer, db.ForeignKey('user.uid'))
-    receivedby = Column(Integer, db.ForeignKey('user.uid'))
+    sentby = Column(String(40), db.ForeignKey('user.uid'))
+    receivedby = Column(String(40), db.ForeignKey('user.uid'))
 
     subject = Column(String(128))  # msg subject
     content = Column(Text)  # msg content
@@ -158,4 +158,3 @@ class Message(db.Model):
 
     def __repr__(self):
         return '<Messages {0}>'.format(self.subject)
-
