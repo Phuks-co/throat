@@ -838,7 +838,7 @@ body.dark .text-post .head {
 }
 body.dark .btn.small {
     background-color: #666;
-    color: #333;
+    color: lightgray;
 }
 body.dark .center {
     border: 1px solid #777;
@@ -859,6 +859,13 @@ body.dark #toggledark i {
 }
 body.dark a {
     color: #777;
+}
+body.dark .CodeMirror {
+  background-color: #383838;
+  color: white;
+}
+body.dark .editor-toolbar a {
+  color: white !important;
 }
 #toggledark i {
     color: #000;

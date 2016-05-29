@@ -27,6 +27,7 @@
             {% endif %}
             {% if post.ptype == 0 and post.user.uid == session['user_id'] %}
               <a href="#edit-txtpost-form" class="btn btn-blue edit small edit-txtpost-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
+              <a href="#delete-txtpost-form" class="btn btn-blue edit small delete-txtpost-form"><i class="fa fa-times-circle" aria-hidden="true"></i> Delete </a>
             {% endif %}
             </div>
           </div>
