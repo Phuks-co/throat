@@ -17,7 +17,7 @@
     <article class="post" data-sid="{{sub.sid}}">
       <div class="image">
         <button type="button" class="lightbtn" id="link-post-icon">
-          <a href="{#post.link#}" rel="noreferrer noopener">
+          <a href="{{url_for('view_sub', sub=sub.name)}}">
             <span class="fa-stack fa-3x" style="color: #616161;">
               <i class="fa fa-square fa-stack-2x"></i>
               <i class="fa fa-list fa-stack-1x fa-inverse"></i>
