@@ -325,7 +325,7 @@ main {
 input[type=search] {
     width: 100%;
     box-sizing: border-box;
-    border: 2px solid lightgray;
+    border: solid lightgray 1px;
     border-radius: 4px;
     font-size: 0.9em;
     font-family: Comfortaa;
@@ -335,7 +335,7 @@ input[type=search] {
     transition: width 0.4s ease-in-out;
 }
 input:focus {
-    border: 2px solid skyblue;
+    border: solid skyblue 1px;
 }
 .pull.right {
     float: right;
@@ -900,7 +900,7 @@ body.dark .editor-toolbar a {
     color: white !important;
 }
 #toggledark i {
-    color: #000;
+    color: inherit;
 }
 .search {
     position: relative;
