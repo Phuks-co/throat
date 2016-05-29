@@ -80,7 +80,7 @@ $(document).ready(function() {
             success: function(data) {
                 if (data.status != "ok") {
                     checkErrors(data, "login-form");
-                    $("#login-btnsubmit").prop('disabled', f);
+                    $("#login-btnsubmit").prop('disabled', false);
                     $("#login-btnsubmit").text('Login');
                 } else {
                     document.location = document.location;
