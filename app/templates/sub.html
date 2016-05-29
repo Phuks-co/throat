@@ -44,9 +44,23 @@
       </div>
       <div class="image">
         {% if not post.link %}
-        <button type="button" class="lightbtn" id="text-post-icon"><a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}"><i class="fa fa-comments fa-3x" aria-hidden="true"></i></a></button>
+        <button type="button" class="lightbtn" id="text-post-icon">
+          <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
+            <span class="fa-stack fa-3x" style="color: #616161;">
+              <i class="fa fa-square fa-stack-2x"></i>
+              <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
+            </span>
+          </a>
+        </button>
         {% else %}
-        <button type="button" class="lightbtn" id="link-post-icon"><a href="{{post.link}}" rel="noreferrer noopener"><i class="fa fa-link fa-3x" aria-hidden="true"></i></a></button>
+        <button type="button" class="lightbtn" id="link-post-icon">
+          <a href="{{post.link}}" rel="noreferrer noopener">
+            <span class="fa-stack fa-3x" style="color: #616161;">
+              <i class="fa fa-square fa-stack-2x"></i>
+              <i class="fa fa-link fa-stack-1x fa-inverse"></i>
+            </span>
+          </a>
+        </button>
         {% endif %}
       </div>
       <div class="main">
