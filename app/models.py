@@ -125,7 +125,7 @@ class SubPostComment(db.Model):
     time = Column(DateTime)
     content = Column(Text)
     # parent comment id
-    parentcid = Column(Integer, db.ForeignKey('sub_post_comment.cid'),
+    parentcid = Column(String(40), db.ForeignKey('sub_post_comment.cid'),
                        nullable=True)
     children = db.relationship("SubPostComment",
                                backref=db.backref("parent", remote_side=cid))
