@@ -53,8 +53,8 @@ def login():
 
         if user.crypto == 1:  # bcrypt
             thash = bcrypt.hashpw(form.password.data.encode('utf-8'),
-                                  user.password)
-            if thash == user.password:
+                                  user.password.encode('utf-8'))
+            if thash == user.password.encode('utf-8'):
                 theuser = SiteUser(user)
                 login_user(theuser, remember=form.remember.data)
                 return json.dumps({'status': 'ok'})
