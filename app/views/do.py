@@ -52,7 +52,8 @@ def login():
                                'error': ['User does not exist.']})
 
         if user.crypto == 1:  # bcrypt
-            thash = bcrypt.hashpw(form.password.data.encode(), user.password)
+            thash = bcrypt.hashpw(form.password.data.encode(),
+                                  user.password.encode())
             if thash == user.password:
                 theuser = SiteUser(user)
                 login_user(theuser, remember=form.remember.data)
@@ -87,6 +88,7 @@ def register():
         db.session.commit()
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
 
 @do.route("/do/edit_user/<user>", methods=['POST'])
 @login_required
@@ -174,9 +176,9 @@ def edit_txtpost(sub, pid):
     if form.validate():
         post = SubPost()
         post.content = form.content.data
-        #post.edited = datetime.datetime.utcnow()
+        # post.edited = datetime.datetime.utcnow()
         rows_changed = SubPost.query.filter_by(pid=pid) \
-                                .update(dict(content=form.content.data))
+                              .update(dict(content=form.content.data))
         db.session.commit()
         return json.dumps({'status': 'ok', 'sub': sub, 'pid': pid})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -339,9 +341,9 @@ def create_sendmsg(user):
 @login_required
 def read_pm(mid):
     """ Mark PM as read """
-    read = datetime.datetime.utcnow()
-    rows_changed = Message.query.filter_by(mid=mid) \
-                                .update(dict(read=read))
+    #  read = datetime.datetime.utcnow()
+    # rows_changed = Message.query.filter_by(mid=mid) \
+    #                            .update(dict(read=read))
     db.session.commit()
     return json.dumps({'status': 'ok', 'mid': mid})
-    return json.dumps({'status': 'error', 'error': 'something broke'})
+    # return json.dumps({'status': 'error', 'error': 'something broke'})
