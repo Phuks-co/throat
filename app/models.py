@@ -51,7 +51,7 @@ class UserMetadata(db.Model):
 
 class Sub(db.Model):
     """ Basic sub data """
-    sid = Column(String, primary_key=True)  # sub id
+    sid = Column(String(40), primary_key=True)  # sub id
     name = Column(String(32), unique=True)  # sub name
     title = Column(String(128))  # sub title/desc
 
@@ -73,7 +73,7 @@ class SubMetadata(db.Model):
     """ Sub metadata. Here we store if the sub is nsfw, the modlist,
     the founder, etc. """
     xid = Column(Integer, primary_key=True)
-    sid = Column(Integer, db.ForeignKey('sub.sid'))  # Subverse id
+    sid = Column(String(40), db.ForeignKey('sub.sid'))  # Subverse id
     key = Column(String(255))  # Metadata key
     value = Column(String(255))
 
@@ -81,7 +81,7 @@ class SubMetadata(db.Model):
 class SubPost(db.Model):
     """ Represents a post on a sub """
     pid = Column(Integer, primary_key=True)  # post id
-    sid = Column(Integer, db.ForeignKey('sub.sid'))
+    sid = Column(String(40), db.ForeignKey('sub.sid'))
     uid = Column(String(40), db.ForeignKey('user.uid'))
 
     # There's a 'sub' field with a reference to the sub and a 'user' one
