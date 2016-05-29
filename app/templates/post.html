@@ -60,6 +60,11 @@
         {%endif%}
         <section id="comments">
           <h1>Comments</h1>
+          {% if post.comments.count() < 1 %}
+          <p>
+            Be the first to comment this post
+          </p>
+          {% endif %}
           {% for comment in post.comments recursive %}
             {% if (loop.depth == 1 and not comment.parentcid) or loop.depth >1 %}
             <article data-cid="{{comment.cid}}" class="text-post center no-padding comment sub-{{loop.depth0}}">
@@ -77,6 +82,10 @@
                     <i class="fa fa-clock-o" aria-hidden="true"></i> Last edited <time-ago datetime="{{comment.time.isoformat()}}"></time-ago>
                   </span>
                 {% endif #}
+                {% if comment.uid == session['user_id'] %}
+                  <a href="#edit-comment-form" class="btn btn-blue edit small edit-comment-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
+                  <a href="#delete-comment-form" class="btn btn-blue edit small delete-comment-form"><i class="fa fa-times-circle" aria-hidden="true"></i> Delete </a>
+                {% endif %}
                 </div>
               </div>
               <div class="content">{{markdown(comment.content)|safe}}</div>

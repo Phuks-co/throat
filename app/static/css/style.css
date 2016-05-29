@@ -588,7 +588,7 @@ nav .right a {
     border: solid transparent 1px;
 }
 .btn.small .fa {
-  font-size: larger;
+    font-size: larger;
 }
 @media only screen and (max-width: 768px) {
     /* For mobile phones: */
@@ -724,16 +724,17 @@ button.mfp-close, button.mfp-arrow {
     border-top: 1px solid #D3D3D3;
 }
 .text-post .head {
-    background: #F9F9F9;
+    background: #FAFAFA;
     width: 100%;
-    margin: 0px;
+    border-bottom: solid #ccc 1px;
+    margin: 0;
     padding: 1em;
 }
 .text-post .head .btn {
     background-color: #E8E8E8;
 }
 .text-post.comment .head {
-    padding: 0.3em;
+    padding: 0.4em;
 }
 .text-post.comment .head .info {
     margin-left: 0.3em;
@@ -766,17 +767,17 @@ button.mfp-close, button.mfp-arrow {
     margin-bottom: 1em;
 }
 .bottombar .lnkreply {
-  text-decoration: none;
+    text-decoration: none;
 }
 .comment .comment-form {
-  padding: 1.5em;
+    padding: 1.5em;
 }
 .comment .close {
-  text-align: right;
-  padding: 10px;
-  cursor: pointer;
-  font-size: 1.5em;
-  color: #565656;
+    text-align: right;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 1.5em;
+    color: #565656;
 }
 
 /* sub comments */
@@ -861,11 +862,11 @@ body.dark a {
     color: #777;
 }
 body.dark .CodeMirror {
-  background-color: #383838;
-  color: white;
+    background-color: #383838;
+    color: white;
 }
 body.dark .editor-toolbar a {
-  color: white !important;
+    color: white !important;
 }
 #toggledark i {
     color: #000;
@@ -897,14 +898,20 @@ body.dark .editor-toolbar a {
     position: relative;
     right: 1px;
 }
-
-.vote p{margin-top: 10px; margin-bottom: 10px;}
-.vote p.count {text-align: center;}
-.upvoted{color:#080;}
-.downvoted{color:#800;}
-
-button#text-post-icon,
-button#link-post-icon {
+.vote p {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.vote p.count {
+    text-align: center;
+}
+.upvoted {
+    color: #080;
+}
+.downvoted {
+    color: #800;
+}
+button#text-post-icon, button#link-post-icon {
     width: 70px;
     height: 70px;
     border: 0;
@@ -912,6 +919,7 @@ button#link-post-icon {
 }
 
 /* post edit button */
+
 a.btn.btn-blue.edit.small {
     background-color: #238FC3;
 }
