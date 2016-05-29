@@ -97,8 +97,7 @@ def edit_user(user):
     """ Edit user endpoint """
     form = EditUserForm()
     if form.validate():
-        rows_changed = User.query.filter_by(name=user) \
-                                .update(dict(email=form.email.data))
+        User.query.filter_by(name=user).update(dict(email=form.email.data))
         db.session.commit()
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_user', user=user)})
@@ -139,8 +138,7 @@ def edit_sub(sub):
     """ Edit sub endpoint """
     form = EditSubForm()
     if form.validate():
-        rows_changed = Sub.query.filter_by(name=sub) \
-                                .update(dict(title=form.title.data))
+        Sub.query.filter_by(name=sub).update(dict(title=form.title.data))
         db.session.commit()
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_sub', sub=sub)})
@@ -183,8 +181,8 @@ def edit_txtpost(sub, pid):
         post = SubPost()
         post.content = form.content.data
         # post.edited = datetime.datetime.utcnow()
-        rows_changed = SubPost.query.filter_by(pid=pid) \
-                              .update(dict(content=form.content.data))
+        SubPost.query.filter_by(pid=pid) \
+                     .update(dict(content=form.content.data))
         db.session.commit()
         return json.dumps({'status': 'ok', 'sub': sub, 'pid': pid})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -347,9 +345,8 @@ def create_sendmsg(user):
 @login_required
 def read_pm(mid):
     """ Mark PM as read """
-    #  read = datetime.datetime.utcnow()
-    # rows_changed = Message.query.filter_by(mid=mid) \
-    #                            .update(dict(read=read))
+    read = datetime.datetime.utcnow()
+    Message.query.filter_by(mid=mid).update(dict(read=read))
     db.session.commit()
     return json.dumps({'status': 'ok', 'mid': mid})
     # return json.dumps({'status': 'error', 'error': 'something broke'})
