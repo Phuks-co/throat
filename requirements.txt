@@ -10,4 +10,4 @@ jsmin
 cssmin
 markdown
 flask-login
-mysqlclient
+psycopg2
