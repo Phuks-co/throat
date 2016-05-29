@@ -147,6 +147,13 @@ def index_all_new():
     return render_template('index.html', posts=subposts)
 
 
+@app.route("/subs")
+def view_subs():
+    """ Here we can view available subs """
+    subs = Sub.query.order_by(Sub.name.desc()).all()
+    return render_template('subs.html', subs=subs)
+
+
 @app.route("/s/<sub>")
 def view_sub(sub):
     """ Here we can view subs (currently sorts like /new) """

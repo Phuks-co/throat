@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block title %}Subs | Throat: Open discussion{% endblock %}
+{% block navbar %}
+<ul class="right">
+  <li class="large">Subs</li>
+</ul>
+{% endblock %}
+
+{% block sidebar %}
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+{% if not subs %}<h1 class="noshit">There are no subs here, yet.</h1>{% endif %}
+{% for sub in subs %}
+    <article class="post" data-sid="{{sub.sid}}">
+      <div class="image">
+        <button type="button" class="lightbtn" id="link-post-icon">
+          <a href="{#post.link#}" rel="noreferrer noopener">
+            <span class="fa-stack fa-3x" style="color: #616161;">
+              <i class="fa fa-square fa-stack-2x"></i>
+              <i class="fa fa-list fa-stack-1x fa-inverse"></i>
+            </span>
+          </a>
+        </button>
+      </div>
+      <div class="main">
+        <a class="title" href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>
+        <p class="author">{{sub.title}}</p>
+        <p class="author">A community for (sub created time)<time-ago datetime="{#sub.created.isoformat()#}"></time-ago></p>
+        <p class="container">
+          <a class="btn small"><i class="fa fa-users" aria-hidden="true"></i> XX Subscribers</a>
+          <a class="btn small"><i class="fa fa-plus" aria-hidden="true"></i> Subscribe</a>
+          <a class="btn small"><i class="fa fa-remove" aria-hidden="true"></i> Block</a>
+        </p>
+      </div>
+    </article>
+{% endfor %}
+{% endblock %}
+{%block pagefoot%}
+{%endblock%}
