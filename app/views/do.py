@@ -52,7 +52,8 @@ def login():
                                'error': ['User does not exist.']})
 
         if user.crypto == 1:  # bcrypt
-            thash = bcrypt.hashpw(form.password.data.encode(), user.password)
+            thash = bcrypt.hashpw(form.password.data.encode('utf-8'),
+                                  user.password)
             if thash == user.password:
                 theuser = SiteUser(user)
                 login_user(theuser, remember=form.remember.data)
