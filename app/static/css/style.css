@@ -373,7 +373,7 @@ a.btn.login, a.btn.register {
     width: 100%;
 }
 .side .lightbtn {
-    color: darkgray;
+    color: #616161;
     background: none!important;
     border: none;
     padding: 0!important;
@@ -864,6 +864,9 @@ body.dark, body.dark header, body.dark footer, body.dark nav ul li a, body.dark 
     background: #101010;
     color: #aaa;
 }
+body.dark h1, body.dark h2, body.dark h3, body.dark h4, body.dark h5, body.dark h6 {
+  color: white;
+}
 body.dark .text-post .head {
     background-color: #555;
     color: #151515;
@@ -871,13 +874,15 @@ body.dark .text-post .head {
 body.dark .btn.small {
     background-color: #666;
     color: lightgray;
+    border: solid transparent 1px;
 }
 body.dark .center {
-    border: 1px solid #777;
+    border: 1px solid lightgray;
 }
 body.dark .btn {
     background-color: #666;
     color: #ccc;
+    border: solid transparent 1px;
 }
 body.dark input[type=search] {
     background-color: #555;
