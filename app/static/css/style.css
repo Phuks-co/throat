@@ -52,7 +52,7 @@ canvas {
 }
 a {
     text-decoration: underline;
-    color: #000;
+    color: inherit;
 }
 a:hover {
     text-decoration: none;
@@ -604,6 +604,9 @@ nav .right a {
     border-radius: 2px;
     color: #616161;
 }
+.btn.btn-blue.small, .btn.btn-red.small {
+  color: white;
+}
 .btn.small .fa {
     font-size: larger;
 }
@@ -944,10 +947,4 @@ button#text-post-icon, button#link-post-icon {
     height: 70px;
     border: 0;
     background: transparent;
-}
-
-/* post edit button */
-
-a.btn.btn-blue.edit.small {
-    background-color: #238FC3;
 }
