@@ -18,6 +18,9 @@ class SiteUser(object):
         """ Returns the unique user id. Used on load_user """
         return str(self.user.uid)
 
+    def is_mod(self, sub):
+        return isMod(sub, self.user)
+
 
 def getVoteCount(post):
     """ Returns the vote count of a post. The parameter is the
@@ -38,5 +41,14 @@ def hasVoted(uid, post, up=True):
     if vote:
         if vote.positive == up:
             return True
+    else:
+        return False
+
+
+def isMod(sub, user):
+    """ Returns True if 'user' is a mod of 'sub' """
+    x = sub.properties.filter_by(key='mod').filter_by(value=user.uid).first()
+    if x:
+        return True  # user is mod
     else:
         return False

@@ -3,10 +3,11 @@
 import json
 import re
 import datetime
+import time
 import bcrypt
 from flask import Blueprint, redirect, url_for
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
-from ..models import SubPostVote
+from ..models import SubPostVote, SubMetadata
 from ..forms import RegistrationForm, LoginForm, LogOutForm
 from ..forms import CreateSubForm, EditSubForm, EditUserForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
@@ -120,7 +121,12 @@ def create_sub():
 
         sub = Sub(form.subname.data, form.title.data)
         db.session.add(sub)
+        ux = SubMetadata(sub, 'mod', current_user.get_id())
+        ux2 = SubMetadata(sub, 'creation', time.time())
+        db.session.add(ux)
+        db.session.add(ux2)
         db.session.commit()
+
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_sub', sub=form.subname.data)})
 
