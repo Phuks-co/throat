@@ -635,13 +635,27 @@ nav .right a {
     border-radius: 2px;
     border: solid 1px lightgray;
 }
-.white-popup-block input[type="button"], .white-popup-block input[type="submit"], .white-popup-block button:not(.mfp-close) {
-    text-align: center;
+.white-popup-block button:not(.mfp-close) {
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
     font-family: Comfortaa;
-    color: gray;
+    text-align: center;
 }
-.white-popup-block input[type="button"]:disabled, .white-popup-block input[type="submit"]:disabled, .white-popup-block button:disabled {
+.white-popup-block button:not(.mfp-close):hover {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
+.white-popup-block button:not(.mfp-close):active {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
+.white-popup-block button:not(.mfp-close):disabled {
     background: floralwhite;
+    color: black;
+    border-color: lightgray;
 }
 .div-error {
     display: none;
