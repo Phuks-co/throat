@@ -2,7 +2,7 @@
 {% block title %}{{sub_title}} | Throat: Open discussion{% endblock %}
 {% block navbar %}
 <ul class="right">
-  <li class="large"><a href="{{url_for('view_sub', sub=sub)}}">/s/{{sub}}</a></li>
+  <li class="large"><a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a></li>
 </ul>
 {% endblock %}
 
@@ -11,9 +11,9 @@
 
 {# temp #}
 <p>
-    /s/{{sub}}
+    /s/{{sub.name}}
   <br>
-    {{sub_title}}
+    {{sub.title}}
 </p>
 
 <div class="row buttons">
@@ -65,19 +65,19 @@
       </div>
       <div class="main">
         {% if not post.link %}
-        <a class="title" href="{{url_for('view_post', sub=sub, pid=post.pid)}}">{{post.title}}</a>
+        <a class="title" href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}">{{post.title}}</a>
         {% else %}
         <a class="title" href="{{post.link}}" rel="noreferrer noopener">{{post.title}}</a>
         {% endif %}
         <p class="author"><time-ago datetime="{{post.posted.isoformat()}}"></time-ago></p>
         <p class="container">
           <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
-          <a href="{{url_for('view_post', sub=sub, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.comments.count()}})</a>
+          <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.comments.count()}})</a>
         </p>
       </div>
     </article>
 {% endfor %}
-<form id="post-form" data-sub="{{sub}}" class="mfp-hide white-popup-block">
+<form id="post-form" data-sub="{{sub.name}}" class="mfp-hide white-popup-block">
   {{txtpostform.csrf_token}}
   <h1>Submit a text post</h1>
   <p class="title">{{txtpostform.title(placeholder=txtpostform.title.label.text, required=True, autofocus=True)}}</p>
@@ -89,7 +89,7 @@
   <p><button type="submit" id="txpost-btnsubmit">Submit post</button></p>
 
 </form>
-<form id="link-post-form" data-sub="{{sub}}" class="mfp-hide white-popup-block">
+<form id="link-post-form" data-sub="{{sub.name}}" class="mfp-hide white-popup-block">
   {{lnkpostform.csrf_token}}
   <h1>Submit a link post</h1>
   <p class="title">{{lnkpostform.title(placeholder=lnkpostform.title.label.text, required=True, autofocus=True)}}</p>
@@ -101,7 +101,7 @@
   <p><button type="submit" id="lnkpost-btnsubmit">Submit link</button></p>
 
 </form>
-<form id="edit-sub-form" data-sub="{{sub}}" class="mfp-hide white-popup-block">
+<form id="edit-sub-form" data-sub="{{sub.name}}" class="mfp-hide white-popup-block">
   {{editsubform.csrf_token}}
   <h1>Edit /s/{{sub}}</h1>
   <p>{{editsubform.title(placeholder=editsubform.title.label.text, required=True)}}</p>

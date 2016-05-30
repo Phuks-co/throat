@@ -164,7 +164,7 @@ def view_sub(sub):
     user = session['user_id']
     subposts = SubPost.query.filter_by(sid=sub.sid) \
                             .order_by(SubPost.posted.desc()).all()
-    return render_template('sub.html', sub=sub.name, sub_title=sub.title,
+    return render_template('sub.html', sub=sub,
                            txtpostform=CreateSubTextPost(),
                            lnkpostform=CreateSubLinkPost(),
                            editsubform=EditSubForm(), posts=subposts)
