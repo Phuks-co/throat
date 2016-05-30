@@ -548,52 +548,52 @@ nav .right a {
     border-color: #ccc;
 }
 .btn:hover {
-  color: #333;
-  background-color: #e6e6e6;
-  border-color: #adadad;
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #adadad;
 }
 .btn:active {
-  color: #333;
-  background-color: #e6e6e6;
-  border-color: #adadad;
-  -webkit-box-shadow: inset 0 3px 5px rgba(0,0,0,.125);
-  box-shadow: inset 0 3px 5px rgba(0,0,0,.125);
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #adadad;
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
 }
 
 /* blue button */
 
 .btn.btn-blue {
-  color: #fff;
-  background-color: #337ab7;
-  border-color: #2e6da4;
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
 }
 .btn.btn-blue:hover {
-  color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
+    color: #fff;
+    background-color: #286090;
+    border-color: #204d74;
 }
 .btn.btn-blue:active {
-  color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
+    color: #fff;
+    background-color: #286090;
+    border-color: #204d74;
 }
 
 /* red button */
 
 .btn.btn-red {
-  color: #fff;
-  background-color: #d9534f;
-  border-color: #d43f3a;
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a;
 }
 .btn.btn-red:hover {
-  color: #fff;
-  background-color: #c9302c;
-  border-color: #ac2925;
+    color: #fff;
+    background-color: #c9302c;
+    border-color: #ac2925;
 }
 .btn.btn-red:active {
-  color: #fff;
-  background-color: #c9302c;
-  border-color: #ac2925;
+    color: #fff;
+    background-color: #c9302c;
+    border-color: #ac2925;
 }
 
 /* small button */
@@ -606,7 +606,7 @@ nav .right a {
     color: #616161;
 }
 .btn.btn-blue.small, .btn.btn-red.small {
-  color: white;
+    color: white;
 }
 .btn.small .fa {
     font-size: larger;
@@ -647,14 +647,14 @@ nav .right a {
     text-align: center;
 }
 .white-popup-block button:not(.mfp-close):hover {
-  color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
+    color: #fff;
+    background-color: #286090;
+    border-color: #204d74;
 }
 .white-popup-block button:not(.mfp-close):active {
-  color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
+    color: #fff;
+    background-color: #286090;
+    border-color: #204d74;
 }
 .white-popup-block button:not(.mfp-close):disabled {
     background: floralwhite;
@@ -866,16 +866,24 @@ body.dark, body.dark header, body.dark footer, body.dark nav ul li a, body.dark 
     color: #aaa;
 }
 body.dark h1, body.dark h2, body.dark h3, body.dark h4, body.dark h5, body.dark h6 {
-  color: white;
+    color: white;
 }
 body.dark .text-post .head {
     background-color: #555;
     color: #151515;
 }
+body.dark .white-popup-block {
+    background-color: #2F2F2F;
+    color: white;
+}
 body.dark .btn.small {
     background-color: #666;
     color: lightgray;
     border: solid transparent 1px;
+}
+body.dark .white-popup-block input {
+    background-color: #2F2F2F;
+    color: white;
 }
 body.dark .center {
     border: 1px solid lightgray;
