@@ -2,7 +2,7 @@
 
 from flask_wtf import Form
 from wtforms import StringField, TextAreaField, BooleanField, HiddenField
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, URL
 
 
 class CreateSubForm(Form):
@@ -43,7 +43,8 @@ class CreateSubLinkPost(Form):
                         validators=[DataRequired(), Length(min=4, max=128)])
     link = StringField('Post link',
                             validators=[DataRequired(),
-                                        Length(min=10, max=128)])
+                                        Length(min=10, max=128),
+                                        URL(require_tld=True)])
 
 
 class PostComment(Form):
