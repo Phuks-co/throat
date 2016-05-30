@@ -78,7 +78,7 @@ class SubMetadata(db.Model):
     key = Column(String(255))  # Metadata key
     value = Column(String(255))
 
-    def __init(self, sub, key, value):
+    def __init__(self, sub, key, value):
         self.sid = sub.sid
         self.key = key
         self.value = value
