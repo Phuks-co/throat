@@ -22,10 +22,7 @@ $(document).ready(function() {
                 if (data.status != "ok") {
                     checkErrors(data, "register-form");
                 } else { // success
-                    $('a.btn.register').magnificPopup('close');
-                    $('#login-intro').addClass('alert ok');
-                    $('#login-intro').text("Thanks for registering! Now you can log in.");
-                    $('a.btn.login').magnificPopup('open');
+                    document.location.reload();
                 }
                 $("#reg-btnsubmit").prop('disabled', false);
                 $("#reg-btnsubmit").text('Register');
@@ -83,7 +80,7 @@ $(document).ready(function() {
                     $("#login-btnsubmit").prop('disabled', false);
                     $("#login-btnsubmit").text('Login');
                 } else {
-                    document.location = document.location;
+                    document.location.reload();
                 }
             },
             error: function(data, err) {

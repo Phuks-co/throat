@@ -87,6 +87,7 @@ def register():
         user = User(form.username.data, form.email.data, form.password.data)
         db.session.add(user)
         db.session.commit()
+        login_user(SiteUser(user))
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
