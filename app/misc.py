@@ -1,4 +1,5 @@
 """ Misc helper function and classes. """
+from .models import db, SubMetadata
 
 
 class SiteUser(object):
@@ -43,6 +44,19 @@ def hasVoted(uid, post, up=True):
             return True
     else:
         return False
+
+
+def getMetadata(obj, key, value=None):
+    """ Gets metadata out of 'obj' (either a Sub, SubPost or User) """
+    x = obj.properties.filter_by(key=key).first()
+    if x and value is None:
+        return x.value
+    if x:
+        x.value = value
+    else:
+        x = obj.__class__(obj, key, value)
+        db.session.add(x)
+    db.session.commit()
 
 
 def isMod(sub, user):
