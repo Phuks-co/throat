@@ -6,6 +6,7 @@ import datetime
 import time
 import bcrypt
 from flask import Blueprint, redirect, url_for
+from sqlalchemy import func
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote, SubMetadata
 from ..forms import RegistrationForm, LoginForm, LogOutForm
@@ -47,7 +48,8 @@ def login():
     """ Login endpoint """
     form = LoginForm()
     if form.validate():
-        user = User.query.filter_by(name=form.username.data).first()
+        user = User.query.filter(func.lower(User.name) ==
+                                 func.lower(form.username.data)).first()
         if not user:
             return json.dumps({'status': 'error',
                                'error': ['User does not exist.']})
@@ -77,10 +79,12 @@ def register():
             return json.dumps({'status': 'error',
                                'error': ['Username has invalid characters']})
         # check if user or email are in use
-        if User.query.filter_by(name=form.username.data).first():
+        if User.query.filter(func.lower(User.name) ==
+                             func.lower(form.username.data)).first():
             return json.dumps({'status': 'error',
                                'error': ['Username is already registered.']})
-        if User.query.filter_by(email=form.email.data).first() and \
+        if User.query.filter(func.lower(User.email) ==
+                             func.lower(form.email.data)).first() and \
            form.email.data != '':
             return json.dumps({'status': 'error',
                                'error': ['Email is alredy in use.']})
@@ -98,7 +102,8 @@ def edit_user(user):
     """ Edit user endpoint """
     form = EditUserForm()
     if form.validate():
-        User.query.filter_by(name=user).update(dict(email=form.email.data))
+        User.query.filter(func.lower(User.name) == func.lower(user)) \
+                  .update(dict(email=form.email.data))
         db.session.commit()
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_user', user=user)})
@@ -115,7 +120,8 @@ def create_sub():
             return json.dumps({'status': 'error',
                                'error': ['Sub name has invalid characters']})
 
-        if Sub.query.filter_by(name=form.subname.data).first():
+        if Sub.query.filter(func.lower(Sub.name) ==
+                            func.lower(form.subname.data)).first():
             return json.dumps({'status': 'error',
                                'error': ['Sub is already registered.']})
 
@@ -137,7 +143,7 @@ def create_sub():
 @login_required
 def edit_sub(sub):
     """ Edit sub endpoint """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = Sub.query.filte(func.lower(Sub.name) == func.lower(sub)).first()
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
@@ -161,7 +167,7 @@ def create_txtpost(sub):
     form = CreateSubTextPost()
     if form.validate():
         # Put pre-posting checks here
-        sub = Sub.query.filter_by(name=sub).first()
+        sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
         if not sub:
             return json.dumps({'status': 'error',
                                'error': ['Sub does not exist']})
@@ -204,7 +210,7 @@ def create_lnkpost(sub):
     form = CreateSubLinkPost()
     if form.validate():
         # Put pre-posting checks here
-        sub = Sub.query.filter_by(name=sub).first()
+        sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
         if not sub:
             return json.dumps({'status': 'error',
                                'error': ['Sub does not exist']})
@@ -293,7 +299,8 @@ def create_comment(sub, pid):
     form = PostComment()
     if form.validate():
         # 1 - Check if sub exists.
-        sub = Sub.query.filter_by(name=sub).first()
+        sub = Sub.query.filter(func.lower(Sub.name) ==
+                               func.lower(sub)).first()
         if not sub:
             return json.dumps({'status': 'error',
                                'error': ['Sub does not exist']})

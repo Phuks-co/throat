@@ -1,5 +1,5 @@
 """ Misc helper function and classes. """
-from .models import db, SubMetadata
+from .models import db
 
 
 class SiteUser(object):
