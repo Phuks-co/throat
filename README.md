@@ -12,7 +12,7 @@ Check `requirements.txt`
 from ubuntu 16.04
 
  - $ apt-get update
- - $ apt-get install git python3-pip libssl-dev libffi-dev python3-dev
+ - $ apt-get install git python3-pip libssl-dev libffi-dev libpq-dev python3-dev
 
 clone and install
 
