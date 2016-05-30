@@ -26,6 +26,7 @@
     {# for badges in user #}
       <!--<li><img src="{{url_for('static', filename='img/textpost.png')}}" alt="{# badge.name #}"/></li>-->
     {# endfor #}
+    {% if user.name == 'System' %}<li>\o/ Cheerleader</li>{% endif %}
   </ul>
   <hr>
   <p class="joindate">Registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
