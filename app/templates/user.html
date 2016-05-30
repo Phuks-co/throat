@@ -40,7 +40,13 @@
       <div class="recent">
         <h3>Recent Posts</h3>
         <ul class="rpost">
-        {% for post in user.posts[::-1][:5] %}
+          {% if user.posts.count() < 1 %}
+          <p>
+            This user has not posted anything, yet
+          </p>
+          {% endif %}
+
+          {% for post in user.posts[::-1][:5] %}
           <li>
             <a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{ post.title }}</a>
             <br>
@@ -54,12 +60,18 @@
               <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
             </span>
           </li>
-        {% endfor %}
+          {% endfor %}
         </ul>
       </div>
       <div class="recent">
         <h3>Recent Comments</h3>
         <ul class="rpost">
+          {% if user.comments.count() < 1 %}
+          <p>
+            This user has not posted anything, yet
+          </p>
+          {% endif %}
+
           {% for comments in user.comments[::-1][:5] %}
           <li>
             <a class="title" href="{{ url_for('view_post', sub=comments.post.sub.name, pid=comments.post.pid) }}">{{comments.post.title}}</a>

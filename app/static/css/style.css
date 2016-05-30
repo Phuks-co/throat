@@ -848,7 +848,10 @@ button.mfp-close, button.mfp-arrow {
     border-top: 1px solid #d3d3d3;
 }
 .user-activity .rpost {
-    margin-left: 1em;
+    margin-left: 5px;
+}
+.user-activity .rpost li {
+    margin: 1em;
 }
 .user-activity .rpost .title {
     text-decoration: none;
