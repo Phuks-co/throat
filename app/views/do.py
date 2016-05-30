@@ -136,9 +136,16 @@ def create_sub():
 @login_required
 def edit_sub(sub):
     """ Edit sub endpoint """
+    sub = Sub.query.filter_by(name=sub).first()
+    if not sub:
+        return json.dumps({'status': 'error',
+                           'error': ['Sub does not exist']})
+    if not current_user.is_mod(sub):
+        return json.dumps({'status': 'error',
+                           'error': ['You\'re not authorized to do this.']})
     form = EditSubForm()
     if form.validate():
-        Sub.query.filter_by(name=sub).update(dict(title=form.title.data))
+        sub.update(dict(title=form.title.data))
         db.session.commit()
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_sub', sub=sub)})
