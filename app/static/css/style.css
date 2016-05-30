@@ -320,7 +320,7 @@ main {
     border-radius: 3px;
 }
 .content {
-    margin-top: 5em;
+    margin-top: 3em;
 }
 input[type=search] {
     width: 100%;
@@ -415,6 +415,7 @@ nav {
     display: block;
     height: auto;
     padding: 1em;
+    padding-top: 0;
     overflow: hidden;
 }
 nav ul {
