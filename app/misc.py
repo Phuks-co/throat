@@ -20,7 +20,16 @@ class SiteUser(object):
         return str(self.user.uid)
 
     def is_mod(self, sub):
+        """ Returns True if the current user is a mod of 'sub' """
         return isMod(sub, self.user)
+
+    def is_admin(self):
+        """ Returns true if the current user is a site admin. """
+        return True if getMetadata(self.user, 'admin') else False
+
+    def is_lizard(self):
+        """ Returns True if we know that the current user is a lizard. """
+        return True if getMetadata(self.user, 'lizard') else False
 
 
 def getVoteCount(post):
