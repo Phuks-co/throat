@@ -161,7 +161,6 @@ def view_sub(sub):
     if not sub:
         abort(404)
 
-    user = session['user_id']
     subposts = SubPost.query.filter_by(sid=sub.sid) \
                             .order_by(SubPost.posted.desc()).all()
     return render_template('sub.html', sub=sub,
@@ -177,7 +176,6 @@ def view_sub_new(sub):
     if not sub:
         abort(404)
 
-    user = session['user_id']
     subposts = SubPost.query.filter_by(sid=sub.sid) \
                             .order_by(SubPost.posted.desc()).all()
     return render_template('sub.html', sub=sub.name, sub_title=sub.title,
@@ -222,11 +220,11 @@ def view_user(user):
                            edituserform=EditUserForm())
 
 
-#@app.route("/u/<user>/edit")
-#@login_required
-#def edit_user(user):
-#    """ WIP: Edit user's profile, slogan, quote, etc """
-#    return "WIP!"
+# @app.route("/u/<user>/edit")
+# @login_required
+# def edit_user(user):
+#     """ WIP: Edit user's profile, slogan, quote, etc """
+#     return "WIP!"
 
 
 @app.route("/messages")

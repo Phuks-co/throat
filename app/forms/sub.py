@@ -14,10 +14,11 @@ class CreateSubForm(Form):
 
     nsfw = BooleanField('NSFW?')
 
+
 class EditSubForm(Form):
+    """ Edit sub. form. """
     title = StringField('Title',
                         validators=[DataRequired(), Length(min=2, max=128)])
-
     nsfw = BooleanField('NSFW?')
 
 
@@ -42,9 +43,8 @@ class CreateSubLinkPost(Form):
     title = StringField('Post title',
                         validators=[DataRequired(), Length(min=4, max=128)])
     link = StringField('Post link',
-                            validators=[DataRequired(),
-                                        Length(min=10, max=128),
-                                        URL(require_tld=True)])
+                       validators=[DataRequired(), Length(min=10, max=128),
+                                   URL(require_tld=True)])
 
 
 class PostComment(Form):

@@ -71,7 +71,4 @@ def getMetadata(obj, key, value=None):
 def isMod(sub, user):
     """ Returns True if 'user' is a mod of 'sub' """
     x = sub.properties.filter_by(key='mod').filter_by(value=user.uid).first()
-    if x:
-        return True  # user is mod
-    else:
-        return False
+    return bool(x)
