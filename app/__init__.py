@@ -193,7 +193,7 @@ def view_post(sub, pid):
     if not post or post.sub.name != sub:
         abort(404)
     return render_template('post.html', post=post,
-                            edittxtpostform=EditSubTextPostForm())
+                           edittxtpostform=EditSubTextPostForm())
 
 
 @app.route("/s/<sub>/<pid>/edit")

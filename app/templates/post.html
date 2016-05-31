@@ -11,9 +11,9 @@
 
 {# temp #}
 <p>
-    /s/{{sub.name}}
+    /s/{{post.sub.name}}
   <br>
-    {{sub.title}}
+    {{post.sub.title}}
 </p>
 
 <div class="row buttons">
@@ -23,7 +23,7 @@
   <div class="col-12">
     <a href="#link-post-form" class="btn btn-blue create-post" style="width:100%;">Submit a link post</a>
   </div>
-  {% if current_user.is_mod(sub) %}
+  {% if current_user.is_mod(post.sub) %}
   <div class="col-12">
     <a href="#edit-sub-form" class="btn btn-blue edit-sub" style="width:100%;">Edit Sub Info</a>
   </div>
