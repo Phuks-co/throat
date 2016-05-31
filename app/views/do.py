@@ -143,7 +143,7 @@ def create_sub():
 @login_required
 def edit_sub(sub):
     """ Edit sub endpoint """
-    sub = Sub.query.filte(func.lower(Sub.name) == func.lower(sub)).first()
+    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
