@@ -103,7 +103,7 @@
 </form>
 <form id="edit-sub-form" data-sub="{{sub.name}}" class="mfp-hide white-popup-block">
   {{editsubform.csrf_token}}
-  <h1>Edit /s/{{sub}}</h1>
+  <h1>Edit /s/{{sub.name}}</h1>
   <p>{{editsubform.title(placeholder=editsubform.title.label.text, required=True)}}</p>
   <div class="alert div-error">
     <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
