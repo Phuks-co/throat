@@ -419,6 +419,23 @@ $(document).ready(function() {
       }
     });
 
+    $('#openimg').click(function(e){
+      var pid = $(e.currentTarget).data().pid
+      var url = $(e.currentTarget).data().img
+      var img = document.createElement('img');
+      if($(this).hasClass('closedimg'))  {
+        img.style = 'max-width:560px';
+        img.src = url;
+        playerid = 'player' + pid;
+        $(e.currentTarget).addClass('openedimg').removeClass('closedimg');
+        document.getElementById(playerid).appendChild(img);
+      }
+      else {
+        $(this).addClass('closedimg').removeClass('openedimg');
+        button = '<button><i class="fa fa-image" aria-hidden="true"></i></button>';
+        document.getElementById(playerid).innerHTML = button;
+      }
+    });
 });
 
 function getCookie(cname) {
