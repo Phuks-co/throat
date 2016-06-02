@@ -36,7 +36,7 @@ class User(db.Model):
         self.status = 0
         self.joindate = datetime.datetime.utcnow()
         password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        if type(password) == bytes:
+        if isinstance(password, bytes):
             self.password = password.decode('utf-8')
         else:
             self.password = password
