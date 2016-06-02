@@ -191,9 +191,13 @@ def view_post(sub, pid):
     post = SubPost.query.filter_by(pid=pid).first()
     if not post or post.sub.name != sub:
         abort(404)
-    return render_template('post.html', post=post,
+    if post.ptype == 1:
+        return render_template('post.html', post=post,
                            edittxtpostform=EditSubTextPostForm(),
                            domain=get_tld(post.link))
+    else:
+        return render_template('post.html', post=post,
+                           edittxtpostform=EditSubTextPostForm())
 
 
 @app.route("/s/<sub>/<pid>/edit")
