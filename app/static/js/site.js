@@ -390,6 +390,35 @@ $(document).ready(function() {
         }
       });
     });
+
+    $('#youtubevid').click(function(e){
+      var pid = $(e.currentTarget).data().pid
+      var url = $(e.currentTarget).data().vid
+      var frame = document.createElement('iframe');
+      var vid_id = '';
+      url = url.replace(/(>|<)/gi,'').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
+      if(url[2] !== undefined) {
+        vid_id = url[2].split(/[^0-9a-z_\-]/i);
+        vid_id = vid_id[0];
+      }
+      else {
+        vid_id = url;
+      }
+      if($(this).hasClass('closedvid'))  {
+        frame.width = '420px';
+        frame.height = '360px';
+        frame.src = 'https://www.youtube.com/embed/' + vid_id;
+        playerid = 'player' + pid;
+        $(e.currentTarget).addClass('openedvid').removeClass('closedvid');
+        document.getElementById(playerid).appendChild(frame);
+      }
+      else {
+        $(this).addClass('closedvid').removeClass('openedvid');
+        button = '<button><i class="fa fa-youtube-play" aria-hidden="true"></i></button>';
+        document.getElementById(playerid).innerHTML = button;
+      }
+    });
+
 });
 
 function getCookie(cname) {
