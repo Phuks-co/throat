@@ -35,8 +35,11 @@ class User(db.Model):
         self.crypto = 1
         self.status = 0
         self.joindate = datetime.datetime.utcnow()
-        self.password = bcrypt.hashpw(password.encode('utf-8'),
-                                      bcrypt.gensalt())
+        password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        if type(password) == bytes:
+            self.password = password.decode('utf-8')
+        else:
+            self.password = password
 
     def __repr__(self):
         return '<User %r>' % self.name
