@@ -19,7 +19,6 @@ class EditSubForm(Form):
     """ Edit sub. form. """
     title = StringField('Title',
                         validators=[DataRequired(), Length(min=2, max=128)])
-    nsfw = BooleanField('NSFW?')
 
 
 class CreateSubTextPost(Form):
