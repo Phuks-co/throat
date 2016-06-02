@@ -11,3 +11,4 @@ cssmin
 markdown
 flask-login
 psycopg2
+tld

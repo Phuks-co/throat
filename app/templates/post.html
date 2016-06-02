@@ -59,13 +59,13 @@
           <div class="content">{{markdown(post.content)|safe}}</div>
           {% else %}
           <div class="content"><a href="{{post.link}}" target="_blank" rel="noreferrer noopener">{{post.link}}</a></div>
-          {# if youtube post.link #}
+          {% if domain == "youtube.com" %}
           <div class="content">
             <div id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
               <div id="player{{post.pid}}"><button><i class="fa fa-youtube-play" aria-hidden="true"></i></button></div>
             </div>
           </div>
-          {# endif #}
+          {% endif %}
           {% endif %}
         </article>
         {%if current_user.is_authenticated %}

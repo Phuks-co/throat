@@ -13,6 +13,7 @@ from flask import Flask, render_template, session, redirect, url_for, abort
 from flask import make_response
 from flask_assets import Environment, Bundle
 from flask_login import LoginManager, login_required, current_user
+from tld import get_tld
 
 from .models import db, User, Sub, SubPost, Message
 from .forms import RegistrationForm, LoginForm, LogOutForm
@@ -191,7 +192,8 @@ def view_post(sub, pid):
     if not post or post.sub.name != sub:
         abort(404)
     return render_template('post.html', post=post,
-                           edittxtpostform=EditSubTextPostForm())
+                           edittxtpostform=EditSubTextPostForm(),
+                           domain=get_tld(post.link))
 
 
 @app.route("/s/<sub>/<pid>/edit")
