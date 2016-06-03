@@ -452,6 +452,28 @@ $(document).ready(function() {
       }
     });
 
+    $('#vimeovid').click(function(e){
+      var pid = $(e.currentTarget).data().pid
+      var url = $(e.currentTarget).data().vid
+      var frame = document.createElement('iframe');
+      if($(this).hasClass('closedvid'))  {
+        frame.width = '480px';
+        frame.height = '320px';
+        frame.style = 'display:block;'
+        frame.src = 'https://player.vimeo.com/video/' + vimeoID(url);
+        playerid = 'player' + pid;
+        $(e.currentTarget).addClass('openedvid').removeClass('closedvid');
+        document.getElementById(playerid).appendChild(frame);
+        $('#' + playerid + ' a').html('<i class="fa fa-close" aria-hidden="true"></i>');
+      }
+      else {
+        $(this).addClass('closedvid').removeClass('openedvid');
+        $('#' + playerid + ' iframe').remove()
+        $('#' + playerid + ' a').html('<i class="fa fa-vimeo" aria-hidden="true"></i>');
+
+      }
+    });
+
     $('#openimg').click(function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().img
@@ -486,4 +508,11 @@ function getCookie(cname) {
         }
     }
     return "";
+}
+
+function vimeoID(url) {
+  var match = url.match(/https?:\/\/(?:www\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/);
+  if (match){
+    return match[3];
+	}
 }
