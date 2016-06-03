@@ -152,6 +152,29 @@
     <p><button type="submit" id="edit-txpost-btnsubmit">Edit post</button></p>
   </form>
   {% endif %}
+  <form id="post-form" data-sub="{{post.sub.name}}" class="mfp-hide white-popup-block">
+    {{txtpostform.csrf_token}}
+    <h1>Submit a text post</h1>
+    <p class="title">{{txtpostform.title(placeholder=txtpostform.title.label.text, required=True, autofocus=True)}}</p>
+    <p class="content">{{txtpostform.content(placeholder="Write your post content here. Styling with Markdown format is supported.")}}</p>
+    <div class="alert div-error">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      <p></p>
+    </div>
+    <p><button type="submit" id="txpost-btnsubmit">Submit post</button></p>
+
+  </form>
+  <form id="link-post-form" data-sub="{{post.sub.name}}" class="mfp-hide white-popup-block">
+    {{lnkpostform.csrf_token}}
+    <h1>Submit a link post</h1>
+    <p class="title">{{lnkpostform.title(placeholder=lnkpostform.title.label.text, required=True, autofocus=True)}}</p>
+    <p class="content">{{lnkpostform.link(placeholder="Paste your link here.")}}</p>
+    <div class="alert div-error">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      <p></p>
+    </div>
+    <p><button type="submit" id="lnkpost-btnsubmit">Submit link</button></p>
+  </form>
 
 {% endblock %}
 {%block pagefoot%}
@@ -160,6 +183,8 @@
 <script>
   var simplemde = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createcomment",}});
   var simplemde2 = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: false}, element: $('#edit-txtpost-form textarea#content')[0]});
+  var simplemde3 = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createpost"}, element: $('#post-form textarea')[0]});
+
 </script>
 {%endif%}
 {%endblock%}

@@ -126,7 +126,9 @@ def utility_processor():
             'csubform': CreateSubForm(), 'markdown': our_markdown,
             'commentform': PostComment(), 'dummyform': DummyForm(),
             'getVoteCount': getVoteCount, 'hasVoted': hasVoted,
-            'delpostform': DeletePost(), 'getMetadata': getMetadata}
+            'delpostform': DeletePost(), 'getMetadata': getMetadata,
+            'txtpostform': CreateSubTextPost(), 'editsubform': EditSubForm(),
+            'lnkpostform': CreateSubLinkPost()}
 
 
 @app.route("/")
@@ -166,10 +168,7 @@ def view_sub(sub):
 
     subposts = SubPost.query.filter_by(sid=sub.sid) \
                             .order_by(SubPost.posted.desc()).all()
-    return render_template('sub.html', sub=sub,
-                           txtpostform=CreateSubTextPost(),
-                           lnkpostform=CreateSubLinkPost(),
-                           editsubform=EditSubForm(), posts=subposts)
+    return render_template('sub.html', sub=sub, posts=subposts)
 
 
 @app.route("/s/<sub>/new")
