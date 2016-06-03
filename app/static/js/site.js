@@ -255,6 +255,33 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
+    $("#delete-post-form").submit(function(e) {
+        $("#delpost-btnsubmit").prop('disabled', true);
+        $("#delpost-btnsubmit").text('Deleting...');
+        $.ajax({
+            type: "POST",
+            url: '/do/delete_post', // XXX: Hardcoded URL because this is supposed to be a static file
+            data: $("#delete-post-form").serialize(),
+            dataType: 'json',
+            success: function(data) {
+                if (data.status != "ok") {
+                    checkErrors(data, "delete-post-form");
+                } else {
+                    document.location.reload();
+                }
+                $("#delpost-btnsubmit").prop('disabled', false);
+                $("#delpost-btnsubmit").text('Delete!');
+            },
+            error: function(data, err) {
+                $("#delete-post-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
+                $("#delete-post-form .div-error").show();
+                $("#delpost-btnsubmit").prop('disabled', false);
+                $("#delpost-btnsubmit").text('Submit message');
+            }
+        });
+        e.preventDefault();
+    });
+
     $(document).on('submit', ".comment-form", function(e){
       // Note for future self: This is a really fucking hacky way to do this.
       // This thing will break if the order of the fields changes >_>
@@ -278,7 +305,9 @@ $(document).ready(function() {
         });
       e.preventDefault();
     });
-
+    $('.delpost').click(function(e){
+      $("#post").prop('value', $(e.target).data('post'));
+    });
     $("#toggledark").click(function() {
         var mode = getCookie("dayNight");
         var d = new Date();
@@ -341,6 +370,7 @@ $(document).ready(function() {
     $('a.btn.edit-sub').magnificPopup(mpSettings);
     $('a.btn.edit-user').magnificPopup(mpSettings);
     $('a.btn.edit-txtpost-form').magnificPopup(mpSettings);
+    $('a.btn.delpost').magnificPopup(mpSettings);
 
     $('.upvote').click(function(e){
       var pid = $(e.currentTarget).parent().parent().data().pid

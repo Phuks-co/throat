@@ -125,6 +125,11 @@ class SubPostMetadata(db.Model):
     key = Column(String(255))  # Metadata key
     value = Column(String(255))
 
+    def __init__(self, pid, key, value):
+        self.pid = pid
+        self.key = key
+        self.value = value
+
 
 class SubPostComment(db.Model):
     """ A comment. In a post. """

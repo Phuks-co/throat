@@ -18,7 +18,7 @@
 
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
 
-{% for post in posts %}
+{% for post in posts if not getMetadata(post, 'deleted') %}
     <article class="post" data-pid="{{post.pid}}">
       {# vote arrow div #}
       <div class="pull left vote">

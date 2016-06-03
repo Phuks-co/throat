@@ -55,3 +55,8 @@ class PostComment(Form):
     comment = TextAreaField('Your comment',
                             validators=[DataRequired(),
                                         Length(min=1, max=2048)])
+
+
+class DeletePost(Form):
+    """ Post deletion form. """
+    post = HiddenField()

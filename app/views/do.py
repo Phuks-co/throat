@@ -8,11 +8,11 @@ import bcrypt
 from flask import Blueprint, redirect, url_for
 from sqlalchemy import func
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
-from ..models import SubPostVote, SubMetadata
+from ..models import SubPostVote, SubMetadata, SubPostMetadata
 from ..forms import RegistrationForm, LoginForm, LogOutForm
 from ..forms import CreateSubForm, EditSubForm, EditUserForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
-from ..forms import PostComment, CreateUserMessageForm
+from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from flask_login import login_user, login_required, logout_user, current_user
 from ..misc import SiteUser
 
@@ -107,6 +107,30 @@ def edit_user(user):
         db.session.commit()
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_user', user=user)})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/delete_post", methods=['POST'])
+@login_required
+def delete_post():
+    """ Post deletion endpoint """
+    form = DeletePost()
+
+    if form.validate():
+        post = SubPost.query.filter_by(pid=form.post.data).first()
+        if not post:
+            return json.dumps({'status': 'error',
+                               'error': ['Post does not exist.']})
+
+        if not current_user.is_mod(post.sub) and not current_user.is_admin():
+            return json.dumps({'status': 'error',
+                               'error': ['Not authorized.']})
+
+        md = SubPostMetadata(post.pid, 'deleted', '1')
+        db.session.add(md)
+        db.session.commit()
+
+        return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 

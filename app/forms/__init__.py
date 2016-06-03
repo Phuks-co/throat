@@ -5,7 +5,7 @@ from .user import RegistrationForm, LoginForm, LogOutForm
 from .user import CreateUserMessageForm, EditUserForm
 from .sub import CreateSubForm, EditSubForm, EditSubTextPostForm
 from .sub import CreateSubTextPost, CreateSubLinkPost
-from .sub import PostComment
+from .sub import PostComment, DeletePost
 
 
 class DummyForm(Form):

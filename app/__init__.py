@@ -20,9 +20,9 @@ from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditSubForm, EditUserForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment
-from .forms import DummyForm
+from .forms import DummyForm, DeletePost
 from .views import do
-from .misc import SiteUser, getVoteCount, hasVoted
+from .misc import SiteUser, getVoteCount, hasVoted, getMetadata
 
 
 app = Flask(__name__)
@@ -124,7 +124,8 @@ def utility_processor():
             'logoutform': LogOutForm(), 'sendmsg': CreateUserMessageForm(),
             'csubform': CreateSubForm(), 'markdown': our_markdown,
             'commentform': PostComment(), 'dummyform': DummyForm(),
-            'getVoteCount': getVoteCount, 'hasVoted': hasVoted}
+            'getVoteCount': getVoteCount, 'hasVoted': hasVoted,
+            'delpostform': DeletePost(), 'getMetadata': getMetadata}
 
 
 @app.route("/")
