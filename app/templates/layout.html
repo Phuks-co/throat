@@ -79,7 +79,7 @@
     </div>
     <footer>
         {% block footer %}
-        Copyright &copy;2016 Throat. All Rights Reserved.
+        Copyright &copy;2016 Throat. All Rights Reserved. | <a href="{{url_for('tos')}}">Terms of service</a>
         {% endblock %}
     </footer>
     {% if current_user.is_anonymous %}
@@ -112,7 +112,7 @@
             <p>{{regform.email(placeholder=regform.email.label.text)}}</p>
             <p>
                 {{regform.accept_tos(style="width: auto", required=True)}}
-                <label for="tos">{{regform.accept_tos.label.text}}</label>
+                <a href="{{url_for('tos')}}"><label for="tos">{{regform.accept_tos.label.text}}</label></a>
             </p>
             {{regform.recaptcha}}
             <div class="alert div-error">

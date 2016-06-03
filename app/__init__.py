@@ -279,6 +279,11 @@ def view_messages_comments():
                            box_name="Comment Replies")
 
 
+@app.route("/tos")
+def tos():
+    return render_template('tos.html')
+
+
 @app.errorhandler(403)
 def Forbidden(error):
     """ 403 Forbidden """
