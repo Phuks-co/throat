@@ -442,10 +442,13 @@ $(document).ready(function() {
         playerid = 'player' + pid;
         $(e.currentTarget).addClass('openedvid').removeClass('closedvid');
         document.getElementById(playerid).appendChild(frame);
+        $('#' + playerid + ' a').html('<i class="fa fa-close" aria-hidden="true"></i>');
       }
       else {
         $(this).addClass('closedvid').removeClass('openedvid');
         $('#' + playerid + ' iframe').remove()
+        $('#' + playerid + ' a').html('<i class="fa fa-youtube-play" aria-hidden="true"></i>');
+
       }
     });
 
@@ -460,10 +463,12 @@ $(document).ready(function() {
 
         $(e.currentTarget).addClass('openedimg').removeClass('closedimg');
         document.getElementById(playerid).appendChild(img);
+        $('#' + playerid + ' a').html('<i class="fa fa-close" aria-hidden="true"></i>');
       }
       else {
         $(this).addClass('closedimg').removeClass('openedimg');
         $('#' + playerid + ' img').remove()
+        $('#' + playerid + ' a').html('<i class="fa fa-image" aria-hidden="true"></i>');
       }
     });
 });
