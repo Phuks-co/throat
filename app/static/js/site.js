@@ -435,8 +435,9 @@ $(document).ready(function() {
         vid_id = url;
       }
       if($(this).hasClass('closedvid'))  {
-        frame.width = '420px';
-        frame.height = '360px';
+        frame.width = '480px';
+        frame.height = '320px';
+        frame.style = 'display:block;'
         frame.src = 'https://www.youtube.com/embed/' + vid_id;
         playerid = 'player' + pid;
         $(e.currentTarget).addClass('openedvid').removeClass('closedvid');
@@ -444,8 +445,7 @@ $(document).ready(function() {
       }
       else {
         $(this).addClass('closedvid').removeClass('openedvid');
-        button = '<button><i class="fa fa-youtube-play" aria-hidden="true"></i></button>';
-        document.getElementById(playerid).innerHTML = button;
+        $('#' + playerid + ' iframe').remove()
       }
     });
 
@@ -453,17 +453,17 @@ $(document).ready(function() {
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().img
       var img = document.createElement('img');
+      playerid = 'player' + pid;
       if($(this).hasClass('closedimg'))  {
-        img.style = 'max-width:560px';
+        img.style = 'max-width:560px;display:block;';
         img.src = url;
-        playerid = 'player' + pid;
+
         $(e.currentTarget).addClass('openedimg').removeClass('closedimg');
         document.getElementById(playerid).appendChild(img);
       }
       else {
         $(this).addClass('closedimg').removeClass('openedimg');
-        button = '<button><i class="fa fa-image" aria-hidden="true"></i></button>';
-        document.getElementById(playerid).innerHTML = button;
+        $('#' + playerid + ' img').remove()
       }
     });
 });
