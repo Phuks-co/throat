@@ -194,11 +194,11 @@ def view_post(sub, pid):
         abort(404)
     if post.ptype == 1:
         return render_template('post.html', post=post,
-                           edittxtpostform=EditSubTextPostForm(),
-                           domain=get_tld(post.link))
+                               edittxtpostform=EditSubTextPostForm(),
+                               domain=get_tld(post.link))
     else:
         return render_template('post.html', post=post,
-                           edittxtpostform=EditSubTextPostForm())
+                               edittxtpostform=EditSubTextPostForm())
 
 
 @app.route("/s/<sub>/<pid>/edit")
