@@ -22,7 +22,7 @@ from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment
 from .forms import DummyForm, DeletePost
 from .views import do
-from .misc import SiteUser, getVoteCount, hasVoted, getMetadata
+from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, SiteAnon
 
 
 app = Flask(__name__)
@@ -33,6 +33,7 @@ db.init_app(app)
 
 assets = Environment(app)
 login_manager = LoginManager(app)
+login_manager.anonymous_user = SiteAnon
 origstatic = app.view_functions['static']
 
 
@@ -281,6 +282,7 @@ def view_messages_comments():
 
 @app.route("/tos")
 def tos():
+    """ Shows the site's TOS. """
     return render_template('tos.html')
 
 

@@ -1,5 +1,6 @@
 """ Misc helper function and classes. """
 from .models import db
+from flask_login import AnonymousUserMixin
 
 
 class SiteUser(object):
@@ -30,6 +31,25 @@ class SiteUser(object):
     def is_lizard(self):
         """ Returns True if we know that the current user is a lizard. """
         return True if getMetadata(self.user, 'lizard') else False
+
+
+class SiteAnon(AnonymousUserMixin):
+    """ A subclass of AnonymousUserMixin. Used for logged out users. """
+    @classmethod
+    def is_mod(cls, sub):
+        """ Anons are not mods. """
+        return False
+
+    @classmethod
+    def is_admin(cls):
+        """ Anons are not admins. """
+        return False
+
+    @classmethod
+    def is_lizard(cls):
+        """ We don't know if anons are lizards...
+            We return False just in case """
+        return False  # We don't know :(
 
 
 def getVoteCount(post):
