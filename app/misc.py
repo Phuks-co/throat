@@ -60,6 +60,8 @@ def getMetadata(obj, key, value=None):
     x = obj.properties.filter_by(key=key).first()
     if x and value is None:
         return x.value
+    elif value is None:
+        return False
     if x:
         x.value = value
     else:
