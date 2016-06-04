@@ -298,6 +298,12 @@ def tos():
     return render_template('tos.html')
 
 
+@app.route("/privacy")
+def privacy():
+    """ Shows the site's privacy policy. """
+    return render_template('privacy.html')
+
+
 @app.errorhandler(403)
 def Forbidden(error):
     """ 403 Forbidden """

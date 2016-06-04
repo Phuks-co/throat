@@ -974,3 +974,8 @@ button#text-post-icon, button#link-post-icon {
     border-radius: 2px;
     border: solid 1px lightgray;
 }
+
+/* privacy tos*/
+.content .privacy {
+    padding: 10px;
+}
