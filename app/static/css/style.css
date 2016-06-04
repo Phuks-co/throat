@@ -967,7 +967,8 @@ button#text-post-icon, button#link-post-icon {
 }
 
 /* edit sub */
-#edit-sub-form input#title {
+#edit-sub-form input#title,
+#edit-user-form input#email {
     width: 70%;
     text-align: left;
     padding: 5px;

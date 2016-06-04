@@ -236,16 +236,22 @@ def view_user(user):
         abort(404)
 
     return render_template('user.html', user=user,
-                           msgform=CreateUserMessageForm(),
-                           edituserform=EditUserForm())
+                           msgform=CreateUserMessageForm())
 
 
-# @app.route("/u/<user>/edit")
-# @login_required
-# def edit_user(user):
-#     """ WIP: Edit user's profile, slogan, quote, etc """
-#     return "WIP!"
+@app.route("/u/<user>/edit")
+@login_required
+def edit_user(user):
+    """ WIP: Edit user's profile, slogan, quote, etc """
+    user = User.query.filter_by(name=user).first()
+    if not user:
+        abort(404)
 
+    if current_user or current_user.is_admin():
+        return render_template('edituser.html', user=user,
+                            edituserform=EditUserForm())
+    else:
+        return "go away"
 
 @app.route("/messages")
 @login_required

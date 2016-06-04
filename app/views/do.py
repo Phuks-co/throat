@@ -100,14 +100,18 @@ def register():
 @login_required
 def edit_user(user):
     """ Edit user endpoint """
-    form = EditUserForm()
-    if form.validate():
-        User.query.filter(func.lower(User.name) == func.lower(user)) \
-                  .update(dict(email=form.email.data))
-        db.session.commit()
-        return json.dumps({'status': 'ok',
-                           'addr': url_for('view_user', user=user)})
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
+    user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
+    if not user:
+        return json.dumps({'status': 'error',
+                           'error': ['User does not exist']})
+    if current_user or current_user.admin():
+        form = EditUserForm()
+        if form.validate():
+            user.email = form.email.data
+            db.session.commit()
+            return json.dumps({'status': 'ok',
+                               'addr': url_for('view_user', user=user.name)})
+        return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/delete_post", methods=['POST'])

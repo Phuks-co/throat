@@ -12,7 +12,7 @@
 <div class="row buttons">
   {% if user.uid == session['user_id'] %}
   <div class="col-12">
-    <a href="#edit-user-form" class="btn btn-blue edit-user" style="width:100%;">Edit user info</a>
+    <a href="{{url_for('edit_user', user=user.name)}}" class="btn btn-blue edit-user" style="width:100%;">Edit user info</a>
   </div>
   {% endif %}
   <div class="col-12">
@@ -109,26 +109,6 @@
   </div>
   <p><button type="submit" id="msg-btnsubmit">Send Message</button></p>
 </form>
-<!-- edit user form -->
-{% if user.uid == session['user_id'] %}
-<form id="edit-user-form"  data-user="{{user.name}}" class="mfp-hide white-popup-block">
-    <div id="the-edit-user-form-itself">
-        {{edituserform.csrf_token}}
-        <h1>Edit info for {{user.name}}</h1>
-        <p>{{edituserform.email(placeholder=edituserform.email.label.text)}}</p>
-        <p>
-            {{edituserform.accept_tos(style="width: auto", required=True)}}
-            <label for="tos">{{edituserform.accept_tos.label.text}}</label>
-        </p>
-        {{edituserform.recaptcha}}
-        <div class="alert div-error">
-          <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-          <p></p>
-        </div>
-        <p><button type="submit" id="edituser-btnsubmit">Edit user</button></p>
-    </div>
-</form>
-{% endif %}
 
 <script type="text/javascript" src="{{ url_for('static', filename='js/simplemde.min.js') }}"></script>
 <script>
