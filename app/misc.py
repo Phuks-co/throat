@@ -20,6 +20,10 @@ class SiteUser(object):
         """ Returns the unique user id. Used on load_user """
         return str(self.user.uid)
 
+    def get_username(self):
+        """ Returns the unique user name. Used on load_user """
+        return str(self.user.name)
+
     def is_mod(self, sub):
         """ Returns True if the current user is a mod of 'sub' """
         return isMod(sub, self.user)
