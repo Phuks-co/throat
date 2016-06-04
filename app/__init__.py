@@ -181,9 +181,11 @@ def edit_sub(sub):
     sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
+    form = EditSubForm()
+    form.css.data = sub.stylesheet.first().content
     if current_user.is_mod(sub) or current_user.is_admin():
         return render_template('editsub.html', sub=sub,
-                            editsubform=EditSubForm())
+                               editsubform=form)
     else:
         return "go away"
 

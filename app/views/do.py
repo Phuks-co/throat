@@ -183,6 +183,11 @@ def edit_sub(sub):
         form = EditSubForm()
         if form.validate():
             sub.title = form.title.data
+            if sub.stylesheet.first():
+                sub.stylesheet.first().content = form.css.data
+            else:
+                css = SubStylesheet(sub.sid, form.css.data)
+                db.session.add(css)
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'addr': url_for('view_sub', sub=sub.name)})

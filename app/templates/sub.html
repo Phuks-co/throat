@@ -118,6 +118,7 @@
 
 {% endblock %}
 {%block pagefoot%}
+<style>{{sub.stylesheet.first().content}}</style>
 <script type="text/javascript" src="{{ url_for('static', filename='js/simplemde.min.js') }}"></script>
 <script>
   var simplemde = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createpost",}});

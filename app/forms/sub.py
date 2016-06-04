@@ -20,6 +20,8 @@ class EditSubForm(Form):
     title = StringField('Title',
                         validators=[DataRequired(), Length(min=2, max=128)])
 
+    css = TextAreaField('Custom stylesheet', validators=[Length(max=10000)])
+
 
 class CreateSubTextPost(Form):
     """ Sub content submission form """

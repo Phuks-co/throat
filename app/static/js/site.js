@@ -132,7 +132,7 @@ $(document).ready(function() {
                 if (data.status != "ok") {
                     checkErrors(data, "edit-sub-form");
                 } else {
-                    $("#edit-sub-form").html("<h1>Sub edited!</h1>You can now <a href=\"" + data.addr + "\">visit it</a>.")
+                    document.location = '/s/' + $("#edit-sub-form").data('sub')
                 }
                 $("#editsub-btnsubmit").prop('disabled', false);
                 $("#editsub-btnsubmit").text('Edit sub');
