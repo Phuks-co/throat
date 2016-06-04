@@ -8,7 +8,7 @@ import bcrypt
 from flask import Blueprint, redirect, url_for
 from sqlalchemy import func
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
-from ..models import SubPostVote, SubMetadata, SubPostMetadata
+from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
 from ..forms import RegistrationForm, LoginForm, LogOutForm
 from ..forms import CreateSubForm, EditSubForm, EditUserForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
@@ -20,7 +20,7 @@ do = Blueprint('do', __name__)
 
 # Regex to match allowed names in subs and usernames
 allowedNames = re.compile("^[a-zA-Z0-9_-]+$")
-
+# allowedCSS = re.compile("\'(^[0-9]{1,5}[a-zA-Z ]+$)|none\'")
 
 def get_errors(form):
     """ A simple function that returns a list with all the form errors. """
@@ -157,8 +157,12 @@ def create_sub():
         db.session.add(sub)
         ux = SubMetadata(sub, 'mod', current_user.get_id())
         ux2 = SubMetadata(sub, 'creation', time.time())
+        ux3 = SubMetadata(sub, 'nsfw', '0')
+        ux4 = SubStylesheet(sub, content='/** css here **/')
         db.session.add(ux)
         db.session.add(ux2)
+        db.session.add(ux3)
+        db.session.add(ux4)
         db.session.commit()
 
         return json.dumps({'status': 'ok',
@@ -175,7 +179,7 @@ def edit_sub(sub):
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    if current_user.is_mod or current_user.is_mod(sub):
+    if current_user.is_mod(sub) or current_user.is_admin():
         form = EditSubForm()
         if form.validate():
             sub.title = form.title.data

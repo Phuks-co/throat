@@ -94,6 +94,9 @@ class SubStylesheet(db.Model):
     sid = Column(String(40), db.ForeignKey('sub.sid'))  # Subverse id
     content = Column(Text)
 
+    def __init__(self, sub, content):
+        self.sid = sub.sid
+        self.content = content
 
 class SubPost(db.Model):
     """ Represents a post on a sub """

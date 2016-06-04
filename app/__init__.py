@@ -179,7 +179,8 @@ def edit_sub(sub):
     if not sub:
         abort(404)
     if current_user.is_mod(sub) or current_user.is_admin():
-        return render_template('editsub.html', sub=sub)
+        return render_template('editsub.html', sub=sub,
+                            editsubform=EditSubForm())
     else:
         return "go away"
 
