@@ -785,6 +785,9 @@ button.mfp-close, button.mfp-arrow {
 .text-post .content ol {
     list-style-type: decimal;
 }
+.content iframe {
+  margin-top: 1em;
+}
 #comments {
     margin-top: 1em;
 }
@@ -856,6 +859,9 @@ button.mfp-close, button.mfp-arrow {
 .user-activity .rpost .title {
     text-decoration: none;
     color: darkcyan;
+}
+.user-activity .rpost .data {
+  margin-top: 0.7em;
 }
 .user-activity .comment {
     color: gray;

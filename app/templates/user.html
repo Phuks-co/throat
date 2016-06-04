@@ -49,16 +49,17 @@
           {% for post in user.posts[::-1][:5] %}
           <li>
             <a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{ post.title }}</a>
-            <br>
-            <a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn small">
-              <i class="fa fa-users" aria-hidden="true"></i> /s/{{post.sub.name}}
-            </a>
-            <a href="{{url_for('view_post', sub=sub, pid=post.pid)}}" class="btn small">
-              <i class="fa fa-comment" aria-hidden="true"></i> Comments
-            </a>
-            <span class="time btn small">
-              <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
-            </span>
+            <div class="data">
+              <a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn small">
+                <i class="fa fa-users" aria-hidden="true"></i> /s/{{post.sub.name}}
+              </a>
+              <a href="{{url_for('view_post', sub=sub, pid=post.pid)}}" class="btn small">
+                <i class="fa fa-comment" aria-hidden="true"></i> Comments
+              </a>
+              <span class="time btn small">
+                <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
+              </span>
+          </div>
           </li>
           {% endfor %}
         </ul>
