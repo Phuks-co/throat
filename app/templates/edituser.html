@@ -8,7 +8,7 @@
 {% block content %}
 {{ super() }}
 
-{% if not current_user and current_user.is_admin() %}
+{% if not user.uid == session['user_id'] and current_user.is_admin() %}
 <center><h3>Editing as Admin</h3></center>
 {% endif %}
 

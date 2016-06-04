@@ -10,7 +10,7 @@
 {{ super() }}
 <hr/>
 <div class="row buttons">
-  {% if user.uid == session['user_id'] %}
+  {% if user.uid == session['user_id'] or current_user.is_admin()%}
   <div class="col-12">
     <a href="{{url_for('edit_user', user=user.name)}}" class="btn btn-blue edit-user" style="width:100%;">Edit user info</a>
   </div>
