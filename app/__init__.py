@@ -270,7 +270,7 @@ def edit_user(user):
     if not user:
         abort(404)
 
-    if current_user or current_user.is_admin():
+    if current_user == user or current_user.is_admin():
         return render_template('edituser.html', user=user,
                             edituserform=EditUserForm())
     else:
