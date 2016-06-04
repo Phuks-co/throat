@@ -15,8 +15,7 @@
 <h1>Edit /s/{{sub.name}}</h1>
 <form id="edit-sub-form" data-sub="{{sub.name}}" class="">
   {{editsubform.csrf_token}}
-  <p>Current Title: {{sub.title}}</p>
-  <p>{{editsubform.title(placeholder=editsubform.title.label.text, required=True, class=d)}}</p>
+  <p><label>{{editsubform.title.label.text}} {{editsubform.title(value=sub.title, required=True, class=d)}}</label></p>
   <div class="alert div-error">
     <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
     <p></p>
