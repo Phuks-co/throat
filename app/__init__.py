@@ -62,6 +62,7 @@ js = Bundle(
            'js/magnific-popup.min.js',
            'js/CustomElements.min.js'),
     Bundle('js/time-elements.js',
+           'js/konami.js',
            'js/site.js', filters='jsmin'),
     output='gen/site.js')
 css = Bundle(
@@ -137,21 +138,21 @@ def utility_processor():
 @app.route("/")
 def index():
     """ The index page, currently sorts like /all/new """
-    subposts = SubPost.query.order_by(SubPost.posted.desc()).all()
+    subposts = SubPost.query.order_by(SubPost.posted.desc()).limit(25).all()
     return render_template('index.html', posts=subposts)
 
 
 @app.route("/new")
 def index_new():
     """ The index page, currently sorts like /all/new """
-    subposts = SubPost.query.order_by(SubPost.posted.desc()).all()
+    subposts = SubPost.query.order_by(SubPost.posted.desc()).limit(25).all()
     return render_template('index.html', posts=subposts)
 
 
 @app.route("/all/new")
 def index_all_new():
     """ The index page, all posts sorted as most recent posted first """
-    subposts = SubPost.query.order_by(SubPost.posted.desc()).all()
+    subposts = SubPost.query.order_by(SubPost.posted.desc()).limit(25).all()
     return render_template('index.html', posts=subposts)
 
 

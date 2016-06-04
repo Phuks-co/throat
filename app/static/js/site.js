@@ -369,6 +369,13 @@ $(document).ready(function() {
     $('a.btn.send-message').magnificPopup(mpSettings);
     $('a.btn.edit-txtpost-form').magnificPopup(mpSettings);
     $('a.btn.delpost').magnificPopup(mpSettings);
+    $('#xk').magnificPopup(mpSettings);
+    $( window ).konami({
+        cheat: function() {
+            $("body").append('<div id="kx" class="mfp-hide"><iframe src="https://kiwiirc.com/client?settings=5aa9382b84379a9b6a2fe782f4ab85ce" style="border:0; width:100%; height:90vh;"></iframe></div>');
+            $("#xk").magnificPopup('open');
+        }
+    });
 
     $('.upvote').click(function(e){
       var pid = $(e.currentTarget).parent().parent().data().pid
