@@ -94,3 +94,6 @@ def isMod(sub, user):
     """ Returns True if 'user' is a mod of 'sub' """
     x = sub.properties.filter_by(key='mod').filter_by(value=user.uid).first()
     return bool(x)
+
+def make_external(url):
+    return urljoin(request.url_root, url)

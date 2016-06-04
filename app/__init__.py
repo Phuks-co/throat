@@ -10,10 +10,12 @@ import datetime
 import bcrypt
 import markdown
 from flask import Flask, render_template, session, redirect, url_for, abort
-from flask import make_response
+from flask import make_response, request
 from flask_assets import Environment, Bundle
 from flask_login import LoginManager, login_required, current_user
 from tld import get_tld
+from urllib.parse import urlparse, urljoin
+from werkzeug.contrib.atom import AtomFeed
 
 from .models import db, User, Sub, SubPost, Message
 from .forms import RegistrationForm, LoginForm, LogOutForm
@@ -22,7 +24,8 @@ from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment
 from .forms import DummyForm, DeletePost
 from .views import do
-from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, SiteAnon
+from .misc import SiteUser, getVoteCount, hasVoted, getMetadata
+from .misc import SiteAnon, make_external
 
 
 app = Flask(__name__)
@@ -198,6 +201,25 @@ def view_sub_new(sub):
                            txtpostform=CreateSubTextPost(),
                            lnkpostform=CreateSubLinkPost(),
                            editsubform=EditSubForm(), posts=subposts)
+
+
+@app.route('/recent.atom')
+def recent_feed():
+    feed = AtomFeed('Recent Throat Activity',
+                    feed_url='url thingy',
+                    url='url thingy')
+    subposts = SubPost.query.order_by(SubPost.posted.desc()).limit(15).all()
+    for post in subposts:
+        feed.add(title=post.title,
+                 #title_type='html',
+                 link=post.pid,
+                 id=post.pid,
+                 #description=post.content,
+                 author=post.user,
+                 #url=make_external(post.url),
+                 updated=post.posted,
+                 published=post.posted)
+    return feed.get_response()
 
 
 @app.route("/s/<sub>/<pid>")
