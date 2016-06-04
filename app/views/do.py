@@ -171,16 +171,14 @@ def edit_sub(sub):
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    if not current_user.is_mod(sub):
-        return json.dumps({'status': 'error',
-                           'error': ['You\'re not authorized to do this.']})
-    form = EditSubForm()
-    if form.validate():
-        sub.update(dict(title=form.title.data))
-        db.session.commit()
-        return json.dumps({'status': 'ok',
-                           'addr': url_for('view_sub', sub=sub)})
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
+    if current_user.is_mod or current_user.is_mod(sub):
+        form = EditSubForm()
+        if form.validate():
+            sub.title = form.title.data
+            db.session.commit()
+            return json.dumps({'status': 'ok',
+                               'addr': url_for('view_sub', sub=sub.name)})
+        return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/txtpost/<sub>", methods=['POST'])

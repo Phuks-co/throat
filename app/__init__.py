@@ -171,6 +171,19 @@ def view_sub(sub):
     return render_template('sub.html', sub=sub, posts=subposts)
 
 
+@app.route("/s/<sub>/edit")
+@login_required
+def edit_sub(sub):
+    """ Here we can edit sub info and settings """
+    sub = Sub.query.filter_by(name=sub).first()
+    if not sub:
+        abort(404)
+    if current_user.is_mod(sub) or current_user.is_admin():
+        return render_template('editsub.html', sub=sub)
+    else:
+        return "go away"
+
+
 @app.route("/s/<sub>/new")
 def view_sub_new(sub):
     """ Here we can view subs sorted as most recent posted first """

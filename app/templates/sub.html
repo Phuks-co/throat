@@ -25,7 +25,7 @@
   </div>
   {% if current_user.is_mod(sub) or current_user.is_admin() %}
   <div class="col-12">
-    <a href="#edit-sub-form" class="btn btn-blue edit-sub" style="width:100%;">Edit Sub Info</a>
+    <a href="{{url_for('edit_sub', sub=sub.name)}}" class="btn btn-blue edit-sub" style="width:100%;">Edit Sub Info</a>
   </div>
   {% endif %}
 </div>
@@ -102,18 +102,6 @@
     <p></p>
   </div>
   <p><button type="submit" id="lnkpost-btnsubmit">Submit link</button></p>
-</form>
-<form id="edit-sub-form" data-sub="{{sub.name}}" class="mfp-hide white-popup-block">
-  {{editsubform.csrf_token}}
-  <h1>Edit /s/{{sub.name}}</h1>
-
-  <p>{{editsubform.title(placeholder=editsubform.title.label.text, required=True)}}</p>
-  <div class="alert div-error">
-    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-    <p></p>
-  </div>
-  <p><button type="submit" id="editsub-btnsubmit">Edit sub</button></p>
-
 </form>
 <form id="delete-post-form" class="mfp-hide white-popup-block">
   {{delpostform.csrf_token}}

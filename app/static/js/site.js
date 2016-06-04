@@ -367,7 +367,6 @@ $(document).ready(function() {
     $('a.btn.create-sub').magnificPopup(mpSettings);
     $('a.btn.create-post').magnificPopup(mpSettings);
     $('a.btn.send-message').magnificPopup(mpSettings);
-    $('a.btn.edit-sub').magnificPopup(mpSettings);
     $('a.btn.edit-user').magnificPopup(mpSettings);
     $('a.btn.edit-txtpost-form').magnificPopup(mpSettings);
     $('a.btn.delpost').magnificPopup(mpSettings);
