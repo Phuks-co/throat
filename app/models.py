@@ -63,6 +63,8 @@ class Sub(db.Model):
 
     posts = db.relationship('SubPost', backref='sub', lazy='dynamic')
     properties = db.relationship('SubMetadata', backref='sub', lazy='dynamic')
+    stylesheet = db.relationship('SubStylesheet', backref='sub',
+                                 lazy='dynamic')
 
     def __init__(self, name, title):
         self.sid = str(uuid.uuid4())
@@ -85,6 +87,12 @@ class SubMetadata(db.Model):
         self.sid = sub.sid
         self.key = key
         self.value = value
+
+
+class SubStylesheet(db.Model):
+    xid = Column(Integer, primary_key=True)
+    sid = Column(String(40), db.ForeignKey('sub.sid'))  # Subverse id
+    content = Column(Text)
 
 
 class SubPost(db.Model):
