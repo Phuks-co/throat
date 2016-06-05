@@ -16,7 +16,7 @@ from ubuntu 16.04
 
 clone and install
 
- - $ git clone https://github.com/Polsaker/throat.git
+ - $ git clone <repo url>
  - $ cd throat
  - $ pip3 install -r requirements.txt
 
