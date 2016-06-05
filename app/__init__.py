@@ -154,7 +154,10 @@ def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.query.order_by(SubPost.posted.desc()).all()
     sorter = BasicSorting(posts)
-    return render_template('index.html', posts=sorter.getPosts(page))
+    npage = page + 1
+    ppage = page - 1
+    return render_template('index.html', page=page, npage=npage, ppage=ppage,
+                            posts=sorter.getPosts(page))
 
 
 @app.route("/subs")

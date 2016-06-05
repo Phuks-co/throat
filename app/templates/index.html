@@ -65,6 +65,12 @@
       </div>
     </article>
 {% endfor %}
+{% if page > 1 %}
+<a href="{{url_for('all_new', page=ppage)}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
+{% endif %}
+<a href="{{url_for('all_new', page=npage)}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+
+
 {% endblock %}
 {%block pagefoot%}
 <!-- create sub form -->
