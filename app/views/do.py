@@ -7,10 +7,11 @@ import time
 import bcrypt
 from flask import Blueprint, redirect, url_for
 from sqlalchemy import func
-from ..models import db, User, Sub, SubPost, Message, SubPostComment
+from ..models import db, User, Sub, SubPost, Message, SubPostComment, UserBadge
 from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
 from ..forms import RegistrationForm, LoginForm, LogOutForm
 from ..forms import CreateSubForm, EditSubForm, EditUserForm
+from ..forms import CreateUserBadgeForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from flask_login import login_user, login_required, logout_user, current_user
@@ -363,6 +364,22 @@ def create_comment(sub, pid):
         db.session.add(comment)
         db.session.commit()
         return json.dumps({'status': 'ok'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/create_user_badge", methods=['POST'])
+@login_required
+def create_user_badge():
+    """ User Badge creation endpoint """
+    form = CreateUserBadgeForm()
+    if form.validate():
+        badge = UserBadge(form.badge.data, form.name.data, form.text.data)
+        #badge.badge = form.badge.data
+        #badge.name = form.name.data
+        #badge.text = form.text.data
+        db.session.add(badge)
+        db.session.commit()
+        return json.dumps({'status': 'ok', 'bid': badge.bid})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 

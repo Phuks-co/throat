@@ -17,12 +17,12 @@ from flask_login import LoginManager, login_required, current_user
 from tld import get_tld
 from werkzeug.contrib.atom import AtomFeed
 
-from .models import db, User, Sub, SubPost, Message, SubPostVote
+from .models import db, User, Sub, SubPost, Message, SubPostVote, UserBadge
 from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditSubForm, EditUserForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment
-from .forms import DummyForm, DeletePost
+from .forms import DummyForm, DeletePost, CreateUserBadgeForm
 from .views import do
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata
 from .misc import SiteAnon, make_external
@@ -315,9 +315,11 @@ def admin_area():
     posts = SubPost.query.count()
     ups = SubPostVote.query.filter_by(positive=1).count()
     downs = SubPostVote.query.filter_by(positive=0).count()
+    badges = UserBadge.query.all()
     if current_user.is_admin():
-        return render_template('admin.html', users=users,
-                            subs=subs, posts=posts, ups=ups, downs=downs)
+        return render_template('admin.html', users=users, badges=badges,
+                            subs=subs, posts=posts, ups=ups, downs=downs,
+                            createuserbadgeform=CreateUserBadgeForm())
     else:
         return render_template('errors/404.html'), 404
 

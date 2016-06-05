@@ -65,6 +65,16 @@ class CreateUserMessageForm(Form):
                            validators=[DataRequired(), Length(min=2, max=128)])
 
 
+class CreateUserBadgeForm(Form):
+    """ CreateUserBadge form. """
+    badge = StringField('fa-xxx number',
+                           validators=[DataRequired(), Length(min=2, max=32)])
+    name = StringField('Name',
+                           validators=[DataRequired(), Length(min=2, max=128)])
+    text = StringField('Description',
+                           validators=[DataRequired(), Length(min=2, max=128)])
+
+
 class LogOutForm(Form):
     """ Logout form. This form has no fields.
         We only use it for the CSRF stuff"""
