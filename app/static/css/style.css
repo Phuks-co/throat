@@ -1032,6 +1032,11 @@ button#text-post-icon, button#link-post-icon {
     border-radius: 2px;
     border: solid 1px lightgray;
 }
+.edituser .adminbadges {
+    padding: 5px;
+    border-radius: 2px;
+    border: solid 1px lightgray;
+}
 .adminbadges {
     margin-top:20px;
 }
