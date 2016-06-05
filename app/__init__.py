@@ -26,7 +26,7 @@ from .forms import DummyForm, DeletePost
 from .views import do
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata
 from .misc import SiteAnon, make_external
-
+from .sorting import BasicSorting
 
 app = Flask(__name__)
 app.register_blueprint(do)
@@ -138,22 +138,22 @@ def utility_processor():
 @app.route("/")
 def index():
     """ The index page, currently sorts like /all/new """
-    subposts = SubPost.query.order_by(SubPost.posted.desc()).limit(25).all()
-    return render_template('index.html', posts=subposts)
+    return all_new(1)
 
 
 @app.route("/new")
 def index_new():
     """ The index page, currently sorts like /all/new """
-    subposts = SubPost.query.order_by(SubPost.posted.desc()).limit(25).all()
-    return render_template('index.html', posts=subposts)
+    return all_new(1)
 
 
-@app.route("/all/new")
-def index_all_new():
+@app.route("/all/new", defaults={'page': 1})
+@app.route("/all/new/<int:page>")
+def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
-    subposts = SubPost.query.order_by(SubPost.posted.desc()).limit(25).all()
-    return render_template('index.html', posts=subposts)
+    posts = SubPost.query.order_by(SubPost.posted.desc()).all()
+    sorter = BasicSorting(posts)
+    return render_template('index.html', posts=sorter.getPosts(page))
 
 
 @app.route("/subs")
