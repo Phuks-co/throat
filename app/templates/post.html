@@ -18,14 +18,14 @@
 
 <div class="row buttons">
   <div class="col-12">
-    <a href="#post-form" class="btn btn-blue create-post" style="width:100%;">Submit a text post</a>
+    <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
   </div>
   <div class="col-12">
-    <a href="#link-post-form" class="btn btn-blue create-post" style="width:100%;">Submit a link post</a>
+    <a href="#link-post-form" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
   </div>
   {% if current_user.is_mod(post.sub) %}
   <div class="col-12">
-    <a href="#edit-sub-form" class="btn btn-blue edit-sub" style="width:100%;">Edit Sub Info</a>
+    <a href="#edit-sub-form" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Info</a>
   </div>
   {% endif %}
 </div>
@@ -50,8 +50,8 @@
               </span>
             {% endif %}
             {% if post.ptype == 0 and post.user.uid == session['user_id'] %}
-              <a href="#edit-txtpost-form" class="btn btn-blue edit small edit-txtpost-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
-              <a href="#delete-txtpost-form" class="btn btn-blue edit small delete-txtpost-form"><i class="fa fa-times-circle" aria-hidden="true"></i> Delete </a>
+              <a href="#edit-txtpost-form" class="btn btn-orange edit small edit-txtpost-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
+              <a href="#delete-txtpost-form" class="btn btn-orange edit small delete-txtpost-form"><i class="fa fa-times-circle" aria-hidden="true"></i> Delete </a>
             {% endif %}
             </div>
           </div>
@@ -85,7 +85,7 @@
             {{commentform.post(value=post.pid)}}
             {{commentform.parent(value='0')}}
             <div class="CommentContent">{{commentform.comment(placeholder="Write your comment here. Styling with Markdown format is supported.")}}</div>
-            <button type="submit" class="btn btn-blue">Submit comment</button>
+            <button type="submit" class="btn btn-orange">Submit comment</button>
           </form>
           <form class="comment-form moving" style="display:none">
             <div class="close">×</div>
@@ -94,7 +94,7 @@
             {{commentform.post(value=post.pid)}}
             {{commentform.parent(value='0')}}
             <div class="CommentContent">{{commentform.comment(class="commenttxtbox",placeholder="Write your comment here. Styling with Markdown format is supported.")}}</div>
-            <button type="submit" class="btn btn-blue">Submit comment</button>
+            <button type="submit" class="btn btn-orange">Submit comment</button>
           </form>
         </section>
         {%endif%}
@@ -123,8 +123,8 @@
                   </span>
                 {% endif #}
                 {% if comment.uid == session['user_id'] %}
-                  <a href="#edit-comment-form" class="btn btn-blue edit small edit-comment-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
-                  <a href="#delete-comment-form" class="btn btn-blue edit small delete-comment-form"><i class="fa fa-times-circle" aria-hidden="true"></i> Delete </a>
+                  <a href="#edit-comment-form" class="btn btn-orange edit small edit-comment-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
+                  <a href="#delete-comment-form" class="btn btn-orange edit small delete-comment-form"><i class="fa fa-times-circle" aria-hidden="true"></i> Delete </a>
                 {% endif %}
                 </div>
               </div>
