@@ -267,8 +267,9 @@ def edit_user(user):
     if not user:
         abort(404)
 
+    subs = Sub.query.order_by(Sub.name.desc()).all()
     if current_user.get_username() == user.name or current_user.is_admin():
-        return render_template('edituser.html', user=user,
+        return render_template('edituser.html', user=user, subs=subs,
                                edituserform=EditUserForm())
     else:
         return "go away"

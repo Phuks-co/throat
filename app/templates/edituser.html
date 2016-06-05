@@ -19,8 +19,18 @@
     {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
   </ul>
 </div>
+<hr>
+<p class="joindate">Registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
+<hr>
+<h3>Moderating:</h3>
+<ul style="color: darkcyan;">
+  {% for sub in subs  %}
+  {% if current_user.is_mod(sub) %}
+  <li><a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a></li>
+  {% endif %}
+  {% endfor %}
+</ul>
 {% endblock %}
-
 {% block content %}
 {{ super() }}
 <div class="edituser">
