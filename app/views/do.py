@@ -22,6 +22,7 @@ do = Blueprint('do', __name__)
 allowedNames = re.compile("^[a-zA-Z0-9_-]+$")
 # allowedCSS = re.compile("\'(^[0-9]{1,5}[a-zA-Z ]+$)|none\'")
 
+
 def get_errors(form):
     """ A simple function that returns a list with all the form errors. """
     ret = []

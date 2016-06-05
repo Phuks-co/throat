@@ -90,6 +90,7 @@ class SubMetadata(db.Model):
 
 
 class SubStylesheet(db.Model):
+    """ Stores sub's custom CSS """
     xid = Column(Integer, primary_key=True)
     sid = Column(String(40), db.ForeignKey('sub.sid'))  # Subverse id
     content = Column(Text)
@@ -97,6 +98,7 @@ class SubStylesheet(db.Model):
     def __init__(self, sub, content):
         self.sid = sub.sid
         self.content = content
+
 
 class SubPost(db.Model):
     """ Represents a post on a sub """

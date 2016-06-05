@@ -6,6 +6,7 @@ import time
 import re
 from wsgiref.handlers import format_date_time
 import datetime
+from urllib.parse import urlparse, urljoin
 
 import bcrypt
 import markdown
@@ -14,7 +15,6 @@ from flask import make_response, request
 from flask_assets import Environment, Bundle
 from flask_login import LoginManager, login_required, current_user
 from tld import get_tld
-from urllib.parse import urlparse, urljoin
 from werkzeug.contrib.atom import AtomFeed
 
 from .models import db, User, Sub, SubPost, Message
@@ -206,25 +206,6 @@ def view_sub_new(sub):
                            editsubform=EditSubForm(), posts=subposts)
 
 
-@app.route('/recent.atom')
-def recent_feed():
-    feed = AtomFeed('Recent Throat Activity',
-                    feed_url='url thingy',
-                    url='url thingy')
-    subposts = SubPost.query.order_by(SubPost.posted.desc()).limit(15).all()
-    for post in subposts:
-        feed.add(title=post.title,
-                 #title_type='html',
-                 link=post.pid,
-                 id=post.pid,
-                 #description=post.content,
-                 author=post.user,
-                 #url=make_external(post.url),
-                 updated=post.posted,
-                 published=post.posted)
-    return feed.get_response()
-
-
 @app.route("/s/<sub>/<pid>")
 def view_post(sub, pid):
     """ View post and comments (WIP) """
@@ -275,9 +256,10 @@ def edit_user(user):
 
     if current_user.get_username() == user.name or current_user.is_admin():
         return render_template('edituser.html', user=user,
-                            edituserform=EditUserForm())
+                               edituserform=EditUserForm())
     else:
         return "go away"
+
 
 @app.route("/messages")
 @login_required
