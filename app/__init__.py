@@ -17,7 +17,7 @@ from flask_login import LoginManager, login_required, current_user
 from tld import get_tld
 from werkzeug.contrib.atom import AtomFeed
 
-from .models import db, User, Sub, SubPost, Message
+from .models import db, User, Sub, SubPost, Message, SubPostVote
 from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditSubForm, EditUserForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
@@ -305,6 +305,21 @@ def view_messages_comments():
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Comment Replies")
 
+
+@app.route("/admin")
+@login_required
+def admin_area():
+    """ WIP: View users. assign badges, etc """
+    users = User.query.count()
+    subs = Sub.query.count()
+    posts = SubPost.query.count()
+    ups = SubPostVote.query.filter_by(positive=1).count()
+    downs = SubPostVote.query.filter_by(positive=0).count()
+    if current_user.is_admin():
+        return render_template('admin.html', users=users,
+                            subs=subs, posts=posts, ups=ups, downs=downs)
+    else:
+        return render_template('errors/404.html'), 404
 
 @app.route("/tos")
 def tos():

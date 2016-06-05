@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block title %}Throat: Open discussion{% endblock %}
+
+{% block content %}
+{{ super() }}
+<div class="adminstats post">
+  <div class="col-3"><h2>{{users}} Users</h2>
+  </div>
+  <div class="col-3"><h2>{{subs}} Subs</h2>
+  </div>
+  <div class="col-3"><h2>{{posts}} Posts</h2>
+  </div>
+  <div class="col-3"><h2>Voting (+{{ups}} | -{{downs}} )</h2>
+  </div>
+</div>
+
+<div class="adminbadges post">
+  <div><h2>Badges</h2>
+    <div>
+      manage available badges here
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}
