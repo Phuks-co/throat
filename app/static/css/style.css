@@ -583,6 +583,24 @@ nav .right a {
     border-color: #204d74;
 }
 
+/* thy thoat orange button */
+
+.btn.btn-orange {
+    color: #fb5b00;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+}
+.btn.btn-orange:hover {
+    color: #fb5b00;
+    background-color: #286090;
+    border-color: #204d74;
+}
+.btn.btn-orange:active {
+    color: #fb5b00;
+    background-color: #286090;
+    border-color: #204d74;
+}
+
 /* red button */
 
 .btn.btn-red {

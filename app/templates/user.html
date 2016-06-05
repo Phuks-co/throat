@@ -12,11 +12,11 @@
 <div class="row buttons">
   {% if user.uid == session['user_id'] or current_user.is_admin()%}
   <div class="col-12">
-    <a href="{{url_for('edit_user', user=user.name)}}" class="btn btn-blue edit-user" style="width:100%;">Edit user info</a>
+    <a href="{{url_for('edit_user', user=user.name)}}" class="btn btn-orange edit-user" style="width:100%;">Edit user info</a>
   </div>
   {% endif %}
   <div class="col-12">
-    <a href="#msg-form" class="btn btn-blue send-message" style="width:100%;">Send a Message to {{user.name}}</a>
+    <a href="#msg-form" class="btn btn-orange send-message" style="width:100%;">Send a Message to {{user.name}}</a>
   </div>
 </div>
 <div>
