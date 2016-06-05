@@ -79,7 +79,7 @@
         </article>
         {%if current_user.is_authenticated %}
         <section id="postcomment">
-          <form class="comment-form">
+          <form class="comment-form static">
             {{commentform.csrf_token}}
             {{commentform.sub(value=post.sub.name)}}
             {{commentform.post(value=post.pid)}}
@@ -186,7 +186,7 @@
 {%if current_user.is_authenticated%}
 <script type="text/javascript" src="{{ url_for('static', filename='js/simplemde.min.js') }}"></script>
 <script>
-  var simplemde = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createcomment",}});
+  var simplemde = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createcomment",}, element: $('.comment-form.static textarea')[0]});
   var simplemde2 = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: false}, element: $('#edit-txtpost-form textarea#content')[0]});
   var simplemde3 = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createpost"}, element: $('#post-form textarea')[0]});
 
