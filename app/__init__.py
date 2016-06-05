@@ -4,6 +4,7 @@
 import json
 import time
 import re
+import random
 from wsgiref.handlers import format_date_time
 import datetime
 from urllib.parse import urlparse, urljoin
@@ -161,6 +162,15 @@ def view_subs():
     """ Here we can view available subs """
     subs = Sub.query.order_by(Sub.name.desc()).all()
     return render_template('subs.html', subs=subs)
+
+
+@app.route("/random")
+def random_sub():
+    """ Here we get a random sub """
+    subcount = Sub.query.count()
+    offset = random.randrange(0, subcount)
+    sub = Sub.query.offset(offset).first()
+    return redirect(url_for('view_sub', sub=sub.name))
 
 
 @app.route("/s/<sub>")
