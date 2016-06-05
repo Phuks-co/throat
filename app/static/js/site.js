@@ -498,6 +498,34 @@ $(document).ready(function() {
         $('#' + playerid + ' a').html('<i class="fa fa-image" aria-hidden="true"></i>');
       }
     });
+
+    $("#create-user-badge").submit(function(e) {
+        $("#create-user-badge-btnsubmit").prop('disabled', true);
+        $("#create-user-badge-btnsubmit").text('Creating badge...');
+        $.ajax({
+            type: "POST",
+            url: '/do/create_user_badge', // XXX: Hardcoded URL because this is supposed to be a static file
+            data: $("#create-user-badge").serialize(),
+            dataType: 'json',
+            success: function(data) {
+                if (data.status != "ok") {
+                    checkErrors(data, "create-user-badge");
+                } else { // success
+                    document.location.reload();
+                }
+                $("#create-user-badge-btnsubmit").prop('disabled', false);
+                $("#create-user-badge-btnsubmit").text('Create badge');
+            },
+            error: function(data, err) {
+                $("#create-user-badge .div-error p").append("<ul><li>Error while contacting the server</li></ul>");
+                $("#create-user-badge .div-error").show();
+                $("#create-user-badge-btnsubmit").prop('disabled', false);
+                $("#create-user-badge-btnsubmit").text('Create badge');
+            }
+        });
+
+        e.preventDefault();
+    });
 });
 
 function getCookie(cname) {

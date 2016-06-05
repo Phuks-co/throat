@@ -1036,3 +1036,20 @@ button#text-post-icon, button#link-post-icon {
 .content .privacy {
     padding: 10px;
 }
+
+/* admin area */
+.adminstats.post {
+    font-size: 24px;
+}
+#create-user-badge input#badge,
+#create-user-badge input#name,
+#create-user-badge input#text {
+    width: 70%;
+    text-align: left;
+    padding: 5px;
+    border-radius: 2px;
+    border: solid 1px lightgray;
+}
+.adminbadges {
+    margin-top:20px;
+}

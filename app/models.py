@@ -53,6 +53,20 @@ class UserMetadata(db.Model):
     value = Column(String(255))
 
 
+class UserBadge(db.Model):
+    """ Here we store badge definitions """
+    bid = Column(String(40), primary_key=True)
+    badge = Column(String(255))  # fa-xxx, badge icon id.
+    name = Column(String(255))  # Badge name
+    text = Column(String(255))  # Short text displayed when hovering the badge
+
+    def __init__(self, badge, name, text):
+        self.bid = str(uuid.uuid4())
+        self.badge = badge
+        self.name = name
+        self.text = text
+
+
 class Sub(db.Model):
     """ Basic sub data """
     sid = Column(String(40), primary_key=True)  # sub id

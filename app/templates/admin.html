@@ -4,24 +4,40 @@
 {% block content %}
 {{ super() }}
 <div class="adminstats post">
-  <div class="col-3"><h2>{{users}} Users</h2>
+  <div class="col-3"><i class="fa fa-user"></i> {{users}} Users
   </div>
-  <div class="col-3"><h2>{{subs}} Subs</h2>
+  <div class="col-3"><i class="fa fa-list"></i> {{subs}} Subs
   </div>
-  <div class="col-3"><h2>{{posts}} Posts</h2>
+  <div class="col-3"><i class="fa fa-comments"></i> {{posts}} Posts
   </div>
-  <div class="col-3"><h2>Voting (+{{ups}} | -{{downs}} )</h2>
+  <div class="col-3">Voting (+{{ups}} | -{{downs}} )
   </div>
 </div>
 
 <div class="adminbadges post">
-  <div><h2>Badges</h2>
-    <div>
-      manage available badges here
+  <div class="col-12"><h2>Available User Badges:</h2>
+    {% for badge in badges %}
+    <div class="col-3"><i title="{{badge.text}}" class="fa {{badge.badge }}"></i> {{badge.name}}
     </div>
+    {% endfor %}
   </div>
 </div>
-
+<div class="adminbadges">
+  <div>
+    <form id="create-user-badge" class="">
+      {{createuserbadgeform.csrf_token}}
+      <h4>Create new user badge (<a href="http://fontawesome.io/cheatsheet/">cheatsheet</a>)</h4>
+      <div class="col-3">{{createuserbadgeform.badge(placeholder=createuserbadgeform.badge.label.text, required=True, autofocus=True)}}</div>
+      <div class="col-3">{{createuserbadgeform.name(placeholder="Badge name")}}</div>
+      <div class="col-3">{{createuserbadgeform.text(placeholder="Badge desc")}}</div>
+      <div class="col-3"><button type="submit" class="btn btn-blue" id="create-user-badge-btnsubmit">Create badge</button></div>
+      <div class="alert div-error">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        <p></p>
+      </div>
+    </form>
+  </div>
+</div>
 
 
 {% endblock %}
