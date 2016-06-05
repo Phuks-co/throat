@@ -300,6 +300,10 @@ hr {
     background: #333;
     background-image: linear-gradient(to right, white, lightgray, white);
 }
+textarea {
+    border: 1px solid lightgray;
+    border-radius: 3px;
+}
 body {
     color: black;
     background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAMUlEQVQIW2NkwAE+fPgwkxGbHEhCQEAgHUMSJgHShCKJLIEiiS4Bl8QmAZbEJQGSBACozBtxLXy9QAAAAABJRU5ErkJggg==) repeat;
@@ -318,6 +322,7 @@ main {
     background: white;
     border: 1px solid lightgray;
     border-radius: 3px;
+    padding: 0.5em;
 }
 .content {
     margin-top: 3em;
@@ -786,7 +791,7 @@ button.mfp-close, button.mfp-arrow {
     list-style-type: decimal;
 }
 .content iframe {
-  margin-top: 1em;
+    margin-top: 1em;
 }
 #comments {
     margin-top: 1em;
@@ -861,7 +866,7 @@ button.mfp-close, button.mfp-arrow {
     color: darkcyan;
 }
 .user-activity .rpost .data {
-  margin-top: 0.7em;
+    margin-top: 0.7em;
 }
 .user-activity .comment {
     color: gray;
@@ -973,8 +978,8 @@ button#text-post-icon, button#link-post-icon {
 }
 
 /* edit sub */
-#edit-sub-form input#title,
-#edit-user-form input#email {
+
+#edit-sub-form input#title {
     width: 70%;
     text-align: left;
     padding: 5px;
@@ -982,7 +987,34 @@ button#text-post-icon, button#link-post-icon {
     border: solid 1px lightgray;
 }
 
+/* edit user */
+
+.edituser {
+    padding: 1.5em;
+}
+.edituser h1, h3 {
+    text-align: center;
+}
+.edituser input[type='email'] {
+    padding: 5px;
+    border-radius: 2px;
+    border: solid 1px lightgray;
+}
+.edituser .right {
+    width: 70%;
+    overflow: hidden;
+}
+.edituser .left {
+    width: 25%;
+    float: left;
+    overflow: hidden;
+}
+.edituser .fullw {
+    margin-left: 25%;
+}
+
 /* privacy tos*/
+
 .content .privacy {
     padding: 10px;
 }

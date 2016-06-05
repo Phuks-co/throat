@@ -2,32 +2,37 @@
 {% block title %}Throat: Open discussion{% endblock %}
 {% block navbar %}
 <ul class="right">
-  <li class="large"><a href="{{url_for('view_user', user=user.name)}}">/s/{{user.name}}</a></li>
+  <li class="large"><a href="{{url_for('view_user', user=user.name)}}">/u/{{user.name}}</a></li>
 </ul>
 {% endblock %}
 {% block content %}
 {{ super() }}
+<div class="edituser">
+  {% if not user.uid == session['user_id'] and current_user.is_admin() %}
+  <h3>Editing as Admin</h3>
+  {% endif %}
 
-{% if not user.uid == session['user_id'] and current_user.is_admin() %}
-<center><h3>Editing as Admin</h3></center>
-{% endif %}
+  <h1>Edit info for {{user.name}}</h1>
+  <form id="edit-user-form"  data-user="{{user.name}}" class="">
+      <div id="the-edit-user-form-itself">
+          {{edituserform.csrf_token}}
 
-<h1>Edit info for {{user.name}}</h1>
-<form id="edit-user-form"  data-user="{{user.name}}" class="">
-    <div id="the-edit-user-form-itself">
-        {{edituserform.csrf_token}}
-        <p><label>{{edituserform.email.label.text}} {{edituserform.email(value=user.email)}}</label></p>
-        <p>
-            {{edituserform.accept_tos(style="width: auto", required=True)}}
-            <label for="tos">{{edituserform.accept_tos.label.text}}</label>
-        </p>
-        {{edituserform.recaptcha}}
-        <div class="alert div-error">
-          <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-          <p></p>
-        </div>
-        <p><button type="submit" class="btn btn-blue" id="edituser-btnsubmit">Edit user</button></p>
-    </div>
-</form>
+          <p>
+            <label for="email" class="left">{{edituserform.email.label.text}}</label>
+            {{edituserform.email(value=user.email, class="right")}}
+          </p>
+          <p class="fullw">
+              {{edituserform.accept_tos(required=True)}}
+              <label for="tos">{{edituserform.accept_tos.label.text}}</label>
+          </p>
+          {{edituserform.recaptcha}}
+          <div class="alert div-error">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+            <p></p>
+          </div>
+          <p><button type="submit" class="btn btn-blue" id="edituser-btnsubmit">Edit user</button></p>
+      </div>
+  </form>
+</div>
 
 {% endblock %}
