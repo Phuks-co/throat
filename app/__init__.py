@@ -26,7 +26,7 @@ from .forms import CreateUserMessageForm, PostComment
 from .forms import DummyForm, DeletePost, CreateUserBadgeForm
 from .views import do
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, getName
-from .misc import SiteAnon, make_external
+from .misc import SiteAnon, make_external, getModName
 from .sorting import BasicSorting
 
 app = Flask(__name__)
@@ -183,7 +183,7 @@ def view_sub(sub):
     if not sub:
         abort(404)
 
-    mod = getName(getMetadata(sub, "mod"))
+    mod = getModName(sub)
     subposts = SubPost.query.filter_by(sid=sub.sid) \
                             .order_by(SubPost.posted.desc()).all()
     return render_template('sub.html', sub=sub, posts=subposts, mod=mod)
