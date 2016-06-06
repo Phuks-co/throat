@@ -1,5 +1,5 @@
 """ Misc helper function and classes. """
-from .models import db
+from .models import db, User
 from flask_login import AnonymousUserMixin
 
 
@@ -93,6 +93,10 @@ def getMetadata(obj, key, value=None):
         db.session.add(x)
     db.session.commit()
 
+def getName(uid):
+    """ Gets username """
+    x = User.query.filter_by(uid=uid).first()
+    return str(x.name)
 
 def isMod(sub, user):
     """ Returns True if 'user' is a mod of 'sub' """

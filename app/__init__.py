@@ -25,7 +25,7 @@ from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment
 from .forms import DummyForm, DeletePost, CreateUserBadgeForm
 from .views import do
-from .misc import SiteUser, getVoteCount, hasVoted, getMetadata
+from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, getName
 from .misc import SiteAnon, make_external
 from .sorting import BasicSorting
 
@@ -183,9 +183,10 @@ def view_sub(sub):
     if not sub:
         abort(404)
 
+    mod = getName(getMetadata(sub, "mod"))
     subposts = SubPost.query.filter_by(sid=sub.sid) \
                             .order_by(SubPost.posted.desc()).all()
-    return render_template('sub.html', sub=sub, posts=subposts)
+    return render_template('sub.html', sub=sub, posts=subposts, mod=mod)
 
 
 @app.route("/s/<sub>/edit")
