@@ -84,7 +84,7 @@
             {{commentform.sub(value=post.sub.name)}}
             {{commentform.post(value=post.pid)}}
             {{commentform.parent(value='0')}}
-            <div class="CommentContent">{{commentform.comment(placeholder="Write your comment here. Styling with Markdown format is supported.")}}</div>
+            <div class="CommentContent">{{commentform.comment(id="comment2", placeholder="Write your comment here. Styling with Markdown format is supported.")}}</div>
             <button type="submit" class="btn btn-orange">Submit comment</button>
           </form>
           <form class="comment-form moving" style="display:none">
@@ -186,9 +186,11 @@
 {%if current_user.is_authenticated%}
 <script type="text/javascript" src="{{ url_for('static', filename='js/simplemde.min.js') }}"></script>
 <script>
-  var simplemde = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createcomment",}, element: $('.comment-form.static textarea#comment')[0]});
+  var simplemde = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createcomment",}, element: $('textarea#comment2')[0]});
   var simplemde2 = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: false}, element: $('textarea#content2')[0]});
+  {% if post.ptype == 0 and post.user.uid == session['user_id'] %}
   var simplemde3 = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createpost"}, element: $('textarea#content')[0]});
+  {%endif%}
 
 </script>
 {%endif%}
