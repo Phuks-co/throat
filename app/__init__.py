@@ -334,8 +334,8 @@ def view_messages_comments():
 @login_required
 def admin_area():
     """ WIP: View users. assign badges, etc """
-    users = User.query.count()
-    subs = Sub.query.count()
+    users = User.query.all()
+    subs = Sub.query.all()
     posts = SubPost.query.count()
     ups = SubPostVote.query.filter_by(positive=True).count()
     downs = SubPostVote.query.filter_by(positive=False).count()

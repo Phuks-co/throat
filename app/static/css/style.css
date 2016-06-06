@@ -1044,9 +1044,6 @@ button#text-post-icon, button#link-post-icon {
 }
 
 /* admin area */
-.adminstats.post {
-    font-size: 24px;
-}
 #create-user-badge input#badge,
 #create-user-badge input#name,
 #create-user-badge input#text {
@@ -1064,5 +1061,27 @@ button#text-post-icon, button#link-post-icon {
 .adminbadges {
     margin-top:20px;
 }
+.admin.section {
+    margin: 20px 0;
+    padding: 20px;
+}
+.admin.section div h2 {
+    margin: 10px;
+    padding: 10px;
+    border-top: #D3D3D3 solid;
+}
+.admin.section .col-12 {
+    margin-top: 10px;
+}
+.admin.section.stats {
+    font-size: 24px;
+}
+.admin.section.users a,
+.admin.section.subs a {
+    text-decoration: none;
+}
 
-.red{ color: red;}
+/* colors */
+.red {color: red;}
+.blue {color: blue;}
+.green {color: green;}
