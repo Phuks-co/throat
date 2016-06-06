@@ -57,6 +57,9 @@ a {
 a:hover {
     text-decoration: none;
 }
+a:visited {
+    color: #FB4000;
+}
 small {
     font-size: 75%;
 }
