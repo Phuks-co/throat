@@ -445,7 +445,7 @@ nav ul li a {
     transition: all 0.2s linear;
 }
 nav ul li a:hover {
-    color: skyblue;
+    color: #fb5b00;
 }
 nav .right {
     float: right;
@@ -477,7 +477,7 @@ nav .right a {
     color: skyblue;
 }
 .post .title:hover {
-    color: #1A6A8B;
+    color: #fb5b00;
 }
 .post .author {
     font-size: small;
