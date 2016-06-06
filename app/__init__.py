@@ -183,10 +183,10 @@ def view_sub(sub):
     if not sub:
         abort(404)
 
-    mod = getModName(sub)
+    # mod = getModName(sub)
     subposts = SubPost.query.filter_by(sid=sub.sid) \
                             .order_by(SubPost.posted.desc()).all()
-    return render_template('sub.html', sub=sub, posts=subposts, mod=mod)
+    return render_template('sub.html', sub=sub, posts=subposts)
 
 
 @app.route("/s/<sub>/edit")
