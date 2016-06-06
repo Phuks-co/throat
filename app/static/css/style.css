@@ -716,6 +716,9 @@ nav .right a {
 .alert.warn {
     background-color: #CCBB28;
 }
+.fa-exclamation-circle.orange {
+    color: #fb5000;
+}
 
 /* The close button */
 
