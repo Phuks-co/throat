@@ -37,7 +37,7 @@
 <div class="admin section users">
   <div class="col-12"><h2>Users</h2>
     {% for user in users %}
-    <div class="col-2"><a href="{{url_for('view_user', user=user.name)}}"><i class="fa fa-user"></i> {{user.name}}</a></div>
+    <div class="col-3"><a href="{{url_for('view_user', user=user.name)}}"><i class="fa fa-user"></i> {{user.name}}</a></div>
     {% endfor %}
   </div>
 </div>
@@ -45,7 +45,7 @@
 <div class="admin section subs">
   <div class="col-12"><h2>Subs</h2>
     {% for sub in subs %}
-    <div class="col-2" title="{{sub.title}}"><a href="{{url_for('view_sub', sub=sub.name)}}"><i class="fa fa-list"></i> {{sub.name}}</a></div>
+    <div class="col-3" title="{{sub.title}}"><a href="{{url_for('view_sub', sub=sub.name)}}"><i class="fa fa-list"></i> {{sub.name}}</a></div>
     {% endfor %}
   </div>
 </div>
