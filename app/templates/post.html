@@ -58,7 +58,7 @@
           {% if post.ptype == 0 %}
           <div class="content">{{markdown(post.content)|safe}}</div>
           {% else %}
-          {% if post.link.startswith("http:") %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
+          {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
           <div class="content"><a href="{{post.link}}" target="_blank" rel="noreferrer noopener">{{post.link}}</a>
           {% if domain == "youtube.com" %}
             <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
