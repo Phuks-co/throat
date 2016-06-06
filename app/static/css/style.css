@@ -58,7 +58,7 @@ a:hover {
     text-decoration: none;
 }
 a:visited {
-    color: #FB4000;
+    color: #D83600;
 }
 small {
     font-size: 75%;
@@ -477,7 +477,7 @@ nav .right a {
     font-size: medium;
 }
 .post .title:visited {
-    color: #FB4000;
+    color: #D83600;
 }
 .post .title:hover {
     color: #fb5b00;
