@@ -3,6 +3,7 @@
 import datetime
 import uuid
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
+from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 
@@ -142,6 +143,16 @@ class SubPost(db.Model):
 
     def __repr__(self):
         return '<SubPost {0} (In Sub{1})>'.format(self.title, self.sid)
+
+    @hybrid_property
+    def voteCount(self):
+        count = 0
+        for vote in self.votes:
+            if vote.positive:
+                count += 1
+            else:
+                count -= 1
+        return count
 
 
 class SubPostMetadata(db.Model):

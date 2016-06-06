@@ -31,8 +31,8 @@
         <nav id="navbar">
           <ul>
             <li><a href='/'><img id="logo" src="{{ url_for('static', filename='img/logo.v2.png') }}" alt="Throat" width="100"></a></li>
-            <li><a href="#">Hot</a></li>
-            <li><a href="#">New</a></li>
+            <li><a href="/all/top">Top</a></li>
+            <li><a href="/all/new">New</a></li>
             <li><a href="#">Active</a></li>
             <li><a href="{{url_for('random_sub')}}">Random</a></li>
             {% block navbar %}{% endblock %}
