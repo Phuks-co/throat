@@ -328,15 +328,16 @@ def admin_area():
     users = User.query.count()
     subs = Sub.query.count()
     posts = SubPost.query.count()
-    ups = SubPostVote.query.filter_by(positive=1).count()
-    downs = SubPostVote.query.filter_by(positive=0).count()
+    ups = SubPostVote.query.filter_by(positive=True).count()
+    downs = SubPostVote.query.filter_by(positive=False).count()
     badges = UserBadge.query.all()
     if current_user.is_admin():
         return render_template('admin.html', users=users, badges=badges,
-                            subs=subs, posts=posts, ups=ups, downs=downs,
-                            createuserbadgeform=CreateUserBadgeForm())
+                               subs=subs, posts=posts, ups=ups, downs=downs,
+                               createuserbadgeform=CreateUserBadgeForm())
     else:
         return render_template('errors/404.html'), 404
+
 
 @app.route("/tos")
 def tos():
