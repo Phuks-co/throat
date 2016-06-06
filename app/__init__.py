@@ -154,7 +154,7 @@ def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.query.order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
-    return render_template('index.html', page=page,
+    return render_template('index.html', page=page, sort_type='all_new',
                            posts=sorter.getPosts(page))
 
 
@@ -164,7 +164,7 @@ def all_top(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.query.order_by(SubPost.posted.desc())
     sorter = VoteSorting(posts)
-    return render_template('index.html', page=page,
+    return render_template('index.html', page=page, sort_type='all_top',
                            posts=sorter.getPosts(page))
 
 
