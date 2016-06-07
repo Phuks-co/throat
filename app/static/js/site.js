@@ -121,8 +121,8 @@ $(document).ready(function() {
     });
 
     $("#edit-sub-form").submit(function(e) {
-        $("#edit-sub-btnsubmit").prop('disabled', true);
-        $("#edit-sub-btnsubmit").text('Editing sub info...');
+        $("#editsub-btnsubmit").prop('disabled', true);
+        $("#editsub-btnsubmit").text('Editing sub info...');
         $.ajax({
             type: "POST",
             url: '/do/edit_sub/'+ $("#edit-sub-form").data('sub'), // XXX: Hardcoded URL because this is supposed to be a static file
@@ -142,6 +142,33 @@ $(document).ready(function() {
                 $("#edit-sub-form .div-error").show();
                 $("#editsub-btnsubmit").prop('disabled', false);
                 $("#editsub-btnsubmit").text('Edit sub');
+            }
+        });
+        e.preventDefault();
+    });
+
+    $("#edit-mod-form").submit(function(e) {
+        $("#editmodform-btnsubmit").prop('disabled', true);
+        $("#editmodform-btnsubmit").text('Editing mod info...');
+        $.ajax({
+            type: "POST",
+            url: '/do/edit_mod/' + $("#edit-mod-form").data('sub') + '/' + $("#edit-mod-form").data('user'), // XXX: Hardcoded URL
+            data: $("#edit-mod-form").serialize(),
+            dataType: 'json',
+            success: function(data) {
+                if (data.status != "ok") {
+                    checkErrors(data, "edit-mod-form");
+                } else {
+                    document.location.reload();
+                }
+                $("#editmodform-btnsubmit").prop('disabled', false);
+                $("#editmodform-btnsubmit").text('Edit mod');
+            },
+            error: function(data, err) {
+                $("#edit-mod-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
+                $("#edit-mod-form .div-error").show();
+                $("#editmodform-btnsubmit").prop('disabled', false);
+                $("#editmodform-btnsubmit").text('Edit mod');
             }
         });
         e.preventDefault();

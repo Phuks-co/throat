@@ -1049,7 +1049,9 @@ button#text-post-icon, button#link-post-icon {
 /* admin area */
 #create-user-badge input#badge,
 #create-user-badge input#name,
-#create-user-badge input#text {
+#create-user-badge input#text,
+#edit-mod-form input#sub,
+#edit-mod-form input#user {
     width: 70%;
     text-align: left;
     padding: 5px;

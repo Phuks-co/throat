@@ -11,7 +11,7 @@ from ..models import db, User, Sub, SubPost, Message, SubPostComment, UserBadge
 from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
 from ..forms import RegistrationForm, LoginForm, LogOutForm
 from ..forms import CreateSubForm, EditSubForm, EditUserForm
-from ..forms import CreateUserBadgeForm
+from ..forms import CreateUserBadgeForm, EditModForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from flask_login import login_user, login_required, logout_user, current_user
@@ -193,6 +193,27 @@ def edit_sub(sub):
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'addr': url_for('view_sub', sub=sub.name)})
+        return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/edit_mod/<sub>/<user>", methods=['POST'])
+@login_required
+def edit_mod(sub, user):
+    """ Edit sub mod endpoint """
+    if current_user.is_admin():
+        form = EditModForm()
+        sub = Sub.query.filter_by(name=form.sub.data).first()
+        if not sub:
+            return json.dumps({'status': 'error',
+                               'error': ['Sub does not exist']})
+        user = User.query.filter_by(name=form.user.data).first()
+        if not user:
+            return json.dumps({'status': 'error',
+                               'error': ['User does not exist']})
+        if form.validate():
+            sub.properties.filter_by(key='mod').first().value = user.uid
+            db.session.commit()
+            return json.dumps({'status': 'ok'})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 

@@ -22,7 +22,7 @@ from .models import db, User, Sub, SubPost, Message, SubPostVote, UserBadge
 from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditSubForm, EditUserForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
-from .forms import CreateUserMessageForm, PostComment
+from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DummyForm, DeletePost, CreateUserBadgeForm
 from .views import do
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, getName
@@ -343,7 +343,8 @@ def admin_area():
     if current_user.is_admin():
         return render_template('admin.html', users=users, badges=badges,
                                subs=subs, posts=posts, ups=ups, downs=downs,
-                               createuserbadgeform=CreateUserBadgeForm())
+                               createuserbadgeform=CreateUserBadgeForm(),
+                               editmodform=EditModForm())
     else:
         return render_template('errors/404.html'), 404
 

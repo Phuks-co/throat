@@ -16,11 +16,19 @@ class CreateSubForm(Form):
 
 
 class EditSubForm(Form):
-    """ Edit sub. form. """
+    """ Edit sub form. """
     title = StringField('Title',
                         validators=[DataRequired(), Length(min=2, max=128)])
 
     css = TextAreaField('Custom stylesheet', validators=[Length(max=10000)])
+
+
+class EditModForm(Form):
+    """ Edit mod of sub (admin) """
+    sub = StringField('Sub',
+                        validators=[DataRequired(), Length(min=2, max=128)])
+    user = StringField('User',
+                        validators=[DataRequired(), Length(min=1, max=128)])
 
 
 class CreateSubTextPost(Form):

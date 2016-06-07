@@ -35,6 +35,7 @@
             <li><a href="/all/new">New</a></li>
             <li><a href="#">Active</a></li>
             <li><a href="{{url_for('random_sub')}}">Random</a></li>
+            {% if current_user.is_admin() %}<li><a href="{{url_for('admin_area')}}">Admin</a></li>{% endif %}
             {% block navbar %}{% endblock %}
           </ul>
         </nav>

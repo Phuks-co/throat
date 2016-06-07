@@ -48,5 +48,20 @@
     <div class="col-3" title="{{sub.title}}"><a href="{{url_for('view_sub', sub=sub.name)}}"><i class="fa fa-list"></i> {{sub.name}} ({{sub.getModName}})</a></div>
     {% endfor %}
   </div>
+  <div class="col-12">
+    <div>
+      <form id="edit-mod-form" class="">
+        {{editmodform.csrf_token}}
+        <h4>Change mod of sub</h4>
+        <div class="col-3">{{editmodform.sub(placeholder='Sub', required=True, autofocus=True)}}</div>
+        <div class="col-3">{{editmodform.user(placeholder='New Mod', required=True,)}}</div>
+        <div class="col-3"><button type="submit" class="btn btn-blue" id="editmodform-btnsubmit">Transfer sub</button></div>
+        <div class="alert div-error">
+          <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+          <p></p>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 {% endblock %}
