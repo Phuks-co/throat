@@ -98,12 +98,6 @@ def getName(uid):
     x = User.query.filter_by(uid=uid).first()
     return str(x.name)
 
-def getModName(sub):
-    """ Gets username of mod """
-    x = sub.properties.filter_by(key='mod').first()
-    y = User.query.filter_by(uid=x.value).first()
-    return str(y.name)
-
 def isMod(sub, user):
     """ Returns True if 'user' is a mod of 'sub' """
     x = sub.properties.filter_by(key='mod').filter_by(value=user.uid).first()

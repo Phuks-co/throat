@@ -26,7 +26,7 @@ from .forms import CreateUserMessageForm, PostComment
 from .forms import DummyForm, DeletePost, CreateUserBadgeForm
 from .views import do
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, getName
-from .misc import SiteAnon, make_external, getModName
+from .misc import SiteAnon, make_external
 from .sorting import VoteSorting, BasicSorting
 
 app = Flask(__name__)

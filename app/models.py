@@ -89,6 +89,17 @@ class Sub(db.Model):
     def __repr__(self):
         return '<Sub {0}-{1}>'.format(self.name, self.title)
 
+    @hybrid_property
+    def getModName(self):
+        x = self.properties.filter_by(key='mod').first()
+        y = User.query.filter_by(uid=x.value).first()
+        return str(y.name)
+
+    @hybrid_property
+    def getSubCreation(self):
+        x = self.properties.filter_by(key='creation').first()
+        return x.value
+
 
 class SubMetadata(db.Model):
     """ Sub metadata. Here we store if the sub is nsfw, the modlist,
