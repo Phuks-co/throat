@@ -98,7 +98,7 @@ class Sub(db.Model):
     @hybrid_property
     def getSubCreation(self):
         x = self.properties.filter_by(key='creation').first()
-        return x.value
+        return str(x.value)
 
 
 class SubMetadata(db.Model):

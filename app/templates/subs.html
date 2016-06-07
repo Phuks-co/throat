@@ -28,7 +28,7 @@
       <div class="main">
         <a class="title" href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>
         <p class="author">{{sub.title}}</p>
-        <p class="author">Created {% if sub.getModName %}by: {{sub.getModName}}{% endif %} (sub created time)<time-ago datetime="{#sub.created.isoformat()#}"></time-ago></p>
+        <p class="author">Created {% if sub.getModName %}by: {{sub.getModName}}{% endif %} <time-ago datetime="{{sub.getSubCreation}}"></time-ago></p>
         <p class="container">
           <a class="btn small"><i class="fa fa-users" aria-hidden="true"></i> XX Subscribers</a>
           <a class="btn small"><i class="fa fa-plus" aria-hidden="true"></i> Subscribe</a>

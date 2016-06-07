@@ -158,7 +158,7 @@ def create_sub():
         sub = Sub(form.subname.data, form.title.data)
         db.session.add(sub)
         ux = SubMetadata(sub, 'mod', current_user.get_id())
-        ux2 = SubMetadata(sub, 'creation', time.time())
+        ux2 = SubMetadata(sub, 'creation', datetime.datetime.utcnow())
         ux3 = SubMetadata(sub, 'nsfw', '0')
         ux4 = SubStylesheet(sub, content='/** css here **/')
         db.session.add(ux)
