@@ -43,9 +43,9 @@
 </div>
 
 <div class="admin section subs">
-  <div class="col-12"><h2>Subs</h2>
+  <div class="col-12"><h2>Subs (mod)</h2>
     {% for sub in subs %}
-    <div class="col-3" title="{{sub.title}}"><a href="{{url_for('view_sub', sub=sub.name)}}"><i class="fa fa-list"></i> {{sub.name}}</a></div>
+    <div class="col-3" title="{{sub.title}}"><a href="{{url_for('view_sub', sub=sub.name)}}"><i class="fa fa-list"></i> {{sub.name}} ({{sub.getModName}})</a></div>
     {% endfor %}
   </div>
 </div>
