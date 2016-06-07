@@ -405,6 +405,9 @@ a.btn.login, a.btn.register {
     overflow: hidden;
     line-height: 1em;
 }
+.side .createdby {
+    font-size: 12px;
+}
 @media only screen and (max-width: 768px) {
     /* For mobile phones: */
     .side {

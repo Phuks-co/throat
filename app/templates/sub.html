@@ -29,8 +29,7 @@
   </div>
   {% endif %}
 </div>
-{% if sub.getModName %}<p>Created by: {{sub.getModName}}</p>{% endif %}
-{% if sub.getSubCreation %}<p>A communuty for <time-ago datetime="{{sub.getSubCreation}}"></time-ago></p>{% endif %}
+<p class="createdby">Created {% if sub.getModName %}by {{sub.getModName}}{% endif %} <time-ago datetime="{{sub.getSubCreation}}"></time-ago></p>
 {% endblock %}
 
 {% block content %}
