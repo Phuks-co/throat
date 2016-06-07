@@ -211,7 +211,7 @@ def edit_sub(sub):
         return render_template('editsub.html', sub=sub,
                                editsubform=form)
     else:
-        return "go away"
+        abort(403)
 
 
 @app.route("/s/<sub>/new")
@@ -282,7 +282,7 @@ def edit_user(user):
         return render_template('edituser.html', user=user, subs=subs,
                                edituserform=EditUserForm())
     else:
-        return "go away"
+        abort(403)
 
 
 @app.route("/messages")

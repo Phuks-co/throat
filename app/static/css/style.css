@@ -450,6 +450,9 @@ nav ul li a {
     -moz-transition: all 0.2s linear;
     transition: all 0.2s linear;
 }
+nav ul li a:visited {
+  color: black;
+}
 nav ul li a:hover {
     color: #fb5b00;
 }
@@ -605,6 +608,9 @@ nav .right a {
     color: #fff;
     background-color: #fb5b00;
     border-color: #fb5b00;
+}
+.btn.small.btn-orange {
+  color: white;
 }
 
 /* red button */
