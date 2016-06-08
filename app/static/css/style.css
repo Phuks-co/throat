@@ -1114,6 +1114,15 @@ button#text-post-icon, button#link-post-icon {
 .admin.section .sub li {
     margin: 4px 0;
 }
+.col-12.admin-page-form {
+    border: 2px solid #D83600;
+    border-radius: 3px;
+    padding: 10px;
+    margin: 10px 0;
+}
+.admin.section.stats div {
+    text-align: center;
+}
 /* colors */
 .red {color: red;}
 .blue {color: blue;}

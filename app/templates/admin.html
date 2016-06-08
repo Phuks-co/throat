@@ -16,7 +16,7 @@
     <div class="col-3">{{loop.index}} - <i title="{{badge.text}}" class="fa {{badge.badge}}"></i> {{badge.name}}</div>
     {% endfor %}
   </div>
-  <div class="col-12">
+  <div class="col-12 admin-page-form">
     <div>
       <form id="create-user-badge" class="">
         {{createuserbadgeform.csrf_token}}
@@ -57,9 +57,9 @@
     </div>
     {% endfor %}
   </div>
-  <div class="col-12">
+  <div class="col-12 admin-page-form">
     <div>
-      <form id="edit-mod-form" class="">
+      <form id="edit-mod-form">
         {{editmodform.csrf_token}}
         <h4>Change mod of sub</h4>
         <div class="col-3">{{editmodform.sub(placeholder=editmodform.sub.label.text, required=True, autofocus=True)}}</div>

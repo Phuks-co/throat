@@ -18,7 +18,8 @@ from flask_login import LoginManager, login_required, current_user
 from tld import get_tld
 from werkzeug.contrib.atom import AtomFeed
 
-from .models import db, User, Sub, SubPost, Message, SubPostVote, UserBadge
+from .models import db, User, Sub, SubPost, Message, SubPostVote
+from .models import UserBadge, UserMetadata
 from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditSubForm, EditUserForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
@@ -265,7 +266,10 @@ def view_user(user):
     if not user:
         abort(404)
 
-    return render_template('user.html', user=user,
+    subs = Sub.query.order_by(Sub.name.asc()).all()
+    badges = UserMetadata.query.filter_by(uid=user.uid) \
+                               .filter_by(key='badge').all()
+    return render_template('user.html', user=user, badges=badges, subs=subs,
                            msgform=CreateUserMessageForm())
 
 
@@ -277,10 +281,12 @@ def edit_user(user):
     if not user:
         abort(404)
 
-    subs = Sub.query.order_by(Sub.name.desc()).all()
+    subs = Sub.query.order_by(Sub.name.asc()).all()
+    badges = UserMetadata.query.filter_by(uid=user.uid) \
+                               .filter_by(key='badge').all()
     if current_user.get_username() == user.name or current_user.is_admin():
         return render_template('edituser.html', user=user, subs=subs,
-                               edituserform=EditUserForm())
+                               badges=badges, edituserform=EditUserForm())
     else:
         abort(403)
 

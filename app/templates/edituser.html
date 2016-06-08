@@ -13,29 +13,31 @@
   <h3>Badges:</h3>
   <ul style="color: darkcyan;">
     <li><i class="fa fa-bug" aria-hidden="true"></i> Bug squasher</li>
-    {# for badge in badges %}
-    <li><i title="{{badge.text}}" class="fa {{badge.badge }}"></i> {{badge.name}}</li>
-    {% endfor #}
+    {% for badge in badges %}
+    <li><i title="{#badge.text#}" class="fa {#badge.badge#}"></i>{{badge.value}}</li>
+    {% endfor %}
     {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
   </ul>
 </div>
 <hr>
 <p class="joindate">Registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
 <hr>
-<h3>Moderating:</h3>
-<ul style="color: darkcyan;">
-  {% for sub in subs  %}
-  {% if current_user.is_mod(sub) %}
-  <li><a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a></li>
-  {% endif %}
-  {% endfor %}
-</ul>
+<div>
+  <h3>Moderating:</h3>
+  <ul style="color: darkcyan;">
+    {% for sub in subs  %}
+    {% if user.name == sub.getModName %}
+    <li><a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a></li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+</div>
 {% endblock %}
 {% block content %}
 {{ super() }}
 <div class="edituser">
   {% if current_user.is_admin() %}
-  <div class="adminbadges post">
+  <div class="adminbadges col-12 admin-page-form">
     <div class=""><h3>Admin options</h3></div>
     <div class="col-3">Assign User Badge
     </div>
