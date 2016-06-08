@@ -185,7 +185,11 @@ def edit_sub(sub):
         form = EditSubForm()
         if form.validate():
             sub.title = form.title.data
-            sub.properties.filter_by(key='nsfw').first().value = form.nsfw.data
+            if sub.properties.filter_by(key='nsfw').first():
+                sub.properties.filter_by(key='nsfw').first().value = form.nsfw.data
+            else:
+                nsfw = SubMetadata(sub, 'nsfw', form.nsfw.data)
+                db.session.add(nsfw)
             if sub.stylesheet.first():
                 sub.stylesheet.first().content = form.css.data
             else:
