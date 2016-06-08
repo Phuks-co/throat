@@ -46,7 +46,7 @@
   <div class="col-12"><h2><i class="fa fa-list"></i> Subs</h2>
     {% for sub in subs %}
     <div class="col-3 sub">
-      <div class="subname"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a></div>
+      <div class="subname"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>{% if sub.getNSFW %} <i title="NSFW" class="fa fa-eye-slash"></i>{% endif %}</div>
       <div class="subtitle">{{sub.title}}</div>
         <ul>
           <li><i class="fa fa-user"></i> {{sub.getModName}}</li>

@@ -105,6 +105,11 @@ class Sub(db.Model):
         x = self.posts.filter_by(sid=self.sid).count()
         return str(x)
 
+    @hybrid_property
+    def getNSFW(self):
+        x = self.properties.filter_by(key='nsfw').first()
+        return True if x.value == '1' else False
+
 class SubMetadata(db.Model):
     """ Sub metadata. Here we store if the sub is nsfw, the modlist,
     the founder, etc. """

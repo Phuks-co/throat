@@ -21,7 +21,7 @@ class EditSubForm(Form):
                         validators=[DataRequired(), Length(min=2, max=128)])
 
     css = TextAreaField('Custom stylesheet', validators=[Length(max=10000)])
-
+    nsfw = BooleanField('NSFW?')
 
 class EditModForm(Form):
     """ Edit mod of sub (admin) """
