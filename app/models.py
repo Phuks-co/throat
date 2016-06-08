@@ -100,6 +100,10 @@ class Sub(db.Model):
         x = self.properties.filter_by(key='creation').first()
         return str(x.value)
 
+    @hybrid_property
+    def getSubPostCount(self):
+        x = self.posts.filter_by(sid=self.sid).count()
+        return str(x)
 
 class SubMetadata(db.Model):
     """ Sub metadata. Here we store if the sub is nsfw, the modlist,

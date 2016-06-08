@@ -408,6 +408,9 @@ a.btn.login, a.btn.register {
 .side .createdby {
     font-size: 12px;
 }
+.side ul {
+    -webkit-padding-start: 0px;
+}
 @media only screen and (max-width: 768px) {
     /* For mobile phones: */
     .side {
@@ -1091,7 +1094,26 @@ button#text-post-icon, button#link-post-icon {
 .admin.section.subs a {
     text-decoration: none;
 }
-
+.admin.section div .sub {
+    margin: 10px 0;
+    text-align: center;
+    border: 1px solid lightgray;
+    border-radius: 3px;
+}
+.admin.section div .subname a {
+    margin: 0;
+    font-size: 24px;
+}
+.admin.section div .subname {
+    margin: 10px 0;
+}
+.admin.section ul {
+    -webkit-padding-start: 0;
+    -webkit-margin-before: 0;
+}
+.admin.section .sub li {
+    margin: 4px 0;
+}
 /* colors */
 .red {color: red;}
 .blue {color: blue;}

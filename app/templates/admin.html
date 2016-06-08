@@ -11,9 +11,9 @@
 </div>
 
 <div class="admin section badges">
-  <div class="col-12"><h2>Available User Badges</h2>
+  <div class="col-12"><h2><i class="fa fa-beer"></i> User Badges</h2>
     {% for badge in badges %}
-    <div class="col-3"><i title="{{badge.text}}" class="fa {{badge.badge}}"></i> {{badge.name}}</div>
+    <div class="col-3">{{loop.index}} - <i title="{{badge.text}}" class="fa {{badge.badge}}"></i> {{badge.name}}</div>
     {% endfor %}
   </div>
   <div class="col-12">
@@ -35,7 +35,7 @@
 </div>
 
 <div class="admin section users">
-  <div class="col-12"><h2>Users</h2>
+  <div class="col-12"><h2><i class="fa fa-users"></i> Users</h2>
     {% for user in users %}
     <div class="col-3"><a href="{{url_for('view_user', user=user.name)}}"><i class="fa fa-user"></i> {{user.name}}</a></div>
     {% endfor %}
@@ -43,9 +43,18 @@
 </div>
 
 <div class="admin section subs">
-  <div class="col-12"><h2>Subs (mod)</h2>
+  <div class="col-12"><h2><i class="fa fa-list"></i> Subs</h2>
     {% for sub in subs %}
-    <div class="col-3" title="{{sub.title}}"><a href="{{url_for('view_sub', sub=sub.name)}}"><i class="fa fa-list"></i> {{sub.name}} ({{sub.getModName}})</a></div>
+    <div class="col-3 sub">
+      <div class="subname"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a></div>
+      <div class="subtitle">{{sub.title}}</div>
+        <ul>
+          <li><i class="fa fa-user"></i> {{sub.getModName}}</li>
+          <li><i class="fa fa-users"></i> xx subscribers</li>
+          <li><i class="fa fa-list"></i> {{sub.getSubPostCount}} submissions</li>
+          <li><i class="fa fa-comments"></i> xx comments</li>
+        </ul>
+    </div>
     {% endfor %}
   </div>
   <div class="col-12">
