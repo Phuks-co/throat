@@ -67,11 +67,11 @@ class CreateUserMessageForm(Form):
 
 class CreateUserBadgeForm(Form):
     """ CreateUserBadge form. """
-    badge = StringField('fa-xxx number',
+    badge = StringField('fa-xxxx-x fa-xxxx',
                            validators=[DataRequired(), Length(min=2, max=32)])
-    name = StringField('Name',
+    name = StringField('Badge name',
                            validators=[DataRequired(), Length(min=2, max=128)])
-    text = StringField('Description',
+    text = StringField('Badge description',
                            validators=[DataRequired(), Length(min=2, max=128)])
 
 

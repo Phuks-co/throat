@@ -27,7 +27,7 @@ class EditModForm(Form):
     """ Edit mod of sub (admin) """
     sub = StringField('Sub',
                         validators=[DataRequired(), Length(min=2, max=128)])
-    user = StringField('User',
+    user = StringField('New mod username',
                         validators=[DataRequired(), Length(min=1, max=128)])
 
 
