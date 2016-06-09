@@ -23,6 +23,8 @@ class User(db.Model):
     # 0 = OK; 1 = banned; 2 = shadowbanned?; 3 = sent to oblivion?
     status = Column(Integer)
     joindate = Column(DateTime)
+    subscribed = db.relationship('SubSubscriber', backref='user',
+                                 lazy='dynamic')
     posts = db.relationship('SubPost', backref='user', lazy='dynamic')
     properties = db.relationship('UserMetadata',
                                  backref='user', lazy='dynamic')
@@ -76,6 +78,8 @@ class Sub(db.Model):
 
     status = Column(Integer)  # Sub status. 0 = ok; 1 = banned; etc
 
+    subscribers = db.relationship('SubSubscriber', backref='sub',
+                                  lazy='dynamic')
     posts = db.relationship('SubPost', backref='sub', lazy='dynamic')
     properties = db.relationship('SubMetadata', backref='sub', lazy='dynamic')
     stylesheet = db.relationship('SubStylesheet', backref='sub',
@@ -110,6 +114,7 @@ class Sub(db.Model):
         x = self.properties.filter_by(key='nsfw').first()
         return True if x.value == '1' else False
 
+
 class SubMetadata(db.Model):
     """ Sub metadata. Here we store if the sub is nsfw, the modlist,
     the founder, etc. """
@@ -122,6 +127,18 @@ class SubMetadata(db.Model):
         self.sid = sub.sid
         self.key = key
         self.value = value
+
+
+class SubSubscriber(db.Model):
+    """ Stores subscribers for a sub. """
+    # Note: We usually use integer primary keys when we don't need to actually
+    # use the primary keys (but we should always define them, because it speeds
+    # up queries and stuff), when we have to store an ID we always use uuid4s
+    # The only exception is SubPost >_>
+    xid = Column(Integer, primary_key=True)
+    sid = Column(String(40), db.ForeignKey('sub.sid'))
+    uid = Column(String(40), db.ForeignKey('user.uid'))
+    time = Column(DateTime)
 
 
 class SubStylesheet(db.Model):

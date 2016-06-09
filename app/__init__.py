@@ -152,6 +152,7 @@ def index_new():
 
 @app.route("/all/new.rss")
 def all_new_rss():
+    """ RSS feed for /all/new """
     fg = FeedGenerator()
     fg.title("/all/new")
     fg.subtitle("All new posts feed")
@@ -166,7 +167,6 @@ def all_new_rss():
         fe.id(url)
         fe.link({'href': url, 'rel': 'self'})
         fe.title(post.title)
-
 
     return fg.rss_str(pretty=True)
 
@@ -189,7 +189,6 @@ def all_top(page):
     sorter = VoteSorting(posts)
     return render_template('index.html', page=page, sort_type='all_top',
                            posts=sorter.getPosts(page))
-
 
 
 @app.route("/subs")
