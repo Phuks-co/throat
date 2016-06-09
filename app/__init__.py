@@ -17,6 +17,7 @@ from flask_assets import Environment, Bundle
 from flask_login import LoginManager, login_required, current_user
 from tld import get_tld
 from werkzeug.contrib.atom import AtomFeed
+from feedgen.feed import FeedGenerator
 
 from .models import db, User, Sub, SubPost, Message, SubPostVote
 from .models import UserBadge, UserMetadata
@@ -147,6 +148,27 @@ def index():
 def index_new():
     """ The index page, currently sorts like /all/new """
     return all_new(1)
+
+
+@app.route("/all/new.rss")
+def all_new_rss():
+    fg = FeedGenerator()
+    fg.title("/all/new")
+    fg.subtitle("All new posts feed")
+    fg.link(href=url_for('all_new', _external=True))
+    fg.generator("Throat")
+    posts = SubPost.query.order_by(SubPost.posted.desc())
+    sorter = BasicSorting(posts)
+    for post in sorter.getPosts():
+        fe = fg.add_entry()
+        url = url_for('view_post', sub=post.sub.name, pid=post.pid,
+                      _external=True)
+        fe.id(url)
+        fe.link({'href': url, 'rel': 'self'})
+        fe.title(post.title)
+
+
+    return fg.rss_str(pretty=True)
 
 
 @app.route("/all/new", defaults={'page': 1})
