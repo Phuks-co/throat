@@ -1,5 +1,5 @@
 """ Misc helper function and classes. """
-from .models import db, User
+from .models import db, User, Message
 from flask_login import AnonymousUserMixin
 
 
@@ -36,6 +36,9 @@ class SiteUser(object):
         """ Returns True if we know that the current user is a lizard. """
         return True if getMetadata(self.user, 'lizard') else False
 
+    def has_mail(self):
+        """ Returns True if the current has unread messages """
+        return hasMail(self.user)
 
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
@@ -101,6 +104,12 @@ def getName(uid):
 def isMod(sub, user):
     """ Returns True if 'user' is a mod of 'sub' """
     x = sub.properties.filter_by(key='mod').filter_by(value=user.uid).first()
+    return bool(x)
+
+def hasMail(user):
+    """ Returns True if 'user' has new messages """
+    x = Message.query.filter_by(receivedby=user.uid) \
+                     .filter_by(read=None).first()
     return bool(x)
 
 def make_external(url):

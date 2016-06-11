@@ -1015,6 +1015,9 @@ button#text-post-icon, button#link-post-icon {
     border: 0;
     background: transparent;
 }
+.fa.fa-envelope.hasmail {
+    color: #fb5000;
+}
 
 /* edit sub */
 
