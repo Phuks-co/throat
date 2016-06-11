@@ -388,6 +388,15 @@ def create_comment(sub, pid):
 
         if form.parent.data != "0":
             comment.parentcid = form.parent.data
+        # send pm to op
+        pm = Message()
+        pm.sentby = current_user.get_id()
+        pm.receivedby = post.uid
+        pm.subject = 'Post reply: ' + post.title
+        pm.content = form.comment.data
+        pm.mtype = post.sub.name + '/' + str(post.pid)
+        pm.posted = datetime.datetime.utcnow()
+        db.session.add(pm)
         db.session.add(comment)
         db.session.commit()
         return json.dumps({'status': 'ok'})

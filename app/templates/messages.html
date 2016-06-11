@@ -22,7 +22,11 @@
 {% for message in messages %}
     <article class="post">
       <div class="main">
-        <p class="title">{{message.subject}}</a>
+        {% if box_name == 'Post Replies' %}
+        <p class="title"><a href="/s/{{message.mtype}}">{{message.subject}}</a></p>
+        {% else %}
+        <p class="title">{{message.subject}}</p>
+        {% endif %}
         <p class="container">{{message.content}}</p>
         <p class="author"><time-ago datetime="{{message.posted.isoformat()}}"></time-ago></p>
         <p class="container">

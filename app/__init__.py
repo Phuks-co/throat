@@ -320,6 +320,7 @@ def view_messages():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
+                            .filter_by(mtype=None) \
                             .order_by(Message.posted.desc()).all()
 
     return render_template('messages.html', user=user, messages=messages,
@@ -332,6 +333,7 @@ def view_messages_sent():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(sentby=user) \
+                            .filter_by(mtype=None) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Sent")
@@ -340,9 +342,10 @@ def view_messages_sent():
 @app.route("/messages/posts")
 @login_required
 def view_messages_posts():
-    """ WIP: View user's messages """
+    """ WIP: View user's post replies """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
+                            .filter(Message.mtype!=None) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Post Replies")
@@ -351,9 +354,10 @@ def view_messages_posts():
 @app.route("/messages/comments")
 @login_required
 def view_messages_comments():
-    """ WIP: View user's messages """
+    """ WIP: View user's comment replies """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
+                            .filter(Message.mtype!=None) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Comment Replies")
