@@ -266,3 +266,8 @@ class Message(db.Model):
     def getMsgSentBy(message):
         x = User.query.filter_by(uid=message.sentby).first()
         return str(x.name)
+
+    @hybrid_property
+    def getMsgRecBy(message):
+        x = User.query.filter_by(uid=message.receivedby).first()
+        return str(x.name)
