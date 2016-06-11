@@ -55,6 +55,20 @@ class UserMetadata(db.Model):
     key = Column(String(255))  # Metadata key
     value = Column(String(255))
 
+    @hybrid_property
+    def getBadgeClass(badge):
+        x = UserBadge.query.filter_by(bid=badge.value).first()
+        return str(x.badge)
+
+    @hybrid_property
+    def getBadgeName(badge):
+        x = UserBadge.query.filter_by(bid=badge.value).first()
+        return str(x.name)
+
+    @hybrid_property
+    def getBadgeText(badge):
+        x = UserBadge.query.filter_by(bid=badge.value).first()
+        return str(x.text)
 
 class UserBadge(db.Model):
     """ Here we store badge definitions """

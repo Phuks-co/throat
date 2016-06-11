@@ -22,9 +22,9 @@
 <div>
   <h3>Badges:</h3>
   <ul style="color: darkcyan;">
-    <li><i class="fa fa-bug" aria-hidden="true"></i> Bug squasher</li>
+    <li title="Early stoat gets the worm"><i class="fa fa-bug" aria-hidden="true"></i> Bug squasher</li>
     {% for badge in badges %}
-    <li><i title="{#badge.text#}" class="fa {#badge.badge#}"></i>{{badge.value}}</li>
+    <li title="{{badge.getBadgeText}}"><i class="fa {{badge.getBadgeClass}}"></i> {{badge.getBadgeName}}</li>
     {% endfor %}
     {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
   </ul>
@@ -37,7 +37,7 @@
   <ul style="color: darkcyan;">
     {% for sub in subs  %}
     {% if user.name == sub.getModName %}
-    <li><a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a></li>
+    <li><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a></li>
     {% endif %}
     {% endfor %}
   </ul>

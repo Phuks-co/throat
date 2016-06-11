@@ -28,7 +28,7 @@ from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DummyForm, DeletePost, CreateUserBadgeForm
 from .views import do
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, getName
-from .misc import SiteAnon, make_external
+from .misc import SiteAnon, make_external, hasBadge
 from .sorting import VoteSorting, BasicSorting
 
 app = Flask(__name__)
@@ -305,9 +305,11 @@ def edit_user(user):
     subs = Sub.query.order_by(Sub.name.asc()).all()
     badges = UserMetadata.query.filter_by(uid=user.uid) \
                                .filter_by(key='badge').all()
+    adminbadges = UserBadge.query.all()
     if current_user.get_username() == user.name or current_user.is_admin():
         return render_template('edituser.html', user=user, subs=subs,
-                               badges=badges, edituserform=EditUserForm())
+                               badges=badges, adminbadges=adminbadges,
+                               edituserform=EditUserForm())
     else:
         abort(403)
 
