@@ -7,8 +7,9 @@ import time
 import bcrypt
 from flask import Blueprint, redirect, url_for
 from sqlalchemy import func
-from ..models import db, User, Sub, SubPost, Message, SubPostComment, UserBadge
+from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
+from ..models import UserMetadata, UserBadge
 from ..forms import RegistrationForm, LoginForm, LogOutForm
 from ..forms import CreateSubForm, EditSubForm, EditUserForm
 from ..forms import CreateUserBadgeForm, EditModForm
@@ -400,13 +401,25 @@ def create_user_badge():
     form = CreateUserBadgeForm()
     if form.validate():
         badge = UserBadge(form.badge.data, form.name.data, form.text.data)
-        #badge.badge = form.badge.data
-        #badge.name = form.name.data
-        #badge.text = form.text.data
         db.session.add(badge)
         db.session.commit()
         return json.dumps({'status': 'ok', 'bid': badge.bid})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/assign_user_badge/<uid>/<bid>", methods=['POST'])
+@login_required
+def assign_user_badge(uid, bid):
+    """ Assign User Badge endpoint """
+    if current_user.is_admin():
+        badge = UserMetadata()
+        badge.uid = uid
+        badge.key = 'badge'
+        badge.value = bid
+        db.session.add(badge)
+        db.session.commit()
+        return json.dumps({'status': 'ok', 'bid': bid})
+        #return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/sendmsg/<user>", methods=['POST'])

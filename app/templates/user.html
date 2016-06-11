@@ -21,7 +21,7 @@
 </div>
 <div>
   <h3>Badges:</h3>
-  <ul style="color: darkcyan;">
+  <ul id="userBadges" style="color: darkcyan;">
     <li title="Early stoat gets the worm"><i class="fa fa-bug" aria-hidden="true"></i> Bug squasher</li>
     {% for badge in badges %}
     <li title="{{badge.getBadgeText}}"><i class="fa {{badge.getBadgeClass}}"></i> {{badge.getBadgeName}}</li>

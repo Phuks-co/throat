@@ -453,6 +453,21 @@ $(document).ready(function() {
       });
     });
 
+    $('div[id^="assignbadge"]').click(function(e){
+      var bid = $(e.currentTarget).data().bid
+      var uid = $(e.currentTarget).data().uid
+      $.ajax({
+        type: "POST",
+        url: '/do/assign_user_badge/' + uid + '/' + bid,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).addClass('badgeassigned');
+          }
+        }
+      });
+    });
+
     $('#youtubevid').click(function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().vid

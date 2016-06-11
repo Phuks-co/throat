@@ -1,6 +1,7 @@
 """ User-related forms """
 from flask_wtf import Form, RecaptchaField
-from wtforms import StringField, PasswordField, TextField, TextAreaField, BooleanField
+from wtforms import StringField, PasswordField, TextField, TextAreaField
+from wtforms import BooleanField
 from wtforms.validators import DataRequired, Length, Email, Required, EqualTo
 from wtforms.validators import Optional
 from wtforms.fields.html5 import EmailField

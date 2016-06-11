@@ -11,7 +11,7 @@
 
 <div>
   <h3>Badges:</h3>
-  <ul style="color: darkcyan;">
+  <ul id="userBadges" style="color: darkcyan;">
     <li title="Early stoat gets the worm"><i class="fa fa-bug" aria-hidden="true"></i> Bug squasher</li>
     {% for badge in badges %}
     <li title="{{badge.getBadgeText}}"><i class="fa {{badge.getBadgeClass}}"></i> {{badge.getBadgeName}}</li>
@@ -41,7 +41,7 @@
     <div class=""><h3>Admin options</h3></div>
     <div class="col-12"><h2><i class="fa fa-beer"></i> Assign User Badge</h2>
       {% for badge in adminbadges %}
-      <div class="col-3 btn">{{loop.index}} - <i title="{{badge.text}}" class="fa {{badge.badge}}"></i> {{badge.name}}</div>
+      <div id="assignbadge" class="col-3 btn" data-bid="{{badge.bid}}" data-uid="{{user.uid}}">{{loop.index}} - <i title="{{badge.text}}" class="fa {{badge.badge}}"></i> {{badge.name}}</div>
       {% endfor %}
     </div>
   </div>
