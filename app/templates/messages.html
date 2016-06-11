@@ -26,7 +26,7 @@
         <p class="container">{{message.content}}</p>
         <p class="author"><time-ago datetime="{{message.posted.isoformat()}}"></time-ago></p>
         <p class="container">
-          <a href="{# url_for('view_user', user=message.user) #}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{message.sentby.name}}</a>
+          <a href="{# url_for('view_user', user=message.user) #}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{message.getMsgSentBy}}</a>
           {% if box_name == 'Inbox' %}
           {% if not message.read %}
           <a class="unread btn btn-orange edit small" data-mid="{{message.mid}}"><i class="fa fa-circle-o" aria-hidden="true"></i> mark as read</a>

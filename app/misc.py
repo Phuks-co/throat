@@ -37,7 +37,7 @@ class SiteUser(object):
         return True if getMetadata(self.user, 'lizard') else False
 
     def has_mail(self):
-        """ Returns True if the current has unread messages """
+        """ Returns True if the current user has unread messages """
         return hasMail(self.user)
 
 class SiteAnon(AnonymousUserMixin):
@@ -107,7 +107,7 @@ def isMod(sub, user):
     return bool(x)
 
 def hasMail(user):
-    """ Returns True if 'user' has new messages """
+    """ Returns True if the current user has unread messages """
     x = Message.query.filter_by(receivedby=user.uid) \
                      .filter_by(read=None).first()
     return bool(x)

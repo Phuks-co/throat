@@ -261,3 +261,8 @@ class Message(db.Model):
 
     def __repr__(self):
         return '<Messages {0}>'.format(self.subject)
+
+    @hybrid_property
+    def getMsgSentBy(message):
+        x = User.query.filter_by(uid=message.sentby).first()
+        return str(x.name)
