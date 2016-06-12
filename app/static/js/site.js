@@ -541,6 +541,38 @@ $(document).ready(function() {
       }
     });
 
+    $('span[id^="opentextpost"]').click(function(e){
+      var pid = $(e.currentTarget).data().pid
+      var div = document.createElement('div');
+      playerid = 'player' + pid;
+      if($(this).hasClass('closedtextpost'))  {
+        div.style = 'max-width:560px;padding:10px;display:block;';
+        $.ajax({
+            type: "GET",
+            url: '/do/get_txtpost/' + pid, // XXX: Hardcoded URL
+            dataType: 'json',
+            success: function(data) {
+                if (data.status != "ok") {
+                    var t = document.createTextNode(data.content);
+                    div.appendChild(t);
+                } else { // success
+                    var t = document.createTextNode(data.content);
+                    div.appendChild(t);
+                }
+
+            }
+        });
+        $(e.currentTarget).addClass('openedtextpost').removeClass('closedtextpost');
+        document.getElementById(playerid).appendChild(div);
+        $('#' + playerid + ' a').html('<i class="fa fa-close" aria-hidden="true"></i>');
+      }
+      else {
+        $(this).addClass('closedtextpost').removeClass('openedtextpost');
+        $('#' + playerid + ' div').remove()
+        $('#' + playerid + ' a').html('<i class="fa fa-comments" aria-hidden="true"></i>');
+      }
+    });
+
     $("#create-user-badge").submit(function(e) {
         $("#create-user-badge-btnsubmit").prop('disabled', true);
         $("#create-user-badge-btnsubmit").text('Creating badge...');

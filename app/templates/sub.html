@@ -98,6 +98,11 @@
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
             </span>
           {% endif %}
+          {% if not post.link %}
+            <span id="opentextpost" data-pid="{{post.pid}}" class="closedtextpost">
+              <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
+            </span>
+          {% endif %}
           <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
           <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.comments.count()}})</a>
           {% if current_user.is_mod(sub) %}

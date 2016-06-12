@@ -249,6 +249,16 @@ def create_txtpost(sub):
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
+@do.route("/do/get_txtpost/<pid>", methods=['GET'])
+def get_txtpost(pid):
+    """ Sub text post expando get endpoint """
+    post = SubPost.query.filter_by(pid=pid).first()
+    if post:
+        return json.dumps({'status': 'ok', 'content': post.content})
+    else:
+        return json.dumps({'status': 'error', 'content': 'No longer available'})
+
+
 @do.route("/do/edit_txtpost/<sub>/<pid>", methods=['POST'])
 @login_required
 def edit_txtpost(sub, pid):
