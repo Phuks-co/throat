@@ -11,10 +11,11 @@ from urllib.parse import urlparse, urljoin
 
 import bcrypt
 import markdown
-from flask import Flask, render_template, session, redirect, url_for, abort
+from flask import Flask, render_template, session, redirect, url_for, abort, g
 from flask import make_response, request
 from flask_assets import Environment, Bundle
 from flask_login import LoginManager, login_required, current_user
+from flask_sqlalchemy import get_debug_queries
 from tld import get_tld
 from werkzeug.contrib.atom import AtomFeed
 from feedgen.feed import FeedGenerator
@@ -100,6 +101,30 @@ def initialize_database():
     """ This is executed before any request is processed. We use this to
     create all the tables and database shit we need. """
     db.create_all()
+
+
+@app.before_request
+def before_request():
+    g.start = time.time()
+
+
+@app.after_request
+def after_request(response):
+    diff = time.time() - g.start
+    diff = int(diff * 1000)
+    if app.debug:
+        print("Exec time: %s ms" % str(diff))
+
+    if response.response and type(response.response) == list:
+        etime = str(diff).encode()
+        queries = str(len(get_debug_queries())).encode()
+
+        response.response[0] = response.response[0] \
+                                       .replace(b'__EXECUTION_TIME__', etime)
+        response.response[0] = response.response[0] \
+                                       .replace(b'__DB_QUERIES__', queries)
+        response.headers["content-length"] = len(response.response[0])
+    return response
 
 
 def checkSession():
