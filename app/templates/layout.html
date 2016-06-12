@@ -87,7 +87,7 @@
     <footer>
         {% block footer %}
         &copy;2016 Throat. All Rights Reserved. | <a href="{{url_for('tos')}}">Terms of service</a> | <a href="{{url_for('privacy')}}">Privacy</a> |
-        Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries.
+        Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries (__QUERY_TIME__ms).
         {% endblock %}
     </footer>
     {% if current_user.is_anonymous %}

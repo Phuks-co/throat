@@ -115,6 +115,10 @@ def after_request(response):
     if app.debug:
         print("Exec time: %s ms" % str(diff))
 
+    querytime = 0
+    for q in get_debug_queries():
+        querytime += q.duration * 1000
+    querytime = str(int(querytime)).encode()
     if response.response and type(response.response) == list:
         etime = str(diff).encode()
         queries = str(len(get_debug_queries())).encode()
@@ -123,6 +127,8 @@ def after_request(response):
                                        .replace(b'__EXECUTION_TIME__', etime)
         response.response[0] = response.response[0] \
                                        .replace(b'__DB_QUERIES__', queries)
+        response.response[0] = response.response[0] \
+                                       .replace(b'__QUERY_TIME__', querytime)
         response.headers["content-length"] = len(response.response[0])
     return response
 
