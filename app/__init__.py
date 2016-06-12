@@ -30,7 +30,7 @@ from .forms import DummyForm, DeletePost, CreateUserBadgeForm
 from .views import do
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, getName
 from .misc import SiteAnon, hasMail
-from .sorting import VoteSorting, BasicSorting
+from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)
 app.register_blueprint(do)
@@ -218,6 +218,16 @@ def all_top(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.query.order_by(SubPost.posted.desc())
     sorter = VoteSorting(posts)
+    return render_template('index.html', page=page, sort_type='all_top',
+                           posts=sorter.getPosts(page))
+
+
+@app.route("/all/hot", defaults={'page': 1})
+@app.route("/all/hot/<int:page>")
+def all_hot(page):
+    """ The index page, all posts sorted as most recent posted first """
+    posts = SubPost.query.order_by(SubPost.posted.desc())
+    sorter = HotSorting(posts)
     return render_template('index.html', page=page, sort_type='all_top',
                            posts=sorter.getPosts(page))
 
