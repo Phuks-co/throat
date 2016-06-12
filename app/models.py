@@ -3,7 +3,6 @@
 import datetime
 import uuid
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
-from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 from tld import get_tld
@@ -56,20 +55,27 @@ class UserMetadata(db.Model):
     key = Column(String(255))  # Metadata key
     value = Column(String(255))
 
-    @hybrid_property
-    def getBadgeClass(badge):
-        x = UserBadge.query.filter_by(bid=badge.value).first()
+    def getBadgeClass(self):
+        """ Returns the badge's css class """
+        if self.key != "badge":
+            return False
+        x = UserBadge.query.filter_by(bid=self.value).first()
         return str(x.badge)
 
-    @hybrid_property
-    def getBadgeName(badge):
-        x = UserBadge.query.filter_by(bid=badge.value).first()
+    def getBadgeName(self):
+        """ Returns the badge's name """
+        if self.key != "badge":
+            return False
+        x = UserBadge.query.filter_by(bid=self.value).first()
         return str(x.name)
 
-    @hybrid_property
-    def getBadgeText(badge):
-        x = UserBadge.query.filter_by(bid=badge.value).first()
+    def getBadgeText(self):
+        """ Returns the badge's hover text """
+        if self.key != "badge":
+            return False
+        x = UserBadge.query.filter_by(bid=self.value).first()
         return str(x.text)
+
 
 class UserBadge(db.Model):
     """ Here we store badge definitions """
@@ -108,24 +114,26 @@ class Sub(db.Model):
     def __repr__(self):
         return '<Sub {0}-{1}>'.format(self.name, self.title)
 
-    @hybrid_property
     def getModName(self):
+        """ Returns the name of the first mod on the list """
+        # Why do we need this? If we want to get the sub's owner or the
+        # creator's name then we should use a different metadata key for that
         x = self.properties.filter_by(key='mod').first()
         y = User.query.filter_by(uid=x.value).first()
         return str(y.name)
 
-    @hybrid_property
     def getSubCreation(self):
+        """ Returns the sub's 'creation' metadata """
         x = self.properties.filter_by(key='creation').first()
         return str(x.value)
 
-    @hybrid_property
     def getSubPostCount(self):
+        """ Returns the sub's post count """
         x = self.posts.filter_by(sid=self.sid).count()
         return str(x)
 
-    @hybrid_property
     def getNSFW(self):
+        """ Returns true if the sub is marked as NSFW """
         x = self.properties.filter_by(key='nsfw').first()
         return True if x.value == '1' else False
 
@@ -196,8 +204,8 @@ class SubPost(db.Model):
     def __repr__(self):
         return '<SubPost {0} (In Sub{1})>'.format(self.title, self.sid)
 
-    @hybrid_property
     def voteCount(self):
+        """ Returns the post's vote count """
         count = 0
         for vote in self.votes:
             if vote.positive:
@@ -206,17 +214,16 @@ class SubPost(db.Model):
                 count -= 1
         return count
 
-    @hybrid_property
     def getDomain(self):
         """ Gets Domain """
         x = get_tld(self.link)
         return x
 
-    @hybrid_property
     def isImage(self):
         """ Returns True if link ends with img suffix """
         suffix = ['.png', '.jpg', '.gif', '.tiff', '.bmp']
         return self.link.lower().endswith(tuple(suffix))
+
 
 class SubPostMetadata(db.Model):
     """ Post metadata. Here we store if it is a sticky post, mod post, tagged
@@ -274,12 +281,12 @@ class Message(db.Model):
     def __repr__(self):
         return '<Messages {0}>'.format(self.subject)
 
-    @hybrid_property
-    def getMsgSentBy(message):
-        x = User.query.filter_by(uid=message.sentby).first()
+    def getMsgSentBy(self):
+        """ Returns this message's sender. """
+        x = User.query.filter_by(uid=self.sentby).first()
         return str(x.name)
 
-    @hybrid_property
-    def getMsgRecBy(message):
-        x = User.query.filter_by(uid=message.receivedby).first()
+    def getMsgRecBy(self):
+        """ Returns this message's recipient """
+        x = User.query.filter_by(uid=self.receivedby).first()
         return str(x.name)

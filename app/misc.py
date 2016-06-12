@@ -22,7 +22,7 @@ class SiteUser(object):
 
     def get_username(self):
         """ Returns the unique user name. Used on load_user """
-        return str(self.user.name)
+        return self.user.name
 
     def is_mod(self, sub):
         """ Returns True if the current user is a mod of 'sub' """
@@ -39,6 +39,7 @@ class SiteUser(object):
     def has_mail(self):
         """ Returns True if the current user has unread messages """
         return hasMail(self.user)
+
 
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
@@ -96,15 +97,18 @@ def getMetadata(obj, key, value=None):
         db.session.add(x)
     db.session.commit()
 
+
 def getName(uid):
     """ Gets username """
     x = User.query.filter_by(uid=uid).first()
     return str(x.name)
 
+
 def isMod(sub, user):
     """ Returns True if 'user' is a mod of 'sub' """
     x = sub.properties.filter_by(key='mod').filter_by(value=user.uid).first()
     return bool(x)
+
 
 def hasMail(user):
     """ Returns True if the current user has unread messages """

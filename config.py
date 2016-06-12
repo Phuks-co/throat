@@ -17,4 +17,4 @@ RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
 # Only for debugging and testing:
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 DEBUG = True
-TESTING = True  # This makes all the captchas valid
+# TESTING = True  # This makes all the captchas valid

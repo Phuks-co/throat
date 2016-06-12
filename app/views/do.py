@@ -3,7 +3,6 @@
 import json
 import re
 import datetime
-import time
 import bcrypt
 from flask import Blueprint, redirect, url_for
 from sqlalchemy import func
@@ -186,8 +185,9 @@ def edit_sub(sub):
         form = EditSubForm()
         if form.validate():
             sub.title = form.title.data
-            if sub.properties.filter_by(key='nsfw').first():
-                sub.properties.filter_by(key='nsfw').first().value = form.nsfw.data
+            nsfw = sub.properties.filter_by(key='nsfw').first()
+            if nsfw:
+                nsfw = form.nsfw.data
             else:
                 nsfw = SubMetadata(sub, 'nsfw', form.nsfw.data)
                 db.session.add(nsfw)
@@ -428,7 +428,6 @@ def assign_user_badge(uid, bid):
         db.session.add(badge)
         db.session.commit()
         return json.dumps({'status': 'ok', 'bid': bid})
-        #return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/sendmsg/<user>", methods=['POST'])
