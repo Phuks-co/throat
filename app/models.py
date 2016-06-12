@@ -3,6 +3,7 @@
 import datetime
 import uuid
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
+from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 from tld import get_tld
@@ -132,7 +133,8 @@ class Sub(db.Model):
         x = self.posts.filter_by(sid=self.sid).count()
         return str(x)
 
-    def getNSFW(self):
+    @hybrid_property
+    def isNSFW(self):
         """ Returns true if the sub is marked as NSFW """
         x = self.properties.filter_by(key='nsfw').first()
         return True if x.value == '1' else False
@@ -204,6 +206,7 @@ class SubPost(db.Model):
     def __repr__(self):
         return '<SubPost {0} (In Sub{1})>'.format(self.title, self.sid)
 
+    @hybrid_property
     def voteCount(self):
         """ Returns the post's vote count """
         count = 0
@@ -214,11 +217,13 @@ class SubPost(db.Model):
                 count -= 1
         return count
 
+    @hybrid_property
     def getDomain(self):
         """ Gets Domain """
         x = get_tld(self.link)
         return x
 
+    @hybrid_property
     def isImage(self):
         """ Returns True if link ends with img suffix """
         suffix = ['.png', '.jpg', '.gif', '.tiff', '.bmp']
