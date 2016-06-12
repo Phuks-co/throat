@@ -187,7 +187,7 @@ def edit_sub(sub):
             sub.title = form.title.data
             nsfw = sub.properties.filter_by(key='nsfw').first()
             if nsfw:
-                nsfw = form.nsfw.data
+                nsfw.value = form.nsfw.data
             else:
                 nsfw = SubMetadata(sub, 'nsfw', form.nsfw.data)
                 db.session.add(nsfw)

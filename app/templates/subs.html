@@ -20,7 +20,7 @@
           <a href="{{url_for('view_sub', sub=sub.name)}}">
             <span class="fa-stack fa-3x" style="color: #616161;">
               <i class="fa fa-square fa-stack-2x"></i>
-              {% if sub.getNSFW %}
+              {% if sub.isNSFW %}
               <i title ="NSFW" class="fa fa-eye-slash fa-stack-1x fa-inverse"></i>
               {% else %}
               <i class="fa fa-list fa-stack-1x fa-inverse"></i>
