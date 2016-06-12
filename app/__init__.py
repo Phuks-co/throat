@@ -105,11 +105,15 @@ def initialize_database():
 
 @app.before_request
 def before_request():
+    """ Called before the request is processed. Used to time the request """
     g.start = time.time()
 
 
 @app.after_request
 def after_request(response):
+    """ Called after the request is processed. Used to time the request """
+    if not app.debug:
+        return  # We won't do this if we're in production mode
     diff = time.time() - g.start
     diff = int(diff * 1000)
     if app.debug:
@@ -119,7 +123,7 @@ def after_request(response):
     for q in get_debug_queries():
         querytime += q.duration * 1000
     querytime = str(int(querytime)).encode()
-    if response.response and type(response.response) == list:
+    if response.response and isinstance(response.response, list):
         etime = str(diff).encode()
         queries = str(len(get_debug_queries())).encode()
 
@@ -385,7 +389,7 @@ def view_messages_posts():
     """ WIP: View user's post replies """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
-                            .filter(Message.mtype!=None) \
+                            .filter(Message.mtype.isnot(None)) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Post Replies")
@@ -397,7 +401,7 @@ def view_messages_comments():
     """ WIP: View user's comment replies """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
-                            .filter(Message.mtype!=None) \
+                            .filter(Message.mtype.isnot(None)) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Comment Replies")
