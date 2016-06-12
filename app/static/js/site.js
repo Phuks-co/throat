@@ -521,7 +521,7 @@ $(document).ready(function() {
       }
     });
 
-    $('#openimg').click(function(e){
+    $('span[id^="openimg"]').click(function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().img
       var img = document.createElement('img');

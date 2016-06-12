@@ -75,6 +75,11 @@
         {% endif %}
         <p class="author"><time-ago datetime="{{post.posted.isoformat()}}"></time-ago></p>
         <p class="container">
+          {% if post.link.endswith('.png') or post.link.endswith('.gif') or post.link.endswith('.jpg') %}
+            <span id="openimg" data-img="{{post.link}}" data-pid="{{post.pid}}" class="closedimg">
+              <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
+            </span>
+          {% endif %}
           <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
           <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.comments.count()}})</a>
           {% if current_user.is_mod(sub) %}
