@@ -56,6 +56,7 @@ class UserMetadata(db.Model):
     key = Column(String(255))  # Metadata key
     value = Column(String(255))
 
+    @hybrid_property
     def getBadgeClass(self):
         """ Returns the badge's css class """
         if self.key != "badge":
@@ -63,6 +64,7 @@ class UserMetadata(db.Model):
         x = UserBadge.query.filter_by(bid=self.value).first()
         return str(x.badge)
 
+    @hybrid_property
     def getBadgeName(self):
         """ Returns the badge's name """
         if self.key != "badge":
@@ -70,6 +72,7 @@ class UserMetadata(db.Model):
         x = UserBadge.query.filter_by(bid=self.value).first()
         return str(x.name)
 
+    @hybrid_property
     def getBadgeText(self):
         """ Returns the badge's hover text """
         if self.key != "badge":
@@ -115,6 +118,7 @@ class Sub(db.Model):
     def __repr__(self):
         return '<Sub {0}-{1}>'.format(self.name, self.title)
 
+    @hybrid_property
     def getModName(self):
         """ Returns the name of the first mod on the list """
         # Why do we need this? If we want to get the sub's owner or the
@@ -123,11 +127,13 @@ class Sub(db.Model):
         y = User.query.filter_by(uid=x.value).first()
         return str(y.name)
 
+    @hybrid_property
     def getSubCreation(self):
         """ Returns the sub's 'creation' metadata """
         x = self.properties.filter_by(key='creation').first()
         return str(x.value)
 
+    @hybrid_property
     def getSubPostCount(self):
         """ Returns the sub's post count """
         x = self.posts.filter_by(sid=self.sid).count()
@@ -286,11 +292,13 @@ class Message(db.Model):
     def __repr__(self):
         return '<Messages {0}>'.format(self.subject)
 
+    @hybrid_property
     def getMsgSentBy(self):
         """ Returns this message's sender. """
         x = User.query.filter_by(uid=self.sentby).first()
         return str(x.name)
 
+    @hybrid_property
     def getMsgRecBy(self):
         """ Returns this message's recipient """
         x = User.query.filter_by(uid=self.receivedby).first()
