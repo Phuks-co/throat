@@ -61,12 +61,12 @@
           {% else %}
           {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
           <div class="content"><a href="{{post.link}}" target="_blank" rel="noreferrer noopener">{{post.link}}</a>
-          {% if domain == "youtube.com" %}
+          {% if post.getDomain == "youtube.com" %}
             <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
             </span>
           {% endif %}
-          {% if domain == "vimeo.com" %}
+          {% if post.getDomain == "vimeo.com" %}
             <span id="vimeovid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
             </span>

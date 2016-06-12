@@ -111,6 +111,3 @@ def hasMail(user):
     x = Message.query.filter_by(receivedby=user.uid) \
                      .filter_by(read=None).first()
     return bool(x)
-
-def make_external(url):
-    return urljoin(request.url_root, url)
