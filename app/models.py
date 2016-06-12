@@ -6,6 +6,7 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
+from tld import get_tld
 
 db = SQLAlchemy()
 
@@ -205,6 +206,17 @@ class SubPost(db.Model):
                 count -= 1
         return count
 
+    @hybrid_property
+    def getDomain(self):
+        """ Gets Domain """
+        x = get_tld(self.link)
+        return x
+
+    @hybrid_property
+    def isImage(self):
+        """ Returns True if link ends with img suffix """
+        suffix = ['.png', '.jpg', '.gif', '.tiff', '.bmp']
+        return self.link.lower().endswith(tuple(suffix))
 
 class SubPostMetadata(db.Model):
     """ Post metadata. Here we store if it is a sticky post, mod post, tagged

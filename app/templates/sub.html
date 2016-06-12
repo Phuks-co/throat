@@ -71,11 +71,21 @@
         <a class="title" href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}">{{post.title}}</a>
         {% else %}
         {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
-        <a class="title" href="{{post.link}}" rel="noreferrer noopener">{{post.title}}</a>
+        <a class="title" href="{{post.link}}" rel="noreferrer noopener">{{post.title}}</a> ({{post.getDomain}})
         {% endif %}
         <p class="author"><time-ago datetime="{{post.posted.isoformat()}}"></time-ago></p>
         <p class="container">
-          {% if post.link.endswith('.png') or post.link.endswith('.gif') or post.link.endswith('.jpg') %}
+          {% if post.getDomain == "youtube.com" %}
+            <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
+              <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
+            </span>
+          {% endif %}
+          {% if post.getDomain == "vimeo.com" %}
+            <span id="vimeovid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
+              <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
+            </span>
+          {% endif %}
+          {% if post.isImage %}
             <span id="openimg" data-img="{{post.link}}" data-pid="{{post.pid}}" class="closedimg">
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
             </span>

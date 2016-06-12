@@ -71,7 +71,7 @@
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
             </span>
           {% endif %}
-          {% if post.link.endswith('.png') or post.link.endswith('.gif') or post.link.endswith('.jpg') %}
+          {% if post.isImage %}
             <span id="openimg" data-img="{{post.link}}" data-pid="{{post.pid}}" class="closedimg">
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
             </span>

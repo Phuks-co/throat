@@ -59,6 +59,21 @@
         {% endif %}
         <p class="author"><relative-time datetime="{{post.posted.isoformat()}}"></relative-time></p>
         <p class="container">
+          {% if post.getDomain == "youtube.com" %}
+            <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
+              <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
+            </span>
+          {% endif %}
+          {% if post.getDomain == "vimeo.com" %}
+            <span id="vimeovid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
+              <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
+            </span>
+          {% endif %}
+          {% if post.isImage %}
+            <span id="openimg" data-img="{{post.link}}" data-pid="{{post.pid}}" class="closedimg">
+              <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
+            </span>
+          {% endif %}
           <a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{{post.sub.name}}</a>
           <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
           <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.comments.count()}})</a>

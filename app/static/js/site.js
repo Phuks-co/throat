@@ -468,7 +468,7 @@ $(document).ready(function() {
       });
     });
 
-    $('#youtubevid').click(function(e){
+    $('span[id^="youtubevid"').click(function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().vid
       var frame = document.createElement('iframe');
@@ -499,7 +499,7 @@ $(document).ready(function() {
       }
     });
 
-    $('#vimeovid').click(function(e){
+    $('span[id^="vimeovid"]').click(function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().vid
       var frame = document.createElement('iframe');
