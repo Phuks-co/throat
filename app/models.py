@@ -223,13 +223,11 @@ class SubPost(db.Model):
                 count -= 1
         return count
 
-    @hybrid_property
     def getDomain(self):
         """ Gets Domain """
         x = get_tld(self.link)
         return x
 
-    @hybrid_property
     def isImage(self):
         """ Returns True if link ends with img suffix """
         suffix = ['.png', '.jpg', '.gif', '.tiff', '.bmp']

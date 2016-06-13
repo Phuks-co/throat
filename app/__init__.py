@@ -255,14 +255,7 @@ def random_sub():
 @app.route("/s/<sub>")
 def view_sub(sub):
     """ Here we can view subs (currently sorts like /new) """
-    sub = Sub.query.filter_by(name=sub).first()
-    if not sub:
-        abort(404)
-
-    # mod = getModName(sub)
-    subposts = SubPost.query.filter_by(sid=sub.sid) \
-                            .order_by(SubPost.posted.desc()).all()
-    return render_template('sub.html', sub=sub, posts=subposts)
+    return view_sub_hot(sub, 1)
 
 
 @app.route("/s/<sub>/edit")
@@ -281,19 +274,46 @@ def edit_sub(sub):
         abort(403)
 
 
-@app.route("/s/<sub>/new")
-def view_sub_new(sub):
-    """ Here we can view subs sorted as most recent posted first """
+@app.route("/s/<sub>/new", defaults={'page': 1})
+@app.route("/s/<sub>/new/<int:page>")
+def view_sub_new(sub, page):
+    """ The index page, all posts sorted as most recent posted first """
     sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
 
-    subposts = SubPost.query.filter_by(sid=sub.sid) \
-                            .order_by(SubPost.posted.desc()).all()
-    return render_template('sub.html', sub=sub.name, sub_title=sub.title,
-                           txtpostform=CreateSubTextPost(),
-                           lnkpostform=CreateSubLinkPost(),
-                           editsubform=EditSubForm(), posts=subposts)
+    posts = sub.posts.order_by(SubPost.posted.desc())
+    sorter = BasicSorting(posts)
+    return render_template('sub.html', sub=sub, page=page, sort_type='new',
+                           posts=sorter.getPosts(page))
+
+
+@app.route("/s/<sub>/top", defaults={'page': 1})
+@app.route("/s/<sub>/top/<int:page>")
+def view_sub_top(sub, page):
+    """ The index page, /top sorting """
+    sub = Sub.query.filter_by(name=sub).first()
+    if not sub:
+        abort(404)
+
+    posts = sub.posts.order_by(SubPost.posted.desc())
+    sorter = VoteSorting(posts)
+    return render_template('sub.html', sub=sub, page=page, sort_type='top',
+                           posts=sorter.getPosts(page))
+
+
+@app.route("/s/<sub>/hot", defaults={'page': 1})
+@app.route("/s/<sub>/hot/<int:page>")
+def view_sub_hot(sub, page):
+    """ The index page, /hot sorting """
+    sub = Sub.query.filter_by(name=sub).first()
+    if not sub:
+        abort(404)
+
+    posts = sub.posts.order_by(SubPost.posted.desc())
+    sorter = HotSorting(posts)
+    return render_template('sub.html', sub=sub, page=page, sort_type='top',
+                           posts=sorter.getPosts(page))
 
 
 @app.route("/s/<sub>/<pid>")
