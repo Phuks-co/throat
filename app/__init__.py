@@ -232,7 +232,7 @@ def all_hot(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.query.order_by(SubPost.posted.desc())
     sorter = HotSorting(posts)
-    return render_template('index.html', page=page, sort_type='all_top',
+    return render_template('index.html', page=page, sort_type='all_hot',
                            posts=sorter.getPosts(page))
 
 
