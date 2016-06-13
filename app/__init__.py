@@ -274,6 +274,31 @@ def edit_sub(sub):
         abort(403)
 
 
+@app.route("/s/<sub>/new.rss")
+def sub_new_rss(sub):
+    """ RSS feed for /s/sub/new """
+    sub = Sub.query.filter_by(name=sub).first()
+    if not sub:
+        abort(404)
+
+    fg = FeedGenerator()
+    fg.title("/s/{}".format(sub))
+    fg.subtitle("All new posts for {} feed".format(sub))
+    fg.link(href=url_for('view_sub_new', sub=sub, _external=True))
+    fg.generator("Throat")
+    posts = sub.posts.order_by(SubPost.posted.desc())
+    sorter = BasicSorting(posts)
+    for post in sorter.getPosts():
+        fe = fg.add_entry()
+        url = url_for('view_post', sub=post.sub.name, pid=post.pid,
+                      _external=True)
+        fe.id(url)
+        fe.link({'href': url, 'rel': 'self'})
+        fe.title(post.title)
+
+    return fg.rss_str(pretty=True)
+
+
 @app.route("/s/<sub>/new", defaults={'page': 1})
 @app.route("/s/<sub>/new/<int:page>")
 def view_sub_new(sub, page):
