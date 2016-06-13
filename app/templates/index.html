@@ -52,11 +52,11 @@
           <a href="{{post.link}}" rel="noreferrer noopener">
             <span class="fa-stack fa-3x" style="color: #616161;">
               <i class="fa fa-square fa-stack-2x"></i>
-              {% if post.isImage %}
+              {% if post.isImage() %}
               <i class="fa fa-image fa-stack-1x fa-inverse"></i>
-              {% elif post.getDomain == "youtube.com" %}
+              {% elif post.getDomain() == "youtube.com" %}
               <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
-              {% elif post.getDomain == "vimeo.com" %}
+              {% elif post.getDomain() == "vimeo.com" %}
               <i class="fa fa-vimeo fa-stack-1x fa-inverse"></i>
               {% else %}
               <i class="fa fa-link fa-stack-1x fa-inverse"></i>
@@ -75,22 +75,23 @@
         {% endif %}
         <p class="author"><relative-time datetime="{{post.posted.isoformat()}}"></relative-time></p>
         <p class="container">
-          {% if post.getDomain == "youtube.com" %}
+          {% if post.link %}
+          {% if post.getDomain() == "youtube.com" %}
             <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
             </span>
           {% endif %}
-          {% if post.getDomain == "vimeo.com" %}
+          {% if post.getDomain() == "vimeo.com" %}
             <span id="vimeovid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
             </span>
           {% endif %}
-          {% if post.isImage %}
+          {% if post.isImage() %}
             <span id="openimg" data-img="{{post.link}}" data-pid="{{post.pid}}" class="closedimg">
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
             </span>
           {% endif %}
-          {% if not post.link %}
+          {% else %}
             <span id="opentextpost" data-pid="{{post.pid}}" class="closedtextpost">
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
             </span>
