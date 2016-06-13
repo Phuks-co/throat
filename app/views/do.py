@@ -404,7 +404,7 @@ def create_comment(sub, pid):
         pm.receivedby = post.uid
         pm.subject = 'Post reply: ' + post.title
         pm.content = form.comment.data
-        pm.mtype = post.sub.name + '/' + str(post.pid)
+        pm.mtype = post.pid
         pm.posted = datetime.datetime.utcnow()
         db.session.add(pm)
         db.session.add(comment)
