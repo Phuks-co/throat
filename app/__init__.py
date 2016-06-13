@@ -355,6 +355,14 @@ def view_post(sub, pid):
                                edittxtpostform=EditSubTextPostForm())
 
 
+@app.route("/p/<pid>")
+def view_post_inbox(pid):
+    """ Gets route to post from just pid """
+    post = SubPost.query.filter_by(pid=pid).first()
+    sub = Sub.query.filter_by(sid=post.sid).first()
+    return redirect(url_for('view_post', sub=sub.name, pid=post.pid ))
+
+
 @app.route("/s/<sub>/<pid>/edit")
 @login_required
 def edit_post(sub, pid):

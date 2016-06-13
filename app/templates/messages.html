@@ -23,7 +23,7 @@
     <article class="post">
       <div class="main">
         {% if box_name == 'Post Replies' %}
-        <p class="title"><a href="/s/{{message.mtype}}">{{message.subject}}</a></p>
+        <p class="title"><a href="{{url_for('view_post_inbox', pid=message.mtype)}}">{{message.subject}}</a></p>
         {% else %}
         <p class="title">{{message.subject}}</p>
         {% endif %}
