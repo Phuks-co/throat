@@ -521,6 +521,29 @@ $(document).ready(function() {
       }
     });
 
+    $('span[id^="vinevid"]').click(function(e){
+      var pid = $(e.currentTarget).data().pid
+      var url = $(e.currentTarget).data().vid
+      var frame = document.createElement('iframe');
+      if($(this).hasClass('closedvine'))  {
+        frame.width = '520px';
+        frame.height = '520px';
+        frame.style = 'display:block;';
+        frame.frameborder = '0';
+        frame.src = 'https://vine.co/v/' + vineID(url) + '/embed/simple';
+        playerid = 'player' + pid;
+        $(e.currentTarget).addClass('openedvine').removeClass('closedvine');
+        document.getElementById(playerid).appendChild(frame);
+        $('#' + playerid + ' a').html('<i class="fa fa-close" aria-hidden="true"></i>');
+      }
+      else {
+        $(this).addClass('closedvine').removeClass('openedvine');
+        $('#' + playerid + ' iframe').remove();
+        $('#' + playerid + ' a').html('<i class="fa fa-vine" aria-hidden="true"></i>');
+
+      }
+    });
+
     $('span[id^="openimg"]').click(function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().img
@@ -621,5 +644,17 @@ function vimeoID(url) {
   var match = url.match(/https?:\/\/(?:www\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/);
   if (match){
     return match[3];
+	}
+}
+function vineID(url) {
+  var match = url.match(/^http(?:s?):\/\/(?:www\.)?vine\.co\/v\/([a-zA-Z0-9]{1,13})$/);
+  if (match){
+    return match[1];
+	}
+}
+function instagramID(url) {
+  var match = url.match(/https?:\/\/[w\.]*instagram\.[^\/]*\/([^?]*)\/([a-zA-Z0-9]{1,10})/);
+  if (match){
+    return match[2];
 	}
 }

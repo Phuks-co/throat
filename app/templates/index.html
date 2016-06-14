@@ -58,6 +58,8 @@
               <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
               {% elif post.getDomain() == "vimeo.com" %}
               <i class="fa fa-vimeo fa-stack-1x fa-inverse"></i>
+              {% elif post.getDomain() == "vine.co" %}
+              <i class="fa fa-vine fa-stack-1x fa-inverse"></i>
               {% else %}
               <i class="fa fa-link fa-stack-1x fa-inverse"></i>
               {% endif %}
@@ -84,6 +86,11 @@
           {% if post.getDomain() == "vimeo.com" %}
             <span id="vimeovid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
+            </span>
+          {% endif %}
+          {% if post.getDomain() == "vine.co" %}
+            <span id="vinevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvine">
+              <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vine" aria-hidden="true"></i></a></span>
             </span>
           {% endif %}
           {% if post.isImage() %}
