@@ -1133,6 +1133,22 @@ button#text-post-icon, button#link-post-icon {
 .admin.section.stats div {
     text-align: center;
 }
+
+/* api page */
+
+article.post.apidoc {
+    padding-top: 20px;
+}
+.post.apidoc span.get {
+    color: #fff;
+    background-color: #fb5b00;
+    border-color: #fb5b00;
+    padding: 8px;
+    display: inline-block;
+    border-radius: 2px;
+    margin-right: 4px;
+}
+
 /* colors */
 .red {color: red;}
 .blue {color: blue;}

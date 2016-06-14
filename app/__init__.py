@@ -27,13 +27,14 @@ from .forms import CreateSubForm, EditSubForm, EditUserForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DummyForm, DeletePost, CreateUserBadgeForm
-from .views import do
+from .views import do, api
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, getName
 from .misc import SiteAnon, hasMail
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)
 app.register_blueprint(do)
+app.register_blueprint(api)
 app.config.from_object('config')
 
 db.init_app(app)
@@ -477,6 +478,12 @@ def admin_area():
                                editmodform=EditModForm())
     else:
         return render_template('errors/404.html'), 404
+
+
+@app.route("/api")
+def view_api():
+    """ View API help page """
+    return render_template('api.html')
 
 
 @app.route("/tos")
