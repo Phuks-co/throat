@@ -22,6 +22,7 @@ from feedgen.feed import FeedGenerator
 
 from .models import db, User, Sub, SubPost, Message, SubPostVote
 from .models import UserBadge, UserMetadata
+from .models import subpost_schema, subposts_schema, sub_schema, subs_schema
 from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditSubForm, EditUserForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost

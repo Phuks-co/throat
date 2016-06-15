@@ -3,9 +3,14 @@
 import re
 import datetime
 import bcrypt
-from flask import Blueprint, jsonify, abort
+from flask import Blueprint, jsonify, abort, request
+from flask.ext.sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
+from marshmallow import Schema, fields, ValidationError, pre_load
+
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
+from ..models import subpost_schema, subposts_schema, sub_schema, subs_schema
 # from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
 # from ..models import UserMetadata, UserBadge
 from flask_login import login_user, login_required, logout_user, current_user
@@ -78,6 +83,31 @@ def view_post(sub, pid):
         resp = jsonify(data)
         resp.status_code = 200
         return resp
+
+
+""" marshmallow """
+
+@api.route('/api/v1/subs')
+def get_subs():
+    subs = Sub.query.order_by(Sub.name.asc())
+    result = subpost_schema.dump(subs)
+    return jsonify({'subs': result.data})
+
+
+@api.route('/api/v1/posts')
+def get_posts():
+    posts = SubPost.query.order_by(SubPost.posted.desc())
+    result = subposts_schema.dump(posts)
+    return jsonify({'posts': result.data})
+
+
+@api.route("/api/v1/post/<int:post>")
+def get_post(post):
+    post = SubPost.query.get(post)
+    if not post:
+        return jsonify({"error": "not found."})
+    post_result = subpost_schema.dump(post)
+    return jsonify({'post': post_result.data})
 
 
 @api.errorhandler(404)
