@@ -9,9 +9,8 @@
   <h4>Sub info</h4>
   <div class="col-12"><span class="get">GET</span> /api/v1/s/{subname}</div>
   <div class="col-12">
-    <div class="col-12">
+    <div class="col-4"><br>
       <ul>
-        <li>success : boolean</li>
         <li>created : date</li>
         <li>mod : string</li>
         <li>name : string</li>
@@ -21,20 +20,17 @@
         <li>title : string</li>
       </ul>
     </div>
-    <div class="col-12">
+    <div class="col-6">
     <pre>
-        {
-          "success": true,
-            "sub": {
-              "created": "2016-06-13 00:08:14.139391",
-              "mod": "username",
-              "name": "subname",
-              "nsfw": false,
-              "posts": "10",
-              "status": null,
-              "title": "sub description"
-            }
-        }
+{
+  "created": "2016-06-13 00:08:14.139391",
+  "mod": "username",
+  "name": "subname",
+  "nsfw": false,
+  "posts": "10",
+  "status": null,
+  "title": "sub description"
+}
     <pre>
     </div>
   </div>
@@ -44,9 +40,8 @@
   <h4>Submission info</h4>
   <div class="col-12"><span class="get">GET</span> api/v1/s/{subname}/{postid}</div>
   <div class="col-12">
-    <div class="col-12">
+    <div class="col-4"><br>
       <ul>
-        <li>success : boolean</li>
         <li>content : string</li>
         <li>id : integer</li>
         <li>link : string</li>
@@ -57,48 +52,42 @@
         <li>votes : integer</li>
       </ul>
     </div>
-    <div class="col-12">
+    <div class="col-6">
     <pre>
-        {
-          "success": 1,
-            "post": {
-              "content": "content text",
-              "id": 12,
-              "link": null,
-              "posted": "Mon, 13 Jun 2016 00:09:16 GMT",
-              "ptype": 0,
-              "title": "post title",
-              "user": "username",
-              "votes": 0
-            }
-        }
+{
+  "content": "content text",
+  "id": 12,
+  "link": null,
+  "posted": "Mon, 13 Jun 2016 00:09:16 GMT",
+  "ptype": 0,
+  "title": "post title",
+  "user": "username",
+  "votes": 0
+}
     <pre>
     </div>
   </div>
 </article>
 
 <article class="post apidoc" class="col-12">
-  <h4>User info</h4>
+  <h4>User info (login required)</h4>
   <div class="col-12"><span class="get">GET</span> /api/v1/u/{username}</div>
   <div class="col-12">
-    <div class="col-12">
+    <div class="col-4"><br>
       <ul>
-        <li>success : boolean</li>
         <li>joindate : date</li>
         <li>name : string</li>
         <li>status : integer</li>
       </ul>
     </div>
-    <div class="col-12">
+    <div class="col-6">
     <pre>
-        {
-          "success": true,
-            "user": {
-              "joindate": "Sun, 12 Jun 2016 20:41:22 GMT",
-              "name": "username",
-              "status": 0
-            }
-        }
+{
+  "joindate": "Sun, 12 Jun 2016 20:41:22 GMT",
+  "name": "username",
+  "status": 0
+}
+
     <pre>
     </div>
   </div>
