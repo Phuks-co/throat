@@ -5,7 +5,6 @@ import datetime
 import bcrypt
 from flask import Blueprint, jsonify, abort, request
 from flask.ext.sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
 from marshmallow import Schema, fields, ValidationError, pre_load
 
@@ -49,7 +48,7 @@ def view_user(user):
 def view_sub(sub):
     """ Get sub """
     sub = Sub.query.filter_by(name=sub).first()
-    if not sub.name != sub:
+    if not sub:
         abort(404)
     else:
         data = {'name': sub.name,
@@ -109,10 +108,10 @@ def get_posts():
 @api.route("/api/v1/post/<int:post>")
 def get_post(post):
     post = SubPost.query.filter_by(pid=post).first()
+    if not post:
+        abort(404)
     post.sid = post.sub.name
     post.uid = post.user.name
-    if not post:
-        return jsonify({"error": "not found."})
     post_result = subpost_schema.dump(post)
     return jsonify({'post': post_result.data})
 
