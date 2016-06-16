@@ -147,7 +147,7 @@ class Sub(db.Model):
         return True if x.value == '1' else False
 
 
-class SubPostSchema(Schema):
+class SubSchema(Schema):
     sid = fields.Int(dump_only=True)
     name = fields.Str()
     title = fields.Str()
@@ -157,8 +157,8 @@ class SubPostSchema(Schema):
     def format_name(self, sub):
         return "{}".format(sub.sid, sub.title, sub.status)
 
-sub_schema = SubPostSchema()
-subs_schema = SubPostSchema(many=True)
+sub_schema = SubSchema()
+subs_schema = SubSchema(many=True)
 
 
 class SubMetadata(db.Model):
@@ -260,8 +260,8 @@ class SubPostSchema(Schema):
     ptype = fields.Str()
     formatted_name = fields.Method(dump_only=True)
 
-    def format_name(self, post):
-        return "{}".format(post.pid, post.sid, post.pid,
+    def format_name(self):
+        return "{}".format(post.pid, post.sid, post.uid,
                            post.title, post.link, post.content,
                            post.posted, post.ptype)
 

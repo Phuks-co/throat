@@ -90,7 +90,7 @@ def view_post(sub, pid):
 @api.route('/api/v1/subs')
 def get_subs():
     subs = Sub.query.order_by(Sub.name.asc())
-    result = subpost_schema.dump(subs)
+    result = subposts_schema.dump(subs)
     return jsonify({'subs': result.data})
 
 
@@ -103,7 +103,9 @@ def get_posts():
 
 @api.route("/api/v1/post/<int:post>")
 def get_post(post):
-    post = SubPost.query.get(post)
+    post = SubPost.query.filter_by(pid=post).first()
+    post.sid = post.sub.name
+    post.uid = post.user.name
     if not post:
         return jsonify({"error": "not found."})
     post_result = subpost_schema.dump(post)
