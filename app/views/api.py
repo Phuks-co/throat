@@ -99,18 +99,18 @@ def get_subs():
 def get_posts():
     posts = SubPost.query.order_by(SubPost.posted.desc()).all()
     for post in SubPost.query:
-        post.sid = post.sub.name
+        # post.sid = post.sub.name
         post.uid = post.user.name
     result = subposts_schema.dump(posts)
     return jsonify({'posts': result.data})
 
 
-@api.route("/api/v1/post/<int:post>")
-def get_post(post):
-    post = SubPost.query.filter_by(pid=post).first()
+@api.route("/api/v1/post/<int:pid>")
+def get_post(pid):
+    post = SubPost.query.filter_by(pid=pid).first()
     if not post:
         abort(404)
-    post.sid = post.sub.name
+    # post.sid = post.sub.name
     post.uid = post.user.name
     post_result = subpost_schema.dump(post)
     return jsonify({'post': post_result.data})
