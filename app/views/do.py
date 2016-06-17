@@ -311,6 +311,10 @@ def upvote(pid):
         return json.dumps({'status': 'error',
                            'error': ['Post does not exist']})
 
+    if post.uid == current_user.get_id():
+        return json.dumps({'status': 'error',
+                           'error': ['You can\'t vote on your own posts']})
+
     qvote = SubPostVote.query.filter_by(pid=pid) \
                              .filter_by(uid=current_user.get_id()).first()
     vote = SubPostVote()

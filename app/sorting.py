@@ -32,7 +32,7 @@ class HotSorting(BasicSorting):
 
     def __init__(self, posts):
         super(HotSorting, self).__init__(posts)
-        self.posts.sort(key=self.get_score)
+        self.posts.sort(key=self.get_score, reverse=True)
 
     def epoch_seconds(self, date):
         """ Returns seconds since the post was created """

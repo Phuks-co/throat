@@ -178,7 +178,7 @@ def utility_processor():
 @app.route("/")
 def index():
     """ The index page, currently sorts like /all/new """
-    return all_new(1)
+    return all_hot(1)
 
 
 @app.route("/new")

@@ -236,7 +236,7 @@ class SubPost(db.Model):
                 count += 1
             else:
                 count -= 1
-        return count
+        return count + 1
 
     def getDomain(self):
         """ Gets Domain """
