@@ -1,6 +1,7 @@
 """ Sorting module. Here we store the classes that sort stuff. """
 from datetime import datetime
 from math import log
+from .misc import cache
 
 
 class BasicSorting(object):
@@ -40,6 +41,7 @@ class HotSorting(BasicSorting):
         return td.days * 86400 + td.seconds + (float(td.microseconds) /
                                                1000000)
 
+    @cache.memoize(300)
     def get_score(self, post):
         """ Returns the /hot score for this post """
         s = post.voteCount
