@@ -37,7 +37,7 @@
         <p class="count">{{post.voteCount}}</p>
         <div class="downvote{%if hasVoted(current_user.get_id(), post, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
       </div>
-      {% cache 300 %}
+      {% cache 300, post.pid, 'post' %}
         <div class="image">
           {% if not post.link %}
           <button type="button" class="lightbtn" id="text-post-icon">
