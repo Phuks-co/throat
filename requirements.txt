@@ -13,5 +13,4 @@ flask-login
 psycopg2
 tld
 feedgen
-marshmallow
 flask-cache

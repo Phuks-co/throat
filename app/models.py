@@ -7,7 +7,6 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 from tld import get_tld
-from marshmallow import Schema, fields
 
 db = SQLAlchemy()
 
@@ -147,17 +146,6 @@ class Sub(db.Model):
         return True if x.value == '1' else False
 
 
-class SubSchema(Schema):
-    sid = fields.Int(dump_only=True)
-    name = fields.Str()
-    title = fields.Str()
-    status = fields.Str()
-    formatted_name = fields.Method(dump_only=True)
-
-sub_schema = SubSchema()
-subs_schema = SubSchema(many=True)
-
-
 class SubMetadata(db.Model):
     """ Sub metadata. Here we store if the sub is nsfw, the modlist,
     the founder, etc. """
@@ -244,21 +232,6 @@ class SubPost(db.Model):
         """ Returns True if link ends with img suffix """
         suffix = ['.png', '.jpg', '.gif', '.tiff', '.bmp']
         return self.link.lower().endswith(tuple(suffix))
-
-
-class SubPostSchema(Schema):
-    pid = fields.Int(dump_only=True)
-    sid = fields.Str()
-    uid = fields.Str()
-    title = fields.Str()
-    link = fields.Str()
-    content = fields.Str()
-    posted = fields.Str()
-    ptype = fields.Str()
-    formatted_name = fields.Method(dump_only=True)
-
-subpost_schema = SubPostSchema()
-subposts_schema = SubPostSchema(many=True)
 
 
 class SubPostMetadata(db.Model):
