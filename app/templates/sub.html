@@ -8,16 +8,15 @@
 {% endblock %}
 
 {% block sidebar %}
-{{ super() }}<hr/>
+{{ super() }}
+<p></p>
+<hr/>
 
 {# temp #}
-<p>
-    /s/{{sub.name}}
-  <br>
-    {{sub.title}}
-  <br>
-  {% if sub.isNSFW %} <i title="NSFW" class="fa fa-eye-slash fa-2x"></i>{% endif %}
-</p>
+    <h3>/s/{{sub.name}}</h3>
+  <p>
+    {% if sub.isNSFW %} <span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
+  </p>
 
 <div class="row buttons">
   <div class="col-12">

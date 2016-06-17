@@ -48,15 +48,17 @@
 
           {% endblock %}
         </div>
-        <div class="row buttons">
         {% if current_user.is_anonymous %}
+        <div class="row buttons">
           <div class="col-6">
             <a href="#login-form" class="btn login">Login</a>
           </div>
           <div class="col-6">
             <a href="#register-form" class="btn register">Register</a>
           </div>
+        </div>
         {% else %}
+        <div class="row buttons">
          <form method="POST" action="{{ url_for('do.logout') }}">
            {{ logoutform.csrf_token }}
            <div class="col-6"><button type="submit" class="btn">Log out</button></div>
@@ -72,9 +74,11 @@
              <a href="{{ url_for('edit_user', user=current_user.user.name) }}"><button type="button" class="lightbtn" id="config"><i class="fa fa-cog" aria-hidden="true"></i></button></a>
            </div>
          </form>
-         <div class="col-12"> Logged in as {{current_user.get_username()}} </div>
-        {% endif %}
         </div>
+        <div class="row">
+          <div class="col-12"> Logged in as {{current_user.get_username()}} </div>
+        </div>
+        {% endif %}
         {% endblock %}
       </div>
       {% block main %}<main class="col-8 right center">{% block content %}{% endblock %}</main>{% endblock %}
