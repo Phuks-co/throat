@@ -256,7 +256,8 @@ def get_txtpost(pid):
     if post:
         return json.dumps({'status': 'ok', 'content': post.content})
     else:
-        return json.dumps({'status': 'error', 'content': 'No longer available'})
+        return json.dumps({'status': 'error',
+                           'error': ['No longer available']})
 
 
 @do.route("/do/edit_txtpost/<sub>/<pid>", methods=['POST'])
