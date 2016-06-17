@@ -29,8 +29,8 @@ from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DummyForm, DeletePost, CreateUserBadgeForm
 from .views import do, api
-from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, getName
-from .misc import SiteAnon, hasMail
+from .misc import SiteUser, getVoteCount, hasVoted, getMetadata
+from .misc import SiteAnon, hasMail, cache
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)
@@ -39,6 +39,7 @@ app.register_blueprint(api)
 app.config.from_object('config')
 
 db.init_app(app)
+cache.init_app(app)
 
 assets = Environment(app)
 login_manager = LoginManager(app)

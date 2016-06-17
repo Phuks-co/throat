@@ -1,6 +1,9 @@
 """ Misc helper function and classes. """
-from .models import db, User, Message
+from .models import db, Message
 from flask_login import AnonymousUserMixin
+from flask_cache import Cache
+
+cache = Cache()
 
 
 class SiteUser(object):
@@ -73,6 +76,7 @@ def getVoteCount(post):
     return count
 
 
+@cache.memoize(50)
 def hasVoted(uid, post, up=True):
     """ Checks if the user up/downvoted the post. """
     vote = post.votes.filter_by(uid=uid).first()
@@ -83,6 +87,7 @@ def hasVoted(uid, post, up=True):
         return False
 
 
+@cache.memoize(60)
 def getMetadata(obj, key, value=None):
     """ Gets metadata out of 'obj' (either a Sub, SubPost or User) """
     x = obj.properties.filter_by(key=key).first()
@@ -96,12 +101,6 @@ def getMetadata(obj, key, value=None):
         x = obj.__class__(obj, key, value)
         db.session.add(x)
     db.session.commit()
-
-
-def getName(uid):
-    """ Gets username """
-    x = User.query.filter_by(uid=uid).first()
-    return str(x.name)
 
 
 def isMod(sub, user):

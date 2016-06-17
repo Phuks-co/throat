@@ -72,7 +72,7 @@
              <a href="{{ url_for('edit_user', user=current_user.user.name) }}"><button type="button" class="lightbtn" id="config"><i class="fa fa-cog" aria-hidden="true"></i></button></a>
            </div>
          </form>
-         <div class="col-12"> Logged in as {{current_user.user.name}} </div>
+         <div class="col-12"> Logged in as {{current_user.get_username()}} </div>
         {% endif %}
         </div>
         {% endblock %}
