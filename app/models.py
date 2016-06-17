@@ -154,9 +154,6 @@ class SubSchema(Schema):
     status = fields.Str()
     formatted_name = fields.Method(dump_only=True)
 
-    def format_name(self, sub):
-        return "{}".format(sub.sid, sub.title, sub.status)
-
 sub_schema = SubSchema()
 subs_schema = SubSchema(many=True)
 
@@ -259,11 +256,6 @@ class SubPostSchema(Schema):
     posted = fields.Str()
     ptype = fields.Str()
     formatted_name = fields.Method(dump_only=True)
-
-    def format_name(self):
-        return "{}".format(post.pid, post.sid, post.uid,
-                           post.title, post.link, post.content,
-                           post.posted, post.ptype)
 
 subpost_schema = SubPostSchema()
 subposts_schema = SubPostSchema(many=True)
