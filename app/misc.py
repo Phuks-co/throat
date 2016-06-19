@@ -43,6 +43,9 @@ class SiteUser(object):
         """ Returns True if the current user has unread messages """
         return hasMail(self.user)
 
+    def new_count(self):
+        """ Returns new message count """
+        return newCount(self.user)
 
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
@@ -114,3 +117,10 @@ def hasMail(user):
     x = Message.query.filter_by(receivedby=user.uid) \
                      .filter_by(read=None).first()
     return bool(x)
+
+
+def newCount(user):
+    """ Returns new message count """
+    newcount = Message.query.filter_by(read=None) \
+                            .filter_by(receivedby=user.uid).count()
+    return newcount

@@ -7,19 +7,15 @@
 {% block sidebar %}
 {{ super() }}
 <hr/>
-    <p><a href="{{ url_for('view_messages') }}">inbox</a></p>
-    <p><a href="{{ url_for('view_messages_sent') }}">sent</a></p>
-    <p><a href="{{ url_for('view_messages_replies') }}">replies</a></p>
+<p><a href="{{ url_for('view_messages') }}">inbox</a></p>
+<p><a href="{{ url_for('view_messages_sent') }}">sent</a></p>
+<p><a href="{{ url_for('view_messages_replies') }}">replies</a></p>
 {% endblock %}
 
 {% block content %}
 {{ super() }}
 <div class="user-activity col-12">
     <h3>{{messages|length}} {{box_name}}{% if box_name != 'Sent' %} - {{newcount}} new{% endif %}</h3>
-
-
-
-
 {% for message in messages %}
     <article class="post">
       <div class="main">

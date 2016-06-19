@@ -66,7 +66,7 @@
            <div class="col-2">
              <a href="{{ url_for('view_messages') }}">
              <button type="button" class="lightbtn" id="mail">
-               <i class="fa fa-envelope{% if current_user.has_mail() %} hasmail{% else %}-o{% endif %}" aria-hidden="true"></i>
+               {% if current_user.has_mail() %}{{current_user.new_count()}} {% endif %}<i class="fa fa-envelope{% if current_user.has_mail() %} hasmail{% else %}-o{% endif %}" aria-hidden="true"></i>
              </button>
              </a>
            </div>
