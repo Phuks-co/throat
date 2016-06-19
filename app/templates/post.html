@@ -44,7 +44,7 @@
             {# if post.ptype == 1 %}
               <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
             {% endif #}
-              {% if not getMetadata(post, 'deleted') %}
+              {% if not getMetadata(post, 'deleted') and not getMetadata(post, 'moddeleted') %}
               <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
               {% else %}
               [Deleted]
@@ -59,7 +59,7 @@
             {% endif %}
             {% if post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
               <a href="#edit-txtpost-form" class="btn btn-orange edit small edit-txtpost-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
-              {% if not getMetadata(post, 'deleted') %}
+              {% if not getMetadata(post, 'deleted') and not getMetadata(post, 'moddeleted') %}
               <a href="#delete-post-form" data-post="{{post.pid}}" class="btn btn-orange edit small btn-red delete-post-form"><i class="fa fa-trash" aria-hidden="true"></i> Delete </a>
               {% else %}
               [Deleted]

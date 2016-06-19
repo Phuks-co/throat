@@ -39,14 +39,13 @@
 
 {% block content %}
 {{ super() }}
+<h3>Modlog</h3>
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
-{% for post in posts if not getMetadata(post, 'deleted') and not getMetadata(post, 'moddeleted')%}
+{% for post in posts if not getMetadata(post, 'deleted') and getMetadata(post, 'moddeleted')%}
     <article class="post" data-pid="{{post.pid}}">
       {# vote div #}
-      <div class="pull left vote">
-        <div class="upvote{%if hasVoted(current_user.get_id(), post)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+      <div class="pull left vote"><br>
         <p class="count">{{post.voteCount}}</p>
-        <div class="downvote{%if hasVoted(current_user.get_id(), post, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
       </div>
       {% cache 300, post.pid, 'subpost' %}
         <div class="image">
@@ -115,11 +114,8 @@
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
             </span>
           {% endif %}
-            <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
+            <span>[Deleted]</span>
             <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.comments.count()}})</a>
-            {% if current_user.is_mod(sub) or current_user.is_admin() %}
-            <a href="#delete-post-form" class="btn small btn-red delpost" data-post="{{post.pid}}"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
-            {% endif %}
           </p>
         </div>
       {%endcache%}
@@ -135,7 +131,6 @@
     <p></p>
   </div>
   <p><button type="submit" id="txpost-btnsubmit">Submit post</button></p>
-
 </form>
 <form id="link-post-form" data-sub="{{sub.name}}" class="mfp-hide white-popup-block">
   {{lnkpostform.csrf_token}}
@@ -148,18 +143,6 @@
   </div>
   <p><button type="submit" id="lnkpost-btnsubmit">Submit link</button></p>
 </form>
-{% if current_user.is_mod(sub) or current_user.is_admin() %}
-<form id="delete-post-form" class="mfp-hide white-popup-block">
-  {{delpostform.csrf_token}}
-  {{delpostform.post}}
-  <h3>Are you sure you want to delete this post?</h3>
-  <div class="alert div-error">
-    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-    <p></p>
-  </div>
-  <p><button type="submit" id="delpost-btnsubmit">Delete!</button></p>
-</form>
-{% endif %}
 
 {% endblock %}
 {%block pagefoot%}

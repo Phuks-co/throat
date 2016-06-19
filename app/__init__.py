@@ -315,6 +315,20 @@ def view_sub_new(sub, page):
                            posts=sorter.getPosts(page))
 
 
+@app.route("/s/<sub>/postmodlog", defaults={'page': 1})
+@app.route("/s/<sub>/postmodlog/<int:page>")
+def view_sub_postmodlog(sub, page):
+    """ The mod/admin deleted posts page, sorted as most recent posted first """
+    sub = Sub.query.filter_by(name=sub).first()
+    if not sub:
+        abort(404)
+
+    posts = sub.posts.order_by(SubPost.posted.desc())
+    sorter = BasicSorting(posts)
+    return render_template('subpostmodlog.html', sub=sub, page=page, sort_type='new',
+                           posts=sorter.getPosts(page))
+
+
 @app.route("/s/<sub>/top", defaults={'page': 1})
 @app.route("/s/<sub>/top/<int:page>")
 def view_sub_top(sub, page):

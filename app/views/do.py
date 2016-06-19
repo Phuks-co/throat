@@ -128,11 +128,16 @@ def delete_post():
             return json.dumps({'status': 'error',
                                'error': ['Post does not exist.']})
 
-        if not current_user.is_mod(post.sub) and not current_user.is_admin():
+        if not current_user.is_mod(post.sub) and not current_user.is_admin() \
+            and not post.user:
             return json.dumps({'status': 'error',
                                'error': ['Not authorized.']})
 
-        md = SubPostMetadata(post.pid, 'deleted', '1')
+        if current_user.is_mod(post.sub) or current_user.is_admin() \
+            or not post.user:
+            md = SubPostMetadata(post.pid, 'moddeleted', '1')
+        else:
+            md = SubPostMetadata(post.pid, 'deleted', '1')
         db.session.add(md)
         db.session.commit()
 
