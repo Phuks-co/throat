@@ -21,7 +21,7 @@
 <li><a href="/all/hot">Hot</a></li>
 <li><a href="/all/top">Top</a></li>
 <li><a href="/all/new">New</a></li>
-<li class="right"><a href="{{url_for('random_sub')}}">Random</a></li>
+<li class="right"><a href="{{url_for('random_sub')}}" class="btn btn-white" style="width:100%;hight:50%;">Random</a></li>
 {% if current_user.is_admin() %}<li><a href="{{url_for('admin_area')}}">Admin</a></li>{% endif %}
 {% endblock %}
 {% block content %}

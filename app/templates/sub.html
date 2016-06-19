@@ -4,7 +4,7 @@
 <li><a href="{{url_for('view_sub_hot', sub=sub.name)}}">Hot</a></li>
 <li><a href="{{url_for('view_sub_top', sub=sub.name)}}">Top</a></li>
 <li><a href="{{url_for('view_sub_new', sub=sub.name)}}">New</a></li>
-<li class="large right"><a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a></li>
+<li class="large right"><a href="{{url_for('view_sub', sub=sub.name)}}" class="btn btn-white" style="width:100%;hight:50%;">/s/{{sub.name}}</a></li>
 {% endblock %}
 
 {% block sidebar %}
