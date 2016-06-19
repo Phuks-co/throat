@@ -2,6 +2,9 @@
 {% block title %}{{post.title}} | Throat: Open discussion{% endblock %}
 
 {% block navbar %}
+<li><a href="{{url_for('view_sub_hot', sub=sub.name)}}">Hot</a></li>
+<li><a href="{{url_for('view_sub_top', sub=sub.name)}}">Top</a></li>
+<li><a href="{{url_for('view_sub_new', sub=sub.name)}}">New</a></li>
 <ul class="right">
   <li class="large"><a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn btn-white" style="width:100%;hight:50%;">/s/{{post.sub.name}}</a></li>
 </ul>
