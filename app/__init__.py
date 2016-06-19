@@ -219,6 +219,18 @@ def all_new(page):
                            posts=sorter.getPosts(page))
 
 
+@app.route("/domain/<domain>", defaults={'page': 1})
+@app.route("/domain/<domain>/<int:page>")
+def all_domain_new(page, domain):
+    """ The index page, all posts sorted as most recent posted first """
+    posts = SubPost.query.filter_by(ptype=1) \
+                         .filter(SubPost.link.contains(domain))
+
+    sorter = BasicSorting(posts)
+    return render_template('index.html', page=page, sort_type='all_new',
+                           posts=sorter.getPosts(page))
+
+
 @app.route("/all/top", defaults={'page': 1})
 @app.route("/all/top/<int:page>")
 def all_top(page):

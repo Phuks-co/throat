@@ -86,7 +86,7 @@
           <a class="title" href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}">{{post.title}}</a>
           {% else %}
           {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
-          <a class="title" href="{{post.link}}" rel="noreferrer noopener">{{post.title}}</a> <span class="postdomain">({{post.getDomain()}})</span>
+          <a class="title" href="{{post.link}}" rel="noreferrer noopener">{{post.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=post.getDomain())}}">{{post.getDomain()}}</a>)</span>
           {% endif %}
           <p class="author"><time-ago datetime="{{post.posted.isoformat()}}"></time-ago></p>
           <p class="container">
