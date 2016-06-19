@@ -1,28 +1,29 @@
 {% extends "layout.html" %}
 {% block title %}My messages | Throat: Open discussion{% endblock %}
 {% block navbar %}
-<ul class="right">
-  <li><a href="{# url_for('view_user', user=user.name) #}">{{user.name}}</a></li>
-</ul>
+
 {% endblock %}
 
 {% block sidebar %}
-{{ super() }}<hr/>
-<p><a href="/messages">inbox</a><p>
-<p><a href="{{ url_for('view_messages_sent') }}">sent</a><p>
-<p><a href="{{ url_for('view_messages_posts') }}">post replies</a><p>
-<p><a href="{{ url_for('view_messages_comments') }}">comment replies</a><p>
-
+{{ super() }}
+<hr/>
+    <p><a href="{{ url_for('view_messages') }}">inbox</a></p>
+    <p><a href="{{ url_for('view_messages_sent') }}">sent</a></p>
+    <p><a href="{{ url_for('view_messages_replies') }}">replies</a></p>
 {% endblock %}
 
 {% block content %}
 {{ super() }}
 <div class="user-activity col-12">
-    <h3>{{box_name}}</h3>
+    <h3>{{messages|length}} {{box_name}}{% if box_name != 'Sent' %} - {{newcount}} new{% endif %}</h3>
+
+
+
+
 {% for message in messages %}
     <article class="post">
       <div class="main">
-        {% if box_name == 'Post Replies' %}
+        {% if box_name == 'Replies' %}
         <p class="title"><a href="{{url_for('view_post_inbox', pid=message.mtype)}}">{{message.subject}}</a></p>
         {% else %}
         <p class="title">{{message.subject}}</p>

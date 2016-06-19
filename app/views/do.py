@@ -407,7 +407,10 @@ def create_comment(sub, pid):
         pm = Message()
         pm.sentby = current_user.get_id()
         pm.receivedby = post.uid
-        pm.subject = 'Post reply: ' + post.title
+        if form.parent.data != "0":
+            pm.subject = 'Comment reply: ' + post.title
+        else:
+            pm.subject = 'Post reply: ' + post.title
         pm.content = form.comment.data
         pm.mtype = post.pid
         pm.posted = datetime.datetime.utcnow()

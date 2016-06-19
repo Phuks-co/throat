@@ -421,9 +421,10 @@ def view_messages():
     messages = Message.query.filter_by(receivedby=user) \
                             .filter_by(mtype=None) \
                             .order_by(Message.posted.desc()).all()
-
+    newcount = Message.query.filter_by(read=None) \
+                            .filter_by(mtype=None).count()
     return render_template('messages.html', user=user, messages=messages,
-                           box_name="Inbox")
+                           box_name="Inbox", newcount=newcount)
 
 
 @app.route("/messages/sent")
@@ -438,28 +439,18 @@ def view_messages_sent():
                            box_name="Sent")
 
 
-@app.route("/messages/posts")
+@app.route("/messages/replies")
 @login_required
-def view_messages_posts():
+def view_messages_replies():
     """ WIP: View user's post replies """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
                             .filter(Message.mtype.isnot(None)) \
                             .order_by(Message.posted.desc()).all()
+    newcount = Message.query.filter_by(read=None) \
+                            .filter(Message.mtype.isnot(None)).count()
     return render_template('messages.html', user=user, messages=messages,
-                           box_name="Post Replies")
-
-
-@app.route("/messages/comments")
-@login_required
-def view_messages_comments():
-    """ WIP: View user's comment replies """
-    user = session['user_id']
-    messages = Message.query.filter_by(receivedby=user) \
-                            .filter(Message.mtype.isnot(None)) \
-                            .order_by(Message.posted.desc()).all()
-    return render_template('messages.html', user=user, messages=messages,
-                           box_name="Comment Replies")
+                           box_name="Replies", newcount=newcount)
 
 
 @app.route("/admin")
