@@ -4,7 +4,7 @@ import json
 import re
 import datetime
 import bcrypt
-from flask import Blueprint, redirect, url_for
+from flask import Blueprint, redirect, url_for, session
 from sqlalchemy import func
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
@@ -133,11 +133,11 @@ def delete_post():
             return json.dumps({'status': 'error',
                                'error': ['Not authorized.']})
 
-        if current_user.is_mod(post.sub) or current_user.is_admin() \
-            or not post.user:
             md = SubPostMetadata(post.pid, 'moddeleted', '1')
-        else:
+        if post.uid == session['user_id']:
             md = SubPostMetadata(post.pid, 'deleted', '1')
+        else:
+            md = SubPostMetadata(post.pid, 'moddeleted', '1')
         db.session.add(md)
         db.session.commit()
 
