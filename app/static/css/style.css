@@ -535,6 +535,9 @@ nav .right a {
 .post .vote {
     margin-left: 0.4em;
 }
+.postdomain {
+    color: #8e8e8e;
+}
 @media only screen and (max-width: 330px) {
     /* For small mobile phones: */
     .post .main {
