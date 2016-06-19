@@ -233,6 +233,13 @@ class SubPost(db.Model):
         suffix = ['.png', '.jpg', '.gif', '.tiff', '.bmp']
         return self.link.lower().endswith(tuple(suffix))
 
+    def isPostNSFW(self):
+        """ Returns true if the post is marked as NSFW """
+        x = self.properties.filter_by(key='nsfw').first()
+        if not x:
+            return False
+        return True if x.value == '1' else False
+
 
 class SubPostMetadata(db.Model):
     """ Post metadata. Here we store if it is a sticky post, mod post, tagged

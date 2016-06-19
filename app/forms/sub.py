@@ -45,6 +45,7 @@ class EditSubTextPostForm(Form):
     content = TextAreaField('Post content',
                             validators=[DataRequired(),
                                         Length(min=1, max=16384)])
+    nsfw = BooleanField('NSFW?')
 
 
 class CreateSubLinkPost(Form):
@@ -54,6 +55,11 @@ class CreateSubLinkPost(Form):
     link = StringField('Post link',
                        validators=[DataRequired(), Length(min=10, max=128),
                                    URL(require_tld=True)])
+
+
+class EditSubLinkPostForm(Form):
+    """ Sub content edit form """
+    nsfw = BooleanField('NSFW?')
 
 
 class PostComment(Form):

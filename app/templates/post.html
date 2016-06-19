@@ -39,6 +39,7 @@
     <main class="col-8 right">
         <article class="text-post center no-padding">
           <div class="head">
+            {% if post.isPostNSFW() %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
             <h1 class="title">{{post.title}}</h1>
             <div class="info">
             {# if post.ptype == 1 %}
@@ -58,7 +59,11 @@
               </span>
             {% endif %}
             {% if post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
+              {% if post.ptype == 0 %}
               <a href="#edit-txtpost-form" class="btn btn-orange edit small edit-txtpost-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
+              {% else %}
+              <a href="#edit-linkpost-form" class="btn btn-orange edit small edit-linkpost-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
+              {% endif %}
               {% if not getMetadata(post, 'deleted') and not getMetadata(post, 'moddeleted') %}
               <a href="#delete-post-form" data-post="{{post.pid}}" class="btn btn-orange edit small btn-red delete-post-form"><i class="fa fa-trash" aria-hidden="true"></i> Delete </a>
               {% else %}
@@ -163,10 +168,23 @@
         </section>
     </main>
 
+  {% if post.ptype == 1 and post.user.uid == session['user_id'] %}
+  <form id="edit-linkpost-form" data-sub="{{post.sub.name}}" data-pid="{{post.pid}}" class="mfp-hide white-popup-block">
+    {{editlinkpostform.csrf_token}}
+    <h1>Edit your link post</h1>
+    <p><label>{{editlinkpostform.nsfw.label.text}} {{editlinkpostform.nsfw(checked=post.isPostNSFW)}}</label></p>
+    <div class="alert div-error">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      <p></p>
+    </div>
+    <p><button type="submit" id="edit-linkpost-btnsubmit">Edit post</button></p>
+  </form>
+  {% endif %}
   {% if post.ptype == 0 and post.user.uid == session['user_id'] %}
   <form id="edit-txtpost-form" data-sub="{{post.sub.name}}" data-pid="{{post.pid}}" class="mfp-hide white-popup-block">
     {{edittxtpostform.csrf_token}}
     <h1>Edit your text post</h1>
+    <p><label>{{edittxtpostform.nsfw.label.text}} {{edittxtpostform.nsfw(checked=post.isPostNSFW)}}</label></p>
     <p class="content">{{edittxtpostform.content(placeholder="Write your post content here. Styling with Markdown format is supported.")}}</p>
     <div class="alert div-error">
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>

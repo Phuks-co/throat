@@ -14,6 +14,7 @@ from ..forms import CreateSubForm, EditSubForm, EditUserForm
 from ..forms import CreateUserBadgeForm, EditModForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
+from ..forms import EditSubLinkPostForm
 from flask_login import login_user, login_required, logout_user, current_user
 from ..misc import SiteUser
 
@@ -269,7 +270,6 @@ def get_txtpost(pid):
 @login_required
 def edit_txtpost(sub, pid):
     """ Sub text post creation endpoint """
-
     form = EditSubTextPostForm()
     if form.validate():
         post = SubPost()
@@ -277,6 +277,14 @@ def edit_txtpost(sub, pid):
         # post.edited = datetime.datetime.utcnow()
         SubPost.query.filter_by(pid=pid) \
                      .update(dict(content=form.content.data))
+        # nsfw metadata
+        nsfw = SubPostMetadata.query.filter_by(pid=pid) \
+                                    .filter_by(key='nsfw').first()
+        if nsfw:
+            nsfw.value = form.nsfw.data
+        else:
+            nsfw = SubPostMetadata(pid, 'nsfw', form.nsfw.data)
+            db.session.add(nsfw)
         db.session.commit()
         return json.dumps({'status': 'ok', 'sub': sub, 'pid': pid})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -305,6 +313,26 @@ def create_lnkpost(sub):
         db.session.add(post)
         db.session.commit()
         return json.dumps({'status': 'ok', 'pid': post.pid, 'sub': sub.name})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/edit_linkpost/<sub>/<pid>", methods=['POST'])
+@login_required
+def edit_linkpost(sub, pid):
+    """ Sub text post creation endpoint """
+    form = EditSubLinkPostForm()
+    if form.validate():
+        post = SubPost()
+        # nsfw metadata
+        nsfw = SubPostMetadata.query.filter_by(pid=pid) \
+                                    .filter_by(key='nsfw').first()
+        if nsfw:
+            nsfw.value = form.nsfw.data
+        else:
+            nsfw = SubPostMetadata(pid, 'nsfw', form.nsfw.data)
+            db.session.add(nsfw)
+        db.session.commit()
+        return json.dumps({'status': 'ok', 'sub': sub, 'pid': pid})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 

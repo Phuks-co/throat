@@ -255,6 +255,33 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
+    $("#edit-linkpost-form").submit(function(e) {
+        $("#edit-link-btnsubmit").prop('disabled', true);
+        $("#edit-link-btnsubmit").text('Editing your post...');
+        $.ajax({
+            type: "POST",
+            url: '/do/edit_linkpost/' + $("#edit-linkpost-form").data('sub') + '/' + $("#edit-linkpost-form").data('pid'), // XXX: Hardcoded URL because this is supposed to be a static file
+            data: $("#edit-linkpost-form").serialize(),
+            dataType: 'json',
+            success: function(data) {
+                if (data.status != "ok") {
+                    checkErrors(data, "edit-linkpost-form");
+                } else {
+                    document.location = '/s/' + data.sub + '/' + data.pid;
+                }
+                $("#edit-linkpost-btnsubmit").prop('disabled', false);
+                $("#edit-linkpost-btnsubmit").text('Edit post');
+            },
+            error: function(data, err) {
+                $("#edit-linkpost-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
+                $("#edit-linkpost-form .div-error").show();
+                $("#edit-linkpost-btnsubmit").prop('disabled', false);
+                $("#edit-linkpost-btnsubmit").text('Edit post');
+            }
+        });
+        e.preventDefault();
+    });
+
     $("#msg-form").submit(function(e) {
         $("#msg-btnsubmit").prop('disabled', true);
         $("#msg-btnsubmit").text('Sending your msg...');
@@ -395,6 +422,7 @@ $(document).ready(function() {
     $('a.btn.create-post').magnificPopup(mpSettings);
     $('a.btn.send-message').magnificPopup(mpSettings);
     $('a.btn.edit-txtpost-form').magnificPopup(mpSettings);
+    $('a.btn.edit-linkpost-form').magnificPopup(mpSettings);
     $('a.btn.delpost').magnificPopup(mpSettings);
     $('a.btn.delete-post-form').magnificPopup(mpSettings);
     $('#xk').magnificPopup(mpSettings);

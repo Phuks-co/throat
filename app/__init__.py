@@ -27,6 +27,7 @@ from .forms import CreateSubForm, EditSubForm, EditUserForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DummyForm, DeletePost, CreateUserBadgeForm
+from .forms import EditSubLinkPostForm
 from .views import do, api
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata
 from .misc import SiteAnon, hasMail, cache
@@ -365,10 +366,12 @@ def view_post(sub, pid):
         abort(404)
     if post.ptype == 1:
         return render_template('post.html', post=post,
-                               edittxtpostform=EditSubTextPostForm())
+                               edittxtpostform=EditSubTextPostForm(),
+                               editlinkpostform=EditSubLinkPostForm())
     else:
         return render_template('post.html', post=post,
-                               edittxtpostform=EditSubTextPostForm())
+                               edittxtpostform=EditSubTextPostForm(),
+                               editlinkpostform=EditSubLinkPostForm())
 
 
 @app.route("/p/<pid>")
