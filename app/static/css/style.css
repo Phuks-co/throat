@@ -537,6 +537,7 @@ nav .right a {
 }
 .postdomain {
     color: #8e8e8e;
+    font-size: small;
 }
 @media only screen and (max-width: 330px) {
     /* For small mobile phones: */
@@ -1160,9 +1161,10 @@ article.post.apidoc {
 .blue {color: blue;}
 .green {color: green;}
 
-span.bgred{
+span.bgred {
   padding: 4px;
   background-color: #e22;
   border-radius: 4px;
   color: #fff;
+  font-size: small;
 }
