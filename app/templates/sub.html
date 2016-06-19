@@ -114,7 +114,7 @@
           {% endif %}
             <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
             <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.comments.count()}})</a>
-            {% if current_user.is_mod(sub) %}
+            {% if current_user.is_mod(sub) or current_user.is_admin() %}
             <a href="#delete-post-form" class="btn small btn-red delpost" data-post="{{post.pid}}"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
             {% endif %}
           </p>
@@ -145,18 +145,18 @@
   </div>
   <p><button type="submit" id="lnkpost-btnsubmit">Submit link</button></p>
 </form>
+{% if current_user.is_mod(sub) or current_user.is_admin() %}
 <form id="delete-post-form" class="mfp-hide white-popup-block">
   {{delpostform.csrf_token}}
   {{delpostform.post}}
-  <h1>Are you sure you want to delete this post?</h1>
+  <h3>Are you sure you want to delete this post?</h3>
   <div class="alert div-error">
     <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
     <p></p>
   </div>
-
   <p><button type="submit" id="delpost-btnsubmit">Delete!</button></p>
-
 </form>
+{% endif %}
 
 {% endblock %}
 {%block pagefoot%}

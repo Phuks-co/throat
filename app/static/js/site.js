@@ -396,6 +396,7 @@ $(document).ready(function() {
     $('a.btn.send-message').magnificPopup(mpSettings);
     $('a.btn.edit-txtpost-form').magnificPopup(mpSettings);
     $('a.btn.delpost').magnificPopup(mpSettings);
+    $('a.btn.delete-post-form').magnificPopup(mpSettings);
     $('#xk').magnificPopup(mpSettings);
     $( window ).konami({
         cheat: function() {

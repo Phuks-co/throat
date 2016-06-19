@@ -44,7 +44,11 @@
             {# if post.ptype == 1 %}
               <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
             {% endif #}
+              {% if not getMetadata(post, 'deleted') %}
               <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
+              {% else %}
+              [Deleted]
+              {% endif %}
               <span class="time btn small">
                 <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
               </span>
@@ -53,9 +57,13 @@
                 <i class="fa fa-clock-o" aria-hidden="true"></i> Last edited <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
               </span>
             {% endif %}
-            {% if post.ptype == 0 and post.user.uid == session['user_id'] %}
+            {% if post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
               <a href="#edit-txtpost-form" class="btn btn-orange edit small edit-txtpost-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
-              <a href="#delete-txtpost-form" class="btn btn-orange edit small delete-txtpost-form"><i class="fa fa-times-circle" aria-hidden="true"></i> Delete </a>
+              {% if not getMetadata(post, 'deleted') %}
+              <a href="#delete-post-form" data-post="{{post.pid}}" class="btn btn-orange edit small btn-red delete-post-form"><i class="fa fa-trash" aria-hidden="true"></i> Delete </a>
+              {% else %}
+              [Deleted]
+              {% endif %}
             {% endif %}
             </div>
           </div>
@@ -132,7 +140,7 @@
                     <i class="fa fa-clock-o" aria-hidden="true"></i> Last edited <time-ago datetime="{{comment.time.isoformat()}}"></time-ago>
                   </span>
                 {% endif #}
-                {% if comment.uid == session['user_id'] %}
+                {% if comment.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
                   <a href="#edit-comment-form" class="btn btn-orange edit small edit-comment-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
                   <a href="#delete-comment-form" class="btn btn-orange edit small delete-comment-form"><i class="fa fa-times-circle" aria-hidden="true"></i> Delete </a>
                 {% endif %}
@@ -177,7 +185,6 @@
       <p></p>
     </div>
     <p><button type="submit" id="txpost-btnsubmit">Submit post</button></p>
-
   </form>
   <form id="link-post-form" data-sub="{{post.sub.name}}" class="mfp-hide white-popup-block">
     {{lnkpostform.csrf_token}}
@@ -190,6 +197,18 @@
     </div>
     <p><button type="submit" id="lnkpost-btnsubmit">Submit link</button></p>
   </form>
+  {% if post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
+  <form id="delete-post-form" class="mfp-hide white-popup-block">
+    {{delpostform.csrf_token}}
+    {{delpostform.post(value=post.pid)}}
+    <h3>Are you sure you want to delete this post?</h3>
+    <div class="alert div-error">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      <p></p>
+    </div>
+    <p><button type="submit" id="delpost-btnsubmit">Delete!</button></p>
+  </form>
+  {% endif %}
 
 {% endblock %}
 {%block pagefoot%}
