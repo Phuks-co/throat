@@ -451,7 +451,7 @@ def view_messages():
                             .filter_by(mtype=None) \
                             .order_by(Message.posted.desc()).all()
     newcount = Message.query.filter_by(read=None) \
-                            .filter(Message.mtype!='99') \
+                            .filter(Message.mtype!='-1') \
                             .filter_by(mtype=None).count()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Inbox", newcount=newcount)
@@ -463,7 +463,7 @@ def view_messages_sent():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(sentby=user) \
-                            .filter((Message.mtype==None) | (Message.mtype=='99')) \
+                            .filter((Message.mtype==None) | (Message.mtype=='-1')) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Sent")
@@ -476,10 +476,10 @@ def view_messages_replies():
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
                             .filter(Message.mtype.isnot(None)) \
-                            .filter(Message.mtype!='99') \
+                            .filter(Message.mtype!='-1') \
                             .order_by(Message.posted.desc()).all()
     newcount = Message.query.filter_by(read=None) \
-                            .filter(Message.mtype!='99') \
+                            .filter(Message.mtype!='-1') \
                             .filter(Message.mtype.isnot(None)).count()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Replies", newcount=newcount)

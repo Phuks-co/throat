@@ -440,7 +440,7 @@ def create_comment(sub, pid):
         pm = Message()
         pm.sentby = current_user.get_id()
         pm.receivedby = post.uid
-        if form.parent.data != "0":
+        if form.parent.data != None:
             pm.subject = 'Comment reply: ' + post.title
         else:
             pm.subject = 'Post reply: ' + post.title
@@ -526,7 +526,7 @@ def delete_pm(mid):
     """ Delete PM """
     message = Message.query.filter_by(mid=mid).first()
     if session['user_id'] == message.receivedby:
-        message.mtype = '99'
+        message.mtype = '-1'
         db.session.commit()
         return json.dumps({'status': 'ok', 'mid': mid})
         # return json.dumps({'status': 'error', 'error': 'something broke'})
