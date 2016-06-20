@@ -115,6 +115,7 @@ def isMod(sub, user):
 def hasMail(user):
     """ Returns True if the current user has unread messages """
     x = Message.query.filter_by(receivedby=user.uid) \
+                     .filter(Message.mtype!='99') \
                      .filter_by(read=None).first()
     return bool(x)
 
@@ -122,5 +123,6 @@ def hasMail(user):
 def newCount(user):
     """ Returns new message count """
     newcount = Message.query.filter_by(read=None) \
+                            .filter(Message.mtype!='99') \
                             .filter_by(receivedby=user.uid).count()
     return newcount

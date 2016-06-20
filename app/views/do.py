@@ -526,7 +526,7 @@ def delete_pm(mid):
     """ Delete PM """
     message = Message.query.filter_by(mid=mid).first()
     if session['user_id'] == message.receivedby:
-        db.session.delete(message)
+        message.mtype = '99'
         db.session.commit()
         return json.dumps({'status': 'ok', 'mid': mid})
         # return json.dumps({'status': 'error', 'error': 'something broke'})
