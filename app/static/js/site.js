@@ -482,6 +482,21 @@ $(document).ready(function() {
       });
     });
 
+    $('.delete').click(function(e){
+      var mid = $(e.currentTarget).data().mid
+      $.ajax({
+        type: "POST",
+        url: '/do/delete_pm/' + mid,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).addClass('deleted').removeClass('delete');
+            $(e.currentTarget).text('deleted')
+          }
+        }
+      });
+    });
+
     $('div[id^="assignbadge"]').click(function(e){
       var bid = $(e.currentTarget).data().bid
       var uid = $(e.currentTarget).data().uid

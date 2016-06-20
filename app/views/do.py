@@ -511,8 +511,22 @@ def create_sendmsg(user):
 @login_required
 def read_pm(mid):
     """ Mark PM as read """
-    read = datetime.datetime.utcnow()
-    Message.query.filter_by(mid=mid).update(dict(read=read))
-    db.session.commit()
-    return json.dumps({'status': 'ok', 'mid': mid})
-    # return json.dumps({'status': 'error', 'error': 'something broke'})
+    message = Message.query.filter_by(mid=mid).first()
+    if session['user_id'] == message.receivedby:
+        read = datetime.datetime.utcnow()
+        message.read = read
+        db.session.commit()
+        return json.dumps({'status': 'ok', 'mid': mid})
+        # return json.dumps({'status': 'error', 'error': 'something broke'})
+
+
+@do.route("/do/delete_pm/<mid>", methods=['POST'])
+@login_required
+def delete_pm(mid):
+    """ Delete PM """
+    message = Message.query.filter_by(mid=mid).first()
+    if session['user_id'] == message.receivedby:
+        db.session.delete(message)
+        db.session.commit()
+        return json.dumps({'status': 'ok', 'mid': mid})
+        # return json.dumps({'status': 'error', 'error': 'something broke'})

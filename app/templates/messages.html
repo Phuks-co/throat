@@ -36,7 +36,7 @@
           {% endif %}
           <a class="btn small"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
           <a class="btn small"><i class="fa fa-mail-forward" aria-hidden="true"></i> forward</a>
-          <a class="btn small"><i class="fa fa-close" aria-hidden="true"></i> delete</a>
+          <a class="delete btn small btn-red" data-mid="{{message.mid}}"><i class="fa fa-trash" aria-hidden="true"></i> delete</a>
           {% else %}
           <a href="{{url_for('view_user', user=message.getMsgRecBy)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{message.getMsgRecBy}}</a>
           {% endif %}
