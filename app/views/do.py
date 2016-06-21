@@ -440,7 +440,7 @@ def create_comment(sub, pid):
         pm = Message()
         pm.sentby = current_user.get_id()
         pm.receivedby = post.uid
-        if form.parent.data != None:
+        if form.parent.data != "0":
             pm.subject = 'Comment reply: ' + post.title
         else:
             pm.subject = 'Post reply: ' + post.title
