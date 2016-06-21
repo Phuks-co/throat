@@ -613,7 +613,7 @@ $(document).ready(function() {
       var div = document.createElement('div');
       playerid = 'player' + pid;
       if($(this).hasClass('closedtextpost'))  {
-        div.style = 'max-width:560px;padding:10px;display:block;';
+        div.id = 'content';
         $.ajax({
             type: "GET",
             url: '/do/get_txtpost/' + pid, // XXX: Hardcoded URL

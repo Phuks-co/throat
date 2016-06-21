@@ -521,7 +521,13 @@ nav .right a {
 .post .main {
     float: left;
     margin: 5px;
-    width: 70%;
+    width: 80%;
+}
+.post #opentextpost div#content {
+    padding: 20px;
+    margin: 6px;
+    display: block;
+    border: 1px solid lightgray;
 }
 .post a {
     text-decoration: none;
