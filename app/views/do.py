@@ -8,7 +8,7 @@ from flask import Blueprint, redirect, url_for, session
 from sqlalchemy import func
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
-from ..models import UserMetadata, UserBadge
+from ..models import UserMetadata, UserBadge, SubSubscriber
 from ..forms import RegistrationForm, LoginForm, LogOutForm
 from ..forms import CreateSubForm, EditSubForm, EditUserForm
 from ..forms import CreateUserBadgeForm, EditModForm
@@ -227,6 +227,30 @@ def edit_mod(sub, user):
             db.session.commit()
             return json.dumps({'status': 'ok'})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/subscribe/<sid>", methods=['POST'])
+@login_required
+def subscribe_to_sub(sid):
+    """ Subscribe to sub """
+    subscribe = SubSubscriber()
+    subscribe.sid = sid
+    subscribe.uid = current_user.get_id()
+    subscribe.time = datetime.datetime.utcnow()
+    db.session.add(subscribe)
+    db.session.commit()
+    return json.dumps({'status': 'ok', 'message': 'subscribed'})
+
+
+@do.route("/do/unsubscribe/<sid>", methods=['POST'])
+@login_required
+def unsubscribe_from_sub(sid):
+    """ Unsubscribe from sub """
+    userid = current_user.get_id()
+    res = SubSubscriber.query.filter_by(sid=sid) \
+                             .filter_by(uid=userid).delete()
+    db.session.commit()
+    return json.dumps({'status': 'ok', 'message': 'unsubscribed'})
 
 
 @do.route("/do/txtpost/<sub>", methods=['POST'])

@@ -20,6 +20,14 @@
 
 <div class="row buttons">
   <div class="col-12">
+    {% if current_user.has_subscribed(sub) %}
+    <span id="subscribe" class="subscribed col-6" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Subscribed</a></span>
+    {% else %}
+    <span id="subscribe" class="unsubscribed col-6" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-plus" aria-hidden="true"></i> Subscribe</a></span>
+    {% endif %}
+    <span id="block" class="" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-x" aria-hidden="true"></i> Block (soon..)</a></span>
+  </div>
+  <div class="col-12">
     <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
   </div>
   <div class="col-12">

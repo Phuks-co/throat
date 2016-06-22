@@ -512,6 +512,36 @@ $(document).ready(function() {
       });
     });
 
+    $('span[id^="subscribe"]').click(function(e){
+      var sid = $(e.currentTarget).data().sid
+      if($(this).hasClass('unsubscribed'))  {
+        $.ajax({
+          type: "POST",
+          url: '/do/subscribe/' + sid,
+          dataType: 'json',
+          success: function(data) {
+            if(data.status == "ok"){
+              $(e.currentTarget).removeClass('unsubscribed').addClass('subscribed');
+              $(e.currentTarget).html('<a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Subscribed</a>');
+            }
+          }
+        });
+      } else {
+        $.ajax({
+          type: "POST",
+          url: '/do/unsubscribe/' + sid,
+          dataType: 'json',
+          success: function(data) {
+            if(data.status == "ok"){
+              $(e.currentTarget).removeClass('subscribed').addClass('unsubscribed');
+              $(e.currentTarget).html('<a class="btn small"><i class="fa fa-plus" aria-hidden="true"></i> Subscribe</a>');
+            }
+          }
+        });
+      }
+    });
+
+
     $('span[id^="youtubevid"]').click(function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().vid

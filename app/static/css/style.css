@@ -1162,6 +1162,20 @@ article.post.apidoc {
     margin-right: 4px;
 }
 
+/* subscribe block sub */
+.post .subscribed a {
+    background-color: green;
+    color: white;
+}
+.side .subscribed a {
+    background-color: #fb5b00;
+    color: white;
+}
+.post .blocked a {
+    background-color: red;
+    color: white;
+}
+
 /* colors */
 .red {color: red;}
 .blue {color: blue;}

@@ -1,5 +1,5 @@
 """ Misc helper function and classes. """
-from .models import db, Message
+from .models import db, Message, SubSubscriber
 from flask_login import AnonymousUserMixin
 from flask_cache import Cache
 
@@ -46,6 +46,10 @@ class SiteUser(object):
     def new_count(self):
         """ Returns new message count """
         return newCount(self.user)
+
+    def has_subscribed(self, sub):
+        """ Returns True if the current user has subscribed to sub """
+        return hasSubscribed(sub, self.user)
 
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
@@ -126,3 +130,10 @@ def newCount(user):
                             .filter(Message.mtype!='-1') \
                             .filter_by(receivedby=user.uid).count()
     return newcount
+
+
+def hasSubscribed(sub, user):
+    """ Returns True if the current user is subscribed """
+    x = SubSubscriber.query.filter_by(sid=sub.sid) \
+                           .filter_by(uid=user.uid).first()
+    return bool(x)
