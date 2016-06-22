@@ -1175,6 +1175,10 @@ article.post.apidoc {
     background-color: red;
     color: white;
 }
+.side .subscribercount {
+  font-size: 12px;
+  height: 30px;
+}
 
 /* colors */
 .red {color: red;}

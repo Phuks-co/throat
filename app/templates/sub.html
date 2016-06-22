@@ -27,6 +27,10 @@
     {% endif %}
     <span id="block" class="" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-x" aria-hidden="true"></i> Block (soon..)</a></span>
   </div>
+  <div class="subscribercount col-12">
+    <i class="fa fa-users" aria-hidden="true"></i> {{sub.subscribers.count()}} Subscribers
+  </div>
+  <span class="col-12"><hr><span>
   <div class="col-12">
     <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
   </div>
