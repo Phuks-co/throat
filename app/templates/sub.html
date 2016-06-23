@@ -13,10 +13,9 @@
 <hr/>
 
 {# temp #}
-    <h3>/s/{{sub.name}}</h3>
-  <p>
-    {% if sub.isNSFW %} <span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
-  </p>
+<p>{% if sub.isNSFW %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %} /s/{{sub.name}}</p>
+<p>{{sub.title}}</p>
+<span class="col-12"><hr><span>
 
 <div class="row buttons">
   <div class="col-12">

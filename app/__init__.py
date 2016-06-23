@@ -11,6 +11,7 @@ from urllib.parse import urlparse, urljoin
 
 import bcrypt
 import markdown
+from sqlalchemy import func
 from flask import Flask, render_template, session, redirect, url_for, abort, g
 from flask import make_response, request
 from flask_assets import Environment, Bundle
@@ -254,7 +255,7 @@ def all_hot(page):
 @app.route("/subs")
 def view_subs():
     """ Here we can view available subs """
-    subs = Sub.query.order_by(Sub.name.desc()).all()
+    subs = Sub.query.order_by(func.lower(Sub.name).asc()).all()
     return render_template('subs.html', subs=subs)
 
 

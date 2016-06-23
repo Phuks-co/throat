@@ -13,13 +13,23 @@
 {{ super() }}<hr/>
 
 {# temp #}
-<p>
-    /s/{{post.sub.name}}
-  <br>
-    {{post.sub.title}}
-</p>
+<p>{% if post.sub.isNSFW %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %} /s/{{post.sub.name}}</p>
+<p>{{post.sub.title}}</p>
+<span class="col-12"><hr><span>
 
 <div class="row buttons">
+  <div class="col-12">
+    {% if current_user.has_subscribed(post.sub) %}
+    <span id="subscribe" class="subscribed col-6" data-sid="{{post.sub.sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Subscribed</a></span>
+    {% else %}
+    <span id="subscribe" class="unsubscribed col-6" data-sid="{{post.sub.sid}}"><a class="btn small"><i class="fa fa-plus" aria-hidden="true"></i> Subscribe</a></span>
+    {% endif %}
+    <span id="block" class="" data-sid="{{post.sub.sid}}"><a class="btn small"><i class="fa fa-x" aria-hidden="true"></i> Block (soon..)</a></span>
+  </div>
+  <div class="subscribercount col-12">
+    <i class="fa fa-users" aria-hidden="true"></i> {{post.sub.subscribers.count()}} Subscribers
+  </div>
+  <span class="col-12"><hr><span>
   <div class="col-12">
     <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
   </div>
