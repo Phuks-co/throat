@@ -331,7 +331,6 @@ main {
     margin-top: 3em;
 }
 input[type=search] {
-    width: 100%;
     box-sizing: border-box;
     border: solid lightgray 1px;
     border-radius: 4px;
@@ -992,7 +991,7 @@ body.dark .editor-toolbar a {
 }
 .search .fa-search {
     position: absolute;
-    top: 0.7em;
+    top: 0;
     left: 1em;
     color: darkgray;
 }

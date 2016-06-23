@@ -14,7 +14,7 @@ from ..forms import CreateSubForm, EditSubForm, EditUserForm
 from ..forms import CreateUserBadgeForm, EditModForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
-from ..forms import EditSubLinkPostForm
+from ..forms import EditSubLinkPostForm, SearchForm
 from flask_login import login_user, login_required, logout_user, current_user
 from ..misc import SiteUser
 
@@ -44,6 +44,14 @@ def logout():
     if form.validate():
         logout_user()
     return redirect(url_for('index'))
+
+
+@do.route("/do/search", methods=['POST'])
+def search():
+    """ Search endpoint """
+    form = SearchForm()
+    term = form.term.data
+    return redirect(url_for('search', term=term))
 
 
 @do.route("/do/login", methods=['POST'])

@@ -5,6 +5,11 @@ from wtforms import StringField, TextAreaField, BooleanField, HiddenField
 from wtforms.validators import DataRequired, Length, URL
 
 
+class SearchForm(Form):
+    """ Search form """
+    term = StringField('Search')
+
+
 class CreateSubForm(Form):
     """ Sub creation form """
     subname = StringField('Sub name',

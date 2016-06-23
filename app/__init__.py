@@ -226,7 +226,16 @@ def all_domain_new(page, domain):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.query.filter_by(ptype=1) \
                          .filter(SubPost.link.contains(domain))
+    sorter = BasicSorting(posts)
+    return render_template('index.html', page=page, sort_type='all_new',
+                           posts=sorter.getPosts(page))
 
+
+@app.route("/search/<term>", defaults={'page': 1})
+@app.route("/search/<term>/<int:page>")
+def search(page, term):
+    """ The index page, with basic title search """
+    posts = SubPost.query.filter(SubPost.title.contains(term))
     sorter = BasicSorting(posts)
     return render_template('index.html', page=page, sort_type='all_new',
                            posts=sorter.getPosts(page))
