@@ -225,7 +225,8 @@ def all_new(page):
 def all_domain_new(page, domain):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.query.filter_by(ptype=1) \
-                         .filter(SubPost.link.contains(domain))
+                         .filter(SubPost.link.contains(domain)) \
+                         .order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
     return render_template('index.html', page=page, sort_type='all_new',
                            posts=sorter.getPosts(page))
@@ -235,7 +236,8 @@ def all_domain_new(page, domain):
 @app.route("/search/<term>/<int:page>")
 def search(page, term):
     """ The index page, with basic title search """
-    posts = SubPost.query.filter(SubPost.title.contains(term))
+    posts = SubPost.query.filter(SubPost.title.contains(term)) \
+                         .order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
     return render_template('index.html', page=page, sort_type='all_new',
                            posts=sorter.getPosts(page))
