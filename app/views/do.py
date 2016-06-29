@@ -241,10 +241,18 @@ def edit_mod(sub, user):
 @login_required
 def subscribe_to_sub(sid):
     """ Subscribe to sub """
+    userid = current_user.get_id()
     subscribe = SubSubscriber()
     subscribe.sid = sid
-    subscribe.uid = current_user.get_id()
+    subscribe.uid = userid
+    subscribe.status = '1'
     subscribe.time = datetime.datetime.utcnow()
+
+    blocked = SubSubscriber.query.filter_by(sid=sid) \
+                                .filter_by(uid=userid) \
+                                .filter_by(status='2').first()
+    if blocked:
+        db.session.delete(blocked)
     db.session.add(subscribe)
     db.session.commit()
     return json.dumps({'status': 'ok', 'message': 'subscribed'})
@@ -256,7 +264,41 @@ def unsubscribe_from_sub(sid):
     """ Unsubscribe from sub """
     userid = current_user.get_id()
     res = SubSubscriber.query.filter_by(sid=sid) \
-                             .filter_by(uid=userid).delete()
+                             .filter_by(uid=userid) \
+                             .filter_by(status='1').delete()
+    db.session.commit()
+    return json.dumps({'status': 'ok', 'message': 'unsubscribed'})
+
+
+@do.route("/do/block/<sid>", methods=['POST'])
+@login_required
+def block_sub(sid):
+    """ Block sub """
+    userid = current_user.get_id()
+    subscribe = SubSubscriber()
+    subscribe.sid = sid
+    subscribe.uid = userid
+    subscribe.status = '2'
+    subscribe.time = datetime.datetime.utcnow()
+
+    subbed = SubSubscriber.query.filter_by(sid=sid) \
+                                .filter_by(uid=userid) \
+                                .filter_by(status='1').first()
+    if subbed:
+        db.session.delete(subbed)
+    db.session.add(subscribe)
+    db.session.commit()
+    return json.dumps({'status': 'ok', 'message': 'subscribed'})
+
+
+@do.route("/do/unblock/<sid>", methods=['POST'])
+@login_required
+def unblock_sub(sid):
+    """ Unblock sub """
+    userid = current_user.get_id()
+    res = SubSubscriber.query.filter_by(sid=sid) \
+                             .filter_by(uid=userid) \
+                             .filter_by(status='2').delete()
     db.session.commit()
     return json.dumps({'status': 'ok', 'message': 'unsubscribed'})
 

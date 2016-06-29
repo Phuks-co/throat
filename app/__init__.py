@@ -31,7 +31,7 @@ from .forms import DummyForm, DeletePost, CreateUserBadgeForm
 from .forms import EditSubLinkPostForm
 from .views import do, api
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata
-from .misc import SiteAnon, hasMail, cache, hasSubscribed
+from .misc import SiteAnon, hasMail, cache, hasSubscribed, hasBlocked
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)

@@ -51,6 +51,10 @@ class SiteUser(object):
         """ Returns True if the current user has subscribed to sub """
         return hasSubscribed(sub, self.user)
 
+    def has_blocked(self, sub):
+        """ Returns True if the current user has blocked sub """
+        return hasBlocked(sub, self.user)
+
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
     @classmethod
@@ -135,5 +139,14 @@ def newCount(user):
 def hasSubscribed(sub, user):
     """ Returns True if the current user is subscribed """
     x = SubSubscriber.query.filter_by(sid=sub.sid) \
-                           .filter_by(uid=user.uid).first()
+                           .filter_by(uid=user.uid) \
+                           .filter_by(status='1').first()
+    return bool(x)
+
+
+def hasBlocked(sub, user):
+    """ Returns True if the current user has blocked """
+    x = SubSubscriber.query.filter_by(sid=sub.sid) \
+                           .filter_by(uid=user.uid) \
+                           .filter_by(status='2').first()
     return bool(x)

@@ -523,6 +523,10 @@ $(document).ready(function() {
             if(data.status == "ok"){
               $(e.currentTarget).removeClass('unsubscribed').addClass('subscribed');
               $(e.currentTarget).html('<a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Subscribed</a>');
+              if($('.sidebar span[id^="block"]').hasClass('blocked')) {
+                $('.sidebar span[id^="block"]').removeClass('blocked').addClass('unblocked');
+                $('.sidebar span[id^="block"]').html('<a class="btn small"><i class="fa fa-remove" aria-hidden="true"></i> Block</a>');
+              }
             }
           }
         });
@@ -541,6 +545,38 @@ $(document).ready(function() {
       }
     });
 
+    $('span[id^="block"]').click(function(e){
+      var sid = $(e.currentTarget).data().sid
+      if($(this).hasClass('unblocked'))  {
+        $.ajax({
+          type: "POST",
+          url: '/do/block/' + sid,
+          dataType: 'json',
+          success: function(data) {
+            if(data.status == "ok"){
+              $(e.currentTarget).removeClass('unblocked').addClass('blocked');
+              $(e.currentTarget).html('<a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Blocked</a>');
+              if($('.sidebar span[id^="subscribe"]').hasClass('subscribed')) {
+                $('.sidebar span[id^="subscribe"]').removeClass('subscribed').addClass('unsubscribed');
+                $('.sidebar span[id^="subscribe"]').html('<a class="btn small"><i class="fa fa-plus" aria-hidden="true"></i> Subscribe</a>');
+              }
+            }
+          }
+        });
+      } else {
+        $.ajax({
+          type: "POST",
+          url: '/do/unblock/' + sid,
+          dataType: 'json',
+          success: function(data) {
+            if(data.status == "ok"){
+              $(e.currentTarget).removeClass('blocked').addClass('unblocked');
+              $(e.currentTarget).html('<a class="btn small"><i class="fa fa-remove" aria-hidden="true"></i> Block</a>');
+            }
+          }
+        });
+      }
+    });
 
     $('span[id^="youtubevid"]').click(function(e){
       var pid = $(e.currentTarget).data().pid
@@ -726,9 +762,17 @@ function vineID(url) {
     return match[1];
 	}
 }
+/* for testing
 function instagramID(url) {
   var match = url.match(/https?:\/\/[w\.]*instagram\.[^\/]*\/([^?]*)\/([a-zA-Z0-9]{1,10})/);
   if (match){
     return match[2];
 	}
 }
+function googMapID(url) {
+  var match = url.match(/^https?\:\/\/(www\.)?google\.[a-z]+\/maps\/?\?([^&]+&)*(ll=-?[0-9]{1,2}\.[0-9]+,-?[0-9]{1,2}\.[0-9]+|q=[^&+])+($|&)/);
+  if (match){
+    return match[2];
+	}
+}
+*/
