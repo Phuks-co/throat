@@ -22,7 +22,7 @@ from werkzeug.contrib.atom import AtomFeed
 from feedgen.feed import FeedGenerator
 
 from .models import db, User, Sub, SubPost, Message, SubPostVote
-from .models import UserBadge, UserMetadata
+from .models import UserBadge, UserMetadata, SiteMetadata
 from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditSubForm, EditUserForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
@@ -30,8 +30,8 @@ from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DummyForm, DeletePost, CreateUserBadgeForm
 from .forms import EditSubLinkPostForm
 from .views import do, api
-from .misc import SiteUser, getVoteCount, hasVoted, getMetadata
-from .misc import SiteAnon, hasMail, cache, hasSubscribed, hasBlocked
+from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail
+from .misc import SiteAnon, cache, hasSubscribed, hasBlocked, getAnnouncement
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)
@@ -174,7 +174,8 @@ def utility_processor():
             'getVoteCount': getVoteCount, 'hasVoted': hasVoted,
             'delpostform': DeletePost(), 'getMetadata': getMetadata,
             'txtpostform': CreateSubTextPost(), 'editsubform': EditSubForm(),
-            'lnkpostform': CreateSubLinkPost()}
+            'lnkpostform': CreateSubLinkPost(),
+            'getAnnouncement': getAnnouncement}
 
 
 @app.route("/")

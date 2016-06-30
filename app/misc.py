@@ -1,5 +1,6 @@
 """ Misc helper function and classes. """
-from .models import db, Message, SubSubscriber, UserMetadata
+from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata
+from .models import SubPost
 from flask_login import AnonymousUserMixin
 from flask_cache import Cache
 
@@ -149,6 +150,15 @@ def hasVoted(uid, post, up=True):
             return True
     else:
         return False
+
+
+@cache.memoize(1200)
+def getAnnouncement():
+    """ Returns sitewide announcement post or False """
+    ann = SiteMetadata.query.filter_by(key='announcement').first()
+    if ann:
+        ann = SubPost.query.filter_by(pid=ann.value).first()
+    return ann
 
 
 @cache.memoize(60)
