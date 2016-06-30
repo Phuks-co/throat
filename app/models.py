@@ -344,3 +344,10 @@ class Message(db.Model):
         """ Returns this message's recipient """
         x = User.query.filter_by(uid=self.receivedby).first()
         return str(x.name)
+
+
+class SiteMetadata(db.Model):
+    """ Site-wide configs """
+    xid = Column(Integer, primary_key=True)
+    key = Column(String(255))  # Metadata key
+    value = Column(String(255))
