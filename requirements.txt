@@ -10,7 +10,6 @@ jsmin
 cssmin
 markdown
 flask-login
-psycopg2
 tld
 feedgen
 flask-cache
