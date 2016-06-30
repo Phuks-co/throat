@@ -18,16 +18,20 @@
 <span class="col-12"><hr><span>
 
 <div class="row buttons">
-  <div class="col-12">
+  <div class="sidebar col-12">
     {% if current_user.has_subscribed(post.sub) %}
-    <span id="subscribe" class="subscribed col-6" data-sid="{{post.sub.sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Subscribed</a></span>
+    <span id="subscribe" class="subscribed" data-sid="{{post.sub.sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Subscribed</a></span>
     {% else %}
-    <span id="subscribe" class="unsubscribed col-6" data-sid="{{post.sub.sid}}"><a class="btn small"><i class="fa fa-plus" aria-hidden="true"></i> Subscribe</a></span>
+    <span id="subscribe" class="unsubscribed" data-sid="{{post.sub.sid}}"><a class="btn small"><i class="fa fa-plus" aria-hidden="true"></i> Subscribe</a></span>
     {% endif %}
-    <span id="block" class="" data-sid="{{post.sub.sid}}"><a class="btn small"><i class="fa fa-x" aria-hidden="true"></i> Block (soon..)</a></span>
+    {% if current_user.has_blocked(post.sub) %}
+    <span id="block" class="blocked" data-sid="{{post.sub.sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Blocked</a></span>
+    {% else %}
+    <span id="block" class="unblocked" data-sid="{{post.sub.sid}}"><a class="btn small"><i class="fa fa-remove" aria-hidden="true"></i> Block</a></span>
+    {% endif %}
   </div>
   <div class="subscribercount col-12">
-    <i class="fa fa-users" aria-hidden="true"></i> {{post.sub.subscribers.count()}} Subscribers
+    <i class="fa fa-users" aria-hidden="true"></i> {{post.sub.getSuscriberCount}} Subscribers
   </div>
   <span class="col-12"><hr><span>
   <div class="col-12">
