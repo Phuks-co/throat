@@ -52,19 +52,28 @@ class User(db.Model):
     def showLinksNewTab(self):
         """ Returns true user selects to open links in a new window """
         x = self.properties.filter_by(key='exlinks').first()
-        return True if x.value == '1' else False
+        if x:
+            return True if x.value == '1' else False
+        else:
+            return False
 
     @hybrid_property
     def showStyles(self):
         """ Returns true user selects to see sustom sub stylesheets """
         x = self.properties.filter_by(key='styles').first()
-        return True if x.value == '1' else False
+        if x:
+            return True if x.value == '1' else False
+        else:
+            return False
 
     @hybrid_property
     def showNSFW(self):
         """ Returns true user selects to see NSFW posts """
         x = self.properties.filter_by(key='nsfw').first()
-        return True if x.value == '1' else False
+        if x:
+            return True if x.value == '1' else False
+        else:
+            return False
 
 class UserMetadata(db.Model):
     """ User metadata. Here we store badges, admin status, etc. """

@@ -59,13 +59,19 @@ class SiteUser(object):
         """ Returns true if user selects to open links in a new window """
         x = UserMetadata.query.filter_by(uid=self.user.uid) \
                               .filter_by(key='exlinks').first()
-        return True if x.value == '1' else False
+        if x:
+            return True if x.value == '1' else False
+        else:
+            return False
 
     def block_styles(self):
         """ Returns true if user selects to block sub styles """
         x = UserMetadata.query.filter_by(uid=self.user.uid) \
                               .filter_by(key='styles').first()
-        return True if x.value == '1' else False
+        if x:
+            return True if x.value == '1' else False
+        else:
+            return False
 
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
