@@ -34,6 +34,7 @@
     <i class="fa fa-users" aria-hidden="true"></i> {{post.sub.getSuscriberCount}} Subscribers
   </div>
   <span class="col-12"><hr><span>
+  {% if current_user.is_authenticated %}
   <div class="col-12">
     <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
   </div>
@@ -45,6 +46,8 @@
     <a href="#edit-sub-form" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Info</a>
   </div>
   {% endif %}
+  {% endif %}
+
 </div>
 <p class="createdby">Created {% if post.sub.getModName %}by {{post.sub.getModName}}{% endif %} <time-ago datetime="{{post.sub.getSubCreation}}"></time-ago></p>
 {% endblock %}
@@ -90,7 +93,7 @@
           <div class="content">{{markdown(post.content)|safe}}</div>
           {% else %}
           {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
-          <div class="content"><a href="{{post.link}}" target="_blank" rel="noreferrer noopener">{{post.link}}</a>
+          <div class="content"><a href="{{post.link}}" target="_blank" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.link}}</a>
           {% if post.getDomain() == "youtube.com" %}
             <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
@@ -244,7 +247,9 @@
 
 {% endblock %}
 {%block pagefoot%}
-<style>{{post.sub.stylesheet.first().content}}</style>
+{% if not current_user.block_styles() %}
+  <style>{{post.sub.stylesheet.first().content}}</style>
+{% endif %}
 {%if current_user.is_authenticated%}
 <script type="text/javascript" src="{{ url_for('static', filename='js/simplemde.min.js') }}"></script>
 <script>

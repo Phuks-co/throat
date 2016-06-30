@@ -119,6 +119,39 @@ def edit_user(user):
         form = EditUserForm()
         if form.validate():
             user.email = form.email.data
+            exlinks = UserMetadata.query.filter_by(uid=user.uid) \
+                                        .filter_by(key='exlinks').first()
+            if exlinks:
+                exlinks.value = form.external_links.data
+            else:
+                exlinksmeta = UserMetadata()
+                exlinksmeta.uid = user.uid
+                exlinksmeta.key = 'exlinks'
+                exlinksmeta.value = form.external_links.data
+                db.session.add(exlinksmeta)
+
+            styles = UserMetadata.query.filter_by(uid=user.uid) \
+                                        .filter_by(key='styles').first()
+            if styles:
+                styles.value = form.disable_sub_style.data
+            else:
+                stylesmeta = UserMetadata()
+                stylesmeta.uid = user.uid
+                stylesmeta.key = 'styles'
+                stylesmeta.value = form.disable_sub_style.data
+                db.session.add(stylesmeta)
+
+            nsfw = UserMetadata.query.filter_by(uid=user.uid) \
+                                     .filter_by(key='nsfw').first()
+            if nsfw:
+                nsfw.value = form.show_nsfw.data
+            else:
+                nsfwmeta = UserMetadata()
+                nsfwmeta.uid = user.uid
+                nsfwmeta.key = 'nsfw'
+                nsfwmeta.value = form.show_nsfw.data
+                db.session.add(nsfwmeta)
+
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'addr': url_for('view_user', user=user.name)})

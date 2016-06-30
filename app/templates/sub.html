@@ -34,20 +34,22 @@
     <i class="fa fa-users" aria-hidden="true"></i> {{sub.getSuscriberCount}} Subscribers
   </div>
   <span class="col-12"><hr><span>
+  {%if current_user.is_authenticated%}
   <div class="col-12">
     <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
   </div>
   <div class="col-12">
     <a href="#link-post-form" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
   </div>
-  <div class="col-12">
-    <a href="{{url_for('view_sub_postmodlog', sub=sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">View modlog</a>
-  </div>
   {% if current_user.is_mod(sub) or current_user.is_admin() %}
   <div class="col-12">
     <a href="{{url_for('edit_sub', sub=sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Info</a>
   </div>
   {% endif %}
+  {% endif %}
+  <div class="col-12">
+    <a href="{{url_for('view_sub_postmodlog', sub=sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">View modlog</a>
+  </div>
 </div>
 <p class="createdby">Created by {{sub.getModName}} <time-ago datetime="{{sub.getSubCreation}}"></time-ago></p>
 {% endblock %}
@@ -101,7 +103,7 @@
           <a class="title" href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}">{{post.title}}</a>
           {% else %}
           {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
-          <a class="title" href="{{post.link}}" rel="noreferrer noopener">{{post.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=post.getDomain())}}">{{post.getDomain()}}</a>)</span>
+          <a class="title" href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=post.getDomain())}}">{{post.getDomain()}}</a>)</span>
           {% endif %}
           <p class="author"><time-ago datetime="{{post.posted.isoformat()}}"></time-ago></p>
           <p class="container">
@@ -141,6 +143,7 @@
       {%endcache%}
     </article>
 {% endfor %}
+{% if current_user.is_authenticated %}
 <form id="post-form" data-sub="{{sub.name}}" class="mfp-hide white-popup-block">
   {{txtpostform.csrf_token}}
   <h1>Submit a text post</h1>
@@ -164,6 +167,7 @@
   </div>
   <p><button type="submit" id="lnkpost-btnsubmit">Submit link</button></p>
 </form>
+{% endif %}
 {% if current_user.is_mod(sub) or current_user.is_admin() %}
 <form id="delete-post-form" class="mfp-hide white-popup-block">
   {{delpostform.csrf_token}}
@@ -179,7 +183,9 @@
 
 {% endblock %}
 {%block pagefoot%}
-<style>{{sub.stylesheet.first().content}}</style>
+{% if not current_user.block_styles() %}
+  <style>{{sub.stylesheet.first().content}}</style>
+{% endif %}
 <script type="text/javascript" src="{{ url_for('static', filename='js/simplemde.min.js') }}"></script>
 <script>
   var simplemde = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: true, unique_id: "createpost",}});

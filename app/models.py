@@ -48,6 +48,23 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.name
 
+    @hybrid_property
+    def showLinksNewTab(self):
+        """ Returns true user selects to open links in a new window """
+        x = self.properties.filter_by(key='exlinks').first()
+        return True if x.value == '1' else False
+
+    @hybrid_property
+    def showStyles(self):
+        """ Returns true user selects to see sustom sub stylesheets """
+        x = self.properties.filter_by(key='styles').first()
+        return True if x.value == '1' else False
+
+    @hybrid_property
+    def showNSFW(self):
+        """ Returns true user selects to see NSFW posts """
+        x = self.properties.filter_by(key='nsfw').first()
+        return True if x.value == '1' else False
 
 class UserMetadata(db.Model):
     """ User metadata. Here we store badges, admin status, etc. """
@@ -55,6 +72,20 @@ class UserMetadata(db.Model):
     uid = Column(String(40), db.ForeignKey('user.uid'))  # Subverse id
     key = Column(String(255))  # Metadata key
     value = Column(String(255))
+
+
+class UserBadge(db.Model):
+    """ Here we store badge definitions """
+    bid = Column(String(40), primary_key=True)
+    badge = Column(String(255))  # fa-xxx, badge icon id.
+    name = Column(String(255))  # Badge name
+    text = Column(String(255))  # Short text displayed when hovering the badge
+
+    def __init__(self, badge, name, text):
+        self.bid = str(uuid.uuid4())
+        self.badge = badge
+        self.name = name
+        self.text = text
 
     @hybrid_property
     def getBadgeClass(self):
@@ -81,6 +112,8 @@ class UserMetadata(db.Model):
         return str(x.text)
 
 
+<<<<<<< HEAD
+=======
 class UserBadge(db.Model):
     """ Here we store badge definitions """
     bid = Column(String(40), primary_key=True)
@@ -96,6 +129,7 @@ class UserBadge(db.Model):
         self.text = text
 
 
+>>>>>>> bff8b182d08b61fac3569617dbb21ec23b945616
 class Sub(db.Model):
     """ Basic sub data """
     sid = Column(String(40), primary_key=True)  # sub id

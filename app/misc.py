@@ -1,5 +1,5 @@
 """ Misc helper function and classes. """
-from .models import db, Message, SubSubscriber
+from .models import db, Message, SubSubscriber, UserMetadata
 from flask_login import AnonymousUserMixin
 from flask_cache import Cache
 
@@ -55,6 +55,18 @@ class SiteUser(object):
         """ Returns True if the current user has blocked sub """
         return hasBlocked(sub, self.user)
 
+    def has_exlinks(self):
+        """ Returns true if user selects to open links in a new window """
+        x = UserMetadata.query.filter_by(uid=self.user.uid) \
+                              .filter_by(key='exlinks').first()
+        return True if x.value == '1' else False
+
+    def block_styles(self):
+        """ Returns true if user selects to block sub styles """
+        x = UserMetadata.query.filter_by(uid=self.user.uid) \
+                              .filter_by(key='styles').first()
+        return True if x.value == '1' else False
+
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
     @classmethod
@@ -72,6 +84,26 @@ class SiteAnon(AnonymousUserMixin):
         """ We don't know if anons are lizards...
             We return False just in case """
         return False  # We don't know :(
+
+    @classmethod
+    def has_subscribed(cls, sub):
+        """ Anons dont get subscribe options. """
+        return False
+
+    @classmethod
+    def has_blocked(cls, sub):
+        """ Anons dont get blocked options. """
+        return False
+
+    @classmethod
+    def has_exlinks(cls):
+        """ Anons dont get usermetadata options. """
+        return False
+
+    @classmethod
+    def block_styles(cls):
+        """ Anons dont get usermetadata options. """
+        return False
 
 
 def getVoteCount(post):

@@ -923,7 +923,9 @@ input#nsfw {
 #userBadges li {
     margin:6px 0;
 }
-
+#edit-user-form p.fullw {
+    margin-top: 100px;
+}
 /* dark mode */
 
 body.dark, body.dark header, body.dark footer, body.dark nav ul li a, body.dark .center, body.dark .post .title, body.dark .text-post, body.dark .side {

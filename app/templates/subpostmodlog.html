@@ -19,6 +19,7 @@
   </p>
 
 <div class="row buttons">
+  {%if current_user.is_authenticated%}
   <div class="col-12">
     <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
   </div>
@@ -32,6 +33,7 @@
   <div class="col-12">
     <a href="{{url_for('edit_sub', sub=sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Info</a>
   </div>
+  {% endif %}
   {% endif %}
 </div>
 <p class="createdby">Created by {{sub.getModName}} <time-ago datetime="{{sub.getSubCreation}}"></time-ago></p>

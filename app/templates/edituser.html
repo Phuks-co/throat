@@ -52,10 +52,11 @@
       <div id="the-edit-user-form-itself">
           {{edituserform.csrf_token}}
 
-          <p>
-            <label for="email" class="left">{{edituserform.email.label.text}}</label>
-            {{edituserform.email(value=user.email, class="right")}}
-          </p>
+          <p><label for="email" class="left">{{edituserform.email.label.text}}</label>{{edituserform.email(value=user.email, class="right")}}</p>
+          <p>{{edituserform.external_links(checked=user.showLinksNewTab)}}<label for="external_links">{{edituserform.external_links.label.text}}</label></p>
+          <p>{{edituserform.disable_sub_style(checked=user.showStyles)}}<label for="disable_sub_style">{{edituserform.disable_sub_style.label.text}}</label></p>
+          <p>{{edituserform.show_nsfw(checked=user.showNSFW)}}<label for="show_nsfw">{{edituserform.show_nsfw.label.text}}</label></p>
+
           <p class="fullw">
               {{edituserform.accept_tos(required=True)}}
               <label for="tos">{{edituserform.accept_tos.label.text}}</label>
