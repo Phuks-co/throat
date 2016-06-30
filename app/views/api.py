@@ -4,7 +4,7 @@ import re
 import datetime
 import bcrypt
 from flask import Blueprint, jsonify, abort, request
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 
 from ..models import db, User, Sub, SubPost
