@@ -82,21 +82,6 @@ class UserMetadata(db.Model):
     key = Column(String(255))  # Metadata key
     value = Column(String(255))
 
-
-class UserBadge(db.Model):
-    """ Here we store badge definitions """
-    bid = Column(String(40), primary_key=True)
-    badge = Column(String(255))  # fa-xxx, badge icon id.
-    name = Column(String(255))  # Badge name
-    # Short text displayed when hovering the badge
-    text = Column(String(255, collation='utf8_bin'))
-
-    def __init__(self, badge, name, text):
-        self.bid = str(uuid.uuid4())
-        self.badge = badge
-        self.name = name
-        self.text = text
-
     @hybrid_property
     def getBadgeClass(self):
         """ Returns the badge's css class """
@@ -120,6 +105,21 @@ class UserBadge(db.Model):
             return False
         x = UserBadge.query.filter_by(bid=self.value).first()
         return str(x.text)
+
+
+class UserBadge(db.Model):
+    """ Here we store badge definitions """
+    bid = Column(String(40), primary_key=True)
+    badge = Column(String(255))  # fa-xxx, badge icon id.
+    name = Column(String(255))  # Badge name
+    # Short text displayed when hovering the badge
+    text = Column(String(255, collation='utf8_bin'))
+
+    def __init__(self, badge, name, text):
+        self.bid = str(uuid.uuid4())
+        self.badge = badge
+        self.name = name
+        self.text = text
 
 
 class Sub(db.Model):
