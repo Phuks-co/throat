@@ -73,6 +73,16 @@ class SiteUser(object):
         else:
             return False
 
+    def show_nsfw(self):
+        """ Returns true if user selects show nsfw posts """
+        x = UserMetadata.query.filter_by(uid=self.user.uid) \
+                              .filter_by(key='nsfw').first()
+        if x:
+            return True if x.value == '1' else False
+        else:
+            return False
+
+
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
     @classmethod
@@ -108,6 +118,11 @@ class SiteAnon(AnonymousUserMixin):
 
     @classmethod
     def block_styles(cls):
+        """ Anons dont get usermetadata options. """
+        return False
+
+    @classmethod
+    def show_nsfw(cls):
         """ Anons dont get usermetadata options. """
         return False
 
