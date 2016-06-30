@@ -44,7 +44,7 @@ class RegistrationForm(Form):
     ])
     confirm = PasswordField('Repeat Password')
     accept_tos = BooleanField('I accept the TOS', [Required()])
-    recaptcha = RecaptchaField()
+    recaptcha = RecaptchaField('Captcha')
 
 
 class EditUserForm(Form):
