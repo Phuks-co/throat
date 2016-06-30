@@ -86,7 +86,8 @@ class UserBadge(db.Model):
     bid = Column(String(40), primary_key=True)
     badge = Column(String(255))  # fa-xxx, badge icon id.
     name = Column(String(255))  # Badge name
-    text = Column(String(255))  # Short text displayed when hovering the badge
+    # Short text displayed when hovering the badge
+    text = Column(String(255), collation='utf8_bin')
 
     def __init__(self, badge, name, text):
         self.bid = str(uuid.uuid4())
@@ -99,7 +100,7 @@ class Sub(db.Model):
     """ Basic sub data """
     sid = Column(String(40), primary_key=True)  # sub id
     name = Column(String(32), unique=True)  # sub name
-    title = Column(String(128))  # sub title/desc
+    title = Column(String(128), collation='utf8_bin')  # sub title/desc
 
     status = Column(Integer)  # Sub status. 0 = ok; 1 = banned; etc
 
@@ -200,9 +201,10 @@ class SubPost(db.Model):
     # There's a 'sub' field with a reference to the sub and a 'user' one
     # with a refernece to the user that created this post
 
-    title = Column(String(128))  # post title
+    title = Column(String(128), collation='utf8_bin')  # post title
     link = Column(String(128))  # post target (if it is a link post)
-    content = Column(Text)  # post content (if it is a text post)
+    # post content (if it is a text post)
+    content = Column(Text, collation='utf8_bin')
 
     posted = Column(DateTime)
 
@@ -269,7 +271,7 @@ class SubPostComment(db.Model):
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))
     uid = Column(String(40), db.ForeignKey('user.uid'))
     time = Column(DateTime)
-    content = Column(Text)
+    content = Column(Text, collation='utf8_bin')
     # parent comment id
     parentcid = Column(String(40), db.ForeignKey('sub_post_comment.cid'),
                        nullable=True)
@@ -295,7 +297,7 @@ class Message(db.Model):
     receivedby = Column(String(40), db.ForeignKey('user.uid'))
 
     subject = Column(String(128))  # msg subject
-    content = Column(Text)  # msg content
+    content = Column(Text, collation='utf8_bin')  # msg content
 
     posted = Column(DateTime)  # sent
     read = Column(DateTime)  # todo markasread time

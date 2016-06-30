@@ -504,7 +504,7 @@ def create_comment(sub, pid):
         comment = SubPostComment()
         comment.uid = current_user.get_id()
         comment.pid = pid
-        comment.content = form.comment.data
+        comment.content = form.comment.data.encode()
         comment.time = datetime.datetime.utcnow()
         print(form.parent.data)
 
