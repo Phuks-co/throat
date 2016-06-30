@@ -79,7 +79,8 @@ class UserBadge(db.Model):
     bid = Column(String(40), primary_key=True)
     badge = Column(String(255))  # fa-xxx, badge icon id.
     name = Column(String(255))  # Badge name
-    text = Column(String(255))  # Short text displayed when hovering the badge
+    # Short text displayed when hovering the badge
+    text = Column(String(255, collation='utf8_bin'))
 
     def __init__(self, badge, name, text):
         self.bid = str(uuid.uuid4())
@@ -112,24 +113,6 @@ class UserBadge(db.Model):
         return str(x.text)
 
 
-<<<<<<< HEAD
-=======
-class UserBadge(db.Model):
-    """ Here we store badge definitions """
-    bid = Column(String(40), primary_key=True)
-    badge = Column(String(255))  # fa-xxx, badge icon id.
-    name = Column(String(255))  # Badge name
-    # Short text displayed when hovering the badge
-    text = Column(String(255, collation='utf8_bin'))
-
-    def __init__(self, badge, name, text):
-        self.bid = str(uuid.uuid4())
-        self.badge = badge
-        self.name = name
-        self.text = text
-
-
->>>>>>> bff8b182d08b61fac3569617dbb21ec23b945616
 class Sub(db.Model):
     """ Basic sub data """
     sid = Column(String(40), primary_key=True)  # sub id
