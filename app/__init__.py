@@ -508,13 +508,14 @@ def view_messages_replies():
 @login_required
 def admin_area():
     """ WIP: View users. assign badges, etc """
-    users = User.query.all()
-    subs = Sub.query.all()
-    posts = SubPost.query.count()
-    ups = SubPostVote.query.filter_by(positive=True).count()
-    downs = SubPostVote.query.filter_by(positive=False).count()
-    badges = UserBadge.query.all()
     if current_user.is_admin():
+        users = User.query.all()
+        subs = Sub.query.all()
+        posts = SubPost.query.count()
+        ups = SubPostVote.query.filter_by(positive=True).count()
+        downs = SubPostVote.query.filter_by(positive=False).count()
+        badges = UserBadge.query.all()
+
         return render_template('admin.html', users=users, badges=badges,
                                subs=subs, posts=posts, ups=ups, downs=downs,
                                createuserbadgeform=CreateUserBadgeForm(),
