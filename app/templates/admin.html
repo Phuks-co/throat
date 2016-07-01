@@ -49,7 +49,8 @@
       <div class="subname"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>{% if sub.getNSFW %} <i title="NSFW" class="fa fa-eye-slash"></i>{% endif %}</div>
       <div class="subtitle">{{sub.title}}</div>
         <ul>
-          <li><i class="fa fa-user"></i> {{sub.getModName}}</li>
+          <li>Founder: {{sub.getFounderName}}</li>
+          <li>Top Mod: {{sub.getTopModName}}</li>
           <li><i class="fa fa-users"></i> {{sub.getSuscriberCount}} subscribers</li>
           <li><i class="fa fa-list"></i> {{sub.getSubPostCount}} submissions</li>
           <li><i class="fa fa-comments"></i> xx comments</li>
@@ -61,7 +62,7 @@
     <div>
       <form id="edit-mod-form">
         {{editmodform.csrf_token}}
-        <h4>Change mod of sub</h4>
+        <h4>Change top mod of sub</h4>
         <div class="col-3">{{editmodform.sub(placeholder=editmodform.sub.label.text, required=True, autofocus=True)}}</div>
         <div class="col-3">{{editmodform.user(placeholder=editmodform.user.label.text, required=True,)}}</div>
         <div class="col-3"><button type="submit" class="btn btn-blue" id="editmodform-btnsubmit">Transfer sub</button></div>

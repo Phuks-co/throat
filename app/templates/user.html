@@ -36,7 +36,7 @@
   <h3>Moderating:</h3>
   <ul style="color: darkcyan;">
     {% for sub in subs  %}
-    {% if user.name == sub.getModName %}
+    {% if user.name == sub.getTopModName %}
     <li><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a></li>
     {% endif %}
     {% endfor %}

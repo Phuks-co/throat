@@ -49,7 +49,7 @@
   {% endif %}
 
 </div>
-<p class="createdby">Created {% if post.sub.getModName %}by {{post.sub.getModName}}{% endif %} <time-ago datetime="{{post.sub.getSubCreation}}"></time-ago></p>
+<p class="createdby">Created by {{post.sub.getFounderName}} <time-ago datetime="{{post.sub.getSubCreation}}"></time-ago></p>
 {% endblock %}
 
 {% block main %}

@@ -26,4 +26,15 @@
   <p><button type="submit" class="btn btn-orange" id="editsub-btnsubmit">Edit sub</button></p>
 
 </form>
+{% if current_user.is_admin() or current_user.is_topmod(sub) %}
+<div class="editmoderators col-12">
+  <p>Current Top Mod: <i class="fa fa-star" title="Top Mod"></i> <a href="{{url_for('view_user', user=sub.getTopModName)}}">{{sub.getTopModName}}</a></p>
+  <p>Level two mods</p>
+  <ul>
+  {% for mod in mods %}
+  <span class="col-4"><li><a href="{{url_for('view_user', user=mod.getUsername)}}">{{mod.getUsername}}</a></li></span>
+  {% endfor %}
+  </ul>
+</div>
+{% endif %}
 {% endblock %}

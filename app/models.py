@@ -146,11 +146,16 @@ class Sub(db.Model):
         return '<Sub {0}-{1}>'.format(self.name, self.title)
 
     @hybrid_property
-    def getModName(self):
-        """ Returns the name of the first mod on the list """
-        # Why do we need this? If we want to get the sub's owner or the
-        # creator's name then we should use a different metadata key for that
+    def getFounderName(self):
+        """ Returns the name of the sub founder """
         x = self.properties.filter_by(key='mod').first()
+        y = User.query.filter_by(uid=x.value).first()
+        return str(y.name)
+
+    @hybrid_property
+    def getTopModName(self):
+        """ Returns the name of the top mod on the list """
+        x = self.properties.filter_by(key='mod1').first()
         y = User.query.filter_by(uid=x.value).first()
         return str(y.name)
 
@@ -193,6 +198,11 @@ class SubMetadata(db.Model):
         self.key = key
         self.value = value
 
+    @hybrid_property
+    def getUsername(self):
+        """ Returns username from str """
+        x = User.query.filter_by(uid=self.value).first()
+        return str(x.name)
 
 class SubSubscriber(db.Model):
     """ Stores subscribers for a sub. """

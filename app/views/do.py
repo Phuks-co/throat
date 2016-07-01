@@ -205,10 +205,12 @@ def create_sub():
         sub = Sub(form.subname.data, form.title.data)
         db.session.add(sub)
         ux = SubMetadata(sub, 'mod', current_user.get_id())
+        uy = SubMetadata(sub, 'mod1', current_user.get_id())
         ux2 = SubMetadata(sub, 'creation', datetime.datetime.utcnow())
         ux3 = SubMetadata(sub, 'nsfw', '0')
         ux4 = SubStylesheet(sub, content='/** css here **/')
         db.session.add(ux)
+        db.session.add(uy)
         db.session.add(ux2)
         db.session.add(ux3)
         db.session.add(ux4)
@@ -264,7 +266,12 @@ def edit_mod(sub, user):
             return json.dumps({'status': 'error',
                                'error': ['User does not exist']})
         if form.validate():
-            sub.properties.filter_by(key='mod').first().value = user.uid
+            topmod = sub.properties.filter_by(key='mod1').first()
+            if topmod:
+                sub.properties.filter_by(key='mod1').first().value = user.uid
+            else:
+                x = SubMetadata(sub, 'mod1', current_user.get_id())
+                db.session.add(x)
             db.session.commit()
             return json.dumps({'status': 'ok'})
         return json.dumps({'status': 'error', 'error': get_errors(form)})

@@ -1048,6 +1048,12 @@ button#text-post-icon, button#link-post-icon {
     border-radius: 2px;
     border: solid 1px lightgray;
 }
+.editmoderators.col-12 {
+    border: 2px solid #D83600;
+    border-radius: 3px;
+    padding: 10px;
+    margin: 10px 0;
+}
 
 /* edit user */
 

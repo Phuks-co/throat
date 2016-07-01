@@ -22,7 +22,7 @@ from werkzeug.contrib.atom import AtomFeed
 from feedgen.feed import FeedGenerator
 
 from .models import db, User, Sub, SubPost, Message, SubPostVote
-from .models import UserBadge, UserMetadata, SiteMetadata
+from .models import UserBadge, UserMetadata, SiteMetadata, SubMetadata
 from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditSubForm, EditUserForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
@@ -30,7 +30,7 @@ from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DummyForm, DeletePost, CreateUserBadgeForm
 from .forms import EditSubLinkPostForm
 from .views import do, api
-from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail
+from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, cache, hasSubscribed, hasBlocked, getAnnouncement
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
@@ -293,10 +293,12 @@ def edit_sub(sub):
     sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
-    form = EditSubForm()
-    form.css.data = sub.stylesheet.first().content
+
     if current_user.is_mod(sub) or current_user.is_admin():
-        return render_template('editsub.html', sub=sub,
+        form = EditSubForm()
+        form.css.data = sub.stylesheet.first().content
+        mods = sub.properties.filter_by(key='mod2').all()
+        return render_template('editsub.html', sub=sub, mods=mods,
                                editsubform=form)
     else:
         abort(403)
@@ -337,8 +339,9 @@ def view_sub_new(sub, page):
 
     posts = sub.posts.order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
+    mods = sub.properties.filter_by(key='mod2').all()
     return render_template('sub.html', sub=sub, page=page, sort_type='new',
-                           posts=sorter.getPosts(page))
+                           posts=sorter.getPosts(page), mods=mods)
 
 
 @app.route("/s/<sub>/postmodlog", defaults={'page': 1})
@@ -351,8 +354,9 @@ def view_sub_postmodlog(sub, page):
 
     posts = sub.posts.order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
-    return render_template('subpostmodlog.html', sub=sub, page=page, sort_type='new',
-                           posts=sorter.getPosts(page))
+    mods = sub.properties.filter_by(key='mod2').all()
+    return render_template('subpostmodlog.html', sub=sub, page=page, mods=mods,
+                           posts=sorter.getPosts(page), sort_type='new')
 
 
 @app.route("/s/<sub>/top", defaults={'page': 1})
@@ -365,8 +369,9 @@ def view_sub_top(sub, page):
 
     posts = sub.posts.order_by(SubPost.posted.desc())
     sorter = VoteSorting(posts)
+    mods = sub.properties.filter_by(key='mod2').all()
     return render_template('sub.html', sub=sub, page=page, sort_type='top',
-                           posts=sorter.getPosts(page))
+                           posts=sorter.getPosts(page), mods=mods)
 
 
 @app.route("/s/<sub>/hot", defaults={'page': 1})
@@ -379,8 +384,9 @@ def view_sub_hot(sub, page):
 
     posts = sub.posts.order_by(SubPost.posted.desc())
     sorter = HotSorting(posts)
+    mods = sub.properties.filter_by(key='mod2').all()
     return render_template('sub.html', sub=sub, page=page, sort_type='top',
-                           posts=sorter.getPosts(page))
+                           posts=sorter.getPosts(page), mods=mods)
 
 
 @app.route("/s/<sub>/<pid>")

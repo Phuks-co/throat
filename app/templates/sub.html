@@ -51,7 +51,17 @@
     <a href="{{url_for('view_sub_postmodlog', sub=sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">View modlog</a>
   </div>
 </div>
-<p class="createdby">Created by {{sub.getModName}} <time-ago datetime="{{sub.getSubCreation}}"></time-ago></p>
+<span class="col-12"><hr><span>
+<p class="createdby">Created by {{sub.getFounderName}} <time-ago datetime="{{sub.getSubCreation}}"></time-ago></p>
+<div class="moderators col-12">
+  Moderators
+  <ul>
+  <li><i class="fa fa-star" title="Top Mod"></i> <a href="{{url_for('view_user', user=sub.getTopModName)}}">{{sub.getTopModName}}</a></li>
+  {% for mod in mods %}
+  <li><a href="{{url_for('view_user', user=mod.getUsername)}}">{{mod.getUsername}}</a></li>
+  {% endfor %}
+  </ul>
+</div>
 {% endblock %}
 
 {% block content %}

@@ -1,6 +1,8 @@
 """ Misc helper function and classes. """
+# from sqlalchemy import or_
+
 from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata
-from .models import SubPost
+from .models import SubPost, SubMetadata
 from flask_login import AnonymousUserMixin
 from flask_cache import Cache
 
@@ -35,6 +37,10 @@ class SiteUser(object):
     def is_admin(self):
         """ Returns true if the current user is a site admin. """
         return True if getMetadata(self.user, 'admin') else False
+
+    def is_topmod(self, sub):
+        """ Returns True if the current user is a mod of 'sub' """
+        return isTopMod(sub, self.user)
 
     def is_lizard(self):
         """ Returns True if we know that the current user is a lizard. """
@@ -179,7 +185,17 @@ def getMetadata(obj, key, value=None):
 
 def isMod(sub, user):
     """ Returns True if 'user' is a mod of 'sub' """
-    x = sub.properties.filter_by(key='mod').filter_by(value=user.uid).first()
+    x = sub.properties.filter_by(key='mod1').filter_by(value=user.uid).first()
+    y = sub.properties.filter_by(key='mod2').filter_by(value=user.uid).first()
+    if x or y:
+        return True
+    else:
+        return False
+
+
+def isTopMod(sub, user):
+    """ Returns True if 'user' is a topmod of 'sub' """
+    x = sub.properties.filter_by(key='mod1').filter_by(value=user.uid).first()
     return bool(x)
 
 
