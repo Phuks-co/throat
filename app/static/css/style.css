@@ -462,7 +462,10 @@ nav .right {
     float: right;
 }
 nav .right a {
-    font-family: Helvetica, Arial, sans-serif;
+  padding: 0px 10px;
+  height: 3em;
+  font-family: Comfortaa;
+  font-size: 11px;
 }
 
 /*
@@ -996,6 +999,9 @@ body.dark .editor-toolbar a {
     top: 0;
     left: 1em;
     color: darkgray;
+}
+.search button {
+  padding: 15px 10px 10px 10px;
 }
 
 /* message page */

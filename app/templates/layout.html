@@ -81,7 +81,7 @@
          </form>
         </div>
         <div class="row">
-          <div class="col-12"> Logged in as {{current_user.get_username()}} </div>
+          <div class="col-12"> Logged in as <a href="{{ url_for('view_user', user=current_user.user.name) }}">{{current_user.get_username()}}</a> </div>
         </div>
         {% endif %}
         {% endblock %}
