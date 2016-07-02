@@ -188,7 +188,7 @@
         </section>
     </main>
 
-  {% if post.ptype == 1 and post.user.uid == session['user_id'] %}
+  {% if post.ptype == 1 and post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
   <form id="edit-linkpost-form" data-sub="{{post.sub.name}}" data-pid="{{post.pid}}" class="mfp-hide white-popup-block">
     {{editlinkpostform.csrf_token}}
     <h1>Edit your link post</h1>
@@ -200,7 +200,7 @@
     <p><button type="submit" id="edit-linkpost-btnsubmit">Edit post</button></p>
   </form>
   {% endif %}
-  {% if post.ptype == 0 and post.user.uid == session['user_id'] %}
+  {% if post.ptype == 0 and post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
   <form id="edit-txtpost-form" data-sub="{{post.sub.name}}" data-pid="{{post.pid}}" class="mfp-hide white-popup-block">
     {{edittxtpostform.csrf_token}}
     <h1>Edit your text post</h1>
