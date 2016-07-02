@@ -55,8 +55,7 @@
           <p>
             This user has not posted anything, yet
           </p>
-          {% endif %}
-
+          {% else %}
           {% for post in user.posts[::-1][:5] %}
           <li>
             <a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{ post.title }}</a>
@@ -73,6 +72,7 @@
           </div>
           </li>
           {% endfor %}
+          {% endif %}
         </ul>
       </div>
       <div class="recent">
@@ -82,8 +82,7 @@
           <p>
             This user has not commented on anything, yet
           </p>
-          {% endif %}
-
+          {% else %}
           {% for comments in user.comments[::-1][:5] %}
           <li>
             <a class="title" href="{{ url_for('view_post', sub=comments.post.sub.name, pid=comments.post.pid) }}">{{comments.post.title}}</a>
@@ -103,6 +102,7 @@
             </span>
           </li>
         {% endfor %}
+        {% endif %}
         </ul>
       </div>
     </div>
