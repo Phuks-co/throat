@@ -171,6 +171,11 @@ def getAnnouncement():
 @cache.memoize(60)
 def getMetadata(obj, key, value=None):
     """ Gets metadata out of 'obj' (either a Sub, SubPost or User) """
+    if not obj:
+        # Failsafe in case FOR SOME REASON SOMEBODY PASSED NONE OR FALSE TO
+        # THIS FUNCTION. IF THIS ACTUALLY HAPPENS YOU SHOULD FEEL BAD FOR
+        # PASSING UNVERIFIED DATA.
+        return
     x = obj.properties.filter_by(key=key).first()
     if x and value is None:
         return x.value
