@@ -86,6 +86,9 @@
               {% else %}
               [Deleted]
               {% endif %}
+              {% if current_user.is_admin() and post.sub.name=='announcements' %}
+                <a href="#make_announcement-form" class="pull right btn btn-orange small make_announcement-form"><i class="fa fa-cube" aria-hidden="true"></i> Make announcement</a>
+              {%endif %}
             {% endif %}
             </div>
           </div>
@@ -244,6 +247,18 @@
     <p><button type="submit" id="delpost-btnsubmit">Delete!</button></p>
   </form>
   {% endif %}
+  {% if post.sub.name == "announcements" and current_user.is_admin() %}
+  <form id="make_announcement-form" class="mfp-hide white-popup-block">
+    {{delpostform.csrf_token}}
+    {{delpostform.post(value=post.pid)}}
+    <h3>Are you sure you want to announce this??</h3>
+    <div class="alert div-error">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      <p></p>
+    </div>
+    <p><button type="submit" id="make_announcement-btnsubmit">Yup!</button></p>
+  </form>
+  {%endif%}
 
 {% endblock %}
 {%block pagefoot%}

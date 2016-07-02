@@ -425,6 +425,8 @@ $(document).ready(function() {
     $('a.btn.edit-linkpost-form').magnificPopup(mpSettings);
     $('a.btn.delpost').magnificPopup(mpSettings);
     $('a.btn.delete-post-form').magnificPopup(mpSettings);
+    $('a.btn.make_announcement-form').magnificPopup(mpSettings);
+
     $('#xk').magnificPopup(mpSettings);
     $( window ).konami({
         cheat: function() {
