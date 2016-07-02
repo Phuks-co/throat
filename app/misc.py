@@ -2,7 +2,7 @@
 # from sqlalchemy import or_
 
 from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata
-from .models import SubPost, SubMetadata
+from .models import SubPost, SubMetadata, SubPostVote
 from flask_login import AnonymousUserMixin
 from flask_cache import Cache
 
@@ -150,7 +150,7 @@ def getVoteCount(post):
 @cache.memoize(50)
 def hasVoted(uid, post, up=True):
     """ Checks if the user up/downvoted the post. """
-    vote = post.votes.filter_by(uid=uid).first()
+    vote = SubPostVote.query.filter_by(uid=uid, pid=post.pid).first()
     if vote:
         if vote.positive == up:
             return True
@@ -158,15 +158,13 @@ def hasVoted(uid, post, up=True):
         return False
 
 
-@cache.memoize(1200)
+@cache.memoize(60)
 def getAnnouncement():
     """ Returns sitewide announcement post or False """
     ann = SiteMetadata.query.filter_by(key='announcement').first()
     if ann:
         ann = SubPost.query.filter_by(pid=ann.value).first()
-
-    if ann not in db.session:
-        ann = session.query(SubPost).get(ann.pid)
+    test = ann.user.name
     return ann
 
 

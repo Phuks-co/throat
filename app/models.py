@@ -26,7 +26,8 @@ class User(db.Model):
     joindate = Column(DateTime)
     subscribed = db.relationship('SubSubscriber', backref='user',
                                  lazy='dynamic')
-    posts = db.relationship('SubPost', backref='user', lazy='dynamic')
+    posts = db.relationship('SubPost', backref='user', lazy='joined')
+
     properties = db.relationship('UserMetadata',
                                  backref='user', lazy='dynamic')
     comments = db.relationship('SubPostComment', backref='user',
@@ -253,7 +254,7 @@ class SubPost(db.Model):
                                lazy='dynamic')
 
     votes = db.relationship('SubPostVote', backref='post',
-                            lazy='dynamic')
+                            lazy='subquery')
 
     def __repr__(self):
         return '<SubPost {0} (In Sub{1})>'.format(self.title, self.sid)

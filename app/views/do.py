@@ -8,7 +8,7 @@ from flask import Blueprint, redirect, url_for, session
 from sqlalchemy import func
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
-from ..models import UserMetadata, UserBadge, SubSubscriber
+from ..models import UserMetadata, UserBadge, SubSubscriber, SiteMetadata
 from ..forms import RegistrationForm, LoginForm, LogOutForm
 from ..forms import CreateSubForm, EditSubForm, EditUserForm
 from ..forms import CreateUserBadgeForm, EditModForm
@@ -644,3 +644,13 @@ def delete_pm(mid):
         db.session.commit()
         return json.dumps({'status': 'ok', 'mid': mid})
         # return json.dumps({'status': 'error', 'error': 'something broke'})
+
+@do.route("/do/admin/deleteannouncement")
+def deleteannouncement():
+    if not current_user.is_admin():
+        abort(404)
+
+    ann = SiteMetadata.query.filter_by(key='announcement').first()
+    db.session.delete(ann)
+    db.session.commit()
+    return redirect(url_for('admin_area'))
