@@ -576,6 +576,9 @@ nav .right a {
     background-color: #fff;
     border-color: #ccc;
 }
+.btn:visited {
+  color: #333;
+}
 .btn:hover {
     color: #333;
     background-color: #e6e6e6;
@@ -596,6 +599,9 @@ nav .right a {
     background-color: #337ab7;
     border-color: #2e6da4;
 }
+.btn.btn-blue:visited {
+  color: #fff;
+}
 .btn.btn-blue:hover {
     color: #fff;
     background-color: #286090;
@@ -611,8 +617,12 @@ nav .right a {
 
 .btn.btn-orange {
     color: #fff;
-    background-color: #fb5b00;
+    background-color: #f82;
     border-color: #fb5b00;
+    font-weight: 600;
+}
+.btn.btn-orange:visited {
+  color: #fff;
 }
 .btn.btn-orange:hover {
     color: #fff;
@@ -634,6 +644,9 @@ nav .right a {
     color: #fff;
     background-color: #d9534f;
     border-color: #d43f3a;
+}
+.btn.btn-red:visited {
+  color: #fff;
 }
 .btn.btn-red:hover {
     color: #fff;
