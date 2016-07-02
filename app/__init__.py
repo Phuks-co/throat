@@ -21,7 +21,7 @@ from tld import get_tld
 from werkzeug.contrib.atom import AtomFeed
 from feedgen.feed import FeedGenerator
 
-from .models import db, User, Sub, SubPost, Message, SubPostVote
+from .models import db, User, Sub, SubPost, Message, SubPostVote, SubPostComment
 from .models import UserBadge, UserMetadata, SiteMetadata, SubMetadata
 from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditSubForm, EditUserForm
@@ -437,8 +437,11 @@ def view_user(user):
     subs = Sub.query.order_by(Sub.name.asc()).all()
     badges = UserMetadata.query.filter_by(uid=user.uid) \
                                .filter_by(key='badge').all()
+    pcount = SubPost.query.filter_by(uid=user.uid).count()
+    ccount = SubPostComment.query.filter_by(uid=user.uid).count()
     return render_template('user.html', user=user, badges=badges, subs=subs,
-                           msgform=CreateUserMessageForm())
+                           msgform=CreateUserMessageForm(), pcount=pcount,
+                           ccount=ccount)
 
 
 @app.route("/u/<user>/edit")
