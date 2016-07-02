@@ -164,6 +164,9 @@ def getAnnouncement():
     ann = SiteMetadata.query.filter_by(key='announcement').first()
     if ann:
         ann = SubPost.query.filter_by(pid=ann.value).first()
+
+    if ann not in db.session:
+        ann = session.query(SubPost).get(ann.pid)
     return ann
 
 
