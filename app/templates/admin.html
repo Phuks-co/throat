@@ -73,5 +73,19 @@
       </form>
     </div>
   </div>
+  <hr>
+  <div class="col-12 admin-page-form">
+      <h3>Announcements</h3>
+      {% set ann= getAnnouncement() %}
+      {%if not ann %}<h4>No active announcements</h4>
+      {%else%}
+      <div class="col-6">
+          <a href="{{ann.link}}">{{ann.title}}</a> by {{ann.user.name}}
+      </div>
+      <div class="col-3">
+        <a href="{{url_for('do.deleteannouncement')}}" class="btn btn-red">Nuke!</a>
+      </div>
+      {%endif%}
+  </div>
 </div>
 {% endblock %}
