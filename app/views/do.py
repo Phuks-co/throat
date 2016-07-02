@@ -654,3 +654,21 @@ def deleteannouncement():
     db.session.delete(ann)
     db.session.commit()
     return redirect(url_for('admin_area'))
+
+
+@do.route("/do/makeannouncement", methods=['POST'])
+@login_required
+def make_announcement():
+    """ Flagging post as announcement - not api """
+    form = DeletePost()
+
+    if form.validate():
+        ann = SiteMetadata.query.filter_by(key='announcement').first()
+        if not ann:
+            ann = SiteMetadata()
+            ann.key = 'announcement'
+            db.session.add(ann)
+        ann.value = form.post.data
+        db.session.commit()
+
+    return redirect(url_for('index'))
