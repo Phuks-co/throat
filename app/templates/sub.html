@@ -56,7 +56,7 @@
 <div class="moderators col-12">
   Moderators
   <ul>
-  <li><i class="fa fa-star" title="Top Mod"></i> <a href="{{url_for('view_user', user=sub.getTopModName)}}">{{sub.getTopModName}}</a></li>
+  <li><i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=sub.getTopModName)}}">{{sub.getTopModName}}</a></li>
   {% for mod in mods %}
   <li><a href="{{url_for('view_user', user=mod.getUsername)}}">{{mod.getUsername}}</a></li>
   {% endfor %}

@@ -35,6 +35,10 @@ class EditModForm(Form):
     user = StringField('New mod username',
                         validators=[DataRequired(), Length(min=1, max=128)])
 
+class EditMod2Form(Form):
+    """ Edit mod2 of sub (admin/owner) """
+    user = StringField('New mod username',
+                        validators=[DataRequired(), Length(min=1, max=128)])
 
 class CreateSubTextPost(Form):
     """ Sub content submission form """

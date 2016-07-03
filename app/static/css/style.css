@@ -1067,6 +1067,13 @@ button#text-post-icon, button#link-post-icon {
     padding: 10px;
     margin: 10px 0;
 }
+#edit-mod2-form input#user {
+    width: 40%;
+    text-align: left;
+    padding: 5px;
+    border-radius: 2px;
+    border: solid 1px lightgray;
+}
 
 /* edit user */
 

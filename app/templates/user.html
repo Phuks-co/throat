@@ -33,13 +33,25 @@
 </div>
 <hr>
 <div>
-  <h3>Moderating:</h3>
+  <h3>Owns:</h3>
   <ul style="color: darkcyan;">
     {% for sub in subs  %}
     {% if user.name == sub.getTopModName %}
     <li><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a></li>
     {% endif %}
     {% endfor %}
+  </ul>
+</div>
+<hr>
+<div>
+  <h3>Mods:</h3>
+  <ul style="color: darkcyan;">
+    {# for sub in subs %}
+    {% if user.name == sub.getTopModName %}
+    <li><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a></li>
+    {% endif %}
+    {% endfor #}
+    <li>todo</ul>
   </ul>
 </div>
 {% endblock %}
@@ -63,7 +75,7 @@
               <a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn small">
                 <i class="fa fa-users" aria-hidden="true"></i> /s/{{post.sub.name}}
               </a>
-              <a href="{{url_for('view_post', sub=sub, pid=post.pid)}}" class="btn small">
+              <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}" class="btn small">
                 <i class="fa fa-comment" aria-hidden="true"></i> Comments
               </a>
               <span class="time btn small">

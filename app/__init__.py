@@ -26,7 +26,7 @@ from .models import UserBadge, UserMetadata, SiteMetadata, SubMetadata
 from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditSubForm, EditUserForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
-from .forms import CreateUserMessageForm, PostComment, EditModForm
+from .forms import CreateUserMessageForm, PostComment, EditModForm, EditMod2Form
 from .forms import DummyForm, DeletePost, CreateUserBadgeForm
 from .forms import EditSubLinkPostForm
 from .views import do, api
@@ -298,8 +298,10 @@ def edit_sub(sub):
         form = EditSubForm()
         form.css.data = sub.stylesheet.first().content
         mods = sub.properties.filter_by(key='mod2').all()
+        modinvs = sub.properties.filter_by(key='mod2i').all()
         return render_template('editsub.html', sub=sub, mods=mods,
-                               editsubform=form)
+                               modinvs=modinvs, editsubform=form,
+                               editmod2form=EditMod2Form())
     else:
         abort(403)
 
@@ -395,12 +397,15 @@ def view_post(sub, pid):
     post = SubPost.query.filter_by(pid=pid).first()
     if not post or post.sub.name != sub:
         abort(404)
+
+    mods = SubMetadata.query.filter_by(sid=post.sub.sid) \
+                            .filter_by(key='mod2').all()
     if post.ptype == 1:
-        return render_template('post.html', post=post,
+        return render_template('post.html', post=post, mods=mods,
                                edittxtpostform=EditSubTextPostForm(),
                                editlinkpostform=EditSubLinkPostForm())
     else:
-        return render_template('post.html', post=post,
+        return render_template('post.html', post=post, mods=mods,
                                edittxtpostform=EditSubTextPostForm(),
                                editlinkpostform=EditSubLinkPostForm())
 
