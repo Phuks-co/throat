@@ -309,6 +309,33 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
+    $("#edit-mod2-form").submit(function(e) {
+        $("#edit-mod2-btnsubmit").prop('disabled', true);
+        $("#edit-mod2-btnsubmit").text('Inviting mod');
+        $.ajax({
+            type: "POST",
+            url: '/do/inv_mod2/' + $("#edit-mod2-form").data('sub'), // XXX: Hardcoded URL because this is supposed to be a static file
+            data: $("#edit-mod2-form").serialize(),
+            dataType: 'json',
+            success: function(data) {
+                if (data.status != "ok") {
+                    checkErrors(data, "edit-mod2-form");
+                } else {
+                    document.location.reload();
+                }
+                $("#editmod2-btnsubmit").prop('disabled', false);
+                $("#editmod2-btnsubmit").text('Invite mod');
+            },
+            error: function(data, err) {
+                $("#edit-mod2-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
+                $("#edit-mod2-form .div-error").show();
+                $("#editmod2-btnsubmit").prop('disabled', false);
+                $("#editmod2-btnsubmit").text('Invite mod');
+            }
+        });
+        e.preventDefault();
+    });
+
     $("#delete-post-form").submit(function(e) {
         $("#delpost-btnsubmit").prop('disabled', true);
         $("#delpost-btnsubmit").text('Deleting...');
@@ -509,6 +536,78 @@ $(document).ready(function() {
         success: function(data) {
           if(data.status == "ok"){
             $(e.currentTarget).addClass('badgeassigned');
+          }
+        }
+      });
+    });
+
+    $('span[id^="remove-mod2"]').click(function(e){
+      var sub = $(e.currentTarget).data().sub
+      var user = $(e.currentTarget).data().user
+      $.ajax({
+        type: "POST",
+        url: '/do/remove_mod2/' + sub + '/' + user,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).removeClass('active').addClass('removed');
+            $(e.currentTarget).text('removed');
+          } else {
+            $(e.currentTarget).text('error');
+          }
+        }
+      });
+    });
+
+    $('span[id^="revoke-mod2-inv"]').click(function(e){
+      var sub = $(e.currentTarget).data().sub
+      var user = $(e.currentTarget).data().user
+      $.ajax({
+        type: "POST",
+        url: '/do/revoke_mod2inv/' + sub + '/' + user,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).removeClass('revoke').addClass('revoked');
+            $(e.currentTarget).text('revoked');
+          } else {
+            $(e.currentTarget).text('error');
+          }
+        }
+      });
+    });
+
+    $('span[id^="accept-mod2-inv"]').click(function(e){
+      var sub = $(e.currentTarget).data().sub
+      var user = $(e.currentTarget).data().user
+      $.ajax({
+        type: "POST",
+        url: '/do/accept_mod2inv/' + sub + '/' + user,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).addClass('accepted');
+            $(e.currentTarget).text('Welcome aboard');
+          } else {
+            $(e.currentTarget).text('error');
+          }
+        }
+      });
+    });
+
+    $('span[id^="refuse-mod2-inv"]').click(function(e){
+      var sub = $(e.currentTarget).data().sub
+      var user = $(e.currentTarget).data().user
+      $.ajax({
+        type: "POST",
+        url: '/do/refuse_mod2inv/' + sub + '/' + user,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).addClass('refused');
+            $(e.currentTarget).text('kthnxby');
+          } else {
+            $(e.currentTarget).text('error');
           }
         }
       });

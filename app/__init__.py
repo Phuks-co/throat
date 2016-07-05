@@ -11,7 +11,7 @@ from urllib.parse import urlparse, urljoin
 
 import bcrypt
 import markdown
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from flask import Flask, render_template, session, redirect, url_for, abort, g
 from flask import make_response, request
 from flask_assets import Environment, Bundle
@@ -297,10 +297,26 @@ def edit_sub(sub):
     if current_user.is_mod(sub) or current_user.is_admin():
         form = EditSubForm()
         form.css.data = sub.stylesheet.first().content
+        return render_template('editsub.html', sub=sub, editsubform=form)
+    else:
+        abort(403)
+
+
+@app.route("/s/<sub>/mods")
+@login_required
+def edit_sub_mods(sub):
+    """ Here we can edit moderators for a sub """
+    sub = Sub.query.filter_by(name=sub).first()
+    if not sub:
+        abort(404)
+
+    if current_user.is_mod(sub) or current_user.is_modinv(sub) \
+    or current_user.is_admin():
+        xmods = sub.properties.filter_by(key='xmod2').all()
         mods = sub.properties.filter_by(key='mod2').all()
         modinvs = sub.properties.filter_by(key='mod2i').all()
-        return render_template('editsub.html', sub=sub, mods=mods,
-                               modinvs=modinvs, editsubform=form,
+        return render_template('submods.html', sub=sub, mods=mods,
+                               modinvs=modinvs, xmods=xmods,
                                editmod2form=EditMod2Form())
     else:
         abort(403)
@@ -475,13 +491,11 @@ def view_messages():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
-                            .filter_by(mtype=None) \
+                            .filter(or_(Message.mtype.is_(None)) | \
+                            (Message.mtype==0)) \
                             .order_by(Message.posted.desc()).all()
-    newcount = Message.query.filter_by(read=None) \
-                            .filter(Message.mtype!='-1') \
-                            .filter_by(mtype=None).count()
     return render_template('messages.html', user=user, messages=messages,
-                           box_name="Inbox", newcount=newcount)
+                           box_name="Inbox")
 
 
 @app.route("/messages/sent")
@@ -490,7 +504,8 @@ def view_messages_sent():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(sentby=user) \
-                            .filter((Message.mtype==None) | (Message.mtype=='-1')) \
+                            .filter((Message.mtype==None) | \
+                            (Message.mtype=='-1')) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Sent")
@@ -502,14 +517,10 @@ def view_messages_replies():
     """ WIP: View user's post replies """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
-                            .filter(Message.mtype.isnot(None)) \
-                            .filter(Message.mtype!='-1') \
+                            .filter(Message.mtype > '0') \
                             .order_by(Message.posted.desc()).all()
-    newcount = Message.query.filter_by(read=None) \
-                            .filter(Message.mtype!='-1') \
-                            .filter(Message.mtype.isnot(None)).count()
     return render_template('messages.html', user=user, messages=messages,
-                           box_name="Replies", newcount=newcount)
+                           box_name="Replies")
 
 
 @app.route("/admin")

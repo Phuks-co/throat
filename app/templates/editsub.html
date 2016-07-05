@@ -26,42 +26,4 @@
   <p><button type="submit" class="btn btn-orange" id="editsub-btnsubmit">Edit sub</button></p>
 
 </form>
-{% if current_user.is_admin() or current_user.is_topmod(sub) %}
-<div class="editmoderators col-12">
-  <p>Owner: <i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=sub.getTopModName)}}">{{sub.getTopModName}}</a></p>
-  <p>Moderators: {% if mods|length < 1 %}none{% endif %}</p>
-  <ul>
-  {% for mod in mods if mods|length > 0 %}
-  <span class="col-4">
-    <li><i class="fa fa-user"></i> <a href="{{url_for('view_user', user=mod.getUsername)}}">{{mod.getUsername}}</a>
-      <span id="remove-mod2" data-user="{{mod.getUsername}}" class="btn">remove</span>
-    </li>
-  </span>
-  {% endfor %}
-  </ul>
-  <div class="editmoderators col-12">
-    <form id="edit-mod2-form" data-sub="{{sub.name}}" class="">
-      {{editmod2form.csrf_token}}
-      <p>
-        <label>Invite new mod: {{editmod2form.user(placeholder=editmod2form.user.label.text, required=True)}}</label>
-        <button type="submit" class="btn btn-orange" id="editmod2-btnsubmit">Invite mod</button>
-      </p>
-      <div class="alert div-error">
-        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-        <p></p>
-      </div>
-    </form>
-    <p>Pending invites: {% if modinvs|length < 1 %}none{% endif %}</p>
-    <ul>
-    {% for modinv in modinvs if modinvs|length > 0 %}
-    <span class="col-4">
-      <li><i class="fa fa-user"></i> <a href="{{url_for('view_user', user=modinv.value)}}">{{modinv.value}}</a>
-        <span id="revoke-mod2-inv" data-user="{{modinv.value}}" class="btn">cancel</span>
-      </li>
-    </span>
-    {% endfor %}
-  </ul>
-  </div>
-</div>
-{% endif %}
 {% endblock %}

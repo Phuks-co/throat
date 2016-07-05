@@ -14,7 +14,7 @@ from ..forms import CreateSubForm, EditSubForm, EditUserForm
 from ..forms import CreateUserBadgeForm, EditModForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
-from ..forms import EditSubLinkPostForm, SearchForm
+from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from flask_login import login_user, login_required, logout_user, current_user
 from ..misc import SiteUser
 
@@ -599,15 +599,8 @@ def assign_user_badge(uid, bid):
 @login_required
 def create_sendmsg(user):
     """ User PM message creation endpoint """
-
     form = CreateUserMessageForm()
     if form.validate():
-        # Put pre-posting checks here
-        # user = User.query.filter_by(name=user).first()
-        # if not user:
-        #    return json.dumps({'status': 'error',
-        #                       'error': ['User does not exist']})
-
         msg = Message()
         msg.receivedby = user
         msg.sentby = current_user.get_id()
@@ -619,6 +612,94 @@ def create_sendmsg(user):
         return json.dumps({'status': 'ok', 'mid': msg.mid,
                            'sentby': current_user.get_id()})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/inv_mod2/<sub>", methods=['POST'])
+@login_required
+def inv_mod2(sub):
+    """ User PM for Mod2 invite endpoint """
+    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    if not sub:
+        return json.dumps({'status': 'error',
+                           'error': ['Sub does not exist']})
+    if current_user.is_topmod(sub) or current_user.is_admin():
+        form = EditMod2Form()
+        if form.validate():
+            user = User.query.filter(func.lower(User.name) ==
+                                     func.lower(form.user.data)).first()
+            if not user:
+                return json.dumps({'status': 'error',
+                                   'error': ['User does not exist.']})
+            msg = Message()
+            msg.receivedby = user.uid
+            msg.sentby = current_user.get_id()
+            msg.subject = sub.name
+            # msg.content = 'Mod inviteinvite'
+            msg.posted = datetime.datetime.utcnow()
+            msg.mtype = '0'
+            meta = SubMetadata(sub, 'mod2i', user.uid)
+            db.session.add(msg)
+            db.session.add(meta)
+            db.session.commit()
+            return json.dumps({'status': 'ok', 'mid': msg.mid,
+                               'sentby': current_user.get_id()})
+        return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/remove_mod2/<sub>/<user>", methods=['POST'])
+@login_required
+def remove_mod2(sub, user):
+    """ Remove Mod2 """
+    user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
+    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    if current_user.is_topmod(sub) or current_user.is_admin():
+        inv = sub.properties.filter_by(key='mod2') \
+                                   .filter_by(value=user.uid).first()
+        inv.key = 'xmod2'
+        db.session.commit()
+        return json.dumps({'status': 'ok', 'msg': 'user demodded'})
+
+
+@do.route("/do/revoke_mod2inv/<sub>/<user>", methods=['POST'])
+@login_required
+def revoke_mod2inv(sub, user):
+    """ Remove Mod2 """
+    user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
+    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    if current_user.is_topmod(sub) or current_user.is_admin():
+        inv = sub.properties.filter_by(key='mod2i') \
+                                   .filter_by(value=user.uid).first()
+        inv.key = 'xmod2i'
+        db.session.commit()
+        return json.dumps({'status': 'ok', 'msg': 'user invite revoked'})
+
+
+@do.route("/do/accept_mod2inv/<sub>/<user>", methods=['POST'])
+@login_required
+def accept_mod2inv(sub, user):
+    """ Remove Mod2 """
+    user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
+    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    inv = sub.properties.filter_by(key='mod2i') \
+                               .filter_by(value=user.uid).first()
+    if inv:
+        inv.key = 'mod2'
+        db.session.commit()
+        return json.dumps({'status': 'ok', 'msg': 'user modded'})
+
+
+@do.route("/do/refuse_mod2inv/<sub>/<user>", methods=['POST'])
+@login_required
+def refuse_mod2inv(sub, user):
+    """ refuse Mod2 """
+    user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
+    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    inv = sub.properties.filter_by(key='mod2i') \
+                               .filter_by(value=user.uid).first()
+    if inv:
+        inv.key = 'xmod2i'
+        db.session.commit()
+        return json.dumps({'status': 'ok', 'msg': 'invite refused'})
 
 
 @do.route("/do/read_pm/<mid>", methods=['POST'])

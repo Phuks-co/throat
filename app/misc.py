@@ -1,5 +1,5 @@
 """ Misc helper function and classes. """
-# from sqlalchemy import or_
+from sqlalchemy import or_
 
 from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata
 from .models import SubPost, SubMetadata, SubPostVote
@@ -33,6 +33,10 @@ class SiteUser(object):
     def is_mod(self, sub):
         """ Returns True if the current user is a mod of 'sub' """
         return isMod(sub, self.user)
+
+    def is_modinv(self, sub):
+        """ Returns True if the current user is invited to mod of 'sub' """
+        return isModInv(sub, self.user)
 
     def is_admin(self):
         """ Returns true if the current user is a site admin. """
@@ -133,6 +137,11 @@ class SiteAnon(AnonymousUserMixin):
         """ Anons dont get usermetadata options. """
         return False
 
+    @classmethod
+    def is_modinv(cls):
+        """ Anons dont get see submod page. """
+        return False
+
 
 def getVoteCount(post):
     """ Returns the vote count of a post. The parameter is the
@@ -206,10 +215,17 @@ def isTopMod(sub, user):
     return bool(x)
 
 
+def isModInv(sub, user):
+    """ Returns True if 'user' is a invited to mod of 'sub' """
+    x = sub.properties.filter_by(key='mod2i').filter_by(value=user.uid).first()
+    return bool(x)
+
+
 def hasMail(user):
     """ Returns True if the current user has unread messages """
     x = Message.query.filter_by(receivedby=user.uid) \
-                     .filter(Message.mtype!='-1') \
+                     .filter(or_(Message.mtype.is_(None)) | \
+                     (Message.mtype != '-1')) \
                      .filter_by(read=None).first()
     return bool(x)
 
@@ -217,7 +233,8 @@ def hasMail(user):
 def newCount(user):
     """ Returns new message count """
     newcount = Message.query.filter_by(read=None) \
-                            .filter(Message.mtype!='-1') \
+                            .filter(or_(Message.mtype.is_(None)) | \
+                            (Message.mtype != '-1')) \
                             .filter_by(receivedby=user.uid).count()
     return newcount
 

@@ -1061,6 +1061,8 @@ button#text-post-icon, button#link-post-icon {
     border-radius: 2px;
     border: solid 1px lightgray;
 }
+
+/* edit sub moderators */
 .editmoderators.col-12 {
     border: 2px solid #D83600;
     border-radius: 3px;
@@ -1074,7 +1076,16 @@ button#text-post-icon, button#link-post-icon {
     border-radius: 2px;
     border: solid 1px lightgray;
 }
-
+.editmodbtn .removed,
+.editmodbtn .revoked  {
+    color: #fff;
+    background-color: #ff0000;
+}
+.mod2-inv .accepted,
+.mod2-inv .refused {
+  color: #fff;
+  background-color: green;
+}
 /* edit user */
 
 .edituser {
