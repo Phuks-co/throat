@@ -28,7 +28,7 @@ from .forms import CreateSubForm, EditSubForm, EditUserForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment, EditModForm, EditMod2Form
 from .forms import DummyForm, DeletePost, CreateUserBadgeForm
-from .forms import EditSubLinkPostForm
+from .forms import EditSubLinkPostForm, BanUserSubForm
 from .views import do, api
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, cache, hasSubscribed, hasBlocked, getAnnouncement
@@ -315,9 +315,12 @@ def edit_sub_mods(sub):
         xmods = sub.properties.filter_by(key='xmod2').all()
         mods = sub.properties.filter_by(key='mod2').all()
         modinvs = sub.properties.filter_by(key='mod2i').all()
+        banned = sub.properties.filter_by(key='ban').all()
+        xbans = sub.properties.filter_by(key='xban').all()
         return render_template('submods.html', sub=sub, mods=mods,
-                               modinvs=modinvs, xmods=xmods,
-                               editmod2form=EditMod2Form())
+                               modinvs=modinvs, xmods=xmods, banned=banned,
+                               editmod2form=EditMod2Form(), xbans=xbans,
+                               banuserform=BanUserSubForm())
     else:
         abort(403)
 
@@ -375,6 +378,19 @@ def view_sub_postmodlog(sub, page):
     mods = sub.properties.filter_by(key='mod2').all()
     return render_template('subpostmodlog.html', sub=sub, page=page, mods=mods,
                            posts=sorter.getPosts(page), sort_type='new')
+
+
+@app.route("/s/<sub>/bannedusers")
+def view_sub_bans(sub):
+    """ See banned users for the sub """
+    sub = Sub.query.filter_by(name=sub).first()
+    if not sub:
+        abort(404)
+
+    banned = sub.properties.filter_by(key='ban').all()
+    xbans = sub.properties.filter_by(key='xban').all()
+    return render_template('subbans.html', sub=sub, banned=banned,
+                           xbans=xbans, banuserform=BanUserSubForm())
 
 
 @app.route("/s/<sub>/top", defaults={'page': 1})

@@ -49,7 +49,7 @@
         <td>Sub Name</td>
         <td>Sub Desc</td>
         <td>Founder</td>
-        <td>Top Mod</td>
+        <td>Owner</td>
         <td><i class="fa fa-user-plus" title="mods"></i></td>
         <td><i class="fa fa-users" title="users"></i></td>
         <td><i class="fa fa-list" title="submissions"></i></td>
@@ -75,7 +75,7 @@
     <div>
       <form id="edit-mod-form">
         {{editmodform.csrf_token}}
-        <h4>Change top mod of sub</h4>
+        <h4>Change owner of sub</h4>
         <div class="col-3">{{editmodform.sub(placeholder=editmodform.sub.label.text, required=True, autofocus=True)}}</div>
         <div class="col-3">{{editmodform.user(placeholder=editmodform.user.label.text, required=True,)}}</div>
         <div class="col-3"><button type="submit" class="btn btn-blue" id="editmodform-btnsubmit">Transfer sub</button></div>

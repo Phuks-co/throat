@@ -336,6 +336,33 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
+    $("#ban-user-form").submit(function(e) {
+        $("#banuser-btnsubmit").prop('disabled', true);
+        $("#banuser-btnsubmit").text('Banning user');
+        $.ajax({
+            type: "POST",
+            url: '/do/ban_user_sub/' + $("#ban-user-form").data('sub'), // XXX: Hardcoded URL because this is supposed to be a static file
+            data: $("#ban-user-form").serialize(),
+            dataType: 'json',
+            success: function(data) {
+                if (data.status != "ok") {
+                    checkErrors(data, "ban-user-form");
+                } else {
+                    document.location.reload();
+                }
+                $("#banuser-btnsubmit").prop('disabled', false);
+                $("#banuser-btnsubmit").text('Banhammer');
+            },
+            error: function(data, err) {
+                $("#ban-user-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
+                $("#ban-user-form .div-error").show();
+                $("#banuser-btnsubmit").prop('disabled', false);
+                $("#banuser-btnsubmit").text('oops');
+            }
+        });
+        e.preventDefault();
+    });
+
     $("#delete-post-form").submit(function(e) {
         $("#delpost-btnsubmit").prop('disabled', true);
         $("#delpost-btnsubmit").text('Deleting...');
@@ -552,6 +579,24 @@ $(document).ready(function() {
           if(data.status == "ok"){
             $(e.currentTarget).removeClass('active').addClass('removed');
             $(e.currentTarget).text('removed');
+          } else {
+            $(e.currentTarget).text('error');
+          }
+        }
+      });
+    });
+
+    $('span[id^="revoke-ban"]').click(function(e){
+      var sub = $(e.currentTarget).data().sub
+      var user = $(e.currentTarget).data().user
+      $.ajax({
+        type: "POST",
+        url: '/do/remove_sub_ban/' + sub + '/' + user,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).removeClass('revoke').addClass('accepted');
+            $(e.currentTarget).text('un-banned');
           } else {
             $(e.currentTarget).text('error');
           }

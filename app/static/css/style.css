@@ -1069,7 +1069,8 @@ button#text-post-icon, button#link-post-icon {
     padding: 10px;
     margin: 10px 0;
 }
-#edit-mod2-form input#user {
+#edit-mod2-form input#user,
+#ban-user-form input#user {
     width: 40%;
     text-align: left;
     padding: 5px;
@@ -1082,7 +1083,8 @@ button#text-post-icon, button#link-post-icon {
     background-color: #ff0000;
 }
 .mod2-inv .accepted,
-.mod2-inv .refused {
+.mod2-inv .refused,
+span.btn.accepted {
   color: #fff;
   background-color: green;
 }

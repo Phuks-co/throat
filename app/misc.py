@@ -34,6 +34,10 @@ class SiteUser(object):
         """ Returns True if the current user is a mod of 'sub' """
         return isMod(sub, self.user)
 
+    def is_subban(self, sub):
+        """ Returns True if the current user is banned from 'sub' """
+        return isSubBan(sub, self.user)
+
     def is_modinv(self, sub):
         """ Returns True if the current user is invited to mod of 'sub' """
         return isModInv(sub, self.user)
@@ -107,6 +111,11 @@ class SiteAnon(AnonymousUserMixin):
         return False
 
     @classmethod
+    def is_topmod(cls, sub):
+        """ Anons are not owners. """
+        return False
+
+    @classmethod
     def is_lizard(cls):
         """ We don't know if anons are lizards...
             We return False just in case """
@@ -140,6 +149,10 @@ class SiteAnon(AnonymousUserMixin):
     @classmethod
     def is_modinv(cls):
         """ Anons dont get see submod page. """
+        return False
+
+    def is_subban(cls, sub):
+        """ Anons dont get banned by default. """
         return False
 
 
@@ -208,6 +221,10 @@ def isMod(sub, user):
     else:
         return False
 
+def isSubBan(sub, user):
+    """ Returns True if 'user' is banned 'sub' """
+    x = sub.properties.filter_by(key='ban').filter_by(value=user.uid).first()
+    return bool(x)
 
 def isTopMod(sub, user):
     """ Returns True if 'user' is a topmod of 'sub' """

@@ -81,6 +81,13 @@ class PostComment(Form):
                             validators=[DataRequired(),
                                         Length(min=1, max=2048)])
 
+class BanUserSubForm(Form):
+    """ Edit ban user from posting """
+    user = StringField('username to ban',
+                        validators=[DataRequired(), Length(min=1, max=128)])
+
+
+
 
 class DeletePost(Form):
     """ Post deletion form. """

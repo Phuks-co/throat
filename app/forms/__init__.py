@@ -6,6 +6,7 @@ from .user import CreateUserMessageForm, EditUserForm, CreateUserBadgeForm
 from .sub import CreateSubForm, EditSubForm, EditSubTextPostForm
 from .sub import CreateSubTextPost, CreateSubLinkPost, EditModForm, EditMod2Form
 from .sub import PostComment, DeletePost, EditSubLinkPostForm, SearchForm
+from .sub import BanUserSubForm
 
 
 class DummyForm(Form):
