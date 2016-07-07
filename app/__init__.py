@@ -476,13 +476,19 @@ def edit_user(user):
     if not user:
         abort(404)
 
-    subs = Sub.query.order_by(Sub.name.asc()).all()
+    owns = SubMetadata.query.filter_by(key='mod1') \
+                            .filter_by(value=user.uid).all()
+    mods = SubMetadata.query.filter_by(key='mod2') \
+                            .filter_by(value=user.uid).all()
     badges = UserMetadata.query.filter_by(uid=user.uid) \
                                .filter_by(key='badge').all()
+    pcount = SubPost.query.filter_by(uid=user.uid).count()
+    ccount = SubPostComment.query.filter_by(uid=user.uid).count()
     adminbadges = UserBadge.query.all()
     if current_user.get_username() == user.name or current_user.is_admin():
-        return render_template('edituser.html', user=user, subs=subs,
+        return render_template('edituser.html', user=user, owns=owns,
                                badges=badges, adminbadges=adminbadges,
+                               pcount=pcount, ccount=ccount, mods=mods,
                                edituserform=EditUserForm())
     else:
         abort(403)
