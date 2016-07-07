@@ -1169,10 +1169,13 @@ button#text-post-icon, button#link-post-icon {
 }
 .admin.section div .subname a {
     margin: 0;
-    font-size: 24px;
+    font-size: 20px;
 }
 .admin.section div .subname {
     margin: 10px 0;
+}
+.admin.section.subs table.col-12 td {
+    border-bottom: 1px solid #d3d3d3;
 }
 .admin.section ul {
     -webkit-padding-start: 0;

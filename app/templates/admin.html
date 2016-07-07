@@ -44,19 +44,30 @@
 
 <div class="admin section subs">
   <div class="col-12"><h2><i class="fa fa-list"></i> Subs</h2>
-    {% for sub in subs %}
-    <div class="col-3 sub">
-      <div class="subname"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>{% if sub.getNSFW %} <i title="NSFW" class="fa fa-eye-slash"></i>{% endif %}</div>
-      <div class="subtitle">{{sub.title}}</div>
-        <ul>
-          <li>Founder: {{sub.getFounderName}}</li>
-          <li>Top Mod: {{sub.getTopModName}}</li>
-          <li><i class="fa fa-users"></i> {{sub.getSuscriberCount}} subscribers</li>
-          <li><i class="fa fa-list"></i> {{sub.getSubPostCount}} submissions</li>
-          <li><i class="fa fa-comments"></i> xx comments</li>
-        </ul>
-    </div>
-    {% endfor %}
+    <table class="col-12">
+      <tr>
+        <td>Sub Name</td>
+        <td>Sub desc</td>
+        <td>Founder</td>
+        <td>Top Mod</td>
+        <td><i class="fa fa-users" title="users"></i></td>
+        <td><i class="fa fa-list" title="submissions"></i></td>
+        <td><i class="fa fa-comments" title="comments"></i></td>
+      </tr>
+      {% for sub in subs %}
+      <tr>
+        <td>
+          <div class="subname"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>{% if sub.getNSFW %} <i title="NSFW" class="fa fa-eye-slash"></i>{% endif %}</div>
+        </td>
+        <td><div class="subtitle">{{sub.title}}</div></td>
+        <td><a href="{{url_for('view_user', user=sub.getFounderName)}}">{{sub.getFounderName}}</a></td>
+        <td><a href="{{url_for('view_user', user=sub.getTopModName)}}">{{sub.getTopModName}}</a></td>
+        <td>{{sub.getSuscriberCount}}</td>
+        <td>{{sub.getSubPostCount}}</td>
+        <td>xx</td>
+      </tr>
+      {% endfor %}
+    </table>
   </div>
   <div class="col-12 admin-page-form">
     <div>
