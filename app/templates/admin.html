@@ -76,15 +76,14 @@
   <hr>
   <div class="col-12 admin-page-form">
       <h3>Announcements</h3>
-      {% set ann= getAnnouncement() %}
+      {% set ann = getAnnouncement() %}
       {%if not ann %}<h4>No active announcements</h4>
       {%else%}
-      <div class="col-6">
-          <a href="{{ann.link}}">{{ann.title}}</a> by {{ann.user.name}}
+      <div class="post">
+        <a href="{{url_for('do.deleteannouncement')}}" class="btn btn-red">Nuke!</a> |
+        <a href="{{url_for('view_post_inbox', pid=ann.pid)}}">{{ann.title}}</a> by {{ann.user.name}}, <relative-time datetime="{{ann.posted.isoformat()}}"></relative-time>
       </div>
-      <div class="col-3">
-        <a href="{{url_for('do.deleteannouncement')}}" class="btn btn-red">Nuke!</a>
-      </div>
+
       {%endif%}
   </div>
 </div>
