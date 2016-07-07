@@ -47,9 +47,10 @@
     <table class="col-12">
       <tr>
         <td>Sub Name</td>
-        <td>Sub desc</td>
+        <td>Sub Desc</td>
         <td>Founder</td>
         <td>Top Mod</td>
+        <td><i class="fa fa-user-plus" title="mods"></i></td>
         <td><i class="fa fa-users" title="users"></i></td>
         <td><i class="fa fa-list" title="submissions"></i></td>
         <td><i class="fa fa-comments" title="comments"></i></td>
@@ -62,6 +63,7 @@
         <td><div class="subtitle">{{sub.title}}</div></td>
         <td><a href="{{url_for('view_user', user=sub.getFounderName)}}">{{sub.getFounderName}}</a></td>
         <td><a href="{{url_for('view_user', user=sub.getTopModName)}}">{{sub.getTopModName}}</a></td>
+        <td>{{sub.getModCount}}</td>
         <td>{{sub.getSuscriberCount}}</td>
         <td>{{sub.getSubPostCount}}</td>
         <td>xx</td>
