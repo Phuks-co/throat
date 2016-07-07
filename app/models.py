@@ -205,6 +205,12 @@ class SubMetadata(db.Model):
         x = User.query.filter_by(uid=self.value).first()
         return str(x.name)
 
+    @hybrid_property
+    def getSubName(self):
+        """ Returns the sub's name from str """
+        x = Sub.query.filter_by(sid=self.sid).first()
+        return str(x.name)
+
 class SubSubscriber(db.Model):
     """ Stores subscribers for a sub. """
     # Note: We usually use integer primary keys when we don't need to actually

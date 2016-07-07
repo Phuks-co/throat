@@ -455,14 +455,17 @@ def view_user(user):
     if not user:
         abort(404)
 
-    subs = Sub.query.order_by(Sub.name.asc()).all()
+    owns = SubMetadata.query.filter_by(key='mod1') \
+                            .filter_by(value=user.uid).all()
+    mods = SubMetadata.query.filter_by(key='mod2') \
+                            .filter_by(value=user.uid).all()
     badges = UserMetadata.query.filter_by(uid=user.uid) \
                                .filter_by(key='badge').all()
     pcount = SubPost.query.filter_by(uid=user.uid).count()
     ccount = SubPostComment.query.filter_by(uid=user.uid).count()
-    return render_template('user.html', user=user, badges=badges, subs=subs,
+    return render_template('user.html', user=user, badges=badges,
                            msgform=CreateUserMessageForm(), pcount=pcount,
-                           ccount=ccount)
+                           ccount=ccount, owns=owns, mods=mods)
 
 
 @app.route("/u/<user>/edit")
