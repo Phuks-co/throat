@@ -8,29 +8,40 @@
 {% block sidebar %}
 {{ super() }}
 <hr/>
-
 <div>
   <h3>Badges:</h3>
   <ul id="userBadges" style="color: darkcyan;">
-    <li title="Early stoat gets the worm"><i class="fa fa-bug" aria-hidden="true"></i> Bug squasher</li>
-    {% for badge in badges %}
-    <li title="{{badge.getBadgeText}}"><i class="fa {{badge.getBadgeClass}}"></i> {{badge.getBadgeName}}</li>
-    {% endfor %}
     {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
+    {% for badge in badges if badges|length > 0 %}
+    <li title="{{badge.getBadgeText}}"><i class="fa {{badge.getBadgeClass}}"></i> {{badge.getBadgeName}}</li>
+    {% else %}
+    <li>none</li>
+    {% endfor %}
   </ul>
 </div>
 <hr>
-<p class="joindate">Registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
-<hr>
 <div>
-  <h3>Moderating:</h3>
+  <h3>Owns:</h3>
   <ul style="color: darkcyan;">
-    {% for sub in subs  %}
-    {% if user.name == sub.getModName %}
-    <li><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a></li>
-    {% endif %}
+    {% for own in owns if owns|length > 0 %}
+    <li><a href="{{url_for('view_sub', sub=own.getSubName)}}">{{own.getSubName}}</a></li>
+    {% else %}
+    <li>none</li>
     {% endfor %}
   </ul>
+</div>
+<hr>
+<div>
+  <h3>Mods:</h3>
+  <ul style="color: darkcyan;">
+    {% for mod in mods if mods|length > 0 %}
+    <li><a href="{{url_for('view_sub', sub=mod.getSubName)}}">{{mod.getSubName}}</a></li>
+    {% else %}
+    <li>none</li>
+    {% endfor %}
+  </ul>
+  <hr>
+  <p class="joindate">User has made {{pcount}} posts<br>and {{ccount}} comments since<br>registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
 </div>
 {% endblock %}
 {% block content %}
