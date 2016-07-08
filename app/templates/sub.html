@@ -55,11 +55,11 @@
   </div>
 </div>
 <span class="col-12"><hr><span>
-<p class="createdby">Created by {{sub.getFounderName}} <time-ago datetime="{{sub.getSubCreation}}"></time-ago></p>
+<p class="createdby">Created by {{getSubUsers(sub, 'mod')}} <time-ago datetime="{{getSubCreation(sub)}}"></time-ago></p>
 <div class="moderators col-12">
   Moderators
   <ul>
-  <li><i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=sub.getTopModName)}}">{{sub.getTopModName}}</a></li>
+  <li><i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=getSubUsers(sub, 'mod1'))}}">{{getSubUsers(sub, 'mod1')}}</a></li>
   {% for mod in mods %}
   <li><a href="{{url_for('view_user', user=mod.getUsername)}}">{{mod.getUsername}}</a></li>
   {% endfor %}

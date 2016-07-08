@@ -1251,7 +1251,6 @@ span.bgred {
   border-radius:5px;
   color: white;
   display: inline-block;
-  padding: 3px;
-  padding-left:4px;
-  padding-right:4px;
+  padding: 3px 8px;
+  margin: 0px 6px;
 }

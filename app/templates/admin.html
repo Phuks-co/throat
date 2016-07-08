@@ -47,7 +47,7 @@
     <table class="col-12">
       <tr>
         <td>Sub Name</td>
-        <td>Sub Desc</td>
+        <td>Created</td>
         <td>Founder</td>
         <td>Owner</td>
         <td><i class="fa fa-user-plus" title="mods"></i></td>
@@ -58,11 +58,11 @@
       {% for sub in subs %}
       <tr>
         <td>
-          <div class="subname"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>{% if sub.getNSFW %} <i title="NSFW" class="fa fa-eye-slash"></i>{% endif %}</div>
+          <div class="subname" title="{{sub.title}}"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>{% if sub.getNSFW %} <i title="NSFW" class="fa fa-eye-slash"></i>{% endif %}</div>
         </td>
-        <td><div class="subtitle">{{sub.title}}</div></td>
-        <td><a href="{{url_for('view_user', user=sub.getFounderName)}}">{{sub.getFounderName}}</a></td>
-        <td><a href="{{url_for('view_user', user=sub.getTopModName)}}">{{sub.getTopModName}}</a></td>
+        <td><time-ago datetime="{{getSubCreation(sub)}}"></time-ago></td>
+        <td><a href="{{url_for('view_user', user=getSubUsers(sub, 'mod'))}}">{{getSubUsers(sub, 'mod')}}</a></td>
+        <td><a href="{{url_for('view_user', user=sub.getTopModName)}}">{{getSubUsers(sub, 'mod1')}}</a></td>
         <td>{{sub.getModCount}}</td>
         <td>{{sub.getSuscriberCount}}</td>
         <td>{{sub.getSubPostCount}}</td>

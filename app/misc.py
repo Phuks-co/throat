@@ -2,7 +2,7 @@
 from sqlalchemy import or_
 
 from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata
-from .models import SubPost, SubMetadata, SubPostVote
+from .models import SubPost, SubMetadata, SubPostVote, User
 from flask_login import AnonymousUserMixin
 from flask_cache import Cache
 
@@ -270,3 +270,19 @@ def hasBlocked(sub, user):
                            .filter_by(uid=user.uid) \
                            .filter_by(status='2').first()
     return bool(x)
+
+
+@cache.memoize(600)
+def getSubUsers(sub, key):
+    """ Returns the names of the sub positions, founder, owner """
+    x = SubMetadata.query.filter_by(sid=sub.sid) \
+                         .filter_by(key=key).first()
+    y = User.query.filter_by(uid=x.value).first()
+    return y.name
+
+
+@cache.memoize(600)
+def getSubCreation(sub):
+    """ Returns the sub's 'creation' metadata """
+    x = sub.properties.filter_by(key='creation').first()
+    return x.value

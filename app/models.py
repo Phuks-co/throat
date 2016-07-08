@@ -147,26 +147,6 @@ class Sub(db.Model):
         return '<Sub {0}-{1}>'.format(self.name, self.title)
 
     @hybrid_property
-    def getFounderName(self):
-        """ Returns the name of the sub founder """
-        x = self.properties.filter_by(key='mod').first()
-        y = User.query.filter_by(uid=x.value).first()
-        return str(y.name)
-
-    @hybrid_property
-    def getTopModName(self):
-        """ Returns the name of the top mod on the list """
-        x = self.properties.filter_by(key='mod1').first()
-        y = User.query.filter_by(uid=x.value).first()
-        return str(y.name)
-
-    @hybrid_property
-    def getSubCreation(self):
-        """ Returns the sub's 'creation' metadata """
-        x = self.properties.filter_by(key='creation').first()
-        return str(x.value)
-
-    @hybrid_property
     def getSubPostCount(self):
         """ Returns the sub's post count """
         x = self.posts.filter_by(sid=self.sid).count()
