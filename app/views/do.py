@@ -622,7 +622,8 @@ def ban_user_sub(sub):
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    if current_user.is_topmod(sub) or current_user.is_admin():
+    if current_user.is_topmod(sub) or current_user.is_admin() \
+    or current_user.is_mod(sub):
         form = BanUserSubForm()
         if form.validate():
             user = User.query.filter(func.lower(User.name) ==
@@ -683,7 +684,8 @@ def remove_sub_ban(sub, user):
     """ Remove Mod2 """
     user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
-    if current_user.is_topmod(sub) or current_user.is_admin():
+    if current_user.is_topmod(sub) or current_user.is_admin() \
+    or current_user.is_mod(sub):
         inv = sub.properties.filter_by(key='ban') \
                             .filter_by(value=user.uid).first()
         inv.key = 'xban'

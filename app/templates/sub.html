@@ -166,7 +166,7 @@
       {%endcache%}
     </article>
 {% endfor %}
-{% if current_user.is_authenticated %}
+{% if current_user.is_authenticated and not current_user.is_subban(sub) %}
 <form id="post-form" data-sub="{{sub.name}}" class="mfp-hide white-popup-block">
   {{txtpostform.csrf_token}}
   <h1>Submit a text post</h1>

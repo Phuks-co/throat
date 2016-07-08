@@ -244,6 +244,7 @@
     <p><button type="submit" id="edit-txpost-btnsubmit">Edit post</button></p>
   </form>
   {% endif %}
+  {% if current_user.is_authenticated and not current_user.is_subban(post.sub) %}
   <form id="post-form" data-sub="{{post.sub.name}}" class="mfp-hide white-popup-block">
     {{txtpostform.csrf_token}}
     <h1>Submit a text post</h1>
@@ -266,6 +267,7 @@
     </div>
     <p><button type="submit" id="lnkpost-btnsubmit">Submit link</button></p>
   </form>
+  {% endif %}
   {% if post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
   <form id="delete-post-form" class="mfp-hide white-popup-block">
     {{delpostform.csrf_token}}
