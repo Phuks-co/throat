@@ -279,6 +279,8 @@ def getSubUsers(sub, key):
     """ Returns the names of the sub positions, founder, owner """
     x = SubMetadata.query.filter_by(sid=sub.sid) \
                          .filter_by(key=key).first()
+    if not x:
+        return False
     y = User.query.filter_by(uid=x.value).first()
     return y.name
 
