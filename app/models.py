@@ -76,6 +76,7 @@ class User(db.Model):
         else:
             return False
 
+
 class UserMetadata(db.Model):
     """ User metadata. Here we store badges, admin status, etc. """
     xid = Column(Integer, primary_key=True)
@@ -184,6 +185,7 @@ class SubMetadata(db.Model):
         x = Sub.query.filter_by(sid=self.sid).first()
         return str(x.name)
 
+
 class SubSubscriber(db.Model):
     """ Stores subscribers for a sub. """
     # Note: We usually use integer primary keys when we don't need to actually
@@ -193,7 +195,7 @@ class SubSubscriber(db.Model):
     xid = Column(Integer, primary_key=True)
     sid = Column(String(40), db.ForeignKey('sub.sid'))
     uid = Column(String(40), db.ForeignKey('user.uid'))
-    status = Column(Integer) # 1=subscribed 2=blocked 3=custom
+    status = Column(Integer)  # 1=subscribed 2=blocked 3=custom
     time = Column(DateTime)
 
 
