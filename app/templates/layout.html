@@ -59,7 +59,7 @@
             <a href="#login-form" class="btn login">Login</a>
           </div>
           <div class="col-6">
-            <a href="#register-form" class="btn register">Register</a>
+            <a href="{{url_for('register')}}" class="btn register">Register</a>
           </div>
         </div>
         {% else %}
@@ -111,28 +111,6 @@
           <p></p>
         </div>
         <p><button type="submit" id="login-btnsubmit">Log in</button></p>
-    </form>
-    <!-- register form -->
-    <form id="register-form" class="mfp-hide white-popup-block">
-        <div id="the-register-form-itself">
-            {{ regform.csrf_token }}
-            <h1>Register</h1>
-            <p>Registering is free. All you need is a username and password.</p>
-            <p>{{regform.username(placeholder=regform.username.label.text, required=True, autofocus=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}</p>
-            <p>{{regform.password(placeholder=regform.password.label.text, required=True, autocomplete="off")}}</p>
-            <p>{{regform.confirm(placeholder=regform.confirm.label.text, required=True, autocomplete="off")}}</p>
-            <p>{{regform.email(placeholder=regform.email.label.text)}}</p>
-            <p>
-                {{regform.accept_tos(style="width: auto", required=True)}}
-                <a href="{{url_for('tos')}}"><label for="tos">{{regform.accept_tos.label.text}}</label></a>
-            </p>
-            {{regform.recaptcha}}
-            <div class="alert div-error">
-              <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-              <p></p>
-            </div>
-            <p><button type="submit" id="reg-btnsubmit">Register</button></p>
-        </div>
     </form>
     {% endif %}
 

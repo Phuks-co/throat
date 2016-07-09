@@ -572,6 +572,13 @@ def admin_area():
         return render_template('errors/404.html'), 404
 
 
+@app.route("/register")
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    return render_template('register.html')
+
+
 @app.route("/api")
 def view_api():
     """ View API help page """

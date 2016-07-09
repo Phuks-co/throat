@@ -22,7 +22,7 @@ $(document).ready(function() {
                 if (data.status != "ok") {
                     checkErrors(data, "register-form");
                 } else { // success
-                    document.location.reload();
+                    document.location = '/';
                 }
                 $("#reg-btnsubmit").prop('disabled', false);
                 $("#reg-btnsubmit").text('Register');
@@ -470,7 +470,6 @@ $(document).ready(function() {
             }
         }
     };
-    $('a.btn.register').magnificPopup(mpSettings);
     $('a.btn.login').magnificPopup(mpSettings);
     $('a.btn.create-sub').magnificPopup(mpSettings);
     $('a.btn.create-post').magnificPopup(mpSettings);
