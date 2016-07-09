@@ -164,13 +164,6 @@ class Sub(db.Model):
         x = self.properties.filter_by(key='nsfw').first()
         return True if x.value == '1' else False
 
-    @hybrid_property
-    def getSuscriberCount(self):
-        """ Returns subscriber count """
-        x = self.subscribers.filter_by(sid=self.sid) \
-                            .filter_by(status='1').count()
-        return x
-
 
 class SubMetadata(db.Model):
     """ Sub metadata. Here we store if the sub is nsfw, the modlist,

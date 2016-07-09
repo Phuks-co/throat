@@ -286,3 +286,11 @@ def getSubCreation(sub):
     """ Returns the sub's 'creation' metadata """
     x = sub.properties.filter_by(key='creation').first()
     return x.value
+
+
+@cache.memoize(300)
+def getSuscriberCount(sub):
+    """ Returns subscriber count """
+    x = sub.subscribers.filter_by(sid=sub.sid) \
+                        .filter_by(status='1').count()
+    return x

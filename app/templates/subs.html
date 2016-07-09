@@ -34,7 +34,7 @@
         <p class="author">{{sub.title}}</p>
         <p class="author">Created by {{getSubUsers(sub, 'mod')}} <time-ago datetime="{{getSubCreation(sub)}}"></time-ago></p>
         <p class="container">
-          <a class="btn small"><i class="fa fa-users" aria-hidden="true"></i> {{sub.getSuscriberCount}} Subscribers</a>
+          <a class="btn small"><i class="fa fa-users" aria-hidden="true"></i> {{getSuscriberCount(sub)}} Subscribers</a>
           {% if current_user.has_subscribed(sub) %}
           <span id="subscribe" class="subscribed" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Subscribed</a></span>
           {% else %}
