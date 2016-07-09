@@ -32,7 +32,7 @@ from .forms import EditSubLinkPostForm, BanUserSubForm
 from .views import do, api
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, cache, hasSubscribed, hasBlocked, getAnnouncement
-from .misc import getSubUsers, getSubCreation, getSuscriberCount
+from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)
@@ -176,7 +176,7 @@ def utility_processor():
             'delpostform': DeletePost(), 'getMetadata': getMetadata,
             'txtpostform': CreateSubTextPost(), 'editsubform': EditSubForm(),
             'lnkpostform': CreateSubLinkPost(), 'getSubUsers': getSubUsers,
-            'getAnnouncement': getAnnouncement,
+            'getAnnouncement': getAnnouncement, 'getModCount': getModCount,
             'getSubCreation': getSubCreation,
             'getSuscriberCount': getSuscriberCount}
 

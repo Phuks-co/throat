@@ -63,8 +63,8 @@
         <td><time-ago datetime="{{getSubCreation(sub)}}"></time-ago></td>
         <td><a href="{{url_for('view_user', user=getSubUsers(sub, 'mod'))}}">{{getSubUsers(sub, 'mod')}}</a></td>
         <td><a href="{{url_for('view_user', user=getSubUsers(sub, 'mod1'))}}">{{getSubUsers(sub, 'mod1')}}</a></td>
-        <td>{{sub.getModCount}}</td>
-        <td>{{sub.getSuscriberCount}}</td>
+        <td>{{getModCount(sub)}}</td>
+        <td>{{getSuscriberCount(sub)}}</td>
         <td>{{sub.getSubPostCount}}</td>
         <td>xx</td>
       </tr>

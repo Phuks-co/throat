@@ -153,12 +153,6 @@ class Sub(db.Model):
         return str(x)
 
     @hybrid_property
-    def getModCount(self):
-        """ Returns the sub's mod count metadata """
-        x = self.properties.filter_by(key='mod2').count()
-        return str(x)
-
-    @hybrid_property
     def isNSFW(self):
         """ Returns true if the sub is marked as NSFW """
         x = self.properties.filter_by(key='nsfw').first()
