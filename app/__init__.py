@@ -21,13 +21,13 @@ from tld import get_tld
 from werkzeug.contrib.atom import AtomFeed
 from feedgen.feed import FeedGenerator
 
-from .models import db, User, Sub, SubPost, Message, SubPostVote, SubPostComment
-from .models import UserBadge, UserMetadata, SiteMetadata, SubMetadata
+from .models import db, User, Sub, SubPost, SubPostVote, SubPostComment
+from .models import UserBadge, UserMetadata, SiteMetadata, SubMetadata, Message
 from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditSubForm, EditUserForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
-from .forms import CreateUserMessageForm, PostComment, EditModForm, EditMod2Form
-from .forms import DummyForm, DeletePost, CreateUserBadgeForm
+from .forms import CreateUserMessageForm, PostComment, EditModForm
+from .forms import DummyForm, DeletePost, CreateUserBadgeForm, EditMod2Form
 from .forms import EditSubLinkPostForm, BanUserSubForm
 from .views import do, api
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
@@ -314,7 +314,7 @@ def edit_sub_mods(sub):
         abort(404)
 
     if current_user.is_mod(sub) or current_user.is_modinv(sub) \
-    or current_user.is_admin():
+       or current_user.is_admin():
         xmods = sub.properties.filter_by(key='xmod2').all()
         mods = sub.properties.filter_by(key='mod2').all()
         modinvs = sub.properties.filter_by(key='mod2i').all()
@@ -371,7 +371,8 @@ def view_sub_new(sub, page):
 @app.route("/s/<sub>/postmodlog", defaults={'page': 1})
 @app.route("/s/<sub>/postmodlog/<int:page>")
 def view_sub_postmodlog(sub, page):
-    """ The mod/admin deleted posts page, sorted as most recent posted first """
+    """ The mod/admin deleted posts page, sorted as most
+        recent posted first """
     sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
@@ -519,8 +520,8 @@ def view_messages():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
-                            .filter(or_(Message.mtype.is_(None)) | \
-                            (Message.mtype==0)) \
+                            .filter(or_(Message.mtype.is_(None)) |
+                                    (Message.mtype == 0)) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Inbox")
@@ -532,8 +533,8 @@ def view_messages_sent():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(sentby=user) \
-                            .filter((Message.mtype==None) | \
-                            (Message.mtype=='-1')) \
+                            .filter((Message.mtypeis_(None)) |
+                                    (Message.mtype == '-1')) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Sent")

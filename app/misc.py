@@ -221,10 +221,12 @@ def isMod(sub, user):
     else:
         return False
 
+
 def isSubBan(sub, user):
     """ Returns True if 'user' is banned 'sub' """
     x = sub.properties.filter_by(key='ban').filter_by(value=user.uid).first()
     return bool(x)
+
 
 def isTopMod(sub, user):
     """ Returns True if 'user' is a topmod of 'sub' """
@@ -241,8 +243,8 @@ def isModInv(sub, user):
 def hasMail(user):
     """ Returns True if the current user has unread messages """
     x = Message.query.filter_by(receivedby=user.uid) \
-                     .filter(or_(Message.mtype.is_(None)) | \
-                     (Message.mtype != '-1')) \
+                     .filter(or_(Message.mtype.is_(None)) |
+                             (Message.mtype != '-1')) \
                      .filter_by(read=None).first()
     return bool(x)
 
@@ -250,8 +252,8 @@ def hasMail(user):
 def newCount(user):
     """ Returns new message count """
     newcount = Message.query.filter_by(read=None) \
-                            .filter(or_(Message.mtype.is_(None)) | \
-                            (Message.mtype != '-1')) \
+                            .filter(or_(Message.mtype.is_(None)) |
+                                    (Message.mtype != '-1')) \
                             .filter_by(receivedby=user.uid).count()
     return newcount
 
@@ -292,7 +294,7 @@ def getSubCreation(sub):
 def getSuscriberCount(sub):
     """ Returns subscriber count """
     x = sub.subscribers.filter_by(sid=sub.sid) \
-                        .filter_by(status='1').count()
+                       .filter_by(status='1').count()
     return x
 
 
