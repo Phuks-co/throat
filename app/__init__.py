@@ -587,8 +587,8 @@ def admin_area():
 def admin_users():
     """ WIP: View users. """
     if current_user.is_admin():
-        users = User.query.order_by(User.name.asc()).limit(10)
-        return render_template('adminusers.html', users=users)
+        users = User.query.order_by(User.name.asc()).all()
+        return render_template('adminusershome.html', users=users)
     else:
         return render_template('errors/404.html'), 404
 
