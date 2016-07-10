@@ -6,10 +6,11 @@
 
 {% block sidebar %}
 {{ super() }}
-<hr/>
-<p><a href="{{ url_for('view_messages') }}">inbox</a></p>
-<p><a href="{{ url_for('view_messages_sent') }}">sent</a></p>
-<p><a href="{{ url_for('view_messages_replies') }}">replies</a></p>
+<div class="row buttons inbox">
+  <div class="col-4"><a class="btn{% if current_user.new_pm_count() > 0 %} btn-orange{% endif %}" href="{{ url_for('view_messages') }}">inbox{% if current_user.new_pm_count() > 0 %} <i class="fa fa-envelope" aria-hidden="true"></i> {{current_user.new_pm_count()}}{% endif %}</a></div>
+  <div class="col-4"><a class="btn{% if current_user.new_reply_count() > 0 %} btn-orange{% endif %}" href="{{ url_for('view_messages_replies') }}">replies{% if current_user.new_reply_count() > 0 %} <i class="fa fa-envelope" aria-hidden="true"></i> {{current_user.new_reply_count()}}{% endif %}</a></div>
+  <div class="col-4"><a class="btn"  href="{{ url_for('view_messages_sent') }}">sent</a></div>
+</div>
 {% endblock %}
 
 {% block content %}

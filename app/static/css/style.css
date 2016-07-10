@@ -1019,6 +1019,9 @@ body.dark .editor-toolbar a {
 
 /* message page */
 
+.inbox div a.btn {
+    width: 100%;
+}
 .received-msgs {
     padding: 4px;
     border-right: 1px solid lightgray;
