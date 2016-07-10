@@ -1,15 +1,45 @@
 {% extends "layout.html" %}
 {% block title %}Throat: Open discussion{% endblock %}
 
+{% block navbar %}
+{{ super() }}
+<li><a href="{{url_for('admin_area')}}">Admin</a></li>
+{% endblock %}
+{% block sidebar %}
+{{ super() }}
+<hr>
+<div class="row buttons">
+  <div class="col-12">
+    <a href="{{url_for('admin_users')}}" class="btn btn-orange" style="width:100%;">Users</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('admin_subs')}}" class="btn btn-orange" style="width:100%;">Subs</a>
+  </div>
+</div>
+{% endblock %}
+
 {% block content %}
 {{ super() }}
 <div class="admin section stats">
-  <div class="col-3"><i class="fa fa-user"></i> {{users|length}} Users</div>
-  <div class="col-3"><i class="fa fa-list"></i> {{subs|length}} Subs</div>
+  <div class="col-3"><i class="fa fa-user"></i> {{users}} Users</div>
+  <div class="col-3"><i class="fa fa-list"></i> {{subs}} Subs</div>
   <div class="col-3"><i class="fa fa-comments"></i> {{posts}} Posts</div>
   <div class="col-3">Voting (+{{ups}} | -{{downs}})</div>
 </div>
+<div class="admin section">
+    <div class="col-12 admin-page-form">
+      <h3>Announcements</h3>
+      {% set ann = getAnnouncement() %}
+      {%if not ann %}<h4>No active announcements</h4>
+      {%else%}
+      <div class="post">
+        <a href="{{url_for('do.deleteannouncement')}}" class="btn btn-red">Nuke!</a> |
+        <a href="{{url_for('view_post_inbox', pid=ann.pid)}}">{{ann.title}}</a> by {{ann.user.name}}, <relative-time datetime="{{ann.posted.isoformat()}}"></relative-time>
+      </div>
 
+      {%endif%}
+  </div>
+</div>
 <div class="admin section badges">
   <div class="col-12"><h2><i class="fa fa-beer"></i> User Badges</h2>
     {% for badge in badges %}
@@ -31,73 +61,6 @@
         </div>
       </form>
     </div>
-  </div>
-</div>
-
-<div class="admin section users">
-  <div class="col-12"><h2><i class="fa fa-users"></i> Users</h2>
-    {% for user in users %}
-    <div class="col-3"><a href="{{url_for('view_user', user=user.name)}}"><i class="fa fa-user"></i> {{user.name}}</a></div>
-    {% endfor %}
-  </div>
-</div>
-
-<div class="admin section subs">
-  <div class="col-12"><h2><i class="fa fa-list"></i> Subs</h2>
-    <table class="col-12">
-      <tr>
-        <td>Sub Name</td>
-        <td>Created</td>
-        <td>Founder</td>
-        <td>Owner</td>
-        <td><i class="fa fa-user-plus" title="mods"></i></td>
-        <td><i class="fa fa-users" title="users"></i></td>
-        <td><i class="fa fa-list" title="submissions"></i></td>
-        <td><i class="fa fa-comments" title="comments"></i></td>
-      </tr>
-      {% for sub in subs %}
-      <tr>
-        <td>
-          <div class="subname" title="{{sub.title}}"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>{% if sub.getNSFW %} <i title="NSFW" class="fa fa-eye-slash"></i>{% endif %}</div>
-        </td>
-        <td><time-ago datetime="{{getSubCreation(sub)}}"></time-ago></td>
-        <td><a href="{{url_for('view_user', user=getSubUsers(sub, 'mod'))}}">{{getSubUsers(sub, 'mod')}}</a></td>
-        <td><a href="{{url_for('view_user', user=getSubUsers(sub, 'mod1'))}}">{{getSubUsers(sub, 'mod1')}}</a></td>
-        <td>{{getModCount(sub)}}</td>
-        <td>{{getSuscriberCount(sub)}}</td>
-        <td>{{sub.getSubPostCount}}</td>
-        <td>xx</td>
-      </tr>
-      {% endfor %}
-    </table>
-  </div>
-  <div class="col-12 admin-page-form">
-    <div>
-      <form id="edit-mod-form">
-        {{editmodform.csrf_token}}
-        <h4>Change owner of sub</h4>
-        <div class="col-3">{{editmodform.sub(placeholder=editmodform.sub.label.text, required=True, autofocus=True)}}</div>
-        <div class="col-3">{{editmodform.user(placeholder=editmodform.user.label.text, required=True,)}}</div>
-        <div class="col-3"><button type="submit" class="btn btn-blue" id="editmodform-btnsubmit">Transfer sub</button></div>
-        <div class="alert div-error">
-          <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-          <p></p>
-        </div>
-      </form>
-    </div>
-  </div>
-  <hr>
-  <div class="col-12 admin-page-form">
-      <h3>Announcements</h3>
-      {% set ann = getAnnouncement() %}
-      {%if not ann %}<h4>No active announcements</h4>
-      {%else%}
-      <div class="post">
-        <a href="{{url_for('do.deleteannouncement')}}" class="btn btn-red">Nuke!</a> |
-        <a href="{{url_for('view_post_inbox', pid=ann.pid)}}">{{ann.title}}</a> by {{ann.user.name}}, <relative-time datetime="{{ann.posted.isoformat()}}"></relative-time>
-      </div>
-
-      {%endif%}
   </div>
 </div>
 {% endblock %}

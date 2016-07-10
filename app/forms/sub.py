@@ -29,10 +29,10 @@ class EditSubForm(Form):
     nsfw = BooleanField('NSFW?')
 
 class EditModForm(Form):
-    """ Edit mod of sub (admin) """
+    """ Edit owner of sub (admin) """
     sub = StringField('Sub',
                         validators=[DataRequired(), Length(min=2, max=128)])
-    user = StringField('New mod username',
+    user = StringField('New owner username',
                         validators=[DataRequired(), Length(min=1, max=128)])
 
 class EditMod2Form(Form):

@@ -33,6 +33,7 @@ from .views import do, api
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, cache, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
+from .misc import getSubPostCount
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)
@@ -178,6 +179,7 @@ def utility_processor():
             'lnkpostform': CreateSubLinkPost(), 'getSubUsers': getSubUsers,
             'getAnnouncement': getAnnouncement, 'getModCount': getModCount,
             'getSubCreation': getSubCreation,
+            'getSubPostCount': getSubPostCount,
             'getSuscriberCount': getSuscriberCount}
 
 
@@ -557,16 +559,38 @@ def view_messages_replies():
 def admin_area():
     """ WIP: View users. assign badges, etc """
     if current_user.is_admin():
-        users = User.query.all()
-        subs = Sub.query.all()
+        users = User.query.count()
+        subs = Sub.query.count()
         posts = SubPost.query.count()
         ups = SubPostVote.query.filter_by(positive=True).count()
         downs = SubPostVote.query.filter_by(positive=False).count()
         badges = UserBadge.query.all()
 
-        return render_template('admin.html', users=users, badges=badges,
-                               subs=subs, posts=posts, ups=ups, downs=downs,
-                               createuserbadgeform=CreateUserBadgeForm(),
+        return render_template('admin.html', badges=badges, subs=subs,
+                               posts=posts, ups=ups, downs=downs, users=users,
+                               createuserbadgeform=CreateUserBadgeForm())
+    else:
+        return render_template('errors/404.html'), 404
+
+
+@app.route("/admin/users")
+@login_required
+def admin_users():
+    """ WIP: View users. """
+    if current_user.is_admin():
+        users = User.query.order_by(User.name.asc()).all()
+
+        return render_template('adminusers.html', users=users)
+    else:
+        return render_template('errors/404.html'), 404
+
+@app.route("/admin/subs")
+@login_required
+def admin_subs():
+    """ WIP: View subs. Assign new owners """
+    if current_user.is_admin():
+        subs = Sub.query.all()
+        return render_template('adminsubs.html', subs=subs,
                                editmodform=EditModForm())
     else:
         return render_template('errors/404.html'), 404

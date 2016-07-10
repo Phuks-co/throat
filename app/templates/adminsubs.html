@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block title %}Throat: Open discussion{% endblock %}
+
+{% block navbar %}
+{{ super() }}
+<li><a href="{{url_for('admin_area')}}">Admin</a></li>
+{% endblock %}
+{% block sidebar %}
+{{ super() }}
+<hr>
+<div class="row buttons">
+  <div class="col-12">
+    <a href="{{url_for('admin_users')}}" class="btn btn-orange" style="width:100%;">Users</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('admin_subs')}}" class="btn btn-orange" style="width:100%;">Subs</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<h2><i class="fa fa-list"></i> Subs</h2>
+<div class="col-12 admin-page-form">
+  <div>
+    <form id="edit-mod-form">
+      {{editmodform.csrf_token}}
+      <h4>Change owner of sub</h4>
+      <div class="col-3">{{editmodform.sub(placeholder=editmodform.sub.label.text, required=True, autofocus=True)}}</div>
+      <div class="col-3">{{editmodform.user(placeholder=editmodform.user.label.text, required=True,)}}</div>
+      <div class="col-3"><button type="submit" class="btn btn-blue" id="editmodform-btnsubmit">Transfer sub</button></div>
+      <div class="alert div-error">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        <p></p>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="admin section subs">
+  <div class="col-12">
+    <table class="col-12">
+      <tr>
+        <td>Sub Name</td>
+        <td>Created</td>
+        <td>Founder</td>
+        <td>Owner</td>
+        <td><i class="fa fa-user-plus" title="mods"></i></td>
+        <td><i class="fa fa-users" title="subscribers"></i></td>
+        <td><i class="fa fa-list" title="submissions"></i></td>
+        <td><i class="fa fa-comments" title="comments"></i></td>
+      </tr>
+      {% for sub in subs %}
+      <tr>
+        <td>
+          <div class="subname" title="{{sub.title}}"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>{% if sub.getNSFW %} <i title="NSFW" class="fa fa-eye-slash"></i>{% endif %}</div>
+        </td>
+        <td><time-ago datetime="{{getSubCreation(sub)}}"></time-ago></td>
+        <td><a href="{{url_for('view_user', user=getSubUsers(sub, 'mod'))}}">{{getSubUsers(sub, 'mod')}}</a></td>
+        <td><a href="{{url_for('view_user', user=getSubUsers(sub, 'mod1'))}}">{{getSubUsers(sub, 'mod1')}}</a></td>
+        <td>{{getModCount(sub)}}</td>
+        <td>{{getSuscriberCount(sub)}}</td>
+        <td>{{getSubPostCount(sub)}}</td>
+        <td>xx</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}

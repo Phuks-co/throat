@@ -148,12 +148,6 @@ class Sub(db.Model):
         return '<Sub {0}-{1}>'.format(self.name, self.title)
 
     @hybrid_property
-    def getSubPostCount(self):
-        """ Returns the sub's post count """
-        x = self.posts.filter_by(sid=self.sid).count()
-        return str(x)
-
-    @hybrid_property
     def isNSFW(self):
         """ Returns true if the sub is marked as NSFW """
         x = self.properties.filter_by(key='nsfw').first()

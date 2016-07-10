@@ -289,6 +289,8 @@ def getSubUsers(sub, key):
 def getSubCreation(sub):
     """ Returns the sub's 'creation' metadata """
     x = sub.properties.filter_by(key='creation').first()
+    if not x:
+        return False
     return x.value
 
 
@@ -304,4 +306,11 @@ def getSuscriberCount(sub):
 def getModCount(sub):
     """ Returns the sub's mod count metadata """
     x = sub.properties.filter_by(key='mod2').count()
+    return x
+
+
+@cache.memoize(300)
+def getSubPostCount(sub):
+    """ Returns the sub's post count """
+    x = SubPost.query.filter_by(sid=sub.sid).count()
     return x
