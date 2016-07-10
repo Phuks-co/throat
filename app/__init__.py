@@ -518,6 +518,15 @@ def edit_user(user):
 
 @app.route("/messages")
 @login_required
+def inbox_sort():
+    if current_user.new_pm_count() == 0 \
+      and current_user.new_reply_count() > 0:
+        return redirect(url_for('view_messages_replies'))
+    else:
+        return redirect(url_for('view_messages'))
+
+
+@app.route("/messages/inbox")
 def view_messages():
     """ WIP: View user's messages """
     user = session['user_id']

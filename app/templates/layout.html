@@ -69,7 +69,7 @@
            <div class="col-6"><button type="submit" class="btn">Log out</button></div>
            <div class="col-2"><button type="button" id="toggledark" class="lightbtn"><i class="fa fa-lightbulb-o" aria-hidden="true"></i></button></div>
            <div class="col-2">
-             <a href="{{ url_for('view_messages') }}">
+             <a href="{{ url_for('inbox_sort') }}">
              <button type="button" class="lightbtn" id="mail">
                {% if current_user.has_mail() %}{{current_user.new_count()}} {% endif %}<i class="fa fa-envelope{% if current_user.has_mail() %} hasmail{% else %}-o{% endif %}" aria-hidden="true"></i>
              </button>
