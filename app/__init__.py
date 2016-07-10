@@ -587,8 +587,18 @@ def admin_area():
 def admin_users():
     """ WIP: View users. """
     if current_user.is_admin():
-        users = User.query.order_by(User.name.asc()).all()
+        users = User.query.order_by(User.name.asc()).limit(10)
+        return render_template('adminusers.html', users=users)
+    else:
+        return render_template('errors/404.html'), 404
 
+@app.route("/admin/users/<term>")
+@login_required
+def admin_users_search(term):
+    """ WIP: View users. """
+    if current_user.is_admin():
+        users = User.query.filter(User.name.contains(term)) \
+                          .order_by(User.name.asc()).all()
         return render_template('adminusers.html', users=users)
     else:
         return render_template('errors/404.html'), 404
@@ -599,7 +609,20 @@ def admin_users():
 def admin_subs():
     """ WIP: View subs. Assign new owners """
     if current_user.is_admin():
-        subs = Sub.query.all()
+        subs = Sub.query.limit(10)
+        return render_template('adminsubs.html', subs=subs,
+                               editmodform=EditModForm())
+    else:
+        return render_template('errors/404.html'), 404
+
+
+@app.route("/admin/subs/<term>")
+@login_required
+def admin_subs_search(term):
+    """ WIP: View users. """
+    if current_user.is_admin():
+        subs = Sub.query.filter(Sub.name.contains(term)) \
+                          .order_by(Sub.name.asc()).all()
         return render_template('adminsubs.html', subs=subs,
                                editmodform=EditModForm())
     else:

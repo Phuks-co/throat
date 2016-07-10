@@ -41,7 +41,7 @@
         {% block sidebar %}
         <div style="text-align: left; margin: 0.5em;">
           {% block search %}
-          <form action="{{ url_for('do.search') }}" method="post">
+          <form action="{{ url_for('do.title_search') }}" method="post">
           <span class="search">
               <span><i class="fa fa-search"></i></span>
               <input id="term" name="term" type="search" placeholder="Search...">

@@ -21,6 +21,17 @@
 {% block content %}
 {{ super() }}
 <h2><i class="fa fa-users"></i> Users</h2>
+<div class="col-12 admin section search">
+  <form action="{{ url_for('do.admin_users_search') }}" method="post">
+  <span class="search">
+      <span><i class="fa fa-search"></i></span>
+      <input id="term" name="term" type="search" placeholder="Search Users...">
+      <span>
+        <button class="btn" type="submit">Submit</button>
+      </span>
+  </span>
+  </form>
+</div>
 <div class="admin section users">
   <div class="col-12">
     <table class="col-12">

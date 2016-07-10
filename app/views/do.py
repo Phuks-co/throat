@@ -46,13 +46,26 @@ def logout():
     return redirect(url_for('index'))
 
 
-@do.route("/do/search", methods=['POST'])
-def search():
+@do.route("/do/title_search", methods=['POST'])
+def title_search():
     """ Search endpoint """
     form = SearchForm()
     term = form.term.data
     return redirect(url_for('search', term=term))
 
+@do.route("/do/admin_users_search", methods=['POST'])
+def admin_users_search():
+    """ Search endpoint """
+    form = SearchForm()
+    term = form.term.data
+    return redirect(url_for('admin_users_search', term=term))
+
+@do.route("/do/admin_subs_search", methods=['POST'])
+def admin_subs_search():
+    """ Search endpoint """
+    form = SearchForm()
+    term = form.term.data
+    return redirect(url_for('admin_subs_search', term=term))
 
 @do.route("/do/login", methods=['POST'])
 def login():
