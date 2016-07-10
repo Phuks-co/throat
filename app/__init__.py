@@ -544,7 +544,7 @@ def view_messages_sent():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(sentby=user) \
-                            .filter((Message.mtypeis_(None)) |
+                            .filter((Message.mtype.is_(None)) |
                                     (Message.mtype == '-1')) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
