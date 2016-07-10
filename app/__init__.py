@@ -593,6 +593,7 @@ def admin_users():
     else:
         return render_template('errors/404.html'), 404
 
+
 @app.route("/admin/subs")
 @login_required
 def admin_subs():
