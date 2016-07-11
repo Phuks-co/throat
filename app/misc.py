@@ -275,6 +275,7 @@ def newPMCount(user):
                      .filter_by(mtype=None).count()
     return x
 
+
 def newReplyCount(user):
     """ Returns new message count in message area """
     x = Message.query.filter_by(read=None) \

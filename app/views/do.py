@@ -131,47 +131,49 @@ def edit_user(user):
     if not user:
         return json.dumps({'status': 'error',
                            'error': ['User does not exist']})
-    if current_user or current_user.admin():
-        form = EditUserForm()
-        if form.validate():
-            user.email = form.email.data
-            exlinks = UserMetadata.query.filter_by(uid=user.uid) \
-                                        .filter_by(key='exlinks').first()
-            if exlinks:
-                exlinks.value = form.external_links.data
-            else:
-                exlinksmeta = UserMetadata()
-                exlinksmeta.uid = user.uid
-                exlinksmeta.key = 'exlinks'
-                exlinksmeta.value = form.external_links.data
-                db.session.add(exlinksmeta)
+    if current_user.get_id() == user.uid or current_user.admin():
+        return(403)
 
-            styles = UserMetadata.query.filter_by(uid=user.uid) \
-                                       .filter_by(key='styles').first()
-            if styles:
-                styles.value = form.disable_sub_style.data
-            else:
-                stylesmeta = UserMetadata()
-                stylesmeta.uid = user.uid
-                stylesmeta.key = 'styles'
-                stylesmeta.value = form.disable_sub_style.data
-                db.session.add(stylesmeta)
+    form = EditUserForm()
+    if form.validate():
+        user.email = form.email.data
+        exlinks = UserMetadata.query.filter_by(uid=user.uid) \
+                                    .filter_by(key='exlinks').first()
+        if exlinks:
+            exlinks.value = form.external_links.data
+        else:
+            exlinksmeta = UserMetadata()
+            exlinksmeta.uid = user.uid
+            exlinksmeta.key = 'exlinks'
+            exlinksmeta.value = form.external_links.data
+            db.session.add(exlinksmeta)
 
-            nsfw = UserMetadata.query.filter_by(uid=user.uid) \
-                                     .filter_by(key='nsfw').first()
-            if nsfw:
-                nsfw.value = form.show_nsfw.data
-            else:
-                nsfwmeta = UserMetadata()
-                nsfwmeta.uid = user.uid
-                nsfwmeta.key = 'nsfw'
-                nsfwmeta.value = form.show_nsfw.data
-                db.session.add(nsfwmeta)
+        styles = UserMetadata.query.filter_by(uid=user.uid) \
+                                   .filter_by(key='styles').first()
+        if styles:
+            styles.value = form.disable_sub_style.data
+        else:
+            stylesmeta = UserMetadata()
+            stylesmeta.uid = user.uid
+            stylesmeta.key = 'styles'
+            stylesmeta.value = form.disable_sub_style.data
+            db.session.add(stylesmeta)
 
-            db.session.commit()
-            return json.dumps({'status': 'ok',
-                               'addr': url_for('view_user', user=user.name)})
-        return json.dumps({'status': 'error', 'error': get_errors(form)})
+        nsfw = UserMetadata.query.filter_by(uid=user.uid) \
+                                 .filter_by(key='nsfw').first()
+        if nsfw:
+            nsfw.value = form.show_nsfw.data
+        else:
+            nsfwmeta = UserMetadata()
+            nsfwmeta.uid = user.uid
+            nsfwmeta.key = 'nsfw'
+            nsfwmeta.value = form.show_nsfw.data
+            db.session.add(nsfwmeta)
+
+        db.session.commit()
+        return json.dumps({'status': 'ok',
+                           'addr': url_for('view_user', user=user.name)})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/delete_post", methods=['POST'])
@@ -265,32 +267,35 @@ def edit_sub(sub):
             return json.dumps({'status': 'ok',
                                'addr': url_for('view_sub', sub=sub.name)})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
+    else:
+        abort(403)
 
 
 @do.route("/do/edit_mod/<sub>/<user>", methods=['POST'])
 @login_required
 def edit_mod(sub, user):
     """ Edit sub mod endpoint """
-    if current_user.is_admin():
-        form = EditModForm()
-        sub = Sub.query.filter_by(name=form.sub.data).first()
-        if not sub:
-            return json.dumps({'status': 'error',
-                               'error': ['Sub does not exist']})
-        user = User.query.filter_by(name=form.user.data).first()
-        if not user:
-            return json.dumps({'status': 'error',
-                               'error': ['User does not exist']})
-        if form.validate():
-            topmod = sub.properties.filter_by(key='mod1').first()
-            if topmod:
-                sub.properties.filter_by(key='mod1').first().value = user.uid
-            else:
-                x = SubMetadata(sub, 'mod1', current_user.get_id())
-                db.session.add(x)
-            db.session.commit()
-            return json.dumps({'status': 'ok'})
-        return json.dumps({'status': 'error', 'error': get_errors(form)})
+    if not current_user.is_admin():
+        abort(403)
+    form = EditModForm()
+    sub = Sub.query.filter_by(name=form.sub.data).first()
+    if not sub:
+        return json.dumps({'status': 'error',
+                           'error': ['Sub does not exist']})
+    user = User.query.filter_by(name=form.user.data).first()
+    if not user:
+        return json.dumps({'status': 'error',
+                           'error': ['User does not exist']})
+    if form.validate():
+        topmod = sub.properties.filter_by(key='mod1').first()
+        if topmod:
+            sub.properties.filter_by(key='mod1').first().value = user.uid
+        else:
+            x = SubMetadata(sub, 'mod1', current_user.get_id())
+            db.session.add(x)
+        db.session.commit()
+        return json.dumps({'status': 'ok'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/subscribe/<sid>", methods=['POST'])
@@ -609,6 +614,8 @@ def assign_user_badge(uid, bid):
         db.session.add(badge)
         db.session.commit()
         return json.dumps({'status': 'ok', 'bid': bid})
+    else:
+        abort(403)
 
 
 @do.route("/do/sendmsg/<user>", methods=['POST'])
@@ -660,6 +667,8 @@ def ban_user_sub(sub):
             return json.dumps({'status': 'ok', 'mid': msg.mid,
                                'sentby': current_user.get_id()})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
+    else:
+        abort(403)
 
 
 @do.route("/do/inv_mod2/<sub>", methods=['POST'])
@@ -692,6 +701,8 @@ def inv_mod2(sub):
             return json.dumps({'status': 'ok', 'mid': msg.mid,
                                'sentby': current_user.get_id()})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
+    else:
+        abort(403)
 
 
 @do.route("/do/remove_sub_ban/<sub>/<user>", methods=['POST'])
@@ -707,6 +718,8 @@ def remove_sub_ban(sub, user):
         inv.key = 'xban'
         db.session.commit()
         return json.dumps({'status': 'ok', 'msg': 'user demodded'})
+    else:
+        abort(403)
 
 
 @do.route("/do/remove_mod2/<sub>/<user>", methods=['POST'])
@@ -721,6 +734,8 @@ def remove_mod2(sub, user):
         inv.key = 'xmod2'
         db.session.commit()
         return json.dumps({'status': 'ok', 'msg': 'user demodded'})
+    else:
+        abort(403)
 
 
 @do.route("/do/revoke_mod2inv/<sub>/<user>", methods=['POST'])
@@ -735,6 +750,8 @@ def revoke_mod2inv(sub, user):
         inv.key = 'xmod2i'
         db.session.commit()
         return json.dumps({'status': 'ok', 'msg': 'user invite revoked'})
+    else:
+        abort(403)
 
 
 @do.route("/do/accept_mod2inv/<sub>/<user>", methods=['POST'])
@@ -749,6 +766,8 @@ def accept_mod2inv(sub, user):
         inv.key = 'mod2'
         db.session.commit()
         return json.dumps({'status': 'ok', 'msg': 'user modded'})
+    else:
+        abort(404)
 
 
 @do.route("/do/refuse_mod2inv/<sub>/<user>", methods=['POST'])
@@ -763,6 +782,8 @@ def refuse_mod2inv(sub, user):
         inv.key = 'xmod2i'
         db.session.commit()
         return json.dumps({'status': 'ok', 'msg': 'invite refused'})
+    else:
+        abort(404)
 
 
 @do.route("/do/read_pm/<mid>", methods=['POST'])
@@ -775,7 +796,8 @@ def read_pm(mid):
         message.read = read
         db.session.commit()
         return json.dumps({'status': 'ok', 'mid': mid})
-        # return json.dumps({'status': 'error', 'error': 'something broke'})
+    else:
+        abort(403)
 
 
 @do.route("/do/delete_pm/<mid>", methods=['POST'])
@@ -787,7 +809,8 @@ def delete_pm(mid):
         message.mtype = '-1'
         db.session.commit()
         return json.dumps({'status': 'ok', 'mid': mid})
-        # return json.dumps({'status': 'error', 'error': 'something broke'})
+    else:
+        abort(403)
 
 
 @do.route("/do/admin/deleteannouncement")
