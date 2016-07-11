@@ -519,8 +519,9 @@ def edit_user(user):
 @app.route("/messages")
 @login_required
 def inbox_sort():
+    """ Inbox? """
     if current_user.new_pm_count() == 0 \
-      and current_user.new_reply_count() > 0:
+       and current_user.new_reply_count() > 0:
         return redirect(url_for('view_messages_replies'))
     else:
         return redirect(url_for('view_messages'))
@@ -592,6 +593,7 @@ def admin_users():
     else:
         return render_template('errors/404.html'), 404
 
+
 @app.route("/admin/users/<term>")
 @login_required
 def admin_users_search(term):
@@ -631,6 +633,7 @@ def admin_subs_search(term):
 
 @app.route("/register")
 def register():
+    """ Endpoint for the registration form """
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     return render_template('register.html')

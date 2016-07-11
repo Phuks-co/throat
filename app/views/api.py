@@ -1,17 +1,13 @@
-""" /api/ """
+""" API endpoint.
+Some rules we should follow:
+ - Always return JSON
+ - Always return a 'status' key ({"status": "ok/error"})
+ - If status is "error", return an "errors" _list_
+"""
 
-import re
-import datetime
-import bcrypt
-from flask import Blueprint, jsonify, abort, request
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
-
-from ..models import db, User, Sub, SubPost
-# from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
-# from ..models import UserMetadata, UserBadge, Message, SubPostComment
+from flask import Blueprint, jsonify, abort
 from flask_login import login_required
-# from ..misc import SiteUser
+from ..models import User, Sub, SubPost
 
 api = Blueprint('api', __name__)
 
@@ -70,14 +66,15 @@ def view_post(sub, pid):
         abort(404)
     else:
         data = {
-                'id': post.pid,
-                'title': post.title,
-                'link': post.link,
-                'content': post.content,
-                'user': post.user.name,
-                'posted': post.posted,
-                'ptype': post.ptype,
-                'votes': post.voteCount}
+            'id': post.pid,
+            'title': post.title,
+            'link': post.link,
+            'content': post.content,
+            'user': post.user.name,
+            'posted': post.posted,
+            'ptype': post.ptype,
+            'votes': post.voteCount
+        }
         resp = jsonify(data)
         resp.status_code = 200
         return resp
@@ -85,7 +82,8 @@ def view_post(sub, pid):
 
 @api.errorhandler(404)
 def not_found(error):
-        data = {'error': 'not found'}
-        resp = jsonify(data)
-        resp.status_code = 404
-        return resp
+    """ Handler for missing api functions """
+    data = {'status': 'error', 'errors': ['not found']}
+    resp = jsonify(data)
+    resp.status_code = 404
+    return resp

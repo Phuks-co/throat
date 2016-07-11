@@ -1,10 +1,10 @@
 """ Misc helper function and classes. """
 from sqlalchemy import or_
+from flask_login import AnonymousUserMixin
+from flask_cache import Cache
 
 from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata
 from .models import SubPost, SubMetadata, SubPostVote, User
-from flask_login import AnonymousUserMixin
-from flask_cache import Cache
 
 cache = Cache()
 
@@ -159,6 +159,7 @@ class SiteAnon(AnonymousUserMixin):
         """ Anons dont get see submod page. """
         return False
 
+    @classmethod
     def is_subban(cls, sub):
         """ Anons dont get banned by default. """
         return False
@@ -194,8 +195,6 @@ def getAnnouncement():
     ann = SiteMetadata.query.filter_by(key='announcement').first()
     if ann:
         ann = SubPost.query.filter_by(pid=ann.value).first()
-        # This line is here to initialize .user >_>
-        test = ann.user.name
     return ann
 
 
@@ -224,10 +223,7 @@ def isMod(sub, user):
     """ Returns True if 'user' is a mod of 'sub' """
     x = sub.properties.filter_by(key='mod1').filter_by(value=user.uid).first()
     y = sub.properties.filter_by(key='mod2').filter_by(value=user.uid).first()
-    if x or y:
-        return True
-    else:
-        return False
+    return bool(x or y)
 
 
 def isSubBan(sub, user):

@@ -4,8 +4,9 @@ import json
 import re
 import datetime
 import bcrypt
-from flask import Blueprint, redirect, url_for, session
+from flask import Blueprint, redirect, url_for, session, abort
 from sqlalchemy import func
+from flask_login import login_user, login_required, logout_user, current_user
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
 from ..models import UserMetadata, UserBadge, SubSubscriber, SiteMetadata
@@ -15,7 +16,6 @@ from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
-from flask_login import login_user, login_required, logout_user, current_user
 from ..misc import SiteUser
 
 do = Blueprint('do', __name__)
@@ -132,7 +132,7 @@ def edit_user(user):
         return json.dumps({'status': 'error',
                            'error': ['User does not exist']})
     if current_user.get_id() == user.uid or current_user.is_admin():
-        return(403)
+        abort(403)
 
     form = EditUserForm()
     if form.validate():
@@ -193,7 +193,6 @@ def delete_post():
             return json.dumps({'status': 'error',
                                'error': ['Not authorized.']})
 
-            md = SubPostMetadata(post.pid, 'moddeleted', '1')
         if post.uid == session['user_id']:
             md = SubPostMetadata(post.pid, 'deleted', '1')
         else:
@@ -324,9 +323,9 @@ def subscribe_to_sub(sid):
 def unsubscribe_from_sub(sid):
     """ Unsubscribe from sub """
     userid = current_user.get_id()
-    res = SubSubscriber.query.filter_by(sid=sid) \
-                             .filter_by(uid=userid) \
-                             .filter_by(status='1').delete()
+    SubSubscriber.query.filter_by(sid=sid) \
+                       .filter_by(uid=userid) \
+                       .filter_by(status='1').delete()
     db.session.commit()
     return json.dumps({'status': 'ok', 'message': 'unsubscribed'})
 
@@ -357,9 +356,9 @@ def block_sub(sid):
 def unblock_sub(sid):
     """ Unblock sub """
     userid = current_user.get_id()
-    res = SubSubscriber.query.filter_by(sid=sid) \
-                             .filter_by(uid=userid) \
-                             .filter_by(status='2').delete()
+    SubSubscriber.query.filter_by(sid=sid) \
+                       .filter_by(uid=userid) \
+                       .filter_by(status='2').delete()
     db.session.commit()
     return json.dumps({'status': 'ok', 'message': 'unsubscribed'})
 
@@ -457,7 +456,6 @@ def edit_linkpost(sub, pid):
     """ Sub text post creation endpoint """
     form = EditSubLinkPostForm()
     if form.validate():
-        post = SubPost()
         # nsfw metadata
         nsfw = SubPostMetadata.query.filter_by(pid=pid) \
                                     .filter_by(key='nsfw').first()
@@ -815,6 +813,7 @@ def delete_pm(mid):
 
 @do.route("/do/admin/deleteannouncement")
 def deleteannouncement():
+    """ Removes the current announcement """
     if not current_user.is_admin():
         abort(404)
 
