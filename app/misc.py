@@ -201,7 +201,7 @@ def getAnnouncement():
     return ann
 
 
-@cache.memoize(60)
+@cache.memoize(30)
 def getMetadata(obj, key, value=None):
     """ Gets metadata out of 'obj' (either a Sub, SubPost or User) """
     if not obj:
@@ -341,3 +341,12 @@ def getSubPostCount(sub):
     """ Returns the sub's post count """
     x = SubPost.query.filter_by(sid=sub.sid).count()
     return x
+
+
+def getStickies(sid):
+    """ Returns a list of stickied SubPosts """
+    x = SubMetadata.query.filter_by(sid=sid).filter_by(key='sticky').all()
+    r = []
+    for i in x:
+        r.append(SubPost.query.filter_by(pid=i.value).first())
+    return r

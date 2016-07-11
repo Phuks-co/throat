@@ -30,6 +30,7 @@ from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DummyForm, DeletePost, CreateUserBadgeForm, EditMod2Form
 from .forms import EditSubLinkPostForm, BanUserSubForm
 from .views import do, api
+from . import misc
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, cache, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
@@ -180,7 +181,7 @@ def utility_processor():
             'getAnnouncement': getAnnouncement, 'getModCount': getModCount,
             'getSubCreation': getSubCreation,
             'getSubPostCount': getSubPostCount,
-            'getSuscriberCount': getSuscriberCount}
+            'getSuscriberCount': getSuscriberCount, 'funcs': misc}
 
 
 @app.route("/")

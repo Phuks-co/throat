@@ -7,6 +7,7 @@ import bcrypt
 from flask import Blueprint, redirect, url_for, session, abort
 from sqlalchemy import func
 from flask_login import login_user, login_required, logout_user, current_user
+from flask_cache import make_template_fragment_key
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
 from ..models import UserMetadata, UserBadge, SubSubscriber, SiteMetadata
@@ -16,7 +17,7 @@ from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
-from ..misc import SiteUser
+from ..misc import SiteUser, cache, getMetadata
 
 do = Blueprint('do', __name__)
 
@@ -841,3 +842,28 @@ def make_announcement():
         db.session.commit()
 
     return redirect(url_for('index'))
+
+
+@do.route("/do/stick/<int:post>", methods=['POST'])
+def toggle_sticky(post):
+    """ Toggles post stickyness - not api """
+    post = SubPost.query.filter_by(pid=post).first()
+
+    if not post or not current_user.is_mod(post.sub):
+        abort(403)
+
+    form = DeletePost()
+
+    if form.validate():
+        md = post.sub.properties.filter_by(key='sticky').first()
+        if not md:
+            md = SubMetadata(post.sub, 'sticky', post.pid)
+            db.session.add(md)
+        else:
+            db.session.delete(md)
+        db.session.commit()
+        cache.delete_memoized(getMetadata, post.sub, 'sticky')
+        ckey = make_template_fragment_key('sticky', vary_on=[post.sub.sid])
+        cache.delete(ckey)
+
+    return redirect(url_for('view_sub', sub=post.sub.name))

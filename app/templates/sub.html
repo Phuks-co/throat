@@ -79,6 +79,41 @@
 
 {% block content %}
 {{ super() }}
+{% cache 1200, 'sticky', sub.sid %}
+  {% set sticks = funcs.getStickies(sub.sid) %}
+  {% for ann in sticks %}
+  <article class="post" data-pid="{{ann.pid}}">
+    {# vote arrow div #}
+    <div class="pull left vote">
+      <div class="upvote{%if hasVoted(current_user.get_id(), ann)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+      <p class="count">{{ann.voteCount}}</p>
+      <div class="downvote{%if hasVoted(current_user.get_id(), ann, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+    </div>
+      <div class="image">
+        <button type="button" class="lightbtn" id="link-post-icon">
+          <a href="{{ann.link}}" rel="noreferrer noopener">
+            <span class="fa-stack fa-3x" style="color: #616161;">
+              <i class="fa fa-square fa-stack-2x"></i>
+              <i class="fa fa-link fa-stack-1x fa-inverse"></i>
+            </span>
+          </a>
+        </button>
+      </div>
+      <div class="main">
+        <a class="title" href="{{url_for('view_post', sub=ann.sub.name, pid=ann.pid)}}"><div class="announcementPost">Sticky</div>{{ann.title}}</a>
+        <p class="author"><relative-time datetime="{{ann.posted.isoformat()}}"></relative-time></p>
+        <p class="container">
+            <span id="opentextpost" data-pid="{{ann.pid}}" class="closedtextpost">
+              <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
+            </span>
+          <a href="{{url_for('view_sub', sub=ann.sub.name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{{ann.sub.name}}</a>
+          <a href="{{url_for('view_user', user=ann.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{ann.user.name}}</a>
+          <a href="{{url_for('view_post', sub=ann.sub.name, pid=ann.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{ann.comments.count()}})</a>
+          </p>
+      </div>
+  </article>
+  {%endfor%}
+{% endcache %}
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
 {% for post in posts if not getMetadata(post, 'deleted') and not getMetadata(post, 'moddeleted')%}
     <article class="post" data-pid="{{post.pid}}">

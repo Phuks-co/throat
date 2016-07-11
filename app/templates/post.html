@@ -113,7 +113,13 @@
               [Deleted]
               {% endif %}
               {% set ann = getAnnouncement() %}
-
+              {% if current_user.is_mod(post.sub) %}
+                {% if post.is_sticky() %}
+                  <a href="#make_sticky-form" class="pull right btn btn-orange small make_announcement-form"><i class="fa fa-thumb-tack" aria-hidden="true"></i> Unstick</a>
+                {% else %}
+                  <a href="#make_sticky-form" class="pull right btn btn-orange small make_announcement-form"><i class="fa fa-thumb-tack" aria-hidden="true"></i> Make sticky</a>
+                {% endif %}
+              {%endif%}
               {% if post.sub.name == "announcements" and current_user.is_admin() and ann.pid != post.pid %}
                 <a href="#make_announcement-form" class="pull right btn btn-orange small make_announcement-form"><i class="fa fa-cube" aria-hidden="true"></i> Make announcement</a>
               {%endif %}
@@ -285,6 +291,18 @@
     {{delpostform.csrf_token}}
     {{delpostform.post(value=post.pid)}}
     <h3>Are you sure you want to announce this??</h3>
+    <div class="alert div-error">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      <p></p>
+    </div>
+    <p><button type="submit" id="make_announcement-btnsubmit">Yup!</button></p>
+  </form>
+  {%endif%}
+  {% if current_user.is_mod(post.sub) %}
+  <form id="make_sticky-form" class="mfp-hide white-popup-block" action="{{url_for('do.toggle_sticky', post=post.pid)}}" method="POST">
+    {{delpostform.csrf_token}}
+    {{delpostform.post(value=post.pid)}}
+    <h3>Are you sure you want to {% if post.is_sticky() %}un{%endif%}stick this?</h3>
     <div class="alert div-error">
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
       <p></p>
