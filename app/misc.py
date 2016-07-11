@@ -195,6 +195,9 @@ def getAnnouncement():
     ann = SiteMetadata.query.filter_by(key='announcement').first()
     if ann:
         ann = SubPost.query.filter_by(pid=ann.value).first()
+        # This line is here to initialize .user >_>
+        # Testing again
+        test = ann.user.name
     return ann
 
 
