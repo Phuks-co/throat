@@ -53,6 +53,7 @@ def title_search():
     term = form.term.data
     return redirect(url_for('search', term=term))
 
+
 @do.route("/do/admin_users_search", methods=['POST'])
 def admin_users_search():
     """ Search endpoint """
@@ -60,12 +61,14 @@ def admin_users_search():
     term = form.term.data
     return redirect(url_for('admin_users_search', term=term))
 
+
 @do.route("/do/admin_subs_search", methods=['POST'])
 def admin_subs_search():
     """ Search endpoint """
     form = SearchForm()
     term = form.term.data
     return redirect(url_for('admin_subs_search', term=term))
+
 
 @do.route("/do/login", methods=['POST'])
 def login():
@@ -144,7 +147,7 @@ def edit_user(user):
                 db.session.add(exlinksmeta)
 
             styles = UserMetadata.query.filter_by(uid=user.uid) \
-                                        .filter_by(key='styles').first()
+                                       .filter_by(key='styles').first()
             if styles:
                 styles.value = form.disable_sub_style.data
             else:
@@ -184,7 +187,7 @@ def delete_post():
                                'error': ['Post does not exist.']})
 
         if not current_user.is_mod(post.sub) and not current_user.is_admin() \
-            and not post.user:
+           and not post.user:
             return json.dumps({'status': 'error',
                                'error': ['Not authorized.']})
 
@@ -302,8 +305,8 @@ def subscribe_to_sub(sid):
     subscribe.time = datetime.datetime.utcnow()
 
     blocked = SubSubscriber.query.filter_by(sid=sid) \
-                                .filter_by(uid=userid) \
-                                .filter_by(status='2').first()
+                                 .filter_by(uid=userid) \
+                                 .filter_by(status='2').first()
     if blocked:
         db.session.delete(blocked)
     db.session.add(subscribe)
@@ -636,7 +639,7 @@ def ban_user_sub(sub):
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
     if current_user.is_topmod(sub) or current_user.is_admin() \
-    or current_user.is_mod(sub):
+       or current_user.is_mod(sub):
         form = BanUserSubForm()
         if form.validate():
             user = User.query.filter(func.lower(User.name) ==
@@ -698,7 +701,7 @@ def remove_sub_ban(sub, user):
     user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
     if current_user.is_topmod(sub) or current_user.is_admin() \
-    or current_user.is_mod(sub):
+       or current_user.is_mod(sub):
         inv = sub.properties.filter_by(key='ban') \
                             .filter_by(value=user.uid).first()
         inv.key = 'xban'
@@ -741,7 +744,7 @@ def accept_mod2inv(sub, user):
     user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
     inv = sub.properties.filter_by(key='mod2i') \
-                               .filter_by(value=user.uid).first()
+                        .filter_by(value=user.uid).first()
     if inv:
         inv.key = 'mod2'
         db.session.commit()
@@ -755,7 +758,7 @@ def refuse_mod2inv(sub, user):
     user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
     inv = sub.properties.filter_by(key='mod2i') \
-                               .filter_by(value=user.uid).first()
+                        .filter_by(value=user.uid).first()
     if inv:
         inv.key = 'xmod2i'
         db.session.commit()
@@ -785,6 +788,7 @@ def delete_pm(mid):
         db.session.commit()
         return json.dumps({'status': 'ok', 'mid': mid})
         # return json.dumps({'status': 'error', 'error': 'something broke'})
+
 
 @do.route("/do/admin/deleteannouncement")
 def deleteannouncement():

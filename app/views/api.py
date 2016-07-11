@@ -17,6 +17,7 @@ api = Blueprint('api', __name__)
 
 """ /api/v1/ """
 
+
 @api.route("/api/v1/status", methods=['GET'])
 def status():
     """ status endpoint """
