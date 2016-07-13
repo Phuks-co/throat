@@ -440,9 +440,11 @@ def view_post(sub, pid):
 
     mods = SubMetadata.query.filter_by(sid=post.sub.sid) \
                             .filter_by(key='mod2').all()
+    txtpedit = EditSubTextPostForm()
+    txtpedit.content.data = post.content
     if post.ptype == 1:
         return render_template('post.html', post=post, mods=mods,
-                               edittxtpostform=EditSubTextPostForm(),
+                               edittxtpostform=txtpedit,
                                editlinkpostform=EditSubLinkPostForm())
     else:
         return render_template('post.html', post=post, mods=mods,

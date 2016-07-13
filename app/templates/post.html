@@ -242,7 +242,7 @@
     {{edittxtpostform.csrf_token}}
     <h1>Edit your text post</h1>
     <p><label>{{edittxtpostform.nsfw.label.text}} {{edittxtpostform.nsfw(checked=post.isPostNSFW())}}</label></p>
-    <p class="content">{{edittxtpostform.content(placeholder="Write your post content here. Styling with Markdown format is supported.")}}</p>
+    <p class="content" style="text-align: left;">{{edittxtpostform.content()}}</p>
     <div class="alert div-error">
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
       <p></p>
