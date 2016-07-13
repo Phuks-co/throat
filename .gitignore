@@ -31,8 +31,7 @@ var/
 *.spec
 
 # Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+pip-log.txtpip-delete-this-directory.txt
 
 # Unit test / coverage reports
 htmlcov/
@@ -68,7 +67,4 @@ target/
 # webassets tmp stuff
 app/static/gen
 app/static/.webassets-cache
-
 config.py
-app/static/img/logo*.png
-app/static/img/favicon.ico
