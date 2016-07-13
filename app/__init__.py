@@ -448,7 +448,7 @@ def view_post(sub, pid):
                                editlinkpostform=EditSubLinkPostForm())
     else:
         return render_template('post.html', post=post, mods=mods,
-                               edittxtpostform=EditSubTextPostForm(),
+                               edittxtpostform=txtpedit,
                                editlinkpostform=EditSubLinkPostForm())
 
 
