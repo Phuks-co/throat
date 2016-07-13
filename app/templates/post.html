@@ -34,6 +34,10 @@
     <i class="fa fa-users" aria-hidden="true"></i> {{getSuscriberCount(post.sub)}} Subscribers
   </div>
   <span class="col-12"><hr><span>
+    {% if isRestricted(post.sub) %}
+    <div class="col-12">
+      Only mods can post.
+    </div>
     {% if current_user.is_mod(post.sub) and isRestricted(post.sub) %}
     <div class="col-12">
       <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
