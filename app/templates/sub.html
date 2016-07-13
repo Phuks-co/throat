@@ -34,6 +34,19 @@
     <i class="fa fa-users" aria-hidden="true"></i> {{getSuscriberCount(sub)}} Subscribers
   </div>
   <span class="col-12"><hr><span>
+  {% if isRestricted(sub) %}
+  <div class="col-12">
+    Only mods can post.
+  </div>
+  {% if current_user.is_mod(sub) and isRestricted(sub) %}
+  <div class="col-12">
+    <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
+  </div>
+  <div class="col-12">
+    <a href="#link-post-form" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
+  </div>
+  {% endif %}
+  {% else %}
   {% if current_user.is_authenticated and not current_user.is_subban(sub) %}
   <div class="col-12">
     <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
@@ -42,18 +55,6 @@
     <a href="#link-post-form" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
   </div>
   {% endif %}
-  {% if current_user.is_mod(sub) or current_user.is_admin() and isRestricted(sub) %}
-  <div class="col-12">
-    <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
-  </div>
-  <div class="col-12">
-    <a href="#link-post-form" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
-  </div>
-  {% endif %}
-  {% if isRestricted(sub) %}
-  <div class="col-12">
-    Only mods can post.
-  </div>
   {% endif %}
   {% if current_user.is_subban(sub) %}
   <div class="col-12">
