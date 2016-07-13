@@ -134,7 +134,7 @@ class Sub(db.Model):
 
     subscribers = db.relationship('SubSubscriber', backref='sub',
                                   lazy='dynamic')
-    _posts = db.relationship('SubPost', backref='sub', lazy='subquery')
+    _posts = db.relationship('SubPost', backref='sub', lazy='joined')
     posts = db.relationship('SubPost', backref='_sub', lazy='dynamic')
     properties = db.relationship('SubMetadata', backref='sub', lazy='dynamic')
     stylesheet = db.relationship('SubStylesheet', backref='sub',
