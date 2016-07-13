@@ -148,12 +148,6 @@ class Sub(db.Model):
     def __repr__(self):
         return '<Sub {0}-{1}>'.format(self.name, self.title)
 
-    @hybrid_property
-    def isNSFW(self):
-        """ Returns true if the sub is marked as NSFW """
-        x = self.properties.filter_by(key='nsfw').first()
-        return True if x.value == '1' else False
-
 
 class SubMetadata(db.Model):
     """ Sub metadata. Here we store if the sub is nsfw, the modlist,

@@ -253,6 +253,7 @@ def edit_sub(sub):
         if form.validate():
             sub.title = form.title.data
             nsfw = sub.properties.filter_by(key='nsfw').first()
+            restricted = sub.properties.filter_by(key='restricted').first()
             if nsfw:
                 nsfw.value = form.nsfw.data
             else:
@@ -263,6 +264,12 @@ def edit_sub(sub):
             else:
                 css = SubStylesheet(sub.sid, form.css.data)
                 db.session.add(css)
+            if restricted:
+                restricted.value = form.restricted.data
+            else:
+                restricted = SubMetadata(sub, 'restricted', \
+                                         form.restricted.data)
+                db.session.add(restricted)
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'addr': url_for('view_sub', sub=sub.name)})

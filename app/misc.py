@@ -359,3 +359,15 @@ def getStickies(sid):
     for i in x:
         r.append(SubPost.query.filter_by(pid=i.value).first())
     return r
+
+
+def isRestricted(self):
+    """ Returns true if the sub is marked as Restricted """
+    x = self.properties.filter_by(key='restricted').first()
+    return False if not x or x.value == '0' else True
+
+
+def isNSFW(self):
+    """ Returns true if the sub is marked as NSFW """
+    x = self.properties.filter_by(key='nsfw').first()
+    return False if not x or x.value == '0' else True
