@@ -2,6 +2,8 @@
 import os
 _basedir = os.path.abspath(os.path.dirname(__file__))
 
+# Site title
+LEMA = "Throat: Open discussion ;D"
 # We're using a sqlite database for testing.
 # In production we _should_ use mysql or something else
 SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL') or 'sqlite:////tmp/test.db'
