@@ -27,6 +27,7 @@ class EditSubForm(Form):
 
     css = TextAreaField('Custom stylesheet', validators=[Length(max=10000)])
     nsfw = BooleanField('NSFW?')
+    restricted = BooleanField('Only mods can post')
 
 class EditModForm(Form):
     """ Edit owner of sub (admin) """
