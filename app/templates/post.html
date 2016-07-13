@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}{{post.title}} | Throat: Open discussion{% endblock %}
+{% block title %}{{post.title}} | {{config.LEMA}}{% endblock %}
 
 {% block navbar %}
 <li><a href="{{url_for('view_sub_hot', sub=post.sub.name)}}">Hot</a></li>

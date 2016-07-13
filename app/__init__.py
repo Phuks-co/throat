@@ -180,7 +180,7 @@ def utility_processor():
             'lnkpostform': CreateSubLinkPost(), 'getSubUsers': getSubUsers,
             'getAnnouncement': getAnnouncement, 'getModCount': getModCount,
             'getSubCreation': getSubCreation,
-            'getSubPostCount': getSubPostCount,
+            'getSubPostCount': getSubPostCount, 'config': app.config,
             'getSuscriberCount': getSuscriberCount, 'funcs': misc}
 
 

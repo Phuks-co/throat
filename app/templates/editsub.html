@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}Throat: Open discussion{% endblock %}
+{% block title %}{{config.LEMA}}{% endblock %}
 {% block navbar %}
 <ul class="right">
   <li class="large"><a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a></li>

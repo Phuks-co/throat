@@ -4,7 +4,7 @@
     {% block head %}
     <meta charset="utf-8">
     <meta name="keywords" content="forum, vote, comment, submit, throat, internet">
-    <meta name="description" content="Throat: Open discussion">
+    <meta name="description" content="{{config.LEMA}}">
     <meta name="robots" content="index, follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -16,7 +16,7 @@
 
     <link rel="icon" sizes="192x192" href="{{ url_for('static', filename='img/favicon.ico') }}">
 
-    <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}{{config.LEMA}}{% endblock %}</title>
 
     <!-- css stuff -->
     {% assets "css_all" %}

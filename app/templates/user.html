@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}/u/{{user.name}} | Throat: Open discussion{% endblock %}
+{% block title %}/u/{{user.name}} | {{config.LEMA}}{% endblock %}
 {% block navbar %}
 <ul class="right">
   <li><a href="{{url_for('view_user', user=user.name)}}" class="btn">{{user.name}}</a></li>
