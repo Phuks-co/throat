@@ -264,7 +264,7 @@ class SubPost(db.Model):
 
     def isAnnouncement(self):
         ann = SiteMetadata.query.filter_by(key='announcement').first()
-        return bool(ann and ann.value == self.pid)
+        return bool(ann and ann.value == str(self.pid))
 
     def isPostNSFW(self):
         """ Returns true if the post is marked as NSFW """
