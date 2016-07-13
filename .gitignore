@@ -68,3 +68,7 @@ target/
 # webassets tmp stuff
 app/static/gen
 app/static/.webassets-cache
+
+config.py
+app/static/img/logo*.png
+app/static/img/favicon.ico
