@@ -1,5 +1,6 @@
 """ Misc helper function and classes. """
 from sqlalchemy import or_
+import markdown
 from flask_login import AnonymousUserMixin
 from flask_cache import Cache
 
@@ -163,6 +164,14 @@ class SiteAnon(AnonymousUserMixin):
     def is_subban(cls, sub):
         """ Anons dont get banned by default. """
         return False
+
+
+class RestrictedMarkdown(markdown.Extension):
+    """ Class to restrict some markdown stuff """
+    def extendMarkdown(self, md, md_globals):
+        """ Here we disable stuff """
+        del md.inlinePatterns['image_link']
+        del md.inlinePatterns['image_reference']
 
 
 def getVoteCount(post):

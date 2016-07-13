@@ -35,7 +35,7 @@ from . import misc
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, cache, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
-from .misc import getSubPostCount
+from .misc import getSubPostCount, RestrictedMarkdown
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)
@@ -89,8 +89,10 @@ assets.register('css_all', css)
 def our_markdown(text):
     """ Here we create a custom markdown function where we load all the
     extensions we need. """
-    return markdown.markdown(cgi.escape(text),
-                             extensions=['markdown.extensions.tables'])
+    return markdown.markdown(text,
+                             extensions=['markdown.extensions.tables',
+                                         RestrictedMarkdown()],
+                             safe_mode='escape')
 
 
 @login_manager.user_loader
