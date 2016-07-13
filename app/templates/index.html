@@ -65,7 +65,7 @@
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
 
 {% for post in posts if not getMetadata(post, 'deleted') and not getMetadata(post, 'moddeleted') %}
-{% if current_user.show_nsfw() and post.isPostNSFW() or not post.isPostNSFW() %}
+{% if (current_user.show_nsfw() and post.isPostNSFW()) or not post.isPostNSFW() or post.isAnnouncement() %}
     <article class="post" data-pid="{{post.pid}}">
       {# vote arrow div #}
       <div class="pull left vote">

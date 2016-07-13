@@ -262,6 +262,10 @@ class SubPost(db.Model):
         suffix = ['.png', '.jpg', '.gif', '.tiff', '.bmp']
         return self.link.lower().endswith(tuple(suffix))
 
+    def isAnnouncement(self):
+        ann = SiteMetadata.query.filter_by(key='announcement').first()
+        return bool(ann and ann.value == self.pid)
+
     def isPostNSFW(self):
         """ Returns true if the post is marked as NSFW """
         x = self.properties.filter_by(key='nsfw').first()
