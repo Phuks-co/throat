@@ -5,6 +5,7 @@ import json
 import time
 import re
 import random
+import cgi
 from wsgiref.handlers import format_date_time
 import datetime
 from urllib.parse import urlparse, urljoin
@@ -88,7 +89,7 @@ assets.register('css_all', css)
 def our_markdown(text):
     """ Here we create a custom markdown function where we load all the
     extensions we need. """
-    return markdown.markdown(text,
+    return markdown.markdown(cgi.escape(text),
                              extensions=['markdown.extensions.tables'])
 
 
