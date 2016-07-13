@@ -49,14 +49,13 @@ class RegistrationForm(Form):
 
 class EditUserForm(Form):
     """ Edit User info form. """
-    #username = TextField('Username', [Length(min=2, max=32)])
+    # username = TextField('Username', [Length(min=2, max=32)])
     email = EmailField('Email Address (optional)',
                        validators=[OptionalIfFieldIsEmpty('email'),
                                    Email("Invalid email address.")])
     external_links = BooleanField('Open external links in a new window')
     disable_sub_style = BooleanField('Disable custom sub styles')
     show_nsfw = BooleanField('Show NSFW content')
-    accept_tos = BooleanField('I accept the TOS', [Required()])
     recaptcha = RecaptchaField()
 
 
