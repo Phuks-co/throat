@@ -103,28 +103,80 @@
       <p class="count">{{ann.voteCount}}</p>
       <div class="downvote{%if hasVoted(current_user.get_id(), ann, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
     </div>
-      <div class="image">
-        <button type="button" class="lightbtn" id="text-post-icon">
-          <a href="{{url_for('view_post', sub=ann.sub.name, pid=ann.pid)}}">
-            <span class="fa-stack fa-3x" style="color: #616161;">
-              <i class="fa fa-square fa-stack-2x"></i>
-              <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
-            </span>
-          </a>
-        </button>
-      </div>
-      <div class="main">
-        <a class="title" href="{{url_for('view_post', sub=ann.sub.name, pid=ann.pid)}}"><div class="announcementPost">Sticky</div>{{ann.title}}</a>
-        <p class="author"><relative-time datetime="{{ann.posted.isoformat()}}"></relative-time></p>
-        <p class="container">
-            <span id="opentextpost" data-pid="{{ann.pid}}" class="closedtextpost">
-              <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
-            </span>
-          <a href="{{url_for('view_sub', sub=ann.sub.name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{{ann.sub.name}}</a>
-          <a href="{{url_for('view_user', user=ann.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{ann.user.name}}</a>
-          <a href="{{url_for('view_post', sub=ann.sub.name, pid=ann.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{ann.comments.count()}})</a>
-          </p>
-      </div>
+    <div class="image">
+      {% if not ann.link %}
+      <button type="button" class="lightbtn" id="text-post-icon">
+        <a href="{{url_for('view_post', sub=ann.sub.name, pid=ann.pid)}}">
+          <span class="fa-stack fa-3x" style="color: #616161;">
+            <i class="fa fa-square fa-stack-2x"></i>
+            <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
+          </span>
+        </a>
+      </button>
+      {% else %}
+      <button type="button" class="lightbtn" id="link-post-icon">
+        <a href="{{ann.link}}" rel="noreferrer noopener">
+          <span class="fa-stack fa-3x" style="color: #616161;">
+            <i class="fa fa-square fa-stack-2x"></i>
+            {% if ann.isImage() %}
+            <i class="fa fa-image fa-stack-1x fa-inverse"></i>
+            {% elif ann.getDomain() == "youtube.com" %}
+            <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
+            {% elif ann.getDomain() == "vimeo.com" %}
+            <i class="fa fa-vimeo fa-stack-1x fa-inverse"></i>
+            {% elif ann.getDomain() == "vine.co" %}
+            <i class="fa fa-vine fa-stack-1x fa-inverse"></i>
+            {% else %}
+            <i class="fa fa-link fa-stack-1x fa-inverse"></i>
+            {% endif %}
+          </span>
+        </a>
+      </button>
+      {% endif %}
+    </div>
+    <div class="main">
+      {% if ann.isPostNSFW() %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
+      {% if not ann.link %}
+      <a class="title" href="{{url_for('view_post', sub=sub.name, pid=ann.pid)}}"><div class="announcementPost">Sticky</div>{{ann.title}}</a>
+      {% else %}
+      {% if ann.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
+      <a class="title" href="{{ann.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener"><div class="announcementPost">Sticky</div>{{ann.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=ann.getDomain())}}">{{ann.getDomain()}}</a>)</span>
+      {% endif %}
+      <p class="author"><time-ago datetime="{{ann.posted.isoformat()}}"></time-ago></p>
+      <p class="container">
+      {% if ann.link %}
+        {% if ann.getDomain() == "youtube.com" %}
+          <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{ann.pid}}" class="closedvid">
+            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
+          </span>
+        {% endif %}
+        {% if post.getDomain() == "vimeo.com" %}
+          <span id="vimeovid" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" class="closedvid">
+            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
+          </span>
+        {% endif %}
+        {% if post.getDomain() == "vine.co" %}
+          <span id="vinevid" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" class="closedvine">
+            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-vine" aria-hidden="true"></i></a></span>
+          </span>
+        {% endif %}
+        {% if post.isImage() %}
+          <span id="openimg" data-img="{{ann.link}}" data-pid="{{ann.pid}}" class="closedimg">
+            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
+          </span>
+        {% endif %}
+      {% else %}
+        <span id="opentextpost" data-pid="{{ann.pid}}" class="closedtextpost">
+          <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
+        </span>
+      {% endif %}
+        <a href="{{url_for('view_user', user=ann.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{ann.user.name}}</a>
+        <a href="{{url_for('view_post', sub=sub.name, pid=ann.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{ann.comments.count()}})</a>
+        {% if current_user.is_mod(sub) or current_user.is_admin() %}
+        <a href="#delete-post-form" class="btn small btn-red delpost" data-post="{{ann.pid}}"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
+        {% endif %}
+      </p>
+    </div>
   </article>
   {%endfor%}
 {% endcache %}
