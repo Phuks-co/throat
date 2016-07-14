@@ -206,7 +206,7 @@ def getAnnouncement():
         ann = SubPost.query.filter_by(pid=ann.value).first()
         # This line is here to initialize .user >_>
         # Testing again
-        test = ann.user.name
+        test = [ann.user.name, ann.sub.name]
     return ann
 
 
