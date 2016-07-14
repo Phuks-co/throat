@@ -257,6 +257,7 @@ class SubPost(db.Model):
         return self.link.lower().endswith(tuple(suffix))
 
     def isAnnouncement(self):
+        """ Returns True if post is an announcement """
         ann = SiteMetadata.query.filter_by(key='announcement').first()
         return bool(ann and ann.value == str(self.pid))
 

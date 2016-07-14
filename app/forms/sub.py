@@ -29,17 +29,20 @@ class EditSubForm(Form):
     nsfw = BooleanField('NSFW?')
     restricted = BooleanField('Only mods can post')
 
+
 class EditModForm(Form):
     """ Edit owner of sub (admin) """
     sub = StringField('Sub',
-                        validators=[DataRequired(), Length(min=2, max=128)])
+                      validators=[DataRequired(), Length(min=2, max=128)])
     user = StringField('New owner username',
-                        validators=[DataRequired(), Length(min=1, max=128)])
+                       validators=[DataRequired(), Length(min=1, max=128)])
+
 
 class EditMod2Form(Form):
     """ Edit mod2 of sub (admin/owner) """
     user = StringField('New mod username',
-                        validators=[DataRequired(), Length(min=1, max=128)])
+                       validators=[DataRequired(), Length(min=1, max=128)])
+
 
 class CreateSubTextPost(Form):
     """ Sub content submission form """
@@ -82,12 +85,11 @@ class PostComment(Form):
                             validators=[DataRequired(),
                                         Length(min=1, max=2048)])
 
+
 class BanUserSubForm(Form):
     """ Edit ban user from posting """
     user = StringField('username to ban',
-                        validators=[DataRequired(), Length(min=1, max=128)])
-
-
+                       validators=[DataRequired(), Length(min=1, max=128)])
 
 
 class DeletePost(Form):

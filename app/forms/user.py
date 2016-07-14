@@ -62,20 +62,21 @@ class EditUserForm(Form):
 class CreateUserMessageForm(Form):
     """ CreateUserMessage form. """
     subject = StringField('subject',
-                           validators=[DataRequired(), Length(min=2, max=32)])
+                          validators=[DataRequired(), Length(min=2, max=32)])
 
     content = TextAreaField('message',
-                           validators=[DataRequired(), Length(min=2, max=128)])
+                            validators=[DataRequired(),
+                                        Length(min=2, max=128)])
 
 
 class CreateUserBadgeForm(Form):
     """ CreateUserBadge form. """
     badge = StringField('fa-xxxx-x fa-xxxx',
-                           validators=[DataRequired(), Length(min=2, max=32)])
+                        validators=[DataRequired(), Length(min=2, max=32)])
     name = StringField('Badge name',
-                           validators=[DataRequired(), Length(min=2, max=128)])
+                       validators=[DataRequired(), Length(min=2, max=128)])
     text = StringField('Badge description',
-                           validators=[DataRequired(), Length(min=2, max=128)])
+                       validators=[DataRequired(), Length(min=2, max=128)])
 
 
 class LogOutForm(Form):
