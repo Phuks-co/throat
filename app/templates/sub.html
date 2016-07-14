@@ -150,17 +150,17 @@
             <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
           </span>
         {% endif %}
-        {% if post.getDomain() == "vimeo.com" %}
+        {% if ann.getDomain() == "vimeo.com" %}
           <span id="vimeovid" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" class="closedvid">
             <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
           </span>
         {% endif %}
-        {% if post.getDomain() == "vine.co" %}
+        {% if ann.getDomain() == "vine.co" %}
           <span id="vinevid" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" class="closedvine">
             <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-vine" aria-hidden="true"></i></a></span>
           </span>
         {% endif %}
-        {% if post.isImage() %}
+        {% if ann.isImage() %}
           <span id="openimg" data-img="{{ann.link}}" data-pid="{{ann.pid}}" class="closedimg">
             <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
           </span>
