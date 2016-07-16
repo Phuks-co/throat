@@ -562,6 +562,7 @@ $(document).ready(function() {
         success: function(data) {
           if(data.status == "ok"){
             $(e.currentTarget).addClass('badgeassigned');
+            document.location.reload();
           }
         }
       });

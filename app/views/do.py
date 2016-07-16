@@ -615,6 +615,11 @@ def create_user_badge():
 def assign_user_badge(uid, bid):
     """ Assign User Badge endpoint """
     if current_user.is_admin():
+        bq = UserMetadata.query.filter_by(uid=uid, key='badge', value=bid)
+        if bq.first():
+            return json.dumps({'status': 'error',
+                               'error': ['Badge is already assigned']})
+
         badge = UserMetadata()
         badge.uid = uid
         badge.key = 'badge'
