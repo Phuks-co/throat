@@ -567,7 +567,7 @@ nav .right a {
     padding: 6px 12px;
     border-radius: 4px;
     touch-action: manipulation;
-    font-family: sans-serif;
+    font-family: Comfortaa, Arial, Helvetica, sans-serif;
     border: solid transparent 1px;
     text-align: center;
     cursor: pointer;
@@ -575,11 +575,6 @@ nav .right a {
     color: #333;
     background-color: #fff;
     border-color: #ccc;
-}
-@media only screen and (min-width: 768px) {
-    .btn {
-        font-family: Comfortaa;
-    }
 }
 .btn:visited {
   color: #333;
