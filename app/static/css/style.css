@@ -51,8 +51,8 @@ canvas {
     display: none;
 }
 a {
-    text-decoration: underline;
-    color: inherit;
+    text-decoration: none;
+    color: #e25708;
 }
 a:hover {
     text-decoration: none;
@@ -376,7 +376,7 @@ input:focus {
     text-align: center;
     margin-right: 1em;
 }
-a.btn.login, a.btn.register {
+a.btn.login, a.btn.register, button.btn.logout {
     width: 100%;
 }
 .side .lightbtn {
@@ -384,6 +384,7 @@ a.btn.login, a.btn.register {
     background: none!important;
     border: none;
     padding: 0!important;
+    margin: 0px 1.5vw 0px 1.5vh!important;
 }
 .side .lightbtn i {
     font-size: 1.5vmax;
@@ -393,8 +394,8 @@ a.btn.login, a.btn.register {
     line-height: 4em;
 }
 .side .buttons button {
+    margin: auto;
     height: 100%;
-    width: 100%;
 }
 .create-sub {
     width: 20em;
@@ -557,7 +558,6 @@ nav .right a {
 /*
   Buttons
 */
-
 .btn {
     text-decoration: none;
     display: inline-block;
@@ -567,7 +567,7 @@ nav .right a {
     padding: 6px 12px;
     border-radius: 4px;
     touch-action: manipulation;
-    font-family: Comfortaa;
+    font-family: sans-serif;
     border: solid transparent 1px;
     text-align: center;
     cursor: pointer;
@@ -575,6 +575,11 @@ nav .right a {
     color: #333;
     background-color: #fff;
     border-color: #ccc;
+}
+@media only screen and (min-width: 768px) {
+    .btn {
+        font-family: Comfortaa;
+    }
 }
 .btn:visited {
   color: #333;
