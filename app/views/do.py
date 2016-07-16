@@ -371,15 +371,16 @@ def unblock_sub(sid):
     return json.dumps({'status': 'ok', 'message': 'unsubscribed'})
 
 
-@do.route("/do/txtpost/<sub>", methods=['POST'])
+@do.route("/do/txtpost", methods=['POST'])
 @login_required
-def create_txtpost(sub):
+def create_txtpost():
     """ Sub text post creation endpoint """
 
     form = CreateSubTextPost()
     if form.validate():
         # Put pre-posting checks here
-        sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+        sub = Sub.query.filter(func.lower(Sub.name) ==
+                               func.lower(form.sub.data)).first()
         if not sub:
             return json.dumps({'status': 'error',
                                'error': ['Sub does not exist']})
@@ -432,15 +433,16 @@ def edit_txtpost(sub, pid):
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
-@do.route("/do/lnkpost/<sub>", methods=['POST'])
+@do.route("/do/lnkpost", methods=['POST'])
 @login_required
-def create_lnkpost(sub):
+def create_lnkpost():
     """ Sub text post creation endpoint """
 
     form = CreateSubLinkPost()
     if form.validate():
         # Put pre-posting checks here
-        sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+        sub = Sub.query.filter(func.lower(Sub.name) ==
+                               func.lower(form.sub.data)).first()
         if not sub:
             return json.dumps({'status': 'error',
                                'error': ['Sub does not exist']})

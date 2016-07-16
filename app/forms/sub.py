@@ -46,11 +46,38 @@ class EditMod2Form(Form):
 
 class CreateSubTextPost(Form):
     """ Sub content submission form """
+    sub = StringField('Sub', validators=[DataRequired(),
+                                         Length(min=2, max=32)])
     title = StringField('Post title',
                         validators=[DataRequired(), Length(min=4, max=128)])
     content = TextAreaField('Post content',
                             validators=[DataRequired(),
                                         Length(min=1, max=16384)])
+
+    def __init__(self, *args, **kwargs):
+        super(CreateSubTextPost, self).__init__(*args, **kwargs)
+        try:
+            self.sub.data = kwargs['sub']
+        except KeyError:
+            pass
+
+
+class CreateSubLinkPost(Form):
+    """ Sub content submission form """
+    sub = StringField('Sub', validators=[DataRequired(),
+                                         Length(min=2, max=32)])
+    title = StringField('Post title',
+                        validators=[DataRequired(), Length(min=4, max=128)])
+    link = StringField('Post link',
+                       validators=[DataRequired(), Length(min=10, max=128),
+                                   URL(require_tld=True)])
+
+    def __init__(self, *args, **kwargs):
+        super(CreateSubLinkPost, self).__init__(*args, **kwargs)
+        try:
+            self.sub.data = kwargs['sub']
+        except KeyError:
+            pass
 
 
 class EditSubTextPostForm(Form):
@@ -59,15 +86,6 @@ class EditSubTextPostForm(Form):
                             validators=[DataRequired(),
                                         Length(min=1, max=16384)])
     nsfw = BooleanField('NSFW?')
-
-
-class CreateSubLinkPost(Form):
-    """ Sub content submission form """
-    title = StringField('Post title',
-                        validators=[DataRequired(), Length(min=4, max=128)])
-    link = StringField('Post link',
-                       validators=[DataRequired(), Length(min=10, max=128),
-                                   URL(require_tld=True)])
 
 
 class EditSubLinkPostForm(Form):

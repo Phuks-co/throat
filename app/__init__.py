@@ -173,18 +173,18 @@ def checkSession():
 @app.context_processor
 def utility_processor():
     """ Here we set some useful stuff for templates """
+    # TODO: Kill this huge mass of shit
     return {'loginform': LoginForm(), 'regform': RegistrationForm(),
             'logoutform': LogOutForm(), 'sendmsg': CreateUserMessageForm(),
             'csubform': CreateSubForm(), 'markdown': our_markdown,
             'commentform': PostComment(), 'dummyform': DummyForm(),
             'getVoteCount': getVoteCount, 'hasVoted': hasVoted,
             'delpostform': DeletePost(), 'getMetadata': getMetadata,
-            'txtpostform': CreateSubTextPost(), 'editsubform': EditSubForm(),
-            'lnkpostform': CreateSubLinkPost(), 'getSubUsers': getSubUsers,
+            'editsubform': EditSubForm(), 'getSubUsers': getSubUsers,
             'getAnnouncement': getAnnouncement, 'getModCount': getModCount,
             'getSubCreation': getSubCreation,
             'getSubPostCount': getSubPostCount, 'config': app.config,
-             'isRestricted': isRestricted, 'isNSFW': isNSFW,
+            'isRestricted': isRestricted, 'isNSFW': isNSFW,
             'getSuscriberCount': getSuscriberCount, 'funcs': misc}
 
 
@@ -371,8 +371,13 @@ def view_sub_new(sub, page):
     posts = sub.posts.order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
     mods = sub.properties.filter_by(key='mod2').all()
+    createtxtpost = CreateSubTextPost(sub=sub.name)
+    createlinkpost = CreateSubLinkPost(sub=sub.name)
+
     return render_template('sub.html', sub=sub, page=page, sort_type='new',
-                           posts=sorter.getPosts(page), mods=mods)
+                           posts=sorter.getPosts(page), mods=mods,
+                           txtpostform=createtxtpost,
+                           lnkpostform=createlinkpost)
 
 
 @app.route("/s/<sub>/postmodlog", defaults={'page': 1})
@@ -415,8 +420,13 @@ def view_sub_top(sub, page):
     posts = sub.posts.order_by(SubPost.posted.desc())
     sorter = VoteSorting(posts)
     mods = sub.properties.filter_by(key='mod2').all()
+    createtxtpost = CreateSubTextPost(sub=sub.name)
+    createlinkpost = CreateSubLinkPost(sub=sub.name)
+
     return render_template('sub.html', sub=sub, page=page, sort_type='top',
-                           posts=sorter.getPosts(page), mods=mods)
+                           posts=sorter.getPosts(page), mods=mods,
+                           txtpostform=createtxtpost,
+                           lnkpostform=createlinkpost)
 
 
 @app.route("/s/<sub>/hot", defaults={'page': 1})
@@ -430,8 +440,13 @@ def view_sub_hot(sub, page):
     posts = sub.posts.order_by(SubPost.posted.desc())
     sorter = HotSorting(posts)
     mods = sub.properties.filter_by(key='mod2').all()
-    return render_template('sub.html', sub=sub, page=page, sort_type='top',
-                           posts=sorter.getPosts(page), mods=mods)
+    createtxtpost = CreateSubTextPost(sub=sub.name)
+    createlinkpost = CreateSubLinkPost(sub=sub.name)
+
+    return render_template('sub.html', sub=sub, page=page, sort_type='hot',
+                           posts=sorter.getPosts(page), mods=mods,
+                           txtpostform=createtxtpost,
+                           lnkpostform=createlinkpost)
 
 
 @app.route("/s/<sub>/<pid>")
@@ -445,14 +460,13 @@ def view_post(sub, pid):
                             .filter_by(key='mod2').all()
     txtpedit = EditSubTextPostForm()
     txtpedit.content.data = post.content
-    if post.ptype == 1:
-        return render_template('post.html', post=post, mods=mods,
-                               edittxtpostform=txtpedit,
-                               editlinkpostform=EditSubLinkPostForm())
-    else:
-        return render_template('post.html', post=post, mods=mods,
-                               edittxtpostform=txtpedit,
-                               editlinkpostform=EditSubLinkPostForm())
+    createtxtpost = CreateSubTextPost(sub=sub)
+    createlinkpost = CreateSubLinkPost(sub=sub)
+    return render_template('post.html', post=post, mods=mods,
+                           edittxtpostform=txtpedit,
+                           editlinkpostform=EditSubLinkPostForm(),
+                           lnkpostform=createlinkpost,
+                           txtpostform=createtxtpost)
 
 
 @app.route("/p/<pid>")

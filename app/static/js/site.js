@@ -179,7 +179,7 @@ $(document).ready(function() {
         $("#txpost-btnsubmit").text('Sending your post...');
         $.ajax({
             type: "POST",
-            url: '/do/txtpost/' + $("#post-form").data('sub'), // XXX: Hardcoded URL because this is supposed to be a static file
+            url: '/do/txtpost',
             data: $("#post-form").serialize(),
             dataType: 'json',
             success: function(data) {
@@ -233,7 +233,7 @@ $(document).ready(function() {
         $("#lnkpost-btnsubmit").text('Sending your link...');
         $.ajax({
             type: "POST",
-            url: '/do/lnkpost/' + $("#link-post-form").data('sub'), // XXX: Hardcoded URL because this is supposed to be a static file
+            url: '/do/lnkpost',
             data: $("#link-post-form").serialize(),
             dataType: 'json',
             success: function(data) {
