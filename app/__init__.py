@@ -392,8 +392,13 @@ def view_sub_postmodlog(sub, page):
     posts = sub.posts.order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
     mods = sub.properties.filter_by(key='mod2').all()
+    createtxtpost = CreateSubTextPost(sub=sub)
+    createlinkpost = CreateSubLinkPost(sub=sub)
+
     return render_template('subpostmodlog.html', sub=sub, page=page, mods=mods,
-                           posts=sorter.getPosts(page), sort_type='new')
+                           posts=sorter.getPosts(page), sort_type='hot',
+                           txtpostform=createtxtpost,
+                           lnkpostform=createlinkpost)
 
 
 @app.route("/s/<sub>/bannedusers")
@@ -421,7 +426,7 @@ def view_sub_top(sub, page):
     sorter = VoteSorting(posts)
     mods = sub.properties.filter_by(key='mod2').all()
     createtxtpost = CreateSubTextPost(sub=sub.name)
-    createlinkpost = CreateSubLinkPost(sub=sub.name)
+    createlinkpost = CreateSubLinkPost(sub=sub)
 
     return render_template('sub.html', sub=sub, page=page, sort_type='top',
                            posts=sorter.getPosts(page), mods=mods,
