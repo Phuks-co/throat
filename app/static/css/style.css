@@ -363,24 +363,27 @@ input:focus {
         margin-top: 1em;
     }
 }
-blockquote{
+blockquote {
   display:block;
-  background: #fff;
   padding: 15px 20px 15px 45px;
   margin: 0 0 20px;
   position: relative;
   font-family: Georgia, serif;
   font-size: 16px;
   line-height: 1.2;
-  color: #666;
   text-align: justify;
   border-left: 15px solid #e67f26;
   border-right: 2px solid #e67f26;
-  box-shadow: 2px 2px 15px #ccc;
+  box-shadow: 2px 2px 15px lightgray;
   margin-left: 30px;
 }
+body.dark blockquote {
+    box-shadow: none;
+    border-top: 1px solid #585858;
+    border-bottom: 1px solid #585858;
+}
 
-blockquote::before{
+blockquote::before {
   content: "\201C";
   font-family: Georgia, serif;
   font-size: 60px;
@@ -391,7 +394,7 @@ blockquote::before{
   top:5px;
 }
 
-blockquote::after{
+blockquote::after {
   content: "";
 }
 
@@ -403,11 +406,11 @@ blockquote a{
   color: #c76c0c;
 }
 
-blockquote a:hover{
+blockquote a:hover {
  color: #666;
 }
 
-blockquote em{
+blockquote em {
   font-style: italic;
 }
 
