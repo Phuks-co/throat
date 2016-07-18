@@ -96,7 +96,7 @@
     <main class="col-8 right">
         <article class="text-post center no-padding">
           <div class="head" data-pid="{{post.pid}}">
-            <div class="pull left vote">
+            <div class="pull left vote" style="margin-right: 10px;">
               <div class="upvote{%if hasVoted(current_user.get_id(), post)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
               <p class="count">{{post.voteCount}}</p>
               <div class="downvote{%if hasVoted(current_user.get_id(), post, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
