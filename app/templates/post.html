@@ -96,6 +96,11 @@
     <main class="col-8 right">
         <article class="text-post center no-padding">
           <div class="head">
+            <div class="pull left vote">
+              <div class="upvote{%if hasVoted(current_user.get_id(), post)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+              <p class="count">{{post.voteCount}}</p>
+              <div class="downvote{%if hasVoted(current_user.get_id(), post, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+            </div>
             {% if post.isPostNSFW() %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
             <h1 class="title">{{post.title}}</h1>
             <div class="info">
