@@ -632,6 +632,25 @@ def assign_user_badge(uid, bid):
         abort(403)
 
 
+@do.route("/do/remove_user_badge/<uid>/<bid>", methods=['POST'])
+@login_required
+def remove_user_badge(uid, bid):
+    """ Remove User Badge endpoint """
+    if current_user.is_admin():
+        bq = UserMetadata.query.filter_by(uid=uid,) \
+                               .filter_by(key='badge') \
+                               .filter_by(value=bid).first()
+        if not bq:
+            return json.dumps({'status': 'error',
+                               'error': ['Badge has already been removed']})
+
+        bq.key = 'xbadge'
+        db.session.commit()
+        return json.dumps({'status': 'ok', 'message': 'Badge deleted'})
+    else:
+        abort(403)
+
+
 @do.route("/do/sendmsg/<user>", methods=['POST'])
 @login_required
 def create_sendmsg(user):

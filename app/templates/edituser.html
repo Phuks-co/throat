@@ -13,7 +13,13 @@
   <ul id="userBadges" style="color: darkcyan;">
     {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
     {% for badge in badges if badges|length > 0 %}
-    <li title="{{badge.getBadgeText}}"><i class="fa {{badge.getBadgeClass}}"></i> {{badge.getBadgeName}}</li>
+    <div class="ubadge">
+      <li title="{{badge.getBadgeText}}"><i class="fa {{badge.getBadgeClass}}"></i> {{badge.getBadgeName}}
+      {% if current_user.is_admin() %}
+      <span id="removebadge" data-bid="{{badge.value}}" data-uid="{{user.uid}}" class="removebadge btn">remove {{badge.getBadgeName}}</span>
+      {% endif %}
+      </li>
+    </div>
     {% else %}
     <li>none</li>
     {% endfor %}

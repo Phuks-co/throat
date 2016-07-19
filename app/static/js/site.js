@@ -568,6 +568,22 @@ $(document).ready(function() {
       });
     });
 
+    $('span[id^="removebadge"]').click(function(e){
+      var bid = $(e.currentTarget).data().bid
+      var uid = $(e.currentTarget).data().uid
+      $.ajax({
+        type: "POST",
+        url: '/do/remove_user_badge/' + uid + '/' + bid,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).text('removed');
+            document.location.reload();
+          }
+        }
+      });
+    });
+
     $('span[id^="remove-mod2"]').click(function(e){
       var sub = $(e.currentTarget).data().sub
       var user = $(e.currentTarget).data().user
