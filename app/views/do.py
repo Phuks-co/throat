@@ -270,6 +270,62 @@ def edit_sub(sub):
                 restricted = SubMetadata(sub, 'restricted', \
                                          form.restricted.data)
                 db.session.add(restricted)
+            if form.flair1.data:
+                flair1 = sub.properties.filter_by(key='fl1').first()
+                if flair1:
+                    flair1.value = form.flair1.data
+                else :
+                    flair1 = SubMetadata(sub, 'fl1', form.flair1.data)
+                    db.session.add(flair1)
+            if form.flair2.data:
+                flair2 = sub.properties.filter_by(key='fl2').first()
+                if flair2:
+                    flair2.value = form.flair2.data
+                else :
+                    flair2 = SubMetadata(sub, 'fl2', form.flair2.data)
+                    db.session.add(flair2)
+            if form.flair3.data:
+                flair3 = sub.properties.filter_by(key='fl3').first()
+                if flair3:
+                    flair3.value = form.flair3.data
+                else :
+                    flair3 = SubMetadata(sub, 'fl3', form.flair3.data)
+                    db.session.add(flair3)
+            if form.flair4.data:
+                flair4 = sub.properties.filter_by(key='fl4').first()
+                if flair4:
+                    flair4.value = form.flair4.data
+                else :
+                    flair4 = SubMetadata(sub, 'fl4', form.flair4.data)
+                    db.session.add(flair4)
+            if form.flair5.data:
+                flair5 = sub.properties.filter_by(key='fl5').first()
+                if flair5:
+                    flair5.value = form.flair5.data
+                else :
+                    flair5 = SubMetadata(sub, 'fl5', form.flair5.data)
+                    db.session.add(flair5)
+            if form.flair6.data:
+                flair6 = sub.properties.filter_by(key='fl6').first()
+                if flair6:
+                    flair6.value = form.flair6.data
+                else :
+                    flair6 = SubMetadata(sub, 'fl6', form.flair6.data)
+                    db.session.add(flair6)
+            if form.flair7.data:
+                flair7 = sub.properties.filter_by(key='fl7').first()
+                if flair7:
+                    flair7.value = form.flair7.data
+                else :
+                    flair7 = SubMetadata(sub, 'fl7', form.flair7.data)
+                    db.session.add(flair7)
+            if form.flair8.data:
+                flair8 = sub.properties.filter_by(key='fl8').first()
+                if flair8:
+                    flair8.value = form.flair8.data
+                else :
+                    flair8 = SubMetadata(sub, 'fl8', form.flair8.data)
+                    db.session.add(flair8)
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'addr': url_for('view_sub', sub=sub.name)})
@@ -277,6 +333,21 @@ def edit_sub(sub):
     else:
         abort(403)
 
+
+@do.route("/do/delete_sub_flair/<sub>/<fl>", methods=['POST'])
+def delete_sub_flair(sub, fl):
+    """ Deletes a sub flair """
+    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    if not sub:
+        return json.dumps({'status': 'error',
+                           'error': ['Sub does not exist']})
+    if current_user.is_mod(sub) or current_user.is_admin():
+        flair = sub.properties.filter_by(key=fl).first()
+        db.session.delete(flair)
+        db.session.commit()
+        return json.dumps({'status': 'ok'})
+    else:
+        abort(404)
 
 @do.route("/do/edit_mod/<sub>/<user>", methods=['POST'])
 @login_required

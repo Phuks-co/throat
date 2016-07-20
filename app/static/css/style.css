@@ -998,6 +998,7 @@ body.dark, body.dark header, body.dark footer, body.dark nav ul li a, body.dark 
     background: #101010;
     color: #aaa;
 }
+
 body.dark h1, body.dark h2, body.dark h3, body.dark h4, body.dark h5, body.dark h6 {
     color: white;
 }
@@ -1107,7 +1108,15 @@ button#text-post-icon, button#link-post-icon {
 
 /* edit sub */
 
-#edit-sub-form input#title {
+#edit-sub-form input#title,
+input#flair1,
+input#flair2,
+input#flair3,
+input#flair4,
+input#flair5,
+input#flair6,
+input#flair7,
+input#flair8 {
     width: 70%;
     text-align: left;
     padding: 5px;

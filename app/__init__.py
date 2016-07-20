@@ -307,6 +307,46 @@ def edit_sub(sub):
     if current_user.is_mod(sub) or current_user.is_admin():
         form = EditSubForm()
         form.css.data = sub.stylesheet.first().content
+        flair1 = sub.properties.filter_by(key='fl1').first()
+        if not flair1:
+            form.flair1.data = ''
+        else :
+            form.flair1.data = flair1.value
+        flair2 = sub.properties.filter_by(key='fl2').first()
+        if not flair2:
+            form.flair2.data = ''
+        else :
+            form.flair2.data = flair2.value
+        flair3 = sub.properties.filter_by(key='fl3').first()
+        if not flair3:
+            form.flair3.data = ''
+        else :
+            form.flair3.data = flair3.value
+        flair4 = sub.properties.filter_by(key='fl4').first()
+        if not flair4:
+            form.flair4.data = ''
+        else :
+            form.flair4.data = flair4.value
+        flair5 = sub.properties.filter_by(key='fl5').first()
+        if not flair5:
+            form.flair5.data = ''
+        else :
+            form.flair5.data = flair5.value
+        flair6 = sub.properties.filter_by(key='fl6').first()
+        if not flair6:
+            form.flair6.data = ''
+        else :
+            form.flair6.data = flair6.value
+        flair7 = sub.properties.filter_by(key='fl7').first()
+        if not flair7:
+            form.flair7.data = ''
+        else :
+            form.flair7.data = flair7.value
+        flair8 = sub.properties.filter_by(key='fl8').first()
+        if not flair8:
+            form.flair8.data = ''
+        else :
+            form.flair8.data = flair8.value
         return render_template('editsub.html', sub=sub, editsubform=form)
     else:
         abort(403)

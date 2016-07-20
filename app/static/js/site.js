@@ -674,6 +674,24 @@ $(document).ready(function() {
       });
     });
 
+    $('span[id^="deletesubflair"]').click(function(e){
+      var sub = $(e.currentTarget).data().sub
+      var fl = $(e.currentTarget).data().fl
+      $.ajax({
+        type: "POST",
+        url: '/do/delete_sub_flair/' + sub + '/' + fl,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).text('deleted');
+            document.location.reload();
+          } else {
+            $(e.currentTarget).text('error');
+          }
+        }
+      });
+    });
+
     $('span[id^="subscribe"]').click(function(e){
       var sid = $(e.currentTarget).data().sid
       if($(this).hasClass('unsubscribed'))  {

@@ -28,6 +28,14 @@ class EditSubForm(Form):
     css = TextAreaField('Custom stylesheet', validators=[Length(max=10000)])
     nsfw = BooleanField('NSFW?')
     restricted = BooleanField('Only mods can post')
+    flair1 = StringField('Flair 1')
+    flair2 = StringField('Flair 2')
+    flair3 = StringField('Flair 3')
+    flair4 = StringField('Flair 4')
+    flair5 = StringField('Flair 5')
+    flair6 = StringField('Flair 6')
+    flair7 = StringField('Flair 7')
+    flair8 = StringField('Flair 8')
 
 
 class EditModForm(Form):

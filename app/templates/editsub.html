@@ -18,7 +18,20 @@
   <p><label>{{editsubform.title.label.text}} {{editsubform.title(value=sub.title, required=True)}}</label></p>
   <p><label>{{editsubform.nsfw.label.text}} {{editsubform.nsfw(checked=isNSFW(sub))}}</label></p>
   <p><label>{{editsubform.restricted.label.text}} {{editsubform.restricted(checked=isRestricted(sub))}}</label></p>
-  <label for="css">{{editsubform.css.label.text}}</label>
+  <hr>
+    <div>
+      <h2>Post flairs</h2>
+      <p><label>{{editsubform.flair1.label.text}} {{editsubform.flair1}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl1">delete 1</span></p>
+      <p><label>{{editsubform.flair2.label.text}} {{editsubform.flair2}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl2">delete 2</span></p>
+      <p><label>{{editsubform.flair3.label.text}} {{editsubform.flair3}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl3">delete 3</span></p>
+      <p><label>{{editsubform.flair4.label.text}} {{editsubform.flair4}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl4">delete 4</span></p>
+      <p><label>{{editsubform.flair5.label.text}} {{editsubform.flair5}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl5">delete 5</span></p>
+      <p><label>{{editsubform.flair6.label.text}} {{editsubform.flair6}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl6">delete 6</span></p>
+      <p><label>{{editsubform.flair7.label.text}} {{editsubform.flair7}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl7">delete 7</span></p>
+      <p><label>{{editsubform.flair8.label.text}} {{editsubform.flair8}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl8">delete 8</span></p>
+    </div>
+  <hr>
+  <h2><label for="css">{{editsubform.css.label.text}}</label></h2>
   <p>{{editsubform.css(style="width:100%; font-family:monospace", rows=50)}}</label></p>
   <div class="alert div-error">
     <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
