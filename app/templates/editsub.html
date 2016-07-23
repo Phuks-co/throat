@@ -15,9 +15,10 @@
 <h1>Edit /s/{{sub.name}}</h1>
 <form id="edit-sub-form" data-sub="{{sub.name}}" class="">
   {{editsubform.csrf_token}}
-  <p><label>{{editsubform.title.label.text}} {{editsubform.title(value=sub.title, required=True)}}</label></p>
-  <p><label>{{editsubform.nsfw.label.text}} {{editsubform.nsfw(checked=isNSFW(sub))}}</label></p>
-  <p><label>{{editsubform.restricted.label.text}} {{editsubform.restricted(checked=isRestricted(sub))}}</label></p>
+  <p><label>{{editsubform.title.label.text}}</label> {{editsubform.title(value=sub.title, required=True)}}</p>
+  <p><label>{{editsubform.nsfw(checked=isNSFW(sub))}} {{editsubform.nsfw.label.text}}</label></p>
+  <p><label>{{editsubform.restricted(checked=isRestricted(sub))}} {{editsubform.restricted.label.text}}</label></p>
+  <p><label>{{editsubform.usercanflair(checked=userCanFlair(sub))}} {{editsubform.usercanflair.label.text}}</label></p>
   <hr>
     <div>
       <h2>Post flairs</h2>

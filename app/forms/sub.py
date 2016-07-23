@@ -17,7 +17,7 @@ class CreateSubForm(Form):
     title = StringField('Title',
                         validators=[DataRequired(), Length(min=2, max=128)])
 
-    nsfw = BooleanField('NSFW?')
+    nsfw = BooleanField('Sub is NSFW?')
 
 
 class EditSubForm(Form):
@@ -26,8 +26,9 @@ class EditSubForm(Form):
                         validators=[DataRequired(), Length(min=2, max=128)])
 
     css = TextAreaField('Custom stylesheet', validators=[Length(max=10000)])
-    nsfw = BooleanField('NSFW?')
+    nsfw = BooleanField('Sub is NSFW')
     restricted = BooleanField('Only mods can post')
+    usercanflair = BooleanField('Allow users to flair their own posts')
     flair1 = StringField('Flair 1')
     flair2 = StringField('Flair 2')
     flair3 = StringField('Flair 3')

@@ -861,7 +861,9 @@ button.mfp-close, button.mfp-arrow {
     width: 100%;
     height: 3em;
 }
-input#nsfw {
+input#nsfw,
+input#restricted,
+input#usercanflair {
     width: 30px;
 }
 

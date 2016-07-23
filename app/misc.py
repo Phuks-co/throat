@@ -371,3 +371,9 @@ def isNSFW(self):
     """ Returns true if the sub is marked as NSFW """
     x = self.properties.filter_by(key='nsfw').first()
     return False if not x or x.value == '0' else True
+
+
+def userCanFlair(self):
+    """ Returns true if the sub allows users to pick their own flair """
+    x = self.properties.filter_by(key='ucf').first()
+    return False if not x or x.value == '0' else True

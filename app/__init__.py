@@ -36,6 +36,7 @@ from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, cache, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
 from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
+from .misc import userCanFlair
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)
@@ -182,7 +183,7 @@ def utility_processor():
             'delpostform': DeletePost(), 'getMetadata': getMetadata,
             'editsubform': EditSubForm(), 'getSubUsers': getSubUsers,
             'getAnnouncement': getAnnouncement, 'getModCount': getModCount,
-            'getSubCreation': getSubCreation,
+            'getSubCreation': getSubCreation, 'userCanFlair': userCanFlair,
             'getSubPostCount': getSubPostCount, 'config': app.config,
             'isRestricted': isRestricted, 'isNSFW': isNSFW,
             'getSuscriberCount': getSuscriberCount, 'funcs': misc}
@@ -306,6 +307,15 @@ def edit_sub(sub):
 
     if current_user.is_mod(sub) or current_user.is_admin():
         form = EditSubForm()
+        #x = sub.properties.filter_by(key='restricted').first()
+        #return False if not x or x.value == '0' else True
+        #form.restricted.data = x
+        #y = sub.properties.filter_by(key='nsfw').first()
+        #return False if not y or y.value == '0' else True
+        #form.nsfw.data = y
+        #z = sub.properties.filter_by(key='ucf').first()
+        #return False if not z or z.value == '0' else True
+        #form.usercanflair.data = z
         form.css.data = sub.stylesheet.first().content
         flair1 = sub.properties.filter_by(key='fl1').first()
         if not flair1:

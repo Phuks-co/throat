@@ -259,6 +259,12 @@ def edit_sub(sub):
             else:
                 nsfw = SubMetadata(sub, 'nsfw', form.nsfw.data)
                 db.session.add(nsfw)
+            usercanflair = sub.properties.filter_by(key='ucf').first()
+            if usercanflair:
+                usercanflair.value = form.usercanflair.data
+            else:
+                usercanflair = SubMetadata(sub, 'ucf', form.usercanflair.data)
+                db.session.add(usercanflair)
             if sub.stylesheet.first():
                 sub.stylesheet.first().content = form.css.data
             else:
