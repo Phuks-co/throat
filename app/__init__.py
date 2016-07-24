@@ -36,7 +36,7 @@ from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, cache, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
 from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
-from .misc import userCanFlair
+from .misc import userCanFlair, subSort
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)
@@ -186,6 +186,7 @@ def utility_processor():
             'getSubCreation': getSubCreation, 'userCanFlair': userCanFlair,
             'getSubPostCount': getSubPostCount, 'config': app.config,
             'isRestricted': isRestricted, 'isNSFW': isNSFW,
+            'subSort': subSort,
             'getSuscriberCount': getSuscriberCount, 'funcs': misc}
 
 

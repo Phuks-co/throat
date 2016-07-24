@@ -377,3 +377,12 @@ def userCanFlair(self):
     """ Returns true if the sub allows users to pick their own flair """
     x = self.properties.filter_by(key='ucf').first()
     return False if not x or x.value == '0' else True
+
+def subSort(self):
+    x = self.properties.filter_by(key='sort').first()
+    if not x or x.value == 'v':
+        return 'Hot'
+    if x.value == 'v_two':
+        return 'New'
+    if x.value == 'v_three':
+        return 'Top'

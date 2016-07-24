@@ -15,23 +15,30 @@
 <h1>Edit /s/{{sub.name}}</h1>
 <form id="edit-sub-form" data-sub="{{sub.name}}" class="">
   {{editsubform.csrf_token}}
-  <p><label>{{editsubform.title.label.text}}</label> {{editsubform.title(value=sub.title, required=True)}}</p>
-  <p><label>{{editsubform.nsfw(checked=isNSFW(sub))}} {{editsubform.nsfw.label.text}}</label></p>
-  <p><label>{{editsubform.restricted(checked=isRestricted(sub))}} {{editsubform.restricted.label.text}}</label></p>
-  <p><label>{{editsubform.usercanflair(checked=userCanFlair(sub))}} {{editsubform.usercanflair.label.text}}</label></p>
-  <hr>
-    <div>
-      <h2>Post flairs</h2>
-      <p><label>{{editsubform.flair1.label.text}} {{editsubform.flair1}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl1">delete 1</span></p>
-      <p><label>{{editsubform.flair2.label.text}} {{editsubform.flair2}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl2">delete 2</span></p>
-      <p><label>{{editsubform.flair3.label.text}} {{editsubform.flair3}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl3">delete 3</span></p>
-      <p><label>{{editsubform.flair4.label.text}} {{editsubform.flair4}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl4">delete 4</span></p>
-      <p><label>{{editsubform.flair5.label.text}} {{editsubform.flair5}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl5">delete 5</span></p>
-      <p><label>{{editsubform.flair6.label.text}} {{editsubform.flair6}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl6">delete 6</span></p>
-      <p><label>{{editsubform.flair7.label.text}} {{editsubform.flair7}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl7">delete 7</span></p>
-      <p><label>{{editsubform.flair8.label.text}} {{editsubform.flair8}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl8">delete 8</span></p>
-    </div>
-  <hr>
+  {# editsubform.subname(value=sub.name) #}
+  <div>
+    <p><label>{{editsubform.title.label.text}}</label> {{editsubform.title(value=sub.title, required=True)}}</p>
+    <p><label>{{editsubform.nsfw(checked=isNSFW(sub))}} {{editsubform.nsfw.label.text}}</label></p>
+    <p><label>{{editsubform.restricted(checked=isRestricted(sub))}} {{editsubform.restricted.label.text}}</label></p>
+    <p><label>{{editsubform.usercanflair(checked=userCanFlair(sub))}} {{editsubform.usercanflair.label.text}}</label></p>
+  </div>
+  <div>
+    <h2>Default sub page post sorting (soon..)</h2>
+    <p>Currently sorts as {{subSort(sub)}}
+    <!--<p>{{editsubform.subsort.label.text}}</p>-->
+    <p>{{ editsubform.subsort }}</p>
+  </div>
+  <div>
+    <h2>Post flairs</h2>
+    <p><label>{{editsubform.flair1.label.text}} {{editsubform.flair1}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl1">delete 1</span></p>
+    <p><label>{{editsubform.flair2.label.text}} {{editsubform.flair2}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl2">delete 2</span></p>
+    <p><label>{{editsubform.flair3.label.text}} {{editsubform.flair3}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl3">delete 3</span></p>
+    <p><label>{{editsubform.flair4.label.text}} {{editsubform.flair4}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl4">delete 4</span></p>
+    <p><label>{{editsubform.flair5.label.text}} {{editsubform.flair5}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl5">delete 5</span></p>
+    <p><label>{{editsubform.flair6.label.text}} {{editsubform.flair6}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl6">delete 6</span></p>
+    <p><label>{{editsubform.flair7.label.text}} {{editsubform.flair7}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl7">delete 7</span></p>
+    <p><label>{{editsubform.flair8.label.text}} {{editsubform.flair8}}</label> <span id="deletesubflair" class="deletesubflair btn" data-sub="{{sub.name}}" data-fl="fl8">delete 8</span></p>
+  </div>
   <h2><label for="css">{{editsubform.css.label.text}}</label></h2>
   <p>{{editsubform.css(style="width:100%; font-family:monospace", rows=50)}}</label></p>
   <div class="alert div-error">

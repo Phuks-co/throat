@@ -861,11 +861,6 @@ button.mfp-close, button.mfp-arrow {
     width: 100%;
     height: 3em;
 }
-input#nsfw,
-input#restricted,
-input#usercanflair {
-    width: 30px;
-}
 
 /* text posts */
 
@@ -1124,6 +1119,16 @@ input#flair8 {
     padding: 5px;
     border-radius: 2px;
     border: solid 1px lightgray;
+}
+input#nsfw,
+input#restricted,
+input#usercanflair {
+    width: 30px;
+}
+#edit-sub-form h2 {
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid #fb5000;
 }
 
 /* edit sub moderators */

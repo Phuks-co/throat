@@ -253,29 +253,36 @@ def edit_sub(sub):
         if form.validate():
             sub.title = form.title.data
             nsfw = sub.properties.filter_by(key='nsfw').first()
-            restricted = sub.properties.filter_by(key='restricted').first()
             if nsfw:
                 nsfw.value = form.nsfw.data
             else:
                 nsfw = SubMetadata(sub, 'nsfw', form.nsfw.data)
                 db.session.add(nsfw)
-            usercanflair = sub.properties.filter_by(key='ucf').first()
-            if usercanflair:
-                usercanflair.value = form.usercanflair.data
-            else:
-                usercanflair = SubMetadata(sub, 'ucf', form.usercanflair.data)
-                db.session.add(usercanflair)
-            if sub.stylesheet.first():
-                sub.stylesheet.first().content = form.css.data
-            else:
-                css = SubStylesheet(sub.sid, form.css.data)
-                db.session.add(css)
+            restricted = sub.properties.filter_by(key='restricted').first()
             if restricted:
                 restricted.value = form.restricted.data
             else:
                 restricted = SubMetadata(sub, 'restricted', \
                                          form.restricted.data)
                 db.session.add(restricted)
+            usercanflair = sub.properties.filter_by(key='ucf').first()
+            if usercanflair:
+                usercanflair.value = form.usercanflair.data
+            else:
+                usercanflair = SubMetadata(sub, 'ucf', form.usercanflair.data)
+                db.session.add(usercanflair)
+            # if form.subsort.data:
+            #     subsort = sub.properties.filter_by(key='sort').first()
+            #     if subsort:
+            #         subsort.value = form.subsort.data
+            #     else:
+            #         subsort = SubMetadata(sub, 'sort', form.subsort.data)
+            #         db.session.add(subsort)
+            if sub.stylesheet.first():
+                sub.stylesheet.first().content = form.css.data
+            else:
+                css = SubStylesheet(sub.sid, form.css.data)
+                db.session.add(css)
             if form.flair1.data:
                 flair1 = sub.properties.filter_by(key='fl1').first()
                 if flair1:
