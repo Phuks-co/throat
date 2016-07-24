@@ -271,13 +271,13 @@ def edit_sub(sub):
             else:
                 usercanflair = SubMetadata(sub, 'ucf', form.usercanflair.data)
                 db.session.add(usercanflair)
-            # if form.subsort.data:
-            #     subsort = sub.properties.filter_by(key='sort').first()
-            #     if subsort:
-            #         subsort.value = form.subsort.data
-            #     else:
-            #         subsort = SubMetadata(sub, 'sort', form.subsort.data)
-            #         db.session.add(subsort)
+            if form.subsort.data != "None":
+                subsort = sub.properties.filter_by(key='sort').first()
+                if subsort:
+                    subsort.value = form.subsort.data
+                else:
+                    subsort = SubMetadata(sub, 'sort', form.subsort.data)
+                    db.session.add(subsort)
             if sub.stylesheet.first():
                 sub.stylesheet.first().content = form.css.data
             else:

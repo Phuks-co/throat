@@ -3,9 +3,8 @@
 from flask_wtf import Form
 from wtforms import StringField, TextAreaField, BooleanField, HiddenField
 from wtforms import RadioField
-from wtforms.validators import DataRequired, Length, URL
+from wtforms.validators import DataRequired, Length, URL, Optional
 
-# from ..models import db, Sub, SubMetadata
 
 class SearchForm(Form):
     """ Search form """
@@ -31,20 +30,9 @@ class EditSubForm(Form):
     nsfw = BooleanField('Sub is NSFW')
     restricted = BooleanField('Only mods can post')
     usercanflair = BooleanField('Allow users to flair their own posts')
-    # subname = HiddenField()
-    # sub = Sub.query.filter_by(name=subname).first()
-    # if not sub:
-    #     abort(404)
-    # x = sub.properties.filter_by(key='sort').first()
-    # if not x or x.value == 'v':
-    #     default = 'Hot'
-    # if x.value == 'v_two':
-    #     default = 'New'
-    # if x.value == 'v_three':
-    #     default = 'Top'
     subsort = RadioField('Default sub page post sorting',
-                    choices=[('v','Hot'),('v_two','New'),('v_three','Top')])
-    #                 default=default)
+                    choices=[('v','Hot'),('v_two','New'),('v_three','Top')],
+                    validators=[Optional()])
     flair1 = StringField('Flair 1')
     flair2 = StringField('Flair 2')
     flair3 = StringField('Flair 3')
