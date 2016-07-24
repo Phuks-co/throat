@@ -15,7 +15,6 @@
 <h1>Edit /s/{{sub.name}}</h1>
 <form id="edit-sub-form" data-sub="{{sub.name}}" class="">
   {{editsubform.csrf_token}}
-  {# editsubform.subname(value=sub.name) #}
   <div>
     <p><label>{{editsubform.title.label.text}}</label> {{editsubform.title(value=sub.title, required=True)}}</p>
     <p><label>{{editsubform.nsfw(checked=isNSFW(sub))}} {{editsubform.nsfw.label.text}}</label></p>
@@ -23,9 +22,8 @@
     <p><label>{{editsubform.usercanflair(checked=userCanFlair(sub))}} {{editsubform.usercanflair.label.text}}</label></p>
   </div>
   <div>
-    <h2>Default sub page post sorting (soon..)</h2>
+    <h2>Default sub page post sorting</h2>
     <p>Currently sorts as {{subSort(sub)}}
-    <!--<p>{{editsubform.subsort.label.text}}</p>-->
     <p>{{ editsubform.subsort }}</p>
   </div>
   <div>
