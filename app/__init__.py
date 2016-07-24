@@ -294,8 +294,18 @@ def random_sub():
 
 @app.route("/s/<sub>")
 def view_sub(sub):
-    """ Here we can view subs (currently sorts like /new) """
-    return view_sub_hot(sub, 1)
+    """ Here we can view subs """
+    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    if not sub:
+        abort(404)
+
+    x = sub.properties.filter_by(key='sort').first()
+    if not x or x.value == 'v':
+        return redirect(url_for('view_sub_hot', sub=sub.name))
+    if x.value == 'v_two':
+        return redirect(url_for('view_sub_new', sub=sub.name))
+    if x.value == 'v_three':
+        return redirect(url_for('view_sub_top', sub=sub.name))
 
 
 @app.route("/s/<sub>/edit")
