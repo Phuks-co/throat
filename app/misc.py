@@ -386,3 +386,21 @@ def subSort(self):
         return 'New'
     if x.value == 'v_three':
         return 'Top'
+
+
+def hasPostFlair(self):
+    """ Returns true if the post has assigned flair """
+    x = self.properties.filter_by(key='flair').first()
+    if not x:
+        return False
+    else:
+        return x.value
+
+
+def getPostFlair(self, fl):
+    """ Returns true if the post has available flair """
+    x = self.properties.filter_by(key=fl).first()
+    if not x:
+        return False
+    else:
+        return x.value

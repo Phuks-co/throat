@@ -479,6 +479,7 @@ $(document).ready(function() {
     $('a.btn.delpost').magnificPopup(mpSettings);
     $('a.btn.delete-post-form').magnificPopup(mpSettings);
     $('a.btn.make_announcement-form').magnificPopup(mpSettings);
+    $('a.btn.edit-flair-form').magnificPopup(mpSettings);
 
     $('#xk').magnificPopup(mpSettings);
     $( window ).konami({
@@ -684,6 +685,43 @@ $(document).ready(function() {
         success: function(data) {
           if(data.status == "ok"){
             $(e.currentTarget).text('deleted');
+            document.location.reload();
+          } else {
+            $(e.currentTarget).text('error');
+          }
+        }
+      });
+    });
+
+    $('div[id^="assignpostflair"]').click(function(e){
+      var sub = $(e.currentTarget).data().sub
+      var post = $(e.currentTarget).data().post
+      var fl = $(e.currentTarget).data().fl
+      $.ajax({
+        type: "POST",
+        url: '/do/assign_post_flair/' + sub + '/' + post + '/' + fl,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).text('assigned');
+            document.location.reload();
+          } else {
+            $(e.currentTarget).text('error');
+          }
+        }
+      });
+    });
+
+    $('div[id^="removepostflair"]').click(function(e){
+      var sub = $(e.currentTarget).data().sub
+      var post = $(e.currentTarget).data().post
+      $.ajax({
+        type: "POST",
+        url: '/do/remove_post_flair/' + sub + '/' + post,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).text('removed');
             document.location.reload();
           } else {
             $(e.currentTarget).text('error');

@@ -362,6 +362,58 @@ def delete_sub_flair(sub, fl):
     else:
         abort(404)
 
+
+@do.route("/do/assign_post_flair/<sub>/<pid>/<fl>", methods=['POST'])
+def assign_post_flair(sub, pid, fl):
+    """ Assign a post's flair """
+    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    if not sub:
+        return json.dumps({'status': 'error',
+                           'error': ['Sub does not exist']})
+    post = SubPost.query.filter_by(pid=pid).first()
+    if not post:
+        return json.dumps({'status': 'error',
+                           'error': ['Post does not exist']})
+    if current_user.is_mod(sub) or post.user.uid == current_user.get_id() \
+        or current_user.is_admin():
+        flair = sub.properties.filter_by(key=fl).first()
+        postfl = post.properties.filter_by(key='flair').first()
+        if postfl:
+            postfl.value = flair.value
+        else:
+            x = SubPostMetadata(pid, 'flair', flair.value)
+            db.session.add(x)
+        db.session.commit()
+        return json.dumps({'status': 'ok'})
+    else:
+        abort(403)
+
+
+@do.route("/do/remove_post_flair/<sub>/<pid>", methods=['POST'])
+def remove_post_flair(sub, pid):
+    """ Deletes a post's flair """
+    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    if not sub:
+        return json.dumps({'status': 'error',
+                           'error': ['Sub does not exist']})
+    post = SubPost.query.filter_by(pid=pid).first()
+    if not post:
+        return json.dumps({'status': 'error',
+                           'error': ['Post does not exist']})
+    if current_user.is_mod(sub) or post.user.uid == current_user.get_id() \
+        or current_user.is_admin():
+        postfl = post.properties.filter_by(key='flair').first()
+        if not postfl:
+            return json.dumps({'status': 'error',
+                               'error': ['Flair does not exist']})
+        else:
+            db.session.delete(postfl)
+        db.session.commit()
+        return json.dumps({'status': 'ok'})
+    else:
+        abort(403)
+
+
 @do.route("/do/edit_mod/<sub>/<user>", methods=['POST'])
 @login_required
 def edit_mod(sub, user):

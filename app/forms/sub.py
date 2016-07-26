@@ -123,6 +123,11 @@ class BanUserSubForm(Form):
                        validators=[DataRequired(), Length(min=1, max=128)])
 
 
+class EditPostFlair(Form):
+    """ Post deletion form. """
+    post = HiddenField()
+
+
 class DeletePost(Form):
     """ Post deletion form. """
     post = HiddenField()

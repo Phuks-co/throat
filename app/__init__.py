@@ -29,14 +29,14 @@ from .forms import CreateSubForm, EditSubForm, EditUserForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DummyForm, DeletePost, CreateUserBadgeForm, EditMod2Form
-from .forms import EditSubLinkPostForm, BanUserSubForm
+from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair
 from .views import do, api
 from . import misc
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, cache, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
 from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
-from .misc import userCanFlair, subSort
+from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)
@@ -186,7 +186,8 @@ def utility_processor():
             'getSubCreation': getSubCreation, 'userCanFlair': userCanFlair,
             'getSubPostCount': getSubPostCount, 'config': app.config,
             'isRestricted': isRestricted, 'isNSFW': isNSFW,
-            'subSort': subSort,
+            'subSort': subSort, 'editpostflair': EditPostFlair(),
+            'hasPostFlair': hasPostFlair, 'getPostFlair': getPostFlair,
             'getSuscriberCount': getSuscriberCount, 'funcs': misc}
 
 
