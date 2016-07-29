@@ -64,6 +64,14 @@
         </div>
       </div>
       {% else %}
+      <div class="row">
+        <div class="col-12">
+          <a class="btn small" href="{{ url_for('view_user', user=current_user.user.name) }}"><i class="fa fa-user" aria-hidden="true"></i> {{current_user.get_username()}}</a>
+          <span class="btn small" title="Post Score"><i class="fa fa-list" aria-hidden="true"></i> {{current_user.get_post_score()}}</span>
+          <span class="btn small" title="Comment Score"><i class="fa fa-comments" aria-hidden="true"></i> xx</span>
+          <span class="btn small" title="Your Voting Score"><i class="fa fa-expand" aria-hidden="true"></i> {{current_user.get_post_voting()}}</span>
+        </div>
+      </div>
       <div class="row buttons">
         <form method="POST" action="{{ url_for('do.logout') }}">
           {{ logoutform.csrf_token }}
@@ -79,16 +87,6 @@
           </div>
 
         </form>
-      </div>
-      <div class="row">
-        <div class="col-12">
-          Logged in as <a href="{{ url_for('view_user', user=current_user.user.name) }}">{{current_user.get_username()}}</a>
-          (
-          <span title="Post Score">{{current_user.get_post_score()}}</span> |
-          <span title="Comment Score">xx</span> |
-          <span title="Your Voting Score">{{current_user.get_post_voting()}}</span>
-          )
-        </div>
       </div>
       {% endif %} {% endblock %}
     </div>
