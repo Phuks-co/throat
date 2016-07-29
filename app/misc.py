@@ -106,6 +106,30 @@ class SiteUser(object):
         else:
             return False
 
+    @cache.memoize(60)
+    def get_post_score(self):
+        """ Returns the post vote score of a user. """
+        posts = SubPost.query.filter_by(uid=self.user.uid)
+        count = 0
+        for post in posts:
+            for vote in post.votes:
+                if vote.positive:
+                    count += 1
+                else:
+                    count -= 1
+        return count
+
+    @cache.memoize(60)
+    def get_post_voting(self):
+        """ Returns the post voting for a user. """
+        votes = SubPostVote.query.filter_by(uid=self.user.uid)
+        count = 0
+        for vote in votes:
+            if vote.positive:
+                count += 1
+            else:
+                count -= 1
+        return count
 
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
