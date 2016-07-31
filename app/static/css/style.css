@@ -991,25 +991,30 @@ button.mfp-close, button.mfp-arrow {
 }
 /* dark mode */
 
-body.dark, body.dark header, body.dark footer, body.dark nav ul li a, body.dark .center, body.dark .post .title, body.dark .text-post, body.dark .side {
+body.dark, body.dark header, body.dark footer, body.dark nav ul li a, body.dark .center, body.dark .post .title, body.dark .text-post, body.dark .side, body.dark .CodeMirror {
     background: #101010;
     color: #aaa;
 }
-
+body.dark .editor-toolbar {
+    border-top: 1px solid #6E4A2D;
+    border-left: 1px solid #6E4A2D;
+    border-right: 1px solid #6E4A2D;
+}
 body.dark h1, body.dark h2, body.dark h3, body.dark h4, body.dark h5, body.dark h6 {
     color: white;
 }
 body.dark .text-post .head {
-    background-color: #555;
+    background-color: #000000;
     color: #151515;
+    border-bottom: solid #93643D 1px;
 }
 body.dark .white-popup-block {
-    background-color: #2F2F2F;
+    background-color: #6E4A2D;
     color: white;
 }
 body.dark .btn.small {
-    background-color: #666;
-    color: lightgray;
+    background-color: #6E4A2D;
+    color: white;
     border: solid transparent 1px;
 }
 body.dark .white-popup-block input {
@@ -1017,10 +1022,10 @@ body.dark .white-popup-block input {
     color: white;
 }
 body.dark .center {
-    border: 1px solid lightgray;
+    border: 1px solid #93643D;
 }
 body.dark .btn {
-    background-color: #666;
+    background-color: #6E4A2D;
     color: #ccc;
     border: solid transparent 1px;
 }
@@ -1037,12 +1042,33 @@ body.dark #toggledark i {
 body.dark a {
     color: #777;
 }
-body.dark .CodeMirror {
-    background-color: #383838;
-    color: white;
+body.dark .side {
+    background-color: #000000;
+    border: 1px solid #93643D;
 }
 body.dark .editor-toolbar a {
     color: white !important;
+}
+body.dark hr {
+    background: #93643D;
+}
+body.dark i.fa.fa-square.fa-stack-2x {
+    color: #6E4A2D;
+}
+body.dark .pull.left.vote {
+    color: #FFFFFF;
+}
+body.dark a.lnkreply {
+    color: #FFF;
+}
+body.dark .post+.post {
+    border-top: 1px solid #412B19;
+}
+body.dark header {
+    border-bottom: solid 1px #412B19;
+}
+body.dark .fa-inverse {
+    color: #bdbdbd;
 }
 #toggledark i {
     color: inherit;
