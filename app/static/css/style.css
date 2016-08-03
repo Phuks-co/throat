@@ -1012,10 +1012,16 @@ body.dark .white-popup-block {
     background-color: #6E4A2D;
     color: white;
 }
-body.dark .btn.small {
+body.dark .btn.small,
+body.dark .post .btn.small.postfl {
     background-color: #6E4A2D;
     color: white;
     border: solid transparent 1px;
+}
+body.dark .post .btn.small {
+    background-color: #2A2A2A;
+    color: white;
+    border-bottom: solid #6E4A2D 1px;
 }
 body.dark .white-popup-block input {
     background-color: #2F2F2F;

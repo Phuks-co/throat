@@ -222,7 +222,7 @@
           {% endif %}
         </div>
         <div class="main">
-          {% if hasPostFlair(post) %}<span class="btn small">{{hasPostFlair(post)}}</span>{% endif %}
+          {% if hasPostFlair(post) %}<span class="btn small postfl">{{hasPostFlair(post)}}</span>{% endif %}
           {% if post.isPostNSFW() %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
           {% if not post.link %}
           <a class="title" href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}">{{post.title}}</a>
