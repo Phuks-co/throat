@@ -99,7 +99,7 @@
   </footer>
   {% if current_user.is_anonymous %}
   <!-- login form -->
-  <form id="login-form" class="mfp-hide white-popup-block">
+  <form action="{{url_for('do.login')}}" data-reload="true" id="login-form" class="ajaxform mfp-hide white-popup-block">
     <h1>Login</h1> {{ loginform.csrf_token }}
     <p id="login-intro">Do you have an account?</p>
     <p>{{loginform.username(placeholder=loginform.username.label.text, required=True, autofocus=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}</p>
@@ -108,11 +108,8 @@
       {{loginform.remember(style="width: auto")}}
       <label for="remember">{{loginform.remember.label.text}}</label>
     </p>
-    <div class="alert div-error">
-      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-      <p></p>
-    </div>
-    <p><button type="submit" id="login-btnsubmit">Log in</button></p>
+    <div class="alert div-error"></div>
+    <p><button type="submit" data-prog="Logging in..." id="login-btnsubmit">Log in</button></p>
   </form>
   {% endif %}
 

@@ -5,7 +5,8 @@ $(document).ready(function() {
     e.preventDefault();
     var target = $(e.target);
     var button = target.find("[type=submit]");
-    button.prop('disabled', true)
+    var btnorm = button.text();
+    button.prop('disabled', true);
     button.text(button.data('prog'));
     $.ajax({
       type: "POST",
@@ -15,18 +16,22 @@ $(document).ready(function() {
       success: function(data) {
         if (data.status != "ok") {
           var obj = data.error,
-            ul = $("<ul>");
+            ul = $("<ul>"); // >_>
           for (var i = 0, l = obj.length; i < l; ++i) {
             ul.append("<li>" + obj[i] + "</li>");
           }
           target.find('.div-error').html('<span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span>' +
-                        '<p>' + ul + '</p>');
+                        '<ul>' + ul.html() + '</ul>');
           target.find('.div-error').show();
-          button.text(button.data('norm'));
+          button.text(btnorm);
         } else { // success
-          button.text(button.data('success'));
+          if(button.data('success')){
+            button.text(button.data('success'));
+          }
           if(target.data('redir')){
             document.location = target.data('redir');
+          }else if (target.data('reload')) {
+            document.location = document.location;
           }
         }
         button.prop('disabled', false);
@@ -35,7 +40,7 @@ $(document).ready(function() {
         target.find('.div-error').html('<span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> <p><ul><li>Error while contacting the server</li></ul></p>');
         target.find('.div-error').show();
         button.prop('disabled', false);
-        button.text(button.data('norm'));
+        button.text(btnorm);
       }
     });
     console.log(target.data());
@@ -50,34 +55,6 @@ $(document).ready(function() {
         $("#" + div + " .div-error p").html(ul);
         $("#" + div + " .div-error").show();
     }
-
-    $("#register-form").submit(function(e) {
-        $("#reg-btnsubmit").prop('disabled', true);
-        $("#reg-btnsubmit").text('Registering...');
-        $.ajax({
-            type: "POST",
-            url: '/do/register', // XXX: Hardcoded URL because this is supposed to be a static file
-            data: $("#register-form").serialize(),
-            dataType: 'json',
-            success: function(data) {
-                if (data.status != "ok") {
-                    checkErrors(data, "register-form");
-                } else { // success
-                    document.location = '/';
-                }
-                $("#reg-btnsubmit").prop('disabled', false);
-                $("#reg-btnsubmit").text('Register');
-            },
-            error: function(data, err) {
-                $("#register-form .div-error p").append("<ul><li>Error while contacting the server</li></ul>");
-                $("#register-form .div-error").show();
-                $("#reg-btnsubmit").prop('disabled', false);
-                $("#reg-btnsubmit").text('Register');
-            }
-        });
-
-        e.preventDefault();
-    });
 
     $("#edit-user-form").submit(function(e) {
         $("#edituser-btnsubmit").prop('disabled', true);
@@ -101,34 +78,6 @@ $(document).ready(function() {
                 $("#edit-user-form .div-error").show();
                 $("#edituser-btnsubmit").prop('disabled', false);
                 $("#edituser-btnsubmit").text('Edit user info');
-            }
-        });
-        e.preventDefault();
-    });
-
-
-    $("#login-form").submit(function(e) {
-        $("#login-btnsubmit").prop('disabled', true);
-        $("#login-btnsubmit").text('Logging in...');
-        $.ajax({
-            type: "POST",
-            url: '/do/login', // XXX: Hardcoded URL because this is supposed to be a static file
-            data: $("#login-form").serialize(),
-            dataType: 'json',
-            success: function(data) {
-                if (data.status != "ok") {
-                    checkErrors(data, "login-form");
-                    $("#login-btnsubmit").prop('disabled', false);
-                    $("#login-btnsubmit").text('Login');
-                } else {
-                    document.location.reload();
-                }
-            },
-            error: function(data, err) {
-                $("#login-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
-                $("#login-form .div-error").show();
-                $("#login-btnsubmit").prop('disabled', false);
-                $("#login-btnsubmit").text('Log in');
             }
         });
         e.preventDefault();
@@ -183,33 +132,6 @@ $(document).ready(function() {
                 $("#edit-sub-form .div-error").show();
                 $("#editsub-btnsubmit").prop('disabled', false);
                 $("#editsub-btnsubmit").text('Edit sub');
-            }
-        });
-        e.preventDefault();
-    });
-
-    $("#edit-sub-css-form").submit(function(e) {
-        $("#editsub-btnsubmit").prop('disabled', true);
-        $("#editsub-btnsubmit").text('Saving');
-        $.ajax({
-            type: "POST",
-            url: '/do/edit_sub_css/'+ $("#edit-sub-css-form").data('sub'), // XXX: Hardcoded URL because this is supposed to be a static file
-            data: $("#edit-sub-css-form").serialize(),
-            dataType: 'json',
-            success: function(data) {
-                if (data.status != "ok") {
-                    checkErrors(data, "edit-sub-css-form");
-                } else {
-                    document.location = '/s/' + $("#edit-sub-css-form").data('sub')
-                }
-                $("#editsub-btnsubmit").prop('disabled', false);
-                $("#editsub-btnsubmit").text('Save');
-            },
-            error: function(data, err) {
-                $("#edit-sub-css-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
-                $("#edit-sub-css-form .div-error").show();
-                $("#editsub-btnsubmit").prop('disabled', false);
-                $("#editsub-btnsubmit").text('Save');
             }
         });
         e.preventDefault();
