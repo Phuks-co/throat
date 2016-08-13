@@ -1,5 +1,46 @@
 // sitewide js.
 $(document).ready(function() {
+  // shitless forms
+  $(document).on('submit', ".ajaxform", function(e){
+    e.preventDefault();
+    var target = $(e.target);
+    var button = target.find("[type=submit]");
+    button.prop('disabled', true)
+    button.text(button.data('prog'));
+    $.ajax({
+      type: "POST",
+      dataType: 'json',
+      url: target.prop('action'),
+      data: target.serialize(),
+      success: function(data) {
+        if (data.status != "ok") {
+          var obj = data.error,
+            ul = $("<ul>");
+          for (var i = 0, l = obj.length; i < l; ++i) {
+            ul.append("<li>" + obj[i] + "</li>");
+          }
+          target.find('.div-error').html('<span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span>' +
+                        '<p>' + ul + '</p>');
+          target.find('.div-error').show();
+          button.text(button.data('norm'));
+        } else { // success
+          button.text(button.data('success'));
+          if(target.data('redir')){
+            document.location = target.data('redir');
+          }
+        }
+        button.prop('disabled', false);
+      },
+      error: function(data, err) {
+        target.find('.div-error').html('<span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> <p><ul><li>Error while contacting the server</li></ul></p>');
+        target.find('.div-error').show();
+        button.prop('disabled', false);
+        button.text(button.data('norm'));
+      }
+    });
+    console.log(target.data());
+  });
+
     function checkErrors(data, div) {
         var obj = data.error,
             ul = $("<ul>");
