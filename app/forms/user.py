@@ -10,7 +10,7 @@ from wtforms.fields.html5 import EmailField
 class LoginForm(Form):
     """ Login form. """
     username = StringField('Username',
-                           validators=[DataRequired(), Length(min=2, max=32)])
+                           validators=[DataRequired(), Length(max=32)])
     password = PasswordField('Password', validators=[DataRequired(),
                                                      Length(min=7, max=256)])
     remember = BooleanField('Remember me')
