@@ -131,6 +131,7 @@ class SiteUser(object):
                 count -= 1
         return count
 
+
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
     @classmethod
@@ -402,7 +403,9 @@ def userCanFlair(self):
     x = self.properties.filter_by(key='ucf').first()
     return False if not x or x.value == '0' else True
 
+
 def subSort(self):
+    """ Don't forget to add the fucking docstring to functions >:| """
     x = self.properties.filter_by(key='sort').first()
     if not x or x.value == 'v':
         return 'Hot'
