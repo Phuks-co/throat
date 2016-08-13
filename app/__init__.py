@@ -25,7 +25,7 @@ from feedgen.feed import FeedGenerator
 from .models import db, User, Sub, SubPost, SubPostVote, SubPostComment
 from .models import UserBadge, UserMetadata, SiteMetadata, SubMetadata, Message
 from .forms import RegistrationForm, LoginForm, LogOutForm
-from .forms import CreateSubForm, EditSubForm, EditUserForm
+from .forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DummyForm, DeletePost, CreateUserBadgeForm, EditMod2Form
@@ -309,6 +309,22 @@ def view_sub(sub):
         return redirect(url_for('view_sub_top', sub=sub.name))
 
 
+@app.route("/s/<sub>/edit/css")
+@login_required
+def edit_sub_css(sub):
+    """ Here we can edit sub info and settings """
+    sub = Sub.query.filter_by(name=sub).first()
+    if not sub:
+        abort(404)
+
+    if not current_user.is_mod(sub) or not current_user.is_admin():
+        abort(403)
+
+    form = EditSubCSSForm()
+    form.css.data = sub.stylesheet.first().content
+    return render_template('editsubcss.html', sub=sub, form=form)
+
+
 @app.route("/s/<sub>/edit")
 @login_required
 def edit_sub(sub):
@@ -319,46 +335,29 @@ def edit_sub(sub):
 
     if current_user.is_mod(sub) or current_user.is_admin():
         form = EditSubForm()
-        form.css.data = sub.stylesheet.first().content
         flair1 = sub.properties.filter_by(key='fl1').first()
-        if not flair1:
-            form.flair1.data = ''
-        else :
+        if flair1:
             form.flair1.data = flair1.value
         flair2 = sub.properties.filter_by(key='fl2').first()
-        if not flair2:
-            form.flair2.data = ''
-        else :
+        if flair2:
             form.flair2.data = flair2.value
         flair3 = sub.properties.filter_by(key='fl3').first()
-        if not flair3:
-            form.flair3.data = ''
-        else :
+        if flair3:
             form.flair3.data = flair3.value
         flair4 = sub.properties.filter_by(key='fl4').first()
-        if not flair4:
-            form.flair4.data = ''
-        else :
+        if flair4:
             form.flair4.data = flair4.value
         flair5 = sub.properties.filter_by(key='fl5').first()
-        if not flair5:
-            form.flair5.data = ''
-        else :
+        if flair5:
             form.flair5.data = flair5.value
         flair6 = sub.properties.filter_by(key='fl6').first()
-        if not flair6:
-            form.flair6.data = ''
-        else :
+        if flair6:
             form.flair6.data = flair6.value
         flair7 = sub.properties.filter_by(key='fl7').first()
-        if not flair7:
-            form.flair7.data = ''
-        else :
+        if flair7:
             form.flair7.data = flair7.value
         flair8 = sub.properties.filter_by(key='fl8').first()
-        if not flair8:
-            form.flair8.data = ''
-        else :
+        if flair8:
             form.flair8.data = flair8.value
         return render_template('editsub.html', sub=sub, editsubform=form)
     else:

@@ -147,6 +147,33 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
+    $("#edit-sub-css-form").submit(function(e) {
+        $("#editsub-btnsubmit").prop('disabled', true);
+        $("#editsub-btnsubmit").text('Saving');
+        $.ajax({
+            type: "POST",
+            url: '/do/edit_sub_css/'+ $("#edit-sub-css-form").data('sub'), // XXX: Hardcoded URL because this is supposed to be a static file
+            data: $("#edit-sub-css-form").serialize(),
+            dataType: 'json',
+            success: function(data) {
+                if (data.status != "ok") {
+                    checkErrors(data, "edit-sub-css-form");
+                } else {
+                    document.location = '/s/' + $("#edit-sub-css-form").data('sub')
+                }
+                $("#editsub-btnsubmit").prop('disabled', false);
+                $("#editsub-btnsubmit").text('Save');
+            },
+            error: function(data, err) {
+                $("#edit-sub-css-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
+                $("#edit-sub-css-form .div-error").show();
+                $("#editsub-btnsubmit").prop('disabled', false);
+                $("#editsub-btnsubmit").text('Save');
+            }
+        });
+        e.preventDefault();
+    });
+
     $("#edit-mod-form").submit(function(e) {
         $("#editmodform-btnsubmit").prop('disabled', true);
         $("#editmodform-btnsubmit").text('Editing mod info...');

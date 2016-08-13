@@ -21,6 +21,11 @@ class CreateSubForm(Form):
     nsfw = BooleanField('Sub is NSFW?')
 
 
+class EditSubCSSForm(Form):
+    """ Edit sub stylesheet form. """
+    css = TextAreaField('Custom stylesheet', validators=[Length(max=10000)])
+
+
 class EditSubForm(Form):
     """ Edit sub form. """
     title = StringField('Title',
@@ -31,8 +36,9 @@ class EditSubForm(Form):
     restricted = BooleanField('Only mods can post')
     usercanflair = BooleanField('Allow users to flair their own posts')
     subsort = RadioField('Default sub page post sorting',
-                    choices=[('v','Hot'),('v_two','New'),('v_three','Top')],
-                    validators=[Optional()])
+                         choices=[('v', 'Hot'), ('v_two', 'New'),
+                                  ('v_three', 'Top')],
+                         validators=[Optional()])
     flair1 = StringField('Flair 1')
     flair2 = StringField('Flair 2')
     flair3 = StringField('Flair 3')

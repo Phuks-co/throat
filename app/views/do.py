@@ -12,7 +12,7 @@ from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
 from ..models import UserMetadata, UserBadge, SubSubscriber, SiteMetadata
 from ..forms import RegistrationForm, LoginForm, LogOutForm
-from ..forms import CreateSubForm, EditSubForm, EditUserForm
+from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
@@ -240,6 +240,29 @@ def create_sub():
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
+@do.route("/do/edit_sub_css/<sub>", methods=['POST'])
+@login_required
+def edit_sub_css(sub):
+    """ Edit sub endpoint """
+    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    if not sub:
+        return json.dumps({'status': 'error',
+                           'error': ['Sub does not exist']})
+    if not current_user.is_mod(sub) or not current_user.is_admin():
+        abort(403)
+
+    form = EditSubCSSForm()
+    if form.validate():
+        if sub.stylesheet.first():
+            sub.stylesheet.first().content = form.css.data
+        else:
+            css = SubStylesheet(sub.sid, form.css.data)
+            db.session.add(css)
+        db.session.commit()
+        return json.dumps({'status': 'ok',
+                           'addr': url_for('view_sub', sub=sub.name)})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
 @do.route("/do/edit_sub/<sub>", methods=['POST'])
 @login_required
 def edit_sub(sub):
@@ -278,11 +301,7 @@ def edit_sub(sub):
                 else:
                     subsort = SubMetadata(sub, 'sort', form.subsort.data)
                     db.session.add(subsort)
-            if sub.stylesheet.first():
-                sub.stylesheet.first().content = form.css.data
-            else:
-                css = SubStylesheet(sub.sid, form.css.data)
-                db.session.add(css)
+
             if form.flair1.data:
                 flair1 = sub.properties.filter_by(key='fl1').first()
                 if flair1:
