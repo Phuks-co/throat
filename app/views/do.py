@@ -248,7 +248,7 @@ def edit_sub_css(sub):
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    if not current_user.is_mod(sub) or not current_user.is_admin():
+    if not current_user.is_mod(sub) and not current_user.is_admin():
         abort(403)
 
     form = EditSubCSSForm()
@@ -262,6 +262,7 @@ def edit_sub_css(sub):
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_sub', sub=sub.name)})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
 
 @do.route("/do/edit_sub/<sub>", methods=['POST'])
 @login_required

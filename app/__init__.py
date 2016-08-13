@@ -317,7 +317,7 @@ def edit_sub_css(sub):
     if not sub:
         abort(404)
 
-    if not current_user.is_mod(sub) or not current_user.is_admin():
+    if not current_user.is_mod(sub) and not current_user.is_admin():
         abort(403)
 
     form = EditSubCSSForm()
