@@ -13,7 +13,7 @@
 {% endif %}
 
 <h1>Edit /s/{{sub.name}}</h1>
-<form id="edit-sub-form" data-sub="{{sub.name}}" class="">
+<form id="edit-sub-form" action="{{url_for('do.edit_sub', sub=sub.name)}}" class="ajaxform">
   {{editsubform.csrf_token}}
   <div>
     <p><label>{{editsubform.title.label.text}}</label> {{editsubform.title(value=sub.title, required=True)}}</p>
@@ -41,7 +41,7 @@
     <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
     <p></p>
   </div>
-  <p><button type="submit" class="btn btn-orange" id="editsub-btnsubmit">Edit sub</button></p>
+  <p><button type="submit" class="btn btn-orange" id="editsub-btnsubmit" data-prog="Saving..." data-success="Saved!">Edit sub</button></p>
 
 </form>
 {% endblock %}

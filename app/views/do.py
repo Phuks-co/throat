@@ -434,9 +434,9 @@ def remove_post_flair(sub, pid):
         abort(403)
 
 
-@do.route("/do/edit_mod/<sub>/<user>", methods=['POST'])
+@do.route("/do/edit_mod", methods=['POST'])
 @login_required
-def edit_mod(sub, user):
+def edit_mod():
     """ Edit sub mod endpoint """
     if not current_user.is_admin():
         abort(403)

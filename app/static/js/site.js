@@ -29,7 +29,11 @@ $(document).ready(function() {
             button.text(button.data('success'));
           }
           if(target.data('redir')){
-            document.location = target.data('redir');
+            if(target.data('redir') == true){
+              document.location = data.addr;
+            }else{
+              document.location = target.data('redir');
+            }
           }else if (target.data('reload')) {
             document.location = document.location;
           }
@@ -46,6 +50,13 @@ $(document).ready(function() {
     console.log(target.data());
   });
 
+
+ /******************************************************
+                LEGACY AJAX FORMS CODE!
+    FOR FUCKS SAKE PORT ALL THIS SHIT TO THE NEW SYSTEM
+ *********************************************************/
+
+
     function checkErrors(data, div) {
         var obj = data.error,
             ul = $("<ul>");
@@ -55,114 +66,6 @@ $(document).ready(function() {
         $("#" + div + " .div-error p").html(ul);
         $("#" + div + " .div-error").show();
     }
-
-    $("#edit-user-form").submit(function(e) {
-        $("#edituser-btnsubmit").prop('disabled', true);
-        $("#edituser-btnsubmit").text('editing user info...');
-        $.ajax({
-            type: "POST",
-            url: '/do/edit_user/'+ $("#edit-user-form").data('user'), // XXX: Hardcoded URL because this is supposed to be a static file
-            data: $("#edit-user-form").serialize(),
-            dataType: 'json',
-            success: function(data) {
-                if (data.status != "ok") {
-                    checkErrors(data, "edit-user-form");
-                } else {
-                    $("#edit-user-form").html("<h1>User edited!</h1>You can now <a href=\"" + data.addr + "\">visit your profile</a>.")
-                }
-                $("#edituser-btnsubmit").prop('disabled', false);
-                $("#edituser-btnsubmit").text('Edit user info');
-            },
-            error: function(data, err) {
-                $("#edit-user-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
-                $("#edit-user-form .div-error").show();
-                $("#edituser-btnsubmit").prop('disabled', false);
-                $("#edituser-btnsubmit").text('Edit user info');
-            }
-        });
-        e.preventDefault();
-    });
-
-    $("#csub-form").submit(function(e) {
-        $("#csub-btnsubmit").prop('disabled', true);
-        $("#csub-btnsubmit").text('Creating sub...');
-        $.ajax({
-            type: "POST",
-            url: '/do/create_sub', // XXX: Hardcoded URL because this is supposed to be a static file
-            data: $("#csub-form").serialize(),
-            dataType: 'json',
-            success: function(data) {
-                if (data.status != "ok") {
-                    checkErrors(data, "csub-form");
-                } else {
-                    $("#csub-form").html("<h1>Sub created!</h1>You can now <a href=\"" + data.addr + "\">visit it</a>.")
-                }
-                $("#csub-btnsubmit").prop('disabled', false);
-                $("#csub-btnsubmit").text('Create sub');
-            },
-            error: function(data, err) {
-                $("#csub-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
-                $("#csub-form .div-error").show();
-                $("#csub-btnsubmit").prop('disabled', false);
-                $("#csub-btnsubmit").text('Create sub');
-            }
-        });
-        e.preventDefault();
-    });
-
-    $("#edit-sub-form").submit(function(e) {
-        $("#editsub-btnsubmit").prop('disabled', true);
-        $("#editsub-btnsubmit").text('Editing sub info...');
-        $.ajax({
-            type: "POST",
-            url: '/do/edit_sub/'+ $("#edit-sub-form").data('sub'), // XXX: Hardcoded URL because this is supposed to be a static file
-            data: $("#edit-sub-form").serialize(),
-            dataType: 'json',
-            success: function(data) {
-                if (data.status != "ok") {
-                    checkErrors(data, "edit-sub-form");
-                } else {
-                    document.location = '/s/' + $("#edit-sub-form").data('sub')
-                }
-                $("#editsub-btnsubmit").prop('disabled', false);
-                $("#editsub-btnsubmit").text('Edit sub');
-            },
-            error: function(data, err) {
-                $("#edit-sub-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
-                $("#edit-sub-form .div-error").show();
-                $("#editsub-btnsubmit").prop('disabled', false);
-                $("#editsub-btnsubmit").text('Edit sub');
-            }
-        });
-        e.preventDefault();
-    });
-
-    $("#edit-mod-form").submit(function(e) {
-        $("#editmodform-btnsubmit").prop('disabled', true);
-        $("#editmodform-btnsubmit").text('Editing mod info...');
-        $.ajax({
-            type: "POST",
-            url: '/do/edit_mod/' + $("#edit-mod-form").data('sub') + '/' + $("#edit-mod-form").data('user'), // XXX: Hardcoded URL
-            data: $("#edit-mod-form").serialize(),
-            dataType: 'json',
-            success: function(data) {
-                if (data.status != "ok") {
-                    checkErrors(data, "edit-mod-form");
-                } else {
-                    document.location.reload();
-                }
-                $("#editmodform-btnsubmit").prop('disabled', false);
-                $("#editmodform-btnsubmit").text('Edit mod');
-            },
-            error: function(data, err) {
-                $("#edit-mod-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
-                $("#edit-mod-form .div-error").show();
-                $("#editmodform-btnsubmit").prop('disabled', false);
-                $("#editmodform-btnsubmit").text('Edit mod');
-            }
-        });
-        e.preventDefault();
-    });
 
     $("#post-form").submit(function(e) {
         $("#txpost-btnsubmit").prop('disabled', true);
