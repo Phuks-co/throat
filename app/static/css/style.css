@@ -1033,7 +1033,8 @@ body.dark .center {
 body.dark .btn {
     background-color: #6E4A2D;
     color: #ccc;
-    border: solid transparent 1px;
+    border: solid #5B3B21 1px;
+    margin: 1px;
 }
 body.dark input[type=search] {
     background-color: #555;
