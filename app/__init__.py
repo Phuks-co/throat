@@ -689,7 +689,7 @@ def admin_users_search(term):
 def admin_subs():
     """ WIP: View subs. Assign new owners """
     if current_user.is_admin():
-        subs = Sub.query.limit(10)
+        subs = Sub.query
         return render_template('adminsubs.html', subs=subs,
                                editmodform=EditModForm())
     else:

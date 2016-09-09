@@ -50,7 +50,6 @@
       <tr>
         <td>Sub Name</td>
         <td>Created</td>
-        <td>Founder</td>
         <td>Owner</td>
         <td><i class="fa fa-user-plus" title="mods"></i></td>
         <td><i class="fa fa-users" title="subscribers"></i></td>
@@ -63,7 +62,6 @@
           <div class="subname" title="{{sub.title}}"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>{% if sub.getNSFW %} <i title="NSFW" class="fa fa-eye-slash"></i>{% endif %}</div>
         </td>
         <td><time-ago datetime="{{getSubCreation(sub)}}"></time-ago></td>
-        <td><a href="{{url_for('view_user', user=getSubUsers(sub, 'mod'))}}">{{getSubUsers(sub, 'mod')}}</a></td>
         <td><a href="{{url_for('view_user', user=getSubUsers(sub, 'mod1'))}}">{{getSubUsers(sub, 'mod1')}}</a></td>
         <td>{{getModCount(sub)}}</td>
         <td>{{getSuscriberCount(sub)}}</td>
