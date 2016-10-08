@@ -27,6 +27,9 @@ $(document).ready(function() {
                         '<ul>' + ul.html() + '</ul>');
           target.find('.div-error').show();
           button.text(btnorm);
+          if (typeof grecaptcha != "undefined") {
+              grecaptcha.reset();
+          }
         } else { // success
           if(button.data('success')){
             button.text(button.data('success'));
