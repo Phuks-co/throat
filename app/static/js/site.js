@@ -1,5 +1,8 @@
 // sitewide js.
 $(document).ready(function() {
+  if (typeof grecaptcha != "undefined") {
+      grecaptcha.render($('.g-recaptcha')[0], {sitekey: $('.g-recaptcha').data().sitekey});
+  }
   // shitless forms
   $(document).on('submit', ".ajaxform", function(e){
     e.preventDefault();
