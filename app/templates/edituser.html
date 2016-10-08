@@ -8,6 +8,12 @@
 {% block sidebar %}
 {{ super() }}
 <hr/>
+<script>
+var recaptchaCallback = function(){
+    grecaptcha.render($('.g-recaptcha')[0], {sitekey: $('.g-recaptcha').data().sitekey});
+}
+</script>
+
 <div>
   <h3>Badges:</h3>
   <ul id="userBadges" style="color: darkcyan;">
