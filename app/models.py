@@ -229,6 +229,7 @@ class SubPost(db.Model):
     def __init__(self):
         x = SubPostMetadata(self.pid, 'score', 1)
         db.session.add(x)
+        db.session.commit()
 
     def __repr__(self):
         return '<SubPost {0} (In Sub{1})>'.format(self.pid, self.sid)
@@ -261,6 +262,7 @@ class SubPost(db.Model):
 
             votes = SubPostMetadata(self.pid, 'score', count+1)
             db.session.add(votes)
+            db.session.commit()
         return int(votes.value)
 
     def getDomain(self):
