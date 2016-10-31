@@ -226,6 +226,10 @@ class SubPost(db.Model):
     votes = db.relationship('SubPostVote', backref='post',
                             lazy='subquery')
 
+    def __init__(self):
+        x = SubPostMetadata(self.pid, 'score', 1)
+        db.session.add(x)
+
     def __repr__(self):
         return '<SubPost {0} (In Sub{1})>'.format(self.pid, self.sid)
 
@@ -238,13 +242,26 @@ class SubPost(db.Model):
     @hybrid_property
     def voteCount(self):
         """ Returns the post's vote count """
-        count = 0
-        for vote in self.votes:
-            if vote.positive:
-                count += 1
-            else:
-                count -= 1
-        return count + 1
+        # count = 0
+        # for vote in self.votes:
+        #     if vote.positive:
+        #         count += 1
+        #     else:
+        #         count -= 1
+        # return count + 1
+        votes = self.properties.filter_by(key='score').first()
+        # XXX: COMPATIBILITY CODE
+        if not votes:
+            count = 0
+            for vote in self.votes:
+                if vote.positive:
+                    count += 1
+                else:
+                    count -= 1
+
+            votes = SubPostMetadata(self.pid, 'score', count+1)
+            db.session.add(votes)
+        return int(votes.value)
 
     def getDomain(self):
         """ Gets Domain """

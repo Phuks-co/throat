@@ -654,18 +654,28 @@ def upvote(pid):
     vote.pid = pid
     vote.uid = current_user.get_id()
     vote.positive = True
+    xvotes = post.properties.filter_by(key='score').first()
+
+    # XXX: COMPATIBILITY CODE
+    if not xvotes:
+        xvotes = SubPostMetadata(post.pid, 'score', 1)
 
     if qvote:
         if qvote.positive:
             return json.dumps({'status': 'error',
                                'error': ['You already voted.']})
         else:
+
             qvote.positive = True
             db.session.add(qvote)
+            xvotes.value += 1
+            db.session.add(xvotes)
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'message': 'Negative vote reverted.'})
 
+    xvotes.value += 1
+    db.session.add(xvotes)
     db.session.add(vote)
     db.session.commit()
     return json.dumps({'status': 'ok'})
@@ -686,6 +696,10 @@ def downvote(pid):
     vote.pid = pid
     vote.uid = current_user.get_id()
     vote.positive = False
+    xvotes = post.properties.filter_by(key='score').first()
+    # XXX: COMPATIBILITY CODE
+    if not xvotes:
+        xvotes = SubPostMetadata(post.pid, 'score', 1)
 
     if qvote:
         if not qvote.positive:
@@ -694,9 +708,14 @@ def downvote(pid):
         else:
             qvote.positive = False
             db.session.add(qvote)
+            xvotes.value -= 1
+            db.session.add(xvotes)
+
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'message': 'Positive vote reverted.'})
+    xvotes.value -= 1
+    db.session.add(xvotes)
 
     db.session.add(vote)
     db.session.commit()
