@@ -668,13 +668,13 @@ def upvote(pid):
 
             qvote.positive = True
             db.session.add(qvote)
-            xvotes.value += 1
+            xvotes.value = int(xvotes.value) + 1
             db.session.add(xvotes)
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'message': 'Negative vote reverted.'})
 
-    xvotes.value += 1
+    xvotes.value = int(xvotes.value) + 1
     db.session.add(xvotes)
     db.session.add(vote)
     db.session.commit()
@@ -708,13 +708,13 @@ def downvote(pid):
         else:
             qvote.positive = False
             db.session.add(qvote)
-            xvotes.value -= 1
+            xvotes.value = int(xvotes.value) - 1
             db.session.add(xvotes)
 
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'message': 'Positive vote reverted.'})
-    xvotes.value -= 1
+    xvotes.value = int(xvotes.value) - 1
     db.session.add(xvotes)
 
     db.session.add(vote)
