@@ -4,9 +4,17 @@ import datetime
 import uuid
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
 from sqlalchemy.ext.hybrid import hybrid_property
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import BaseQuery, Model, _BoundDeclarativeMeta, SQLAlchemy as BaseSQLAlchemy, _QueryProperty
 import bcrypt
 from tld import get_tld
+
+
+class SQLAlchemy(BaseSQLAlchemy):
+    def make_declarative_base(self):
+        # in this case we're just using a custom Model class, but you can change the DelcarativeMeta or other stuff as well
+        base = declarative_base(cls=MyModel, name='Model', metaclass=_BoundDeclarativeMeta)
+        base.query = _QueryProperty(self)
+        return base
 
 db = SQLAlchemy()
 

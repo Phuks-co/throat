@@ -38,11 +38,24 @@ from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
 from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
 from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair
 from .sorting import VoteSorting, BasicSorting, HotSorting
+from .caching_query import FromCache
+
+from flask.ext.profile import Profiler
+import logging
+
+logging.basicConfig()
+logger = logging.getLogger("throat.sqltime")
+logger.setLevel(logging.DEBUG)
 
 app = Flask(__name__)
+app.debug = True
+
+Profiler(app)
+
 app.register_blueprint(do)
 app.register_blueprint(api)
 app.config.from_object('config')
+app.config['SQLALCHEMY_ECHO'] = True
 
 db.init_app(app)
 cache.init_app(app)

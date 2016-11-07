@@ -45,7 +45,7 @@
         {% else %}
         <p class="title">{{message.subject}}</p>
         {% endif %}
-        <p class="container">{{message.content}}</p>
+        <p class="container">{{markdown(message.content)|safe}}</p>
         <p class="author"><time-ago datetime="{{message.posted.isoformat()}}"></time-ago></p>
         <p class="container">
           {% if box_name != 'Sent' %}
