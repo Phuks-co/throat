@@ -271,8 +271,11 @@ def all_top(page):
 @app.route("/all/hot/<int:page>")
 def all_hot(page):
     """ The index page, all posts sorted as most recent posted first """
-    posts = SubPost.query.order_by(SubPost.posted.desc())
+    posts = SubPost.cache.filter()
     sorter = HotSorting(posts)
+    l = sorter.getPosts(1)[0]
+    print(getMetadata(l, 'deleted'))
+    print(getMetadata(l, 'moddeleted'))
     return render_template('index.html', page=page, sort_type='all_hot',
                            posts=sorter.getPosts(page))
 

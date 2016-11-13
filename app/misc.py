@@ -5,7 +5,7 @@ from flask_login import AnonymousUserMixin
 from flask_cache import Cache
 
 from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata
-from .models import SubPost, SubMetadata, SubPostVote, User
+from .models import SubPost, SubMetadata, SubPostVote, User, SubPostMetadata
 
 cache = Cache()
 
@@ -243,7 +243,14 @@ def getMetadata(obj, key, value=None):
         # THIS FUNCTION. IF THIS ACTUALLY HAPPENS YOU SHOULD FEEL BAD FOR
         # PASSING UNVERIFIED DATA.
         return
-    x = obj.properties.filter_by(key=key).first()
+    if isinstance(obj, SubPost):
+        x = SubPostMetadata.cache.filter(key=key, pid=obj.pid)
+        try:
+            x = next(x)
+        except StopIteration:
+            return False
+    else:
+        x = obj.properties.filter_by(key=key).first()
     if x and value is None:
         return x.value
     elif value is None:
@@ -415,13 +422,10 @@ def subSort(self):
         return 'Top'
 
 
-def hasPostFlair(self):
+def hasPostFlair(post):
     """ Returns true if the post has assigned flair """
-    x = self.properties.filter_by(key='flair').first()
-    if not x:
-        return False
-    else:
-        return x.value
+    x = getMetadata(post, 'flair')
+    return x
 
 
 def getPostFlair(self, fl):

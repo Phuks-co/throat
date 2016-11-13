@@ -7,12 +7,20 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 from tld import get_tld
+from .caching import CacheableMixin, query_callable, regions
+
 
 db = SQLAlchemy()
 
 
-class User(db.Model):
+class User(db.Model, CacheableMixin):
     """ Basic user data (Used for login or password recovery) """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    cache_pk = 'uid'
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
     uid = Column(String(40), primary_key=True)
     name = Column(String(64), unique=True)
     email = Column(String(128))
@@ -79,6 +87,11 @@ class User(db.Model):
 
 class UserMetadata(db.Model):
     """ User metadata. Here we store badges, admin status, etc. """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
     xid = Column(Integer, primary_key=True)
     uid = Column(String(40), db.ForeignKey('user.uid'))  # Subverse id
     key = Column(String(255))  # Metadata key
@@ -111,6 +124,11 @@ class UserMetadata(db.Model):
 
 class UserBadge(db.Model):
     """ Here we store badge definitions """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
     bid = Column(String(40), primary_key=True)
     badge = Column(String(255))  # fa-xxx, badge icon id.
     name = Column(String(255))  # Badge name
@@ -126,6 +144,11 @@ class UserBadge(db.Model):
 
 class Sub(db.Model):
     """ Basic sub data """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
     sid = Column(String(40), primary_key=True)  # sub id
     name = Column(String(32), unique=True)  # sub name
     title = Column(String(128, collation='utf8_bin'))  # sub title/desc
@@ -152,6 +175,11 @@ class Sub(db.Model):
 class SubMetadata(db.Model):
     """ Sub metadata. Here we store if the sub is nsfw, the modlist,
     the founder, etc. """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
     xid = Column(Integer, primary_key=True)
     sid = Column(String(40), db.ForeignKey('sub.sid'))  # Subverse id
     key = Column(String(255))  # Metadata key
@@ -177,6 +205,12 @@ class SubMetadata(db.Model):
 
 class SubSubscriber(db.Model):
     """ Stores subscribers for a sub. """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    cache_pk = 'xid'
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
     # Note: We usually use integer primary keys when we don't need to actually
     # use the primary keys (but we should always define them, because it speeds
     # up queries and stuff), when we have to store an ID we always use uuid4s
@@ -190,6 +224,11 @@ class SubSubscriber(db.Model):
 
 class SubStylesheet(db.Model):
     """ Stores sub's custom CSS """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
     xid = Column(Integer, primary_key=True)
     sid = Column(String(40), db.ForeignKey('sub.sid'))  # Subverse id
     content = Column(Text)
@@ -199,8 +238,13 @@ class SubStylesheet(db.Model):
         self.content = content
 
 
-class SubPost(db.Model):
+class SubPost(db.Model, CacheableMixin):
     """ Represents a post on a sub """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    cache_pk = 'pid'
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
     pid = Column(Integer, primary_key=True)  # post id
     sid = Column(String(40), db.ForeignKey('sub.sid'))
     uid = Column(String(40), db.ForeignKey('user.uid'))
@@ -218,15 +262,13 @@ class SubPost(db.Model):
     ptype = Column(Integer)  # Post type. 0=txt; 1=link; etc
 
     properties = db.relationship('SubPostMetadata',
-                                 backref='post', lazy='dynamic')
+                                 backref='post', lazy='subquery')
 
     comments = db.relationship('SubPostComment', backref='post',
                                lazy='dynamic')
 
     votes = db.relationship('SubPostVote', backref='post',
                             lazy='subquery')
-
-
 
     def __repr__(self):
         return '<SubPost {0} (In Sub{1})>'.format(self.pid, self.sid)
@@ -240,15 +282,9 @@ class SubPost(db.Model):
     @hybrid_property
     def voteCount(self):
         """ Returns the post's vote count """
-        # count = 0
-        # for vote in self.votes:
-        #     if vote.positive:
-        #         count += 1
-        #     else:
-        #         count -= 1
-        # return count + 1
-        votes = self.properties.filter_by(key='score').first()
-        return int(votes.value) if votes else 0
+        votes = SubPostMetadata.cache.filter(key='score', pid=self.pid)
+
+        return int(next(votes).value) if votes else 0
 
     def getDomain(self):
         """ Gets Domain """
@@ -267,15 +303,22 @@ class SubPost(db.Model):
 
     def isPostNSFW(self):
         """ Returns true if the post is marked as NSFW """
-        x = self.properties.filter_by(key='nsfw').first()
-        if not x:
+        x = SubPostMetadata.cache.filter(key='nsfw', pid=self.pid)
+        try:
+            x = next(x)
+        except StopIteration:
             return False
         return True if x.value == '1' else False
 
 
-class SubPostMetadata(db.Model):
+class SubPostMetadata(db.Model, CacheableMixin):
     """ Post metadata. Here we store if it is a sticky post, mod post, tagged
     as nsfw, etc. """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    cache_pk = 'xid'
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
     xid = Column(Integer, primary_key=True)
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))
     key = Column(String(255))  # Metadata key
@@ -286,9 +329,17 @@ class SubPostMetadata(db.Model):
         self.key = key
         self.value = value
 
+    def __repr__(self):
+        return '<SubPostMetadata ({0}); {1} = {2}>'.format(self.pid, self.key, self.value)
+
 
 class SubPostComment(db.Model):
     """ A comment. In a post. """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
     cid = Column(String(64), primary_key=True)
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))
     uid = Column(String(40), db.ForeignKey('user.uid'))
@@ -306,6 +357,11 @@ class SubPostComment(db.Model):
 
 class SubPostVote(db.Model):
     """ Up/Downvotes in a post. """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
     xid = Column(Integer, primary_key=True)
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))
     uid = Column(String(40), db.ForeignKey('user.uid'))
@@ -314,6 +370,11 @@ class SubPostVote(db.Model):
 
 class Message(db.Model):
     """ Represents a post on a sub """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
     mid = Column(Integer, primary_key=True)  # msg id
     sentby = Column(String(40), db.ForeignKey('user.uid'))
     receivedby = Column(String(40), db.ForeignKey('user.uid'))
@@ -344,6 +405,11 @@ class Message(db.Model):
 
 class SiteMetadata(db.Model):
     """ Site-wide configs """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
     xid = Column(Integer, primary_key=True)
     key = Column(String(255))  # Metadata key
     value = Column(String(255))

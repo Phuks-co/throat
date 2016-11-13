@@ -11,7 +11,7 @@ class BasicSorting(object):
     def __init__(self, posts):
         """ posts is the query of SubPosts """
         # Normally here we'll sort em'.
-        self.posts = posts.all()
+        self.posts = list(posts)
 
     def getPosts(self, page=1):
         """ Gets the posts, sorted. """
