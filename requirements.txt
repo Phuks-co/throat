@@ -13,3 +13,4 @@ flask-login
 tld
 feedgen
 flask-cache
+dogpile.cache
