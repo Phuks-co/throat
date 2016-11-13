@@ -14,4 +14,4 @@ tld
 feedgen
 flask-cache
 dogpile.cache
-pymysql
+mysqlclient
