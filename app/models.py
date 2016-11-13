@@ -4,17 +4,9 @@ import datetime
 import uuid
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
 from sqlalchemy.ext.hybrid import hybrid_property
-from flask_sqlalchemy import BaseQuery, Model, _BoundDeclarativeMeta, SQLAlchemy as BaseSQLAlchemy, _QueryProperty
+from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 from tld import get_tld
-
-
-class SQLAlchemy(BaseSQLAlchemy):
-    def make_declarative_base(self):
-        # in this case we're just using a custom Model class, but you can change the DelcarativeMeta or other stuff as well
-        base = declarative_base(cls=MyModel, name='Model', metaclass=_BoundDeclarativeMeta)
-        base.query = _QueryProperty(self)
-        return base
 
 db = SQLAlchemy()
 
@@ -234,10 +226,7 @@ class SubPost(db.Model):
     votes = db.relationship('SubPostVote', backref='post',
                             lazy='subquery')
 
-    def __init__(self):
-        x = SubPostMetadata(self.pid, 'score', 1)
-        db.session.add(x)
-        db.session.commit()
+
 
     def __repr__(self):
         return '<SubPost {0} (In Sub{1})>'.format(self.pid, self.sid)
@@ -259,19 +248,7 @@ class SubPost(db.Model):
         #         count -= 1
         # return count + 1
         votes = self.properties.filter_by(key='score').first()
-        # XXX: COMPATIBILITY CODE
-        if not votes:
-            count = 0
-            for vote in self.votes:
-                if vote.positive:
-                    count += 1
-                else:
-                    count -= 1
-
-            votes = SubPostMetadata(self.pid, 'score', count+1)
-            db.session.add(votes)
-            db.session.commit()
-        return int(votes.value)
+        return int(votes.value) if votes else 0
 
     def getDomain(self):
         """ Gets Domain """
