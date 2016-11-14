@@ -283,8 +283,14 @@ class SubPost(db.Model, CacheableMixin):
     def voteCount(self):
         """ Returns the post's vote count """
         votes = SubPostMetadata.cache.filter(key='score', pid=self.pid)
-
-        return int(next(votes).value) if votes else 0
+        try:
+            votes = next(votes)
+        except:
+            votes = SubPostMetadata(self.pid, 'score', 1)
+            db.session.add(votes)
+            db.session.commit()
+            return 1
+        return int(votes.value) if votes else 0
 
     def getDomain(self):
         """ Gets Domain """
