@@ -270,9 +270,6 @@ class SubPost(db.Model, CacheableMixin):
     votes = db.relationship('SubPostVote', backref='post',
                             lazy='subquery')
 
-    def __repr__(self):
-        return '<SubPost {0} (In Sub{1})>'.format(self.pid, self.sid)
-
     def is_sticky(self):
         """ Returns True if this post is stickied """
         l = self.sub.properties.filter_by(key='sticky') \
