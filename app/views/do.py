@@ -654,10 +654,10 @@ def upvote(pid):
     vote.pid = pid
     vote.uid = current_user.get_id()
     vote.positive = True
-    xvotes = post.properties.filter_by(key='score').first()
-
-    # XXX: COMPATIBILITY CODE
-    if not xvotes:
+    xvotes = SubPostMetadata.cache.filter(key='score', pid=post.pid)
+    try:
+        xvotes = next(xvotes)
+    except StopIteration:
         xvotes = SubPostMetadata(post.pid, 'score', 1)
 
     if qvote:
@@ -696,9 +696,10 @@ def downvote(pid):
     vote.pid = pid
     vote.uid = current_user.get_id()
     vote.positive = False
-    xvotes = post.properties.filter_by(key='score').first()
-    # XXX: COMPATIBILITY CODE
-    if not xvotes:
+    xvotes = SubPostMetadata.cache.filter(key='score', pid=post.pid)
+    try:
+        xvotes = next(xvotes)
+    except StopIteration:
         xvotes = SubPostMetadata(post.pid, 'score', 1)
 
     if qvote:
