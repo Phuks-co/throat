@@ -23,7 +23,7 @@ class VoteSorting(BasicSorting):
     """ Sorts by votes (/top) """
     def __init__(self, posts):
         super(VoteSorting, self).__init__(posts)
-        self.posts.sort(key=lambda x: x.voteCount)
+        self.posts.sort(key=lambda x: x.voteCount())
         self.posts.reverse()
 
 
@@ -44,7 +44,7 @@ class HotSorting(BasicSorting):
     @cache.memoize(300)
     def get_score(self, post):
         """ Returns the /hot score for this post """
-        s = post.voteCount
+        s = post.voteCount()
         order = log(max(abs(s), 1), 10)
         sign = 1 if s > 0 else -1 if s < 0 else 0
         seconds = self.epoch_seconds(post.posted) - 1134028003

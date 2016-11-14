@@ -279,7 +279,6 @@ class SubPost(db.Model, CacheableMixin):
                                .filter_by(value=self.pid).first()
         return bool(l)
 
-    @hybrid_property
     def voteCount(self):
         """ Returns the post's vote count """
         votes = SubPostMetadata.cache.filter(key='score', pid=self.pid)

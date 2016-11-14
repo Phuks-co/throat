@@ -73,7 +73,7 @@ def view_post(sub, pid):
             'user': post.user.name,
             'posted': post.posted,
             'ptype': post.ptype,
-            'votes': post.voteCount
+            'votes': post.voteCount()
         }
         resp = jsonify(data)
         resp.status_code = 200

@@ -23,7 +23,7 @@
     <article class="post" data-pid="{{post.pid}}">
       {# vote div #}
       <div class="pull left vote"><br>
-        <p class="count">{{post.voteCount}}</p>
+        <p class="count">{{post.voteCount()}}</p>
       </div>
       {% cache 300, post.pid, 'subpost' %}
         <div class="image">
