@@ -303,12 +303,12 @@ def view_sub(sub):
     if not sub:
         abort(404)
 
-    x = sub.properties.filter_by(key='sort').first()
-    if not x or x.value == 'v':
+    x = getMetadata(sub, 'sort')
+    if not x or x == 'v':
         return redirect(url_for('view_sub_hot', sub=sub.name))
-    if x.value == 'v_two':
+    if x == 'v_two':
         return redirect(url_for('view_sub_new', sub=sub.name))
-    if x.value == 'v_three':
+    if x == 'v_three':
         return redirect(url_for('view_sub_top', sub=sub.name))
 
 
