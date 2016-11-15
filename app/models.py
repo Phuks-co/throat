@@ -34,7 +34,7 @@ class User(db.Model, CacheableMixin):
     joindate = Column(DateTime)
     subscribed = db.relationship('SubSubscriber', backref='user',
                                  lazy='dynamic')
-    posts = db.relationship('SubPost', backref='user', lazy='joined')
+    posts = db.relationship('SubPost', backref='_user', lazy='joined')
 
     properties = db.relationship('UserMetadata',
                                  backref='user', lazy='dynamic')
@@ -142,10 +142,11 @@ class UserBadge(db.Model):
         self.text = text
 
 
-class Sub(db.Model):
+class Sub(db.Model, CacheableMixin):
     """ Basic sub data """
     cache_label = "default"  # region's label to use
     cache_regions = regions  # regions to store cache
+    cache_pk = 'sid'
     # Query handeling dogpile caching
     query_class = query_callable(regions)
 
@@ -157,7 +158,7 @@ class Sub(db.Model):
 
     subscribers = db.relationship('SubSubscriber', backref='sub',
                                   lazy='dynamic')
-    _posts = db.relationship('SubPost', backref='sub', lazy='joined')
+    _posts = db.relationship('SubPost', backref='__sub', lazy='joined')
     posts = db.relationship('SubPost', backref='_sub', lazy='dynamic')
     properties = db.relationship('SubMetadata', backref='sub', lazy='dynamic')
     stylesheet = db.relationship('SubStylesheet', backref='sub',
@@ -295,6 +296,15 @@ class SubPost(db.Model, CacheableMixin):
         x = get_tld(self.link)
         return x
 
+    @hybrid_property
+    def sub(self):
+        return Sub.cache.get(self.sid)
+
+    @hybrid_property
+    def user(self):
+        return User.cache.get(self.uid)
+
+
     def isImage(self):
         """ Returns True if link ends with img suffix """
         suffix = ['.png', '.jpg', '.gif', '.tiff', '.bmp']
@@ -323,6 +333,7 @@ class SubPostMetadata(db.Model, CacheableMixin):
     cache_pk = 'xid'
     # Query handeling dogpile caching
     query_class = query_callable(regions)
+
     xid = Column(Integer, primary_key=True)
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))
     key = Column(String(255))  # Metadata key
@@ -335,7 +346,6 @@ class SubPostMetadata(db.Model, CacheableMixin):
 
     def __repr__(self):
         return '<SubPostMetadata ({0}); {1} = {2}>'.format(self.pid, self.key, self.value)
-
 
 class SubPostComment(db.Model):
     """ A comment. In a post. """
