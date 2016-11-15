@@ -85,11 +85,12 @@ class User(db.Model, CacheableMixin):
             return False
 
 
-class UserMetadata(db.Model):
+class UserMetadata(db.Model, CacheableMixin):
     """ User metadata. Here we store badges, admin status, etc. """
     cache_label = "default"  # region's label to use
     cache_regions = regions  # regions to store cache
     # Query handeling dogpile caching
+    cache_pk = 'xid'
     query_class = query_callable(regions)
 
     xid = Column(Integer, primary_key=True)
@@ -160,7 +161,7 @@ class Sub(db.Model, CacheableMixin):
                                   lazy='dynamic')
     _posts = db.relationship('SubPost', backref='__sub', lazy='joined')
     posts = db.relationship('SubPost', backref='_sub', lazy='dynamic')
-    properties = db.relationship('SubMetadata', backref='sub', lazy='dynamic')
+    properties = db.relationship('SubMetadata', backref='sub', lazy='subquery')
     stylesheet = db.relationship('SubStylesheet', backref='sub',
                                  lazy='dynamic')
 
@@ -173,12 +174,13 @@ class Sub(db.Model, CacheableMixin):
         return '<Sub {0}-{1}>'.format(self.name, self.title)
 
 
-class SubMetadata(db.Model):
+class SubMetadata(db.Model, CacheableMixin):
     """ Sub metadata. Here we store if the sub is nsfw, the modlist,
     the founder, etc. """
     cache_label = "default"  # region's label to use
     cache_regions = regions  # regions to store cache
     # Query handeling dogpile caching
+    cache_pk = 'xid'
     query_class = query_callable(regions)
 
     xid = Column(Integer, primary_key=True)
@@ -262,7 +264,7 @@ class SubPost(db.Model, CacheableMixin):
 
     ptype = Column(Integer)  # Post type. 0=txt; 1=link; etc
 
-    properties = db.relationship('SubPostMetadata',
+    _properties = db.relationship('SubPostMetadata',
                                  backref='post', lazy='subquery')
 
     comments = db.relationship('SubPostComment', backref='post',
@@ -273,9 +275,14 @@ class SubPost(db.Model, CacheableMixin):
 
     def is_sticky(self):
         """ Returns True if this post is stickied """
-        l = self.sub.properties.filter_by(key='sticky') \
-                               .filter_by(value=self.pid).first()
-        return bool(l)
+        x = SubMetadata.cache.filter(key='sticky', sid=self.sid,
+                                     value=self.pid)
+        try:
+            x = next(x)
+        except StopIteration:
+            x = False
+
+        return bool(x)
 
     def voteCount(self):
         """ Returns the post's vote count """
@@ -304,6 +311,9 @@ class SubPost(db.Model, CacheableMixin):
     def user(self):
         return User.cache.get(self.uid)
 
+    @hybrid_property
+    def properties(self):
+        return User.cache.filter(pid=self.pid)
 
     def isImage(self):
         """ Returns True if link ends with img suffix """

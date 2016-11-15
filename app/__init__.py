@@ -425,7 +425,11 @@ def view_sub_new(sub, page):
 
     posts = sub.posts.order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
-    mods = sub.properties.filter_by(key='mod2').all()
+    mods = SubMetadata.cache.filter(key='mod2', sid=sub.sid)
+    try:
+        mods = list(mods)
+    except StopIteration:
+        mods = []
     createtxtpost = CreateSubTextPost(sub=sub.name)
     createlinkpost = CreateSubLinkPost(sub=sub.name)
 

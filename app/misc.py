@@ -3,8 +3,8 @@ from sqlalchemy import or_
 import markdown
 from flask_login import AnonymousUserMixin
 from flask_cache import Cache
-
-from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata
+import sqlalchemy.orm
+from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata, Sub
 from .models import SubPost, SubMetadata, SubPostVote, User, SubPostMetadata
 
 cache = Cache()
@@ -243,14 +243,20 @@ def getMetadata(obj, key, value=None):
         # THIS FUNCTION. IF THIS ACTUALLY HAPPENS YOU SHOULD FEEL BAD FOR
         # PASSING UNVERIFIED DATA.
         return
-    if isinstance(obj, SubPost):
-        x = SubPostMetadata.cache.filter(key=key, pid=obj.pid)
+
+    try:
+        x = obj.properties.filter_by(key=key).first()
+    except (AttributeError, sqlalchemy.orm.exc.DetachedInstanceError):
+        if isinstance(obj, SubPost):
+            x = SubPostMetadata.cache.filter(key=key, pid=obj.pid)
+        elif isinstance(obj, Sub):
+            x = SubMetadata.cache.filter(key=key, sid=obj.sid)
+        elif isinstance(obj, User):
+            x = UserMetadata.cache.filter(key=key, uid=obj.uid)
         try:
             x = next(x)
         except StopIteration:
             return False
-    else:
-        x = obj.properties.filter_by(key=key).first()
     if x and value is None:
         return x.value
     elif value is None:
@@ -265,26 +271,47 @@ def getMetadata(obj, key, value=None):
 
 def isMod(sub, user):
     """ Returns True if 'user' is a mod of 'sub' """
-    x = sub.properties.filter_by(key='mod1').filter_by(value=user.uid).first()
-    y = sub.properties.filter_by(key='mod2').filter_by(value=user.uid).first()
+    x = SubMetadata.cache.filter(key='mod1', sid=sub.sid, value=user.uid)
+    try:
+        x = next(x)
+    except StopIteration:
+        x = False
+
+    y = SubMetadata.cache.filter(key='mod2', sid=sub.sid, value=user.uid)
+    try:
+        y = next(y)
+    except StopIteration:
+        y = False
     return bool(x or y)
 
 
 def isSubBan(sub, user):
     """ Returns True if 'user' is banned 'sub' """
-    x = sub.properties.filter_by(key='ban').filter_by(value=user.uid).first()
+    x = SubMetadata.cache.filter(key='ban', sid=sub.sid, value=user.uid)
+    try:
+        x = next(x)
+    except StopIteration:
+        x = False
     return bool(x)
 
 
 def isTopMod(sub, user):
     """ Returns True if 'user' is a topmod of 'sub' """
-    x = sub.properties.filter_by(key='mod1').filter_by(value=user.uid).first()
+    x = SubMetadata.cache.filter(key='mod1', sid=sub.sid, value=user.uid)
+    try:
+        x = next(x)
+    except StopIteration:
+        x = False
     return bool(x)
 
 
 def isModInv(sub, user):
     """ Returns True if 'user' is a invited to mod of 'sub' """
-    x = sub.properties.filter_by(key='mod2i').filter_by(value=user.uid).first()
+    x = SubMetadata.cache.filter(key='mod2i', sid=sub.sid, value=user.uid)
+    try:
+        x = next(x)
+    except StopIteration:
+        x = False
     return bool(x)
 
 
@@ -356,10 +383,8 @@ def getSubUsers(sub, key):
 @cache.memoize(600)
 def getSubCreation(sub):
     """ Returns the sub's 'creation' metadata """
-    x = sub.properties.filter_by(key='creation').first()
-    if not x:
-        return False
-    return x.value
+    x = getMetadata(sub, 'creation')
+    return x
 
 
 @cache.memoize(300)
@@ -393,22 +418,22 @@ def getStickies(sid):
     return r
 
 
-def isRestricted(self):
+def isRestricted(sub):
     """ Returns true if the sub is marked as Restricted """
-    x = self.properties.filter_by(key='restricted').first()
-    return False if not x or x.value == '0' else True
+    x = getMetadata(sub, 'restricted')
+    return False if not x or x == '0' else True
 
 
-def isNSFW(self):
+def isNSFW(sub):
     """ Returns true if the sub is marked as NSFW """
-    x = self.properties.filter_by(key='nsfw').first()
-    return False if not x or x.value == '0' else True
+    x = getMetadata(sub, 'nsfw')
+    return False if not x or x == '0' else True
 
 
-def userCanFlair(self):
+def userCanFlair(sub):
     """ Returns true if the sub allows users to pick their own flair """
-    x = self.properties.filter_by(key='ucf').first()
-    return False if not x or x.value == '0' else True
+    x = getMetadata(sub, 'ucf')
+    return False if not x or x == '0' else True
 
 
 def subSort(self):
@@ -428,10 +453,6 @@ def hasPostFlair(post):
     return x
 
 
-def getPostFlair(self, fl):
+def getPostFlair(post, fl):
     """ Returns true if the post has available flair """
-    x = self.properties.filter_by(key=fl).first()
-    if not x:
-        return False
-    else:
-        return x.value
+    return getMetadata(post, fl)
