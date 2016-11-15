@@ -278,6 +278,8 @@ class SubPost(db.Model, CacheableMixin):
 
     def voteCount(self):
         """ Returns the post's vote count """
+        db.session.expunge_all()
+
         votes = SubPostMetadata.cache.filter(key='score', pid=self.pid)
         try:
             votes = next(votes)
