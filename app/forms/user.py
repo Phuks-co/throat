@@ -1,5 +1,5 @@
 """ User-related forms """
-from flask_wtf import Form, RecaptchaField
+from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, PasswordField, TextField, TextAreaField
 from wtforms import BooleanField
 from wtforms.validators import DataRequired, Length, Email, Required, EqualTo
@@ -7,7 +7,7 @@ from wtforms.validators import Optional
 from wtforms.fields.html5 import EmailField
 
 
-class LoginForm(Form):
+class LoginForm(FlaskForm):
     """ Login form. """
     username = StringField('Username',
                            validators=[DataRequired(), Length(max=32)])
@@ -31,7 +31,7 @@ class OptionalIfFieldIsEmpty(Optional):
             super(OptionalIfFieldIsEmpty, self).__call__(form, field)
 
 
-class RegistrationForm(Form):
+class RegistrationForm(FlaskForm):
     """ Registration form. """
     username = TextField('Username', [Length(min=2, max=32)])
     email = EmailField('Email Address (optional)',
@@ -47,7 +47,7 @@ class RegistrationForm(Form):
     recaptcha = RecaptchaField('Captcha')
 
 
-class EditUserForm(Form):
+class EditUserForm(FlaskForm):
     """ Edit User info form. """
     # username = TextField('Username', [Length(min=2, max=32)])
     email = EmailField('Email Address (optional)',
@@ -59,7 +59,7 @@ class EditUserForm(Form):
     recaptcha = RecaptchaField()
 
 
-class CreateUserMessageForm(Form):
+class CreateUserMessageForm(FlaskForm):
     """ CreateUserMessage form. """
     subject = StringField('subject',
                           validators=[DataRequired(), Length(min=2, max=32)])
@@ -69,7 +69,7 @@ class CreateUserMessageForm(Form):
                                         Length(min=2, max=128)])
 
 
-class CreateUserBadgeForm(Form):
+class CreateUserBadgeForm(FlaskForm):
     """ CreateUserBadge form. """
     badge = StringField('fa-xxxx-x fa-xxxx',
                         validators=[DataRequired(), Length(min=2, max=32)])
@@ -79,7 +79,7 @@ class CreateUserBadgeForm(Form):
                        validators=[DataRequired(), Length(min=2, max=128)])
 
 
-class LogOutForm(Form):
+class LogOutForm(FlaskForm):
     """ Logout form. This form has no fields.
         We only use it for the CSRF stuff"""
     pass

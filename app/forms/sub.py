@@ -1,17 +1,17 @@
 """ Sub-related forms """
 
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, BooleanField, HiddenField
 from wtforms import RadioField
 from wtforms.validators import DataRequired, Length, URL, Optional
 
 
-class SearchForm(Form):
+class SearchForm(FlaskForm):
     """ Search form """
     term = StringField('Search')
 
 
-class CreateSubForm(Form):
+class CreateSubForm(FlaskForm):
     """ Sub creation form """
     subname = StringField('Sub name',
                           validators=[DataRequired(), Length(min=2, max=32)])
@@ -21,12 +21,12 @@ class CreateSubForm(Form):
     nsfw = BooleanField('Sub is NSFW?')
 
 
-class EditSubCSSForm(Form):
+class EditSubCSSForm(FlaskForm):
     """ Edit sub stylesheet form. """
     css = TextAreaField('Custom stylesheet', validators=[Length(max=10000)])
 
 
-class EditSubForm(Form):
+class EditSubForm(FlaskForm):
     """ Edit sub form. """
     title = StringField('Title',
                         validators=[DataRequired(), Length(min=2, max=128)])
@@ -49,7 +49,7 @@ class EditSubForm(Form):
     flair8 = StringField('Flair 8')
 
 
-class EditModForm(Form):
+class EditModForm(FlaskForm):
     """ Edit owner of sub (admin) """
     sub = StringField('Sub',
                       validators=[DataRequired(), Length(min=2, max=128)])
@@ -57,13 +57,13 @@ class EditModForm(Form):
                        validators=[DataRequired(), Length(min=1, max=128)])
 
 
-class EditMod2Form(Form):
+class EditMod2Form(FlaskForm):
     """ Edit mod2 of sub (admin/owner) """
     user = StringField('New mod username',
                        validators=[DataRequired(), Length(min=1, max=128)])
 
 
-class CreateSubTextPost(Form):
+class CreateSubTextPost(FlaskForm):
     """ Sub content submission form """
     sub = StringField('Sub', validators=[DataRequired(),
                                          Length(min=2, max=32)])
@@ -81,7 +81,7 @@ class CreateSubTextPost(Form):
             pass
 
 
-class CreateSubLinkPost(Form):
+class CreateSubLinkPost(FlaskForm):
     """ Sub content submission form """
     sub = StringField('Sub', validators=[DataRequired(),
                                          Length(min=2, max=32)])
@@ -99,7 +99,7 @@ class CreateSubLinkPost(Form):
             pass
 
 
-class EditSubTextPostForm(Form):
+class EditSubTextPostForm(FlaskForm):
     """ Sub content edit form """
     content = TextAreaField('Post content',
                             validators=[DataRequired(),
@@ -107,12 +107,12 @@ class EditSubTextPostForm(Form):
     nsfw = BooleanField('NSFW?')
 
 
-class EditSubLinkPostForm(Form):
+class EditSubLinkPostForm(FlaskForm):
     """ Sub content edit form """
     nsfw = BooleanField('NSFW?')
 
 
-class PostComment(Form):
+class PostComment(FlaskForm):
     """ Comment submission form """
     sub = HiddenField()
     post = HiddenField()
@@ -123,17 +123,17 @@ class PostComment(Form):
                                         Length(min=1, max=2048)])
 
 
-class BanUserSubForm(Form):
+class BanUserSubForm(FlaskForm):
     """ Edit ban user from posting """
     user = StringField('username to ban',
                        validators=[DataRequired(), Length(min=1, max=128)])
 
 
-class EditPostFlair(Form):
+class EditPostFlair(FlaskForm):
     """ Post deletion form. """
     post = HiddenField()
 
 
-class DeletePost(Form):
+class DeletePost(FlaskForm):
     """ Post deletion form. """
     post = HiddenField()
