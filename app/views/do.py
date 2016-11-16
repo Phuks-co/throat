@@ -701,6 +701,7 @@ def downvote(pid):
         xvotes = next(xvotes)
     except StopIteration:
         xvotes = SubPostMetadata(post.pid, 'score', 1)
+        db.session.add(xvotes)
 
     if qvote:
         if not qvote.positive:
@@ -716,7 +717,6 @@ def downvote(pid):
             return json.dumps({'status': 'ok',
                                'message': 'Positive vote reverted.'})
     xvotes.value = int(xvotes.value) - 1
-    db.session.add(xvotes)
 
     db.session.add(vote)
     db.session.commit()
