@@ -7,7 +7,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 from tld import get_tld
-from urlparse import urlparse
+from urllib.parse import urlparse
 from .caching import CacheableMixin, query_callable, regions
 
 
