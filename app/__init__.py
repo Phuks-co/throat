@@ -715,6 +715,28 @@ def admin_subs_search(term):
         return render_template('errors/404.html'), 404
 
 
+@app.route("/admin/post")
+@login_required
+def admin_post():
+    """ WIP: View post. """
+    if current_user.is_admin():
+        return render_template('adminpost.html')
+    else:
+        return render_template('errors/404.html'), 404
+
+
+@app.route("/admin/post/<term>")
+@login_required
+def admin_post_search(term):
+    """ WIP: View users. """
+    if current_user.is_admin():
+        post = SubPost.query.filter_by(pid=term).first()
+        sub = Sub.query.filter_by(sid=post.sid).first()
+        return render_template('adminpostsearch.html', sub=sub, post=post)
+    else:
+        return render_template('errors/404.html'), 404
+
+
 @app.route("/register")
 def register():
     """ Endpoint for the registration form """

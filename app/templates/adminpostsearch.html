@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% block title %}{{config.LEMA}}{% endblock %}
+
+{% block navbar %}
+{{ super() }}
+<li><a href="{{url_for('admin_area')}}">Admin</a></li>
+{% endblock %}
+{% block sidebar %}
+{{ super() }}
+<hr>
+<div class="row buttons">
+  <div class="col-12">
+    <a href="{{url_for('admin_users')}}" class="btn btn-orange" style="width:100%;">Users</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('admin_subs')}}" class="btn btn-orange" style="width:100%;">Subs</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('admin_post')}}" class="btn btn-orange" style="width:100%;">Post</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<h2><i class="fa fa-list"></i> Post</h2>
+<div class="col-12 admin section search">
+  <form action="{{ url_for('do.admin_post_search') }}" method="post">
+  <span class="search">
+      <span><i class="fa fa-search"></i></span>
+      <input id="term" name="term" type="search" placeholder="Post number...">
+      <span>
+        <button class="btn" type="submit">Submit</button>
+      </span>
+  </span>
+  </form>
+</div>
+<div class="admin section users">
+  <div class="col-12">
+    <table class="col-12">
+      <tr>
+        <td>nsfw</td>
+        <td>Title</td>
+        <td>User</td>
+        <td>Time</td>
+      </tr>
+      <tr>
+        <td>{% if post.isPostNSFW() %}<span class="bgred" alt="Not safe for work">NSFW</span>{% else %}no{% endif %}</td>
+        <td>{{post.title}}</</td>
+        <td><a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a></td>
+        <td><i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago></td>
+      </tr>
+    </table>
+  </div>
+  <div class="col-12">
+    <h3>+/- Votes (soon..)</h3>
+    <table class="col-12">
+      <tr>
+        <td>vote</td>
+        <td>user</td>
+        <td>Time</td>
+      </tr>
+      <tr>
+        <td>up/down</td>
+        <td>userplaceholder</</td>
+        <td>timeplaceholder</td>
+      </tr>
+      <tr>
+        <td>up/down</td>
+        <td>userplaceholder</</td>
+        <td>timeplaceholder</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

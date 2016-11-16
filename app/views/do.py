@@ -71,6 +71,14 @@ def admin_subs_search():
     return redirect(url_for('admin_subs_search', term=term))
 
 
+@do.route("/do/admin_post_search", methods=['POST'])
+def admin_post_search():
+    """ Search endpoint """
+    form = SearchForm()
+    term = form.term.data
+    return redirect(url_for('admin_post_search', term=term))
+
+
 @do.route("/do/login", methods=['POST'])
 def login():
     """ Login endpoint """

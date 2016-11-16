@@ -23,37 +23,18 @@
 
 {% block content %}
 {{ super() }}
-<h2><i class="fa fa-users"></i> Users</h2>
+<h2><i class="fa fa-list"></i> Post</h2>
 <div class="col-12 admin section search">
-  <form action="{{ url_for('do.admin_users_search') }}" method="post">
+  <form action="{{ url_for('do.admin_post_search') }}" method="post">
   <span class="search">
       <span><i class="fa fa-search"></i></span>
-      <input id="term" name="term" type="search" placeholder="Search Users...">
+      <input id="term" name="term" type="search" placeholder="Post number...">
       <span>
         <button class="btn" type="submit">Submit</button>
       </span>
   </span>
   </form>
 </div>
-<div class="admin section users">
-  <div class="col-12">
-    <table class="col-12">
-      <tr>
-        <td>Name</td>
-        <td>Status</td>
-        <td>Joined</td>
-      </tr>
-      {% for user in users %}
-      <tr>
-        <td>
-          <div class="username"><a href="{{url_for('view_user', user=user.name)}}"><i class="fa fa-user"></i> {{user.name}}</a></div>
-        </td>
-        <td>{{user.status}}</td>
-        <td><time-ago datetime="{{user.joindate}}"></time-ago></p></td>
-      </tr>
-      {% endfor %}
-    </table>
-  </div>
-</div>
+
 
 {% endblock %}
