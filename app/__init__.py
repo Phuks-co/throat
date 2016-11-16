@@ -520,7 +520,7 @@ def view_post(sub, pid):
     if not post or post.sub.name != sub:
         abort(404)
 
-    mods = getMetadata(sub, 'mod2', all=True)
+    mods = getMetadata(post.sub, 'mod2', all=True)
     txtpedit = EditSubTextPostForm()
     txtpedit.content.data = post.content
     createtxtpost = CreateSubTextPost(sub=sub)
