@@ -7,6 +7,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 from tld import get_tld
+from urlparse import urlparse
 from .caching import CacheableMixin, query_callable, regions
 
 
@@ -300,8 +301,8 @@ class SubPost(db.Model, CacheableMixin):
 
     def getDomain(self):
         """ Gets Domain """
-        x = get_tld(self.link, fail_silently=True)
-        return x
+        x = urlparse(self.link)
+        return x.netloc
 
     @hybrid_property
     def sub(self):
