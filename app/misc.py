@@ -236,7 +236,7 @@ def getAnnouncement():
 
 
 @cache.memoize(30)
-def getMetadata(obj, key, value=None):
+def getMetadata(obj, key, value=None, all=False):
     """ Gets metadata out of 'obj' (either a Sub, SubPost or User) """
     if not obj:
         # Failsafe in case FOR SOME REASON SOMEBODY PASSED NONE OR FALSE TO
@@ -245,7 +245,10 @@ def getMetadata(obj, key, value=None):
         return
 
     try:
-        x = obj.properties.filter_by(key=key).first()
+        if all:
+            x = obj.properties.filter_by(key=key).all()
+        else:
+            x = obj.properties.filter_by(key=key).first()
     except (AttributeError, sqlalchemy.orm.exc.DetachedInstanceError):
         if isinstance(obj, SubPost):
             x = SubPostMetadata.cache.filter(key=key, pid=obj.pid)
@@ -254,11 +257,17 @@ def getMetadata(obj, key, value=None):
         elif isinstance(obj, User):
             x = UserMetadata.cache.filter(key=key, uid=obj.uid)
         try:
-            x = next(x)
+            if all:
+                x = list(x)
+            else:
+                x = next(x)
         except StopIteration:
             return False
     if x and value is None:
-        return x.value
+        if all:
+            return x
+        else:
+            return x.value
     elif value is None:
         return False
     if x:
@@ -390,9 +399,11 @@ def getSubCreation(sub):
 @cache.memoize(300)
 def getSuscriberCount(sub):
     """ Returns subscriber count """
-    x = sub.subscribers.filter_by(sid=sub.sid) \
-                       .filter_by(status='1').count()
-    return x
+    x = SubSubscriber.cache.filter(sid=sub.sid,status=1)
+    try:
+        return len(list(x))
+    except StopIteration:
+        return 0
 
 
 @cache.memoize(300)

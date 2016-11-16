@@ -483,7 +483,7 @@ def view_sub_top(sub, page):
 
     posts = sub.posts.order_by(SubPost.posted.desc())
     sorter = VoteSorting(posts)
-    mods = sub.properties.filter_by(key='mod2').all()
+    mods = getMetadata(sub, 'mod2', all=True)
     createtxtpost = CreateSubTextPost(sub=sub.name)
     createlinkpost = CreateSubLinkPost(sub=sub)
 
@@ -503,7 +503,7 @@ def view_sub_hot(sub, page):
 
     posts = sub.posts.order_by(SubPost.posted.desc())
     sorter = HotSorting(posts)
-    mods = sub.properties.filter_by(key='mod2').all()
+    mods = getMetadata(sub, 'mod2', all=True)
     createtxtpost = CreateSubTextPost(sub=sub.name)
     createlinkpost = CreateSubLinkPost(sub=sub.name)
 
@@ -520,8 +520,7 @@ def view_post(sub, pid):
     if not post or post.sub.name != sub:
         abort(404)
 
-    mods = SubMetadata.query.filter_by(sid=post.sub.sid) \
-                            .filter_by(key='mod2').all()
+    mods = getMetadata(sub, 'mod2', all=True)
     txtpedit = EditSubTextPostForm()
     txtpedit.content.data = post.content
     createtxtpost = CreateSubTextPost(sub=sub)

@@ -206,7 +206,7 @@ class SubMetadata(db.Model, CacheableMixin):
         return str(x.name)
 
 
-class SubSubscriber(db.Model):
+class SubSubscriber(db.Model, CacheableMixin):
     """ Stores subscribers for a sub. """
     cache_label = "default"  # region's label to use
     cache_regions = regions  # regions to store cache
