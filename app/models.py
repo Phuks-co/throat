@@ -300,7 +300,7 @@ class SubPost(db.Model, CacheableMixin):
 
     def getDomain(self):
         """ Gets Domain """
-        x = get_tld(self.link)
+        x = get_tld(self.link, fail_silently=True)
         return x
 
     @hybrid_property
