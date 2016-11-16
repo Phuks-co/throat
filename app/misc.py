@@ -269,6 +269,8 @@ def getMetadata(obj, key, value=None, all=False):
         else:
             return x.value
     elif value is None:
+        if all:
+            return []
         return False
     if x:
         x.value = value
@@ -399,7 +401,7 @@ def getSubCreation(sub):
 @cache.memoize(300)
 def getSuscriberCount(sub):
     """ Returns subscriber count """
-    x = SubSubscriber.cache.filter(sid=sub.sid,status=1)
+    x = SubSubscriber.cache.filter(sid=sub.sid, status=1)
     try:
         return len(list(x))
     except StopIteration:
