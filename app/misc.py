@@ -411,8 +411,12 @@ def getSuscriberCount(sub):
 @cache.memoize(300)
 def getModCount(sub):
     """ Returns the sub's mod count metadata """
-    x = getMetadata(sub, 'mod2')
-    return x
+    x = SubMetadata.query.filter_by(sid=sub.sid) \
+                         .filter_by(key='mod2').count()
+    if not x:
+        return '0'
+    else:
+        return x
 
 
 @cache.memoize(300)
