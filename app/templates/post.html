@@ -165,6 +165,11 @@
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
             </span>
           {% endif %}
+          {% if post.getDomain() == "www.youtube.com" %}
+            <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
+              <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
+            </span>
+          {% endif %}
           {% if post.getDomain() == "vimeo.com" %}
             <span id="vimeovid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>

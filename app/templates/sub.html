@@ -212,6 +212,8 @@
                 <i class="fa fa-image fa-stack-1x fa-inverse"></i>
                 {% elif post.getDomain() == "youtube.com" %}
                 <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
+                {% elif post.getDomain() == "www.youtube.com" %}
+                <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
                 {% elif post.getDomain() == "vimeo.com" %}
                 <i class="fa fa-vimeo fa-stack-1x fa-inverse"></i>
                 {% elif post.getDomain() == "vine.co" %}
@@ -237,6 +239,11 @@
           <p class="container">
           {% if post.link %}
             {% if post.getDomain() == "youtube.com" %}
+              <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
+                <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
+              </span>
+            {% endif %}
+            {% if post.getDomain() == "www.youtube.com" %}
               <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
               </span>
