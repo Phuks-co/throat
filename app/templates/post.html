@@ -159,31 +159,34 @@
           <div class="content">{{markdown(post.content)|safe}}</div>
           {% else %}
           {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
-          <div class="content"><a href="{{post.link}}" target="_blank" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.link}}</a>
-          {% if post.getDomain() == "youtube.com" %}
-            <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
-              <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
-            </span>
-          {% endif %}
-          {% if post.getDomain() == "www.youtube.com" %}
-            <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
-              <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
-            </span>
-          {% endif %}
-          {% if post.getDomain() == "vimeo.com" %}
-            <span id="vimeovid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
-              <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
-            </span>
-          {% endif %}
-          {% if post.getDomain() == "vine.co" %}
-            <span id="vinevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvine">
-              <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vine" aria-hidden="true"></i></a></span>
-            </span>
-          {% endif %}
+          <div class="content">
           {% if post.isImage() %}
             <span id="openimg" data-img="{{post.link}}" data-pid="{{post.pid}}" class="closedimg">
+              {{post.link}}
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
             </span>
+          {% else %}
+            <a href="{{post.link}}" target="_blank" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.link}}</a>
+            {% if post.getDomain() == "youtube.com" %}
+              <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
+                <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
+              </span>
+            {% endif %}
+            {% if post.getDomain() == "www.youtube.com" %}
+              <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
+                <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
+              </span>
+            {% endif %}
+            {% if post.getDomain() == "vimeo.com" %}
+              <span id="vimeovid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
+                <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
+              </span>
+            {% endif %}
+            {% if post.getDomain() == "vine.co" %}
+              <span id="vinevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvine">
+                <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vine" aria-hidden="true"></i></a></span>
+              </span>
+            {% endif %}
           {% endif %}
           </div>
           {% endif %}
