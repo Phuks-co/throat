@@ -732,7 +732,9 @@ def admin_post_search(term):
     if current_user.is_admin():
         post = SubPost.query.filter_by(pid=term).first()
         sub = Sub.query.filter_by(sid=post.sid).first()
-        return render_template('adminpostsearch.html', sub=sub, post=post)
+        votes = SubPostVote.query.filter_by(pid=term).all()
+        return render_template('adminpostsearch.html', sub=sub, post=post,
+                                votes=votes)
     else:
         return render_template('errors/404.html'), 404
 

@@ -60,16 +60,13 @@
         <td>user</td>
         <td>Time</td>
       </tr>
+      {% for vote in votes %}
       <tr>
-        <td>up/down</td>
-        <td>userplaceholder</</td>
+        <td>{% if vote.positive %}<span class="upvoted">up</span>{% else %}<span class="downvoted">down</span>{% endif %}</td>
+        <td>{{vote.uid}}</td>
         <td>timeplaceholder</td>
       </tr>
-      <tr>
-        <td>up/down</td>
-        <td>userplaceholder</</td>
-        <td>timeplaceholder</td>
-      </tr>
+      {% endfor %}
     </table>
   </div>
 </div>
