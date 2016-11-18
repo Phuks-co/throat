@@ -379,6 +379,12 @@ class SubPostComment(db.Model):
     def __init__(self):
         self.cid = str(uuid.uuid4())
 
+    @hybrid_property
+    def getUname(self):
+        """ Returns username from str """
+        x = User.query.filter_by(uid=self.uid).first()
+        return str(x.name)
+
 
 class SubPostVote(db.Model):
     """ Up/Downvotes in a post. """

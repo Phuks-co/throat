@@ -525,8 +525,9 @@ def view_post(sub, pid):
     txtpedit.content.data = post.content
     createtxtpost = CreateSubTextPost(sub=sub)
     createlinkpost = CreateSubLinkPost(sub=sub)
+    comments = SubPostComment.query.filter_by(pid=pid).all()
     return render_template('post.html', post=post, mods=mods,
-                           edittxtpostform=txtpedit,
+                           edittxtpostform=txtpedit, comments=comments,
                            editlinkpostform=EditSubLinkPostForm(),
                            lnkpostform=createlinkpost,
                            txtpostform=createtxtpost)

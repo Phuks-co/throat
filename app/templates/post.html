@@ -219,7 +219,7 @@
             Be the first to comment this post
           </p>
           {% endif %}
-          {% for comment in post.comments recursive %}
+          {% for comment in comments %}
             {% if (loop.depth == 1 and not comment.parentcid) or loop.depth >1 %}
             <article data-cid="{{comment.cid}}" class="text-post center no-padding comment sub-{{loop.depth0}}">
               <div class="head">
@@ -227,7 +227,7 @@
                 {# if post.ptype == 1 %}
                   <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
                 {% endif #}
-                  <a href="{{url_for('view_user', user=comment.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{comment.user.name}}</a>
+                  <a href="{{ url_for('view_user', user=comment.getUname) }}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{ comment.getUname }}</a>
                   <span class="time btn small">
                     <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{comment.time.isoformat()}}"></time-ago>
                   </span>
@@ -251,9 +251,9 @@
               </span>
               {%endif%}
             </article>
-            {% if comment.children %}
+            {# if comment.children %}
               {{loop(comment.children)}}
-            {%endif%}
+            {% endif #}
             {%endif%}
           {%endfor%}
         </section>
