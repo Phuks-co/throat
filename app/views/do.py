@@ -1074,7 +1074,7 @@ def toggle_sticky(post):
     form = DeletePost()
 
     if form.validate():
-        md = SubPostMetadata.query.filter_by(key='sticky').first()
+        md = SubMetadata.query.filter_by(key='sticky').first()
         if not md:
             md = SubMetadata(post.sub, 'sticky', post.pid)
             db.session.add(md)
