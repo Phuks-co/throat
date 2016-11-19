@@ -378,7 +378,7 @@
 {% endblock %}
 {%block pagefoot%}
 {% if not current_user.block_styles() %}
-  <style>{{post.sub.stylesheet.first().content}}</style>
+  <style>{{style.content}}</style>
 {% endif %}
 {%if current_user.is_authenticated%}
 <script type="text/javascript" src="{{ url_for('static', filename='js/simplemde.min.js') }}"></script>

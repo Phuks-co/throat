@@ -24,6 +24,7 @@ from feedgen.feed import FeedGenerator
 
 from .models import db, User, Sub, SubPost, SubPostVote, SubPostComment
 from .models import UserBadge, UserMetadata, SiteMetadata, SubMetadata, Message
+from .models import SubStylesheet
 from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
@@ -432,10 +433,11 @@ def view_sub_new(sub, page):
         mods = []
     createtxtpost = CreateSubTextPost(sub=sub.name)
     createlinkpost = CreateSubLinkPost(sub=sub.name)
+    style = SubStylesheet.query.filter_by(sid=sub.sid).first()
 
     return render_template('sub.html', sub=sub, page=page, sort_type='new',
                            posts=sorter.getPosts(page), mods=mods,
-                           txtpostform=createtxtpost,
+                           txtpostform=createtxtpost, style=style,
                            lnkpostform=createlinkpost)
 
 
@@ -486,10 +488,11 @@ def view_sub_top(sub, page):
     mods = getMetadata(sub, 'mod2', all=True)
     createtxtpost = CreateSubTextPost(sub=sub.name)
     createlinkpost = CreateSubLinkPost(sub=sub)
+    style = SubStylesheet.query.filter_by(sid=sub.sid).first()
 
     return render_template('sub.html', sub=sub, page=page, sort_type='top',
                            posts=sorter.getPosts(page), mods=mods,
-                           txtpostform=createtxtpost,
+                           txtpostform=createtxtpost, style=style,
                            lnkpostform=createlinkpost)
 
 
@@ -506,10 +509,11 @@ def view_sub_hot(sub, page):
     mods = getMetadata(sub, 'mod2', all=True)
     createtxtpost = CreateSubTextPost(sub=sub.name)
     createlinkpost = CreateSubLinkPost(sub=sub.name)
+    style = SubStylesheet.query.filter_by(sid=sub.sid).first()
 
     return render_template('sub.html', sub=sub, page=page, sort_type='hot',
                            posts=sorter.getPosts(page), mods=mods,
-                           txtpostform=createtxtpost,
+                           txtpostform=createtxtpost, style=style,
                            lnkpostform=createlinkpost)
 
 
@@ -526,10 +530,12 @@ def view_post(sub, pid):
     createtxtpost = CreateSubTextPost(sub=sub)
     createlinkpost = CreateSubLinkPost(sub=sub)
     comments = SubPostComment.query.filter_by(pid=pid).all()
+    sub = Sub.query.filter_by(sid=post.sid).first()
+    style = SubStylesheet.query.filter_by(sid=sub.sid).first()
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit, comments=comments,
                            editlinkpostform=EditSubLinkPostForm(),
-                           lnkpostform=createlinkpost,
+                           lnkpostform=createlinkpost, style=style,
                            txtpostform=createtxtpost)
 
 
@@ -721,6 +727,7 @@ def admin_subs_search(term):
 def admin_post():
     """ WIP: View post. """
     if current_user.is_admin():
+        posts = SubPost.query.first()
         return render_template('adminpost.html')
     else:
         return render_template('errors/404.html'), 404
