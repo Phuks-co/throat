@@ -455,7 +455,8 @@ def userCanFlair(sub):
 
 def subSort(self):
     """ Don't forget to add the fucking docstring to functions >:| """
-    x = self.properties.filter_by(key='sort').first()
+    x = SubMetadata.query.filter_by(sid=self.sid) \
+                         .filter_by(key='sort').first()
     if not x or x.value == 'v':
         return 'Hot'
     if x.value == 'v_two':

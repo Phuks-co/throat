@@ -339,28 +339,28 @@ def edit_sub(sub):
 
     if current_user.is_mod(sub) or current_user.is_admin():
         form = EditSubForm()
-        flair1 = sub.properties.filter_by(key='fl1').first()
+        flair1 = SubMetadata.query.filter_by(key='fl1').first()
         if flair1:
             form.flair1.data = flair1.value
-        flair2 = sub.properties.filter_by(key='fl2').first()
+        flair2 = SubMetadata.query.filter_by(key='fl2').first()
         if flair2:
             form.flair2.data = flair2.value
-        flair3 = sub.properties.filter_by(key='fl3').first()
+        flair3 = SubMetadata.query.filter_by(key='fl3').first()
         if flair3:
             form.flair3.data = flair3.value
-        flair4 = sub.properties.filter_by(key='fl4').first()
+        flair4 = SubMetadata.query.filter_by(key='fl4').first()
         if flair4:
             form.flair4.data = flair4.value
-        flair5 = sub.properties.filter_by(key='fl5').first()
+        flair5 = SubMetadata.query.filter_by(key='fl5').first()
         if flair5:
             form.flair5.data = flair5.value
-        flair6 = sub.properties.filter_by(key='fl6').first()
+        flair6 = SubMetadata.query.filter_by(key='fl6').first()
         if flair6:
             form.flair6.data = flair6.value
-        flair7 = sub.properties.filter_by(key='fl7').first()
+        flair7 = SubMetadata.query.filter_by(key='fl7').first()
         if flair7:
             form.flair7.data = flair7.value
-        flair8 = sub.properties.filter_by(key='fl8').first()
+        flair8 = SubMetadata.query.filter_by(key='fl8').first()
         if flair8:
             form.flair8.data = flair8.value
         return render_template('editsub.html', sub=sub, editsubform=form)
@@ -452,7 +452,7 @@ def view_sub_postmodlog(sub, page):
 
     posts = sub.posts.order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
-    mods = sub.properties.filter_by(key='mod2').all()
+    mods = SubMetadata.query.filter_by(key='mod2').all()
     createtxtpost = CreateSubTextPost(sub=sub)
     createlinkpost = CreateSubLinkPost(sub=sub)
 
