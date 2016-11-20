@@ -937,7 +937,7 @@ def remove_sub_ban(sub, user):
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
     if current_user.is_topmod(sub) or current_user.is_admin() \
        or current_user.is_mod(sub):
-        inv = sub.properties.filter_by(key='ban') \
+        inv = SubMetadata.query.filter_by(key='ban') \
                             .filter_by(value=user.uid).first()
         inv.key = 'xban'
         db.session.commit()
@@ -953,7 +953,7 @@ def remove_mod2(sub, user):
     user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
     if current_user.is_topmod(sub) or current_user.is_admin():
-        inv = sub.properties.filter_by(key='mod2') \
+        inv = SubMetadata.query.filter_by(key='mod2') \
                             .filter_by(value=user.uid).first()
         inv.key = 'xmod2'
         db.session.commit()
@@ -969,7 +969,7 @@ def revoke_mod2inv(sub, user):
     user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
     if current_user.is_topmod(sub) or current_user.is_admin():
-        inv = sub.properties.filter_by(key='mod2i') \
+        inv = SubMetadata.query.filter_by(key='mod2i') \
                                    .filter_by(value=user.uid).first()
         inv.key = 'xmod2i'
         db.session.commit()
@@ -984,7 +984,7 @@ def accept_mod2inv(sub, user):
     """ Remove Mod2 """
     user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
-    inv = sub.properties.filter_by(key='mod2i') \
+    inv = SubMetadata.query.filter_by(key='mod2i') \
                         .filter_by(value=user.uid).first()
     if inv:
         inv.key = 'mod2'
@@ -1000,8 +1000,8 @@ def refuse_mod2inv(sub, user):
     """ refuse Mod2 """
     user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
-    inv = sub.properties.filter_by(key='mod2i') \
-                        .filter_by(value=user.uid).first()
+    inv = SubMetadata.query.filter_by(key='mod2i') \
+                           .filter_by(value=user.uid).first()
     if inv:
         inv.key = 'xmod2i'
         db.session.commit()

@@ -34,7 +34,7 @@
   <span class="editmodbtn col-4">
     <li><i class="fa fa-user"></i> <a href="{{url_for('view_user', user=mod.getUsername)}}">{{mod.getUsername}}</a>
       {% if current_user.is_admin() or current_user.is_topmod(sub) %}
-      <span id="remove-mod2" data-sub="{{sub.name}}" data-user="{{mod.getUsername}}" class="btn active">remove</span>
+      <span id="remove-mod2" data-sub="{{sub.name}}" data-user="{{mod.getUsername}}" class="btn">remove</span>
       {% endif %}
     </li>
   </span>

@@ -412,10 +412,11 @@ class SubPostVote(db.Model, CacheableMixin):
     positive = Column(Boolean)
 
 
-class Message(db.Model):
+class Message(db.Model, CacheableMixin):
     """ Represents a post on a sub """
     cache_label = "default"  # region's label to use
     cache_regions = regions  # regions to store cache
+    cache_pk = 'mid'
     # Query handeling dogpile caching
     query_class = query_callable(regions)
 

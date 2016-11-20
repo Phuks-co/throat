@@ -346,30 +346,21 @@ def hasMail(user):
 
 def newCount(user):
     """ Returns new message count """
-    x = Message.query.filter_by(read=None) \
-                     .filter(or_(Message.mtype.is_(None)) |
-                             (Message.mtype != '-1')) \
-                     .filter_by(receivedby=user.uid).count()
-    return x
+    x = Message.cache.filter(read=None, receivedby=user.uid)
+    return len(list(x))
 
 
 def newPMCount(user):
     """ Returns new message count in message area"""
-    x = Message.query.filter_by(read=None) \
-                     .filter(or_(Message.mtype.is_(None)) |
-                             (Message.mtype != '-1')) \
-                     .filter_by(receivedby=user.uid) \
-                     .filter_by(mtype=None).count()
+    x = Message.query.filter_by(read=None).filter(Message.mtype=='0') \
+                     .filter_by(receivedby=user.uid).count()
     return x
 
 
 def newReplyCount(user):
     """ Returns new message count in message area """
-    x = Message.query.filter_by(read=None) \
-                     .filter(or_(Message.mtype.is_(None)) |
-                             (Message.mtype != '-1')) \
-                     .filter_by(receivedby=user.uid) \
-                     .filter(Message.mtype.isnot(None)).count()
+    x = Message.query.filter_by(read=None).filter(Message.mtype==None) \
+                     .filter_by(receivedby=user.uid).count()
     return x
 
 
