@@ -41,6 +41,7 @@ from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)
+
 app.register_blueprint(do)
 app.register_blueprint(api)
 app.config.from_object('config')
@@ -518,7 +519,7 @@ def view_sub_hot(sub, page):
 @app.route("/s/<sub>/<pid>")
 def view_post(sub, pid):
     """ View post and comments (WIP) """
-    post = SubPost.query.filter_by(pid=pid).first()
+    post = SubPost.cache.get(pid)
     if not post or post.sub.name != sub:
         abort(404)
 
@@ -527,9 +528,13 @@ def view_post(sub, pid):
     txtpedit.content.data = post.content
     createtxtpost = CreateSubTextPost(sub=sub)
     createlinkpost = CreateSubLinkPost(sub=sub)
-    comments = SubPostComment.query.filter_by(pid=pid).all()
-    sub = Sub.query.filter_by(sid=post.sid).first()
-    style = SubStylesheet.query.filter_by(sid=sub.sid).first()
+    comments = SubPostComment.cache.filter(pid=pid)
+    sub = Sub.cache.get(post.sid)
+    style = SubStylesheet.cache.filter(sid=sub.sid)
+    try:
+        style = next(style)
+    except StopIteration:
+        style = ""
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit, comments=comments,
                            editlinkpostform=EditSubLinkPostForm(),

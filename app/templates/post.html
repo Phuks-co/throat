@@ -29,7 +29,7 @@
 
 </div>
 <span class="col-12"><hr><span>
-<p>{% if post.sub.isNSFW %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %} /s/{{post.sub.name}}</p>
+<p>{% if isNSFW(post.sub) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %} /s/{{post.sub.name}}</p>
 <p>{{post.sub.title}}</p>
 <span class="col-12"><hr><span>
 <div class="row buttons">

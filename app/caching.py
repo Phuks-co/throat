@@ -198,7 +198,7 @@ class Cache(object):
             #    raise TypeError('filter accept only one attribute for filtering')
             key, value = list(kwargs.items())[0]
             if key not in self._columns():
-                raise TypeError('%s does not have an attribute %s' % self, key)
+                raise TypeError('{0} does not have an attribute {1}'.format(self, key))
             query_kwargs[key] = value
 
         cache_key = self._cache_key(**kwargs)

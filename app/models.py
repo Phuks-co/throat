@@ -61,28 +61,27 @@ class User(db.Model, CacheableMixin):
     @hybrid_property
     def showLinksNewTab(self):
         """ Returns true user selects to open links in a new window """
-        x = self.properties.filter_by(key='exlinks').first()
-        if x:
-            return True if x.value == '1' else False
-        else:
+        x = UserMetadata.cache.filter(key='exlinks', uid=self.uid)
+        try:
+            x = next(x)
+            if x.value == 1:
+                return True
+            else:
+                return False
+        except StopIteration:
             return False
 
     @hybrid_property
     def showStyles(self):
         """ Returns true user selects to see sustom sub stylesheets """
-        x = self.properties.filter_by(key='styles').first()
-        if x:
-            return True if x.value == '1' else False
-        else:
-            return False
-
-    @hybrid_property
-    def showNSFW(self):
-        """ Returns true user selects to see NSFW posts """
-        x = self.properties.filter_by(key='nsfw').first()
-        if x:
-            return True if x.value == '1' else False
-        else:
+        x = UserMetadata.cache.filter(key='styles', uid=self.uid)
+        try:
+            x = next(x)
+            if x.value == 1:
+                return True
+            else:
+                return False
+        except StopIteration:
             return False
 
 
@@ -104,7 +103,7 @@ class UserMetadata(db.Model, CacheableMixin):
         """ Returns the badge's css class """
         if self.key != "badge":
             return False
-        x = UserBadge.query.filter_by(bid=self.value).first()
+        x = UserBadge.cache.get(self.value)
         return str(x.badge)
 
     @hybrid_property
@@ -112,7 +111,7 @@ class UserMetadata(db.Model, CacheableMixin):
         """ Returns the badge's name """
         if self.key != "badge":
             return False
-        x = UserBadge.query.filter_by(bid=self.value).first()
+        x = UserBadge.cache.get(self.value)
         return str(x.name)
 
     @hybrid_property
@@ -120,7 +119,7 @@ class UserMetadata(db.Model, CacheableMixin):
         """ Returns the badge's hover text """
         if self.key != "badge":
             return False
-        x = UserBadge.query.filter_by(bid=self.value).first()
+        x = UserBadge.cache.get(self.value)
         return str(x.text)
 
 
@@ -197,13 +196,13 @@ class SubMetadata(db.Model, CacheableMixin):
     @hybrid_property
     def getUsername(self):
         """ Returns username from str """
-        x = User.query.filter_by(uid=self.value).first()
-        return str(x.name)
+        x = User.cache.get(self.value)
+        return x.name
 
     @hybrid_property
     def getSubName(self):
         """ Returns the sub's name from str """
-        x = Sub.query.filter_by(sid=self.sid).first()
+        x = Sub.cache.get(self.sid)
         return str(x.name)
 
 
@@ -226,10 +225,11 @@ class SubSubscriber(db.Model, CacheableMixin):
     time = Column(DateTime)
 
 
-class SubStylesheet(db.Model):
+class SubStylesheet(db.Model, CacheableMixin):
     """ Stores sub's custom CSS """
     cache_label = "default"  # region's label to use
     cache_regions = regions  # regions to store cache
+    cache_pk = 'xid'
     # Query handeling dogpile caching
     query_class = query_callable(regions)
 
@@ -287,15 +287,12 @@ class SubPost(db.Model, CacheableMixin):
 
     def voteCount(self):
         """ Returns the post's vote count """
-        db.session.expunge_all()
+        # db.session.expunge_all()
 
         votes = SubPostMetadata.cache.filter(key='score', pid=self.pid)
         try:
             votes = next(votes)
-        except:
-            votes = SubPostMetadata(self.pid, 'score', 1)
-            db.session.add(votes)
-            db.session.commit()
+        except StopIteration:
             return 1
         return int(votes.value) if votes else 0
 
@@ -358,7 +355,7 @@ class SubPostMetadata(db.Model, CacheableMixin):
     def __repr__(self):
         return '<SubPostMetadata ({0}); {1} = {2}>'.format(self.pid, self.key, self.value)
 
-class SubPostComment(db.Model):
+class SubPostComment(db.Model, CacheableMixin):
     """ A comment. In a post. """
     cache_label = "default"  # region's label to use
     cache_regions = regions  # regions to store cache

@@ -236,7 +236,7 @@ def getAnnouncement():
 
 
 @cache.memoize(30)
-def getMetadata(obj, key, value=None, all=False):
+def getMetadata(obj, key, value=None, all=False, record=False):
     """ Gets metadata out of 'obj' (either a Sub, SubPost or User) """
     if not obj:
         # Failsafe in case FOR SOME REASON SOMEBODY PASSED NONE OR FALSE TO
@@ -266,8 +266,9 @@ def getMetadata(obj, key, value=None, all=False):
     if x and value is None:
         if all:
             return x
-        else:
-            return x.value
+        if record:
+            return x
+        return x.value
     elif value is None:
         if all:
             return []
@@ -366,29 +367,35 @@ def newReplyCount(user):
 
 def hasSubscribed(sub, user):
     """ Returns True if the current user is subscribed """
-    x = SubSubscriber.query.filter_by(sid=sub.sid) \
-                           .filter_by(uid=user.uid) \
-                           .filter_by(status='1').first()
+    x = SubSubscriber.cache.filter(sid=sub.sid, uid=user.uid, status='1')
+    try:
+        x = next(x)
+    except StopIteration:
+        x = False
     return bool(x)
 
 
 def hasBlocked(sub, user):
     """ Returns True if the current user has blocked """
-    x = SubSubscriber.query.filter_by(sid=sub.sid) \
-                           .filter_by(uid=user.uid) \
-                           .filter_by(status='2').first()
+    x = SubSubscriber.cache.filter(sid=sub.sid, uid=user.uid, status='2')
+    try:
+        x = next(x)
+    except StopIteration:
+        x = False
     return bool(x)
 
 
 @cache.memoize(600)
 def getSubUsers(sub, key):
     """ Returns the names of the sub positions, founder, owner """
-    x = SubMetadata.query.filter_by(sid=sub.sid) \
-                         .filter_by(key=key).first()
-    if not x:
+    x = SubMetadata.cache.filter(sid=sub.sid, key=key)
+    try:
+        x = next(x)
+    except StopIteration:
         return False
-    y = User.query.filter_by(uid=x.value).first()
-    return y.name
+
+    name = User.cache.get(x.value).name
+    return name
 
 
 @cache.memoize(600)
@@ -411,27 +418,32 @@ def getSuscriberCount(sub):
 @cache.memoize(300)
 def getModCount(sub):
     """ Returns the sub's mod count metadata """
-    x = SubMetadata.query.filter_by(sid=sub.sid) \
-                         .filter_by(key='mod2').count()
-    if not x:
-        return '0'
-    else:
-        return x
+    x = getMetadata(sub, 'mod2', all=True)
+
+    return len(x)
 
 
 @cache.memoize(300)
 def getSubPostCount(sub):
     """ Returns the sub's post count """
-    x = SubPost.query.filter_by(sid=sub.sid).count()
+    x = SubPost.cache.filter(sid=sub.sid)
+    try:
+        x = list(x)
+    except StopIteration:
+        x = 0
     return x
 
 
 def getStickies(sid):
     """ Returns a list of stickied SubPosts """
-    x = SubMetadata.query.filter_by(sid=sid).filter_by(key='sticky').all()
+    x = SubMetadata.cache.filter(sid=sid, key='sticky')
+    try:
+        x = list(x)
+    except StopIteration:
+        x = []
     r = []
     for i in x:
-        r.append(SubPost.query.filter_by(pid=i.value).first())
+        r.append(SubPost.cache.get(i.value))
     return r
 
 
@@ -453,15 +465,15 @@ def userCanFlair(sub):
     return False if not x or x == '0' else True
 
 
-def subSort(self):
+def subSort(sub):
     """ Don't forget to add the fucking docstring to functions >:| """
-    x = SubMetadata.query.filter_by(sid=self.sid) \
-                         .filter_by(key='sort').first()
-    if not x or x.value == 'v':
+    # What an useful docstring.
+    x = getMetadata(sub, 'sort')
+    if not x or x == 'v':
         return 'Hot'
-    if x.value == 'v_two':
+    if x == 'v_two':
         return 'New'
-    if x.value == 'v_three':
+    if x == 'v_three':
         return 'Top'
 
 

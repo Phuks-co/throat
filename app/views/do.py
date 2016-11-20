@@ -663,17 +663,14 @@ def upvote(pid):
 
     qvote = SubPostVote.query.filter_by(pid=pid) \
                              .filter_by(uid=current_user.get_id()).first()
-    vote = SubPostVote()
-    vote.pid = pid
-    vote.uid = current_user.get_id()
-    vote.positive = True
-    xvotes = SubPostMetadata.cache.filter(key='score', pid=post.pid)
-    try:
-        xvotes = next(xvotes)
 
-    except StopIteration:
+    xvotes = getMetadata(post, 'score', record=True)
+    if not xvotes:
+        print("WHYYYYYYYYYYYYYYYYYYYYYYYYYY")
         xvotes = SubPostMetadata(post.pid, 'score', 1)
         db.session.add(xvotes)
+        cache.delete_memoized(getMetadata, post, 'score', record=True)
+        SubPostMetadata.cache.uncache(key='score', pid=post.pid)
 
     if qvote:
         if qvote.positive:
@@ -682,14 +679,18 @@ def upvote(pid):
         else:
 
             qvote.positive = True
-            db.session.add(qvote)
-            xvotes.value = int(xvotes.value) + 1
+            xvotes.value = int(xvotes.value) + 2
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'message': 'Negative vote reverted.'})
+    else:
+        vote = SubPostVote()
+        vote.pid = pid
+        vote.uid = current_user.get_id()
+        vote.positive = True
+        db.session.add(vote)
 
     xvotes.value = int(xvotes.value) + 1
-    db.session.add(vote)
     db.session.commit()
     return json.dumps({'status': 'ok'})
 
@@ -705,16 +706,14 @@ def downvote(pid):
 
     qvote = SubPostVote.query.filter_by(pid=pid) \
                              .filter_by(uid=current_user.get_id()).first()
-    vote = SubPostVote()
-    vote.pid = pid
-    vote.uid = current_user.get_id()
-    vote.positive = False
-    xvotes = SubPostMetadata.cache.filter(key='score', pid=post.pid)
-    try:
-        xvotes = next(xvotes)
-    except StopIteration:
+
+    xvotes = getMetadata(post, 'score', record=True)
+    if not xvotes:
         xvotes = SubPostMetadata(post.pid, 'score', 1)
         db.session.add(xvotes)
+        cache.delete_memoized(getMetadata, post, 'score', record=True)
+        SubPostMetadata.cache.uncache(key='score', pid=post.pid)
+
 
     if qvote:
         if not qvote.positive:
@@ -722,15 +721,17 @@ def downvote(pid):
                                'error': ['You already voted.']})
         else:
             qvote.positive = False
-            db.session.add(qvote)
-            xvotes.value = int(xvotes.value) - 1
-
+            xvotes.value = int(xvotes.value) - 2
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'message': 'Positive vote reverted.'})
+    else:
+        vote = SubPostVote()
+        vote.pid = pid
+        vote.uid = current_user.get_id()
+        vote.positive = False
+        db.session.add(vote)
     xvotes.value = int(xvotes.value) - 1
-
-    db.session.add(vote)
     db.session.commit()
     return json.dumps({'status': 'ok'})
 
