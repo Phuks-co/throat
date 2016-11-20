@@ -235,6 +235,14 @@ def getAnnouncement():
     return ann
 
 
+def decent(q):
+    """ Makes querying shit easier """
+    try:
+        return next(q)
+    except StopIteration:
+        return None
+
+
 @cache.memoize(30)
 def getMetadata(obj, key, value=None, all=False, record=False):
     """ Gets metadata out of 'obj' (either a Sub, SubPost or User) """

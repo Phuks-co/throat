@@ -37,7 +37,7 @@ from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, cache, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
 from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
-from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair
+from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair, decent
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)
@@ -263,7 +263,7 @@ def search(page, term):
 @app.route("/all/top/<int:page>")
 def all_top(page):
     """ The index page, all posts sorted as most recent posted first """
-    posts = SubPost.query.order_by(SubPost.posted.desc())
+    posts = SubPost.cache.filter()
     sorter = VoteSorting(posts)
     return render_template('index.html', page=page, sort_type='all_top',
                            posts=sorter.getPosts(page))
@@ -316,7 +316,7 @@ def view_sub(sub):
 @login_required
 def edit_sub_css(sub):
     """ Here we can edit sub info and settings """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = decent(Sub.cache.filter(name=sub))
     if not sub:
         abort(404)
 
@@ -332,7 +332,7 @@ def edit_sub_css(sub):
 @login_required
 def edit_sub(sub):
     """ Here we can edit sub info and settings """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = decent(Sub.cache.filter(name=sub))
     if not sub:
         abort(404)
 
@@ -371,7 +371,7 @@ def edit_sub(sub):
 @login_required
 def edit_sub_mods(sub):
     """ Here we can edit moderators for a sub """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = decent(Sub.cache.filter(name=sub))
     if not sub:
         abort(404)
 
@@ -393,7 +393,7 @@ def edit_sub_mods(sub):
 @app.route("/s/<sub>/new.rss")
 def sub_new_rss(sub):
     """ RSS feed for /s/sub/new """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = decent(Sub.cache.filter(name=sub))
     if not sub:
         abort(404)
 
@@ -419,7 +419,7 @@ def sub_new_rss(sub):
 @app.route("/s/<sub>/new/<int:page>")
 def view_sub_new(sub, page):
     """ The index page, all posts sorted as most recent posted first """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = decent(Sub.cache.filter(name=sub))
     if not sub:
         abort(404)
 
@@ -445,7 +445,7 @@ def view_sub_new(sub, page):
 def view_sub_postmodlog(sub, page):
     """ The mod/admin deleted posts page, sorted as most
         recent posted first """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = decent(Sub.cache.filter(name=sub))
     if not sub:
         abort(404)
 
@@ -464,7 +464,7 @@ def view_sub_postmodlog(sub, page):
 @app.route("/s/<sub>/bannedusers")
 def view_sub_bans(sub):
     """ See banned users for the sub """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = decent(Sub.cache.filter(name=sub))
     if not sub:
         abort(404)
 
@@ -478,7 +478,7 @@ def view_sub_bans(sub):
 @app.route("/s/<sub>/top/<int:page>")
 def view_sub_top(sub, page):
     """ The index page, /top sorting """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = decent(Sub.cache.filter(name=sub))
     if not sub:
         abort(404)
 
