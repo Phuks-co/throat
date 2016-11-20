@@ -16,3 +16,6 @@ flask-cache
 dogpile.cache
 mysqlclient
 redis
+requests
+python-opengraph
+pillow
