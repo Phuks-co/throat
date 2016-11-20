@@ -193,7 +193,11 @@
         </div>
         {% cache 300, post.pid, 'subpost' %}
           <div class="image">
-            {% if not post.link %}
+              {% if post.thumb %}
+              <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
+                <img src="{{config.THUMBNAIL_HOST}}{{post.thumb}}">
+              </a>
+              {% elif not post.link %}
               <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
                 <span class="fa-stack fa-3x" style="color: #616161;">
                   <i class="fa fa-square fa-stack-2x"></i>
