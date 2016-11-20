@@ -670,6 +670,7 @@ def upvote(pid):
     xvotes = SubPostMetadata.cache.filter(key='score', pid=post.pid)
     try:
         xvotes = next(xvotes)
+
     except StopIteration:
         xvotes = SubPostMetadata(post.pid, 'score', 1)
         db.session.add(xvotes)
@@ -683,7 +684,6 @@ def upvote(pid):
             qvote.positive = True
             db.session.add(qvote)
             xvotes.value = int(xvotes.value) + 1
-            db.session.add(xvotes)
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'message': 'Negative vote reverted.'})
@@ -724,7 +724,6 @@ def downvote(pid):
             qvote.positive = False
             db.session.add(qvote)
             xvotes.value = int(xvotes.value) - 1
-            db.session.add(xvotes)
 
             db.session.commit()
             return json.dumps({'status': 'ok',

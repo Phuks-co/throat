@@ -280,8 +280,10 @@ class SubPost(db.Model, CacheableMixin):
                                      value=self.pid)
         try:
             x = next(x)
+            x = True
         except StopIteration:
             x = False
+
 
         return bool(x)
 
