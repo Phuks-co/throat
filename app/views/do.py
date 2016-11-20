@@ -631,6 +631,9 @@ def create_lnkpost():
         post.posted = datetime.datetime.utcnow()
         db.session.add(post)
         db.session.commit()
+        ckey = make_template_fragment_key('subposts', vary_on=[post.sub.sid])
+        cache.delete(ckey)
+
         # Try to get thumbnail.
         # 1 - Check if it's an image
         try:
