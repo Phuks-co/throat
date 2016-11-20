@@ -79,37 +79,37 @@ class SiteUser(object):
         """ Returns True if the current user has blocked sub """
         return hasBlocked(sub, self.user)
 
+    @cache.memoize(60)
     def has_exlinks(self):
         """ Returns true if user selects to open links in a new window """
-        x = UserMetadata.query.filter_by(uid=self.user.uid) \
-                              .filter_by(key='exlinks').first()
+        x = getMetadata(self.user, 'exlinks')
         if x:
-            return True if x.value == '1' else False
+            return True if x == '1' else False
         else:
             return False
 
+    @cache.memoize(60)
     def block_styles(self):
         """ Returns true if user selects to block sub styles """
-        x = UserMetadata.query.filter_by(uid=self.user.uid) \
-                              .filter_by(key='styles').first()
+        x = getMetadata(self.user, 'styles')
         if x:
-            return True if x.value == '1' else False
+            return True if x == '1' else False
         else:
             return False
 
+    @cache.memoize(60)
     def show_nsfw(self):
         """ Returns true if user selects show nsfw posts """
-        x = UserMetadata.query.filter_by(uid=self.user.uid) \
-                              .filter_by(key='nsfw').first()
+        x = getMetadata(self.user, 'nsfw')
         if x:
-            return True if x.value == '1' else False
+            return True if x == '1' else False
         else:
             return False
 
     @cache.memoize(60)
     def get_post_score(self):
         """ Returns the post vote score of a user. """
-        posts = SubPost.query.filter_by(uid=self.user.uid)
+        posts = SubPost.cache.filter(uid=self.user.uid)
         count = 0
         for post in posts:
             for vote in post.votes:
@@ -122,7 +122,7 @@ class SiteUser(object):
     @cache.memoize(60)
     def get_post_voting(self):
         """ Returns the post voting for a user. """
-        votes = SubPostVote.query.filter_by(uid=self.user.uid)
+        votes = SubPostVote.cache.filter(uid=self.user.uid)
         count = 0
         for vote in votes:
             if vote.positive:

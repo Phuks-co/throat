@@ -363,6 +363,7 @@ class SubPostComment(db.Model):
     cache_label = "default"  # region's label to use
     cache_regions = regions  # regions to store cache
     # Query handeling dogpile caching
+    cache_pk = 'cid'
     query_class = query_callable(regions)
 
     cid = Column(String(64), primary_key=True)
@@ -386,10 +387,11 @@ class SubPostComment(db.Model):
         return str(x.name)
 
 
-class SubPostVote(db.Model):
+class SubPostVote(db.Model, CacheableMixin):
     """ Up/Downvotes in a post. """
     cache_label = "default"  # region's label to use
     cache_regions = regions  # regions to store cache
+    cache_pk = 'xid'
     # Query handeling dogpile caching
     query_class = query_callable(regions)
 
