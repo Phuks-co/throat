@@ -637,18 +637,18 @@ def create_lnkpost():
         # Try to get thumbnail.
         # 1 - Check if it's an image
         try:
-            req = requests.get(form.link.data, timeout=50)
+            req = requests.get(form.link.data, timeout=0.5)
         except:
             return json.dumps({'status': 'ok', 'pid': post.pid,
                                'sub': sub.name})
-
+        ctype = req.headers['content-type'].split(";")[0].lower()
         filename = str(uuid.uuid4()) + '.jpg'
         good_types = ['image/gif', 'image/jpeg', 'image/png']
-        if req.headers['content-type'] in good_types:
+        if ctype in good_types:
             # yay, it's an image!!1
             # Resize
             im = Image.open(BytesIO(req.content)).convert('RGB')
-        elif req.headers['content-type'] == 'text/html':
+        elif ctype == 'text/html':
             # Not an image!! Let's try with OpenGraph
             og = OpenGraph(html=req.text)
             try:
@@ -659,7 +659,7 @@ def create_lnkpost():
                                    'sub': sub.name})
             try:
                 req = requests.get(img, timeout=0.5)
-            except:
+            except Exception as e:
                 return json.dumps({'status': 'ok', 'pid': post.pid,
                                    'sub': sub.name})
             im = Image.open(BytesIO(req.content)).convert('RGB')
