@@ -9,6 +9,7 @@ from sqlalchemy.orm.attributes import get_history
 from sqlalchemy.ext.declarative import declared_attr
 from dogpile.cache.region import make_region
 from dogpile.cache.api import NO_VALUE
+import config
 
 
 def md5_key_mangler(key):
@@ -37,8 +38,14 @@ def memoize(obj):
 # if your app runs on multiple machine behind a
 # load balancer, I'd recommend the memcache backend.
 cache_config = {
-    'backend': 'dogpile.cache.memory',
-    'expiration_time': 3600, # 1 hour
+    'backend': 'dogpile.cache.redis',
+    'arguments': {
+        'host': config.CACHE_REDIS_HOST,
+        'port': config.CACHE_REDIS_PORT,
+        'db': 5,
+        'redis_expiration_time': 60*60*2,   # 2 hours
+        'distributed_lock': True
+    }
 }
 
 regions = dict(
