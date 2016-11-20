@@ -1137,46 +1137,6 @@
               e.setSelection(cursor, cursor + chunk.length);
             }
           }
-        }, {
-          name: 'cmdImage',
-          title: 'Image',
-          hotkey: 'Ctrl+G',
-          icon: {
-            glyph: 'glyphicon glyphicon-picture',
-            fa: 'fa fa-picture-o',
-            'fa-3': 'icon-picture',
-            octicons: 'octicon octicon-file-media'
-          },
-          callback: function(e) {
-            // Give ![] surround the selection and prepend the image link
-            var chunk, cursor, selected = e.getSelection(),
-              content = e.getContent(),
-              link;
-
-            if (selected.length === 0) {
-              // Give extra word
-              chunk = e.__localize('enter image description here');
-            } else {
-              chunk = selected.text;
-            }
-
-            link = prompt(e.__localize('Insert Image Hyperlink'), 'http://');
-
-            var urlRegex = new RegExp('^((http|https)://|(//))[a-z0-9]', 'i');
-            if (link !== null && link !== '' && link !== 'http://' && urlRegex.test(link)) {
-              var sanitizedLink = $('<div>' + link + '</div>').text();
-
-              // transform selection and set the cursor into chunked text
-              e.replaceSelection('![' + chunk + '](' + sanitizedLink + ' "' + e.__localize('enter image title here') + '")');
-              cursor = selected.start + 2;
-
-              // Set the next tab
-              e.setNextTab(e.__localize('enter image title here'));
-
-              // Set the cursor
-              e.setSelection(cursor, cursor + chunk.length);
-            }
-          }
         }]
       }, {
         name: 'groupMisc',

@@ -134,9 +134,4 @@
   <p><button type="submit" id="msg-btnsubmit">Send Message</button></p>
 </form>
 
-<script type="text/javascript" src="{{ url_for('static', filename='js/simplemde.min.js') }}"></script>
-<script>
-  var simplemde = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: false, unique_id: "sendmsg",}});
-</script>
-
 {% endblock %}

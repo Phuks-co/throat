@@ -173,6 +173,11 @@ class Sub(db.Model, CacheableMixin):
     def __repr__(self):
         return '<Sub {0}-{1}>'.format(self.name, self.title)
 
+    @hybrid_property
+    def posts(self):
+        return SubPost.query.filter_by(sid=self.sid)
+
+
 
 class SubMetadata(db.Model, CacheableMixin):
     """ Sub metadata. Here we store if the sub is nsfw, the modlist,

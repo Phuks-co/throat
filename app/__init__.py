@@ -78,11 +78,12 @@ js = Bundle(
            'js/CustomElements.min.js'),
     Bundle('js/time-elements.js',
            'js/konami.js',
+           'js/markdown.js',
            'js/bootstrap-markdown.js',
            'js/site.js', filters='jsmin'),
     output='gen/site.js')
 css = Bundle(
-    Bundle('css/font-awesome.min.css', 'css/simplemde.min.css',
+    Bundle('css/font-awesome.min.css',
            'css/bootstrap-markdown.min.css'),
     Bundle('css/magnific-popup.css', 'css/style.css',
            filters='cssmin,datauri'), output='gen/site.css')

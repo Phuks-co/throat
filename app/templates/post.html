@@ -6,7 +6,7 @@
 <li><a href="{{url_for('view_sub_top', sub=post.sub.name)}}">Top</a></li>
 <li><a href="{{url_for('view_sub_new', sub=post.sub.name)}}">New</a></li>
 <ul class="right">
-  <li class="large"><a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn btn-white" style="width:100%;hight:50%;">/s/{{post.sub.name}}</a></li>
+  <li class="large"><a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn btn-white" style="width:100%;height:50%;">/s/{{post.sub.name}}</a></li>
 </ul>
 {% endblock %}
 {% block sidebar %}
@@ -198,6 +198,7 @@
           </div>
           {% endif %}
         </article>
+        <hr>
         {%if current_user.is_authenticated %}
         <section id="postcomment">
           <form class="comment-form static">
