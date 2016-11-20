@@ -334,7 +334,8 @@ $(document).ready(function() {
       // Here we append it _next_ to the div that is holding the reply button
       $(e.target).parent().parent().after().after().append(x);
       // Here we hackishly get the textarea and initialize the MDE
-      var l = new SimpleMDE({element: $(x[0]).children('.CommentContent').children('#comment')[0], autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: false, unique_id: "createcomment",}});
+      $(x[0]).children('.CommentContent').children('#comment').markdown({autofocus:true})
+      //var l = new SimpleMDE({element: $(x[0]).children('.CommentContent').children('#comment')[0], autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: false, unique_id: "createcomment",}});
       //$(e.target).parent().next().insertBefore('<span class="close">×</span>');
 
       // Here we hide the reply button...

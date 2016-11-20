@@ -205,7 +205,7 @@
             {{commentform.sub(value=post.sub.name)}}
             {{commentform.post(value=post.pid)}}
             {{commentform.parent(value='0')}}
-            <div class="CommentContent">{{commentform.comment(id="comment2", placeholder="Write your comment here. Styling with Markdown format is supported.")}}</div>
+            <div class="CommentContent">{{commentform.comment(id="comment2", placeholder="Write your comment here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}</div>
             <button type="submit" class="btn btn-orange">Submit comment</button>
           </form>
           <form class="comment-form moving" style="display:none">
@@ -214,7 +214,7 @@
             {{commentform.sub(value=post.sub.name)}}
             {{commentform.post(value=post.pid)}}
             {{commentform.parent(value='0')}}
-            <div class="CommentContent">{{commentform.comment(class="commenttxtbox",placeholder="Write your comment here. Styling with Markdown format is supported.")}}</div>
+            <div class="CommentContent">{{commentform.comment(class="commenttxtbox",placeholder="Write your comment here. Styling with Markdown format is supported.", rows="10")}}</div>
             <button type="submit" class="btn btn-orange">Submit comment</button>
           </form>
         </section>
@@ -295,12 +295,12 @@
     <h1>Submit a text post</h1>
     <p class="sub">/s/{{txtpostform.sub(placeholder=txtpostform.sub.label.text, required=True)}}</p>
     <p class="title">{{txtpostform.title(placeholder=txtpostform.title.label.text, required=True, autofocus=True)}}</p>
-    <p class="content">{{txtpostform.content(id="content2", placeholder="Write your post content here. Styling with Markdown format is supported.")}}</p>
+    <p class="content">{{txtpostform.content(id="content2", placeholder="Write your post content here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}</p>
     <div class="alert div-error">
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
       <p></p>
     </div>
-    <p><button type="submit" id="txpost-btnsubmit">Submit post</button></p>
+    <p><button type="submit" class="btn btn-blue" id="txpost-btnsubmit">Submit post</button></p>
   </form>
   <form id="link-post-form" data-sub="{{post.sub.name}}" class="mfp-hide white-popup-block">
     {{lnkpostform.csrf_token}}
@@ -312,7 +312,7 @@
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
       <p></p>
     </div>
-    <p><button type="submit" id="lnkpost-btnsubmit">Submit link</button></p>
+    <p><button type="submit" class="btn btn-blue" id="lnkpost-btnsubmit">Submit link</button></p>
   </form>
   {% endif %}
   {% if post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
@@ -324,7 +324,7 @@
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
       <p></p>
     </div>
-    <p><button type="submit" id="delpost-btnsubmit">Delete!</button></p>
+    <p><button type="submit" class="btn btn-blue" id="delpost-btnsubmit">Delete!</button></p>
   </form>
   {% endif %}
   {% if post.sub.name == "announcements" and current_user.is_admin() and ann.pid != post.pid %}
@@ -336,7 +336,7 @@
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
       <p></p>
     </div>
-    <p><button type="submit" id="make_announcement-btnsubmit">Yup!</button></p>
+    <p><button type="submit" class="btn btn-blue" id="make_announcement-btnsubmit">Yup!</button></p>
   </form>
   {%endif%}
   {% if current_user.is_mod(post.sub) or current_user.is_admin() %}
@@ -348,7 +348,7 @@
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
       <p></p>
     </div>
-    <p><button type="submit" id="make_announcement-btnsubmit">Yup!</button></p>
+    <p><button type="submit" class="btn btn-blue" id="make_announcement-btnsubmit">Yup!</button></p>
   </form>
   {%endif%}
   {% if post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
@@ -378,15 +378,4 @@
 {% if not current_user.block_styles() %}
   <style>{{style.content}}</style>
 {% endif %}
-{%if current_user.is_authenticated%}
-<script type="text/javascript" src="{{ url_for('static', filename='js/simplemde.min.js') }}"></script>
-<script>
-  var simplemde = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: false}, element: $('textarea#comment2')[0]});
-  var simplemde2 = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: false}, element: $('textarea#content2')[0]});
-  {% if post.ptype == 0 and post.user.uid == session['user_id'] %}
-  var simplemde3 = new SimpleMDE({autoDownloadFontAwesome: false, spellChecker: false, autosave: {enabled: false}, element: $('textarea#content')[0]});
-  {%endif%}
-
-</script>
-{%endif%}
 {%endblock%}
