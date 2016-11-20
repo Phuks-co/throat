@@ -325,7 +325,33 @@ $(document).ready(function() {
             $("body").addClass("dark");
         }
     });
+    $(document).on('click', '.collapse', function(e){
+      var button = $($(e.target).parent());
+      if(!button.data('cid')){
+        var button = $(e.target);
+      }
+      var id = button.data('cid');
+      $('#content-'+id).hide();
+      $('#bott-'+id).hide();
+      $('#child-'+id).hide();
+      button.removeClass('collapse');
+      button.addClass('expand');
+      button.html('<i class="fa fa-plus" aria-hidden="true"></i>')
+    });
 
+    $(document).on('click', '.expand', function(e){
+      var button = $($(e.target).parent());
+      if(!button.data('cid')){
+        var button = $(e.target);
+      }
+      var id = button.data('cid');
+      $('#content-'+id).show();
+      $('#bott-'+id).show();
+      $('#child-'+id).show();
+      button.removeClass('expand');
+      button.addClass('collapse');
+      button.html('<i class="fa fa-minus" aria-hidden="true"></i>')
+    });
     $('.lnkreply').click(function(e) {
       // Explaining what this does because it'll be a pain in the ass to maintain
       // We have stored an additional copy of the form, without the MDE initialized.

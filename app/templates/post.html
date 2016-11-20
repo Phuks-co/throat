@@ -231,6 +231,7 @@
             <article data-cid="{{comment.cid}}" class="text-post center no-padding comment sub-{{loop.depth0}}">
               <div class="head">
                 <div class="info">
+                  <a class="btn small collapse" data-cid="{{comment.cid}}"><i class="fa fa-minus" aria-hidden="true"></i></a>
                 {# if post.ptype == 1 %}
                   <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
                 {% endif #}
@@ -249,18 +250,20 @@
                 {% endif %}
                 </div>
               </div>
-              <div class="content">{{markdown(comment.content)|safe}}</div>
+              <div class="content" id="content-{{comment.cid}}">{{markdown(comment.content)|safe}}</div>
               {%if current_user.is_authenticated%}
-              <span class="bottombar btn small">
+              <span class="bottombar btn small" id="bott-{{comment.cid}}">
                 <a href="#reply" class="lnkreply" data-to="{{comment.cid}}">
                   <i class="fa fa-reply" aria-hidden="true"></i> reply
                 </a>
               </span>
               {%endif%}
             </article>
-            {% if post.getComments(comment.cid) %}
-              {{loop(post.getComments(comment.cid))}}
-            {% endif %}
+            <div id="child-{{comment.cid}}">
+              {% if post.getComments(comment.cid) %}
+                {{loop(post.getComments(comment.cid))}}
+              {% endif %}
+            </div>
           {%endfor%}
         </section>
     </main>
