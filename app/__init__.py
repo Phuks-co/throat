@@ -468,8 +468,8 @@ def view_sub_bans(sub):
     if not sub:
         abort(404)
 
-    banned = sub.properties.filter_by(key='ban').all()
-    xbans = sub.properties.filter_by(key='xban').all()
+    banned = getMetadata(sub, 'ban', all=True)
+    xbans = getMetadata(sub, 'xban', all=True)
     return render_template('subbans.html', sub=sub, banned=banned,
                            xbans=xbans, banuserform=BanUserSubForm())
 
