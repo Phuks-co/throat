@@ -272,8 +272,8 @@ def edit_sub_css(sub):
 
     form = EditSubCSSForm()
     if form.validate():
-        if sub.stylesheet.first():
-            sub.stylesheet.first().content = form.css.data
+        if sub.stylesheet:
+            sub.stylesheet.content = form.css.data
         else:
             css = SubStylesheet(sub.sid, form.css.data)
             db.session.add(css)
