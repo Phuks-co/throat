@@ -204,8 +204,13 @@ def delete_post():
 
         if post.uid == session['user_id']:
             md = SubPostMetadata(post.pid, 'deleted', '1')
+            cache.delete_memoized(getMetadata, post, 'deleted')
         else:
             md = SubPostMetadata(post.pid, 'moddeleted', '1')
+            cache.delete_memoized(getMetadata, post, 'moddeleted')
+
+        ckey = make_template_fragment_key('subposts', vary_on=[post.sub.sid])
+        cache.delete(ckey)
         db.session.add(md)
         db.session.commit()
 
