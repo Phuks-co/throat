@@ -274,9 +274,7 @@ def all_hot(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.cache.filter()
     sorter = HotSorting(posts)
-    l = sorter.getPosts(1)[0]
-    print(getMetadata(l, 'deleted'))
-    print(getMetadata(l, 'moddeleted'))
+
     return render_template('index.html', page=page, sort_type='all_hot',
                            posts=sorter.getPosts(page))
 
@@ -727,7 +725,7 @@ def admin_subs_search(term):
 def admin_post():
     """ WIP: View post. """
     if current_user.is_admin():
-        posts = SubPost.query.first()
+        # posts = SubPost.query.first()
         return render_template('adminpost.html')
     else:
         return render_template('errors/404.html'), 404
@@ -742,7 +740,7 @@ def admin_post_search(term):
         sub = Sub.query.filter_by(sid=post.sid).first()
         votes = SubPostVote.query.filter_by(pid=term).all()
         return render_template('adminpostsearch.html', sub=sub, post=post,
-                                votes=votes)
+                               votes=votes)
     else:
         return render_template('errors/404.html'), 404
 
