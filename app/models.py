@@ -160,9 +160,9 @@ class Sub(db.Model, CacheableMixin):
     subscribers = db.relationship('SubSubscriber', backref='sub',
                                   lazy='dynamic')
     _posts = db.relationship('SubPost', backref='__sub', lazy='joined')
-    posts = db.relationship('SubPost', backref='_sub', lazy='dynamic')
+    __posts = db.relationship('SubPost', backref='_sub', lazy='dynamic')
     properties = db.relationship('SubMetadata', backref='sub', lazy='subquery')
-    stylesheet = db.relationship('SubStylesheet', backref='sub',
+    __stylesheet = db.relationship('SubStylesheet', backref='sub',
                                  lazy='dynamic')
 
     def __init__(self, name, title):
@@ -176,6 +176,10 @@ class Sub(db.Model, CacheableMixin):
     @hybrid_property
     def posts(self):
         return SubPost.query.filter_by(sid=self.sid)
+
+    @hybrid_property
+    def stylesheet(self):
+        return next(SubStylesheet.cache.filter(sid=self.sid))
 
 
 

@@ -327,7 +327,7 @@ def edit_sub_css(sub):
         abort(403)
 
     form = EditSubCSSForm()
-    form.css.data = sub.stylesheet.first().content
+    form.css.data = SubStylesheet.cache.get(sub.sid).content
     return render_template('editsubcss.html', sub=sub, form=form)
 
 
@@ -435,11 +435,10 @@ def view_sub_new(sub, page):
         mods = []
     createtxtpost = CreateSubTextPost(sub=sub.name)
     createlinkpost = CreateSubLinkPost(sub=sub.name)
-    style = SubStylesheet.query.filter_by(sid=sub.sid).first()
 
     return render_template('sub.html', sub=sub, page=page, sort_type='new',
                            posts=sorter.getPosts(page), mods=mods,
-                           txtpostform=createtxtpost, style=style,
+                           txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
 
 
@@ -490,11 +489,10 @@ def view_sub_top(sub, page):
     mods = getMetadata(sub, 'mod2', all=True)
     createtxtpost = CreateSubTextPost(sub=sub.name)
     createlinkpost = CreateSubLinkPost(sub=sub)
-    style = SubStylesheet.query.filter_by(sid=sub.sid).first()
 
     return render_template('sub.html', sub=sub, page=page, sort_type='top',
                            posts=sorter.getPosts(page), mods=mods,
-                           txtpostform=createtxtpost, style=style,
+                           txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
 
 
@@ -511,11 +509,10 @@ def view_sub_hot(sub, page):
     mods = getMetadata(sub, 'mod2', all=True)
     createtxtpost = CreateSubTextPost(sub=sub.name)
     createlinkpost = CreateSubLinkPost(sub=sub.name)
-    style = SubStylesheet.query.filter_by(sid=sub.sid).first()
 
     return render_template('sub.html', sub=sub, page=page, sort_type='hot',
                            posts=sorter.getPosts(page), mods=mods,
-                           txtpostform=createtxtpost, style=style,
+                           txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
 
 
@@ -533,7 +530,6 @@ def view_post(sub, pid):
     createlinkpost = CreateSubLinkPost(sub=sub)
     comments = SubPostComment.cache.filter(pid=pid)
     sub = Sub.cache.get(post.sid)
-    style = SubStylesheet.cache.filter(sid=sub.sid)
     try:
         style = next(style)
     except StopIteration:
@@ -541,7 +537,7 @@ def view_post(sub, pid):
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit, comments=comments,
                            editlinkpostform=EditSubLinkPostForm(),
-                           lnkpostform=createlinkpost, style=style,
+                           lnkpostform=createlinkpost,
                            txtpostform=createtxtpost)
 
 
