@@ -226,8 +226,7 @@
             Be the first to comment this post
           </p>
           {% endif %}
-          {% for comment in comments %}
-            {% if (loop.depth == 1 and not comment.parentcid) or loop.depth >1 %}
+          {% for comment in post.getComments() recursive %}
             <article data-cid="{{comment.cid}}" class="text-post center no-padding comment sub-{{loop.depth0}}">
               <div class="head">
                 <div class="info">
@@ -258,10 +257,9 @@
               </span>
               {%endif%}
             </article>
-            {# if comment.children %}
-              {{loop(comment.children)}}
-            {% endif #}
-            {%endif%}
+            {% if post.getComments(comment.cid) %}
+              {{loop(post.getComments(comment.cid))}}
+            {% endif %}
           {%endfor%}
         </section>
     </main>

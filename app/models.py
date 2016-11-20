@@ -296,6 +296,11 @@ class SubPost(db.Model, CacheableMixin):
             return 1
         return int(votes.value) if votes else 0
 
+    def getComments(self, parent=None):
+        comms = SubPostComment.cache.filter(pid=self.pid, parentcid=parent)
+        comms = list(comms)
+        return comms
+
     def getDomain(self):
         """ Gets Domain """
         x = urlparse(self.link)
