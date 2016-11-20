@@ -3,7 +3,12 @@
 import json
 import re
 import datetime
+import uuid
 import bcrypt
+from opengraph import OpenGraph
+import requests
+from PIL import Image
+from io import BytesIO
 from flask import Blueprint, redirect, url_for, session, abort
 from sqlalchemy import func
 from flask_login import login_user, login_required, logout_user, current_user
@@ -18,6 +23,7 @@ from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..misc import SiteUser, cache, getMetadata
+import config
 
 do = Blueprint('do', __name__)
 
@@ -624,6 +630,44 @@ def create_lnkpost():
         post.ptype = "1"
         post.posted = datetime.datetime.utcnow()
         db.session.add(post)
+        db.session.commit()
+        # Try to get thumbnail.
+        # 1 - Check if it's an image
+        try:
+            req = requests.get(form.link.data, timeout=50)
+        except:
+            return json.dumps({'status': 'ok', 'pid': post.pid,
+                               'sub': sub.name})
+
+        filename = str(uuid.uuid4()) + '.jpg'
+        good_types = ['image/gif', 'image/jpeg', 'image/png']
+        if req.headers['content-type'] in good_types:
+            # yay, it's an image!!1
+            # Resize
+            im = Image.open(BytesIO(req.content)).convert('RGB')
+        elif req.headers['content-type'] == 'text/html':
+            # Not an image!! Let's try with OpenGraph
+            og = OpenGraph(html=req.text)
+            try:
+                img = og.image
+            except AttributeError:
+                # no image
+                return json.dumps({'status': 'ok', 'pid': post.pid,
+                                   'sub': sub.name})
+            try:
+                req = requests.get(img, timeout=50)
+            except:
+                return json.dumps({'status': 'ok', 'pid': post.pid,
+                                   'sub': sub.name})
+            im = Image.open(BytesIO(req.content)).convert('RGB')
+        else:
+            return json.dumps({'status': 'ok', 'pid': post.pid,
+                               'sub': sub.name})
+
+        im.thumbnail((70, 70), Image.ANTIALIAS)
+        im.save(config.THUMBNAILS + '/' + filename, "JPEG")
+        tn = SubPostMetadata(post.pid, 'thumbnail', filename)
+        db.session.add(tn)
         db.session.commit()
         return json.dumps({'status': 'ok', 'pid': post.pid, 'sub': sub.name})
     return json.dumps({'status': 'error', 'error': get_errors(form)})

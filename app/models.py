@@ -6,7 +6,6 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
-from tld import get_tld
 from urllib.parse import urlparse
 from .caching import CacheableMixin, query_callable, regions
 
@@ -326,6 +325,14 @@ class SubPost(db.Model, CacheableMixin):
     @hybrid_property
     def properties(self):
         return User.cache.filter(pid=self.pid)
+
+    @hybrid_property
+    def thumb(self):
+        x = SubPostMetadata.cache.filter(pid=self.pid, key='thumbnail')
+        try:
+            return next(x).value
+        except:
+            return False
 
     def isImage(self):
         """ Returns True if link ends with img suffix """
