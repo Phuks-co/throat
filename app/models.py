@@ -283,8 +283,6 @@ class SubPost(db.Model, CacheableMixin):
             x = True
         except StopIteration:
             x = False
-
-
         return bool(x)
 
     def voteCount(self):

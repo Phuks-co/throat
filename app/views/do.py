@@ -1085,8 +1085,11 @@ def toggle_sticky(post):
         else:
             db.session.delete(md)
         db.session.commit()
+        SubMetadata.cache.uncache(key='sticky', sid=post.sid, value=post.pid)
         cache.delete_memoized(getMetadata, post.sub, 'sticky')
         ckey = make_template_fragment_key('sticky', vary_on=[post.sub.sid])
+        cache.delete(ckey)
+        ckey = make_template_fragment_key('subposts', vary_on=[post.sub.sid])
         cache.delete(ckey)
 
     return redirect(url_for('view_sub', sub=post.sub.name))

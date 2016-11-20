@@ -232,6 +232,12 @@ class Cache(object):
         """
         self.regions[self.label].delete(key)
 
+    def uncache(self, **kwargs):
+        """
+        flushes query from cache
+        """
+        cache_key = self._cache_key(**kwargs)
+        self.flush(cache_key)
 
     @memoize
     def _columns(self):
