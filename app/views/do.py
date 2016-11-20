@@ -637,7 +637,7 @@ def create_lnkpost():
         # Try to get thumbnail.
         # 1 - Check if it's an image
         try:
-            req = requests.get(form.link.data, timeout=0.5)
+            req = requests.get(form.link.data, timeout=50)
         except:
             return json.dumps({'status': 'ok', 'pid': post.pid,
                                'sub': sub.name})
@@ -666,9 +666,15 @@ def create_lnkpost():
         else:
             return json.dumps({'status': 'ok', 'pid': post.pid,
                                'sub': sub.name})
+        background = Image.new('RGB', (70, 70), (0, 0, 0))
 
         im.thumbnail((70, 70), Image.ANTIALIAS)
-        im.save(config.THUMBNAILS + '/' + filename, "JPEG")
+
+        bg_w, bg_h = background.size
+        img_w, img_h = im.size
+        offset = (int((bg_w - img_w) / 2), int((bg_h - img_h) / 2))
+        background.paste(im, offset)
+        background.save(config.THUMBNAILS + '/' + filename, "JPEG")
         tn = SubPostMetadata(post.pid, 'thumbnail', filename)
         db.session.add(tn)
         db.session.commit()
