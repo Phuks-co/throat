@@ -327,7 +327,7 @@ def edit_sub_css(sub):
         abort(403)
 
     form = EditSubCSSForm()
-    form.css.data = SubStylesheet.cache.get(sub.sid).content
+    form.css.data = decent(SubStylesheet.cache.filter(sid=sub.sid)).content
     return render_template('editsubcss.html', sub=sub, form=form)
 
 
