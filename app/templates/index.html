@@ -37,14 +37,12 @@
       <div class="downvote{%if hasVoted(current_user.get_id(), ann, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
     </div>
       <div class="image">
-        <button type="button" class="lightbtn" id="text-post-icon">
           <a href="{{url_for('view_post_inbox', pid=ann.pid)}}">
             <span class="fa-stack fa-3x" style="color: #616161;">
               <i class="fa fa-square fa-stack-2x"></i>
               <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
             </span>
           </a>
-        </button>
       </div>
       <div class="main">
         <a class="title" href="{{url_for('view_post_inbox', pid=ann.pid)}}"><div class="announcementPost">Announcement</div>{{ann.title}}</a>
@@ -76,16 +74,13 @@
         {% cache 300, post.pid, 'post' %}
           <div class="image">
             {% if not post.link %}
-            <button type="button" class="lightbtn" id="text-post-icon">
               <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
                 <span class="fa-stack fa-3x" style="color: #616161;">
                   <i class="fa fa-square fa-stack-2x"></i>
                   <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
                 </span>
               </a>
-            </button>
             {% else %}
-            <button type="button" class="lightbtn" id="link-post-icon">
               <a href="{{post.link}}" rel="noreferrer noopener">
                 <span class="fa-stack fa-3x" style="color: #616161;">
                   <i class="fa fa-square fa-stack-2x"></i>
@@ -104,7 +99,6 @@
                   {% endif %}
                 </span>
               </a>
-            </button>
             {% endif %}
           </div>
           <div class="main">

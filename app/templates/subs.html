@@ -16,7 +16,6 @@
 {% for sub in subs %}
     <article class="post" data-sid="{{sub.sid}}">
       <div class="image">
-        <button type="button" class="lightbtn" id="link-post-icon">
           <a href="{{url_for('view_sub', sub=sub.name)}}">
             <span class="fa-stack fa-3x" style="color: #616161;">
               <i class="fa fa-square fa-stack-2x"></i>
@@ -27,7 +26,6 @@
               {% endif %}
             </span>
           </a>
-        </button>
       </div>
       <div class="main">
         <a class="title" href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>

@@ -562,6 +562,7 @@ nav .right a {
 .post .image {
     float: left;
     margin: 5px;
+    margin-top: 0px;
     width: auto;
     text-align: center;
 }
@@ -574,6 +575,7 @@ nav .right a {
 .post .main {
     float: left;
     margin: 5px;
+    margin-top: 8px;
     width: 80%;
 }
 .post #opentextpost div#content {
@@ -593,6 +595,7 @@ nav .right a {
 }
 .post .vote {
     margin-left: 0.4em;
+    margin-top: 10px;
 }
 .postdomain {
     color: #8e8e8e;
