@@ -380,6 +380,6 @@
 {% endblock %}
 {%block pagefoot%}
 {% if not current_user.block_styles() %}
-  <style>{{style.content}}</style>
+<style>{{post.sub.stylesheet.content}}</style>
 {% endif %}
 {%endblock%}

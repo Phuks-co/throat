@@ -530,10 +530,6 @@ def view_post(sub, pid):
     createlinkpost = CreateSubLinkPost(sub=sub)
     comments = SubPostComment.cache.filter(pid=pid)
     sub = Sub.cache.get(post.sid)
-    try:
-        style = next(style)
-    except StopIteration:
-        style = ""
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit, comments=comments,
                            editlinkpostform=EditSubLinkPostForm(),
