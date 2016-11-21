@@ -277,7 +277,7 @@
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
       <p></p>
     </div>
-    <p><button type="submit" id="edit-linkpost-btnsubmit">Edit post</button></p>
+    <p><button type="submit" class="btn btn-blue" id="edit-linkpost-btnsubmit">Edit post</button></p>
   </form>
   {% endif %}
   {% if post.ptype == 0 and post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
@@ -362,7 +362,7 @@
     {% if hasPostFlair(post) %}
     <h3>Current flair</h3>
     <p><div class="btn">{{hasPostFlair(post)}}</div></p>
-    <p><div class="btn" id="removepostflair" data-sub="{{post.sub.name}}" data-post="{{post.pid}}"><i class="fa fa-remove"></i> Remove current flair</div></p>
+    <p><div class="btn btn-blue" id="removepostflair" data-sub="{{post.sub.name}}" data-post="{{post.pid}}"><i class="fa fa-remove"></i> Remove current flair</div></p>
 
     {% endif %}
     <h3>Avalable post flairs</h3>
