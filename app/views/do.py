@@ -818,7 +818,6 @@ def create_comment(sub, pid):
         comment.pid = pid
         comment.content = form.comment.data.encode()
         comment.time = datetime.datetime.utcnow()
-        print(form.parent.data)
 
         if form.parent.data != "0":
             comment.parentcid = form.parent.data
@@ -837,7 +836,7 @@ def create_comment(sub, pid):
             db.session.add(pm)
         db.session.add(comment)
         db.session.commit()
-        SubPostComment.cache.uncache(pid=pid)
+        SubPostComment.cache.uncache(pid=pid, parentcid=None)
         SubPostComment.cache.uncache(pid=pid, parentcid=form.parent.data)
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
