@@ -572,6 +572,9 @@ nav .right a {
     max-width: 70px;
     max-height: 70px;
 }
+.post .image a img {
+    margin: 6px 7px;
+}
 .post .main {
     float: left;
     margin: 5px;
