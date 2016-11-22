@@ -425,12 +425,14 @@ def getModCount(sub):
 @cache.memoize(300)
 def getSubPostCount(sub):
     """ Returns the sub's post count """
-    x = SubPost.cache.filter(sid=sub.sid)
-    try:
-        x = list(x)
-    except StopIteration:
-        x = 0
-    return x
+    x = Sub.query.filter_by(name=sub.name).first()
+    y = SubPost.query.filter_by(sid=sub.sid).count()
+    #x = SubPost.cache.filter(sid=sub.sid)
+    #try:
+    #    x = list(x)
+    #except StopIteration:
+    #    x = 0
+    return y
 
 
 def getStickies(sid):
