@@ -302,7 +302,7 @@
     <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
     <p></p>
   </div>
-  <p><button type="submit" id="lnkpost-btnsubmit">Submit link</button></p>
+  <p><button type="submit" class="btn btn-blue" id="lnkpost-btnsubmit">Submit link</button></p>
 </form>
 {% endif %}
 {% if current_user.is_mod(sub) or current_user.is_admin() %}
@@ -314,7 +314,7 @@
     <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
     <p></p>
   </div>
-  <p><button type="submit" id="delpost-btnsubmit">Delete!</button></p>
+  <p><button type="submit" class="btn btn-blue" id="delpost-btnsubmit">Delete!</button></p>
 </form>
 {% endif %}
 
