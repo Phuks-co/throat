@@ -1061,6 +1061,12 @@ body.dark header {
 body.dark .fa-inverse {
     color: #bdbdbd;
 }
+body.dark .md-editor .md-footer,
+body.dark .md-editor>.md-header,
+body.dark textarea#comment2 {
+    background: #0c0e0c;
+}
+
 #toggledark i {
     color: inherit;
 }
