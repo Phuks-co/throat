@@ -295,7 +295,7 @@
 <form id="link-post-form" data-sub="{{sub.name}}" class="mfp-hide white-popup-block">
   {{lnkpostform.csrf_token}}
   <h1>Submit a link post</h1>
-  <p class="sub">/s/{{txtpostform.sub(placeholder=txtpostform.sub.label.text, required=True)}}</p>
+  <p class="sub">/s/{{lnkpostform.sub(placeholder=lnkpostform.sub.label.text, required=True)}}</p>
   <p class="title">{{lnkpostform.title(placeholder=lnkpostform.title.label.text, required=True, autofocus=True)}}</p>
   <p class="content">{{lnkpostform.link(placeholder="Paste your link here.")}}</p>
   <div class="alert div-error">
