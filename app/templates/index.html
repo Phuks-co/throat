@@ -61,7 +61,7 @@
 {% endcache %}
 
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
-{% cache 300, 'frontpage' %}
+{% cache 300, 'frontpage', sort_type, page|string %}
   {% for post in posts if not getMetadata(post, 'deleted') and not getMetadata(post, 'moddeleted') and not post.isAnnouncement() %}
   {% if (current_user.show_nsfw() and post.isPostNSFW()) or not post.isPostNSFW() %}
       <article class="post" data-pid="{{post.pid}}">
