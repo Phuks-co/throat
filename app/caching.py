@@ -2,7 +2,7 @@
 import functools
 import hashlib
 
-from flask.ext.sqlalchemy import BaseQuery
+from flask_sqlalchemy import BaseQuery
 from sqlalchemy import event, select
 from sqlalchemy.orm.interfaces import MapperOption
 from sqlalchemy.orm.attributes import get_history
