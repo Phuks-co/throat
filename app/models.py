@@ -2,11 +2,11 @@
 
 import datetime
 import uuid
+from urllib.parse import urlparse
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
-from urllib.parse import urlparse
 from .caching import CacheableMixin, query_callable, regions
 
 
@@ -63,10 +63,7 @@ class User(db.Model, CacheableMixin):
         x = UserMetadata.cache.filter(key='exlinks', uid=self.uid)
         try:
             x = next(x)
-            if x.value == 1:
-                return True
-            else:
-                return False
+            return bool(x.value)
         except StopIteration:
             return False
 
@@ -76,10 +73,7 @@ class User(db.Model, CacheableMixin):
         x = UserMetadata.cache.filter(key='styles', uid=self.uid)
         try:
             x = next(x)
-            if x.value == 1:
-                return True
-            else:
-                return False
+            return bool(x.value)
         except StopIteration:
             return False
 
@@ -162,7 +156,7 @@ class Sub(db.Model, CacheableMixin):
     __posts = db.relationship('SubPost', backref='_sub', lazy='dynamic')
     properties = db.relationship('SubMetadata', backref='sub', lazy='subquery')
     __stylesheet = db.relationship('SubStylesheet', backref='sub',
-                                 lazy='dynamic')
+                                   lazy='dynamic')
 
     def __init__(self, name, title):
         self.sid = str(uuid.uuid4())
@@ -174,12 +168,13 @@ class Sub(db.Model, CacheableMixin):
 
     @hybrid_property
     def posts(self):
+        """ gets posts from sub, replaces the db relationship """
         return SubPost.query.filter_by(sid=self.sid)
 
     @hybrid_property
     def stylesheet(self):
+        """ gets stylesheet from sub, replaces the db relationship """
         return next(SubStylesheet.cache.filter(sid=self.sid))
-
 
 
 class SubMetadata(db.Model, CacheableMixin):
@@ -274,7 +269,7 @@ class SubPost(db.Model, CacheableMixin):
     ptype = Column(Integer)  # Post type. 0=txt; 1=link; etc
 
     _properties = db.relationship('SubPostMetadata',
-                                 backref='post', lazy='subquery')
+                                  backref='post', lazy='subquery')
 
     comments = db.relationship('SubPostComment', backref='post',
                                lazy='dynamic')
@@ -305,6 +300,7 @@ class SubPost(db.Model, CacheableMixin):
         return int(votes.value) if votes else 0
 
     def getComments(self, parent=None):
+        """ Returns cached post comments """
         comms = SubPostComment.cache.filter(pid=self.pid, parentcid=parent)
         comms = list(comms)
         return comms
@@ -316,22 +312,26 @@ class SubPost(db.Model, CacheableMixin):
 
     @hybrid_property
     def sub(self):
+        """ Returns post's sub, replaces db relationship """
         return Sub.cache.get(self.sid)
 
     @hybrid_property
     def user(self):
+        """ Returns post creator, replaces db relationship """
         return User.cache.get(self.uid)
 
     @hybrid_property
     def properties(self):
+        """ Returns ALL post metadata. You should not use this >:| """
         return User.cache.filter(pid=self.pid)
 
     @hybrid_property
     def thumb(self):
+        """ Returns thumbnail address for post """
         x = SubPostMetadata.cache.filter(pid=self.pid, key='thumbnail')
         try:
             return next(x).value
-        except:
+        except StopIteration:
             return False
 
     def isImage(self):
@@ -374,7 +374,9 @@ class SubPostMetadata(db.Model, CacheableMixin):
         self.value = value
 
     def __repr__(self):
-        return '<SubPostMetadata ({0}); {1} = {2}>'.format(self.pid, self.key, self.value)
+        return '<SubPostMetadata ({0}); {1} = {2}>'.format(self.pid, self.key,
+                                                           self.value)
+
 
 class SubPostComment(db.Model, CacheableMixin):
     """ A comment. In a post. """

@@ -1,7 +1,8 @@
 {
   "linters": {
     "sample": {
-      "type": "pep8"
+      "type": "pep8",
+      "include": "(\\.py$)"
     }
   }
 }

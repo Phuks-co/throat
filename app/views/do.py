@@ -323,6 +323,7 @@ def edit_sub(sub):
                     subsort = SubMetadata(sub, 'sort', form.subsort.data)
                     db.session.add(subsort)
 
+            # TODO: for god's sake, kill this
             if form.flair1.data:
                 flair1 = sub.properties.filter_by(key='fl1').first()
                 if flair1:
@@ -379,6 +380,7 @@ def edit_sub(sub):
                 else:
                     flair8 = SubMetadata(sub, 'fl8', form.flair8.data)
                     db.session.add(flair8)
+
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'addr': url_for('view_sub', sub=sub.name)})
@@ -660,7 +662,7 @@ def create_lnkpost():
                                    'sub': sub.name})
             try:
                 req = requests.get(img, timeout=0.5)
-            except Exception as e:
+            except:
                 return json.dumps({'status': 'ok', 'pid': post.pid,
                                    'sub': sub.name})
             im = Image.open(BytesIO(req.content)).convert('RGB')
@@ -767,7 +769,6 @@ def downvote(pid):
         db.session.add(xvotes)
         cache.delete_memoized(getMetadata, post, 'score', record=True)
         SubPostMetadata.cache.uncache(key='score', pid=post.pid)
-
 
     if qvote:
         if not qvote.positive:
@@ -1038,7 +1039,7 @@ def accept_mod2inv(sub, user):
     user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
     inv = SubMetadata.query.filter_by(key='mod2i') \
-                        .filter_by(value=user.uid).first()
+                           .filter_by(value=user.uid).first()
     if inv:
         inv.key = 'mod2'
         db.session.commit()
@@ -1127,8 +1128,7 @@ def toggle_sticky(post):
     """ Toggles post stickyness - not api """
     post = SubPost.query.filter_by(pid=post).first()
 
-    if not post or not current_user.is_mod(post.sub) \
-        or not current_user.is_admin():
+    if not current_user.is_mod(post.sub) or not current_user.is_admin():
         abort(403)
 
     form = DeletePost()

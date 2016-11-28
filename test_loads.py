@@ -1,10 +1,12 @@
+""" Basic unit tests """
 import os
-from app import app, db
 import unittest
 import tempfile
+from app import app, db
+
 
 class FlaskrTestCase(unittest.TestCase):
-
+    """ Here we test for pages loading, etc """
     def setUp(self):
         self.db_fd, app.config['DATABASE'] = tempfile.mkstemp()
         app.config['TESTING'] = True
@@ -17,6 +19,7 @@ class FlaskrTestCase(unittest.TestCase):
         os.unlink(app.config['DATABASE'])
 
     def test_working_setup(self):
+        """ Tests if the index loads """
         x = self.app.get('/')
         assert x.status_code == 200
 
