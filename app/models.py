@@ -133,7 +133,7 @@ class UserBadge(db.Model):
     badge = Column(String(255))  # fa-xxx, badge icon id.
     name = Column(String(255))  # Badge name
     # Short text displayed when hovering the badge
-    text = Column(String(255, collation='utf8_bin'))
+    text = Column(String(255))
 
     def __init__(self, badge, name, text):
         self.bid = str(uuid.uuid4())
@@ -152,7 +152,7 @@ class Sub(db.Model, CacheableMixin):
 
     sid = Column(String(40), primary_key=True)  # sub id
     name = Column(String(32), unique=True)  # sub name
-    title = Column(String(128, collation='utf8_bin'))  # sub title/desc
+    title = Column(String(128))  # sub title/desc
 
     status = Column(Integer)  # Sub status. 0 = ok; 1 = banned; etc
 
@@ -264,10 +264,10 @@ class SubPost(db.Model, CacheableMixin):
     # There's a 'sub' field with a reference to the sub and a 'user' one
     # with a refernece to the user that created this post
 
-    title = Column(String(128, collation='utf8_bin'))  # post title
+    title = Column(String(128))  # post title
     link = Column(String(128))  # post target (if it is a link post)
     # post content (if it is a text post)
-    content = Column(Text(collation='utf8_bin'))
+    content = Column(Text())
 
     posted = Column(DateTime)
 
@@ -388,7 +388,7 @@ class SubPostComment(db.Model, CacheableMixin):
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))
     uid = Column(String(40), db.ForeignKey('user.uid'))
     time = Column(DateTime)
-    content = Column(Text(collation='utf8_bin'))
+    content = Column(Text())
     # parent comment id
     parentcid = Column(String(40), db.ForeignKey('sub_post_comment.cid'),
                        nullable=True)
@@ -432,7 +432,7 @@ class Message(db.Model, CacheableMixin):
     receivedby = Column(String(40), db.ForeignKey('user.uid'))
 
     subject = Column(String(128))  # msg subject
-    content = Column(Text(collation='utf8_bin'))  # msg content
+    content = Column(Text())  # msg content
 
     posted = Column(DateTime)  # sent
     read = Column(DateTime)  # todo markasread time
