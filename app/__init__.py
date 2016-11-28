@@ -38,6 +38,7 @@ from .misc import SiteAnon, cache, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
 from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
 from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair, decent
+from .misc import getUpVoteCount, getDownVoteCount
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)
@@ -193,7 +194,9 @@ def utility_processor():
             'isRestricted': isRestricted, 'isNSFW': isNSFW,
             'subSort': subSort, 'editpostflair': EditPostFlair(),
             'hasPostFlair': hasPostFlair, 'getPostFlair': getPostFlair,
-            'getSuscriberCount': getSuscriberCount, 'funcs': misc}
+            'getSuscriberCount': getSuscriberCount, 'funcs': misc,
+            'getUpVoteCount': getUpVoteCount,
+            'getDownVoteCount':getDownVoteCount}
 
 
 @app.route("/")
