@@ -398,11 +398,11 @@ def edit_sub_mods(sub):
 
     if current_user.is_mod(sub) or current_user.is_modinv(sub) \
        or current_user.is_admin():
-        xmods = SubMetadata.query.filter_by(key='xmod2').all()
-        mods = SubMetadata.query.filter_by(key='mod2').all()
-        modinvs = SubMetadata.query.filter_by(key='mod2i').all()
-        banned = SubMetadata.query.filter_by(key='ban').all()
-        xbans = SubMetadata.query.filter_by(key='xban').all()
+        xmods = getMetadata(sub, 'xmod2', all=True)
+        mods = getMetadata(sub, 'mod2', all=True)
+        modinvs = getMetadata(sub, 'mod2i', all=True)
+        banned = getMetadata(sub, 'ban', all=True)
+        xbans = getMetadata(sub, 'xban', all=True)
         return render_template('submods.html', sub=sub, mods=mods,
                                modinvs=modinvs, xmods=xmods, banned=banned,
                                editmod2form=EditMod2Form(), xbans=xbans,
