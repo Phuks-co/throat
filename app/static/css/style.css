@@ -1066,6 +1066,9 @@ body.dark .md-editor>.md-header,
 body.dark textarea#comment2 {
     background: #0c0e0c;
 }
+body.dark textarea#content {
+    background: #2f2f2f;
+}
 
 #toggledark i {
     color: inherit;
