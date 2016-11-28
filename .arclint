@@ -1,0 +1,7 @@
+{
+  "linters": {
+    "sample": {
+      "type": "pep8"
+    }
+  }
+}
