@@ -19,3 +19,4 @@ redis
 requests
 python-opengraph
 pillow
+pytest
