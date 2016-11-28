@@ -38,7 +38,6 @@ from .misc import SiteAnon, cache, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
 from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
 from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair, decent
-from .misc import getUpVoteCount, getDownVoteCount
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)
@@ -194,9 +193,7 @@ def utility_processor():
             'isRestricted': isRestricted, 'isNSFW': isNSFW,
             'subSort': subSort, 'editpostflair': EditPostFlair(),
             'hasPostFlair': hasPostFlair, 'getPostFlair': getPostFlair,
-            'getSuscriberCount': getSuscriberCount, 'funcs': misc,
-            'getUpVoteCount': getUpVoteCount,
-            'getDownVoteCount':getDownVoteCount}
+            'getSuscriberCount': getSuscriberCount, 'funcs': misc}
 
 
 @app.route("/")
@@ -533,8 +530,11 @@ def view_post(sub, pid):
     createlinkpost = CreateSubLinkPost(sub=sub)
     comments = SubPostComment.cache.filter(pid=pid)
     sub = Sub.cache.get(post.sid)
+    upcount = SubPostVote.query.filter_by(pid=post.pid, positive=1).count()
+    downcount = SubPostVote.query.filter_by(pid=post.pid, positive=0).count()
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit, comments=comments,
+                           upcount=upcount, downcount=downcount,
                            editlinkpostform=EditSubLinkPostForm(),
                            lnkpostform=createlinkpost,
                            txtpostform=createtxtpost)
