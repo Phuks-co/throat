@@ -53,6 +53,24 @@ $(document).ready(function() {
     console.log(target.data());
   });
 
+  $('article a').click(function(e){
+    e.preventDefault();
+    var url = $(this).attr('href');
+
+    if(url.endsWith('.jpg') || url.endsWith('.gif') || url.endsWith('.png')){
+      img = $(this).find('img')[0]
+      console.log(img)
+      if(img != undefined){
+        console.log("got")
+        img.remove();
+        return;
+      }
+      var image = new Image();
+      image.src = url;
+      $(this).append(image);
+    }
+  });
+
 
  /******************************************************
                 LEGACY AJAX FORMS CODE!
