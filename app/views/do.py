@@ -965,6 +965,21 @@ def inv_mod2(sub):
             if not user:
                 return json.dumps({'status': 'error',
                                    'error': ['User does not exist.']})
+
+            mod = SubMetadata.query.filter_by(sid=sub.sid, key='mod2',
+                                              value=user.uid).first()
+            mod1 = SubMetadata.query.filter_by(sid=sub.sid, key='mod1',
+                                              value=user.uid).first()
+            if mod or mod1:
+                return json.dumps({'status': 'error',
+                                   'error': ['User is already a mod.']})
+            modinv = SubMetadata.query.filter_by(sid=sub.sid, key='mod2i',
+                                              value=user.uid).first()
+            if modinv:
+                return json.dumps({'status': 'error',
+                                   'error': ['User has a pending invite.']})
+
+
             msg = Message()
             msg.receivedby = user.uid
             msg.sentby = current_user.get_id()
@@ -976,6 +991,9 @@ def inv_mod2(sub):
             db.session.add(msg)
             db.session.add(meta)
             db.session.commit()
+
+            SubMetadata.cache.uncache(key='mod2i', sid=sub.sid)
+            cache.delete_memoized(getMetadata, sub, 'mod2i', all=True)
             return json.dumps({'status': 'ok', 'mid': msg.mid,
                                'sentby': current_user.get_id()})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -995,6 +1013,10 @@ def remove_sub_ban(sub, user):
                             .filter_by(value=user.uid).first()
         inv.key = 'xban'
         db.session.commit()
+
+        SubMetadata.cache.uncache(key='xban', sid=sub.sid)
+        cache.delete_memoized(getMetadata, sub, 'xban', all=True)
+
         return json.dumps({'status': 'ok', 'msg': 'user demodded'})
     else:
         abort(403)
@@ -1011,6 +1033,10 @@ def remove_mod2(sub, user):
                             .filter_by(value=user.uid).first()
         inv.key = 'xmod2'
         db.session.commit()
+
+        SubMetadata.cache.uncache(key='mod2', sid=sub.sid)
+        cache.delete_memoized(getMetadata, sub, 'mod2', all=True)
+
         return json.dumps({'status': 'ok', 'msg': 'user demodded'})
     else:
         abort(403)
@@ -1024,9 +1050,13 @@ def revoke_mod2inv(sub, user):
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
     if current_user.is_topmod(sub) or current_user.is_admin():
         inv = SubMetadata.query.filter_by(key='mod2i') \
-                                   .filter_by(value=user.uid).first()
+                               .filter_by(value=user.uid).first()
         inv.key = 'xmod2i'
         db.session.commit()
+
+        SubMetadata.cache.uncache(key='mod2i', sid=sub.sid)
+        cache.delete_memoized(getMetadata, sub, 'mod2i', all=True)
+
         return json.dumps({'status': 'ok', 'msg': 'user invite revoked'})
     else:
         abort(403)
