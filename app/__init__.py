@@ -235,8 +235,12 @@ def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.query.order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
+    createtxtpost = CreateSubTextPost() # maybe TODO: autofill a random sub name
+    createlinkpost = CreateSubLinkPost()
     return render_template('index.html', page=page, sort_type='all_new',
-                           posts=sorter.getPosts(page))
+                           posts=sorter.getPosts(page),
+                           txtpostform=createtxtpost,
+                           lnkpostform=createlinkpost)
 
 
 @app.route("/domain/<domain>", defaults={'page': 1})
@@ -247,8 +251,12 @@ def all_domain_new(page, domain):
                          .filter(SubPost.link.contains(domain)) \
                          .order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
+    createtxtpost = CreateSubTextPost()
+    createlinkpost = CreateSubLinkPost()
     return render_template('index.html', page=page, sort_type='all_new',
-                           posts=sorter.getPosts(page))
+                           posts=sorter.getPosts(page),
+                           txtpostform=createtxtpost,
+                           lnkpostform=createlinkpost)
 
 
 @app.route("/search/<term>", defaults={'page': 1})
@@ -258,8 +266,12 @@ def search(page, term):
     posts = SubPost.query.filter(SubPost.title.contains(term)) \
                          .order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
+    createtxtpost = CreateSubTextPost()
+    createlinkpost = CreateSubLinkPost()
     return render_template('index.html', page=page, sort_type='all_new',
-                           posts=sorter.getPosts(page))
+                           posts=sorter.getPosts(page),
+                           txtpostform=createtxtpost,
+                           lnkpostform=createlinkpost)
 
 
 @app.route("/all/top", defaults={'page': 1})
@@ -268,9 +280,12 @@ def all_top(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.cache.filter()
     sorter = VoteSorting(posts)
+    createtxtpost = CreateSubTextPost()
+    createlinkpost = CreateSubLinkPost()
     return render_template('index.html', page=page, sort_type='all_top',
-                           posts=sorter.getPosts(page))
-
+                           posts=sorter.getPosts(page),
+                           txtpostform=createtxtpost,
+                           lnkpostform=createlinkpost)
 
 @app.route("/all/hot", defaults={'page': 1})
 @app.route("/all/hot/<int:page>")
@@ -278,9 +293,12 @@ def all_hot(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.cache.filter()
     sorter = HotSorting(posts)
-
+    createtxtpost = CreateSubTextPost()
+    createlinkpost = CreateSubLinkPost()
     return render_template('index.html', page=page, sort_type='all_hot',
-                           posts=sorter.getPosts(page))
+                           posts=sorter.getPosts(page),
+                           txtpostform=createtxtpost,
+                           lnkpostform=createlinkpost)
 
 
 @app.route("/subs")
