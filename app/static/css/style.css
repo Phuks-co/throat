@@ -1131,15 +1131,7 @@ button#text-post-icon, button#link-post-icon {
 
 /* edit sub */
 
-#edit-sub-form input#title,
-input#flair1,
-input#flair2,
-input#flair3,
-input#flair4,
-input#flair5,
-input#flair6,
-input#flair7,
-input#flair8 {
+#edit-sub-form input[type="text"]{
     width: 70%;
     text-align: left;
     padding: 5px;
@@ -1360,3 +1352,8 @@ form .sub input{width:25em;}
 .btn-editor{width: initial !important; }
 .md-input{padding-left: 5px !important; padding-top:5px !important;}
 .md-preview{padding-left: 5px !important;}
+
+body.dark input{
+  background-color: #151515;
+  border-color: #333 !important;
+}
