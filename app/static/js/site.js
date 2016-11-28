@@ -53,7 +53,7 @@ $(document).ready(function() {
     console.log(target.data());
   });
 
-  $('article a').click(function(e){
+  $('section article a').click(function(e){
     e.preventDefault();
     var url = $(this).attr('href');
 
@@ -68,6 +68,8 @@ $(document).ready(function() {
       var image = new Image();
       image.src = url;
       $(this).append(image);
+    }else{
+      window.location = url;
     }
   });
 
