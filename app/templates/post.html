@@ -100,6 +100,9 @@
     <a href="{{url_for('edit_sub', sub=post.sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Info</a>
   </div>
   <div class="col-12">
+    <a href="{{url_for('edit_sub_flairs', sub=post.sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Flairs</a>
+  </div>
+  <div class="col-12">
     <a href="{{url_for('edit_sub_css', sub=post.sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Stylesheet</a>
   </div>
   <div class="col-12">
@@ -368,7 +371,7 @@
     <h3>Avalable post flairs</h3>
     <div class="btn-group" data-toggle="buttons">
       {% for ll in editpostflair.flair %}
-        <label class="btn btn-default assignpostflair" data-fl="{{ll.data}}" data-sub="{{post.sub.name}}" data-post="{{post.pid}}"> 
+        <label class="btn btn-default assignpostflair" data-fl="{{ll.data}}" data-sub="{{post.sub.name}}" data-post="{{post.pid}}">
           {{ll}}
           {{ll.label}}</label>
       {%endfor %}
