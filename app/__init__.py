@@ -358,7 +358,8 @@ def edit_sub(sub):
         abort(404)
 
     if current_user.is_mod(sub) or current_user.is_admin():
-        form = EditSubForm()
+        form = EditSubForm(subsort=getMetadata(sub, 'sort'))
+
         flair1 = SubMetadata.query.filter_by(key='fl1').first()
         if flair1:
             form.flair1.data = flair1.value
