@@ -155,6 +155,7 @@ class Sub(db.Model, CacheableMixin):
     _posts = db.relationship('SubPost', backref='__sub', lazy='joined')
     __posts = db.relationship('SubPost', backref='_sub', lazy='dynamic')
     properties = db.relationship('SubMetadata', backref='sub', lazy='subquery')
+    flairs = db.relationship('SubFlair', backref='sub', lazy='dynamic')
     __stylesheet = db.relationship('SubStylesheet', backref='sub',
                                    lazy='dynamic')
 
@@ -175,6 +176,18 @@ class Sub(db.Model, CacheableMixin):
     def stylesheet(self):
         """ gets stylesheet from sub, replaces the db relationship """
         return next(SubStylesheet.cache.filter(sid=self.sid))
+
+
+class SubFlair(db.Model, CacheableMixin):
+    """ Stores all the flairs for all da subs """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    cache_pk = 'xid'
+    query_class = query_callable(regions)
+
+    xid = Column(Integer, primary_key=True)
+    sid = Column(String(40), db.ForeignKey('sub.sid'))  # Subverse id
+    text = Column(String(64))
 
 
 class SubMetadata(db.Model, CacheableMixin):

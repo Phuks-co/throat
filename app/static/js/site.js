@@ -4,7 +4,7 @@ $(document).ready(function() {
   $(document).on('submit', ".ajaxform", function(e){
     e.preventDefault();
     var target = $(e.target);
-    var button = target.find("[type=submit]");
+    var button = $(target.find("[type=submit]")[0]);
     var btnorm = button.text();
     button.prop('disabled', true);
     button.text(button.data('prog'));
@@ -635,7 +635,7 @@ $(document).ready(function() {
       });
     });
 
-    $('div[id^="assignpostflair"]').click(function(e){
+    $('label.assignpostflair').click(function(e){
       var sub = $(e.currentTarget).data().sub
       var post = $(e.currentTarget).data().post
       var fl = $(e.currentTarget).data().fl

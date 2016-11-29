@@ -1212,16 +1212,13 @@ span.btn.accepted {
 }
 
 /* admin area */
-#create-user-badge input#badge,
-#create-user-badge input#name,
-#create-user-badge input#text,
-#edit-mod-form input#sub,
-#edit-mod-form input#user {
-    width: 70%;
+.nice-form input[type="text"] {
+    width: 100%;
     text-align: left;
     padding: 5px;
     border-radius: 2px;
     border: solid 1px lightgray;
+    padding: 6px 12px;
 }
 .edituser .adminbadges {
     padding: 5px;
@@ -1276,7 +1273,7 @@ span.btn.accepted {
 .admin.section .sub li {
     margin: 4px 0;
 }
-.col-12.admin-page-form {
+.admin-page-form {
     border: 2px solid #D83600;
     border-radius: 3px;
     padding: 10px;
@@ -1357,3 +1354,5 @@ body.dark input{
   background-color: #151515;
   border-color: #333 !important;
 }
+
+.btn-sm{padding-left: 6px; padding-right: 6px;}

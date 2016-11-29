@@ -25,13 +25,26 @@ class EditSubCSSForm(FlaskForm):
     """ Edit sub stylesheet form. """
     css = TextAreaField('Custom stylesheet', validators=[Length(max=10000)])
 
+class EditSubFlair(FlaskForm):
+    """ Edits ONE flair from a sub """
+    flair = HiddenField()
+    text = StringField('Flair text', validators=[DataRequired(),
+                                                 Length(max=64)])
+
+class CreateSubFlair(FlaskForm):
+    """ Creates a flair """
+    text = StringField('Flair text', validators=[DataRequired(),
+                                                 Length(max=64)])
+
+class DeleteSubFlair(FlaskForm):
+    """ Used to delete flairs """
+    flair = HiddenField()
 
 class EditSubForm(FlaskForm):
     """ Edit sub form. """
     title = StringField('Title',
                         validators=[DataRequired(), Length(min=2, max=128)])
 
-    css = TextAreaField('Custom stylesheet', validators=[Length(max=10000)])
     nsfw = BooleanField('Sub is NSFW')
     restricted = BooleanField('Only mods can post')
     usercanflair = BooleanField('Allow users to flair their own posts')
@@ -39,14 +52,6 @@ class EditSubForm(FlaskForm):
                          choices=[('v', 'Hot'), ('v_two', 'New'),
                                   ('v_three', 'Top')],
                          validators=[Optional()])
-    flair1 = StringField('Flair 1')
-    flair2 = StringField('Flair 2')
-    flair3 = StringField('Flair 3')
-    flair4 = StringField('Flair 4')
-    flair5 = StringField('Flair 5')
-    flair6 = StringField('Flair 6')
-    flair7 = StringField('Flair 7')
-    flair8 = StringField('Flair 8')
 
 
 class EditModForm(FlaskForm):
@@ -132,6 +137,9 @@ class BanUserSubForm(FlaskForm):
 class EditPostFlair(FlaskForm):
     """ Post deletion form. """
     post = HiddenField()
+    flair = RadioField('Flair',
+                       choices=[],
+                       validators=[DataRequired()])
 
 
 class DeletePost(FlaskForm):

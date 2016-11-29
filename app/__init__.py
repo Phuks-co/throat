@@ -24,13 +24,13 @@ from feedgen.feed import FeedGenerator
 
 from .models import db, User, Sub, SubPost, SubPostVote, SubPostComment
 from .models import UserBadge, UserMetadata, SiteMetadata, SubMetadata, Message
-from .models import SubStylesheet
-from .forms import RegistrationForm, LoginForm, LogOutForm
+from .models import SubStylesheet, SubFlair
+from .forms import RegistrationForm, LoginForm, LogOutForm, EditSubFlair
 from .forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment, EditModForm
-from .forms import DummyForm, DeletePost, CreateUserBadgeForm, EditMod2Form
-from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair
+from .forms import DeletePost, CreateUserBadgeForm, EditMod2Form, CreateSubFlair
+from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair, DummyForm
 from .views import do, api
 from . import misc
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
@@ -75,6 +75,7 @@ app.view_functions['static'] = cache_static
 js = Bundle(
     Bundle('js/jquery.min.js',
            'js/magnific-popup.min.js',
+           'js/bootstrap.buttons.min.js',
            'js/CustomElements.min.js'),
     Bundle('js/time-elements.js',
            'js/konami.js',
@@ -186,12 +187,12 @@ def utility_processor():
             'commentform': PostComment(), 'dummyform': DummyForm(),
             'getVoteCount': getVoteCount, 'hasVoted': hasVoted,
             'delpostform': DeletePost(), 'getMetadata': getMetadata,
-            'editsubform': EditSubForm(), 'getSubUsers': getSubUsers,
+            'getSubUsers': getSubUsers,
             'getAnnouncement': getAnnouncement, 'getModCount': getModCount,
             'getSubCreation': getSubCreation, 'userCanFlair': userCanFlair,
             'getSubPostCount': getSubPostCount, 'config': app.config,
             'isRestricted': isRestricted, 'isNSFW': isNSFW,
-            'subSort': subSort, 'editpostflair': EditPostFlair(),
+            'subSort': subSort,
             'hasPostFlair': hasPostFlair, 'getPostFlair': getPostFlair,
             'getSuscriberCount': getSuscriberCount, 'funcs': misc}
 
@@ -349,6 +350,25 @@ def edit_sub_css(sub):
     return render_template('editsubcss.html', sub=sub, form=form)
 
 
+@app.route("/s/<sub>/edit/flairs")
+@login_required
+def edit_sub_flairs(sub):
+    """ Here we manage the sub's flairs. """
+    sub = decent(Sub.cache.filter(name=sub))
+    if not sub:
+        abort(404)
+
+    if not current_user.is_mod(sub) and not current_user.is_admin():
+        abort(403)
+
+    flairs = SubFlair.query.filter_by(sub=sub).all()
+    formflairs = []
+    for flair in flairs:
+        formflairs.append(EditSubFlair(flair=flair.xid, text=flair.text))
+    return render_template('editflairs.html', sub=sub, flairs=formflairs,
+                           createflair=CreateSubFlair())
+
+
 @app.route("/s/<sub>/edit")
 @login_required
 def edit_sub(sub):
@@ -360,30 +380,6 @@ def edit_sub(sub):
     if current_user.is_mod(sub) or current_user.is_admin():
         form = EditSubForm(subsort=getMetadata(sub, 'sort'))
 
-        flair1 = SubMetadata.query.filter_by(key='fl1').first()
-        if flair1:
-            form.flair1.data = flair1.value
-        flair2 = SubMetadata.query.filter_by(key='fl2').first()
-        if flair2:
-            form.flair2.data = flair2.value
-        flair3 = SubMetadata.query.filter_by(key='fl3').first()
-        if flair3:
-            form.flair3.data = flair3.value
-        flair4 = SubMetadata.query.filter_by(key='fl4').first()
-        if flair4:
-            form.flair4.data = flair4.value
-        flair5 = SubMetadata.query.filter_by(key='fl5').first()
-        if flair5:
-            form.flair5.data = flair5.value
-        flair6 = SubMetadata.query.filter_by(key='fl6').first()
-        if flair6:
-            form.flair6.data = flair6.value
-        flair7 = SubMetadata.query.filter_by(key='fl7').first()
-        if flair7:
-            form.flair7.data = flair7.value
-        flair8 = SubMetadata.query.filter_by(key='fl8').first()
-        if flair8:
-            form.flair8.data = flair8.value
         return render_template('editsub.html', sub=sub, editsubform=form)
     else:
         abort(403)
@@ -541,6 +537,15 @@ def view_post(sub, pid):
     post = SubPost.cache.get(pid)
     if not post or post.sub.name != sub:
         abort(404)
+    sub = Sub.cache.get(post.sid)
+
+    editflair = EditPostFlair()
+    editflair.flair.choices = []
+    if post.user.uid == current_user.get_id() or current_user.is_mod(post.sub)\
+      or current_user.is_admin():
+        flairs = SubFlair.query.filter_by(sid=sub.sid).all()
+        for flair in flairs:
+            editflair.flair.choices.append((flair.xid, flair.text))
 
     mods = getMetadata(post.sub, 'mod2', all=True)
     txtpedit = EditSubTextPostForm()
@@ -548,7 +553,7 @@ def view_post(sub, pid):
     createtxtpost = CreateSubTextPost(sub=sub)
     createlinkpost = CreateSubLinkPost(sub=sub)
     comments = SubPostComment.cache.filter(pid=pid)
-    sub = Sub.cache.get(post.sid)
+
     upcount = SubPostVote.query.filter_by(pid=post.pid, positive=1).count()
     downcount = SubPostVote.query.filter_by(pid=post.pid, positive=0).count()
     return render_template('post.html', post=post, mods=mods,
@@ -556,7 +561,7 @@ def view_post(sub, pid):
                            upcount=upcount, downcount=downcount,
                            editlinkpostform=EditSubLinkPostForm(),
                            lnkpostform=createlinkpost,
-                           txtpostform=createtxtpost)
+                           txtpostform=createtxtpost, editpostflair=editflair)
 
 
 @app.route("/p/<pid>")

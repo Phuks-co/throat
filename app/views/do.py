@@ -4,26 +4,28 @@ import json
 import re
 import datetime
 import uuid
+from io import BytesIO
 import bcrypt
 from opengraph import OpenGraph
 import requests
 from PIL import Image
-from io import BytesIO
 from flask import Blueprint, redirect, url_for, session, abort
 from sqlalchemy import func
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_cache import make_template_fragment_key
+import config
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
 from ..models import UserMetadata, UserBadge, SubSubscriber, SiteMetadata
-from ..forms import RegistrationForm, LoginForm, LogOutForm
+from ..models import SubFlair
+from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubFlair
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
-from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
+from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form, EditSubFlair
+from ..forms import DeleteSubFlair
 from ..misc import SiteUser, cache, getMetadata
-import config
 
 do = Blueprint('do', __name__)
 
@@ -323,86 +325,12 @@ def edit_sub(sub):
                     subsort = SubMetadata(sub, 'sort', form.subsort.data)
                     db.session.add(subsort)
 
-            # TODO: for god's sake, kill this
-            if form.flair1.data:
-                flair1 = getMetadata(sub, 'fl1', record=True)
-                if flair1:
-                    flair1.value = form.flair1.data
-                else:
-                    flair1 = SubMetadata(sub, 'fl1', form.flair1.data)
-                    db.session.add(flair1)
-            if form.flair2.data:
-                flair2 = getMetadata(sub, 'fl2', record=True)
-                if flair2:
-                    flair2.value = form.flair2.data
-                else:
-                    flair2 = SubMetadata(sub, 'fl2', form.flair2.data)
-                    db.session.add(flair2)
-            if form.flair3.data:
-                flair3 = getMetadata(sub, 'fl3', record=True)
-                if flair3:
-                    flair3.value = form.flair3.data
-                else:
-                    flair3 = SubMetadata(sub, 'fl3', form.flair3.data)
-                    db.session.add(flair3)
-            if form.flair4.data:
-                flair4 = getMetadata(sub, 'fl4', record=True)
-                if flair4:
-                    flair4.value = form.flair4.data
-                else:
-                    flair4 = SubMetadata(sub, 'fl4', form.flair4.data)
-                    db.session.add(flair4)
-            if form.flair5.data:
-                flair5 = getMetadata(sub, 'fl5', record=True)
-                if flair5:
-                    flair5.value = form.flair5.data
-                else:
-                    flair5 = SubMetadata(sub, 'fl5', form.flair5.data)
-                    db.session.add(flair5)
-            if form.flair6.data:
-                flair6 = getMetadata(sub, 'fl6', record=True)
-                if flair6:
-                    flair6.value = form.flair6.data
-                else:
-                    flair6 = SubMetadata(sub, 'fl6', form.flair6.data)
-                    db.session.add(flair6)
-            if form.flair7.data:
-                flair7 = getMetadata(sub, 'fl7', record=True)
-                if flair7:
-                    flair7.value = form.flair7.data
-                else:
-                    flair7 = SubMetadata(sub, 'fl7', form.flair7.data)
-                    db.session.add(flair7)
-            if form.flair8.data:
-                flair8 = getMetadata(sub, 'fl8', record=True)
-                if flair8:
-                    flair8.value = form.flair8.data
-                else:
-                    flair8 = SubMetadata(sub, 'fl8', form.flair8.data)
-                    db.session.add(flair8)
-
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'addr': url_for('view_sub', sub=sub.name)})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
     else:
         abort(403)
-
-
-@do.route("/do/delete_sub_flair/<sub>/<fl>", methods=['POST'])
-def delete_sub_flair(sub, fl):
-    """ Deletes a sub flair """
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
-    if not sub:
-        return json.dumps({'status': 'error',
-                           'error': ['Sub does not exist']})
-    if current_user.is_mod(sub) or current_user.is_admin():
-        flair = sub.properties.filter_by(key=fl).first()
-        db.session.delete(flair)
-        db.session.commit()
-        return json.dumps({'status': 'ok'})
-    else:
-        abort(404)
 
 
 @do.route("/do/assign_post_flair/<sub>/<pid>/<fl>", methods=['POST'])
@@ -418,12 +346,16 @@ def assign_post_flair(sub, pid, fl):
                            'error': ['Post does not exist']})
     if current_user.is_mod(sub) or post.user.uid == current_user.get_id() \
        or current_user.is_admin():
-        flair = sub.properties.filter_by(key=fl).first()
-        postfl = post.properties.filter_by(key='flair').first()
+        flair = SubFlair.query.filter_by(xid=fl, sid=sub.sid).first()
+        if not flair:
+            return json.dumps({'status': 'error',
+                              'error': ['Flair does not exist']})
+
+        postfl = getMetadata(post, 'flair', record=True)
         if postfl:
-            postfl.value = flair.value
+            postfl.value = flair.text
         else:
-            x = SubPostMetadata(pid, 'flair', flair.value)
+            x = SubPostMetadata(pid, 'flair', flair.text)
             db.session.add(x)
         db.session.commit()
         return json.dumps({'status': 'ok'})
@@ -969,12 +901,12 @@ def inv_mod2(sub):
             mod = SubMetadata.query.filter_by(sid=sub.sid, key='mod2',
                                               value=user.uid).first()
             mod1 = SubMetadata.query.filter_by(sid=sub.sid, key='mod1',
-                                              value=user.uid).first()
+                                               value=user.uid).first()
             if mod or mod1:
                 return json.dumps({'status': 'error',
                                    'error': ['User is already a mod.']})
             modinv = SubMetadata.query.filter_by(sid=sub.sid, key='mod2i',
-                                              value=user.uid).first()
+                                                 value=user.uid).first()
             if modinv:
                 return json.dumps({'status': 'error',
                                    'error': ['User has a pending invite.']})
@@ -1179,3 +1111,71 @@ def toggle_sticky(post):
         cache.delete(ckey)
 
     return redirect(url_for('view_sub', sub=post.sub.name))
+
+
+@do.route("/do/flair/<sub>/edit", methods=['POST'])
+@login_required
+def edit_flair(sub):
+    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    if not sub:
+        abort(404)
+
+    if not current_user.is_topmod(sub) and not current_user.is_admin():
+        abort(403)
+
+    form = EditSubFlair()
+    if form.validate():
+        flair = SubFlair.query.filter_by(sid=sub.sid,
+                                         xid=form.flair.data).first()
+        if not flair:
+            return json.dumps({'status': 'error',
+                               'error': ['Flair does not exist']})
+
+        flair.text = form.text.data
+        db.session.commit()
+        return json.dumps({'status': 'ok'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/flair/<sub>/delete", methods=['POST'])
+@login_required
+def delete_flair(sub):
+    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    if not sub:
+        abort(404)
+
+    if not current_user.is_topmod(sub) and not current_user.is_admin():
+        abort(403)
+
+    form = DeleteSubFlair()
+    if form.validate():
+        flair = SubFlair.query.filter_by(sid=sub.sid,
+                                         xid=form.flair.data).first()
+        if not flair:
+            return json.dumps({'status': 'error',
+                               'error': ['Flair does not exist']})
+
+        db.session.delete(flair)
+        db.session.commit()
+        return json.dumps({'status': 'ok'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/flair/<sub>/create", methods=['POST'])
+@login_required
+def create_flair(sub):
+    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    if not sub:
+        abort(404)
+
+    if not current_user.is_topmod(sub) and not current_user.is_admin():
+        abort(403)
+    form = CreateSubFlair()
+    if form.validate():
+        flair = SubFlair()
+        flair.sid = sub.sid
+        flair.text = form.text.data
+        db.session.add(flair)
+        db.session.commit()
+        return json.dumps({'status': 'ok'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})

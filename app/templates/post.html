@@ -356,7 +356,7 @@
   </form>
   {%endif%}
   {% if post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
-  <form id="edit-flair-form" class="mfp-hide white-popup-block" action="" method="POST">
+  <form id="edit-flair-form" class="mfp-hide white-popup-block ajaxform" action="" method="POST">
     {{editpostflair.csrf_token}}
     {{editpostflair.post(value=post.pid)}}
     {% if hasPostFlair(post) %}
@@ -366,14 +366,14 @@
 
     {% endif %}
     <h3>Avalable post flairs</h3>
-    {% if getPostFlair(post.sub, 'fl1') %}<div class="btn" id="assignpostflair" data-sub="{{post.sub.name}}" data-post="{{post.pid}}" data-fl="fl1">{{getPostFlair(post.sub, 'fl1')}}</div>{% endif %}
-    {% if getPostFlair(post.sub, 'fl2') %}<div class="btn" id="assignpostflair" data-sub="{{post.sub.name}}" data-post="{{post.pid}}" data-fl="fl2">{{getPostFlair(post.sub, 'fl2')}}</div>{% endif %}
-    {% if getPostFlair(post.sub, 'fl3') %}<div class="btn" id="assignpostflair" data-sub="{{post.sub.name}}" data-post="{{post.pid}}" data-fl="fl3">{{getPostFlair(post.sub, 'fl3')}}</div>{% endif %}
-    {% if getPostFlair(post.sub, 'fl4') %}<div class="btn" id="assignpostflair" data-sub="{{post.sub.name}}" data-post="{{post.pid}}" data-fl="fl4">{{getPostFlair(post.sub, 'fl4')}}</div>{% endif %}
-    {% if getPostFlair(post.sub, 'fl5') %}<div class="btn" id="assignpostflair" data-sub="{{post.sub.name}}" data-post="{{post.pid}}" data-fl="fl5">{{getPostFlair(post.sub, 'fl5')}}</div>{% endif %}
-    {% if getPostFlair(post.sub, 'fl6') %}<div class="btn" id="assignpostflair" data-sub="{{post.sub.name}}" data-post="{{post.pid}}" data-fl="fl6">{{getPostFlair(post.sub, 'fl6')}}</div>{% endif %}
-    {% if getPostFlair(post.sub, 'fl7') %}<div class="btn" id="assignpostflair" data-sub="{{post.sub.name}}" data-post="{{post.pid}}" data-fl="fl7">{{getPostFlair(post.sub, 'fl7')}}</div>{% endif %}
-    {% if getPostFlair(post.sub, 'fl8') %}<div class="btn" id="assignpostflair" data-sub="{{post.sub.name}}" data-post="{{post.pid}}" data-fl="fl8">{{getPostFlair(post.sub, 'fl8')}}</div>{% endif %}
+    <div class="btn-group" data-toggle="buttons">
+      {% for ll in editpostflair.flair %}
+        <label class="btn btn-default assignpostflair" data-fl="{{ll.data}}" data-sub="{{post.sub.name}}" data-post="{{post.pid}}"> 
+          {{ll}}
+          {{ll.label}}</label>
+      {%endfor %}
+    </div>
+
   </form>
   {% endif %}
 
