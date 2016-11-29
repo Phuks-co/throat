@@ -1,8 +1,12 @@
 {% extends "layout.html" %}
 {% block title %}/u/{{user.name}} | {{config.LEMA}}{% endblock %}
 {% block navbar %}
+<ul class="left">
+  <li><a href="{{url_for('view_user_posts', user=user.name)}}">Posts</a></li>
+  <li><a href="{{url_for('view_user_comments', user=user.name)}}">Comments</a></li>
+</ul>
 <ul class="right">
-  <li><a href="{{url_for('view_user', user=user.name)}}" class="btn">{{user.name}}</a></li>
+  <li><a href="{{url_for('view_user', user=user.name)}}">{{user.name}}</a></li>
 </ul>
 {% endblock %}
 
@@ -19,104 +23,46 @@
     <a href="#msg-form" class="btn btn-orange send-message" style="width:100%;">Send a Message to {{user.name}}</a>
   </div>
 </div>
-<div>
-  <h3>Badges:</h3>
-  <ul id="userBadges" style="color: darkcyan;">
-    {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
-    {% for badge in badges if badges|length > 0 %}
-    <li title="{{badge.getBadgeText}}"><i class="fa {{badge.getBadgeClass}}"></i> {{badge.getBadgeName}}</li>
-    {% else %}
-    <li>none</li>
-    {% endfor %}
-  </ul>
-</div>
-<hr>
-<div>
-  <h3>Owns:</h3>
-  <ul style="color: darkcyan;">
-    {% for own in owns if owns|length > 0 %}
-    <li><a href="{{url_for('view_sub', sub=own.getSubName)}}">{{own.getSubName}}</a></li>
-    {% else %}
-    <li>none</li>
-    {% endfor %}
-  </ul>
-</div>
-<hr>
-<div>
-  <h3>Mods:</h3>
-  <ul style="color: darkcyan;">
-    {% for mod in mods if mods|length > 0 %}
-    <li><a href="{{url_for('view_sub', sub=mod.getSubName)}}">{{mod.getSubName}}</a></li>
-    {% else %}
-    <li>none</li>
-    {% endfor %}
-  </ul>
-  <hr>
-  <p class="joindate">User has made {{pcount}} posts<br>and {{ccount}} comments since<br>registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
-</div>
 {% endblock %}
 
 {% block content %}
 {{ super() }}
   <h1 class="noshit">{{user.name}}</h1>
     <div class="user-activity col-10">
-      <div class="recent">
-        <h3>Recent Posts</h3>
-        <ul class="rpost">
-          {% if pcount < 1 %}
-          <p>
-            This user has not posted anything, yet
-          </p>
+      <p class="joindate">User has made {{pcount}} posts and {{ccount}} comments since registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
+      {# TODO user stats #}
+      <div>
+        <h3>Badges:</h3>
+        <ul id="userBadges" style="color: darkcyan;">
+          {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
+          {% for badge in badges if badges|length > 0 %}
+          <li title="{{badge.getBadgeText}}"><i class="fa {{badge.getBadgeClass}}"></i> {{badge.getBadgeName}}</li>
           {% else %}
-          {% for post in user.posts[::-1][:5] %}
-          <li>
-            <a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{ post.title }}</a>
-            <div class="data">
-              <a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn small">
-                <i class="fa fa-users" aria-hidden="true"></i> /s/{{post.sub.name}}
-              </a>
-              <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}" class="btn small">
-                <i class="fa fa-comment" aria-hidden="true"></i> Comments
-              </a>
-              <span class="time btn small">
-                <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
-              </span>
-          </div>
-          </li>
+          <li>none</li>
           {% endfor %}
-          {% endif %}
         </ul>
       </div>
-      <div class="recent">
-        <h3>Recent Comments</h3>
-        <ul class="rpost">
-          {% if ccount < 1 %}
-          <p>
-            This user has not commented on anything, yet
-          </p>
+      <div>
+        <h3>Owns:</h3>
+        <ul style="color: darkcyan;">
+          {% for own in owns if owns|length > 0 %}
+          <li><a href="{{url_for('view_sub', sub=own.getSubName)}}">{{own.getSubName}}</a></li>
           {% else %}
-          {% for comments in user.comments[::-1][:5] %}
-          <li>
-            <a class="title" href="{{ url_for('view_post', sub=comments.post.sub.name, pid=comments.post.pid) }}">{{comments.post.title}}</a>
-            <br>
-            <span class="comment">
-              {{comments.content}}
-            </span>
-            <br>
-            <a href="{{ url_for('view_sub', sub=comments.post.sub.name) }}" class="btn small">
-              <i class="fa fa-users" aria-hidden="true"></i> /s/{{comments.post.sub.name}}
-            </a>
-            <a href="{{ url_for('view_post', sub=comments.post.sub.name, pid=comments.post.pid) }}" class="btn small">
-              <i class="fa fa-comment" aria-hidden="true"></i> Comments
-            </a>
-            <span class="time btn small">
-              <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{comments.post.posted.isoformat()}}"></time-ago>
-            </span>
-          </li>
-        {% endfor %}
-        {% endif %}
+          <li>none</li>
+          {% endfor %}
         </ul>
       </div>
+      <div>
+        <h3>Mods:</h3>
+        <ul style="color: darkcyan;">
+          {% for mod in mods if mods|length > 0 %}
+          <li><a href="{{url_for('view_sub', sub=mod.getSubName)}}">{{mod.getSubName}}</a></li>
+          {% else %}
+          <li>none</li>
+          {% endfor %}
+        </ul>
+      </div>
+
     </div>
     <div class="image col-2">
       <a href="#"><img src="{{url_for('static', filename='img/textpost.png')}}" alt="User Img"/></a>

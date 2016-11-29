@@ -606,6 +606,48 @@ def view_user(user):
                            ccount=ccount, owns=owns, mods=mods)
 
 
+@app.route("/u/<user>/posts")
+@login_required
+def view_user_posts(user):
+    """ WIP: View user's recent posts """
+    user = User.query.filter_by(name=user).first()
+    if not user:
+        abort(404)
+
+    owns = SubMetadata.query.filter_by(key='mod1') \
+                            .filter_by(value=user.uid).all()
+    mods = SubMetadata.query.filter_by(key='mod2') \
+                            .filter_by(value=user.uid).all()
+    badges = UserMetadata.query.filter_by(uid=user.uid) \
+                               .filter_by(key='badge').all()
+    pcount = SubPost.query.filter_by(uid=user.uid).count()
+    ccount = SubPostComment.query.filter_by(uid=user.uid).count()
+    return render_template('userposts.html', user=user, badges=badges,
+                           msgform=CreateUserMessageForm(), pcount=pcount,
+                           ccount=ccount, owns=owns, mods=mods)
+
+
+@app.route("/u/<user>/comments")
+@login_required
+def view_user_comments(user):
+    """ WIP: View user's recent comments """
+    user = User.query.filter_by(name=user).first()
+    if not user:
+        abort(404)
+
+    owns = SubMetadata.query.filter_by(key='mod1') \
+                            .filter_by(value=user.uid).all()
+    mods = SubMetadata.query.filter_by(key='mod2') \
+                            .filter_by(value=user.uid).all()
+    badges = UserMetadata.query.filter_by(uid=user.uid) \
+                               .filter_by(key='badge').all()
+    pcount = SubPost.query.filter_by(uid=user.uid).count()
+    ccount = SubPostComment.query.filter_by(uid=user.uid).count()
+    return render_template('usercomments.html', user=user, badges=badges,
+                           msgform=CreateUserMessageForm(), pcount=pcount,
+                           ccount=ccount, owns=owns, mods=mods)
+
+
 @app.route("/u/<user>/edit")
 @login_required
 def edit_user(user):
