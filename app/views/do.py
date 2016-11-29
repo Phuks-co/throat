@@ -148,7 +148,7 @@ def edit_user(user):
     if not user:
         return json.dumps({'status': 'error',
                            'error': ['User does not exist']})
-    if current_user.get_id() != user.uid or not current_user.is_admin():
+    if current_user.get_id() != user.uid and not current_user.is_admin():
         abort(403)
 
     form = EditUserForm()
