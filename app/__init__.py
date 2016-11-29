@@ -621,10 +621,9 @@ def view_user_posts(user):
     badges = UserMetadata.query.filter_by(uid=user.uid) \
                                .filter_by(key='badge').all()
     pcount = SubPost.query.filter_by(uid=user.uid).count()
-    ccount = SubPostComment.query.filter_by(uid=user.uid).count()
     return render_template('userposts.html', user=user, badges=badges,
                            msgform=CreateUserMessageForm(), pcount=pcount,
-                           ccount=ccount, owns=owns, mods=mods)
+                           owns=owns, mods=mods)
 
 
 @app.route("/u/<user>/comments")
@@ -641,10 +640,9 @@ def view_user_comments(user):
                             .filter_by(value=user.uid).all()
     badges = UserMetadata.query.filter_by(uid=user.uid) \
                                .filter_by(key='badge').all()
-    pcount = SubPost.query.filter_by(uid=user.uid).count()
     ccount = SubPostComment.query.filter_by(uid=user.uid).count()
     return render_template('usercomments.html', user=user, badges=badges,
-                           msgform=CreateUserMessageForm(), pcount=pcount,
+                           msgform=CreateUserMessageForm(),
                            ccount=ccount, owns=owns, mods=mods)
 
 

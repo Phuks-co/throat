@@ -53,8 +53,6 @@
     <li>none</li>
     {% endfor %}
   </ul>
-  <hr>
-  <p class="joindate">User has made {{pcount}} posts<br>and {{ccount}} comments since<br>registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
 </div>
 {% endblock %}
 
@@ -70,23 +68,27 @@
             This user has not commented on anything, yet
           </p>
           {% else %}
+          <p>
+            This user has {{ccount}} comments
+          </p>
           {% for comments in user.comments[::-1][:10] %}
           <li>
-            <a class="title" href="{{ url_for('view_post', sub=comments.post.sub.name, pid=comments.post.pid) }}">{{comments.post.title}}</a>
-            <br>
-            <span class="comment">
-              {{comments.content}}
-            </span>
-            <br>
-            <a href="{{ url_for('view_sub', sub=comments.post.sub.name) }}" class="btn small">
-              <i class="fa fa-users" aria-hidden="true"></i> /s/{{comments.post.sub.name}}
-            </a>
-            <a href="{{ url_for('view_post', sub=comments.post.sub.name, pid=comments.post.pid) }}" class="btn small">
-              <i class="fa fa-comment" aria-hidden="true"></i> Comments
-            </a>
-            <span class="time btn small">
-              <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{comments.post.posted.isoformat()}}"></time-ago>
-            </span>
+            <div class="usercomments data">
+              <p><a class="title" href="{{ url_for('view_post', sub=comments.post.sub.name, pid=comments.post.pid) }}">{{comments.post.title}}</a></p>
+              <p><span class="comment">{{comments.content}}</span></p>
+              <a href="{{ url_for('view_post', sub=comments.post.sub.name, pid=comments.post.pid) }}#{{comments.cid}}" class="btn small">
+                <i class="fa fa-link" aria-hidden="true"></i> permalink
+              </a>
+              <a href="{{ url_for('view_sub', sub=comments.post.sub.name) }}" class="btn small">
+                <i class="fa fa-users" aria-hidden="true"></i> /s/{{comments.post.sub.name}}
+              </a>
+              <a href="{{ url_for('view_post', sub=comments.post.sub.name, pid=comments.post.pid) }}" class="btn small">
+                <i class="fa fa-comment" aria-hidden="true"></i> Comments
+              </a>
+              <span class="time btn small">
+                <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{comments.post.posted.isoformat()}}"></time-ago>
+              </span>
+            </div>
           </li>
         {% endfor %}
         {% endif %}

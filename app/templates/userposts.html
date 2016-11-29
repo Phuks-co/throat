@@ -53,8 +53,6 @@
     <li>none</li>
     {% endfor %}
   </ul>
-  <hr>
-  <p class="joindate">User has made {{pcount}} posts<br>and {{ccount}} comments since<br>registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
 </div>
 {% endblock %}
 
@@ -70,10 +68,13 @@
             This user has not posted anything, yet
           </p>
           {% else %}
+          <p>
+            This user has {{pcount}} posts
+          </p>
           {% for post in user.posts[::-1][:10] %}
           <li>
-            <a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{ post.title }}</a>
-            <div class="data">
+            <div class="userposts data">
+              <p><a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{ post.title }}</a></p>
               <a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn small">
                 <i class="fa fa-users" aria-hidden="true"></i> /s/{{post.sub.name}}
               </a>
@@ -83,7 +84,7 @@
               <span class="time btn small">
                 <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
               </span>
-          </div>
+            </div>
           </li>
           {% endfor %}
           {% endif %}

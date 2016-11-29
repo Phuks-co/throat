@@ -231,7 +231,7 @@
           </p>
           {% endif %}
           {% for comment in post.getComments() recursive %}
-            <article data-cid="{{comment.cid}}" class="text-post center no-padding comment sub-{{loop.depth0}}">
+            <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="text-post center no-padding comment sub-{{loop.depth0}}">
               <div class="head">
                 <div class="info">
                   <a class="btn small collapse" data-cid="{{comment.cid}}"><i class="fa fa-minus" aria-hidden="true"></i></a>

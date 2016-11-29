@@ -973,6 +973,22 @@ button.mfp-close, button.mfp-arrow {
 #edit-user-form p.fullw {
     margin-top: 100px;
 }
+/* user posts and permalink */
+.userposts.data {
+    border-top: 1px solid #d3d3d3;
+}
+article:target {
+    background: #efd3bb;
+    color: #000;
+}
+body.dark article:target {
+    background: #44260f;
+    color: #fff;
+}
+/* user comments */
+.usercomments.data {
+    border-top: 1px solid #d3d3d3;
+}
 /* dark mode */
 
 body.dark, body.dark header, body.dark footer, body.dark nav ul li a, body.dark .center, body.dark .post .title, body.dark .text-post, body.dark .side, body.dark .CodeMirror {

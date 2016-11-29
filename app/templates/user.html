@@ -21,20 +21,21 @@
     <a href="#msg-form" class="btn btn-orange send-message" style="width:100%;">Send a Message to {{user.name}}</a>
   </div>
 </div>
+<p>Registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
 {% endblock %}
 
 {% block content %}
 {{ super() }}
   <h1 class="noshit">{{user.name}}</h1>
     <div class="user-activity col-10">
-      <p class="joindate">User has made {{pcount}} posts and {{ccount}} comments since registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
+      <p class="joindate">User has made {{pcount}} posts and {{ccount}} comments.</p>
       {# TODO user stats #}
       <div>
         <h3>Badges:</h3>
         <ul id="userBadges" style="color: darkcyan;">
           {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
           {% for badge in badges if badges|length > 0 %}
-          <li title="{{badge.getBadgeText}}"><i class="fa {{badge.getBadgeClass}}"></i> {{badge.getBadgeName}}</li>
+          <li title="{{badge.getBadgeText}}"><i class="fa {{badge.getBadgeClass}} fa-2x"></i> {{badge.getBadgeName}}</li>
           {% else %}
           <li>none</li>
           {% endfor %}
@@ -63,7 +64,7 @@
 
     </div>
     <div class="image col-2">
-      <a href="#"><img src="{{url_for('static', filename='img/textpost.png')}}" alt="User Img"/></a>
+      <p><a href="#"><img src="{{url_for('static', filename='img/textpost.png')}}" alt="User Img"/></a></p>
     </div>
 
 <form id="msg-form" data-user="{{user.uid}}" class="mfp-hide white-popup-block">
