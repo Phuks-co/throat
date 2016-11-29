@@ -793,7 +793,11 @@ def admin_post():
     """ WIP: View post. """
     if current_user.is_admin():
         # posts = SubPost.query.first()
-        return render_template('adminpost.html')
+        posts = SubPost.query.order_by(SubPost.posted.desc())
+        sorter = BasicSorting(posts)
+        page = 1
+        return render_template('adminpost.html', page=page, sort_type='all_new',
+                               posts=sorter.getPosts(page))
     else:
         return render_template('errors/404.html'), 404
 

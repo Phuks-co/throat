@@ -16,14 +16,14 @@
     <a href="{{url_for('admin_subs')}}" class="btn btn-orange" style="width:100%;">Subs</a>
   </div>
   <div class="col-12">
-    <a href="{{url_for('admin_post')}}" class="btn btn-orange" style="width:100%;">Post</a>
+    <a href="{{url_for('admin_post')}}" class="btn btn-orange" style="width:100%;">Posts</a>
   </div>
 </div>
 {% endblock %}
 
 {% block content %}
 {{ super() }}
-<h2><i class="fa fa-list"></i> Post</h2>
+<h2><i class="fa fa-list"></i> Recent Posts</h2>
 <div class="col-12 admin section search">
   <form action="{{ url_for('do.admin_post_search') }}" method="post">
   <span class="search">
@@ -35,6 +35,24 @@
   </span>
   </form>
 </div>
-
-
+<div class="admin section subs posts">
+  <div class="col-12">
+    <table class="col-12">
+      <tr>
+        <td>Admin ID</td>
+        <td>Title</td>
+        <td>Sub</td>
+        <td>User</td>
+      </tr>
+    {% for post in posts %}
+      <tr>
+        <td><a href="{{url_for('admin_post_search', term=post.pid)}}">{{post.pid}}</a></td>
+        <td><a href="{{url_for('view_post_inbox', pid=post.pid)}}">{{post.title}}</a></td>
+        <td><a href="{{url_for('view_sub', sub=post.sub.name)}}">{{post.sub.name}}</a></td>
+        <td><a href="{{url_for('view_user', user=post.user.name)}}"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a></td>
+      </tr>
+    {% endfor %}
+    </table>
+  </div>
+<div>
 {% endblock %}

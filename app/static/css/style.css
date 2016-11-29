@@ -1298,7 +1298,9 @@ span.btn.accepted {
 .admin.section.stats div {
     text-align: center;
 }
-
+.admin.section.posts tr {
+    line-height: 40px;
+}
 /* api page */
 
 article.post.apidoc {
