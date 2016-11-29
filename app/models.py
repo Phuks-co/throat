@@ -96,7 +96,7 @@ class UserMetadata(db.Model, CacheableMixin):
         """ Returns the badge's css class """
         if self.key != "badge":
             return False
-        x = UserBadge.cache.get(self.value)
+        x = UserBadge.query.get(self.value)
         return str(x.badge)
 
     @hybrid_property
@@ -104,7 +104,7 @@ class UserMetadata(db.Model, CacheableMixin):
         """ Returns the badge's name """
         if self.key != "badge":
             return False
-        x = UserBadge.cache.get(self.value)
+        x = UserBadge.query.get(self.value)
         return str(x.name)
 
     @hybrid_property
@@ -112,7 +112,7 @@ class UserMetadata(db.Model, CacheableMixin):
         """ Returns the badge's hover text """
         if self.key != "badge":
             return False
-        x = UserBadge.cache.get(self.value)
+        x = UserBadge.query.get(self.value)
         return str(x.text)
 
 

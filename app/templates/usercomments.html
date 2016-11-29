@@ -2,11 +2,9 @@
 {% block title %}/u/{{user.name}} | {{config.LEMA}}{% endblock %}
 {% block navbar %}
 <ul class="left">
+  <li><a href="{{url_for('view_user', user=user.name)}}">{{user.name}}</a></li>
   <li><a href="{{url_for('view_user_posts', user=user.name)}}">Posts</a></li>
   <li><a href="{{url_for('view_user_comments', user=user.name)}}">Comments</a></li>
-</ul>
-<ul class="right">
-  <li><a href="{{url_for('view_user', user=user.name)}}">{{user.name}}</a></li>
 </ul>
 {% endblock %}
 
