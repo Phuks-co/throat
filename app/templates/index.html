@@ -13,14 +13,12 @@
   <div class="col-12">
     <a href="{{url_for('view_subs')}}" class="btn btn-orange" style="width:100%;">View all subs</a>
   </div>
-  {% if current_user.is_authenticated and not current_user.is_lizard() %}
   <div class="col-12">
     <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
   </div>
   <div class="col-12">
     <a href="#link-post-form" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
   </div>
-  {% endif %}
 </div>
 <div class="col-12">
   <div style="width:100%;height:100%;">
