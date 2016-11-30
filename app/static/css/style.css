@@ -1381,3 +1381,7 @@ body.dark input{
 }
 
 .btn-sm{padding-left: 6px; padding-right: 6px;}
+
+#SubscriptionsList ul li {
+  text-align: left;
+}

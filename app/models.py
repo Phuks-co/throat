@@ -240,6 +240,12 @@ class SubSubscriber(db.Model, CacheableMixin):
     status = Column(Integer)  # 1=subscribed 2=blocked 3=custom
     time = Column(DateTime)
 
+    @hybrid_property
+    def getSubName(self):
+        """ Returns the sub's name from str """
+        x = Sub.cache.get(self.sid)
+        return str(x.name)
+
 
 class SubStylesheet(db.Model, CacheableMixin):
     """ Stores sub's custom CSS """
