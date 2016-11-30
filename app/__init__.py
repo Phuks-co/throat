@@ -581,7 +581,8 @@ def edit_post(sub, pid):
 
 @app.route("/s/<sub>/<pid>/<cid>")
 def view_perm(sub, pid, cid):
-    """ WIP: Permalink to comment """
+    """ WIP: Permalink to comment, see rTH7ed77c7c69c3,
+    currently using :active css to flag comment in comment chain """
     return "WIP!"
 
 

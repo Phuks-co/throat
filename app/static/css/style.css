@@ -555,6 +555,12 @@ nav .right a {
     font-weight: bold;
     text-decoration: none;
 }
+#comments .bottombar span a {
+    margin: 0px 14px;
+}
+body.dark textarea#comment {
+    background: #292929;
+}
 .post .container {
     margin: 0px;
     margin-top: 7px;

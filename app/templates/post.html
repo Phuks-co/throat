@@ -253,14 +253,20 @@
                 {% endif %}
                 </div>
               </div>
-              <div class="content" id="content-{{comment.cid}}">{{markdown(comment.content)|safe}}</div>
+              <div class="content" id="content-{{comment.cid}}">{{markdown(comment.content)|safe}}
+              </div>
+              <div class="bottombar">
+              <span id="bott-{{comment.cid}}">
+                <a href="#{{comment.cid}}">
+                  <i class="fa fa-link" aria-hidden="true"></i> permalink
+                </a>
               {%if current_user.is_authenticated%}
-              <span class="bottombar btn small" id="bott-{{comment.cid}}">
                 <a href="#reply" class="lnkreply" data-to="{{comment.cid}}">
                   <i class="fa fa-reply" aria-hidden="true"></i> reply
                 </a>
-              </span>
               {%endif%}
+              </span>
+            </div>
             </article>
             <div id="child-{{comment.cid}}">
               {% if post.getComments(comment.cid) %}
