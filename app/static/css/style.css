@@ -1071,8 +1071,9 @@ body.dark i.fa.fa-square.fa-stack-2x {
 body.dark .pull.left.vote {
     color: #FFFFFF;
 }
-body.dark a.lnkreply {
-    color: #FFF;
+body.dark a.lnkreply,
+body.dark .bottombar a {
+    color: #fff;
 }
 body.dark .post+.post {
     border-top: 1px solid #412B19;
