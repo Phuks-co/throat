@@ -27,8 +27,7 @@
   <div style="width:100%;hight:100%;">
     <div class="subscriptions btn btn-white" style="width:100%">Subscriptions</div><br>
     <div id="SubscriptionsList" class="btn btn-blue" style="display:none; hight:100%;width:100%" >
-            <li>subverse uno</li>
-            <li>subverse dos</li>
+      {% for sub in subs %} <li>{{sub.sid}}</li> {% endfor %}
     </div>
   </div>
 </div>

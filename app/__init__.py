@@ -24,7 +24,7 @@ from feedgen.feed import FeedGenerator
 
 from .models import db, User, Sub, SubPost, SubPostVote, SubPostComment
 from .models import UserBadge, UserMetadata, SiteMetadata, SubMetadata, Message
-from .models import SubStylesheet, SubFlair
+from .models import SubStylesheet, SubFlair, SubSubscriber
 from .forms import RegistrationForm, LoginForm, LogOutForm, EditSubFlair
 from .forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
@@ -238,8 +238,9 @@ def all_new(page):
     sorter = BasicSorting(posts)
     createtxtpost = CreateSubTextPost() # maybe TODO: autofill a random sub name
     createlinkpost = CreateSubLinkPost()
+    subs =  SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
     return render_template('index.html', page=page, sort_type='all_new',
-                           posts=sorter.getPosts(page),
+                           posts=sorter.getPosts(page), subs=subs,
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
 
@@ -254,8 +255,9 @@ def all_domain_new(page, domain):
     sorter = BasicSorting(posts)
     createtxtpost = CreateSubTextPost()
     createlinkpost = CreateSubLinkPost()
+    subs =  SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
     return render_template('index.html', page=page, sort_type='all_new',
-                           posts=sorter.getPosts(page),
+                           posts=sorter.getPosts(page), subs=subs,
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
 
@@ -283,8 +285,9 @@ def all_top(page):
     sorter = VoteSorting(posts)
     createtxtpost = CreateSubTextPost()
     createlinkpost = CreateSubLinkPost()
+    subs =  SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
     return render_template('index.html', page=page, sort_type='all_top',
-                           posts=sorter.getPosts(page),
+                           posts=sorter.getPosts(page), subs=subs,
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
 
@@ -296,8 +299,9 @@ def all_hot(page):
     sorter = HotSorting(posts)
     createtxtpost = CreateSubTextPost()
     createlinkpost = CreateSubLinkPost()
+    subs =  SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
     return render_template('index.html', page=page, sort_type='all_hot',
-                           posts=sorter.getPosts(page),
+                           posts=sorter.getPosts(page), subs=subs,
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
 
