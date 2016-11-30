@@ -808,10 +808,16 @@ def admin_post_search(term):
     """ WIP: View users. """
     if current_user.is_admin():
         post = SubPost.query.filter_by(pid=term).first()
+        user = post.user
         sub = Sub.query.filter_by(sid=post.sid).first()
         votes = SubPostVote.query.filter_by(pid=term).all()
+        upcount = SubPostVote.query.filter_by(pid=post.pid, positive=1).count()
+        downcount = SubPostVote.query.filter_by(pid=post.pid, positive=0).count()
+        pcount = SubPost.query.filter_by(uid=user.uid).count()
+        ccount = SubPostComment.query.filter_by(uid=user.uid).count()
         return render_template('adminpostsearch.html', sub=sub, post=post,
-                               votes=votes)
+                               votes=votes, ccount=ccount, pcount=pcount,
+                               upcount=upcount, downcount=downcount)
     else:
         return render_template('errors/404.html'), 404
 

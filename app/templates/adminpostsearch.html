@@ -23,37 +23,33 @@
 
 {% block content %}
 {{ super() }}
-<h2><i class="fa fa-list"></i> Post</h2>
-<div class="col-12 admin section search">
-  <form action="{{ url_for('do.admin_post_search') }}" method="post">
-  <span class="search">
-      <span><i class="fa fa-search"></i></span>
-      <input id="term" name="term" type="search" placeholder="Post number...">
-      <span>
-        <button class="btn" type="submit">Submit</button>
-      </span>
-  </span>
-  </form>
-</div>
-<div class="admin section users">
+<h2><i class="fa fa-list"></i> Post: <a href="{{url_for('view_post_inbox', pid=post.pid)}}">{{post.title}}</a></h2>
+<div class="col-12 admin section users">
   <div class="col-12">
     <table class="col-12">
       <tr>
-        <td>nsfw</td>
-        <td>Title</td>
-        <td>User</td>
-        <td>Time</td>
-      </tr>
-      <tr>
-        <td>{% if post.isPostNSFW() %}<span class="bgred" alt="Not safe for work">NSFW</span>{% else %}no{% endif %}</td>
-        <td>{{post.title}}</</td>
-        <td><a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a></td>
-        <td><i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago></td>
+        <td>NSFW: {% if post.isPostNSFW() %}<span class="bgred" alt="Not safe for work">NSFW</span>{% else %}no{% endif %}</td>
+        <td>When: <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago></td>
+        <td>Sub: <a href="{{url_for('view_sub', sub=post.sub.name)}}">{{post.sub.name}}</a></td>
       </tr>
     </table>
   </div>
+</div>
+<h2><i class="fa fa-user"></i> User: <a href="{{url_for('view_user', user=post.user.name)}}"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a></h2>
+<div class="col-12 admin section users">
   <div class="col-12">
-    <h3>+/- Votes</h3>
+    <table class="col-12">
+      <tr>
+        <td>Posts: {{pcount}}</td>
+        <td>Comments: {{ccount}}<td>
+        <td>Registered: xx</td>
+      </tr>
+    </table>
+  </div>
+</div>
+<h2><i class="fa fa-expand"></i> Votes: (+{{upcount}} | -{{downcount}})</h2>
+<div class="col-12 admin section users">
+  <div class="col-12">
     <table class="col-12">
       <tr>
         <td>vote</td>
@@ -70,5 +66,22 @@
     </table>
   </div>
 </div>
-
-{% endblock %}
+<h2><i class="fa fa-comments"></i> Comments: {{post.comments.count()}}</h2>
+<div class="col-12 admin section users">
+  <div class="col-12">
+    <table class="col-12">
+      <tr>
+        <td>user</td>
+        <td>comment</td>
+        <td>permalink</td>
+      </tr>
+      {#<!-- TODO:  -->#}
+      <tr>
+        <td>coming soon..</td>
+        <td>xx</td>
+        <td>xx</td>
+      </tr>
+      {#<!-- TODO:  -->#}
+    </table>
+  </div>
+</div>{% endblock %}
