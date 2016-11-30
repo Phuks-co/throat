@@ -893,6 +893,18 @@ $(document).ready(function() {
 
         e.preventDefault();
     });
+    $('.subscriptions').click(function(){
+
+     if($(this).text()=='Subscriptions'){
+         $('#SubscriptionsList').show();
+         $(this).text('Hide');
+     }else{
+         $('#SubscriptionsList').hide();
+         $(this).text('Subscriptions');
+     }
+
+   });
+
 });
 
 function getCookie(cname) {

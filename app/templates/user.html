@@ -21,6 +21,15 @@
     <a href="#msg-form" class="btn btn-orange send-message" style="width:100%;">Send a Message to {{user.name}}</a>
   </div>
 </div>
+<div class="col-12">
+  <div style="width:100%;hight:100%;">
+    <div class="subscriptions btn btn-white" style="width:100%">Subscriptions</div><br>
+    <div id="SubscriptionsList" class="btn btn-blue" style="display:none; hight:100%;width:100%" >
+            <li>subverse uno</li>
+            <li>subverse dos</li>
+    </div>
+  </div>
+</div>
 <p>Registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
 {% endblock %}
 
