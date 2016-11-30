@@ -1289,6 +1289,10 @@ span.btn.accepted {
 .admin.section.users table.col-12 td {
     border-bottom: 1px solid #d3d3d3;
 }
+body.dark .admin.section.subs table.col-12 td,
+body.dark .admin.section.users table.col-12 td {
+    border-bottom: 1px solid #383838;
+}
 .admin.section ul {
     -webkit-padding-start: 0;
     -webkit-margin-before: 0;
