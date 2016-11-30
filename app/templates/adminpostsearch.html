@@ -52,15 +52,13 @@
   <div class="col-12">
     <table class="col-12">
       <tr>
-        <td>vote</td>
-        <td>user</td>
-        <td>Time</td>
+        <td class="col-1">vote</td>
+        <td class="col-11">user</td>
       </tr>
       {% for vote in votes %}
       <tr>
-        <td>{% if vote.positive %}<span class="upvoted">up</span>{% else %}<span class="downvoted">down</span>{% endif %}</td>
-        <td>{{vote.uid}}</td>
-        <td>timeplaceholder</td>
+        <td class="col-1">{% if vote.positive %}<span class="upvoted">up</span>{% else %}<span class="downvoted">down</span>{% endif %}</td>
+        <td class="col-11"><a href="{{url_for('view_user', user=vote.getUsername)}}">{{vote.getUsername}}</a></td>
       </tr>
       {% endfor %}
     </table>

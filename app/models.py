@@ -439,6 +439,12 @@ class SubPostVote(db.Model, CacheableMixin):
     uid = Column(String(40), db.ForeignKey('user.uid'))
     positive = Column(Boolean)
 
+    @hybrid_property
+    def getUsername(self):
+        """ Returns username from str """
+        x = User.cache.get(self.uid)
+        return x.name
+
 
 class Message(db.Model, CacheableMixin):
     """ Represents a post on a sub """
