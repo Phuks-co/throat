@@ -3,6 +3,6 @@ notify:
     - url: https://ph.polsaker.com/harbormaster/hook/circleci/
 machine:
   python:
-    version: 3.5.0
+    version: 3.4.2
   services:
      - redis
