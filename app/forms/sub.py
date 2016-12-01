@@ -25,20 +25,24 @@ class EditSubCSSForm(FlaskForm):
     """ Edit sub stylesheet form. """
     css = TextAreaField('Custom stylesheet', validators=[Length(max=10000)])
 
+
 class EditSubFlair(FlaskForm):
     """ Edits ONE flair from a sub """
     flair = HiddenField()
     text = StringField('Flair text', validators=[DataRequired(),
                                                  Length(max=64)])
 
+
 class CreateSubFlair(FlaskForm):
     """ Creates a flair """
     text = StringField('Flair text', validators=[DataRequired(),
                                                  Length(max=64)])
 
+
 class DeleteSubFlair(FlaskForm):
     """ Used to delete flairs """
     flair = HiddenField()
+
 
 class EditSubForm(FlaskForm):
     """ Edit sub form. """

@@ -29,8 +29,9 @@ from .forms import RegistrationForm, LoginForm, LogOutForm, EditSubFlair
 from .forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment, EditModForm
-from .forms import DeletePost, CreateUserBadgeForm, EditMod2Form, CreateSubFlair
-from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair, DummyForm
+from .forms import DeletePost, CreateUserBadgeForm, EditMod2Form, DummyForm
+from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair
+from .forms import CreateSubFlair
 from .views import do, api
 from . import misc
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
@@ -282,6 +283,7 @@ def all_top(page):
                            posts=sorter.getPosts(page),
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
+
 
 @app.route("/all/hot", defaults={'page': 1})
 @app.route("/all/hot/<int:page>")
@@ -538,7 +540,7 @@ def view_post(sub, pid):
     editflair = EditPostFlair()
     editflair.flair.choices = []
     if post.user.uid == current_user.get_id() or current_user.is_mod(post.sub)\
-      or current_user.is_admin():
+       or current_user.is_admin():
         flairs = SubFlair.query.filter_by(sid=sub.sid).all()
         for flair in flairs:
             editflair.flair.choices.append((flair.xid, flair.text))
@@ -793,7 +795,8 @@ def admin_post():
         posts = SubPost.query.order_by(SubPost.posted.desc())
         sorter = BasicSorting(posts)
         page = 1
-        return render_template('adminpost.html', page=page, sort_type='all_new',
+        return render_template('adminpost.html', page=page,
+                               sort_type='all_new',
                                posts=sorter.getPosts(page))
     else:
         return render_template('errors/404.html'), 404
