@@ -467,8 +467,8 @@ def view_sub_postmodlog(sub, page):
     posts = sub.posts.order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
     mods = SubMetadata.query.filter_by(key='mod2').all()
-    createtxtpost = CreateSubTextPost(sub=sub)
-    createlinkpost = CreateSubLinkPost(sub=sub)
+    createtxtpost = CreateSubTextPost(sub=sub.name)
+    createlinkpost = CreateSubLinkPost(sub=sub.name)
 
     return render_template('subpostmodlog.html', sub=sub, page=page, mods=mods,
                            posts=sorter.getPosts(page), sort_type='hot',
@@ -501,7 +501,7 @@ def view_sub_top(sub, page):
     sorter = VoteSorting(posts)
     mods = getMetadata(sub, 'mod2', all=True)
     createtxtpost = CreateSubTextPost(sub=sub.name)
-    createlinkpost = CreateSubLinkPost(sub=sub)
+    createlinkpost = CreateSubLinkPost(sub=sub.name)
 
     return render_template('sub.html', sub=sub, page=page, sort_type='top',
                            posts=sorter.getPosts(page), mods=mods,
@@ -548,8 +548,8 @@ def view_post(sub, pid):
     mods = getMetadata(post.sub, 'mod2', all=True)
     txtpedit = EditSubTextPostForm()
     txtpedit.content.data = post.content
-    createtxtpost = CreateSubTextPost(sub=sub)
-    createlinkpost = CreateSubLinkPost(sub=sub)
+    createtxtpost = CreateSubTextPost(sub=sub.name)
+    createlinkpost = CreateSubLinkPost(sub=sub.name)
     comments = SubPostComment.cache.filter(pid=pid)
 
     upcount = SubPostVote.query.filter_by(pid=post.pid, positive=1).count()
