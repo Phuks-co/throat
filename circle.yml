@@ -4,3 +4,5 @@ notify:
 machine:
   python:
     version: 3.5.0
+  services:
+     - redis
