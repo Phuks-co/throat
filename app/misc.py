@@ -352,14 +352,14 @@ def newCount(user):
 
 def newPMCount(user):
     """ Returns new message count in message area"""
-    x = Message.query.filter_by(read=None).filter(Message.mtype=='0') \
+    x = Message.query.filter_by(read=None).filter(Message.mtype == '0') \
                      .filter_by(receivedby=user.uid).count()
     return x
 
 
 def newReplyCount(user):
     """ Returns new message count in message area """
-    x = Message.query.filter_by(read=None).filter(Message.mtype!=None) \
+    x = Message.query.filter_by(read=None).filter(Message.mtype != None) \
                      .filter_by(receivedby=user.uid).count()
     return x
 
@@ -427,11 +427,6 @@ def getSubPostCount(sub):
     """ Returns the sub's post count """
     x = Sub.query.filter_by(name=sub.name).first()
     y = SubPost.query.filter_by(sid=sub.sid).count()
-    #x = SubPost.cache.filter(sid=sub.sid)
-    #try:
-    #    x = list(x)
-    #except StopIteration:
-    #    x = 0
     return y
 
 
