@@ -1,0 +1,6 @@
+notify:
+  webhooks:
+    - url: https://ph.polsaker.com/harbormaster/hook/circleci/
+machine:
+  python:
+    version: 3.5
