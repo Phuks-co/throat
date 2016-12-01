@@ -425,7 +425,6 @@ def getModCount(sub):
 @cache.memoize(300)
 def getSubPostCount(sub):
     """ Returns the sub's post count """
-    x = Sub.query.filter_by(name=sub.name).first()
     y = SubPost.query.filter_by(sid=sub.sid).count()
     return y
 
