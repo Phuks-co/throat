@@ -812,7 +812,8 @@ def admin_post_search(term):
         sub = Sub.query.filter_by(sid=post.sid).first()
         votes = SubPostVote.query.filter_by(pid=term).all()
         upcount = SubPostVote.query.filter_by(pid=post.pid, positive=1).count()
-        downcount = SubPostVote.query.filter_by(pid=post.pid, positive=0).count()
+        downcount = SubPostVote.query.filter_by(pid=post.pid,
+                                                positive=0).count()
         pcount = SubPost.query.filter_by(uid=user.uid).count()
         ccount = SubPostComment.query.filter_by(uid=user.uid).count()
         return render_template('adminpostsearch.html', sub=sub, post=post,
