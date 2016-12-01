@@ -148,7 +148,7 @@
               {% else %}
               [Deleted]
               {% endif %}
-              {% set ann = getAnnouncement() %}
+              {% set ann = func.getAnnouncement() %}
               {% if current_user.is_mod(post.sub) or current_user.is_admin() %}
                 {% if post.is_sticky() %}
                   <a href="#make_sticky-form" class="pull right btn btn-orange small make_announcement-form"><i class="fa fa-thumb-tack" aria-hidden="true"></i> Unstick</a>
