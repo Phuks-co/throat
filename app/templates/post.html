@@ -84,11 +84,11 @@
   </div>
 </div>
 <span class="col-12"><hr><span>
-<p class="createdby">Created by {{getSubUsers(post.sub, 'mod')}} <time-ago datetime="{{getSubCreation(post.sub)}}"></time-ago></p>
+<p class="createdby">Created by {{func.getSubUsers(post.sub, 'mod')}} <time-ago datetime="{{func.getSubCreation(post.sub)}}"></time-ago></p>
 <div class="moderators col-12">
   Moderators
   <ul>
-  <li><i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=getSubUsers(post.sub, 'mod1'))}}">{{getSubUsers(post.sub, 'mod1')}}</a></li>
+  <li><i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=func.getSubUsers(post.sub, 'mod1'))}}">{{func.getSubUsers(post.sub, 'mod1')}}</a></li>
   {% for mod in mods %}
   <li><a href="{{url_for('view_user', user=mod.getUsername)}}">{{mod.getUsername}}</a></li>
   {% endfor %}
@@ -122,7 +122,7 @@
               <p class="count">{{post.voteCount()}}</p>
               <div class="downvote{%if hasVoted(current_user.get_id(), post, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
             </div>
-            {% if hasPostFlair(post) %}<span class="btn">{{hasPostFlair(post)}}</span>{% endif %}
+            {% if func.hasPostFlair(post) %}<span class="btn">{{func.hasPostFlair(post)}}</span>{% endif %}
             {% if post.isPostNSFW() %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
             <h1 class="title">{{post.title}}</h1>
             <div class="info">
@@ -135,7 +135,7 @@
               [Deleted]
               {% endif %}
             {% if post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
-              {% if userCanFlair(post.sub) or current_user.is_mod(post.sub) or current_user.is_admin() %}
+              {% if func.userCanFlair(post.sub) or current_user.is_mod(post.sub) or current_user.is_admin() %}
               <a href="#edit-flair-form" class="btn btn-orange edit small edit-flair-form" aria-hidden="true"><i class="fa fa-flag"></i> Flair</a>
               {% endif %}
               {% if post.ptype == 0 %}
@@ -368,9 +368,9 @@
   <form id="edit-flair-form" class="mfp-hide white-popup-block ajaxform" action="" method="POST">
     {{editpostflair.csrf_token}}
     {{editpostflair.post(value=post.pid)}}
-    {% if hasPostFlair(post) %}
+    {% if func.hasPostFlair(post) %}
     <h3>Current flair</h3>
-    <p><div class="btn">{{hasPostFlair(post)}}</div></p>
+    <p><div class="btn">{{func.hasPostFlair(post)}}</div></p>
     <p><div class="btn btn-blue" id="removepostflair" data-sub="{{post.sub.name}}" data-post="{{post.pid}}"><i class="fa fa-remove"></i> Remove current flair</div></p>
 
     {% endif %}

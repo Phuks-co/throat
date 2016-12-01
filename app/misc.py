@@ -1,7 +1,7 @@
 """ Misc helper function and classes. """
 from sqlalchemy import or_
 import markdown
-from flask_login import AnonymousUserMixin
+from flask_login import AnonymousUserMixin, current_user
 from flask_cache import Cache
 import sqlalchemy.orm
 from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata, Sub
@@ -487,3 +487,8 @@ def hasPostFlair(post):
 def getPostFlair(post, fl):
     """ Returns true if the post has available flair """
     return getMetadata(post, fl)
+
+
+def getSubscriptions():
+    subs = SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
+    return list(subs)

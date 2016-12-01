@@ -19,7 +19,7 @@
     <p><label>{{editsubform.title.label.text}}</label> {{editsubform.title(value=sub.title, required=True)}}</p>
     <p><label>{{editsubform.nsfw(checked=isNSFW(sub))}} {{editsubform.nsfw.label.text}}</label></p>
     <p><label>{{editsubform.restricted(checked=isRestricted(sub))}} {{editsubform.restricted.label.text}}</label></p>
-    <p><label>{{editsubform.usercanflair(checked=userCanFlair(sub))}} {{editsubform.usercanflair.label.text}}</label></p>
+    <p><label>{{editsubform.usercanflair(checked=func.userCanFlair(sub))}} {{editsubform.usercanflair.label.text}}</label></p>
   </div>
   <div>
     <h2><i class="fa fa-sort-amount-asc"></i> Default sub page post sorting</h2>

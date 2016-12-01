@@ -24,7 +24,7 @@
 {% endif %}
 
 <div class="col-12">
-  <p>Owner: <i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=getSubUsers(sub, 'mod1'))}}">{{getSubUsers(sub, 'mod1')}}</a></p>
+  <p>Owner: <i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=func.getSubUsers(sub, 'mod1'))}}">{{func.getSubUsers(sub, 'mod1')}}</a></p>
 </div>
 <div class="col-12"><hr></div>
 <div class="col-12">

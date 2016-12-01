@@ -187,13 +187,8 @@ def utility_processor():
             'commentform': PostComment(), 'dummyform': DummyForm(),
             'getVoteCount': getVoteCount, 'hasVoted': hasVoted,
             'delpostform': DeletePost(), 'getMetadata': getMetadata,
-            'getSubUsers': getSubUsers,
-            'getAnnouncement': getAnnouncement, 'getModCount': getModCount,
-            'getSubCreation': getSubCreation, 'userCanFlair': userCanFlair,
             'getSubPostCount': getSubPostCount, 'config': app.config,
             'isRestricted': isRestricted, 'isNSFW': isNSFW,
-            'subSort': subSort,
-            'hasPostFlair': hasPostFlair, 'getPostFlair': getPostFlair,
             'getSuscriberCount': getSuscriberCount, 'funcs': misc}
 
 
@@ -236,11 +231,10 @@ def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.query.order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
-    createtxtpost = CreateSubTextPost() # maybe TODO: autofill a random sub name
+    createtxtpost = CreateSubTextPost()  # TODO: autofill a random sub name??
     createlinkpost = CreateSubLinkPost()
-    subs =  SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
     return render_template('index.html', page=page, sort_type='all_new',
-                           posts=sorter.getPosts(page), subs=subs,
+                           posts=sorter.getPosts(page),
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
 
@@ -255,9 +249,8 @@ def all_domain_new(page, domain):
     sorter = BasicSorting(posts)
     createtxtpost = CreateSubTextPost()
     createlinkpost = CreateSubLinkPost()
-    subs =  SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
     return render_template('index.html', page=page, sort_type='all_new',
-                           posts=sorter.getPosts(page), subs=subs,
+                           posts=sorter.getPosts(page),
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
 
@@ -285,9 +278,8 @@ def all_top(page):
     sorter = VoteSorting(posts)
     createtxtpost = CreateSubTextPost()
     createlinkpost = CreateSubLinkPost()
-    subs =  SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
     return render_template('index.html', page=page, sort_type='all_top',
-                           posts=sorter.getPosts(page), subs=subs,
+                           posts=sorter.getPosts(page),
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
 
@@ -299,9 +291,9 @@ def all_hot(page):
     sorter = HotSorting(posts)
     createtxtpost = CreateSubTextPost()
     createlinkpost = CreateSubLinkPost()
-    subs =  SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
+
     return render_template('index.html', page=page, sort_type='all_hot',
-                           posts=sorter.getPosts(page), subs=subs,
+                           posts=sorter.getPosts(page),
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
 
