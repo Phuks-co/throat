@@ -32,7 +32,7 @@
 <div class="admin section">
     <div class="col-12 admin-page-form">
       <h3>Announcements</h3>
-      {% set ann = getAnnouncement() %}
+      {% set ann = func.getAnnouncement() %}
       {%if not ann %}<h4>No active announcements</h4>
       {%else%}
       <div class="post">
