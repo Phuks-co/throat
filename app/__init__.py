@@ -189,7 +189,7 @@ def utility_processor():
             'delpostform': DeletePost(), 'getMetadata': getMetadata,
             'getSubPostCount': getSubPostCount, 'config': app.config,
             'isRestricted': isRestricted, 'isNSFW': isNSFW,
-            'getSuscriberCount': getSuscriberCount, 'funcs': misc}
+            'getSuscriberCount': getSuscriberCount, 'func': misc}
 
 
 @app.route("/")

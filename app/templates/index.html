@@ -46,7 +46,7 @@
 {% block content %}
 {{ super() }}
 {% cache 1200, 'announcement' %}
-  {% set ann = funcs.getAnnouncement() %}
+  {% set ann = func.getAnnouncement() %}
   {% if ann %}
   <article class="post" data-pid="{{ann.pid}}">
     {# vote arrow div #}
