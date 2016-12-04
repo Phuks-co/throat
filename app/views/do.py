@@ -349,7 +349,7 @@ def assign_post_flair(sub, pid, fl):
         flair = SubFlair.query.filter_by(xid=fl, sid=sub.sid).first()
         if not flair:
             return json.dumps({'status': 'error',
-                              'error': ['Flair does not exist']})
+                               'error': ['Flair does not exist']})
 
         postfl = getMetadata(post, 'flair', record=True)
         if postfl:
@@ -690,6 +690,7 @@ def upvote(pid, value):
     db.session.commit()
     return json.dumps({'status': 'ok'})
 
+
 @do.route('/do/sendcomment/<sub>/<pid>', methods=['POST'])
 @login_required
 def create_comment(sub, pid):
@@ -877,7 +878,6 @@ def inv_mod2(sub):
             if modinv:
                 return json.dumps({'status': 'error',
                                    'error': ['User has a pending invite.']})
-
 
             msg = Message()
             msg.receivedby = user.uid
