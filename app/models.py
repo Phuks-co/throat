@@ -164,6 +164,7 @@ class Sub(db.Model, CacheableMixin):
     def __init__(self, name, title):
         self.sid = str(uuid.uuid4())
         self.name = name
+        self.sidebar = ''
         self.title = title
 
     def __repr__(self):
