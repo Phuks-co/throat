@@ -358,6 +358,7 @@ def assign_post_flair(sub, pid, fl):
             x = SubPostMetadata(pid, 'flair', flair.text)
             db.session.add(x)
         db.session.commit()
+        SubPostMetadata.cache.uncache(key='flair', pid=post.pid)
         return json.dumps({'status': 'ok'})
     else:
         abort(403)
@@ -376,13 +377,15 @@ def remove_post_flair(sub, pid):
                            'error': ['Post does not exist']})
     if current_user.is_mod(sub) or post.user.uid == current_user.get_id() \
        or current_user.is_admin():
-        postfl = post.properties.filter_by(key='flair').first()
+        postfl = SubPostMetadata.query.filter_by(key='flair',
+                                                 pid=post.pid).first()
         if not postfl:
             return json.dumps({'status': 'error',
                                'error': ['Flair does not exist']})
         else:
             db.session.delete(postfl)
         db.session.commit()
+        SubPostMetadata.cache.uncache(key='flair', pid=post.pid)
         return json.dumps({'status': 'ok'})
     else:
         abort(403)
