@@ -29,7 +29,7 @@
 
 </div>
 <span class="col-12"><hr><span>
-<p>{% if isNSFW(post.sub) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %} /s/{{post.sub.name}}</p>
+<p>{% if func.isNSFW(post.sub) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %} /s/{{post.sub.name}}</p>
 <p>{{post.sub.title}}</p>
 <span class="col-12"><hr><span>
 <div class="row buttons">
@@ -49,11 +49,11 @@
     <i class="fa fa-users" aria-hidden="true"></i> {{getSuscriberCount(post.sub)}} Subscribers
   </div>
   <span class="col-12"><hr><span>
-    {% if isRestricted(post.sub) %}
+    {% if func.isRestricted(post.sub) %}
     <div class="col-12">
       Only mods can post.
     </div>
-    {% if current_user.is_mod(post.sub) and isRestricted(post.sub) %}
+    {% if current_user.is_mod(post.sub) and func.isRestricted(post.sub) %}
     <div class="col-12">
       <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
     </div>

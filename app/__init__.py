@@ -33,7 +33,7 @@ from .forms import DeletePost, CreateUserBadgeForm, EditMod2Form, DummyForm
 from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair
 from .forms import CreateSubFlair
 from .views import do, api
-from . import misc
+from . import misc, forms
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, cache, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
@@ -188,8 +188,7 @@ def utility_processor():
             'commentform': PostComment(), 'dummyform': DummyForm(),
             'getVoteCount': getVoteCount, 'hasVoted': hasVoted,
             'delpostform': DeletePost(), 'getMetadata': getMetadata,
-            'getSubPostCount': getSubPostCount, 'config': app.config,
-            'isRestricted': isRestricted, 'isNSFW': isNSFW,
+            'config': app.config, 'form': forms,
             'getSuscriberCount': getSuscriberCount, 'func': misc}
 
 
