@@ -432,16 +432,17 @@ $(document).ready(function() {
     });
 
     $('.upvote').click(function(e){
-      var pid = $(e.currentTarget).parent().parent().data().pid
+      var pid = $(e.currentTarget).parent().find('input[name="post"]').prop('value');
       $.ajax({
         type: "POST",
-        url: '/do/upvote/' + pid,
+        url: '/do/vote/'+ pid +'/up',
+        data: $(e.currentTarget).parent().serialize(),
         dataType: 'json',
         success: function(data) {
           if(data.status == "ok"){
             $(e.currentTarget).addClass('upvoted');
-            $(e.currentTarget).parent().children('.downvote').removeClass('downvoted');
-            var count = $(e.currentTarget).parent().children('.count');
+            $(e.currentTarget).parent().parent().children('form.dvform').children('.downvote').removeClass('downvoted');
+            var count = $(e.currentTarget).parent().parent().children('.count');
             count.text(parseInt(count.text())+1);
           }
         }
@@ -449,16 +450,17 @@ $(document).ready(function() {
     });
 
     $('.downvote').click(function(e){
-      var pid = $(e.currentTarget).parent().parent().data().pid
+      var pid = $(e.currentTarget).parent().find('input[name="post"]').prop('value');
       $.ajax({
         type: "POST",
-        url: '/do/downvote/' + pid,
+        url: '/do/vote/'+ pid +'/down',
+        data: $(e.currentTarget).parent().serialize(),
         dataType: 'json',
         success: function(data) {
           if(data.status == "ok"){
             $(e.currentTarget).addClass('downvoted');
-            $(e.currentTarget).parent().children('.upvote').removeClass('upvoted');
-            var count = $(e.currentTarget).parent().children('.count');
+            $(e.currentTarget).parent().parent().children('form.uvform').children('.upvote').removeClass('upvoted');
+            var count = $(e.currentTarget).parent().parent().children('.count');
             count.text(parseInt(count.text())-1);
           }
         }

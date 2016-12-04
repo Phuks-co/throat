@@ -636,10 +636,16 @@ def edit_linkpost(sub, pid):
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
-@do.route('/do/upvote/<pid>', methods=['POST'])
+@do.route('/do/vote/<pid>/<value>', methods=['POST'])
 @login_required
-def upvote(pid):
+def upvote(pid, value):
     """ Logs an upvote to a post. """
+    if value == "up":
+        voteValue = 1
+    elif value == "down":
+        voteValue = -1
+    else:
+        abort(403)
     post = SubPost.query.filter_by(pid=pid).first()
     if not post:
         return json.dumps({'status': 'error',
@@ -660,71 +666,26 @@ def upvote(pid):
         SubPostMetadata.cache.uncache(key='score', pid=post.pid)
 
     if qvote:
-        if qvote.positive:
+        if qvote.positive == (True if voteValue == 1 else False):
             return json.dumps({'status': 'error',
                                'error': ['You already voted.']})
         else:
 
-            qvote.positive = True
-            xvotes.value = int(xvotes.value) + 2
+            qvote.positive = True if voteValue == 1 else False
+            xvotes.value = int(xvotes.value) + (voteValue*2)
             db.session.commit()
             return json.dumps({'status': 'ok',
-                               'message': 'Negative vote reverted.'})
+                               'message': 'Vote flipped.'})
     else:
         vote = SubPostVote()
         vote.pid = pid
         vote.uid = current_user.get_id()
-        vote.positive = True
+        vote.positive = True if voteValue == 1 else False
         db.session.add(vote)
 
-    xvotes.value = int(xvotes.value) + 1
+    xvotes.value = int(xvotes.value) + voteValue
     db.session.commit()
     return json.dumps({'status': 'ok'})
-
-
-@do.route('/do/downvote/<pid>', methods=['POST'])
-@login_required
-def downvote(pid):
-    """ Logs a downvote to a post. """
-    post = SubPost.query.filter_by(pid=pid).first()
-    if not post:
-        return json.dumps({'status': 'error',
-                           'error': ['Post does not exist']})
-
-    if post.uid == current_user.get_id():
-        return json.dumps({'status': 'error',
-                           'error': ['You can\'t vote on your own posts']})
-
-    qvote = SubPostVote.query.filter_by(pid=pid) \
-                             .filter_by(uid=current_user.get_id()).first()
-
-    xvotes = getMetadata(post, 'score', record=True)
-    if not xvotes:
-        xvotes = SubPostMetadata(post.pid, 'score', 1)
-        db.session.add(xvotes)
-        cache.delete_memoized(getMetadata, post, 'score', record=True)
-        SubPostMetadata.cache.uncache(key='score', pid=post.pid)
-
-    if qvote:
-        if not qvote.positive:
-            return json.dumps({'status': 'error',
-                               'error': ['You already voted.']})
-        else:
-            qvote.positive = False
-            xvotes.value = int(xvotes.value) - 2
-            db.session.commit()
-            return json.dumps({'status': 'ok',
-                               'message': 'Positive vote reverted.'})
-    else:
-        vote = SubPostVote()
-        vote.pid = pid
-        vote.uid = current_user.get_id()
-        vote.positive = False
-        db.session.add(vote)
-    xvotes.value = int(xvotes.value) - 1
-    db.session.commit()
-    return json.dumps({'status': 'ok'})
-
 
 @do.route('/do/sendcomment/<sub>/<pid>', methods=['POST'])
 @login_required

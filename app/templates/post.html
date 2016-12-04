@@ -118,9 +118,18 @@
         <article class="text-post center no-padding">
           <div class="head" data-pid="{{post.pid}}">
             <div class="pull left vote" style="margin-right: 10px;">
-              <div class="upvote{%if hasVoted(current_user.get_id(), post)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
-              <p class="count">{{post.voteCount()}}</p>
-              <div class="downvote{%if hasVoted(current_user.get_id(), post, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+              {# vote arrow div #}
+                <form class="uvform">
+                  <div class="upvote{%if hasVoted(current_user.get_id(), post)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+                  {% set uv = form.VoteForm() %}
+                  {{uv.csrf_token}}{{uv.post(value=post.pid)}}
+                </form>
+                <p class="count">{{post.voteCount()}}</p>
+                <form class="dvform">
+                  <div class="downvote{%if hasVoted(current_user.get_id(), post, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+                  {% set dv = form.VoteForm() %}
+                  {{uv.csrf_token}}{{uv.post(value=post.pid)}}
+                </form>
             </div>
             {% if func.hasPostFlair(post) %}<span class="btn">{{func.hasPostFlair(post)}}</span>{% endif %}
             {% if post.isPostNSFW() %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}

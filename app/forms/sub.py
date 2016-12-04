@@ -149,3 +149,8 @@ class EditPostFlair(FlaskForm):
 class DeletePost(FlaskForm):
     """ Post deletion form. """
     post = HiddenField()
+
+
+class VoteForm(FlaskForm):
+    """ form for voting """
+    post = HiddenField()  # Post PID

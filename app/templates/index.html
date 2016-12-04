@@ -51,9 +51,17 @@
   <article class="post" data-pid="{{ann.pid}}">
     {# vote arrow div #}
     <div class="pull left vote">
-      <div class="upvote{%if hasVoted(current_user.get_id(), ann)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+      <form class="uvform">
+        <div class="upvote{%if hasVoted(current_user.get_id(), ann)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+        {% set uv = form.VoteForm() %}
+        {{uv.csrf_token}}{{uv.post(value=ann.pid)}}
+      </form>
       <p class="count">{{ann.voteCount()}}</p>
-      <div class="downvote{%if hasVoted(current_user.get_id(), ann, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+      <form class="dvform">
+        <div class="downvote{%if hasVoted(current_user.get_id(), ann, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+        {% set dv = form.VoteForm() %}
+        {{uv.csrf_token}}{{uv.post(value=ann.pid)}}
+      </form>
     </div>
       <div class="image">
           <a href="{{url_for('view_post_inbox', pid=ann.pid)}}">
@@ -86,9 +94,17 @@
       <article class="post" data-pid="{{post.pid}}">
         {# vote arrow div #}
         <div class="pull left vote">
-          <div class="upvote{%if hasVoted(current_user.get_id(), post)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+          <form class="uvform">
+            <div class="upvote{%if hasVoted(current_user.get_id(), post)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+            {% set uv = form.VoteForm() %}
+            {{uv.csrf_token}}{{uv.post(value=post.pid)}}
+          </form>
           <p class="count">{{post.voteCount()}}</p>
-          <div class="downvote{%if hasVoted(current_user.get_id(), post, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+          <form class="dvform">
+            <div class="downvote{%if hasVoted(current_user.get_id(), post, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+            {% set dv = form.VoteForm() %}
+            {{uv.csrf_token}}{{uv.post(value=post.pid)}}
+          </form>
         </div>
         {% cache 300, post.pid, 'post' %}
           <div class="image">
