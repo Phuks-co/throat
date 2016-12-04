@@ -376,7 +376,7 @@ def edit_sub(sub):
 
     if current_user.is_mod(sub) or current_user.is_admin():
         form = EditSubForm(subsort=getMetadata(sub, 'sort'))
-
+        form.sidebar.data = sub.sidebar
         return render_template('editsub.html', sub=sub, editsubform=form)
     else:
         abort(403)

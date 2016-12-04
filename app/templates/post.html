@@ -6,7 +6,7 @@
 <li><a href="{{url_for('view_sub_top', sub=post.sub.name)}}">Top</a></li>
 <li><a href="{{url_for('view_sub_new', sub=post.sub.name)}}">New</a></li>
 <ul class="right">
-  <li class="large"><a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn btn-white" style="width:100%;height:50%;">/s/{{post.sub.name}}</a></li>
+  <li class="large"><a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn btn-white" style="width:100%;height:50%;">{% if func.isNSFW(post.sub) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %} /s/{{post.sub.name}}</a></li>
 </ul>
 {% endblock %}
 {% block sidebar %}
@@ -24,13 +24,11 @@
     </span>
   </p>
   {% endif %}
-  <p>xx views</p>
+  <!--<p>xx views</p>-->
   <p>{{upcount}} upvoted, {{downcount}} downvoted</p>
 
 </div>
-<span class="col-12"><hr><span>
-<p>{% if func.isNSFW(post.sub) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %} /s/{{post.sub.name}}</p>
-<p>{{post.sub.title}}</p>
+
 <span class="col-12"><hr><span>
 <div class="row buttons">
   <div class="sidebar col-12">
@@ -53,7 +51,8 @@
     <div class="col-12">
       Only mods can post.
     </div>
-    {% if current_user.is_mod(post.sub) and func.isRestricted(post.sub) %}
+    {% endif %}
+    {% if not func.isRestricted(sub) or (current_user.is_mod(sub) and func.isRestricted(sub)) %}
     <div class="col-12">
       <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
     </div>
@@ -61,28 +60,15 @@
       <a href="#link-post-form" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
     </div>
     {% endif %}
-    {% else %}
-    {% if current_user.is_authenticated and not current_user.is_subban(post.sub) %}
-    <div class="col-12">
-      <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
-    </div>
-    <div class="col-12">
-      <a href="#link-post-form" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
-    </div>
-    {% endif %}
-    {% endif %}
+
   {% if current_user.is_subban(post.sub) %}
   <div class="col-12">
     You are currently banned from posting.
   </div>
   {% endif %}
-  <div class="col-12">
-    <a href="{{url_for('view_sub_postmodlog', sub=post.sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">View modlog</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('view_sub_bans', sub=post.sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Banned Users</a>
-  </div>
 </div>
+{{markdown(post.sub.sidebar)|safe}}
+
 <span class="col-12"><hr><span>
 <p class="createdby">Created by {{func.getSubUsers(post.sub, 'mod')}} <time-ago datetime="{{func.getSubCreation(post.sub)}}"></time-ago></p>
 <div class="moderators col-12">
@@ -110,6 +96,16 @@
   </div>
 </div>
 {% endif %}
+<span class="col-12"><hr><span>
+
+<div class="row buttons">
+  <div class="col-12">
+    <a href="{{url_for('view_sub_postmodlog', sub=post.sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">View modlog</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('view_sub_bans', sub=post.sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Banned Users</a>
+  </div>
+</div>
 
 {% endblock %}
 

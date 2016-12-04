@@ -150,6 +150,8 @@ class Sub(db.Model, CacheableMixin):
 
     status = Column(Integer)  # Sub status. 0 = ok; 1 = banned; etc
 
+    sidebar = Column(Text)
+
     subscribers = db.relationship('SubSubscriber', backref='sub',
                                   lazy='dynamic')
     _posts = db.relationship('SubPost', backref='__sub', lazy='joined')

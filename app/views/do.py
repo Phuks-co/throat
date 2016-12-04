@@ -298,6 +298,8 @@ def edit_sub(sub):
         form = EditSubForm()
         if form.validate():
             sub.title = form.title.data
+            sub.sidebar = form.sidebar.data
+
             nsfw = getMetadata(sub, 'nsfw', record=True)
             if nsfw:
                 nsfw.value = form.nsfw.data
