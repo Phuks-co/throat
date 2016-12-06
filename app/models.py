@@ -495,3 +495,18 @@ class SiteMetadata(db.Model):
     xid = Column(Integer, primary_key=True)
     key = Column(String(255))  # Metadata key
     value = Column(String(255))
+
+
+class SubLog(db.Model):
+    """ Sub modlogs """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
+    lid = Column(Integer, primary_key=True) # log id
+    sid = Column(String(40), db.ForeignKey('sub.sid')) # sub.sid
+    time = Column(DateTime)
+    action = Column(Integer)  # 1 deletion, 2 user ban, 3 flair, 4 modedit, 5 comment, 6 mods
+    desc = Column(String(255)) # description
+    link = Column(String(255))

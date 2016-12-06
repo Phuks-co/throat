@@ -17,7 +17,7 @@ import config
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
 from ..models import UserMetadata, UserBadge, SubSubscriber, SiteMetadata
-from ..models import SubFlair
+from ..models import SubFlair, SubLog
 from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubFlair
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
@@ -277,6 +277,13 @@ def edit_sub_css(sub):
     if form.validate():
         if stylesheet:
             stylesheet.content = form.css.data
+            log = SubLog()
+            log.sid = sub.sid
+            log.action = 4 # action modedit of sub
+            log.time = datetime.datetime.utcnow()
+            log.desc = 'CSS edited by ' + current_user.get_username()
+            # log.link = url_for('view_sub', sub=sub.name)
+            db.session.add(log)
         else:
             css = SubStylesheet(sub.sid, form.css.data)
             db.session.add(css)
@@ -327,6 +334,13 @@ def edit_sub(sub):
                     subsort = SubMetadata(sub, 'sort', form.subsort.data)
                     db.session.add(subsort)
 
+            log = SubLog()
+            log.sid = sub.sid
+            log.action = 4 # action modedit of sub
+            log.time = datetime.datetime.utcnow()
+            log.desc = 'Sub settings edited by ' + current_user.get_username()
+            # log.link = url_for('view_sub', sub=sub.name)
+            db.session.add(log)
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'addr': url_for('view_sub', sub=sub.name)})
@@ -359,6 +373,14 @@ def assign_post_flair(sub, pid, fl):
         else:
             x = SubPostMetadata(pid, 'flair', flair.text)
             db.session.add(x)
+
+        log = SubLog()
+        log.sid = sub.sid
+        log.action = 3 # action postflair
+        log.time = datetime.datetime.utcnow()
+        log.desc = current_user.get_username() + ' assigned post flair'
+        log.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
+        db.session.add(log)
         db.session.commit()
         SubPostMetadata.cache.uncache(key='flair', pid=post.pid)
         return json.dumps({'status': 'ok'})

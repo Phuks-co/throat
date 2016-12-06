@@ -24,7 +24,7 @@ from feedgen.feed import FeedGenerator
 
 from .models import db, User, Sub, SubPost, SubPostVote, SubPostComment
 from .models import UserBadge, UserMetadata, SiteMetadata, SubMetadata, Message
-from .models import SubStylesheet, SubFlair, SubSubscriber
+from .models import SubStylesheet, SubFlair, SubSubscriber, SubLog
 from .forms import RegistrationForm, LoginForm, LogOutForm, EditSubFlair
 from .forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
@@ -378,6 +378,21 @@ def edit_sub(sub):
         form = EditSubForm(subsort=getMetadata(sub, 'sort'))
         form.sidebar.data = sub.sidebar
         return render_template('editsub.html', sub=sub, editsubform=form)
+    else:
+        abort(403)
+
+
+@app.route("/s/<sub>/sublog")
+@login_required
+def view_sublog(sub):
+    """ Here we can see a log of mod/admin activity in the sub """
+    sub = decent(Sub.cache.filter(name=sub))
+    if not sub:
+        abort(404)
+
+    if current_user.is_mod(sub) or current_user.is_admin():
+        logs = SubLog.query.filter_by(sid=sub.sid).all()
+        return render_template('sublog.html', sub=sub, logs=logs)
     else:
         abort(403)
 
