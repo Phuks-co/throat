@@ -27,7 +27,7 @@ app.config['TESTING'] = True
 # -- Real shit starts here
 
 
-class BasicTestCase(unittest.TestCase):
+class AABasicTestCase(unittest.TestCase):
     """ Here we test for pages loading, etc """
     def setUp(self):
         self.app = app.test_client()
@@ -39,7 +39,7 @@ class BasicTestCase(unittest.TestCase):
         assert x.status_code == 200
 
 
-class AccountTestCase(unittest.TestCase):
+class ABAccountTestCase(unittest.TestCase):
     """ Here we test registration, login and logout """
     def setUp(self):
         self.app = app.test_client()
@@ -116,7 +116,6 @@ class AccountTestCase(unittest.TestCase):
         r.flushall()
         x = self.app.get('/')
         assert 'There are no posts here, yet.' not in x.get_data(True)
-
 
 
 if __name__ == '__main__':
