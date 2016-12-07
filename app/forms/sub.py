@@ -98,7 +98,7 @@ class CreateSubLinkPost(FlaskForm):
     title = StringField('Post title',
                         validators=[DataRequired(), Length(min=4, max=128)])
     link = StringField('Post link',
-                       validators=[DataRequired(), Length(min=10, max=128),
+                       validators=[DataRequired(), Length(min=10, max=256),
                                    URL(require_tld=True)])
 
     def __init__(self, *args, **kwargs):
