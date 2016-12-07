@@ -1,4 +1,3 @@
-gunicorn
 flask
 flask-wtf
 sqlalchemy
