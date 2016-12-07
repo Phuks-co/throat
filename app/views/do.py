@@ -619,6 +619,7 @@ def create_lnkpost():
                 # no image
                 return json.dumps({'status': 'ok', 'pid': post.pid,
                                    'sub': sub.name})
+            del og  # just in case
             try:
                 req = requests.get(img, timeout=0.5)
             except:
