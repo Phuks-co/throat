@@ -408,6 +408,13 @@ def remove_post_flair(sub, pid):
                                'error': ['Flair does not exist']})
         else:
             db.session.delete(postfl)
+            log = SubLog()
+            log.sid = sub.sid
+            log.action = 3 # action postflair
+            log.time = datetime.datetime.utcnow()
+            log.desc = current_user.get_username() + ' removed post flair'
+            log.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
+            db.session.add(log)
         db.session.commit()
         SubPostMetadata.cache.uncache(key='flair', pid=post.pid)
         return json.dumps({'status': 'ok'})
@@ -432,6 +439,7 @@ def edit_mod():
                            'error': ['User does not exist']})
     if form.validate():
         topmod = sub.properties.filter_by(key='mod1').first()
+
         if topmod:
             sub.properties.filter_by(key='mod1').first().value = user.uid
         else:
@@ -863,6 +871,13 @@ def ban_user_sub(sub):
             msg.content = ':p'
             msg.posted = datetime.datetime.utcnow()
             meta = SubMetadata(sub, 'ban', user.uid)
+            log = SubLog()
+            log.sid = sub.sid
+            log.action = 2 # action modedit of sub
+            log.time = datetime.datetime.utcnow()
+            log.desc = current_user.get_username() + ' banned ' + user.name + ' from the sub'
+            log.link = url_for('view_sub_bans', sub=sub.name)
+            db.session.add(log)
             db.session.add(msg)
             db.session.add(meta)
             db.session.commit()
@@ -911,6 +926,13 @@ def inv_mod2(sub):
             msg.posted = datetime.datetime.utcnow()
             msg.mtype = '0'
             meta = SubMetadata(sub, 'mod2i', user.uid)
+            log = SubLog()
+            log.sid = sub.sid
+            log.action = 6 # 6 mod action
+            log.time = datetime.datetime.utcnow()
+            log.desc = current_user.get_username() + ' invited ' + user.name + ' to the mod team'
+            log.link = url_for('edit_sub_mods', sub=sub.name)
+            db.session.add(log)
             db.session.add(msg)
             db.session.add(meta)
             db.session.commit()
@@ -935,12 +957,19 @@ def remove_sub_ban(sub, user):
         inv = SubMetadata.query.filter_by(key='ban') \
                             .filter_by(value=user.uid).first()
         inv.key = 'xban'
+        log = SubLog()
+        log.sid = sub.sid
+        log.action = 2 # ban action
+        log.time = datetime.datetime.utcnow()
+        log.desc = current_user.get_username() + ' removed ban on ' + user.name
+        log.link = url_for('view_sub_bans', sub=sub.name)
+        db.session.add(log)
         db.session.commit()
 
         SubMetadata.cache.uncache(key='xban', sid=sub.sid)
         cache.delete_memoized(getMetadata, sub, 'xban', all=True)
 
-        return json.dumps({'status': 'ok', 'msg': 'user demodded'})
+        return json.dumps({'status': 'ok', 'msg': 'user ban removed'})
     else:
         abort(403)
 
@@ -955,6 +984,13 @@ def remove_mod2(sub, user):
         inv = SubMetadata.query.filter_by(key='mod2') \
                             .filter_by(value=user.uid).first()
         inv.key = 'xmod2'
+        log = SubLog()
+        log.sid = sub.sid
+        log.action = 6 # 6 mod action
+        log.time = datetime.datetime.utcnow()
+        log.desc = current_user.get_username() + ' removed ' + user.name + ' from the mod team'
+        log.link = url_for('edit_sub_mods', sub=sub.name)
+        db.session.add(log)
         db.session.commit()
 
         SubMetadata.cache.uncache(key='mod2', sid=sub.sid)
@@ -975,6 +1011,13 @@ def revoke_mod2inv(sub, user):
         inv = SubMetadata.query.filter_by(key='mod2i') \
                                .filter_by(value=user.uid).first()
         inv.key = 'xmod2i'
+        log = SubLog()
+        log.sid = sub.sid
+        log.action = 6 # 6 mod action
+        log.time = datetime.datetime.utcnow()
+        log.desc = current_user.get_username() + ' canceled ' + user.name + ' mod invite'
+        log.link = url_for('edit_sub_mods', sub=sub.name)
+        db.session.add(log)
         db.session.commit()
 
         SubMetadata.cache.uncache(key='mod2i', sid=sub.sid)
@@ -995,6 +1038,13 @@ def accept_mod2inv(sub, user):
                            .filter_by(value=user.uid).first()
     if inv:
         inv.key = 'mod2'
+        log = SubLog()
+        log.sid = sub.sid
+        log.action = 6 # 6 mod action
+        log.time = datetime.datetime.utcnow()
+        log.desc = user.name + ' accepted mod invite'
+        log.link = url_for('edit_sub_mods', sub=sub.name)
+        db.session.add(log)
         db.session.commit()
         return json.dumps({'status': 'ok', 'msg': 'user modded'})
     else:
@@ -1011,6 +1061,13 @@ def refuse_mod2inv(sub, user):
                            .filter_by(value=user.uid).first()
     if inv:
         inv.key = 'xmod2i'
+        log = SubLog()
+        log.sid = sub.sid
+        log.action = 6 # 6 mod action
+        log.time = datetime.datetime.utcnow()
+        log.desc = user.name + ' rejected mod invite'
+        log.link = url_for('edit_sub_mods', sub=sub.name)
+        db.session.add(log)
         db.session.commit()
         return json.dumps({'status': 'ok', 'msg': 'invite refused'})
     else:
@@ -1090,8 +1147,22 @@ def toggle_sticky(post):
         md = SubMetadata.query.filter_by(key='sticky').first()
         if not md:
             md = SubMetadata(post.sub, 'sticky', post.pid)
+            log = SubLog()
+            log.sid = post.sub.sid
+            log.action = 4 # sub action
+            log.time = datetime.datetime.utcnow()
+            log.desc = current_user.get_username() + ' stickied: ' + post.title
+            log.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
+            db.session.add(log)
             db.session.add(md)
         else:
+            log = SubLog()
+            log.sid = post.sub.sid
+            log.action = 4 # sub action
+            log.time = datetime.datetime.utcnow()
+            log.desc = current_user.get_username() + ' removed stickied: ' + post.title
+            log.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
+            db.session.add(log)
             db.session.delete(md)
         db.session.commit()
         SubMetadata.cache.uncache(key='sticky', sid=post.sid, value=post.pid)
