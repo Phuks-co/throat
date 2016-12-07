@@ -23,3 +23,7 @@ clone and install
 run
 
  - $ ./run.py
+
+---
+
+Note for future self: Ensure the mysql uses fucking utf8
