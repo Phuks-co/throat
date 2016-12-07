@@ -16,6 +16,5 @@ dogpile.cache
 mysqlclient
 redis
 requests
-python-opengraph
 pillow
 pytest
