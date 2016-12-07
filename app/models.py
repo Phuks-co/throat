@@ -281,8 +281,8 @@ class SubPost(db.Model, CacheableMixin):
     # There's a 'sub' field with a reference to the sub and a 'user' one
     # with a refernece to the user that created this post
 
-    title = Column(String(128))  # post title
-    link = Column(String(128))  # post target (if it is a link post)
+    title = Column(String(256))  # post title
+    link = Column(String(256))  # post target (if it is a link post)
     # post content (if it is a text post)
     content = Column(Text())
 

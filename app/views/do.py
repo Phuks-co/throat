@@ -6,7 +6,7 @@ import datetime
 import uuid
 from io import BytesIO
 import bcrypt
-from opengraph import OpenGraph
+from bs4 import BeautifulSoup
 import requests
 from PIL import Image
 from flask import Blueprint, redirect, url_for, session, abort
@@ -607,28 +607,31 @@ def create_lnkpost():
         # Try to get thumbnail.
         # 1 - Check if it's an image
         try:
-            req = requests.get(form.link.data, timeout=0.5)
+            req = requests.get(form.link.data, timeout=50)
         except:
             return json.dumps({'status': 'ok', 'pid': post.pid,
                                'sub': sub.name})
+        print(form.link.data)
         ctype = req.headers['content-type'].split(";")[0].lower()
         filename = str(uuid.uuid4()) + '.jpg'
         good_types = ['image/gif', 'image/jpeg', 'image/png']
+        print(ctype)
         if ctype in good_types:
             # yay, it's an image!!1
             # Resize
             im = Image.open(BytesIO(req.content)).convert('RGB')
         elif ctype == 'text/html':
             # Not an image!! Let's try with OpenGraph
-            og = OpenGraph(html=req.text)
+            og = BeautifulSoup(req.text, 'lxml')
             try:
-                img = og.image
-            except AttributeError:
+                img = og('meta', {'property': 'og:image'})[0].get('content')
+            except IndexError:
                 # no image
                 return json.dumps({'status': 'ok', 'pid': post.pid,
                                    'sub': sub.name})
+            print(img)
             try:
-                req = requests.get(img, timeout=0.5)
+                req = requests.get(img, timeout=50)
             except:
                 return json.dumps({'status': 'ok', 'pid': post.pid,
                                    'sub': sub.name})
@@ -646,6 +649,8 @@ def create_lnkpost():
         background.paste(im, offset)
         background.save(config.THUMBNAILS + '/' + filename, "JPEG")
         tn = SubPostMetadata(post.pid, 'thumbnail', filename)
+        im.close()
+        background.close()
         db.session.add(tn)
         db.session.commit()
         return json.dumps({'status': 'ok', 'pid': post.pid, 'sub': sub.name})

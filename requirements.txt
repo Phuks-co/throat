@@ -1,4 +1,3 @@
-gunicorn
 flask
 flask-wtf
 sqlalchemy
@@ -17,6 +16,5 @@ dogpile.cache
 mysqlclient
 redis
 requests
-python-opengraph
 pillow
 pytest
