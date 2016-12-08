@@ -10,6 +10,13 @@
 {% endblock %}
 
 {% block sidebar %}
+{% if func.enableVideoMode(sub) %}
+  <div class="musicmodediv">
+  <div>Video mode enabled</div>
+  {% include 'videomodeplayer.html' %}
+</div>
+<span class="col-12"><hr><span>
+{% endif %}
 {{ super() }}
 <p></p>
 <hr/>
@@ -94,15 +101,6 @@
     <a href="{{url_for('view_sub_bans', sub=sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Banned Users</a>
   </div>
 </div>
-
-{% if func.enableVideoMode(sub) %}
-<span class="col-12"><hr><span>
-  <div class="musicmodediv">
-  <p>Video mode enabled</p>
-  {% include 'videomodeplayer.html' %}
-</div>
-{% endif %}
-
 {% endblock %}
 
 {% block content %}

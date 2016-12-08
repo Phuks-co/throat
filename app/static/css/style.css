@@ -1155,9 +1155,18 @@ button#text-post-icon, button#link-post-icon {
 
 /* music mode video player */
 .musicmodediv {
-    height:340px;
+    height:250px;
 }
-
+.btn-videoplayer {
+    padding: 8px;
+    width: 130px;
+    margin: 2px 8px;
+}
+.videoplayer-player {
+    width: 300px;
+    height:180px;
+    margin: 0 auto;
+}
 /* edit sub */
 
 #edit-sub-form input[type="text"]{
