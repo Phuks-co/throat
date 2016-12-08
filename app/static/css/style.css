@@ -1153,6 +1153,11 @@ button#text-post-icon, button#link-post-icon {
     color: #fb5000;
 }
 
+/* music mode video player */
+.musicmodediv {
+    height:340px;
+}
+
 /* edit sub */
 
 #edit-sub-form input[type="text"]{
@@ -1164,7 +1169,8 @@ button#text-post-icon, button#link-post-icon {
 }
 input#nsfw,
 input#restricted,
-input#usercanflair {
+input#usercanflair,
+input#videomode {
     width: 30px;
 }
 #edit-sub-form h2 {

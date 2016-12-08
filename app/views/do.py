@@ -326,6 +326,12 @@ def edit_sub(sub):
             else:
                 usercanflair = SubMetadata(sub, 'ucf', form.usercanflair.data)
                 db.session.add(usercanflair)
+            video = getMetadata(sub, 'videomode', record=True)
+            if video:
+                video.value = form.videomode.data
+            else:
+                video = SubMetadata(sub, 'videomode', form.videomode.data)
+                db.session.add(video)
             if form.subsort.data != "None":
                 subsort = getMetadata(sub, 'sort', record=True)
                 if subsort:

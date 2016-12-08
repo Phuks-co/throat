@@ -13,9 +13,6 @@
 {{ super() }}
 <p></p>
 <hr/>
-
-{# temp #}
-
 <div class="row buttons">
   <div class="sidebar col-12">
     {% if current_user.has_subscribed(sub) %}
@@ -97,6 +94,15 @@
     <a href="{{url_for('view_sub_bans', sub=sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Banned Users</a>
   </div>
 </div>
+
+{% if func.enableVideoMode(sub) %}
+  <div class="musicmodediv">
+  <p>Music mode enabled</p>
+  {% include 'videomodeplayer.html' %}
+</div>
+<span class="col-12"><hr><span>
+{% endif %}
+
 {% endblock %}
 
 {% block content %}

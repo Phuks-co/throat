@@ -460,6 +460,12 @@ def userCanFlair(sub):
     return False if not x or x == '0' else True
 
 
+def enableVideoMode(sub):
+    """ Returns true if the sub has video/music player enabled """
+    x = getMetadata(sub, 'videomode')
+    return False if not x or x == '0' else True
+
+
 def subSort(sub):
     """ Don't forget to add the fucking docstring to functions >:| """
     # What an useful docstring.
