@@ -2,6 +2,7 @@
 
 import datetime
 import uuid
+import re
 from urllib.parse import urlparse
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -331,6 +332,14 @@ class SubPost(db.Model, CacheableMixin):
         """ Gets Domain """
         x = urlparse(self.link)
         return x.netloc
+
+
+    def getYoutubeID(self):
+        pattern = r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\/(?:watch\?v=|watch\?.+&v=|embed\/|v\/|.+\?v=)?([^&=\n%\?]{11})'
+        result = re.findall(pattern, self.link, re.IGNORECASE)
+        id = result[0].replace("&#39;", "");
+        return str(id)
+
 
     @hybrid_property
     def sub(self):
