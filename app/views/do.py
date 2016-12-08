@@ -444,12 +444,20 @@ def edit_mod():
         return json.dumps({'status': 'error',
                            'error': ['User does not exist']})
     if form.validate():
-        topmod = sub.properties.filter_by(key='mod1').first()
+        topmod = SubMetadata.query.filter_by(sid=sub.sid) \
+                                  .filter_by(key='mod1').first()
 
         if topmod:
-            sub.properties.filter_by(key='mod1').first().value = user.uid
+            topmod.value = user.uid
+            log = SubLog()
+            log.sid = sub.sid
+            log.action = 6 # mod action
+            log.time = datetime.datetime.utcnow()
+            log.desc = current_user.get_username() + ' transferred sub ownership to ' + user.name
+            log.link = url_for('view_sub', sub=sub.name)
+            db.session.add(log)
         else:
-            x = SubMetadata(sub, 'mod1', current_user.get_id())
+            x = SubMetadata(sub, 'mod1', user.uid)
             db.session.add(x)
         db.session.commit()
         return json.dumps({'status': 'ok'})

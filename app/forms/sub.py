@@ -60,14 +60,6 @@ class EditSubForm(FlaskForm):
     sidebar = TextAreaField('Sidebar text')
 
 
-class EditModForm(FlaskForm):
-    """ Edit owner of sub (admin) """
-    sub = StringField('Sub',
-                      validators=[DataRequired(), Length(min=2, max=128)])
-    user = StringField('New owner username',
-                       validators=[DataRequired(), Length(min=1, max=128)])
-
-
 class EditMod2Form(FlaskForm):
     """ Edit mod2 of sub (admin/owner) """
     user = StringField('New mod username',

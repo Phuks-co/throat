@@ -69,16 +69,6 @@ class CreateUserMessageForm(FlaskForm):
                                         Length(min=2, max=128)])
 
 
-class CreateUserBadgeForm(FlaskForm):
-    """ CreateUserBadge form. """
-    badge = StringField('fa-xxxx-x fa-xxxx',
-                        validators=[DataRequired(), Length(min=2, max=32)])
-    name = StringField('Badge name',
-                       validators=[DataRequired(), Length(min=2, max=128)])
-    text = StringField('Badge description',
-                       validators=[DataRequired(), Length(min=2, max=128)])
-
-
 class LogOutForm(FlaskForm):
     """ Logout form. This form has no fields.
         We only use it for the CSRF stuff"""
