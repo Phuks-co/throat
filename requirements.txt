@@ -18,3 +18,4 @@ redis
 requests
 pillow
 pytest
+sendgrid
