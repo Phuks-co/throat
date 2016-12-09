@@ -396,6 +396,15 @@ def assign_post_flair(sub, pid, fl):
         log.desc = current_user.get_username() + ' assigned post flair'
         log.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
         db.session.add(log)
+
+        if not current_user.is_mod(sub) and current_user.is_admin():
+            alog = SiteLog()
+            alog.action = 4 # subs
+            alog.time = datetime.datetime.utcnow()
+            alog.desc = current_user.get_username() + ' assigned post flair'
+            alog.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
+            db.session.add(alog)
+
         db.session.commit()
         SubPostMetadata.cache.uncache(key='flair', pid=post.pid)
         return json.dumps({'status': 'ok'})
@@ -430,6 +439,15 @@ def remove_post_flair(sub, pid):
             log.desc = current_user.get_username() + ' removed post flair'
             log.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
             db.session.add(log)
+
+            if not current_user.is_mod(sub) and current_user.is_admin():
+                alog = SiteLog()
+                alog.action = 4 # subs
+                alog.time = datetime.datetime.utcnow()
+                alog.desc = current_user.get_username() + ' removed post flair'
+                alog.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
+                db.session.add(alog)
+
         db.session.commit()
         SubPostMetadata.cache.uncache(key='flair', pid=post.pid)
         return json.dumps({'status': 'ok'})
@@ -468,6 +486,13 @@ def edit_mod():
         else:
             x = SubMetadata(sub, 'mod1', user.uid)
             db.session.add(x)
+
+        alog = SiteLog()
+        alog.action = 4 # subs
+        alog.time = datetime.datetime.utcnow()
+        alog.desc = current_user.get_username() + ' assigned post flair'
+        alog.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
+        db.session.add(alog)
         db.session.commit()
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -807,13 +832,21 @@ def create_comment(sub, pid):
 @login_required
 def create_user_badge():
     """ User Badge creation endpoint """
-    form = CreateUserBadgeForm()
-    if form.validate():
-        badge = UserBadge(form.badge.data, form.name.data, form.text.data)
-        db.session.add(badge)
-        db.session.commit()
-        return json.dumps({'status': 'ok', 'bid': badge.bid})
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
+    if current_user.is_admin():
+        form = CreateUserBadgeForm()
+        if form.validate():
+            badge = UserBadge(form.badge.data, form.name.data, form.text.data)
+
+            alog = SiteLog()
+            alog.action = 2 # users
+            alog.time = datetime.datetime.utcnow()
+            alog.desc = current_user.get_username() + ' created a new badge'
+            alog.link = url_for('admin_area')
+            db.session.add(alog)
+            db.session.add(badge)
+            db.session.commit()
+            return json.dumps({'status': 'ok', 'bid': badge.bid})
+        return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/assign_user_badge/<uid>/<bid>", methods=['POST'])
@@ -831,6 +864,13 @@ def assign_user_badge(uid, bid):
         badge.key = 'badge'
         badge.value = bid
         db.session.add(badge)
+        user = User.query.filter_by(uid=uid).first()
+        alog = SiteLog()
+        alog.action = 2 # users
+        alog.time = datetime.datetime.utcnow()
+        alog.desc = current_user.get_username() + ' assigned a user badge to ' + user.name
+        alog.link = url_for('view_user', user=user.name)
+        db.session.add(alog)
         db.session.commit()
         return json.dumps({'status': 'ok', 'bid': bid})
     else:
@@ -850,6 +890,13 @@ def remove_user_badge(uid, bid):
                                'error': ['Badge has already been removed']})
 
         bq.key = 'xbadge'
+        user = User.query.filter_by(uid=uid).first()
+        alog = SiteLog()
+        alog.action = 2 # users
+        alog.time = datetime.datetime.utcnow()
+        alog.desc = current_user.get_username() + ' removed a user badge from ' + user.name
+        alog.link = url_for('view_user', user=user.name)
+        db.session.add(alog)
         db.session.commit()
         return json.dumps({'status': 'ok', 'message': 'Badge deleted'})
     else:
