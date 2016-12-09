@@ -492,11 +492,13 @@ def getPostFlair(post, fl):
 
 
 def getSubscriptions():
+    """ Returns subscribed subs list """
     subs = SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
     return list(subs)
 
 
 def sendMail(to, subject, content):
+    """ Send email """
     sg = sendgrid.SendGridAPIClient(api_key=config.SENDGRID_API_KEY)
 
     from_email = sendgrid.Email(config.SENDGRID_DEFAULT_FROM)
