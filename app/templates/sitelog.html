@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block title %}{{config.LEMA}}{% endblock %}
+{% block sidebar %}
+{{ super() }}
+<p></p>
+<hr/>
+<ul>
+  <li>1 deletion</li>
+  <li>2 users</li>
+  <li>3 announcement</li>
+  <li>4 subs</li>
+  <li>5 mods/admins</li>
+  <li>6 </li>
+</ul>
+{% endblock %}
+{% block content %}
+{{ super() }}
+
+<h1> Site log </h1>
+<table class="col-12">
+  <tr>
+    <td>Time</td>
+    <td>action</td>
+    <td>desc</td>
+    <td>link</td>
+  </tr>
+  {% for log in logs %}
+  <tr>
+    <td>{{log.time}}</td>
+    <td>{{log.action}}</td>
+    <td>{{log.desc}}</td>
+    <td>{{log.link}}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

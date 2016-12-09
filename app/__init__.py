@@ -24,7 +24,7 @@ from feedgen.feed import FeedGenerator
 
 from .models import db, User, Sub, SubPost, SubPostVote, SubPostComment
 from .models import UserBadge, UserMetadata, SiteMetadata, SubMetadata, Message
-from .models import SubStylesheet, SubFlair, SubSubscriber, SubLog
+from .models import SubStylesheet, SubFlair, SubSubscriber, SubLog, SiteLog
 from .forms import RegistrationForm, LoginForm, LogOutForm, EditSubFlair
 from .forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
@@ -833,6 +833,17 @@ def admin_post_search(term):
                                upcount=upcount, downcount=downcount)
     else:
         return render_template('errors/404.html'), 404
+
+
+@app.route("/admin/sitelog")
+@login_required
+def view_sitelog():
+    """ Here we can see a log of admin activity on the site """
+    if current_user.is_admin():
+        logs = SiteLog.query.order_by(SiteLog.lid.desc()).all()
+        return render_template('sitelog.html', logs=logs)
+    else:
+        abort(403)
 
 
 @app.route("/register")

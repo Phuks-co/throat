@@ -519,3 +519,17 @@ class SubLog(db.Model):
     action = Column(Integer)  # 1 deletion, 2 user ban, 3 flair, 4 modedit, 5 comment, 6 mods
     desc = Column(String(255)) # description
     link = Column(String(255))
+
+
+class SiteLog(db.Model):
+    """ Sub modlogs """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
+    lid = Column(Integer, primary_key=True) # log id
+    time = Column(DateTime)
+    action = Column(Integer)  # 1 deletion, 2 users, 3 ann, 4 subs, 5 mods/admins
+    desc = Column(String(255)) # description
+    link = Column(String(255))

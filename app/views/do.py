@@ -17,7 +17,7 @@ import config
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
 from ..models import UserMetadata, UserBadge, SubSubscriber, SiteMetadata
-from ..models import SubFlair, SubLog
+from ..models import SubFlair, SubLog, SiteLog
 from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubFlair
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
@@ -346,6 +346,15 @@ def edit_sub(sub):
             log.time = datetime.datetime.utcnow()
             log.desc = 'Sub settings edited by ' + current_user.get_username()
             # log.link = url_for('view_sub', sub=sub.name)
+
+            if not current_user.is_mod(sub) and current_user.is_admin():
+                alog = SiteLog()
+                alog.action = 4 # subs
+                alog.time = datetime.datetime.utcnow()
+                alog.desc = 'Sub settings edited by ' + current_user.get_username()
+                alog.link = url_for('view_sub', sub=sub.name)
+                db.session.add(alog)
+
             db.session.add(log)
             db.session.commit()
             return json.dumps({'status': 'ok',

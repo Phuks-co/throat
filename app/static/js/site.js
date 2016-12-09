@@ -895,6 +895,7 @@ $(document).ready(function() {
 
         e.preventDefault();
     });
+    
     $('.subscriptions').click(function(){
 
      if($(this).text()=='Subscriptions'){
