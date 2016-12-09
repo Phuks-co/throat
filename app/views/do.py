@@ -253,6 +253,13 @@ def create_sub():
         db.session.add(ux2)
         db.session.add(ux3)
         db.session.add(ux4)
+        # admin/site log
+        alog = SiteLog()
+        alog.action = 4 # subs
+        alog.time = datetime.datetime.utcnow()
+        alog.desc = current_user.get_username() + ' created a new sub'
+        alog.link = url_for('view_sub', sub=sub.name)
+        db.session.add(alog)
         db.session.commit()
 
         return json.dumps({'status': 'ok',
