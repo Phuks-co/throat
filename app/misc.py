@@ -1,6 +1,8 @@
 """ Misc helper function and classes. """
 from sqlalchemy import or_
 import markdown
+import sendgrid
+import config
 from flask_login import AnonymousUserMixin, current_user
 from flask_cache import Cache
 import sqlalchemy.orm
@@ -492,3 +494,20 @@ def getPostFlair(post, fl):
 def getSubscriptions():
     subs = SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
     return list(subs)
+
+
+def sendMail(to, subject, content):
+    sg = sendgrid.SendGridAPIClient(api_key=config.SENDGRID_API_KEY)
+
+    from_email = sendgrid.Email(config.SENDGRID_DEFAULT_FROM)
+    to_email = sendgrid.Email(to)
+    content = sendgrid.helpers.mail.Content('text/html', content)
+
+    mail = sendgrid.helpers.mail.Mail(from_email, subject, to_email,
+                                      content)
+
+    try:
+        r = sg.client.mail.send.post(request_body=mail.get())
+    except Exception as e:
+        print(dir(e))
+        print(e.read())

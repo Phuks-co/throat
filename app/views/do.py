@@ -2,6 +2,7 @@
 
 import json
 import re
+import time
 import datetime
 import uuid
 from io import BytesIO
@@ -14,6 +15,7 @@ from sqlalchemy import func
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_cache import make_template_fragment_key
 import config
+from .. import forms
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
 from ..models import UserMetadata, UserBadge, SubSubscriber, SiteMetadata
@@ -25,7 +27,7 @@ from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form, EditSubFlair
 from ..forms import DeleteSubFlair
-from ..misc import SiteUser, cache, getMetadata
+from ..misc import SiteUser, cache, getMetadata, sendMail
 
 do = Blueprint('do', __name__)
 
@@ -1321,5 +1323,89 @@ def create_flair(sub):
         flair.text = form.text.data
         db.session.add(flair)
         db.session.commit()
+        return json.dumps({'status': 'ok'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/recovery", methods=['POST'])
+def recovery():
+    if current_user.is_authenticated:
+        abort(403)
+
+    form = forms.PasswordRecoveryForm()
+    if form.validate():
+        user = User.query.filter_by(email=form.email.data).first()
+        if not user:
+            return json.dumps({'status': 'ok'})
+
+        # User exists, check if they don't already have a key sent
+        key = getMetadata(user, 'recovery-key', record=True)
+        if key:
+            # Key exists, check if it has expired
+            keyExp = getMetadata(user, 'recovery-key-time', record=True)
+            expiration = float(keyExp.value)
+            if (time.time() - expiration) > 86400:  # 1 day
+                # Key is old. remove it and proceed
+                db.session.delete(key)
+                db.session.delete(keyExp)
+            else:
+                # silently fail >_>
+                return json.dumps({'status': 'ok'})
+
+        # checks done, doing the stuff.
+        key = UserMetadata(user.uid, 'recovery-key', uuid.uuid4())
+        keyExp = UserMetadata(user.uid, 'recovery-key-time', time.time())
+        db.session.add(key)
+        db.session.add(keyExp)
+        db.session.commit()
+        sendMail(
+            subject='Password recovery',
+            to=user.email,
+            content="""<h1><strong>{0}</strong></h1>
+            <p>Somebody (most likely you) has requested a password reset for
+            your account</p>
+            <p>To proceed, visit the following address</p>
+            <a href="{1}">{1}</a>
+            <hr>
+            <p>If you didn't request a password recovery, please ignore this
+            email</p>
+            """.format(config.LEMA, url_for('password_reset', key=key.value,
+                                            uid=user.uid, _external=True))
+        )
+        return json.dumps({'status': 'ok'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/reset", methods=['POST'])
+def reset():
+    if current_user.is_authenticated:
+        abort(403)
+
+    form = forms.PasswordResetForm()
+    if form.validate():
+        user = User.query.get(form.user.data)
+        if not user:
+            return json.dumps({'status': 'ok'})
+
+        # User exists, check if they don't already have a key sent
+        key = getMetadata(user, 'recovery-key', record=True)
+        keyExp = getMetadata(user, 'recovery-key-time', record=True)
+        if not key:
+            abort(403)
+
+        if key.value != form.key.data:
+            abort(403)
+
+        db.session.delete(key)
+        db.session.delete(keyExp)
+        db.session.commit()
+        cache.delete_memoized(getMetadata, user, 'recovery-key', record=True)
+        cache.delete_memoized(getMetadata, user, 'recovery-key-time', record=True)
+        UserMetadata.cache.uncache(key='recovery-key', uid=user.uid)
+        UserMetadata.cache.uncache(key='recovery-key-time', uid=user.uid)
+
+        # All good. Set da password.
+        user.setPassword(form.password.data)
+        login_user(SiteUser(user))
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})

@@ -1,7 +1,7 @@
 """ User-related forms """
 from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, PasswordField, TextField, TextAreaField
-from wtforms import BooleanField
+from wtforms import BooleanField, HiddenField
 from wtforms.validators import DataRequired, Length, Email, Required, EqualTo
 from wtforms.validators import Optional
 from wtforms.fields.html5 import EmailField
@@ -67,6 +67,27 @@ class CreateUserMessageForm(FlaskForm):
     content = TextAreaField('message',
                             validators=[DataRequired(),
                                         Length(min=2, max=128)])
+
+
+class PasswordRecoveryForm(FlaskForm):
+    """ the 'forgot your password?' form """
+    email = EmailField('Email Address',
+                       validators=[Email("Invalid email address.")])
+    recaptcha = RecaptchaField()
+
+
+class PasswordResetForm(FlaskForm):
+    """ the 'forgot your password?' form """
+    user = HiddenField()
+    key = HiddenField()
+    password = PasswordField('Password', [
+        Required(),
+        EqualTo('confirm', message='Passwords must match'),
+        Length(min=7, max=256)
+    ])
+    confirm = PasswordField('Repeat Password')
+
+    recaptcha = RecaptchaField()
 
 
 class LogOutForm(FlaskForm):

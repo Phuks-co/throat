@@ -49,6 +49,9 @@ class User(db.Model, CacheableMixin):
         self.crypto = 1
         self.status = 0
         self.joindate = datetime.datetime.utcnow()
+        self.setPassword(password)
+
+    def setPassword(self, password):
         password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         if isinstance(password, bytes):
             self.password = password.decode('utf-8')
@@ -91,6 +94,11 @@ class UserMetadata(db.Model, CacheableMixin):
     uid = Column(String(40), db.ForeignKey('user.uid'))  # Subverse id
     key = Column(String(255))  # Metadata key
     value = Column(String(255))
+
+    def __init__(self, uid, key, value):
+        self.uid = uid
+        self.key = key
+        self.value = value
 
     @hybrid_property
     def getBadgeClass(self):

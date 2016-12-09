@@ -1,8 +1,8 @@
 """ Uhh... Here we import stuff """
 from flask_wtf import FlaskForm
 
-from .user import RegistrationForm, LoginForm, LogOutForm
-from .user import CreateUserMessageForm, EditUserForm
+from .user import RegistrationForm, LoginForm, LogOutForm, PasswordResetForm
+from .user import CreateUserMessageForm, EditUserForm, PasswordRecoveryForm
 from .sub import CreateSubForm, EditSubForm, EditSubTextPostForm, EditSubFlair
 from .sub import CreateSubTextPost, CreateSubLinkPost
 from .sub import PostComment, DeletePost, EditSubLinkPostForm, SearchForm

@@ -35,7 +35,7 @@ from .forms import CreateSubFlair
 from .views import do, api
 from . import misc, forms
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
-from .misc import SiteAnon, cache, hasSubscribed, hasBlocked, getAnnouncement
+from .misc import SiteAnon, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
 from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
 from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair, decent
@@ -48,7 +48,7 @@ app.register_blueprint(api)
 app.config.from_object('config')
 
 db.init_app(app)
-cache.init_app(app)
+misc.cache.init_app(app)
 
 assets = Environment(app)
 login_manager = LoginManager(app)
@@ -852,6 +852,33 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     return render_template('register.html')
+
+
+@app.route("/recover")
+def password_recovery():
+    """ Endpoint for the registration form """
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    return render_template('password_recovery.html')
+
+
+@app.route('/reset/<uid>/<key>')
+def password_reset(uid, key):
+    user = User.query.filter_by(uid=uid).first()
+    if not user:
+        abort(403)
+    key = getMetadata(user, 'recovery-key', record=True)
+    keyExp = getMetadata(user, 'recovery-key-time', record=True)
+    if not key:
+        abort(404)
+    if current_user.is_authenticated:
+        db.session.delete(key)
+        db.session.delete(keyExp)
+        db.session.commit()
+        return redirect(url_for('index'))
+
+    form = forms.PasswordResetForm(key=key.value, user=user.uid)
+    return render_template('password_reset.html', resetpw=form)
 
 
 @app.route("/api")
