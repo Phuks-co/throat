@@ -1402,6 +1402,20 @@ body.dark input{
 
 .btn-sm{padding-left: 6px; padding-right: 6px;}
 
+/* subscriptions */
 #SubscriptionsList ul li {
   text-align: left;
+}
+.subscriptionbar ul {
+    white-space: nowrap;
+}
+.subscriptionbar ul li {
+    display: inline-block;
+    margin: 0 6px;
+}
+.subscriptionbar {
+    border-bottom: 1px solid #dedede;
+}
+body.dark .subscriptionbar {
+    border-bottom: 1px solid #412b19;
 }
