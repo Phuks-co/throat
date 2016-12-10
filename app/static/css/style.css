@@ -1445,5 +1445,5 @@ body.dark .subscriptionbar {
 /* todays top posts */
 .todaystop .list ul li {
     text-align: left;
-    margin-left: 10px;
+    margin: 6px 0 6px 12px;
 }
