@@ -121,6 +121,9 @@
   {% set un = '1'%}
 {% else %}
   {% set un = current_user.get_id() %}
+  {% if not un %}
+    {% set un = '2' %}
+  {%endif%}
 {% endif %}
 {% cache 300, 'frontpage', sort_type, page|string, un %}
   {% for post in posts if not getMetadata(post, 'deleted') and not getMetadata(post, 'moddeleted') and not post.isAnnouncement() %}

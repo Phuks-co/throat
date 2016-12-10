@@ -219,7 +219,6 @@ def home_new(page):
     posts = []
     for sub in subs:
         posts += SubPost.query.filter_by(sid=sub.sid).all()
-    print(posts)
     sorter = NewSorting(posts)
     return render_template('index.html', page=page, sort_type='home_new',
                            posts=sorter.getPosts(page))

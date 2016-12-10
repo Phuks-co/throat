@@ -114,7 +114,7 @@ class ABAccountTestCase(unittest.TestCase):
         assert 'There are no posts here, yet.' not in x.get_data(True)
 
         r.flushall()
-        x = self.app.get('/')
+        x = self.app.get('/all/hot')
         assert 'There are no posts here, yet.' not in x.get_data(True)
 
 
