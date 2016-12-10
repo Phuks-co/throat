@@ -1,12 +1,17 @@
 {% extends "layout.html" %}
 {% block title %}{{sub.title}} | {{config.LEMA}}{% endblock %}
 {% block navbar %}
+<li>
+  <a href="{{url_for('view_sub', sub=sub.name)}}">
+    {% if sub.isNSFW %}
+      <span class="bgred" alt="Not safe for work">NSFW</span>
+    {% endif %}
+    {{sub.name}}
+  </a>
+</li>
 <li><a href="{{url_for('view_sub_hot', sub=sub.name)}}">Hot</a></li>
 <li><a href="{{url_for('view_sub_top', sub=sub.name)}}">Top</a></li>
 <li><a href="{{url_for('view_sub_new', sub=sub.name)}}">New</a></li>
-<li class="large right">
-  <a href="{{url_for('view_sub', sub=sub.name)}}" class="btn btn-white" style="width:100%;height:50%;">{% if sub.isNSFW %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}/s/{{sub.name}}</a>
-</li>
 {% endblock %}
 
 {% block sidebar %}

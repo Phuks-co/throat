@@ -2,12 +2,17 @@
 {% block title %}{{post.title}} | {{config.LEMA}}{% endblock %}
 
 {% block navbar %}
+<li>
+  <a href="{{url_for('view_sub', sub=post.sub.name)}}">
+    {% if func.isNSFW(post.sub) %}
+      <span class="bgred" alt="Not safe for work">NSFW</span>
+    {% endif %}
+    {{post.sub.name}}
+  </a>
+</li>
 <li><a href="{{url_for('view_sub_hot', sub=post.sub.name)}}">Hot</a></li>
 <li><a href="{{url_for('view_sub_top', sub=post.sub.name)}}">Top</a></li>
 <li><a href="{{url_for('view_sub_new', sub=post.sub.name)}}">New</a></li>
-<ul class="right">
-  <li class="large"><a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn btn-white" style="width:100%;height:50%;">{% if func.isNSFW(post.sub) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %} /s/{{post.sub.name}}</a></li>
-</ul>
 {% endblock %}
 {% block sidebar %}
 {{ super() }}<hr/>
