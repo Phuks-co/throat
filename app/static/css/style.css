@@ -1441,3 +1441,9 @@ body.dark .subscriptionbar {
 .col-12.btcdonation div {
     margin: 10px 0;
 }
+
+/* todays top posts */
+.todaystop .list ul li {
+    text-align: left;
+    margin-left: 10px;
+}

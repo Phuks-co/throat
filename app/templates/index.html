@@ -32,7 +32,8 @@
   <div class="list">
     <ul>
     {% for post in func.getTodaysTopPosts() %}
-      <li>/s/{{post.sub.name}}: <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{post.title}}</a></li>
+      <li>({{post.voteCount()}} phuks) <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{post.title}}</a><br>
+      -<time-ago datetime="{{post.posted.isoformat()}}"></time-ago> in <a href="{{url_for('view_sub', sub=post.sub.name)}}">/s/{{post.sub.name}}</a></li>
     {% endfor %}
     </ul>
   </div>
