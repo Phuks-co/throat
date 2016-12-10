@@ -27,7 +27,7 @@ from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form, EditSubFlair
 from ..forms import DeleteSubFlair, UseBTCdonationForm
-from ..misc import SiteUser, cache, getMetadata, sendMail
+from ..misc import SiteUser, cache, getMetadata, sendMail, getDefaultSubs
 
 do = Blueprint('do', __name__)
 
@@ -136,6 +136,12 @@ def register():
                                'error': ['Email is alredy in use.']})
         user = User(form.username.data, form.email.data, form.password.data)
         db.session.add(user)
+        # defaults
+        defaults = getDefaultSubs()
+        for d in defaults:
+            x = SubSubscriber(d.sid, user.uid)
+            x.status = 1
+            db.session.add(x)
         db.session.commit()
         login_user(SiteUser(user))
         return json.dumps({'status': 'ok'})

@@ -242,10 +242,6 @@ class SubSubscriber(db.Model, CacheableMixin):
     # Query handeling dogpile caching
     query_class = query_callable(regions)
 
-    # Note: We usually use integer primary keys when we don't need to actually
-    # use the primary keys (but we should always define them, because it speeds
-    # up queries and stuff), when we have to store an ID we always use uuid4s
-    # The only exception is SubPost >_>
     xid = Column(Integer, primary_key=True)
     sid = Column(String(40), db.ForeignKey('sub.sid'))
     uid = Column(String(40), db.ForeignKey('user.uid'))
@@ -253,11 +249,20 @@ class SubSubscriber(db.Model, CacheableMixin):
     time = Column(DateTime)
     order = Column(Integer)  # Order in the subs bar.
 
+    def __init__(self, sid, uid):
+        self.time = datetime.datetime.utcnow()
+        self.sid = sid
+        self.uid = uid
+
     @hybrid_property
     def getSubName(self):
         """ Returns the sub's name from str """
         x = Sub.cache.get(self.sid)
         return str(x.name)
+
+    @hybrid_property
+    def name(self):
+        return self.getSubName
 
 
 class SubStylesheet(db.Model, CacheableMixin):
@@ -501,10 +506,11 @@ class Message(db.Model, CacheableMixin):
         return str(x.name)
 
 
-class SiteMetadata(db.Model):
+class SiteMetadata(db.Model, CacheableMixin):
     """ Site-wide configs """
     cache_label = "default"  # region's label to use
     cache_regions = regions  # regions to store cache
+    cache_pk = 'xid'
     # Query handeling dogpile caching
     query_class = query_callable(regions)
 

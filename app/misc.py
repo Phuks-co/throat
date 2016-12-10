@@ -491,9 +491,25 @@ def getPostFlair(post, fl):
     return getMetadata(post, fl)
 
 
+@cache.memoize(600)
+def getDefaultSubs():
+    """ Returns a list of all the default subs """
+    md = list(SiteMetadata.cache.filter(key='default'))
+    defaults = []
+    for sub in md:
+        sub = Sub.cache.get(sub.value)
+        defaults.append(sub)
+    return defaults
+
+
 def getSubscriptions():
     """ Returns all the subs the current user is subscribed to """
-    subs = SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
+    if current_user.is_authenticated:
+        subs = SubSubscriber.cache.filter(uid=current_user.user.uid,
+                                          status='1')
+    else:
+        subs = getDefaultSubs()
+    print(subs)
     return list(subs)
 
 
