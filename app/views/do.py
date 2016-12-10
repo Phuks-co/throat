@@ -505,11 +505,8 @@ def edit_mod():
 def subscribe_to_sub(sid):
     """ Subscribe to sub """
     userid = current_user.get_id()
-    subscribe = SubSubscriber()
-    subscribe.sid = sid
-    subscribe.uid = userid
+    subscribe = SubSubscriber(sid, userid)
     subscribe.status = '1'
-    subscribe.time = datetime.datetime.utcnow()
 
     blocked = SubSubscriber.query.filter_by(sid=sid) \
                                  .filter_by(uid=userid) \

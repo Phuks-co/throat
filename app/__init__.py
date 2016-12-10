@@ -40,7 +40,7 @@ from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
 from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
 from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair, decent
 from .misc import enableBTCmod
-from .sorting import VoteSorting, BasicSorting, HotSorting
+from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
 
 app = Flask(__name__)
 
@@ -195,14 +195,47 @@ def utility_processor():
 
 @app.route("/")
 def index():
-    """ The index page, currently sorts like /all/new """
-    return all_hot(1)
+    """ The index page, shows /hot of current subscriptions """
+    return home_hot(1)
 
 
-@app.route("/new")
-def index_new():
-    """ The index page, currently sorts like /all/new """
-    return all_new(1)
+@app.route("/hot", defaults={'page': 1})
+@app.route("/hot/<int:page>")
+def home_hot(page):
+    subs = misc.getSubscriptions()
+    posts = []
+    for sub in subs:
+        posts += SubPost.query.filter_by(sid=sub.sid).all()
+
+    sorter = HotSorting(posts)
+    return render_template('index.html', page=page, sort_type='home_hot',
+                           posts=sorter.getPosts(page))
+
+
+@app.route("/new", defaults={'page': 1})
+@app.route("/new/<int:page>")
+def home_new(page):
+    subs = misc.getSubscriptions()
+    posts = []
+    for sub in subs:
+        posts += SubPost.query.filter_by(sid=sub.sid).all()
+    print(posts)
+    sorter = NewSorting(posts)
+    return render_template('index.html', page=page, sort_type='home_new',
+                           posts=sorter.getPosts(page))
+
+
+@app.route("/top", defaults={'page': 1})
+@app.route("/top/<int:page>")
+def home_top(page):
+    subs = misc.getSubscriptions()
+    posts = []
+    for sub in subs:
+        posts += SubPost.query.filter_by(sid=sub.sid).all()
+
+    sorter = VoteSorting(posts)
+    return render_template('index.html', page=page, sort_type='home_top',
+                           posts=sorter.getPosts(page))
 
 
 @app.route("/all/new.rss")
@@ -232,12 +265,9 @@ def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.query.order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
-    createtxtpost = CreateSubTextPost()
-    createlinkpost = CreateSubLinkPost()
+
     return render_template('index.html', page=page, sort_type='all_new',
-                           posts=sorter.getPosts(page),
-                           txtpostform=createtxtpost,
-                           lnkpostform=createlinkpost)
+                           posts=sorter.getPosts(page))
 
 
 @app.route("/domain/<domain>", defaults={'page': 1})
@@ -248,12 +278,9 @@ def all_domain_new(page, domain):
                          .filter(SubPost.link.contains(domain)) \
                          .order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
-    createtxtpost = CreateSubTextPost()
-    createlinkpost = CreateSubLinkPost()
+
     return render_template('index.html', page=page, sort_type='all_new',
-                           posts=sorter.getPosts(page),
-                           txtpostform=createtxtpost,
-                           lnkpostform=createlinkpost)
+                           posts=sorter.getPosts(page))
 
 
 @app.route("/search/<term>", defaults={'page': 1})
@@ -263,12 +290,9 @@ def search(page, term):
     posts = SubPost.query.filter(SubPost.title.contains(term)) \
                          .order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
-    createtxtpost = CreateSubTextPost()
-    createlinkpost = CreateSubLinkPost()
+
     return render_template('index.html', page=page, sort_type='all_new',
-                           posts=sorter.getPosts(page),
-                           txtpostform=createtxtpost,
-                           lnkpostform=createlinkpost)
+                           posts=sorter.getPosts(page))
 
 
 @app.route("/all/top", defaults={'page': 1})
@@ -277,12 +301,9 @@ def all_top(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.cache.filter()
     sorter = VoteSorting(posts)
-    createtxtpost = CreateSubTextPost()
-    createlinkpost = CreateSubLinkPost()
+
     return render_template('index.html', page=page, sort_type='all_top',
-                           posts=sorter.getPosts(page),
-                           txtpostform=createtxtpost,
-                           lnkpostform=createlinkpost)
+                           posts=sorter.getPosts(page))
 
 
 @app.route("/all/hot", defaults={'page': 1})
@@ -291,13 +312,9 @@ def all_hot(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.cache.filter()
     sorter = HotSorting(posts)
-    createtxtpost = CreateSubTextPost()
-    createlinkpost = CreateSubLinkPost()
 
     return render_template('index.html', page=page, sort_type='all_hot',
-                           posts=sorter.getPosts(page),
-                           txtpostform=createtxtpost,
-                           lnkpostform=createlinkpost)
+                           posts=sorter.getPosts(page))
 
 
 @app.route("/subs")

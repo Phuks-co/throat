@@ -27,6 +27,14 @@ class VoteSorting(BasicSorting):
         self.posts.reverse()
 
 
+class NewSorting(BasicSorting):
+    """ Sorts by date (/new) """
+    def __init__(self, posts):
+        super(NewSorting, self).__init__(posts)
+        self.posts.sort(key=lambda x: x.posted.isoformat())
+        self.posts.reverse()
+
+
 class HotSorting(BasicSorting):
     """ Sorts by age and votes (/hot) """
     epoch = datetime(1970, 1, 1)

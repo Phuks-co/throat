@@ -509,7 +509,6 @@ def getSubscriptions():
                                           status='1')
     else:
         subs = getDefaultSubs()
-    print(subs)
     return list(subs)
 
 

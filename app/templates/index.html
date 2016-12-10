@@ -61,9 +61,15 @@
 {% endblock %}
 {% block navbar %}
 {{ super() }}
-<li><a href="/all/hot">Hot</a></li>
-<li><a href="/all/top">Top</a></li>
-<li><a href="/all/new">New</a></li>
+{% if sort_type.startswith('all') %}
+  <li><a href="/all/hot">Hot</a></li>
+  <li><a href="/all/top">Top</a></li>
+  <li><a href="/all/new">New</a></li>
+{% else %}
+  <li><a href="/hot">Hot</a></li>
+  <li><a href="/top">Top</a></li>
+  <li><a href="/new">New</a></li>
+{%endif%}
 {% if current_user.is_admin() %}<li><a href="{{url_for('admin_area')}}">Admin</a></li>{% endif %}
 {% endblock %}
 {% block content %}
@@ -111,7 +117,12 @@
 {% endcache %}
 
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
-{% cache 300, 'frontpage', sort_type, page|string %}
+{% if sort_type.startswith('all') %}
+  {% set un = '1'%}
+{% else %}
+  {% set un = current_user.get_id() %}
+{% endif %}
+{% cache 300, 'frontpage', sort_type, page|string, un %}
   {% for post in posts if not getMetadata(post, 'deleted') and not getMetadata(post, 'moddeleted') and not post.isAnnouncement() %}
   {% if (current_user.show_nsfw() and post.isPostNSFW()) or not post.isPostNSFW() %}
       <article class="post" data-pid="{{post.pid}}">
@@ -235,6 +246,7 @@
 </form>
 {% if current_user.is_authenticated %}
 <form id="post-form" class="mfp-hide white-popup-block">
+  {% set txtpostform = form.CreateSubTextPost()%}
   {{txtpostform.csrf_token}}
   <h1>Submit a text post</h1>
   <p class="sub">/s/{{txtpostform.sub(placeholder="Enter sub name.", required=True)}}</p>
@@ -247,6 +259,7 @@
   <p><button type="submit" class="btn btn-blue" id="txpost-btnsubmit">Submit post</button></p>
 </form>
 <form id="link-post-form" class="mfp-hide white-popup-block">
+  {% set lnkpostform = form.CreateSubLinkPost()%}
   {{lnkpostform.csrf_token}}
   <h1>Submit a link post</h1>
   <p class="sub">/s/{{lnkpostform.sub(placeholder="Enter sub name.", required=True)}}</p>
