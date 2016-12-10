@@ -20,18 +20,6 @@
     <a href="#link-post-form" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
   </div>
 </div>
-<div class="col-12">
-  <div style="width:100%;height:100%;">
-    <div class="subscriptions btn btn-white" style="width:100%">Subscriptions</div><br>
-    <div id="SubscriptionsList" style="display:none; height:100%;width:100%" >
-      <ul>
-        {% for sub in func.getSubscriptions() %}
-          <li><a href="{{url_for('view_sub', sub=sub.getSubName)}}">{{sub.getSubName}}</a></li>
-        {% endfor %}
-      </ul>
-    </div>
-  </div>
-</div>
 {% endif %}
 
 {% if func.enableBTCmod() %}
