@@ -1,7 +1,7 @@
 """ Sorting module. Here we store the classes that sort stuff. """
 from datetime import datetime
 from math import log
-from .misc import cache
+from .caching import cache
 
 
 class BasicSorting(object):

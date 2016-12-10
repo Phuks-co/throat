@@ -7,11 +7,10 @@ import markdown
 import sendgrid
 import config
 from flask_login import AnonymousUserMixin, current_user
-from flask_cache import Cache
+from .sorting import VoteSorting
 from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata, Sub
 from .models import SubPost, SubMetadata, SubPostVote, User, SubPostMetadata
-
-cache = Cache()
+from .caching import cache
 
 
 class SiteUser(object):
@@ -518,10 +517,13 @@ def getBTCaddr():
         return x.value
 
 
+@cache.memoize(300)
 def getTodaysTopPosts():
     """ Returns posts with todays date """
-    posts = SubPost.query.filter(cast(SubPost.posted,Date) == date.today()).all()
-    return list(posts)
+    posts = SubPost.query.filter(cast(SubPost.posted, Date) ==
+                                 date.today()).all()
+    posts = VoteSorting(posts).getPosts(1)
+    return list(posts)[:5]
 
 
 def sendMail(to, subject, content):

@@ -33,7 +33,7 @@ from .forms import DeletePost, CreateUserBadgeForm, EditMod2Form, DummyForm
 from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair
 from .forms import CreateSubFlair, UseBTCdonationForm
 from .views import do, api
-from . import misc, forms
+from . import misc, forms, caching
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
@@ -49,7 +49,7 @@ app.register_blueprint(api)
 app.config.from_object('config')
 
 db.init_app(app)
-misc.cache.init_app(app)
+caching.cache.init_app(app)
 
 assets = Environment(app)
 login_manager = LoginManager(app)

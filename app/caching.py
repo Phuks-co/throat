@@ -3,13 +3,16 @@ import functools
 import hashlib
 
 from flask_sqlalchemy import BaseQuery
-from sqlalchemy import event, select
+from sqlalchemy import event
 from sqlalchemy.orm.interfaces import MapperOption
 from sqlalchemy.orm.attributes import get_history
 from sqlalchemy.ext.declarative import declared_attr
 from dogpile.cache.region import make_region
 from dogpile.cache.api import NO_VALUE
 import config
+
+from flask_cache import Cache
+cache = Cache()
 
 
 def md5_key_mangler(key):
