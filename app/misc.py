@@ -1,6 +1,7 @@
 """ Misc helper function and classes. """
 from urllib.parse import urlparse, parse_qs
-from sqlalchemy import or_
+from sqlalchemy import or_, Date, cast
+from datetime import date
 import sqlalchemy.orm
 import markdown
 import sendgrid
@@ -515,6 +516,12 @@ def getBTCaddr():
     x = SiteMetadata.query.filter_by(key='btcaddr').first()
     if x:
         return x.value
+
+
+def getTodaysTopPosts():
+    """ Returns posts with todays date """
+    posts = SubPost.query.filter(cast(SubPost.posted,Date) == date.today()).all()
+    return list(posts)
 
 
 def sendMail(to, subject, content):

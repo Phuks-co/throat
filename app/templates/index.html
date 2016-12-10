@@ -24,6 +24,20 @@
   </div>
 </div>
 {% endif %}
+<span class="col-12"><hr></span>
+<div class="col-12 todaystop">
+  <div class="col-12">
+    Today's posts:
+  </div>
+  <div class="list">
+    <ul>
+    {% for post in func.getTodaysTopPosts() %}
+      <li>/s/{{post.sub.name}}: <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{post.title}}</a></li>
+    {% endfor %}
+    </ul>
+  </div>
+</div>
+
 
 {% if func.enableBTCmod() %}
 <span class="col-12"><hr></span>
