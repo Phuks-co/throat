@@ -251,6 +251,7 @@ class SubSubscriber(db.Model, CacheableMixin):
     uid = Column(String(40), db.ForeignKey('user.uid'))
     status = Column(Integer)  # 1=subscribed 2=blocked 3=custom
     time = Column(DateTime)
+    order = Column(Integer)  # Order in the subs bar.
 
     @hybrid_property
     def getSubName(self):
