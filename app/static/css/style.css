@@ -1427,6 +1427,7 @@ body.dark input{
   text-align: center;
   margin-top:0.5em
 }
+#subsdropdown .dropdown-toggle{cursor:pointer;}
 #hiddensubs{white-space:initial;}
 #hiddensubs li{width:90%;}
 body.dark .subscriptionbar {
