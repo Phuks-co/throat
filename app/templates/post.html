@@ -251,23 +251,32 @@
                 {# if post.ptype == 1 %}
                   <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
                 {% endif #}
-                  <a href="{{ url_for('view_user', user=comment.getUname) }}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{ comment.getUname }}</a>
+                  {% if not comment.deleted %}
+                    <a href="{{ url_for('view_user', user=comment.getUname) }}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{ comment.getUname }}</a>
+                  {%else%}
+                    <a class="btn small"><i class="fa fa-user" aria-hidden="true"></i>[Deleted]</a>
+                  {%endif%}
                   <span class="time btn small">
                     <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{comment.time.isoformat()}}"></time-ago>
                   </span>
-                {# if post.edited == true
+                {% if comment.lastedit and not comment.deleted %}
                   <span class="time btn small">
-                    <i class="fa fa-clock-o" aria-hidden="true"></i> Last edited <time-ago datetime="{{comment.time.isoformat()}}"></time-ago>
+                    <i class="fa fa-clock-o" aria-hidden="true"></i> Edited <time-ago datetime="{{comment.lastedit.isoformat()}}"></time-ago>
                   </span>
-                {% endif #}
-                {% if comment.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
-                  <a href="#edit-comment-form" class="btn btn-orange edit small edit-comment-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
-                  <a href="#delete-comment-form" class="btn btn-orange edit small delete-comment-form"><i class="fa fa-times-circle" aria-hidden="true"></i> Delete </a>
+                {% endif %}
+                {% if (comment.uid == session['user_id'] or current_user.is_admin()) and not comment.deleted %}
+                  <a href="#edit-comment-form" class="btn btn-orange edit small edit-comment-form" data-cid="{{comment.cid}}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
+                  <a href="#delete-comment-form" class="btn btn-orange edit small delete-comment-form" data-cid="{{comment.cid}}"><i class="fa fa-times-circle" aria-hidden="true"></i> Delete </a>
                 {% endif %}
                 </div>
               </div>
-              <div class="content" id="content-{{comment.cid}}">{{markdown(comment.content)|safe}}
-              </div>
+              <div class="content" id="content-{{comment.cid}}">
+                {% if comment.deleted %}[Deleted]{%else%}
+                  {{markdown(comment.content)|safe}}
+                {%endif%}</div>
+              {%if not comment.deleted %}
+                <div hidden id="sauce-{{comment.cid}}">{{comment.content}}</div>
+              {%endif%}
               <div class="bottombar">
               <span id="bott-{{comment.cid}}">
                 <a href="#{{comment.cid}}">
@@ -315,6 +324,23 @@
     <p><button type="submit" class="btn btn-blue" id="edit-txpost-btnsubmit">Edit post</button></p>
   </form>
   {% endif %}
+  {% if current_user.is_authenticated %}
+    <form action="{{url_for('do.edit_comment')}}" data-reload="true" id="edit-comment-form" class="ajaxform mfp-hide white-popup-block">
+      <h2>Edit comment</h2>
+      {% set cf = form.EditCommentForm() %}
+      {{cf.csrf_token}}{{cf.cid(id="ecf-cid")}}
+      <p>{{cf.text(rows="10", **{'data-provide' :"markdown"})}}</p>
+      <p><button type="submit" class="btn btn-blue" data-prog="Saving..">Edit comment</button></p>
+    </form>
+
+    <form action="{{url_for('do.delete_comment')}}" data-reload="true" id="delete-comment-form" class="ajaxform mfp-hide white-popup-block">
+      <h2>Deleting comment</h2>
+      <p>Are you sure you want to do this?</p>
+      {% set cf = form.DeleteCommentForm() %}
+      {{cf.csrf_token}}{{cf.cid(id="dcf-cid")}}
+      <p><button type="submit" class="btn btn-blue" data-prog="Deleting..">Yup!</button></p>
+    </form>
+  {%endif%}
   {% if current_user.is_authenticated and not current_user.is_subban(post.sub) %}
   <form id="post-form" data-sub="{{post.sub.name}}" class="mfp-hide white-popup-block">
     {{txtpostform.csrf_token}}

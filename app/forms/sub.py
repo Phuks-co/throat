@@ -33,6 +33,19 @@ class EditSubFlair(FlaskForm):
                                                  Length(max=64)])
 
 
+class DeleteCommentForm(FlaskForm):
+    """ Removes a comment in a post """
+    cid = HiddenField()  # comment id
+
+
+class EditCommentForm(FlaskForm):
+    """ Edits a comment in a post """
+    cid = HiddenField()  # comment id
+    text = TextAreaField('Your comment',
+                         validators=[DataRequired(),
+                                     Length(min=1, max=2048)])
+
+
 class CreateSubFlair(FlaskForm):
     """ Creates a flair """
     text = StringField('Flair text', validators=[DataRequired(),

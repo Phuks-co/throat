@@ -38,7 +38,8 @@ $(document).ready(function() {
               document.location = target.data('redir');
             }
           }else if (target.data('reload')) {
-            document.location = document.location;
+            console.log('tried')
+            document.location.reload();
           }
         }
         button.prop('disabled', false);
@@ -422,6 +423,22 @@ $(document).ready(function() {
     $('a.btn.delete-post-form').magnificPopup(mpSettings);
     $('a.btn.make_announcement-form').magnificPopup(mpSettings);
     $('a.btn.edit-flair-form').magnificPopup(mpSettings);
+
+    $('.edit-comment-form').magnificPopup(mpSettings);
+    $('.edit-comment-form').click(function(){
+      var cid= $(this).data('cid');
+      var sauce=$('#sauce-'+cid).html();
+      $('#ecf-cid').prop('value', cid)
+      $('#edit-comment-form textarea').html(sauce);
+      $('.edit-comment-form').magnificPopup('open');
+    });
+
+    $('.delete-comment-form').magnificPopup(mpSettings);
+    $('.delete-comment-form').click(function(){
+      var cid= $(this).data('cid');
+      $('#dcf-cid').prop('value', cid)
+      $('.delete-comment-form').magnificPopup('open');
+    });
 
     $('#xk').magnificPopup(mpSettings);
     $( window ).konami({

@@ -1233,7 +1233,7 @@ def use_btc_donation():
         alog = SiteLog()
         alog.action = 10  # money realated!
         alog.time = datetime.datetime.utcnow()
-        if form.enablebtcmod.data == True:
+        if form.enablebtcmod.data:
             alog.desc = current_user.get_username() + \
                         ' enabled btc donations: ' + form.btcaddress.data
         else:
@@ -1439,5 +1439,52 @@ def reset():
         # All good. Set da password.
         user.setPassword(form.password.data)
         login_user(SiteUser(user))
+        return json.dumps({'status': 'ok'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/edit_comment", methods=['POST'])
+@login_required
+def edit_comment():
+    """ Edits a comment """
+    form = forms.EditCommentForm()
+    if form.validate():
+        comment = SubPostComment.query.get(form.cid.data)
+        if not comment:
+            abort(404)
+
+        if comment.uid != current_user.get_id() and not \
+                current_user.is_admin():
+            abort(403)
+
+        comment.content = form.text.data
+        comment.lastedit = datetime.datetime.utcnow()
+        db.session.commit()
+        SubPostComment.cache.uncache(pid=comment.pid, parentcid=None)
+        SubPostComment.cache.uncache(pid=comment.pid,
+                                     parentcid=comment.parentcid)
+        return json.dumps({'status': 'ok'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/delete_comment", methods=['POST'])
+@login_required
+def delete_comment():
+    """ Edits a comment """
+    form = forms.DeleteCommentForm()
+    if form.validate():
+        comment = SubPostComment.query.get(form.cid.data)
+        if not comment:
+            abort(404)
+
+        if comment.uid != current_user.get_id() and not \
+                current_user.is_admin():
+            abort(403)
+
+        comment.status = 1
+        db.session.commit()
+        SubPostComment.cache.uncache(pid=comment.pid, parentcid=None)
+        SubPostComment.cache.uncache(pid=comment.pid,
+                                     parentcid=comment.parentcid)
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})

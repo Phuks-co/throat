@@ -432,7 +432,9 @@ class SubPostComment(db.Model, CacheableMixin):
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))
     uid = Column(String(40), db.ForeignKey('user.uid'))
     time = Column(DateTime)
+    lastedit = Column(DateTime)
     content = Column(Text())
+    status = Column(Integer)  # 1 = deleted
     # parent comment id
     parentcid = Column(String(40), db.ForeignKey('sub_post_comment.cid'),
                        nullable=True)
@@ -447,6 +449,10 @@ class SubPostComment(db.Model, CacheableMixin):
         """ Returns username from str """
         x = User.query.filter_by(uid=self.uid).first()
         return str(x.name)
+
+    @hybrid_property
+    def deleted(self):
+        return True if self.status == 1 else False
 
 
 class SubPostVote(db.Model, CacheableMixin):

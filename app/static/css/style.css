@@ -1089,10 +1089,14 @@ body.dark .md-editor>.md-header,
 body.dark textarea#comment2 {
     background: #0c0e0c;
 }
-body.dark textarea#content,
-body.dark form textarea#content2 {
+body.dark textarea {
     background: #2f2f2f;
 }
+
+body.dark textarea:focus {
+    background: #323232;
+}
+
 
 #toggledark i {
     color: inherit;
