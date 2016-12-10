@@ -1433,7 +1433,10 @@ body.dark input{
 body.dark .subscriptionbar {
     border-bottom: 1px solid #412b19;
 }
-
+ body.dark ul#hiddensubs {
+    background: #101010;
+    border: 1px solid #412b19
+ }
 /* bitcoin module */
 .col-12.btcdonation div {
     margin: 10px 0;
