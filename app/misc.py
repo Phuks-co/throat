@@ -497,6 +497,26 @@ def getSubscriptions():
     return list(subs)
 
 
+def enableBTCmod():
+    """ Returns true if BTC donation module is enabled """
+    x = SiteMetadata.query.filter_by(key='usebtc').first()
+    return False if not x or x.value == '0' else True
+
+
+def getBTCmsg():
+    """ Returns donation module text """
+    x = SiteMetadata.query.filter_by(key='btcmsg').first()
+    if x:
+        return x.value
+
+
+def getBTCaddr():
+    """ Returns Bitcoin address """
+    x = SiteMetadata.query.filter_by(key='btcaddr').first()
+    if x:
+        return x.value
+
+
 def sendMail(to, subject, content):
     """ Sends a mail through sendgrid """
     sg = sendgrid.SendGridAPIClient(api_key=config.SENDGRID_API_KEY)

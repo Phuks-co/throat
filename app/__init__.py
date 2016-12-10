@@ -31,7 +31,7 @@ from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DeletePost, CreateUserBadgeForm, EditMod2Form, DummyForm
 from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair
-from .forms import CreateSubFlair
+from .forms import CreateSubFlair, UseBTCdonationForm
 from .views import do, api
 from . import misc, forms
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
@@ -39,6 +39,7 @@ from .misc import SiteAnon, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
 from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
 from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair, decent
+from .misc import enableBTCmod
 from .sorting import VoteSorting, BasicSorting, HotSorting
 
 app = Flask(__name__)
@@ -745,7 +746,8 @@ def admin_area():
 
         return render_template('admin.html', badges=badges, subs=subs,
                                posts=posts, ups=ups, downs=downs, users=users,
-                               createuserbadgeform=CreateUserBadgeForm())
+                               createuserbadgeform=CreateUserBadgeForm(),
+                               usebtcdonationform=UseBTCdonationForm())
     else:
         return render_template('errors/404.html'), 404
 

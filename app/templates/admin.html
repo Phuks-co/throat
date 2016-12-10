@@ -56,4 +56,24 @@
     </div>
   </div>
 </div>
+<div class="admin section BTCaddress">
+  <div class="col-12"><h2><i class="fa fa-btc"></i> Bitcoin Donation: {% if func.enableBTCmod() %}Enabled{% else %}Disabled{% endif %}</h2>
+  </div>
+  <div class="col-12 admin-page-form">
+    <div>
+      <form id="usebtcdonation" class="nice-form">
+        {{usebtcdonationform.csrf_token}}
+        <h4>Bitcoin donation address and message</h4>
+        <div class="col-12"><label>{{usebtcdonationform.enablebtcmod(checked=func.enableBTCmod())}} {{usebtcdonationform.enablebtcmod.label.text}}</label></div>
+        <div class="col-12">{{usebtcdonationform.message(placeholder=func.getBTCmsg())}}</div>
+        <div class="col-12">{{usebtcdonationform.btcaddress(placeholder=func.getBTCaddr())}}</div>
+        <div class="col-3"><button type="submit" class="btn btn-blue" id="usebtcdonation-btnsubmit">Save</button></div>
+        <div class="alert div-error">
+          <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+          <p></p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

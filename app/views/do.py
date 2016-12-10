@@ -26,7 +26,7 @@ from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form, EditSubFlair
-from ..forms import DeleteSubFlair
+from ..forms import DeleteSubFlair, UseBTCdonationForm
 from ..misc import SiteUser, cache, getMetadata, sendMail
 
 do = Blueprint('do', __name__)
@@ -1186,6 +1186,47 @@ def make_announcement():
         db.session.commit()
 
     return redirect(url_for('index'))
+
+
+@do.route("/do/usebtcdonation", methods=['POST'])
+def use_btc_donation():
+    """ Enable bitcoin donation module """
+    if not current_user.is_admin():
+        abort(404)
+
+    form = UseBTCdonationForm()
+
+    if form.validate():
+        usebtc = SiteMetadata.query.filter_by(key='usebtc').first()
+        btcaddress = SiteMetadata.query.filter_by(key='btcaddr').first()
+        btcmessage = SiteMetadata.query.filter_by(key='btcmsg').first()
+        if not usebtc:
+            usebtc = SiteMetadata()
+            usebtc.key = 'usebtc'
+            usebtc.value = form.enablebtcmod.data
+            db.session.add(usebtc)
+        else:
+            usebtc.value = form.enablebtcmod.data
+
+        if not btcaddress:
+            btcaddr = SiteMetadata()
+            btcaddr.key = 'btcaddr'
+            btcaddr.value = form.btcaddress.data
+            db.session.add(btcaddr)
+        else:
+            btcaddress.value = form.btcaddress.data
+
+        if not btcmessage:
+            btcmsg = SiteMetadata()
+            btcmsg.key = 'btcmsg'
+            btcmsg.value = form.message.data
+            db.session.add(btcmsg)
+        else:
+            btcmessage.value = form.message.data
+
+        db.session.commit()
+        return json.dumps({'status': 'ok'})
+    return redirect(url_for('admin_area'))
 
 
 @do.route("/do/stick/<int:post>", methods=['POST'])

@@ -896,6 +896,34 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
+    $("#usebtcdonation").submit(function(e) {
+        $("#usebtcdonation-btnsubmit").prop('disabled', true);
+        $("#usebtcdonation-btnsubmit").text('saving...');
+        $.ajax({
+            type: "POST",
+            url: '/do/usebtcdonation', // XXX: Hardcoded URL because this is supposed to be a static file
+            data: $("#usebtcdonation").serialize(),
+            dataType: 'json',
+            success: function(data) {
+                if (data.status != "ok") {
+                    checkErrors(data, "usebtcdonation");
+                } else { // success
+                    document.location.reload();
+                }
+                $("#usebtcdonation-btnsubmit").prop('disabled', false);
+                $("#usebtcdonation-btnsubmit").text('Saved!');
+            },
+            error: function(data, err) {
+                $("#usebtcdonation .div-error p").append("<ul><li>Error while contacting the server</li></ul>");
+                $("#usebtcdonation .div-error").show();
+                $("#usebtcdonation-btnsubmit").prop('disabled', false);
+                $("#usebtcdonation-btnsubmit").text('Save');
+            }
+        });
+
+        e.preventDefault();
+    });
+
     $('.subscriptions').click(function(){
 
      if($(this).text()=='Subscriptions'){

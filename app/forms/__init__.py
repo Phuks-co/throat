@@ -8,7 +8,7 @@ from .sub import CreateSubTextPost, CreateSubLinkPost
 from .sub import PostComment, DeletePost, EditSubLinkPostForm, SearchForm
 from .sub import BanUserSubForm, EditPostFlair, EditSubCSSForm, EditMod2Form
 from .sub import CreateSubFlair, DeleteSubFlair, VoteForm
-from .admin import CreateUserBadgeForm, EditModForm
+from .admin import CreateUserBadgeForm, EditModForm, UseBTCdonationForm
 
 
 class DummyForm(FlaskForm):

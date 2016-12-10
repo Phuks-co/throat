@@ -23,3 +23,10 @@ class CreateUserBadgeForm(FlaskForm):
                        validators=[DataRequired(), Length(min=2, max=128)])
     text = StringField('Badge description',
                        validators=[DataRequired(), Length(min=2, max=128)])
+
+
+class UseBTCdonationForm(FlaskForm):
+    """ Enable/Use bitcoin donation module """
+    enablebtcmod = BooleanField('Enable Bitcoin donation module')
+    message = StringField('Enter text')
+    btcaddress = StringField('Bitcoin address')
