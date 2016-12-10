@@ -14,6 +14,9 @@
     <a href="{{url_for('view_subs')}}" class="btn btn-orange" style="width:100%;">View all subs</a>
   </div>
   <div class="col-12">
+    <a href="{{url_for('random_sub')}}" class="btn btn-orange" style="width:100%;">View random sub</a>
+  </div>
+  <div class="col-12">
     <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
   </div>
   <div class="col-12">
@@ -43,7 +46,6 @@
 <li><a href="/all/hot">Hot</a></li>
 <li><a href="/all/top">Top</a></li>
 <li><a href="/all/new">New</a></li>
-<li class="right"><a href="{{url_for('random_sub')}}" class="btn small">Random</a></li>
 {% if current_user.is_admin() %}<li><a href="{{url_for('admin_area')}}">Admin</a></li>{% endif %}
 {% endblock %}
 {% block content %}
