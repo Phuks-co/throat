@@ -28,13 +28,15 @@
   <span class="col-12"><hr></span>
   <div class="col-12 todaystop">
     <div class="col-12">
-      Today's posts:
+      Today's top posts
     </div>
     <div class="list">
       <ul>
       {% for post in func.getTodaysTopPosts() %}
-        <li>({{post.voteCount()}} phuks) <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{post.title}}</a><br>
-        <time-ago datetime="{{post.posted.isoformat()}}"></time-ago> in <a href="{{url_for('view_sub', sub=post.sub.name)}}">/s/{{post.sub.name}}</a></li>
+        <li><a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{post.title}}</a><br>
+        <span class="sidelocale">
+          <time-ago datetime="{{post.posted.isoformat()}}"></time-ago> in <a href="{{url_for('view_sub', sub=post.sub.name)}}">/s/{{post.sub.name}}</a></li>
+        </span>
       {% endfor %}
       </ul>
     </div>

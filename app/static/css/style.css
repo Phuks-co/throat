@@ -1449,5 +1449,15 @@ body.dark .subscriptionbar {
 /* todays top posts */
 .todaystop .list ul li {
     text-align: left;
-    margin: 6px 0 6px 12px;
+    margin: 6px 0px 6px 16px;
+    padding: 0 0px;
+    float: left;
+    width: 100%;
+}
+.todaystop .list ul {
+    list-style-type:disc
+}
+span.sidelocale {
+    font-variant: small-caps;
+    font-size: 12px;
 }
