@@ -743,11 +743,17 @@ def admin_area():
         ups = SubPostVote.query.filter_by(positive=True).count()
         downs = SubPostVote.query.filter_by(positive=False).count()
         badges = UserBadge.query.all()
-
+        btc = SiteMetadata.query.filter_by(key='usebtc').first()
+        if btc:
+            x = SiteMetadata.query.filter_by(key='btcmsg').first()
+            y = SiteMetadata.query.filter_by(key='btcaddr').first()
+            btc = UseBTCdonationForm(message=x.value, btcaddress=y.value)
+        else:
+            btc = UseBTCdonationForm()
         return render_template('admin.html', badges=badges, subs=subs,
                                posts=posts, ups=ups, downs=downs, users=users,
                                createuserbadgeform=CreateUserBadgeForm(),
-                               usebtcdonationform=UseBTCdonationForm())
+                               usebtcdonationform=btc)
     else:
         return render_template('errors/404.html'), 404
 
