@@ -26,14 +26,25 @@
 
 <body {%if request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous %}class="dark" {%endif%}>
   <div class="row subscriptionbar">
-    {% if current_user.is_authenticated %}
-    <ul>
-      {% for sub in func.getSubscriptions() %}
-        <li><a href="{{url_for('view_sub', sub=sub.getSubName)}}">{{sub.getSubName}}</a></li>
-      {% endfor %}
-    </ul>
-    {% endif %}
+    <div id="subslist" class="col-11">
+      {% if current_user.is_authenticated %}
+      <ul>
+        {% for sub in func.getSubscriptions() %}
+          <li class="subinthebar"><a href="{{url_for('view_sub', sub=sub.getSubName)}}">{{sub.getSubName}}</a></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+    <div class="col-1 dropdown" id="subsdropdown">
+      <button class="btn btn-default dropdown-toggle" id="ddd1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        More
+        <span class="fa fa-caret-down"></span>
+      </button>
+      <ul id="hiddensubs" class="dropdown-menu dropdown-menu-right columns"></ul>
+    </div>
   </div>
+
+
   <div class="row">
     <header class="col-12">
       <nav id="navbar">

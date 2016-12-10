@@ -924,16 +924,17 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
-    $('.subscriptions').click(function(){
-
-     if($(this).text()=='Subscriptions'){
-         $('#SubscriptionsList').show();
-         $(this).text('Hide');
-     }else{
-         $('#SubscriptionsList').hide();
-         $(this).text('Subscriptions');
-     }
-
+    $('#subsdropdown').click(function(){
+      var w = $('#subslist').width()
+      var x = ''
+       $.each($("#subslist .subinthebar"),function(){
+           p = $(this).position();
+           if (p.left < 0 - $(this).width() || p.left > w){
+              console.log($(this))
+              x = x + '<li>' + $(this).html() + '</li>'
+           }
+       });
+       $('#hiddensubs').html(x)
    });
 
 });

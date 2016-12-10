@@ -1415,7 +1415,20 @@ body.dark input{
 }
 .subscriptionbar {
     border-bottom: 1px solid #dedede;
+    font-variant: small-caps;
 }
+
+.subscriptionbar ul{
+  margin: 0.5em;
+  padding:0;
+}
+#subslist{overflow: hidden;}
+#subsdropdown{
+  text-align: center;
+  margin-top:0.5em
+}
+#hiddensubs{white-space:initial;}
+#hiddensubs li{width:90%;}
 body.dark .subscriptionbar {
     border-bottom: 1px solid #412b19;
 }
