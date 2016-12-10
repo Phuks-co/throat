@@ -26,11 +26,13 @@
 
 <body {%if request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous %}class="dark" {%endif%}>
   <div class="row subscriptionbar">
+    {% if current_user.is_authenticated %}
     <ul>
       {% for sub in func.getSubscriptions() %}
         <li><a href="{{url_for('view_sub', sub=sub.getSubName)}}">{{sub.getSubName}}</a></li>
       {% endfor %}
     </ul>
+    {% endif %}
   </div>
   <div class="row">
     <header class="col-12">

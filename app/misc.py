@@ -493,7 +493,14 @@ def getPostFlair(post, fl):
 
 def getSubscriptions():
     """ Returns subscribed subs list """
-    subs = SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
+    if current_user.is_authenticated:
+        subs = SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
+    # create deafult/non loogged in users sub list here
+    # else:
+    #    subs = [
+    #        'sid',
+    #        'sid'
+    #    ]
     return list(subs)
 
 
