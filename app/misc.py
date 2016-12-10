@@ -1,11 +1,12 @@
 """ Misc helper function and classes. """
+from urllib.parse import urlparse, parse_qs
 from sqlalchemy import or_
+import sqlalchemy.orm
 import markdown
 import sendgrid
 import config
 from flask_login import AnonymousUserMixin, current_user
 from flask_cache import Cache
-import sqlalchemy.orm
 from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata, Sub
 from .models import SubPost, SubMetadata, SubPostVote, User, SubPostMetadata
 
@@ -233,7 +234,6 @@ def getAnnouncement():
         ann = SubPost.query.filter_by(pid=ann.value).first()
         # This line is here to initialize .user >_>
         # Testing again
-        test = [ann.user.name, ann.sub.name]
     return ann
 
 
@@ -492,20 +492,13 @@ def getPostFlair(post, fl):
 
 
 def getSubscriptions():
-    """ Returns subscribed subs list """
-    if current_user.is_authenticated:
-        subs = SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
-    # create deafult/non loogged in users sub list here
-    # else:
-    #    subs = [
-    #        'sid',
-    #        'sid'
-    #    ]
+    """ Returns all the subs the current user is subscribed to """
+    subs = SubSubscriber.cache.filter(uid=current_user.user.uid, status='1')
     return list(subs)
 
 
 def sendMail(to, subject, content):
-    """ Send email """
+    """ Sends a mail through sendgrid """
     sg = sendgrid.SendGridAPIClient(api_key=config.SENDGRID_API_KEY)
 
     from_email = sendgrid.Email(config.SENDGRID_DEFAULT_FROM)
@@ -515,8 +508,18 @@ def sendMail(to, subject, content):
     mail = sendgrid.helpers.mail.Mail(from_email, subject, to_email,
                                       content)
 
-    try:
-        r = sg.client.mail.send.post(request_body=mail.get())
-    except Exception as e:
-        print(dir(e))
-        print(e.read())
+    sg.client.mail.send.post(request_body=mail.get())
+
+
+def getYoutubeID(url):
+    url = urlparse(url)
+    if url.hostname == 'youtu.be':
+        return url.path[1:]
+    if url.hostname in ['www.youtube.com', 'youtube.com']:
+        if url.path == '/watch':
+            p = parse_qs(url.query)
+            return p['v'][0]
+        if url.path[:3] == '/v/':
+            return url.path.split('/')[2]
+    # fail?
+    return None

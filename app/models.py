@@ -2,11 +2,11 @@
 
 import datetime
 import uuid
-import re
 from urllib.parse import urlparse
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import current_user
 import bcrypt
 from .caching import CacheableMixin, query_callable, regions
 
@@ -308,6 +308,11 @@ class SubPost(db.Model, CacheableMixin):
     votes = db.relationship('SubPostVote', backref='post',
                             lazy='subquery')
 
+    def __init__(self, sid):
+        self.sid = sid
+        self.uid = current_user.get_id()
+        self.posted = datetime.datetime.utcnow()
+
     def is_sticky(self):
         """ Returns True if this post is stickied """
         x = SubMetadata.cache.filter(key='sticky', sid=self.sid,
@@ -340,14 +345,6 @@ class SubPost(db.Model, CacheableMixin):
         """ Gets Domain """
         x = urlparse(self.link)
         return x.netloc
-
-
-    def getYoutubeID(self):
-        pattern = r'(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtube|youtu|youtube-nocookie)\.(?:com|be)\/(?:watch\?v=|watch\?.+&v=|embed\/|v\/|.+\?v=)?([^&=\n%\?]{11})'
-        result = re.findall(pattern, self.link, re.IGNORECASE)
-        id = result[0].replace("&#39;", "");
-        return str(id)
-
 
     @hybrid_property
     def sub(self):
@@ -522,12 +519,17 @@ class SubLog(db.Model):
     # Query handeling dogpile caching
     query_class = query_callable(regions)
 
-    lid = Column(Integer, primary_key=True) # log id
-    sid = Column(String(40), db.ForeignKey('sub.sid')) # sub.sid
+    lid = Column(Integer, primary_key=True)  # log id
+    sid = Column(String(40), db.ForeignKey('sub.sid'))  # sub.sid
     time = Column(DateTime)
-    action = Column(Integer)  # 1 deletion, 2 user ban, 3 flair, 4 modedit, 5 comment, 6 mods
-    desc = Column(String(255)) # description
+    # 1 = deletion, 2 = user ban, 3 = flair, 4 = modedit, 5 = comment, 6 = mods
+    action = Column(Integer)
+    desc = Column(String(255))  # description
     link = Column(String(255))
+
+    def __init__(self, sid):
+        self.sid = sid
+        self.time = datetime.datetime.utcnow()
 
 
 class SiteLog(db.Model):
@@ -537,8 +539,9 @@ class SiteLog(db.Model):
     # Query handeling dogpile caching
     query_class = query_callable(regions)
 
-    lid = Column(Integer, primary_key=True) # log id
+    lid = Column(Integer, primary_key=True)  # log id
     time = Column(DateTime)
-    action = Column(Integer)  # 1 deletion, 2 users, 3 ann, 4 subs, 5 mods/admins
-    desc = Column(String(255)) # description
+    # 1 deletion, 2 users, 3 ann, 4 subs, 5 mods/admins
+    action = Column(Integer)
+    desc = Column(String(255))  # description
     link = Column(String(255))

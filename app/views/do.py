@@ -257,7 +257,7 @@ def create_sub():
         db.session.add(ux4)
         # admin/site log
         alog = SiteLog()
-        alog.action = 4 # subs
+        alog.action = 4  # subs
         alog.time = datetime.datetime.utcnow()
         alog.desc = current_user.get_username() + ' created a new sub'
         alog.link = url_for('view_sub', sub=sub.name)
@@ -286,10 +286,8 @@ def edit_sub_css(sub):
     if form.validate():
         if stylesheet:
             stylesheet.content = form.css.data
-            log = SubLog()
-            log.sid = sub.sid
-            log.action = 4 # action modedit of sub
-            log.time = datetime.datetime.utcnow()
+            log = SubLog(sub.sid)
+            log.action = 4  # action modedit of sub
             log.desc = 'CSS edited by ' + current_user.get_username()
             # log.link = url_for('view_sub', sub=sub.name)
             db.session.add(log)
@@ -349,18 +347,17 @@ def edit_sub(sub):
                     subsort = SubMetadata(sub, 'sort', form.subsort.data)
                     db.session.add(subsort)
 
-            log = SubLog()
-            log.sid = sub.sid
-            log.action = 4 # action modedit of sub
-            log.time = datetime.datetime.utcnow()
+            log = SubLog(sub.sid)
+            log.action = 4  # action modedit of sub
             log.desc = 'Sub settings edited by ' + current_user.get_username()
             # log.link = url_for('view_sub', sub=sub.name)
 
             if not current_user.is_mod(sub) and current_user.is_admin():
                 alog = SiteLog()
-                alog.action = 4 # subs
+                alog.action = 4  # subs
                 alog.time = datetime.datetime.utcnow()
-                alog.desc = 'Sub settings edited by ' + current_user.get_username()
+                alog.desc = 'Sub settings edited by ' + \
+                            current_user.get_username()
                 alog.link = url_for('view_sub', sub=sub.name)
                 db.session.add(alog)
 
@@ -398,17 +395,15 @@ def assign_post_flair(sub, pid, fl):
             x = SubPostMetadata(pid, 'flair', flair.text)
             db.session.add(x)
 
-        log = SubLog()
-        log.sid = sub.sid
-        log.action = 3 # action postflair
-        log.time = datetime.datetime.utcnow()
+        log = SubLog(sub.sid)
+        log.action = 3  # action postflair
         log.desc = current_user.get_username() + ' assigned post flair'
         log.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
         db.session.add(log)
 
         if not current_user.is_mod(sub) and current_user.is_admin():
             alog = SiteLog()
-            alog.action = 4 # subs
+            alog.action = 4  # subs
             alog.time = datetime.datetime.utcnow()
             alog.desc = current_user.get_username() + ' assigned post flair'
             alog.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
@@ -441,20 +436,19 @@ def remove_post_flair(sub, pid):
                                'error': ['Flair does not exist']})
         else:
             db.session.delete(postfl)
-            log = SubLog()
-            log.sid = sub.sid
-            log.action = 3 # action postflair
-            log.time = datetime.datetime.utcnow()
+            log = SubLog(sub.sid)
+            log.action = 3  # action postflair
             log.desc = current_user.get_username() + ' removed post flair'
             log.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
             db.session.add(log)
 
             if not current_user.is_mod(sub) and current_user.is_admin():
                 alog = SiteLog()
-                alog.action = 4 # subs
+                alog.action = 4  # subs
                 alog.time = datetime.datetime.utcnow()
                 alog.desc = current_user.get_username() + ' removed post flair'
-                alog.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
+                alog.link = url_for('view_post', sub=post.sub.name,
+                                    pid=post.pid)
                 db.session.add(alog)
 
         db.session.commit()
@@ -485,23 +479,16 @@ def edit_mod():
 
         if topmod:
             topmod.value = user.uid
-            log = SubLog()
-            log.sid = sub.sid
-            log.action = 6 # mod action
-            log.time = datetime.datetime.utcnow()
-            log.desc = current_user.get_username() + ' transferred sub ownership to ' + user.name
-            log.link = url_for('view_sub', sub=sub.name)
-            db.session.add(log)
         else:
             x = SubMetadata(sub, 'mod1', user.uid)
             db.session.add(x)
 
-        alog = SiteLog()
-        alog.action = 4 # subs
-        alog.time = datetime.datetime.utcnow()
-        alog.desc = current_user.get_username() + ' assigned post flair'
-        alog.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
-        db.session.add(alog)
+        log = SubLog(sub.sid)
+        log.action = 6  # mod action
+        log.desc = current_user.get_username() + ' transferred sub ' + \
+            'ownership to ' + user.name
+        log.link = url_for('view_sub', sub=sub.name)
+        db.session.add(log)
         db.session.commit()
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -587,13 +574,10 @@ def create_txtpost():
             return json.dumps({'status': 'error',
                                'error': ['Sub does not exist']})
 
-        post = SubPost()
-        post.sid = sub.sid
-        post.uid = current_user.get_id()
+        post = SubPost(sub.sid)
         post.title = form.title.data
         post.content = form.content.data
         post.ptype = "0"
-        post.posted = datetime.datetime.utcnow()
         db.session.add(post)
         db.session.commit()
         return json.dumps({'status': 'ok', 'pid': post.pid, 'sub': sub.name})
@@ -617,9 +601,6 @@ def edit_txtpost(sub, pid):
     """ Sub text post creation endpoint """
     form = EditSubTextPostForm()
     if form.validate():
-        post = SubPost()
-        post.content = form.content.data
-        # post.edited = datetime.datetime.utcnow()
         SubPost.query.filter_by(pid=pid) \
                      .update(dict(content=form.content.data))
         # nsfw metadata
@@ -649,13 +630,10 @@ def create_lnkpost():
             return json.dumps({'status': 'error',
                                'error': ['Sub does not exist']})
 
-        post = SubPost()
-        post.sid = sub.sid
-        post.uid = current_user.get_id()
+        post = SubPost(sub.sid)
         post.title = form.title.data
         post.link = form.link.data
         post.ptype = "1"
-        post.posted = datetime.datetime.utcnow()
         db.session.add(post)
         db.session.commit()
         ckey = make_template_fragment_key('subposts', vary_on=[post.sub.sid])
@@ -665,14 +643,12 @@ def create_lnkpost():
         # 1 - Check if it's an image
         try:
             req = requests.get(form.link.data, timeout=50)
-        except:
+        except requests.exceptions.RequestException:
             return json.dumps({'status': 'ok', 'pid': post.pid,
                                'sub': sub.name})
-        print(form.link.data)
         ctype = req.headers['content-type'].split(";")[0].lower()
         filename = str(uuid.uuid4()) + '.jpg'
         good_types = ['image/gif', 'image/jpeg', 'image/png']
-        print(ctype)
         if ctype in good_types:
             # yay, it's an image!!1
             # Resize
@@ -686,10 +662,9 @@ def create_lnkpost():
                 # no image
                 return json.dumps({'status': 'ok', 'pid': post.pid,
                                    'sub': sub.name})
-            print(img)
             try:
                 req = requests.get(img, timeout=50)
-            except:
+            except requests.exceptions.RequestException:
                 return json.dumps({'status': 'ok', 'pid': post.pid,
                                    'sub': sub.name})
             im = Image.open(BytesIO(req.content)).convert('RGB')
@@ -847,7 +822,7 @@ def create_user_badge():
             badge = UserBadge(form.badge.data, form.name.data, form.text.data)
 
             alog = SiteLog()
-            alog.action = 2 # users
+            alog.action = 2  # users
             alog.time = datetime.datetime.utcnow()
             alog.desc = current_user.get_username() + ' created a new badge'
             alog.link = url_for('admin_area')
@@ -875,9 +850,10 @@ def assign_user_badge(uid, bid):
         db.session.add(badge)
         user = User.query.filter_by(uid=uid).first()
         alog = SiteLog()
-        alog.action = 2 # users
+        alog.action = 2  # users
         alog.time = datetime.datetime.utcnow()
-        alog.desc = current_user.get_username() + ' assigned a user badge to ' + user.name
+        alog.desc = current_user.get_username() + ' assigned a user badge ' + \
+            ' to ' + user.name
         alog.link = url_for('view_user', user=user.name)
         db.session.add(alog)
         db.session.commit()
@@ -901,9 +877,10 @@ def remove_user_badge(uid, bid):
         bq.key = 'xbadge'
         user = User.query.filter_by(uid=uid).first()
         alog = SiteLog()
-        alog.action = 2 # users
+        alog.action = 2  # users
         alog.time = datetime.datetime.utcnow()
-        alog.desc = current_user.get_username() + ' removed a user badge from ' + user.name
+        alog.desc = current_user.get_username() + ' removed a user badge' + \
+            ' from ' + user.name
         alog.link = url_for('view_user', user=user.name)
         db.session.add(alog)
         db.session.commit()
@@ -955,13 +932,14 @@ def ban_user_sub(sub):
             msg.content = ':p'
             msg.posted = datetime.datetime.utcnow()
             meta = SubMetadata(sub, 'ban', user.uid)
-            log = SubLog()
-            log.sid = sub.sid
-            log.action = 2 # action modedit of sub
-            log.time = datetime.datetime.utcnow()
-            log.desc = current_user.get_username() + ' banned ' + user.name + ' from the sub'
+
+            log = SubLog(sub.sid)
+            log.action = 2  # action modedit of sub
+            log.desc = current_user.get_username() + ' banned ' + user.name + \
+                ' from the sub'
             log.link = url_for('view_sub_bans', sub=sub.name)
             db.session.add(log)
+
             db.session.add(msg)
             db.session.add(meta)
             db.session.commit()
@@ -1010,13 +988,14 @@ def inv_mod2(sub):
             msg.posted = datetime.datetime.utcnow()
             msg.mtype = '0'
             meta = SubMetadata(sub, 'mod2i', user.uid)
-            log = SubLog()
-            log.sid = sub.sid
-            log.action = 6 # 6 mod action
-            log.time = datetime.datetime.utcnow()
-            log.desc = current_user.get_username() + ' invited ' + user.name + ' to the mod team'
+
+            log = SubLog(sub.sid)
+            log.action = 6  # 6 mod action
+            log.desc = current_user.get_username() + ' invited ' + \
+                user.name + ' to the mod team'
             log.link = url_for('edit_sub_mods', sub=sub.name)
             db.session.add(log)
+
             db.session.add(msg)
             db.session.add(meta)
             db.session.commit()
@@ -1041,10 +1020,8 @@ def remove_sub_ban(sub, user):
         inv = SubMetadata.query.filter_by(key='ban') \
                             .filter_by(value=user.uid).first()
         inv.key = 'xban'
-        log = SubLog()
-        log.sid = sub.sid
-        log.action = 2 # ban action
-        log.time = datetime.datetime.utcnow()
+        log = SubLog(sub.sid)
+        log.action = 2  # ban action
         log.desc = current_user.get_username() + ' removed ban on ' + user.name
         log.link = url_for('view_sub_bans', sub=sub.name)
         db.session.add(log)
@@ -1068,15 +1045,14 @@ def remove_mod2(sub, user):
         inv = SubMetadata.query.filter_by(key='mod2') \
                             .filter_by(value=user.uid).first()
         inv.key = 'xmod2'
-        log = SubLog()
-        log.sid = sub.sid
-        log.action = 6 # 6 mod action
-        log.time = datetime.datetime.utcnow()
-        log.desc = current_user.get_username() + ' removed ' + user.name + ' from the mod team'
+        log = SubLog(sub.sid)
+        log.action = 6  # 6 mod action
+        log.desc = current_user.get_username() + ' removed ' + user.name + \
+            ' from the mod team'
         log.link = url_for('edit_sub_mods', sub=sub.name)
         db.session.add(log)
-        db.session.commit()
 
+        db.session.commit()
         SubMetadata.cache.uncache(key='mod2', sid=sub.sid)
         cache.delete_memoized(getMetadata, sub, 'mod2', all=True)
 
@@ -1095,11 +1071,10 @@ def revoke_mod2inv(sub, user):
         inv = SubMetadata.query.filter_by(key='mod2i') \
                                .filter_by(value=user.uid).first()
         inv.key = 'xmod2i'
-        log = SubLog()
-        log.sid = sub.sid
-        log.action = 6 # 6 mod action
-        log.time = datetime.datetime.utcnow()
-        log.desc = current_user.get_username() + ' canceled ' + user.name + ' mod invite'
+        log = SubLog(sub.sid)
+        log.action = 6  # 6 mod action
+        log.desc = current_user.get_username() + ' canceled ' + user.name + \
+            ' mod invite'
         log.link = url_for('edit_sub_mods', sub=sub.name)
         db.session.add(log)
         db.session.commit()
@@ -1122,10 +1097,8 @@ def accept_mod2inv(sub, user):
                            .filter_by(value=user.uid).first()
     if inv:
         inv.key = 'mod2'
-        log = SubLog()
-        log.sid = sub.sid
-        log.action = 6 # 6 mod action
-        log.time = datetime.datetime.utcnow()
+        log = SubLog(sub.sid)
+        log.action = 6  # 6 mod action
         log.desc = user.name + ' accepted mod invite'
         log.link = url_for('edit_sub_mods', sub=sub.name)
         db.session.add(log)
@@ -1145,10 +1118,8 @@ def refuse_mod2inv(sub, user):
                            .filter_by(value=user.uid).first()
     if inv:
         inv.key = 'xmod2i'
-        log = SubLog()
-        log.sid = sub.sid
-        log.action = 6 # 6 mod action
-        log.time = datetime.datetime.utcnow()
+        log = SubLog(sub.sid)
+        log.action = 6  # 6 mod action
         log.desc = user.name + ' rejected mod invite'
         log.link = url_for('edit_sub_mods', sub=sub.name)
         db.session.add(log)
@@ -1231,20 +1202,17 @@ def toggle_sticky(post):
         md = SubMetadata.query.filter_by(key='sticky').first()
         if not md:
             md = SubMetadata(post.sub, 'sticky', post.pid)
-            log = SubLog()
-            log.sid = post.sub.sid
-            log.action = 4 # sub action
-            log.time = datetime.datetime.utcnow()
+            log = SubLog(post.sub.sid)
+            log.action = 4  # sub action
             log.desc = current_user.get_username() + ' stickied: ' + post.title
             log.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
             db.session.add(log)
             db.session.add(md)
         else:
-            log = SubLog()
-            log.sid = post.sub.sid
-            log.action = 4 # sub action
-            log.time = datetime.datetime.utcnow()
-            log.desc = current_user.get_username() + ' removed stickied: ' + post.title
+            log = SubLog(post.sub.sid)
+            log.action = 4  # sub action
+            log.desc = current_user.get_username() + ' removed stickied: ' + \
+                post.title
             log.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
             db.session.add(log)
             db.session.delete(md)
@@ -1262,6 +1230,7 @@ def toggle_sticky(post):
 @do.route("/do/flair/<sub>/edit", methods=['POST'])
 @login_required
 def edit_flair(sub):
+    """ Edits flairs (from edit flair page) """
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
     if not sub:
         abort(404)
@@ -1286,6 +1255,7 @@ def edit_flair(sub):
 @do.route("/do/flair/<sub>/delete", methods=['POST'])
 @login_required
 def delete_flair(sub):
+    """ Removes a flair (from edit flair page) """
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
     if not sub:
         abort(404)
@@ -1310,6 +1280,7 @@ def delete_flair(sub):
 @do.route("/do/flair/<sub>/create", methods=['POST'])
 @login_required
 def create_flair(sub):
+    """ Creates a new flair (from edit flair page) """
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
     if not sub:
         abort(404)
@@ -1329,6 +1300,7 @@ def create_flair(sub):
 
 @do.route("/do/recovery", methods=['POST'])
 def recovery():
+    """ Password recovery page. Email+captcha and sends recovery email """
     if current_user.is_authenticated:
         abort(403)
 
@@ -1378,6 +1350,7 @@ def recovery():
 
 @do.route("/do/reset", methods=['POST'])
 def reset():
+    """ Password reset. Takes key and uid and changes password """
     if current_user.is_authenticated:
         abort(403)
 
@@ -1400,7 +1373,8 @@ def reset():
         db.session.delete(keyExp)
         db.session.commit()
         cache.delete_memoized(getMetadata, user, 'recovery-key', record=True)
-        cache.delete_memoized(getMetadata, user, 'recovery-key-time', record=True)
+        cache.delete_memoized(getMetadata, user, 'recovery-key-time',
+                              record=True)
         UserMetadata.cache.uncache(key='recovery-key', uid=user.uid)
         UserMetadata.cache.uncache(key='recovery-key-time', uid=user.uid)
 
