@@ -1224,6 +1224,17 @@ def use_btc_donation():
         else:
             btcmessage.value = form.message.data
 
+        alog = SiteLog()
+        alog.action = 10  # money realated!
+        alog.time = datetime.datetime.utcnow()
+        if form.enablebtcmod.data == True:
+            alog.desc = current_user.get_username() + \
+                        ' enabled btc donations: ' + form.btcaddress.data
+        else:
+            alog.desc = current_user.get_username() + \
+                        ' disabled btc donations'
+        alog.link = url_for('admin_area')
+        db.session.add(alog)
         db.session.commit()
         return json.dumps({'status': 'ok'})
     return redirect(url_for('admin_area'))
