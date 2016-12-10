@@ -90,7 +90,7 @@ sub {
 }
 pre {
     display: block;
-    overflow: auto;
+    overflow: hidden;
 }
 code {
     font-family: 'Courier New', Courier, monospace;

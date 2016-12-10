@@ -4,10 +4,12 @@ Some rules we should follow:
  - Always return a 'status' key ({"status": "ok/error"})
  - If status is "error", return an "errors" _list_
 """
-
+from sqlalchemy import func
 from flask import Blueprint, jsonify, abort
 from flask_login import login_required
 from ..models import User, Sub, SubPost
+from ..misc import getSubUsers, getSubCreation, getSuscriberCount
+from ..misc import getSubPostCount, isNSFW, enableBTCmod
 
 api = Blueprint('api', __name__)
 
@@ -48,11 +50,13 @@ def view_sub(sub):
     else:
         data = {'name': sub.name,
                 'title': sub.title,
-                'created': sub.getSubCreation,
-                'posts': sub.getSubPostCount,
-                'mod': sub.getModName,
+                'created': getSubCreation(sub),
+                'posts': getSubPostCount(sub),
+                'owner': getSubUsers(sub, 'mod1'),
+                'subscribers': getSuscriberCount(sub),
                 'status': sub.status,
-                'nsfw': sub.isNSFW}
+                'nsfw': isNSFW(sub)
+                }
         resp = jsonify(data)
         resp.status_code = 200
         return resp
