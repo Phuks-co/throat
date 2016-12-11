@@ -45,7 +45,7 @@ cache_config = {
     'arguments': {
         'host': config.CACHE_REDIS_HOST,
         'port': config.CACHE_REDIS_PORT,
-        'db': 5,
+        'db': config.CACHE_REDIS_DB+1,
         'redis_expiration_time': 60*60*2,   # 2 hours
         'distributed_lock': True
     }
