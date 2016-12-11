@@ -1226,7 +1226,9 @@ span.btn.accepted {
 .edituser h1, .edituser h3 {
     text-align: center;
 }
-.edituser input[type='email'] {
+.edituser input[type='email'],
+.edituser input[type='password'],
+.edituser input[type='text'] {
     padding: 5px;
     border-radius: 2px;
     border: solid 1px lightgray;

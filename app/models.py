@@ -58,6 +58,14 @@ class User(db.Model, CacheableMixin):
         else:
             self.password = password
 
+    def isPasswordCorrect(self, password):
+        if self.crypto == 1:  # bcrypt
+            thash = bcrypt.hashpw(password.encode('utf-8'),
+                                  self.password.encode('utf-8'))
+            if thash == self.password.encode('utf-8'):
+                return True
+        return False
+
     def __repr__(self):
         return '<User %r>' % self.name
 

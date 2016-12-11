@@ -57,6 +57,19 @@ class EditUserForm(FlaskForm):
     disable_sub_style = BooleanField('Disable custom sub styles')
     show_nsfw = BooleanField('Show NSFW content')
     recaptcha = RecaptchaField()
+    password = PasswordField('New password', [
+        OptionalIfFieldIsEmpty('password'),
+        EqualTo('confirm', message='Passwords must match'),
+        Length(min=7, max=256),
+    ])
+    confirm = PasswordField('Repeat Password', [
+        OptionalIfFieldIsEmpty('password')
+    ])
+
+    oldpassword = PasswordField('Your current password', [
+        Required(),
+        Length(min=7, max=256)
+    ])
 
 
 class CreateUserMessageForm(FlaskForm):

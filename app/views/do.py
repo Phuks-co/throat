@@ -161,7 +161,12 @@ def edit_user(user):
 
     form = EditUserForm()
     if form.validate():
+        if not user.isPasswordCorrect(form.oldpassword.data):
+            return json.dumps({'status': 'error', 'error': ['Wrong password']})
+
         user.email = form.email.data
+        if form.password.data:
+            user.setPassword(form.password.data)
         exlinks = UserMetadata.query.filter_by(uid=user.uid) \
                                     .filter_by(key='exlinks').first()
         if exlinks:

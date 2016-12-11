@@ -79,6 +79,12 @@ var recaptchaCallback = function(){
           <p>{{edituserform.external_links(checked=user.showLinksNewTab)}}<label for="external_links">{{edituserform.external_links.label.text}}</label></p>
           <p>{{edituserform.disable_sub_style(checked=user.showStyles)}}<label for="disable_sub_style">{{edituserform.disable_sub_style.label.text}}</label></p>
           <p>{{edituserform.show_nsfw(checked=user.showNSFW)}}<label for="show_nsfw">{{edituserform.show_nsfw.label.text}}</label></p>
+
+          <p>{{edituserform.password(placeholder=edituserform.password.label.text, required=False, autocomplete="off")}}</p>
+          <p>{{edituserform.confirm(placeholder=edituserform.confirm.label.text, required=False, autocomplete="off")}}</p>
+          <hr>
+          <p>{{edituserform.oldpassword(placeholder=edituserform.oldpassword.label.text, required=True, autocomplete="off")}}</p>
+
           {{edituserform.recaptcha}}
           <div class="alert div-error"></div>
           <p><button type="submit" class="btn btn-blue" id="edituser-btnsubmit" data-prog="Editing..." data-success="Saved!">Edit user</button></p>
