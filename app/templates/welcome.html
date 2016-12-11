@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block title %}Welcome{%endblock%}
+{% block content %}
+{{ super() }}
+<h1>{{config.LEMA}}</h1>
+
+<p>Thanks for registering! Here you'll find a brief introduction on how to use this site</p>
+<hr>
+
+<p>Firstly, this site is composed of <a href="{{url_for('view_subs')}}">subs</a>. Each sub has its own
+theme, rules, moderators, etc.</p>
+
+<p>Blah blah blah blah. This page is not finished because a guy named Boukert didn't move his fat ass yet</p>
+
+<h2>How to report bugs</h2>
+If you find any bug, glitch or any other nasty thing, you should open a task in <a href="https://ph.polsaker.com">here</a> and
+we'll take care of it.
+{%endblock%}

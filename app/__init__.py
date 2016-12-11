@@ -316,6 +316,12 @@ def all_hot(page):
                            posts=sorter.getPosts(page))
 
 
+@app.route("/welcome")
+def welcome():
+    """ Welcome page for new users """
+    return render_template('welcome.html')
+
+
 @app.route("/subs")
 def view_subs():
     """ Here we can view available subs """
