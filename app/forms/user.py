@@ -100,8 +100,6 @@ class PasswordResetForm(FlaskForm):
     ])
     confirm = PasswordField('Repeat Password')
 
-    recaptcha = RecaptchaField()
-
 
 class LogOutForm(FlaskForm):
     """ Logout form. This form has no fields.
