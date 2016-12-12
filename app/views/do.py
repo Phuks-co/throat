@@ -1404,6 +1404,12 @@ def recovery():
             """.format(config.LEMA, url_for('password_reset', key=key.value,
                                             uid=user.uid, _external=True))
         )
+        cache.delete_memoized(getMetadata, user, 'recovery-key', record=True)
+        cache.delete_memoized(getMetadata, user, 'recovery-key-time',
+                              record=True)
+        UserMetadata.cache.uncache(key='recovery-key', uid=user.uid)
+        UserMetadata.cache.uncache(key='recovery-key-time', uid=user.uid)
+
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
