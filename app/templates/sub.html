@@ -43,6 +43,7 @@
     <i class="fa fa-users" aria-hidden="true"></i> {{getSuscriberCount(sub)}} Subscribers
   </div>
 
+{% if current_user.is_authenticated %}
   <span class="col-12"><hr><span>
   {% if func.isRestricted(sub) %}
   <div class="col-12">Only mods can post.</div>{%endif%}
@@ -61,6 +62,7 @@
     You are currently banned from posting.
   </div>
   {% endif %}
+{% endif %}
 </div>
 
 {{markdown(sub.sidebar)|safe}}
