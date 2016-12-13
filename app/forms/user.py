@@ -86,7 +86,7 @@ class PasswordRecoveryForm(FlaskForm):
     """ the 'forgot your password?' form """
     email = EmailField('Email Address',
                        validators=[Email("Invalid email address.")])
-    recaptcha = RecaptchaField()
+    recaptcha = RecaptchaField('Captcha')
 
 
 class PasswordResetForm(FlaskForm):
