@@ -806,10 +806,12 @@ def create_comment(sub, pid):
             pm.receivedby = post.uid
             if form.parent.data != "0":
                 pm.subject = 'Comment reply: ' + post.title
+                pm.mtype = 5  # comment reply
             else:
                 pm.subject = 'Post reply: ' + post.title
+                pm.mtype = 4  # comment reply
             pm.content = form.comment.data
-            pm.mtype = post.pid
+            pm.mlink = post.pid
             pm.posted = datetime.datetime.utcnow()
             db.session.add(pm)
         db.session.add(comment)
@@ -909,6 +911,7 @@ def create_sendmsg(user):
         msg.subject = form.subject.data
         msg.content = form.content.data
         msg.posted = datetime.datetime.utcnow()
+        msg.mtype = 1  # PM
         db.session.add(msg)
         db.session.commit()
         return json.dumps({'status': 'ok', 'mid': msg.mid,
@@ -939,6 +942,8 @@ def ban_user_sub(sub):
             msg.subject = 'You have been banned from /s/' + sub.name
             msg.content = ':p'
             msg.posted = datetime.datetime.utcnow()
+            msg.mtype = 2  # sub related
+            msg.mlink = '/s/' + sub.name
             meta = SubMetadata(sub, 'ban', user.uid)
 
             log = SubLog(sub.sid)
@@ -991,10 +996,12 @@ def inv_mod2(sub):
             msg = Message()
             msg.receivedby = user.uid
             msg.sentby = current_user.get_id()
-            msg.subject = sub.name
-            # msg.content = 'Mod inviteinvite'
+            msg.subject = 'You have been invited to mod a sub.'
+            msg.content = current_user.get_id() + \
+                          ' has invited you to help moderate ' + sub.name
             msg.posted = datetime.datetime.utcnow()
-            msg.mtype = '0'
+            msg.mtype = 2  # sub related
+            msg.mlink = '/s/' + sub.name + '/mods'
             meta = SubMetadata(sub, 'mod2i', user.uid)
 
             log = SubLog(sub.sid)
@@ -1157,7 +1164,7 @@ def delete_pm(mid):
     """ Delete PM """
     message = Message.query.filter_by(mid=mid).first()
     if session['user_id'] == message.receivedby:
-        message.mtype = '-1'
+        message.mtype = 6  #deleted
         db.session.commit()
         return json.dumps({'status': 'ok', 'mid': mid})
     else:

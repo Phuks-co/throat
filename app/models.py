@@ -500,8 +500,8 @@ class Message(db.Model, CacheableMixin):
 
     posted = Column(DateTime)  # sent
     read = Column(DateTime)  # todo markasread time
-
-    mtype = Column(Integer)  # msg type. 0=pm; 1=mod; 2=username mention; etc
+    # mtype: 1=pm, 2=mods/subs, 3=user mention, 4=postreply, 5=commreply, 6=del
+    mtype = Column(Integer)
     mlink = Column(String(128)) # link to be included
 
     def __repr__(self):

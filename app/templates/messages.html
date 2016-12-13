@@ -7,9 +7,18 @@
 {% block sidebar %}
 {{ super() }}
 <div class="row buttons inbox">
-  <div class="col-4"><a class="btn{% if current_user.new_pm_count() > 0 %} btn-orange{% endif %}" href="{{ url_for('view_messages') }}">inbox{% if current_user.new_pm_count() > 0 %} <i class="fa fa-envelope" aria-hidden="true"></i> {{current_user.new_pm_count()}}{% endif %}</a></div>
-  <div class="col-4"><a class="btn{% if current_user.new_reply_count() > 0 %} btn-orange{% endif %}" href="{{ url_for('view_messages_replies') }}">replies{% if current_user.new_reply_count() > 0 %} <i class="fa fa-envelope" aria-hidden="true"></i> {{current_user.new_reply_count()}}{% endif %}</a></div>
-  <div class="col-4"><a class="btn"  href="{{ url_for('view_messages_sent') }}">sent</a></div>
+  <div class="col-3"><a class="btn{% if current_user.new_pm_count() > 0 %} btn-orange{% endif %}" href="{{ url_for('view_messages') }}">
+    <i class="fa fa-user" aria-hidden="true"></i>{% if current_user.new_pm_count() > 0 %} <i class="fa fa-envelope" aria-hidden="true"></i> {{current_user.new_pm_count()}}{% endif %}</a>
+  </div>
+  <div class="col-3"><a class="btn{% if current_user.new_postreply_count() > 0 %} btn-orange{% endif %}" href="{{ url_for('view_messages_postreplies') }}">
+    <i class="fa fa-list" aria-hidden="true"></i>{% if current_user.new_postreply_count() > 0 %} <i class="fa fa-envelope" aria-hidden="true"></i> {{current_user.new_postreply_count()}}{% endif %}</a>
+  </div>
+  <div class="col-3"><a class="btn{% if current_user.new_comreply_count() > 0 %} btn-orange{% endif %}" href="{{ url_for('view_messages_comreplies') }}">
+    <i class="fa fa-comments" aria-hidden="true"></i>{% if current_user.new_comreply_count() > 0 %} <i class="fa fa-envelope" aria-hidden="true"></i> {{current_user.new_comreply_count()}}{% endif %}</a>
+  </div>
+  <div class="col-3"><a class="btn"  href="{{ url_for('view_messages_sent') }}">
+    sent</a>
+  </div>
 </div>
 {% endblock %}
 

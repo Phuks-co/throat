@@ -711,8 +711,11 @@ def edit_user(user):
 def inbox_sort():
     """ Inbox? """
     if current_user.new_pm_count() == 0 \
-       and current_user.new_reply_count() > 0:
-        return redirect(url_for('view_messages_replies'))
+       and current_user.new_postreply_count() > 0:
+        return redirect(url_for('view_messages_postreplies'))
+    if current_user.new_pm_count() == 0 \
+       and current_user.new_comreply_count() > 0:
+        return redirect(url_for('view_messages_comreplies'))
     else:
         return redirect(url_for('view_messages'))
 
@@ -722,8 +725,7 @@ def view_messages():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
-                            .filter(or_(Message.mtype.is_(None)) |
-                                    (Message.mtype == 0)) \
+                            .filter_by(mtype = 1) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Inbox")
@@ -735,20 +737,31 @@ def view_messages_sent():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(sentby=user) \
-                            .filter((Message.mtype.is_(None)) |
-                                    (Message.mtype == '-1')) \
+                            .filter_by(mtype=1) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Sent")
 
 
-@app.route("/messages/replies")
+@app.route("/messages/postreplies")
 @login_required
-def view_messages_replies():
+def view_messages_postreplies():
     """ WIP: View user's post replies """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
-                            .filter(Message.mtype > '0') \
+                            .filter_by(mtype=4) \
+                            .order_by(Message.posted.desc()).all()
+    return render_template('messages.html', user=user, messages=messages,
+                           box_name="Replies")
+
+
+@app.route("/messages/commentreplies")
+@login_required
+def view_messages_comreplies():
+    """ WIP: View user's comments replies """
+    user = session['user_id']
+    messages = Message.query.filter_by(receivedby=user) \
+                            .filter_by(mtype=5) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Replies")

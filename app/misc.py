@@ -70,9 +70,13 @@ class SiteUser(object):
         """ Returns new message count """
         return newPMCount(self.user)
 
-    def new_reply_count(self):
-        """ Returns new message count """
-        return newReplyCount(self.user)
+    def new_postreply_count(self):
+        """ Returns new post reply count """
+        return newPostReplyCount(self.user)
+
+    def new_comreply_count(self):
+        """ Returns new comment reply count """
+        return newComReplyCount(self.user)
 
     def has_subscribed(self, sub):
         """ Returns True if the current user has subscribed to sub """
@@ -354,14 +358,21 @@ def newCount(user):
 
 def newPMCount(user):
     """ Returns new message count in message area"""
-    x = Message.query.filter_by(read=None).filter(Message.mtype == '0') \
+    x = Message.query.filter_by(read=None).filter_by(mtype = 1) \
                      .filter_by(receivedby=user.uid).count()
     return x
 
 
-def newReplyCount(user):
-    """ Returns new message count in message area """
-    x = Message.query.filter_by(read=None).filter(Message.mtype.isnot(None)) \
+def newComReplyCount(user):
+    """ Returns new comment replies count in message area """
+    x = Message.query.filter_by(read=None).filter_by(mtype = 5) \
+                     .filter_by(receivedby=user.uid).count()
+    return x
+
+
+def newPostReplyCount(user):
+    """ Returns new replies count in message area """
+    x = Message.query.filter_by(read=None).filter_by(mtype = 4) \
                      .filter_by(receivedby=user.uid).count()
     return x
 
