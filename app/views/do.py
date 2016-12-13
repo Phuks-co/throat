@@ -997,7 +997,7 @@ def inv_mod2(sub):
             msg.receivedby = user.uid
             msg.sentby = current_user.get_id()
             msg.subject = 'You have been invited to mod a sub.'
-            msg.content = current_user.get_id() + \
+            msg.content = current_user.get_username() + \
                           ' has invited you to help moderate ' + sub.name
             msg.posted = datetime.datetime.utcnow()
             msg.mtype = 2  # sub related

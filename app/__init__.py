@@ -716,6 +716,9 @@ def inbox_sort():
     if current_user.new_pm_count() == 0 \
        and current_user.new_comreply_count() > 0:
         return redirect(url_for('view_messages_comreplies'))
+    if current_user.new_pm_count() == 0 \
+       and current_user.new_modmail_count() > 0:
+        return redirect(url_for('view_messages_modmail'))
     else:
         return redirect(url_for('view_messages'))
 
@@ -765,6 +768,18 @@ def view_messages_comreplies():
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Replies")
+
+
+@app.route("/messages/modmail")
+@login_required
+def view_messages_modmail():
+    """ WIP: View user's modmail """
+    user = session['user_id']
+    messages = Message.query.filter_by(receivedby=user) \
+                            .filter_by(mtype=2) \
+                            .order_by(Message.posted.desc()).all()
+    return render_template('messages.html', user=user, messages=messages,
+                           box_name="ModMail")
 
 
 @app.route("/admin")

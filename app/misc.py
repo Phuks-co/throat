@@ -70,6 +70,10 @@ class SiteUser(object):
         """ Returns new message count """
         return newPMCount(self.user)
 
+    def new_modmail_count(self):
+        """ Returns new modmail msg count """
+        return newModmailCount(self.user)
+
     def new_postreply_count(self):
         """ Returns new post reply count """
         return newPostReplyCount(self.user)
@@ -344,35 +348,42 @@ def isModInv(sub, user):
 def hasMail(user):
     """ Returns True if the current user has unread messages """
     x = Message.query.filter_by(receivedby=user.uid) \
-                     .filter(or_(Message.mtype.is_(None)) |
-                             (Message.mtype != '-1')) \
+                     .filter(Message.mtype != 6) \
                      .filter_by(read=None).first()
     return bool(x)
 
 
 def newCount(user):
     """ Returns new message count """
-    x = Message.cache.filter(read=None, receivedby=user.uid)
+    x = Message.query.filter(Message.read==None, Message.receivedby==user.uid) \
+                     .filter(Message.mtype != 6)
     return len(list(x))
 
 
 def newPMCount(user):
     """ Returns new message count in message area"""
-    x = Message.query.filter_by(read=None).filter_by(mtype = 1) \
+    x = Message.query.filter_by(read=None).filter_by(mtype=1) \
                      .filter_by(receivedby=user.uid).count()
     return x
 
 
-def newComReplyCount(user):
-    """ Returns new comment replies count in message area """
-    x = Message.query.filter_by(read=None).filter_by(mtype = 5) \
+def newModmailCount(user):
+    """ Returns new replies count in message area """
+    x = Message.query.filter_by(read=None).filter_by(mtype=2) \
                      .filter_by(receivedby=user.uid).count()
     return x
 
 
 def newPostReplyCount(user):
     """ Returns new replies count in message area """
-    x = Message.query.filter_by(read=None).filter_by(mtype = 4) \
+    x = Message.query.filter_by(read=None).filter_by(mtype=4) \
+                     .filter_by(receivedby=user.uid).count()
+    return x
+
+
+def newComReplyCount(user):
+    """ Returns new comment replies count in message area """
+    x = Message.query.filter_by(read=None).filter_by(mtype=5) \
                      .filter_by(receivedby=user.uid).count()
     return x
 
