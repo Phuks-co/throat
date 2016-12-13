@@ -1001,7 +1001,7 @@ def inv_mod2(sub):
                           ' has invited you to help moderate ' + sub.name
             msg.posted = datetime.datetime.utcnow()
             msg.mtype = 2  # sub related
-            msg.mlink = '/s/' + sub.name + '/mods'
+            msg.mlink = sub.name
             meta = SubMetadata(sub, 'mod2i', user.uid)
 
             log = SubLog(sub.sid)
