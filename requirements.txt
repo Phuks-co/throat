@@ -19,3 +19,4 @@ requests
 pillow
 pytest
 sendgrid
+bs4
