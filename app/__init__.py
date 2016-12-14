@@ -132,7 +132,7 @@ def before_request():
 def after_request(response):
     """ Called after the request is processed. Used to time the request """
     if not app.debug:
-        return  # We won't do this if we're in production mode
+        return response  # We won't do this if we're in production mode
     diff = time.time() - g.start
     diff = int(diff * 1000)
     if app.debug:
