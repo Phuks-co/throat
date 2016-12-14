@@ -593,3 +593,11 @@ def getYoutubeID(url):
             return url.path.split('/')[2]
     # fail?
     return None
+
+
+def moddedSubCount(user):
+    """ Returns the number of subs a user is modding """
+    sub1 = SubMetadata.query.filter_by(key='mod1', value=user).count()
+    sub2 = SubMetadata.query.filter_by(key='mod2', value=user).count()
+    print(sub1+sub2)
+    return sub1 + sub2

@@ -15,7 +15,7 @@ from sqlalchemy import func
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_cache import make_template_fragment_key
 import config
-from .. import forms
+from .. import forms, misc
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
 from ..models import UserMetadata, UserBadge, SubSubscriber, SiteMetadata
@@ -253,6 +253,10 @@ def create_sub():
                             func.lower(form.subname.data)).first():
             return json.dumps({'status': 'error',
                                'error': ['Sub is already registered.']})
+
+        if misc.moddedSubCount(current_user.get_id()) >= 15:
+            return json.dumps({'status': 'error',
+                               'error': ["You can't mod more than 15 subs."]})
 
         sub = Sub(form.subname.data, form.title.data)
         db.session.add(sub)
@@ -997,12 +1001,17 @@ def inv_mod2(sub):
                 return json.dumps({'status': 'error',
                                    'error': ['User has a pending invite.']})
 
+            if misc.moddedSubCount(user.uid) >= 15:
+                return json.dumps({'status': 'error',
+                                   'error': [
+                                    "User can't mod more than 15 subs"
+                                    ]})
             msg = Message()
             msg.receivedby = user.uid
             msg.sentby = current_user.get_id()
             msg.subject = 'You have been invited to mod a sub.'
             msg.content = current_user.get_username() + \
-                          ' has invited you to help moderate ' + sub.name
+                ' has invited you to help moderate ' + sub.name
             msg.posted = datetime.datetime.utcnow()
             msg.mtype = 2  # sub related
             msg.mlink = sub.name
@@ -1117,6 +1126,9 @@ def accept_mod2inv(sub, user):
     inv = SubMetadata.query.filter_by(key='mod2i') \
                            .filter_by(value=user.uid).first()
     if inv:
+        if misc.moddedSubCount(user.uid) >= 15:
+            return json.dumps({'status': 'error',
+                               'error': ["You can't mod more than 15 subs"]})
         inv.key = 'mod2'
         log = SubLog(sub.sid)
         log.action = 6  # 6 mod action
