@@ -9,6 +9,13 @@
 {{ super() }}
 <hr>
 {% include 'adminsidebar.html' %}
+<span class="col-12"><hr></span>
+<ul>
+  <li>Default subs:
+  {% for sub in func.getDefaultSubs() %}
+  <li><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a></li>
+  {% endfor %}
+</ul>
 {% endblock %}
 
 {% block content %}
