@@ -163,9 +163,7 @@
                   <i class="fa fa-square fa-stack-2x"></i>
                   {% if post.isImage() %}
                   <i class="fa fa-image fa-stack-1x fa-inverse"></i>
-                  {% elif post.getDomain() == "youtube.com" %}
-                  <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
-                  {% elif post.getDomain() == "www.youtube.com" %}
+                  {% elif post.getDomain() == "youtube.com" or post.getDomain() == "www.youtube.com" or post.getDomain() == "youtu.be" %}
                   <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
                   {% elif post.getDomain() == "vimeo.com" %}
                   <i class="fa fa-vimeo fa-stack-1x fa-inverse"></i>
@@ -189,12 +187,7 @@
             <p class="author"><relative-time datetime="{{post.posted.isoformat()}}"></relative-time></p>
             <p class="container">
               {% if post.link %}
-              {% if post.getDomain() == "youtube.com" %}
-                <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
-                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
-                </span>
-              {% endif %}
-              {% if post.getDomain() == "www.youtube.com" %}
+              {% if post.getDomain() == "youtube.com" or post.getDomain() == "www.youtube.com" or post.getDomain() == "youtu.be" %}
                 <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
                 </span>

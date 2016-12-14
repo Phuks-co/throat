@@ -144,7 +144,7 @@
             <i class="fa fa-square fa-stack-2x"></i>
             {% if ann.isImage() %}
             <i class="fa fa-image fa-stack-1x fa-inverse"></i>
-            {% elif ann.getDomain() == "youtube.com" %}
+            {% elif ann.getDomain() == "youtube.com" or ann.getDomain() == "www.youtube.com" or ann.getDomain() == "youtu.be" %}
             <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
             {% elif ann.getDomain() == "vimeo.com" %}
             <i class="fa fa-vimeo fa-stack-1x fa-inverse"></i>
@@ -168,7 +168,7 @@
       <p class="author"><time-ago datetime="{{ann.posted.isoformat()}}"></time-ago></p>
       <p class="container">
       {% if ann.link %}
-        {% if ann.getDomain() == "youtube.com" %}
+        {% if ann.getDomain() == "youtube.com" or ann.getDomain() == "www.youtube.com" or ann.getDomain() == "youtu.be" %}
           <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{ann.pid}}" class="closedvid">
             <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
           </span>
@@ -240,9 +240,7 @@
                   <i class="fa fa-square fa-stack-2x"></i>
                   {% if post.isImage() %}
                   <i class="fa fa-image fa-stack-1x fa-inverse"></i>
-                  {% elif post.getDomain() == "youtube.com" %}
-                  <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
-                  {% elif post.getDomain() == "www.youtube.com" %}
+                  {% elif post.getDomain() == "youtube.com" or post.getDomain() == "www.youtube.com" or post.getDomain() == "youtu.be" %}
                   <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
                   {% elif post.getDomain() == "vimeo.com" %}
                   <i class="fa fa-vimeo fa-stack-1x fa-inverse"></i>
@@ -267,12 +265,7 @@
             <p class="author"><time-ago datetime="{{post.posted.isoformat()}}"></time-ago></p>
             <p class="container">
             {% if post.link %}
-              {% if post.getDomain() == "youtube.com" %}
-                <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
-                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
-                </span>
-              {% endif %}
-              {% if post.getDomain() == "www.youtube.com" %}
+              {% if post.getDomain() == "youtube.com" or post.getDomain() == "www.youtube.com" or post.getDomain() == "youtu.be" %}
                 <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
                 </span>
