@@ -69,6 +69,7 @@
   <li><a href="/hot">Hot</a></li>
   <li><a href="/top">Top</a></li>
   <li><a href="/new">New</a></li>
+  <li><a href="/all/new">All new posts</a></li>
 {%endif%}
 {% if current_user.is_admin() %}<li><a href="{{url_for('admin_area')}}">Admin</a></li>{% endif %}
 {% endblock %}
