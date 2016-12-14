@@ -1463,3 +1463,7 @@ span.sidelocale {
     font-variant: small-caps;
     font-size: 12px;
 }
+
+.uvform {
+  cursor: pointer;
+}
