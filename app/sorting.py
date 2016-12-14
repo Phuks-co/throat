@@ -6,7 +6,7 @@ from .caching import cache
 
 class BasicSorting(object):
     """ Base class for sorters. """
-    entriesPerPage = 25
+    entriesPerPage = 20
 
     def __init__(self, posts):
         """ posts is the query of SubPosts """
