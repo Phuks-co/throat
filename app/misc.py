@@ -429,7 +429,7 @@ def getSubUsers(sub, key):
 def getSubCreation(sub):
     """ Returns the sub's 'creation' metadata """
     x = getMetadata(sub, 'creation')
-    return x
+    return x.replace(' ', 'T')  # Converts to ISO format
 
 
 @cache.memoize(300)
@@ -599,5 +599,4 @@ def moddedSubCount(user):
     """ Returns the number of subs a user is modding """
     sub1 = SubMetadata.query.filter_by(key='mod1', value=user).count()
     sub2 = SubMetadata.query.filter_by(key='mod2', value=user).count()
-    print(sub1+sub2)
     return sub1 + sub2
