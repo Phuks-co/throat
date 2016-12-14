@@ -145,6 +145,10 @@ class SiteUser(object):
 
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
+
+    def get_id(self):
+        return False
+
     @classmethod
     def is_mod(cls, sub):
         """ Anons are not mods. """
@@ -524,10 +528,10 @@ def getDefaultSubs():
     return defaults
 
 
-def getSubscriptions():
+def getSubscriptions(uid):
     """ Returns all the subs the current user is subscribed to """
-    if current_user.is_authenticated:
-        subs = SubSubscriber.cache.filter(uid=current_user.user.uid,
+    if uid:
+        subs = SubSubscriber.cache.filter(uid=uid,
                                           status='1')
     else:
         subs = getDefaultSubs()

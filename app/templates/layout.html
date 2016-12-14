@@ -28,7 +28,7 @@
   <div class="row subscriptionbar">
     <div id="subslist" class="col-11">
       <ul>
-        {% for sub in func.getSubscriptions() %}
+        {% for sub in func.getSubscriptions(current_user.get_id()) %}
           <li class="subinthebar"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a></li>
         {% endfor %}
       </ul>

@@ -275,6 +275,10 @@ def create_sub():
         db.session.add(alog)
         db.session.commit()
 
+        x = SubSubscriber(sub.sid, current_user.get_id())
+        x.status = 1
+        db.session.add(x)
+
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_sub', sub=form.subname.data)})
 
@@ -1105,8 +1109,10 @@ def revoke_mod2inv(sub, user):
 @do.route("/do/accept_mod2inv/<sub>/<user>", methods=['POST'])
 @login_required
 def accept_mod2inv(sub, user):
-    """ Remove Mod2 """
+    """ Accept mod invite """
     user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
+    if user.uid != current_user.get_id():
+        abort(403)
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
     inv = SubMetadata.query.filter_by(key='mod2i') \
                            .filter_by(value=user.uid).first()
@@ -1118,6 +1124,11 @@ def accept_mod2inv(sub, user):
         log.link = url_for('edit_sub_mods', sub=sub.name)
         db.session.add(log)
         db.session.commit()
+
+        x = SubSubscriber(sub.sid, user.uid)
+        x.status = 1
+        db.session.add(x)
+
         return json.dumps({'status': 'ok', 'msg': 'user modded'})
     else:
         abort(404)

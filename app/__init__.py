@@ -202,7 +202,7 @@ def index():
 @app.route("/hot", defaults={'page': 1})
 @app.route("/hot/<int:page>")
 def home_hot(page):
-    subs = misc.getSubscriptions()
+    subs = misc.getSubscriptions(current_user.get_id())
     posts = []
     for sub in subs:
         posts += SubPost.query.filter_by(sid=sub.sid).all()
@@ -215,7 +215,7 @@ def home_hot(page):
 @app.route("/new", defaults={'page': 1})
 @app.route("/new/<int:page>")
 def home_new(page):
-    subs = misc.getSubscriptions()
+    subs = misc.getSubscriptions(current_user.get_id())
     posts = []
     for sub in subs:
         posts += SubPost.query.filter_by(sid=sub.sid).all()
@@ -227,7 +227,7 @@ def home_new(page):
 @app.route("/top", defaults={'page': 1})
 @app.route("/top/<int:page>")
 def home_top(page):
-    subs = misc.getSubscriptions()
+    subs = misc.getSubscriptions(current_user.get_id())
     posts = []
     for sub in subs:
         posts += SubPost.query.filter_by(sid=sub.sid).all()
