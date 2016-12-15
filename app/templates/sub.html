@@ -109,7 +109,7 @@
 
 {% block content %}
 {{ super() }}
-{% cache 1200, 'sticky', sub.sid %}
+{% cache 1200, 'sticky', sub.sid, sort_type %}
   {% set sticks = func.getStickies(sub.sid) %}
   {% for ann in sticks %}
   <article class="post" data-pid="{{ann.pid}}">
