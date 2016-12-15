@@ -737,10 +737,11 @@ body.dark textarea#comment {
     font-size: larger;
 }
 @media only screen and (max-width: 768px) {
-    /* For mobile phones: */
-    .btn {
-        width: 100% !important;
-    }
+    /* For mobile phones:
+     * .btn {
+     *     width: 100% !important;
+     * }
+     */
 }
 
 /* login, register form */
