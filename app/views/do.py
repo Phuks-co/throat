@@ -219,11 +219,11 @@ def delete_post():
         if post.uid == session['user_id']:
             md = SubPostMetadata(post.pid, 'deleted', '1')
             cache.delete_memoized(getMetadata, post, 'deleted')
-            SubPostMetadata.cache.uncache(key='deleted', sid=post.sub.sid)
+            SubPostMetadata.cache.uncache(key='deleted', pid=post.pid)
         else:
             md = SubPostMetadata(post.pid, 'moddeleted', '1')
             cache.delete_memoized(getMetadata, post, 'moddeleted')
-            SubPostMetadata.cache.uncache(key='moddeleted', sid=post.sub.sid)
+            SubPostMetadata.cache.uncache(key='moddeleted', pid=post.pid)
 
         # :(
         cache.delete(make_template_fragment_key('subposts',
