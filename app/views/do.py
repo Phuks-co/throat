@@ -172,10 +172,8 @@ def edit_user(user):
         if exlinks:
             exlinks.value = form.external_links.data
         else:
-            exlinksmeta = UserMetadata()
-            exlinksmeta.uid = user.uid
-            exlinksmeta.key = 'exlinks'
-            exlinksmeta.value = form.external_links.data
+            exlinksmeta = UserMetadata(user.uid, 'exlinks',
+                                       form.external_links.data)
             db.session.add(exlinksmeta)
 
         styles = UserMetadata.query.filter_by(uid=user.uid) \
@@ -183,10 +181,8 @@ def edit_user(user):
         if styles:
             styles.value = form.disable_sub_style.data
         else:
-            stylesmeta = UserMetadata()
-            stylesmeta.uid = user.uid
-            stylesmeta.key = 'styles'
-            stylesmeta.value = form.disable_sub_style.data
+            stylesmeta = UserMetadata(user.uid, 'styles',
+                                      form.disable_sub_style.data)
             db.session.add(stylesmeta)
 
         nsfw = UserMetadata.query.filter_by(uid=user.uid) \
@@ -194,10 +190,7 @@ def edit_user(user):
         if nsfw:
             nsfw.value = form.show_nsfw.data
         else:
-            nsfwmeta = UserMetadata()
-            nsfwmeta.uid = user.uid
-            nsfwmeta.key = 'nsfw'
-            nsfwmeta.value = form.show_nsfw.data
+            nsfwmeta = UserMetadata(user.uid, 'nsfw', form.show_nsfw.data)
             db.session.add(nsfwmeta)
 
         db.session.commit()
@@ -871,10 +864,7 @@ def assign_user_badge(uid, bid):
             return json.dumps({'status': 'error',
                                'error': ['Badge is already assigned']})
 
-        badge = UserMetadata()
-        badge.uid = uid
-        badge.key = 'badge'
-        badge.value = bid
+        badge = UserMetadata(uid, 'badge', bid)
         db.session.add(badge)
         user = User.query.filter_by(uid=uid).first()
         alog = SiteLog()
