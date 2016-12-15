@@ -104,7 +104,7 @@
             YouTubePlayer.current = Math.max(YouTubePlayer.current - 1, 0);
         },
         onReady: function (event) {
-            event.target.loadVideoById(YouTubePlayer.videos[YouTubePlayer.current]);
+            event.target.cueVideoById(YouTubePlayer.videos[YouTubePlayer.current]);
         },
         onStateChange: function (event) {
             if (event.data == YT.PlayerState.ENDED) {
