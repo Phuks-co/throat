@@ -298,6 +298,13 @@
       </article>
   {% endfor %}
 {%endcache%}
+{% if page > 1 %}
+<a href="{{url_for(sort_type, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
+{% endif %}
+{% if posts|length == 20 %}
+<a href="{{url_for(sort_type, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+{% endif %}
+
 {% if current_user.is_authenticated and not current_user.is_subban(sub) %}
 <form id="post-form" data-sub="{{sub.name}}" class="mfp-hide white-popup-block">
   {{txtpostform.csrf_token}}
