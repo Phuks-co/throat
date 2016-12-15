@@ -86,8 +86,7 @@ class CreateSubTextPost(FlaskForm):
     title = StringField('Post title',
                         validators=[DataRequired(), Length(min=4, max=128)])
     content = TextAreaField('Post content',
-                            validators=[DataRequired(),
-                                        Length(min=1, max=16384)])
+                            validators=[Length(min=0, max=16384)])
 
     def __init__(self, *args, **kwargs):
         super(CreateSubTextPost, self).__init__(*args, **kwargs)
