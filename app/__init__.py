@@ -413,11 +413,8 @@ def view_sublog(sub):
     if not sub:
         abort(404)
 
-    if current_user.is_mod(sub) or current_user.is_admin():
-        logs = SubLog.query.filter_by(sid=sub.sid).all()
-        return render_template('sublog.html', sub=sub, logs=logs)
-    else:
-        abort(403)
+    logs = SubLog.query.filter_by(sid=sub.sid).all()
+    return render_template('sublog.html', sub=sub, logs=logs)
 
 
 @app.route("/s/<sub>/mods")
