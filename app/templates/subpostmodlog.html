@@ -60,7 +60,7 @@
           {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
           <a class="title" href="{{post.link}}" rel="noreferrer noopener">{{post.title}}</a> ({{post.getDomain()}})
           {% endif %}
-          <p class="author"><time-ago datetime="{{post.posted.isoformat()}}"></time-ago></p>
+          <p class="author"><time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago></p>
           <p class="container">
           {% if post.link %}
             {% if post.getDomain() == "youtube.com" %}

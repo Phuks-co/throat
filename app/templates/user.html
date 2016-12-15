@@ -21,7 +21,7 @@
     <a href="#msg-form" class="btn btn-orange send-message" style="width:100%;">Send a Message to {{user.name}}</a>
   </div>
 </div>
-<p>Registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
+<p>Registered <time-ago datetime="{{ user.joindate.isoformat() }}Z"></time-ago></p>
 {% endblock %}
 
 {% block content %}

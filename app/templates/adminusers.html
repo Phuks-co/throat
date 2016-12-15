@@ -39,7 +39,7 @@
           <div class="username"><a href="{{url_for('view_user', user=user.name)}}"><i class="fa fa-user"></i> {{user.name}}</a></div>
         </td>
         <td>{{user.status}}</td>
-        <td><time-ago datetime="{{user.joindate.isoformat()}}"></time-ago></p></td>
+        <td><time-ago datetime="{{user.joindate.isoformat()}}Z"></time-ago></p></td>
       </tr>
       {% endfor %}
     </table>

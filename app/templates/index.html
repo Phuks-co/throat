@@ -35,7 +35,7 @@
       {% for post in func.getTodaysTopPosts() %}
         <li><a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{post.title}}</a><br>
         <span class="sidelocale">
-          <time-ago datetime="{{post.posted.isoformat()}}"></time-ago> in <a href="{{url_for('view_sub', sub=post.sub.name)}}">/s/{{post.sub.name}}</a></li>
+          <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=post.sub.name)}}">/s/{{post.sub.name}}</a></li>
         </span>
       {% endfor %}
       </ul>
@@ -103,7 +103,7 @@
       </div>
       <div class="main">
         <a class="title" href="{{url_for('view_post_inbox', pid=ann.pid)}}"><div class="announcementPost">Announcement</div>{{ann.title}}</a>
-        <p class="author"><relative-time datetime="{{ann.posted.isoformat()}}"></relative-time></p>
+        <p class="author"><relative-time datetime="{{ann.posted.isoformat()}}Z"></relative-time></p>
         <p class="container">
             <span id="opentextpost" data-pid="{{ann.pid}}" class="closedtextpost">
               <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
@@ -184,7 +184,7 @@
             {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
             <a class="title" href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=post.getDomain())}}">{{post.getDomain()}}</a>)</span>
             {% endif %}
-            <p class="author"><relative-time datetime="{{post.posted.isoformat()}}"></relative-time></p>
+            <p class="author"><relative-time datetime="{{post.posted.isoformat()}}Z"></relative-time></p>
             <p class="container">
               {% if post.link %}
               {% if post.getDomain() == "youtube.com" or post.getDomain() == "www.youtube.com" or post.getDomain() == "youtu.be" %}

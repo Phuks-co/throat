@@ -19,7 +19,7 @@
     <table class="col-12">
       <tr>
         <td>NSFW: {% if post.isPostNSFW() %}<span class="bgred" alt="Not safe for work">NSFW</span>{% else %}no{% endif %}</td>
-        <td>When: <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago></td>
+        <td>When: <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago></td>
         <td>Sub: <a href="{{url_for('view_sub', sub=post.sub.name)}}">{{post.sub.name}}</a></td>
       </tr>
     </table>

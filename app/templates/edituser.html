@@ -53,7 +53,7 @@ var recaptchaCallback = function(){
     {% endfor %}
   </ul>
   <hr>
-  <p class="joindate">User has made {{pcount}} posts<br>and {{ccount}} comments since<br>registered <time-ago datetime="{{ user.joindate.isoformat() }}"></time-ago></p>
+  <p class="joindate">User has made {{pcount}} posts<br>and {{ccount}} comments since<br>registered <time-ago datetime="{{ user.joindate.isoformat() }}Z"></time-ago></p>
 </div>
 {% endblock %}
 {% block content %}

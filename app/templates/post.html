@@ -19,13 +19,13 @@
 <div class="sidebar col-12">
   <p>
     <span class="time">
-      <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
+      <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago>
     </span>
   </p>
   {% if post.edited == true %}
   <p>
     <span class="time">
-      <i class="fa fa-clock-o" aria-hidden="true"></i> Last edited <time-ago datetime="{{post.posted.isoformat()}}"></time-ago>
+      <i class="fa fa-clock-o" aria-hidden="true"></i> Last edited <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago>
     </span>
   </p>
   {% endif %}
@@ -75,7 +75,7 @@
 {{markdown(post.sub.sidebar)|safe}}
 
 <span class="col-12"><hr><span>
-<p class="createdby">Created by {{func.getSubUsers(post.sub, 'mod')}} <time-ago datetime="{{func.getSubCreation(post.sub)}}"></time-ago></p>
+<p class="createdby">Created by {{func.getSubUsers(post.sub, 'mod')}} <time-ago datetime="{{func.getSubCreation(post.sub)}}Z"></time-ago></p>
 <div class="moderators col-12">
   Moderators
   <ul>
@@ -249,11 +249,11 @@
                     <a class="btn small"><i class="fa fa-user" aria-hidden="true"></i>[Deleted]</a>
                   {%endif%}
                   <span class="time btn small">
-                    <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{comment.time.isoformat()}}"></time-ago>
+                    <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago>
                   </span>
                 {% if comment.lastedit and not comment.deleted %}
                   <span class="time btn small">
-                    <i class="fa fa-clock-o" aria-hidden="true"></i> Edited <time-ago datetime="{{comment.lastedit.isoformat()}}"></time-ago>
+                    <i class="fa fa-clock-o" aria-hidden="true"></i> Edited <time-ago datetime="{{comment.lastedit.isoformat()}}Z"></time-ago>
                   </span>
                 {% endif %}
                 {% if (comment.uid == session['user_id'] or current_user.is_admin()) and not comment.deleted %}
