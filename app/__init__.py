@@ -481,7 +481,8 @@ def view_sub_new(sub, page):
     createtxtpost = CreateSubTextPost(sub=sub.name)
     createlinkpost = CreateSubLinkPost(sub=sub.name)
 
-    return render_template('sub.html', sub=sub, page=page, sort_type='new',
+    return render_template('sub.html', sub=sub, page=page,
+                           sort_type='view_sub_new',
                            posts=sorter.getPosts(page), mods=mods,
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
@@ -535,7 +536,8 @@ def view_sub_top(sub, page):
     createtxtpost = CreateSubTextPost(sub=sub.name)
     createlinkpost = CreateSubLinkPost(sub=sub.name)
 
-    return render_template('sub.html', sub=sub, page=page, sort_type='top',
+    return render_template('sub.html', sub=sub, page=page,
+                           sort_type='view_sub_top',
                            posts=sorter.getPosts(page), mods=mods,
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
@@ -555,7 +557,8 @@ def view_sub_hot(sub, page):
     createtxtpost = CreateSubTextPost(sub=sub.name)
     createlinkpost = CreateSubLinkPost(sub=sub.name)
 
-    return render_template('sub.html', sub=sub, page=page, sort_type='hot',
+    return render_template('sub.html', sub=sub, page=page,
+                           sort_type='view_sub_hot',
                            posts=sorter.getPosts(page), mods=mods,
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
