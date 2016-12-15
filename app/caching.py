@@ -233,7 +233,10 @@ class Cache(object):
             if obj is NO_VALUE:
                 yield self.get(pks[pos])
             else:
-                yield obj[0]
+                try:
+                    yield obj[0]
+                except IndexError:
+                    continue
 
 
     def flush(self, key):
