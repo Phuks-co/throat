@@ -339,6 +339,8 @@ def edit_sub(sub):
             else:
                 nsfw = SubMetadata(sub, 'nsfw', form.nsfw.data)
                 db.session.add(nsfw)
+            cache.delete_memoized(getMetadata, sub, 'nsfw')
+            SubMetadata.cache.uncache(key='nsfw', sid=sub.sid)
             restricted = getMetadata(sub, 'restricted', record=True)
             if restricted:
                 restricted.value = form.restricted.data
@@ -346,6 +348,8 @@ def edit_sub(sub):
                 restricted = SubMetadata(sub, 'restricted',
                                          form.restricted.data)
                 db.session.add(restricted)
+            cache.delete_memoized(getMetadata, sub, 'restricted')
+            SubMetadata.cache.uncache(key='restricted', sid=sub.sid)
             usercanflair = getMetadata(sub, 'ucf', record=True)
             if usercanflair:
                 usercanflair.value = form.usercanflair.data
@@ -358,6 +362,10 @@ def edit_sub(sub):
             else:
                 video = SubMetadata(sub, 'videomode', form.videomode.data)
                 db.session.add(video)
+            # Cache inv. for videomode
+            cache.delete_memoized(getMetadata, sub, 'videomode')
+            SubMetadata.cache.uncache(key='videomode', sid=sub.sid)
+
             if form.subsort.data != "None":
                 subsort = getMetadata(sub, 'sort', record=True)
                 if subsort:
@@ -365,6 +373,8 @@ def edit_sub(sub):
                 else:
                     subsort = SubMetadata(sub, 'sort', form.subsort.data)
                     db.session.add(subsort)
+                cache.delete_memoized(getMetadata, sub, 'sort')
+                SubMetadata.cache.uncache(key='sort', sid=sub.sid)
 
             log = SubLog(sub.sid)
             log.action = 4  # action modedit of sub
