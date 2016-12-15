@@ -1483,6 +1483,7 @@ def reset():
 
         # All good. Set da password.
         user.setPassword(form.password.data)
+        db.session.commit()
         login_user(SiteUser(user))
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
