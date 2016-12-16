@@ -22,7 +22,7 @@ from tld import get_tld
 from werkzeug.contrib.atom import AtomFeed
 from feedgen.feed import FeedGenerator
 
-from .models import db, User, Sub, SubPost, SubPostVote, SubPostComment
+from .models import db, User, Sub, SubPost, SubPostVote, SubPostComment, Client
 from .models import UserBadge, UserMetadata, SiteMetadata, SubMetadata, Message
 from .models import SubStylesheet, SubFlair, SubSubscriber, SubLog, SiteLog
 from .forms import RegistrationForm, LoginForm, LogOutForm, EditSubFlair
@@ -33,6 +33,7 @@ from .forms import DeletePost, CreateUserBadgeForm, EditMod2Form, DummyForm
 from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair
 from .forms import CreateSubFlair, UseBTCdonationForm
 from .views import do, api
+from .views.api import oauth
 from . import misc, forms, caching
 from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, hasSubscribed, hasBlocked, getAnnouncement
@@ -41,6 +42,8 @@ from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
 from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair, decent
 from .misc import enableBTCmod, getCommentParentUID
 from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 
@@ -49,6 +52,7 @@ app.register_blueprint(api)
 app.config.from_object('config')
 
 db.init_app(app)
+oauth.init_app(app)
 caching.cache.init_app(app)
 
 assets = Environment(app)
@@ -120,6 +124,7 @@ def initialize_database():
     """ This is executed before any request is processed. We use this to
     create all the tables and database shit we need. """
     db.create_all()
+
 
 
 @app.before_request
