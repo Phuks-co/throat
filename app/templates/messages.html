@@ -30,7 +30,6 @@
 <div class="user-activity col-12">
     <h3>{{messages|length}} {{box_name}}</h3>
 {% for message in messages %}
-  {# if message.mtype == 0 #}
     <article class="post">
       <div class="main">
         {% if box_name == 'Replies' %}
@@ -45,6 +44,11 @@
         <p class="author"><time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>
         <p class="container">
           {% if box_name != 'Sent' %}
+          {# temp
+            <a href="{{url_for('view_post_inbox', pid=message.mlink)}}#{{message.parentcid}}" class="btn small">
+              <i class="fa fa-link" aria-hidden="true"></i> permalink
+            </a>
+          #}
           <a href="{{url_for('view_user', user=message.getMsgSentBy)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{message.getMsgSentBy}}</a>
           {% if not message.read %}
           <a class="unread btn btn-orange edit small" data-mid="{{message.mid}}"><i class="fa fa-circle-o" aria-hidden="true"></i> mark as read</a>

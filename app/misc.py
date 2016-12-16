@@ -10,7 +10,7 @@ from flask_login import AnonymousUserMixin, current_user
 from .sorting import VoteSorting
 from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata, Sub
 from .models import SubPost, SubMetadata, SubPostVote, User, SubPostMetadata
-from .models import SubPostCommentVote
+from .models import SubPostCommentVote, SubPostComment
 from .caching import cache
 
 
@@ -249,6 +249,11 @@ def hasVotedComment(uid, comment, up=True):
     else:
         return False
 
+@cache.memoize(60)
+def getCommentParentUID(cid):
+    """ Returns the uid of a parent comment """
+    parent = SubPostComment.query.filter_by(cid=cid).first()
+    return parent.uid
 
 @cache.memoize(60)
 def getAnnouncement():

@@ -27,7 +27,7 @@ from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form, EditSubFlair
 from ..forms import DeleteSubFlair, UseBTCdonationForm
-from ..misc import SiteUser, cache, getMetadata, sendMail, getDefaultSubs
+from ..misc import SiteUser, cache, getMetadata, sendMail, getDefaultSubs, getCommentParentUID
 
 do = Blueprint('do', __name__)
 
@@ -817,21 +817,22 @@ def create_comment(sub, pid):
 
         if form.parent.data != "0":
             comment.parentcid = form.parent.data
-        if current_user.get_id() != post.uid:
-            # send pm to op
-            pm = Message()
-            pm.sentby = current_user.get_id()
+
+        # send pm to parent
+        pm = Message()
+        pm.sentby = current_user.get_id()
+        if form.parent.data != "0":
+            pm.receivedby = getCommentParentUID(form.parent.data)
+            pm.subject = 'Comment reply: ' + post.title
+            pm.mtype = 5  # comment reply
+        else:
             pm.receivedby = post.uid
-            if form.parent.data != "0":
-                pm.subject = 'Comment reply: ' + post.title
-                pm.mtype = 5  # comment reply
-            else:
-                pm.subject = 'Post reply: ' + post.title
-                pm.mtype = 4  # comment reply
-            pm.content = form.comment.data
-            pm.mlink = post.pid
-            pm.posted = datetime.datetime.utcnow()
-            db.session.add(pm)
+            pm.subject = 'Post reply: ' + post.title
+            pm.mtype = 4  # Post reply
+        pm.content = form.comment.data
+        pm.mlink = post.pid
+        pm.posted = datetime.datetime.utcnow()
+        db.session.add(pm)
         db.session.add(comment)
         db.session.commit()
         SubPostComment.cache.uncache(pid=pid, parentcid=None)
