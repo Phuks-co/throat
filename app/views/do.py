@@ -27,7 +27,7 @@ from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form, EditSubFlair
 from ..forms import DeleteSubFlair, UseBTCdonationForm
-from ..misc import SiteUser, cache, getMetadata, sendMail, getDefaultSubs, getCommentParentUID
+from ..misc import SiteUser, cache, getMetadata, sendMail, getDefaultSubs
 
 do = Blueprint('do', __name__)
 
@@ -824,7 +824,7 @@ def create_comment(sub, pid):
         pm = Message()
         pm.sentby = current_user.get_id()
         if form.parent.data != "0":
-            pm.receivedby = getCommentParentUID(form.parent.data)
+            pm.receivedby = misc.getCommentParentUID(form.parent.data)
             pm.subject = 'Comment reply: ' + post.title
             pm.mtype = 5  # comment reply
         else:
@@ -1017,8 +1017,8 @@ def inv_mod2(sub):
             if misc.moddedSubCount(user.uid) >= 15:
                 return json.dumps({'status': 'error',
                                    'error': [
-                                    "User can't mod more than 15 subs"
-                                    ]})
+                                       "User can't mod more than 15 subs"
+                                   ]})
             msg = Message()
             msg.receivedby = user.uid
             msg.sentby = current_user.get_id()
@@ -1200,7 +1200,7 @@ def delete_pm(mid):
     """ Delete PM """
     message = Message.query.filter_by(mid=mid).first()
     if session['user_id'] == message.receivedby:
-        message.mtype = 6  #deleted
+        message.mtype = 6  # deleted
         db.session.commit()
         return json.dumps({'status': 'ok', 'mid': mid})
     else:
@@ -1566,7 +1566,6 @@ def upvotecomment(cid, value):
                                     .first()
 
     if not comment.score:
-        # XXX: Backwards compatibility
         comment.score = 0
 
     if qvote:

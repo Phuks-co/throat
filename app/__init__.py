@@ -42,8 +42,6 @@ from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
 from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair, decent
 from .misc import enableBTCmod, getCommentParentUID
 from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
-import logging
-logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 
@@ -126,7 +124,6 @@ def initialize_database():
     db.create_all()
 
 
-
 @app.before_request
 def before_request():
     """ Called before the request is processed. Used to time the request """
@@ -207,6 +204,7 @@ def index():
 @app.route("/hot", defaults={'page': 1})
 @app.route("/hot/<int:page>")
 def home_hot(page):
+    """ /hot for subscriptions """
     subs = misc.getSubscriptions(current_user.get_id())
     posts = []
     for sub in subs:
@@ -220,6 +218,7 @@ def home_hot(page):
 @app.route("/new", defaults={'page': 1})
 @app.route("/new/<int:page>")
 def home_new(page):
+    """ /new for subscriptions """
     subs = misc.getSubscriptions(current_user.get_id())
     posts = []
     for sub in subs:
@@ -232,6 +231,7 @@ def home_new(page):
 @app.route("/top", defaults={'page': 1})
 @app.route("/top/<int:page>")
 def home_top(page):
+    """ /top for subscriptions """
     subs = misc.getSubscriptions(current_user.get_id())
     posts = []
     for sub in subs:
@@ -733,7 +733,7 @@ def view_messages():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
-                            .filter_by(mtype = 1) \
+                            .filter_by(mtype=1) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Inbox")
@@ -927,6 +927,7 @@ def password_recovery():
 
 @app.route('/reset/<uid>/<key>')
 def password_reset(uid, key):
+    """ The page that actually resets the password """
     user = User.query.filter_by(uid=uid).first()
     if not user:
         abort(403)

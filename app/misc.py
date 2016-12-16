@@ -1,12 +1,12 @@
 """ Misc helper function and classes. """
 from urllib.parse import urlparse, parse_qs
-from sqlalchemy import or_, Date, cast
 from datetime import date
+from sqlalchemy import Date, cast
 import sqlalchemy.orm
 import markdown
 import sendgrid
 import config
-from flask_login import AnonymousUserMixin, current_user
+from flask_login import AnonymousUserMixin  # , current_user
 from .sorting import VoteSorting
 from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata, Sub
 from .models import SubPost, SubMetadata, SubPostVote, User, SubPostMetadata
@@ -62,10 +62,6 @@ class SiteUser(object):
     def has_mail(self):
         """ Returns True if the current user has unread messages """
         return hasMail(self.user)
-
-    def new_count(self):
-        """ Returns new message count """
-        return newCount(self.user)
 
     def new_pm_count(self):
         """ Returns new message count """
@@ -213,9 +209,9 @@ class NiceLinkPattern(markdown.inlinepatterns.LinkPattern):
         el = markdown.util.etree.Element("a")
         el.text = m.group(2)
         if el.text.startswith('@') or el.text.startswith('/u/'):
-            href = '/u/' + m.group(3)
+            href = '/u/' + m.group(4)
         elif el.text.startswith('/s/'):
-            href = '/s/' + m.group(3)
+            href = '/s/' + m.group(4)
 
         if href:
             if href[0] == "<":
@@ -229,21 +225,15 @@ class NiceLinkPattern(markdown.inlinepatterns.LinkPattern):
 
 class RestrictedMarkdown(markdown.Extension):
     """ Class to restrict some markdown stuff """
-    RE_MENTION = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))(@([A-Za-z]+[A-Za-z0-9]+))'
-    RE_U_MENTION = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))(\/u\/([A-Za-z]+[A-Za-z0-9]+))'
-    RE_SUB_MENTION = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))(\/s\/([A-Za-z]+[A-Za-z0-9]+))'
+    RE_AMENTION = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/s\/)' \
+                  '([A-Za-z]+[A-Za-z0-9]+))'
 
     def extendMarkdown(self, md, md_globals):
         """ Here we disable stuff """
         del md.inlinePatterns['image_link']
         del md.inlinePatterns['image_reference']
-        user_tag = NiceLinkPattern(self.RE_MENTION, md)
-        user_tag2 = NiceLinkPattern(self.RE_U_MENTION, md)
-        sub_tag = NiceLinkPattern(self.RE_SUB_MENTION, md)
+        user_tag = NiceLinkPattern(self.RE_AMENTION, md)
         md.inlinePatterns.add('user', user_tag, '>strong')
-        md.inlinePatterns.add('user2', user_tag2, '>strong')
-        md.inlinePatterns.add('sub', sub_tag, '>strong')
-
 
 
 def getVoteCount(post):
@@ -280,11 +270,13 @@ def hasVotedComment(uid, comment, up=True):
     else:
         return False
 
+
 @cache.memoize(60)
 def getCommentParentUID(cid):
     """ Returns the uid of a parent comment """
     parent = SubPostComment.query.filter_by(cid=cid).first()
     return parent.uid
+
 
 @cache.memoize(60)
 def getAnnouncement():
@@ -403,13 +395,6 @@ def hasMail(user):
                      .filter(Message.mtype != 6) \
                      .filter_by(read=None).first()
     return bool(x)
-
-
-def newCount(user):
-    """ Returns new message count """
-    x = Message.query.filter(Message.read==None, Message.receivedby==user.uid) \
-                     .filter(Message.mtype != 6)
-    return len(list(x))
 
 
 def newPMCount(user):
@@ -630,6 +615,7 @@ def sendMail(to, subject, content):
 
 
 def getYoutubeID(url):
+    """ Returns youtube ID for a video. """
     url = urlparse(url)
     if url.hostname == 'youtu.be':
         return url.path[1:]
