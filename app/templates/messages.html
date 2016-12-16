@@ -49,7 +49,7 @@
           {% if not message.read %}
           <a class="unread btn btn-orange edit small" data-mid="{{message.mid}}"><i class="fa fa-circle-o" aria-hidden="true"></i> mark as read</a>
           {% else %}
-          <a class="read btn small"><i class="fa fa-folder-open" aria-hidden="true"></i> read</a>
+          <a class="read btn small"><i class="fa fa-folder-open" aria-hidden="true"></i> read {{message.read}}</a>
           {% endif %}
           <a class="btn small"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
           <a class="btn small"><i class="fa fa-mail-forward" aria-hidden="true"></i> forward</a>
