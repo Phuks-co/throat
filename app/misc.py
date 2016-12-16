@@ -10,6 +10,7 @@ from flask_login import AnonymousUserMixin, current_user
 from .sorting import VoteSorting
 from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata, Sub
 from .models import SubPost, SubMetadata, SubPostVote, User, SubPostMetadata
+from .models import SubPostCommentVote
 from .caching import cache
 
 
@@ -231,6 +232,17 @@ def getVoteCount(post):
 def hasVoted(uid, post, up=True):
     """ Checks if the user up/downvoted the post. """
     vote = SubPostVote.query.filter_by(uid=uid, pid=post.pid).first()
+    if vote:
+        if vote.positive == up:
+            return True
+    else:
+        return False
+
+
+@cache.memoize(50)
+def hasVotedComment(uid, comment, up=True):
+    """ Checks if the user up/downvoted a comment. """
+    vote = SubPostCommentVote.query.filter_by(uid=uid, cid=comment.cid).first()
     if vote:
         if vote.positive == up:
             return True

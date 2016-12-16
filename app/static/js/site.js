@@ -499,6 +499,43 @@ $(document).ready(function() {
       });
     });
 
+    $('.cdownvote').click(function(e){
+      var pid = $(e.currentTarget).parent().find('input[name="post"]').prop('value');
+      $.ajax({
+        type: "POST",
+        url: '/do/votecomment/'+ pid +'/down',
+        data: $(e.currentTarget).parent().serialize(),
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).addClass('downvoted');
+            $('#cuvform-'+pid).parent().children('.cuvform').children('.upvoted').removeClass('upvoted');
+
+            var count = $(e.currentTarget).parent().parent().children('.count');
+            count.text(parseInt(count.text())-1);
+          }
+        }
+      });
+    });
+
+    $('.cupvote').click(function(e){
+      var pid = $(e.currentTarget).parent().find('input[name="post"]').prop('value');
+      $.ajax({
+        type: "POST",
+        url: '/do/votecomment/'+ pid +'/up',
+        data: $(e.currentTarget).parent().serialize(),
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).addClass('upvoted');
+            $('#cuvform-'+pid).parent().children('.cdvform').children('.downvoted').removeClass('downvoted');
+            var count = $(e.currentTarget).parent().parent().children('.count');
+            count.text(parseInt(count.text())+1);
+          }
+        }
+      });
+    });
+
     $('.delete').click(function(e){
       var mid = $(e.currentTarget).data().mid
       $.ajax({

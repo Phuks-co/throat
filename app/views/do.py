@@ -19,7 +19,7 @@ from .. import forms, misc
 from ..models import db, User, Sub, SubPost, Message, SubPostComment
 from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
 from ..models import UserMetadata, UserBadge, SubSubscriber, SiteMetadata
-from ..models import SubFlair, SubLog, SiteLog
+from ..models import SubFlair, SubLog, SiteLog, SubPostCommentVote
 from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubFlair
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
@@ -1534,3 +1534,53 @@ def delete_comment():
                                      parentcid=comment.parentcid)
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route('/do/votecomment/<cid>/<value>', methods=['POST'])
+@login_required
+def upvotecomment(cid, value):
+    """ Logs an upvote to a post. """
+    if value == "up":
+        voteValue = 1
+    elif value == "down":
+        voteValue = -1
+    else:
+        abort(403)
+    comment = SubPostComment.query.filter_by(cid=cid).first()
+    if not comment:
+        return json.dumps({'status': 'error',
+                           'error': ['Comment does not exist']})
+
+    if comment.uid == current_user.get_id():
+        return json.dumps({'status': 'error',
+                           'error': ['You can\'t vote on your own comments']})
+
+    qvote = SubPostCommentVote.query.filter_by(cid=cid) \
+                                    .filter_by(uid=current_user.get_id()) \
+                                    .first()
+
+    if not comment.score:
+        # XXX: Backwards compatibility
+        comment.score = 0
+
+    if qvote:
+        if qvote.positive == (True if voteValue == 1 else False):
+            return json.dumps({'status': 'error',
+                               'error': ['You already voted.']})
+        else:
+
+            qvote.positive = True if voteValue == 1 else False
+            comment.score = int(comment.score) + (voteValue*2)
+            db.session.commit()
+            return json.dumps({'status': 'ok',
+                               'message': 'Vote flipped.'})
+    else:
+        vote = SubPostCommentVote()
+        vote.cid = cid
+        vote.uid = current_user.get_id()
+        vote.positive = True if voteValue == 1 else False
+        db.session.add(vote)
+
+    comment.score = int(comment.score) + voteValue
+    db.session.commit()
+    return json.dumps({'status': 'ok'})

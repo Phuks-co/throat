@@ -443,6 +443,8 @@ class SubPostComment(db.Model, CacheableMixin):
     lastedit = Column(DateTime)
     content = Column(Text())
     status = Column(Integer)  # 1 = deleted
+
+    score = Column(Integer)
     # parent comment id
     parentcid = Column(String(40), db.ForeignKey('sub_post_comment.cid'),
                        nullable=True)
@@ -461,6 +463,23 @@ class SubPostComment(db.Model, CacheableMixin):
     @hybrid_property
     def deleted(self):
         return True if self.status == 1 else False
+
+    def getScore(self):
+        return self.score if self.score else 0
+
+
+class SubPostCommentVote(db.Model, CacheableMixin):
+    """ A comment. In a post. """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    # Query handeling dogpile caching
+    cache_pk = 'xid'
+    query_class = query_callable(regions)
+
+    xid = Column(Integer, primary_key=True)
+    cid = Column(String(64))
+    uid = Column(String(40), db.ForeignKey('user.uid'))
+    positive = Column(Boolean)
 
 
 class SubPostVote(db.Model, CacheableMixin):

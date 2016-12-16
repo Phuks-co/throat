@@ -262,25 +262,45 @@
                 {% endif %}
                 </div>
               </div>
-              <div class="content" id="content-{{comment.cid}}">
-                {% if comment.deleted %}[Deleted]{%else%}
-                  {{markdown(comment.content)|safe}}
-                {%endif%}</div>
-              {%if not comment.deleted %}
-                <div hidden id="sauce-{{comment.cid}}">{{comment.content}}</div>
-              {%endif%}
-              <div class="bottombar">
-              <span id="bott-{{comment.cid}}">
-                <a href="#{{comment.cid}}">
-                  <i class="fa fa-link" aria-hidden="true"></i> permalink
-                </a>
-              {%if current_user.is_authenticated%}
-                <a href="#reply" class="lnkreply" data-to="{{comment.cid}}">
-                  <i class="fa fa-reply" aria-hidden="true"></i> reply
-                </a>
-              {%endif%}
-              </span>
-            </div>
+              <div class="row">
+                <div>
+                  <div class="pull left votecomment" style="margin-left: 10px;">
+                    {# vote arrow div #}
+                      <form class="cuvform" id="cuvform-{{comment.cid}}">
+                        <div class="cupvote{%if func.hasVotedComment(current_user.get_id(), comment)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+                        {% set uv = form.VoteForm() %}
+                        {{uv.csrf_token}}{{uv.post(value=comment.cid)}}
+                      </form>
+                      <p class="count">{{comment.getScore()}}</p>
+                      <form class="cdvform" id="cdvform-{{comment.cid}}">
+                        <div class="cdownvote{%if func.hasVotedComment(current_user.get_id(), comment, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+                        {% set dv = form.VoteForm() %}
+                        {{uv.csrf_token}}{{uv.post(value=comment.cid)}}
+                      </form>
+                  </div>
+                </div>
+                <div class="col-11">
+                  <div class="content" id="content-{{comment.cid}}">
+                    {% if comment.deleted %}[Deleted]{%else%}
+                      {{markdown(comment.content)|safe}}
+                    {%endif%}</div>
+                  {%if not comment.deleted %}
+                    <div hidden id="sauce-{{comment.cid}}">{{comment.content}}</div>
+                  {%endif%}
+                  <div class="bottombar">
+                    <span id="bott-{{comment.cid}}">
+                      <a href="#{{comment.cid}}">
+                        <i class="fa fa-link" aria-hidden="true"></i> permalink
+                      </a>
+                      {%if current_user.is_authenticated%}
+                        <a href="#reply" class="lnkreply" data-to="{{comment.cid}}">
+                          <i class="fa fa-reply" aria-hidden="true"></i> reply
+                        </a>
+                      {%endif%}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </article>
             <div id="child-{{comment.cid}}">
               {% if post.getComments(comment.cid) %}
