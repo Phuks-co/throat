@@ -514,7 +514,7 @@ class Message(db.Model, CacheableMixin):
     sentby = Column(String(40), db.ForeignKey('user.uid'))
     receivedby = Column(String(40), db.ForeignKey('user.uid'))
 
-    subject = Column(String(256))  # msg subject
+    subject = Column(String(300))  # msg subject
     content = Column(Text())  # msg content
 
     posted = Column(DateTime)  # sent
