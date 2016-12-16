@@ -277,11 +277,11 @@ def create_sub():
         alog.desc = current_user.get_username() + ' created a new sub'
         alog.link = url_for('view_sub', sub=sub.name)
         db.session.add(alog)
-        db.session.commit()
-
         x = SubSubscriber(sub.sid, current_user.get_id())
         x.status = 1
         db.session.add(x)
+
+        db.session.commit()
 
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_sub', sub=form.subname.data)})
