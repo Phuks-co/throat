@@ -1470,3 +1470,7 @@ span.sidelocale {
 }
 
 .count {text-align: center;}
+
+.content img {
+    max-width: 100%;
+}
