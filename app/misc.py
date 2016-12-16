@@ -207,12 +207,43 @@ class SiteAnon(AnonymousUserMixin):
         return False
 
 
+class NiceLinkPattern(markdown.inlinepatterns.LinkPattern):
+    """ Return a link element from the given match. """
+    def handleMatch(self, m):
+        el = markdown.util.etree.Element("a")
+        el.text = m.group(2)
+        if el.text.startswith('@') or el.text.startswith('/u/'):
+            href = '/u/' + m.group(3)
+        elif el.text.startswith('/s/'):
+            href = '/s/' + m.group(3)
+
+        if href:
+            if href[0] == "<":
+                href = href[1:-1]
+            el.set("href", self.sanitize_url(self.unescape(href.strip())))
+        else:
+            el.set("href", "")
+
+        return el
+
+
 class RestrictedMarkdown(markdown.Extension):
     """ Class to restrict some markdown stuff """
+    RE_MENTION = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))(@([A-Za-z]+[A-Za-z0-9]+))'
+    RE_U_MENTION = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))(\/u\/([A-Za-z]+[A-Za-z0-9]+))'
+    RE_SUB_MENTION = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))(\/s\/([A-Za-z]+[A-Za-z0-9]+))'
+
     def extendMarkdown(self, md, md_globals):
         """ Here we disable stuff """
         del md.inlinePatterns['image_link']
         del md.inlinePatterns['image_reference']
+        user_tag = NiceLinkPattern(self.RE_MENTION, md)
+        user_tag2 = NiceLinkPattern(self.RE_U_MENTION, md)
+        sub_tag = NiceLinkPattern(self.RE_SUB_MENTION, md)
+        md.inlinePatterns.add('user', user_tag, '>strong')
+        md.inlinePatterns.add('user2', user_tag2, '>strong')
+        md.inlinePatterns.add('sub', sub_tag, '>strong')
+
 
 
 def getVoteCount(post):
