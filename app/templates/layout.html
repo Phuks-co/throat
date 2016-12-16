@@ -112,7 +112,7 @@
     <main class="col-8 right center">{% block content %}{% endblock %}</main>{% endblock %}
   </div>
   <footer>
-    {% block footer %} &copy;2016 Throat. All Rights Reserved. | <a href="{{url_for('tos')}}">Terms of service</a> | <a href="{{url_for('privacy')}}">Privacy</a> | <a href="{{url_for('view_api')}}">API</a>
+    {% block footer %} &copy;{{config.COPY}} | <a href="{{url_for('tos')}}">Terms of service</a> | <a href="{{url_for('privacy')}}">Privacy</a> | <a href="{{url_for('view_api')}}">API</a>
     {%if config.DEBUG %} | Page generated in __EXECUTION_TIME__ms with
     __DB_QUERIES__ queries (__QUERY_TIME__ms){%endif%} {% endblock %}
   </footer>
