@@ -832,9 +832,12 @@ def create_comment(sub, pid):
         pm.content = form.comment.data
         pm.mlink = post.pid
         pm.posted = datetime.datetime.utcnow()
-        db.session.add(pm)
+        if pm.receivedby != pm.sentby:  # This is a waste but meh
+            db.session.add(pm)
+
         db.session.add(comment)
         db.session.commit()
+
         SubPostComment.cache.uncache(pid=pid, parentcid=None)
         SubPostComment.cache.uncache(pid=pid, parentcid=form.parent.data)
         return json.dumps({'status': 'ok'})
