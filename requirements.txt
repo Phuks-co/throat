@@ -20,3 +20,4 @@ pillow
 pytest
 sendgrid
 bs4
+flask-oauthlib
