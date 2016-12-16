@@ -99,7 +99,7 @@ def authorize(*args, **kwargs):
 @oauth.require_oauth('email')
 def me():
     user = request.oauth.user
-    return jsonify(email=user.email, username=user.name)
+    return jsonify(email=user.email, username=user.name, uid=user.uid)
 
 
 @api.route('/oauth/token', methods=['GET', 'POST'])
