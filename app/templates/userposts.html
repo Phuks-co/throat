@@ -71,19 +71,14 @@
           <p>
             This user has {{pcount}} posts
           </p>
-          {% for post in user.posts[::-1][:10] %}
+          {% for post in user.posts[::-1][:20] %}
           <li>
             <div class="userposts data">
-              <p><a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{ post.title }}</a></p>
-              <a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn small">
-                <i class="fa fa-users" aria-hidden="true"></i> /s/{{post.sub.name}}
-              </a>
-              <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}" class="btn small">
-                <i class="fa fa-comment" aria-hidden="true"></i> Comments
-              </a>
-              <span class="time btn small">
-                <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago>
-              </span>
+              <p>({{post.voteCount()}}) <a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{ post.title }}</a></p>
+              <div class="postbar">
+                <i class="fa fa-clock-o" aria-hidden="true"></i> <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in
+                <a href="{{url_for('view_sub', sub=post.sub.name)}}">/s/{{post.sub.name}}</a>
+                with {{post.getComments() | length}} <i class="fa fa-comments" aria-hidden="true"></i> comments
             </div>
           </li>
           {% endfor %}
