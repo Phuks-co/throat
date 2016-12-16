@@ -30,42 +30,52 @@
 <div class="user-activity col-12">
     <h3>{{messages|length}} {{box_name}}</h3>
 {% for message in messages %}
-    <article class="post">
+    <article class="pmessage post" data-replyto='{{message.sentby}}' data-replytitle='Re: {{message.subject}}'>
       <div class="main">
         {% if box_name == 'Replies' %}
-        <p class="title"><a href="{{url_for('view_post_inbox', pid=message.mlink)}}">{{message.subject}}</a></p>
+          <p class="title"><a href="{{url_for('view_post_inbox', pid=message.mlink)}}">{{message.subject}}</a></p>
         {% else %}
-        <p class="title">{{message.subject}}</p>
+          <p class="title">{{message.subject}}</p>
         {% endif %}
         <p class="container">{{markdown(message.content)|safe}}</p>
         {% if message.mtype == 2 %}
-        <p>Please visit: <a href="{{url_for('edit_sub_mods', sub=message.mlink)}}"> /s/{{message.mlink}}/mods</a><p>
+          <p>Please visit: <a href="{{url_for('edit_sub_mods', sub=message.mlink)}}"> /s/{{message.mlink}}/mods</a><p>
         {% endif %}
         <p class="author"><time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>
         <p class="container">
           {% if box_name != 'Sent' %}
-          {# temp
-            <a href="{{url_for('view_post_inbox', pid=message.mlink)}}#{{message.parentcid}}" class="btn small">
-              <i class="fa fa-link" aria-hidden="true"></i> permalink
-            </a>
-          #}
-          <a href="{{url_for('view_user', user=message.getMsgSentBy)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{message.getMsgSentBy}}</a>
-          {% if not message.read %}
-          <a class="unread btn btn-orange edit small" data-mid="{{message.mid}}"><i class="fa fa-circle-o" aria-hidden="true"></i> mark as read</a>
+            <a href="{{url_for('view_user', user=message.getMsgSentBy)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{message.getMsgSentBy}}</a>
+            {% if not message.read %}
+              <a class="unread btn btn-orange edit small" data-mid="{{message.mid}}"><i class="fa fa-circle-o" aria-hidden="true"></i> mark as read</a>
+            {% else %}
+              <a class="read btn small"><i class="fa fa-folder-open" aria-hidden="true"></i> read {{message.read}}</a>
+            {% endif %}
+            <a href="#msg-form" class="btn small replymsg popup"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
+            <a class="btn small"><i class="fa fa-mail-forward" aria-hidden="true"></i> forward</a>
+            <a class="delete btn small btn-red" data-mid="{{message.mid}}"><i class="fa fa-trash" aria-hidden="true"></i> delete</a>
           {% else %}
-          <a class="read btn small"><i class="fa fa-folder-open" aria-hidden="true"></i> read {{message.read}}</a>
-          {% endif %}
-          <a class="btn small"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
-          <a class="btn small"><i class="fa fa-mail-forward" aria-hidden="true"></i> forward</a>
-          <a class="delete btn small btn-red" data-mid="{{message.mid}}"><i class="fa fa-trash" aria-hidden="true"></i> delete</a>
-          {% else %}
-          <a href="{{url_for('view_user', user=message.getMsgRecBy)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{message.getMsgRecBy}}</a>
+            <a href="{{url_for('view_user', user=message.getMsgRecBy)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{message.getMsgRecBy}}</a>
           {% endif %}
         </p>
       </div>
     </article>
 {% endfor %}
 </div>
+
+<form id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="ajaxform mfp-hide white-popup-block">
+  {% set msgform = form.CreateUserMessageForm()%}
+  {{msgform.csrf_token}}
+  {{msgform.to()}}
+  <h1>Submit a user message</h1>
+  <p class="subject">{{msgform.subject(placeholder=msgform.subject.label.text, required=True, autofocus=True)}}</p>
+  <p class="content">{{msgform.content(placeholder="Write your post content here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}</p>
+  <div class="alert div-error">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+    <p></p>
+  </div>
+  <p><button type="submit" id="msg-btnsubmit" class="btn btn-blue" data-prog="Sending...">Send Message</button></p>
+</form>
+
 {% endblock %}
 {%block pagefoot%}
 

@@ -74,6 +74,7 @@ class EditUserForm(FlaskForm):
 
 class CreateUserMessageForm(FlaskForm):
     """ CreateUserMessage form. """
+    to = HiddenField()
     subject = StringField('subject',
                           validators=[DataRequired(), Length(min=2, max=32)])
 

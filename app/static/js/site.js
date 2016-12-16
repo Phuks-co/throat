@@ -199,32 +199,6 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
-    $("#msg-form").submit(function(e) {
-        $("#msg-btnsubmit").prop('disabled', true);
-        $("#msg-btnsubmit").text('Sending your msg...');
-        $.ajax({
-            type: "POST",
-            url: '/do/sendmsg/' + $("#msg-form").data('user'), // XXX: Hardcoded URL because this is supposed to be a static file
-            data: $("#msg-form").serialize(),
-            dataType: 'json',
-            success: function(data) {
-                if (data.status != "ok") {
-                    checkErrors(data, "msg-form");
-                } else {
-                    document.location = '/messages';
-                }
-                $("#msg-btnsubmit").prop('disabled', false);
-                $("#msg-btnsubmit").text('Submit message');
-            },
-            error: function(data, err) {
-                $("#msg-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
-                $("#msg-form .div-error").show();
-                $("#msg-btnsubmit").prop('disabled', false);
-                $("#msg-btnsubmit").text('Submit message');
-            }
-        });
-        e.preventDefault();
-    });
 
     $("#edit-mod2-form").submit(function(e) {
         $("#edit-mod2-btnsubmit").prop('disabled', true);
@@ -306,6 +280,8 @@ $(document).ready(function() {
         });
         e.preventDefault();
     });
+
+
 
     $(document).on('submit', ".comment-form", function(e){
       // Note for future self: This is a really fucking hacky way to do this.
@@ -402,17 +378,16 @@ $(document).ready(function() {
     var mpSettings = {
         type: 'inline',
         preloader: false,
-        focus: '#username',
         callbacks: {
             beforeOpen: function() {
                 if ($(window).width() < 700) {
                     this.st.focus = false;
-                } else {
-                    this.st.focus = '#username';
                 }
             }
         }
     };
+    $('a.btn.popup').magnificPopup(mpSettings);
+
     $('a.btn.login').magnificPopup(mpSettings);
     $('a.btn.create-sub').magnificPopup(mpSettings);
     $('a.btn.create-post').magnificPopup(mpSettings);
@@ -431,6 +406,14 @@ $(document).ready(function() {
       $('#ecf-cid').prop('value', cid)
       $('#edit-comment-form textarea').html(sauce);
       $('.edit-comment-form').magnificPopup('open');
+    });
+
+    $('.pmessage .replymsg').click(function(e){
+      e.preventDefault();
+      var replyto=$(this).parents('article').data('replyto');
+      var title=$(this).parents('article').data('replytitle');
+      $('#msg-form #to').prop('value', replyto);
+      $('#msg-form #subject').prop('value', title);
     });
 
     $('.delete-comment-form').magnificPopup(mpSettings);

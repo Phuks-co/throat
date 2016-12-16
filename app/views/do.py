@@ -920,14 +920,14 @@ def remove_user_badge(uid, bid):
         abort(403)
 
 
-@do.route("/do/sendmsg/<user>", methods=['POST'])
+@do.route("/do/sendmsg", methods=['POST'])
 @login_required
-def create_sendmsg(user):
+def create_sendmsg():
     """ User PM message creation endpoint """
     form = CreateUserMessageForm()
     if form.validate():
         msg = Message()
-        msg.receivedby = user
+        msg.receivedby = form.to.data
         msg.sentby = current_user.get_id()
         msg.subject = form.subject.data
         msg.content = form.content.data

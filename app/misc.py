@@ -87,6 +87,10 @@ class SiteUser(object):
         """ Returns True if the current user has blocked sub """
         return hasBlocked(sub, self.user)
 
+    def new_count(self):
+        """ Returns new message count """
+        return newCount(self.user)
+
     @cache.memoize(60)
     def has_exlinks(self):
         """ Returns true if user selects to open links in a new window """
@@ -634,3 +638,11 @@ def moddedSubCount(user):
     sub1 = SubMetadata.query.filter_by(key='mod1', value=user).count()
     sub2 = SubMetadata.query.filter_by(key='mod2', value=user).count()
     return sub1 + sub2
+
+
+def newCount(user):
+    """ Returns new message count """
+    x = Message.query.filter(Message.read.is_(None),
+                             Message.receivedby == user.uid) \
+                     .filter(Message.mtype != 6)
+    return len(list(x))
