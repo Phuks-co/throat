@@ -668,7 +668,7 @@ def create_lnkpost():
         # Try to get thumbnail.
         # 1 - Check if it's an image
         try:
-            req = requests.get(form.link.data, timeout=50)
+            req = requests.get(form.link.data, timeout=0.5)
         except requests.exceptions.RequestException:
             return json.dumps({'status': 'ok', 'pid': post.pid,
                                'sub': sub.name})
@@ -689,7 +689,7 @@ def create_lnkpost():
                 return json.dumps({'status': 'ok', 'pid': post.pid,
                                    'sub': sub.name})
             try:
-                req = requests.get(img, timeout=50)
+                req = requests.get(img, timeout=0.5)
             except requests.exceptions.RequestException:
                 return json.dumps({'status': 'ok', 'pid': post.pid,
                                    'sub': sub.name})
