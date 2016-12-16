@@ -70,7 +70,7 @@ $(document).ready(function() {
       image.src = url;
       $(this).append(image);
     }else{
-      window.location = url;
+      return true;
     }
   });
 
