@@ -26,7 +26,7 @@
 {% endif %}
 {% if func.getTodaysTopPosts() %}
   <span class="col-12"><hr></span>
-  <div class="col-12 todaystop">
+  <div class="col-12 row todaystop">
     <div class="col-12">
       Today's top posts
     </div>
@@ -45,7 +45,7 @@
 
 {% if func.enableBTCmod() %}
 <span class="col-12"><hr></span>
-<div class="col-12 btcdonation">
+<div class="col-12 row btcdonation">
   <div class="btcmessage">
     {{func.getBTCmsg()}}
   </div>
