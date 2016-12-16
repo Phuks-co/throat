@@ -962,6 +962,12 @@ def privacy():
     return render_template('privacy.html')
 
 
+@app.errorhandler(401)
+def unauthorized(error):
+    """ 401 Unauthorized """
+    return render_template('errors/401.html'), 401
+
+
 @app.errorhandler(403)
 def Forbidden(error):
     """ 403 Forbidden """

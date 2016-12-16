@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %}Error 401 - Unauthorized | {{config.LEMA}}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/errors.css') }}">
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+    <div class="error internal">
+      {% if current_user.is_authenticated %}
+        <h1>Unauthorized</h1>
+        <p>You're not allowed to see this stuff.</p>
+      {% else %}
+      <form action="{{url_for('do.login')}}" data-reload="true" id="login-form" class="ajaxform white-popup-block">
+        <h1>Login</h1> {{ loginform.csrf_token }}
+        <p id="login-intro">Do you have an account?</p>
+        <p>{{loginform.username(placeholder=loginform.username.label.text, required=True, autofocus=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}</p>
+        <p>{{loginform.password(placeholder=loginform.password.label.text, required=True)}}</p>
+        <p>
+          {{loginform.remember(style="width: auto")}}
+          <label for="remember">{{loginform.remember.label.text}}</label>
+        </p>
+        <div class="alert div-error"></div>
+        <p><button type="submit" class="btn btn-blue" data-prog="Logging in..." id="login-btnsubmit">Log in</button></p>
+        <p style="text-align:right;"><a href="{{url_for('password_recovery')}}">Forgot your password?</a>
+      </form>
+      {% endif %}
+    </div>
+{% endblock %}
