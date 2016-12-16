@@ -661,6 +661,8 @@ def create_lnkpost():
         post.link = form.link.data
         post.ptype = "1"
         db.session.add(post)
+        nsfw = SubPostMetadata(post.pid, 'nsfw', form.nsfw.data)
+        db.session.add(nsfw)
         db.session.commit()
         ckey = make_template_fragment_key('subposts', vary_on=[post.sub.sid])
         cache.delete(ckey)

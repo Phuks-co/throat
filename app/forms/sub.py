@@ -105,6 +105,7 @@ class CreateSubLinkPost(FlaskForm):
     link = StringField('Post link',
                        validators=[DataRequired(), Length(min=10, max=256),
                                    URL(require_tld=True)])
+    nsfw = BooleanField('NSFW?')
 
     def __init__(self, *args, **kwargs):
         super(CreateSubLinkPost, self).__init__(*args, **kwargs)
