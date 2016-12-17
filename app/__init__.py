@@ -283,7 +283,8 @@ def all_domain_new(page, domain):
                          .order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
 
-    return render_template('index.html', page=page, sort_type='all_new',
+    return render_template('domains.html', page=page, domain=domain,
+                           sort_type='all_domain_new',
                            posts=sorter.getPosts(page))
 
 

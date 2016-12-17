@@ -1,0 +1,224 @@
+{% extends "layout.html" %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block title %}{{config.LEMA}}{% endblock %}
+{% block sidebar %}
+{{ super() }}
+{% if current_user.is_authenticated %}
+<div class="row buttons">
+  <div class="col-12">
+    <a href="#csub-form" class="btn btn-orange create-sub" style="width:100%;">Create your own sub</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('view_subs')}}" class="btn btn-orange" style="width:100%;">View all subs</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('random_sub')}}" class="btn btn-orange" style="width:100%;">View random sub</a>
+  </div>
+  <div class="col-12">
+    <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
+  </div>
+  <div class="col-12">
+    <a href="#link-post-form" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
+  </div>
+</div>
+{% endif %}
+{% if func.getTodaysTopPosts() %}
+  <span class="col-12"><hr></span>
+  <div class="col-12 row todaystop">
+    <div class="col-12">
+      Today's top posts
+    </div>
+    <div class="list">
+      <ul>
+      {% for post in func.getTodaysTopPosts() %}
+        <li><a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{post.title}}</a><br>
+        <span class="sidelocale">
+          <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=post.sub.name)}}">/s/{{post.sub.name}}</a></li>
+        </span>
+      {% endfor %}
+      </ul>
+    </div>
+  </div>
+{%endif%}
+
+{% if func.enableBTCmod() %}
+<span class="col-12"><hr></span>
+<div class="col-12 row btcdonation">
+  <div class="btcmessage">
+    {{func.getBTCmsg()}}
+  </div>
+  <div class="btcaddr">
+    {{func.getBTCaddr()}}
+  </div>
+  <div class="btcqrcode">
+    <img src="https://chart.googleapis.com/chart?cht=qr&chl={{func.getBTCaddr()}}&chs=104x104&choe=UTF-8&chld=L|0">
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+{% block navbar %}
+{{ super() }}
+{% if sort_type.startswith('all') %}
+  <li><a href="/all/hot">Hot</a></li>
+  <li><a href="/all/top">Top</a></li>
+  <li><a href="/all/new">New</a></li>
+{% else %}
+  <li><a href="/hot">Hot</a></li>
+  <li><a href="/top">Top</a></li>
+  <li><a href="/new">New</a></li>
+  <li><a href="/all/new">All new posts</a></li>
+{%endif%}
+{% if current_user.is_admin() %}<li><a href="{{url_for('admin_area')}}">Admin</a></li>{% endif %}
+{% endblock %}
+{% block content %}
+{{ super() }}
+
+{% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
+{% cache 300, 'domainpage', domain, page|string %}
+  {% for post in posts if not getMetadata(post, 'deleted') and not getMetadata(post, 'moddeleted') and not post.isAnnouncement() %}
+  {% if (current_user.show_nsfw() and post.isPostNSFW()) or not post.isPostNSFW() %}
+      <article class="post" data-pid="{{post.pid}}">
+        {# vote arrow div #}
+        <div class="pull left vote">
+          <form class="uvform">
+            <div class="upvote{%if hasVoted(current_user.get_id(), post)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+            {% set uv = form.VoteForm() %}
+            {{uv.csrf_token}}{{uv.post(value=post.pid)}}
+          </form>
+          <p class="count">{{post.voteCount()}}</p>
+          <form class="dvform">
+            <div class="downvote{%if hasVoted(current_user.get_id(), post, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+            {% set dv = form.VoteForm() %}
+            {{uv.csrf_token}}{{uv.post(value=post.pid)}}
+          </form>
+        </div>
+        {% cache 300, post.pid, 'post' %}
+          <div class="image">
+            {% if post.thumb %}
+            <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
+              <img src="{{config.THUMBNAIL_HOST}}{{post.thumb}}">
+            </a>
+            {% elif not post.link %}
+              <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
+                <span class="fa-stack fa-3x" style="color: #616161;">
+                  <i class="fa fa-square fa-stack-2x"></i>
+                  <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
+                </span>
+              </a>
+            {% else %}
+              <a href="{{post.link}}" rel="noreferrer noopener">
+                <span class="fa-stack fa-3x" style="color: #616161;">
+                  <i class="fa fa-square fa-stack-2x"></i>
+                  {% if post.isImage() %}
+                  <i class="fa fa-image fa-stack-1x fa-inverse"></i>
+                  {% elif post.getDomain() == "youtube.com" or post.getDomain() == "www.youtube.com" or post.getDomain() == "youtu.be" %}
+                  <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
+                  {% elif post.getDomain() == "vimeo.com" %}
+                  <i class="fa fa-vimeo fa-stack-1x fa-inverse"></i>
+                  {% elif post.getDomain() == "vine.co" %}
+                  <i class="fa fa-vine fa-stack-1x fa-inverse"></i>
+                  {% else %}
+                  <i class="fa fa-link fa-stack-1x fa-inverse"></i>
+                  {% endif %}
+                </span>
+              </a>
+            {% endif %}
+          </div>
+          <div class="main">
+            {% if post.isPostNSFW() %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
+            {% if not post.link %}
+            <a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{post.title}}</a>
+            {% else %}
+            {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
+            <a class="title" href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=post.getDomain())}}">{{post.getDomain()}}</a>)</span>
+            {% endif %}
+            <p class="author"><relative-time datetime="{{post.posted.isoformat()}}Z"></relative-time></p>
+            <p class="container">
+              {% if post.link %}
+              {% if post.getDomain() == "youtube.com" or post.getDomain() == "www.youtube.com" or post.getDomain() == "youtu.be" %}
+                <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
+                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
+                </span>
+              {% endif %}
+              {% if post.getDomain() == "vimeo.com" %}
+                <span id="vimeovid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
+                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
+                </span>
+              {% endif %}
+              {% if post.getDomain() == "vine.co" %}
+                <span id="vinevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvine">
+                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vine" aria-hidden="true"></i></a></span>
+                </span>
+              {% endif %}
+              {% if post.isImage() %}
+                <span id="openimg" data-img="{{post.link}}" data-pid="{{post.pid}}" class="closedimg">
+                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
+                </span>
+              {% endif %}
+              {% else %}
+                <span id="opentextpost" data-pid="{{post.pid}}" class="closedtextpost">
+                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
+                </span>
+              {% endif %}
+              <a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{{post.sub.name}}</a>
+              <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
+              <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.getComments() | length}})</a>
+              </p>
+          </div>
+        {% endcache %}
+      </article>
+  {% endif %}
+  {% endfor %}
+{% endcache %}
+{% if page > 1 %}
+<a href="{{url_for(sort_type, page=(page-1), domain=domain)}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
+{% endif %}
+{% if posts|length == 20 %}
+<a href="{{url_for(sort_type, page=(page+1), domain=domain)}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+{% endif %}
+
+{% endblock %}
+{%block pagefoot%}
+<!-- create sub form -->
+<form id="csub-form" data-redir="true" action="{{url_for('do.create_sub')}}" class="ajaxform mfp-hide white-popup-block">
+  {{ csubform.csrf_token }}
+  <h1>Create sub</h1>
+  <p>Create a sub. For you, for your friends or your favorite community</p>
+  <p>{{csubform.subname(placeholder=csubform.subname.label.text, required=True, autofocus=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}</p>
+  <p>{{csubform.title(placeholder=csubform.title.label.text, required=True)}}</p>
+  <div class="alert div-error"></div>
+  <p><button type="submit" id="csub-btnsubmit" class="btn btn-blue" data-prog="Creating...">Create sub</button></p>
+</form>
+{% if current_user.is_authenticated %}
+<form id="post-form" class="mfp-hide white-popup-block">
+  {% set txtpostform = form.CreateSubTextPost()%}
+  {{txtpostform.csrf_token}}
+  <h1>Submit a text post</h1>
+  <p class="sub">/s/{{txtpostform.sub(placeholder="Enter sub name.", required=True)}}</p>
+  <p class="title">{{txtpostform.title(placeholder=txtpostform.title.label.text, required=True, autofocus=True)}}</p>
+  <p class="content">{{txtpostform.content(placeholder="Write your post content here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}</p>
+  <div class="alert div-error">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+    <p></p>
+  </div>
+  <p><button type="submit" class="btn btn-blue" id="txpost-btnsubmit">Submit post</button></p>
+</form>
+<form id="link-post-form" class="mfp-hide white-popup-block">
+  {% set lnkpostform = form.CreateSubLinkPost()%}
+  {{lnkpostform.csrf_token}}
+  <h1>Submit a link post</h1>
+  <p class="sub">/s/{{lnkpostform.sub(placeholder="Enter sub name.", required=True)}}</p>
+  <p class="title">{{lnkpostform.title(placeholder=lnkpostform.title.label.text, required=True, autofocus=True)}}</p>
+  <p class="content">{{lnkpostform.link(type="url", pattern="https?://.+", required=True, placeholder="Paste your link here.")}}</p>
+  <p><label>{{lnkpostform.nsfw.label.text}} {{lnkpostform.nsfw()}}</label></p>
+  <div class="alert div-error">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+    <p></p>
+  </div>
+  <p><button type="submit" class="btn btn-blue" id="lnkpost-btnsubmit">Submit link</button></p>
+</form>
+{% endif %}
+{%endblock%}
