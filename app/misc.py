@@ -282,6 +282,10 @@ def getCommentParentUID(cid):
     return parent.uid
 
 
+def getComment(cid):
+    return SubPostComment.cache.get(cid)
+
+
 @cache.memoize(60)
 def getAnnouncement():
     """ Returns sitewide announcement post or False """

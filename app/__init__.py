@@ -610,6 +610,15 @@ def view_post_inbox(pid):
     return redirect(url_for('view_post', sub=sub.name, pid=post.pid))
 
 
+@app.route("/c/<cid>")
+def view_comment_inbox(cid):
+    """ Gets route to post from just cid """
+    comm = SubPostComment.query.filter_by(cid=cid).first()
+    post = SubPost.query.filter_by(pid=comm.pid).first()
+    return redirect(url_for('view_post', sub=post.sub.name, pid=comm.pid))
+
+
+
 @app.route("/s/<sub>/<pid>/edit")
 @login_required
 def edit_post(sub, pid):

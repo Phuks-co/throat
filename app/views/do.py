@@ -832,7 +832,7 @@ def create_comment(sub, pid):
             pm.subject = 'Post reply: ' + post.title
             pm.mtype = 4  # Post reply
         pm.content = form.comment.data
-        pm.mlink = post.pid
+        pm.mlink = comment.cid
         pm.posted = datetime.datetime.utcnow()
         if pm.receivedby != pm.sentby:  # This is a waste but meh
             db.session.add(pm)
