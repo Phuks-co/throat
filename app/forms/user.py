@@ -76,11 +76,11 @@ class CreateUserMessageForm(FlaskForm):
     """ CreateUserMessage form. """
     to = HiddenField()
     subject = StringField('subject',
-                          validators=[DataRequired(), Length(min=2, max=32)])
+                          validators=[DataRequired(), Length(min=1, max=256)])
 
     content = TextAreaField('message',
                             validators=[DataRequired(),
-                                        Length(min=2, max=128)])
+                                        Length(min=1, max=16384)])
 
 
 class PasswordRecoveryForm(FlaskForm):
