@@ -94,6 +94,14 @@ pre {
 }
 code {
     font-family: 'Courier New', Courier, monospace;
+    white-space: pre;
+    display: block;
+    margin-left: 10px;
+    border: 1px solid #d1d1d1;
+    padding: 6px;
+}
+body.dark code {
+    border: 1px solid #555;
 }
 ul, ol {
     list-style: none;
