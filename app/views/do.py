@@ -1159,7 +1159,7 @@ def accept_mod2inv(sub, user):
         log.link = url_for('edit_sub_mods', sub=sub.name)
         db.session.add(log)
 
-        su = SubSubscriber.query.filter_by(sid=sub.sid, uid=sub.uid, status=1)
+        su = SubSubscriber.query.filter_by(sid=sub.sid, uid=user.uid, status=1)
         if not su.first():
             x = SubSubscriber(sub.sid, user.uid, 1)
             db.session.add(x)
