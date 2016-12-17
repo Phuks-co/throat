@@ -348,7 +348,10 @@ class SubPost(db.Model, CacheableMixin):
         try:
             votes = next(votes)
         except StopIteration:
-            return 0
+            l = SubPostMetadata(self.pid, 'score', 1)
+            db.session.add(l)
+            db.session.commit()
+            return 1
         return int(votes.value) if votes else 0
 
     def getComments(self, parent=None):
