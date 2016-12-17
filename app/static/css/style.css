@@ -601,6 +601,7 @@ body.dark textarea#comment {
     margin: 6px;
     display: block;
     border: 1px solid lightgray;
+    white-space: pre-line;
 }
 .post a {
     text-decoration: none;
