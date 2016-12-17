@@ -435,7 +435,7 @@ def newComReplyCount(user):
 
 def hasSubscribed(sub, user):
     """ Returns True if the current user is subscribed """
-    x = SubSubscriber.cache.filter(sid=sub.sid, uid=user.uid, status='1')
+    x = SubSubscriber.cache.filter(sid=sub.sid, uid=user.uid, status=1)
     try:
         x = next(x)
     except StopIteration:
@@ -445,7 +445,7 @@ def hasSubscribed(sub, user):
 
 def hasBlocked(sub, user):
     """ Returns True if the current user has blocked """
-    x = SubSubscriber.cache.filter(sid=sub.sid, uid=user.uid, status='2')
+    x = SubSubscriber.cache.filter(sid=sub.sid, uid=user.uid, status=2)
     try:
         x = next(x)
     except StopIteration:
@@ -473,7 +473,7 @@ def getSubCreation(sub):
     return x.replace(' ', 'T')  # Converts to ISO format
 
 
-@cache.memoize(300)
+@cache.memoize(60)
 def getSuscriberCount(sub):
     """ Returns subscriber count """
     x = SubSubscriber.cache.filter(sid=sub.sid, status=1)
@@ -483,7 +483,7 @@ def getSuscriberCount(sub):
         return 0
 
 
-@cache.memoize(300)
+@cache.memoize(60)
 def getModCount(sub):
     """ Returns the sub's mod count metadata """
     x = getMetadata(sub, 'mod2', all=True)
@@ -491,7 +491,7 @@ def getModCount(sub):
     return len(x)
 
 
-@cache.memoize(300)
+@cache.memoize(60)
 def getSubPostCount(sub):
     """ Returns the sub's post count """
     y = SubPost.query.filter_by(sid=sub.sid).count()
@@ -573,7 +573,7 @@ def getSubscriptions(uid):
     """ Returns all the subs the current user is subscribed to """
     if uid:
         subs = SubSubscriber.cache.filter(uid=uid,
-                                          status='1')
+                                          status=1)
     else:
         subs = getDefaultSubs()
     return list(subs)

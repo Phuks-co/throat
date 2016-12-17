@@ -257,10 +257,12 @@ class SubSubscriber(db.Model, CacheableMixin):
     time = Column(DateTime)
     order = Column(Integer)  # Order in the subs bar.
 
-    def __init__(self, sid, uid):
+    def __init__(self, sid, uid, status):
         self.time = datetime.datetime.utcnow()
         self.sid = sid
         self.uid = uid
+        SubSubscriber.cache.uncache(sid=sid, uid=uid, status=status)
+        SubSubscriber.cache.uncache(uid=uid, status=status)
 
     @hybrid_property
     def getSubName(self):

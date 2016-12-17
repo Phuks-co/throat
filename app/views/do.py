@@ -139,8 +139,7 @@ def register():
         # defaults
         defaults = getDefaultSubs()
         for d in defaults:
-            x = SubSubscriber(d.sid, user.uid)
-            x.status = 1
+            x = SubSubscriber(d.sid, user.uid, 1)
             db.session.add(x)
         db.session.commit()
         login_user(SiteUser(user))
@@ -277,8 +276,7 @@ def create_sub():
         alog.desc = current_user.get_username() + ' created a new sub'
         alog.link = url_for('view_sub', sub=sub.name)
         db.session.add(alog)
-        x = SubSubscriber(sub.sid, current_user.get_id())
-        x.status = 1
+        x = SubSubscriber(sub.sid, current_user.get_id(), 1)
         db.session.add(x)
 
         db.session.commit()
@@ -531,8 +529,7 @@ def subscribe_to_sub(sid):
     su = SubSubscriber.query.filter_by(sid=sid, uid=userid, status=1).first()
     if su:
         return json.dumps({'status': 'ok', 'message': 'already subscribed'})
-    subscribe = SubSubscriber(sid, userid)
-    subscribe.status = '1'
+    subscribe = SubSubscriber(sid, userid, 1)
 
     blocked = SubSubscriber.query.filter_by(sid=sid) \
                                  .filter_by(uid=userid) \
@@ -564,10 +561,7 @@ def block_sub(sid):
     su = SubSubscriber.query.filter_by(sid=sid, uid=userid, status=2).first()
     if su:
         return json.dumps({'status': 'ok', 'message': 'already blocked'})
-    subscribe = SubSubscriber()
-    subscribe.sid = sid
-    subscribe.uid = userid
-    subscribe.status = '2'
+    subscribe = SubSubscriber(sid, userid, 2)
     subscribe.time = datetime.datetime.utcnow()
 
     subbed = SubSubscriber.query.filter_by(sid=sid) \
@@ -1163,8 +1157,7 @@ def accept_mod2inv(sub, user):
 
         su = SubSubscriber.query.filter_by(sid=sub.sid, uid=sub.uid, status=1)
         if not su.first():
-            x = SubSubscriber(sub.sid, user.uid)
-            x.status = 1
+            x = SubSubscriber(sub.sid, user.uid, 1)
             db.session.add(x)
         db.session.commit()
 
