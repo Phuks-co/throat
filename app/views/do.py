@@ -977,6 +977,9 @@ def ban_user_sub(sub):
             db.session.add(msg)
             db.session.add(meta)
             db.session.commit()
+
+            SubMetadata.cache.uncache(key='ban', sid=sub.sid)
+            cache.delete_memoized(getMetadata, sub, 'ban', all=True)
             return json.dumps({'status': 'ok', 'mid': msg.mid,
                                'sentby': current_user.get_id()})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -1070,7 +1073,8 @@ def remove_sub_ban(sub, user):
 
         SubMetadata.cache.uncache(key='xban', sid=sub.sid)
         cache.delete_memoized(getMetadata, sub, 'xban', all=True)
-
+        SubMetadata.cache.uncache(key='ban', sid=sub.sid)
+        cache.delete_memoized(getMetadata, sub, 'ban', all=True)
         return json.dumps({'status': 'ok', 'msg': 'user ban removed'})
     else:
         abort(403)
@@ -1092,11 +1096,12 @@ def remove_mod2(sub, user):
             ' from the mod team'
         log.link = url_for('edit_sub_mods', sub=sub.name)
         db.session.add(log)
-
         db.session.commit()
+
         SubMetadata.cache.uncache(key='mod2', sid=sub.sid)
         cache.delete_memoized(getMetadata, sub, 'mod2', all=True)
-
+        SubMetadata.cache.uncache(key='xmod2', sid=sub.sid)
+        cache.delete_memoized(getMetadata, sub, 'xmod2', all=True)
         return json.dumps({'status': 'ok', 'msg': 'user demodded'})
     else:
         abort(403)
@@ -1105,7 +1110,7 @@ def remove_mod2(sub, user):
 @do.route("/do/revoke_mod2inv/<sub>/<user>", methods=['POST'])
 @login_required
 def revoke_mod2inv(sub, user):
-    """ Remove Mod2 """
+    """ revoke Mod2 inv """
     user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
     sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
     if current_user.is_topmod(sub) or current_user.is_admin():
@@ -1122,7 +1127,8 @@ def revoke_mod2inv(sub, user):
 
         SubMetadata.cache.uncache(key='mod2i', sid=sub.sid)
         cache.delete_memoized(getMetadata, sub, 'mod2i', all=True)
-
+        SubMetadata.cache.uncache(key='xmod2i', sid=sub.sid)
+        cache.delete_memoized(getMetadata, sub, 'xmod2i', all=True)
         return json.dumps({'status': 'ok', 'msg': 'user invite revoked'})
     else:
         abort(403)
@@ -1148,12 +1154,16 @@ def accept_mod2inv(sub, user):
         log.desc = user.name + ' accepted mod invite'
         log.link = url_for('edit_sub_mods', sub=sub.name)
         db.session.add(log)
-        db.session.commit()
 
         x = SubSubscriber(sub.sid, user.uid)
         x.status = 1
         db.session.add(x)
+        db.session.commit()
 
+        SubMetadata.cache.uncache(key='mod2i', sid=sub.sid)
+        cache.delete_memoized(getMetadata, sub, 'mod2i', all=True)
+        SubMetadata.cache.uncache(key='mod2', sid=sub.sid)
+        cache.delete_memoized(getMetadata, sub, 'mod2', all=True)
         return json.dumps({'status': 'ok', 'msg': 'user modded'})
     else:
         abort(404)
@@ -1175,6 +1185,11 @@ def refuse_mod2inv(sub, user):
         log.link = url_for('edit_sub_mods', sub=sub.name)
         db.session.add(log)
         db.session.commit()
+
+        SubMetadata.cache.uncache(key='mod2i', sid=sub.sid)
+        cache.delete_memoized(getMetadata, sub, 'mod2i', all=True)
+        SubMetadata.cache.uncache(key='xmod2i', sid=sub.sid)
+        cache.delete_memoized(getMetadata, sub, 'xmod2i', all=True)
         return json.dumps({'status': 'ok', 'msg': 'invite refused'})
     else:
         abort(404)
