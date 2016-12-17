@@ -528,6 +528,9 @@ def edit_mod():
 def subscribe_to_sub(sid):
     """ Subscribe to sub """
     userid = current_user.get_id()
+    su = SubSubscriber.query.filter_by(sid=sid, uid=userid, status=1).first()
+    if su:
+        return json.dumps({'status': 'ok', 'message': 'already subscribed'})
     subscribe = SubSubscriber(sid, userid)
     subscribe.status = '1'
 
@@ -558,6 +561,9 @@ def unsubscribe_from_sub(sid):
 def block_sub(sid):
     """ Block sub """
     userid = current_user.get_id()
+    su = SubSubscriber.query.filter_by(sid=sid, uid=userid, status=2).first()
+    if su:
+        return json.dumps({'status': 'ok', 'message': 'already blocked'})
     subscribe = SubSubscriber()
     subscribe.sid = sid
     subscribe.uid = userid
@@ -571,7 +577,7 @@ def block_sub(sid):
         db.session.delete(subbed)
     db.session.add(subscribe)
     db.session.commit()
-    return json.dumps({'status': 'ok', 'message': 'subscribed'})
+    return json.dumps({'status': 'ok', 'message': 'blocked'})
 
 
 @do.route("/do/unblock/<sid>", methods=['POST'])
@@ -1155,9 +1161,11 @@ def accept_mod2inv(sub, user):
         log.link = url_for('edit_sub_mods', sub=sub.name)
         db.session.add(log)
 
-        x = SubSubscriber(sub.sid, user.uid)
-        x.status = 1
-        db.session.add(x)
+        su = SubSubscriber.query.filter_by(sid=sub.sid, uid=sub.uid, status=1)
+        if not su.first():
+            x = SubSubscriber(sub.sid, user.uid)
+            x.status = 1
+            db.session.add(x)
         db.session.commit()
 
         SubMetadata.cache.uncache(key='mod2i', sid=sub.sid)
