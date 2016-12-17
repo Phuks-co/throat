@@ -605,6 +605,8 @@ def create_txtpost():
         post.content = form.content.data
         post.ptype = "0"
         db.session.add(post)
+        l = SubPostMetadata(post.pid, 'score', 1)
+        db.session.add(l)
         db.session.commit()
         return json.dumps({'status': 'ok', 'pid': post.pid, 'sub': sub.name})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -661,6 +663,8 @@ def create_lnkpost():
         post.link = form.link.data
         post.ptype = "1"
         db.session.add(post)
+        l = SubPostMetadata(post.pid, 'score', 1)
+        db.session.add(l)
         nsfw = SubPostMetadata(post.pid, 'nsfw', form.nsfw.data)
         db.session.add(nsfw)
         db.session.commit()

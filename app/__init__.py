@@ -35,7 +35,7 @@ from .forms import CreateSubFlair, UseBTCdonationForm
 from .views import do, api
 from .views.api import oauth
 from . import misc, forms, caching
-from .misc import SiteUser, getVoteCount, hasVoted, getMetadata, hasMail, isMod
+from .misc import SiteUser, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
 from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
@@ -189,7 +189,7 @@ def utility_processor():
             'logoutform': LogOutForm(), 'sendmsg': CreateUserMessageForm(),
             'csubform': CreateSubForm(), 'markdown': our_markdown,
             'commentform': PostComment(), 'dummyform': DummyForm(),
-            'getVoteCount': getVoteCount, 'hasVoted': hasVoted,
+            'hasVoted': hasVoted,
             'delpostform': DeletePost(), 'getMetadata': getMetadata,
             'config': app.config, 'form': forms,
             'getSuscriberCount': getSuscriberCount, 'func': misc}

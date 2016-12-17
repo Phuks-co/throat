@@ -240,19 +240,6 @@ class RestrictedMarkdown(markdown.Extension):
         md.inlinePatterns.add('user', user_tag, '>strong')
 
 
-def getVoteCount(post):
-    """ Returns the vote count of a post. The parameter is the
-    SubPost object """
-    count = 0
-    for vote in post.votes:
-        if vote.positive:
-            count += 1
-        else:
-            count -= 1
-
-    return count
-
-
 @cache.memoize(50)
 def hasVoted(uid, post, up=True):
     """ Checks if the user up/downvoted the post. """

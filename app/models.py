@@ -348,7 +348,7 @@ class SubPost(db.Model, CacheableMixin):
         try:
             votes = next(votes)
         except StopIteration:
-            return 1
+            return 0
         return int(votes.value) if votes else 0
 
     def getComments(self, parent=None):
