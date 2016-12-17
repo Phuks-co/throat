@@ -586,7 +586,6 @@ def getBTCaddr():
         return x.value
 
 
-@cache.memoize(300)
 def getTodaysTopPosts():
     """ Returns posts with todays date """
     posts = SubPost.query.filter(cast(SubPost.posted, Date) ==

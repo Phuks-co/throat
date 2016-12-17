@@ -24,7 +24,9 @@
   </div>
 </div>
 {% endif %}
-{% if func.getTodaysTopPosts() %}
+{%cache 3600, 'toppost' %}
+{% set tp = func.getTodaysTopPosts()%}
+{% if tp %}
   <span class="col-12"><hr></span>
   <div class="col-12 row todaystop">
     <div class="col-12">
@@ -32,17 +34,16 @@
     </div>
     <div class="list">
       <ul>
-        {%cache 3600, 'toppost' %}
-      {% for post in func.getTodaysTopPosts() %}
+      {% for post in tp %}
         <li><a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{post.title}}</a><br>
         <span class="sidelocale">
           <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=post.sub.name)}}">/s/{{post.sub.name}}</a></li>
         </span>
       {% endfor %}
-        {% endcache %}
       </ul>
     </div>
   </div>
+{% endcache %}
 {%endif%}
 
 {% if func.enableBTCmod() %}
