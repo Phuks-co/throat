@@ -778,6 +778,7 @@ def upvote(pid, value):
             qvote.positive = True if voteValue == 1 else False
             xvotes.value = int(xvotes.value) + (voteValue*2)
             db.session.commit()
+            SubPostMetadata.cache.uncache(key='score', pid=post.pid)
             return json.dumps({'status': 'ok',
                                'message': 'Vote flipped.'})
     else:
@@ -786,7 +787,7 @@ def upvote(pid, value):
         vote.uid = current_user.get_id()
         vote.positive = True if voteValue == 1 else False
         db.session.add(vote)
-
+    SubPostMetadata.cache.uncache(key='score', pid=post.pid)
     xvotes.value = int(xvotes.value) + voteValue
     db.session.commit()
     return json.dumps({'status': 'ok'})
