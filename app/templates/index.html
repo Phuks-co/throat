@@ -32,12 +32,14 @@
     </div>
     <div class="list">
       <ul>
+        {%cache 3600, 'toppost' %}
       {% for post in func.getTodaysTopPosts() %}
         <li><a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{post.title}}</a><br>
         <span class="sidelocale">
           <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=post.sub.name)}}">/s/{{post.sub.name}}</a></li>
         </span>
       {% endfor %}
+        {% endcache %}
       </ul>
     </div>
   </div>
