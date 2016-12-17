@@ -71,7 +71,7 @@
           <p>
             This user has {{ccount}} comments
           </p>
-          {% for comments in user.comments[::-1][:20] if not comment.deleted %}
+          {% for comments in user.comments[::-1][:20] if not comments.deleted %}
           <li>
             <div class="usercomments data">
               <p><a class="title" href="{{ url_for('view_post', sub=comments.post.sub.name, pid=comments.post.pid) }}">{{comments.post.title}}</a></p>
