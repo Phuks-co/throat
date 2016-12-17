@@ -368,7 +368,7 @@ class SubPost(db.Model, CacheableMixin):
     @hybrid_property
     def sub(self):
         """ Returns post's sub, replaces db relationship """
-        return Sub.cache.get(self.sid)
+        return Sub.query.get(self.sid)
 
     @hybrid_property
     def user(self):
