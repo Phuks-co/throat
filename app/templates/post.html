@@ -441,6 +441,6 @@
 {% endblock %}
 {%block pagefoot%}
 {% if not current_user.block_styles() %}
-<style>{{post.sub.stylesheet.content}}</style>
+<style>{{post.sub.stylesheet.content|safe}}</style>
 {% endif %}
 {%endblock%}
