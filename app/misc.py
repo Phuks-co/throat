@@ -300,7 +300,8 @@ def getMetadata(obj, key, value=None, all=False, record=False, cache=True):
         # THIS FUNCTION. IF THIS ACTUALLY HAPPENS YOU SHOULD FEEL BAD FOR
         # PASSING UNVERIFIED DATA.
         return
-
+    if record:
+        cache = False
     try:
         if all:
             x = obj.properties.filter_by(key=key).all()
