@@ -161,7 +161,7 @@
                 </span>
               </a>
             {% else %}
-              <a href="{{post.link}}" rel="noreferrer noopener">
+              <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
                 <span class="fa-stack fa-3x" style="color: #616161;">
                   <i class="fa fa-square fa-stack-2x"></i>
                   {% if post.isImage() %}
