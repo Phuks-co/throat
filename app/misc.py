@@ -275,8 +275,9 @@ class RestrictedMarkdown(markdown.Extension):
     """ Class to restrict some markdown stuff """
     RE_AMENTION = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/s\/)' \
                   '([A-Za-z]+[A-Za-z0-9]+))'
-    RE_URL = r'(<(?:f|ht)tps?://[^>]*>|\b(?:f|ht)tps?://[^)<>\s]+[^.,)<>\s]|' \
-             r'\bwww\.[^)<>\s]+[^.,)<>\s]|[^(<\s]+\.(?:com|net|org)\b)'
+    RE_URL = r'(<(?:f|ht)tps?://[^>]*>|\b(?:f|ht)tps?://[^)<>\s\'"]+[^.,)' \
+             r'<>\s\'"]|\bwww\.[^)<>\s\'"]+[^.,)<>\s\'"]|[^(<\s\'"]+\.' \
+             r'(?:com|net|org)\b)'
 
     def extendMarkdown(self, md, md_globals):
         """ Here we disable stuff """
