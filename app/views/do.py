@@ -225,12 +225,12 @@ def delete_post():
             SubPostMetadata.cache.uncache(key='moddeleted', pid=post.pid)
 
         # :(
-        cache.delete(make_template_fragment_key('subposts',
-                                                vary_on=[post.sub.sid, 'new']))
-        cache.delete(make_template_fragment_key('subposts',
-                                                vary_on=[post.sub.sid, 'hot']))
-        cache.delete(make_template_fragment_key('subposts',
-                                                vary_on=[post.sub.sid, 'top']))
+        #cache.delete(make_template_fragment_key('subposts',
+        #                                        vary_on=[post.sub.sid, 'new']))
+        #cache.delete(make_template_fragment_key('subposts',
+        #                                        vary_on=[post.sub.sid, 'hot']))
+        #cache.delete(make_template_fragment_key('subposts',
+        #                                        vary_on=[post.sub.sid, 'top']))
         db.session.add(md)
         db.session.commit()
 
@@ -668,8 +668,8 @@ def create_lnkpost():
         nsfw = SubPostMetadata(post.pid, 'nsfw', form.nsfw.data)
         db.session.add(nsfw)
         db.session.commit()
-        ckey = make_template_fragment_key('subposts', vary_on=[post.sub.sid])
-        cache.delete(ckey)
+        #ckey = make_template_fragment_key('subposts', vary_on=[post.sub.sid])
+        #cache.delete(ckey)
 
         # Try to get thumbnail.
         # 1 - Check if it's an image
@@ -1362,8 +1362,8 @@ def toggle_sticky(post):
         cache.delete_memoized(getMetadata, post.sub, 'sticky')
         ckey = make_template_fragment_key('sticky', vary_on=[post.sub.sid])
         cache.delete(ckey)
-        ckey = make_template_fragment_key('subposts', vary_on=[post.sub.sid])
-        cache.delete(ckey)
+        #ckey = make_template_fragment_key('subposts', vary_on=[post.sub.sid])
+        #cache.delete(ckey)
 
     return redirect(url_for('view_sub', sub=post.sub.name))
 
