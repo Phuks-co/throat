@@ -864,6 +864,33 @@ $(document).ready(function() {
       }
     });
 
+    $('span[id^="gfycat"]').click(function(e){
+      var pid = $(e.currentTarget).data().pid
+      var url = $(e.currentTarget).data().vid
+      var player = document.createElement('video');
+      var source = document.createElement('source');
+      playerid = 'player' + pid;
+      if($(this).hasClass('closedgfycat'))  {
+        player.id = "vid" + pid
+        player.style = 'max-width:560px;display:block;';
+        player.preload ="auto"
+        player.autoplay = "autoplay"
+        player.loop = "loop"
+        source.src = 'https://zippy.gfycat.com/' + gfycatID(url) + '.mp4';
+        source.type = "video/webm"
+        $(e.currentTarget).addClass('openedgfycat').removeClass('closedgfycat');
+        document.getElementById(playerid).appendChild(player);
+        document.getElementById("vid" + pid).appendChild(source);
+        $('#' + playerid + ' a').html('<i class="fa fa-close" aria-hidden="true"></i>');
+      }
+      else {
+        $(this).addClass('closedgfycat').removeClass('openedgfycat');
+        $('#' + playerid + ' video').remove();
+        $('#' + playerid + ' a').html('<i class="fa fa-video-camera" aria-hidden="true"></i>');
+
+      }
+    });
+
     $('span[id^="openimg"]').click(function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().img
@@ -1036,6 +1063,12 @@ function vimeoID(url) {
 }
 function vineID(url) {
   var match = url.match(/^http(?:s?):\/\/(?:www\.)?vine\.co\/v\/([a-zA-Z0-9]{1,13})$/);
+  if (match){
+    return match[1];
+	}
+}
+function gfycatID(url) {
+  var match = url.match(/^https:\/\/gfycat\.com\/([a-zA-Z0-9]{1,20})$/);
   if (match){
     return match[1];
 	}

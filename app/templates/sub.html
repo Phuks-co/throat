@@ -279,6 +279,11 @@
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vine" aria-hidden="true"></i></a></span>
                 </span>
               {% endif %}
+              {% if post.getDomain() == "gfycat.com" %}
+                <span id="gfycat" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedgfycat">
+                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-video-camera" aria-hidden="true"></i></a></span>
+                </span>
+              {% endif %}
               {% if post.isImage() %}
                 <span id="openimg" data-img="{{post.link}}" data-pid="{{post.pid}}" class="closedimg">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
