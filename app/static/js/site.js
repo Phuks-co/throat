@@ -875,7 +875,7 @@ $(document).ready(function() {
         frame.frameborder = '0';
         frame.src = 'https://gfycat.com/ifr/' + gfycatID(url);
         playerid = 'player' + pid;
-        $(e.currentTarget).addClass('openedvine').removeClass('closedgfycat');
+        $(e.currentTarget).addClass('openedgfycat').removeClass('closedgfycat');
         document.getElementById(playerid).appendChild(frame);
         $('#' + playerid + ' a').html('<i class="fa fa-close" aria-hidden="true"></i>');
       }
