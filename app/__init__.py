@@ -791,7 +791,8 @@ def view_messages_modmail():
     """ WIP: View user's modmail """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
-                            .filter_by(mtype=2) \
+                            .filter(or_(Message.mtype=='2', \
+                                        Message.mtype=='7')) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="ModMail")

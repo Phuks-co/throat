@@ -19,7 +19,7 @@
   <div class="col-3"><a class="btn"  href="{{ url_for('view_messages_sent') }}">
     <i class="fa fa-send-o" aria-hidden="true"></i></a>
   </div>
-  <div class="col-12"><a class="btn"  href="{{ url_for('view_messages_modmail') }}">
+  <div class="col-12"><a class="btn{% if current_user.new_modmail_count() > 0 %} btn-orange{% endif %}"  href="{{ url_for('view_messages_modmail') }}">
     <i class="fa fa-user-plus" aria-hidden="true"></i> Modmail {% if current_user.new_modmail_count() > 0 %} <i class="fa fa-envelope" aria-hidden="true"></i> {{current_user.new_modmail_count()}}{% endif %}</a>
   </div>
 </div>
@@ -43,6 +43,9 @@
         {% endif %}
         {% if message.mtype == 2 %}
           <p>Please visit: <a href="{{url_for('edit_sub_mods', sub=message.mlink)}}"> /s/{{message.mlink}}/mods</a><p>
+        {% endif %}
+        {% if message.mtype == 7 %}
+          <p>Please visit: <a href="{{url_for('view_sub_bans', sub=message.mlink)}}"> /s/{{message.mlink}}/bannedusers</a><p>
         {% endif %}
         <p class="author"><time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>
         <p class="container">

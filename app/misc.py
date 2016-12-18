@@ -1,7 +1,7 @@
 """ Misc helper function and classes. """
 from urllib.parse import urlparse, parse_qs
 from datetime import date
-from sqlalchemy import Date, cast
+from sqlalchemy import Date, cast, or_
 import sqlalchemy.orm
 import markdown
 import sendgrid
@@ -422,7 +422,8 @@ def newPMCount(user):
 
 def newModmailCount(user):
     """ Returns new replies count in message area """
-    x = Message.query.filter_by(read=None).filter_by(mtype=2) \
+    x = Message.query.filter_by(read=None) \
+                     .filter(or_(Message.mtype=='2', Message.mtype=='7')) \
                      .filter_by(receivedby=user.uid).count()
     return x
 

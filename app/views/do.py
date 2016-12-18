@@ -972,12 +972,12 @@ def ban_user_sub(sub):
             msg.subject = 'You have been banned from /s/' + sub.name
             msg.content = ':p'
             msg.posted = datetime.datetime.utcnow()
-            msg.mtype = 2  # sub related
-            msg.mlink = '/s/' + sub.name
+            msg.mtype = 7  # sub bans related
+            msg.mlink = sub.name
             meta = SubMetadata(sub, 'ban', user.uid)
 
             log = SubLog(sub.sid)
-            log.action = 2  # action modedit of sub
+            log.action = 7  # sub bans related
             log.desc = current_user.get_username() + ' banned ' + user.name + \
                 ' from the sub'
             log.link = url_for('view_sub_bans', sub=sub.name)
@@ -1073,10 +1073,21 @@ def remove_sub_ban(sub, user):
         inv = SubMetadata.query.filter_by(key='ban') \
                             .filter_by(value=user.uid).first()
         inv.key = 'xban'
+
+        msg = Message()
+        msg.receivedby = user.uid
+        msg.sentby = current_user.get_id()
+        msg.subject = 'You have been unbanned from /s/' + sub.name
+        msg.content = ':D'
+        msg.posted = datetime.datetime.utcnow()
+        msg.mtype = 7  # sub bans related
+        msg.mlink = sub.name
+
         log = SubLog(sub.sid)
-        log.action = 2  # ban action
+        log.action = 7  # sub ban action
         log.desc = current_user.get_username() + ' removed ban on ' + user.name
         log.link = url_for('view_sub_bans', sub=sub.name)
+        db.session.add(msg)
         db.session.add(log)
         db.session.commit()
 
