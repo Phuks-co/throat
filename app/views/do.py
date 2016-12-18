@@ -674,8 +674,8 @@ def create_lnkpost():
         # Try to get thumbnail.
         # 1 - Check if it's an image
         try:
-            req = requests.get(form.link.data, timeout=0.5)
-        except requests.exceptions.RequestException:
+            req = misc.safeRequest(form.link.data)
+        except (requests.exceptions.RequestException, ValueError):
             return json.dumps({'status': 'ok', 'pid': post.pid,
                                'sub': sub.name})
         ctype = req.headers['content-type'].split(";")[0].lower()
@@ -695,8 +695,8 @@ def create_lnkpost():
                 return json.dumps({'status': 'ok', 'pid': post.pid,
                                    'sub': sub.name})
             try:
-                req = requests.get(img, timeout=0.5)
-            except requests.exceptions.RequestException:
+                req = misc.safeRequest(img)
+            except (requests.exceptions.RequestException, ValueError):
                 return json.dumps({'status': 'ok', 'pid': post.pid,
                                    'sub': sub.name})
             im = Image.open(BytesIO(req.content)).convert('RGB')
@@ -1222,6 +1222,8 @@ def read_pm(mid):
     """ Mark PM as read """
     message = Message.query.filter_by(mid=mid).first()
     if session['user_id'] == message.receivedby:
+        if message.read is not None:
+            return json.dumps({'status': 'ok'})
         read = datetime.datetime.utcnow()
         message.read = read
         db.session.commit()

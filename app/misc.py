@@ -1,7 +1,9 @@
 """ Misc helper function and classes. """
 from urllib.parse import urlparse, parse_qs
 import datetime
-from sqlalchemy import Date, cast, or_
+import time
+from sqlalchemy import cast, or_
+import requests
 import sqlalchemy.orm
 import markdown
 import sendgrid
@@ -205,6 +207,30 @@ class SiteAnon(AnonymousUserMixin):
     def is_subban(cls, sub):
         """ Anons dont get banned by default. """
         return False
+
+
+def safeRequest(url):
+    """ Gets stuff for the internet, with timeouts and size restrictions """
+    max_size = 25000000  # won't download more than 25MB
+    recieve_timeout = 10  # won't download for more than 10s
+    r = requests.get(url, stream=True, timeout=0.5)
+    r.raise_for_status()
+
+    if int(r.headers.get('Content-Length')) > max_size:
+        raise ValueError('response too large')
+
+    size = 0
+    start = time.time()
+    f = ''
+    for chunk in r.iter_content(1024):
+        if time.time() - start > recieve_timeout:
+            raise ValueError('timeout reached')
+
+        size += len(chunk)
+        f += chunk
+        if size > max_size:
+            raise ValueError('response too large')
+    return f
 
 
 class NiceLinkPattern(markdown.inlinepatterns.LinkPattern):
