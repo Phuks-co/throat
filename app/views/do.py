@@ -1332,7 +1332,7 @@ def toggle_sticky(post):
     """ Toggles post stickyness - not api """
     post = SubPost.query.filter_by(pid=post).first()
 
-    if not current_user.is_mod(post.sub) or not current_user.is_admin():
+    if not current_user.is_mod(post.sub) and not current_user.is_admin():
         abort(403)
 
     form = DeletePost()
