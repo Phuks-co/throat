@@ -328,8 +328,7 @@ $(document).ready(function() {
         var button = $(e.target);
       }
       var id = button.data('cid');
-      $('#content-'+id).hide();
-      $('#bott-'+id).hide();
+      $('#comment-'+id).hide();
       $('#child-'+id).hide();
       button.removeClass('collapse');
       button.addClass('expand');
@@ -342,8 +341,7 @@ $(document).ready(function() {
         var button = $(e.target);
       }
       var id = button.data('cid');
-      $('#content-'+id).show();
-      $('#bott-'+id).show();
+      $('#comment-'+id).show();
       $('#child-'+id).show();
       button.removeClass('expand');
       button.addClass('collapse');
