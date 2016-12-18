@@ -94,7 +94,7 @@ pre {
 }
 code {
     font-family: 'Courier New', Courier, monospace;
-    white-space: pre;
+    white-space: pre-wrap;
     display: block;
     margin-left: 10px;
     border: 1px solid #d1d1d1;
@@ -601,7 +601,7 @@ body.dark textarea#comment {
     margin: 6px;
     display: block;
     border: 1px solid lightgray;
-    white-space: pre-line;
+    white-space: pre-wrap;
 }
 .post a {
     text-decoration: none;
