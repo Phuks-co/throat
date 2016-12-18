@@ -234,11 +234,28 @@ def safeRequest(url):
     return (r, f)
 
 
+class URLifyPattern(markdown.inlinepatterns.LinkPattern):
+    """ Return a link element from the given match. """
+    def handleMatch(self, m):
+        el = markdown.util.etree.Element("a")
+        el.text = markdown.util.AtomicString(m.group(2))
+        href = m.group(2)
+
+        if not href.split('://')[0] in ('http', 'https'):
+            if '@' in href and '/' not in href:
+                href = 'mailto:' + href
+            else:
+                href = 'http://' + href
+        el.set('href', href)
+
+        return el
+
+
 class NiceLinkPattern(markdown.inlinepatterns.LinkPattern):
     """ Return a link element from the given match. """
     def handleMatch(self, m):
         el = markdown.util.etree.Element("a")
-        el.text = m.group(2)
+        el.text = markdown.util.AtomicString(m.group(2))
         if el.text.startswith('@') or el.text.startswith('/u/'):
             href = '/u/' + m.group(4)
         elif el.text.startswith('/s/'):
@@ -258,13 +275,17 @@ class RestrictedMarkdown(markdown.Extension):
     """ Class to restrict some markdown stuff """
     RE_AMENTION = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/s\/)' \
                   '([A-Za-z]+[A-Za-z0-9]+))'
+    RE_URL = r'(<(?:f|ht)tps?://[^>]*>|\b(?:f|ht)tps?://[^)<>\s]+[^.,)<>\s]|' \
+             r'\bwww\.[^)<>\s]+[^.,)<>\s]|[^(<\s]+\.(?:com|net|org)\b)'
 
     def extendMarkdown(self, md, md_globals):
         """ Here we disable stuff """
         del md.inlinePatterns['image_link']
         del md.inlinePatterns['image_reference']
         user_tag = NiceLinkPattern(self.RE_AMENTION, md)
+        url = URLifyPattern(self.RE_URL, md)
         md.inlinePatterns.add('user', user_tag, '>strong')
+        md.inlinePatterns.add('user', url, '>strong')
 
 
 @cache.memoize(50)
