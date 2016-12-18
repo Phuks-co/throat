@@ -1051,13 +1051,13 @@ function gfycatID(url) {
 	}
 }
 function imgurID(url) {
-  var match = url.match(/^https?:\/\/i\.imgur\.com\/(.*?)(?:\/.gifv|$)/);
+  var match = url.match(/^http(?:s?):\/\/i\.imgur\.com\/(.*?)(?:\/.gifv|$)/);
   if (match){
     return match[1].replace(/.gifv/,'');
 	}
 }
 function slimgID(url) {
-  var match = url.match(/^https?:\/\/i\.sli\.mg\/(.*?)(?:\/.gifv|$)/);
+  var match = url.match(/^http(?:s?):\/\/i\.sli\.mg\/(.*?)(?:\/.gifv|$)/);
   if (match){
     return match[1].replace(/.gifv/,'');
 	}
