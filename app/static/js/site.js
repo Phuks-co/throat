@@ -884,6 +884,32 @@ $(document).ready(function() {
       }
     });
 
+    $('span[id^="openvid"]').click(function(e){
+      var pid = $(e.currentTarget).data().pid
+      var url = $(e.currentTarget).data().vid
+      var player = document.createElement('video');
+      var source = document.createElement('source');
+      playerid = 'player' + pid;
+      if($(this).hasClass('closedvid'))  {
+        player.id = "vid" + pid
+        player.style = 'max-width:560px;display:block;';
+        player.preload ="auto"
+        player.autoplay = "autoplay"
+        player.loop = "loop"
+        source.src = url
+        source.type = "video/webm"
+        $(e.currentTarget).addClass('openedvid').removeClass('closedvid');
+        document.getElementById(playerid).appendChild(player);
+        document.getElementById("vid" + pid).appendChild(source);
+        $('#' + playerid + ' a').html('<i class="fa fa-close" aria-hidden="true"></i>');
+      }
+      else {
+        $(this).addClass('closedvid').removeClass('openedvid');
+        $('#' + playerid + ' video').remove()
+        $('#' + playerid + ' a').html('<i class="fa fa-play" aria-hidden="true"></i>');
+      }
+    });
+
     $('span[id^="opentextpost"]').click(function(e){
       var pid = $(e.currentTarget).data().pid
       var div = document.createElement('div');

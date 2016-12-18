@@ -394,6 +394,11 @@ class SubPost(db.Model, CacheableMixin):
         suffix = ['.png', '.jpg', '.gif', '.tiff', '.bmp']
         return self.link.lower().endswith(tuple(suffix))
 
+    def isVideo(self):
+        """ Returns True if link ends with img suffix """
+        suffix = ['.mp4', '.webm']
+        return self.link.lower().endswith(tuple(suffix))
+
     def isAnnouncement(self):
         """ Returns True if post is an announcement """
         ann = SiteMetadata.query.filter_by(key='announcement').first()
