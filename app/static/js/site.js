@@ -307,7 +307,7 @@ $(document).ready(function() {
       e.preventDefault();
     });
     $('.delpost').click(function(e){
-      $("#post").prop('value', $(e.target).data('post'));
+      $("#delete-post-form input#post").prop('value', $(this).data('post'));
     });
     $("#toggledark").click(function() {
         var mode = getCookie("dayNight");
