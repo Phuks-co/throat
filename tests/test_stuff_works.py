@@ -96,13 +96,13 @@ class ABAccountTestCase(unittest.TestCase):
         x = self.text_post('testing', 'yo im testing', '# yeah, test')
         p = json.loads(x.get_data(True))
         assert p['status'] == 'ok'
-        x = self.app.get('/s/testing/{0}'.format(p['pid']))
+        x = self.app.get(p['addr'])
         assert 'yo im testing' in x.get_data(True)
 
         x = self.link_post('testing', 'still testing', 'https://google.com')
         p = json.loads(x.get_data(True))
         assert p['status'] == 'ok'
-        x = self.app.get('/s/testing/{0}'.format(p['pid']))
+        x = self.app.get(p['addr'])
         assert 'still testing' in x.get_data(True)
 
         # NOT empty subpage tests :)
