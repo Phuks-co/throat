@@ -221,7 +221,7 @@ def safeRequest(url):
 
     size = 0
     start = time.time()
-    f = ''
+    f = b''
     for chunk in r.iter_content(1024):
         if time.time() - start > recieve_timeout:
             raise ValueError('timeout reached')
