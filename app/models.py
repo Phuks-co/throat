@@ -394,8 +394,13 @@ class SubPost(db.Model, CacheableMixin):
         suffix = ['.png', '.jpg', '.gif', '.tiff', '.bmp']
         return self.link.lower().endswith(tuple(suffix))
 
+    def isGifv(self):
+        """ Returns True if link ends with video suffix """
+        suffix = ['.gifv']
+        return self.link.lower().endswith(tuple(suffix))
+
     def isVideo(self):
-        """ Returns True if link ends with img suffix """
+        """ Returns True if link ends with video suffix """
         suffix = ['.mp4', '.webm']
         return self.link.lower().endswith(tuple(suffix))
 

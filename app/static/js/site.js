@@ -931,6 +931,40 @@ $(document).ready(function() {
       }
     });
 
+    $('span[id^="gifv"]').click(function(e){
+      var pid = $(e.currentTarget).data().pid
+      var domain = $(e.currentTarget).data().domain
+      var url = $(e.currentTarget).data().vid
+      var player = document.createElement('video');
+      var source = document.createElement('source');
+      playerid = 'player' + pid;
+      if($(this).hasClass('closedgifv'))  {
+        player.id = "vid" + pid
+        player.style = 'max-width:560px;display:block;';
+        player.preload ="auto"
+        player.autoplay = "autoplay"
+        player.loop = "loop"
+        //if (domain == "i.imgur.com") {
+        source.src = 'https://i.imgur.com/' + imgurID(url) + '.mp4';
+        //}
+        //  coming soon
+        //if (domain == "i.sli.mg") {
+        //  source.src = 'https://i.sli.mg/' + slimgID(url) + '.webm';
+        //}
+        source.type = "video/webm"
+        $(e.currentTarget).addClass('openedgifv').removeClass('closedgifv');
+        document.getElementById(playerid).appendChild(player);
+        document.getElementById("vid" + pid).appendChild(source);
+        $('#' + playerid + ' a').html('<i class="fa fa-close" aria-hidden="true"></i>');
+      }
+      else {
+        $(this).addClass('closedgifv').removeClass('openedgifv');
+        $('#' + playerid + ' video').remove();
+        $('#' + playerid + ' a').html('<i class="fa fa-video-camera" aria-hidden="true"></i>');
+
+      }
+    });
+
     $('span#opentextpost').click(function(e){
       var pid = $(e.currentTarget).data().pid
       var div = document.createElement('div');
@@ -1068,6 +1102,18 @@ function gfycatID(url) {
   var match = url.match(/^https:\/\/gfycat\.com\/([a-zA-Z0-9]{1,60})$/);
   if (match){
     return match[1];
+	}
+}
+function imgurID(url) {
+  var match = url.match(/^https?:\/\/i\.imgur\.com\/(.*?)(?:\/.gifv|$)/);
+  if (match){
+    return match[1].replace(/.gifv/,'');
+	}
+}
+function slimgID(url) {
+  var match = url.match(/^https?:\/\/i\.sli\.mg\/(.*?)(?:\/.gifv|$)/);
+  if (match){
+    return match[1].replace(/.gifv/,'');
 	}
 }
 /* for testing

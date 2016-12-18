@@ -168,6 +168,11 @@
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
               </span>
               {% endif %}
+              {% if post.isGifv() and post.getDomain() == "i.imgur.com"%}
+              <span id="gifv" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{post.getDomain()}}" class="closedgifv">
+                <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
+              </span>
+              {% endif %}
               {% else %}
                 <span id="opentextpost" data-pid="{{post.pid}}" class="closedtextpost">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
