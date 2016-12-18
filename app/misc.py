@@ -217,7 +217,7 @@ def safeRequest(url):
     r = requests.get(url, stream=True, timeout=0.5)
     r.raise_for_status()
 
-    if int(r.headers.get('Content-Length')) > max_size:
+    if int(r.headers.get('Content-Length', 1)) > max_size:
         raise ValueError('response too large')
 
     size = 0
