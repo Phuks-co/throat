@@ -10,7 +10,7 @@ import bcrypt
 from bs4 import BeautifulSoup
 import requests
 from PIL import Image
-from flask import Blueprint, redirect, url_for, session, abort
+from flask import Blueprint, redirect, url_for, session, abort, jsonify
 from sqlalchemy import func
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_cache import make_template_fragment_key
@@ -608,7 +608,9 @@ def create_txtpost():
         l = SubPostMetadata(post.pid, 'score', 1)
         db.session.add(l)
         db.session.commit()
-        return json.dumps({'status': 'ok', 'pid': post.pid, 'sub': sub.name})
+        return json.dumps({'status': 'ok',
+                           'addr': url_for('view_post', sub=sub.name,
+                                           pid=post.pid)})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -668,16 +670,16 @@ def create_lnkpost():
         nsfw = SubPostMetadata(post.pid, 'nsfw', form.nsfw.data)
         db.session.add(nsfw)
         db.session.commit()
-        #ckey = make_template_fragment_key('subposts', vary_on=[post.sub.sid])
-        #cache.delete(ckey)
+        # ckey = make_template_fragment_key('subposts', vary_on=[post.sub.sid])
+        # cache.delete(ckey)
 
         # Try to get thumbnail.
         # 1 - Check if it's an image
         try:
             req = misc.safeRequest(form.link.data)
         except (requests.exceptions.RequestException, ValueError):
-            return json.dumps({'status': 'ok', 'pid': post.pid,
-                               'sub': sub.name})
+            return jsonify(status='ok', addr=url_for('view_post', sub=sub.name,
+                                                     pid=post.pid))
         ctype = req[0].headers['content-type'].split(";")[0].lower()
         filename = str(uuid.uuid4()) + '.jpg'
         good_types = ['image/gif', 'image/jpeg', 'image/png']
@@ -692,17 +694,19 @@ def create_lnkpost():
                 img = og('meta', {'property': 'og:image'})[0].get('content')
             except IndexError:
                 # no image
-                return json.dumps({'status': 'ok', 'pid': post.pid,
-                                   'sub': sub.name})
+                return jsonify(status='ok', addr=url_for('view_post',
+                                                         sub=sub.name,
+                                                         pid=post.pid))
             try:
                 req = misc.safeRequest(img)
             except (requests.exceptions.RequestException, ValueError):
-                return json.dumps({'status': 'ok', 'pid': post.pid,
-                                   'sub': sub.name})
+                return jsonify(status='ok', addr=url_for('view_post',
+                                                         sub=sub.name,
+                                                         pid=post.pid))
             im = Image.open(BytesIO(req[1])).convert('RGB')
         else:
-            return json.dumps({'status': 'ok', 'pid': post.pid,
-                               'sub': sub.name})
+            return jsonify(status='ok', addr=url_for('view_post', sub=sub.name,
+                                                     pid=post.pid))
         background = Image.new('RGB', (70, 70), (0, 0, 0))
 
         im.thumbnail((70, 70), Image.ANTIALIAS)
@@ -717,7 +721,8 @@ def create_lnkpost():
         background.close()
         db.session.add(tn)
         db.session.commit()
-        return json.dumps({'status': 'ok', 'pid': post.pid, 'sub': sub.name})
+        return jsonify(status='ok', addr=url_for('view_post', sub=sub.name,
+                                                 pid=post.pid))
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 

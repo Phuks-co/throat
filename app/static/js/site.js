@@ -27,6 +27,7 @@ $(document).ready(function() {
           if (typeof grecaptcha != "undefined") {
               grecaptcha.reset();
           }
+          button.prop('disabled', false);
         } else { // success
           if(button.data('success')){
             button.text(button.data('success'));
@@ -40,9 +41,10 @@ $(document).ready(function() {
           }else if (target.data('reload')) {
             console.log('tried')
             document.location.reload();
+          }else{
+            button.prop('disabled', false);
           }
         }
-        button.prop('disabled', false);
       },
       error: function(data, err) {
         target.find('.div-error').html('<span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> <p><ul><li>Error while contacting the server</li></ul></p>');
@@ -90,34 +92,6 @@ $(document).ready(function() {
         $("#" + div + " .div-error p").html(ul);
         $("#" + div + " .div-error").show();
     }
-
-    $("#post-form").submit(function(e) {
-        $("#txpost-btnsubmit").prop('disabled', true);
-        $("#txpost-btnsubmit").text('Sending your post...');
-        $.ajax({
-            type: "POST",
-            url: '/do/txtpost',
-            data: $("#post-form").serialize(),
-            dataType: 'json',
-            success: function(data) {
-                if (data.status != "ok") {
-                    checkErrors(data, "post-form");
-                } else {
-                    document.location = '/s/' + data.sub + '/' + data.pid;
-                }
-                $("#txpost-btnsubmit").prop('disabled', false);
-                $("#txpost-btnsubmit").text('Submit post');
-            },
-            error: function(data, err) {
-                $("#post-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
-                $("#post-form .div-error").show();
-                $("#txpost-btnsubmit").prop('disabled', false);
-                $("#txpost-btnsubmit").text('Submit post');
-            }
-        });
-        e.preventDefault();
-    });
-
     $("#edit-txtpost-form").submit(function(e) {
         $("#edit-txpost-btnsubmit").prop('disabled', true);
         $("#edit-txpost-btnsubmit").text('Editing your post...');
@@ -140,33 +114,6 @@ $(document).ready(function() {
                 $("#edit-txtpost-form .div-error").show();
                 $("#edit-txpost-btnsubmit").prop('disabled', false);
                 $("#edit-txpost-btnsubmit").text('Edit post');
-            }
-        });
-        e.preventDefault();
-    });
-
-    $("#link-post-form").submit(function(e) {
-        $("#lnkpost-btnsubmit").prop('disabled', true);
-        $("#lnkpost-btnsubmit").text('Sending your link...');
-        $.ajax({
-            type: "POST",
-            url: '/do/lnkpost',
-            data: $("#link-post-form").serialize(),
-            dataType: 'json',
-            success: function(data) {
-                if (data.status != "ok") {
-                    checkErrors(data, "link-post-form");
-                } else {
-                    document.location = '/s/' + data.sub + '/' + data.pid;
-                }
-                $("#lnkpost-btnsubmit").prop('disabled', false);
-                $("#lnkpost-btnsubmit").text('Submit link');
-            },
-            error: function(data, err) {
-                $("#link-post-form .div-error p").html("<ul><li>Error while contacting the server</li></ul>");
-                $("#link-post-form .div-error").show();
-                $("#lnkpost-btnsubmit").prop('disabled', false);
-                $("#lnkpost-btnsubmit").text('Submit link');
             }
         });
         e.preventDefault();

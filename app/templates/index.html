@@ -262,7 +262,7 @@
   <p><button type="submit" id="csub-btnsubmit" class="btn btn-blue" data-prog="Creating...">Create sub</button></p>
 </form>
 {% if current_user.is_authenticated %}
-<form id="post-form" class="mfp-hide white-popup-block">
+<form id="post-form" action="{{url_for('do.create_txtpost')}}" data-redir="true" class="ajaxform mfp-hide white-popup-block">
   {% set txtpostform = form.CreateSubTextPost()%}
   {{txtpostform.csrf_token}}
   <h1>Submit a text post</h1>
@@ -273,9 +273,9 @@
     <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
     <p></p>
   </div>
-  <p><button type="submit" class="btn btn-blue" id="txpost-btnsubmit">Submit post</button></p>
+  <p><button type="submit" class="btn btn-blue" data-prog="Sending...">Submit post</button></p>
 </form>
-<form id="link-post-form" class="mfp-hide white-popup-block">
+<form id="link-post-form" action="{{url_for('do.create_lnkpost')}}" data-redir="true" class="ajaxform mfp-hide white-popup-block">
   {% set lnkpostform = form.CreateSubLinkPost()%}
   {{lnkpostform.csrf_token}}
   <h1>Submit a link post</h1>
@@ -287,7 +287,7 @@
     <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
     <p></p>
   </div>
-  <p><button type="submit" class="btn btn-blue" id="lnkpost-btnsubmit">Submit link</button></p>
+  <p><button type="submit" class="btn btn-blue" data-prog="Sending...">Submit link</button></p>
 </form>
 {% endif %}
 {%endblock%}
