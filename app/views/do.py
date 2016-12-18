@@ -684,10 +684,10 @@ def create_lnkpost():
         if ctype in good_types:
             # yay, it's an image!!1
             # Resize
-            im = Image.open(BytesIO(req.content)).convert('RGB')
+            im = Image.open(BytesIO(req[1])).convert('RGB')
         elif ctype == 'text/html':
             # Not an image!! Let's try with OpenGraph
-            og = BeautifulSoup(req.text, 'lxml')
+            og = BeautifulSoup(req[1], 'lxml')
             try:
                 img = og('meta', {'property': 'og:image'})[0].get('content')
             except IndexError:
@@ -699,7 +699,7 @@ def create_lnkpost():
             except (requests.exceptions.RequestException, ValueError):
                 return json.dumps({'status': 'ok', 'pid': post.pid,
                                    'sub': sub.name})
-            im = Image.open(BytesIO(req.content)).convert('RGB')
+            im = Image.open(BytesIO(req[1])).convert('RGB')
         else:
             return json.dumps({'status': 'ok', 'pid': post.pid,
                                'sub': sub.name})

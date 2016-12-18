@@ -211,6 +211,7 @@ class SiteAnon(AnonymousUserMixin):
 
 def safeRequest(url):
     """ Gets stuff for the internet, with timeouts and size restrictions """
+    # Returns (Response, File)
     max_size = 25000000  # won't download more than 25MB
     recieve_timeout = 10  # won't download for more than 10s
     r = requests.get(url, stream=True, timeout=0.5)
@@ -221,14 +222,16 @@ def safeRequest(url):
 
     size = 0
     start = time.time()
+    f = b''
     for chunk in r.iter_content(1024):
         if time.time() - start > recieve_timeout:
             raise ValueError('timeout reached')
 
         size += len(chunk)
+        f += chunk
         if size > max_size:
             raise ValueError('response too large')
-    return r
+    return (r, f)
 
 
 class NiceLinkPattern(markdown.inlinepatterns.LinkPattern):
