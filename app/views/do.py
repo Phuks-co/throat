@@ -851,7 +851,7 @@ def create_comment(sub, pid):
 
         SubPostComment.cache.uncache(pid=pid, parentcid=None)
         SubPostComment.cache.uncache(pid=pid, parentcid=form.parent.data)
-        return json.dumps({'status': 'ok'})
+        return json.dumps({'status': 'ok', 'page': url_for('view_post_inbox', pid=pid)})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 

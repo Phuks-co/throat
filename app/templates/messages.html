@@ -30,7 +30,9 @@
 <div class="user-activity col-12">
     <h3>{{messages|length}} {{box_name}}</h3>
 {% for message in messages %}
-    <article class="pmessage post" data-replyto='{{message.sentby}}' data-replytitle='Re: {{message.subject}}'>
+    <article class="pmessage post" data-replyto='{{message.sentby}}'
+    {% if box_name == 'Replies' %}data-sub='{{func.getCommentSub(message.mlink).name}}' data-post='{{func.getComment(message.mlink).pid}}'{%endif%}
+    data-replytitle='Re: {{message.subject}}'>
       <div class="main">
         {% if box_name == 'Replies' %}
           <p class="title"><a href="{{url_for('view_comment_inbox', cid=message.mlink)}}">{{message.subject}}</a></p>
@@ -51,7 +53,11 @@
             {% else %}
               <a class="read btn small"><i class="fa fa-folder-open" aria-hidden="true"></i> read {{message.read}}</a>
             {% endif %}
-            <a href="#msg-form" class="btn small replymsg popup"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
+              {% if box_name == 'Replies' %}
+                <a href="#comment-form" class="btn small replycomment popup"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
+              {%else%}
+                <a href="#msg-form" class="btn small replymsg popup"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
+              {%endif%}
             <a class="btn small"><i class="fa fa-mail-forward" aria-hidden="true"></i> forward</a>
             <a class="delete btn small btn-red" data-mid="{{message.mid}}"><i class="fa fa-trash" aria-hidden="true"></i> delete</a>
           {% else %}
@@ -75,6 +81,16 @@
     <p></p>
   </div>
   <p><button type="submit" id="msg-btnsubmit" class="btn btn-blue" data-prog="Sending...">Send Message</button></p>
+</form>
+
+<form class="comment-form mfp-hide white-popup-block" id="comment-form">
+  <h2>Reply to comment</h2>
+  {{commentform.csrf_token}}
+  {{commentform.sub()}}
+  {{commentform.post()}}
+  {{commentform.parent(value='0')}}
+  <div class="CommentContent">{{commentform.comment(id="comment2", placeholder="Write your comment here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}</div>
+  <button type="submit" class="btn btn-orange">Submit comment</button>
 </form>
 
 {% endblock %}

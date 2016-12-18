@@ -273,6 +273,12 @@ def getComment(cid):
     return SubPostComment.cache.get(cid)
 
 
+def getCommentSub(cid):
+    l = getComment(cid)
+    p = SubPost.cache.get(l.pid)
+    return Sub.cache.get(p.sid)
+
+
 @cache.memoize(60)
 def getAnnouncement():
     """ Returns sitewide announcement post or False """

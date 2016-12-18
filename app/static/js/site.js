@@ -286,17 +286,17 @@ $(document).ready(function() {
     $(document).on('submit', ".comment-form", function(e){
       // Note for future self: This is a really fucking hacky way to do this.
       // This thing will break if the order of the fields changes >_>
-      $(e.target[e.target.length -1]).text("Sending comment...")
-      $(e.target[e.target.length -1]).prop('disabled', true)
+      $(this).children('button[type="submit"]').text("Sending comment...")
+      $(this).children('button[type="submit"]').prop('disabled', true)
       $.ajax({
           type: "POST",
-          url: '/do/sendcomment/' + $(e.target[1]).prop('value') + '/' + $(e.target[2]).prop('value'),
+          url: '/do/sendcomment/' + $(this).children('#sub').prop('value') + '/' + $(e.target[2]).prop('value'),
           data: $(e.target).serialize(),
           dataType: 'json',
           success: function(data) {
             if(data.status != "ok"){
             }else{
-              document.location.reload();
+              document.location = data.page;
             }
           },
           error: function(data, err) {
@@ -414,6 +414,15 @@ $(document).ready(function() {
       var title=$(this).parents('article').data('replytitle');
       $('#msg-form #to').prop('value', replyto);
       $('#msg-form #subject').prop('value', title);
+    });
+
+    $('.pmessage .replycomment').click(function(e){
+      e.preventDefault();
+
+      var sub=$(this).parents('article').data('sub');
+      var post=$(this).parents('article').data('post');
+      $('#comment-form #sub').prop('value', sub);
+      $('#comment-form #post').prop('value', post);
     });
 
     $('.delete-comment-form').magnificPopup(mpSettings);
