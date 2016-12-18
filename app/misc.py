@@ -606,7 +606,7 @@ def getBTCaddr():
 
 def getTodaysTopPosts():
     """ Returns top posts in the last 24 hours """
-    since = datetime.datetime.now() - datetime.timedelta(hours=24)
+    since = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
     posts = SubPost.query.filter(SubPost.posted > since).all()
     posts = VoteSorting(posts).getPosts(1)
     return list(posts)[:5]
