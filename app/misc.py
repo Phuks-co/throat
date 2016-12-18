@@ -1,6 +1,6 @@
 """ Misc helper function and classes. """
 from urllib.parse import urlparse, parse_qs
-from datetime import date
+import datetime
 from sqlalchemy import Date, cast, or_
 import sqlalchemy.orm
 import markdown
@@ -609,9 +609,9 @@ def getBTCaddr():
 
 
 def getTodaysTopPosts():
-    """ Returns posts with todays date """
-    posts = SubPost.query.filter(cast(SubPost.posted, Date) ==
-                                 date.today()).all()
+    """ Returns top posts in the last 24 hours """
+    since = datetime.datetime.now() - datetime.timedelta(hours=24)
+    posts = SubPost.query.filter(SubPost.posted > since).all()
     posts = VoteSorting(posts).getPosts(1)
     return list(posts)[:5]
 
