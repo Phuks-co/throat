@@ -933,7 +933,7 @@ $(document).ready(function() {
       }
     });
 
-    $('span[id^="opentextpost"]').click(function(e){
+    $('span#opentextpost').click(function(e){
       var pid = $(e.currentTarget).data().pid
       var div = document.createElement('div');
       playerid = 'player' + pid;
@@ -959,6 +959,9 @@ $(document).ready(function() {
         $('#' + playerid + ' a').html('<i class="fa fa-close" aria-hidden="true"></i>');
       }
       else {
+        if($(e.currentTarget)[0].id=="opentextpost" && e.target==$('#' + playerid + ' div')[0]){
+          return;
+        }
         $(this).addClass('closedtextpost').removeClass('openedtextpost');
         $('#' + playerid + ' div').remove()
         $('#' + playerid + ' a').html('<i class="fa fa-comments" aria-hidden="true"></i>');
