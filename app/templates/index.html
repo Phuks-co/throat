@@ -24,7 +24,7 @@
   </div>
 </div>
 {% endif %}
-{%cache 3600, 'toppost' %}
+{%cache 300, 'toppost' %}
 {% set tp = func.getTodaysTopPosts()%}
 {% if tp %}
   <span class="col-12"><hr></span>
