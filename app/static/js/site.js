@@ -867,20 +867,16 @@ $(document).ready(function() {
     $('span[id^="gfycat"]').click(function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().vid
-      var player = document.createElement('video');
-      var source = document.createElement('source');
-      playerid = 'player' + pid;
+      var frame = document.createElement('iframe');
       if($(this).hasClass('closedgfycat'))  {
-        player.id = "vid" + pid
-        player.style = 'max-width:560px;display:block;';
-        player.preload ="auto"
-        player.autoplay = "autoplay"
-        player.loop = "loop"
-        source.src = 'https://zippy.gfycat.com/' + gfycatID(url) + '.mp4';
-        source.type = "video/webm"
-        $(e.currentTarget).addClass('openedgfycat').removeClass('closedgfycat');
-        document.getElementById(playerid).appendChild(player);
-        document.getElementById("vid" + pid).appendChild(source);
+        frame.width = '520px';
+        frame.height = '460px';
+        frame.style = 'display:block;';
+        frame.frameborder = '0';
+        frame.src = 'https://gfycat.com/ifr/' + gfycatID(url);
+        playerid = 'player' + pid;
+        $(e.currentTarget).addClass('openedvine').removeClass('closedgfycat');
+        document.getElementById(playerid).appendChild(frame);
         $('#' + playerid + ' a').html('<i class="fa fa-close" aria-hidden="true"></i>');
       }
       else {
