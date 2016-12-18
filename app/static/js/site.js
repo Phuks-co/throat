@@ -891,7 +891,7 @@ $(document).ready(function() {
         player.preload ="auto"
         player.autoplay = "autoplay"
         player.loop = "loop"
-        if (domain == "i.imgur.com") {
+        if (domain == "i.imgur.com" || domain == "imgur.com") {
         source.src = 'https://i.imgur.com/' + imgurID(url) + '.mp4';
         }
         if (domain == "i.sli.mg") {
@@ -1051,15 +1051,15 @@ function gfycatID(url) {
 	}
 }
 function imgurID(url) {
-  var match = url.match(/^http(?:s?):\/\/i\.imgur\.com\/(.*?)(?:\/.gifv|$)/);
+  var match = url.match(/^http(?:s?):\/\/(i\.)?imgur\.com\/(.*?)(?:\/.gifv|$)/);
   if (match){
-    return match[1].replace(/.gifv/,'');
+    return match[2].replace(/.gifv/,'');
 	}
 }
 function slimgID(url) {
-  var match = url.match(/^http(?:s?):\/\/i\.sli\.mg\/(.*?)(?:\/.gifv|$)/);
+  var match = url.match(/^http(?:s?):\/\/(i\.)?sli\.mg\/(.*?)(?:\/.gifv|$)/);
   if (match){
-    return match[1].replace(/.gifv/,'');
+    return match[2].replace(/.gifv/,'');
 	}
 }
 /* for testing

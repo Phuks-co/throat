@@ -397,7 +397,13 @@ class SubPost(db.Model, CacheableMixin):
     def isGifv(self):
         """ Returns True if link ends with video suffix """
         suffix = ['.gifv']
-        return self.link.lower().endswith(tuple(suffix))
+        domains = ['imgur.com', 'i.imgur.com', 'i.sli.mg', 'sli.mg']
+        if self.link.lower().endswith(tuple(suffix)):
+            for domain in domains:
+                if domain in self.link.lower():
+                    return True
+        else:
+            return False
 
     def isVideo(self):
         """ Returns True if link ends with video suffix """
