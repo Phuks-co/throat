@@ -27,7 +27,7 @@
 {% block content %}
 {{ super() }}
   <h1 class="noshit">{{user.name}}</h1>
-    <div class="user-activity col-10">
+    <div class="user-activity col-6">
       <p class="joindate">User has made {{pcount}} posts and {{ccount}} comments.</p>
       {# TODO user stats #}
       <div>
@@ -63,8 +63,9 @@
       </div>
 
     </div>
-    <div class="image col-2">
-      <p><a href="#"><img src="{{url_for('static', filename='img/textpost.png')}}" alt="User Img"/></a></p>
+    <div class="image col-6">
+      <h3><a href="{{url_for('view_user_comments', user=user.name)}}">View comments</a></h3>
+      <h3><a href="{{url_for('view_user_posts', user=user.name)}}">View submissions</a></h3>
     </div>
 
 <form id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="ajaxform mfp-hide white-popup-block">

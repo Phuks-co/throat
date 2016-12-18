@@ -58,8 +58,8 @@
 
 {% block content %}
 {{ super() }}
-  <h1 class="noshit">{{user.name}}</h1>
-    <div class="user-activity col-10">
+  <h1 class="noshit"><a href="{{url_for('view_user', user=user.name)}}">{{user.name}}</a></h1>
+    <div class="user-activity col-12">
       <div class="recent">
         <h3>Recent Posts</h3>
         <ul class="rpost">
@@ -85,9 +85,6 @@
           {% endif %}
         </ul>
       </div>
-    </div>
-    <div class="image col-2">
-      <a href="#"><img src="{{url_for('static', filename='img/textpost.png')}}" alt="User Img"/></a>
     </div>
 
     <form id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="ajaxform mfp-hide white-popup-block">
