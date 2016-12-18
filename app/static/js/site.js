@@ -881,7 +881,7 @@ $(document).ready(function() {
       }
       else {
         $(this).addClass('closedgfycat').removeClass('openedgfycat');
-        $('#' + playerid + ' video').remove();
+        $('#' + playerid + ' iframe').remove();
         $('#' + playerid + ' a').html('<i class="fa fa-video-camera" aria-hidden="true"></i>');
 
       }
