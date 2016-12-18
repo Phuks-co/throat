@@ -678,7 +678,7 @@ def create_lnkpost():
         except (requests.exceptions.RequestException, ValueError):
             return json.dumps({'status': 'ok', 'pid': post.pid,
                                'sub': sub.name})
-        ctype = req.headers['content-type'].split(";")[0].lower()
+        ctype = req[0].headers['content-type'].split(";")[0].lower()
         filename = str(uuid.uuid4()) + '.jpg'
         good_types = ['image/gif', 'image/jpeg', 'image/png']
         if ctype in good_types:
