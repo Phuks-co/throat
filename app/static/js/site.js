@@ -350,23 +350,25 @@ $(document).ready(function() {
       button.html('<i class="fa fa-minus" aria-hidden="true"></i>')
     });
     $('.lnkreply').click(function(e) {
+      // TODO: Redo this. it's too shitty >_>
       // Explaining what this does because it'll be a pain in the ass to maintain
       // We have stored an additional copy of the form, without the MDE initialized.
       // Here we clone it and remove the 'display: none'
       var x = $($(".comment-form.moving")[0]).clone().show();
       // Here we append it _next_ to the div that is holding the reply button
-      $(e.target).parent().parent().after().after().append(x);
+      $(this).parent().parent().after().after().append(x);
       // Here we hackishly get the textarea and initialize the MDE
       $(x[0]).children('.CommentContent').children('#comment').markdown({autofocus:true})
       //$(e.target).parent().next().insertBefore('<span class="close">×</span>');
 
       // Here we hide the reply button...
-      $(e.target).parent().hide();
+      $(this).parent().hide();
       // Guesswork to get the right elements..
-      var parent = $(e.target).data().to;
+      var parent = $(this).data('to');
+      console.log($(this).parent().next())
       // And here we hackishly set the value of the 'parent' hidden input to the cid
       // of the parent comment.
-      $(e.target).parent().next().children('#parent').prop('value', parent);
+      $('.comment-form.moving #parent').prop('value', parent);
       e.preventDefault();
     });
 
