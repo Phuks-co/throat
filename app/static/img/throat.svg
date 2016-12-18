@@ -27,9 +27,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="225.5983"
-     inkscape:cy="249.34369"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="491.18527"
+     inkscape:cy="268.45259"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -93,29 +93,29 @@ Polsaker
        d="m 253.38256,896.84471 c 4.74764,-3.48113 9.88683,-6.31074 15.4969,-7.95255 3.76669,-1.44975 7.64072,-2.47415 11.59007,-3.28292 3.34361,-0.73758 6.75019,-1.10662 10.14002,-1.55515 0,0 -8.00689,5.98123 -8.00689,5.98123 l 0,0 c -3.39485,0.45685 -6.80003,0.87492 -10.14079,1.65425 -4.00391,0.89677 -7.8989,2.09643 -11.74732,3.5183 -1.27997,0.41953 -2.52848,0.86326 -3.74602,1.44399 -0.3597,0.17156 -1.41051,0.74103 -1.06799,0.53733 6.56683,-3.90527 10.90711,-6.21774 7.28559,-4.27873 0,0 -9.80357,3.93425 -9.80357,3.93425 z"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:#fd5c00;fill-opacity:1;fill-rule:evenodd;stroke:#fd5c00;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:#ff9a62;fill-opacity:1;fill-rule:evenodd;stroke:#ff9a62;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 348.57143,824.8622 50,0 -28.03571,53.92858 z"
        id="path4428"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:#fd5c00;fill-opacity:1;fill-rule:evenodd;stroke:#fd5c00;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:#ff9a62;fill-opacity:1;fill-rule:evenodd;stroke:#ff9a62;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 197.5,609.82259 71.78571,37.14286 -6.14097,-36.67125 z"
        id="path4432"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#fd5c00;stroke-width:11;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 705.89286,608.43363 705.97426,59.750166 49.642857,604.32649 696.44127,605.12743 40.535715,61.290775 40,607.3622 372.67857,896.82649 Z"
+       style="fill:none;fill-rule:evenodd;stroke:#ff9a62;stroke-width:11;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 705.89286,608.43363 0.0814,-548.683464 -656.331403,544.576324 29.066984,0.036 617.731429,0.76495 L 40.535715,61.290775 40,607.3622 372.67857,896.82649 Z"
        id="path4218"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccccccc" />
+       sodipodi:nodetypes="ccccccccc" />
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#fd5c00;stroke-width:11;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;fill-rule:evenodd;stroke:#ff9a62;stroke-width:11;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 40.153563,62.160172 372.74629,889.22258 706.09663,58.624638"
        id="path4239"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccc" />
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#fd5c00;stroke-width:11;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;fill-rule:evenodd;stroke:#ff9a62;stroke-width:11;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 372.74629,337.04793 0,560.12959"
        id="path4241"
        inkscape:connector-curvature="0"
@@ -124,6 +124,6 @@ Polsaker
        inkscape:connector-curvature="0"
        id="path6025"
        d="m 548.03291,609.44378 -71.78571,37.14287 6.14098,-36.67126 z"
-       style="fill:#fd5c00;fill-opacity:1;fill-rule:evenodd;stroke:#fd5c00;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:#ff9a62;fill-opacity:1;fill-rule:evenodd;stroke:#fd5c00;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   </g>
 </svg>
