@@ -270,6 +270,8 @@ class RestrictedMarkdown(markdown.Extension):
 @cache.memoize(50)
 def hasVoted(uid, post, up=True):
     """ Checks if the user up/downvoted the post. """
+    if not uid:
+        return False
     vote = SubPostVote.query.filter_by(uid=uid, pid=post.pid).first()
     if vote:
         if vote.positive == up:
@@ -281,6 +283,8 @@ def hasVoted(uid, post, up=True):
 @cache.memoize(50)
 def hasVotedComment(uid, comment, up=True):
     """ Checks if the user up/downvoted a comment. """
+    if not uid:
+        return False
     vote = SubPostCommentVote.query.filter_by(uid=uid, cid=comment.cid).first()
     if vote:
         if vote.positive == up:

@@ -24,7 +24,7 @@
   </div>
 </div>
 {% endif %}
-{%cache 300, 'toppost' %}
+{% cache 300, 'toppost' %}
 {% set tp = func.getTodaysTopPosts()%}
 {% if tp %}
   <span class="col-12"><hr></span>
@@ -147,7 +147,7 @@
             {{uv.csrf_token}}{{uv.post(value=post.pid)}}
           </form>
         </div>
-        {% cache 300, post.pid, 'post' %}
+        {# cache 300, post.pid, 'post' #}
           <div class="image">
             {% if post.thumb %}
             <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
@@ -237,7 +237,7 @@
               <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.getComments() | length}})</a>
               </p>
           </div>
-        {% endcache %}
+        {# endcache #}
       </article>
   {% endif %}
   {% endfor %}
