@@ -762,7 +762,7 @@ def upvote(pid, value):
     qvote = SubPostVote.query.filter_by(pid=pid) \
                              .filter_by(uid=current_user.get_id()).first()
 
-    xvotes = getMetadata(post, 'score', record=True)
+    xvotes = getMetadata(post, 'score', record=True, cache=False)
     if not xvotes:
         xvotes = SubPostMetadata(post.pid, 'score', 1)
         db.session.add(xvotes)

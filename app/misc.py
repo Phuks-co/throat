@@ -293,7 +293,7 @@ def decent(q):
 
 
 @cache.memoize(30)
-def getMetadata(obj, key, value=None, all=False, record=False):
+def getMetadata(obj, key, value=None, all=False, record=False, cache=True):
     """ Gets metadata out of 'obj' (either a Sub, SubPost or User) """
     if not obj:
         # Failsafe in case FOR SOME REASON SOMEBODY PASSED NONE OR FALSE TO
@@ -308,22 +308,36 @@ def getMetadata(obj, key, value=None, all=False, record=False):
             x = obj.properties.filter_by(key=key).first()
     except (AttributeError, sqlalchemy.orm.exc.DetachedInstanceError):
         if isinstance(obj, SubPost):
-            x = SubPostMetadata.cache.filter(key=key, pid=obj.pid)
-        elif isinstance(obj, Sub):
-            x = SubMetadata.cache.filter(key=key, sid=obj.sid)
-        elif isinstance(obj, User):
-            x = UserMetadata.cache.filter(key=key, uid=obj.uid)
-        try:
-            if all:
-                x = list(x)
+            if cache:
+                x = SubPostMetadata.cache.filter(key=key, pid=obj.pid)
             else:
-                x = next(x)
-        except StopIteration:
-            return False
+                x = SubPostMetadata.query.filter_by(key=key, pid=obj.pid)
+        elif isinstance(obj, Sub):
+            if cache:
+                x = SubMetadata.cache.filter(key=key, sid=obj.sid)
+            else:
+                x = SubMetadata.query.filter_by(key=key, sid=obj.sid)
+        elif isinstance(obj, User):
+            if cache:
+                x = UserMetadata.cache.filter(key=key, uid=obj.uid)
+            else:
+                x = UserMetadata.query.filter_by(key=key, uid=obj.uid)
+        if cache:
+            try:
+                if all:
+                    x = list(x)
+                else:
+                    x = next(x)
+            except StopIteration:
+                return False
+        else:
+            if all:
+                x = x.all()
+            else:
+                x = x.first()
+
     if x and value is None:
-        if all:
-            return x
-        if record:
+        if all or record:
             return x
         return x.value
     elif value is None:
