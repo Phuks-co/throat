@@ -214,7 +214,7 @@ def safeRequest(url):
     # Returns (Response, File)
     max_size = 25000000  # won't download more than 25MB
     recieve_timeout = 10  # won't download for more than 10s
-    r = requests.get(url, stream=True, timeout=0.5)
+    r = requests.get(url, stream=True, timeout=1)
     r.raise_for_status()
 
     if int(r.headers.get('Content-Length', 1)) > max_size:
