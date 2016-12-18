@@ -46,8 +46,8 @@
 {% if current_user.is_authenticated %}
   <span class="col-12"><hr><span>
   {% if func.isRestricted(sub) %}
-  <div class="col-12">Only mods can post.</div>{%endif%}
-
+  <div class="col-12">Only mods can post.</div>
+  {%endif%}
   {% if not func.isRestricted(sub) or (current_user.is_mod(sub) and func.isRestricted(sub)) %}
   <div class="col-12">
     <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
