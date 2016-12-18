@@ -891,13 +891,12 @@ $(document).ready(function() {
         player.preload ="auto"
         player.autoplay = "autoplay"
         player.loop = "loop"
-        //if (domain == "i.imgur.com") {
+        if (domain == "i.imgur.com") {
         source.src = 'https://i.imgur.com/' + imgurID(url) + '.mp4';
-        //}
-        //  coming soon
-        //if (domain == "i.sli.mg") {
-        //  source.src = 'https://i.sli.mg/' + slimgID(url) + '.webm';
-        //}
+        }
+        if (domain == "i.sli.mg") {
+          source.src = 'https://i.sli.mg/' + slimgID(url) + '.webm';
+        }
         source.type = "video/webm"
         $(e.currentTarget).addClass('openedgifv').removeClass('closedgifv');
         document.getElementById(playerid).appendChild(player);
