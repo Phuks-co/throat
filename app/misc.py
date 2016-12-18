@@ -221,16 +221,14 @@ def safeRequest(url):
 
     size = 0
     start = time.time()
-    f = b''
     for chunk in r.iter_content(1024):
         if time.time() - start > recieve_timeout:
             raise ValueError('timeout reached')
 
         size += len(chunk)
-        f += chunk
         if size > max_size:
             raise ValueError('response too large')
-    return f
+    return r
 
 
 class NiceLinkPattern(markdown.inlinepatterns.LinkPattern):
