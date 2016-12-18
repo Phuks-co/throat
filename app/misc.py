@@ -361,18 +361,14 @@ def getMetadata(obj, key, value=None, all=False, record=False, cache=True):
 
 def isMod(sub, user):
     """ Returns True if 'user' is a mod of 'sub' """
-    x = SubMetadata.cache.filter(key='mod1', sid=sub.sid, value=user.uid)
-    try:
-        x = next(x)
-    except StopIteration:
-        x = False
+    x = SubMetadata.query.filter_by(key='mod1', sid=sub.sid, value=user.uid)
+    if x.first():
+        return True
 
-    y = SubMetadata.cache.filter(key='mod2', sid=sub.sid, value=user.uid)
-    try:
-        y = next(y)
-    except StopIteration:
-        y = False
-    return bool(x or y)
+    y = SubMetadata.query.filter_by(key='mod2', sid=sub.sid, value=user.uid)
+    if y.first():
+        return True
+    return False
 
 
 def isSubBan(sub, user):
