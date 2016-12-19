@@ -42,8 +42,13 @@ from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
 from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair, decent
 from .misc import enableBTCmod, getCommentParentUID
 from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
+from werkzeug.contrib.profiler import ProfilerMiddleware
 
 app = Flask(__name__)
+app.jinja_env.cache = {}
+
+app.config['PROFILE'] = True
+app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 
 app.register_blueprint(do)
 app.register_blueprint(api)
@@ -270,10 +275,11 @@ def all_new_rss():
 def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = SubPost.query.order_by(SubPost.posted.desc())
-    sorter = BasicSorting(posts)
+    posts = posts.paginate(page, 20, False)
+    # sorter = BasicSorting(posts)
 
     return render_template('index.html', page=page, sort_type='all_new',
-                           posts=sorter.getPosts(page))
+                           posts=posts.items)
 
 
 @app.route("/domain/<domain>", defaults={'page': 1})

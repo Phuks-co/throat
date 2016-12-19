@@ -720,3 +720,13 @@ def getPostsFromSubs(subs):
         posts.append(SubPost.sid == sub.sid)
     posts = SubPost.query.filter(or_(*posts)).all()
     return posts
+
+
+@cache.memoize(300)
+def getSub(sid):
+    return Sub.cache.get(sid)
+
+
+@cache.memoize(300)
+def getUser(uid):
+    return User.cache.get(uid)

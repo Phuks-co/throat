@@ -35,7 +35,7 @@ class User(db.Model, CacheableMixin):
     joindate = Column(DateTime)
     subscribed = db.relationship('SubSubscriber', backref='user',
                                  lazy='dynamic')
-    posts = db.relationship('SubPost', backref='_user', lazy='joined')
+    posts = db.relationship('SubPost', backref='user', lazy='dynamic')
 
     properties = db.relationship('UserMetadata',
                                  backref='user', lazy='dynamic')
@@ -335,6 +335,7 @@ class SubPost(db.Model, CacheableMixin):
         self.uid = current_user.get_id()
         self.posted = datetime.datetime.utcnow()
 
+    #
     def is_sticky(self):
         """ Returns True if this post is stickied """
         x = SubMetadata.cache.filter(key='sticky', sid=self.sid,
@@ -377,13 +378,7 @@ class SubPost(db.Model, CacheableMixin):
     @cache.memoize(60)
     def sub(self):
         """ Returns post's sub, replaces db relationship """
-        return Sub.query.get(self.sid)
-
-    @hybrid_property
-    @cache.memoize(60)
-    def user(self):
-        """ Returns post creator, replaces db relationship """
-        return User.cache.get(self.uid)
+        return Sub.cache.get(self.sid)
 
     def getThumbnail(self):
         """ Returns thumbnail address for post """
