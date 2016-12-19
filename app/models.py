@@ -375,7 +375,7 @@ class SubPost(db.Model, CacheableMixin):
     @cache.memoize(60)
     def user(self):
         """ Returns post's sub, replaces db relationship """
-        return User.query.get(self.sid)
+        return User.query.get(self.uid)
 
     @cache.memoize(300)
     def getThumbnail(self):
