@@ -368,8 +368,10 @@ $(document).ready(function() {
 
       var sub=$(this).parents('article').data('sub');
       var post=$(this).parents('article').data('post');
+      var parent=$(this).parents('article').data('parent');
       $('#comment-form #sub').prop('value', sub);
       $('#comment-form #post').prop('value', post);
+      $('#comment-form #parent').prop('value', parent);
     });
 
     $('.delete-comment-form').magnificPopup(mpSettings);

@@ -31,7 +31,7 @@
     <h3>{{messages|length}} {{box_name}}</h3>
 {% for message in messages %}
     <article class="pmessage post" data-replyto='{{message.sentby}}'
-    {% if box_name == 'Replies' %}data-sub='{{func.getCommentSub(message.mlink).name}}' data-post='{{func.getComment(message.mlink).pid}}'{%endif%}
+    {% if box_name == 'Replies' %}data-sub='{{func.getCommentSub(message.mlink).name}}' data-post='{{func.getComment(message.mlink).pid}}' data-parent='{{message.mlink}}'{%endif%}
     data-replytitle='Re: {{message.subject}}'>
       <div class="main">
         {% if box_name == 'Replies' %}
