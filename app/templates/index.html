@@ -147,7 +147,7 @@
             {{uv.csrf_token}}{{uv.post(value=post.pid)}}
           </form>
         </div>
-        {# cache 300, post.pid, 'post' #}
+        { cache 300, post.pid, 'post' }
           <div class="image">
             {% if post.getThumbnail() %}
             <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
@@ -237,7 +237,7 @@
               <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.getCommentCount()}})</a>
               </p>
           </div>
-        {# endcache #}
+        { endcache }
       </article>
   {% endif %}
   {% endfor %}
