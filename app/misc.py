@@ -21,6 +21,7 @@ class SiteUser(object):
 
     def __init__(self, userclass=None):
         self.user = userclass
+        self.name = self.user.name
         self.is_active = True  # Apply bans by setting this to false.
         if self.user:
             self.is_authenticated = True
@@ -638,12 +639,14 @@ def getSubscriptions(uid):
     return list(subs)
 
 
+@cache.memoize(600)
 def enableBTCmod():
     """ Returns true if BTC donation module is enabled """
     x = SiteMetadata.query.filter_by(key='usebtc').first()
     return False if not x or x.value == '0' else True
 
 
+@cache.memoize(600)
 def getBTCmsg():
     """ Returns donation module text """
     x = SiteMetadata.query.filter_by(key='btcmsg').first()
@@ -651,6 +654,7 @@ def getBTCmsg():
         return x.value
 
 
+@cache.memoize(600)
 def getBTCaddr():
     """ Returns Bitcoin address """
     x = SiteMetadata.query.filter_by(key='btcaddr').first()
@@ -708,3 +712,11 @@ def newCount(user):
                              Message.receivedby == user.uid) \
                      .filter(Message.mtype != 6)
     return len(list(x))
+
+@cache.memoize(30)
+def getPostsFromSubs(subs):
+    posts = []
+    for sub in subs:
+        posts.append(SubPost.sid == sub.sid)
+    posts = SubPost.query.filter(or_(*posts)).all()
+    return posts

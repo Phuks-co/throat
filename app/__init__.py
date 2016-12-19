@@ -42,6 +42,9 @@ from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
 from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair, decent
 from .misc import enableBTCmod, getCommentParentUID
 from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
+import logging
+logging.basicConfig()
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 app = Flask(__name__)
 
@@ -203,12 +206,11 @@ def index():
 
 @app.route("/hot", defaults={'page': 1})
 @app.route("/hot/<int:page>")
+#@caching.cache.memoize(15)
 def home_hot(page):
     """ /hot for subscriptions """
     subs = misc.getSubscriptions(current_user.get_id())
-    posts = []
-    for sub in subs:
-        posts += SubPost.query.filter_by(sid=sub.sid).all()
+    posts = misc.getPostsFromSubs(subs)
 
     sorter = HotSorting(posts)
     return render_template('index.html', page=page, sort_type='home_hot',
@@ -222,7 +224,8 @@ def home_new(page):
     subs = misc.getSubscriptions(current_user.get_id())
     posts = []
     for sub in subs:
-        posts += SubPost.query.filter_by(sid=sub.sid).all()
+        posts.append(SubPost.sid == sub.sid)
+    posts = SubPost.query.filter(or_(*posts)).all()
     sorter = NewSorting(posts)
     return render_template('index.html', page=page, sort_type='home_new',
                            posts=sorter.getPosts(page))
@@ -230,12 +233,14 @@ def home_new(page):
 
 @app.route("/top", defaults={'page': 1})
 @app.route("/top/<int:page>")
+@caching.cache.memoize(30)
 def home_top(page):
     """ /top for subscriptions """
     subs = misc.getSubscriptions(current_user.get_id())
     posts = []
     for sub in subs:
-        posts += SubPost.query.filter_by(sid=sub.sid).all()
+        posts.append(SubPost.sid == sub.sid)
+    posts = SubPost.query.filter(or_(*posts)).all()
 
     sorter = VoteSorting(posts)
     return render_template('index.html', page=page, sort_type='home_top',

@@ -84,7 +84,7 @@
       {% else %}
       <div class="row">
         <div class="col-12">
-          <a class="btn small" href="{{ url_for('view_user', user=current_user.user.name) }}"><i class="fa fa-user" aria-hidden="true"></i> {{current_user.get_username()}}</a>
+          <a class="btn small" href="{{ url_for('view_user', user=current_user.name) }}"><i class="fa fa-user" aria-hidden="true"></i> {{current_user.get_username()}}</a>
           <span class="btn small" title="Phuks taken"><i class="fa fa-list" aria-hidden="true"></i> {{current_user.get_post_score()}}</span>
           <!--<span class="btn small" title="Comment Score"><i class="fa fa-comments" aria-hidden="true"></i> xx</span>-->
           <span class="btn small" title="Phuks given"><i class="fa fa-expand" aria-hidden="true"></i> {{current_user.get_post_voting()}}</span>
@@ -101,7 +101,7 @@
                  {% if current_user.has_mail() %}{{current_user.new_count()}} {% endif %}<i class="fa fa-envelope{% if current_user.has_mail() %} hasmail{% else %}-o{% endif %}" aria-hidden="true"></i>
                </button>
             </a>
-            <a href="{{ url_for('edit_user', user=current_user.user.name) }}"><button type="button" class="lightbtn" id="config"><i class="fa fa-cog" aria-hidden="true"></i></button></a>
+            <a href="{{ url_for('edit_user', user=current_user.name) }}"><button type="button" class="lightbtn" id="config"><i class="fa fa-cog" aria-hidden="true"></i></button></a>
           </div>
 
         </form>
