@@ -768,11 +768,11 @@ def upvote(pid, value):
                              .filter_by(uid=current_user.get_id()).first()
 
     xvotes = SubPostMetadata.query.filter_by(pid=post.pid, key='score').first()
-    if not xvotes:
-        xvotes = SubPostMetadata(post.pid, 'score', 1)
-        db.session.add(xvotes)
-        cache.delete_memoized(getMetadata, post, 'score', record=True)
-        SubPostMetadata.cache.uncache(key='score', pid=post.pid)
+    # if not xvotes:
+    #   xvotes = SubPostMetadata(post.pid, 'score', 1)
+    #    db.session.add(xvotes)
+    #    cache.delete_memoized(getMetadata, post, 'score', record=True)
+    #    SubPostMetadata.cache.uncache(key='score', pid=post.pid)
 
     if qvote:
         if qvote.positive == (True if voteValue == 1 else False):
