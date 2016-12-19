@@ -35,7 +35,7 @@ class User(db.Model, CacheableMixin):
     joindate = Column(DateTime)
     subscribed = db.relationship('SubSubscriber', backref='user',
                                  lazy='dynamic')
-    posts = db.relationship('SubPost', backref='user', lazy='dynamic')
+    posts = db.relationship('SubPost', backref='_user', lazy='dynamic')
 
     properties = db.relationship('UserMetadata',
                                  backref='user', lazy='dynamic')
@@ -371,7 +371,13 @@ class SubPost(db.Model, CacheableMixin):
     @cache.memoize(60)
     def sub(self):
         """ Returns post's sub, replaces db relationship """
-        return Sub.cache.get(self.sid)
+        return Sub.query.get(self.sid)
+
+    @hybrid_property
+    @cache.memoize(60)
+    def user(self):
+        """ Returns post's sub, replaces db relationship """
+        return User.query.get(self.sid)
 
     @cache.memoize(300)
     def getThumbnail(self):
