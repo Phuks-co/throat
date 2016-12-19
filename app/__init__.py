@@ -42,9 +42,6 @@ from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
 from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair, decent
 from .misc import enableBTCmod, getCommentParentUID
 from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
-import logging
-logging.basicConfig()
-logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 app = Flask(__name__)
 
