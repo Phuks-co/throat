@@ -1487,3 +1487,22 @@ span.sidelocale {
 .sub-0{
   margin-top: .6em;
 }
+
+a[href="#s"]::after {
+    color: #000;
+    content: attr(title);
+    padding: 0 .5em;
+    visibility: visible;
+}
+
+a[href="#s"]:active::after, a[href="#s"]:hover::after {
+    color: #FFF;
+    opacity: 1;
+}
+
+a[href="#s"] {
+    background: #000;
+    color: #FFF!important;
+    display: inline-block;
+    text-decoration: none!important;
+}
