@@ -230,13 +230,13 @@ class SubMetadata(db.Model, CacheableMixin):
     @hybrid_property
     def getUsername(self):
         """ Returns username from str """
-        x = User.cache.get(self.value)
+        x = User.query.get(self.value)
         return x.name
 
     @hybrid_property
     def getSubName(self):
         """ Returns the sub's name from str """
-        x = Sub.cache.get(self.sid)
+        x = Sub.query.get(self.sid)
         return str(x.name)
 
 
@@ -260,13 +260,11 @@ class SubSubscriber(db.Model, CacheableMixin):
         self.sid = sid
         self.uid = uid
         self.status = status
-        SubSubscriber.cache.uncache(sid=sid, uid=uid, status=status)
-        SubSubscriber.cache.uncache(uid=uid, status=status)
 
     @hybrid_property
     def getSubName(self):
         """ Returns the sub's name from str """
-        x = Sub.cache.get(self.sid)
+        x = Sub.query.get(self.sid)
         return str(x.name)
 
     @hybrid_property
@@ -523,7 +521,7 @@ class SubPostVote(db.Model, CacheableMixin):
     @hybrid_property
     def getUsername(self):
         """ Returns username from str """
-        x = User.cache.get(self.uid)
+        x = User.query.get(self.uid)
         return x.name
 
 

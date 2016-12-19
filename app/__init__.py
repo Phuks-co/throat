@@ -581,10 +581,10 @@ def view_sub_hot(sub, page):
 @app.route("/s/<sub>/<pid>")
 def view_post(sub, pid):
     """ View post and comments (WIP) """
-    post = SubPost.cache.get(pid)
+    post = SubPost.query.get(pid)
     if not post or post.sub.name != sub:
         abort(404)
-    sub = Sub.cache.get(post.sid)
+    sub = Sub.query.get(post.sid)
 
     editflair = EditPostFlair()
     editflair.flair.choices = []

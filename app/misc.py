@@ -325,13 +325,13 @@ def getCommentParentUID(cid):
 
 
 def getComment(cid):
-    return SubPostComment.cache.get(cid)
+    return SubPostComment.query.get(cid)
 
 
 def getCommentSub(cid):
     l = getComment(cid)
-    p = SubPost.cache.get(l.pid)
-    return Sub.cache.get(p.sid)
+    p = SubPost.query.get(l.pid)
+    return Sub.query.get(p.sid)
 
 
 @cache.memoize(60)
@@ -515,7 +515,7 @@ def getStickies(sid):
         x = []
     r = []
     for i in x:
-        r.append(SubPost.cache.get(i.value))
+        r.append(SubPost.query.get(i.value))
     return r
 
 
@@ -572,7 +572,7 @@ def getDefaultSubs():
     md = list(SiteMetadata.query.filter_by(key='default'))
     defaults = []
     for sub in md:
-        sub = Sub.cache.get(sub.value)
+        sub = Sub.query.get(sub.value)
         defaults.append(sub)
     return defaults
 
@@ -581,7 +581,7 @@ def getSubscriptions(uid):
     """ Returns all the subs the current user is subscribed to """
     if uid:
         subs = SubSubscriber.query.filter_by(uid=uid,
-                                          status=1)
+                                             status=1)
     else:
         subs = getDefaultSubs()
     return list(subs)
@@ -661,6 +661,7 @@ def newCount(user):
                      .filter(Message.mtype != 6)
     return len(list(x))
 
+
 @cache.memoize(30)
 def getPostsFromSubs(subs):
     posts = []
@@ -668,13 +669,3 @@ def getPostsFromSubs(subs):
         posts.append(SubPost.sid == sub.sid)
     posts = SubPost.query.filter(or_(*posts)).all()
     return posts
-
-
-@cache.memoize(300)
-def getSub(sid):
-    return Sub.cache.get(sid)
-
-
-@cache.memoize(300)
-def getUser(uid):
-    return User.cache.get(uid)
