@@ -632,8 +632,9 @@ def edit_txtpost(sub, pid):
     """ Sub text post creation endpoint """
     form = EditSubTextPostForm()
     if form.validate():
-        SubPost.query.filter_by(pid=pid) \
-                     .update(dict(content=form.content.data))
+        post = SubPost.query.get(pid)
+        post.content = form.content.data
+
         # nsfw metadata
         nsfw = SubPostMetadata.query.filter_by(pid=pid) \
                                     .filter_by(key='nsfw').first()
