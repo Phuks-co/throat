@@ -70,24 +70,22 @@ class User(db.Model, CacheableMixin):
         return '<User %r>' % self.name
 
     @hybrid_property
+    @cache.memoize(20)
     def showLinksNewTab(self):
         """ Returns true user selects to open links in a new window """
-        x = UserMetadata.cache.filter(key='exlinks', uid=self.uid)
-        try:
-            x = next(x)
+        x = UserMetadata.query.filter_by(key='exlinks', uid=self.uid).first()
+        if x:
             return bool(x.value)
-        except StopIteration:
-            return False
+        return False
 
     @hybrid_property
+    @cache.memoize(20)
     def showStyles(self):
         """ Returns true user selects to see sustom sub stylesheets """
-        x = UserMetadata.cache.filter(key='styles', uid=self.uid)
-        try:
-            x = next(x)
+        x = UserMetadata.query.filter_by(key='styles', uid=self.uid).first()
+        if x:
             return bool(x.value)
-        except StopIteration:
-            return False
+        return False
 
 
 class UserMetadata(db.Model, CacheableMixin):
@@ -173,7 +171,7 @@ class Sub(db.Model, CacheableMixin):
                                   lazy='dynamic')
     _posts = db.relationship('SubPost', backref='__sub', lazy='joined')
     __posts = db.relationship('SubPost', backref='_sub', lazy='dynamic')
-    properties = db.relationship('SubMetadata', backref='sub', lazy='subquery')
+    properties = db.relationship('SubMetadata', backref='sub', lazy='dynamic')
     flairs = db.relationship('SubFlair', backref='sub', lazy='dynamic')
     __stylesheet = db.relationship('SubStylesheet', backref='sub',
                                    lazy='dynamic')
@@ -195,7 +193,7 @@ class Sub(db.Model, CacheableMixin):
     @hybrid_property
     def stylesheet(self):
         """ gets stylesheet from sub, replaces the db relationship """
-        return next(SubStylesheet.cache.filter(sid=self.sid))
+        return SubStylesheet.query.filter_by(sid=self.sid).first()
 
 
 class SubFlair(db.Model, CacheableMixin):
@@ -319,8 +317,8 @@ class SubPost(db.Model, CacheableMixin):
     score = Column(Integer)  # Post score
     thumbnail = Column(String(128))  # Thumbnail filename
 
-    _properties = db.relationship('SubPostMetadata',
-                                  backref='post', lazy='subquery')
+    properties = db.relationship('SubPostMetadata',
+                                  backref='post', lazy='dynamic')
 
     comments = db.relationship('SubPostComment', backref='post',
                                lazy='dynamic')
@@ -335,32 +333,27 @@ class SubPost(db.Model, CacheableMixin):
         self.uid = current_user.get_id()
         self.posted = datetime.datetime.utcnow()
 
-    #
+    @cache.memoize(30)
     def is_sticky(self):
         """ Returns True if this post is stickied """
-        x = SubMetadata.cache.filter(key='sticky', sid=self.sid,
-                                     value=self.pid)
-        try:
-            x = next(x)
-            x = True
-        except StopIteration:
-            x = False
+        x = SubMetadata.query.filter_by(key='sticky', sid=self.sid,
+                                        value=self.pid).first()
         return bool(x)
 
     def voteCount(self):
         """ Returns the post's vote count """
         if self.score is None:  # Compat code
-            votes = SubPostMetadata.cache.filter(key='score', pid=self.pid)
-            try:
-                self.score = next(votes).value
-            except StopIteration:
+            votes = SubPostMetadata.query.filter_by(key='score', pid=self.pid)
+            if votes.first():
+                self.score = votes.value
+            else:
                 self.score = 1
             db.session.commit()
         return self.score
 
     def getComments(self, parent=None):
         """ Returns cached post comments """
-        comms = SubPostComment.cache.filter(pid=self.pid, parentcid=parent)
+        comms = SubPostComment.query.filter_by(pid=self.pid, parentcid=parent)
         comms = list(comms)
         return comms
 
@@ -380,13 +373,15 @@ class SubPost(db.Model, CacheableMixin):
         """ Returns post's sub, replaces db relationship """
         return Sub.cache.get(self.sid)
 
+    @cache.memoize(300)
     def getThumbnail(self):
         """ Returns thumbnail address for post """
         if self.thumbnail is None:  # Compat code
-            thumb = SubPostMetadata.cache.filter(key='thumbnail', pid=self.pid)
-            try:
-                self.thumbnail = next(thumb).value
-            except StopIteration:
+            thumb = SubPostMetadata.query.filter_by(key='thumbnail',
+                                                    pid=self.pid)
+            if thumb:
+                self.thumbnail = thumb.value
+            else:
                 self.thumbnail = ''
             db.session.commit()
         return self.thumbnail
@@ -411,24 +406,21 @@ class SubPost(db.Model, CacheableMixin):
         suffix = ('.mp4', '.webm')
         return self.link.lower().endswith(suffix)
 
+    @cache.memoize(300)
     def isAnnouncement(self):
         """ Returns True if post is an announcement """
-        ann = SiteMetadata.cache.filter(key='announcement')
-        try:
-            if next(ann).value == str(self.pid):
-                return True
-            return False
-        except StopIteration:
-            return False
+        ann = SiteMetadata.query.filter_by(key='announcement').first()
+        if ann:
+            return ann.value == str(self.pid)
+        return False
 
+    @cache.memoize(30)
     def isPostNSFW(self):
         """ Returns true if the post is marked as NSFW """
-        x = SubPostMetadata.cache.filter(key='nsfw', pid=self.pid)
-        try:
-            x = next(x)
-        except StopIteration:
-            return False
-        return True if x.value == '1' else False
+        x = SubPostMetadata.query.filter_by(key='nsfw', pid=self.pid).first()
+        if x:
+            return x.value == '1'
+        return False
 
 
 class SubPostMetadata(db.Model, CacheableMixin):

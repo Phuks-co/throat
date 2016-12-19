@@ -125,7 +125,7 @@ class SiteUser(object):
     @cache.memoize(60)
     def get_post_score(self):
         """ Returns the post vote score of a user. """
-        posts = SubPost.cache.filter(uid=self.user.uid)
+        posts = SubPost.query.filter_by(uid=self.user.uid)
         count = 0
         for post in posts:
             for vote in post.votes:
@@ -138,7 +138,7 @@ class SiteUser(object):
     @cache.memoize(60)
     def get_post_voting(self):
         """ Returns the post voting for a user. """
-        votes = SubPostVote.cache.filter(uid=self.user.uid)
+        votes = SubPostVote.query.filter_by(uid=self.user.uid)
         count = 0
         for vote in votes:
             if vote.positive:
@@ -345,14 +345,6 @@ def getAnnouncement():
     return ann
 
 
-def decent(q):
-    """ Makes querying shit easier """
-    try:
-        return next(q)
-    except StopIteration:
-        return None
-
-
 @cache.memoize(30)
 def getMetadata(obj, key, value=None, all=False, record=False, cache=True):
     """ Gets metadata out of 'obj' (either a Sub, SubPost or User) """
@@ -364,39 +356,19 @@ def getMetadata(obj, key, value=None, all=False, record=False, cache=True):
     if record:
         cache = False
     try:
-        if all:
-            x = obj.properties.filter_by(key=key).all()
-        else:
-            x = obj.properties.filter_by(key=key).first()
-    except (AttributeError, sqlalchemy.orm.exc.DetachedInstanceError):
+        x = obj.properties.filter_by(key=key)
+    except sqlalchemy.orm.exc.DetachedInstanceError:
         if isinstance(obj, SubPost):
-            if cache:
-                x = SubPostMetadata.cache.filter(key=key, pid=obj.pid)
-            else:
-                x = SubPostMetadata.query.filter_by(key=key, pid=obj.pid)
+            x = SubPostMetadata.query.filter_by(key=key, pid=obj.pid)
         elif isinstance(obj, Sub):
-            if cache:
-                x = SubMetadata.cache.filter(key=key, sid=obj.sid)
-            else:
-                x = SubMetadata.query.filter_by(key=key, sid=obj.sid)
+            x = SubMetadata.query.filter_by(key=key, sid=obj.sid)
         elif isinstance(obj, User):
-            if cache:
-                x = UserMetadata.cache.filter(key=key, uid=obj.uid)
-            else:
-                x = UserMetadata.query.filter_by(key=key, uid=obj.uid)
-        if cache:
-            try:
-                if all:
-                    x = list(x)
-                else:
-                    x = next(x)
-            except StopIteration:
-                return False
-        else:
-            if all:
-                x = x.all()
-            else:
-                x = x.first()
+            x = UserMetadata.query.filter_by(key=key, uid=obj.uid)
+
+    if all:
+        x = x.all()
+    else:
+        x = x.first()
 
     if x and value is None:
         if all or record:
@@ -428,32 +400,20 @@ def isMod(sub, user):
 
 def isSubBan(sub, user):
     """ Returns True if 'user' is banned 'sub' """
-    x = SubMetadata.cache.filter(key='ban', sid=sub.sid, value=user.uid)
-    try:
-        x = next(x)
-    except StopIteration:
-        x = False
-    return bool(x)
+    x = SubMetadata.query.filter_by(key='ban', sid=sub.sid, value=user.uid)
+    return bool(x.first())
 
 
 def isTopMod(sub, user):
     """ Returns True if 'user' is a topmod of 'sub' """
-    x = SubMetadata.cache.filter(key='mod1', sid=sub.sid, value=user.uid)
-    try:
-        x = next(x)
-    except StopIteration:
-        x = False
-    return bool(x)
+    x = SubMetadata.query.filter_by(key='mod1', sid=sub.sid, value=user.uid)
+    return bool(x.first())
 
 
 def isModInv(sub, user):
     """ Returns True if 'user' is a invited to mod of 'sub' """
-    x = SubMetadata.cache.filter(key='mod2i', sid=sub.sid, value=user.uid)
-    try:
-        x = next(x)
-    except StopIteration:
-        x = False
-    return bool(x)
+    x = SubMetadata.query.filter_by(key='mod2i', sid=sub.sid, value=user.uid)
+    return bool(x.first())
 
 
 def hasMail(user):
@@ -495,34 +455,22 @@ def newComReplyCount(user):
 
 def hasSubscribed(sub, user):
     """ Returns True if the current user is subscribed """
-    x = SubSubscriber.cache.filter(sid=sub.sid, uid=user.uid, status=1)
-    try:
-        x = next(x)
-    except StopIteration:
-        x = False
-    return bool(x)
+    x = SubSubscriber.query.filter_by(sid=sub.sid, uid=user.uid, status=1)
+    return bool(x.first())
 
 
 def hasBlocked(sub, user):
     """ Returns True if the current user has blocked """
-    x = SubSubscriber.cache.filter(sid=sub.sid, uid=user.uid, status=2)
-    try:
-        x = next(x)
-    except StopIteration:
-        x = False
-    return bool(x)
+    x = SubSubscriber.query.filter_by(sid=sub.sid, uid=user.uid, status=2)
+    return bool(x.first())
 
 
 @cache.memoize(600)
 def getSubUsers(sub, key):
     """ Returns the names of the sub positions, founder, owner """
-    x = SubMetadata.cache.filter(sid=sub.sid, key=key)
-    try:
-        x = next(x)
-    except StopIteration:
-        return False
+    x = SubMetadata.query.filter_by(sid=sub.sid, key=key).first()
 
-    name = User.cache.get(x.value).name
+    name = User.query.get(x.value).name
     return name
 
 
@@ -536,7 +484,7 @@ def getSubCreation(sub):
 @cache.memoize(60)
 def getSuscriberCount(sub):
     """ Returns subscriber count """
-    x = SubSubscriber.cache.filter(sid=sub.sid, status=1)
+    x = SubSubscriber.query.filter_by(sid=sub.sid, status=1)
     try:
         return len(list(x))
     except StopIteration:
@@ -560,7 +508,7 @@ def getSubPostCount(sub):
 
 def getStickies(sid):
     """ Returns a list of stickied SubPosts """
-    x = SubMetadata.cache.filter(sid=sid, key='sticky')
+    x = SubMetadata.query.filter_by(sid=sid, key='sticky')
     try:
         x = list(x)
     except StopIteration:
@@ -621,7 +569,7 @@ def getPostFlair(post, fl):
 @cache.memoize(600)
 def getDefaultSubs():
     """ Returns a list of all the default subs """
-    md = list(SiteMetadata.cache.filter(key='default'))
+    md = list(SiteMetadata.query.filter_by(key='default'))
     defaults = []
     for sub in md:
         sub = Sub.cache.get(sub.value)
@@ -632,7 +580,7 @@ def getDefaultSubs():
 def getSubscriptions(uid):
     """ Returns all the subs the current user is subscribed to """
     if uid:
-        subs = SubSubscriber.cache.filter(uid=uid,
+        subs = SubSubscriber.query.filter_by(uid=uid,
                                           status=1)
     else:
         subs = getDefaultSubs()

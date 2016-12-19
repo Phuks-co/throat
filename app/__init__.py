@@ -39,7 +39,7 @@ from .misc import SiteUser, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
 from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
-from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair, decent
+from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair
 from .misc import enableBTCmod, getCommentParentUID
 from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
 # from werkzeug.contrib.profiler import ProfilerMiddleware
@@ -312,7 +312,7 @@ def search(page, term):
 @app.route("/all/top/<int:page>")
 def all_top(page):
     """ The index page, all posts sorted as most recent posted first """
-    posts = SubPost.cache.filter()
+    posts = SubPost.query.filter_by()
     sorter = VoteSorting(posts)
 
     return render_template('index.html', page=page, sort_type='all_top',
@@ -323,7 +323,7 @@ def all_top(page):
 @app.route("/all/hot/<int:page>")
 def all_hot(page):
     """ The index page, all posts sorted as most recent posted first """
-    posts = SubPost.cache.filter()
+    posts = SubPost.query.filter_by()
     sorter = HotSorting(posts)
 
     return render_template('index.html', page=page, sort_type='all_hot',
@@ -372,7 +372,7 @@ def view_sub(sub):
 @login_required
 def edit_sub_css(sub):
     """ Here we can edit sub info and settings """
-    sub = decent(Sub.cache.filter(name=sub))
+    sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
 
@@ -380,7 +380,7 @@ def edit_sub_css(sub):
         abort(403)
 
     form = EditSubCSSForm()
-    form.css.data = decent(SubStylesheet.cache.filter(sid=sub.sid)).content
+    form.css.data = SubStylesheet.query.filter_by(sid=sub.sid).first().content
     return render_template('editsubcss.html', sub=sub, form=form)
 
 
@@ -388,7 +388,7 @@ def edit_sub_css(sub):
 @login_required
 def edit_sub_flairs(sub):
     """ Here we manage the sub's flairs. """
-    sub = decent(Sub.cache.filter(name=sub))
+    sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
 
@@ -407,7 +407,7 @@ def edit_sub_flairs(sub):
 @login_required
 def edit_sub(sub):
     """ Here we can edit sub info and settings """
-    sub = decent(Sub.cache.filter(name=sub))
+    sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
 
@@ -423,7 +423,7 @@ def edit_sub(sub):
 @login_required
 def view_sublog(sub):
     """ Here we can see a log of mod/admin activity in the sub """
-    sub = decent(Sub.cache.filter(name=sub))
+    sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
 
@@ -435,7 +435,7 @@ def view_sublog(sub):
 @login_required
 def edit_sub_mods(sub):
     """ Here we can edit moderators for a sub """
-    sub = decent(Sub.cache.filter(name=sub))
+    sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
 
@@ -455,7 +455,7 @@ def edit_sub_mods(sub):
 @app.route("/s/<sub>/new.rss")
 def sub_new_rss(sub):
     """ RSS feed for /s/sub/new """
-    sub = decent(Sub.cache.filter(name=sub))
+    sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
 
@@ -481,13 +481,13 @@ def sub_new_rss(sub):
 @app.route("/s/<sub>/new/<int:page>")
 def view_sub_new(sub, page):
     """ The index page, all posts sorted as most recent posted first """
-    sub = decent(Sub.cache.filter(name=sub))
+    sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
 
     posts = sub.posts.order_by(SubPost.posted.desc())
     sorter = BasicSorting(posts)
-    mods = SubMetadata.cache.filter(key='mod2', sid=sub.sid)
+    mods = SubMetadata.query.filter_by(key='mod2', sid=sub.sid)
     try:
         mods = list(mods)
     except StopIteration:
@@ -507,7 +507,7 @@ def view_sub_new(sub, page):
 def view_sub_postmodlog(sub, page):
     """ The mod/admin deleted posts page, sorted as most
         recent posted first """
-    sub = decent(Sub.cache.filter(name=sub))
+    sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
 
@@ -526,7 +526,7 @@ def view_sub_postmodlog(sub, page):
 @app.route("/s/<sub>/bannedusers")
 def view_sub_bans(sub):
     """ See banned users for the sub """
-    sub = decent(Sub.cache.filter(name=sub))
+    sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
 
@@ -540,7 +540,7 @@ def view_sub_bans(sub):
 @app.route("/s/<sub>/top/<int:page>")
 def view_sub_top(sub, page):
     """ The index page, /top sorting """
-    sub = decent(Sub.cache.filter(name=sub))
+    sub = Sub.query.filter_by(name=sub).first()
     if not sub:
         abort(404)
 
@@ -599,7 +599,7 @@ def view_post(sub, pid):
     txtpedit.content.data = post.content
     createtxtpost = CreateSubTextPost(sub=sub.name)
     createlinkpost = CreateSubLinkPost(sub=sub.name)
-    comments = SubPostComment.cache.filter(pid=pid)
+    comments = SubPostComment.query.filter_by(pid=pid)
 
     upcount = SubPostVote.query.filter_by(pid=post.pid, positive=1).count()
     downcount = SubPostVote.query.filter_by(pid=post.pid, positive=0).count()
