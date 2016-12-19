@@ -606,8 +606,8 @@ def create_txtpost():
         post.content = form.content.data
         post.ptype = "0"
         db.session.add(post)
-        l = SubPostMetadata(post.pid, 'score', 1)
-        db.session.add(l)
+        # l = SubPostMetadata(post.pid, 'score', 1)
+        # db.session.add(l)
         db.session.commit()
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_post', sub=sub.name,
@@ -666,8 +666,8 @@ def create_lnkpost():
         post.link = form.link.data
         post.ptype = "1"
         db.session.add(post)
-        l = SubPostMetadata(post.pid, 'score', 1)
-        db.session.add(l)
+        # l = SubPostMetadata(post.pid, 'score', 1)
+        # db.session.add(l)
         nsfw = SubPostMetadata(post.pid, 'nsfw', form.nsfw.data)
         db.session.add(nsfw)
         db.session.commit()
@@ -717,10 +717,9 @@ def create_lnkpost():
         offset = (int((bg_w - img_w) / 2), int((bg_h - img_h) / 2))
         background.paste(im, offset)
         background.save(config.THUMBNAILS + '/' + filename, "JPEG")
-        tn = SubPostMetadata(post.pid, 'thumbnail', filename)
+        post.thumbnail = filename
         im.close()
         background.close()
-        db.session.add(tn)
         db.session.commit()
         return jsonify(status='ok', addr=url_for('view_post', sub=sub.name,
                                                  pid=post.pid))
@@ -768,7 +767,7 @@ def upvote(pid, value):
     qvote = SubPostVote.query.filter_by(pid=pid) \
                              .filter_by(uid=current_user.get_id()).first()
 
-    xvotes = SubPostMetadata.query.filter_by(pid=post.pid, key='score').first()
+    # xvotes = SubPostMetadata.query.filter_by(pid=post.pid, key='score').first()
     # if not xvotes:
     #   xvotes = SubPostMetadata(post.pid, 'score', 1)
     #    db.session.add(xvotes)
@@ -782,11 +781,10 @@ def upvote(pid, value):
         else:
 
             qvote.positive = True if voteValue == 1 else False
-            xvotes.value = int(xvotes.value) + (voteValue*2)
+            post.score = int(post.score) + (voteValue*2)
             db.session.commit()
             cache.delete_memoized(misc.hasVoted, current_user.get_id(),
                                   qvote.positive)
-            SubPostMetadata.cache.uncache(key='score', pid=post.pid)
             return json.dumps({'status': 'ok',
                                'message': 'Vote flipped.'})
     else:
@@ -797,8 +795,7 @@ def upvote(pid, value):
         db.session.add(vote)
     cache.delete_memoized(misc.hasVoted, current_user.get_id(),
                           vote.positive)
-    SubPostMetadata.cache.uncache(key='score', pid=post.pid)
-    xvotes.value = int(xvotes.value) + voteValue
+    post.score = int(post.score) + voteValue
     db.session.commit()
     return json.dumps({'status': 'ok'})
 

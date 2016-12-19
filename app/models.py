@@ -8,7 +8,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import current_user
 import bcrypt
-from .caching import CacheableMixin, query_callable, regions
+from .caching import CacheableMixin, query_callable, regions, cache
 
 
 db = SQLAlchemy()
@@ -316,6 +316,9 @@ class SubPost(db.Model, CacheableMixin):
 
     ptype = Column(Integer)  # Post type. 0=txt; 1=link; etc
 
+    score = Column(Integer)  # Post score
+    thumbnail = Column(String(128))  # Thumbnail filename
+
     _properties = db.relationship('SubPostMetadata',
                                   backref='post', lazy='subquery')
 
@@ -327,6 +330,8 @@ class SubPost(db.Model, CacheableMixin):
 
     def __init__(self, sid):
         self.sid = sid
+        self.score = 1
+        self.thumbnail = ''
         self.uid = current_user.get_id()
         self.posted = datetime.datetime.utcnow()
 
@@ -343,17 +348,14 @@ class SubPost(db.Model, CacheableMixin):
 
     def voteCount(self):
         """ Returns the post's vote count """
-        # db.session.expunge_all()
-
-        votes = SubPostMetadata.cache.filter(key='score', pid=self.pid)
-        try:
-            votes = next(votes)
-        except StopIteration:
-            l = SubPostMetadata(self.pid, 'score', 1)
-            db.session.add(l)
+        if self.score is None:  # Compat code
+            votes = SubPostMetadata.cache.filter(key='score', pid=self.pid)
+            try:
+                self.score = next(votes).value
+            except StopIteration:
+                self.score = 1
             db.session.commit()
-            return 1
-        return int(votes.value) if votes else 0
+        return self.score
 
     def getComments(self, parent=None):
         """ Returns cached post comments """
@@ -361,45 +363,48 @@ class SubPost(db.Model, CacheableMixin):
         comms = list(comms)
         return comms
 
+    def getCommentCount(self):
+        c = SubPostComment.query.filter(SubPostComment.pid == self.pid).count()
+        return c
+
+    @cache.memoize(300)
     def getDomain(self):
         """ Gets Domain """
         x = urlparse(self.link)
         return x.netloc
 
     @hybrid_property
+    @cache.memoize(60)
     def sub(self):
         """ Returns post's sub, replaces db relationship """
         return Sub.query.get(self.sid)
 
     @hybrid_property
+    @cache.memoize(60)
     def user(self):
         """ Returns post creator, replaces db relationship """
         return User.cache.get(self.uid)
 
-    @hybrid_property
-    def properties(self):
-        """ Returns ALL post metadata. You should not use this >:| """
-        return User.cache.filter(pid=self.pid)
-
-    @hybrid_property
-    def thumb(self):
+    def getThumbnail(self):
         """ Returns thumbnail address for post """
-        x = SubPostMetadata.cache.filter(pid=self.pid, key='thumbnail')
-        try:
-            return next(x).value
-        except StopIteration:
-            return False
+        if self.thumbnail is None:  # Compat code
+            thumb = SubPostMetadata.cache.filter(key='thumbnail', pid=self.pid)
+            try:
+                self.thumbnail = next(thumb).value
+            except StopIteration:
+                self.thumbnail = ''
+            db.session.commit()
+        return self.thumbnail
 
     def isImage(self):
         """ Returns True if link ends with img suffix """
-        suffix = ['.png', '.jpg', '.gif', '.tiff', '.bmp']
-        return self.link.lower().endswith(tuple(suffix))
+        suffix = ('.png', '.jpg', '.gif', '.tiff', '.bmp')
+        return self.link.lower().endswith(suffix)
 
     def isGifv(self):
         """ Returns True if link ends with video suffix """
-        suffix = ['.gifv']
         domains = ['imgur.com', 'i.imgur.com', 'i.sli.mg', 'sli.mg']
-        if self.link.lower().endswith(tuple(suffix)):
+        if self.link.lower().endswith('.gifv'):
             for domain in domains:
                 if domain in self.link.lower():
                     return True
@@ -408,13 +413,18 @@ class SubPost(db.Model, CacheableMixin):
 
     def isVideo(self):
         """ Returns True if link ends with video suffix """
-        suffix = ['.mp4', '.webm']
-        return self.link.lower().endswith(tuple(suffix))
+        suffix = ('.mp4', '.webm')
+        return self.link.lower().endswith(suffix)
 
     def isAnnouncement(self):
         """ Returns True if post is an announcement """
-        ann = SiteMetadata.query.filter_by(key='announcement').first()
-        return bool(ann and ann.value == str(self.pid))
+        ann = SiteMetadata.cache.filter(key='announcement')
+        try:
+            if next(ann).value == str(self.pid):
+                return True
+            return False
+        except StopIteration:
+            return False
 
     def isPostNSFW(self):
         """ Returns true if the post is marked as NSFW """

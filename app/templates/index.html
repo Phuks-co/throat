@@ -149,9 +149,9 @@
         </div>
         {# cache 300, post.pid, 'post' #}
           <div class="image">
-            {% if post.thumb %}
+            {% if post.getThumbnail() %}
             <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
-              <img src="{{config.THUMBNAIL_HOST}}{{post.thumb}}">
+              <img src="{{config.THUMBNAIL_HOST}}{{post.getThumbnail()}}">
             </a>
             {% elif not post.link %}
               <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
@@ -234,7 +234,7 @@
               {% endif %}
               <a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{{post.sub.name}}</a>
               <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
-              <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.getComments() | length}})</a>
+              <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.getCommentCount()}})</a>
               </p>
           </div>
         {# endcache #}

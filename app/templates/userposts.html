@@ -78,7 +78,7 @@
               <div class="postbar">
                 <i class="fa fa-clock-o" aria-hidden="true"></i> <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in
                 <a href="{{url_for('view_sub', sub=post.sub.name)}}">/s/{{post.sub.name}}</a>
-                with {{post.getComments() | length}} <i class="fa fa-comments" aria-hidden="true"></i> comments
+                with {{post.getCommentCount()}} <i class="fa fa-comments" aria-hidden="true"></i> comments
             </div>
           </li>
           {% endfor %}
