@@ -25,6 +25,7 @@ class SiteUser(object):
         if self.user:
             self.is_authenticated = True
             self.is_anonymous = False
+            self.admin = getMetadata(self.user, 'admin')
         else:
             self.is_authenticated = False
             self.is_anonymous = True
@@ -51,7 +52,7 @@ class SiteUser(object):
 
     def is_admin(self):
         """ Returns true if the current user is a site admin. """
-        return True if getMetadata(self.user, 'admin') else False
+        return self.admin
 
     def is_topmod(self, sub):
         """ Returns True if the current user is a mod of 'sub' """
