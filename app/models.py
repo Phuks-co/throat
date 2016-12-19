@@ -261,6 +261,7 @@ class SubSubscriber(db.Model, CacheableMixin):
         self.time = datetime.datetime.utcnow()
         self.sid = sid
         self.uid = uid
+        self.status = status
         SubSubscriber.cache.uncache(sid=sid, uid=uid, status=status)
         SubSubscriber.cache.uncache(uid=uid, status=status)
 

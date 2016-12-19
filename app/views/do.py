@@ -143,6 +143,7 @@ def register():
             db.session.add(x)
         db.session.commit()
         login_user(SiteUser(user))
+        SubSubscriber.cache.uncache(uid=user.uid, status=1)
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
