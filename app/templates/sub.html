@@ -185,6 +185,16 @@
             <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
           </span>
         {% endif %}
+        {% if post.isVideo() %}
+        <span id="openvideo" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" data-domain="{{ann.getDomain()}}" class="closedvid">
+          <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
+        </span>
+        {% endif %}
+        {% if post.isGifv() %}
+        <span id="gifv" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" data-domain="{{ann.getDomain()}}" class="closedgifv">
+          <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
+        </span>
+        {% endif %}
       {% else %}
         <span id="opentextpost" data-pid="{{ann.pid}}" class="closedtextpost">
           <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
@@ -290,7 +300,7 @@
                 </span>
               {% endif %}
               {% if post.isVideo() %}
-              <span id="openvideo" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
+              <span id="openvideo" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{post.getDomain()}}" class="closedvid">
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
               </span>
               {% endif %}

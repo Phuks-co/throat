@@ -854,6 +854,7 @@ $(document).ready(function() {
 
     $('span[id^="openvid"]').click(function(e){
       var pid = $(e.currentTarget).data().pid
+      var domain = $(e.currentTarget).data().domain
       var url = $(e.currentTarget).data().vid
       var player = document.createElement('video');
       var source = document.createElement('source');
@@ -864,8 +865,12 @@ $(document).ready(function() {
         player.preload ="auto"
         player.autoplay = "autoplay"
         player.loop = "loop"
-        source.src = url
         source.type = "video/webm"
+        if (domain == "i.imgtc.com") {
+          source.src = 'https://i.imgtc.com/' + imgtcID(url);
+        } else {
+          source.src = url
+        }
         $(e.currentTarget).addClass('openedvid').removeClass('closedvid');
         document.getElementById(playerid).appendChild(player);
         document.getElementById("vid" + pid).appendChild(source);
@@ -892,7 +897,7 @@ $(document).ready(function() {
         player.autoplay = "autoplay"
         player.loop = "loop"
         if (domain == "i.imgur.com" || domain == "imgur.com") {
-        source.src = 'https://i.imgur.com/' + imgurID(url) + '.mp4';
+          source.src = 'https://i.imgur.com/' + imgurID(url) + '.mp4';
         }
         if (domain == "i.sli.mg") {
           source.src = 'https://i.sli.mg/' + slimgID(url) + '.webm';
@@ -1060,6 +1065,12 @@ function slimgID(url) {
   var match = url.match(/^http(?:s?):\/\/(i\.)?sli\.mg\/(.*?)(?:\/.gifv|$)/);
   if (match){
     return match[2].replace(/.gifv/,'');
+	}
+}
+function imgtcID(url) {
+  var match = url.match(/^http(?:s?):\/\/(i\.)?imgtc\.com\/(.*?)(?:\/.mp4|$)/);
+  if (match){
+    return match[2];
 	}
 }
 /* for testing
