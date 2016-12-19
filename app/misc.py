@@ -286,7 +286,7 @@ class RestrictedMarkdown(markdown.Extension):
         user_tag = NiceLinkPattern(self.RE_AMENTION, md)
         url = URLifyPattern(self.RE_URL, md)
         md.inlinePatterns.add('user', user_tag, '>strong')
-        md.inlinePatterns.add('user', url, '>strong')
+        md.inlinePatterns.add('url', url, '>strong')
 
 
 @cache.memoize(50)
