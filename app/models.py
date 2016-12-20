@@ -77,7 +77,7 @@ class User(db.Model, CacheableMixin):
         """ Returns true user selects to open links in a new window """
         x = UserMetadata.query.filter_by(key='exlinks', uid=self.uid).first()
         if x:
-            return bool(x.value)
+            return bool(int(x.value))
         return False
 
     @hybrid_property
@@ -86,8 +86,19 @@ class User(db.Model, CacheableMixin):
         """ Returns true user selects to see sustom sub stylesheets """
         x = UserMetadata.query.filter_by(key='styles', uid=self.uid).first()
         if x:
-            return bool(x.value)
+            return bool(int(x.value))
         return False
+
+    @hybrid_property
+    @cache.memoize(20)
+    def showNSFW(self):
+        """ Returns true user selects to see sustom sub stylesheets """
+        x = UserMetadata.query.filter_by(key='nsfw', uid=self.uid).first()
+        if x:
+            return bool(int(x.value))
+        return True
+
+
 
 
 class UserMetadata(db.Model, CacheableMixin):
