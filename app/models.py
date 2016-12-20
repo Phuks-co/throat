@@ -321,6 +321,9 @@ class SubPost(db.Model):
         self.uid = current_user.get_id()
         self.posted = datetime.datetime.utcnow()
 
+    def __repr__(self):
+        return "<SubPost {0}>".format(self.pid)
+
     @cache.memoize(30)
     def is_sticky(self):
         """ Returns True if this post is stickied """
