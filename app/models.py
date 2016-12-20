@@ -151,13 +151,8 @@ class UserBadge(db.Model):
         self.text = text
 
 
-class Sub(db.Model, CacheableMixin):
+class Sub(db.Model):
     """ Basic sub data """
-    cache_label = "default"  # region's label to use
-    cache_regions = regions  # regions to store cache
-    cache_pk = 'sid'
-    # Query handeling dogpile caching
-    query_class = query_callable(regions)
 
     sid = Column(String(40), primary_key=True)  # sub id
     name = Column(String(32), unique=True)  # sub name
@@ -289,13 +284,8 @@ class SubStylesheet(db.Model, CacheableMixin):
         self.content = content
 
 
-class SubPost(db.Model, CacheableMixin):
+class SubPost(db.Model):
     """ Represents a post on a sub """
-    cache_label = "default"  # region's label to use
-    cache_regions = regions  # regions to store cache
-    cache_pk = 'pid'
-    # Query handeling dogpile caching
-    query_class = query_callable(regions)
     pid = Column(Integer, primary_key=True)  # post id
     sid = Column(String(40), db.ForeignKey('sub.sid'))
     uid = Column(String(40), db.ForeignKey('user.uid'))
