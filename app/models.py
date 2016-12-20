@@ -322,7 +322,7 @@ class SubPost(db.Model):
     # There's a 'sub' field with a reference to the sub and a 'user' one
     # with a refernece to the user that created this post
 
-    title = Column(String(256))  # post title
+    title = Column(String(512))  # post title
     link = Column(String(256))  # post target (if it is a link post)
     # post content (if it is a text post)
     content = Column(Text())
@@ -591,7 +591,7 @@ class Message(db.Model, CacheableMixin):
     sentby = Column(String(40), db.ForeignKey('user.uid'))
     receivedby = Column(String(40), db.ForeignKey('user.uid'))
 
-    subject = Column(String(300))  # msg subject
+    subject = Column(String(550))  # msg subject
     content = Column(Text())  # msg content
 
     posted = Column(DateTime)  # sent

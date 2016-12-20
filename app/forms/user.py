@@ -76,7 +76,7 @@ class CreateUserMessageForm(FlaskForm):
     """ CreateUserMessage form. """
     to = HiddenField()
     subject = StringField('subject',
-                          validators=[DataRequired(), Length(min=1, max=256)])
+                          validators=[DataRequired(), Length(min=1, max=400)])
 
     content = TextAreaField('message',
                             validators=[DataRequired(),
