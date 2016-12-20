@@ -279,7 +279,7 @@ class NiceLinkPattern(markdown.inlinepatterns.LinkPattern):
         return el
 
 RE_AMENTION = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/s\/)' \
-              '([A-Za-z]+[A-Za-z0-9\-\_]+))'
+              r'([A-Za-z]+[A-Za-z0-9\-\_]+))'
 
 
 class RestrictedMarkdown(markdown.Extension):
@@ -700,7 +700,7 @@ def workWithMentions(data, receivedby, post, sub):
         mts = list(set(mts))  # Removes dupes
         # Filter only users
         mts = [x[2] for x in mts if x[1] == "/u/" or x[1] == "@"]
-        for mtn in mts:
+        for mtn in mts [:5]:
             # Send notifications.
             user = User.query.filter(func.lower(User.name) ==
                                      func.lower(mtn)).first()
