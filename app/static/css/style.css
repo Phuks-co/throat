@@ -373,7 +373,7 @@ input:focus {
 }
 blockquote {
   display:block;
-  padding: 15px 20px 15px 45px;
+  padding: 5px 20px 5px 7px;
   margin: 0 0 20px;
   position: relative;
   font-family: Georgia, serif;
