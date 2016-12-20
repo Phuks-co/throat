@@ -185,12 +185,12 @@
             <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
           </span>
         {% endif %}
-        {% if post.isVideo() %}
+        {% if ann.isVideo() %}
         <span id="openvideo" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" data-domain="{{ann.getDomain()}}" class="closedvid">
           <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
         </span>
         {% endif %}
-        {% if post.isGifv() %}
+        {% if ann.isGifv() %}
         <span id="gifv" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" data-domain="{{ann.getDomain()}}" class="closedgifv">
           <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
         </span>
