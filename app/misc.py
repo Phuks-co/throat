@@ -272,11 +272,12 @@ class NiceLinkPattern(markdown.inlinepatterns.LinkPattern):
 
         return el
 
+RE_AMENTION = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/s\/)' \
+              '([A-Za-z]+[A-Za-z0-9]+))'
+
 
 class RestrictedMarkdown(markdown.Extension):
     """ Class to restrict some markdown stuff """
-    RE_AMENTION = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/s\/)' \
-                  '([A-Za-z]+[A-Za-z0-9]+))'
     RE_URL = r'(<(?:f|ht)tps?://[^>]*>|\b(?:f|ht)tps?://[^)<>\s\'"]+[^.,)' \
              r'<>\s\'"]|\bwww\.[^)<>\s\'"]+[^.,)<>\s\'"]|[^(<\s\'"]+\.' \
              r'(?:com|net|org)\b)'
@@ -285,7 +286,7 @@ class RestrictedMarkdown(markdown.Extension):
         """ Here we disable stuff """
         del md.inlinePatterns['image_link']
         del md.inlinePatterns['image_reference']
-        user_tag = NiceLinkPattern(self.RE_AMENTION, md)
+        user_tag = NiceLinkPattern(RE_AMENTION, md)
         url = URLifyPattern(self.RE_URL, md)
         md.inlinePatterns.add('user', user_tag, '>strong')
         md.inlinePatterns.add('url', url, '>strong')
@@ -426,7 +427,8 @@ def hasMail(user):
 
 def newPMCount(user):
     """ Returns new message count in message area"""
-    x = Message.query.filter_by(read=None).filter_by(mtype=1) \
+    x = Message.query.filter_by(read=None).filter(or_(Message.mtype == 1,
+                                                      Message.mtype == 8)) \
                      .filter_by(receivedby=user.uid).count()
     return x
 
@@ -434,7 +436,7 @@ def newPMCount(user):
 def newModmailCount(user):
     """ Returns new replies count in message area """
     x = Message.query.filter_by(read=None) \
-                     .filter(or_(Message.mtype=='2', Message.mtype=='7')) \
+                     .filter(or_(Message.mtype == 2, Message.mtype == 7)) \
                      .filter_by(receivedby=user.uid).count()
     return x
 

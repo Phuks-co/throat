@@ -751,7 +751,8 @@ def view_messages():
     """ WIP: View user's messages """
     user = session['user_id']
     messages = Message.query.filter_by(receivedby=user) \
-                            .filter_by(mtype=1) \
+                            .filter(or_(Message.mtype == 1,
+                                        Message.mtype == 8)) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
                            box_name="Inbox")

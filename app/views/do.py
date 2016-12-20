@@ -833,7 +833,7 @@ def create_comment(sub, pid):
         if form.parent.data != "0":
             comment.parentcid = form.parent.data
 
-        # send pm to parent
+        # 5 - send pm to parent
         pm = Message()
         pm.sentby = current_user.get_id()
         if form.parent.data != "0":
@@ -844,11 +844,42 @@ def create_comment(sub, pid):
             pm.receivedby = post.uid
             pm.subject = 'Post reply: ' + post.title
             pm.mtype = 4  # Post reply
-        pm.content = form.comment.data
+        # pm.content = form.comment.data
         pm.mlink = comment.cid
         pm.posted = datetime.datetime.utcnow()
-        if pm.receivedby != pm.sentby:  # This is a waste but meh
+        if pm.receivedby != pm.sentby:
             db.session.add(pm)
+
+        # 6 - Process mentions
+        mts = re.findall(misc.RE_AMENTION, form.comment.data)
+        if mts:
+            mts = list(set(mts))  # Removes dupes
+            # Filter only users
+            mts = [x[2] for x in mts if x[1] == "/u/" or x[1] == "@"]
+            for mtn in mts:
+                # Send notifications.
+                user = User.query.filter(func.lower(User.name) ==
+                                         func.lower(mtn)).first()
+                if not user:
+                    continue
+                if user.uid != pm.sentby and user.uid != pm.receivedby:
+                    # Checks done. Send our shit
+                    pm = Message()
+                    pm.sentby = current_user.get_id()
+                    pm.receivedby = user.uid
+                    pm.subject = "You've been tagged in a post"
+                    pm.mlink = comment.cid
+                    pm.content = "[{0}]({1}) tagged you in a comment "\
+                                 "in [{2}]({3})".format(
+                                    current_user.get_username(),
+                                    url_for('view_user',
+                                            user=current_user.get_username()),
+                                    post.title,
+                                    url_for('view_post', pid=post.pid,
+                                            sid=sub.name))
+                    pm.posted = datetime.datetime.utcnow()
+                    pm.mtype = 8  # tagging notifications
+                    db.session.add(pm)
 
         db.session.add(comment)
         db.session.commit()

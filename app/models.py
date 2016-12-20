@@ -536,8 +536,9 @@ class Message(db.Model, CacheableMixin):
     posted = Column(DateTime)  # sent
     read = Column(DateTime)  # todo markasread time
     # mtype: 1=pm, 2=mods/subs, 3=user mention, 4=postreply, 5=commreply, 6=del
+    # 7=sub bans, 8=tagging notifications
     mtype = Column(Integer)
-    mlink = Column(String(128)) # link to be included
+    mlink = Column(String(128))  # link to be included
 
     def __repr__(self):
         return '<Messages {0}>'.format(self.subject)
