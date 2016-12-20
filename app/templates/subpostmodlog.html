@@ -19,7 +19,7 @@
 {{ super() }}
 <h3>Modlog</h3>
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
-{% for post in posts if not getMetadata(post, 'deleted') and getMetadata(post, 'moddeleted')%}
+{% for post in posts if not post.wasDeleted()%}
     <article class="post" data-pid="{{post.pid}}">
       {# vote div #}
       <div class="pull left vote"><br>

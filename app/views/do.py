@@ -217,22 +217,10 @@ def delete_post():
                                'error': ['Not authorized.']})
 
         if post.uid == session['user_id']:
-            md = SubPostMetadata(post.pid, 'deleted', '1')
-            cache.delete_memoized(getMetadata, post, 'deleted')
-            SubPostMetadata.cache.uncache(key='deleted', pid=post.pid)
+            post.deleted = 1
         else:
-            md = SubPostMetadata(post.pid, 'moddeleted', '1')
-            cache.delete_memoized(getMetadata, post, 'moddeleted')
-            SubPostMetadata.cache.uncache(key='moddeleted', pid=post.pid)
+            post.deleted = 2
 
-        # :(
-        #cache.delete(make_template_fragment_key('subposts',
-        #                                        vary_on=[post.sub.sid, 'new']))
-        #cache.delete(make_template_fragment_key('subposts',
-        #                                        vary_on=[post.sub.sid, 'hot']))
-        #cache.delete(make_template_fragment_key('subposts',
-        #                                        vary_on=[post.sub.sid, 'top']))
-        db.session.add(md)
         db.session.commit()
 
         return json.dumps({'status': 'ok'})
@@ -636,15 +624,7 @@ def edit_txtpost(sub, pid):
     if form.validate():
         post = SubPost.query.get(pid)
         post.content = form.content.data
-
-        # nsfw metadata
-        nsfw = SubPostMetadata.query.filter_by(pid=pid) \
-                                    .filter_by(key='nsfw').first()
-        if nsfw:
-            nsfw.value = form.nsfw.data
-        else:
-            nsfw = SubPostMetadata(pid, 'nsfw', form.nsfw.data)
-            db.session.add(nsfw)
+        post.nsfw = form.nsfw.data
         db.session.commit()
         return json.dumps({'status': 'ok', 'sub': sub, 'pid': pid})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -671,8 +651,6 @@ def create_lnkpost():
         db.session.add(post)
         # l = SubPostMetadata(post.pid, 'score', 1)
         # db.session.add(l)
-        nsfw = SubPostMetadata(post.pid, 'nsfw', form.nsfw.data)
-        db.session.add(nsfw)
         db.session.commit()
 
         misc.workWithMentions(form.title.data, None, post, sub)
@@ -735,14 +713,8 @@ def edit_linkpost(sub, pid):
     """ Sub text post creation endpoint """
     form = EditSubLinkPostForm()
     if form.validate():
-        # nsfw metadata
-        nsfw = SubPostMetadata.query.filter_by(pid=pid) \
-                                    .filter_by(key='nsfw').first()
-        if nsfw:
-            nsfw.value = form.nsfw.data
-        else:
-            nsfw = SubPostMetadata(pid, 'nsfw', form.nsfw.data)
-            db.session.add(nsfw)
+        post = SubPost.query.filter_by(pid=pid).first()
+        post.nsfw = form.nsfw.data
         db.session.commit()
         return json.dumps({'status': 'ok', 'sub': sub, 'pid': pid})
     return json.dumps({'status': 'error', 'error': get_errors(form)})

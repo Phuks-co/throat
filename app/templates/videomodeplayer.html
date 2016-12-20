@@ -65,7 +65,7 @@
          * Tracks ids here... 7BurNCK5Pc8 yM3zyEWVVFs Rqnw5IfbZOU
          */
         videos: [
-          {% for post in posts if not getMetadata(post, 'deleted') and not getMetadata(post, 'moddeleted') and not post.is_sticky()%}
+          {% for post in posts if not post.wasDeleted() and not post.is_sticky()%}
             {% if post.getDomain() == "youtube.com" or post.getDomain() == "www.youtube.com" or post.getDomain() == "youtu.be" %}
               {% if func.hasPostFlair(post) != "skip" %}
               '{{ func.getYoutubeID(post.link) }}',

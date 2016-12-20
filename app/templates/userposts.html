@@ -71,7 +71,7 @@
           <p>
             This user has {{pcount}} posts
           </p>
-          {% for post in user.posts[::-1][:20] if not getMetadata(post, 'deleted') %}
+          {% for post in user.posts[::-1][:20] if not post.deleted == 1 %}
           <li>
             <div class="userposts data">
               <p>({{post.voteCount()}}) <a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{ post.title }}</a></p>

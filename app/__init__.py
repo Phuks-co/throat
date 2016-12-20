@@ -43,6 +43,9 @@ from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair
 from .misc import enableBTCmod, getCommentParentUID
 from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
 # from werkzeug.contrib.profiler import ProfilerMiddleware
+import logging
+logging.basicConfig()
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 app = Flask(__name__)
 app.jinja_env.cache = {}

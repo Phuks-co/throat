@@ -127,15 +127,22 @@ class SiteUser(object):
     @cache.memoize(60)
     def get_post_score(self):
         """ Returns the post vote score of a user. """
-        posts = SubPost.query.filter_by(uid=self.user.uid)
-        count = 0
-        for post in posts:
-            for vote in post.votes:
+        if self.user.score is None:
+            mposts = SubPost.query.filter_by(uid=self.user.uid)
+            posts = []
+            for post in mposts:
+                posts.append(SubPostVote.pid == post.pid)
+            votes = SubPostVote.query.filter(or_(*posts)).all()
+            count = 0
+
+            for vote in votes:
                 if vote.positive:
                     count += 1
                 else:
                     count -= 1
-        return count
+            self.user.score = count
+            db.session.commit()
+        return self.user.score
 
     @cache.memoize(60)
     def get_post_voting(self):

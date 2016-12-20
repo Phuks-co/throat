@@ -33,6 +33,8 @@ class User(db.Model, CacheableMixin):
     # 0 = OK; 1 = banned; 2 = shadowbanned?; 3 = sent to oblivion?
     status = Column(Integer)
     joindate = Column(DateTime)
+
+    score = Column(Integer)  # The user's score
     subscribed = db.relationship('SubSubscriber', backref='user',
                                  lazy='dynamic')
     posts = db.relationship('SubPost', backref='_user', lazy='dynamic')
@@ -305,8 +307,11 @@ class SubPost(db.Model):
     score = Column(Integer)  # Post score
     thumbnail = Column(String(128))  # Thumbnail filename
 
+    deleted = Column(Integer)  # Deletion status. 1=user, 2=mod, etc
+    nsfw = Column(Integer)  # nsfw. 1=nsfw, 2=???!
+
     properties = db.relationship('SubPostMetadata',
-                                  backref='post', lazy='dynamic')
+                                 backref='post', lazy='dynamic')
 
     comments = db.relationship('SubPostComment', backref='post',
                                lazy='dynamic')
@@ -317,12 +322,32 @@ class SubPost(db.Model):
     def __init__(self, sid):
         self.sid = sid
         self.score = 1
+        self.deleted = 0
+        self.nsfw = 0
         self.thumbnail = ''
         self.uid = current_user.get_id()
         self.posted = datetime.datetime.utcnow()
 
     def __repr__(self):
         return "<SubPost {0}>".format(self.pid)
+
+    def wasDeleted(self):
+        """ Returns post deletion status """
+        # XXX: compatibility code
+        if self.deleted is None:
+            del1 = SubPostMetadata.query.filter_by(key='deleted',
+                                                   pid=self.pid).first()
+            if del1:
+                self.deleted = 1
+            else:
+                del2 = SubPostMetadata.query.filter_by(key='moddeleted',
+                                                       pid=self.pid).first()
+                if del2:
+                    self.deleted = 1
+                else:
+                    self.deleted = 0
+            db.session.commit()
+        return self.deleted
 
     @cache.memoize(30)
     def is_sticky(self):
@@ -383,11 +408,13 @@ class SubPost(db.Model):
             db.session.commit()
         return self.thumbnail
 
+    @cache.memoize(300)
     def isImage(self):
         """ Returns True if link ends with img suffix """
         suffix = ('.png', '.jpg', '.gif', '.tiff', '.bmp')
         return self.link.lower().endswith(suffix)
 
+    @cache.memoize(300)
     def isGifv(self):
         """ Returns True if link ends with video suffix """
         domains = ['imgur.com', 'i.imgur.com', 'i.sli.mg', 'sli.mg']
@@ -398,6 +425,7 @@ class SubPost(db.Model):
         else:
             return False
 
+    @cache.memoize(300)
     def isVideo(self):
         """ Returns True if link ends with video suffix """
         suffix = ('.mp4', '.webm')
@@ -414,10 +442,15 @@ class SubPost(db.Model):
     @cache.memoize(30)
     def isPostNSFW(self):
         """ Returns true if the post is marked as NSFW """
-        x = SubPostMetadata.query.filter_by(key='nsfw', pid=self.pid).first()
-        if x:
-            return x.value == '1'
-        return False
+        if self.nsfw is None:  # Compat code
+            nsfw = SubPostMetadata.query.filter_by(key='nsfw',
+                                                   pid=self.pid).first()
+            if nsfw:
+                self.nsfw = nsfw.value
+            else:
+                self.nsfw = 0
+            db.session.commit()
+        return bool(self.nsfw)
 
 
 class SubPostMetadata(db.Model, CacheableMixin):

@@ -130,7 +130,7 @@
   {%endif%}
 {% endif %}
 {% cache 150, 'frontpage', sort_type, page|string, un %}
-  {% for post in posts if not getMetadata(post, 'deleted') and not getMetadata(post, 'moddeleted') and not post.isAnnouncement() %}
+  {% for post in posts if not post.wasDeleted() and not post.isAnnouncement() %}
   {% if (current_user.show_nsfw() and post.isPostNSFW()) or not post.isPostNSFW() %}
       <article class="post" data-pid="{{post.pid}}">
         {# vote arrow div #}

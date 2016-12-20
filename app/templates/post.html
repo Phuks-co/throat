@@ -139,7 +139,7 @@
             {# if post.ptype == 1 %}
               <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
             {% endif #}
-              {% if not getMetadata(post, 'deleted') and not getMetadata(post, 'moddeleted') %}
+              {% if not post.wasDeleted() %}
               <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
               {% else %}
               [Deleted]
@@ -153,7 +153,7 @@
               {% else %}
               <a href="#edit-linkpost-form" class="btn btn-orange edit small edit-linkpost-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
               {% endif %}
-              {% if not getMetadata(post, 'deleted') and not getMetadata(post, 'moddeleted') %}
+              {% if not post.wasDeleted() %}
               <a href="#delete-post-form" data-post="{{post.pid}}" class="btn btn-orange edit small btn-red delete-post-form"><i class="fa fa-trash" aria-hidden="true"></i> Delete </a>
               {% else %}
               [Deleted]
