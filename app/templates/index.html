@@ -35,9 +35,9 @@
     <div class="list">
       <ul>
       {% for post in tp %}
-        <li><a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{post.title}}</a><br>
+        <li><a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">{{post.title}}</a><br>
         <span class="sidelocale">
-          <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=post.sub.name)}}">/s/{{post.sub.name}}</a></li>
+          <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}">/s/{{func.getSub(post.sid).name}}</a></li>
         </span>
       {% endfor %}
       </ul>
@@ -85,13 +85,13 @@
     {# vote arrow div #}
     <div class="pull left vote">
       <form class="uvform">
-        <div class="upvote{%if hasVoted(current_user.get_id(), ann)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+        <div class="upvote{%if func.getVoteStatus(current_user.get_id(), ann.pid) == 1%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
         {% set uv = form.VoteForm() %}
         {{uv.csrf_token}}{{uv.post(value=ann.pid)}}
       </form>
       <p class="count">{{ann.voteCount()}}</p>
       <form class="dvform">
-        <div class="downvote{%if hasVoted(current_user.get_id(), ann, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+        <div class="downvote{%if func.getVoteStatus(current_user.get_id(), ann.pid) == 0%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
         {% set dv = form.VoteForm() %}
         {{uv.csrf_token}}{{uv.post(value=ann.pid)}}
       </form>
@@ -136,13 +136,13 @@
         {# vote arrow div #}
         <div class="pull left vote">
           <form class="uvform">
-            <div class="upvote{%if hasVoted(current_user.get_id(), post)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+            <div class="upvote{%if func.getVoteStatus(current_user.get_id(), post.pid) == 1%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
             {% set uv = form.VoteForm() %}
             {{uv.csrf_token}}{{uv.post(value=post.pid)}}
           </form>
           <p class="count">{{post.voteCount()}}</p>
           <form class="dvform">
-            <div class="downvote{%if hasVoted(current_user.get_id(), post, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+            <div class="downvote{%if func.getVoteStatus(current_user.get_id(), post.pid) == 0%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
             {% set dv = form.VoteForm() %}
             {{uv.csrf_token}}{{uv.post(value=post.pid)}}
           </form>
@@ -150,18 +150,18 @@
         {% cache 300, post.pid, 'post' %}
           <div class="image">
             {% if post.getThumbnail() %}
-            <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
+            <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
               <img src="{{config.THUMBNAIL_HOST}}{{post.getThumbnail()}}">
             </a>
             {% elif not post.link %}
-              <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
+              <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
                 <span class="fa-stack fa-3x" style="color: #616161;">
                   <i class="fa fa-square fa-stack-2x"></i>
                   <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
                 </span>
               </a>
             {% else %}
-              <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
+              <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
                 <span class="fa-stack fa-3x" style="color: #616161;">
                   <i class="fa fa-square fa-stack-2x"></i>
                   {% if post.isImage() %}
@@ -184,7 +184,7 @@
           <div class="main">
             {% if post.isPostNSFW() %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
             {% if not post.link %}
-            <a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{post.title}}</a>
+            <a class="title" href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">{{post.title}}</a>
             {% else %}
             {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
             <a class="title" href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=post.getDomain())}}">{{post.getDomain()}}</a>)</span>
@@ -232,9 +232,9 @@
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
                 </span>
               {% endif %}
-              <a href="{{url_for('view_sub', sub=post.sub.name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{{post.sub.name}}</a>
-              <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
-              <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.getCommentCount()}})</a>
+              <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{{func.getSub(post.sid).name}}</a>
+              <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a>
+              <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.getCommentCount()}})</a>
               </p>
           </div>
         {% endcache %}

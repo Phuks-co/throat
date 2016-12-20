@@ -217,13 +217,13 @@
         {# vote div #}
         <div class="pull left vote">
           <form class="uvform">
-            <div class="upvote{%if hasVoted(current_user.get_id(), post)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+            <div class="upvote{%if func.getVoteStatus(current_user.get_id(), post.pid) == 1 %} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
             {% set uv = form.VoteForm() %}
             {{uv.csrf_token}}{{uv.post(value=post.pid)}}
           </form>
           <p class="count">{{post.voteCount()}}</p>
           <form class="dvform">
-            <div class="downvote{%if hasVoted(current_user.get_id(), post, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+            <div class="downvote{%if func.getVoteStatus(current_user.get_id(), post.pid) == 0%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
             {% set dv = form.VoteForm() %}
             {{uv.csrf_token}}{{uv.post(value=post.pid)}}
           </form>
@@ -231,18 +231,18 @@
         {% cache 300, post.pid, 'subpost' %}
           <div class="image">
               {% if post.getThumbnail() %}
-              <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
+              <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
                 <img src="{{config.THUMBNAIL_HOST}}{{post.getThumbnail()}}">
               </a>
               {% elif not post.link %}
-              <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
+              <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
                 <span class="fa-stack fa-3x" style="color: #616161;">
                   <i class="fa fa-square fa-stack-2x"></i>
                   <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
                 </span>
               </a>
             {% else %}
-              <a href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">
+              <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
                 <span class="fa-stack fa-3x" style="color: #616161;">
                   <i class="fa fa-square fa-stack-2x"></i>
                   {% if post.isImage() %}
@@ -314,7 +314,7 @@
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
               </span>
             {% endif %}
-              <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
+              <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a>
               <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.comments.count()}})</a>
               {% if current_user.is_mod(sub) or current_user.is_admin() %}
               <a href="#delete-post-form" class="btn small btn-red delpost" data-post="{{post.pid}}"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>

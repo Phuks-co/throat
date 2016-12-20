@@ -22,6 +22,7 @@ class SiteUser(object):
     """ Representation of a site user. Used on the login manager. """
 
     def __init__(self, userclass=None):
+        print("BEEP, USER")
         self.user = userclass
         self.name = self.user.name
         self.is_active = True  # Apply bans by setting this to false.
@@ -302,6 +303,14 @@ class RestrictedMarkdown(markdown.Extension):
 
 
 @cache.memoize(50)
+def getVoteStatus(uid, pid):
+    vote = SubPostVote.query.filter_by(uid=uid, pid=pid).first()
+    if not vote:
+        return -1
+    return vote
+
+
+@cache.memoize(50)
 def hasVoted(uid, post, up=True):
     """ Checks if the user up/downvoted the post. """
     if not uid:
@@ -426,6 +435,7 @@ def isModInv(sub, user):
     return bool(x.first())
 
 
+@cache.memoize(10)
 def hasMail(user):
     """ Returns True if the current user has unread messages """
     x = Message.query.filter_by(receivedby=user.uid) \
@@ -496,10 +506,7 @@ def getSubCreation(sub):
 def getSuscriberCount(sub):
     """ Returns subscriber count """
     x = SubSubscriber.query.filter_by(sid=sub.sid, status=1)
-    try:
-        return len(list(x))
-    except StopIteration:
-        return 0
+    return x.count()
 
 
 @cache.memoize(60)
@@ -711,3 +718,13 @@ def workWithMentions(data, receivedby, post, sub):
                 pm.mtype = 8  # tagging notifications
                 db.session.add(pm)
         db.session.commit()
+
+
+@cache.memoize(30)
+def getSub(sid):
+    return Sub.query.filter_by(sid=sid).first()
+
+
+@cache.memoize(30)
+def getUser(uid):
+    return User.query.filter_by(uid=uid).first()
