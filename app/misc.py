@@ -312,7 +312,7 @@ def getVoteStatus(uid, pid):
     vote = SubPostVote.query.filter_by(uid=uid, pid=pid).first()
     if not vote:
         return -1
-    return vote
+    return int(vote.positive)
 
 
 @cache.memoize(50)
@@ -700,7 +700,7 @@ def workWithMentions(data, receivedby, post, sub):
         mts = list(set(mts))  # Removes dupes
         # Filter only users
         mts = [x[2] for x in mts if x[1] == "/u/" or x[1] == "@"]
-        for mtn in mts [:5]:
+        for mtn in mts[:5]:
             # Send notifications.
             user = User.query.filter(func.lower(User.name) ==
                                      func.lower(mtn)).first()

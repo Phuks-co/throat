@@ -131,7 +131,7 @@
 {% endif %}
 {% cache 150, 'frontpage', sort_type, page|string, un %}
   {% for post in posts if not post.wasDeleted() and not post.isAnnouncement() %}
-  {% if ((current_user.show_nsfw() and post.isPostNSFW()) or not post.isPostNSFW()) and ((current_user.show_nsfw() and func.getSub(post.sid).nsfw) or not func.getSub(post.sid).nsfw) %}
+  {% if ((current_user.show_nsfw() and post.isPostNSFW()) or not post.isPostNSFW()) and ((current_user.show_nsfw() and func.getSub(post.sid).isNSFW()) or not func.getSub(post.sid).isNSFW()) %}
       <article class="post" data-pid="{{post.pid}}">
         {# vote arrow div #}
         <div class="pull left vote">

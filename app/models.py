@@ -175,6 +175,8 @@ class Sub(db.Model):
 
     sidebar = Column(Text)
 
+    nsfw = Column(Integer)  # nsfw = 1
+
     subscribers = db.relationship('SubSubscriber', backref='sub',
                                   lazy='dynamic')
     _posts = db.relationship('SubPost', backref='__sub', lazy='joined')
@@ -203,15 +205,19 @@ class Sub(db.Model):
         """ gets stylesheet from sub, replaces the db relationship """
         return SubStylesheet.query.filter_by(sid=self.sid).first()
 
-    @hybrid_property
     @cache.memoize(30)
-    def nsfw(self):
+    def isNSFW(self):
         """ returns true if sub is nsfw """
-        nsfw = SubMetadata.query.filter_by(sid=self.sid, key='nsfw').first()
-        if nsfw:
-            return bool(int(nsfw.value))
-        else:
-            return False
+        print("Foo")
+        if self.nsfw is None:
+            nsfw = SubMetadata.query.filter_by(sid=self.sid,
+                                               key='nsfw').first()
+            if nsfw:
+                self.nsfw = int(nsfw.value)
+            else:
+                self.nsfw = 0
+            db.session.commit()
+        return self.nsfw
 
 
 class SubFlair(db.Model, CacheableMixin):
