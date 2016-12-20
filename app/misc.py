@@ -311,7 +311,7 @@ def our_markdown(text):
                              safe_mode='escape')
 
 
-@cache.memoize(50)
+@cache.memoize(5)
 def getVoteStatus(uid, pid):
     vote = SubPostVote.query.filter_by(uid=uid, pid=pid).first()
     if not vote:
