@@ -279,7 +279,7 @@ class NiceLinkPattern(markdown.inlinepatterns.LinkPattern):
         return el
 
 RE_AMENTION = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/s\/)' \
-              '([A-Za-z]+[A-Za-z0-9]+))'
+              '([A-Za-z]+[A-Za-z0-9\-\_]+))'
 
 
 class RestrictedMarkdown(markdown.Extension):
