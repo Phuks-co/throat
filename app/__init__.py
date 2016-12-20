@@ -269,7 +269,10 @@ def all_new_rss():
 @app.route("/all/new/<int:page>")
 def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
-    posts = SubPost.query.order_by(SubPost.posted.desc())
+    if current_user.show_nsfw():
+        posts = SubPost.query.order_by(SubPost.posted.desc())
+    else:
+        posts = SubPost.query.filter_by(nsfw=0).order_by(SubPost.posted.desc())
     posts = posts.paginate(page, 20, False)
     # sorter = BasicSorting(posts)
 
@@ -307,7 +310,10 @@ def search(page, term):
 @app.route("/all/top/<int:page>")
 def all_top(page):
     """ The index page, all posts sorted as most recent posted first """
-    posts = SubPost.query.filter_by()
+    if current_user.show_nsfw():
+        posts = SubPost.query.filter_by()
+    else:
+        posts = SubPost.query.filter_by(nsfw=0)
     sorter = VoteSorting(posts)
 
     return render_template('index.html', page=page, sort_type='all_top',
@@ -318,7 +324,10 @@ def all_top(page):
 @app.route("/all/hot/<int:page>")
 def all_hot(page):
     """ The index page, all posts sorted as most recent posted first """
-    posts = SubPost.query.filter_by()
+    if current_user.show_nsfw():
+        posts = SubPost.query.filter_by()
+    else:
+        posts = SubPost.query.filter_by(nsfw=0)
     sorter = HotSorting(posts)
 
     return render_template('index.html', page=page, sort_type='all_hot',
