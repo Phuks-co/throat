@@ -1506,3 +1506,7 @@ a[href="#s"] {
     display: inline-block;
     text-decoration: none!important;
 }
+
+nav ul li a:not(#logo){
+  margin-top: 5px;
+}
