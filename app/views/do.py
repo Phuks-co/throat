@@ -156,7 +156,7 @@ def edit_user(user):
     if not user:
         return json.dumps({'status': 'error',
                            'error': ['User does not exist']})
-    if current_user.get_id() != user.uid and not current_user.is_admin():
+    if current_user.get_id() != user.uid or not current_user.is_admin():
         abort(403)
 
     form = EditUserForm()
@@ -606,8 +606,7 @@ def create_txtpost():
         post.content = form.content.data
         post.ptype = "0"
         db.session.add(post)
-        # l = SubPostMetadata(post.pid, 'score', 1)
-        # db.session.add(l)
+
         misc.workWithMentions(form.content.data, None, post, sub)
         misc.workWithMentions(form.title.data, None, post, sub)
         db.session.commit()
