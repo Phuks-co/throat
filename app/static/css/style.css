@@ -391,16 +391,6 @@ body.dark blockquote {
     border-bottom: 1px solid #585858;
 }
 
-blockquote::before {
-  content: "\201C";
-  font-family: Georgia, serif;
-  font-size: 60px;
-  font-weight: bold;
-  color: #999;
-  position: absolute;
-  left: 10px;
-  top:5px;
-}
 
 blockquote::after {
   content: "";
@@ -408,7 +398,6 @@ blockquote::after {
 
 blockquote a{
   text-decoration: none;
-  background: #eee;
   cursor: pointer;
   padding: 0 3px;
   color: #c76c0c;
