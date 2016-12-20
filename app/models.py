@@ -203,6 +203,16 @@ class Sub(db.Model):
         """ gets stylesheet from sub, replaces the db relationship """
         return SubStylesheet.query.filter_by(sid=self.sid).first()
 
+    @hybrid_property
+    @cache.memoize(30)
+    def nsfw(self):
+        """ returns true if sub is nsfw """
+        nsfw = SubMetadata.query.filter_by(sid=self.sid, key='nsfw').first()
+        if nsfw:
+            return bool(int(nsfw.value))
+        else:
+            return False
+
 
 class SubFlair(db.Model, CacheableMixin):
     """ Stores all the flairs for all da subs """

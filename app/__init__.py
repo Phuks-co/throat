@@ -269,10 +269,7 @@ def all_new_rss():
 @app.route("/all/new/<int:page>")
 def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
-    if current_user.show_nsfw():
-        posts = SubPost.query.order_by(SubPost.posted.desc())
-    else:
-        posts = SubPost.query.filter_by(nsfw=0).order_by(SubPost.posted.desc())
+    posts = SubPost.query.order_by(SubPost.posted.desc())
     posts = posts.paginate(page, 20, False)
     # sorter = BasicSorting(posts)
 
