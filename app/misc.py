@@ -119,11 +119,7 @@ class SiteUser(object):
     @cache.memoize(60)
     def show_nsfw(self):
         """ Returns true if user selects show nsfw posts """
-        x = getMetadata(self.user, 'nsfw')
-        if x:
-            return True if x == '1' else False
-        else:
-            return False
+        return self.user.showNSFW
 
     @cache.memoize(60)
     def get_post_score(self):
