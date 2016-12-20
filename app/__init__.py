@@ -203,7 +203,6 @@ def index():
 
 @app.route("/hot", defaults={'page': 1})
 @app.route("/hot/<int:page>")
-@caching.cache.memoize(300)
 def home_hot(page):
     """ /hot for subscriptions """
     subs = misc.getSubscriptions(current_user.get_id())
@@ -230,7 +229,6 @@ def home_new(page):
 
 @app.route("/top", defaults={'page': 1})
 @app.route("/top/<int:page>")
-@caching.cache.memoize(300)
 def home_top(page):
     """ /top for subscriptions """
     subs = misc.getSubscriptions(current_user.get_id())
