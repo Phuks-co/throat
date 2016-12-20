@@ -382,7 +382,7 @@ class SubPost(db.Model, CacheableMixin):
         """ Returns thumbnail address for post """
         if self.thumbnail is None:  # Compat code
             thumb = SubPostMetadata.query.filter_by(key='thumbnail',
-                                                    pid=self.pid)
+                                                    pid=self.pid).first()
             if thumb:
                 self.thumbnail = thumb.value
             else:
