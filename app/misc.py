@@ -302,6 +302,15 @@ class RestrictedMarkdown(markdown.Extension):
         md.inlinePatterns.add('url', url, '>strong')
 
 
+def our_markdown(text):
+    """ Here we create a custom markdown function where we load all the
+    extensions we need. """
+    return markdown.markdown(text,
+                             extensions=['markdown.extensions.tables',
+                                         RestrictedMarkdown()],
+                             safe_mode='escape')
+
+
 @cache.memoize(50)
 def getVoteStatus(uid, pid):
     vote = SubPostVote.query.filter_by(uid=uid, pid=pid).first()

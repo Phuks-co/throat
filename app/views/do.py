@@ -610,10 +610,9 @@ def get_txtpost(pid):
     """ Sub text post expando get endpoint """
     post = SubPost.query.filter_by(pid=pid).first()
     if post:
-        return json.dumps({'status': 'ok', 'content': post.content})
+        return jsonify(status='ok', content=misc.our_markdown(post.content))
     else:
-        return json.dumps({'status': 'error',
-                           'error': ['No longer available']})
+        return jsonify(status='error', error=['No longer available'])
 
 
 @do.route("/do/edit_txtpost/<sub>/<pid>", methods=['POST'])

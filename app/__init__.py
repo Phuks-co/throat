@@ -38,7 +38,7 @@ from . import misc, forms, caching
 from .misc import SiteUser, hasVoted, getMetadata, hasMail, isMod
 from .misc import SiteAnon, hasSubscribed, hasBlocked, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
-from .misc import getSubPostCount, RestrictedMarkdown, isRestricted, isNSFW
+from .misc import getSubPostCount, isRestricted, isNSFW
 from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair
 from .misc import enableBTCmod, getCommentParentUID
 from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
@@ -104,15 +104,6 @@ css = Bundle(
 
 assets.register('js_all', js)
 assets.register('css_all', css)
-
-
-def our_markdown(text):
-    """ Here we create a custom markdown function where we load all the
-    extensions we need. """
-    return markdown.markdown(text,
-                             extensions=['markdown.extensions.tables',
-                                         RestrictedMarkdown()],
-                             safe_mode='escape')
 
 
 @login_manager.user_loader
@@ -196,7 +187,7 @@ def utility_processor():
     # TODO: Kill this huge mass of shit
     return {'loginform': LoginForm(), 'regform': RegistrationForm(),
             'logoutform': LogOutForm(), 'sendmsg': CreateUserMessageForm(),
-            'csubform': CreateSubForm(), 'markdown': our_markdown,
+            'csubform': CreateSubForm(), 'markdown': misc.our_markdown,
             'commentform': PostComment(), 'dummyform': DummyForm(),
             'hasVoted': hasVoted,
             'delpostform': DeletePost(), 'getMetadata': getMetadata,

@@ -929,12 +929,8 @@ $(document).ready(function() {
             url: '/do/get_txtpost/' + pid, // XXX: Hardcoded URL
             dataType: 'json',
             success: function(data) {
-                if (data.status != "ok") {
-                    var t = document.createTextNode(data.content);
-                    div.appendChild(t);
-                } else { // success
-                    var t = document.createTextNode(data.content);
-                    div.appendChild(t);
+                if (data.status == "ok") {
+                    div.innerHTML = data.content;
                 }
 
             }
