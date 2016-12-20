@@ -581,7 +581,7 @@ def view_sub_hot(sub, page):
 @app.route("/s/<sub>/<pid>")
 def view_post(sub, pid):
     """ View post and comments (WIP) """
-    post = SubPost.query.filter_by(pid=pid)
+    post = SubPost.query.filter_by(pid=pid).first()
     if not post or post.sub.name != sub:
         abort(404)
     sub = Sub.query.get(post.sid)
