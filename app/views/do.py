@@ -428,6 +428,7 @@ def assign_post_flair(sub, pid, fl):
         log.desc = current_user.get_username() + ' assigned post flair'
         log.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
         db.session.add(log)
+        cache.delete_memoized(getMetadata, post, 'flair')
 
         if not current_user.is_mod(sub) and current_user.is_admin():
             alog = SiteLog()
