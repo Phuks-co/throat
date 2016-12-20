@@ -608,6 +608,8 @@ def create_txtpost():
         db.session.add(post)
         # l = SubPostMetadata(post.pid, 'score', 1)
         # db.session.add(l)
+        misc.workWithMentions(form.content.data, None, post, sub)
+        misc.workWithMentions(form.title.data, None, post, sub)
         db.session.commit()
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_post', sub=sub.name,
@@ -672,8 +674,8 @@ def create_lnkpost():
         nsfw = SubPostMetadata(post.pid, 'nsfw', form.nsfw.data)
         db.session.add(nsfw)
         db.session.commit()
-        # ckey = make_template_fragment_key('subposts', vary_on=[post.sub.sid])
-        # cache.delete(ckey)
+
+        misc.workWithMentions(form.title.data, None, post, sub)
 
         # Try to get thumbnail.
         # 1 - Check if it's an image
@@ -851,35 +853,7 @@ def create_comment(sub, pid):
             db.session.add(pm)
 
         # 6 - Process mentions
-        mts = re.findall(misc.RE_AMENTION, form.comment.data)
-        if mts:
-            mts = list(set(mts))  # Removes dupes
-            # Filter only users
-            mts = [x[2] for x in mts if x[1] == "/u/" or x[1] == "@"]
-            for mtn in mts:
-                # Send notifications.
-                user = User.query.filter(func.lower(User.name) ==
-                                         func.lower(mtn)).first()
-                if not user:
-                    continue
-                if user.uid != pm.sentby and user.uid != pm.receivedby:
-                    # Checks done. Send our shit
-                    pm = Message()
-                    pm.sentby = current_user.get_id()
-                    pm.receivedby = user.uid
-                    pm.subject = "You've been tagged in a post"
-                    pm.mlink = comment.cid
-                    pm.content = "[{0}]({1}) tagged you in a comment "\
-                                 "in [{2}]({3})".format(
-                                    current_user.get_username(),
-                                    url_for('view_user',
-                                            user=current_user.get_username()),
-                                    post.title,
-                                    url_for('view_post', pid=post.pid,
-                                            sid=sub.name))
-                    pm.posted = datetime.datetime.utcnow()
-                    pm.mtype = 8  # tagging notifications
-                    db.session.add(pm)
+        misc.workWithMentions(form.comment.data, pm.receivedby, post, sub)
 
         db.session.add(comment)
         db.session.commit()

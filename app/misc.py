@@ -2,13 +2,15 @@
 from urllib.parse import urlparse, parse_qs
 import datetime
 import time
-from sqlalchemy import cast, or_
+import re
+from sqlalchemy import or_, func
 import requests
 import sqlalchemy.orm
 import markdown
 import sendgrid
 import config
-from flask_login import AnonymousUserMixin  # , current_user
+from flask import url_for
+from flask_login import AnonymousUserMixin, current_user
 from .sorting import VoteSorting
 from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata, Sub
 from .models import SubPost, SubMetadata, SubPostVote, User, SubPostMetadata
@@ -671,3 +673,34 @@ def getPostsFromSubs(subs):
         posts.append(SubPost.sid == sub.sid)
     posts = SubPost.query.filter(or_(*posts)).all()
     return posts
+
+
+def workWithMentions(data, receivedby, post, sub):
+    mts = re.findall(RE_AMENTION, data)
+    if mts:
+        mts = list(set(mts))  # Removes dupes
+        # Filter only users
+        mts = [x[2] for x in mts if x[1] == "/u/" or x[1] == "@"]
+        for mtn in mts:
+            # Send notifications.
+            user = User.query.filter(func.lower(User.name) ==
+                                     func.lower(mtn)).first()
+            if not user:
+                continue
+            if user.uid != current_user.get_id() and user.uid != receivedby:
+                # Checks done. Send our shit
+                pm = Message()
+                pm.sentby = current_user.get_id()
+                pm.receivedby = user.uid
+                pm.subject = "You've been tagged in a post"
+                link = url_for('view_post', pid=post.pid, sub=sub.name)
+                pm.mlink = link
+                pm.content = "[{0}]({1}) tagged you in [{2}]({3})".format(
+                                current_user.get_username(),
+                                url_for('view_user',
+                                        user=current_user.get_username()),
+                                post.title, link)
+                pm.posted = datetime.datetime.utcnow()
+                pm.mtype = 8  # tagging notifications
+                db.session.add(pm)
+        db.session.commit()
