@@ -43,9 +43,6 @@ from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair
 from .misc import enableBTCmod, getCommentParentUID
 from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
 # from werkzeug.contrib.profiler import ProfilerMiddleware
-import logging
-logging.basicConfig()
-logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 app = Flask(__name__)
 app.jinja_env.cache = {}
@@ -56,6 +53,10 @@ app.jinja_env.cache = {}
 app.register_blueprint(do)
 app.register_blueprint(api)
 app.config.from_object('config')
+if app.config['TESTING']:
+    import logging
+    logging.basicConfig()
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 db.init_app(app)
 oauth.init_app(app)
