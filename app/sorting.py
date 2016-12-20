@@ -49,7 +49,7 @@ class HotSorting(BasicSorting):
         return td.days * 86400 + td.seconds + (float(td.microseconds) /
                                                1000000)
 
-    @cache.memoize(300)
+    @cache.memoize(600)
     def get_score(self, post):
         """ Returns the /hot score for this post """
         s = post.voteCount()

@@ -383,6 +383,7 @@ class SubPost(db.Model):
                                         value=self.pid).first()
         return bool(x)
 
+    @cache.memoize(5)
     def voteCount(self):
         """ Returns the post's vote count """
         if self.score is None:  # Compat code
@@ -411,13 +412,13 @@ class SubPost(db.Model):
         return x.netloc
 
     @hybrid_property
-    @cache.memoize(60)
+    @cache.memoize(600)
     def sub(self):
         """ Returns post's sub, replaces db relationship """
         return Sub.query.get(self.sid)
 
     @hybrid_property
-    @cache.memoize(60)
+    @cache.memoize(600)
     def user(self):
         """ Returns post's sub, replaces db relationship """
         return User.query.get(self.uid)
@@ -458,7 +459,7 @@ class SubPost(db.Model):
         suffix = ('.mp4', '.webm')
         return self.link.lower().endswith(suffix)
 
-    @cache.memoize(300)
+    @cache.memoize(600)
     def isAnnouncement(self):
         """ Returns True if post is an announcement """
         ann = SiteMetadata.query.filter_by(key='announcement').first()

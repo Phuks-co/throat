@@ -98,7 +98,7 @@ class SiteUser(object):
         """ Returns new message count """
         return newCount(self.user)
 
-    @cache.memoize(60)
+    @cache.memoize(300)
     def has_exlinks(self):
         """ Returns true if user selects to open links in a new window """
         x = getMetadata(self.user, 'exlinks')
@@ -107,7 +107,7 @@ class SiteUser(object):
         else:
             return False
 
-    @cache.memoize(60)
+    @cache.memoize(300)
     def block_styles(self):
         """ Returns true if user selects to block sub styles """
         x = getMetadata(self.user, 'styles')
@@ -116,12 +116,12 @@ class SiteUser(object):
         else:
             return False
 
-    @cache.memoize(60)
+    @cache.memoize(300)
     def show_nsfw(self):
         """ Returns true if user selects show nsfw posts """
         return self.user.showNSFW
 
-    @cache.memoize(60)
+    @cache.memoize(300)
     def get_post_score(self):
         """ Returns the post vote score of a user. """
         if self.user.score is None:
@@ -141,7 +141,7 @@ class SiteUser(object):
             db.session.commit()
         return self.user.score
 
-    @cache.memoize(60)
+    @cache.memoize(120)
     def get_post_voting(self):
         """ Returns the post voting for a user. """
         votes = SubPostVote.query.filter_by(uid=self.user.uid)
@@ -341,7 +341,7 @@ def hasVotedComment(uid, comment, up=True):
         return False
 
 
-@cache.memoize(60)
+@cache.memoize(600)
 def getCommentParentUID(cid):
     """ Returns the uid of a parent comment """
     parent = SubPostComment.query.filter_by(cid=cid).first()
@@ -358,7 +358,7 @@ def getCommentSub(cid):
     return Sub.query.get(p.sid)
 
 
-@cache.memoize(60)
+@cache.memoize(600)
 def getAnnouncement():
     """ Returns sitewide announcement post or False """
     ann = SiteMetadata.query.filter_by(key='announcement').first()
@@ -685,7 +685,7 @@ def newCount(user):
     return len(list(x))
 
 
-@cache.memoize(30)
+@cache.memoize(120)
 def getPostsFromSubs(subs):
     posts = []
     for sub in subs:
@@ -725,11 +725,11 @@ def workWithMentions(data, receivedby, post, sub):
         db.session.commit()
 
 
-@cache.memoize(30)
+@cache.memoize(600)
 def getSub(sid):
     return Sub.query.filter_by(sid=sid).first()
 
 
-@cache.memoize(30)
+@cache.memoize(600)
 def getUser(uid):
     return User.query.filter_by(uid=uid).first()
