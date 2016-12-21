@@ -121,14 +121,10 @@
 {% endcache %}
 
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
-{% if sort_type.startswith('all') %}
-  {% set un = '1'%}
-{% else %}
-  {% set un = current_user.get_id() %}
-  {% if not un %}
-    {% set un = '2' %}
-  {%endif%}
-{% endif %}
+{% set un = current_user.get_id() %}
+{% if not un %}
+  {% set un = '2' %}
+{%endif%}
 {% cache 150, 'frontpage', sort_type, page|string, un %}
   {% for post in posts if not post.wasDeleted() and not post.isAnnouncement() %}
   {% if ((current_user.show_nsfw() and post.isPostNSFW()) or not post.isPostNSFW()) and ((current_user.show_nsfw() and func.getSub(post.sid).isNSFW()) or not func.getSub(post.sid).isNSFW()) %}
