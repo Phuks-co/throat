@@ -137,6 +137,18 @@ class SiteUser(object):
                     count += 1
                 else:
                     count -= 1
+
+            mcomments = SubPostComment.query.filter_by(uid=self.user.uid)
+            comms = []
+            for comm in mcomments:
+                comms.append(SubPostCommentVote.cid == comm.cid)
+            votes = SubPostVote.query.filter(or_(*comms)).all()
+            for vote in votes:
+                if vote.positive:
+                    count += 1
+                else:
+                    count -= 1
+
             self.user.score = count
             db.session.commit()
         return self.user.score
