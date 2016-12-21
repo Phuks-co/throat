@@ -760,7 +760,7 @@ def upvote(pid, value):
                           vote.positive)
     post.score += voteValue
     if user.score is not None:
-        user.score = int(post.score) + voteValue
+        user.score += voteValue
     db.session.commit()
     return json.dumps({'status': 'ok'})
 
