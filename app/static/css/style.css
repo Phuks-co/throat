@@ -1498,3 +1498,8 @@ a[href="#s"] {
 nav ul li a:not(#logo){
   margin-top: 5px;
 }
+
+/* twitter expando */
+blockquote.twitter-tweet {
+    text-align: left;
+}
