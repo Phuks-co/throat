@@ -918,6 +918,36 @@ $(document).ready(function() {
       }
     });
 
+    $('span[id^="tweet"]').click(function(e){
+      var pid = $(e.currentTarget).data().pid
+      var url = $(e.currentTarget).data().url
+      var div = document.createElement('div');
+      playerid = 'player' + pid;
+      if($(this).hasClass('closedtweet'))  {
+        $.ajax({
+          type: "get",
+          url: 'https://publish.twitter.com/oembed?url=' + url,
+          dataType: 'jsonp',
+          success: function(data) {
+            if(data.version == "1.0"){
+              div.innerHTML = data.html;
+            } else {
+              div.innerHTML = '<br>Oops. Phox got my tounge. Something borked.<br>';
+            }
+          }
+        });
+
+        $(e.currentTarget).addClass('openedtweet').removeClass('closedtweet');
+        document.getElementById(playerid).appendChild(div);
+        $('#' + playerid + ' a').html('<i class="fa fa-close" aria-hidden="true"></i>');
+      }
+      else {
+        $(this).addClass('closedtweet').removeClass('openedtweet');
+        $('#' + playerid + ' div').remove()
+        $('#' + playerid + ' a').html('<i class="fa fa-twitter" aria-hidden="true"></i>');
+      }
+    });
+
     $('span#opentextpost').click(function(e){
       var pid = $(e.currentTarget).data().pid
       var div = document.createElement('div');

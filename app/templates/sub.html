@@ -169,31 +169,30 @@
           <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{ann.pid}}" class="closedvid">
             <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
           </span>
-        {% endif %}
-        {% if ann.getDomain() == "vimeo.com" %}
+        {% elif ann.getDomain() == "vimeo.com" %}
           <span id="vimeovid" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" class="closedvid">
             <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
           </span>
-        {% endif %}
-        {% if ann.getDomain() == "vine.co" %}
+        {% elif ann.getDomain() == "vine.co" %}
           <span id="vinevid" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" class="closedvine">
             <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-vine" aria-hidden="true"></i></a></span>
           </span>
-        {% endif %}
-        {% if ann.isImage() %}
+        {% elif ann.isImage() %}
           <span id="openimg" data-img="{{ann.link}}" data-pid="{{ann.pid}}" class="closedimg">
             <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
           </span>
-        {% endif %}
-        {% if ann.isVideo() %}
+        {% elif ann.isVideo() %}
         <span id="openvideo" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" data-domain="{{ann.getDomain()}}" class="closedvid">
           <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
         </span>
-        {% endif %}
-        {% if ann.isGifv() %}
+        {% elif ann.isGifv() %}
         <span id="gifv" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" data-domain="{{ann.getDomain()}}" class="closedgifv">
           <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
         </span>
+        {% elif post.getDomain() == "twitter.com" %}
+          <span id="tweet" data-url="{{post.link}}" data-pid="{{post.pid}}" class="closedtweet">
+            <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-twitter" aria-hidden="true"></i></a></span>
+          </span>
         {% endif %}
       {% else %}
         <span id="opentextpost" data-pid="{{ann.pid}}" class="closedtextpost">
@@ -278,36 +277,34 @@
                 <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
                 </span>
-              {% endif %}
-              {% if post.getDomain() == "vimeo.com" %}
+              {% elif post.getDomain() == "vimeo.com" %}
                 <span id="vimeovid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
                 </span>
-              {% endif %}
-              {% if post.getDomain() == "vine.co" %}
+              {% elif post.getDomain() == "vine.co" %}
                 <span id="vinevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvine">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vine" aria-hidden="true"></i></a></span>
                 </span>
-              {% endif %}
-              {% if post.getDomain() == "gfycat.com" %}
+              {% elif post.getDomain() == "gfycat.com" %}
                 <span id="gfycat" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedgfycat">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-video-camera" aria-hidden="true"></i></a></span>
                 </span>
-              {% endif %}
-              {% if post.isImage() %}
+              {% elif post.isImage() %}
                 <span id="openimg" data-img="{{post.link}}" data-pid="{{post.pid}}" class="closedimg">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
                 </span>
-              {% endif %}
-              {% if post.isVideo() %}
+              {% elif post.isVideo() %}
               <span id="openvideo" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{post.getDomain()}}" class="closedvid">
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
               </span>
-              {% endif %}
-              {% if post.isGifv() %}
-              <span id="gifv" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{post.getDomain()}}" class="closedgifv">
+              {% elif post.isGifv() %}
+              <span id="gifv" data-url="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{post.getDomain()}}" class="closedgifv">
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
               </span>
+              {% elif post.getDomain() == "twitter.com" %}
+                <span id="tweet" data-url="{{post.link}}" data-pid="{{post.pid}}" class="closedtweet">
+                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-twitter" aria-hidden="true"></i></a></span>
+                </span>
               {% endif %}
             {% else %}
               <span id="opentextpost" data-pid="{{post.pid}}" class="closedtextpost">
