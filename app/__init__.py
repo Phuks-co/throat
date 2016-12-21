@@ -754,7 +754,7 @@ def view_messages():
                                         Message.mtype == 8)) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
-                           box_name="Inbox")
+                           box_name="Inbox", boxID="1")
 
 
 @app.route("/messages/sent")
@@ -778,7 +778,7 @@ def view_messages_postreplies():
                             .filter_by(mtype=4) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
-                           box_name="Replies")
+                           box_name="Replies", boxID="2")
 
 
 @app.route("/messages/commentreplies")
@@ -790,7 +790,7 @@ def view_messages_comreplies():
                             .filter_by(mtype=5) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
-                           box_name="Replies")
+                           box_name="Replies", boxID="3")
 
 
 @app.route("/messages/modmail")
@@ -803,7 +803,7 @@ def view_messages_modmail():
                                         Message.mtype=='7')) \
                             .order_by(Message.posted.desc()).all()
     return render_template('messages.html', user=user, messages=messages,
-                           box_name="ModMail")
+                           box_name="ModMail", boxID="4")
 
 
 @app.route("/admin")

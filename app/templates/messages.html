@@ -28,7 +28,10 @@
 {% block content %}
 {{ super() }}
 <div class="user-activity col-12">
-    <h3>{{messages|length}} {{box_name}}</h3>
+    <h3>
+      {{messages|length}} {{box_name}} <a data-boxid="{{boxID}}" data-name="{{current_user.name}}" class="readall btn small right">
+      <i class="fa fa-folder-open" aria-hidden="true"></i> Mark all as read</a>
+    </h3>
 {% for message in messages %}
     <article class="pmessage post" data-replyto='{{message.sentby}}'
     {% if box_name == 'Replies' %}data-sub='{{func.getCommentSub(message.mlink).name}}' data-post='{{func.getComment(message.mlink).pid}}' data-parent='{{message.mlink}}'{%endif%}

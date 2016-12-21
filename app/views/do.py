@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 import requests
 from PIL import Image
 from flask import Blueprint, redirect, url_for, session, abort, jsonify
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_cache import make_template_fragment_key
 import config
@@ -1199,6 +1199,38 @@ def read_pm(mid):
         message.read = read
         db.session.commit()
         return json.dumps({'status': 'ok', 'mid': mid})
+    else:
+        abort(403)
+
+
+@do.route("/do/readall_msgs/<user>/<boxid>", methods=['POST'])
+@login_required
+def readall_msgs(user, boxid):
+    """ Mark all messages in a box as read """
+    if current_user.name == user:
+        user = User.query.filter_by(name=current_user.name).first()
+        if boxid == '1':
+            x = Message.query.filter_by(read=None) \
+                             .filter(or_(Message.mtype == 1, \
+                                         Message.mtype == 8)) \
+                             .filter_by(receivedby=user.uid).all()
+        elif boxid == '2':
+            x = Message.query.filter_by(read=None).filter_by(mtype=4) \
+                             .filter_by(receivedby=user.uid).all()
+        elif boxid == '3':
+            x = Message.query.filter_by(read=None).filter_by(mtype=5) \
+                             .filter_by(receivedby=user.uid).all()
+        elif boxid == '4':
+            x = Message.query.filter_by(read=None) \
+                             .filter(or_(Message.mtype == 2, \
+                                         Message.mtype == 7)) \
+                             .filter_by(receivedby=user.uid).all()
+
+        for message in list(x):
+            message.read = datetime.datetime.utcnow()
+
+        db.session.commit()
+        return json.dumps({'status': 'ok', 'message': 'All marked as read'})
     else:
         abort(403)
 

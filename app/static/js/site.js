@@ -492,6 +492,24 @@ $(document).ready(function() {
       });
     });
 
+    $('.readall').click(function(e){
+      var boxid = $(e.currentTarget).data().boxid
+      var user = $(e.currentTarget).data().name
+      $.ajax({
+        type: "POST",
+        url: '/do/readall_msgs/' + user + '/' + boxid,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).text('read');
+            document.location.reload();
+          } else {
+            $(e.currentTarget).text('error');
+          }
+        }
+      });
+    });
+
     $('div[id^="assignbadge"]').click(function(e){
       var bid = $(e.currentTarget).data().bid
       var uid = $(e.currentTarget).data().uid
