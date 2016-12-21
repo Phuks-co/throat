@@ -319,15 +319,8 @@ def edit_sub(sub):
         if form.validate():
             sub.title = form.title.data
             sub.sidebar = form.sidebar.data
+            sub.nsfw = form.nsfw.data
 
-            nsfw = getMetadata(sub, 'nsfw', record=True)
-            if nsfw:
-                nsfw.value = form.nsfw.data
-            else:
-                nsfw = SubMetadata(sub, 'nsfw', form.nsfw.data)
-                db.session.add(nsfw)
-            cache.delete_memoized(getMetadata, sub, 'nsfw')
-            SubMetadata.cache.uncache(key='nsfw', sid=sub.sid)
             restricted = getMetadata(sub, 'restricted', record=True)
             if restricted:
                 restricted.value = form.restricted.data

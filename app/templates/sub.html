@@ -3,7 +3,7 @@
 {% block navbar %}
 <li>
   <a href="{{url_for('view_sub', sub=sub.name)}}">
-    {% if sub.isNSFW %}
+    {% if sub.nsfw %}
       <span class="bgred" alt="Not safe for work">NSFW</span>
     {% endif %}
     {{sub.name}}

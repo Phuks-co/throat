@@ -560,9 +560,9 @@ def isRestricted(sub):
     return False if not x or x == '0' else True
 
 
-def isNSFW(sub):
+def isNSFW(self):
     """ Returns true if the sub is marked as NSFW """
-    x = getMetadata(sub, 'nsfw')
+    x = self.nsfw
     return False if not x or x == '0' else True
 
 
