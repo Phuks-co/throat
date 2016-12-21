@@ -744,7 +744,7 @@ def upvote(pid, value):
             qvote.positive = True if voteValue == 1 else False
             post.score = int(post.score) + (voteValue*2)
             if user.score is not None:
-                user.score = int(user.score) + (voteValue*2)
+                user.score += (voteValue*2)
             db.session.commit()
             cache.delete_memoized(misc.hasVoted, current_user.get_id(),
                                   qvote.positive)
@@ -758,7 +758,7 @@ def upvote(pid, value):
         db.session.add(vote)
     cache.delete_memoized(misc.hasVoted, current_user.get_id(),
                           vote.positive)
-    post.score = int(post.score) + voteValue
+    post.score += voteValue
     if user.score is not None:
         user.score = int(post.score) + voteValue
     db.session.commit()
@@ -1587,7 +1587,7 @@ def upvotecomment(cid, value):
             qvote.positive = True if voteValue == 1 else False
             comment.score = int(comment.score) + (voteValue*2)
             if user.score is not None:
-                user.score = int(user.score) + (voteValue*2)
+                user.score += (voteValue*2)
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'message': 'Vote flipped.'})
@@ -1600,6 +1600,6 @@ def upvotecomment(cid, value):
 
     comment.score = int(comment.score) + voteValue
     if user.score is not None:
-        user.score = int(user.score) + voteValue
+        user.score += voteValue
     db.session.commit()
     return json.dumps({'status': 'ok'})
