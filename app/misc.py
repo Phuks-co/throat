@@ -125,7 +125,7 @@ class SiteUser(object):
     def get_post_score(self):
         """ Returns the post vote score of a user. """
         if self.user.score is None:
-            mposts = SubPost.query.filter_by(uid=self.user.uid)
+            mposts = SubPost.query.filter_by(uid=self.user.uid).all()
             posts = []
             for post in mposts:
                 posts.append(SubPostVote.pid == post.pid)
@@ -138,7 +138,7 @@ class SiteUser(object):
                 else:
                     count -= 1
 
-            mcomments = SubPostComment.query.filter_by(uid=self.user.uid)
+            mcomments = SubPostComment.query.filter_by(uid=self.user.uid).all()
             comms = []
             for comm in mcomments:
                 comms.append(SubPostCommentVote.cid == comm.cid)
