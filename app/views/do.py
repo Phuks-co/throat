@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 import requests
 from PIL import Image
 from flask import Blueprint, redirect, url_for, session, abort, jsonify
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, and_
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_cache import make_template_fragment_key
 import config
@@ -744,7 +744,8 @@ def upvote(pid, value):
             qvote.positive = True if voteValue == 1 else False
             post.score = int(post.score) + (voteValue*2)
             if user.score is not None:
-                user.score += (voteValue*2)
+                user.score = User.score + (voteValue*2)
+                db.session.add(user)
             db.session.commit()
             cache.delete_memoized(misc.hasVoted, current_user.get_id(),
                                   qvote.positive)
@@ -760,7 +761,8 @@ def upvote(pid, value):
                           vote.positive)
     post.score += voteValue
     if user.score is not None:
-        user.score += voteValue
+        user.score = User.score + voteValue
+        db.session.add(user)
     db.session.commit()
     return json.dumps({'status': 'ok'})
 
@@ -1619,7 +1621,8 @@ def upvotecomment(cid, value):
             qvote.positive = True if voteValue == 1 else False
             comment.score = int(comment.score) + (voteValue*2)
             if user.score is not None:
-                user.score += (voteValue*2)
+                user.score = User.score + (voteValue*2)
+                db.session.add(user)
             db.session.commit()
             return json.dumps({'status': 'ok',
                                'message': 'Vote flipped.'})
@@ -1632,6 +1635,8 @@ def upvotecomment(cid, value):
 
     comment.score = int(comment.score) + voteValue
     if user.score is not None:
-        user.score += voteValue
+        user.score = User.score + voteValue
+        db.session.add(user)
+
     db.session.commit()
     return json.dumps({'status': 'ok'})

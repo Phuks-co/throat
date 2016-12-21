@@ -354,6 +354,9 @@ class SubPost(db.Model):
         self.thumbnail = ''
         self.uid = current_user.get_id()
         self.posted = datetime.datetime.utcnow()
+        if current_user.user.score is not None:
+            current_user.user.score = User.score + 1
+            db.session.add(current_user.user)
 
     def __repr__(self):
         return "<SubPost {0}>".format(self.pid)
