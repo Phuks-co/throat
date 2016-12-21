@@ -142,7 +142,7 @@ class SiteUser(object):
             comms = []
             for comm in mcomments:
                 comms.append(SubPostCommentVote.cid == comm.cid)
-            votes = SubPostVote.query.filter(or_(*comms)).all()
+            votes = SubPostCommentVote.query.filter(or_(*comms)).all()
             for vote in votes:
                 if vote.positive:
                     count += 1
