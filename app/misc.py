@@ -22,7 +22,6 @@ class SiteUser(object):
     """ Representation of a site user. Used on the login manager. """
 
     def __init__(self, userclass=None):
-        print("BEEP, USER")
         self.user = userclass
         self.name = self.user.name
         self.is_active = True  # Apply bans by setting this to false.

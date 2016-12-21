@@ -1213,7 +1213,7 @@ def readall_msgs(user, boxid):
         user = User.query.filter_by(name=current_user.name).first()
         if boxid == '1':
             x = Message.query.filter_by(read=None) \
-                             .filter(or_(Message.mtype == 1, \
+                             .filter(or_(Message.mtype == 1,
                                          Message.mtype == 8)) \
                              .filter_by(receivedby=user.uid).all()
         elif boxid == '2':
@@ -1224,7 +1224,7 @@ def readall_msgs(user, boxid):
                              .filter_by(receivedby=user.uid).all()
         elif boxid == '4':
             x = Message.query.filter_by(read=None) \
-                             .filter(or_(Message.mtype == 2, \
+                             .filter(or_(Message.mtype == 2,
                                          Message.mtype == 7)) \
                              .filter_by(receivedby=user.uid).all()
 

@@ -208,7 +208,6 @@ class Sub(db.Model):
     @cache.memoize(30)
     def isNSFW(self):
         """ returns true if sub is nsfw """
-        print("Foo")
         if self.nsfw is None:
             nsfw = SubMetadata.query.filter_by(sid=self.sid,
                                                key='nsfw').first()
