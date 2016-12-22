@@ -190,8 +190,8 @@
           <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
         </span>
         {% elif post.getDomain() == "twitter.com" %}
-          <span id="tweet" data-url="{{post.link}}" data-pid="{{post.pid}}" class="closedtweet">
-            <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-twitter" aria-hidden="true"></i></a></span>
+          <span id="tweet" data-url="{{ann.link}}" data-pid="{{ann.pid}}" class="closedtweet">
+            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-twitter" aria-hidden="true"></i></a></span>
           </span>
         {% endif %}
       {% else %}
@@ -298,7 +298,7 @@
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
               </span>
               {% elif post.isGifv() %}
-              <span id="gifv" data-url="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{post.getDomain()}}" class="closedgifv">
+              <span id="gifv" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{post.getDomain()}}" class="closedgifv">
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
               </span>
               {% elif post.getDomain() == "twitter.com" %}

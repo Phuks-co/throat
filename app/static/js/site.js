@@ -57,10 +57,11 @@ $(document).ready(function() {
   });
 
   $('section article a').click(function(e){
-    e.preventDefault();
+    // e.preventDefault();
     var url = $(this).attr('href');
 
     if(url.endsWith('.jpg') || url.endsWith('.gif') || url.endsWith('.png')){
+      e.preventDefault();
       img = $(this).find('img')[0]
       console.log(img)
       if(img != undefined){
