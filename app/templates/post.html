@@ -3,16 +3,16 @@
 
 {% block navbar %}
 <li>
-  <a href="{{url_for('view_sub', sub=post.sub.name)}}">
-    {% if func.isNSFW(post.sub) %}
+  <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}">
+    {% if func.isNSFW(func.getSub(post.sid)) %}
       <span class="bgred" alt="Not safe for work">NSFW</span>
     {% endif %}
-    {{post.sub.name}}
+    {{func.getSub(post.sid).name}}
   </a>
 </li>
-<li><a href="{{url_for('view_sub_hot', sub=post.sub.name)}}">Hot</a></li>
-<li><a href="{{url_for('view_sub_top', sub=post.sub.name)}}">Top</a></li>
-<li><a href="{{url_for('view_sub_new', sub=post.sub.name)}}">New</a></li>
+<li><a href="{{url_for('view_sub_hot', sub=func.getSub(post.sid).name)}}">Hot</a></li>
+<li><a href="{{url_for('view_sub_top', sub=func.getSub(post.sid).name)}}">Top</a></li>
+<li><a href="{{url_for('view_sub_new', sub=func.getSub(post.sid).name)}}">New</a></li>
 {% endblock %}
 {% block sidebar %}
 {{ super() }}<hr/>
@@ -37,27 +37,27 @@
 <span class="col-12"><hr><span>
 <div class="row buttons">
   <div class="sidebar col-12">
-    {% if current_user.has_subscribed(post.sub) %}
-    <span id="subscribe" class="subscribed" data-sid="{{post.sub.sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Subscribed</a></span>
+    {% if current_user.has_subscribed(post.sid) %}
+    <span id="subscribe" class="subscribed" data-sid="{{func.getSub(post.sid).sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Subscribed</a></span>
     {% else %}
-    <span id="subscribe" class="unsubscribed" data-sid="{{post.sub.sid}}"><a class="btn small"><i class="fa fa-plus" aria-hidden="true"></i> Subscribe</a></span>
+    <span id="subscribe" class="unsubscribed" data-sid="{{func.getSub(post.sid).sid}}"><a class="btn small"><i class="fa fa-plus" aria-hidden="true"></i> Subscribe</a></span>
     {% endif %}
-    {% if current_user.has_blocked(post.sub) %}
-    <span id="block" class="blocked" data-sid="{{post.sub.sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Blocked</a></span>
+    {% if current_user.has_blocked(post.sid) %}
+    <span id="block" class="blocked" data-sid="{{func.getSub(post.sid).sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Blocked</a></span>
     {% else %}
-    <span id="block" class="unblocked" data-sid="{{post.sub.sid}}"><a class="btn small"><i class="fa fa-remove" aria-hidden="true"></i> Block</a></span>
+    <span id="block" class="unblocked" data-sid="{{func.getSub(post.sid).sid}}"><a class="btn small"><i class="fa fa-remove" aria-hidden="true"></i> Block</a></span>
     {% endif %}
   </div>
   <div class="subscribercount col-12">
-    <i class="fa fa-users" aria-hidden="true"></i> {{getSuscriberCount(post.sub)}} Subscribers
+    <i class="fa fa-users" aria-hidden="true"></i> {{getSuscriberCount(func.getSub(post.sid))}} Subscribers
   </div>
   <span class="col-12"><hr><span>
-    {% if func.isRestricted(post.sub) %}
+    {% if func.isRestricted(func.getSub(post.sid)) %}
     <div class="col-12">
       Only mods can post.
     </div>
     {% endif %}
-    {% if not func.isRestricted(post.sub) or (current_user.is_mod(post.sub) and func.isRestricted(post.sub)) %}
+    {% if not func.isRestricted(func.getSub(post.sid)) or (current_user.is_mod(func.getSub(post.sid)) and func.isRestricted(func.getSub(post.sid))) %}
     <div class="col-12">
       <a href="#post-form" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
     </div>
@@ -66,38 +66,38 @@
     </div>
     {% endif %}
 
-  {% if current_user.is_subban(post.sub) %}
+  {% if current_user.is_subban(func.getSub(post.sid)) %}
   <div class="col-12">
     You are currently banned from posting.
   </div>
   {% endif %}
 </div>
-{{markdown(post.sub.sidebar)|safe}}
+{{markdown(func.getSub(post.sid).sidebar)|safe}}
 
 <span class="col-12"><hr><span>
-<p class="createdby">Created by {{func.getSubUsers(post.sub, 'mod')}} <time-ago datetime="{{func.getSubCreation(post.sub)}}Z"></time-ago></p>
+<p class="createdby">Created by {{func.getSubUsers(func.getSub(post.sid), 'mod')}} <time-ago datetime="{{func.getSubCreation(func.getSub(post.sid))}}Z"></time-ago></p>
 <div class="moderators col-12">
   Moderators
   <ul>
-  <li><i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=func.getSubUsers(post.sub, 'mod1'))}}">{{func.getSubUsers(post.sub, 'mod1')}}</a></li>
+  <li><i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=func.getSubUsers(func.getSub(post.sid), 'mod1'))}}">{{func.getSubUsers(func.getSub(post.sid), 'mod1')}}</a></li>
   {% for mod in mods %}
   <li><a href="{{url_for('view_user', user=mod.getUsername)}}">{{mod.getUsername}}</a></li>
   {% endfor %}
   </ul>
 </div>
-{% if current_user.is_mod(post.sub) or current_user.is_admin() %}
+{% if current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
 <div class="row buttons">
   <div class="col-12">
-    <a href="{{url_for('edit_sub', sub=post.sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Info</a>
+    <a href="{{url_for('edit_sub', sub=func.getSub(post.sid).name)}}" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Info</a>
   </div>
   <div class="col-12">
-    <a href="{{url_for('edit_sub_flairs', sub=post.sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Flairs</a>
+    <a href="{{url_for('edit_sub_flairs', sub=func.getSub(post.sid).name)}}" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Flairs</a>
   </div>
   <div class="col-12">
-    <a href="{{url_for('edit_sub_css', sub=post.sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Stylesheet</a>
+    <a href="{{url_for('edit_sub_css', sub=func.getSub(post.sid).name)}}" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Stylesheet</a>
   </div>
   <div class="col-12">
-    <a href="{{url_for('edit_sub_mods', sub=post.sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Moderators</a>
+    <a href="{{url_for('edit_sub_mods', sub=func.getSub(post.sid).name)}}" class="btn btn-orange edit-sub" style="width:100%;">Moderators</a>
   </div>
 </div>
 {% endif %}
@@ -105,10 +105,10 @@
 
 <div class="row buttons">
   <div class="col-12">
-    <a href="{{url_for('view_sublog', sub=post.sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Sub Log</a>
+    <a href="{{url_for('view_sublog', sub=func.getSub(post.sid).name)}}" class="btn btn-orange edit-sub" style="width:100%;">Sub Log</a>
   </div>
   <div class="col-12">
-    <a href="{{url_for('view_sub_bans', sub=post.sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Banned Users</a>
+    <a href="{{url_for('view_sub_bans', sub=func.getSub(post.sid).name)}}" class="btn btn-orange edit-sub" style="width:100%;">Banned Users</a>
   </div>
 </div>
 
@@ -121,31 +121,31 @@
             <div class="pull left vote" style="margin-right: 10px;">
               {# vote arrow div #}
                 <form class="uvform">
-                  <div class="upvote{%if hasVoted(current_user.get_id(), post)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+                  <div class="upvote{%if func.getVoteStatus(current_user.get_id(), post.pid) == 1%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
                   {% set uv = form.VoteForm() %}
                   {{uv.csrf_token}}{{uv.post(value=post.pid)}}
                 </form>
-                <p class="count">{{post.voteCount()}}</p>
+                <p class="count">{{post['score']}}</p>
                 <form class="dvform">
-                  <div class="downvote{%if hasVoted(current_user.get_id(), post, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+                  <div class="downvote{%if func.getVoteStatus(current_user.get_id(), post.pid) == 0%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
                   {% set dv = form.VoteForm() %}
                   {{uv.csrf_token}}{{uv.post(value=post.pid)}}
                 </form>
             </div>
-            {% if func.hasPostFlair(post) %}<span class="btn">{{func.hasPostFlair(post)}}</span>{% endif %}
-            {% if post.isPostNSFW() %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
+            {% if func.getPostFlair(post) %}<span class="btn">{{func.getPostFlair(post)}}</span>{% endif %}
+            {% if db.is_post_nsfw(post) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
             <h1 class="title">{{post.title}}</h1>
             <div class="info">
             {# if post.ptype == 1 %}
               <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
             {% endif #}
-              {% if not post.wasDeleted() %}
-              <a href="{{url_for('view_user', user=post.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{post.user.name}}</a>
+              {% if not db.is_post_deleted(post) %}
+              <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a>
               {% else %}
               [Deleted]
               {% endif %}
-            {% if post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
-              {% if func.userCanFlair(post.sub) or current_user.is_mod(post.sub) or current_user.is_admin() %}
+            {% if func.getUser(post.uid).uid == session['user_id'] or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
+              {% if func.userCanFlair(func.getSub(post.sid)) or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
               <a href="#edit-flair-form" class="btn btn-orange edit small edit-flair-form" aria-hidden="true"><i class="fa fa-flag"></i> Flair</a>
               {% endif %}
               {% if post.ptype == 0 %}
@@ -153,20 +153,20 @@
               {% else %}
               <a href="#edit-linkpost-form" class="btn btn-orange edit small edit-linkpost-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
               {% endif %}
-              {% if not post.wasDeleted() %}
+              {% if not db.is_post_deleted(post) %}
               <a href="#delete-post-form" data-post="{{post.pid}}" class="btn btn-orange edit small btn-red delete-post-form"><i class="fa fa-trash" aria-hidden="true"></i> Delete </a>
               {% else %}
               [Deleted]
               {% endif %}
               {% set ann = func.getAnnouncement() %}
-              {% if current_user.is_mod(post.sub) or current_user.is_admin() %}
-                {% if post.is_sticky() %}
+              {% if current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
+                {% if post in func.getStickies(post['sid']) %}
                   <a href="#make_sticky-form" class="pull right btn btn-orange small make_announcement-form"><i class="fa fa-thumb-tack" aria-hidden="true"></i> Unstick</a>
                 {% else %}
                   <a href="#make_sticky-form" class="pull right btn btn-orange small make_announcement-form"><i class="fa fa-thumb-tack" aria-hidden="true"></i> Make sticky</a>
                 {% endif %}
               {%endif%}
-              {% if post.sub.name == "announcements" and current_user.is_admin() and ann.pid != post.pid %}
+              {% if func.getSub(post.sid).name == "announcements" and current_user.is_admin() and ann.pid != post.pid %}
                 <a href="#make_announcement-form" class="pull right btn btn-orange small make_announcement-form"><i class="fa fa-cube" aria-hidden="true"></i> Make announcement</a>
               {%endif %}
               {% if ann.pid == post.pid %}
@@ -180,38 +180,38 @@
           {% else %}
           {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
           <div class="content">
-          {% if post.isImage() %}
+          {% if func.isImage(post.link) %}
             <span id="openimg" data-img="{{post.link}}" data-pid="{{post.pid}}" class="closedimg">
               {{post.link}}
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
             </span>
           {% else %}
             <a href="{{post.link}}" target="_blank" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.link}}</a>
-            {% if post.getDomain() == "youtube.com" or post.getDomain() == "www.youtube.com" or post.getDomain() == "youtu.be" %}
+            {% if func.getDomain(post.link) == "youtube.com" or func.getDomain(post.link) == "www.youtube.com" or func.getDomain(post.link) == "youtu.be" %}
               <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
               </span>
-            {% elif post.getDomain() == "vimeo.com" %}
+            {% elif func.getDomain(post.link) == "vimeo.com" %}
               <span id="vimeovid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
               </span>
-            {% elif post.getDomain() == "vine.co" %}
+            {% elif func.getDomain(post.link) == "vine.co" %}
               <span id="vinevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvine">
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vine" aria-hidden="true"></i></a></span>
               </span>
-            {% elif post.getDomain() == "gfycat.com" %}
+            {% elif func.getDomain(post.link) == "gfycat.com" %}
               <span id="gfycat" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedgfycat">
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-video-camera" aria-hidden="true"></i></a></span>
               </span>
-            {% elif post.isVideo() %}
-            <span id="openvideo" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{post.getDomain()}}" class="closedvid">
+            {% elif func.isVideo(post.link) %}
+            <span id="openvideo" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{func.getDomain(post.link)}}" class="closedvid">
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
             </span>
-            {% elif post.isGifv() %}
-            <span id="gifv" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{post.getDomain()}}" class="closedgifv">
+            {% elif func.isGifv(post.link) %}
+            <span id="gifv" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{func.getDomain(post.link)}}" class="closedgifv">
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
             </span>
-            {% elif post.getDomain() == "twitter.com" %}
+            {% elif func.getDomain(post.link) == "twitter.com" %}
               <span id="tweet" data-url="{{post.link}}" data-pid="{{post.pid}}" class="closedtweet">
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-twitter" aria-hidden="true"></i></a></span>
               </span>
@@ -225,7 +225,7 @@
         <section id="postcomment">
           <form class="comment-form static">
             {{commentform.csrf_token}}
-            {{commentform.sub(value=post.sub.name)}}
+            {{commentform.sub(value=func.getSub(post.sid).name)}}
             {{commentform.post(value=post.pid)}}
             {{commentform.parent(value='0')}}
             <div class="CommentContent">{{commentform.comment(id="comment2", placeholder="Write your comment here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}</div>
@@ -234,7 +234,7 @@
           <form class="comment-form moving" style="display:none">
             <div class="close">×</div>
             {{commentform.csrf_token}}
-            {{commentform.sub(value=post.sub.name)}}
+            {{commentform.sub(value=func.getSub(post.sid).name)}}
             {{commentform.post(value=post.pid)}}
             {{commentform.parent(value='0')}}
             <div class="CommentContent">{{commentform.comment(class="commenttxtbox",placeholder="Write your comment here. Styling with Markdown format is supported.", rows="10")}}</div>
@@ -244,12 +244,12 @@
         {%endif%}
         <section id="comments">
           <h1>Comments</h1>
-          {% if post.comments.count() < 1 %}
+          {% if comments|length < 1 %}
           <p>
             Be the first to comment this post
           </p>
           {% endif %}
-          {% for comment in post.getComments() recursive %}
+          {% for comment in comments recursive %}
             <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="text-post center no-padding comment sub-{{loop.depth0}}">
               <div class="head">
                 <div class="info">
@@ -258,7 +258,7 @@
                   <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
                 {% endif #}
                   {% if not comment.deleted %}
-                    <a href="{{ url_for('view_user', user=comment.getUname) }}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{ comment.getUname }}</a>
+                    <a href="{{ url_for('view_user', user=db.get_user_from_uid(comment.uid).name) }}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{ db.get_user_from_uid(comment.uid).name }}</a>
                   {%else%}
                     <a class="btn small"><i class="fa fa-user" aria-hidden="true"></i>[Deleted]</a>
                   {%endif%}
@@ -284,7 +284,7 @@
                       {% set uv = form.VoteForm() %}
                       {{uv.csrf_token}}{{uv.post(value=comment.cid)}}
                     </form>
-                    <p class="count">{{comment.getScore()}}</p>
+                    <p class="count">{{func.get_comment_score(comment)}}</p>
                     <form class="cdvform" id="cdvform-{{comment.cid}}">
                       <div class="cdownvote{%if func.hasVotedComment(current_user.get_id(), comment, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
                       {% set dv = form.VoteForm() %}
@@ -315,19 +315,19 @@
               </div>
             </article>
             <div id="child-{{comment.cid}}" {% if comment.deleted %}hidden{%endif%}>
-              {% if post.getComments(comment.cid) %}
-                {{loop(post.getComments(comment.cid))}}
+              {% if db.get_post_comments(post.pid, comment.cid) %}
+                {{loop(db.get_post_comments(post.pid, comment.cid))}}
               {% endif %}
             </div>
           {%endfor%}
         </section>
     </main>
 
-  {% if post.ptype == 1 and post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
-  <form id="edit-linkpost-form" data-sub="{{post.sub.name}}" data-pid="{{post.pid}}" class="mfp-hide white-popup-block">
+  {% if post.ptype == 1 and func.getUser(post.uid).uid == session['user_id'] or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
+  <form id="edit-linkpost-form" data-sub="{{func.getSub(post.sid).name}}" data-pid="{{post.pid}}" class="mfp-hide white-popup-block">
     {{editlinkpostform.csrf_token}}
     <h1>Edit your link post</h1>
-    <p><label>{{editlinkpostform.nsfw.label.text}} {{editlinkpostform.nsfw(checked=post.isPostNSFW())}}</label></p>
+    <p><label>{{editlinkpostform.nsfw.label.text}} {{editlinkpostform.nsfw(checked=db.is_post_nsfw(post))}}</label></p>
     <div class="alert div-error">
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
       <p></p>
@@ -335,11 +335,11 @@
     <p><button type="submit" class="btn btn-blue" id="edit-linkpost-btnsubmit">Edit post</button></p>
   </form>
   {% endif %}
-  {% if post.ptype == 0 and post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
-  <form id="edit-txtpost-form" data-sub="{{post.sub.name}}" data-pid="{{post.pid}}" class="mfp-hide white-popup-block">
+  {% if post.ptype == 0 and func.getUser(post.uid).uid == session['user_id'] or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
+  <form id="edit-txtpost-form" data-sub="{{func.getSub(post.sid).name}}" data-pid="{{post.pid}}" class="mfp-hide white-popup-block">
     {{edittxtpostform.csrf_token}}
     <h1>Edit your text post</h1>
-    <p><label>{{edittxtpostform.nsfw.label.text}} {{edittxtpostform.nsfw(checked=post.isPostNSFW())}}</label></p>
+    <p><label>{{edittxtpostform.nsfw.label.text}} {{edittxtpostform.nsfw(checked=db.is_post_nsfw(post))}}</label></p>
     <p class="content" style="text-align: left;">{{edittxtpostform.content(rows="10", **{'data-provide' :"markdown"})}}</p>
     <div class="alert div-error">
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
@@ -365,7 +365,7 @@
       <p><button type="submit" class="btn btn-blue" data-prog="Deleting..">Yup!</button></p>
     </form>
   {%endif%}
-  {% if current_user.is_authenticated and not current_user.is_subban(post.sub) %}
+  {% if current_user.is_authenticated and not current_user.is_subban(func.getSub(post.sid)) %}
   <form id="post-form" action="{{url_for('do.create_txtpost')}}" data-redir="true" class="ajaxform mfp-hide white-popup-block">
     {{txtpostform.csrf_token}}
     <h1>Submit a text post</h1>
@@ -392,7 +392,7 @@
     <p><button type="submit" class="btn btn-blue" data-prog="Sending...">Submit link</button></p>
   </form>
   {% endif %}
-  {% if post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
+  {% if func.getUser(post.uid).uid == session['user_id'] or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
   <form id="delete-post-form" class="mfp-hide white-popup-block">
     {{delpostform.csrf_token}}
     {{delpostform.post(value=post.pid)}}
@@ -404,7 +404,7 @@
     <p><button type="submit" class="btn btn-blue" id="delpost-btnsubmit">Delete!</button></p>
   </form>
   {% endif %}
-  {% if post.sub.name == "announcements" and current_user.is_admin() and ann.pid != post.pid %}
+  {% if func.getSub(post.sid).name == "announcements" and current_user.is_admin() and ann.pid != post.pid %}
   <form id="make_announcement-form" class="mfp-hide white-popup-block" action="{{url_for('do.make_announcement')}}" method="POST">
     {{delpostform.csrf_token}}
     {{delpostform.post(value=post.pid)}}
@@ -416,11 +416,11 @@
     <p><button type="submit" class="btn btn-blue" id="make_announcement-btnsubmit">Yup!</button></p>
   </form>
   {%endif%}
-  {% if current_user.is_mod(post.sub) or current_user.is_admin() %}
+  {% if current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
   <form id="make_sticky-form" class="mfp-hide white-popup-block" action="{{url_for('do.toggle_sticky', post=post.pid)}}" method="POST">
     {{delpostform.csrf_token}}
     {{delpostform.post(value=post.pid)}}
-    <h3>Are you sure you want to {% if post.is_sticky() %}un{%endif%}stick this?</h3>
+    <h3>Are you sure you want to {% if post in func.getStickies(post['sid']) %}un{%endif%}stick this?</h3>
     <div class="alert div-error">
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
       <p></p>
@@ -428,20 +428,20 @@
     <p><button type="submit" class="btn btn-blue" id="make_announcement-btnsubmit">Yup!</button></p>
   </form>
   {%endif%}
-  {% if post.user.uid == session['user_id'] or current_user.is_mod(post.sub) or current_user.is_admin() %}
+  {% if func.getUser(post.uid).uid == session['user_id'] or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
   <form id="edit-flair-form" class="mfp-hide white-popup-block ajaxform" action="" method="POST">
     {{editpostflair.csrf_token}}
     {{editpostflair.post(value=post.pid)}}
-    {% if func.hasPostFlair(post) %}
+    {% if func.getPostFlair(post) %}
     <h3>Current flair</h3>
-    <p><div class="btn">{{func.hasPostFlair(post)}}</div></p>
-    <p><div class="btn btn-blue" id="removepostflair" data-sub="{{post.sub.name}}" data-post="{{post.pid}}"><i class="fa fa-remove"></i> Remove current flair</div></p>
+    <p><div class="btn">{{func.getPostFlair(post)}}</div></p>
+    <p><div class="btn btn-blue" id="removepostflair" data-sub="{{func.getSub(post.sid).name}}" data-post="{{post.pid}}"><i class="fa fa-remove"></i> Remove current flair</div></p>
 
     {% endif %}
     <h3>Avalable post flairs</h3>
     <div class="btn-group" data-toggle="buttons">
       {% for ll in editpostflair.flair %}
-        <label class="btn btn-default assignpostflair" data-fl="{{ll.data}}" data-sub="{{post.sub.name}}" data-post="{{post.pid}}">
+        <label class="btn btn-default assignpostflair" data-fl="{{ll.data}}" data-sub="{{func.getSub(post.sid).name}}" data-post="{{post.pid}}">
           {{ll}}
           {{ll.label}}</label>
       {%endfor %}
@@ -453,6 +453,6 @@
 {% endblock %}
 {%block pagefoot%}
 {% if not current_user.block_styles() %}
-<style>{{post.sub.stylesheet.content|safe}}</style>
+<style>{{db.get_sub_stylesheet(post.sid)|safe}}</style>
 {% endif %}
 {%endblock%}

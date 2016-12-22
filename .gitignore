@@ -71,3 +71,4 @@ config.py
 
 # thumbs
 thumbs/*
+.pylint

@@ -11,15 +11,16 @@ from bs4 import BeautifulSoup
 import requests
 from PIL import Image
 from flask import Blueprint, redirect, url_for, session, abort, jsonify
-from sqlalchemy import func, or_, and_
+# from sqlalchemy import func, or_, and_
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_cache import make_template_fragment_key
 import config
 from .. import forms, misc
-from ..models import db, User, Sub, SubPost, Message, SubPostComment
-from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
-from ..models import UserMetadata, UserBadge, SubSubscriber, SiteMetadata
-from ..models import SubFlair, SubLog, SiteLog, SubPostCommentVote
+from .. import database as db
+# from ..models import db, User, Sub, SubPost, Message, SubPostComment
+# from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
+# from ..models import UserMetadata, UserBadge, SubSubscriber, SiteMetadata
+# from ..models import SubFlair, SubLog, SiteLog, SubPostCommentVote
 from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubFlair
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
@@ -27,7 +28,7 @@ from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form, EditSubFlair
 from ..forms import DeleteSubFlair, UseBTCdonationForm
-from ..misc import SiteUser, cache, getMetadata, sendMail, getDefaultSubs
+from ..misc import SiteUser, cache, sendMail, getDefaultSubs
 
 do = Blueprint('do', __name__)
 
@@ -94,16 +95,15 @@ def login():
     """ Login endpoint """
     form = LoginForm()
     if form.validate():
-        user = User.query.filter(func.lower(User.name) ==
-                                 func.lower(form.username.data)).first()
+        user = db.get_user_from_name(form.username.data)
         if not user:
             return json.dumps({'status': 'error',
                                'error': ['User does not exist.']})
 
-        if user.crypto == 1:  # bcrypt
+        if user['crypto'] == 1:  # bcrypt
             thash = bcrypt.hashpw(form.password.data.encode('utf-8'),
-                                  user.password.encode('utf-8'))
-            if thash == user.password.encode('utf-8'):
+                                  user['password'].encode('utf-8'))
+            if thash == user['password'].encode('utf-8'):
                 theuser = SiteUser(user)
                 login_user(theuser, remember=form.remember.data)
                 return json.dumps({'status': 'ok'})
@@ -125,25 +125,23 @@ def register():
             return json.dumps({'status': 'error',
                                'error': ['Username has invalid characters']})
         # check if user or email are in use
-        if User.query.filter(func.lower(User.name) ==
-                             func.lower(form.username.data)).first():
+        if db.get_user_from_name(form.username.data):
             return json.dumps({'status': 'error',
                                'error': ['Username is already registered.']})
-        if User.query.filter(func.lower(User.email) ==
-                             func.lower(form.email.data)).first() and \
-           form.email.data != '':
+        x = db.query('SELECT `uid` FROM `user` WHERE `email`=%s',
+                     (form.email.data,))
+        if x.fetchone() and form.email.data != '':
             return json.dumps({'status': 'error',
                                'error': ['Email is alredy in use.']})
-        user = User(form.username.data, form.email.data, form.password.data)
-        db.session.add(user)
+
+        user = db.create_user(form.username.data, form.email.data,
+                              form.password.data)
         # defaults
         defaults = getDefaultSubs()
         for d in defaults:
-            x = SubSubscriber(d.sid, user.uid, 1)
-            db.session.add(x)
-        db.session.commit()
+            db.create_subscription(user['uid'], d['sid'], 1)
+
         login_user(SiteUser(user))
-        SubSubscriber.cache.uncache(uid=user.uid, status=1)
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
@@ -152,50 +150,34 @@ def register():
 @login_required
 def edit_user(user):
     """ Edit user endpoint """
-    user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
+    user = db.get_user_from_name(user)
     if not user:
         return json.dumps({'status': 'error',
                            'error': ['User does not exist']})
-    if current_user.get_id() != user.uid and not current_user.is_admin():
+    if current_user.get_id() != user['uid'] and not current_user.is_admin():
         abort(403)
 
     form = EditUserForm()
     if form.validate():
-        if not user.isPasswordCorrect(form.oldpassword.data):
+        if not db.is_password_valid(user['uid'], form.oldpassword.data):
             return json.dumps({'status': 'error', 'error': ['Wrong password']})
 
-        user.email = form.email.data
+        db.uquery('UPDATE `user` SET `email`=%s WHERE `uid`=%s',
+                  (form.email.data, user['uid']))
         if form.password.data:
-            user.setPassword(form.password.data)
-        exlinks = UserMetadata.query.filter_by(uid=user.uid) \
-                                    .filter_by(key='exlinks').first()
-        if exlinks:
-            exlinks.value = form.external_links.data
-        else:
-            exlinksmeta = UserMetadata(user.uid, 'exlinks',
-                                       form.external_links.data)
-            db.session.add(exlinksmeta)
+            db.update_user_password(form.password.data)
 
-        styles = UserMetadata.query.filter_by(uid=user.uid) \
-                                   .filter_by(key='styles').first()
-        if styles:
-            styles.value = form.disable_sub_style.data
-        else:
-            stylesmeta = UserMetadata(user.uid, 'styles',
-                                      form.disable_sub_style.data)
-            db.session.add(stylesmeta)
+        db.update_user_metadata(user['uid'], 'exlinks',
+                                form.external_links.data)
 
-        nsfw = UserMetadata.query.filter_by(uid=user.uid) \
-                                 .filter_by(key='nsfw').first()
-        if nsfw:
-            nsfw.value = form.show_nsfw.data
-        else:
-            nsfwmeta = UserMetadata(user.uid, 'nsfw', form.show_nsfw.data)
-            db.session.add(nsfwmeta)
+        db.update_user_metadata(user['uid'], 'nostyles',
+                                form.disable_sub_style.data)
 
-        db.session.commit()
+        db.update_user_metadata(user['uid'], 'nsfw',
+                                form.show_nsfw.data)
+
         return json.dumps({'status': 'ok',
-                           'addr': url_for('view_user', user=user.name)})
+                           'addr': url_for('view_user', user=user['name'])})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -206,22 +188,22 @@ def delete_post():
     form = DeletePost()
 
     if form.validate():
-        post = SubPost.query.filter_by(pid=form.post.data).first()
+        post = db.get_post_from_pid(form.post.data)
         if not post:
             return json.dumps({'status': 'error',
                                'error': ['Post does not exist.']})
-
-        if not current_user.is_mod(post.sub) and not current_user.is_admin() \
-           and not post.user:
+        sub = db.get_sub_from_sid(post['sid'])
+        if not current_user.is_mod(sub) and not current_user.is_admin() \
+           and not post['uid'] == current_user.get_id():
             return json.dumps({'status': 'error',
                                'error': ['Not authorized.']})
 
-        if post.uid == session['user_id']:
-            post.deleted = 1
+        if post['uid'] == session['user_id']:
+            deletion = 1
         else:
-            post.deleted = 2
-
-        db.session.commit()
+            deletion = 2
+        db.uquery('UPDATE `sub_post` SET `deleted`=%s WHERE pid=%s',
+                  (deletion, post['pid']))
 
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -237,8 +219,7 @@ def create_sub():
             return json.dumps({'status': 'error',
                                'error': ['Sub name has invalid characters']})
 
-        if Sub.query.filter(func.lower(Sub.name) ==
-                            func.lower(form.subname.data)).first():
+        if db.get_sub_from_name(form.subname.data):
             return json.dumps({'status': 'error',
                                'error': ['Sub is already registered.']})
 
@@ -246,29 +227,15 @@ def create_sub():
             return json.dumps({'status': 'error',
                                'error': ["You can't mod more than 15 subs."]})
 
-        sub = Sub(form.subname.data, form.title.data)
-        db.session.add(sub)
-        ux = SubMetadata(sub, 'mod', current_user.get_id())
-        uy = SubMetadata(sub, 'mod1', current_user.get_id())
-        ux2 = SubMetadata(sub, 'creation', datetime.datetime.utcnow())
-        ux3 = SubMetadata(sub, 'nsfw', '0')
-        ux4 = SubStylesheet(sub, content='/** css here **/')
-        db.session.add(ux)
-        db.session.add(uy)
-        db.session.add(ux2)
-        db.session.add(ux3)
-        db.session.add(ux4)
-        # admin/site log
-        alog = SiteLog()
-        alog.action = 4  # subs
-        alog.time = datetime.datetime.utcnow()
-        alog.desc = current_user.get_username() + ' created a new sub'
-        alog.link = url_for('view_sub', sub=sub.name)
-        db.session.add(alog)
-        x = SubSubscriber(sub.sid, current_user.get_id(), 1)
-        db.session.add(x)
+        sub = db.create_sub(current_user.get_id(), form.subname.data,
+                            form.title.data)
 
-        db.session.commit()
+        # admin/site log
+        db.create_sitelog(4,
+                          current_user.get_username() + ' created a new sub',
+                          url_for('view_sub', sub=sub['name']))
+
+        db.create_subscription(current_user.get_id(), sub['sid'], 1)
 
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_sub', sub=form.subname.data)})
@@ -280,29 +247,22 @@ def create_sub():
 @login_required
 def edit_sub_css(sub):
     """ Edit sub endpoint """
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
     if not current_user.is_mod(sub) and not current_user.is_admin():
         abort(403)
 
-    stylesheet = SubStylesheet.query.filter_by(sid=sub.sid).first()
     form = EditSubCSSForm()
     if form.validate():
-        if stylesheet:
-            stylesheet.content = form.css.data
-            log = SubLog(sub.sid)
-            log.action = 4  # action modedit of sub
-            log.desc = 'CSS edited by ' + current_user.get_username()
-            # log.link = url_for('view_sub', sub=sub.name)
-            db.session.add(log)
-        else:
-            css = SubStylesheet(sub.sid, form.css.data)
-            db.session.add(css)
-        db.session.commit()
+        db.uquery('UPDATE `sub_stylesheet` SET `content`=%s WHERE `sid`=%s',
+                  (form.css.data, sub['sid']))
+        db.create_sitelog(sub['sid'], 4,
+                          'CSS edited by ' + current_user.get_username())
+
         return json.dumps({'status': 'ok',
-                           'addr': url_for('view_sub', sub=sub.name)})
+                           'addr': url_for('view_sub', sub=sub['name'])})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -310,70 +270,36 @@ def edit_sub_css(sub):
 @login_required
 def edit_sub(sub):
     """ Edit sub endpoint """
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
     if current_user.is_mod(sub) or current_user.is_admin():
         form = EditSubForm()
         if form.validate():
-            sub.title = form.title.data
-            sub.sidebar = form.sidebar.data
-            sub.nsfw = form.nsfw.data
-
-            restricted = getMetadata(sub, 'restricted', record=True)
-            if restricted:
-                restricted.value = form.restricted.data
-            else:
-                restricted = SubMetadata(sub, 'restricted',
-                                         form.restricted.data)
-                db.session.add(restricted)
-            cache.delete_memoized(getMetadata, sub, 'restricted')
-            SubMetadata.cache.uncache(key='restricted', sid=sub.sid)
-            usercanflair = getMetadata(sub, 'ucf', record=True)
-            if usercanflair:
-                usercanflair.value = form.usercanflair.data
-            else:
-                usercanflair = SubMetadata(sub, 'ucf', form.usercanflair.data)
-                db.session.add(usercanflair)
-            video = getMetadata(sub, 'videomode', record=True)
-            if video:
-                video.value = form.videomode.data
-            else:
-                video = SubMetadata(sub, 'videomode', form.videomode.data)
-                db.session.add(video)
-            # Cache inv. for videomode
-            cache.delete_memoized(getMetadata, sub, 'videomode')
-            SubMetadata.cache.uncache(key='videomode', sid=sub.sid)
+            db.uquery('UPDATE `sub` SET `title`=%s, `sidebar`=%s, `nsfw`=%s '
+                      'WHERE `sid`=%s', (form.title.data, form.sidebar.data,
+                                         form.nsfw.data, sub['sid']))
+            db.update_sub_metadata(sub['sid'], 'restricted',
+                                   form.restricted.data)
+            db.update_sub_metadata(sub['sid'], 'ucf', form.usercanflair.data)
+            db.update_sub_metadata(sub['sid'], 'videomode',
+                                   form.videomode.data)
 
             if form.subsort.data != "None":
-                subsort = getMetadata(sub, 'sort', record=True)
-                if subsort:
-                    subsort.value = form.subsort.data
-                else:
-                    subsort = SubMetadata(sub, 'sort', form.subsort.data)
-                    db.session.add(subsort)
-                cache.delete_memoized(getMetadata, sub, 'sort')
-                SubMetadata.cache.uncache(key='sort', sid=sub.sid)
+                db.update_sub_metadata(sub['sid'], 'sort',
+                                       form.subsort.data)
 
-            log = SubLog(sub.sid)
-            log.action = 4  # action modedit of sub
-            log.desc = 'Sub settings edited by ' + current_user.get_username()
-            # log.link = url_for('view_sub', sub=sub.name)
+            db.create_sublog(sub['sid'], 4, 'Sub settings edited by ' +
+                             current_user.get_username())
 
             if not current_user.is_mod(sub) and current_user.is_admin():
-                alog = SiteLog()
-                alog.action = 4  # subs
-                alog.time = datetime.datetime.utcnow()
-                alog.desc = 'Sub settings edited by ' + \
-                            current_user.get_username()
-                alog.link = url_for('view_sub', sub=sub.name)
-                db.session.add(alog)
+                db.create_sitelog(4, 'Sub settings edited by ' +
+                                  current_user.get_username(),
+                                  url_for('view_sub', sub=sub['name']))
 
-            db.session.add(log)
-            db.session.commit()
             return json.dumps({'status': 'ok',
-                               'addr': url_for('view_sub', sub=sub.name)})
+                               'addr': url_for('view_sub', sub=sub['name'])})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
     else:
         abort(403)
@@ -382,45 +308,34 @@ def edit_sub(sub):
 @do.route("/do/assign_post_flair/<sub>/<pid>/<fl>", methods=['POST'])
 def assign_post_flair(sub, pid, fl):
     """ Assign a post's flair """
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    post = SubPost.query.filter_by(pid=pid).first()
+    post = db.get_post_from_pid(pid)
     if not post:
         return json.dumps({'status': 'error',
                            'error': ['Post does not exist']})
-    if current_user.is_mod(sub) or post.user.uid == current_user.get_id() \
+    if current_user.is_mod(sub) or post['uid'] == current_user.get_id() \
        or current_user.is_admin():
-        flair = SubFlair.query.filter_by(xid=fl, sid=sub.sid).first()
+        flair = db.query('SELECT * FROM `sub_flair` WHERE `xid`=%s AND '
+                         '`sid`=%s', (fl, sub['sid'])).fetchone()
         if not flair:
             return json.dumps({'status': 'error',
                                'error': ['Flair does not exist']})
 
-        postfl = getMetadata(post, 'flair', record=True)
-        if postfl:
-            postfl.value = flair.text
-        else:
-            x = SubPostMetadata(pid, 'flair', flair.text)
-            db.session.add(x)
-
-        log = SubLog(sub.sid)
-        log.action = 3  # action postflair
-        log.desc = current_user.get_username() + ' assigned post flair'
-        log.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
-        db.session.add(log)
-        cache.delete_memoized(getMetadata, post, 'flair')
+        db.update_post_metadata(post['pid'], 'flair', flair['text'])
+        db.create_sublog(sub['sid'], 3, current_user.get_username() +
+                         ' assigned post flair',
+                         url_for('view_post', sub=sub['name'],
+                                 pid=post['pid']))
 
         if not current_user.is_mod(sub) and current_user.is_admin():
-            alog = SiteLog()
-            alog.action = 4  # subs
-            alog.time = datetime.datetime.utcnow()
-            alog.desc = current_user.get_username() + ' assigned post flair'
-            alog.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
-            db.session.add(alog)
+            db.create_sitelog(4, current_user.get_username() +
+                              ' assigned post flair',
+                              url_for('view_post', sub=sub['name'],
+                                      pid=post['pid']))
 
-        db.session.commit()
-        SubPostMetadata.cache.uncache(key='flair', pid=post.pid)
         return json.dumps({'status': 'ok'})
     else:
         abort(403)
@@ -429,40 +344,32 @@ def assign_post_flair(sub, pid, fl):
 @do.route("/do/remove_post_flair/<sub>/<pid>", methods=['POST'])
 def remove_post_flair(sub, pid):
     """ Deletes a post's flair """
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    post = SubPost.query.filter_by(pid=pid).first()
+    post = db.get_post_from_pid(pid)
     if not post:
         return json.dumps({'status': 'error',
                            'error': ['Post does not exist']})
-    if current_user.is_mod(sub) or post.user.uid == current_user.get_id() \
+    if current_user.is_mod(sub) or post['uid'] == current_user.get_id() \
        or current_user.is_admin():
-        postfl = SubPostMetadata.query.filter_by(key='flair',
-                                                 pid=post.pid).first()
+        postfl = misc.getPostFlair(post)
         if not postfl:
             return json.dumps({'status': 'error',
                                'error': ['Flair does not exist']})
         else:
-            db.session.delete(postfl)
-            log = SubLog(sub.sid)
-            log.action = 3  # action postflair
-            log.desc = current_user.get_username() + ' removed post flair'
-            log.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
-            db.session.add(log)
+            db.uquery('DELETE FROM `sub_post_metadata` WHERE `pid`=%s AND '
+                      '`key`=%s', (post['pid'], 'flair'))
+            db.create_sublog(sub['sid'], 3, current_user.get_username() +
+                             ' removed post flair',
+                             url_for('view_post', sub=sub['name'], pid=pid))
 
             if not current_user.is_mod(sub) and current_user.is_admin():
-                alog = SiteLog()
-                alog.action = 4  # subs
-                alog.time = datetime.datetime.utcnow()
-                alog.desc = current_user.get_username() + ' removed post flair'
-                alog.link = url_for('view_post', sub=post.sub.name,
-                                    pid=post.pid)
-                db.session.add(alog)
-
-        db.session.commit()
-        SubPostMetadata.cache.uncache(key='flair', pid=post.pid)
+                db.create_sitelog(4, current_user.get_username() +
+                                  ' removed post flair',
+                                  url_for('view_post', sub=sub['name'],
+                                          pid=pid))
         return json.dumps({'status': 'ok'})
     else:
         abort(403)
@@ -475,31 +382,20 @@ def edit_mod():
     if not current_user.is_admin():
         abort(403)
     form = EditModForm()
-    sub = Sub.query.filter_by(name=form.sub.data).first()
+    sub = db.get_sub_from_name(form.sub.data)
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    user = User.query.filter_by(name=form.user.data).first()
+    user = db.get_user_from_name(form.user.data)
     if not user:
         return json.dumps({'status': 'error',
                            'error': ['User does not exist']})
     if form.validate():
-        topmod = SubMetadata.query.filter_by(sid=sub.sid) \
-                                  .filter_by(key='mod1').first()
+        db.update_sub_metadata(sub['sid'], 'mod1', user['uid'])
 
-        if topmod:
-            topmod.value = user.uid
-        else:
-            x = SubMetadata(sub, 'mod1', user.uid)
-            db.session.add(x)
-
-        log = SubLog(sub.sid)
-        log.action = 6  # mod action
-        log.desc = current_user.get_username() + ' transferred sub ' + \
-            'ownership to ' + user.name
-        log.link = url_for('view_sub', sub=sub.name)
-        db.session.add(log)
-        db.session.commit()
+        db.create_sublog(sub.sid, current_user.get_username() + ' transferred '
+                         'sub ownership to ' + user['name'],
+                         url_for('view_sub', sub=sub['name']))
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
@@ -509,18 +405,17 @@ def edit_mod():
 def subscribe_to_sub(sid):
     """ Subscribe to sub """
     userid = current_user.get_id()
-    su = SubSubscriber.query.filter_by(sid=sid, uid=userid, status=1).first()
-    if su:
-        return json.dumps({'status': 'ok', 'message': 'already subscribed'})
-    subscribe = SubSubscriber(sid, userid, 1)
+    sub = db.get_sub_from_sid(sid)
+    if not sub:
+        return jsonify(status='error', message='sub not found')
 
-    blocked = SubSubscriber.query.filter_by(sid=sid) \
-                                 .filter_by(uid=userid) \
-                                 .filter_by(status='2').first()
-    if blocked:
-        db.session.delete(blocked)
-    db.session.add(subscribe)
-    db.session.commit()
+    if current_user.has_subscribed(sid):
+        return jsonify(status='ok', message='already subscribed')
+
+    db.create_subscription(userid, sub['sid'], 1)
+    if current_user.has_blocked(sid):
+        db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s AND `sid`=%s '
+                  'AND `status`=2', (userid, sid))
     return json.dumps({'status': 'ok', 'message': 'subscribed'})
 
 
@@ -529,11 +424,16 @@ def subscribe_to_sub(sid):
 def unsubscribe_from_sub(sid):
     """ Unsubscribe from sub """
     userid = current_user.get_id()
-    SubSubscriber.query.filter_by(sid=sid) \
-                       .filter_by(uid=userid) \
-                       .filter_by(status='1').delete()
-    db.session.commit()
-    return json.dumps({'status': 'ok', 'message': 'unsubscribed'})
+    sub = db.get_sub_from_sid(sid)
+    if not sub:
+        return jsonify(status='error', message='sub not found')
+
+    if not current_user.has_subscribed(sid):
+        return jsonify(status='ok', message='not subscribed')
+
+    db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s AND `sid`=%s '
+              'AND `status`=1', (userid, sid))
+    return jsonify(status='ok', message='unsubscribed')
 
 
 @do.route("/do/block/<sid>", methods=['POST'])
@@ -541,19 +441,14 @@ def unsubscribe_from_sub(sid):
 def block_sub(sid):
     """ Block sub """
     userid = current_user.get_id()
-    su = SubSubscriber.query.filter_by(sid=sid, uid=userid, status=2).first()
-    if su:
+    if current_user.has_blocked(sid):
         return json.dumps({'status': 'ok', 'message': 'already blocked'})
-    subscribe = SubSubscriber(sid, userid, 2)
-    subscribe.time = datetime.datetime.utcnow()
 
-    subbed = SubSubscriber.query.filter_by(sid=sid) \
-                                .filter_by(uid=userid) \
-                                .filter_by(status='1').first()
-    if subbed:
-        db.session.delete(subbed)
-    db.session.add(subscribe)
-    db.session.commit()
+    db.create_subscription(userid, sid, 2)
+
+    if current_user.has_subscribed(sid):
+        db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s AND `sid`=%s '
+                  'AND `status`=1', (userid, sid))
     return json.dumps({'status': 'ok', 'message': 'blocked'})
 
 
@@ -562,11 +457,16 @@ def block_sub(sid):
 def unblock_sub(sid):
     """ Unblock sub """
     userid = current_user.get_id()
-    SubSubscriber.query.filter_by(sid=sid) \
-                       .filter_by(uid=userid) \
-                       .filter_by(status='2').delete()
-    db.session.commit()
-    return json.dumps({'status': 'ok', 'message': 'unsubscribed'})
+    sub = db.get_sub_from_sid(sid)
+    if not sub:
+        return jsonify(status='error', message='sub not found')
+
+    if not current_user.has_blocked(sid):
+        return jsonify(status='ok', message='not blocked')
+
+    db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s AND `sid`=%s '
+              'AND `status`=2', (userid, sid))
+    return jsonify(status='ok', message='unblocked')
 
 
 @do.route("/do/txtpost", methods=['POST'])
@@ -577,33 +477,30 @@ def create_txtpost():
     form = CreateSubTextPost()
     if form.validate():
         # Put pre-posting checks here
-        sub = Sub.query.filter(func.lower(Sub.name) ==
-                               func.lower(form.sub.data)).first()
+        sub = db.get_sub_from_name(form.sub.data)
         if not sub:
             return json.dumps({'status': 'error',
                                'error': ['Sub does not exist']})
 
-        post = SubPost(sub.sid)
-        post.title = form.title.data
-        post.content = form.content.data
-        post.ptype = "0"
-        db.session.add(post)
+        post = db.create_post(sid=sub['sid'],
+                              uid=current_user.uid,
+                              title=form.title.data,
+                              content=form.content.data,
+                              ptype=0)
 
         misc.workWithMentions(form.content.data, None, post, sub)
         misc.workWithMentions(form.title.data, None, post, sub)
-        db.session.commit()
-        return json.dumps({'status': 'ok',
-                           'addr': url_for('view_post', sub=sub.name,
-                                           pid=post.pid)})
+        return jsonify(status='ok', addr=url_for('view_post', sub=sub['name'],
+                                                 pid=post['pid']))
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/get_txtpost/<pid>", methods=['GET'])
 def get_txtpost(pid):
     """ Sub text post expando get endpoint """
-    post = SubPost.query.filter_by(pid=pid).first()
+    post = db.get_post_from_pid(pid)
     if post:
-        return jsonify(status='ok', content=misc.our_markdown(post.content))
+        return jsonify(status='ok', content=misc.our_markdown(post['content']))
     else:
         return jsonify(status='error', error=['No longer available'])
 
@@ -614,10 +511,11 @@ def edit_txtpost(sub, pid):
     """ Sub text post creation endpoint """
     form = EditSubTextPostForm()
     if form.validate():
-        post = SubPost.query.get(pid)
-        post.content = form.content.data
-        post.nsfw = form.nsfw.data
-        db.session.commit()
+        post = db.get_post_from_pid(pid)
+        if not post:
+            return jsonify(status='error', error=['No such post'])
+        db.uquery('UPDATE `sub_post` SET `content`=%s, `nsfw`=%s WHERE '
+                  '`pid`=%s', (form.content.data, form.nsfw.data, pid))
         return json.dumps({'status': 'ok', 'sub': sub, 'pid': pid})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
@@ -630,20 +528,17 @@ def create_lnkpost():
     form = CreateSubLinkPost()
     if form.validate():
         # Put pre-posting checks here
-        sub = Sub.query.filter(func.lower(Sub.name) ==
-                               func.lower(form.sub.data)).first()
+        sub = db.get_sub_from_name(form.sub.data)
         if not sub:
             return json.dumps({'status': 'error',
                                'error': ['Sub does not exist']})
 
-        post = SubPost(sub.sid)
-        post.title = form.title.data
-        post.link = form.link.data
-        post.ptype = "1"
-        db.session.add(post)
-        # l = SubPostMetadata(post.pid, 'score', 1)
-        # db.session.add(l)
-        db.session.commit()
+        post = db.create_post(sid=sub['sid'],
+                              uid=current_user.uid,
+                              title=form.title.data,
+                              link=form.link.data,
+                              ptype=1,
+                              content='')
 
         misc.workWithMentions(form.title.data, None, post, sub)
 
@@ -652,8 +547,9 @@ def create_lnkpost():
         try:
             req = misc.safeRequest(form.link.data)
         except (requests.exceptions.RequestException, ValueError):
-            return jsonify(status='ok', addr=url_for('view_post', sub=sub.name,
-                                                     pid=post.pid))
+            return jsonify(status='ok', addr=url_for('view_post',
+                                                     sub=sub['name'],
+                                                     pid=post['pid']))
         ctype = req[0].headers['content-type'].split(";")[0].lower()
         filename = str(uuid.uuid4()) + '.jpg'
         good_types = ['image/gif', 'image/jpeg', 'image/png']
@@ -666,36 +562,32 @@ def create_lnkpost():
             og = BeautifulSoup(req[1], 'lxml')
             try:
                 img = og('meta', {'property': 'og:image'})[0].get('content')
-            except IndexError:
+                req = misc.safeRequest(img)
+            except (OSError, ValueError, IndexError):
                 # no image
                 return jsonify(status='ok', addr=url_for('view_post',
-                                                         sub=sub.name,
-                                                         pid=post.pid))
-            try:
-                req = misc.safeRequest(img)
-            except (requests.exceptions.RequestException, ValueError):
-                return jsonify(status='ok', addr=url_for('view_post',
-                                                         sub=sub.name,
-                                                         pid=post.pid))
+                                                         sub=sub['name'],
+                                                         pid=post['pid']))
             im = Image.open(BytesIO(req[1])).convert('RGB')
         else:
-            return jsonify(status='ok', addr=url_for('view_post', sub=sub.name,
-                                                     pid=post.pid))
+            return jsonify(status='ok', addr=url_for('view_post',
+                                                     pid=post['pid'],
+                                                     sub=sub['name']))
         background = Image.new('RGB', (70, 70), (0, 0, 0))
 
         im.thumbnail((70, 70), Image.ANTIALIAS)
 
         bg_w, bg_h = background.size
         img_w, img_h = im.size
-        offset = (int((bg_w - img_w) / 2), int((bg_h - img_h) / 2))
-        background.paste(im, offset)
+        background.paste(im, (int((bg_w - img_w) / 2),
+                              int((bg_h - img_h) / 2)))
         background.save(config.THUMBNAILS + '/' + filename, "JPEG")
-        post.thumbnail = filename
+        db.uquery('UPDATE `sub_post` SET `thumbnail`=%s WHERE `pid`=%s',
+                  (filename, post['pid']))
         im.close()
         background.close()
-        db.session.commit()
-        return jsonify(status='ok', addr=url_for('view_post', sub=sub.name,
-                                                 pid=post.pid))
+        return jsonify(status='ok', addr=url_for('view_post', sub=sub['name'],
+                                                 pid=post['pid']))
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -705,9 +597,11 @@ def edit_linkpost(sub, pid):
     """ Sub text post creation endpoint """
     form = EditSubLinkPostForm()
     if form.validate():
-        post = SubPost.query.filter_by(pid=pid).first()
-        post.nsfw = form.nsfw.data
-        db.session.commit()
+        post = db.get_post_from_pid(pid)
+        if not post:
+            return jsonify(status='error', error=['No such post'])
+        db.uquery('UPDATE `sub_post` SET `nsfw`=%s WHERE `pid`=%s',
+                  (form.nsfw.data, pid))
         return json.dumps({'status': 'ok', 'sub': sub, 'pid': pid})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
@@ -722,49 +616,43 @@ def upvote(pid, value):
         voteValue = -1
     else:
         abort(403)
-    post = SubPost.query.filter_by(pid=pid).first()
+    post = db.get_post_from_pid(pid)
     if not post:
-        return json.dumps({'status': 'error',
-                           'error': ['Post does not exist']})
+        return jsonify(status='error', error=['Post does not exist'])
 
-    if post.uid == current_user.get_id():
-        return json.dumps({'status': 'error',
-                           'error': ['You can\'t vote on your own posts']})
+    if post['uid'] == current_user.get_id():
+        return jsonify(status='error',
+                       error=["You can't vote on your own posts"])
 
-    qvote = SubPostVote.query.filter_by(pid=pid) \
-                             .filter_by(uid=current_user.get_id()).first()
-    user = User.query.filter_by(uid=post.uid).first()
+    qvote = db.query('SELECT * FROM `sub_post_vote` WHERE `pid`=%s AND '
+                     '`uid`=%s', (pid, current_user.uid)).fetchone()
+    user = db.get_user_from_uid(post['uid'])
 
     if qvote:
-        if qvote.positive == (True if voteValue == 1 else False):
+        if bool(qvote['positive']) == (True if voteValue == 1 else False):
             return json.dumps({'status': 'error',
                                'error': ['You already voted.']})
         else:
-
-            qvote.positive = True if voteValue == 1 else False
-            post.score = int(post.score) + (voteValue*2)
-            if user.score is not None:
-                user.score = User.score + (voteValue*2)
-                db.session.add(user)
-            db.session.commit()
-            cache.delete_memoized(misc.hasVoted, current_user.get_id(),
-                                  qvote.positive)
-            return json.dumps({'status': 'ok',
-                               'message': 'Vote flipped.'})
+            positive = True if voteValue == 1 else False
+            db.uquery('UPDATE `sub_post_vote` SET `positive`=%s WHERE '
+                      '`xid`=%s', (positive, qvote['xid']))
+            db.uquery('UPDATE `sub_post` SET `score`=`score`+%s WHERE '
+                      '`pid`=%s', (voteValue*2, post['pid']))
+            if user['score'] is not None:
+                db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
+                          '`uid`=%s', (voteValue*2, post['uid']))
+            return jsonify(status='ok', message='Vote flipped')
     else:
-        vote = SubPostVote()
-        vote.pid = pid
-        vote.uid = current_user.get_id()
-        vote.positive = True if voteValue == 1 else False
-        db.session.add(vote)
-    cache.delete_memoized(misc.hasVoted, current_user.get_id(),
-                          vote.positive)
-    post.score += voteValue
-    if user.score is not None:
-        user.score = User.score + voteValue
-        db.session.add(user)
-    db.session.commit()
-    return json.dumps({'status': 'ok'})
+        positive = True if voteValue == 1 else False
+        db.uquery('INSERT INTO `sub_post_vote` (`pid`, `uid`, `positive`) '
+                  'VALUES (%s, %s, %s)', (pid, current_user.uid, positive))
+    db.uquery('UPDATE `sub_post` SET `score`=`score`+%s WHERE '
+              '`pid`=%s', (voteValue, post['pid']))
+
+    if user['score'] is not None:
+        db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
+                  '`uid`=%s', (voteValue, post['uid']))
+    return jsonify(status='ok')
 
 
 @do.route('/do/sendcomment/<sub>/<pid>', methods=['POST'])
@@ -774,57 +662,48 @@ def create_comment(sub, pid):
     form = PostComment()
     if form.validate():
         # 1 - Check if sub exists.
-        sub = Sub.query.filter(func.lower(Sub.name) ==
-                               func.lower(sub)).first()
+        sub = db.get_sub_from_name(sub)
         if not sub:
             return json.dumps({'status': 'error',
                                'error': ['Sub does not exist']})
         # 2 - Check if post exists.
-        post = SubPost.query.filter_by(pid=pid).first()
+        post = db.get_post_from_pid(pid)
         if not post:
             return json.dumps({'status': 'error',
                                'error': ['Post does not exist']})
         # 3 - Check if the post is in that sub.
-        if not post.sub.name == sub.name:
+        if not post['sid'] == sub['sid']:
             return json.dumps({'status': 'error',
                                'error': ['Post does not exist']})
 
         # 4 - All OK, post dem comment.
-        comment = SubPostComment()
-        comment.uid = current_user.get_id()
-        comment.pid = pid
-        comment.content = form.comment.data.encode()
-        comment.time = datetime.datetime.utcnow()
-
-        if form.parent.data != "0":
-            comment.parentcid = form.parent.data
+        comment = db.create_comment(pid=pid,
+                                    uid=current_user.uid,
+                                    content=form.comment.data.encode(),
+                                    parentcid=form.parent.data)
 
         # 5 - send pm to parent
-        pm = Message()
-        pm.sentby = current_user.get_id()
         if form.parent.data != "0":
-            pm.receivedby = misc.getCommentParentUID(form.parent.data)
-            pm.subject = 'Comment reply: ' + post.title
-            pm.mtype = 5  # comment reply
+            to = misc.getCommentParentUID(form.parent.data)
+            subject = 'Comment reply: ' + post['title']
+            mtype = 5
         else:
-            pm.receivedby = post.uid
-            pm.subject = 'Post reply: ' + post.title
-            pm.mtype = 4  # Post reply
-        # pm.content = form.comment.data
-        pm.mlink = comment.cid
-        pm.posted = datetime.datetime.utcnow()
-        if pm.receivedby != pm.sentby:
-            db.session.add(pm)
+            to = post['uid']
+            subject = 'Post reply: ' + post['title']
+            mtype = 4
+        if to != current_user.uid:
+            db.create_message(mfrom=current_user.uid,
+                              to=to,
+                              subject=subject,
+                              content='',
+                              link=comment['cid'],
+                              mtype=mtype)
 
         # 6 - Process mentions
-        misc.workWithMentions(form.comment.data, pm.receivedby, post, sub)
+        misc.workWithMentions(form.comment.data, to, post, sub)
 
-        db.session.add(comment)
-        db.session.commit()
-
-        SubPostComment.cache.uncache(pid=pid, parentcid=None)
-        SubPostComment.cache.uncache(pid=pid, parentcid=form.parent.data)
-        return json.dumps({'status': 'ok', 'page': url_for('view_post_inbox', pid=pid)})
+        return json.dumps({'status': 'ok', 'page': url_for('view_post_inbox',
+                           pid=pid)})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -835,17 +714,11 @@ def create_user_badge():
     if current_user.is_admin():
         form = CreateUserBadgeForm()
         if form.validate():
-            badge = UserBadge(form.badge.data, form.name.data, form.text.data)
+            db.create_badge(form.badge.data, form.name.data, form.text.data)
 
-            alog = SiteLog()
-            alog.action = 2  # users
-            alog.time = datetime.datetime.utcnow()
-            alog.desc = current_user.get_username() + ' created a new badge'
-            alog.link = url_for('admin_area')
-            db.session.add(alog)
-            db.session.add(badge)
-            db.session.commit()
-            return json.dumps({'status': 'ok', 'bid': badge.bid})
+            db.create_sitelog(2, current_user.get_username() +
+                              ' created a new badge')
+            return json.dumps({'status': 'ok'})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -854,22 +727,20 @@ def create_user_badge():
 def assign_user_badge(uid, bid):
     """ Assign User Badge endpoint """
     if current_user.is_admin():
-        bq = UserMetadata.query.filter_by(uid=uid, key='badge', value=bid)
-        if bq.first():
+        bq = db.query('SELECT `xid` FROM `user_metadata` WHERE `key`=%s AND '
+                      '`uid`=%s AND `value`=%s', ('badge', uid, bid))
+
+        if bq.rowcount == 0:
             return json.dumps({'status': 'error',
                                'error': ['Badge is already assigned']})
 
-        badge = UserMetadata(uid, 'badge', bid)
-        db.session.add(badge)
-        user = User.query.filter_by(uid=uid).first()
-        alog = SiteLog()
-        alog.action = 2  # users
-        alog.time = datetime.datetime.utcnow()
-        alog.desc = current_user.get_username() + ' assigned a user badge ' + \
-            ' to ' + user.name
-        alog.link = url_for('view_user', user=user.name)
-        db.session.add(alog)
-        db.session.commit()
+        db.uquery('INSERT INTO `user_metadata` (`uid`, `key`, `value`) VALUES '
+                  '(%s, %s, %s)', (uid, 'badge', bid))
+
+        user = db.get_user_from_uid(uid)
+        db.create_sitelog(2, current_user.get_username() +
+                          ' assigned a user badge to ' + user['name'],
+                          url_for('view_user', user=user['name']))
         return json.dumps({'status': 'ok', 'bid': bid})
     else:
         abort(403)
@@ -880,23 +751,19 @@ def assign_user_badge(uid, bid):
 def remove_user_badge(uid, bid):
     """ Remove User Badge endpoint """
     if current_user.is_admin():
-        bq = UserMetadata.query.filter_by(uid=uid,) \
-                               .filter_by(key='badge') \
-                               .filter_by(value=bid).first()
-        if not bq:
+        bq = db.query('SELECT `xid` FROM `user_metadata` WHERE `key`=%s AND '
+                      '`uid`=%s AND `value`=%s', ('badge', uid, bid))
+
+        if bq.rowcount == 0:
             return json.dumps({'status': 'error',
                                'error': ['Badge has already been removed']})
 
-        bq.key = 'xbadge'
-        user = User.query.filter_by(uid=uid).first()
-        alog = SiteLog()
-        alog.action = 2  # users
-        alog.time = datetime.datetime.utcnow()
-        alog.desc = current_user.get_username() + ' removed a user badge' + \
-            ' from ' + user.name
-        alog.link = url_for('view_user', user=user.name)
-        db.session.add(alog)
-        db.session.commit()
+        db.uquery('DELETE FROM `user_metadata` WHERE `xid`=%s', (bq['xid']))
+        user = db.get_user_from_uid(uid)
+        db.create_sitelog(2, current_user.get_username() +
+                          ' removed a user badge from ' + user['name'],
+                          url_for('view_user', user=user['name']))
+
         return json.dumps({'status': 'ok', 'message': 'Badge deleted'})
     else:
         abort(403)
@@ -908,16 +775,13 @@ def create_sendmsg():
     """ User PM message creation endpoint """
     form = CreateUserMessageForm()
     if form.validate():
-        msg = Message()
-        msg.receivedby = form.to.data
-        msg.sentby = current_user.get_id()
-        msg.subject = form.subject.data
-        msg.content = form.content.data
-        msg.posted = datetime.datetime.utcnow()
-        msg.mtype = 1  # PM
-        db.session.add(msg)
-        db.session.commit()
-        return json.dumps({'status': 'ok', 'mid': msg.mid,
+        db.create_message(mfrom=current_user.uid,
+                          to=form.to.data,
+                          subject=form.subject.data,
+                          content=form.content.data,
+                          link=None,
+                          mtype=1)
+        return json.dumps({'status': 'ok',
                            'sentby': current_user.get_id()})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
@@ -926,7 +790,7 @@ def create_sendmsg():
 @login_required
 def ban_user_sub(sub):
     """ Ban user from sub endpoint """
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
@@ -934,35 +798,26 @@ def ban_user_sub(sub):
        or current_user.is_mod(sub):
         form = BanUserSubForm()
         if form.validate():
-            user = User.query.filter(func.lower(User.name) ==
-                                     func.lower(form.user.data)).first()
+            user = db.get_user_from_name(form.user.data)
             if not user:
                 return json.dumps({'status': 'error',
                                    'error': ['User does not exist.']})
-            msg = Message()
-            msg.receivedby = user.uid
-            msg.sentby = current_user.get_id()
-            msg.subject = 'You have been banned from /s/' + sub.name
-            msg.content = ':p'
-            msg.posted = datetime.datetime.utcnow()
-            msg.mtype = 7  # sub bans related
-            msg.mlink = sub.name
-            meta = SubMetadata(sub, 'ban', user.uid)
+            if db.get_sub_metadata(sub['sid'], 'ban', value=user['uid']):
+                return jsonify(status='error', error=['Already banned'])
+            db.create_message(mfrom=current_user.uid,
+                              to=user['uid'],
+                              subject='You have been banned from /s/' +
+                                      sub.name,
+                              content='',
+                              link=sub['name'],
+                              mtype=7)
 
-            log = SubLog(sub.sid)
-            log.action = 7  # sub bans related
-            log.desc = current_user.get_username() + ' banned ' + user.name + \
-                ' from the sub'
-            log.link = url_for('view_sub_bans', sub=sub.name)
-            db.session.add(log)
+            db.create_sub_metadata(sub['sid'], 'ban', user['uid'])
 
-            db.session.add(msg)
-            db.session.add(meta)
-            db.session.commit()
-
-            SubMetadata.cache.uncache(key='ban', sid=sub.sid)
-            cache.delete_memoized(getMetadata, sub, 'ban', all=True)
-            return json.dumps({'status': 'ok', 'mid': msg.mid,
+            db.create_sublog(sub['sid'], 7, current_user.get_username() +
+                             ' banned ' + user['name'],
+                             url_for('view_sub_bans', sub=sub['name']))
+            return json.dumps({'status': 'ok',
                                'sentby': current_user.get_id()})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
     else:
@@ -973,29 +828,23 @@ def ban_user_sub(sub):
 @login_required
 def inv_mod2(sub):
     """ User PM for Mod2 invite endpoint """
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
     if current_user.is_topmod(sub) or current_user.is_admin():
         form = EditMod2Form()
         if form.validate():
-            user = User.query.filter(func.lower(User.name) ==
-                                     func.lower(form.user.data)).first()
+            user = db.get_user_from_name(form.user.data)
             if not user:
                 return json.dumps({'status': 'error',
                                    'error': ['User does not exist.']})
 
-            mod = SubMetadata.query.filter_by(sid=sub.sid, key='mod2',
-                                              value=user.uid).first()
-            mod1 = SubMetadata.query.filter_by(sid=sub.sid, key='mod1',
-                                               value=user.uid).first()
-            if mod or mod1:
+            if misc.isMod(sub['sid'], user['uid']):
                 return json.dumps({'status': 'error',
                                    'error': ['User is already a mod.']})
-            modinv = SubMetadata.query.filter_by(sid=sub.sid, key='mod2i',
-                                                 value=user.uid).first()
-            if modinv:
+
+            if db.get_sub_metadata(sub['sid'], 'mod2i', user['uid']):
                 return json.dumps({'status': 'error',
                                    'error': ['User has a pending invite.']})
 
@@ -1004,31 +853,21 @@ def inv_mod2(sub):
                                    'error': [
                                        "User can't mod more than 15 subs"
                                    ]})
-            msg = Message()
-            msg.receivedby = user.uid
-            msg.sentby = current_user.get_id()
-            msg.subject = 'You have been invited to mod a sub.'
-            msg.content = current_user.get_username() + \
-                ' has invited you to help moderate ' + sub.name
-            msg.posted = datetime.datetime.utcnow()
-            msg.mtype = 2  # sub related
-            msg.mlink = sub.name
-            meta = SubMetadata(sub, 'mod2i', user.uid)
+            db.create_message(mfrom=current_user.uid,
+                              to=user['uid'],
+                              subject='You have been invited to mod a sub.',
+                              content=current_user.get_username() +
+                              ' has invited you to help moderate ' +
+                              sub['name'],
+                              link=sub['name'],
+                              mtype=2)
 
-            log = SubLog(sub.sid)
-            log.action = 6  # 6 mod action
-            log.desc = current_user.get_username() + ' invited ' + \
-                user.name + ' to the mod team'
-            log.link = url_for('edit_sub_mods', sub=sub.name)
-            db.session.add(log)
+            db.create_sub_metadata(sub['sid'], 'mod2i', user['uid'])
 
-            db.session.add(msg)
-            db.session.add(meta)
-            db.session.commit()
-
-            SubMetadata.cache.uncache(key='mod2i', sid=sub.sid)
-            cache.delete_memoized(getMetadata, sub, 'mod2i', all=True)
-            return json.dumps({'status': 'ok', 'mid': msg.mid,
+            db.create_sublog(sub['sid'], 6, current_user.get_username() +
+                             ' invited ' + user['name'] + ' to the mod team',
+                             url_for('edit_sub_mods', sub=sub['name']))
+            return json.dumps({'status': 'ok',
                                'sentby': current_user.get_id()})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
     else:
@@ -1039,35 +878,27 @@ def inv_mod2(sub):
 @login_required
 def remove_sub_ban(sub, user):
     """ Remove Mod2 """
-    user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    user = db.get_user_from_name(user)
+    sub = db.get_sub_from_name(sub)
     if current_user.is_topmod(sub) or current_user.is_admin() \
        or current_user.is_mod(sub):
-        inv = SubMetadata.query.filter_by(key='ban') \
-                            .filter_by(value=user.uid).first()
-        inv.key = 'xban'
+        if not misc.isSubBan(sub, user):
+            return jsonify(status='error', error=['User was not banned'])
 
-        msg = Message()
-        msg.receivedby = user.uid
-        msg.sentby = current_user.get_id()
-        msg.subject = 'You have been unbanned from /s/' + sub.name
-        msg.content = ':D'
-        msg.posted = datetime.datetime.utcnow()
-        msg.mtype = 7  # sub bans related
-        msg.mlink = sub.name
+        db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s',
+                  ('ban', user['uid']))
 
-        log = SubLog(sub.sid)
-        log.action = 7  # sub ban action
-        log.desc = current_user.get_username() + ' removed ban on ' + user.name
-        log.link = url_for('view_sub_bans', sub=sub.name)
-        db.session.add(msg)
-        db.session.add(log)
-        db.session.commit()
+        db.create_message(mfrom=current_user.uid,
+                          to=user['uid'],
+                          subject='You have been unbanned from /s/' +
+                          sub['name'],
+                          content='',
+                          mtype=7,
+                          mlink=sub['name'])
 
-        SubMetadata.cache.uncache(key='xban', sid=sub.sid)
-        cache.delete_memoized(getMetadata, sub, 'xban', all=True)
-        SubMetadata.cache.uncache(key='ban', sid=sub.sid)
-        cache.delete_memoized(getMetadata, sub, 'ban', all=True)
+        db.create_sublog(sub['sid'], 7, current_user.get_username() +
+                         ' removed ban on ' + user['name'],
+                         url_for('view_sub_bans', sub=sub['name']))
         return json.dumps({'status': 'ok', 'msg': 'user ban removed'})
     else:
         abort(403)
@@ -1077,24 +908,20 @@ def remove_sub_ban(sub, user):
 @login_required
 def remove_mod2(sub, user):
     """ Remove Mod2 """
-    user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    user = db.get_user_from_name(user)
+    sub = db.get_sub_from_name(sub)
     if current_user.is_topmod(sub) or current_user.is_admin():
-        inv = SubMetadata.query.filter_by(key='mod2') \
-                            .filter_by(value=user.uid).first()
-        inv.key = 'xmod2'
-        log = SubLog(sub.sid)
-        log.action = 6  # 6 mod action
-        log.desc = current_user.get_username() + ' removed ' + user.name + \
-            ' from the mod team'
-        log.link = url_for('edit_sub_mods', sub=sub.name)
-        db.session.add(log)
-        db.session.commit()
+        x = db.get_sub_metadata(sub['sid'], 'mod2', value=user['uid'])
+        if not x:
+            return jsonify(status='error', error=['User is not mod'])
 
-        SubMetadata.cache.uncache(key='mod2', sid=sub.sid)
-        cache.delete_memoized(getMetadata, sub, 'mod2', all=True)
-        SubMetadata.cache.uncache(key='xmod2', sid=sub.sid)
-        cache.delete_memoized(getMetadata, sub, 'xmod2', all=True)
+        db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s',
+                  ('mod2', user['uid']))
+
+        db.create_sublog(sub['sid'], 6, current_user.get_username() +
+                         ' removed ' + user['name'] + ' from the mod team',
+                         url_for('edit_sub_mods', sub=sub['name']))
+
         return json.dumps({'status': 'ok', 'msg': 'user demodded'})
     else:
         abort(403)
@@ -1104,24 +931,18 @@ def remove_mod2(sub, user):
 @login_required
 def revoke_mod2inv(sub, user):
     """ revoke Mod2 inv """
-    user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    user = db.get_user_from_name(user)
+    sub = db.get_sub_from_name(sub)
     if current_user.is_topmod(sub) or current_user.is_admin():
-        inv = SubMetadata.query.filter_by(key='mod2i') \
-                               .filter_by(value=user.uid).first()
-        inv.key = 'xmod2i'
-        log = SubLog(sub.sid)
-        log.action = 6  # 6 mod action
-        log.desc = current_user.get_username() + ' canceled ' + user.name + \
-            ' mod invite'
-        log.link = url_for('edit_sub_mods', sub=sub.name)
-        db.session.add(log)
-        db.session.commit()
+        x = db.get_sub_metadata(sub['sid'], 'mod2i', value=user['uid'])
+        if not x:
+            return jsonify(status='error', error=['User is not mod'])
+        db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s',
+                  ('mod2i', user['uid']))
 
-        SubMetadata.cache.uncache(key='mod2i', sid=sub.sid)
-        cache.delete_memoized(getMetadata, sub, 'mod2i', all=True)
-        SubMetadata.cache.uncache(key='xmod2i', sid=sub.sid)
-        cache.delete_memoized(getMetadata, sub, 'xmod2i', all=True)
+        db.create_sublog(sub['sid'], 6, current_user.get_username() +
+                         ' canceled ' + user['name'] + '\'s mod invite',
+                         url_for('edit_sub_mods', sub=sub['name']))
         return json.dumps({'status': 'ok', 'msg': 'user invite revoked'})
     else:
         abort(403)
@@ -1131,33 +952,21 @@ def revoke_mod2inv(sub, user):
 @login_required
 def accept_mod2inv(sub, user):
     """ Accept mod invite """
-    user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
+    user = db.get_user_from_name(user)
     if user.uid != current_user.get_id():
         abort(403)
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
-    inv = SubMetadata.query.filter_by(key='mod2i') \
-                           .filter_by(value=user.uid).first()
-    if inv:
-        if misc.moddedSubCount(user.uid) >= 15:
+    sub = db.get_sub_from_name(sub)
+    if misc.isModInv(sub, user):
+        if misc.moddedSubCount(user['uid']) >= 15:
             return json.dumps({'status': 'error',
                                'error': ["You can't mod more than 15 subs"]})
-        inv.key = 'mod2'
-        log = SubLog(sub.sid)
-        log.action = 6  # 6 mod action
-        log.desc = user.name + ' accepted mod invite'
-        log.link = url_for('edit_sub_mods', sub=sub.name)
-        db.session.add(log)
+        db.uquery('UPDATE `sub_metadata` SET `key`=%s WHERE `key`=%s AND '
+                  '`uid`=%s', ('mod2', 'mod2i', user['uid']))
+        db.create_sublog(sub['sid'], 6, user['name'] + ' accepted mod invite',
+                         url_for('edit_sub_mods', sub=sub['name']))
 
-        su = SubSubscriber.query.filter_by(sid=sub.sid, uid=user.uid, status=1)
-        if not su.first():
-            x = SubSubscriber(sub.sid, user.uid, 1)
-            db.session.add(x)
-        db.session.commit()
-
-        SubMetadata.cache.uncache(key='mod2i', sid=sub.sid)
-        cache.delete_memoized(getMetadata, sub, 'mod2i', all=True)
-        SubMetadata.cache.uncache(key='mod2', sid=sub.sid)
-        cache.delete_memoized(getMetadata, sub, 'mod2', all=True)
+        if not current_user.has_subscribed(sub['sid']):
+            db.create_subscription(current_user.uid, sub['sid'], 1)
         return json.dumps({'status': 'ok', 'msg': 'user modded'})
     else:
         abort(404)
@@ -1167,23 +976,17 @@ def accept_mod2inv(sub, user):
 @login_required
 def refuse_mod2inv(sub, user):
     """ refuse Mod2 """
-    user = User.query.filter(func.lower(User.name) == func.lower(user)).first()
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
-    inv = SubMetadata.query.filter_by(key='mod2i') \
-                           .filter_by(value=user.uid).first()
-    if inv:
-        inv.key = 'xmod2i'
-        log = SubLog(sub.sid)
-        log.action = 6  # 6 mod action
-        log.desc = user.name + ' rejected mod invite'
-        log.link = url_for('edit_sub_mods', sub=sub.name)
-        db.session.add(log)
-        db.session.commit()
+    user = db.get_user_from_name(user)
+    sub = db.get_sub_from_name(sub)
+    if user.uid != current_user.get_id():
+        abort(403)
 
-        SubMetadata.cache.uncache(key='mod2i', sid=sub.sid)
-        cache.delete_memoized(getMetadata, sub, 'mod2i', all=True)
-        SubMetadata.cache.uncache(key='xmod2i', sid=sub.sid)
-        cache.delete_memoized(getMetadata, sub, 'xmod2i', all=True)
+    if misc.isModInv(sub, user):
+        db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s',
+                  ('mod2i', user['uid']))
+
+        db.create_sublog(sub['sid'], 6, user['name'] + ' rejected mod invite',
+                         url_for('edit_sub_mods', sub=sub['name']))
         return json.dumps({'status': 'ok', 'msg': 'invite refused'})
     else:
         abort(404)
@@ -1193,13 +996,13 @@ def refuse_mod2inv(sub, user):
 @login_required
 def read_pm(mid):
     """ Mark PM as read """
-    message = Message.query.filter_by(mid=mid).first()
-    if session['user_id'] == message.receivedby:
-        if message.read is not None:
+    message = db.query('SELECT * FROM `message` WHERE `mid`=%s', (mid,))
+    message = message.fetchone()
+    if session['user_id'] == message['receivedby']:
+        if message['read'] is not None:
             return json.dumps({'status': 'ok'})
         read = datetime.datetime.utcnow()
-        message.read = read
-        db.session.commit()
+        db.uquery('UPDATE `message` SET `read`=%s WHERE `mid`=%s', (mid, read))
         return json.dumps({'status': 'ok', 'mid': mid})
     else:
         abort(403)
@@ -1210,28 +1013,24 @@ def read_pm(mid):
 def readall_msgs(user, boxid):
     """ Mark all messages in a box as read """
     if current_user.name == user:
-        user = User.query.filter_by(name=current_user.name).first()
+        q = 'SELECT * FROM `message` WHERE `read` IS NULL AND `receivedby`=%s '
         if boxid == '1':
-            x = Message.query.filter_by(read=None) \
-                             .filter(or_(Message.mtype == 1,
-                                         Message.mtype == 8)) \
-                             .filter_by(receivedby=user.uid).all()
+            q += 'AND `mtype` IN (1, 8) '
         elif boxid == '2':
-            x = Message.query.filter_by(read=None).filter_by(mtype=4) \
-                             .filter_by(receivedby=user.uid).all()
+            q += 'AND `mtype`=4 '
         elif boxid == '3':
-            x = Message.query.filter_by(read=None).filter_by(mtype=5) \
-                             .filter_by(receivedby=user.uid).all()
+            q += 'AND `mtype`=5 '
         elif boxid == '4':
-            x = Message.query.filter_by(read=None) \
-                             .filter(or_(Message.mtype == 2,
-                                         Message.mtype == 7)) \
-                             .filter_by(receivedby=user.uid).all()
+            q += 'AND `mtype` IN (2, 7) '
+        else:
+            return jsonify(status='error', error=['wrong boxid bruh'])
+        x = db.query(q, (current_user.uid,))
 
-        for message in list(x):
-            message.read = datetime.datetime.utcnow()
+        now = datetime.datetime.utcnow()
+        for message in x:
+            db.uquery('UPDATE `message` SET `read`=%s WHERE `mid`=%s',
+                      (message['mid'], now))
 
-        db.session.commit()
         return json.dumps({'status': 'ok', 'message': 'All marked as read'})
     else:
         abort(403)
@@ -1241,10 +1040,10 @@ def readall_msgs(user, boxid):
 @login_required
 def delete_pm(mid):
     """ Delete PM """
-    message = Message.query.filter_by(mid=mid).first()
-    if session['user_id'] == message.receivedby:
-        message.mtype = 6  # deleted
-        db.session.commit()
+    message = db.query('SELECT * FROM `message` WHERE `mid`=%s', (mid,))
+    message = message.fetchone()
+    if session['user_id'] == message['receivedby']:
+        db.uquery('UPDATE `message` SET `mtype`=6 WHERE `mid`=%s', (mid, ))
         return json.dumps({'status': 'ok', 'mid': mid})
     else:
         abort(403)
@@ -1256,9 +1055,7 @@ def deleteannouncement():
     if not current_user.is_admin():
         abort(404)
 
-    ann = SiteMetadata.query.filter_by(key='announcement').first()
-    db.session.delete(ann)
-    db.session.commit()
+    db.uquery('DELETE FROM `site_metadata` WHERE `key`=%s', ('announcement',))
     return redirect(url_for('admin_area'))
 
 
@@ -1271,13 +1068,7 @@ def make_announcement():
     form = DeletePost()
 
     if form.validate():
-        ann = SiteMetadata.query.filter_by(key='announcement').first()
-        if not ann:
-            ann = SiteMetadata()
-            ann.key = 'announcement'
-            db.session.add(ann)
-        ann.value = form.post.data
-        db.session.commit()
+        db.update_site_metadata('announcement', form.post.data)
 
     return redirect(url_for('index'))
 
@@ -1291,45 +1082,16 @@ def use_btc_donation():
     form = UseBTCdonationForm()
 
     if form.validate():
-        usebtc = SiteMetadata.query.filter_by(key='usebtc').first()
-        btcaddress = SiteMetadata.query.filter_by(key='btcaddr').first()
-        btcmessage = SiteMetadata.query.filter_by(key='btcmsg').first()
-        if not usebtc:
-            usebtc = SiteMetadata()
-            usebtc.key = 'usebtc'
-            usebtc.value = form.enablebtcmod.data
-            db.session.add(usebtc)
-        else:
-            usebtc.value = form.enablebtcmod.data
+        db.update_site_metadata('usebtc', form.enablebtcmod.data)
+        db.update_site_metadata('btcaddr', form.btcaddress.data)
+        db.update_site_metadata('btcmsg', form.message.data)
 
-        if not btcaddress:
-            btcaddr = SiteMetadata()
-            btcaddr.key = 'btcaddr'
-            btcaddr.value = form.btcaddress.data
-            db.session.add(btcaddr)
-        else:
-            btcaddress.value = form.btcaddress.data
-
-        if not btcmessage:
-            btcmsg = SiteMetadata()
-            btcmsg.key = 'btcmsg'
-            btcmsg.value = form.message.data
-            db.session.add(btcmsg)
-        else:
-            btcmessage.value = form.message.data
-
-        alog = SiteLog()
-        alog.action = 10  # money realated!
-        alog.time = datetime.datetime.utcnow()
         if form.enablebtcmod.data:
-            alog.desc = current_user.get_username() + \
-                        ' enabled btc donations: ' + form.btcaddress.data
+            desc = current_user.get_username() + ' enabled btc donations: ' + \
+                  form.btcaddress.data
         else:
-            alog.desc = current_user.get_username() + \
-                        ' disabled btc donations'
-        alog.link = url_for('admin_area')
-        db.session.add(alog)
-        db.session.commit()
+            desc = current_user.get_username() + ' disabled btc donations'
+        db.create_sitelog(10, desc, '')
         return json.dumps({'status': 'ok'})
     return redirect(url_for('admin_area'))
 
@@ -1337,38 +1099,21 @@ def use_btc_donation():
 @do.route("/do/stick/<int:post>", methods=['POST'])
 def toggle_sticky(post):
     """ Toggles post stickyness - not api """
-    post = SubPost.query.filter_by(pid=post).first()
-
-    if not current_user.is_mod(post.sub) and not current_user.is_admin():
+    post = db.get_post_from_pid(post)
+    sub = db.get_sub_from_sid(post['sid'])
+    if not current_user.is_mod(sub) and not current_user.is_admin():
         abort(403)
 
     form = DeletePost()
 
     if form.validate():
-        md = SubMetadata.query.filter_by(key='sticky').first()
-        if not md:
-            md = SubMetadata(post.sub, 'sticky', post.pid)
-            log = SubLog(post.sub.sid)
-            log.action = 4  # sub action
-            log.desc = current_user.get_username() + ' stickied: ' + post.title
-            log.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
-            db.session.add(log)
-            db.session.add(md)
-        else:
-            log = SubLog(post.sub.sid)
-            log.action = 4  # sub action
-            log.desc = current_user.get_username() + ' removed stickied: ' + \
-                post.title
-            log.link = url_for('view_post', sub=post.sub.name, pid=post.pid)
-            db.session.add(log)
-            db.session.delete(md)
-        db.session.commit()
-        SubMetadata.cache.uncache(key='sticky', sid=post.sid, value=post.pid)
-        cache.delete_memoized(getMetadata, post.sub, 'sticky')
+        db.update_sub_metadata(sub['sid'], 'sticky', post['pid'])
+        db.create_sublog(sub['sid'], 4, current_user.get_username() +
+                         ' touched sticky',
+                         url_for('view_post', sub=sub['name'],
+                                 pid=post['pid']))
         ckey = make_template_fragment_key('sticky', vary_on=[post.sub.sid])
         cache.delete(ckey)
-        #ckey = make_template_fragment_key('subposts', vary_on=[post.sub.sid])
-        #cache.delete(ckey)
 
     return redirect(url_for('view_sub', sub=post.sub.name))
 
@@ -1377,7 +1122,7 @@ def toggle_sticky(post):
 @login_required
 def edit_flair(sub):
     """ Edits flairs (from edit flair page) """
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
 
@@ -1386,14 +1131,15 @@ def edit_flair(sub):
 
     form = EditSubFlair()
     if form.validate():
-        flair = SubFlair.query.filter_by(sid=sub.sid,
-                                         xid=form.flair.data).first()
-        if not flair:
+        flair = db.query('SELECT * FROM `sub_flair` WHERE `sid`=%s AND '
+                         '`xid`=%s', (sub['sid'], form.flair.data))
+
+        if not flair.rowcount:
             return json.dumps({'status': 'error',
                                'error': ['Flair does not exist']})
 
-        flair.text = form.text.data
-        db.session.commit()
+        db.uquery('UPDATE `sub_flair` SET `text`=%s WHERE `xid`=%s',
+                  (form.text.data, form.flair.data))
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
@@ -1402,7 +1148,7 @@ def edit_flair(sub):
 @login_required
 def delete_flair(sub):
     """ Removes a flair (from edit flair page) """
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
 
@@ -1411,14 +1157,13 @@ def delete_flair(sub):
 
     form = DeleteSubFlair()
     if form.validate():
-        flair = SubFlair.query.filter_by(sid=sub.sid,
-                                         xid=form.flair.data).first()
+        flair = db.query('SELECT * FROM `sub_flair` WHERE `sid`=%s AND '
+                         '`xid`=%s', (sub['sid'], form.flair.data))
         if not flair:
             return json.dumps({'status': 'error',
                                'error': ['Flair does not exist']})
+        db.uquery('DELETE FROM `sub_flair` WHERE `xid`=%s', (form.flair.data,))
 
-        db.session.delete(flair)
-        db.session.commit()
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
@@ -1427,7 +1172,7 @@ def delete_flair(sub):
 @login_required
 def create_flair(sub):
     """ Creates a new flair (from edit flair page) """
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
 
@@ -1435,11 +1180,8 @@ def create_flair(sub):
         abort(403)
     form = CreateSubFlair()
     if form.validate():
-        flair = SubFlair()
-        flair.sid = sub.sid
-        flair.text = form.text.data
-        db.session.add(flair)
-        db.session.commit()
+        db.uquery('INSERT INTO `sub_flair` (`sid`, `text`) VALUES (%s, %s)',
+                  (sub['sid'], form.text.data))
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
@@ -1452,33 +1194,35 @@ def recovery():
 
     form = forms.PasswordRecoveryForm()
     if form.validate():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = db.query('SELECT * FROM `user` WHERE `email`=%s',
+                        (form.edmail.data)).fetchone()
         if not user:
             return json.dumps({'status': 'ok'})
 
         # User exists, check if they don't already have a key sent
-        key = getMetadata(user, 'recovery-key', record=True)
+        key = db.get_user_metadata(user['uid'], 'recovery-key')
         if key:
             # Key exists, check if it has expired
-            keyExp = getMetadata(user, 'recovery-key-time', record=True)
-            expiration = float(keyExp.value)
+            keyExp = db.get_user_metadata(user['uid'], 'recovery-key-time')
+            expiration = float(keyExp)
             if (time.time() - expiration) > 86400:  # 1 day
                 # Key is old. remove it and proceed
-                db.session.delete(key)
-                db.session.delete(keyExp)
+                db.uquery('DELETE FROM `user_metadata` WHERE `uid`=%s AND '
+                          '`key`=%s', (user['uid'], 'recovery-key'))
+                db.uquery('DELETE FROM `user_metadata` WHERE `uid`=%s AND '
+                          '`key`=%s', (user['uid'], 'recovery-key-time'))
             else:
                 # silently fail >_>
                 return json.dumps({'status': 'ok'})
 
         # checks done, doing the stuff.
-        key = UserMetadata(user.uid, 'recovery-key', uuid.uuid4())
-        keyExp = UserMetadata(user.uid, 'recovery-key-time', time.time())
-        db.session.add(key)
-        db.session.add(keyExp)
-        db.session.commit()
+        rekey = uuid.uuid4()
+        db.create_user_metadata(user['uid'], 'recovery-key', rekey)
+        db.create_user_metadata(user['uid'], 'recovery-key-time', time.time())
+
         sendMail(
             subject='Password recovery',
-            to=user.email,
+            to=user['email'],
             content="""<h1><strong>{0}</strong></h1>
             <p>Somebody (most likely you) has requested a password reset for
             your account</p>
@@ -1487,14 +1231,9 @@ def recovery():
             <hr>
             <p>If you didn't request a password recovery, please ignore this
             email</p>
-            """.format(config.LEMA, url_for('password_reset', key=key.value,
-                                            uid=user.uid, _external=True))
+            """.format(config.LEMA, url_for('password_reset', key=rekey,
+                                            uid=user['uid'], _external=True))
         )
-        cache.delete_memoized(getMetadata, user, 'recovery-key', record=True)
-        cache.delete_memoized(getMetadata, user, 'recovery-key-time',
-                              record=True)
-        UserMetadata.cache.uncache(key='recovery-key', uid=user.uid)
-        UserMetadata.cache.uncache(key='recovery-key-time', uid=user.uid)
 
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -1508,31 +1247,25 @@ def reset():
 
     form = forms.PasswordResetForm()
     if form.validate():
-        user = User.query.get(form.user.data)
+        user = db.get_user_from_uid(form.user.data)
         if not user:
             return json.dumps({'status': 'ok'})
 
         # User exists, check if they don't already have a key sent
-        key = getMetadata(user, 'recovery-key', record=True)
-        keyExp = getMetadata(user, 'recovery-key-time', record=True)
+        key = db.get_user_metadata(user['uid'], 'recovery-key')
         if not key:
             abort(403)
 
-        if key.value != form.key.data:
+        if key != form.key.data:
             abort(403)
 
-        db.session.delete(key)
-        db.session.delete(keyExp)
-        db.session.commit()
-        cache.delete_memoized(getMetadata, user, 'recovery-key', record=True)
-        cache.delete_memoized(getMetadata, user, 'recovery-key-time',
-                              record=True)
-        UserMetadata.cache.uncache(key='recovery-key', uid=user.uid)
-        UserMetadata.cache.uncache(key='recovery-key-time', uid=user.uid)
+        db.uquery('DELETE FROM `user_metadata` WHERE `uid`=%s AND '
+                  '`key`=%s', (user['uid'], 'recovery-key'))
+        db.uquery('DELETE FROM `user_metadata` WHERE `uid`=%s AND '
+                  '`key`=%s', (user['uid'], 'recovery-key-time'))
 
         # All good. Set da password.
-        user.setPassword(form.password.data)
-        db.session.commit()
+        db.update_user_password(user['uid'], form.password.data)
         login_user(SiteUser(user))
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -1544,21 +1277,17 @@ def edit_comment():
     """ Edits a comment """
     form = forms.EditCommentForm()
     if form.validate():
-        comment = SubPostComment.query.get(form.cid.data)
+        comment = db.get_comment_from_cid(form.cid.data)
         if not comment:
             abort(404)
 
-        if comment.uid != current_user.get_id() and not \
-                current_user.is_admin():
+        if comment['uid'] != current_user.uid and not current_user.is_admin():
             abort(403)
 
-        comment.content = form.text.data
-        comment.lastedit = datetime.datetime.utcnow()
-        db.session.commit()
-        SubPostComment.cache.uncache(pid=comment.pid, parentcid=None)
-        SubPostComment.cache.uncache(pid=comment.pid,
-                                     parentcid=comment.parentcid)
-        return json.dumps({'status': 'ok'})
+        dt = datetime.datetime.utcnow()
+        db.uquery('UPDATE `sub_post_comment` SET `content`=%s, `lastedit`=%s '
+                  'WHERE `cid`=%s', (form.text.data, dt, form.cid.data))
+        return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -1568,20 +1297,16 @@ def delete_comment():
     """ Edits a comment """
     form = forms.DeleteCommentForm()
     if form.validate():
-        comment = SubPostComment.query.get(form.cid.data)
+        comment = db.get_comment_from_cid(form.cid.data)
         if not comment:
             abort(404)
 
-        if comment.uid != current_user.get_id() and not \
-                current_user.is_admin():
+        if comment['uid'] != current_user.uid and not current_user.is_admin():
             abort(403)
 
-        comment.status = 1
-        db.session.commit()
-        SubPostComment.cache.uncache(pid=comment.pid, parentcid=None)
-        SubPostComment.cache.uncache(pid=comment.pid,
-                                     parentcid=comment.parentcid)
-        return json.dumps({'status': 'ok'})
+        db.uquery('UPDATE `sub_post_comment` SET `status`=1 WHERE `cid`=%s',
+                  (form.cid.data,))
+        return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -1595,48 +1320,43 @@ def upvotecomment(cid, value):
         voteValue = -1
     else:
         abort(403)
-    comment = SubPostComment.query.filter_by(cid=cid).first()
+    comment = db.get_comment_from_cid(cid)
     if not comment:
         return json.dumps({'status': 'error',
                            'error': ['Comment does not exist']})
 
-    if comment.uid == current_user.get_id():
+    if comment['uid'] == current_user.get_id():
         return json.dumps({'status': 'error',
                            'error': ['You can\'t vote on your own comments']})
 
-    qvote = SubPostCommentVote.query.filter_by(cid=cid) \
-                                    .filter_by(uid=current_user.get_id()) \
-                                    .first()
-
-    user = User.query.filter_by(uid=comment.uid).first()
-    if not comment.score:
-        comment.score = 0
+    qvote = db.query('SELECT * FROM `sub_post_comment_vote` WHERE `cid`=%s AND'
+                     ' `uid`=%s', (cid, current_user.uid)).fetchone()
+    user = db.get_user_from_uid(comment['uid'])
 
     if qvote:
-        if qvote.positive == (True if voteValue == 1 else False):
+        if bool(qvote['positive']) == (True if voteValue == 1 else False):
             return json.dumps({'status': 'error',
                                'error': ['You already voted.']})
         else:
-
-            qvote.positive = True if voteValue == 1 else False
-            comment.score = int(comment.score) + (voteValue*2)
-            if user.score is not None:
-                user.score = User.score + (voteValue*2)
-                db.session.add(user)
-            db.session.commit()
-            return json.dumps({'status': 'ok',
-                               'message': 'Vote flipped.'})
+            positive = True if voteValue == 1 else False
+            db.uquery('UPDATE `sub_post_comment_vote` SET `positive`=%s WHERE '
+                      '`xid`=%s', (positive, qvote['xid']))
+            db.uquery('UPDATE `sub_post_comment` SET `score`=`score`+%s WHERE '
+                      '`cid`=%s', (voteValue*2, comment['cid']))
+            if user['score'] is not None:
+                db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
+                          '`uid`=%s', (voteValue*2, comment['uid']))
+            return jsonify(status='ok', message='Vote flipped')
     else:
-        vote = SubPostCommentVote()
-        vote.cid = cid
-        vote.uid = current_user.get_id()
-        vote.positive = True if voteValue == 1 else False
-        db.session.add(vote)
+        positive = True if voteValue == 1 else False
+        db.uquery('INSERT INTO `sub_post_comment_vote` (`cid`, `uid`, '
+                  '`positive`) VALUES (%s, %s, %s)',
+                  (cid, current_user.uid, positive))
+    db.uquery('UPDATE `sub_post_comment` SET `score`=`score`+%s WHERE '
+              '`cid`=%s', (voteValue, comment['cid']))
 
-    comment.score = int(comment.score) + voteValue
-    if user.score is not None:
-        user.score = User.score + voteValue
-        db.session.add(user)
+    if user['score'] is not None:
+        db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
+                  '`uid`=%s', (voteValue, comment['uid']))
 
-    db.session.commit()
     return json.dumps({'status': 'ok'})

@@ -20,9 +20,9 @@ var recaptchaCallback = function(){
     {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
     {% for badge in badges if badges|length > 0 %}
     <div class="ubadge">
-      <li title="{{badge.getBadgeText}}"><i class="fa {{badge.getBadgeClass}}"></i> {{badge.getBadgeName}}
+      <li title="{{badge.text}}"><i class="fa {{badge.badge}}"></i> {{badge.name}}
       {% if current_user.is_admin() %}
-      <span id="removebadge" data-bid="{{badge.value}}" data-uid="{{user.uid}}" class="removebadge btn">remove {{badge.getBadgeName}}</span>
+      <span id="removebadge" data-bid="{{badge.value}}" data-uid="{{user.uid}}" class="removebadge btn">x</span>
       {% endif %}
       </li>
     </div>
@@ -36,7 +36,7 @@ var recaptchaCallback = function(){
   <h3>Owns:</h3>
   <ul style="color: darkcyan;">
     {% for own in owns if owns|length > 0 %}
-    <li><a href="{{url_for('view_sub', sub=own.getSubName)}}">{{own.getSubName}}</a></li>
+    <li><a href="{{url_for('view_sub', sub=own.name)}}">{{own.name}}</a></li>
     {% else %}
     <li>none</li>
     {% endfor %}
@@ -47,13 +47,13 @@ var recaptchaCallback = function(){
   <h3>Mods:</h3>
   <ul style="color: darkcyan;">
     {% for mod in mods if mods|length > 0 %}
-    <li><a href="{{url_for('view_sub', sub=mod.getSubName)}}">{{mod.getSubName}}</a></li>
+    <li><a href="{{url_for('view_sub', sub=mod.name)}}">{{mod.name}}</a></li>
     {% else %}
     <li>none</li>
     {% endfor %}
   </ul>
   <hr>
-  <p class="joindate">User has made {{pcount}} posts<br>and {{ccount}} comments since<br>registered <time-ago datetime="{{ user.joindate.isoformat() }}Z"></time-ago></p>
+  <p class="joindate">User has made {{pcount}} posts<br>and {{ccount}} comments since<br>registering <time-ago datetime="{{ user.joindate.isoformat() }}Z"></time-ago></p>
 </div>
 {% endblock %}
 {% block content %}
@@ -76,9 +76,9 @@ var recaptchaCallback = function(){
           {{edituserform.csrf_token}}
 
           <p><label for="email" class="left">{{edituserform.email.label.text}}</label>{{edituserform.email(value=user.email, class="right")}}</p>
-          <p>{{edituserform.external_links(checked=user.showLinksNewTab)}}<label for="external_links">{{edituserform.external_links.label.text}}</label></p>
-          <p>{{edituserform.disable_sub_style(checked=user.showStyles)}}<label for="disable_sub_style">{{edituserform.disable_sub_style.label.text}}</label></p>
-          <p>{{edituserform.show_nsfw(checked=user.showNSFW)}}<label for="show_nsfw">{{edituserform.show_nsfw.label.text}}</label></p>
+          <p>{{edituserform.external_links()}}<label for="external_links">{{edituserform.external_links.label.text}}</label></p>
+          <p>{{edituserform.disable_sub_style()}}<label for="disable_sub_style">{{edituserform.disable_sub_style.label.text}}</label></p>
+          <p>{{edituserform.show_nsfw()}}<label for="show_nsfw">{{edituserform.show_nsfw.label.text}}</label></p>
 
           <p>{{edituserform.password(placeholder=edituserform.password.label.text, required=False, autocomplete="off")}}</p>
           <p>{{edituserform.confirm(placeholder=edituserform.confirm.label.text, required=False, autocomplete="off")}}</p>

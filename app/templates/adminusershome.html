@@ -34,7 +34,7 @@
         <td>Status</td>
         <td>Joined</td>
       </tr>
-      {% for user in users if getMetadata(user, 'admin') %}
+      {% for user in users if db.get_user_metadata(user.uid, 'admin') %}
       <tr>
         <td>
           <div class="username"><a href="{{url_for('view_user', user=user.name)}}"><i class="fa fa-user"></i> {{user.name}}</a></div>

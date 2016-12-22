@@ -37,27 +37,27 @@
     </h3>
 {% for message in messages %}
     <article class="pmessage post" data-replyto='{{message.sentby}}'
-    {% if box_name == 'Replies' %}data-sub='{{func.getCommentSub(message.mlink).name}}' data-post='{{func.getComment(message.mlink).pid}}' data-parent='{{message.mlink}}'{%endif%}
+    {% if box_name == 'Replies' %}data-sub='{{func.getCommentSub(message.mlink).name}}' data-post='{{db.get_comment_from_cid(message.mlink).pid}}' data-parent='{{message.mlink}}'{%endif%}
     data-replytitle='Re: {{message.subject}}'>
       <div class="main">
         {% if box_name == 'Replies' %}
           <div class="pull left votecomment" style="margin-right: 10px;">
             {# vote arrow div #}
-              <form class="cuvform" id="cuvform-{{func.getComment(message.mlink).cid}}">
-                <div class="cupvote{%if func.hasVotedComment(current_user.get_id(), func.getComment(message.mlink))%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+              <form class="cuvform" id="cuvform-{{db.get_comment_from_cid(message.mlink).cid}}">
+                <div class="cupvote{%if func.hasVotedComment(current_user.get_id(), db.get_comment_from_cid(message.mlink))%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
                 {% set uv = form.VoteForm() %}
-                {{uv.csrf_token}}{{uv.post(value=func.getComment(message.mlink).cid)}}
+                {{uv.csrf_token}}{{uv.post(value=db.get_comment_from_cid(message.mlink).cid)}}
               </form>
-              <p class="count">{{func.getComment(message.mlink).getScore()}}</p>
-              <form class="cdvform" id="cdvform-{{func.getComment(message.mlink).cid}}">
-                <div class="cdownvote{%if func.hasVotedComment(current_user.get_id(), func.getComment(message.mlink), False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+              <p class="count">{{func.get_comment_score(db.get_comment_from_cid(message.mlink))}}</p>
+              <form class="cdvform" id="cdvform-{{db.get_comment_from_cid(message.mlink).cid}}">
+                <div class="cdownvote{%if func.hasVotedComment(current_user.get_id(), db.get_comment_from_cid(message.mlink), False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
                 {% set dv = form.VoteForm() %}
-                {{uv.csrf_token}}{{uv.post(value=func.getComment(message.mlink).cid)}}
+                {{uv.csrf_token}}{{uv.post(value=db.get_comment_from_cid(message.mlink).cid)}}
               </form>
           </div>
           <div>
             <p class="title"><a href="{{url_for('view_comment_inbox', cid=message.mlink)}}">{{message.subject}}</a></p>
-            <p class="container">{{markdown(func.getComment(message.mlink).content)|safe}}</p>
+            <p class="container">{{markdown(db.get_comment_from_cid(message.mlink).content)|safe}}</p>
           </div>
         {% else %}
           <p class="title">{{message.subject}}</p>

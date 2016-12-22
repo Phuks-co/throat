@@ -1,21 +1,20 @@
 """ Misc helper function and classes. """
 from urllib.parse import urlparse, parse_qs
-import datetime
 import time
 import re
-from sqlalchemy import or_, func
+# from sqlalchemy import or_, func
 import requests
-import sqlalchemy.orm
 import markdown
 import sendgrid
 import config
 from flask import url_for
 from flask_login import AnonymousUserMixin, current_user
 from .sorting import VoteSorting
-from .models import db, Message, SubSubscriber, UserMetadata, SiteMetadata, Sub
-from .models import SubPost, SubMetadata, SubPostVote, User, SubPostMetadata
-from .models import SubPostCommentVote, SubPostComment
+# from .models import db, Message, SubSubscriber, UserMetadata, Sub
+# from .models import SubPost, SubMetadata, SubPostVote, User, SubPostMetadata
+# from .models import SubPostCommentVote, SubPostComment
 from .caching import cache
+from . import database as db
 
 
 class SiteUser(object):
@@ -23,23 +22,24 @@ class SiteUser(object):
 
     def __init__(self, userclass=None):
         self.user = userclass
-        self.name = self.user.name
+        self.name = self.user['name']
+        self.uid = self.user['uid']
         self.is_active = True  # Apply bans by setting this to false.
         if self.user:
             self.is_authenticated = True
             self.is_anonymous = False
-            self.admin = getMetadata(self.user, 'admin')
+            self.admin = bool(db.get_user_metadata(self.uid, 'admin'))
         else:
             self.is_authenticated = False
             self.is_anonymous = True
 
     def get_id(self):
         """ Returns the unique user id. Used on load_user """
-        return str(self.user.uid)
+        return self.uid
 
     def get_username(self):
-        """ Returns the unique user name. Used on load_user """
-        return self.user.name
+        """ Returns the user name. Used on load_user """
+        return self.name
 
     def is_mod(self, sub):
         """ Returns True if the current user is a mod of 'sub' """
@@ -61,46 +61,60 @@ class SiteUser(object):
         """ Returns True if the current user is a mod of 'sub' """
         return isTopMod(sub, self.user)
 
-    def is_lizard(self):
-        """ Returns True if we know that the current user is a lizard. """
-        return True if getMetadata(self.user, 'lizard') else False
-
     def has_mail(self):
         """ Returns True if the current user has unread messages """
-        return hasMail(self.user)
+        return bool(db.user_mail_count(self.uid))
 
     def new_pm_count(self):
         """ Returns new message count """
-        return newPMCount(self.user)
+        x = db.query('SELECT COUNT(*) AS c FROM `message` WHERE `read` IS NULL'
+                     ' AND `mtype` IN (1, 8) AND `receivedby`=%s',
+                     (self.user['uid'],)).fetchone()['c']
+        return x
 
     def new_modmail_count(self):
         """ Returns new modmail msg count """
-        return newModmailCount(self.user)
+        x = db.query('SELECT COUNT(*) AS c FROM `message` WHERE `read` IS NULL'
+                     ' AND `mtype` IN (2, 7) AND `receivedby`=%s',
+                     (self.user['uid'],)).fetchone()['c']
+        return x
 
     def new_postreply_count(self):
         """ Returns new post reply count """
-        return newPostReplyCount(self.user)
+        x = db.query('SELECT COUNT(*) AS c FROM `message` WHERE `read` IS NULL'
+                     ' AND `mtype`=4 AND `receivedby`=%s',
+                     (self.user['uid'],)).fetchone()['c']
+        return x
 
     def new_comreply_count(self):
         """ Returns new comment reply count """
-        return newComReplyCount(self.user)
+        x = db.query('SELECT COUNT(*) AS c FROM `message` WHERE `read` IS NULL'
+                     ' AND `mtype`=5 AND `receivedby`=%s',
+                     (self.user['uid'],)).fetchone()['c']
+        return x
 
-    def has_subscribed(self, sub):
+    def has_subscribed(self, sid):
         """ Returns True if the current user has subscribed to sub """
-        return hasSubscribed(sub, self.user)
+        x = db.query('SELECT xid FROM `sub_subscriber` '
+                     'WHERE `sid`=%s AND `uid`=%s AND `status`=%s',
+                     (sid, self.uid, 1))
+        return bool(x.fetchone())
 
-    def has_blocked(self, sub):
+    def has_blocked(self, sid):
         """ Returns True if the current user has blocked sub """
-        return hasBlocked(sub, self.user)
+        x = db.query('SELECT xid FROM `sub_subscriber` '
+                     'WHERE `sid`=%s AND `uid`=%s AND `status`=%s',
+                     (sid, self.uid, 2))
+        return bool(x.fetchone())
 
     def new_count(self):
         """ Returns new message count """
-        return newCount(self.user)
+        return db.user_mail_count(self.uid)
 
     @cache.memoize(300)
     def has_exlinks(self):
         """ Returns true if user selects to open links in a new window """
-        x = getMetadata(self.user, 'exlinks')
+        x = db.get_user_metadata(self.uid, 'exlinks')
         if x:
             return True if x == '1' else False
         else:
@@ -109,7 +123,7 @@ class SiteUser(object):
     @cache.memoize(300)
     def block_styles(self):
         """ Returns true if user selects to block sub styles """
-        x = getMetadata(self.user, 'styles')
+        x = db.get_user_metadata(self.uid, 'nostyles')
         if x:
             return True if x == '1' else False
         else:
@@ -118,51 +132,62 @@ class SiteUser(object):
     @cache.memoize(300)
     def show_nsfw(self):
         """ Returns true if user selects show nsfw posts """
-        return self.user.showNSFW
+        return db.get_user_metadata(self.uid, 'nsfw')
 
     @cache.memoize(300)
     def get_post_score(self):
         """ Returns the post vote score of a user. """
-        if self.user.score is None:
-            mposts = SubPost.query.filter_by(uid=self.user.uid).all()
-            posts = []
+        if self.user['score'] is None:
+            mposts = db.query('SELECT * FROM `sub_post` WHERE `uid`=%s',
+                              (self.uid, )).fetchall()
+
+            q = "SELECT `positive` FROM `sub_post_vote` WHERE `pid` IN ("
+            l = []
             for post in mposts:
-                posts.append(SubPostVote.pid == post.pid)
-            votes = SubPostVote.query.filter(or_(*posts)).all()
+                q += '%s, '
+                l.append(post['pid'])
+            q = q[:-2] + ")"
             count = 0
 
-            for vote in votes:
-                if vote.positive:
-                    count += 1
-                else:
-                    count -= 1
+            if l:
+                votes = db.query(q, list(l)).fetchall()
 
-            mcomments = SubPostComment.query.filter_by(uid=self.user.uid).all()
-            comms = []
-            for comm in mcomments:
-                comms.append(SubPostCommentVote.cid == comm.cid)
-            votes = SubPostCommentVote.query.filter(or_(*comms)).all()
-            for vote in votes:
-                if vote.positive:
-                    count += 1
-                else:
-                    count -= 1
+                for vote in votes:
+                    if vote['positive']:
+                        count += 1
+                    else:
+                        count -= 1
 
-            self.user.score = count
-            db.session.commit()
-        return self.user.score
+            mposts = db.query('SELECT * FROM `sub_post_comment` WHERE '
+                              '`uid`=%s', (self.uid, )).fetchall()
+            q = "SELECT `positive` FROM `sub_post_comment_vote`"
+            q += " WHERE `cid` IN ("
+
+            l = []
+            for post in mposts:
+                q += '%s, '
+                l.append(post['cid'])
+            q = q[:-2] + ")"
+            count = 0
+
+            if l:
+                votes = db.query(q, list(l)).fetchall()
+
+                for vote in votes:
+                    if vote['positive']:
+                        count += 1
+                    else:
+                        count -= 1
+
+            db.uquery('UPDATE `user` SET `score`=%s WHERE `uid`=%s',
+                      (count, self.uid))
+            return count
+        return self.user['score']
 
     @cache.memoize(120)
     def get_post_voting(self):
         """ Returns the post voting for a user. """
-        votes = SubPostVote.query.filter_by(uid=self.user.uid)
-        count = 0
-        for vote in votes:
-            if vote.positive:
-                count += 1
-            else:
-                count -= 1
-        return count
+        return db.get_user_post_voting(self.uid)
 
 
 class SiteAnon(AnonymousUserMixin):
@@ -185,12 +210,6 @@ class SiteAnon(AnonymousUserMixin):
     def is_topmod(cls, sub):
         """ Anons are not owners. """
         return False
-
-    @classmethod
-    def is_lizard(cls):
-        """ We don't know if anons are lizards...
-            We return False just in case """
-        return False  # We don't know :(
 
     @classmethod
     def has_subscribed(cls, sub):
@@ -305,8 +324,8 @@ class RestrictedMarkdown(markdown.Extension):
         del md.inlinePatterns['image_reference']
         user_tag = NiceLinkPattern(RE_AMENTION, md)
         url = URLifyPattern(self.RE_URL, md)
-        md.inlinePatterns.add('user', user_tag, '>strong')
-        md.inlinePatterns.add('url', url, '>strong')
+        md.inlinePatterns.add('user', user_tag, '<not_strong')
+        md.inlinePatterns.add('url', url, '>user')
 
 
 def our_markdown(text):
@@ -320,23 +339,13 @@ def our_markdown(text):
 
 @cache.memoize(5)
 def getVoteStatus(uid, pid):
-    vote = SubPostVote.query.filter_by(uid=uid, pid=pid).first()
+    """ Returns if the user voted positively or negatively to a post """
+    c = db.query('SELECT positive FROM `sub_post_vote` WHERE `uid`=%s'
+                 ' AND `pid`=%s', (uid, pid, ))
+    vote = c.fetchone()
     if not vote:
         return -1
-    return int(vote.positive)
-
-
-@cache.memoize(50)
-def hasVoted(uid, post, up=True):
-    """ Checks if the user up/downvoted the post. """
-    if not uid:
-        return False
-    vote = SubPostVote.query.filter_by(uid=uid, pid=post.pid).first()
-    if vote:
-        if vote.positive == up:
-            return True
-    else:
-        return False
+    return int(vote['positive'])
 
 
 @cache.memoize(50)
@@ -344,9 +353,10 @@ def hasVotedComment(uid, comment, up=True):
     """ Checks if the user up/downvoted a comment. """
     if not uid:
         return False
-    vote = SubPostCommentVote.query.filter_by(uid=uid, cid=comment.cid).first()
+    vote = db.query('SELECT `positive` FROM `sub_post_comment_vote` WHERE '
+                    '`uid`=%s AND `cid`=%s', (uid, comment['cid'])).fetchone()
     if vote:
-        if vote.positive == up:
+        if vote['positive'] == up:
             return True
     else:
         return False
@@ -355,258 +365,150 @@ def hasVotedComment(uid, comment, up=True):
 @cache.memoize(600)
 def getCommentParentUID(cid):
     """ Returns the uid of a parent comment """
-    parent = SubPostComment.query.filter_by(cid=cid).first()
-    return parent.uid
-
-
-def getComment(cid):
-    return SubPostComment.query.get(cid)
+    comm = db.get_comment_from_cid(cid)
+    parent = db.get_comment_from_cid(comm['parent'])
+    return parent['uid']
 
 
 def getCommentSub(cid):
-    l = getComment(cid)
-    p = SubPost.query.get(l.pid)
-    return Sub.query.get(p.sid)
+    """ Returns the sub for a comment """
+    l = db.get_comment_from_cid(cid)
+    return db.get_sub_from_pid(l['pid'])
 
 
 @cache.memoize(600)
 def getAnnouncement():
     """ Returns sitewide announcement post or False """
-    ann = SiteMetadata.query.filter_by(key='announcement').first()
+    ann = db.get_site_metadata('announcement')
     if ann:
-        ann = SubPost.query.filter_by(pid=ann.value).first()
-        # This line is here to initialize .user >_>
-        # Testing again
+        ann = db.get_post_from_pid(ann['value'])
     return ann
-
-
-@cache.memoize(30)
-def getMetadata(obj, key, value=None, all=False, record=False, cache=True):
-    """ Gets metadata out of 'obj' (either a Sub, SubPost or User) """
-    if not obj:
-        # Failsafe in case FOR SOME REASON SOMEBODY PASSED NONE OR FALSE TO
-        # THIS FUNCTION. IF THIS ACTUALLY HAPPENS YOU SHOULD FEEL BAD FOR
-        # PASSING UNVERIFIED DATA.
-        return
-    if record:
-        cache = False
-    try:
-        x = obj.properties.filter_by(key=key)
-    except sqlalchemy.orm.exc.DetachedInstanceError:
-        if isinstance(obj, SubPost):
-            x = SubPostMetadata.query.filter_by(key=key, pid=obj.pid)
-        elif isinstance(obj, Sub):
-            x = SubMetadata.query.filter_by(key=key, sid=obj.sid)
-        elif isinstance(obj, User):
-            x = UserMetadata.query.filter_by(key=key, uid=obj.uid)
-
-    if all:
-        x = x.all()
-    else:
-        x = x.first()
-
-    if x and value is None:
-        if all or record:
-            return x
-        return x.value
-    elif value is None:
-        if all:
-            return []
-        return False
-    if x:
-        x.value = value
-    else:
-        x = obj.__class__(obj, key, value)
-        db.session.add(x)
-    db.session.commit()
 
 
 def isMod(sub, user):
     """ Returns True if 'user' is a mod of 'sub' """
-    x = SubMetadata.query.filter_by(key='mod1', sid=sub.sid, value=user.uid)
-    if x.first():
+    x = db.get_sub_metadata(sub['sid'], 'mod1', value=user['uid'])
+    if x:
         return True
 
-    y = SubMetadata.query.filter_by(key='mod2', sid=sub.sid, value=user.uid)
-    if y.first():
+    x = db.get_sub_metadata(sub['sid'], 'mod2', value=user['uid'])
+    if x:
         return True
     return False
 
 
+@cache.memoize(30)
 def isSubBan(sub, user):
     """ Returns True if 'user' is banned 'sub' """
-    x = SubMetadata.query.filter_by(key='ban', sid=sub.sid, value=user.uid)
-    return bool(x.first())
+    x = db.get_sub_metadata(sub['sid'], 'ban', value=user['uid'])
+    return x
 
 
+@cache.memoize(30)
 def isTopMod(sub, user):
     """ Returns True if 'user' is a topmod of 'sub' """
-    x = SubMetadata.query.filter_by(key='mod1', sid=sub.sid, value=user.uid)
-    return bool(x.first())
+    x = db.get_sub_metadata(sub['sid'], 'mod1', value=user['uid'])
+    return x
 
 
 def isModInv(sub, user):
     """ Returns True if 'user' is a invited to mod of 'sub' """
-    x = SubMetadata.query.filter_by(key='mod2i', sid=sub.sid, value=user.uid)
-    return bool(x.first())
-
-
-@cache.memoize(10)
-def hasMail(user):
-    """ Returns True if the current user has unread messages """
-    x = Message.query.filter_by(receivedby=user.uid) \
-                     .filter(Message.mtype != 6) \
-                     .filter_by(read=None).first()
-    return bool(x)
-
-
-def newPMCount(user):
-    """ Returns new message count in message area"""
-    x = Message.query.filter_by(read=None).filter(or_(Message.mtype == 1,
-                                                      Message.mtype == 8)) \
-                     .filter_by(receivedby=user.uid).count()
+    x = db.get_sub_metadata(sub['sid'], 'mod2i', value=user['uid'])
     return x
-
-
-def newModmailCount(user):
-    """ Returns new replies count in message area """
-    x = Message.query.filter_by(read=None) \
-                     .filter(or_(Message.mtype == 2, Message.mtype == 7)) \
-                     .filter_by(receivedby=user.uid).count()
-    return x
-
-
-def newPostReplyCount(user):
-    """ Returns new replies count in message area """
-    x = Message.query.filter_by(read=None).filter_by(mtype=4) \
-                     .filter_by(receivedby=user.uid).count()
-    return x
-
-
-def newComReplyCount(user):
-    """ Returns new comment replies count in message area """
-    x = Message.query.filter_by(read=None).filter_by(mtype=5) \
-                     .filter_by(receivedby=user.uid).count()
-    return x
-
-
-def hasSubscribed(sub, user):
-    """ Returns True if the current user is subscribed """
-    x = SubSubscriber.query.filter_by(sid=sub.sid, uid=user.uid, status=1)
-    return bool(x.first())
-
-
-def hasBlocked(sub, user):
-    """ Returns True if the current user has blocked """
-    x = SubSubscriber.query.filter_by(sid=sub.sid, uid=user.uid, status=2)
-    return bool(x.first())
 
 
 @cache.memoize(600)
 def getSubUsers(sub, key):
     """ Returns the names of the sub positions, founder, owner """
-    x = SubMetadata.query.filter_by(sid=sub.sid, key=key).first()
-
-    name = User.query.get(x.value).name
-    return name
+    x = db.get_sub_metadata(sub['sid'], key)
+    if x:
+        return db.get_user_from_uid(x['value'])['name']
 
 
 @cache.memoize(600)
 def getSubCreation(sub):
     """ Returns the sub's 'creation' metadata """
-    x = getMetadata(sub, 'creation')
-    return x.replace(' ', 'T')  # Converts to ISO format
+    x = db.get_sub_metadata(sub['sid'], 'creation')
+    return x['value'].replace(' ', 'T')  # Converts to ISO format
 
 
 @cache.memoize(60)
 def getSuscriberCount(sub):
     """ Returns subscriber count """
-    x = SubSubscriber.query.filter_by(sid=sub.sid, status=1)
-    return x.count()
+    x = db.query('SELECT COUNT(*) AS count FROM `sub_subscriber` '
+                 'WHERE `sid`=%s AND `status`=%s', (sub['sid'], 1))
+    return x.fetchone()['count']
 
 
 @cache.memoize(60)
 def getModCount(sub):
     """ Returns the sub's mod count metadata """
-    x = getMetadata(sub, 'mod2', all=True)
+    x = db.query('SELECT COUNT(*) AS c FROM `sub_metadata` WHERE '
+                 '`sid`=%s AND `key`=%s', (sub['sid'], 'mod2')).fetchone()
 
-    return len(x)
+    return x['c']
 
 
 @cache.memoize(60)
 def getSubPostCount(sub):
     """ Returns the sub's post count """
-    y = SubPost.query.filter_by(sid=sub.sid).count()
+    y = db.query('SELECT COUNT(*) AS c FROM `sub` WHERE `sid`=%s',
+                 (sub['sid'],)).fetchone()['c']
     return y
 
 
+@cache.memoize(60)
 def getStickies(sid):
     """ Returns a list of stickied SubPosts """
-    x = SubMetadata.query.filter_by(sid=sid, key='sticky')
-    try:
-        x = list(x)
-    except StopIteration:
-        x = []
+    x = db.get_sub_metadata(sid, 'sticky', _all=True)
     r = []
     for i in x:
-        r.append(SubPost.query.get(i.value))
+        r.append(db.get_post_from_pid(i['pid']))
     return r
 
 
+@cache.memoize(60)
 def isRestricted(sub):
     """ Returns true if the sub is marked as Restricted """
-    x = getMetadata(sub, 'restricted')
-    return False if not x or x == '0' else True
+    x = db.get_sub_metadata(sub['sid'], 'restricted')
+    return False if not x or x['value'] == '0' else True
 
 
-def isNSFW(self):
+def isNSFW(sub):
     """ Returns true if the sub is marked as NSFW """
-    x = self.nsfw
+    x = sub['nsfw']
     return False if not x or x == '0' else True
 
 
 def userCanFlair(sub):
     """ Returns true if the sub allows users to pick their own flair """
-    x = getMetadata(sub, 'ucf')
-    return False if not x or x == '0' else True
+    x = db.get_sub_metadata(sub['sid'], 'ucf')
+    return False if not x or x['value'] == '0' else True
 
 
 def enableVideoMode(sub):
     """ Returns true if the sub has video/music player enabled """
-    x = getMetadata(sub, 'videomode')
-    return False if not x or x == '0' else True
+    x = db.get_sub_metadata(sub['sid'], 'videomode')
+    return False if not x or x['value'] == '0' else True
 
 
-def subSort(sub):
-    """ Don't forget to add the fucking docstring to functions >:| """
-    # What an useful docstring.
-    x = getMetadata(sub, 'sort')
-    if not x or x == 'v':
-        return 'Hot'
-    if x == 'v_two':
-        return 'New'
-    if x == 'v_three':
-        return 'Top'
-
-
-def hasPostFlair(post):
-    """ Returns true if the post has assigned flair """
-    x = getMetadata(post, 'flair')
-    return x
-
-
-def getPostFlair(post, fl):
+@cache.memoize(5)
+def getPostFlair(post):
     """ Returns true if the post has available flair """
-    return getMetadata(post, fl)
+    f = db.get_post_metadata(post['pid'], 'flair')
+    if not f:
+        return False
+    else:
+        return f['value']
 
 
 @cache.memoize(600)
 def getDefaultSubs():
     """ Returns a list of all the default subs """
-    md = list(SiteMetadata.query.filter_by(key='default'))
+    md = db.get_site_metadata('default', True)
     defaults = []
     for sub in md:
-        sub = Sub.query.get(sub.value)
+        sub = db.get_sub_from_sid(sub['value'])
         defaults.append(sub)
     return defaults
 
@@ -614,8 +516,7 @@ def getDefaultSubs():
 def getSubscriptions(uid):
     """ Returns all the subs the current user is subscribed to """
     if uid:
-        subs = SubSubscriber.query.filter_by(uid=uid,
-                                             status=1)
+        subs = db.get_user_subscriptions(uid)
     else:
         subs = getDefaultSubs()
     return list(subs)
@@ -624,30 +525,31 @@ def getSubscriptions(uid):
 @cache.memoize(600)
 def enableBTCmod():
     """ Returns true if BTC donation module is enabled """
-    x = SiteMetadata.query.filter_by(key='usebtc').first()
-    return False if not x or x.value == '0' else True
+    x = db.get_site_metadata('usebtc')
+    return False if not x or x['value'] == '0' else True
 
 
 @cache.memoize(600)
 def getBTCmsg():
     """ Returns donation module text """
-    x = SiteMetadata.query.filter_by(key='btcmsg').first()
+    x = db.get_site_metadata('btcmsg')
     if x:
-        return x.value
+        return x['value']
 
 
 @cache.memoize(600)
 def getBTCaddr():
     """ Returns Bitcoin address """
-    x = SiteMetadata.query.filter_by(key='btcaddr').first()
+    x = db.get_site_metadata('btcaddr')
     if x:
-        return x.value
+        return x['value']
 
 
 def getTodaysTopPosts():
     """ Returns top posts in the last 24 hours """
-    since = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
-    posts = SubPost.query.filter(SubPost.posted > since).all()
+    c = db.query('SELECT * FROM `sub_post` WHERE '
+                 '`posted` > NOW() - INTERVAL 1 DAY')
+    posts = c.fetchall()
     posts = VoteSorting(posts).getPosts(1)
     return list(posts)[:5]
 
@@ -681,31 +583,29 @@ def getYoutubeID(url):
     return None
 
 
-def moddedSubCount(user):
+def moddedSubCount(uid):
     """ Returns the number of subs a user is modding """
-    sub1 = SubMetadata.query.filter_by(key='mod1', value=user).count()
-    sub2 = SubMetadata.query.filter_by(key='mod2', value=user).count()
-    return sub1 + sub2
-
-
-def newCount(user):
-    """ Returns new message count """
-    x = Message.query.filter(Message.read.is_(None),
-                             Message.receivedby == user.uid) \
-                     .filter(Message.mtype != 6)
-    return len(list(x))
+    sub = db.query('SELECT COUNT(*) AS c ON `sub_metadata` WHERE `value`=%s '
+                   "AND `key` IN ('mod1', 'mod2')", (uid,))
+    return sub.fetchone()['c']
 
 
 @cache.memoize(120)
 def getPostsFromSubs(subs):
-    posts = []
+    """ Returns all posts from a list or subs """
+    if not subs:
+        return []
+    qbody = "SELECT * FROM `sub_post` WHERE "
+    qdata = []
     for sub in subs:
-        posts.append(SubPost.sid == sub.sid)
-    posts = SubPost.query.filter(or_(*posts)).all()
-    return posts
+        qbody += "`sid`=%s OR "
+        qdata.append(sub['sid'])
+    c = db.query(qbody[:-3], tuple(qdata))
+    return c.fetchall()
 
 
 def workWithMentions(data, receivedby, post, sub):
+    """ Does all the job for mentions """
     mts = re.findall(RE_AMENTION, data)
     if mts:
         mts = list(set(mts))  # Removes dupes
@@ -713,34 +613,69 @@ def workWithMentions(data, receivedby, post, sub):
         mts = [x[2] for x in mts if x[1] == "/u/" or x[1] == "@"]
         for mtn in mts[:5]:
             # Send notifications.
-            user = User.query.filter(func.lower(User.name) ==
-                                     func.lower(mtn)).first()
+            user = db.get_user_from_name(mtn)
             if not user:
                 continue
-            if user.uid != current_user.get_id() and user.uid != receivedby:
+            if user['uid'] != current_user.uid and user['uid'] != receivedby:
                 # Checks done. Send our shit
-                pm = Message()
-                pm.sentby = current_user.get_id()
-                pm.receivedby = user.uid
-                pm.subject = "You've been tagged in a post"
-                link = url_for('view_post', pid=post.pid, sub=sub.name)
-                pm.mlink = link
-                pm.content = "[{0}]({1}) tagged you in [{2}]({3})".format(
-                                current_user.get_username(),
-                                url_for('view_user',
-                                        user=current_user.get_username()),
-                                post.title, link)
-                pm.posted = datetime.datetime.utcnow()
-                pm.mtype = 8  # tagging notifications
-                db.session.add(pm)
-        db.session.commit()
+                link = url_for('view_post', pid=post['pid'], sub=sub['name'])
+                db.create_message(current_user.uid, user['uid'],
+                                  subject="You've been tagged in a post",
+                                  content="[{0}]({1}) tagged you in [{2}]({3})"
+                                  .format(
+                                      current_user.get_username(),
+                                      url_for(
+                                          'view_user',
+                                          user=current_user.name),
+                                      "Here: " + post['title'], link),
+                                  link=link,
+                                  mtype=8)
 
 
-@cache.memoize(600)
 def getSub(sid):
-    return Sub.query.filter_by(sid=sid).first()
+    """ Returns sub from sid, db proxy now """
+    return db.get_sub_from_sid(sid)
 
 
-@cache.memoize(600)
 def getUser(uid):
-    return User.query.filter_by(uid=uid).first()
+    """ Returns user from uid, db proxy now """
+    return db.get_user_from_uid(uid)
+
+
+@cache.memoize(300)
+def getDomain(link):
+    """ Gets Domain from url """
+    x = urlparse(link)
+    return x.netloc
+
+
+@cache.memoize(300)
+def isImage(link):
+    """ Returns True if link ends with img suffix """
+    suffix = ('.png', '.jpg', '.gif', '.tiff', '.bmp')
+    return link.lower().endswith(suffix)
+
+
+@cache.memoize(300)
+def isGifv(link):
+    """ Returns True if link ends with video suffix """
+    domains = ['imgur.com', 'i.imgur.com', 'i.sli.mg', 'sli.mg']
+    if link.lower().endswith('.gifv'):
+        for domain in domains:
+            if domain in link.lower():
+                return True
+    else:
+        return False
+
+
+@cache.memoize(300)
+def isVideo(link):
+    """ Returns True if link ends with video suffix """
+    suffix = ('.mp4', '.webm')
+    return link.lower().endswith(suffix)
+
+
+@cache.memoize(30)
+def get_comment_score(comment):
+    """ Returns the score for comment """
+    return comment['score'] if comment['score'] else 0

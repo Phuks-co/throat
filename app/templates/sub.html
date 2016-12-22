@@ -27,12 +27,12 @@
 <hr/>
 <div class="row buttons">
   <div class="sidebar col-12">
-    {% if current_user.has_subscribed(sub) %}
+    {% if current_user.has_subscribed(sub.sid) %}
     <span id="subscribe" class="subscribed" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Subscribed</a></span>
     {% else %}
     <span id="subscribe" class="unsubscribed" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-plus" aria-hidden="true"></i> Subscribe</a></span>
     {% endif %}
-    {% if current_user.has_blocked(sub) %}
+    {% if current_user.has_blocked(sub.sid) %}
     <span id="block" class="blocked" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Blocked</a></span>
     {% else %}
     <span id="block" class="unblocked" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-remove" aria-hidden="true"></i> Block</a></span>
@@ -189,9 +189,9 @@
         <span id="gifv" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" data-domain="{{ann.getDomain()}}" class="closedgifv">
           <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
         </span>
-        {% elif post.getDomain() == "twitter.com" %}
-          <span id="tweet" data-url="{{ann.link}}" data-pid="{{ann.pid}}" class="closedtweet">
-            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-twitter" aria-hidden="true"></i></a></span>
+        {% elif func.getDomain(post.link) == "twitter.com" %}
+        <span id="tweet" data-url="{{ann.link}}" data-pid="{{ann.pid}}" class="closedtweet">
+          <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-twitter" aria-hidden="true"></i></a></span>
           </span>
         {% endif %}
       {% else %}
@@ -208,7 +208,7 @@
 {% endcache %}
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
 {# cache 120, 'subposts', sub.sid, sort_type, page|string #}
-  {% for post in posts if not post.wasDeleted() and not post.is_sticky()%}
+  {% for post in posts if not db.is_post_deleted(post) and not post in func.getStickies(sub.sid)%}
       <article class="post" data-pid="{{post.pid}}">
         {# vote div #}
         <div class="pull left vote">
@@ -217,7 +217,7 @@
             {% set uv = form.VoteForm() %}
             {{uv.csrf_token}}{{uv.post(value=post.pid)}}
           </form>
-          <p class="count">{{post.voteCount()}}</p>
+          <p class="count">{{post['score']}}</p>
           <form class="dvform">
             <div class="downvote{%if func.getVoteStatus(current_user.get_id(), post.pid) == 0%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
             {% set dv = form.VoteForm() %}
@@ -226,9 +226,9 @@
         </div>
         {% cache 300, post.pid, 'subpost' %}
           <div class="image">
-              {% if post.getThumbnail() %}
+              {% if db.get_post_thumbnail(post) %}
               <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
-                <img src="{{config.THUMBNAIL_HOST}}{{post.getThumbnail()}}">
+                <img src="{{config.THUMBNAIL_HOST}}{{db.get_post_thumbnail(post)}}">
               </a>
               {% elif not post.link %}
               <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
@@ -241,15 +241,15 @@
               <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
                 <span class="fa-stack fa-3x" style="color: #616161;">
                   <i class="fa fa-square fa-stack-2x"></i>
-                  {% if post.isImage() %}
+                  {% if func.isImage(post.link) %}
                   <i class="fa fa-image fa-stack-1x fa-inverse"></i>
-                  {% elif post.getDomain() == "youtube.com" or post.getDomain() == "www.youtube.com" or post.getDomain() == "youtu.be" %}
+                  {% elif func.getDomain(post.link) == "youtube.com" or func.getDomain(post.link) == "www.youtube.com" or func.getDomain(post.link) == "youtu.be" %}
                   <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
-                  {% elif post.getDomain() == "vimeo.com" %}
+                  {% elif func.getDomain(post.link) == "vimeo.com" %}
                   <i class="fa fa-vimeo fa-stack-1x fa-inverse"></i>
-                  {% elif post.getDomain() == "vine.co" %}
+                  {% elif func.getDomain(post.link) == "vine.co" %}
                   <i class="fa fa-vine fa-stack-1x fa-inverse"></i>
-                  {% elif post.isVideo() %}
+                  {% elif func.isVideo(post.link) %}
                   <i class="fa fa-video-camera fa-stack-1x fa-inverse"></i>
                   {% else %}
                   <i class="fa fa-link fa-stack-1x fa-inverse"></i>
@@ -259,46 +259,45 @@
             {% endif %}
           </div>
           <div class="main">
-            {% if func.hasPostFlair(post) %}<span class="btn small postfl">{{func.hasPostFlair(post)}}</span>{% endif %}
-            {% if post.isPostNSFW() %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
+            {% if func.getPostFlair(post) %}<span class="btn small postfl">{{func.getPostFlair(post)}}</span>{% endif %}
+            {% if db.is_post_nsfw(post) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
             {% if not post.link %}
             <a class="title" href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}">{{post.title}}</a>
             {% else %}
             {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
-            <a class="title" href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=post.getDomain())}}">{{post.getDomain()}}</a>)</span>
+            <a class="title" href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=func.getDomain(post.link))}}">{{func.getDomain(post.link)}}</a>)</span>
             {% endif %}
             <p class="author"><time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago></p>
             <p class="container">
             {% if post.link %}
-              {% if post.getDomain() == "youtube.com" or post.getDomain() == "www.youtube.com" or post.getDomain() == "youtu.be" %}
+              {% if func.getDomain(post.link) == "youtube.com" or func.getDomain(post.link) == "www.youtube.com" or func.getDomain(post.link) == "youtu.be" %}
                 <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
                 </span>
-              {% elif post.getDomain() == "vimeo.com" %}
+              {% elif func.getDomain(post.link) == "vimeo.com" %}
                 <span id="vimeovid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
                 </span>
-              {% elif post.getDomain() == "vine.co" %}
+              {% elif func.getDomain(post.link) == "vine.co" %}
                 <span id="vinevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvine">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vine" aria-hidden="true"></i></a></span>
                 </span>
-              {% elif post.getDomain() == "gfycat.com" %}
+              {% elif func.getDomain(post.link) == "gfycat.com" %}
                 <span id="gfycat" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedgfycat">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-video-camera" aria-hidden="true"></i></a></span>
                 </span>
-              {% elif post.isImage() %}
+              {% elif func.isImage(post.link) %}
                 <span id="openimg" data-img="{{post.link}}" data-pid="{{post.pid}}" class="closedimg">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
                 </span>
-              {% elif post.isVideo() %}
-              <span id="openvideo" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{post.getDomain()}}" class="closedvid">
+              {% elif func.isVideo(post.link) %}
+              <span id="openvideo" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{func.getDomain(post.link)}}" class="closedvid">
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
               </span>
-              {% elif post.isGifv() %}
-              <span id="gifv" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{post.getDomain()}}" class="closedgifv">
+              <span id="gifv" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{func.getDomain(post.link)}}" class="closedgifv">
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
               </span>
-              {% elif post.getDomain() == "twitter.com" %}
+              {% elif func.getDomain(post.link) == "twitter.com" %}
                 <span id="tweet" data-url="{{post.link}}" data-pid="{{post.pid}}" class="closedtweet">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-twitter" aria-hidden="true"></i></a></span>
                 </span>
@@ -309,7 +308,11 @@
               </span>
             {% endif %}
               <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a>
-              <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comments" aria-hidden="true"></i>  {{post.comments.count()}}</a>
+
+              <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> {{db.get_post_comment_count(post.pid)}}</a>
+              {% if current_user.is_mod(sub) or current_user.is_admin() %}
+              <a href="#delete-post-form" class="btn small btn-red delpost" data-post="{{post.pid}}"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
+              {% endif %}
             </p>
           </div>
         {%endcache%}
@@ -355,6 +358,6 @@
 {% endblock %}
 {%block pagefoot%}
 {% if not current_user.block_styles() %}
-  <style>{{sub.stylesheet.content|safe}}</style>
+  <style>{{db.get_sub_stylesheet(sub.sid)|safe}}</style>
 {% endif %}
 {%endblock%}

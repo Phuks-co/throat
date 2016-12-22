@@ -35,7 +35,7 @@
         <ul id="userBadges" style="color: darkcyan;">
           {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
           {% for badge in badges if badges|length > 0 %}
-          <li title="{{badge.getBadgeText}}"><i class="fa {{badge.getBadgeClass}} fa-2x"></i> {{badge.getBadgeName}}</li>
+          <li title="{{badge.text}}"><i class="fa {{badge.badge}} fa-2x"></i> {{badge.name}}</li>
           {% else %}
           <li>none</li>
           {% endfor %}
@@ -45,7 +45,7 @@
         <h3>Owns:</h3>
         <ul style="color: darkcyan;">
           {% for own in owns if owns|length > 0 %}
-          <li><a href="{{url_for('view_sub', sub=own.getSubName)}}">{{own.getSubName}}</a></li>
+          <li><a href="{{url_for('view_sub', sub=own.name)}}">{{own.name}}</a></li>
           {% else %}
           <li>none</li>
           {% endfor %}
@@ -55,7 +55,7 @@
         <h3>Mods:</h3>
         <ul style="color: darkcyan;">
           {% for mod in mods if mods|length > 0 %}
-          <li><a href="{{url_for('view_sub', sub=mod.getSubName)}}">{{mod.getSubName}}</a></li>
+          <li><a href="{{url_for('view_sub', sub=mod.name)}}">{{mod.name}}</a></li>
           {% else %}
           <li>none</li>
           {% endfor %}

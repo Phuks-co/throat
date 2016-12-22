@@ -17,14 +17,11 @@ from flask import Flask, render_template, session, redirect, url_for, abort, g
 from flask import make_response, request
 from flask_assets import Environment, Bundle
 from flask_login import LoginManager, login_required, current_user
-from flask_sqlalchemy import get_debug_queries
+# from flask_sqlalchemy import get_debug_queries
 from tld import get_tld
 from werkzeug.contrib.atom import AtomFeed
 from feedgen.feed import FeedGenerator
 
-from .models import db, User, Sub, SubPost, SubPostVote, SubPostComment, Client
-from .models import UserBadge, UserMetadata, SiteMetadata, SubMetadata, Message
-from .models import SubStylesheet, SubFlair, SubSubscriber, SubLog, SiteLog
 from .forms import RegistrationForm, LoginForm, LogOutForm, EditSubFlair
 from .forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
@@ -35,12 +32,13 @@ from .forms import CreateSubFlair, UseBTCdonationForm
 from .views import do, api
 from .views.api import oauth
 from . import misc, forms, caching
-from .misc import SiteUser, hasVoted, getMetadata, hasMail, isMod
-from .misc import SiteAnon, hasSubscribed, hasBlocked, getAnnouncement
+from . import database as db
+from .misc import SiteUser, isMod
+from .misc import SiteAnon, getAnnouncement
 from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
 from .misc import getSubPostCount, isRestricted, isNSFW
-from .misc import userCanFlair, subSort, hasPostFlair, getPostFlair
-from .misc import enableBTCmod, getCommentParentUID
+from .misc import userCanFlair, getPostFlair
+from .misc import enableBTCmod
 from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
 # from werkzeug.contrib.profiler import ProfilerMiddleware
 
@@ -58,7 +56,7 @@ if app.config['TESTING']:
     logging.basicConfig()
     logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
-db.init_app(app)
+# db.init_app(app)
 oauth.init_app(app)
 caching.cache.init_app(app)
 
@@ -106,22 +104,32 @@ assets.register('js_all', js)
 assets.register('css_all', css)
 
 
+@app.teardown_appcontext
+def close_db(error):
+    """Closes the database again at the end of the request."""
+    if hasattr(g, 'dbmod'):
+        g.db.commit()
+
+    if hasattr(g, 'db'):
+        g.db.close()
+
+
+# @app.before_first_request
+# def initialize_database():
+#     """ This is executed before any request is processed. We use this to
+#     create all the tables and database shit we need. """
+#     db.create_all()
+
+
 @login_manager.user_loader
 def load_user(user_id):
     """ This is used by flask_login to reload an user from a previously stored
     unique identifier. Required for the 'remember me' functionality. """
-    user = User.query.filter_by(uid=user_id).first()
+    user = db.get_user_from_uid(user_id)
     if not user:
         return None
     else:
         return SiteUser(user)
-
-
-@app.before_first_request
-def initialize_database():
-    """ This is executed before any request is processed. We use this to
-    create all the tables and database shit we need. """
-    db.create_all()
 
 
 @app.before_request
@@ -140,45 +148,18 @@ def after_request(response):
     if app.debug:
         print("Exec time: %s ms" % str(diff))
 
-    querytime = 0
-    for q in get_debug_queries():
-        querytime += q.duration * 1000
-    querytime = str(int(querytime)).encode()
+    if not hasattr(g, 'qc'):
+        g.qc = 0
     if response.response and isinstance(response.response, list):
         etime = str(diff).encode()
-        queries = str(len(get_debug_queries())).encode()
 
         response.response[0] = response.response[0] \
                                        .replace(b'__EXECUTION_TIME__', etime)
         response.response[0] = response.response[0] \
-                                       .replace(b'__DB_QUERIES__', queries)
-        response.response[0] = response.response[0] \
-                                       .replace(b'__QUERY_TIME__', querytime)
+                                       .replace(b'__DB_QUERIES__',
+                                                str(g.qc).encode())
         response.headers["content-length"] = len(response.response[0])
     return response
-
-
-def checkSession():
-    """ Helper function that checks if a session is valid. """
-    if 'user' in session:
-        # We also store and check the join date to prevent somebody stealing
-        # a session of a different user after the user was perma-deleted
-        # or if the database was emptied.
-        user = User.query.filter_by(uid=session['user']).first()
-        try:
-            # This line is here because for some reason, when storing the
-            # joindate in a session, the microsecond part is lost, and if we
-            # don't do this, the next 'if' statement will always wipe all the
-            # sessions.
-            jd = user.joindate.replace(microsecond=0)
-        except AttributeError:  # This is to migrate old session cookies.
-            session.pop('user', None)  # Remove before going to production
-            session.pop('joindate', None)
-            return
-        if (not user) or session['joindate'] != jd:
-            # User does not exist, invalidate session
-            session.pop('user', None)
-            session.pop('joindate', None)
 
 
 @app.context_processor
@@ -189,9 +170,8 @@ def utility_processor():
             'logoutform': LogOutForm(), 'sendmsg': CreateUserMessageForm(),
             'csubform': CreateSubForm(), 'markdown': misc.our_markdown,
             'commentform': PostComment(), 'dummyform': DummyForm(),
-            'hasVoted': hasVoted,
-            'delpostform': DeletePost(), 'getMetadata': getMetadata,
-            'config': app.config, 'form': forms,
+            'delpostform': DeletePost(),
+            'config': app.config, 'form': forms, 'db': db,
             'getSuscriberCount': getSuscriberCount, 'func': misc}
 
 
@@ -218,10 +198,7 @@ def home_hot(page):
 def home_new(page):
     """ /new for subscriptions """
     subs = misc.getSubscriptions(current_user.get_id())
-    posts = []
-    for sub in subs:
-        posts.append(SubPost.sid == sub.sid)
-    posts = SubPost.query.filter(or_(*posts)).all()
+    posts = misc.getPostsFromSubs(subs)
     sorter = NewSorting(posts)
     return render_template('index.html', page=page, sort_type='home_new',
                            posts=sorter.getPosts(page))
@@ -232,10 +209,7 @@ def home_new(page):
 def home_top(page):
     """ /top for subscriptions """
     subs = misc.getSubscriptions(current_user.get_id())
-    posts = []
-    for sub in subs:
-        posts.append(SubPost.sid == sub.sid)
-    posts = SubPost.query.filter(or_(*posts)).all()
+    posts = misc.getPostsFromSubs(subs)
 
     sorter = VoteSorting(posts)
     return render_template('index.html', page=page, sort_type='home_top',
@@ -250,15 +224,17 @@ def all_new_rss():
     fg.subtitle("All new posts feed")
     fg.link(href=url_for('all_new', _external=True))
     fg.generator("Throat")
-    posts = SubPost.query.order_by(SubPost.posted.desc())
+    c = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC LIMIT 30')
+    posts = c.fetchall()
     sorter = BasicSorting(posts)
     for post in sorter.getPosts():
         fe = fg.add_entry()
-        url = url_for('view_post', sub=post.sub.name, pid=post.pid,
+        url = url_for('view_post', sub=misc.getSub(post['sid'])['name'],
+                      pid=post['pid'],
                       _external=True)
         fe.id(url)
         fe.link({'href': url, 'rel': 'self'})
-        fe.title(post.title)
+        fe.title(post['title'])
 
     return fg.rss_str(pretty=True)
 
@@ -267,63 +243,58 @@ def all_new_rss():
 @app.route("/all/new/<int:page>")
 def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
-    posts = SubPost.query.order_by(SubPost.posted.desc())
-    posts = posts.paginate(page, 20, False)
+    c = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC '
+                 'LIMIT %s,20', ((page - 1) * 20, ))
+    posts = c.fetchall()
     # sorter = BasicSorting(posts)
 
     return render_template('index.html', page=page, sort_type='all_new',
-                           posts=posts.items)
+                           posts=posts)
 
 
 @app.route("/domain/<domain>", defaults={'page': 1})
 @app.route("/domain/<domain>/<int:page>")
 def all_domain_new(page, domain):
     """ The index page, all posts sorted as most recent posted first """
-    posts = SubPost.query.filter_by(ptype=1) \
-                         .filter(SubPost.link.contains(domain)) \
-                         .order_by(SubPost.posted.desc())
-    sorter = BasicSorting(posts)
-
+    c = db.query('SELECT * FROM `sub_post` WHERE `link` LIKE %s '
+                 'LIMIT %s,20', ('%://' + domain + '/%', (page - 1) * 20))
+    posts = c.fetchall()
     return render_template('domains.html', page=page, domain=domain,
                            sort_type='all_domain_new',
-                           posts=sorter.getPosts(page))
+                           posts=posts)
 
 
 @app.route("/search/<term>", defaults={'page': 1})
 @app.route("/search/<term>/<int:page>")
 def search(page, term):
     """ The index page, with basic title search """
-    posts = SubPost.query.filter(SubPost.title.contains(term)) \
-                         .order_by(SubPost.posted.desc())
-    sorter = BasicSorting(posts)
+    c = db.query('SELECT * FROM `sub_post` WHERE `title` LIKE %s '
+                 'ORDER BY `posted` LIMIT %s,20',
+                 ('%' + term + '%', (page - 1) * 20))
+    posts = c.fetchall()
 
     return render_template('index.html', page=page, sort_type='all_new',
-                           posts=sorter.getPosts(page))
+                           posts=posts)
 
 
 @app.route("/all/top", defaults={'page': 1})
 @app.route("/all/top/<int:page>")
 def all_top(page):
     """ The index page, all posts sorted as most recent posted first """
-    if current_user.show_nsfw():
-        posts = SubPost.query.filter_by()
-    else:
-        posts = SubPost.query.filter_by(nsfw=0)
-    sorter = VoteSorting(posts)
+    c = db.query('SELECT * FROM `sub_post` ORDER BY `score` ASC LIMIT %s,20',
+                 ((page - 1) * 20, ))
+    posts = c.fetchall()
 
     return render_template('index.html', page=page, sort_type='all_top',
-                           posts=sorter.getPosts(page))
+                           posts=posts)
 
 
 @app.route("/all/hot", defaults={'page': 1})
 @app.route("/all/hot/<int:page>")
 def all_hot(page):
     """ The index page, all posts sorted as most recent posted first """
-    if current_user.show_nsfw():
-        posts = SubPost.query.filter_by()
-    else:
-        posts = SubPost.query.filter_by(nsfw=0)
-    sorter = HotSorting(posts)
+    c = db.query('SELECT * FROM `sub_post` LIMIT 500')
+    sorter = HotSorting(c.fetchall())
 
     return render_template('index.html', page=page, sort_type='all_hot',
                            posts=sorter.getPosts(page))
@@ -344,40 +315,39 @@ def donate():
 @app.route("/subs")
 def view_subs():
     """ Here we can view available subs """
-    subs = Sub.query.order_by(func.lower(Sub.name).asc()).all()
-    return render_template('subs.html', subs=subs)
+    # TODO: pagination
+    c = db.query('SELECT * FROM `sub` ORDER BY `name`')
+    return render_template('subs.html', subs=c.fetchall())
 
 
 @app.route("/random")
 def random_sub():
     """ Here we get a random sub """
-    subcount = Sub.query.count()
-    offset = random.randrange(0, subcount)
-    sub = Sub.query.offset(offset).first()
-    return redirect(url_for('view_sub', sub=sub.name))
+    c = db.query('SELECT `name` FROM `sub` ORDER BY RAND() LIMIT 1')
+    return redirect(url_for('view_sub', sub=c.fetchone()['name']))
 
 
 @app.route("/s/<sub>")
 def view_sub(sub):
     """ Here we can view subs """
-    sub = Sub.query.filter(func.lower(Sub.name) == func.lower(sub)).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
 
-    x = getMetadata(sub, 'sort')
-    if not x or x == 'v':
-        return redirect(url_for('view_sub_hot', sub=sub.name))
-    if x == 'v_two':
-        return redirect(url_for('view_sub_new', sub=sub.name))
-    if x == 'v_three':
-        return redirect(url_for('view_sub_top', sub=sub.name))
+    x = db.get_sub_metadata(sub['sid'], 'sort')
+    if not x or x['value'] == 'v':
+        return redirect(url_for('view_sub_hot', sub=sub['name']))
+    elif x['value'] == 'v_two':
+        return redirect(url_for('view_sub_new', sub=sub['name']))
+    elif x['value'] == 'v_three':
+        return redirect(url_for('view_sub_top', sub=sub['name']))
 
 
 @app.route("/s/<sub>/edit/css")
 @login_required
 def edit_sub_css(sub):
     """ Here we can edit sub info and settings """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
 
@@ -385,7 +355,8 @@ def edit_sub_css(sub):
         abort(403)
 
     form = EditSubCSSForm()
-    form.css.data = SubStylesheet.query.filter_by(sid=sub.sid).first().content
+
+    form.css.data = db.get_sub_stylesheet()
     return render_template('editsubcss.html', sub=sub, form=form)
 
 
@@ -393,17 +364,18 @@ def edit_sub_css(sub):
 @login_required
 def edit_sub_flairs(sub):
     """ Here we manage the sub's flairs. """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
 
     if not current_user.is_mod(sub) and not current_user.is_admin():
         abort(403)
 
-    flairs = SubFlair.query.filter_by(sub=sub).all()
+    c = db.query('SELECT * FROM `sub_flair` WHERE `sid`=%s', (sub['sid'], ))
+    flairs = c.fetchall()
     formflairs = []
     for flair in flairs:
-        formflairs.append(EditSubFlair(flair=flair.xid, text=flair.text))
+        formflairs.append(EditSubFlair(flair=flair['xid'], text=flair['text']))
     return render_template('editflairs.html', sub=sub, flairs=formflairs,
                            createflair=CreateSubFlair())
 
@@ -412,13 +384,13 @@ def edit_sub_flairs(sub):
 @login_required
 def edit_sub(sub):
     """ Here we can edit sub info and settings """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
 
     if current_user.is_mod(sub) or current_user.is_admin():
-        form = EditSubForm(subsort=getMetadata(sub, 'sort'))
-        form.sidebar.data = sub.sidebar
+        form = EditSubForm(subsort=db.get_sub_metadata(sub['sid'], 'sort'))
+        form.sidebar.data = sub['sidebar']
         return render_template('editsub.html', sub=sub, editsubform=form)
     else:
         abort(403)
@@ -428,11 +400,12 @@ def edit_sub(sub):
 @login_required
 def view_sublog(sub):
     """ Here we can see a log of mod/admin activity in the sub """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
 
-    logs = SubLog.query.filter_by(sid=sub.sid).all()
+    logs = db.query('SELECT * FROM `sub_log` WHERE `sid`=%s', (sub['sid'], ))
+    logs = logs.fetchall()
     return render_template('sublog.html', sub=sub, logs=logs)
 
 
@@ -440,15 +413,15 @@ def view_sublog(sub):
 @login_required
 def edit_sub_mods(sub):
     """ Here we can edit moderators for a sub """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
 
     if current_user.is_mod(sub) or current_user.is_modinv(sub) \
        or current_user.is_admin():
-        xmods = getMetadata(sub, 'xmod2', all=True)
-        mods = getMetadata(sub, 'mod2', all=True)
-        modinvs = getMetadata(sub, 'mod2i', all=True)
+        xmods = db.get_sub_metadata(sub, 'xmod2', _all=True)
+        mods = db.get_sub_metadata(sub, 'mod2', _all=True)
+        modinvs = db.get_sub_metadata(sub, 'mod2i', _all=True)
         return render_template('submods.html', sub=sub, mods=mods,
                                modinvs=modinvs, xmods=xmods,
                                editmod2form=EditMod2Form(),
@@ -460,24 +433,25 @@ def edit_sub_mods(sub):
 @app.route("/s/<sub>/new.rss")
 def sub_new_rss(sub):
     """ RSS feed for /s/sub/new """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
 
     fg = FeedGenerator()
-    fg.title("/s/{}".format(sub))
-    fg.subtitle("All new posts for {} feed".format(sub))
-    fg.link(href=url_for('view_sub_new', sub=sub, _external=True))
+    fg.title("/s/{}".format(sub['name']))
+    fg.subtitle("All new posts for {} feed".format(sub['name']))
+    fg.link(href=url_for('view_sub_new', sub=sub['name'], _external=True))
     fg.generator("Throat")
-    posts = sub.posts.order_by(SubPost.posted.desc())
-    sorter = BasicSorting(posts)
-    for post in sorter.getPosts():
+    posts = db.query('SELECT * FROM `sub_post` WHERE sid=%s'
+                     ' ORDER BY `posted` LIMIT 30', (sub['sid'], )).fetchall()
+
+    for post in posts:
         fe = fg.add_entry()
-        url = url_for('view_post', sub=post.sub.name, pid=post.pid,
-                      _external=True)
+        url = url_for('view_post', sub=sub['name'],
+                      pid=post['pid'], _external=True)
         fe.id(url)
         fe.link({'href': url, 'rel': 'self'})
-        fe.title(post.title)
+        fe.title(post['title'])
 
     return fg.rss_str(pretty=True)
 
@@ -486,44 +460,20 @@ def sub_new_rss(sub):
 @app.route("/s/<sub>/new/<int:page>")
 def view_sub_new(sub, page):
     """ The index page, all posts sorted as most recent posted first """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
 
-    posts = sub.posts.order_by(SubPost.posted.desc())
-    sorter = BasicSorting(posts)
-    mods = SubMetadata.query.filter_by(key='mod2', sid=sub.sid)
-    try:
-        mods = list(mods)
-    except StopIteration:
-        mods = []
-    createtxtpost = CreateSubTextPost(sub=sub.name)
-    createlinkpost = CreateSubLinkPost(sub=sub.name)
+    posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s '
+                     'ORDER BY `posted` LIMIT %s,20',
+                     (sub['sid'], (page - 1) * 20, )).fetchall()
+    mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
+    createtxtpost = CreateSubTextPost(sub=sub['name'])
+    createlinkpost = CreateSubLinkPost(sub=sub['name'])
 
     return render_template('sub.html', sub=sub, page=page,
                            sort_type='view_sub_new',
-                           posts=sorter.getPosts(page), mods=mods,
-                           txtpostform=createtxtpost,
-                           lnkpostform=createlinkpost)
-
-
-@app.route("/s/<sub>/postmodlog", defaults={'page': 1})
-@app.route("/s/<sub>/postmodlog/<int:page>")
-def view_sub_postmodlog(sub, page):
-    """ The mod/admin deleted posts page, sorted as most
-        recent posted first """
-    sub = Sub.query.filter_by(name=sub).first()
-    if not sub:
-        abort(404)
-
-    posts = sub.posts.order_by(SubPost.posted.desc())
-    sorter = BasicSorting(posts)
-    mods = SubMetadata.query.filter_by(key='mod2').all()
-    createtxtpost = CreateSubTextPost(sub=sub.name)
-    createlinkpost = CreateSubLinkPost(sub=sub.name)
-
-    return render_template('subpostmodlog.html', sub=sub, page=page, mods=mods,
-                           posts=sorter.getPosts(page), sort_type='hot',
+                           posts=posts, mods=mods,
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
 
@@ -531,12 +481,12 @@ def view_sub_postmodlog(sub, page):
 @app.route("/s/<sub>/bannedusers")
 def view_sub_bans(sub):
     """ See banned users for the sub """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
 
-    banned = getMetadata(sub, 'ban', all=True)
-    xbans = getMetadata(sub, 'xban', all=True)
+    banned = db.get_sub_metadata(sub['sid'], 'ban', _all=True)
+    xbans = db.get_sub_metadata(sub['sid'], 'xban', _all=True)
     return render_template('subbans.html', sub=sub, banned=banned,
                            xbans=xbans, banuserform=BanUserSubForm())
 
@@ -545,19 +495,21 @@ def view_sub_bans(sub):
 @app.route("/s/<sub>/top/<int:page>")
 def view_sub_top(sub, page):
     """ The index page, /top sorting """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
 
-    posts = sub.posts.order_by(SubPost.posted.desc())
-    sorter = VoteSorting(posts)
-    mods = getMetadata(sub, 'mod2', all=True)
-    createtxtpost = CreateSubTextPost(sub=sub.name)
-    createlinkpost = CreateSubLinkPost(sub=sub.name)
+    posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s '
+                     'ORDER BY `score` LIMIT %s,20',
+                     (sub['sid'], (page - 1) * 20, )).fetchall()
+
+    mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
+    createtxtpost = CreateSubTextPost(sub=sub['name'])
+    createlinkpost = CreateSubLinkPost(sub=sub['name'])
 
     return render_template('sub.html', sub=sub, page=page,
                            sort_type='view_sub_top',
-                           posts=sorter.getPosts(page), mods=mods,
+                           posts=posts, mods=mods,
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
 
@@ -566,15 +518,16 @@ def view_sub_top(sub, page):
 @app.route("/s/<sub>/hot/<int:page>")
 def view_sub_hot(sub, page):
     """ The index page, /hot sorting """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
 
-    posts = sub.posts.order_by(SubPost.posted.desc())
-    sorter = HotSorting(posts)
-    mods = getMetadata(sub, 'mod2', all=True)
-    createtxtpost = CreateSubTextPost(sub=sub.name)
-    createlinkpost = CreateSubLinkPost(sub=sub.name)
+    c = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s LIMIT 500',
+                 (sub['sid'], )).fetchall()
+    sorter = HotSorting(c)
+    mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
+    createtxtpost = CreateSubTextPost(sub=sub['name'])
+    createlinkpost = CreateSubLinkPost(sub=sub['name'])
 
     return render_template('sub.html', sub=sub, page=page,
                            sort_type='view_sub_hot',
@@ -586,28 +539,32 @@ def view_sub_hot(sub, page):
 @app.route("/s/<sub>/<pid>")
 def view_post(sub, pid):
     """ View post and comments (WIP) """
-    post = SubPost.query.filter_by(pid=pid).first()
-    if not post or post.sub.name != sub:
+    post = db.get_post_from_pid(pid)
+    ksub = db.get_sub_from_sid(post['sid'])
+    if not post or ksub['name'] != sub:
         abort(404)
-    sub = Sub.query.get(post.sid)
 
     editflair = EditPostFlair()
     editflair.flair.choices = []
-    if post.user.uid == current_user.get_id() or current_user.is_mod(post.sub)\
+    if post['uid'] == current_user.get_id() or current_user.is_mod(ksub) \
        or current_user.is_admin():
-        flairs = SubFlair.query.filter_by(sid=sub.sid).all()
+        flairs = db.query('SELECT `xid`, `text` FROM `sub_flair` '
+                          'WHERE `sid`=%s', (ksub['sid'], )).fetchall()
         for flair in flairs:
-            editflair.flair.choices.append((flair.xid, flair.text))
+            editflair.flair.choices.append((flair['xid'], flair['text']))
 
-    mods = getMetadata(post.sub, 'mod2', all=True)
+    mods = db.get_sub_metadata(post['sid'], 'mod2', _all=True)
     txtpedit = EditSubTextPostForm()
-    txtpedit.content.data = post.content
-    createtxtpost = CreateSubTextPost(sub=sub.name)
-    createlinkpost = CreateSubLinkPost(sub=sub.name)
-    comments = SubPostComment.query.filter_by(pid=pid)
+    txtpedit.content.data = post['content']
+    createtxtpost = CreateSubTextPost(sub=ksub['name'])
+    createlinkpost = CreateSubLinkPost(sub=ksub['name'])
+    comments = db.get_post_comments(pid)
+    upcount = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
+                       '`pid`=%s AND `positive`=%s', (pid, 1)).fetchone()['c']
+    downcount = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
+                         '`pid`=%s AND `positive`=%s', (pid, 0)) \
+                  .fetchone()['c']
 
-    upcount = SubPostVote.query.filter_by(pid=post.pid, positive=1).count()
-    downcount = SubPostVote.query.filter_by(pid=post.pid, positive=0).count()
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit, comments=comments,
                            upcount=upcount, downcount=downcount,
@@ -619,31 +576,29 @@ def view_post(sub, pid):
 @app.route("/p/<pid>")
 def view_post_inbox(pid):
     """ Gets route to post from just pid """
-    post = SubPost.query.filter_by(pid=pid).first()
-    sub = Sub.query.filter_by(sid=post.sid).first()
-    return redirect(url_for('view_post', sub=sub.name, pid=post.pid))
+    post = db.get_post_from_pid(pid)
+    if not post:
+        abort(404)
+    sub = db.get_sub_from_sid(post['sid'])
+    return redirect(url_for('view_post', sub=sub['name'], pid=post['pid']))
 
 
 @app.route("/c/<cid>")
 def view_comment_inbox(cid):
     """ Gets route to post from just cid """
-    comm = SubPostComment.query.filter_by(cid=cid).first()
-    post = SubPost.query.filter_by(pid=comm.pid).first()
-    return redirect(url_for('view_post', sub=post.sub.name, pid=comm.pid))
-
-
-
-@app.route("/s/<sub>/<pid>/edit")
-@login_required
-def edit_post(sub, pid):
-    """ WIP: Edit a post content """
-    return "WIP!"
+    comm = db.get_comment_from_cid(cid)
+    if not comm:
+        abort(404)
+    post = db.get_post_from_pid(comm['pid'])
+    sub = db.get_sub_from_sid(post['sid'])
+    return redirect(url_for('view_post', sub=sub['name'], pid=comm['pid']))
 
 
 @app.route("/s/<sub>/<pid>/<cid>")
 def view_perm(sub, pid, cid):
     """ WIP: Permalink to comment, see rTH7ed77c7c69c3,
     currently using :active css to flag comment in comment chain """
+    # TODO
     return "WIP!"
 
 
@@ -651,18 +606,18 @@ def view_perm(sub, pid, cid):
 @login_required
 def view_user(user):
     """ WIP: View user's profile, posts, comments, badges, etc """
-    user = User.query.filter_by(name=user).first()
+    user = db.get_user_from_name(user)
     if not user:
         abort(404)
 
-    owns = SubMetadata.query.filter_by(key='mod1') \
-                            .filter_by(value=user.uid).all()
-    mods = SubMetadata.query.filter_by(key='mod2') \
-                            .filter_by(value=user.uid).all()
-    badges = UserMetadata.query.filter_by(uid=user.uid) \
-                               .filter_by(key='badge').all()
-    pcount = SubPost.query.filter_by(uid=user.uid).count()
-    ccount = SubPostComment.query.filter_by(uid=user.uid).count()
+    owns = db.get_user_positions(user['uid'], 'mod1')
+    mods = db.get_user_positions(user['uid'], 'mod2')
+    badges = db.get_user_badges(user['uid'])
+    pcount = db.query('SELECT COUNT(*) AS c FROM `sub_post` WHERE `uid`=%s',
+                      (user['uid'], )).fetchone()['c']
+    ccount = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE '
+                      '`uid`=%s', (user['uid'], )).fetchone()['c']
+
     return render_template('user.html', user=user, badges=badges,
                            msgform=CreateUserMessageForm(), pcount=pcount,
                            ccount=ccount, owns=owns, mods=mods)
@@ -672,64 +627,69 @@ def view_user(user):
 @login_required
 def view_user_posts(user):
     """ WIP: View user's recent posts """
-    user = User.query.filter_by(name=user).first()
+    user = db.get_user_from_name(user)
     if not user:
         abort(404)
 
-    owns = SubMetadata.query.filter_by(key='mod1') \
-                            .filter_by(value=user.uid).all()
-    mods = SubMetadata.query.filter_by(key='mod2') \
-                            .filter_by(value=user.uid).all()
-    badges = UserMetadata.query.filter_by(uid=user.uid) \
-                               .filter_by(key='badge').all()
-    pcount = SubPost.query.filter_by(uid=user.uid).count()
+    owns = db.get_user_positions(user['uid'], 'mod1')
+    mods = db.get_user_positions(user['uid'], 'mod2')
+    badges = db.get_user_badges(user['uid'])
+
+    # TODO: pagination
+    posts = db.query('SELECT * FROM `sub_post` WHERE `uid`=%s '
+                     'ORDER BY `posted` DESC LIMIT 20', (user['uid'],))
     return render_template('userposts.html', user=user, badges=badges,
-                           msgform=CreateUserMessageForm(), pcount=pcount,
-                           owns=owns, mods=mods)
+                           msgform=CreateUserMessageForm(),
+                           owns=owns, mods=mods, posts=posts.fetchall())
 
 
 @app.route("/u/<user>/comments")
 @login_required
 def view_user_comments(user):
     """ WIP: View user's recent comments """
-    user = User.query.filter_by(name=user).first()
+    user = db.get_user_from_name(user)
     if not user:
         abort(404)
 
-    owns = SubMetadata.query.filter_by(key='mod1') \
-                            .filter_by(value=user.uid).all()
-    mods = SubMetadata.query.filter_by(key='mod2') \
-                            .filter_by(value=user.uid).all()
-    badges = UserMetadata.query.filter_by(uid=user.uid) \
-                               .filter_by(key='badge').all()
-    ccount = SubPostComment.query.filter_by(uid=user.uid).count()
+    owns = db.get_user_positions(user['uid'], 'mod1')
+    mods = db.get_user_positions(user['uid'], 'mod2')
+    badges = db.get_user_badges(user['uid'])
+    # TODO: pagination
+    comments = db.query('SELECT * FROM `sub_post_comment` WHERE `uid`=%s '
+                        'ORDER BY `time` DESC LIMIT 20', (user['uid'],))
     return render_template('usercomments.html', user=user, badges=badges,
                            msgform=CreateUserMessageForm(),
-                           ccount=ccount, owns=owns, mods=mods)
+                           comments=comments.fetchall(), owns=owns, mods=mods)
 
 
 @app.route("/u/<user>/edit")
 @login_required
 def edit_user(user):
     """ WIP: Edit user's profile, slogan, quote, etc """
-    user = User.query.filter_by(name=user).first()
+    user = db.get_user_from_name(user)
     if not user:
         abort(404)
 
-    owns = SubMetadata.query.filter_by(key='mod1') \
-                            .filter_by(value=user.uid).all()
-    mods = SubMetadata.query.filter_by(key='mod2') \
-                            .filter_by(value=user.uid).all()
-    badges = UserMetadata.query.filter_by(uid=user.uid) \
-                               .filter_by(key='badge').all()
-    pcount = SubPost.query.filter_by(uid=user.uid).count()
-    ccount = SubPostComment.query.filter_by(uid=user.uid).count()
-    adminbadges = UserBadge.query.all()
-    if current_user.get_username() == user.name or current_user.is_admin():
+    owns = db.get_user_positions(user['uid'], 'mod1')
+    mods = db.get_user_positions(user['uid'], 'mod2')
+    badges = db.get_user_badges(user['uid'])
+    pcount = db.query('SELECT COUNT(*) AS c FROM `sub_post` WHERE `uid`=%s',
+                      (user['uid'], )).fetchone()['c']
+    ccount = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE '
+                      '`uid`=%s', (user['uid'], )).fetchone()['c']
+    exlink = int(db.get_user_metadata(user['uid'], 'exlinks'))
+    styles = int(db.get_user_metadata(user['uid'], 'nostyles'))
+    nsfw = int(db.get_user_metadata(user['uid'], 'nsfw'))
+    form = EditUserForm(external_links=bool(exlink), show_nsfw=bool(nsfw),
+                        disable_sub_style=bool(styles))
+    adminbadges = []
+    if current_user.is_admin():
+        adminbadges = db.query('SELECT * FROM `user_badge`').fetchall()
+    if current_user.get_username() == user['name'] or current_user.is_admin():
         return render_template('edituser.html', user=user, owns=owns,
                                badges=badges, adminbadges=adminbadges,
                                pcount=pcount, ccount=ccount, mods=mods,
-                               edituserform=EditUserForm())
+                               edituserform=form)
     else:
         abort(403)
 
@@ -755,11 +715,10 @@ def inbox_sort():
 def view_messages():
     """ WIP: View user's messages """
     user = session['user_id']
-    messages = Message.query.filter_by(receivedby=user) \
-                            .filter(or_(Message.mtype == 1,
-                                        Message.mtype == 8)) \
-                            .order_by(Message.posted.desc()).all()
-    return render_template('messages.html', user=user, messages=messages,
+    msgs = db.query('SELECT * FROM `message` WHERE `mtype` IN (1, 8)'
+                    'AND `receivedby`=%s ORDER BY `posted` DESC',
+                    (user,)).fetchall()
+    return render_template('messages.html', user=user, messages=msgs,
                            box_name="Inbox", boxID="1")
 
 
@@ -768,10 +727,10 @@ def view_messages():
 def view_messages_sent():
     """ WIP: View user's messages """
     user = session['user_id']
-    messages = Message.query.filter_by(sentby=user) \
-                            .filter_by(mtype=1) \
-                            .order_by(Message.posted.desc()).all()
-    return render_template('messages.html', user=user, messages=messages,
+    msgs = db.query('SELECT * FROM `message` WHERE `mtype`=1 '
+                    'AND `receivedby`=%s ORDER BY `posted` DESC',
+                    (user,)).fetchall()
+    return render_template('messages.html', user=user, messages=msgs,
                            box_name="Sent")
 
 
@@ -780,10 +739,10 @@ def view_messages_sent():
 def view_messages_postreplies():
     """ WIP: View user's post replies """
     user = session['user_id']
-    messages = Message.query.filter_by(receivedby=user) \
-                            .filter_by(mtype=4) \
-                            .order_by(Message.posted.desc()).all()
-    return render_template('messages.html', user=user, messages=messages,
+    msgs = db.query('SELECT * FROM `message` WHERE `mtype`=4 '
+                    'AND `receivedby`=%s ORDER BY `posted` DESC',
+                    (user,)).fetchall()
+    return render_template('messages.html', user=user, messages=msgs,
                            box_name="Replies", boxID="2")
 
 
@@ -792,10 +751,10 @@ def view_messages_postreplies():
 def view_messages_comreplies():
     """ WIP: View user's comments replies """
     user = session['user_id']
-    messages = Message.query.filter_by(receivedby=user) \
-                            .filter_by(mtype=5) \
-                            .order_by(Message.posted.desc()).all()
-    return render_template('messages.html', user=user, messages=messages,
+    msgs = db.query('SELECT * FROM `message` WHERE `mtype`=5 '
+                    'AND `receivedby`=%s ORDER BY `posted` DESC',
+                    (user,)).fetchall()
+    return render_template('messages.html', user=user, messages=msgs,
                            box_name="Replies", boxID="3")
 
 
@@ -804,11 +763,10 @@ def view_messages_comreplies():
 def view_messages_modmail():
     """ WIP: View user's modmail """
     user = session['user_id']
-    messages = Message.query.filter_by(receivedby=user) \
-                            .filter(or_(Message.mtype=='2', \
-                                        Message.mtype=='7')) \
-                            .order_by(Message.posted.desc()).all()
-    return render_template('messages.html', user=user, messages=messages,
+    msgs = db.query('SELECT * FROM `message` WHERE `mtype` IN (2, 7) '
+                    'AND `receivedby`=%s ORDER BY `posted` DESC',
+                    (user,)).fetchall()
+    return render_template('messages.html', user=user, messages=msgs,
                            box_name="ModMail", boxID="4")
 
 
@@ -817,17 +775,20 @@ def view_messages_modmail():
 def admin_area():
     """ WIP: View users. assign badges, etc """
     if current_user.is_admin():
-        users = User.query.count()
-        subs = Sub.query.count()
-        posts = SubPost.query.count()
-        ups = SubPostVote.query.filter_by(positive=True).count()
-        downs = SubPostVote.query.filter_by(positive=False).count()
-        badges = UserBadge.query.all()
-        btc = SiteMetadata.query.filter_by(key='usebtc').first()
+        users = db.query('SELECT COUNT(*) AS c FROM `user`').fetchone()['c']
+        subs = db.query('SELECT COUNT(*) AS c FROM `sub`').fetchone()['c']
+        posts = db.query('SELECT COUNT(*) AS c FROM `sub_post`') \
+                  .fetchone()['c']
+        ups = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
+                       '`positive`=1').fetchone()['c']
+        downs = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
+                         '`positive`=0').fetchone()['c']
+        badges = db.query('SELECT * FROM `user_badge`').fetchall()
+        btc = db.get_site_metadata('usebtc')
         if btc:
-            x = SiteMetadata.query.filter_by(key='btcmsg').first()
-            y = SiteMetadata.query.filter_by(key='btcaddr').first()
-            btc = UseBTCdonationForm(message=x.value, btcaddress=y.value)
+            x = db.get_site_metadata('btcmsg')['value']
+            y = db.get_site_metadata('btcaddr')['value']
+            btc = UseBTCdonationForm(message=x, btcaddress=y)
         else:
             btc = UseBTCdonationForm()
         return render_template('admin.html', badges=badges, subs=subs,
@@ -843,7 +804,7 @@ def admin_area():
 def admin_users():
     """ WIP: View users. """
     if current_user.is_admin():
-        users = User.query.order_by(User.name.asc()).all()
+        users = db.query('SELECT * FROM `user` ORDER BY `name`').fetchall()
         return render_template('adminusershome.html', users=users)
     else:
         return render_template('errors/404.html'), 404
@@ -854,8 +815,8 @@ def admin_users():
 def admin_users_search(term):
     """ WIP: View users. """
     if current_user.is_admin():
-        users = User.query.filter(User.name.contains(term)) \
-                          .order_by(User.name.asc()).all()
+        users = db.query('SELECT * FROM `user` WHERE `name` LIKE %s'
+                         'ORDER BY `name` ASC', ('%' + term + '%',))
         return render_template('adminusers.html', users=users)
     else:
         return render_template('errors/404.html'), 404
@@ -866,7 +827,7 @@ def admin_users_search(term):
 def admin_subs():
     """ WIP: View subs. Assign new owners """
     if current_user.is_admin():
-        subs = Sub.query
+        subs = db.query('SELECT * FROM `sub`').fetchall()
         return render_template('adminsubs.html', subs=subs,
                                editmodform=EditModForm())
     else:
@@ -878,8 +839,8 @@ def admin_subs():
 def admin_subs_search(term):
     """ WIP: View users. """
     if current_user.is_admin():
-        subs = Sub.query.filter(Sub.name.contains(term)) \
-                          .order_by(Sub.name.asc()).all()
+        subs = db.query('SELECT * FROM `sub` WHERE `name` LIKE %s'
+                        'ORDER BY `name` ASC', ('%' + term + '%',))
         return render_template('adminsubs.html', subs=subs,
                                editmodform=EditModForm())
     else:
@@ -891,13 +852,12 @@ def admin_subs_search(term):
 def admin_post():
     """ WIP: View post. """
     if current_user.is_admin():
-        # posts = SubPost.query.first()
-        posts = SubPost.query.order_by(SubPost.posted.desc())
-        sorter = BasicSorting(posts)
-        page = 1
-        return render_template('adminpost.html', page=page,
+        # TODO: pagination
+        posts = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC '
+                         'LIMIT 100')
+        return render_template('adminpost.html',
                                sort_type='all_new',
-                               posts=sorter.getPosts(page))
+                               posts=posts)
     else:
         return render_template('errors/404.html'), 404
 
@@ -907,15 +867,24 @@ def admin_post():
 def admin_post_search(term):
     """ WIP: View users. """
     if current_user.is_admin():
-        post = SubPost.query.filter_by(pid=term).first()
-        user = post.user
-        sub = Sub.query.filter_by(sid=post.sid).first()
-        votes = SubPostVote.query.filter_by(pid=term).all()
-        upcount = SubPostVote.query.filter_by(pid=post.pid, positive=1).count()
-        downcount = SubPostVote.query.filter_by(pid=post.pid,
-                                                positive=0).count()
-        pcount = SubPost.query.filter_by(uid=user.uid).count()
-        ccount = SubPostComment.query.filter_by(uid=user.uid).count()
+        post = db.get_post_from_pid(term)
+        user = db.get_user_from_uid(post['uid'])
+        sub = db.get_sub_from_sid(post['sid'])
+
+        votes = db.query('SELECT * FROM `sub_post_vote` WHERE `pid`=%s',
+                         (post['pid'],)).fetchall()
+        upcount = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
+                           '`pid`=%s AND `positive`=1', (post['pid'], )) \
+                    .fetchone()['c']
+        downcount = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
+                             '`pid`=%s AND `positive`=0', (post['pid'], )) \
+                      .fetchone()['c']
+
+        pcount = db.query('SELECT COUNT(*) AS c FROM `sub_post` WHERE '
+                          '`uid`=%s', (user['uid'],)).fetchone()['c']
+        ccount = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE '
+                          '`uid`=%s', (user['uid'],)).fetchone()['c']
+
         return render_template('adminpostsearch.html', sub=sub, post=post,
                                votes=votes, ccount=ccount, pcount=pcount,
                                upcount=upcount, downcount=downcount)
@@ -928,8 +897,8 @@ def admin_post_search(term):
 def view_sitelog():
     """ Here we can see a log of admin activity on the site """
     if current_user.is_admin():
-        logs = SiteLog.query.order_by(SiteLog.lid.desc()).all()
-        return render_template('sitelog.html', logs=logs)
+        logs = db.query('SELECT * FROM `site_log` ORDER BY `lid` DESC')
+        return render_template('sitelog.html', logs=logs.fetchall())
     else:
         abort(403)
 
@@ -953,20 +922,21 @@ def password_recovery():
 @app.route('/reset/<uid>/<key>')
 def password_reset(uid, key):
     """ The page that actually resets the password """
-    user = User.query.filter_by(uid=uid).first()
+    user = db.get_user_from_uid(uid)
     if not user:
         abort(403)
-    key = getMetadata(user, 'recovery-key', record=True)
-    keyExp = getMetadata(user, 'recovery-key-time', record=True)
+    key = db.get_user_metadata(user['uid'], 'recovery-key')
+    # keyExp = db.get_user_metadata(user['uid'], 'recovery-key-time')
     if not key:
         abort(404)
     if current_user.is_authenticated:
-        db.session.delete(key)
-        db.session.delete(keyExp)
-        db.session.commit()
+        db.uquery('DELETE FROM `user_metadata` WHERE `uid`=%s AND `key`=%s',
+                  (user['uid'], 'recovery-key'))
+        db.uquery('DELETE FROM `user_metadata` WHERE `uid`=%s AND `key`=%s',
+                  (user['uid'], 'recovery-key-time'))
         return redirect(url_for('index'))
 
-    form = forms.PasswordResetForm(key=key.value, user=user.uid)
+    form = forms.PasswordResetForm(key=key['value'], user=user['uid'])
     return render_template('password_reset.html', resetpw=form)
 
 

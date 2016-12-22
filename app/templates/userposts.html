@@ -26,7 +26,7 @@
   <ul id="userBadges" style="color: darkcyan;">
     {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
     {% for badge in badges if badges|length > 0 %}
-    <li title="{{badge.getBadgeText}}"><i class="fa {{badge.getBadgeClass}}"></i> {{badge.getBadgeName}}</li>
+    <li title="{{badge.text}}"><i class="fa {{badge.badge}}"></i> {{badge.name}}</li>
     {% else %}
     <li>none</li>
     {% endfor %}
@@ -37,7 +37,7 @@
   <h3>Owns:</h3>
   <ul style="color: darkcyan;">
     {% for own in owns if owns|length > 0 %}
-    <li><a href="{{url_for('view_sub', sub=own.getSubName)}}">{{own.getSubName}}</a></li>
+    <li><a href="{{url_for('view_sub', sub=own.name)}}">{{own.name}}</a></li>
     {% else %}
     <li>none</li>
     {% endfor %}
@@ -48,7 +48,7 @@
   <h3>Mods:</h3>
   <ul style="color: darkcyan;">
     {% for mod in mods if mods|length > 0 %}
-    <li><a href="{{url_for('view_sub', sub=mod.getSubName)}}">{{mod.getSubName}}</a></li>
+    <li><a href="{{url_for('view_sub', sub=mod.name)}}">{{mod.name}}</a></li>
     {% else %}
     <li>none</li>
     {% endfor %}
@@ -63,22 +63,22 @@
       <div class="recent">
         <h3>Recent Posts</h3>
         <ul class="rpost">
-          {% if pcount < 1 %}
+          {% if posts|length < 1 %}
           <p>
             This user has not posted anything, yet
           </p>
           {% else %}
           <p>
-            This user has {{pcount}} posts
+            This user has {{posts|length}} posts
           </p>
-          {% for post in user.posts[::-1][:20] if not post.deleted == 1 %}
+          {% for post in posts if not post.deleted == 1 %}
           <li>
             <div class="userposts data">
-              <p>({{post.voteCount()}}) <a class="title" href="{{url_for('view_post', sub=post.sub.name, pid=post.pid)}}">{{ post.title }}</a></p>
+              <p>({{post['score']}}) <a class="title" href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">{{ post.title }}</a></p>
               <div class="postbar">
                 <i class="fa fa-clock-o" aria-hidden="true"></i> <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in
-                <a href="{{url_for('view_sub', sub=post.sub.name)}}">/s/{{post.sub.name}}</a>
-                with {{post.getCommentCount()}} <i class="fa fa-comments" aria-hidden="true"></i> comments
+                <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}">/s/{{func.getSub(post.sid).name}}</a>
+                with {{db.get_post_comment_count(post.pid)}} <i class="fa fa-comments" aria-hidden="true"></i> comments
             </div>
           </li>
           {% endfor %}

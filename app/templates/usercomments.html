@@ -26,7 +26,7 @@
   <ul id="userBadges" style="color: darkcyan;">
     {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
     {% for badge in badges if badges|length > 0 %}
-    <li title="{{badge.getBadgeText}}"><i class="fa {{badge.getBadgeClass}}"></i> {{badge.getBadgeName}}</li>
+    <li title="{{badge.text}}"><i class="fa {{badge.badge}}"></i> {{badge.name}}</li>
     {% else %}
     <li>none</li>
     {% endfor %}
@@ -37,7 +37,7 @@
   <h3>Owns:</h3>
   <ul style="color: darkcyan;">
     {% for own in owns if owns|length > 0 %}
-    <li><a href="{{url_for('view_sub', sub=own.getSubName)}}">{{own.getSubName}}</a></li>
+    <li><a href="{{url_for('view_sub', sub=own.name)}}">{{own.name}}</a></li>
     {% else %}
     <li>none</li>
     {% endfor %}
@@ -48,7 +48,7 @@
   <h3>Mods:</h3>
   <ul style="color: darkcyan;">
     {% for mod in mods if mods|length > 0 %}
-    <li><a href="{{url_for('view_sub', sub=mod.getSubName)}}">{{mod.getSubName}}</a></li>
+    <li><a href="{{url_for('view_sub', sub=mod.name)}}">{{mod.name}}</a></li>
     {% else %}
     <li>none</li>
     {% endfor %}
@@ -63,25 +63,25 @@
       <div class="recent">
         <h3>Recent Comments</h3>
         <ul class="rpost">
-          {% if ccount < 1 %}
+          {% if comments|length < 1 %}
           <p>
             This user has not commented on anything, yet
           </p>
           {% else %}
           <p>
-            This user has {{ccount}} comments
+            This user has {{comments|length}} comments
           </p>
-          {% for comments in user.comments[::-1][:20] if not comments.deleted %}
+          {% for comment in comments if not comment.deleted %}
           <li>
             <div class="usercomments data">
-              <p><a class="title" href="{{ url_for('view_post', sub=comments.post.sub.name, pid=comments.post.pid) }}">{{comments.post.title}}</a></p>
-              <p><span class="comment">{{markdown(comments.content)|safe}}</span></p>
+              <p><a class="title" href="{{ url_for('view_post', sub=db.get_sub_from_pid(comment.pid).name, pid=comment.pid) }}">{{db.get_post_from_pid(comment.pid).title}}</a></p>
+              <p><span class="comment">{{markdown(comment.content)|safe}}</span></p>
               <div class="postbar">
-                <a href="{{ url_for('view_post', sub=comments.post.sub.name, pid=comments.post.pid) }}#{{comments.cid}}" class="btn small">
+                <a href="{{ url_for('view_post', sub=db.get_sub_from_pid(comment.pid).name, pid=comment.pid) }}#{{comment.cid}}" class="btn small">
                   <i class="fa fa-link" aria-hidden="true"></i> permalink
                 </a>
-                <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{comments.post.posted.isoformat()}}Z"></time-ago> in
-                <a href="{{ url_for('view_sub', sub=comments.post.sub.name) }}">/s/{{comments.post.sub.name}}</a>
+                <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago> in
+                <a href="{{ url_for('view_sub', sub=db.get_sub_from_pid(comment.pid).name) }}">/s/{{db.get_sub_from_pid(comment.pid).name}}</a>
               </div>
             </div>
           </li>
