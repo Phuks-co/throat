@@ -14,25 +14,13 @@
 {{ super() }}
 {% if not subs %}<h1 class="noshit">There are no subs here, yet.</h1>{% endif %}
 {% for sub in subs %}
-    <article class="post" data-sid="{{sub.sid}}">
-      <div class="image">
-          <a href="{{url_for('view_sub', sub=sub.name)}}">
-            <span class="fa-stack fa-3x" style="color: #616161;">
-              <i class="fa fa-square fa-stack-2x"></i>
-              {% if sub.isNSFW %}
-              <i title ="NSFW" class="fa fa-eye-slash fa-stack-1x fa-inverse"></i>
-              {% else %}
-              <i class="fa fa-list fa-stack-1x fa-inverse"></i>
-              {% endif %}
-            </span>
-          </a>
-      </div>
+    <article class="col-5 post" data-sid="{{sub.sid}}" style="float:left">
       <div class="main">
         <a class="title" href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>
-        <p class="author">{{sub.title}}</p>
+        <p class="author">{% if sub.nsfw  %}<span class="btn" style="color:white;background:red">nsfw</span>{% endif %} {{sub.title}}</p>
         <p class="author">Created by {{func.getSubUsers(sub, 'mod')}} <time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago></p>
         <p class="container">
-          <a class="btn small"><i class="fa fa-users" aria-hidden="true"></i> {{getSuscriberCount(sub)}} Subscribers</a>
+          <a class="btn small"><i class="fa fa-users" aria-hidden="true"></i> {{getSuscriberCount(sub)}}</a>
           {% if current_user.has_subscribed(sub) %}
           <span id="subscribe" class="subscribed" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Subscribed</a></span>
           {% else %}

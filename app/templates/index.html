@@ -226,7 +226,9 @@
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
                 </span>
               {% endif %}
-              <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{{func.getSub(post.sid).name}}</a>
+              <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i>
+              {% if post.sub.nsfw  %}<font style="color:red">nsfw</font>{% endif %}
+              /s/{{func.getSub(post.sid).name}}</a>
               <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a>
               <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.getCommentCount()}})</a>
               </p>
