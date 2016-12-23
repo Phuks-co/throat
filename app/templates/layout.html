@@ -17,7 +17,14 @@
 
   <link rel="icon" href="{{ url_for('static', filename='img/icon.png') }}?v9">
 
-  <title>{% block title %}{{config.LEMA}}{% endblock %}</title>
+  <title>
+    {% if not current_user.is_anonymous %}
+      {% if current_user.has_mail() %}
+        ({{current_user.new_count()}})
+      {% endif %}
+    {% endif %}
+    {% block title %}{{config.LEMA}}{% endblock %}
+  </title>
 
   <!-- css stuff -->
   {% assets "css_all" %}
@@ -98,8 +105,13 @@
             <button type="button" id="toggledark" class="lightbtn"><i class="fa fa-lightbulb-o" aria-hidden="true"></i></button>
             <a href="{{ url_for('inbox_sort') }}">
               <button type="button" class="lightbtn" id="mail">
-                 {% if current_user.has_mail() %}{{current_user.new_count()}} {% endif %}<i class="fa fa-envelope{% if current_user.has_mail() %} hasmail{% else %}-o{% endif %}" aria-hidden="true"></i>
-               </button>
+              {% if current_user.has_mail() %}
+                {{current_user.new_count()}}
+                <i class="fa fa-envelope hasmail" aria-hidden="true"></i>
+              {% else %}
+                <i class="fa fa-envelope-o" aria-hidden="true"></i>
+              {% endif %}
+              </button>
             </a>
             <a href="{{ url_for('edit_user', user=current_user.name) }}"><button type="button" class="lightbtn" id="config"><i class="fa fa-cog" aria-hidden="true"></i></button></a>
           </div>
