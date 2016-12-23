@@ -200,7 +200,7 @@
         </span>
       {% endif %}
         <a href="{{url_for('view_user', user=ann.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{ann.user.name}}</a>
-        <a href="{{url_for('view_post', sub=sub.name, pid=ann.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{ann.comments.count()}})</a>
+        <a href="{{url_for('view_post', sub=sub.name, pid=ann.pid)}}#comments" class="btn small"><i class="fa fa-comments" aria-hidden="true"></i>  {{ann.comments.count()}}</a>
         {% if current_user.is_mod(sub) or current_user.is_admin() %}
         <a href="#delete-post-form" class="btn small btn-red delpost" data-post="{{ann.pid}}"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
         {% endif %}
@@ -312,7 +312,7 @@
               </span>
             {% endif %}
               <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a>
-              <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.comments.count()}})</a>
+              <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comments" aria-hidden="true"></i>  {{post.comments.count()}}</a>
               {% if current_user.is_mod(sub) or current_user.is_admin() %}
               <a href="#delete-post-form" class="btn small btn-red delpost" data-post="{{post.pid}}"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
               {% endif %}
