@@ -335,6 +335,12 @@ def welcome():
     return render_template('welcome.html')
 
 
+@app.route("/donate")
+def donate():
+    """ Donation page """
+    return render_template('donate.html')
+
+
 @app.route("/subs")
 def view_subs():
     """ Here we can view available subs """

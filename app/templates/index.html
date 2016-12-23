@@ -48,16 +48,8 @@
 
 {% if func.enableBTCmod() %}
 <span class="col-12"><hr></span>
-<div class="col-12 row btcdonation">
-  <div class="btcmessage">
-    {{func.getBTCmsg()}}
-  </div>
-  <div class="btcaddr">
-    {{func.getBTCaddr()}}
-  </div>
-  <div class="btcqrcode">
-    <img src="https://chart.googleapis.com/chart?cht=qr&chl={{func.getBTCaddr()}}&chs=104x104&choe=UTF-8&chld=L|0">
-  </div>
+<div class="col-12">
+  <a href="{{url_for('donate')}}" class="btn btn-orange donate" style="width:100%;">GibPhuk</a>
 </div>
 {% endif %}
 

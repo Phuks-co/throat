@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block title %}{{config.LEMA}}{% endblock %}
+
+{% block content %}
+{{ super() }}
+<h1>Donate to Phuks</h1>
+<div class="col-12 row btcdonation">
+  <div class="btcmessage">
+    {{func.getBTCmsg()}}
+  </div>
+  <div class="btcaddr">
+    {{func.getBTCaddr()}}
+  </div>
+  <div class="btcqrcode">
+    <img src="https://chart.googleapis.com/chart?cht=qr&chl={{func.getBTCaddr()}}&chs=104x104&choe=UTF-8&chld=L|0">
+  </div>
+</div>
+{% endblock %}
