@@ -29,8 +29,11 @@
 {{ super() }}
 <div class="user-activity col-12">
     <h3>
-      {{messages|length}} {{box_name}} <a data-boxid="{{boxID}}" data-name="{{current_user.name}}" class="readall btn small right">
-      <i class="fa fa-folder-open" aria-hidden="true"></i> Mark all as read</a>
+      {{messages|length}} {{box_name}}
+      {% if box_name != 'Sent' %}
+        <a data-boxid="{{boxID}}" data-name="{{current_user.name}}" class="readall btn small right">
+        <i class="fa fa-folder-open" aria-hidden="true"></i> Mark all as read</a>
+      {% endif %}
     </h3>
 {% for message in messages %}
     <article class="pmessage post" data-replyto='{{message.sentby}}'
