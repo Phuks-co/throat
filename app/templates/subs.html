@@ -17,7 +17,7 @@
     <article class="col-5 post" data-sid="{{sub.sid}}" style="float:left">
       <div class="main">
         <a class="title" href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>
-        <p class="author">{% if sub.nsfw  %}<span class="btn" style="color:white;background:red">nsfw</span>{% endif %} {{sub.title}}</p>
+        <p class="author">{% if sub.nsfw  %}<span class="btn small" style="color:white;background:red">nsfw</span>{% endif %} {{sub.title}}</p>
         <p class="author">Created by {{func.getSubUsers(sub, 'mod')}} <time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago></p>
         <p class="container">
           <a class="btn small"><i class="fa fa-users" aria-hidden="true"></i> {{getSuscriberCount(sub)}}</a>
