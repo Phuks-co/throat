@@ -45,11 +45,12 @@
   </div>
 {%endif%}
 {% endcache %}
-
 {% if func.enableBTCmod() %}
 <span class="col-12"><hr></span>
-<div class="col-12">
-  <a href="{{url_for('donate')}}" class="btn btn-orange donate" style="width:100%;">GibPhuk</a>
+<div class="row buttons">
+  <div class="col-12">
+    <a href="{{url_for('donate')}}" class="btn btn-orange donate" style="width:100%;">GibPhuk</a>
+  </div>
 </div>
 {% endif %}
 
@@ -105,7 +106,7 @@
             </span>
           <a href="{{url_for('view_sub', sub=ann.sub.name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{{ann.sub.name}}</a>
           <a href="{{url_for('view_user', user=ann.user.name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{ann.user.name}}</a>
-          <a href="{{url_for('view_post_inbox', pid=ann.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{ann.comments.count()}})</a>
+          <a href="{{url_for('view_post_inbox', pid=ann.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> {{ann.comments.count()}}</a>
           </p>
       </div>
   </article>
@@ -222,7 +223,7 @@
               {% if post.sub.nsfw  %}<font style="color:red">nsfw</font>{% endif %}
               /s/{{func.getSub(post.sid).name}}</a>
               <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a>
-              <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.getCommentCount()}})</a>
+              <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comments" aria-hidden="true"></i> {{post.getCommentCount()}}</a>
               </p>
           </div>
         {% endcache %}
