@@ -1112,10 +1112,10 @@ def toggle_sticky(post):
                          ' touched sticky',
                          url_for('view_post', sub=sub['name'],
                                  pid=post['pid']))
-        ckey = make_template_fragment_key('sticky', vary_on=[post.sub.sid])
+        ckey = make_template_fragment_key('sticky', vary_on=[post['sid']])
         cache.delete(ckey)
 
-    return redirect(url_for('view_sub', sub=post.sub.name))
+    return redirect(url_for('view_sub', sub=sub['name']))
 
 
 @do.route("/do/flair/<sub>/edit", methods=['POST'])

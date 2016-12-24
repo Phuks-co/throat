@@ -463,7 +463,7 @@ def getStickies(sid):
     x = db.get_sub_metadata(sid, 'sticky', _all=True)
     r = []
     for i in x:
-        r.append(db.get_post_from_pid(i['pid']))
+        r.append(db.get_post_from_pid(i['value']))
     return r
 
 
