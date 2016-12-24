@@ -508,8 +508,7 @@ def getDefaultSubs():
     md = db.get_site_metadata('default', True)
     defaults = []
     for sub in md:
-        sub = db.get_sub_from_sid(sub['value'])
-        defaults.append(sub)
+        defaults.append({'sid': sub['value']})
     return defaults
 
 
@@ -519,6 +518,7 @@ def getSubscriptions(uid):
         subs = db.get_user_subscriptions(uid)
     else:
         subs = getDefaultSubs()
+    print(subs)
     return list(subs)
 
 
