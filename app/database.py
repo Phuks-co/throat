@@ -228,7 +228,7 @@ def update_site_metadata(key, value):
     x = get_site_metadata(key)
     if not x:
         return create_site_metadata(key, value)
-    uquery('UPDATE `sub_post_metadata` SET `value`=%s WHERE `key`=%s',
+    uquery('UPDATE `site_metadata` SET `value`=%s WHERE `key`=%s',
            (value, key))
 
 # Create X
