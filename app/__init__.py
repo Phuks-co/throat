@@ -729,7 +729,7 @@ def view_messages_sent():
     """ WIP: View user's messages """
     user = session['user_id']
     msgs = db.query('SELECT * FROM `message` WHERE `mtype`=1 '
-                    'AND `receivedby`=%s ORDER BY `posted` DESC',
+                    'AND `sentby`=%s ORDER BY `posted` DESC',
                     (user,)).fetchall()
     return render_template('messages.html', user=user, messages=msgs,
                            box_name="Sent")

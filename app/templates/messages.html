@@ -88,7 +88,7 @@
             {%endif%}
             <a class="delete btn small btn-red" data-mid="{{message.mid}}"><i class="fa fa-trash" aria-hidden="true"></i> delete</a>
           {% else %}
-            <a href="{{url_for('view_user', user=message.getMsgRecBy)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{message.getMsgRecBy}}</a>
+            <a href="{{url_for('view_user', user=db.get_user_from_uid(message.receivedby).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{db.get_user_from_uid(message.receivedby).name}}</a>
           {% endif %}
         </p>
       </div>
