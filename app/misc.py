@@ -366,7 +366,7 @@ def hasVotedComment(uid, comment, up=True):
 def getCommentParentUID(cid):
     """ Returns the uid of a parent comment """
     comm = db.get_comment_from_cid(cid)
-    parent = db.get_comment_from_cid(comm['parent'])
+    parent = db.get_comment_from_cid(comm['parentcid'])
     return parent['uid']
 
 

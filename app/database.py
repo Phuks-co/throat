@@ -102,7 +102,7 @@ def get_post_from_pid(pid):
     return c.fetchone()
 
 
-@cache.memoize(10)
+@cache.memoize(5)
 def get_comment_from_cid(cid):
     """ Returns a comment's db stuff from the cid """
     c = query('SELECT * FROM `sub_post_comment` WHERE `cid`=%s', (cid, ))
@@ -439,7 +439,7 @@ def get_post_thumbnail(post):
     return post['thumbnail']
 
 
-@cache.memoize(7)
+@cache.memoize(10)
 def get_post_comments(pid, parent=None):
     """ Returns some comments from a post. If the parentcid parameter is given,
     it returns all the child-comments from that cid. If not, it'll only return
