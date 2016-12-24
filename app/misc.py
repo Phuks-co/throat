@@ -518,7 +518,6 @@ def getSubscriptions(uid):
         subs = db.get_user_subscriptions(uid)
     else:
         subs = getDefaultSubs()
-    print(subs)
     return list(subs)
 
 

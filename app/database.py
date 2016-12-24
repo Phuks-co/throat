@@ -400,11 +400,11 @@ def is_post_nsfw(post):
                 d1['value'] = 0
             uquery('UPDATE `sub_post` SET `nsfw`=%s WHERE `pid`=%s',
                    (d1['value'], post['pid']))
-            return d1['value']
+            return bool(int(d1['value']))
         uquery('UPDATE `sub_post` SET `nsfw`=%s WHERE `pid`=%s',
                (0, post['pid']))
         return False
-    return post['nsfw']
+    return bool(post['nsfw'])
 
 
 @cache.memoize(15)
