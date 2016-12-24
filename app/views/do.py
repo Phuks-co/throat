@@ -1002,7 +1002,7 @@ def read_pm(mid):
         if message['read'] is not None:
             return json.dumps({'status': 'ok'})
         read = datetime.datetime.utcnow()
-        db.uquery('UPDATE `message` SET `read`=%s WHERE `mid`=%s', (mid, read))
+        db.uquery('UPDATE `message` SET `read`=%s WHERE `mid`=%s', (read, mid))
         return json.dumps({'status': 'ok', 'mid': mid})
     else:
         abort(403)
