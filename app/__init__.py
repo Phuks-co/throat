@@ -356,7 +356,7 @@ def edit_sub_css(sub):
 
     form = EditSubCSSForm()
 
-    form.css.data = db.get_sub_stylesheet()
+    form.css.data = db.get_sub_stylesheet(sub['sid'])
     return render_template('editsubcss.html', sub=sub, form=form)
 
 
@@ -419,9 +419,9 @@ def edit_sub_mods(sub):
 
     if current_user.is_mod(sub) or current_user.is_modinv(sub) \
        or current_user.is_admin():
-        xmods = db.get_sub_metadata(sub, 'xmod2', _all=True)
-        mods = db.get_sub_metadata(sub, 'mod2', _all=True)
-        modinvs = db.get_sub_metadata(sub, 'mod2i', _all=True)
+        xmods = db.get_sub_metadata(sub['sid'], 'xmod2', _all=True)
+        mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
+        modinvs = db.get_sub_metadata(sub['sid'], 'mod2i', _all=True)
         return render_template('submods.html', sub=sub, mods=mods,
                                modinvs=modinvs, xmods=xmods,
                                editmod2form=EditMod2Form(),
