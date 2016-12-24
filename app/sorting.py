@@ -31,7 +31,7 @@ class NewSorting(BasicSorting):
     """ Sorts by date (/new) """
     def __init__(self, posts):
         super(NewSorting, self).__init__(posts)
-        self.posts.sort(key=lambda x: x.posted.isoformat())
+        self.posts.sort(key=lambda x: x['posted'].isoformat())
         self.posts.reverse()
 
 
