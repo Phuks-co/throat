@@ -794,8 +794,7 @@ def ban_user_sub(sub):
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    if current_user.is_topmod(sub) or current_user.is_admin() \
-       or current_user.is_mod(sub):
+    if current_user.is_mod(sub) or current_user.is_admin():
         form = BanUserSubForm()
         if form.validate():
             user = db.get_user_from_name(form.user.data)
@@ -880,8 +879,7 @@ def remove_sub_ban(sub, user):
     """ Remove Mod2 """
     user = db.get_user_from_name(user)
     sub = db.get_sub_from_name(sub)
-    if current_user.is_topmod(sub) or current_user.is_admin() \
-       or current_user.is_mod(sub):
+    if current_user.is_mod(sub) or current_user.is_admin():
         if not misc.isSubBan(sub, user):
             return jsonify(status='error', error=['User was not banned'])
 
@@ -1126,7 +1124,7 @@ def edit_flair(sub):
     if not sub:
         abort(404)
 
-    if not current_user.is_topmod(sub) and not current_user.is_admin():
+    if not current_user.is_mod(sub) and not current_user.is_admin():
         abort(403)
 
     form = EditSubFlair()
@@ -1152,7 +1150,7 @@ def delete_flair(sub):
     if not sub:
         abort(404)
 
-    if not current_user.is_topmod(sub) and not current_user.is_admin():
+    if not current_user.is_mod(sub) and not current_user.is_admin():
         abort(403)
 
     form = DeleteSubFlair()
@@ -1176,7 +1174,7 @@ def create_flair(sub):
     if not sub:
         abort(404)
 
-    if not current_user.is_topmod(sub) and not current_user.is_admin():
+    if not current_user.is_mod(sub) and not current_user.is_admin():
         abort(403)
     form = CreateSubFlair()
     if form.validate():
