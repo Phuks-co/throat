@@ -269,7 +269,7 @@ def all_domain_new(page, domain):
 def search(page, term):
     """ The index page, with basic title search """
     c = db.query('SELECT * FROM `sub_post` WHERE `title` LIKE %s '
-                 'ORDER BY `posted` LIMIT %s,20',
+                 'ORDER BY `posted` DESC LIMIT %s,20',
                  ('%' + term + '%', (page - 1) * 20))
     posts = c.fetchall()
 
@@ -443,7 +443,8 @@ def sub_new_rss(sub):
     fg.link(href=url_for('view_sub_new', sub=sub['name'], _external=True))
     fg.generator("Throat")
     posts = db.query('SELECT * FROM `sub_post` WHERE sid=%s'
-                     ' ORDER BY `posted` LIMIT 30', (sub['sid'], )).fetchall()
+                     ' ORDER BY `posted` DESC LIMIT 30', (sub['sid'], )) \
+              .fetchall()
 
     for post in posts:
         fe = fg.add_entry()
@@ -465,7 +466,7 @@ def view_sub_new(sub, page):
         abort(404)
 
     posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s '
-                     'ORDER BY `posted` LIMIT %s,20',
+                     'ORDER BY `posted` DESC LIMIT %s,20',
                      (sub['sid'], (page - 1) * 20, )).fetchall()
     mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
     createtxtpost = CreateSubTextPost(sub=sub['name'])
