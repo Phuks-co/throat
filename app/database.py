@@ -375,13 +375,16 @@ def is_post_deleted(post):
     if post['deleted'] is None:
         d1 = get_post_metadata(post['pid'], 'deleted')
         if d1:
-            uquery('UPDATE `sub_post` SET `deleted`=%s', (1, ))
+            uquery('UPDATE `sub_post` SET `deleted`=%s WHERE `pid`=%s',
+                   (1, post['pid']))
             return True
         d2 = get_post_metadata(post['pid'], 'moddeleted')
         if d2:
-            uquery('UPDATE `sub_post` SET `deleted`=%s', (1, ))
+            uquery('UPDATE `sub_post` SET `deleted`=%s WHERE `pid`=%s',
+                   (1, post['pid']))
             return True
-        uquery('UPDATE `sub_post` SET `deleted`=%s', (0, ))
+        uquery('UPDATE `sub_post` SET `deleted`=%s WHERE `pid`=%s',
+               (0, post['pid']))
         return False
     return post['deleted']
 
@@ -395,9 +398,11 @@ def is_post_nsfw(post):
         if d1:
             if not d1['value']:
                 d1['value'] = 0
-            uquery('UPDATE `sub_post` SET `nsfw`=%s', (d1['value'], ))
+            uquery('UPDATE `sub_post` SET `nsfw`=%s WHERE `pid`=%s',
+                   (d1['value'], post['pid']))
             return d1['value']
-        uquery('UPDATE `sub_post` SET `nsfw`=%s', (0, ))
+        uquery('UPDATE `sub_post` SET `nsfw`=%s WHERE `pid`=%s',
+               (0, post['pid']))
         return False
     return post['nsfw']
 
@@ -409,9 +414,11 @@ def is_sub_nsfw(sub):
     if sub['nsfw'] is None:
         d1 = get_sub_metadata(sub['sid'], 'nsfw')
         if d1:
-            uquery('UPDATE `sub` SET `nsfw`=%s', (d1['value'], ))
+            uquery('UPDATE `sub` SET `nsfw`=%s WHERE `sid`=%s',
+                   (d1['value'], sub['sid']))
             return d1['value']
-        uquery('UPDATE `sub` SET `nsfw`=%s', (0, ))
+        uquery('UPDATE `sub` SET `nsfw`=%s WHERE `sid`=%s',
+               (0, sub['sid']))
         return False
     return sub['nsfw']
 
@@ -423,9 +430,11 @@ def get_post_thumbnail(post):
     if post['thumbnail'] is None:
         d1 = get_post_metadata(post['pid'], 'thumbnail')
         if d1:
-            uquery('UPDATE `sub_post` SET `thumbnail`=%s', (d1['value'], ))
+            uquery('UPDATE `sub_post` SET `thumbnail`=%s WHERE `pid`=%s',
+                   (d1['value'], post['pid']))
             return d1['value']
-        uquery('UPDATE `sub_post` SET `nsfw`=%s', ('', ))
+        uquery('UPDATE `sub_post` SET `thumbnail`=%s WHERE `pid`=%s',
+               ('', post['pid']))
         return ''
     return post['thumbnail']
 
