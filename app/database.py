@@ -9,12 +9,15 @@ from flask import g
 from .caching import cache
 
 
-def connect_db():
+def connect_db(db=None):
     """Connects to the specific database."""
+    if not db:
+        db = g.appconfig['DB_NAME']
+
     rv = MySQLdb.connect(host=config.DB_HOST,
                          user=config.DB_USER,
                          passwd=config.DB_PASSWD,
-                         db=config.DB_NAME,
+                         db=db,
                          cursorclass=MySQLdb.cursors.DictCursor)
     return rv
 

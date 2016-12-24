@@ -2,26 +2,33 @@
 import sys
 import json
 import unittest
-import tempfile
 import redis
 
 sys.path.append('..')
-from app import app, db  # noqa
+from app import app  # noqa
+import app.database as db  # noqa
 
 # Misc setup common for all tests
 r = redis.StrictRedis(host=app.config['CACHE_REDIS_HOST'],
                       port=app.config['CACHE_REDIS_PORT'])
 r.flushall()
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + tempfile.mkstemp()[1]
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + tempfile.mkstemp()[1]
 app.config['WTF_CSRF_ENABLED'] = False
-try:
-    db.init_app(app)
-except AssertionError:
-    pass
 
-with app.app_context():
-    db.create_all()
-
+d = db.connect_db('throat_unit')
+f = d.cursor()
+f.execute('DROP DATABASE IF EXISTS throat_unit')
+d.commit()
+f.execute('CREATE DATABASE throat_unit')
+d.commit()
+f.execute('USE throat_unit')
+xx = open('throat.sql').read().split(';')
+for o in xx[:-1]:
+    f.execute(o)
+    d.commit()
+d.close()
+app.config['DB_NAME'] = 'throat_unit'
 app.config['TESTING'] = True
 
 # -- Real shit starts here
@@ -35,6 +42,7 @@ class AABasicTestCase(unittest.TestCase):
     def test_index_loads_and_database_is_empty(self):
         """ Tests if the index loads """
         x = self.app.get('/')
+        print(x.get_data(True))
         assert 'There are no posts here, yet.' in x.get_data(True)
         assert x.status_code == 200
 

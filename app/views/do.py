@@ -806,7 +806,7 @@ def ban_user_sub(sub):
             db.create_message(mfrom=current_user.uid,
                               to=user['uid'],
                               subject='You have been banned from /s/' +
-                                      sub.name,
+                                      sub['name'],
                               content='',
                               link=sub['name'],
                               mtype=7)
@@ -1105,11 +1105,19 @@ def toggle_sticky(post):
     form = DeletePost()
 
     if form.validate():
-        db.update_sub_metadata(sub['sid'], 'sticky', post['pid'])
-        db.create_sublog(sub['sid'], 4, current_user.get_username() +
-                         ' touched sticky',
-                         url_for('view_post', sub=sub['name'],
-                                 pid=post['pid']))
+        x = db.get_sub_metadata(sub['sid'], 'sticky')
+        if not x or int(x['value']) != post['pid']:
+            db.update_sub_metadata(sub['sid'], 'sticky', post['pid'])
+            db.create_sublog(sub['sid'], 4, current_user.get_username() +
+                             ' touched sticky',
+                             url_for('view_post', sub=sub['name'],
+                                     pid=post['pid']))
+        else:
+            db.uquery('DELETE FROM `sub_metadata` WHERE `value`=%s AND '
+                      '`key`=%s', (post['pid'], 'sticky'))
+        cache.delete_memoized(misc.getStickies, post['sid'])
+        cache.delete_memoized(db.get_sub_metadata, post['sid'], 'sticky',
+                              _all=True)
         ckey = make_template_fragment_key('sticky', vary_on=[post['sid']])
         cache.delete(ckey)
 

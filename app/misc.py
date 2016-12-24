@@ -430,7 +430,10 @@ def getSubUsers(sub, key):
 def getSubCreation(sub):
     """ Returns the sub's 'creation' metadata """
     x = db.get_sub_metadata(sub['sid'], 'creation')
-    return x['value'].replace(' ', 'T')  # Converts to ISO format
+    try:
+        return x['value'].replace(' ', 'T')  # Converts to ISO format
+    except TypeError:  # no sub creation!
+        return ''
 
 
 @cache.memoize(60)
@@ -458,7 +461,7 @@ def getSubPostCount(sub):
     return y
 
 
-@cache.memoize(60)
+@cache.memoize(5)
 def getStickies(sid):
     """ Returns a list of stickied SubPosts """
     x = db.get_sub_metadata(sid, 'sticky', _all=True)

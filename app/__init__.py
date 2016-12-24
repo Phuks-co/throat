@@ -114,6 +114,10 @@ def close_db(error):
         g.db.close()
 
 
+@app.before_request
+def do_magic_stuff():
+    g.appconfig = app.config
+
 # @app.before_first_request
 # def initialize_database():
 #     """ This is executed before any request is processed. We use this to

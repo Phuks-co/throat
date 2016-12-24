@@ -253,11 +253,11 @@
             <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="text-post center no-padding comment sub-{{loop.depth0}}">
               <div class="head">
                 <div class="info">
-                  <a class="btn small {% if comment.deleted %}expand{%else%}collapse{%endif%}" data-cid="{{comment.cid}}"><i class="fa fa-{% if comment.deleted %}plus{%else%}minus{%endif%}" aria-hidden="true"></i></a>
+                  <a class="btn small {% if comment.status == 1 %}expand{%else%}collapse{%endif%}" data-cid="{{comment.cid}}"><i class="fa fa-{% if comment.status == 1 %}plus{%else%}minus{%endif%}" aria-hidden="true"></i></a>
                 {# if post.ptype == 1 %}
                   <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
                 {% endif #}
-                  {% if not comment.deleted %}
+                  {% if not comment.status == 1 %}
                     <a href="{{ url_for('view_user', user=db.get_user_from_uid(comment.uid).name) }}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{ db.get_user_from_uid(comment.uid).name }}</a>
                   {%else%}
                     <a class="btn small"><i class="fa fa-user" aria-hidden="true"></i>[Deleted]</a>
@@ -265,18 +265,18 @@
                   <span class="time btn small">
                     <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago>
                   </span>
-                {% if comment.lastedit and not comment.deleted %}
+                {% if comment.lastedit and not comment.status == 1 %}
                   <span class="time btn small">
                     <i class="fa fa-clock-o" aria-hidden="true"></i> Edited <time-ago datetime="{{comment.lastedit.isoformat()}}Z"></time-ago>
                   </span>
                 {% endif %}
-                {% if (comment.uid == session['user_id'] or current_user.is_admin()) and not comment.deleted %}
+                {% if (comment.uid == session['user_id'] or current_user.is_admin()) and not comment.status == 1 %}
                   <a href="#edit-comment-form" class="btn btn-orange edit small edit-comment-form" data-cid="{{comment.cid}}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
                   <a href="#delete-comment-form" class="btn btn-orange edit small delete-comment-form" data-cid="{{comment.cid}}"><i class="fa fa-times-circle" aria-hidden="true"></i> Delete </a>
                 {% endif %}
                 </div>
               </div>
-              <div class="row" id="comment-{{comment.cid}}" {% if comment.deleted %}hidden{%endif%}>
+              <div class="row" id="comment-{{comment.cid}}" {% if comment.status == 1 %}hidden{%endif%}>
                 <div class="pull left votecomment" style="margin-left: 10px;">
                   {# vote arrow div #}
                     <form class="cuvform" id="cuvform-{{comment.cid}}">
@@ -293,10 +293,10 @@
                 </div>
                 <div class="col-11">
                   <div class="content" id="content-{{comment.cid}}">
-                    {% if comment.deleted %}[Deleted]{%else%}
+                    {% if comment.status == 1 %}[Deleted]{%else%}
                       {{markdown(comment.content)|safe}}
                     {%endif%}</div>
-                  {%if not comment.deleted %}
+                  {%if not comment.status == 1 %}
                     <div hidden id="sauce-{{comment.cid}}">{{comment.content}}</div>
                   {%endif%}
                   <div class="bottombar">
@@ -314,7 +314,7 @@
                 </div>
               </div>
             </article>
-            <div id="child-{{comment.cid}}" {% if comment.deleted %}hidden{%endif%}>
+            <div id="child-{{comment.cid}}" {% if comment.status == 1 %}hidden{%endif%}>
               {% if db.get_post_comments(post.pid, comment.cid) %}
                 {{loop(db.get_post_comments(post.pid, comment.cid))}}
               {% endif %}
