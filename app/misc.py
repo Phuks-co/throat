@@ -373,6 +373,7 @@ def getCommentParentUID(cid):
 def getCommentSub(cid):
     """ Returns the sub for a comment """
     l = db.get_comment_from_cid(cid)
+
     return db.get_sub_from_pid(l['pid'])
 
 
@@ -584,7 +585,7 @@ def getYoutubeID(url):
 
 def moddedSubCount(uid):
     """ Returns the number of subs a user is modding """
-    sub = db.query('SELECT COUNT(*) AS c ON `sub_metadata` WHERE `value`=%s '
+    sub = db.query('SELECT COUNT(*) AS c FROM `sub_metadata` WHERE `value`=%s '
                    "AND `key` IN ('mod1', 'mod2')", (uid,))
     return sub.fetchone()['c']
 

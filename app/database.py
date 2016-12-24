@@ -253,13 +253,14 @@ def create_sub(uid, name, title):
     """ Registers a new sub """
     sid = str(uuid.uuid4())
     uquery('INSERT INTO `sub` (`sid`, `name`, `title`, `sidebar`, `nsfw`) '
-           'VALUES (%s, %s, %s, '', 0)', (sid, name, title))
+           'VALUES (%s, %s, %s, \'\', 0)', (sid, name, title))
     g.db.commit()
     create_sub_metadata(sid, 'mod', uid)
     create_sub_metadata(sid, 'mod1', uid)
     create_sub_metadata(sid, 'creation', datetime.datetime.utcnow())
     uquery('INSERT INTO `sub_stylesheet` (`sid`, `content`) VALUES (%s, %s)',
            (sid, '/* CSS here */'))
+    return {'name': name, 'sid': sid}
 
 
 def create_subscription(uid, sid, stype):
