@@ -40,8 +40,8 @@ def save_grant(client_id, code, req, *args, **kwargs):
     expires = datetime.utcnow() + timedelta(seconds=100)
     l = db.uquery('INSERT INTO `grant` (`client_id`, `code`, `redirect_uri`, '
                   '`_scopes`, `user_id`, `expires`) VALUES (%s, %s, %s, %s, %s'
-                  ', %s)', (client_id, code['code'], req.redirect_uri,
-                            ' '.join(req.scopes), current_user.uid, expires))
+                  ', %s)', (client_id, code['code'], req['redirect_uri'],
+                            ' '.join(req['scopes']), current_user.uid, expires))
 
     g.db.commit()
     f = db.query('SELECT * FROM `grant` WHERE `id`=%s', (l.lastrowid, ))
@@ -63,7 +63,7 @@ def load_token(access_token=None, refresh_token=None):
 def save_token(token, req, *args, **kwargs):
     """ Creates oauth token """
     db.uquery('DELETE FROM `token` WHERE `client_id`=%s AND `user_id`=%s',
-              (req.client.client_id, req.user.uid))
+              (req.client['client_id'], req.user.uid))
 
     expires_in = token.get('expires_in')
     expires = datetime.utcnow() + timedelta(seconds=expires_in)
@@ -72,7 +72,7 @@ def save_token(token, req, *args, **kwargs):
                   ') VALUES (%s, %s, %s, %s, %s, %s, %s)',
                   (token['access_token'], token['refresh_token'],
                    token['token_type'], token['scope'], expires,
-                   req.client.client_id, req.user.uid))
+                   req.client['client_id'], req.user.uid))
     g.db.commit()
     f = db.query('SELECT * FROM `token` WHERE `id`=%s', (l.lastrowid, ))
     return f.fetchone()
@@ -100,7 +100,7 @@ def authorize(*args, **kwargs):
 def me():
     """ Returns basic user info """
     user = request.oauth.user
-    return jsonify(email=user.email, username=user.name, uid=user.uid)
+    return jsonify(email=user['email'], username=user['name'], uid=user['uid'])
 
 
 @api.route('/oauth/token', methods=['GET', 'POST'])
