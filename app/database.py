@@ -13,8 +13,6 @@ def connect_db(db=None):
     """Connects to the specific database."""
     if not db:
         db = g.appconfig['DB_NAME']
-    if config.DB_PASSWD == '':
-        config.DB_PASSWD = None
     rv = MySQLdb.connect(host=config.DB_HOST,
                          user=config.DB_USER,
                          passwd=config.DB_PASSWD,
@@ -315,9 +313,9 @@ def create_comment(pid, uid, content, parentcid):
     cid = str(uuid.uuid4())
     if parentcid == "0":
         parentcid = None
-    l = uquery('INSERT INTO `sub_post_comment` (`uid`, `pid`, `time`, `score`,'
-               ' `content`, `parentcid`, `cid`) VALUES (%s, %s, %s, %s, %s, '
-               '%s, %s);', (uid, pid, posted, 0, content, parentcid, cid))
+    uquery('INSERT INTO `sub_post_comment` (`uid`, `pid`, `time`, `score`,'
+           ' `content`, `parentcid`, `cid`) VALUES (%s, %s, %s, %s, %s, '
+           '%s, %s);', (uid, pid, posted, 0, content, parentcid, cid))
     return {'pid': pid, 'uid': uid, 'cid': cid}
 
 
