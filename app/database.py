@@ -317,9 +317,8 @@ def create_comment(pid, uid, content, parentcid):
         parentcid = None
     l = uquery('INSERT INTO `sub_post_comment` (`uid`, `pid`, `time`, `score`,'
                ' `content`, `parentcid`, `cid`) VALUES (%s, %s, %s, %s, %s, '
-               '%s, %s)', (uid, pid, posted, 0, content, parentcid, cid))
-    g.db.commit()
-    return {'pid': pid, 'uid': uid, 'cid': l.lastrowid}
+               '%s, %s);', (uid, pid, posted, 0, content, parentcid, cid))
+    return {'pid': pid, 'uid': uid, 'cid': cid}
 
 
 def create_badge(badge, name, text):
