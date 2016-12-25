@@ -13,7 +13,8 @@ def connect_db(db=None):
     """Connects to the specific database."""
     if not db:
         db = g.appconfig['DB_NAME']
-
+    if config.DB_PASSWD == '':
+        config.DB_PASSWD = None
     rv = MySQLdb.connect(host=config.DB_HOST,
                          user=config.DB_USER,
                          passwd=config.DB_PASSWD,
