@@ -8,6 +8,12 @@ COPY = "2016 Throat. All Rights Reserved."
 # We're using a sqlite database for testing.
 # In production we _should_ use mysql or something else
 SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL') or 'sqlite:////tmp/test.db'
+
+DB_HOST = 'localhost'
+DB_USER = os.getenv('DB_USER') or 'root'
+DB_PASSWD = os.getenv('DB_PASSWD') or 'sumthing'
+DB_NAME = os.getenv('DB_NAME') or 'phuks'
+
 CACHE_TYPE = 'simple'
 CACHE_REDIS_HOST = '127.0.0.1'
 CACHE_REDIS_PORT = 6379

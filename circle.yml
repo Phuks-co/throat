@@ -6,3 +6,8 @@ machine:
     version: 3.4.2
   services:
      - redis
+     - mysql
+  environment:
+    DB_USER: ubuntu
+    DB_PASSWD: ''
+    DB_NAME: 'circle_test'
