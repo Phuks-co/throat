@@ -11,7 +11,7 @@ SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL') or 'sqlite:////tmp/test.db'
 
 DB_HOST = 'localhost'
 DB_USER = os.getenv('DB_USER') or 'root'
-DB_PASSWD = os.getenv('DB_PASSWD') or 'sumthing'
+DB_PASSWD = os.getenv('DB_PASSWD') or ''
 DB_NAME = os.getenv('DB_NAME') or 'phuks'
 
 CACHE_TYPE = 'simple'

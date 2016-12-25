@@ -9,5 +9,5 @@ machine:
      - mysql
   environment:
     DB_USER: ubuntu
-    DB_PASSWD: ''
+    DB_PASSWD: ~
     DB_NAME: 'circle_test'
