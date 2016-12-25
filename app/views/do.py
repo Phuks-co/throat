@@ -687,10 +687,14 @@ def create_comment(sub, pid):
             to = misc.getCommentParentUID(comment['cid'])
             subject = 'Comment reply: ' + post['title']
             mtype = 5
+            cache.delete_memoized(db.get_post_comments, post['pid'],
+                                  form.parent.data)
         else:
             to = post['uid']
             subject = 'Post reply: ' + post['title']
             mtype = 4
+            cache.delete_memoized(db.get_post_comments, post['pid'])
+            cache.delete_memoized(db.get_post_comments, post['pid'], None)
         if to != current_user.uid:
             db.create_message(mfrom=current_user.uid,
                               to=to,

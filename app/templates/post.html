@@ -249,7 +249,7 @@
             Be the first to comment this post
           </p>
           {% endif %}
-          {% for comment in comments recursive %}
+          {% for comment in db.get_post_comments(post.pid) recursive %}
             <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="text-post center no-padding comment sub-{{loop.depth0}}">
               <div class="head">
                 <div class="info">
