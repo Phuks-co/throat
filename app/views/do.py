@@ -533,6 +533,12 @@ def create_lnkpost():
             return json.dumps({'status': 'error',
                                'error': ['Sub does not exist']})
 
+        l = db.query('SELECT `pid` FROM `sub_post` WHERE `sid`=%s AND '
+                     '`link`=%s AND `posted` > DATE_SUB(NOW(), INTERVAL 1 '
+                     'MONTH)', (sub['sid'], form.link.data)).fetchone()
+        if l:
+            return jsonify(status='error', error=['This link was recently '
+                                                  'posted on this sub.'])
         post = db.create_post(sid=sub['sid'],
                               uid=current_user.uid,
                               title=form.title.data,
