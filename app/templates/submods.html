@@ -47,9 +47,9 @@
   <ul>
   {% for modinv in modinvs if modinvs|length > 0 %}
   <span class="editmodbtn col-4">
-    <li><i class="fa fa-user"></i> <a href="{{url_for('view_user', user=modinv.getUsername)}}">{{modinv.getUsername}}</a>
+    <li><i class="fa fa-user"></i> <a href="{{url_for('view_user', user=db.get_user_from_uid(modinv.value).name)}}">{{db.get_user_from_uid(modinv.value).name}}</a>
       {% if current_user.is_admin() or current_user.is_topmod(sub) %}
-      <span id="revoke-mod2-inv" data-sub="{{sub.name}}" data-user="{{modinv.getUsername}}" class="btn revoke">cancel</span>
+      <span id="revoke-mod2-inv" data-sub="{{sub.name}}" data-user="{{db.get_user_from_uid(modinv.value).name}}" class="btn revoke">cancel</span>
       {% endif %}
     </li>
     </span>
@@ -78,7 +78,7 @@
   <ul>
   {% for xmod in xmods if xmods|length > 0 %}
   <span class="col-4">
-    <li><i class="fa fa-remove"></i> <a href="{{url_for('view_user', user=xmod.getUsername)}}">{{xmod.getUsername}}</a></li>
+    <li><i class="fa fa-remove"></i> <a href="{{url_for('view_user', user=db.get_user_from_uid(xmod.value).name)}}">{{db.get_user_from_uid(xmod.value).name}}</a></li>
   </span>
   {% endfor %}
   </ul>

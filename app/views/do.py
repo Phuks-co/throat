@@ -849,7 +849,7 @@ def inv_mod2(sub):
                 return json.dumps({'status': 'error',
                                    'error': ['User does not exist.']})
 
-            if misc.isMod(sub['sid'], user['uid']):
+            if misc.isMod(sub, user):
                 return json.dumps({'status': 'error',
                                    'error': ['User is already a mod.']})
 
@@ -857,7 +857,7 @@ def inv_mod2(sub):
                 return json.dumps({'status': 'error',
                                    'error': ['User has a pending invite.']})
 
-            if misc.moddedSubCount(user.uid) >= 15:
+            if misc.moddedSubCount(user['uid']) >= 15:
                 return json.dumps({'status': 'error',
                                    'error': [
                                        "User can't mod more than 15 subs"
@@ -961,7 +961,7 @@ def revoke_mod2inv(sub, user):
 def accept_mod2inv(sub, user):
     """ Accept mod invite """
     user = db.get_user_from_name(user)
-    if user.uid != current_user.get_id():
+    if user['uid'] != current_user.get_id():
         abort(403)
     sub = db.get_sub_from_name(sub)
     if misc.isModInv(sub, user):
@@ -969,7 +969,7 @@ def accept_mod2inv(sub, user):
             return json.dumps({'status': 'error',
                                'error': ["You can't mod more than 15 subs"]})
         db.uquery('UPDATE `sub_metadata` SET `key`=%s WHERE `key`=%s AND '
-                  '`uid`=%s', ('mod2', 'mod2i', user['uid']))
+                  '`value`=%s', ('mod2', 'mod2i', user['uid']))
         db.create_sublog(sub['sid'], 6, user['name'] + ' accepted mod invite',
                          url_for('edit_sub_mods', sub=sub['name']))
 
