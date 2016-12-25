@@ -97,7 +97,7 @@
         </div>
         {% cache 300, post.pid, 'post' %}
           <div class="image">
-            {% if db.get_post_thumbnail(post) %}
+            {% if not ((db.is_post_nsfw(post) or db.is_sub_nsfw(db.get_sub_from_sid(post.sid))) and current_user.show_nsfw()) and db.get_post_thumbnail(post) %}
             <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
               <img src="{{config.THUMBNAIL_HOST}}{{db.get_post_thumbnail(post)}}">
             </a>
