@@ -297,7 +297,7 @@ def all_top(page):
 @app.route("/all/hot/<int:page>")
 def all_hot(page):
     """ The index page, all posts sorted as most recent posted first """
-    c = db.query('SELECT * FROM `sub_post` LIMIT 500')
+    c = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC LIMIT 500 ')
     sorter = HotSorting(c.fetchall())
 
     return render_template('index.html', page=page, sort_type='all_hot',
