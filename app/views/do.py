@@ -481,7 +481,10 @@ def create_txtpost():
         if not sub:
             return json.dumps({'status': 'error',
                                'error': ['Sub does not exist']})
-
+        if current_user.is_subban(sub):
+            return json.dumps({'status': 'error',
+                               'error': ['You\'re banned from posting on this'
+                                         ' sub']})
         post = db.create_post(sid=sub['sid'],
                               uid=current_user.uid,
                               title=form.title.data,
@@ -532,7 +535,10 @@ def create_lnkpost():
         if not sub:
             return json.dumps({'status': 'error',
                                'error': ['Sub does not exist']})
-
+        if current_user.is_subban(sub):
+            return json.dumps({'status': 'error',
+                               'error': ['You\'re banned from posting on this'
+                                         ' sub']})
         l = db.query('SELECT `pid` FROM `sub_post` WHERE `sid`=%s AND '
                      '`link`=%s AND `posted` > DATE_SUB(NOW(), INTERVAL 1 '
                      'MONTH)', (sub['sid'], form.link.data)).fetchone()
@@ -902,7 +908,7 @@ def remove_sub_ban(sub, user):
                           sub['name'],
                           content='',
                           mtype=7,
-                          mlink=sub['name'])
+                          link=sub['name'])
 
         db.create_sublog(sub['sid'], 7, current_user.get_username() +
                          ' removed ban on ' + user['name'],

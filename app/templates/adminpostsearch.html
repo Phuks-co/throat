@@ -48,7 +48,7 @@
       {% for vote in votes %}
       <tr>
         <td class="col-1">{% if vote.positive %}<span class="upvoted">up</span>{% else %}<span class="downvoted">down</span>{% endif %}</td>
-        <td class="col-11"><a href="{{url_for('view_user', user=vote.getUsername)}}">{{vote.getUsername}}</a></td>
+        <td class="col-11"><a href="{{url_for('view_user', user=db.get_user_from_uid(vote.uid).name)}}">{{db.get_user_from_uid(vote.uid).name}}</a></td>
       </tr>
       {% endfor %}
     </table>
