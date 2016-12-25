@@ -746,7 +746,7 @@ def assign_user_badge(uid, bid):
         bq = db.query('SELECT `xid` FROM `user_metadata` WHERE `key`=%s AND '
                       '`uid`=%s AND `value`=%s', ('badge', uid, bid))
 
-        if bq.rowcount == 0:
+        if bq.rowcount != 0:
             return json.dumps({'status': 'error',
                                'error': ['Badge is already assigned']})
 
