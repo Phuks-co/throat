@@ -11,7 +11,7 @@ from .caching import cache
 
 def connect_db(db=None):
     """Connects to the specific database."""
-    if not db:
+    if db is None:
         db = g.appconfig['DB_NAME']
     rv = MySQLdb.connect(host=config.DB_HOST,
                          user=config.DB_USER,

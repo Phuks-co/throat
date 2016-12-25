@@ -16,7 +16,7 @@ r.flushall()
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + tempfile.mkstemp()[1]
 app.config['WTF_CSRF_ENABLED'] = False
 
-d = db.connect_db('throat_unit')
+d = db.connect_db('')
 f = d.cursor()
 f.execute('DROP DATABASE IF EXISTS throat_unit')
 d.commit()
