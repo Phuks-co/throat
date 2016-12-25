@@ -15,13 +15,13 @@
 {% endblock %}
 
 {% block sidebar %}
-{# if func.enableVideoMode(sub) %}
+{% if func.enableVideoMode(sub) %}
   <div class="musicmodediv">
   <div>Video mode enabled</div>
   {% include 'videomodeplayer.html' %}
 </div>
 <span class="col-12"><hr><span>
-{% endif #}
+{% endif %}
 {{ super() }}
 <p></p>
 <hr/>
