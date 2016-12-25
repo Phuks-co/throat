@@ -17,7 +17,9 @@ def connect_db(db=None):
                          user=config.DB_USER,
                          passwd=config.DB_PASSWD,
                          db=db,
-                         cursorclass=MySQLdb.cursors.DictCursor)
+                         cursorclass=MySQLdb.cursors.DictCursor,
+                         use_unicode=True,
+                         charset="utf8")
     return rv
 
 
