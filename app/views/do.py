@@ -393,7 +393,7 @@ def edit_mod():
     if form.validate():
         db.update_sub_metadata(sub['sid'], 'mod1', user['uid'])
 
-        db.create_sublog(sub.sid, current_user.get_username() + ' transferred '
+        db.create_sublog(sub['sid'], current_user.get_username() + ' transferred '
                          'sub ownership to ' + user['name'],
                          url_for('view_sub', sub=sub['name']))
         return json.dumps({'status': 'ok'})
