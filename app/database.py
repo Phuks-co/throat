@@ -343,8 +343,9 @@ def get_user_subscriptions(uid):
 @cache.memoize(10)
 def get_user_post_voting(uid):
     """ Returns the user's total voting score """
-    c = query('SELECT positive FROM `sub_post_vote` WHERE `uid`=%s',
-              (uid, ))
+    c = query('SELECT `positive` FROM `sub_post_vote` WHERE `uid`=%s UNION '
+              'ALL SELECT `positive` FROM `sub_post_comment_vote` WHERE '
+              '`uid`=%s', (uid, uid))
     l = c.fetchall()
     score = 0
     for i in l:
