@@ -448,10 +448,10 @@ def get_post_comments(pid, parent=None):
     the root comments.  """
     q = 'SELECT * FROM `sub_post_comment` WHERE `pid`=%s'
     if parent:
-        q += ' AND `parentcid`=%s'
+        q += ' AND `parentcid`=%s ORDER BY `score` DESC'
         c = query(q, (pid, parent))
     else:
-        q += ' AND `parentcid` IS NULL'
+        q += ' AND `parentcid` IS NULL ORDER BY `score` DESC'
         c = query(q, (pid, ))
 
     return c.fetchall()
