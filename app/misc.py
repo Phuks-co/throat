@@ -168,7 +168,6 @@ class SiteUser(object):
                 q += '%s, '
                 l.append(post['cid'])
             q = q[:-2] + ")"
-            count = 0
 
             if l:
                 votes = db.query(q, list(l)).fetchall()
