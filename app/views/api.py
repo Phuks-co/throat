@@ -18,19 +18,84 @@ api = Blueprint('api', __name__)
 oauth = OAuth2Provider()
 
 
+class OAuthClient(object):
+    def __init__(self, stuff):
+        self.is_confidential = bool(stuff['is_confidential'])
+        self._redirect_uris = stuff['_redirect_uris']
+        self._default_scopes = stuff['_default_scopes']
+        self.client_id = stuff['client_id']
+
+    @property
+    def client_type(self):
+        if self.is_confidential:
+            return 'confidential'
+        return 'public'
+
+    @property
+    def redirect_uris(self):
+        if self._redirect_uris:
+            return self._redirect_uris.split()
+        return []
+
+    @property
+    def default_redirect_uri(self):
+        return self.redirect_uris[0]
+
+    @property
+    def default_scopes(self):
+        if self._default_scopes:
+            return self._default_scopes.split()
+        return []
+
+
+class OAuthGrant(object):
+    def __init__(self, stuff):
+        self.tuff = stuff
+        self.redirect_uri = stuff['redirect_uri']
+
+    @property
+    def user(self):
+        return db.get_user_from_uid(self.tuff['user_id'])
+
+    @property
+    def scopes(self):
+        if self.tuff['_scopes']:
+            return self.tuff['_scopes'].split()
+        return []
+
+    def delete(self):
+        db.uquery('DELETE FROM `grant` WHERE `id`=%s', (self.tuff['id'],))
+
+
+class OAuthToken(object):
+    def __init__(self, stuff):
+        self.tuff = stuff
+        self.expires = stuff['expires']
+        self.scopes = stuff['_scopes'].split()
+
+    @property
+    def user(self):
+        return db.get_user_from_uid(self.tuff['user_id'])
+
+    def delete(self):
+        db.uquery('DELETE FROM `token` WHERE `id`=%s', (self.tuff['id'],))
+
+
 # OAuth stuff
 @oauth.clientgetter
 def load_client(client_id):
     """ Loads OAuth clients """
-    return db.query('SELECT * FROM `client` WHERE `client_id`=%s',
-                    (client_id,)).fetchone()
+    l = db.query('SELECT * FROM `client` WHERE `client_id`=%s',
+                 (client_id,)).fetchone()
+    return OAuthClient(l) if l else None
 
 
 @oauth.grantgetter
 def load_grant(client_id, code):
     """ Gets grants.. """
-    return db.query('SELECT * FROM `grant` WHERE `client_id`=%s AND `code`=%s',
-                    (client_id, code)).fetchone()
+    l = db.query('SELECT * FROM `grant` WHERE `client_id`=%s AND `code`=%s',
+                 (client_id, code)).fetchone()
+    return OAuthGrant(l) if l else None
 
 
 @oauth.grantsetter
@@ -40,8 +105,8 @@ def save_grant(client_id, code, req, *args, **kwargs):
     expires = datetime.utcnow() + timedelta(seconds=100)
     l = db.uquery('INSERT INTO `grant` (`client_id`, `code`, `redirect_uri`, '
                   '`_scopes`, `user_id`, `expires`) VALUES (%s, %s, %s, %s, %s'
-                  ', %s)', (client_id, code['code'], req['redirect_uri'],
-                            ' '.join(req['scopes']), current_user.uid, expires))
+                  ', %s)', (client_id, code['code'], req.redirect_uri,
+                            ' '.join(req.scopes), current_user.uid, expires))
 
     g.db.commit()
     f = db.query('SELECT * FROM `grant` WHERE `id`=%s', (l.lastrowid, ))
@@ -52,18 +117,19 @@ def save_grant(client_id, code, req, *args, **kwargs):
 def load_token(access_token=None, refresh_token=None):
     """ Loads oauth token """
     if access_token:
-        return db.query('SELECT * FROM `token` WHERE `access_token`=%s',
-                        (access_token,))
+        l = db.query('SELECT * FROM `token` WHERE `access_token`=%s',
+                     (access_token,)).fetchone()
     elif refresh_token:
-        return db.query('SELECT * FROM `token` WHERE `refresh_token`=%s',
-                        (refresh_token,))
+        l = db.query('SELECT * FROM `token` WHERE `refresh_token`=%s',
+                     (refresh_token,)).fetchone()
+    return OAuthToken(l) if l else None
 
 
 @oauth.tokensetter
 def save_token(token, req, *args, **kwargs):
     """ Creates oauth token """
     db.uquery('DELETE FROM `token` WHERE `client_id`=%s AND `user_id`=%s',
-              (req.client['client_id'], req.user.uid))
+              (req.client.client_id, req.user['uid']))
 
     expires_in = token.get('expires_in')
     expires = datetime.utcnow() + timedelta(seconds=expires_in)
@@ -72,7 +138,7 @@ def save_token(token, req, *args, **kwargs):
                   ') VALUES (%s, %s, %s, %s, %s, %s, %s)',
                   (token['access_token'], token['refresh_token'],
                    token['token_type'], token['scope'], expires,
-                   req.client['client_id'], req.user.uid))
+                   req.client.client_id, req.user['uid']))
     g.db.commit()
     f = db.query('SELECT * FROM `token` WHERE `id`=%s', (l.lastrowid, ))
     return f.fetchone()

@@ -41,6 +41,8 @@ from .misc import userCanFlair, getPostFlair
 from .misc import enableBTCmod
 from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
 # from werkzeug.contrib.profiler import ProfilerMiddleware
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 app.jinja_env.cache = {}
