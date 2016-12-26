@@ -393,8 +393,9 @@ def edit_mod():
     if form.validate():
         db.update_sub_metadata(sub['sid'], 'mod1', user['uid'])
 
-        db.create_sublog(sub['sid'], current_user.get_username() + ' transferred '
-                         'sub ownership to ' + user['name'],
+        db.create_sublog(sub['sid'],
+                         current_user.get_username() + ' transferred sub '
+                         'ownership to ' + user['name'],
                          url_for('view_sub', sub=sub['name']))
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -719,7 +720,7 @@ def create_comment(sub, pid):
         misc.workWithMentions(form.comment.data, to, post, sub)
 
         return json.dumps({'status': 'ok', 'page': url_for('view_post_inbox',
-                           pid=pid)})
+                                                           pid=pid)})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -822,7 +823,7 @@ def ban_user_sub(sub):
             db.create_message(mfrom=current_user.uid,
                               to=user['uid'],
                               subject='You have been banned from /s/' +
-                                      sub['name'],
+                              sub['name'],
                               content='',
                               link=sub['name'],
                               mtype=7)

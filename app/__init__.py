@@ -757,6 +757,10 @@ def view_messages_sent():
 def view_messages_postreplies():
     """ WIP: View user's post replies """
     user = session['user_id']
+    now = datetime.datetime.utcnow()
+    db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
+              '`receivedby`=%s AND `mtype`=4', (now, user))
+
     msgs = db.query('SELECT * FROM `message` WHERE `mtype`=4 '
                     'AND `receivedby`=%s ORDER BY `posted` DESC',
                     (user,)).fetchall()
@@ -769,6 +773,10 @@ def view_messages_postreplies():
 def view_messages_comreplies():
     """ WIP: View user's comments replies """
     user = session['user_id']
+    now = datetime.datetime.utcnow()
+    db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
+              '`receivedby`=%s AND `mtype`=5', (now, user))
+
     msgs = db.query('SELECT * FROM `message` WHERE `mtype`=5 '
                     'AND `receivedby`=%s ORDER BY `posted` DESC',
                     (user,)).fetchall()

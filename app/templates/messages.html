@@ -30,7 +30,7 @@
 <div class="user-activity col-12">
     <h3>
       {{messages|length}} {{box_name}}
-      {% if box_name != 'Sent' %}
+      {% if box_name != 'Sent' and box_name != 'Replies' %}
         <a data-boxid="{{boxID}}" data-name="{{current_user.name}}" class="readall btn small right">
         <i class="fa fa-folder-open" aria-hidden="true"></i> Mark all as read</a>
       {% endif %}
@@ -74,7 +74,9 @@
           {% if box_name != 'Sent' %}
             <a href="{{url_for('view_user', user=message.getMsgSentBy)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{db.get_user_from_uid(message.sentby).name}}</a>
             {% if not message.read %}
-              <a class="unread btn btn-orange edit small" data-mid="{{message.mid}}"><i class="fa fa-circle-o" aria-hidden="true"></i> mark as read</a>
+              {% if box_name != 'Replies' %}
+                <a class="unread btn btn-orange edit small" data-mid="{{message.mid}}"><i class="fa fa-circle-o" aria-hidden="true"></i> mark as read</a>
+              {% endif %}
             {% else %}
               <a class="read btn small"><i class="fa fa-folder-open" aria-hidden="true"></i> read {{message.read}}</a>
             {% endif %}
