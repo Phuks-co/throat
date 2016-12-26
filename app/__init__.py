@@ -323,13 +323,15 @@ def donate():
 def view_subs(page):
     """ Here we can view available subs """
     # TODO: pagination
-    c = db.query('SELECT * FROM `sub` ORDER BY `name` DESC')
+    c = db.query('SELECT * FROM `sub` ORDER BY `name` ASC')
     return render_template('subs.html', page=page, subs=c.fetchall())
 
 
 @app.route("/mysubs")
 def view_my_subs():
     """ Here we can view subscribed subs """
+    # mysubs = db.query('SELECT * FROM `SubSubscriber`
+    #                   WHERE `uid`=current_user.uid ')
     # TODO: filter by subscribed subs
     c = db.query('SELECT * FROM `sub` ORDER BY `name`')
     return render_template('subs.html', subs=c.fetchall())
