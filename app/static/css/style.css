@@ -1460,7 +1460,10 @@ span.sidelocale {
     font-size: 12px;
 }
 
-.uvform {
+.uvform,
+.dvform,
+.cuvform,
+.cdvform {
   cursor: pointer;
 }
 
