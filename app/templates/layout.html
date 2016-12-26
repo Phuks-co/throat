@@ -123,7 +123,7 @@
     {% block main %}
     <main class="col-8 right center">{% block content %}{% endblock %}</main>{% endblock %}
   </div>
-  <footer>{{url_for('do.create_lnkpost')}}
+  <footer>
     {% block footer %} &copy;{{config.COPY}} |
     <a href="{{url_for('welcome')}}">Welcome</a> |
     <a href="{{url_for('tos')}}">Terms of service</a> |
