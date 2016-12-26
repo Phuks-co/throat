@@ -1049,7 +1049,7 @@ body.dark #toggledark i {
     color: #ff0;
 }
 body.dark a {
-    color: #777;
+    color: rgb(173, 84, 34);
 }
 body.dark .side {
     background-color: #000000;
