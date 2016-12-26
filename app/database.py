@@ -4,6 +4,7 @@ import datetime
 import bcrypt
 import MySQLdb
 import MySQLdb.cursors
+import _mysql_exceptions
 import config
 from flask import g
 from .caching import cache
@@ -42,7 +43,10 @@ def get_cursor():
 def query(qr, params=()):
     """ Queries the database and returns the cursor """
     c = get_cursor()
-    c.execute(qr, params)
+    try:
+        c.execute(qr, params)
+    except _mysql_exceptions.OperationalError:
+        c.execute(qr, params)  # We retry once just in case
     if not hasattr(g, 'qc'):
         g.qc = 0
     g.qc += 1
@@ -52,7 +56,10 @@ def query(qr, params=()):
 def uquery(qr, params=()):
     """ Queries the database to alter data """
     c = get_cursor()
-    c.execute(qr, params)
+    try:
+        c.execute(qr, params)
+    except _mysql_exceptions.OperationalError:
+        c.execute(qr, params)  # We retry once just in case
     if not hasattr(g, 'qc'):
         g.qc = 0
     g.qc += 1
