@@ -201,9 +201,6 @@
       {% endif %}
         <a href="{{url_for('view_user', user=db.get_user_from_uid(ann.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{db.get_user_from_uid(ann.uid).name}}</a>
         <a href="{{url_for('view_post', sub=sub.name, pid=ann.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> {{db.get_post_comment_count(ann.pid)}}</a>
-        {% if current_user.is_mod(sub) or current_user.is_admin() %}
-        <a href="#delete-post-form" class="btn small btn-red delpost" data-post="{{ann.pid}}"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
-        {% endif %}
       </p>
     </div>
   </article>
@@ -314,9 +311,6 @@
               <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a>
 
               <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> {{db.get_post_comment_count(post.pid)}}</a>
-              {% if current_user.is_mod(sub) or current_user.is_admin() %}
-              <a href="#delete-post-form" class="btn small btn-red delpost" data-post="{{post.pid}}"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
-              {% endif %}
             </p>
           </div>
         {%endcache%}
