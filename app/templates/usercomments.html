@@ -68,19 +68,16 @@
             This user has not commented on anything, yet
           </p>
           {% else %}
-          <p>
-            This user has {{comments|length}} comments
-          </p>
           {% for comment in comments if not comment.deleted %}
           <li>
             <div class="usercomments data">
-              <p>({{func.get_comment_score(comment)}}) <a class="title" href="{{ url_for('view_post', sub=db.get_sub_from_pid(comment.pid).name, pid=comment.pid) }}">{{db.get_post_from_pid(comment.pid).title}}</a></p>
-              <p><span class="comment">{{markdown(comment.content)|safe}}</span></p>
+              <p><a class="title" href="{{ url_for('view_post', sub=db.get_sub_from_pid(comment.pid).name, pid=comment.pid) }}">{{db.get_post_from_pid(comment.pid).title}}</a></p>
+              <p> <span class="comment"> {{markdown(comment.content)|safe}}</span></p>
               <div class="postbar">
                 <a href="{{ url_for('view_post', sub=db.get_sub_from_pid(comment.pid).name, pid=comment.pid) }}#{{comment.cid}}" class="btn small">
                   <i class="fa fa-link" aria-hidden="true"></i> permalink
                 </a>
-                <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago> in
+                ({{func.get_comment_score(comment)}}) Posted <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago> in
                 <a href="{{ url_for('view_sub', sub=db.get_sub_from_pid(comment.pid).name) }}">/s/{{db.get_sub_from_pid(comment.pid).name}}</a>
               </div>
             </div>
@@ -89,6 +86,12 @@
         {% endif %}
         </ul>
       </div>
+      {% if page > 1 %}
+      <a href="{{url_for('view_user_comments', user=user.name, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
+      {% endif %}
+      {% if comments|length == 20 %}
+      <a href="{{url_for('view_user_comments', user=user.name, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+      {% endif %}
     </div>
 
     <form id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="ajaxform mfp-hide white-popup-block">

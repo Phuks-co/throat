@@ -68,15 +68,12 @@
             This user has not posted anything, yet
           </p>
           {% else %}
-          <p>
-            This user has {{posts|length}} posts
-          </p>
           {% for post in posts if not post.deleted == 1 %}
           <li>
             <div class="userposts data">
-              <p>({{post['score']}}) <a class="title" href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">{{ post.title }}</a></p>
+              <p><a class="title" href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">{{ post.title }}</a></p>
               <div class="postbar">
-                <i class="fa fa-clock-o" aria-hidden="true"></i> <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in
+                ({{post['score']}}) <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in
                 <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}">/s/{{func.getSub(post.sid).name}}</a>
                 with {{db.get_post_comment_count(post.pid)}} <i class="fa fa-comments" aria-hidden="true"></i> comments
             </div>
@@ -85,6 +82,12 @@
           {% endif %}
         </ul>
       </div>
+      {% if page > 1 %}
+      <a href="{{url_for('view_user_posts', user=user.name, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
+      {% endif %}
+      {% if posts|length == 20 %}
+      <a href="{{url_for('view_user_posts', user=user.name, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+      {% endif %}
     </div>
 
     <form id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="ajaxform mfp-hide white-popup-block">

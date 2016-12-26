@@ -629,9 +629,10 @@ def view_user(user):
                            ccount=ccount, owns=owns, mods=mods)
 
 
-@app.route("/u/<user>/posts")
+@app.route("/u/<user>/posts", defaults={'page': 1})
+@app.route("/u/<user>/posts/<int:page>")
 @login_required
-def view_user_posts(user):
+def view_user_posts(user, page):
     """ WIP: View user's recent posts """
     user = db.get_user_from_name(user)
     if not user:
@@ -640,18 +641,18 @@ def view_user_posts(user):
     owns = db.get_user_positions(user['uid'], 'mod1')
     mods = db.get_user_positions(user['uid'], 'mod2')
     badges = db.get_user_badges(user['uid'])
-
-    # TODO: pagination
     posts = db.query('SELECT * FROM `sub_post` WHERE `uid`=%s '
-                     'ORDER BY `posted` DESC LIMIT 20', (user['uid'],))
+                     'ORDER BY `posted` DESC LIMIT 20 OFFSET %s ',
+                     (user['uid'],((page - 1) * 20)))
     return render_template('userposts.html', user=user, badges=badges,
-                           msgform=CreateUserMessageForm(),
+                           msgform=CreateUserMessageForm(), page=page,
                            owns=owns, mods=mods, posts=posts.fetchall())
 
 
-@app.route("/u/<user>/comments")
+@app.route("/u/<user>/comments", defaults={'page': 1})
+@app.route("/u/<user>/comments/<int:page>")
 @login_required
-def view_user_comments(user):
+def view_user_comments(user, page):
     """ WIP: View user's recent comments """
     user = db.get_user_from_name(user)
     if not user:
@@ -660,11 +661,11 @@ def view_user_comments(user):
     owns = db.get_user_positions(user['uid'], 'mod1')
     mods = db.get_user_positions(user['uid'], 'mod2')
     badges = db.get_user_badges(user['uid'])
-    # TODO: pagination
     comments = db.query('SELECT * FROM `sub_post_comment` WHERE `uid`=%s '
-                        'ORDER BY `time` DESC LIMIT 20', (user['uid'],))
+                        'ORDER BY `time` DESC LIMIT 20 OFFSET %s ',
+                        (user['uid'],((page - 1) * 20)))
     return render_template('usercomments.html', user=user, badges=badges,
-                           msgform=CreateUserMessageForm(),
+                           msgform=CreateUserMessageForm(), page=page,
                            comments=comments.fetchall(), owns=owns, mods=mods)
 
 
