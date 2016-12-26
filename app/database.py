@@ -274,7 +274,7 @@ def create_subscription(uid, sid, stype):
            'VALUES (%s, %s, %s, %s)', (time, uid, sid, stype))
 
 
-def create_sitelog(action, description, link):
+def create_sitelog(action, description, link=''):
     """ Creates an entry in the site log """
     t = datetime.datetime.utcnow()
     uquery('INSERT INTO `site_log` (`time`, `action`, `desc`, `link`) VALUES '
