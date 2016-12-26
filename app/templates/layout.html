@@ -123,11 +123,12 @@
     {% block main %}
     <main class="col-8 right center">{% block content %}{% endblock %}</main>{% endblock %}
   </div>
-  <footer>
+  <footer>{{url_for('do.create_lnkpost')}}
     {% block footer %} &copy;{{config.COPY}} |
     <a href="{{url_for('welcome')}}">Welcome</a> |
     <a href="{{url_for('tos')}}">Terms of service</a> |
     <a href="{{url_for('privacy')}}">Privacy</a> |
+    <a href="{{url_for('view_sub', sub='changelog')}}">Changelog</a> |
     <a href="{{url_for('view_api')}}">API</a> |
     <a href="{{url_for('donate')}}">Donate</a>
     {%if config.DEBUG or current_user.is_admin()%} | Page generated in __EXECUTION_TIME__ms with
