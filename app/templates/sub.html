@@ -294,12 +294,13 @@
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
                 </span>
               {% elif func.isVideo(post.link) %}
-              <span id="openvideo" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{func.getDomain(post.link)}}" class="closedvid">
-                <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
-              </span>
-              <span id="gifv" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{func.getDomain(post.link)}}" class="closedgifv">
-                <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
-              </span>
+                <span id="openvideo" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{func.getDomain(post.link)}}" class="closedvid">
+                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
+                </span>
+              {% elif func.isGifv(post.link) %}
+                <span id="gifv" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{func.getDomain(post.link)}}" class="closedgifv">
+                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
+                </span>
               {% elif func.getDomain(post.link) == "twitter.com" %}
                 <span id="tweet" data-url="{{post.link}}" data-pid="{{post.pid}}" class="closedtweet">
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-twitter" aria-hidden="true"></i></a></span>
