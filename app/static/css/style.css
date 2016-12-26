@@ -1504,3 +1504,6 @@ nav ul li a:not(#logo){
 blockquote.twitter-tweet {
     text-align: left;
 }
+body.dark .md-preview {
+  background: #2f2f2f !important;
+}
