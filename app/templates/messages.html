@@ -84,7 +84,7 @@
               {% if box_name == 'Replies' %}
                 <a href="#comment-form" class="btn small replycomment popup"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
               {%else%}
-                <a href="#msg-form" class="btn small replymsg popup"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
+                <a href="#msg-form" data-mid="{{message.mid}}" class="btn small replymsg popup"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
               {%endif%}
               <a class="btn small"><i class="fa fa-mail-forward" aria-hidden="true"></i> forward</a>
             {%endif%}

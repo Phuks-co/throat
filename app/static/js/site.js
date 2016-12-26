@@ -362,6 +362,19 @@ $(document).ready(function() {
       var title=$(this).parents('article').data('replytitle');
       $('#msg-form #to').prop('value', replyto);
       $('#msg-form #subject').prop('value', title);
+      var mid = $(e.currentTarget).data().mid
+      $.ajax({
+        type: "POST",
+        url: '/do/read_pm/' + mid,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            console.log($(e.currentTarget).parent())
+            $(e.currentTarget).parent().children('.unread').text('read')
+            $(e.currentTarget).parent().children('.unread').addClass('read').removeClass('unread').removeClass('btn-blue');
+          }
+        }
+      });
     });
 
     $('.pmessage .replycomment').click(function(e){
