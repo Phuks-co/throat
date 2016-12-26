@@ -71,7 +71,7 @@
 {% endblock %}
 {% block content %}
 {{ super() }}
-{% cache 1200, 'announcement' %}
+{% cache 120, 'announcement' %}
   {% set ann = func.getAnnouncement() %}
   {% if ann %}
   <article class="post" data-pid="{{ann.pid}}">
