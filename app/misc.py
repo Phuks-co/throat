@@ -2,19 +2,21 @@
 from urllib.parse import urlparse, parse_qs
 import time
 import re
-# from sqlalchemy import or_, func
+from functools import update_wrapper
 import requests
 import markdown
+from redis import Redis
 import sendgrid
 import config
-from flask import url_for
+from flask import url_for, request, g, jsonify
 from flask_login import AnonymousUserMixin, current_user
 from .sorting import VoteSorting
-# from .models import db, Message, SubSubscriber, UserMetadata, Sub
-# from .models import SubPost, SubMetadata, SubPostVote, User, SubPostMetadata
-# from .models import SubPostCommentVote, SubPostComment
 from .caching import cache
 from . import database as db
+
+redis = Redis(host=config.CACHE_REDIS_HOST,
+              port=config.CACHE_REDIS_PORT,
+              db=config.CACHE_REDIS_DB)
 
 
 class SiteUser(object):
@@ -244,6 +246,49 @@ class SiteAnon(AnonymousUserMixin):
     def is_subban(cls, sub):
         """ Anons dont get banned by default. """
         return False
+
+
+class RateLimit(object):
+    expiration_window = 10
+
+    def __init__(self, key_prefix, limit, per, send_x_headers):
+        self.reset = (int(time.time()) // per) * per + per
+        self.key = key_prefix + str(self.reset)
+        self.limit = limit
+        self.per = per
+        self.send_x_headers = send_x_headers
+        p = redis.pipeline()
+        p.incr(self.key)
+        p.expireat(self.key, self.reset + self.expiration_window)
+        self.current = min(p.execute()[0], limit)
+
+    remaining = property(lambda x: x.limit - x.current)
+    over_limit = property(lambda x: x.current >= x.limit)
+
+
+def get_view_rate_limit():
+    return getattr(g, '_view_rate_limit', None)
+
+
+def on_over_limit(limit):
+    return jsonify(status='error', error=['Whoa, calm down a bit and wait a '
+                                          'bit before posting again.'])
+
+
+def ratelimit(limit, per=300, send_x_headers=True,
+              over_limit=on_over_limit,
+              scope_func=lambda: request.remote_addr,
+              key_func=lambda: request.endpoint):
+    def decorator(f):
+        def rate_limited(*args, **kwargs):
+            key = 'rate-limit/%s/%s/' % (key_func(), scope_func())
+            rlimit = RateLimit(key, limit + 1, per, send_x_headers)
+            g._view_rate_limit = rlimit
+            if over_limit is not None and rlimit.over_limit:
+                return over_limit(rlimit)
+            return f(*args, **kwargs)
+        return update_wrapper(rate_limited, f)
+    return decorator
 
 
 def safeRequest(url):

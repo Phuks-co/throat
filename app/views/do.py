@@ -670,6 +670,7 @@ def upvote(pid, value):
 
 @do.route('/do/sendcomment/<sub>/<pid>', methods=['POST'])
 @login_required
+@misc.ratelimit(1, per=30)  # Once every 30 secs
 def create_comment(sub, pid):
     """ Here we send comments. """
     form = PostComment()
