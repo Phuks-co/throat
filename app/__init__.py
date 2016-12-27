@@ -934,13 +934,14 @@ def admin_post_search(term):
         return render_template('errors/404.html'), 404
 
 
-@app.route("/sitelog")
+@app.route("/sitelog", defaults={'page': 1})
+@app.route("/sitelog/<int:page>")
 @login_required
-def view_sitelog():
+def view_sitelog(page):
     """ Here we can see a log of admin activity on the site """
-    # TODO: pagination
-    logs = db.query('SELECT * FROM `site_log` ORDER BY `lid` DESC')
-    return render_template('sitelog.html', logs=logs.fetchall())
+    logs = db.query('SELECT * FROM `site_log` ORDER BY `lid` DESC LIMIT 50 '
+                    'OFFSET %s ', (((page - 1) * 50),))
+    return render_template('sitelog.html', logs=logs.fetchall(), page=page)
 
 
 @app.route("/register")
