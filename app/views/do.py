@@ -96,7 +96,7 @@ def login():
     form = LoginForm()
     if form.validate():
         user = db.get_user_from_name(form.username.data)
-        if not user:
+        if not user or user['status'] == 10:
             return json.dumps({'status': 'error',
                                'error': ['User does not exist.']})
 
