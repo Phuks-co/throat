@@ -331,13 +331,18 @@ $(document).ready(function() {
       $('.edit-comment-form').magnificPopup('open');
     });
 
-    $('.delac-close').click(function(e){$('.delete-account-form').magnificPopup('close');})
+    $('.delac-close').click(function(e){
+      $('.delete-account-form').magnificPopup('close');
+      $('#delete_account').prop('value', 0)
+      $('#delete_account').prop('checked', false)
+    })
     $('#delac').click(function(e){
       $('.delete-account-form').magnificPopup('close');
       $('#delete_account').prop('value', 1)
       $('#delete_account').prop('checked', true)
     })
     $('#delete_account').click(function(e){
+
       e.preventDefault();
       $('.delete-account-form').magnificPopup('open')
     });
