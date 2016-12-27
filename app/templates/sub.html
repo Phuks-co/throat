@@ -182,16 +182,16 @@
             <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
           </span>
         {% elif func.isVideo(ann.link) %}
-        <span id="openvideo" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" data-domain="{{func.getDomain(ann.link)}}" class="closedvid">
-          <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
-        </span>
+          <span id="openvideo" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" data-domain="{{func.getDomain(ann.link)}}" class="closedvid">
+            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
+          </span>
         {% elif func.isGifv(ann.link) %}
-        <span id="gifv" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" data-domain="{{func.getDomain(ann.link)}}" class="closedgifv">
-          <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
-        </span>
-        {% elif func.getDomain(post.link) == "twitter.com" %}
-        <span id="tweet" data-url="{{ann.link}}" data-pid="{{ann.pid}}" class="closedtweet">
-          <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-twitter" aria-hidden="true"></i></a></span>
+          <span id="gifv" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" data-domain="{{func.getDomain(ann.link)}}" class="closedgifv">
+            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
+          </span>
+        {% elif func.getDomain(ann.link) == "twitter.com" %}
+          <span id="tweet" data-url="{{ann.link}}" data-pid="{{ann.pid}}" class="closedtweet">
+            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-twitter" aria-hidden="true"></i></a></span>
           </span>
         {% endif %}
       {% else %}
