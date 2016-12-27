@@ -258,7 +258,7 @@ def edit_sub_css(sub):
     if form.validate():
         db.uquery('UPDATE `sub_stylesheet` SET `content`=%s WHERE `sid`=%s',
                   (form.css.data, sub['sid']))
-        db.create_sitelog(sub['sid'], 4,
+        db.create_sublog(sub['sid'], 4,
                           'CSS edited by ' + current_user.get_username())
 
         return json.dumps({'status': 'ok',
