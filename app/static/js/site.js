@@ -1100,7 +1100,7 @@ function vineID(url) {
 	}
 }
 function gfycatID(url) {
-  var match = url.match(/^https:\/\/gfycat\.com\/([a-zA-Z0-9]{1,60})$/);
+  var match = url.match(/^http(?:s?):\/\/gfycat\.com\/([a-zA-Z0-9]{1,60})$/);
   if (match){
     return match[1];
 	}
