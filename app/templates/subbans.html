@@ -49,7 +49,7 @@
   <ul>
   {% for xban in xbans if xbans|length > 0 %}
   <span class="col-4">
-    <li><i class="fa fa-user"></i> <a href="{{url_for('view_user', user=db.get_user_from_uid(ban.value).name)}}">{{db.get_user_from_uid(ban.value).name}}</a></li>
+    <li><i class="fa fa-user"></i> <a href="{{url_for('view_user', user=db.get_user_from_uid(xban.value).name)}}">{{db.get_user_from_uid(xban.value).name}}</a></li>
   </span>
   {% endfor %}
   </ul>
