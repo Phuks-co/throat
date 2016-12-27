@@ -202,6 +202,12 @@ def delete_post():
             deletion = 1
         else:
             deletion = 2
+
+        if not current_user.is_mod(sub) and current_user.is_admin() \
+           and not post['uid'] == current_user.get_id():
+            db.create_sitelog(4, current_user.get_username() +
+                              ' deleted a post',
+                              url_for('view_sub', sud=sub['sid']))
         db.uquery('UPDATE `sub_post` SET `deleted`=%s WHERE pid=%s',
                   (deletion, post['pid']))
 
@@ -1326,7 +1332,7 @@ def edit_comment():
 @do.route("/do/delete_comment", methods=['POST'])
 @login_required
 def delete_comment():
-    """ Edits a comment """
+    """ deletes a comment """
     form = forms.DeleteCommentForm()
     if form.validate():
         comment = db.get_comment_from_cid(form.cid.data)
@@ -1336,6 +1342,10 @@ def delete_comment():
         if comment['uid'] != current_user.uid and not current_user.is_admin():
             abort(403)
 
+        if comment['uid'] != current_user.uid and current_user.is_admin():
+            db.create_sitelog(4, current_user.get_username() +
+                              ' deleted a comment',
+                              url_for('view_post_inbox', pid=comment['pid']))
         db.uquery('UPDATE `sub_post_comment` SET `status`=1 WHERE `cid`=%s',
                   (form.cid.data,))
         return jsonify(status='ok')
