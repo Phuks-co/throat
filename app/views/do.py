@@ -909,8 +909,8 @@ def remove_sub_ban(sub, user):
         if not misc.isSubBan(sub, user):
             return jsonify(status='error', error=['User was not banned'])
 
-        db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s',
-                  ('ban', user['uid']))
+        db.uquery('UPDATE `sub_metadata` SET `key`=%s WHERE `key`=%s AND '
+                  '`value`=%s', ('xban', 'ban', user['uid']))
 
         db.create_message(mfrom=current_user.uid,
                           to=user['uid'],
