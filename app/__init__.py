@@ -328,8 +328,8 @@ def donate():
 @app.route("/subs/<int:page>")
 def view_subs(page):
     """ Here we can view available subs """
-    # TODO: pagination
-    c = db.query('SELECT * FROM `sub` ORDER BY `name` ASC')
+    c = db.query('SELECT * FROM `sub` ORDER BY `name` ASC Limit 30 OFFSET %s',
+                 (((page -1) * 30),))
     return render_template('subs.html', page=page, subs=c.fetchall())
 
 
