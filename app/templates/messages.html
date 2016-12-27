@@ -78,7 +78,7 @@
                 <a class="unread btn btn-orange edit small" data-mid="{{message.mid}}"><i class="fa fa-circle-o" aria-hidden="true"></i> mark as read</a>
               {% endif %}
             {% else %}
-              <a class="read btn small"><i class="fa fa-folder-open" aria-hidden="true"></i> read {{message.read}}</a>
+              <a class="read btn small"><i class="fa fa-folder-open" aria-hidden="true"></i> read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
             {% endif %}
             {% if message.mtype != 8 %}
               {% if box_name == 'Replies' %}
