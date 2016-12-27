@@ -49,11 +49,18 @@
 <span class="col-12"><hr></span>
 <div class="row buttons">
   <div class="col-12">
-    <a href="{{url_for('donate')}}" class="btn btn-orange donate" style="width:100%;">GibPhuk</a>
+    <a href="{{url_for('donate')}}" class="btn btn-orange donate" style="width:100%;">Gib phuks</a>
   </div>
 </div>
 {% endif %}
-
+{% if current_user.is_authenticated %}
+<span class="col-12"><hr></span>
+<div class="row buttons">
+  <div class="col-12">
+    <a href="{{url_for('view_sitelog')}}" class="btn btn-orange donate" style="width:100%;">Site log</a>
+  </div>
+</div>
+{% endif %}
 {% endblock %}
 {% block navbar %}
 {{ super() }}

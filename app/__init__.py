@@ -41,8 +41,6 @@ from .misc import userCanFlair, getPostFlair
 from .misc import enableBTCmod
 from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
 # from werkzeug.contrib.profiler import ProfilerMiddleware
-import logging
-logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 app.jinja_env.cache = {}
@@ -118,6 +116,8 @@ def close_db(error):
 
 @app.before_request
 def do_magic_stuff():
+    """ We save the appconfig here because it can change during runtime
+    (for unit tests) and we can't import app from some modules """
     g.appconfig = app.config
 
 # @app.before_first_request
@@ -660,7 +660,7 @@ def view_user_posts(user, page):
     badges = db.get_user_badges(user['uid'])
     posts = db.query('SELECT * FROM `sub_post` WHERE `uid`=%s '
                      'ORDER BY `posted` DESC LIMIT 20 OFFSET %s ',
-                     (user['uid'],((page - 1) * 20)))
+                     (user['uid'], ((page - 1) * 20)))
     return render_template('userposts.html', user=user, badges=badges,
                            msgform=CreateUserMessageForm(), page=page,
                            owns=owns, mods=mods, posts=posts.fetchall())
@@ -680,7 +680,7 @@ def view_user_comments(user, page):
     badges = db.get_user_badges(user['uid'])
     comments = db.query('SELECT * FROM `sub_post_comment` WHERE `uid`=%s '
                         'ORDER BY `time` DESC LIMIT 20 OFFSET %s ',
-                        (user['uid'],((page - 1) * 20)))
+                        (user['uid'], ((page - 1) * 20)))
     return render_template('usercomments.html', user=user, badges=badges,
                            msgform=CreateUserMessageForm(), page=page,
                            comments=comments.fetchall(), owns=owns, mods=mods)
@@ -934,15 +934,13 @@ def admin_post_search(term):
         return render_template('errors/404.html'), 404
 
 
-@app.route("/admin/sitelog")
+@app.route("/sitelog")
 @login_required
 def view_sitelog():
     """ Here we can see a log of admin activity on the site """
-    if current_user.is_admin():
-        logs = db.query('SELECT * FROM `site_log` ORDER BY `lid` DESC')
-        return render_template('sitelog.html', logs=logs.fetchall())
-    else:
-        abort(403)
+    # TODO: pagination
+    logs = db.query('SELECT * FROM `site_log` ORDER BY `lid` DESC')
+    return render_template('sitelog.html', logs=logs.fetchall())
 
 
 @app.route("/register")
