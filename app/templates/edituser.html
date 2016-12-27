@@ -71,7 +71,7 @@ var recaptchaCallback = function(){
   {% endif %}
 
   <h1>Edit info for {{user.name}}</h1>
-  <form id="edit-user-form"  action="{{url_for('do.edit_user', user=user.name)}}" class="ajaxform">
+  <form id="edit-user-form" data-redir='true'  action="{{url_for('do.edit_user', user=user.name)}}" class="ajaxform">
       <div id="the-edit-user-form-itself">
           {{edituserform.csrf_token}}
 
@@ -79,7 +79,9 @@ var recaptchaCallback = function(){
           <p>{{edituserform.external_links()}}<label for="external_links">{{edituserform.external_links.label.text}}</label></p>
           <p>{{edituserform.disable_sub_style()}}<label for="disable_sub_style">{{edituserform.disable_sub_style.label.text}}</label></p>
           <p>{{edituserform.show_nsfw()}}<label for="show_nsfw">{{edituserform.show_nsfw.label.text}}</label></p>
-
+          <hr>
+          <p class='admin-page-form'>{{edituserform.delete_account()}}<label for="delete_account">{{edituserform.delete_account.label.text}}</label></p>
+          <hr>
           <p>{{edituserform.password(placeholder=edituserform.password.label.text, required=False, autocomplete="off")}}</p>
           <p>{{edituserform.confirm(placeholder=edituserform.confirm.label.text, required=False, autocomplete="off")}}</p>
           <hr>
@@ -91,5 +93,13 @@ var recaptchaCallback = function(){
       </div>
   </form>
 </div>
-
+<div id="delete-account-form" class="mfp-hide white-popup-block">
+  <h3>Are you REALLY sure you want to <b>PERMANENTLY</b> delete this account?</h3>
+  <div class="alert div-error">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+    <p></p>
+  </div>
+  <div><button class="btn btn-red" id="delac" style='margin-right:50%;'>Yup!</button><button class="btn btn-blue delac-close">No.</button></div>
+</div>
+<a href='#delete-account-form' class='delete-account-form popup'>asasdas</a>
 {% endblock %}

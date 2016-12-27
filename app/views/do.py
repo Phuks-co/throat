@@ -161,7 +161,13 @@ def edit_user(user):
     if form.validate():
         if not db.is_password_valid(user['uid'], form.oldpassword.data):
             return json.dumps({'status': 'error', 'error': ['Wrong password']})
-
+        print(form.delete_account.data)
+        if form.delete_account.data:
+            db.uquery('UPDATE `user` SET `status`=10 WHERE `uid`=%s',
+                      (user['uid'],))
+            logout_user()
+            return json.dumps({'status': 'ok',
+                               'addr': '/'})
         db.uquery('UPDATE `user` SET `email`=%s WHERE `uid`=%s',
                   (form.email.data, user['uid']))
         if form.password.data:

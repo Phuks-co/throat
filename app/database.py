@@ -73,15 +73,19 @@ def uquery(qr, params=()):
 @cache.memoize(10)
 def get_user_from_uid(uid):
     """ Returns a user's db row from uid """
-    c = query('SELECT * FROM `user` WHERE `uid`=%s', (uid, ))
-    return c.fetchone()
+    c = query('SELECT * FROM `user` WHERE `uid`=%s', (uid, )).fetchone()
+    if c and c['status'] == 10:  # Account deleted
+        c['name'] = '[Deleted]'
+    return c
 
 
 @cache.memoize(10)
 def get_user_from_name(name):
     """ Return a user's db row from the name """
-    c = query('SELECT * FROM `user` WHERE `name`=%s', (name, ))
-    return c.fetchone()
+    c = query('SELECT * FROM `user` WHERE `name`=%s', (name, )).fetchone()
+    if c and c['status'] == 10:  # Account deleted
+        c['name'] = '[Deleted]'
+    return c
 
 
 @cache.memoize(10)

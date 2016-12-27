@@ -309,7 +309,7 @@ $(document).ready(function() {
             }
         }
     };
-    $('a.btn.popup').magnificPopup(mpSettings);
+    $('a.popup').magnificPopup(mpSettings);
 
     $('a.btn.login').magnificPopup(mpSettings);
     $('a.btn.create-sub').magnificPopup(mpSettings);
@@ -331,6 +331,16 @@ $(document).ready(function() {
       $('.edit-comment-form').magnificPopup('open');
     });
 
+    $('.delac-close').click(function(e){$('.delete-account-form').magnificPopup('close');})
+    $('#delac').click(function(e){
+      $('.delete-account-form').magnificPopup('close');
+      $('#delete_account').prop('value', 1)
+      $('#delete_account').prop('checked', true)
+    })
+    $('#delete_account').click(function(e){
+      e.preventDefault();
+      $('.delete-account-form').magnificPopup('open')
+    });
     $('.pmessage .replymsg').click(function(e){
       e.preventDefault();
       var replyto=$(this).parents('article').data('replyto');

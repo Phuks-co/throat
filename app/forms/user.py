@@ -71,6 +71,8 @@ class EditUserForm(FlaskForm):
         Length(min=7, max=256)
     ])
 
+    delete_account = BooleanField('DELETE THIS ACCOUNT')
+
 
 class CreateUserMessageForm(FlaskForm):
     """ CreateUserMessage form. """
