@@ -652,7 +652,7 @@ def view_user(user):
 def view_user_posts(user, page):
     """ WIP: View user's recent posts """
     user = db.get_user_from_name(user)
-    if not user:
+    if not user or user['status'] == 10:
         abort(404)
 
     owns = db.get_user_positions(user['uid'], 'mod1')
@@ -672,7 +672,7 @@ def view_user_posts(user, page):
 def view_user_comments(user, page):
     """ WIP: View user's recent comments """
     user = db.get_user_from_name(user)
-    if not user:
+    if not user or user['status'] == 10:
         abort(404)
 
     owns = db.get_user_positions(user['uid'], 'mod1')
@@ -691,7 +691,7 @@ def view_user_comments(user, page):
 def edit_user(user):
     """ WIP: Edit user's profile, slogan, quote, etc """
     user = db.get_user_from_name(user)
-    if not user:
+    if not user or user['status'] == 10:
         abort(404)
 
     owns = db.get_user_positions(user['uid'], 'mod1')
@@ -739,6 +739,8 @@ def inbox_sort():
 def view_messages():
     """ WIP: View user's messages """
     user = session['user_id']
+    if current_user.user['status'] == 10:
+        abort(404)
     msgs = db.query('SELECT * FROM `message` WHERE `mtype` IN (1, 8)'
                     'AND `receivedby`=%s ORDER BY `posted` DESC',
                     (user,)).fetchall()
@@ -751,6 +753,8 @@ def view_messages():
 def view_messages_sent():
     """ WIP: View user's messages """
     user = session['user_id']
+    if current_user.user['status'] == 10:
+        abort(404)
     msgs = db.query('SELECT * FROM `message` WHERE `mtype`=1 '
                     'AND `sentby`=%s ORDER BY `posted` DESC',
                     (user,)).fetchall()
@@ -763,6 +767,8 @@ def view_messages_sent():
 def view_messages_postreplies():
     """ WIP: View user's post replies """
     user = session['user_id']
+    if current_user.user['status'] == 10:
+        abort(404)
     now = datetime.datetime.utcnow()
     db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
               '`receivedby`=%s AND `mtype`=4', (now, user))
@@ -779,6 +785,8 @@ def view_messages_postreplies():
 def view_messages_comreplies():
     """ WIP: View user's comments replies """
     user = session['user_id']
+    if current_user.user['status'] == 10:
+        abort(404)
     now = datetime.datetime.utcnow()
     db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
               '`receivedby`=%s AND `mtype`=5', (now, user))
@@ -795,6 +803,8 @@ def view_messages_comreplies():
 def view_messages_modmail():
     """ WIP: View user's modmail """
     user = session['user_id']
+    if current_user.user['status'] == 10:
+        abort(404)
     msgs = db.query('SELECT * FROM `message` WHERE `mtype` IN (2, 7) '
                     'AND `receivedby`=%s ORDER BY `posted` DESC',
                     (user,)).fetchall()
