@@ -404,7 +404,8 @@ def edit_mod():
                            'error': ['User does not exist']})
     if form.validate():
         db.update_sub_metadata(sub['sid'], 'mod1', user['uid'])
-
+        db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s '
+                  'AND `sid`=%s', ('mod2',  user['uid'], sub['sid']))
         db.create_sublog(sid=sub['sid'], action=4,
                          description=current_user.get_username() +
                          ' transferred sub ownership to ' + user['name'],
