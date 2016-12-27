@@ -472,6 +472,7 @@ def unblock_sub(sid):
 
 @do.route("/do/txtpost", methods=['POST'])
 @login_required
+@misc.ratelimit(1, per=30, key_func=lambda: 'post')
 def create_txtpost():
     """ Sub text post creation endpoint """
 
@@ -526,6 +527,7 @@ def edit_txtpost(sub, pid):
 
 @do.route("/do/lnkpost", methods=['POST'])
 @login_required
+@misc.ratelimit(1, per=30, key_func=lambda: 'post')
 def create_lnkpost():
     """ Sub text post creation endpoint """
 

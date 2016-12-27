@@ -249,6 +249,7 @@ class SiteAnon(AnonymousUserMixin):
 
 
 class RateLimit(object):
+    """ This class does the rate-limit magic """
     expiration_window = 10
 
     def __init__(self, key_prefix, limit, per, send_x_headers):
@@ -267,11 +268,13 @@ class RateLimit(object):
 
 
 def get_view_rate_limit():
+    """ Returns the rate limit for the current view """
     return getattr(g, '_view_rate_limit', None)
 
 
 def on_over_limit(limit):
-    return jsonify(status='error', error=['Whoa, calm down a bit and wait a '
+    """ This is called when the rate limit is reached """
+    return jsonify(status='error', error=['Whoa, calm down and wait a '
                                           'bit before posting again.'])
 
 
@@ -279,8 +282,11 @@ def ratelimit(limit, per=300, send_x_headers=True,
               over_limit=on_over_limit,
               scope_func=lambda: request.remote_addr,
               key_func=lambda: request.endpoint):
+    """ This is a decorator. It does the rate-limit magic. """
     def decorator(f):
+        """ Function inside function! """
         def rate_limited(*args, **kwargs):
+            """ FUNCTIONCEPTION """
             key = 'rate-limit/%s/%s/' % (key_func(), scope_func())
             rlimit = RateLimit(key, limit + 1, per, send_x_headers)
             g._view_rate_limit = rlimit
