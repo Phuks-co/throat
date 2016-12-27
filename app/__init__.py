@@ -287,8 +287,8 @@ def search(page, term):
 @app.route("/all/top/<int:page>")
 def all_top(page):
     """ The index page, all posts sorted as most recent posted first """
-    c = db.query('SELECT * FROM `sub_post` ORDER BY `score` ASC LIMIT %s,20',
-                 ((page - 1) * 20, ))
+    c = db.query('SELECT * FROM `sub_post` DESC ORDER BY `score` ASC LIMIT '
+                 '%s,20', ((page - 1) * 20, ))
     posts = c.fetchall()
 
     return render_template('index.html', page=page, sort_type='all_top',
