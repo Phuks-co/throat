@@ -598,12 +598,12 @@ def view_post(sub, pid):
     downcount = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
                          '`pid`=%s AND `positive`=%s', (pid, 0)) \
                   .fetchone()['c']
-
+    comments = db.get_all_post_comments(post['pid'])
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit,
                            upcount=upcount, downcount=downcount,
                            editlinkpostform=EditSubLinkPostForm(),
-                           lnkpostform=createlinkpost,
+                           lnkpostform=createlinkpost, comments=comments,
                            txtpostform=createtxtpost, editpostflair=editflair)
 
 

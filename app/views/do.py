@@ -11,16 +11,12 @@ from bs4 import BeautifulSoup
 import requests
 from PIL import Image
 from flask import Blueprint, redirect, url_for, session, abort, jsonify
-# from sqlalchemy import func, or_, and_
+from flask import render_template
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_cache import make_template_fragment_key
 import config
 from .. import forms, misc
 from .. import database as db
-# from ..models import db, User, Sub, SubPost, Message, SubPostComment
-# from ..models import SubPostVote, SubMetadata, SubPostMetadata, SubStylesheet
-# from ..models import UserMetadata, UserBadge, SubSubscriber, SiteMetadata
-# from ..models import SubFlair, SubLog, SiteLog, SubPostCommentVote
 from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubFlair
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
@@ -1414,3 +1410,13 @@ def upvotecomment(cid, value):
                   '`uid`=%s', (voteValue, comment['uid']))
 
     return json.dumps({'status': 'ok'})
+
+
+@do.route('/do/get_comments/<cid>', methods=['POST'])
+def get_comments(cid):
+    comment = db.get_comment_from_cid(cid)
+    if not comment:
+        return jsonify(status='error', error=['Wuddatcomment'])
+
+    comments = db.get_all_post_comments(comment['pid'], cid)
+    return render_template('postcomments.html', comments=comments)

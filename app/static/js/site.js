@@ -77,6 +77,26 @@ $(document).ready(function() {
     }
   });
 
+  $('.loadmore').click(function(e){
+    e.preventDefault();
+    if($(e.target).prop('disabled')){
+      return
+    }
+    $(e.target).html('Loading...');
+    $(e.target).prop('disabled', true);
+    var cid = $(this).data()['cid'];
+    $.ajax({
+      type: "POST",
+      url: '/do/get_comments/' + cid,
+      success: function(data) {
+        $(e.target).parent().html(data);
+      },
+      error: function(data, err) {
+        $(e.target).prop('disabled', false);
+          $(e.target).html('Error while trying to load comments...');
+      }
+    });
+  });
 
  /******************************************************
                 LEGACY AJAX FORMS CODE!

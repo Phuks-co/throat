@@ -533,3 +533,27 @@ def update_user_password(uid, password):
         password = password.decode('utf-8')
 
     uquery('UPDATE `user` SET `password`=%s WHERE `uid`=%s', (password, uid))
+
+
+def get_child_comment_count(cid):
+    q = 'SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE `parentcid`=%s'
+    return query(q, (cid,)).fetchone()['c']
+
+
+def get_all_post_comments(pid, pa=None, depth=0):
+    posts = get_post_comments(pid, pa)
+    f = []
+    for post in posts:
+        x = get_all_post_comments(pid, post['cid'], depth+1)
+        if depth == 4 and x:
+            post['children'] = []
+            post['amt'] = get_child_comment_count(post['cid'])
+            post['more'] = True
+        elif not x:
+            post['more'] = False
+            post['children'] = []
+        else:
+            post['more'] = True
+            post['children'] = x
+        f.append(post)
+    return f

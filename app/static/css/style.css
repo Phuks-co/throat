@@ -329,11 +329,21 @@ main {
     overflow: hidden;
     min-height: 20%;
 }
+
+
 .center {
     background: white;
     border: 1px solid lightgray;
     border-radius: 3px;
     padding: 0.5em;
+}
+
+.loadmore{margin: 5px;}
+.pchild{padding-bottom: 4px;}
+
+.center .center {
+  border-right: none;
+  border-radius: 0;
 }
 .content {
     margin-top: 3em;
@@ -858,7 +868,6 @@ button.mfp-close, button.mfp-arrow {
 }
 .text-post + .text-post {
     margin-top: 1em;
-    border-top: 1px solid #D3D3D3;
 }
 .text-post .head {
     background: #FAFAFA;
@@ -918,7 +927,10 @@ button.mfp-close, button.mfp-arrow {
 }
 
 /* sub comments */
-
+article .text-post{
+  margin-left: 2em;
+}
+/*
 .text-post.sub-1 {
     margin-left: 2em;
 }
@@ -943,7 +955,7 @@ button.mfp-close, button.mfp-arrow {
 .text-post.sub-8 {
     margin-left: 16em;
 }
-
+*/
 /* user page */
 
 .user-activity .recent {
