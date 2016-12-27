@@ -231,7 +231,7 @@ def create_sub():
                             form.title.data)
 
         # admin/site log
-        db.create_sitelog(4,
+        db.create_sitelog(6,
                           current_user.get_username() + ' created a new sub',
                           url_for('view_sub', sub=sub['name']))
 
@@ -1074,6 +1074,9 @@ def deleteannouncement():
         abort(404)
 
     db.uquery('DELETE FROM `site_metadata` WHERE `key`=%s', ('announcement',))
+    db.create_sitelog(3, current_user.get_username() +
+                      ' removed an announcement',
+                      url_for('view_post_inbox', pid=form.post.data))
     return redirect(url_for('admin_area'))
 
 
@@ -1087,6 +1090,9 @@ def make_announcement():
 
     if form.validate():
         db.update_site_metadata('announcement', form.post.data)
+        db.create_sitelog(3, current_user.get_username() +
+                          ' made an announcement',
+                          url_for('view_post_inbox', pid=form.post.data))
 
     return redirect(url_for('index'))
 

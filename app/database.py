@@ -281,6 +281,8 @@ def create_subscription(uid, sid, stype):
            'VALUES (%s, %s, %s, %s)', (time, uid, sid, stype))
 
 
+# Action: 1- deletion, 2- users, 3- announcement, 4- subs (admin override),
+# 5- mods/admins, 6- sub creation --- 10- donations
 def create_sitelog(action, description, link=''):
     """ Creates an entry in the site log """
     t = datetime.datetime.utcnow()
