@@ -1,5 +1,6 @@
 """ Misc helper function and classes. """
 from urllib.parse import urlparse, parse_qs
+import math
 import time
 import re
 from functools import update_wrapper
@@ -139,51 +140,7 @@ class SiteUser(object):
     @cache.memoize(300)
     def get_post_score(self):
         """ Returns the post vote score of a user. """
-        if self.user['score'] is None:
-            mposts = db.query('SELECT * FROM `sub_post` WHERE `uid`=%s',
-                              (self.uid, )).fetchall()
-
-            q = "SELECT `positive` FROM `sub_post_vote` WHERE `pid` IN ("
-            l = []
-            for post in mposts:
-                q += '%s, '
-                l.append(post['pid'])
-            q = q[:-2] + ")"
-            count = 0
-
-            if l:
-                votes = db.query(q, list(l)).fetchall()
-
-                for vote in votes:
-                    if vote['positive']:
-                        count += 1
-                    else:
-                        count -= 1
-
-            mposts = db.query('SELECT * FROM `sub_post_comment` WHERE '
-                              '`uid`=%s', (self.uid, )).fetchall()
-            q = "SELECT `positive` FROM `sub_post_comment_vote`"
-            q += " WHERE `cid` IN ("
-
-            l = []
-            for post in mposts:
-                q += '%s, '
-                l.append(post['cid'])
-            q = q[:-2] + ")"
-
-            if l:
-                votes = db.query(q, list(l)).fetchall()
-
-                for vote in votes:
-                    if vote['positive']:
-                        count += 1
-                    else:
-                        count -= 1
-
-            db.uquery('UPDATE `user` SET `score`=%s WHERE `uid`=%s',
-                      (count, self.uid))
-            return count
-        return self.user['score']
+        return get_user_post_score(self.user)
 
     @cache.memoize(120)
     def get_post_voting(self):
@@ -732,3 +689,64 @@ def isVideo(link):
 def get_comment_score(comment):
     """ Returns the score for comment """
     return comment['score'] if comment['score'] else 0
+
+
+def get_user_post_score(user):
+    """ Returns the user's post score """
+    if user['score'] is None:
+        mposts = db.query('SELECT * FROM `sub_post` WHERE `uid`=%s',
+                          (user['uid'], )).fetchall()
+
+        q = "SELECT `positive` FROM `sub_post_vote` WHERE `pid` IN ("
+        l = []
+        for post in mposts:
+            q += '%s, '
+            l.append(post['pid'])
+        q = q[:-2] + ")"
+        count = 0
+
+        if l:
+            votes = db.query(q, list(l)).fetchall()
+
+            for vote in votes:
+                if vote['positive']:
+                    count += 1
+                else:
+                    count -= 1
+
+        mposts = db.query('SELECT * FROM `sub_post_comment` WHERE '
+                          '`uid`=%s', (self.uid, )).fetchall()
+        q = "SELECT `positive` FROM `sub_post_comment_vote`"
+        q += " WHERE `cid` IN ("
+
+        l = []
+        for post in mposts:
+            q += '%s, '
+            l.append(post['cid'])
+        q = q[:-2] + ")"
+
+        if l:
+            votes = db.query(q, list(l)).fetchall()
+
+            for vote in votes:
+                if vote['positive']:
+                    count += 1
+                else:
+                    count -= 1
+
+        db.uquery('UPDATE `user` SET `score`=%s WHERE `uid`=%s',
+                  (count, user['uid']))
+        return count
+    return user['score']
+
+
+def get_user_level(uid):
+    user = db.get_user_from_uid(uid)
+    xp = get_user_post_score(user)
+    xp += db.get_user_post_voting(uid)/2
+    badges = db.get_user_badges(uid)
+    for badge in badges:
+        xp += badge['value']
+    level = math.sqrt(xp/10)
+    print(level)
+    return int(level)

@@ -271,6 +271,7 @@ CREATE TABLE `user_badge` (
   `badge` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `text` varchar(255) DEFAULT NULL,
+  `value` int(128) DEFAULT 100,
   PRIMARY KEY (`bid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -312,11 +312,15 @@ def create_message(mfrom, to, subject, content, link, mtype):
 def create_post(sid, uid, title, content, ptype, link=None, thumbnail=''):
     """ Duh. Creates a post """
     posted = datetime.datetime.utcnow()
+    user = get_user_from_uid(uid)
     l = uquery('INSERT INTO `sub_post` (`sid`, `uid`, `title`, `link`, '
                '`posted`, `ptype`, `score`, `thumbnail`, `deleted`, `nsfw`, '
                '`content`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
                '%s)', (sid, uid, title, link, posted, ptype, 1, thumbnail, 0,
                        0, content))
+    if user['score'] is not None:
+        uquery('UPDATE `user` SET `score`=`score`+1 WHERE '
+               '`uid`=%s', (uid, ))
     g.db.commit()  # We insta-commit posts so we can safely edit thumbnail
     return {'sid': sid, 'uid': uid, 'link': link, 'posted': posted,
             'ptype': ptype, 'pid': l.lastrowid, 'title': title}
@@ -334,11 +338,11 @@ def create_comment(pid, uid, content, parentcid):
     return {'pid': pid, 'uid': uid, 'cid': cid}
 
 
-def create_badge(badge, name, text):
+def create_badge(badge, name, text, value):
     """ Creates a badge """
     bid = str(uuid.uuid4())
-    uquery('INSERT INTO `user_badge` (`bid`, `badge`, `name`, `text`) '
-           'VALUES (%s, %s, %s, %s)', (bid, badge, name, text))
+    uquery('INSERT INTO `user_badge` (`bid`, `badge`, `name`, `text`, `value`)'
+           ' VALUES (%s, %s, %s, %s, %s)', (bid, badge, name, text, value))
 
 
 @cache.memoize(10)

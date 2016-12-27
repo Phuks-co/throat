@@ -26,7 +26,13 @@
 
 {% block content %}
 {{ super() }}
-  <h1 class="noshit">{{user.name}}</h1>
+  <div class="row">
+    <div><h1 style="margin-right: 0px; margin-left:0px;" class="noshit col-11">{{user.name}}</h1></div>
+    <div class="col-1 admin-page-form">
+      <div class="row noshit">Level</div>
+      <div class="row"><h2 class="noshit">{{func.get_user_level(user.uid)}}</h2></div>
+    </div>
+  </div>
     <div class="user-activity col-6">
       <p class="joindate">User has made {{pcount}} posts and {{ccount}} comments.</p>
       {# TODO user stats #}
@@ -35,7 +41,7 @@
         <ul id="userBadges" style="color: darkcyan;">
           {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
           {% for badge in badges if badges|length > 0 %}
-          <li title="{{badge.text}}"><i class="fa {{badge.badge}} fa-2x"></i> {{badge.name}}</li>
+          <li title="{{badge.text}}, {{badge.value}}XP"><i class="fa {{badge.badge}} fa-2x"></i> {{badge.name}}</li>
           {% else %}
           <li>none</li>
           {% endfor %}

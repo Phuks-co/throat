@@ -746,7 +746,8 @@ def create_user_badge():
     if current_user.is_admin():
         form = CreateUserBadgeForm()
         if form.validate():
-            db.create_badge(form.badge.data, form.name.data, form.text.data)
+            db.create_badge(form.badge.data, form.name.data, form.text.data,
+                            form.value.data)
 
             db.create_sitelog(2, current_user.get_username() +
                               ' created a new badge')

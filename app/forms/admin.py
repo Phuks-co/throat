@@ -2,9 +2,8 @@
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, BooleanField, HiddenField
-from wtforms import RadioField
+from wtforms import RadioField, IntegerField
 from wtforms.validators import DataRequired, Length, URL, Optional
-
 
 
 class EditModForm(FlaskForm):
@@ -23,6 +22,7 @@ class CreateUserBadgeForm(FlaskForm):
                        validators=[DataRequired(), Length(min=2, max=128)])
     text = StringField('Badge description',
                        validators=[DataRequired(), Length(min=2, max=128)])
+    value = IntegerField('XP value')
 
 
 class UseBTCdonationForm(FlaskForm):
