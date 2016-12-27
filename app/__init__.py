@@ -312,6 +312,12 @@ def welcome():
     return render_template('welcome.html')
 
 
+@app.route("/canary")
+def canary():
+    """ Warrent canary """
+    return render_template('canary.html')
+
+
 @app.route("/donate")
 def donate():
     """ Donation page """
