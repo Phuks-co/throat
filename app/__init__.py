@@ -334,7 +334,7 @@ def view_subs(page):
 
 
 @app.route("/mysubs")
-def view_my_subs(page):
+def view_my_subs():
     """ Here we can view subscribed subs """
     subs = db.get_user_subscriptions(current_user.uid)
     return render_template('mysubs.html', subs=subs)
