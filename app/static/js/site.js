@@ -229,31 +229,6 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
-
-
-    $(document).on('submit', ".comment-form", function(e){
-      // Note for future self: This is a really fucking hacky way to do this.
-      // This thing will break if the order of the fields changes >_>
-      $(this).children('button[type="submit"]').text("Sending comment...")
-      $(this).children('button[type="submit"]').prop('disabled', true)
-      $.ajax({
-          type: "POST",
-          url: '/do/sendcomment/' + $(this).children('#sub').prop('value') + '/' + $(e.target[2]).prop('value'),
-          data: $(e.target).serialize(),
-          dataType: 'json',
-          success: function(data) {
-            if(data.status != "ok"){
-            }else{
-              document.location = data.page;
-            }
-          },
-          error: function(data, err) {
-              $(e.target[e.target.length -1]).text("Submit comment.");
-              $(e.target[e.target.length -1]).prop('disabled', false);
-          }
-        });
-      e.preventDefault();
-    });
     $('.delpost').click(function(e){
       $("#delete-post-form input#post").prop('value', $(this).data('post'));
     });
@@ -1133,17 +1108,3 @@ function imgtcID(url) {
     return match[2];
 	}
 }
-/* for testing
-function instagramID(url) {
-  var match = url.match(/https?:\/\/[w\.]*instagram\.[^\/]*\/([^?]*)\/([a-zA-Z0-9]{1,10})/);
-  if (match){
-    return match[2];
-	}
-}
-function googMapID(url) {
-  var match = url.match(/^https?\:\/\/(www\.)?google\.[a-z]+\/maps\/?\?([^&]+&)*(ll=-?[0-9]{1,2}\.[0-9]+,-?[0-9]{1,2}\.[0-9]+|q=[^&+])+($|&)/);
-  if (match){
-    return match[2];
-	}
-}
-*/

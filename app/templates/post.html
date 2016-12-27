@@ -223,7 +223,7 @@
         <hr>
         {%if current_user.is_authenticated %}
         <section id="postcomment">
-          <form class="comment-form static">
+          <form data-reload='true' action="{{url_for('do.create_comment', sub=func.getSub(post.sid).name, pid=post.pid)}}" class="comment-form ajaxform static">
             {{commentform.csrf_token}}
             {{commentform.sub(value=func.getSub(post.sid).name)}}
             {{commentform.post(value=post.pid)}}
@@ -231,7 +231,7 @@
             <div class="CommentContent">{{commentform.comment(id="comment2", placeholder="Write your comment here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}</div>
             <button type="submit" class="btn btn-orange">Submit comment</button>
           </form>
-          <form class="comment-form moving" style="display:none">
+          <form data-reload='true' action="{{url_for('do.create_comment', sub=func.getSub(post.sid).name, pid=post.pid)}}" class="ajaxform comment-form moving" style="display:none">
             <div class="close">×</div>
             {{commentform.csrf_token}}
             {{commentform.sub(value=func.getSub(post.sid).name)}}
