@@ -35,6 +35,12 @@
   <div class="row subscriptionbar">
     <div id="subslist" class="col-11">
       <ul>
+        {% if not current_user.is_anonymous %}
+        <li class="subinthebar"><a href="{{url_for('view_my_subs')}}">subscribed</a></li>
+        <li class="subinthebar"><a href="{{url_for('view_myblocked_subs')}}">blocked</a></li>
+        <li class="subinthebar"><a href="{{url_for('view_mymodded_subs')}}">mysubs</a></li>
+        <li class="subinthebar"> | </li>
+        {% endif %}
         {% for sub in func.getSubscriptions(current_user.get_id()) %}
           <li class="subinthebar"><a href="{{url_for('view_sub', sub=db.get_sub_from_sid(sub.sid).name)}}">{{db.get_sub_from_sid(sub.sid).name}}</a></li>
         {% endfor %}

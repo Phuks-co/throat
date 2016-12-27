@@ -334,13 +334,24 @@ def view_subs(page):
 
 
 @app.route("/mysubs")
-def view_my_subs():
+def view_my_subs(page):
     """ Here we can view subscribed subs """
-    # mysubs = db.query('SELECT * FROM `SubSubscriber`
-    #                   WHERE `uid`=current_user.uid ')
-    # TODO: filter by subscribed subs
-    c = db.query('SELECT * FROM `sub` ORDER BY `name`')
-    return render_template('subs.html', subs=c.fetchall())
+    subs = db.get_user_subscriptions(current_user.uid)
+    return render_template('mysubs.html', subs=subs)
+
+
+@app.route("/modsubs")
+def view_mymodded_subs():
+    """ Here we can view subscribed subs """
+    subs = db.get_user_modded(current_user.uid)
+    return render_template('mysubs.html', subs=subs)
+
+
+@app.route("/myblockedsubs")
+def view_myblocked_subs():
+    """ Here we can view subscribed subs """
+    subs = db.get_user_blocked(current_user.uid)
+    return render_template('mysubs.html', subs=subs)
 
 
 @app.route("/random")

@@ -355,9 +355,25 @@ def get_sub_stylesheet(sid):
 @cache.memoize(10)
 def get_user_subscriptions(uid):
     """ Returns all the user's subscriptions from the uid """
-    c = query('SELECT * FROM `sub_subscriber` WHERE `uid`=%s', (uid, ))
+    c = query('SELECT * FROM `sub_subscriber` WHERE `uid`=%s AND `status`=1',
+              (uid, ))
     return c.fetchall()
 
+
+@cache.memoize(10)
+def get_user_blocked(uid):
+    """ Returns all the user's blocked from the uid """
+    c = query('SELECT * FROM `sub_subscriber` WHERE `uid`=%s AND `status`=2',
+              (uid, ))
+    return c.fetchall()
+
+
+@cache.memoize(10)
+def get_user_modded(uid):
+    """ Returns all the user's owned/modded from the uid """
+    c = query('SELECT * FROM `sub_metadata` WHERE `key` IN %s and `value`=%s',
+              (('mod1', 'mod2'), uid, ))
+    return c.fetchall()
 
 @cache.memoize(10)
 def get_user_post_voting(uid):
