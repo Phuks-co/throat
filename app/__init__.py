@@ -889,22 +889,21 @@ def admin_subs_search(term):
         return render_template('errors/404.html'), 404
 
 
-@app.route("/admin/post")
+@app.route("/admin/post/all/", defaults={'page': 1})
+@app.route("/admin/post/all/<int:page>")
 @login_required
-def admin_post():
+def admin_post(page):
     """ WIP: View post. """
     if current_user.is_admin():
-        # TODO: pagination
         posts = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC '
-                         'LIMIT 100')
-        return render_template('adminpost.html',
-                               sort_type='all_new',
-                               posts=posts)
+                         'LIMIT 100 OFFSET %s', (((page - 1) * 100),))
+        return render_template('adminpost.html', page=page,
+                               sort_type='all_new', posts=posts.fetchall())
     else:
         return render_template('errors/404.html'), 404
 
 
-@app.route("/admin/post/<term>")
+@app.route("/admin/post/search/<term>")
 @login_required
 def admin_post_search(term):
     """ WIP: View users. """
