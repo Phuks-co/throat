@@ -405,10 +405,14 @@ def edit_mod():
     if form.validate():
         db.update_sub_metadata(sub['sid'], 'mod1', user['uid'])
 
-        db.create_sublog(sub['sid'],
-                         current_user.get_username() + ' transferred sub '
-                         'ownership to ' + user['name'],
-                         url_for('view_sub', sub=sub['name']))
+        db.create_sublog(sid=sub['sid'], action=4,
+                         description=current_user.get_username() +
+                         ' transferred sub ownership to ' + user['name'],
+                         link=url_for('view_sub', sub=sub['name']))
+        db.create_sitelog(action=4,
+                          description=current_user.get_username() +
+                          ' transferred sub ownership to ' + user['name'],
+                          link=url_for('view_sub', sub=sub['name']))
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
