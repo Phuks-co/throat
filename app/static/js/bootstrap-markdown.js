@@ -972,7 +972,7 @@
     savable: false,
     width: 'inherit',
     height: 'inherit',
-    resize: 'none',
+    resize: 'vertical',
     iconlibrary: 'fa',
     language: 'en',
     initialstate: 'editor',
