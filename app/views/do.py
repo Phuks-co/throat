@@ -1091,10 +1091,14 @@ def deleteannouncement():
     if not current_user.is_admin():
         abort(404)
 
-    db.uquery('DELETE FROM `site_metadata` WHERE `key`=%s', ('announcement',))
-    db.create_sitelog(3, current_user.get_username() +
-                      ' removed an announcement',
-                      url_for('view_post_inbox', pid=form.post.data))
+    form = DeletePost()
+
+    if form.validate():
+        db.uquery('DELETE FROM `site_metadata` WHERE `key`=%s',
+                  ('announcement',))
+        db.create_sitelog(3, current_user.get_username() +
+                          ' removed an announcement',
+                          url_for('view_post_inbox', pid=form.post.data))
     return redirect(url_for('admin_area'))
 
 

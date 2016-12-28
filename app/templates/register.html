@@ -6,7 +6,7 @@ var recaptchaCallback = function(){
     grecaptcha.render($('.g-recaptcha')[0], {sitekey: $('.g-recaptcha').data().sitekey});
 }
 </script>
-<form id="register-form" class="ajaxform white-popup-block" action="{{url_for('do.register')}}" data-redir="{{url_for('welcome')}}">
+<form method="POST" id="register-form" class="ajaxform white-popup-block" action="{{url_for('do.register')}}" data-redir="{{url_for('welcome')}}">
     <div id="the-register-form-itself">
         {{ regform.csrf_token }}
         <h1>Register</h1>
