@@ -344,6 +344,9 @@ main {
 .center .center {
   border-right: none;
   border-radius: 0;
+  border-bottom: none !important;
+  border-right: none !important;
+  margin-right: 0px;
 }
 .content {
     margin-top: 3em;
