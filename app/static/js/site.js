@@ -290,7 +290,7 @@ $(document).ready(function() {
       button.addClass('collapse');
       button.html('<i class="fa fa-minus" aria-hidden="true"></i>')
     });
-    $('.lnkreply').click(function(e) {
+    $(document).on('click', '.lnkreply', function(e) {
       // TODO: Redo this. it's too shitty >_>
       // Explaining what this does because it'll be a pain in the ass to maintain
       // We have stored an additional copy of the form, without the MDE initialized.
