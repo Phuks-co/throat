@@ -572,7 +572,7 @@ def view_sub_hot(sub, page):
 
 
 @app.route("/s/<sub>/<pid>")
-def view_post(sub, pid):
+def view_post(sub, pid, comments=False):
     """ View post and comments (WIP) """
     post = db.get_post_from_pid(pid)
     ksub = db.get_sub_from_sid(post['sid'])
@@ -598,7 +598,8 @@ def view_post(sub, pid):
     downcount = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
                          '`pid`=%s AND `positive`=%s', (pid, 0)) \
                   .fetchone()['c']
-    comments = db.get_all_post_comments(post['pid'])
+    if not comments:
+        comments = db.get_all_post_comments(post['pid'])
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit,
                            upcount=upcount, downcount=downcount,
@@ -632,8 +633,28 @@ def view_comment_inbox(cid):
 def view_perm(sub, pid, cid):
     """ WIP: Permalink to comment, see rTH7ed77c7c69c3,
     currently using :active css to flag comment in comment chain """
-    # TODO
-    return "WIP!"
+    # We get the comment...
+    the_comment = db.get_comment_from_cid(cid)
+    if not the_comment:
+        abort(404)
+    # ... its children ...
+    the_comment['children'] = db.get_all_post_comments(pid, the_comment['cid'],
+                                                       2)
+    the_comment['hl'] = True
+    # ... and its parent ...
+    if the_comment['parentcid']:
+        p1 = db.get_comment_from_cid(the_comment['parentcid'])
+        p1['children'] = [the_comment]
+        # ... and the parent of its parent ...
+        if p1['parentcid']:
+            p2 = db.get_comment_from_cid(p1['parentcid'])
+            p2['children'] = [p1]
+            root = p2
+        else:
+            root = p1
+    else:
+        root = the_comment
+    return view_post(sub, pid, [root])
 
 
 @app.route("/u/<user>")

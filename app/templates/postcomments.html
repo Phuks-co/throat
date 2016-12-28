@@ -1,5 +1,5 @@
 {% for comment in comments recursive %}
-  <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="text-post center no-padding comment sub-{{loop.depth0}}">
+  <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="{% if comment.hl %}active{%endif%} text-post center no-padding comment sub-{{loop.depth0}}">
     <div class="head">
       <div class="info">
         <a class="btn small {% if comment.status == 1 %}expand{%else%}collapse{%endif%}" data-cid="{{comment.cid}}"><i class="fa fa-{% if comment.status == 1 %}plus{%else%}minus{%endif%}" aria-hidden="true"></i></a>
@@ -50,7 +50,7 @@
         {%endif%}
         <div class="bottombar">
           <span id="bott-{{comment.cid}}">
-            <a href="#{{comment.cid}}">
+            <a href="{{url_for('view_perm', sub=db.get_sub_from_pid(comment.pid).name, pid=comment.pid, cid=comment.cid)}}">
               <i class="fa fa-link" aria-hidden="true"></i> permalink
             </a>
             {%if current_user.is_authenticated%}

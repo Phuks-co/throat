@@ -993,11 +993,11 @@ article .text-post{
 .userposts.data {
     border-top: 1px solid #d3d3d3;
 }
-article:target {
+article.active {
     background: #efd3bb;
     color: #000;
 }
-body.dark article:target {
+body.dark article.active {
     background: #44260f;
     color: #fff;
 }

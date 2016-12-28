@@ -74,7 +74,7 @@
               <p><a class="title" href="{{ url_for('view_post', sub=db.get_sub_from_pid(comment.pid).name, pid=comment.pid) }}">{{db.get_post_from_pid(comment.pid).title}}</a></p>
               <p> <span class="comment"> {{markdown(comment.content)|safe}}</span></p>
               <div class="postbar">
-                <a href="{{ url_for('view_post', sub=db.get_sub_from_pid(comment.pid).name, pid=comment.pid) }}#{{comment.cid}}" class="btn small">
+                <a href="{{ url_for('view_perm', sub=db.get_sub_from_pid(comment.pid).name, pid=comment.pid, cid=comment.cid) }}" class="btn small">
                   <i class="fa fa-link" aria-hidden="true"></i> permalink
                 </a>
                 ({{func.get_comment_score(comment)}}) Posted <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago> in
