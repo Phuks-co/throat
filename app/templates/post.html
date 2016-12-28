@@ -186,7 +186,7 @@
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
             </span>
           {% else %}
-            <a href="{{post.link}}" target="_blank" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.link}}</a>
+            <a href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %} {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.link}}</a>
             {% if func.getDomain(post.link) == "youtube.com" or func.getDomain(post.link) == "www.youtube.com" or func.getDomain(post.link) == "youtu.be" %}
               <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>

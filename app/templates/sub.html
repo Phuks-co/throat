@@ -157,7 +157,7 @@
     <div class="main">
       {% if db.is_post_nsfw(ann) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
       {% if not ann.link %}
-      <a target='_blank' class="title" href="{{url_for('view_post', sub=sub.name, pid=ann.pid)}}"><div class="announcementPost">Sticky</div>{{ann.title}}</a>
+      <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} class="title" href="{{url_for('view_post', sub=sub.name, pid=ann.pid)}}"><div class="announcementPost">Sticky</div>{{ann.title}}</a>
       {% else %}
       {% if ann.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
       <a class="title" href="{{ann.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener"><div class="announcementPost">Sticky</div>{{ann.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=func.getDomain(ann.link))}}">{{func.getDomain(ann.link)}}</a>)</span>
@@ -227,18 +227,18 @@
         {% cache 300, post.pid, 'subpost' %}
           <div class="image">
             {% if not ((db.is_post_nsfw(post) or db.is_sub_nsfw(sub)) and current_user.show_nsfw()) and db.get_post_thumbnail(post) %}
-              <a target='_blank' href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
+              <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
                 <img src="{{config.THUMBNAIL_HOST}}{{db.get_post_thumbnail(post)}}">
               </a>
               {% elif not post.link %}
-              <a target='_blank' href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
+              <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
                 <span class="fa-stack fa-3x" style="color: #616161;">
                   <i class="fa fa-square fa-stack-2x"></i>
                   <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
                 </span>
               </a>
             {% else %}
-              <a target='_blank' href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
+              <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
                 <span class="fa-stack fa-3x" style="color: #616161;">
                   <i class="fa fa-square fa-stack-2x"></i>
                   {% if func.isImage(post.link) %}
@@ -265,7 +265,7 @@
             <a class="title" href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}">{{post.title}}</a>
             {% else %}
             {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
-            <a target='_blank' class="title" href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=func.getDomain(post.link))}}">{{func.getDomain(post.link)}}</a>)</span>
+            <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} class="title" href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=func.getDomain(post.link))}}">{{func.getDomain(post.link)}}</a>)</span>
             {% endif %}
             <p class="author"><time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago></p>
             <p class="container">

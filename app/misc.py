@@ -114,7 +114,6 @@ class SiteUser(object):
         """ Returns new message count """
         return db.user_mail_count(self.uid)
 
-    @cache.memoize(300)
     def has_exlinks(self):
         """ Returns true if user selects to open links in a new window """
         x = db.get_user_metadata(self.uid, 'exlinks')
@@ -123,7 +122,6 @@ class SiteUser(object):
         else:
             return False
 
-    @cache.memoize(300)
     def block_styles(self):
         """ Returns true if user selects to block sub styles """
         x = db.get_user_metadata(self.uid, 'nostyles')
