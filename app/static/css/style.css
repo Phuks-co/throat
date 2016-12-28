@@ -1296,7 +1296,8 @@ span.btn.accepted {
     margin-top: 10px;
 }
 .admin.section.stats {
-    font-size: 24px;
+    font-size: 20px;
+    text-align: center;
 }
 .admin.section.users a,
 .admin.section.subs a {

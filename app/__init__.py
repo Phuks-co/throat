@@ -832,6 +832,8 @@ def admin_area():
         subs = db.query('SELECT COUNT(*) AS c FROM `sub`').fetchone()['c']
         posts = db.query('SELECT COUNT(*) AS c FROM `sub_post`') \
                   .fetchone()['c']
+        comms = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment`') \
+                  .fetchone()['c']
         ups = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
                        '`positive`=1').fetchone()['c']
         downs = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
@@ -847,7 +849,7 @@ def admin_area():
         return render_template('admin.html', badges=badges, subs=subs,
                                posts=posts, ups=ups, downs=downs, users=users,
                                createuserbadgeform=CreateUserBadgeForm(),
-                               usebtcdonationform=btc)
+                               comms=comms, usebtcdonationform=btc)
     else:
         return render_template('errors/404.html'), 404
 

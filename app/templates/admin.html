@@ -14,10 +14,22 @@
 {% block content %}
 {{ super() }}
 <div class="admin section stats">
-  <div class="col-3"><i class="fa fa-user"></i> {{users}} Users</div>
-  <div class="col-3"><i class="fa fa-list"></i> {{subs}} Subs</div>
-  <div class="col-3"><i class="fa fa-comments"></i> {{posts}} Posts</div>
-  <div class="col-3">Voting (+{{ups}} | -{{downs}})</div>
+  <table class="col-12">
+    <tr>
+      <td class="col-2"><i class="fa fa-user" title="users"></i></td>
+      <td class="col-2"><i class="fa fa-users" title="subs"></i></td>
+      <td class="col-2"><i class="fa fa-list" title="posts"></i></td>
+      <td class="col-2"><i class="fa fa-comments" title="comments"></i></td>
+      <td class="col-2">votes</td>
+    </tr>
+    <tr>
+      <td class="col-2">{{users}}</td>
+      <td class="col-2">{{subs}}</td>
+      <td class="col-2">{{posts}}</td>
+      <td class="col-2">{{comms}}</td>
+      <td class="col-2">+{{ups}} | -{{downs}}</td>
+    </tr>
+  </table>
 </div>
 <div class="admin section">
     <div class="col-12 admin-page-form">
