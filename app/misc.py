@@ -750,6 +750,8 @@ def get_user_level(uid):
     badges = db.get_user_badges(uid)
     for badge in badges:
         xp += badge['value']
+    if not xp:
+        return 0
     level = math.sqrt(xp/10)
     print(level)
     return int(level)
