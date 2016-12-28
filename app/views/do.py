@@ -690,6 +690,10 @@ def create_comment(sub, pid):
     """ Here we send comments. """
     form = PostComment()
     if form.validate():
+        if sub == '0':
+            sub = form.sub.data
+        if pid == '0':
+            pid = form.post.data
         # 1 - Check if sub exists.
         sub = db.get_sub_from_name(sub)
         if not sub:
@@ -735,7 +739,7 @@ def create_comment(sub, pid):
         # 6 - Process mentions
         misc.workWithMentions(form.comment.data, to, post, sub)
 
-        return json.dumps({'status': 'ok', 'page': url_for('view_post_inbox',
+        return json.dumps({'status': 'ok', 'addr': url_for('view_post_inbox',
                                                            pid=pid)})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
