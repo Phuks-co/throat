@@ -347,6 +347,9 @@ def our_markdown(text):
 @cache.memoize(5)
 def getVoteStatus(uid, pid):
     """ Returns if the user voted positively or negatively to a post """
+    if not uid:
+        return -1
+
     c = db.query('SELECT positive FROM `sub_post_vote` WHERE `uid`=%s'
                  ' AND `pid`=%s', (uid, pid, ))
     vote = c.fetchone()
