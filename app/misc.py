@@ -718,7 +718,7 @@ def get_user_post_score(user):
                     count -= 1
 
         mposts = db.query('SELECT * FROM `sub_post_comment` WHERE '
-                          '`uid`=%s', (self.uid, )).fetchall()
+                          '`uid`=%s', (user['uid'], )).fetchall()
         q = "SELECT `positive` FROM `sub_post_comment_vote`"
         q += " WHERE `cid` IN ("
 
