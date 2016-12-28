@@ -74,15 +74,14 @@
           {% if box_name != 'Sent' %}
             <a href="{{url_for('view_user', user=db.get_user_from_uid(message.sentby).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{db.get_user_from_uid(message.sentby).name}}</a>
             {% if not message.read %}
-              {% if box_name != 'Replies' %}
-                <a class="unread btn btn-orange edit small" data-mid="{{message.mid}}"><i class="fa fa-circle-o" aria-hidden="true"></i> mark as read</a>
-              {% endif %}
+                <a class="unread btn btn-orange edit small" data-mid="{{message.mid}}"><i class="fa fa-circle-o" aria-hidden="true"></i> {% if box_name != "Replies" %}mark as read{%else%}new{%endif%}</a>
             {% else %}
               <a class="read btn small"><i class="fa fa-folder-open" aria-hidden="true"></i> read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
             {% endif %}
             {% if message.mtype != 8 %}
               {% if box_name == 'Replies' %}
                 <a href="#comment-form" class="btn small replycomment popup"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
+                <a href="{{ url_for('view_perm', sub=func.getCommentSub(message.mlink).name, pid=db.get_comment_from_cid(message.mlink).pid, cid=message.mlink) }}" class="btn small"><i class="fa fa-link" aria-hidden="true"></i> permalink</a>
               {%else%}
                 <a href="#msg-form" data-mid="{{message.mid}}" class="btn small replymsg popup"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
               {%endif%}
