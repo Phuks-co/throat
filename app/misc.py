@@ -248,7 +248,8 @@ def ratelimit(limit, per=300, send_x_headers=True,
             rlimit = RateLimit(key, limit + 1, per, send_x_headers)
             g._view_rate_limit = rlimit
             if over_limit is not None and rlimit.over_limit:
-                return over_limit(rlimit)
+                if not g.appconfig.get('TESTING'):
+                    return over_limit(rlimit)
             return f(*args, **kwargs)
         return update_wrapper(rate_limited, f)
     return decorator
