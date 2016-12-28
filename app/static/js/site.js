@@ -15,7 +15,6 @@ $(document).ready(function() {
       data: target.serialize(),
       success: function(data) {
         if (data.status != "ok") {
-          target[0].reset();
           var obj = data.error,
             ul = $("<ul>"); // >_>
           for (var i = 0, l = obj.length; i < l; ++i) {
@@ -30,6 +29,7 @@ $(document).ready(function() {
           }
           button.prop('disabled', false);
         } else { // success
+          target[0].reset();
           if(button.data('success')){
             button.text(button.data('success'));
           }
