@@ -930,7 +930,7 @@ button.mfp-close, button.mfp-arrow {
 
 /* sub comments */
 article .text-post{
-  margin-left: 2em;
+  margin-left: .7em !important;
 }
 /*
 .text-post.sub-1 {
