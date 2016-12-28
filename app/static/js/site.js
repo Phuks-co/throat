@@ -77,7 +77,7 @@ $(document).ready(function() {
     }
   });
 
-  $('.loadmore').click(function(e){
+  $(document).on('click', ".loadmore", function(e){
     e.preventDefault();
     if($(e.target).prop('disabled')){
       return
