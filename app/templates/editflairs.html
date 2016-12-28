@@ -14,7 +14,7 @@
 
 <h1>Editing /s/{{sub.name}}'s flairs</h1>
 <div class="col-12 admin-page-form">
-  <form class="ajaxform nice-form" action="{{url_for('do.create_flair', sub=sub.name)}}" data-reload="true">
+  <form  method="POST" class="ajaxform nice-form" action="{{url_for('do.create_flair', sub=sub.name)}}" data-reload="true">
     <h4>Create new flair</h4>
     {{createflair.csrf_token}}
     <div class="col-10">
@@ -33,7 +33,7 @@
 {% if flairs %}
   <div class="col-12 admin-page-form">
     {% for flair in flairs %}
-      <form action="{{url_for('do.edit_flair', sub=sub.name)}}" class="nice-form ajaxform">
+      <form  method="POST" action="{{url_for('do.edit_flair', sub=sub.name)}}" class="nice-form ajaxform">
         {{flair.csrf_token}}
         {{flair.flair}}
         <div class="col-10">
@@ -48,7 +48,7 @@
           <p></p>
         </div>
       </form>
-      <form data-reload="true" action="{{url_for('do.delete_flair', sub=sub.name)}}" class="nice-form ajaxform">
+      <form  method="POST" data-reload="true" action="{{url_for('do.delete_flair', sub=sub.name)}}" class="nice-form ajaxform">
         {{flair.csrf_token}}{{flair.flair}}
         <div class="col-1">
           <button type="submit" class="btn btn-orange" id="editsub-btnsubmit" data-prog="Deleting..." data-success="Deleted!">Delete</button>

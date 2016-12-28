@@ -78,7 +78,7 @@
       <h3><a href="{{url_for('view_user_posts', user=user.name)}}">View submissions</a></h3>
     </div>
 
-<form id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="ajaxform mfp-hide white-popup-block">
+<form  method="POST" id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="ajaxform mfp-hide white-popup-block">
   {{msgform.csrf_token}}
   {{msgform.to(value=user.uid)}}
   <h1>Submit a user message</h1>

@@ -145,7 +145,7 @@
   </footer>
   {% if current_user.is_anonymous %}
   <!-- login form -->
-  <form action="{{url_for('do.login')}}" data-reload="true" id="login-form" class="ajaxform mfp-hide white-popup-block">
+  <form  method="POST" action="{{url_for('do.login')}}" data-reload="true" id="login-form" class="ajaxform mfp-hide white-popup-block">
     <h1>Login</h1> {{ loginform.csrf_token }}
     <p id="login-intro">Do you have an account?</p>
     <p>{{loginform.username(placeholder=loginform.username.label.text, required=True, autofocus=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}</p>

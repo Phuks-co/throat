@@ -71,7 +71,7 @@ var recaptchaCallback = function(){
   {% endif %}
 
   <h1>Edit info for {{user.name}}</h1>
-  <form id="edit-user-form" data-redir='true'  action="{{url_for('do.edit_user', user=user.name)}}" class="ajaxform">
+  <form  method="POST" id="edit-user-form" data-redir='true'  action="{{url_for('do.edit_user', user=user.name)}}" class="ajaxform">
       <div id="the-edit-user-form-itself">
           {{edituserform.csrf_token}}
 

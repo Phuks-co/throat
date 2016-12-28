@@ -196,7 +196,7 @@
 {% endblock %}
 {%block pagefoot%}
 <!-- create sub form -->
-<form id="csub-form" data-redir="true" action="{{url_for('do.create_sub')}}" class="ajaxform mfp-hide white-popup-block">
+<form id="csub-form" data-redir="true" action="{{url_for('do.create_sub')}}"  method="POST" class="ajaxform mfp-hide white-popup-block">
   {{ csubform.csrf_token }}
   <h1>Create sub</h1>
   <p>Create a sub. For you, for your friends or your favorite community</p>
@@ -206,7 +206,7 @@
   <p><button type="submit" id="csub-btnsubmit" class="btn btn-blue" data-prog="Creating...">Create sub</button></p>
 </form>
 {% if current_user.is_authenticated %}
-<form id="post-form" action="{{url_for('do.create_txtpost')}}" data-redir="true" class="ajaxform mfp-hide white-popup-block">
+<form id="post-form" action="{{url_for('do.create_txtpost')}}" data-redir="true"  method="POST" class="ajaxform mfp-hide white-popup-block">
   {% set txtpostform = form.CreateSubTextPost()%}
   {{txtpostform.csrf_token}}
   <h1>Submit a text post</h1>
@@ -219,7 +219,7 @@
   </div>
   <p><button type="submit" class="btn btn-blue" data-prog="Sending...">Submit post</button></p>
 </form>
-<form id="link-post-form" action="{{url_for('do.create_lnkpost')}}" data-redir="true" class="ajaxform mfp-hide white-popup-block">
+<form id="link-post-form" action="{{url_for('do.create_lnkpost')}}" data-redir="true"  method="POST" class="ajaxform mfp-hide white-popup-block">
   {% set lnkpostform = form.CreateSubLinkPost()%}
   {{lnkpostform.csrf_token}}
   <h1>Submit a link post</h1>

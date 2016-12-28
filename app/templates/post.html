@@ -232,7 +232,7 @@
             <div class="alert div-error"></div>
             <button type="submit" class="btn btn-orange">Submit comment</button>
           </form>
-          <form data-reload='true' action="{{url_for('do.create_comment', sub=func.getSub(post.sid).name, pid=post.pid)}}" class="ajaxform comment-form moving" style="display:none">
+          <form data-reload='true'  method="POST" action="{{url_for('do.create_comment', sub=func.getSub(post.sid).name, pid=post.pid)}}" class="ajaxform comment-form moving" style="display:none">
             <div class="close">×</div>
             {{commentform.csrf_token}}
             {{commentform.sub(value=func.getSub(post.sid).name)}}
@@ -281,7 +281,7 @@
   </form>
   {% endif %}
   {% if current_user.is_authenticated %}
-    <form action="{{url_for('do.edit_comment')}}" data-reload="true" id="edit-comment-form" class="ajaxform mfp-hide white-popup-block">
+    <form action="{{url_for('do.edit_comment')}}" data-reload="true" id="edit-comment-form"  method="POST" class="ajaxform mfp-hide white-popup-block">
       <h2>Edit comment</h2>
       {% set cf = form.EditCommentForm() %}
       {{cf.csrf_token}}{{cf.cid(id="ecf-cid")}}
@@ -289,7 +289,7 @@
       <p><button type="submit" class="btn btn-blue" data-prog="Saving..">Edit comment</button></p>
     </form>
 
-    <form action="{{url_for('do.delete_comment')}}" data-reload="true" id="delete-comment-form" class="ajaxform mfp-hide white-popup-block">
+    <form action="{{url_for('do.delete_comment')}}" data-reload="true" id="delete-comment-form"  method="POST" class="ajaxform mfp-hide white-popup-block">
       <h2>Deleting comment</h2>
       <p>Are you sure you want to do this?</p>
       {% set cf = form.DeleteCommentForm() %}
@@ -298,7 +298,7 @@
     </form>
   {%endif%}
   {% if current_user.is_authenticated and not current_user.is_subban(func.getSub(post.sid)) %}
-  <form id="post-form" action="{{url_for('do.create_txtpost')}}" data-redir="true" class="ajaxform mfp-hide white-popup-block">
+  <form id="post-form" action="{{url_for('do.create_txtpost')}}" data-redir="true"  method="POST" class="ajaxform mfp-hide white-popup-block">
     {{txtpostform.csrf_token}}
     <h1>Submit a text post</h1>
     <p class="sub">/s/{{txtpostform.sub(placeholder=txtpostform.sub.label.text, required=True)}}</p>
@@ -310,7 +310,7 @@
     </div>
     <p><button type="submit" class="btn btn-blue" data-prog="Sending...">Submit post</button></p>
   </form>
-  <form id="link-post-form" action="{{url_for('do.create_lnkpost')}}" data-redir="true" class="ajaxform mfp-hide white-popup-block">
+  <form id="link-post-form" action="{{url_for('do.create_lnkpost')}}" data-redir="true"  method="POST" class="ajaxform mfp-hide white-popup-block">
     {{lnkpostform.csrf_token}}
     <h1>Submit a link post</h1>
     <p class="sub">/s/{{lnkpostform.sub(placeholder=lnkpostform.sub.label.text, required=True)}}</p>

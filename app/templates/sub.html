@@ -325,7 +325,7 @@
 {% endif %}
 
 {% if current_user.is_authenticated and not current_user.is_subban(sub) %}
-<form id="post-form" action="{{url_for('do.create_txtpost')}}" data-redir="true" class="ajaxform mfp-hide white-popup-block">
+<form  method="POST" id="post-form" action="{{url_for('do.create_txtpost')}}" data-redir="true" class="ajaxform mfp-hide white-popup-block">
   {{txtpostform.csrf_token}}
   <h1>Submit a text post</h1>
   <p class="sub">/s/{{txtpostform.sub(placeholder=txtpostform.sub.label.text, required=True)}}</p>
@@ -338,7 +338,7 @@
   <p><button type="submit" class="btn btn-blue" data-prog="Sending...">Submit post</button></p>
 
 </form>
-<form id="link-post-form" action="{{url_for('do.create_lnkpost')}}" data-redir="true" class="ajaxform mfp-hide white-popup-block">
+<form  method="POST" id="link-post-form" action="{{url_for('do.create_lnkpost')}}" data-redir="true" class="ajaxform mfp-hide white-popup-block">
   {{lnkpostform.csrf_token}}
   <h1>Submit a link post</h1>
   <p class="sub">/s/{{lnkpostform.sub(placeholder=lnkpostform.sub.label.text, required=True)}}</p>

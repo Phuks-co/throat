@@ -13,7 +13,7 @@
 {% endif %}
 
 <h1>Edit /s/{{sub.name}}</h1>
-<form id="edit-sub-form" action="{{url_for('do.edit_sub', sub=sub.name)}}" class="nice-form ajaxform">
+<form  method="POST" id="edit-sub-form" action="{{url_for('do.edit_sub', sub=sub.name)}}" class="nice-form ajaxform">
   {{editsubform.csrf_token}}
   <div>
     <p><label>{{editsubform.title.label.text}}</label> {{editsubform.title(value=sub.title, required=True)}}</p>

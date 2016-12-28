@@ -13,7 +13,7 @@
 {% endif %}
 
 <h1>Edit /s/{{sub.name}}</h1>
-<form class="ajaxform" action="{{url_for('do.edit_sub_css', sub=sub.name)}}">
+<form  method="POST" class="ajaxform" action="{{url_for('do.edit_sub_css', sub=sub.name)}}">
   {{form.csrf_token}}
   <h2><i class="fa fa-cubes"></i> {{form.css.label.text}}</h2>
   <p>{{form.css(style="width:100%; font-family:monospace", rows=50)}}</label></p>

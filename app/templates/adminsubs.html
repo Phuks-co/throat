@@ -34,7 +34,7 @@
 </div>
 <div class="col-12 admin-page-form">
   <div>
-    <form class="ajaxform" id="edit-mod-form" data-reload="true" action="{{url_for('do.edit_mod')}}">
+    <form  method="POST" class="ajaxform" id="edit-mod-form" data-reload="true" action="{{url_for('do.edit_mod')}}">
       {{editmodform.csrf_token}}
       <h4>Change owner of sub</h4>
       <div class="col-3">{{editmodform.sub(placeholder=editmodform.sub.label.text, required=True, autofocus=True)}}</div>
