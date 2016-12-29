@@ -166,7 +166,7 @@
       <p class="container">
       {% if ann.link %}
         {% if func.getDomain(ann.link) == "youtube.com" or func.getDomain(ann.link) == "www.youtube.com" or func.getDomain(ann.link) == "youtu.be" %}
-          <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{ann.pid}}" class="closedvid">
+          <span id="youtubevid" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" class="closedvid">
             <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
           </span>
         {% elif func.getDomain(ann.link) == "vimeo.com" %}
