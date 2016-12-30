@@ -214,9 +214,9 @@ def home_new(page):
 def home_new_more(pid=None):
     if not pid:
         abort(404)
-    c = db.query('SELECT * FROM `sub_post` WHERE `pid`<%s ORDER BY `posted` '
-                 'DESC LIMIT 20', (pid, ))
-    posts = c.fetchall()
+    subs = misc.getSubscriptions(current_user.get_id())
+    posts = misc.getPostsFromSubs(subs)
+
     return render_template('indexpost.html', posts=posts, sort_type='all_new')
 
 
