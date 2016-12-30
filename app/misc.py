@@ -742,6 +742,7 @@ def get_user_post_score(user):
     return user['score']
 
 
+@cache.memoize(10)
 def get_user_level(uid):
     user = db.get_user_from_uid(uid)
     xp = get_user_post_score(user)
@@ -749,6 +750,7 @@ def get_user_level(uid):
     badges = db.get_user_badges(uid)
     for badge in badges:
         xp += badge['value']
+    if xp <= 0:
+        return (0, 0)
     level = math.sqrt(xp/10)
-    print(level)
-    return int(level)
+    return (int(level), xp)
