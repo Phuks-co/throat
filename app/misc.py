@@ -130,10 +130,13 @@ class SiteUser(object):
         else:
             return False
 
-    @cache.memoize(300)
     def show_nsfw(self):
         """ Returns true if user selects show nsfw posts """
-        return db.get_user_metadata(self.uid, 'nsfw')
+        x = db.get_user_metadata(self.uid, 'nsfw')
+        if x:
+            return True if x == '1' else False
+        else:
+            return False 
 
     @cache.memoize(300)
     def get_post_score(self):
