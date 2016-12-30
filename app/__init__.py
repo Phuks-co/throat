@@ -209,6 +209,17 @@ def home_new(page):
                            posts=sorter.getPosts(page))
 
 
+@app.route("/new/more", defaults={'pid': None})
+@app.route('/new/more/<int:pid>')
+def home_new_more(pid=None):
+    if not pid:
+        abort(404)
+    c = db.query('SELECT * FROM `sub_post` WHERE `pid`<%s ORDER BY `posted` '
+                 'DESC LIMIT 20', (pid, ))
+    posts = c.fetchall()
+    return render_template('indexpost.html', posts=posts, sort_type='all_new')
+
+
 @app.route("/top", defaults={'page': 1})
 @app.route("/top/<int:page>")
 def home_top(page):
@@ -255,6 +266,17 @@ def all_new(page):
 
     return render_template('index.html', page=page, sort_type='all_new',
                            posts=posts)
+
+
+@app.route("/all/new/more", defaults={'pid': None})
+@app.route('/all/new/more/<int:pid>')
+def all_new_more(pid=None):
+    if not pid:
+        abort(404)
+    c = db.query('SELECT * FROM `sub_post` WHERE `pid`<%s ORDER BY `posted` '
+                 'DESC LIMIT 20', (pid, ))
+    posts = c.fetchall()
+    return render_template('indexpost.html', posts=posts, sort_type='all_new')
 
 
 @app.route("/domain/<domain>", defaults={'page': 1})

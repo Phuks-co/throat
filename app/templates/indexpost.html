@@ -1,0 +1,111 @@
+{% for post in posts if not db.is_post_deleted(post) and not post.pid == func.getAnnouncement().pid %}
+{% if ((current_user.show_nsfw() and db.is_post_nsfw(post)) or not db.is_post_nsfw(post)) and ((current_user.show_nsfw() and db.is_sub_nsfw(func.getSub(post.sid))) or not db.is_sub_nsfw(func.getSub(post.sid))) %}
+    <article class="post" data-pid="{{post.pid}}">
+      {# vote arrow div #}
+      <div class="pull left vote">
+        <form class="uvform">
+          <div class="upvote{%if func.getVoteStatus(current_user.get_id(), post.pid) == 1%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+          {% set uv = form.VoteForm() %}
+          {{uv.csrf_token}}{{uv.post(value=post.pid)}}
+        </form>
+        <p class="count">{{post['score']}}</p>
+        <form class="dvform">
+          <div class="downvote{%if func.getVoteStatus(current_user.get_id(), post.pid) == 0%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+          {% set dv = form.VoteForm() %}
+          {{uv.csrf_token}}{{uv.post(value=post.pid)}}
+        </form>
+      </div>
+      {% cache 300, post.pid, 'post' %}
+        <div class="image">
+          {% if not ((db.is_post_nsfw(post) or db.is_sub_nsfw(db.get_sub_from_sid(post.sid))) and current_user.show_nsfw()) and db.get_post_thumbnail(post) %}
+          <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
+            <img src="{{config.THUMBNAIL_HOST}}{{db.get_post_thumbnail(post)}}">
+          </a>
+          {% elif not post.link %}
+            <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
+              <span class="fa-stack fa-3x" style="color: #616161;">
+                <i class="fa fa-square fa-stack-2x"></i>
+                <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          {% else %}
+            <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
+              <span class="fa-stack fa-3x" style="color: #616161;">
+                <i class="fa fa-square fa-stack-2x"></i>
+                {% if func.isImage(post.link) %}
+                <i class="fa fa-image fa-stack-1x fa-inverse"></i>
+                {% elif func.getDomain(post.link) == "youtube.com" or func.getDomain(post.link) == "www.youtube.com" or func.getDomain(post.link) == "youtu.be" %}
+                <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
+                {% elif func.getDomain(post.link) == "vimeo.com" %}
+                <i class="fa fa-vimeo fa-stack-1x fa-inverse"></i>
+                {% elif func.getDomain(post.link) == "vine.co" %}
+                <i class="fa fa-vine fa-stack-1x fa-inverse"></i>
+                {% elif func.isVideo(post.link) %}
+                <i class="fa fa-video-camera fa-stack-1x fa-inverse"></i>
+                {% else %}
+                <i class="fa fa-link fa-stack-1x fa-inverse"></i>
+                {% endif %}
+              </span>
+            </a>
+          {% endif %}
+        </div>
+        <div class="main">
+          {% if db.is_post_nsfw(post) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
+          {% if not post.link %}
+          <a class="title" href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">{{post.title}}</a>
+          {% else %}
+          {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
+          <a class="title" href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=func.getDomain(post.link))}}">{{func.getDomain(post.link)}}</a>)</span>
+          {% endif %}
+          <p class="author"><relative-time datetime="{{post.posted.isoformat()}}Z"></relative-time></p>
+          <p class="container">
+            {% if post.link %}
+              {% if func.getDomain(post.link) == "youtube.com" or func.getDomain(post.link) == "www.youtube.com" or func.getDomain(post.link) == "youtu.be" %}
+                <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
+                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
+                </span>
+              {% elif func.getDomain(post.link) == "vimeo.com" %}
+                <span id="vimeovid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
+                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
+                </span>
+              {% elif func.getDomain(post.link) == "vine.co" %}
+                <span id="vinevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvine">
+                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vine" aria-hidden="true"></i></a></span>
+                </span>
+              {% elif func.getDomain(post.link) == "gfycat.com" %}
+                <span id="gfycat" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedgfycat">
+                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-video-camera" aria-hidden="true"></i></a></span>
+                </span>
+              {% elif func.isImage(post.link) %}
+                <span id="openimg" data-img="{{post.link}}" data-pid="{{post.pid}}" class="closedimg">
+                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
+                </span>
+              {% elif func.isVideo(post.link) %}
+              <span id="openvideo" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{func.getDomain(post.link)}}" class="closedvid">
+                <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
+              </span>
+              {% elif func.isGifv(post.link) %}
+              <span id="gifv" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{func.getDomain(post.link)}}" class="closedgifv">
+                <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
+              </span>
+              {% elif func.getDomain(post.link) == "twitter.com" %}
+                <span id="tweet" data-url="{{post.link}}" data-pid="{{post.pid}}" class="closedtweet">
+                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-twitter" aria-hidden="true"></i></a></span>
+                </span>
+              {% endif %}
+            {% else %}
+              <span id="opentextpost" data-pid="{{post.pid}}" class="closedtextpost">
+                <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
+              </span>
+            {% endif %}
+            <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i>
+            {% if db.is_sub_nsfw(func.getSub(post.sid))  %}<font style="color:red">nsfw</font>{% endif %}
+            /s/{{func.getSub(post.sid).name}}</a>
+            <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a>
+            <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> {{db.get_post_comment_count(post.pid)}}</a>
+            </p>
+        </div>
+      {% endcache %}
+    </article>
+{% endif %}
+{% endfor %}
