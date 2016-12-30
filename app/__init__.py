@@ -389,7 +389,7 @@ def edit_sub_css(sub):
 
     form = EditSubCSSForm()
 
-    form.css.data = db.get_sub_stylesheet(sub['sid'])
+    form.css.data = db.get_sub_stylesheet(sub['sid'], False)
     return render_template('editsubcss.html', sub=sub, form=form)
 
 
