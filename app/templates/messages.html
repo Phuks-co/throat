@@ -71,7 +71,7 @@
         {% endif %}
         <p class="author"><time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>
         <p class="container bottombar">
-          <span>
+          <span data-to="{{message.mid}}">
           {% if box_name != 'Sent' %}
             <a href="{{url_for('view_user', user=db.get_user_from_uid(message.sentby).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{db.get_user_from_uid(message.sentby).name}}</a>
             {% if not message.read %}
