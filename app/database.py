@@ -1,5 +1,6 @@
 """ All the database operations should be done from this file """
 import uuid
+import html
 import datetime
 import bcrypt
 import MySQLdb
@@ -349,7 +350,7 @@ def create_badge(badge, name, text, value):
 def get_sub_stylesheet(sid):
     """ Returns a sub's stylesheet from the sid """
     c = query('SELECT `content` FROM `sub_stylesheet` WHERE `sid`=%s', (sid, ))
-    return c.fetchone()['content']
+    return html.escape(c.fetchone()['content'])
 
 
 @cache.memoize(10)

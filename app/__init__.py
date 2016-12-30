@@ -5,7 +5,6 @@ import json
 import time
 import re
 import random
-import cgi
 from wsgiref.handlers import format_date_time
 import datetime
 from urllib.parse import urlparse, urljoin
