@@ -879,7 +879,7 @@ def admin_area():
 def admin_users():
     """ WIP: View users. """
     if current_user.is_admin():
-        users = db.query('SELECT * FROM `user` ORDER BY `joined`').fetchall()
+        users = db.query('SELECT * FROM `user` ORDER BY `joindate`').fetchall()
         return render_template('adminusershome.html', users=users)
     else:
         return render_template('errors/404.html'), 404
