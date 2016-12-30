@@ -84,7 +84,7 @@
                 <a href="#reply" class="btn small lnkreply"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
                 <a href="{{ url_for('view_perm', sub=func.getCommentSub(message.mlink).name, pid=db.get_comment_from_cid(message.mlink).pid, cid=message.mlink) }}" class="btn small"><i class="fa fa-link" aria-hidden="true"></i> permalink</a>
               {%else%}
-                <a href="#msg-form" data-mid="{{message.mid}}" class="btn small replymsg popup"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
+                <a href="#msg-form" data-mid="{{message.mid}}" class="btn small replymsg lnkreply"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
               {%endif%}
               <!--<a class="btn small"><i class="fa fa-mail-forward" aria-hidden="true"></i> forward</a>-->
             {%endif%}
@@ -108,25 +108,28 @@
             <button type="submit" class="btn btn-orange">Submit comment</button>
           </form>
         </div>
-        {%endif%}
+        {% else %}
+        <div>
+          <form id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="ajaxform comment-form moving" style="display:none">
+            <h2>Reply to message</h2>
+            <div class="close">×</div>
+            {% set msgform = form.CreateUserMessageForm()%}
+            {{msgform.csrf_token}}
+            {{msgform.to()}}
+            <p class="subject">{{msgform.subject(placeholder=msgform.subject.label.text, required=True, autofocus=True)}}</p>
+            <p class="content">{{msgform.content(placeholder="Write your post content here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}</p>
+            <div class="alert div-error">
+              <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+              <p></p>
+            </div>
+            <p><button type="submit" id="msg-btnsubmit" class="btn btn-blue" data-prog="Sending...">Send Message</button></p>
+          </form>
+        </div>
+        {% endif %}
       </div>
     </article>
 {% endfor %}
 </div>
-
-<form id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="ajaxform mfp-hide white-popup-block">
-  {% set msgform = form.CreateUserMessageForm()%}
-  {{msgform.csrf_token}}
-  {{msgform.to()}}
-  <h1>Submit a user message</h1>
-  <p class="subject">{{msgform.subject(placeholder=msgform.subject.label.text, required=True, autofocus=True)}}</p>
-  <p class="content">{{msgform.content(placeholder="Write your post content here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}</p>
-  <div class="alert div-error">
-    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-    <p></p>
-  </div>
-  <p><button type="submit" id="msg-btnsubmit" class="btn btn-blue" data-prog="Sending...">Send Message</button></p>
-</form>
 
 {% endblock %}
 {%block pagefoot%}
