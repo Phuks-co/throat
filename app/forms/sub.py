@@ -71,7 +71,8 @@ class EditSubForm(FlaskForm):
                          choices=[('v', 'Hot'), ('v_two', 'New'),
                                   ('v_three', 'Top')],
                          validators=[Optional()])
-    sidebar = TextAreaField('Sidebar text')
+    sidebar = TextAreaField('Sidebar text',
+                            validators=[Length(min=2, max=8000)])
 
 
 class EditMod2Form(FlaskForm):
