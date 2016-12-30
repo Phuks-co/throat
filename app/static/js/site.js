@@ -414,7 +414,7 @@ $(document).ready(function() {
         }
     });
 
-    $('.upvote').click(function(e){
+    $('.upvote').on('click', function(e){
       var pid = $(e.currentTarget).parent().find('input[name="post"]').prop('value');
       $.ajax({
         type: "POST",
@@ -432,7 +432,7 @@ $(document).ready(function() {
       });
     });
 
-    $('.downvote').click(function(e){
+    $('.downvote').on('click', function(e){
       var pid = $(e.currentTarget).parent().find('input[name="post"]').prop('value');
       $.ajax({
         type: "POST",
@@ -712,7 +712,7 @@ $(document).ready(function() {
       });
     });
 
-    $('span[id^="subscribe"]').click(function(e){
+    $('span[id^="subscribe"]').on('click', function(e){
       var sid = $(e.currentTarget).data().sid
       if($(this).hasClass('unsubscribed'))  {
         $.ajax({
@@ -745,7 +745,7 @@ $(document).ready(function() {
       }
     });
 
-    $('span[id^="block"]').click(function(e){
+    $('span[id^="block"]').on('click', function(e){
       var sid = $(e.currentTarget).data().sid
       if($(this).hasClass('unblocked'))  {
         $.ajax({
@@ -778,7 +778,7 @@ $(document).ready(function() {
       }
     });
 
-    $('span[id^="youtubevid"]').click(function(e){
+    $('span[id^="youtubevid"]').on('click', function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().vid
       var frame = document.createElement('iframe');
@@ -809,7 +809,7 @@ $(document).ready(function() {
       }
     });
 
-    $('span[id^="vimeovid"]').click(function(e){
+    $('span[id^="vimeovid"]').on('click', function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().vid
       var frame = document.createElement('iframe');
@@ -831,7 +831,7 @@ $(document).ready(function() {
       }
     });
 
-    $('span[id^="vinevid"]').click(function(e){
+    $('span[id^="vinevid"]').on('click', function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().vid
       var frame = document.createElement('iframe');
@@ -854,7 +854,7 @@ $(document).ready(function() {
       }
     });
 
-    $('span[id^="gfycat"]').click(function(e){
+    $('span[id^="gfycat"]').on('click', function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().vid
       var frame = document.createElement('iframe');
@@ -877,7 +877,7 @@ $(document).ready(function() {
       }
     });
 
-    $('span[id^="openimg"]').click(function(e){
+    $('span[id^="openimg"]').on('click', function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().img
       var img = document.createElement('img');
@@ -897,7 +897,7 @@ $(document).ready(function() {
       }
     });
 
-    $('span[id^="openvid"]').click(function(e){
+    $('span[id^="openvid"]').on('click', function(e){
       var pid = $(e.currentTarget).data().pid
       var domain = $(e.currentTarget).data().domain
       var url = $(e.currentTarget).data().vid
@@ -928,7 +928,7 @@ $(document).ready(function() {
       }
     });
 
-    $('span[id^="gifv"]').click(function(e){
+    $('span[id^="gifv"]').on('click', function(e){
       var pid = $(e.currentTarget).data().pid
       var domain = $(e.currentTarget).data().domain
       var url = $(e.currentTarget).data().vid
@@ -961,7 +961,7 @@ $(document).ready(function() {
       }
     });
 
-    $('span[id^="tweet"]').click(function(e){
+    $('span[id^="tweet"]').on('click', function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().url
       var div = document.createElement('div');
@@ -991,7 +991,7 @@ $(document).ready(function() {
       }
     });
 
-    $('span#opentextpost').click(function(e){
+    $('span#opentextpost').on('click', function(e){
       var pid = $(e.currentTarget).data().pid
       var div = document.createElement('div');
       playerid = 'player' + pid;
