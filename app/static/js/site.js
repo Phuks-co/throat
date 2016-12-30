@@ -883,7 +883,7 @@ $(document).ready(function() {
       var img = document.createElement('img');
       playerid = 'player' + pid;
       if($(this).hasClass('closedimg'))  {
-        img.style = 'max-width:560px;display:block;';
+        img.style = 'max-width:100%;display:block;';
         img.src = url;
 
         $(e.currentTarget).addClass('openedimg').removeClass('closedimg');
