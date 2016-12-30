@@ -532,7 +532,7 @@ nav .right a {
   Post list styles
 */
 
-.post {
+.post, article {
     overflow: hidden;
     padding: 5px;
     word-wrap: break-word;
