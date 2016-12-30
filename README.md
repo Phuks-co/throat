@@ -1,7 +1,8 @@
 #throat
-sshhh  ![Open discussion](https://i.sli.mg/C1U5Vq.png)  just swallow it
 
-A stoat based link and discussion aggregator with snek (python3)
+https://phuks.co/
+
+A phoxy link and discussion aggregator with snek (python3)
 
 ##Dependencies:
 
@@ -22,7 +23,7 @@ clone and install
 
 run
 
- - $ ./run.py
+ - $ ./wsgi.py
 
 ---
 
