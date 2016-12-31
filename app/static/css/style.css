@@ -907,9 +907,6 @@ button.mfp-close, button.mfp-arrow {
 #postcomment {
     margin-top: 15px;
 }
-.CodeMirror .CodeMirror-scroll, .CodeMirror {
-    min-height: 100px;
-}
 .bottombar {
     margin-left: 1em;
     margin-bottom: 1em;
@@ -1007,8 +1004,7 @@ body.dark article.active {
 }
 /* dark mode */
 
-body.dark, body.dark header, body.dark footer, body.dark nav ul li a, body.dark .center, body.dark .post .title, body.dark .text-post, body.dark .side, body.dark .CodeMirror {
-    background: #101010;
+body.dark, body.dark header, body.dark footer, body.dark nav ul li a, body.dark .center, body.dark .post .title, body.dark .text-post, body.dark .side {
     color: #aaa;
 }
 body.dark .editor-toolbar {
