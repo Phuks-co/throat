@@ -36,6 +36,9 @@ class SiteUser(object):
             self.is_authenticated = False
             self.is_anonymous = True
 
+    def __repr__(self):
+        return "<SiteUser {0}>".format(self.uid)
+
     def get_id(self):
         """ Returns the unique user id. Used on load_user """
         return self.uid
@@ -136,7 +139,7 @@ class SiteUser(object):
         if x:
             return True if x == '1' else False
         else:
-            return False 
+            return False
 
     @cache.memoize(300)
     def get_post_score(self):
