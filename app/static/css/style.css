@@ -1008,6 +1008,10 @@ body.dark, body.dark header, body.dark footer, body.dark .center, body.dark .pos
     background: #101010;
     color: #aaa;
 }
+
+body.dark nav ul li a{
+  color: #aaa;
+}
 body.dark .editor-toolbar {
     border-top: 1px solid #6E4A2D;
     border-left: 1px solid #6E4A2D;
