@@ -978,7 +978,7 @@ $(document).ready(function() {
         $('#' + playerid + ' a').html('<i class="fa fa-twitter" aria-hidden="true"></i>');
       }
     });
-    $(document).on('click', 'span[id^="#opentextpost"]', function(e){
+    $(document).on('click', 'span[id^="opentextpost"]', function(e){
       var pid = $(e.currentTarget).data().pid
       var div = document.createElement('div');
       playerid = 'player' + pid;
