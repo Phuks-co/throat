@@ -658,6 +658,7 @@ def upvote(pid, value):
 
     if qvote:
         if bool(qvote['positive']) == (True if voteValue == 1 else False):
+            # TODO: Taking back votes
             return json.dumps({'status': 'error',
                                'error': ['You already voted.']})
         else:

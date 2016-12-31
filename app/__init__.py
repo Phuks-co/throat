@@ -382,6 +382,7 @@ def random_sub():
     return redirect(url_for('view_sub', sub=c.fetchone()['name']))
 
 
+@app.route("/s/<sub>/")
 @app.route("/s/<sub>")
 def view_sub(sub):
     """ Here we can view subs """
