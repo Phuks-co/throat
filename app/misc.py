@@ -241,7 +241,7 @@ def on_over_limit(limit):
 
 def ratelimit(limit, per=300, send_x_headers=True,
               over_limit=on_over_limit,
-              scope_func=lambda: request.remote_addr,
+              scope_func=lambda: request.access_route[-1],
               key_func=lambda: request.endpoint):
     """ This is a decorator. It does the rate-limit magic. """
     def decorator(f):
