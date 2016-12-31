@@ -726,7 +726,7 @@ $(document).ready(function() {
         }
       });
     });
-    $(document).on('click', 'span[id^="subscribe"]', function(e){
+    $('span[id^="subscribe"').click(function(e){
       var sid = $(e.currentTarget).data().sid
       if($(this).hasClass('unsubscribed'))  {
         $.ajax({
@@ -758,7 +758,7 @@ $(document).ready(function() {
         });
       }
     });
-    $(document).on('click', 'span[id^="block"]', function(e){
+    $('span[id^="block"').click(function(e){
       var sid = $(e.currentTarget).data().sid
       if($(this).hasClass('unblocked'))  {
         $.ajax({
