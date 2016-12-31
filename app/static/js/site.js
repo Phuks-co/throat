@@ -422,9 +422,14 @@ $(document).ready(function() {
         dataType: 'json',
         success: function(data) {
           if(data.status == "ok"){
-            $(e.currentTarget).addClass('upvoted');
-            $(e.currentTarget).parent().parent().children('form.dvform').children('.downvote').removeClass('downvoted');
-            var count = $(e.currentTarget).parent().parent().children('.count');
+            target = $(e.target)
+            if(target[0].classList[0] == 'fa'){
+              target = target.parent();
+            }
+
+            target.addClass('upvoted');
+            target.parent().parent().children('form.dvform').children('.downvote').removeClass('downvoted');
+            var count = target.parent().parent().children('.count');
             count.text(parseInt(count.text())+1);
           }
         }
@@ -439,9 +444,13 @@ $(document).ready(function() {
         dataType: 'json',
         success: function(data) {
           if(data.status == "ok"){
-            $(e.currentTarget).addClass('downvoted');
-            $(e.currentTarget).parent().parent().children('form.uvform').children('.upvote').removeClass('upvoted');
-            var count = $(e.currentTarget).parent().parent().children('.count');
+            target = $(e.target)
+            if(target[0].classList[0] == 'fa'){
+              target = target.parent();
+            }
+            target.addClass('downvoted');
+            target.parent().parent().children('form.uvform').children('.upvote').removeClass('upvoted');
+            var count = target.parent().parent().children('.count');
             count.text(parseInt(count.text())-1);
           }
         }
@@ -472,10 +481,14 @@ $(document).ready(function() {
         dataType: 'json',
         success: function(data) {
           if(data.status == "ok"){
-            $(e.currentTarget).addClass('downvoted');
+            target = $(e.target)
+            if(target[0].classList[0] == 'fa'){
+              target = target.parent();
+            }
+            target.addClass('downvoted');
             $('#cuvform-'+pid).parent().children('.cuvform').children('.upvoted').removeClass('upvoted');
 
-            var count = $(e.currentTarget).parent().parent().children('.count');
+            var count = target.parent().parent().children('.count');
             count.text(parseInt(count.text())-1);
           }
         }
@@ -491,9 +504,13 @@ $(document).ready(function() {
         dataType: 'json',
         success: function(data) {
           if(data.status == "ok"){
-            $(e.currentTarget).addClass('upvoted');
+            target = $(e.target)
+            if(target[0].classList[0] == 'fa'){
+              target = target.parent();
+            }
+            target.addClass('upvoted');
             $('#cuvform-'+pid).parent().children('.cdvform').children('.downvoted').removeClass('downvoted');
-            var count = $(e.currentTarget).parent().parent().children('.count');
+            var count = target.parent().parent().children('.count');
             count.text(parseInt(count.text())+1);
           }
         }

@@ -754,13 +754,14 @@ def get_user_post_score(user):
 
 @cache.memoize(10)
 def get_user_level(uid):
+    """ Returns the user's level and XP as a tuple (level, xp) """
     user = db.get_user_from_uid(uid)
     xp = get_user_post_score(user)
     xp += db.get_user_post_voting(uid)/2
     badges = db.get_user_badges(uid)
     for badge in badges:
         xp += badge['value']
-    if xp <= 0:
+    if xp <= 0:  # We don't want to do the sqrt of a negative number
         return (0, 0)
     level = math.sqrt(xp/10)
     return (int(level), xp)
