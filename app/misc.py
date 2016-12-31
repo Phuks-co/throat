@@ -239,9 +239,17 @@ def on_over_limit(limit):
                                           'bit before posting again.'])
 
 
+def get_ip():
+    """ Tries to return the user's actual IP address. """
+    if request.access_route:
+        return request.access_route[-1]
+    else:
+        return request.remote_addr
+
+
 def ratelimit(limit, per=300, send_x_headers=True,
               over_limit=on_over_limit,
-              scope_func=lambda: request.access_route[-1],
+              scope_func=lambda: get_ip(),
               key_func=lambda: request.endpoint):
     """ This is a decorator. It does the rate-limit magic. """
     def decorator(f):
