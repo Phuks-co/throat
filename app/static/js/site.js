@@ -413,8 +413,7 @@ $(document).ready(function() {
             $("#xk").magnificPopup('open');
         }
     });
-
-    $('.upvote').on('click', function(e){
+    $(document).on('click', '.upvote', function(e){
       var pid = $(e.currentTarget).parent().find('input[name="post"]').prop('value');
       $.ajax({
         type: "POST",
@@ -431,8 +430,7 @@ $(document).ready(function() {
         }
       });
     });
-
-    $('.downvote').on('click', function(e){
+    $(document).on('click', '.downvote', function(e){
       var pid = $(e.currentTarget).parent().find('input[name="post"]').prop('value');
       $.ajax({
         type: "POST",
@@ -711,8 +709,7 @@ $(document).ready(function() {
         }
       });
     });
-
-    $('span[id^="subscribe"]').on('click', function(e){
+    $(document).on('click', 'span[id^="subscribe"]', function(e){
       var sid = $(e.currentTarget).data().sid
       if($(this).hasClass('unsubscribed'))  {
         $.ajax({
@@ -744,8 +741,7 @@ $(document).ready(function() {
         });
       }
     });
-
-    $('span[id^="block"]').on('click', function(e){
+    $(document).on('click', 'span[id^="block"]', function(e){
       var sid = $(e.currentTarget).data().sid
       if($(this).hasClass('unblocked'))  {
         $.ajax({
@@ -777,8 +773,7 @@ $(document).ready(function() {
         });
       }
     });
-
-    $('span[id^="youtubevid"]').on('click', function(e){
+    $(document).on('click', 'span[id^="youtubevid"]', function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().vid
       var frame = document.createElement('iframe');
@@ -808,8 +803,7 @@ $(document).ready(function() {
 
       }
     });
-
-    $('span[id^="vimeovid"]').on('click', function(e){
+    $(document).on('click', 'span[id^="vimeovid"]', function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().vid
       var frame = document.createElement('iframe');
@@ -830,8 +824,7 @@ $(document).ready(function() {
 
       }
     });
-
-    $('span[id^="vinevid"]').on('click', function(e){
+    $(document).on('click', 'span[id^="vinevid"]', function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().vid
       var frame = document.createElement('iframe');
@@ -853,8 +846,7 @@ $(document).ready(function() {
 
       }
     });
-
-    $('span[id^="gfycat"]').on('click', function(e){
+    $(document).on('click', 'span[id^="gfycat"]', function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().vid
       var frame = document.createElement('iframe');
@@ -876,8 +868,7 @@ $(document).ready(function() {
 
       }
     });
-
-    $('span[id^="openimg"]').on('click', function(e){
+    $(document).on('click', 'span[id^="openimg"]', function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().img
       var img = document.createElement('img');
@@ -896,8 +887,7 @@ $(document).ready(function() {
         $('#' + playerid + ' a').html('<i class="fa fa-image" aria-hidden="true"></i>');
       }
     });
-
-    $('span[id^="openvid"]').on('click', function(e){
+    $(document).on('click', 'span[id^="openvid"]', function(e){
       var pid = $(e.currentTarget).data().pid
       var domain = $(e.currentTarget).data().domain
       var url = $(e.currentTarget).data().vid
@@ -927,8 +917,7 @@ $(document).ready(function() {
         $('#' + playerid + ' a').html('<i class="fa fa-play" aria-hidden="true"></i>');
       }
     });
-
-    $('span[id^="gifv"]').on('click', function(e){
+    $(document).on('click', 'span[id^="gifv"]', function(e){
       var pid = $(e.currentTarget).data().pid
       var domain = $(e.currentTarget).data().domain
       var url = $(e.currentTarget).data().vid
@@ -960,8 +949,7 @@ $(document).ready(function() {
 
       }
     });
-
-    $('span[id^="tweet"]').on('click', function(e){
+    $(document).on('click', 'span[id^="tweet"]', function(e){
       var pid = $(e.currentTarget).data().pid
       var url = $(e.currentTarget).data().url
       var div = document.createElement('div');
@@ -990,8 +978,7 @@ $(document).ready(function() {
         $('#' + playerid + ' a').html('<i class="fa fa-twitter" aria-hidden="true"></i>');
       }
     });
-
-    $('span#opentextpost').on('click', function(e){
+    $(document).on('click', 'span[id^="#opentextpost"]', function(e){
       var pid = $(e.currentTarget).data().pid
       var div = document.createElement('div');
       playerid = 'player' + pid;
