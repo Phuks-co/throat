@@ -199,7 +199,7 @@ $(document).ready(function () {
 </script>
   {% if sort_type == 'all_new' and current_user.is_labrat() %}
     <script type="text/javascript" charset="utf-8">
-        var socket = io.connect('http://' + document.domain + ':' + location.port + '/snt');
+        var socket = io.connect('//' + document.domain + ':' + location.port + '/snt');
         socket.on('connect', function() {
             socket.emit('subscribe', {sub: '/all/new'});
         });
