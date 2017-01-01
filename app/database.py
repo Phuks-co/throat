@@ -323,7 +323,9 @@ def create_post(sid, uid, title, content, ptype, link=None, thumbnail=''):
                '`uid`=%s', (uid, ))
     g.db.commit()  # We insta-commit posts so we can safely edit thumbnail
     return {'sid': sid, 'uid': uid, 'link': link, 'posted': posted,
-            'ptype': ptype, 'pid': l.lastrowid, 'title': title}
+            'ptype': ptype, 'pid': l.lastrowid, 'title': title,
+            'deleted': False, 'nsfw': False, 'score': 1,
+            'thumbnail': thumbnail}
 
 
 def create_comment(pid, uid, content, parentcid):

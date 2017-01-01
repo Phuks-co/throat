@@ -16,7 +16,6 @@ from flask import Flask, render_template, session, redirect, url_for, abort, g
 from flask import make_response, request
 from flask_assets import Environment, Bundle
 from flask_login import LoginManager, login_required, current_user
-# from flask_sqlalchemy import get_debug_queries
 from tld import get_tld
 from werkzeug.contrib.atom import AtomFeed
 from feedgen.feed import FeedGenerator
@@ -30,14 +29,9 @@ from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair
 from .forms import CreateSubFlair, UseBTCdonationForm
 from .views import do, api
 from .views.api import oauth
-from . import misc, forms, caching
+from . import misc, forms, caching, socketio
 from . import database as db
-from .misc import SiteUser, isMod
-from .misc import SiteAnon, getAnnouncement
-from .misc import getSubUsers, getSubCreation, getSuscriberCount, getModCount
-from .misc import getSubPostCount, isRestricted, isNSFW
-from .misc import userCanFlair, getPostFlair
-from .misc import enableBTCmod
+from .misc import SiteUser, SiteAnon, getSuscriberCount
 from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
 # from werkzeug.contrib.profiler import ProfilerMiddleware
 
@@ -52,11 +46,11 @@ app.register_blueprint(api)
 app.config.from_object('config')
 if app.config['TESTING']:
     import logging
-    logging.basicConfig()
-    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
 
 # db.init_app(app)
 oauth.init_app(app)
+socketio.socketio.init_app(app)
 caching.cache.init_app(app)
 
 assets = Environment(app)
@@ -89,6 +83,7 @@ js = Bundle(
            'js/CustomElements.min.js'),
     Bundle('js/time-elements.js',
            'js/konami.js',
+           'js/socket.io.slim.js',
            'js/markdown.js',
            'js/bootstrap-markdown.js',
            'js/site.js', filters='jsmin'),
@@ -350,7 +345,7 @@ def donate():
 def view_subs(page):
     """ Here we can view available subs """
     c = db.query('SELECT * FROM `sub` ORDER BY `name` ASC Limit 30 OFFSET %s',
-                 (((page -1) * 30),))
+                 (((page - 1) * 30),))
     return render_template('subs.html', page=page, subs=c.fetchall())
 
 
@@ -758,8 +753,9 @@ def edit_user(user):
     exlink = int(db.get_user_metadata(user['uid'], 'exlinks'))
     styles = int(db.get_user_metadata(user['uid'], 'nostyles'))
     nsfw = int(db.get_user_metadata(user['uid'], 'nsfw'))
+    exp = int(db.get_user_metadata(user['uid'], 'labrat'))
     form = EditUserForm(external_links=bool(exlink), show_nsfw=bool(nsfw),
-                        disable_sub_style=bool(styles))
+                        disable_sub_style=bool(styles), experimental=bool(exp))
     adminbadges = []
     if current_user.is_admin():
         adminbadges = db.query('SELECT * FROM `user_badge`').fetchall()

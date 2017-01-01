@@ -72,6 +72,7 @@ class EditUserForm(FlaskForm):
     ])
 
     delete_account = BooleanField('DELETE THIS ACCOUNT')
+    experimental = BooleanField('Enable experimental features')
 
 
 class CreateUserMessageForm(FlaskForm):

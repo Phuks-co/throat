@@ -1,8 +1,12 @@
 """ Misc helper function and classes. """
 from urllib.parse import urlparse, parse_qs
 import math
+import uuid
 import time
 import re
+from io import BytesIO
+from PIL import Image
+from bs4 import BeautifulSoup
 from functools import update_wrapper
 import requests
 import markdown
@@ -77,6 +81,13 @@ class SiteUser(object):
                      ' AND `mtype` IN (1, 8) AND `receivedby`=%s',
                      (self.user['uid'],)).fetchone()['c']
         return x
+
+    def is_labrat(self):
+        x = db.get_user_metadata(self.uid, 'labrat')
+        if x:
+            return True if x == '1' else False
+        else:
+            return False
 
     def new_modmail_count(self):
         """ Returns new modmail msg count """
@@ -773,3 +784,44 @@ def get_user_level(uid):
         return (0, 0)
     level = math.sqrt(xp/10)
     return (int(level), xp)
+
+
+def get_thumbnail(form):
+    """ Tries to fetch a thumbnail """
+    # 1 - Check if it's an image
+    try:
+        req = safeRequest(form.link.data)
+    except (requests.exceptions.RequestException, ValueError):
+        return ''
+    ctype = req[0].headers['content-type'].split(";")[0].lower()
+    filename = str(uuid.uuid4()) + '.jpg'
+    good_types = ['image/gif', 'image/jpeg', 'image/png']
+    if ctype in good_types:
+        # yay, it's an image!!1
+        # Resize
+        im = Image.open(BytesIO(req[1])).convert('RGB')
+    elif ctype == 'text/html':
+        # Not an image!! Let's try with OpenGraph
+        og = BeautifulSoup(req[1], 'lxml')
+        try:
+            img = og('meta', {'property': 'og:image'})[0].get('content')
+            req = safeRequest(img)
+        except (OSError, ValueError, IndexError):
+            # no image
+            return ''
+        im = Image.open(BytesIO(req[1])).convert('RGB')
+    else:
+        return ''
+    background = Image.new('RGB', (70, 70), (0, 0, 0))
+
+    im.thumbnail((70, 70), Image.ANTIALIAS)
+
+    bg_w, bg_h = background.size
+    img_w, img_h = im.size
+    background.paste(im, (int((bg_w - img_w) / 2),
+                          int((bg_h - img_h) / 2)))
+    background.save(config.THUMBNAILS + '/' + filename, "JPEG")
+    im.close()
+    background.close()
+
+    return filename

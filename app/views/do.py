@@ -5,17 +5,14 @@ import re
 import time
 import datetime
 import uuid
-from io import BytesIO
 import bcrypt
-from bs4 import BeautifulSoup
-import requests
-from PIL import Image
 from flask import Blueprint, redirect, url_for, session, abort, jsonify
 from flask import render_template
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_cache import make_template_fragment_key
 import config
 from .. import forms, misc
+from ..socketio import socketio
 from .. import database as db
 from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubFlair
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
@@ -171,6 +168,9 @@ def edit_user(user):
 
         db.update_user_metadata(user['uid'], 'exlinks',
                                 form.external_links.data)
+
+        db.update_user_metadata(user['uid'], 'labrat',
+                                form.experimental.data)
 
         db.update_user_metadata(user['uid'], 'nostyles',
                                 form.disable_sub_style.data)
@@ -561,61 +561,24 @@ def create_lnkpost():
         if l:
             return jsonify(status='error', error=['This link was recently '
                                                   'posted on this sub.'])
+        img = misc.get_thumbnail(form)
         post = db.create_post(sid=sub['sid'],
                               uid=current_user.uid,
                               title=form.title.data,
                               link=form.link.data,
                               ptype=1,
-                              content='')
-
+                              content='', thumbnail=img)
+        addr = url_for('view_post', sub=sub['name'], pid=post['pid'])
         misc.workWithMentions(form.title.data, None, post, sub)
+        socketio.emit('thread',
+                      {'addr': addr, 'sub': sub['name'], 'type': 'link',
+                       'user': current_user.name, 'url': form.link.data,
+                       'html': render_template('indexpost.html', nocheck=True,
+                                               posts=[post])},
+                      namespace='/snt',
+                      room='/all/new')
 
-        # Try to get thumbnail.
-        # 1 - Check if it's an image
-        try:
-            req = misc.safeRequest(form.link.data)
-        except (requests.exceptions.RequestException, ValueError):
-            return jsonify(status='ok', addr=url_for('view_post',
-                                                     sub=sub['name'],
-                                                     pid=post['pid']))
-        ctype = req[0].headers['content-type'].split(";")[0].lower()
-        filename = str(uuid.uuid4()) + '.jpg'
-        good_types = ['image/gif', 'image/jpeg', 'image/png']
-        if ctype in good_types:
-            # yay, it's an image!!1
-            # Resize
-            im = Image.open(BytesIO(req[1])).convert('RGB')
-        elif ctype == 'text/html':
-            # Not an image!! Let's try with OpenGraph
-            og = BeautifulSoup(req[1], 'lxml')
-            try:
-                img = og('meta', {'property': 'og:image'})[0].get('content')
-                req = misc.safeRequest(img)
-            except (OSError, ValueError, IndexError):
-                # no image
-                return jsonify(status='ok', addr=url_for('view_post',
-                                                         sub=sub['name'],
-                                                         pid=post['pid']))
-            im = Image.open(BytesIO(req[1])).convert('RGB')
-        else:
-            return jsonify(status='ok', addr=url_for('view_post',
-                                                     pid=post['pid'],
-                                                     sub=sub['name']))
-        background = Image.new('RGB', (70, 70), (0, 0, 0))
-
-        im.thumbnail((70, 70), Image.ANTIALIAS)
-
-        bg_w, bg_h = background.size
-        img_w, img_h = im.size
-        background.paste(im, (int((bg_w - img_w) / 2),
-                              int((bg_h - img_h) / 2)))
-        background.save(config.THUMBNAILS + '/' + filename, "JPEG")
-        db.uquery('UPDATE `sub_post` SET `thumbnail`=%s WHERE `pid`=%s',
-                  (filename, post['pid']))
-        im.close()
-        background.close()
-        return jsonify(status='ok', addr=url_for('view_post', sub=sub['name'],
-                                                 pid=post['pid']))
+        return jsonify(status='ok', addr=addr)
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
