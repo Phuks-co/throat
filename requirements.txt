@@ -21,3 +21,5 @@ pytest
 sendgrid
 bs4
 flask-oauthlib
+flask-socketio
+eventlet
