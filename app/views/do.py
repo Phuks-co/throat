@@ -505,11 +505,17 @@ def create_txtpost():
                               title=form.title.data,
                               content=form.content.data,
                               ptype=0)
-
+        addr = url_for('view_post', sub=sub['name'], pid=post['pid'])
+        socketio.emit('thread',
+                      {'addr': addr, 'sub': sub['name'], 'type': 'text',
+                       'user': current_user.name,
+                       'html': render_template('indexpost.html', nocheck=True,
+                                               posts=[post])},
+                      namespace='/snt',
+                      room='/all/new')
         misc.workWithMentions(form.content.data, None, post, sub)
         misc.workWithMentions(form.title.data, None, post, sub)
-        return jsonify(status='ok', addr=url_for('view_post', sub=sub['name'],
-                                                 pid=post['pid']))
+        return jsonify(status='ok', addr=addr)
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
