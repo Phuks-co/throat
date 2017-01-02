@@ -1021,6 +1021,10 @@ body.dark .center {
     border: solid 1px #333133;
 }
 
+body.dark .post+.post {
+    border-top: 1px solid #333133;
+}
+
 body.dark .post .title {
     background: #1b1b1b;
     color: #fd5c00;
@@ -1125,10 +1129,6 @@ body.dark .editor-toolbar {
 }
 body.dark h1, body.dark h2, body.dark h3, body.dark h4, body.dark h5, body.dark h6 {
     color: white;
-}
-
-body.dark .center {
-    border: 1px solid #93643D;
 }
 
 body.dark input[type=search] {
