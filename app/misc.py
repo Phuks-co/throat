@@ -200,6 +200,10 @@ class SiteAnon(AnonymousUserMixin):
         return False
 
     @classmethod
+    def is_labrat(cls):
+        return False
+
+    @classmethod
     def block_styles(cls):
         """ Anons dont get usermetadata options. """
         return False
