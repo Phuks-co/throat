@@ -1036,8 +1036,12 @@ body.dark .post .title:hover {
     color: #2883b9;
 }
 
-body.dark a:visited {
+body.dark article a:visited {
     color: #2883b9;
+}
+
+body.dark a:visited {
+    color: #bbb;
 }
 
 body.dark i.fa.fa-square.fa-stack-2x {
