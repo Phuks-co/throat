@@ -1093,6 +1093,10 @@ body.dark nav ul li a:hover {
    color: white;
 }
 
+body.dark .subscriptionbar ul li a:visited{
+  color: #ad5422;
+}
+
 body.dark .text-post .head {
     background-color: #000;
     color: #151515;
