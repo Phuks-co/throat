@@ -170,8 +170,15 @@
           // bahhh
           title = $('title').html().split('\n')
           title = title[title.length-1]
-          document.title = '(' + d.count + ')\n ' + title;
-          $('#newmailcount').html(d.count)
+          if(d.count == 0){
+            document.title = '\n' + title;
+            $('#newmailcount').html('');
+            $('.fa-envelope').removeClass('hasmail');
+          }else{
+            document.title = '(' + d.count + ')\n ' + title;
+            $('#newmailcount').html(d.count);
+            $('.fa-envelope').addClass('hasmail');
+          }
         })
     </script>
   {% endif %}
