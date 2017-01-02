@@ -544,6 +544,7 @@ nav .right a {
 .post .title {
     text-decoration: none;
     color: black;
+    line-height: 1.2em;
     font-size: medium;
 }
 .post .title:visited {
@@ -555,6 +556,7 @@ nav .right a {
 .post .author {
     font-size: small;
     color: gray;
+    margin: 7px 0 0 0;
 }
 .post .comments {
     font-size: x-small;
@@ -593,7 +595,7 @@ body.dark textarea#comment {
     float: left;
     margin: 5px;
     margin-top: 8px;
-    width: 80%;
+    width: 85%;
 }
 .post #opentextpost div#content {
     padding: 20px;
@@ -689,9 +691,6 @@ body.dark textarea#comment {
     background-color: #f82;
     border-color: #f82;
     font-weight: 600;
-}
-.btn.btn-orange:visited {
-  color: #fff;
 }
 .btn.btn-orange:hover {
     color: #fff;
@@ -1004,14 +1003,121 @@ body.dark article.active {
 }
 /* dark mode */
 
-body.dark, body.dark header, body.dark footer, body.dark .center, body.dark .post .title, body.dark .text-post, body.dark .side {
+body.dark {
     background: #101010;
     color: #aaa;
 }
 
-body.dark nav ul li a{
-  color: #aaa;
+body.dark .side {
+    background-color: #1b1b1b;
+    border: 1px solid #333133;
 }
+body.dark header {
+    background: #1b1b1b;
+    border-bottom: solid 1px #333133;
+}
+body.dark .center {
+    background: #1b1b1b;
+    border: solid 1px #333133;
+}
+
+body.dark .post+.post {
+    border-top: 1px solid #333133;
+}
+
+body.dark .post .title {
+    background: #1b1b1b;
+    color: #fd5c00;
+}
+body.dark .post .title:visited {
+    color: #FFFFFF;
+}
+body.dark .post .title:hover {
+    color: #2883b9;
+}
+
+body.dark a:visited {
+    color: #bbb;
+}
+
+body.dark i.fa.fa-square.fa-stack-2x {
+    color: black;
+}
+
+body.dark .btn {
+    border: solid #333133 1px;
+    margin: 1px;
+  background: #101010;
+  color: #fd5c00;
+}
+
+body.dark .btn:hover {
+    border: solid #333133 1px;
+    margin: 1px;
+  background: #101010;
+  color: #bbb !important;
+}
+
+body.dark .btn.btn-orange:visited {
+    color: #fd5c00;
+}
+
+body.dark .btn.small {
+    background-color: #101010;
+    color: white;
+    border: solid #333133 1px;
+}
+body.dark .btn.small:hover {
+    background-color: #101010;
+    color: #fd5c00;
+    border: solid #333133 1px;
+}
+
+body.dark .side .lightbtn i:hover {
+    color: #fd5c00;
+}
+
+body.dark footer {
+   background: #101010;
+}
+
+body.dark hr {
+    background: #333133;
+}
+
+body.dark nav ul li a {
+   color: white;
+}
+
+body.dark nav ul li a:hover {
+   color: white;
+}
+
+body.dark .text-post .head {
+    background-color: #000;
+    color: #151515;
+    border-bottom: solid #333133 1px;
+}
+body.dark .white-popup-block {
+    background-color: #101010;
+    color: white;
+    border: solid #333133 1px;
+}
+
+body.dark .white-popup-block input {
+    background-color: #0c0c0c;
+    color: white;
+}
+
+body.dark h1 {
+    color: #fd5c00;
+}
+body.dark textarea {
+    background: #0c0c0c;
+}
+
+
+/* old dark remains */
 body.dark .editor-toolbar {
     border-top: 1px solid #6E4A2D;
     border-left: 1px solid #6E4A2D;
@@ -1020,39 +1126,11 @@ body.dark .editor-toolbar {
 body.dark h1, body.dark h2, body.dark h3, body.dark h4, body.dark h5, body.dark h6 {
     color: white;
 }
-body.dark .text-post .head {
-    background-color: #000000;
-    color: #151515;
-    border-bottom: solid #93643D 1px;
-}
-body.dark .white-popup-block {
-    background-color: #6E4A2D;
-    color: white;
-}
-body.dark .btn.small,
-body.dark .post .btn.small.postfl {
-    background-color: #6E4A2D;
-    color: white;
-    border: solid transparent 1px;
-}
-body.dark .post .btn.small {
-    background-color: #2A2A2A;
-    color: white;
-    border-bottom: solid #6E4A2D 1px;
-}
-body.dark .white-popup-block input {
-    background-color: #2F2F2F;
-    color: white;
-}
+
 body.dark .center {
     border: 1px solid #93643D;
 }
-body.dark .btn {
-    background-color: #6E4A2D;
-    color: #ccc;
-    border: solid #5B3B21 1px;
-    margin: 1px;
-}
+
 body.dark input[type=search] {
     background-color: #555;
     border: solid transparent 1px;
@@ -1073,21 +1151,12 @@ body.dark .side {
 body.dark .editor-toolbar a {
     color: white !important;
 }
-body.dark hr {
-    background: #93643D;
-}
-body.dark i.fa.fa-square.fa-stack-2x {
-    color: #6E4A2D;
-}
 body.dark .pull.left.vote {
     color: #FFFFFF;
 }
 body.dark a.lnkreply,
 body.dark .bottombar a {
     color: #fff;
-}
-body.dark .post+.post {
-    border-top: 1px solid #412B19;
 }
 body.dark header {
     border-bottom: solid 1px #412B19;
@@ -1099,9 +1168,6 @@ body.dark .md-editor .md-footer,
 body.dark .md-editor>.md-header,
 body.dark textarea#comment2 {
     background: #0c0e0c;
-}
-body.dark textarea {
-    background: #2f2f2f;
 }
 
 body.dark textarea:focus {
