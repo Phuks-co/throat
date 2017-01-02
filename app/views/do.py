@@ -505,7 +505,7 @@ def create_txtpost():
                               title=form.title.data,
                               content=form.content.data,
                               ptype=0)
-        addr =url_for('view_post', sub=sub['name'], pid=post['pid'])
+        addr = url_for('view_post', sub=sub['name'], pid=post['pid'])
         socketio.emit('thread',
                       {'addr': addr, 'sub': sub['name'], 'type': 'text',
                        'user': current_user.name, 'pid': post['pid'],

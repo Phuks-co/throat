@@ -11,6 +11,6 @@ def handle_message():
 
 @socketio.on('subscribe', namespace='/snt')
 def handle_subscription(data):
-    sub = str(data['target'])
-    if not sub.startswith('user'):
+    sub = data['target']
+    if not str(sub).startswith('user'):
         join_room(sub)
