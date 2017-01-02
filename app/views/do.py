@@ -699,7 +699,7 @@ def create_comment(sub, pid):
         x = db.get_post_comment_count(pid)
         socketio.emit('threadcomments',
                       {'pid': post['pid'],
-                       'comments': x + 1},
+                       'comments': x},
                       namespace='/snt',
                       room=post['pid'])
 
