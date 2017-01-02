@@ -1027,6 +1027,11 @@ def read_pm(mid):
             return json.dumps({'status': 'ok'})
         read = datetime.datetime.utcnow()
         db.uquery('UPDATE `message` SET `read`=%s WHERE `mid`=%s', (read, mid))
+        cache.delete_memoized(db.user_mail_count, current_user.uid)
+        socketio.emit('notification',
+                      {'count': db.user_mail_count(current_user.uid)},
+                      namespace='/snt',
+                      room='user' + current_user.uid)
         return json.dumps({'status': 'ok', 'mid': mid})
     else:
         abort(403)
@@ -1054,7 +1059,11 @@ def readall_msgs(user, boxid):
         for message in x:
             db.uquery('UPDATE `message` SET `read`=%s WHERE `mid`=%s',
                       (message['mid'], now))
-
+        cache.delete_memoized(db.user_mail_count, current_user.uid)
+        socketio.emit('notification',
+                      {'count': db.user_mail_count(current_user.uid)},
+                      namespace='/snt',
+                      room='user' + current_user.uid)
         return json.dumps({'status': 'ok', 'message': 'All marked as read'})
     else:
         abort(403)

@@ -23,8 +23,7 @@
         ({{current_user.new_count()}})
       {% endif %}
     {% endif %}
-    {% block title %}{{config.LEMA}}{% endblock %}
-  </title>
+    {% block title %}{{config.LEMA}}{% endblock %}</title>
 
   <!-- css stuff -->
   {% assets "css_all" %}
@@ -112,7 +111,7 @@
             <a href="{{ url_for('inbox_sort') }}">
               <button type="button" class="lightbtn" id="mail">
               {% if current_user.has_mail() %}
-                {{current_user.new_count()}}
+                <span id="newmailcount">{{current_user.new_count()}}</span>
                 <i class="fa fa-envelope hasmail" aria-hidden="true"></i>
               {% else %}
                 <i class="fa fa-envelope-o" aria-hidden="true"></i>
@@ -163,7 +162,20 @@
   <!-- Scripts -->
   {% assets "js_all" %}
   <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-  {% endassets %} {%block pagefoot%}{%endblock%}
+  {% endassets %}
+  {% if current_user.is_labrat() %}
+    <script type="text/javascript" charset="utf-8">
+        var socket = io.connect('//' + document.domain + ':' + location.port + '/snt');
+        socket.on('notification', function(d){
+          // bahhh
+          title = $('title').html().split('\n')
+          title = title[title.length-1]
+          document.title = '(' + d.count + ')\n ' + title;
+          $('#newmailcount').html(d.count)
+        })
+    </script>
+  {% endif %}
+  {%block pagefoot%}{%endblock%}
   <a href="#kx" id="xk" style="display:none"></a>
 </body>
 

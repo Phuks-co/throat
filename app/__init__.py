@@ -29,7 +29,8 @@ from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair
 from .forms import CreateSubFlair, UseBTCdonationForm
 from .views import do, api
 from .views.api import oauth
-from . import misc, forms, caching, socketio
+from . import misc, forms, caching
+from .socketio import socketio
 from . import database as db
 from .misc import SiteUser, SiteAnon, getSuscriberCount
 from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
@@ -50,7 +51,7 @@ if app.config['TESTING']:
 
 # db.init_app(app)
 oauth.init_app(app)
-socketio.socketio.init_app(app)
+socketio.init_app(app)
 caching.cache.init_app(app)
 
 assets = Environment(app)
@@ -822,7 +823,10 @@ def view_messages_postreplies():
     now = datetime.datetime.utcnow()
     db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
               '`receivedby`=%s AND `mtype`=4', (now, user))
-
+    socketio.emit('notification',
+                  {'count': db.user_mail_count(current_user.uid)},
+                  namespace='/snt',
+                  room='user' + current_user.uid)
     msgs = db.query('SELECT * FROM `message` WHERE `mtype`=4 '
                     'AND `receivedby`=%s ORDER BY `posted` DESC',
                     (user,)).fetchall()
@@ -840,7 +844,10 @@ def view_messages_comreplies():
     now = datetime.datetime.utcnow()
     db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
               '`receivedby`=%s AND `mtype`=5', (now, user))
-
+    socketio.emit('notification',
+                  {'count': db.user_mail_count(current_user.uid)},
+                  namespace='/snt',
+                  room='user' + current_user.uid)
     msgs = db.query('SELECT * FROM `message` WHERE `mtype`=5 '
                     'AND `receivedby`=%s ORDER BY `posted` DESC',
                     (user,)).fetchall()

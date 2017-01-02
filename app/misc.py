@@ -189,6 +189,10 @@ class SiteAnon(AnonymousUserMixin):
         return False
 
     @classmethod
+    def get_blocked(cls):
+        return []
+
+    @classmethod
     def has_subscribed(cls, sub):
         """ Anons dont get subscribe options. """
         return False

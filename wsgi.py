@@ -2,4 +2,4 @@
 """ From here we start the app in debug mode. """
 from app import app, socketio
 if __name__ == "__main__":
-    socketio.socketio.run(app)
+    socketio.run(app)

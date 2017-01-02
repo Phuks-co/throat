@@ -8,12 +8,16 @@ import _mysql_exceptions
 import config
 from flask import g
 from .caching import cache
+from .socketio import socketio
 
 
 def connect_db(db=None):
     """Connects to the specific database."""
     if db is None:
-        db = g.appconfig['DB_NAME']
+        try:
+            db = g.appconfig['DB_NAME']
+        except AttributeError:
+            db = config.DB_NAME
     rv = MySQLdb.connect(host=config.DB_HOST,
                          user=config.DB_USER,
                          passwd=config.DB_PASSWD,
@@ -307,6 +311,12 @@ def create_message(mfrom, to, subject, content, link, mtype):
     uquery('INSERT INTO `message` (`sentby`, `receivedby`, `subject`, `mlink`'
            ', `content`, `posted`, `mtype`) VALUES (%s, %s, %s, %s, %s, %s, '
            '%s)', (mfrom, to, subject, link, content, posted, mtype))
+    cache.delete_memoized(user_mail_count, to)
+    socketio.emit('notification',
+                  {'count': user_mail_count(to)},
+                  namespace='/snt',
+                  room='user' + to)
+
 
 
 def create_post(sid, uid, title, content, ptype, link=None, thumbnail=''):
