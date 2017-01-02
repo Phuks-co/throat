@@ -429,8 +429,10 @@ $(document).ready(function() {
 
             target.addClass('upvoted');
             target.parent().parent().children('form.dvform').children('.downvote').removeClass('downvoted');
-            var count = target.parent().parent().children('.count');
-            count.text(parseInt(count.text())+1);
+            if(!window.sio){
+              var count = target.parent().parent().children('.count');
+              count.text(parseInt(count.text())+1);
+            }
           }
         }
       });
@@ -450,8 +452,10 @@ $(document).ready(function() {
             }
             target.addClass('downvoted');
             target.parent().parent().children('form.uvform').children('.upvote').removeClass('upvoted');
-            var count = target.parent().parent().children('.count');
-            count.text(parseInt(count.text())-1);
+            if(!window.sio){
+              var count = target.parent().parent().children('.count');
+              count.text(parseInt(count.text())-1);
+            }
           }
         }
       });

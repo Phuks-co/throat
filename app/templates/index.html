@@ -176,6 +176,7 @@
 {% if current_user.is_labrat() %}
   <script type="text/javascript" charset="utf-8">
       socket.on('connect', function() {
+        window.sio = true;
         {% if sort_type == 'all_new' %}
           socket.emit('subscribe', {target: '/all/new'});
         {% endif %}
