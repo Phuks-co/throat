@@ -1154,9 +1154,6 @@ body.dark a.lnkreply,
 body.dark .bottombar a {
     color: #fff;
 }
-body.dark header {
-    border-bottom: solid 1px #412B19;
-}
 body.dark .fa-inverse {
     color: #bdbdbd;
 }
