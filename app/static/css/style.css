@@ -1144,10 +1144,6 @@ body.dark #toggledark i {
 body.dark a {
     color: rgb(173, 84, 34);
 }
-body.dark .side {
-    background-color: #000000;
-    border: 1px solid #93643D;
-}
 body.dark .editor-toolbar a {
     color: white !important;
 }
