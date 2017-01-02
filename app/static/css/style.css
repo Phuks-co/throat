@@ -1036,7 +1036,8 @@ body.dark .post .title:hover {
     color: #2883b9;
 }
 
-body.dark article a:visited {
+body.dark article a:visited,
+body.dark .content a:visited {
     color: #2883b9;
 }
 
