@@ -505,7 +505,7 @@ def create_txtpost():
                               title=form.title.data,
                               content=form.content.data,
                               ptype=0)
-        addr = url_for('view_post', sub=sub['name'], pid=post['pid'])
+        addr =url_for('view_post', sub=sub['name'], pid=post['pid'])
         socketio.emit('thread',
                       {'addr': addr, 'sub': sub['name'], 'type': 'text',
                        'user': current_user.name,
@@ -639,6 +639,12 @@ def upvote(pid, value):
             if user['score'] is not None:
                 db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
                           '`uid`=%s', (voteValue*2, post['uid']))
+            socketio.emit('threadscore',
+                          {'pid': post['pid'],
+                           'score': post['score'] + voteValue*2},
+                          namespace='/snt',
+                          room=post['pid'])
+            cache.delete_memoized(db.get_post_from_pid, pid)
             return jsonify(status='ok', message='Vote flipped')
     else:
         positive = True if voteValue == 1 else False
@@ -646,7 +652,12 @@ def upvote(pid, value):
                   'VALUES (%s, %s, %s)', (pid, current_user.uid, positive))
     db.uquery('UPDATE `sub_post` SET `score`=`score`+%s WHERE '
               '`pid`=%s', (voteValue, post['pid']))
-
+    socketio.emit('threadscore',
+                  {'pid': post['pid'],
+                   'score': post['score'] + voteValue},
+                  namespace='/snt',
+                  room=post['pid'])
+    cache.delete_memoized(db.get_post_from_pid, pid)
     if user['score'] is not None:
         db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
                   '`uid`=%s', (voteValue, post['uid']))
@@ -684,6 +695,13 @@ def create_comment(sub, pid):
                                     uid=current_user.uid,
                                     content=form.comment.data.encode(),
                                     parentcid=form.parent.data)
+
+        x = db.get_post_comment_count(pid)
+        socketio.emit('threadcomments',
+                      {'pid': post['pid'],
+                       'comments': x + 1},
+                      namespace='/snt',
+                      room=post['pid'])
 
         # 5 - send pm to parent
         if form.parent.data != "0":

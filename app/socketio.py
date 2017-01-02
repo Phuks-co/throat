@@ -10,5 +10,5 @@ def handle_message():
 
 @socketio.on('subscribe', namespace='/snt')
 def handle_subscription(data):
-    sub = data['sub']
+    sub = data['target']
     join_room(sub)

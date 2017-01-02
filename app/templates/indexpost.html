@@ -1,6 +1,6 @@
 {% for post in posts if not db.is_post_deleted(post) and not post.pid == func.getAnnouncement().pid %}
 {% if nocheck or (((current_user.show_nsfw() and db.is_post_nsfw(post)) or not db.is_post_nsfw(post)) and ((current_user.show_nsfw() and db.is_sub_nsfw(func.getSub(post.sid))) or not db.is_sub_nsfw(func.getSub(post.sid)))) %}
-    <article class="post" data-pid="{{post.pid}}">
+    <article id="{{post.pid}}" class="post" data-pid="{{post.pid}}">
       {# vote arrow div #}
       <div class="pull left vote">
         <form class="uvform">
@@ -102,7 +102,7 @@
             {% if db.is_sub_nsfw(func.getSub(post.sid))  %}<font style="color:red">nsfw</font>{% endif %}
             /s/{{func.getSub(post.sid).name}}</a>
             <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a>
-            <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> {{db.get_post_comment_count(post.pid)}}</a>
+            <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> <span class="ccount">{{db.get_post_comment_count(post.pid)}}</span></a>
             </p>
         </div>
       {% endcache %}

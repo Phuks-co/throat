@@ -81,7 +81,7 @@
 {% cache 120, 'announcement' %}
   {% set ann = func.getAnnouncement() %}
   {% if ann %}
-  <article class="post" data-pid="{{ann.pid}}">
+  <article id="{{ann.pid}}" class="post" data-pid="{{ann.pid}}">
     {# vote arrow div #}
     <div class="pull left vote">
       <form class="uvform">
@@ -113,7 +113,7 @@
             </span>
           <a href="{{url_for('view_sub', sub=func.getSub(ann.sid).name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{{func.getSub(ann.sid).name}}</a>
           <a href="{{url_for('view_user', user=func.getUser(ann.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(ann.uid).name}}</a>
-          <a href="{{url_for('view_post_inbox', pid=ann.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> {{db.get_post_comment_count(ann.pid)}}</a>
+          <a href="{{url_for('view_post_inbox', pid=ann.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> <span class="ccount">{{db.get_post_comment_count(ann.pid)}}</span></a>
           </p>
       </div>
   </article>
@@ -173,6 +173,32 @@
   <p><button type="submit" class="btn btn-blue" data-prog="Sending...">Submit link</button></p>
 </form>
 {% endif %}
+{% if current_user.is_labrat() %}
+  <script type="text/javascript" charset="utf-8">
+      var socket = io.connect('//' + document.domain + ':' + location.port + '/snt');
+      socket.on('connect', function() {
+        {% if sort_type == 'all_new' %}
+          socket.emit('subscribe', {target: '/all/new'});
+        {% endif %}
+        $('article.post').each(function(i){
+          socket.emit('subscribe', {target: $(this).data('pid')});
+        })
+      });
+      socket.on('thread', function(data){
+        socket.emit('subscribe', {target: data.pid})
+        $('.alldaposts').prepend(data.html)
+      })
+      socket.on('threadscore', function(data){
+        console.log('article#' + data.pid + ' .count')
+        $('article#' + data.pid + ' .count').html(data.score)
+      })
+
+      socket.on('threadcomments', function(data){
+        console.log('article#' + data.pid + ' .ccount')
+        $('article#' + data.pid + ' .ccount').html(data.comments)
+      })
+  </script>
+{%endif%}
 {% if sort_type.endswith('new')%}
 <script>
 $(document).ready(function () {
@@ -197,16 +223,6 @@ $(document).ready(function () {
         });
     })
 </script>
-  {% if sort_type == 'all_new' and current_user.is_labrat() %}
-    <script type="text/javascript" charset="utf-8">
-        var socket = io.connect('//' + document.domain + ':' + location.port + '/snt');
-        socket.on('connect', function() {
-            socket.emit('subscribe', {sub: '/all/new'});
-        });
-        socket.on('thread', function(data){
-          $('.alldaposts').prepend(data.html)
-        })
-    </script>
-  {%endif%}
+
 {%endif%}
 {%endblock%}
