@@ -67,6 +67,10 @@ class SiteUser(object):
         """ Returns true if the current user is a site admin. """
         return self.admin
 
+    def get_blocked(self):
+        l = db.get_user_blocked(self.uid)
+        return [x['sid'] for x in l]
+
     def is_topmod(self, sub):
         """ Returns True if the current user is a mod of 'sub' """
         return isTopMod(sub, self.user)

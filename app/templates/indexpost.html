@@ -1,4 +1,4 @@
-{% for post in posts if not db.is_post_deleted(post) and not post.pid == func.getAnnouncement().pid %}
+{% for post in posts if not db.is_post_deleted(post) and not post.pid == func.getAnnouncement().pid and not post.sid in current_user.get_blocked() %}
 {% if nocheck or (((current_user.show_nsfw() and db.is_post_nsfw(post)) or not db.is_post_nsfw(post)) and ((current_user.show_nsfw() and db.is_sub_nsfw(func.getSub(post.sid))) or not db.is_sub_nsfw(func.getSub(post.sid)))) %}
     <article id="{{post.pid}}" class="post" data-pid="{{post.pid}}">
       {# vote arrow div #}
