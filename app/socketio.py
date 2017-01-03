@@ -6,7 +6,8 @@ socketio = SocketIO()
 
 @socketio.on('connect', namespace='/snt')
 def handle_message():
-    join_room('user' + current_user.uid)
+    if current_user.get_id():
+        join_room('user' + current_user.uid)
 
 
 @socketio.on('subscribe', namespace='/snt')
