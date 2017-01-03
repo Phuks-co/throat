@@ -540,6 +540,7 @@ def edit_txtpost(sub, pid):
             return jsonify(status='error', error=['No such post'])
         db.uquery('UPDATE `sub_post` SET `content`=%s, `nsfw`=%s WHERE '
                   '`pid`=%s', (form.content.data, form.nsfw.data, pid))
+        cache.delete_memoized(db.get_post_from_pid, pid)
         return json.dumps({'status': 'ok', 'sub': sub, 'pid': pid})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
