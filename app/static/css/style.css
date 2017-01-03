@@ -1229,7 +1229,7 @@ button#text-post-icon, button#link-post-icon {
     background: transparent;
 }
 .fa.fa-envelope.hasmail {
-    color: #fb5000;
+    color: #fb5000 !important;
 }
 
 /* music mode video player */
