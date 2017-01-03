@@ -165,7 +165,6 @@
   {% assets "js_all" %}
   <script type="text/javascript" src="{{ ASSET_URL }}"></script>
   {% endassets %}
-  {% if current_user.is_labrat() %}
     <script type="text/javascript" charset="utf-8">
         var socket = io.connect('//' + document.domain + ':' + location.port + '/snt');
         socket.on('notification', function(d){
@@ -184,7 +183,6 @@
         })
         socket.on('uscore', function(d){$('#postscore').html(d.score);})
     </script>
-  {% endif %}
   {%block pagefoot%}{%endblock%}
   <a href="#kx" id="xk" style="display:none"></a>
 </body>
