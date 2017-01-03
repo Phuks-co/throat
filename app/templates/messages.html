@@ -97,7 +97,7 @@
 {% endfor %}
 </div>
 
-<form id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="ajaxform mfp-hide white-popup-block">
+<form data-reset="true" id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="ajaxform mfp-hide white-popup-block">
   {% set msgform = form.CreateUserMessageForm()%}
   {{msgform.csrf_token}}
   {{msgform.to()}}
@@ -111,7 +111,7 @@
   <p><button type="submit" id="msg-btnsubmit" class="btn btn-blue" data-prog="Sending...">Send Message</button></p>
 </form>
 
-<form  method="POST" data-redir='true' action="{{url_for('do.create_comment', sub='0', pid='0')}}" class="ajaxform comment-form mfp-hide white-popup-block" id="comment-form">
+<form data-reset="true" method="POST" data-redir='true' action="{{url_for('do.create_comment', sub='0', pid='0')}}" class="ajaxform comment-form mfp-hide white-popup-block" id="comment-form">
   <h2>Reply to comment</h2>
   {{commentform.csrf_token}}
   {{commentform.sub()}}

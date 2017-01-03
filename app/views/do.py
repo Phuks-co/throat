@@ -579,6 +579,7 @@ def create_lnkpost():
         socketio.emit('thread',
                       {'addr': addr, 'sub': sub['name'], 'type': 'link',
                        'user': current_user.name, 'url': form.link.data,
+                       'pid': post['pid'],
                        'html': render_template('indexpost.html', nocheck=True,
                                                posts=[post])},
                       namespace='/snt',
