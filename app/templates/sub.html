@@ -69,7 +69,9 @@
 
 <span class="col-12"><hr><span>
 
-<p class="createdby">Created by {{func.getSubUsers(sub, 'mod')}} <time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago></p>
+<p class="createdby">Created by {% if func.getSubUsers(func.getSub(sub.sid), 'mod') == '[Deleted]' %} Pkuks {% else %} {{func.getSubUsers(func.getSub(sub.sid), 'mod')}} {% endif %}
+  <time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago>
+</p>
 <div class="moderators col-12">
   Moderators
   <ul>
