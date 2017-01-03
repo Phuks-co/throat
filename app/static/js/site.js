@@ -29,7 +29,9 @@ $(document).ready(function() {
           }
           button.prop('disabled', false);
         } else { // success
-          target[0].reset();
+          if(target.data('reset')){
+            target[0].reset();
+          }
           if(button.data('success')){
             button.text(button.data('success'));
           }
