@@ -209,7 +209,7 @@ def delete_post():
            and not post['uid'] == current_user.get_id():
             db.create_sitelog(4, current_user.get_username() +
                               ' deleted a post',
-                              url_for('view_sub', sud=sub['sid']))
+                              url_for('view_sub', sub=sub['sid']))
         db.uquery('UPDATE `sub_post` SET `deleted`=%s WHERE pid=%s',
                   (deletion, post['pid']))
 
