@@ -406,9 +406,11 @@ def edit_sub_css(sub):
     if not current_user.is_mod(sub) and not current_user.is_admin():
         abort(403)
 
-    form = EditSubCSSForm()
+    c = db.query('SELECT `content` FROM `sub_stylesheet` WHERE `sid`=%s',
+                 (sub['sid'], ))
+    c = c.fetchone()['content']
+    form = EditSubCSSForm(css=c)
 
-    form.css.data = db.get_sub_stylesheet(sub['sid'], False)
     return render_template('editsubcss.html', sub=sub, form=form)
 
 
