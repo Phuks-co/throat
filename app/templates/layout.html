@@ -114,6 +114,7 @@
                 <span id="newmailcount">{{current_user.new_count()}}</span>
                 <i class="fa fa-envelope hasmail" aria-hidden="true"></i>
               {% else %}
+                <span id="newmailcount"></span>
                 <i class="fa fa-envelope-o" aria-hidden="true"></i>
               {% endif %}
               </button>
@@ -173,11 +174,11 @@
           if(d.count == 0){
             document.title = '\n' + title;
             $('#newmailcount').html('');
-            $('.fa-envelope').removeClass('hasmail');
+            $('.fa-envelope').removeClass('hasmail').addClass('fa-envelope-o').removeClass('fa-envelope');
           }else{
             document.title = '(' + d.count + ')\n ' + title;
             $('#newmailcount').html(d.count);
-            $('.fa-envelope').addClass('hasmail');
+            $('.fa-envelope-o').addClass('hasmail').addClass('fa-envelope').removeClass('fa-envelope-o');
           }
         })
         socket.on('uscore', function(d){$('#postscore').html(d.score);})
