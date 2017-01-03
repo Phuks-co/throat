@@ -346,7 +346,7 @@ $(document).ready(function() {
     $('a.btn.edit-flair-form').magnificPopup(mpSettings);
 
     $('.edit-comment-form').magnificPopup(mpSettings);
-    $('.edit-comment-form').click(function(){
+    $(document).on('click', '.edit-comment-form', function(){
       var cid= $(this).data('cid');
       var sauce=$('#sauce-'+cid).html();
       $('#ecf-cid').prop('value', cid)
