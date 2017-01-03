@@ -37,7 +37,7 @@
     <form  method="POST" class="ajaxform" id="edit-mod-form" data-reload="true" action="{{url_for('do.edit_mod')}}">
       {{editmodform.csrf_token}}
       <h4>Change owner of sub</h4>
-      <div class="col-3">{{editmodform.sub(placeholder=editmodform.sub.label.text, required=True, autofocus=True)}}</div>
+      <div class="col-3">{{editmodform.sub(placeholder=editmodform.sub.label.text, required=True)}}</div>
       <div class="col-3">{{editmodform.user(placeholder=editmodform.user.label.text, required=True,)}}</div>
       <div class="col-3"><button type="submit" class="btn btn-blue" data-prog="Doing the magic...">Transfer sub</button></div>
       <div class="alert div-error"></div>

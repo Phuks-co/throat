@@ -56,7 +56,7 @@
       <form id="create-user-badge" class="nice-form">
         {{createuserbadgeform.csrf_token}}
         <h4>Create new user badge (<a href="http://fontawesome.io/cheatsheet/">cheatsheet</a>)</h4>
-        <div class="col-3">{{createuserbadgeform.badge(placeholder=createuserbadgeform.badge.label.text, required=True, autofocus=True)}}</div>
+        <div class="col-3">{{createuserbadgeform.badge(placeholder=createuserbadgeform.badge.label.text, required=True)}}</div>
         <div class="col-2">{{createuserbadgeform.name(placeholder=createuserbadgeform.name.label.text)}}</div>
         <div class="col-3">{{createuserbadgeform.text(placeholder=createuserbadgeform.text.label.text)}}</div>
         <div class="col-2">{{createuserbadgeform.value(placeholder=createuserbadgeform.value.label.text, value=100)}}</div>

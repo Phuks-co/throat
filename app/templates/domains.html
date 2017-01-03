@@ -200,7 +200,7 @@
   {{ csubform.csrf_token }}
   <h1>Create sub</h1>
   <p>Create a sub. For you, for your friends or your favorite community</p>
-  <p>{{csubform.subname(placeholder=csubform.subname.label.text, required=True, autofocus=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}</p>
+  <p>{{csubform.subname(placeholder=csubform.subname.label.text, required=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}</p>
   <p>{{csubform.title(placeholder=csubform.title.label.text, required=True)}}</p>
   <div class="alert div-error"></div>
   <p><button type="submit" id="csub-btnsubmit" class="btn btn-blue" data-prog="Creating...">Create sub</button></p>
@@ -211,7 +211,7 @@
   {{txtpostform.csrf_token}}
   <h1>Submit a text post</h1>
   <p class="sub">/s/{{txtpostform.sub(placeholder="Enter sub name.", required=True)}}</p>
-  <p class="title">{{txtpostform.title(placeholder=txtpostform.title.label.text, required=True, autofocus=True)}}</p>
+  <p class="title">{{txtpostform.title(placeholder=txtpostform.title.label.text, required=True)}}</p>
   <p class="content">{{txtpostform.content(placeholder="Write your post content here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}</p>
   <div class="alert div-error">
     <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
@@ -224,7 +224,7 @@
   {{lnkpostform.csrf_token}}
   <h1>Submit a link post</h1>
   <p class="sub">/s/{{lnkpostform.sub(placeholder="Enter sub name.", required=True)}}</p>
-  <p class="title">{{lnkpostform.title(placeholder=lnkpostform.title.label.text, required=True, autofocus=True)}}</p>
+  <p class="title">{{lnkpostform.title(placeholder=lnkpostform.title.label.text, required=True)}}</p>
   <p class="content">{{lnkpostform.link(type="url", pattern="https?://.+", required=True, placeholder="Paste your link here.")}}</p>
   <p><label>{{lnkpostform.nsfw.label.text}} {{lnkpostform.nsfw()}}</label></p>
   <div class="alert div-error">
