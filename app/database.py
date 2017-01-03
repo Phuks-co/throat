@@ -318,7 +318,6 @@ def create_message(mfrom, to, subject, content, link, mtype):
                   room='user' + to)
 
 
-
 def create_post(sid, uid, title, content, ptype, link=None, thumbnail=''):
     """ Duh. Creates a post """
     posted = datetime.datetime.utcnow()
@@ -391,6 +390,7 @@ def get_user_modded(uid):
     c = query('SELECT * FROM `sub_metadata` WHERE `key` IN %s and `value`=%s',
               (('mod1', 'mod2'), uid, ))
     return c.fetchall()
+
 
 @cache.memoize(10)
 def get_user_post_voting(uid):

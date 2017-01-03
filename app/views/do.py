@@ -639,6 +639,10 @@ def upvote(pid, value):
             if user['score'] is not None:
                 db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
                           '`uid`=%s', (voteValue*2, post['uid']))
+                socketio.emit('uscore',
+                              {'score': user['score'] + voteValue*2},
+                              namespace='/snt',
+                              room="user" + post['uid'])
             socketio.emit('threadscore',
                           {'pid': post['pid'],
                            'score': post['score'] + voteValue*2},
@@ -661,6 +665,10 @@ def upvote(pid, value):
     if user['score'] is not None:
         db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
                   '`uid`=%s', (voteValue, post['uid']))
+        socketio.emit('uscore',
+                      {'score': user['score'] + voteValue},
+                      namespace='/snt',
+                      room="user" + post['uid'])
     return jsonify(status='ok')
 
 
@@ -1396,6 +1404,10 @@ def upvotecomment(cid, value):
             if user['score'] is not None:
                 db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
                           '`uid`=%s', (voteValue*2, comment['uid']))
+                socketio.emit('uscore',
+                              {'score': user['score'] + voteValue*2},
+                              namespace='/snt',
+                              room="user" + comment['uid'])
             return jsonify(status='ok', message='Vote flipped')
     else:
         positive = True if voteValue == 1 else False
@@ -1404,10 +1416,13 @@ def upvotecomment(cid, value):
                   (cid, current_user.uid, positive))
     db.uquery('UPDATE `sub_post_comment` SET `score`=`score`+%s WHERE '
               '`cid`=%s', (voteValue, comment['cid']))
-
     if user['score'] is not None:
         db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
                   '`uid`=%s', (voteValue, comment['uid']))
+        socketio.emit('uscore',
+                      {'score': user['score'] + voteValue},
+                      namespace='/snt',
+                      room="user" + comment['uid'])
 
     return json.dumps({'status': 'ok'})
 
