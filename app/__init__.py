@@ -828,6 +828,7 @@ def view_messages_postreplies():
     now = datetime.datetime.utcnow()
     db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
               '`receivedby`=%s AND `mtype`=4', (now, user))
+    cache.delete_memoized(db.user_mail_count, current_user.uid)
     socketio.emit('notification',
                   {'count': db.user_mail_count(current_user.uid)},
                   namespace='/snt',
@@ -849,6 +850,7 @@ def view_messages_comreplies():
     now = datetime.datetime.utcnow()
     db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
               '`receivedby`=%s AND `mtype`=5', (now, user))
+    cache.delete_memoized(db.user_mail_count, current_user.uid)
     socketio.emit('notification',
                   {'count': db.user_mail_count(current_user.uid)},
                   namespace='/snt',
