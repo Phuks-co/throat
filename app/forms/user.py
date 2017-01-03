@@ -73,6 +73,7 @@ class EditUserForm(FlaskForm):
 
     delete_account = BooleanField('DELETE THIS ACCOUNT')
     experimental = BooleanField('Enable experimental features')
+    noscroll = BooleanField('Disable infinite scroll')
 
 
 class CreateUserMessageForm(FlaskForm):

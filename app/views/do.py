@@ -175,8 +175,8 @@ def edit_user(user):
         db.update_user_metadata(user['uid'], 'nostyles',
                                 form.disable_sub_style.data)
 
-        db.update_user_metadata(user['uid'], 'nsfw',
-                                form.show_nsfw.data)
+        db.update_user_metadata(user['uid'], 'nsfw', form.show_nsfw.data)
+        db.update_user_metadata(user['uid'], 'noscroll', form.noscroll.data)
 
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_user', user=user['name'])})

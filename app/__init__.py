@@ -755,8 +755,10 @@ def edit_user(user):
     styles = int(db.get_user_metadata(user['uid'], 'nostyles'))
     nsfw = int(db.get_user_metadata(user['uid'], 'nsfw'))
     exp = int(db.get_user_metadata(user['uid'], 'labrat'))
+    noscroll = int(db.get_user_metadata(user['uid'], 'noscroll'))
     form = EditUserForm(external_links=bool(exlink), show_nsfw=bool(nsfw),
-                        disable_sub_style=bool(styles), experimental=bool(exp))
+                        disable_sub_style=bool(styles), experimental=bool(exp),
+                        noscroll=bool(noscroll))
     adminbadges = []
     if current_user.is_admin():
         adminbadges = db.query('SELECT * FROM `user_badge`').fetchall()

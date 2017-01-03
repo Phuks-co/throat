@@ -140,6 +140,14 @@ class SiteUser(object):
         else:
             return False
 
+    def likes_scroll(self):
+        """ Returns true if user likes scroll """
+        x = db.get_user_metadata(self.uid, 'noscroll')
+        if x:
+            return False if x == '1' else True
+        else:
+            return True
+
     def block_styles(self):
         """ Returns true if user selects to block sub styles """
         x = db.get_user_metadata(self.uid, 'nostyles')
@@ -187,6 +195,11 @@ class SiteAnon(AnonymousUserMixin):
     def is_topmod(cls, sub):
         """ Anons are not owners. """
         return False
+
+    @classmethod
+    def likes_scroll(cls):
+        """ Anons like scroll. """
+        return True
 
     @classmethod
     def get_blocked(cls):
