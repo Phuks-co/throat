@@ -312,6 +312,7 @@ def all_top(page):
                            posts=posts)
 
 
+@app.route("/all", defaults={'page': 1})
 @app.route("/all/hot", defaults={'page': 1})
 @app.route("/all/hot/<int:page>")
 def all_hot(page):

@@ -35,6 +35,7 @@
     <div id="subslist" class="col-11">
       <ul>
         {% if not current_user.is_anonymous %}
+        <li class="subinthebar"><a href="{{url_for('all_hot')}}">all</a></li>
         <li class="subinthebar"><a href="{{url_for('view_my_subs')}}">subscribed</a></li>
         <li class="subinthebar"><a href="{{url_for('view_myblocked_subs')}}">blocked</a></li>
         <li class="subinthebar"><a href="{{url_for('view_mymodded_subs')}}">mysubs</a></li>
