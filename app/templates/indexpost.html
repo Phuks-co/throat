@@ -93,7 +93,7 @@
                   <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-twitter" aria-hidden="true"></i></a></span>
                 </span>
               {% endif %}
-            {% else %}
+            {% elif post.content != '' %}
               <span id="opentextpost" data-pid="{{post.pid}}" class="closedtextpost">
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
               </span>
