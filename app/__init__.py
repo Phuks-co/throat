@@ -622,7 +622,7 @@ def view_post(sub, pid, comments=False):
     if not comments:
         comments = db.get_all_post_comments(post['pid'])
     return render_template('post.html', post=post, mods=mods,
-                           edittxtpostform=txtpedit,
+                           edittxtpostform=txtpedit, sub=ksub,
                            upcount=upcount, downcount=downcount,
                            editlinkpostform=EditSubLinkPostForm(),
                            lnkpostform=createlinkpost, comments=comments,

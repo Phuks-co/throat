@@ -555,13 +555,13 @@ def grab_title():
         abort(400)
     try:
         req = misc.safeRequest(url)
-    except (requests.exceptions.RequestException, ValueError) as e:
+    except (requests.exceptions.RequestException, ValueError):
         return jsonify(status='error', error=['Couldn\'t get title'])
 
     og = BeautifulSoup(req[1], 'lxml')
     try:
         title = og('title')[0].text
-    except (OSError, ValueError, IndexError) as e:
+    except (OSError, ValueError, IndexError):
         return jsonify(status='error', error=['Couldn\'t get title'])
     return jsonify(status='ok', title=title)
 

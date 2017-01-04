@@ -136,7 +136,7 @@
             </div>
             {% if func.getPostFlair(post) %}<span class="btn">{{func.getPostFlair(post)}}</span>{% endif %}
             {% if db.is_post_nsfw(post) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
-            <h1 class="title">{{post.title}}</h1>
+            <h1 class="title"><a href="{%if post.ptype== 0 %}{{url_for('view_post', sub=sub.name, pid=post.pid)}}{% else %}{{post.link}}{%endif%}">{{post.title}}</a></h1>
             <div class="info">
             {# if post.ptype == 1 %}
               <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
@@ -144,7 +144,7 @@
               {% if not db.is_post_deleted(post) %}
               <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a>
               {% else %}
-              [Deleted]
+                [Deleted]
               {% endif %}
             {% if func.getUser(post.uid).uid == session['user_id'] or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
               {% if func.userCanFlair(func.getSub(post.sid)) or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
@@ -184,11 +184,11 @@
           <div class="content">
           {% if func.isImage(post.link) %}
             <span id="openimg" data-img="{{post.link}}" data-pid="{{post.pid}}" class="closedimg">
-              {{post.link}}
+              <a href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %} rel="noreferrer noopener">{{post.link}}</a>
               <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
             </span>
           {% else %}
-            <a href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %} {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.link}}</a>
+            <a href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %} rel="noreferrer noopener">{{post.link}}</a>
             {% if func.getDomain(post.link) == "youtube.com" or func.getDomain(post.link) == "www.youtube.com" or func.getDomain(post.link) == "youtu.be" %}
               <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
                 <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
