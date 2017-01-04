@@ -1017,6 +1017,22 @@ def register():
     return render_template('register.html')
 
 
+@app.route("/submit/text", defaults={'sub': ''})
+@app.route("/submit/text/<sub>")
+@login_required
+def submit_text(sub):
+    """ Endpoint for text submission creation """
+    return render_template('createpost.html', type='text', sub=sub)
+
+
+@app.route("/submit/link", defaults={'sub': ''})
+@app.route("/submit/link/<sub>")
+@login_required
+def submit_link(sub):
+    """ Endpoint for link submission creation """
+    return render_template('createpost.html', type='link', sub=sub)
+
+
 @app.route("/recover")
 def password_recovery():
     """ Endpoint for the registration form """

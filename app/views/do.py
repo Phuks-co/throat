@@ -6,8 +6,10 @@ import time
 import datetime
 import uuid
 import bcrypt
+import requests
+from bs4 import BeautifulSoup
 from flask import Blueprint, redirect, url_for, session, abort, jsonify
-from flask import render_template
+from flask import render_template, request
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_cache import make_template_fragment_key
 import config
@@ -543,6 +545,25 @@ def edit_txtpost(sub, pid):
         cache.delete_memoized(db.get_post_from_pid, pid)
         return json.dumps({'status': 'ok', 'sub': sub, 'pid': pid})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/grabtitle", methods=['get'])
+@login_required
+def grab_title():
+    url = request.args.get('u')
+    if not url:
+        abort(400)
+    try:
+        req = misc.safeRequest(url)
+    except (requests.exceptions.RequestException, ValueError) as e:
+        return jsonify(status='error', error=['Couldn\'t get title'])
+
+    og = BeautifulSoup(req[1], 'lxml')
+    try:
+        title = og('title')[0].text
+    except (OSError, ValueError, IndexError) as e:
+        return jsonify(status='error', error=['Couldn\'t get title'])
+    return jsonify(status='ok', title=title)
 
 
 @do.route("/do/lnkpost", methods=['POST'])

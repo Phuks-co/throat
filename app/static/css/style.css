@@ -742,13 +742,6 @@ body.dark textarea#comment {
 .btn.small .fa {
     font-size: larger;
 }
-@media only screen and (max-width: 768px) {
-    /* For mobile phones:
-     * .btn {
-     *     width: 100% !important;
-     * }
-     */
-}
 
 /* login, register form */
 
@@ -764,7 +757,8 @@ body.dark textarea#comment {
     line-height: 1.6;
     color: #5A6064;
 }
-.white-popup-block input {
+.white-popup-block input,
+.ajaxform input {
     width: 70%;
     text-align: left;
     padding: 5px;
@@ -845,18 +839,19 @@ button.mfp-close, button.mfp-arrow {
 
 /* send post form */
 
-#post-form .content {
+form .content {
     text-align: left;
     width: 100%;
     font-size: 0.9em;
 }
-#post-form .title {
+form .title input {
     width: 100%;
-    height: auto;
+    font-size: larger;
 }
-#post-form .title input {
-    width: 100%;
-    height: 3em;
+
+form .link input {
+  width: 100%;
+  font-size: larger;
 }
 
 /* text posts */
@@ -928,32 +923,6 @@ button.mfp-close, button.mfp-arrow {
 article .text-post{
   margin-left: .7em !important;
 }
-/*
-.text-post.sub-1 {
-    margin-left: 2em;
-}
-.text-post.sub-2 {
-    margin-left: 4em;
-}
-.text-post.sub-3 {
-    margin-left: 6em;
-}
-.text-post.sub-4 {
-    margin-left: 8em;
-}
-.text-post.sub-5 {
-    margin-left: 10em;
-}
-.text-post.sub-6 {
-    margin-left: 12em;
-}
-.text-post.sub-7 {
-    margin-left: 14em;
-}
-.text-post.sub-8 {
-    margin-left: 16em;
-}
-*/
 /* user page */
 
 .user-activity .recent {
@@ -1051,14 +1020,12 @@ body.dark i.fa.fa-square.fa-stack-2x {
 
 body.dark .btn {
     border: solid #333133 1px;
-    margin: 1px;
   background: #101010;
   color: #fd5c00;
 }
 
 body.dark .btn:hover {
     border: solid #333133 1px;
-    margin: 1px;
   background: #101010;
   color: #bbb !important;
 }
@@ -1471,8 +1438,8 @@ span.bgred {
 
 .cus-die-six:before{content:"\2685";}
 
-form .sub input{width:25em;}
-
+form .sub{text-align: center; font-size: larger;}
+form .sub input{width: 35%}
 .btn-editor{width: initial !important; }
 .md-input{padding-left: 5px !important; padding-top:5px !important;}
 .md-preview{padding-left: 5px !important;}

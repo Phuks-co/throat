@@ -336,7 +336,6 @@ $(document).ready(function() {
 
     $('a.btn.login').magnificPopup(mpSettings);
     $('a.btn.create-sub').magnificPopup(mpSettings);
-    $('a.btn.create-post').magnificPopup(mpSettings);
     $('a.btn.send-message').magnificPopup(mpSettings);
     $('a.btn.edit-txtpost-form').magnificPopup(mpSettings);
     $('a.btn.edit-linkpost-form').magnificPopup(mpSettings);
@@ -1154,3 +1153,23 @@ function imgtcID(url) {
     return match[2];
 	}
 }
+
+$('#graburl').click(function(e){
+  $(this).prop('disabled', true);
+  $(this).html('Grabbing...');
+  $.ajax({
+    type: "GET",
+    dataType: 'json',
+    url: '/do/grabtitle',
+    data: {'u': $('#link').prop('value')},
+    success: function(data) {
+      if(data.status == 'error'){
+        $('#title').prop('value', 'Error fetching title');
+      }else{
+        $('#title').prop('value', data.title);
+      }
+      $(this).prop('disabled', false);
+      $(this).html('Done!');
+    }
+  })
+})
