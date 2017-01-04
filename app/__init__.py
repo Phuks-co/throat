@@ -383,6 +383,8 @@ def random_sub():
 @app.route("/s/<sub>")
 def view_sub(sub):
     """ Here we can view subs """
+    if sub.lower() == "all":
+        return redirect(url_for('all_hot', page=1))
     sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
@@ -516,6 +518,8 @@ def sub_new_rss(sub):
 @app.route("/s/<sub>/new/<int:page>")
 def view_sub_new(sub, page):
     """ The index page, all posts sorted as most recent posted first """
+    if sub.lower() == "all":
+        return redirect(url_for('all_new', page=1))
     sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
@@ -551,6 +555,8 @@ def view_sub_bans(sub):
 @app.route("/s/<sub>/top/<int:page>")
 def view_sub_top(sub, page):
     """ The index page, /top sorting """
+    if sub.lower() == "all":
+        return redirect(url_for('all_top', page=1))
     sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
@@ -574,6 +580,8 @@ def view_sub_top(sub, page):
 @app.route("/s/<sub>/hot/<int:page>")
 def view_sub_hot(sub, page):
     """ The index page, /hot sorting """
+    if sub.lower() == "all":
+        return redirect(url_for('all_hot', page=1))
     sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)

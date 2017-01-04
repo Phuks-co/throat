@@ -502,7 +502,7 @@ def create_txtpost():
             return json.dumps({'status': 'error',
                                'error': ['You\'re banned from posting on this'
                                          ' sub']})
-        if misc.isRestricted(sub):
+        if misc.isRestricted(sub) and not current_user.is_mod(sub):
             return json.dumps({'status': 'error',
                                'error': ['You can\'t post on this sub']})
         post = db.create_post(sid=sub['sid'],
@@ -585,7 +585,7 @@ def create_lnkpost():
             return json.dumps({'status': 'error',
                                'error': ['You\'re banned from posting on this'
                                          ' sub']})
-        if misc.isRestricted(sub):
+        if misc.isRestricted(sub) and not current_user.is_mod(sub):
             return json.dumps({'status': 'error',
                                'error': ['You can\'t post on this sub']})
         l = db.query('SELECT `pid` FROM `sub_post` WHERE `sid`=%s AND '
