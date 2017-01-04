@@ -109,7 +109,7 @@ ul, ol {
 table {
     table-layout: auto;
     border-collapse: separate;
-    border-spacing: 0;
+    border-spacing: 4px;
     empty-cells: hide;
 }
 img {
