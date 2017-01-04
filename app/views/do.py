@@ -502,6 +502,9 @@ def create_txtpost():
             return json.dumps({'status': 'error',
                                'error': ['You\'re banned from posting on this'
                                          ' sub']})
+        if misc.isRestricted(sub):
+            return json.dumps({'status': 'error',
+                               'error': ['You can\'t post on this sub']})
         post = db.create_post(sid=sub['sid'],
                               uid=current_user.uid,
                               title=form.title.data,
@@ -571,7 +574,6 @@ def grab_title():
 @misc.ratelimit(1, per=30, key_func=lambda: 'post')
 def create_lnkpost():
     """ Sub text post creation endpoint """
-
     form = CreateSubLinkPost()
     if form.validate():
         # Put pre-posting checks here
@@ -583,6 +585,9 @@ def create_lnkpost():
             return json.dumps({'status': 'error',
                                'error': ['You\'re banned from posting on this'
                                          ' sub']})
+        if misc.isRestricted(sub):
+            return json.dumps({'status': 'error',
+                               'error': ['You can\'t post on this sub']})
         l = db.query('SELECT `pid` FROM `sub_post` WHERE `sid`=%s AND '
                      '`link`=%s AND `posted` > DATE_SUB(NOW(), INTERVAL 1 '
                      'MONTH)', (sub['sid'], form.link.data)).fetchone()
