@@ -8,6 +8,7 @@ import uuid
 import bcrypt
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 from flask import Blueprint, redirect, url_for, session, abort, jsonify
 from flask import render_template, request
 from flask_login import login_user, login_required, logout_user, current_user
@@ -576,7 +577,7 @@ def grab_title():
 @login_required
 @misc.ratelimit(1, per=30, key_func=lambda: 'post')
 def create_lnkpost():
-    """ Sub text post creation endpoint """
+    """ Sub link post creation endpoint """
     if misc.get_user_level(current_user.uid)[0] <= 5:
         form = CaptchaForm()
         if not form.validate():
@@ -601,6 +602,15 @@ def create_lnkpost():
         if l:
             return jsonify(status='error', error=['This link was recently '
                                                   'posted on this sub.'])
+        bans = db.uquery('SELECT `value` FROM `site_metadata` WHERE `key`=%s',
+                         ('banned_domain',)).fetchall()
+        ben = []
+        for i in bans:
+            ben.append(i['value'])
+        url = urlparse(form.link.data)
+        if url.netloc in ben:
+            return jsonify(status='error', error=['This domain is banned'])
+
         img = misc.get_thumbnail(form)
         post = db.create_post(sid=sub['sid'],
                               uid=current_user.uid,
