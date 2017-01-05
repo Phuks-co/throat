@@ -391,10 +391,13 @@ class RestrictedMarkdown(markdown.Extension):
 def our_markdown(text):
     """ Here we create a custom markdown function where we load all the
     extensions we need. """
-    return markdown.markdown(text,
-                             extensions=['markdown.extensions.tables',
-                                         RestrictedMarkdown()],
-                             safe_mode='escape')
+    try:
+        return markdown.markdown(text,
+                                 extensions=['markdown.extensions.tables',
+                                             RestrictedMarkdown()],
+                                 safe_mode='escape')
+    except RecursionError:
+        return '> tfw tried to break the site'
 
 
 @cache.memoize(5)
