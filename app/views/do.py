@@ -1156,7 +1156,7 @@ def ban_domain():
 
     if form.validate():
         db.create_site_metadata('banned_domain', form.domain.data)
-        db.create_sitelog(3, current_user.get_username() +
+        db.create_sitelog(5, current_user.get_username() +
                           ' banned domain ' + form.domain.data)
 
     return redirect(url_for('admin_domains'))
