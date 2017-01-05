@@ -31,7 +31,11 @@ class SiteUser(object):
         self.user = userclass
         self.name = self.user['name']
         self.uid = self.user['uid']
-        self.is_active = True  # Apply bans by setting this to false.
+        # If status is not 0, user is banned
+        if self.user['status'] != 0:
+            self.is_active = False
+        else:
+            self.is_active = True
         if self.user:
             self.is_authenticated = True
             self.is_anonymous = False
