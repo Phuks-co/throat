@@ -190,13 +190,17 @@ def status():
 @login_required
 def view_user(user):
     """ Get user info """
-    user = User.query.filter_by(name=user).first()
+    user = db.get_user_from_name(user)
     if not user:
         abort(404)
     else:
-        data = {'name': user.name,
-                'joindate': user.joindate,
-                'status': user.status}
+        if user['status'] == 10:
+            data = {'name': user['name']}
+        else:
+            data = {'name': user['name'],
+                    'joindate': user['joindate'],
+                    'status': user['status'],
+                    'phuks received': user['score']}
         resp = jsonify(data)
         resp.status_code = 200
         return resp
@@ -205,18 +209,20 @@ def view_user(user):
 @api.route("/api/v1/s/<sub>", methods=['GET'])
 def view_sub(sub):
     """ Get sub """
-    sub = Sub.query.filter_by(name=sub).first()
+    sub = db.get_sub_from_name(sub)
+    posts = db.query('SELECT COUNT(*) AS c FROM `sub_post` WHERE `sid`=%s',
+                     (sub['sid'], )).fetchone()['c']
     if not sub:
         abort(404)
     else:
-        data = {'name': sub.name,
-                'title': sub.title,
+        data = {'name': sub['name'],
+                'title': sub['title'],
                 'created': getSubCreation(sub),
-                'posts': getSubPostCount(sub),
+                'posts': posts,
                 'owner': getSubUsers(sub, 'mod1'),
                 'subscribers': getSuscriberCount(sub),
-                'status': sub.status,
-                'nsfw': isNSFW(sub)
+                'status': sub['status'],
+                'nsfw': sub['nsfw']
                 }
         resp = jsonify(data)
         resp.status_code = 200
@@ -243,6 +249,21 @@ def view_post(sub, pid):
         resp = jsonify(data)
         resp.status_code = 200
         return resp
+
+
+@api.route("/api/v1/banneddomains", methods=['GET'])
+def view_banned_domains():
+    """ Get list of banned domains """
+    bans = db.uquery('SELECT `value` FROM `site_metadata` WHERE `key`=%s',
+                     ('banned_domain', )).fetchall()
+    ben = []
+    for i in bans:
+        ben.append(i['value'])
+
+    data = ben
+    resp = jsonify(ben)
+    resp.status_code = 200
+    return resp
 
 
 @api.errorhandler(404)
