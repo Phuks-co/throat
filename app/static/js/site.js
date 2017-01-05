@@ -477,7 +477,7 @@ $(document).ready(function() {
       });
     });
 
-    $('.cdownvote').click(function(e){
+    $(document).on('click', '.cdownvote', function(e){
       var pid = $(e.currentTarget).parent().find('input[name="post"]').prop('value');
       $.ajax({
         type: "POST",
@@ -500,7 +500,7 @@ $(document).ready(function() {
       });
     });
 
-    $('.cupvote').click(function(e){
+    $(document).on('click', '.cupvote', function(e){
       var pid = $(e.currentTarget).parent().find('input[name="post"]').prop('value');
       $.ajax({
         type: "POST",
