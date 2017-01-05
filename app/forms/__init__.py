@@ -9,7 +9,7 @@ from .sub import PostComment, DeletePost, EditSubLinkPostForm, SearchForm
 from .sub import BanUserSubForm, EditPostFlair, EditSubCSSForm, EditMod2Form
 from .sub import CreateSubFlair, DeleteSubFlair, VoteForm, DeleteCommentForm
 from .admin import CreateUserBadgeForm, EditModForm, UseBTCdonationForm
-from .admin import BannedDomainForm
+from .admin import BanDomainForm
 
 
 class DummyForm(FlaskForm):

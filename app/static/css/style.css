@@ -1377,6 +1377,13 @@ body.dark .admin.section.users table.col-12 td {
 .admin.section.posts tr {
     line-height: 40px;
 }
+table.domains tr:nth-child(even) {
+    background: #dcdcdc;
+}
+body.dark table.domains tr:nth-child(even) {
+    background: #0c0c0c;
+}
+
 /* api page */
 
 article.post.apidoc {

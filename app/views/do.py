@@ -22,7 +22,7 @@ from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form, EditSubFlair
-from ..forms import DeleteSubFlair, UseBTCdonationForm
+from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..misc import SiteUser, cache, sendMail, getDefaultSubs
 
 do = Blueprint('do', __name__)
@@ -1145,6 +1145,21 @@ def make_announcement():
                           url_for('view_post_inbox', pid=form.post.data))
 
     return redirect(url_for('index'))
+
+@do.route("/do/ban_domain", methods=['POST'])
+def ban_domain():
+    """ Add domain to ban list """
+    if not current_user.is_admin():
+        abort(404)
+
+    form = BanDomainForm()
+
+    if form.validate():
+        db.create_site_metadata('banned_domain', form.domain.data)
+        db.create_sitelog(3, current_user.get_username() +
+                          ' banned domain ' + form.domain.data)
+
+    return redirect(url_for('admin_domains'))
 
 
 @do.route("/do/usebtcdonation", methods=['POST'])

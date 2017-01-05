@@ -32,6 +32,6 @@ class UseBTCdonationForm(FlaskForm):
     btcaddress = StringField('Bitcoin address')
 
 
-class BannedDomainForm(FlaskForm):
+class BanDomainForm(FlaskForm):
     """ Add banned domain """
     domain = StringField('Enter Domain')
