@@ -1433,7 +1433,14 @@ span.bgred {
   color: #fff;
   font-size: small;
 }
-
+body.dark span.bgred {
+    padding: 3px;
+    background-color: transparent;
+    border-radius: 4px;
+    color: #e22;
+    font-size: small;
+    border: 1px solid #e22;
+}
 .announcementPost{
   background-color: #a22;
   border-radius:5px;
