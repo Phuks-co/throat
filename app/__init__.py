@@ -562,7 +562,7 @@ def view_sub_top(sub, page):
         abort(404)
 
     posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s '
-                     'ORDER BY `score` LIMIT %s,20',
+                     'ORDER BY `score` DESC LIMIT %s,20',
                      (sub['sid'], (page - 1) * 20, )).fetchall()
 
     mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
