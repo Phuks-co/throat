@@ -15,6 +15,7 @@ $(document).ready(function() {
       data: target.serialize(),
       success: function(data) {
         if (data.status != "ok") {
+          button.prop('disabled', true);
           var obj = data.error,
             ul = $("<ul>"); // >_>
           for (var i = 0, l = obj.length; i < l; ++i) {
@@ -27,7 +28,6 @@ $(document).ready(function() {
           if (typeof grecaptcha != "undefined") {
               grecaptcha.reset();
           }
-          button.prop('disabled', false);
         } else { // success
           if(target.data('reset')){
             target[0].reset();

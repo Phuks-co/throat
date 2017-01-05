@@ -20,7 +20,7 @@ from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubFlair
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
-from ..forms import PostComment, CreateUserMessageForm, DeletePost
+from ..forms import PostComment, CreateUserMessageForm, DeletePost, CaptchaForm
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form, EditSubFlair
 from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..misc import SiteUser, cache, sendMail, getDefaultSubs
@@ -490,7 +490,10 @@ def unblock_sub(sid):
 @misc.ratelimit(1, per=30, key_func=lambda: 'post')
 def create_txtpost():
     """ Sub text post creation endpoint """
-
+    if misc.get_user_level(current_user.uid)[0] <= 5:
+        form = CaptchaForm()
+        if not form.validate():
+            return json.dumps({'status': 'error', 'error': get_errors(form)})
     form = CreateSubTextPost()
     if form.validate():
         # Put pre-posting checks here
@@ -574,6 +577,10 @@ def grab_title():
 @misc.ratelimit(1, per=30, key_func=lambda: 'post')
 def create_lnkpost():
     """ Sub text post creation endpoint """
+    if misc.get_user_level(current_user.uid)[0] <= 5:
+        form = CaptchaForm()
+        if not form.validate():
+            return json.dumps({'status': 'error', 'error': get_errors(form)})
     form = CreateSubLinkPost()
     if form.validate():
         # Put pre-posting checks here
