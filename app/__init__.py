@@ -26,7 +26,7 @@ from .forms import CreateSubTextPost, EditSubTextPostForm, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DeletePost, CreateUserBadgeForm, EditMod2Form, DummyForm
 from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair
-from .forms import CreateSubFlair, UseBTCdonationForm
+from .forms import CreateSubFlair, UseBTCdonationForm, BannedDomainForm
 from .views import do, api
 from .views.api import oauth
 from . import misc, forms, caching
@@ -1003,6 +1003,19 @@ def admin_post_search(term):
         return render_template('adminpostsearch.html', sub=sub, post=post,
                                votes=votes, ccount=ccount, pcount=pcount,
                                upcount=upcount, downcount=downcount)
+    else:
+        return render_template('errors/404.html'), 404
+
+
+@app.route("/admin/domains", defaults={'page': 1})
+@app.route("/admin/domains/<int:page>")
+@login_required
+def admin_domains(page):
+    """ WIP: View Banned Domains """
+    if current_user.is_admin():
+        domains = db.get_site_metadata('banned_domain', _all=True)
+        return render_template('admindomains.html', domains=domains, page=page,
+                               banneddomainform=BannedDomainForm())
     else:
         return render_template('errors/404.html'), 404
 

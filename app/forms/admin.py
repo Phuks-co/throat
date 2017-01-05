@@ -30,3 +30,8 @@ class UseBTCdonationForm(FlaskForm):
     enablebtcmod = BooleanField('Enable Bitcoin donation module')
     message = StringField('Enter text')
     btcaddress = StringField('Bitcoin address')
+
+
+class BannedDomainForm(FlaskForm):
+    """ Add banned domain """
+    domain = StringField('Enter Domain')
