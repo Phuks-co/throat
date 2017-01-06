@@ -131,7 +131,8 @@ def register():
             return json.dumps({'status': 'error',
                                'error': ['Email is alredy in use.']})
 
-        y = db.get_site_metadata('useinvitecode')['value']
+        y = db.get_site_metadata('useinvitecode')
+        y = y['value'] if y else False
         if y == '1':
             z = db.get_site_metadata('invitecode')['value']
             if z != form.invitecode.data:
