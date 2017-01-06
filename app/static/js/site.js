@@ -15,7 +15,7 @@ $(document).ready(function() {
       data: target.serialize(),
       success: function(data) {
         if (data.status != "ok") {
-          button.prop('disabled', true);
+          button.prop('disabled', false);
           var obj = data.error,
             ul = $("<ul>"); // >_>
           for (var i = 0, l = obj.length; i < l; ++i) {

@@ -2,10 +2,10 @@
 {% block head %}
 {{ super() }}
 {% if func.get_user_level(current_user.uid)[0] <= 5 %}
- <script src="https://www.google.com/recaptcha/api.js" type="text/javascript"></script>
+ <script src="https://www.google.com/recaptcha/api.js?onload=recaptchaCallback&render=explicit" type="text/javascript"></script>
 <script>
 var recaptchaCallback = function(){
-    grecaptcha.render($('.g-recaptcha')[0], {sitekey: $('.g-recaptcha').data().sitekey});
+    grecaptcha.render($('.g-recaptcha')[0], {sitekey: "{{config.RECAPTCHA_PUBLIC_KEY}}"});
 }
 </script>
 {%endif%}
@@ -22,8 +22,7 @@ var recaptchaCallback = function(){
     <p class="title">{{txtpostform.title(placeholder=txtpostform.title.label.text, required=True)}}</p>
     <p class="content">{{txtpostform.content(placeholder="(Optional) Write your post content here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}</p>
     {% if func.get_user_level(current_user.uid)[0] <= 5 %}
-      {% set captcha = form.CaptchaForm() %}
-      {{captcha.recaptcha}}
+      <div class="g-recaptcha"></div>
     {% endif %}
     <div class="alert div-error">
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
@@ -45,8 +44,7 @@ var recaptchaCallback = function(){
     </div>
     <p><label>{{lnkpostform.nsfw.label.text}} {{lnkpostform.nsfw()}}</label></p>
       {% if func.get_user_level(current_user.uid)[0] <= 5 %}
-        {% set captcha = form.CaptchaForm() %}
-        {{captcha.recaptcha}}
+        <div class="g-recaptcha"></div>
       {% endif %}
       <div class="alert div-error">
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
