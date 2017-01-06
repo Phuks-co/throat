@@ -1135,6 +1135,19 @@ def delete_pm(mid):
         abort(403)
 
 
+@do.route("/do/save_pm/<mid>", methods=['POST'])
+@login_required
+def save_pm(mid):
+    """ Save/Archive PM """
+    message = db.query('SELECT * FROM `message` WHERE `mid`=%s', (mid,))
+    message = message.fetchone()
+    if session['user_id'] == message['receivedby']:
+        db.uquery('UPDATE `message` SET `mtype`=9 WHERE `mid`=%s', (mid, ))
+        return json.dumps({'status': 'ok', 'mid': mid})
+    else:
+        abort(403)
+
+
 @do.route("/do/admin/deleteannouncement")
 def deleteannouncement():
     """ Removes the current announcement """

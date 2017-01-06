@@ -22,6 +22,9 @@
   <div class="col-12"><a class="btn{% if current_user.new_modmail_count() > 0 %} btn-orange{% endif %}"  href="{{ url_for('view_messages_modmail') }}">
     <i class="fa fa-user-plus" aria-hidden="true"></i> Modmail {% if current_user.new_modmail_count() > 0 %} <i class="fa fa-envelope" aria-hidden="true"></i> {{current_user.new_modmail_count()}}{% endif %}</a>
   </div>
+  <div class="col-12"><a class="btn"  href="{{ url_for('view_saved_messages') }}">
+    <i class="fa fa-save" aria-hidden="true"></i> Saved Messages</a>
+  </div>
 </div>
 {% endblock %}
 
@@ -87,6 +90,9 @@
               {%endif%}
               <!--<a class="btn small"><i class="fa fa-mail-forward" aria-hidden="true"></i> forward</a>-->
             {%endif%}
+            {% if boxID != "5" %}
+              <a class="savepm btn small btn-green" data-mid="{{message.mid}}"><i class="fa fa-save" aria-hidden="true"></i> save</a>
+            {% endif %}
             <a class="delete btn small btn-red" data-mid="{{message.mid}}"><i class="fa fa-trash" aria-hidden="true"></i> delete</a>
           {% else %}
             <a href="{{url_for('view_user', user=db.get_user_from_uid(message.receivedby).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{db.get_user_from_uid(message.receivedby).name}}</a>

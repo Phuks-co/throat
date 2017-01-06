@@ -884,6 +884,19 @@ def view_messages_modmail():
                            box_name="ModMail", boxID="4")
 
 
+@app.route("/messages/saved")
+def view_saved_messages():
+    """ WIP: View user's saved messages """
+    user = session['user_id']
+    if current_user.user['status'] == 10:
+        abort(404)
+    msgs = db.query('SELECT * FROM `message` WHERE `mtype`=9 '
+                    'AND `receivedby`=%s ORDER BY `posted` DESC',
+                    (user,)).fetchall()
+    return render_template('messages.html', user=user, messages=msgs,
+                           box_name="Saved Messages", boxID="5")
+
+
 @app.route("/admin")
 @login_required
 def admin_area():

@@ -537,6 +537,21 @@ $(document).ready(function() {
       });
     });
 
+    $('.savepm').click(function(e){
+      var mid = $(e.currentTarget).data().mid
+      $.ajax({
+        type: "POST",
+        url: '/do/save_pm/' + mid,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).addClass('saved').removeClass('savepm');
+            $(e.currentTarget).text('saved')
+          }
+        }
+      });
+    });
+
     $('.readall').click(function(e){
       var boxid = $(e.currentTarget).data().boxid
       var user = $(e.currentTarget).data().name

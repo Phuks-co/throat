@@ -727,6 +727,29 @@ body.dark textarea#comment {
     border-color: #ac2925;
 }
 
+/* green button */
+
+.btn.btn-green {
+    color: #fff;
+    background-color: #00962a;
+    border-color: #00962a;
+}
+.btn.btn-green:visited {
+  color: #fff;
+}
+.btn.btn-green:hover {
+    color: #fff;
+    background-color: #008625;
+    border-color: #008625;
+}
+.btn.btn-green:active {
+    color: #fff;
+    background-color: #008625;
+    border-color: #008625;
+}
+.btn.small.btn-green {
+  color: #fff;
+}
 /* small button */
 
 .btn.small {
