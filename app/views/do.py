@@ -131,6 +131,12 @@ def register():
             return json.dumps({'status': 'error',
                                'error': ['Email is alredy in use.']})
 
+        y = db.get_site_metadata('useinvitecode')['value']
+        if y == '1':
+            z = db.get_site_metadata('invitecode')['value']
+            if z != form.invitecode.data:
+                return json.dumps({'status': 'error',
+                                   'error': ['Incorrect invite code.']})
         user = db.create_user(form.username.data, form.email.data,
                               form.password.data)
         # defaults
@@ -1233,8 +1239,6 @@ def use_invite_code():
         else:
             desc = current_user.get_username() + ' disabled invite code required'
         db.create_sitelog(7, desc, '')
-        cache.delete_memoized(misc.enableInviteCode)
-        cache.delete_memoized(misc.getInviteCode)
         # return json.dumps({'status': 'ok'})
     return redirect(url_for('admin_area'))
 

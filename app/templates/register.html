@@ -16,6 +16,9 @@ var recaptchaCallback = function(){
         <h1>Register</h1>
         <p>Registering is free. All you need is a username and password.</p>
         <p>{{regform.username(placeholder=regform.username.label.text, required=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}</p>
+        {% if func.enableInviteCode() %}
+          <p>{{regform.invitecode(placeholder=regform.invitecode.label.text, autocomplete="off", title="A code is required for new registrations")}}</p>
+        {% endif %}
         <p>{{regform.password(placeholder=regform.password.label.text, required=True, autocomplete="off")}}</p>
         <p>{{regform.confirm(placeholder=regform.confirm.label.text, required=True, autocomplete="off")}}</p>
         <p>{{regform.email(placeholder=regform.email.label.text)}}</p>

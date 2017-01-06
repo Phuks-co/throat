@@ -43,6 +43,7 @@ class RegistrationForm(FlaskForm):
         Length(min=7, max=256)
     ])
     confirm = PasswordField('Repeat Password')
+    invitecode = TextField('Invite Code')
     accept_tos = BooleanField('I accept the TOS', [Required()])
     recaptcha = RecaptchaField('Captcha')
 
