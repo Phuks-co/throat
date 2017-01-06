@@ -1218,9 +1218,6 @@ button#text-post-icon, button#link-post-icon {
     border: 0;
     background: transparent;
 }
-.fa.fa-envelope.hasmail {
-    color: #fb5000 !important;
-}
 
 /* music mode video player */
 .musicmodediv {
@@ -1590,4 +1587,8 @@ blockquote.twitter-tweet {
 }
 body.dark .md-preview {
   background: #2f2f2f !important;
+}
+
+.fa.fa-envelope.hasmail {
+    color: #fb5000;
 }
