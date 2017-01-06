@@ -599,6 +599,21 @@ def enableBTCmod():
 
 
 @cache.memoize(600)
+def enableInviteCode():
+    """ Returns true if invite code is required to register """
+    x = db.get_site_metadata('useinvitecode')
+    return False if not x or x['value'] == '0' else True
+
+
+@cache.memoize(600)
+def getInviteCode():
+    """ Returns invite code """
+    x = db.get_site_metadata('invitecode')
+    if x:
+        return x['value']
+
+
+@cache.memoize(600)
 def getBTCmsg():
     """ Returns donation module text """
     x = db.get_site_metadata('btcmsg')

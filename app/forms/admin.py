@@ -35,3 +35,9 @@ class UseBTCdonationForm(FlaskForm):
 class BanDomainForm(FlaskForm):
     """ Add banned domain """
     domain = StringField('Enter Domain')
+
+
+class UseInviteCodeForm(FlaskForm):
+    """ Enable/Use an invite code to register """
+    enableinvitecode = BooleanField('Enable invite code to register')
+    invitecode = StringField('Enter invite code')

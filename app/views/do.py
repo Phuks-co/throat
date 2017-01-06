@@ -24,6 +24,7 @@ from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost, CaptchaForm
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form, EditSubFlair
 from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
+from ..forms import UseInviteCodeForm
 from ..misc import SiteUser, cache, sendMail, getDefaultSubs
 
 do = Blueprint('do', __name__)
@@ -1212,6 +1213,29 @@ def use_btc_donation():
             desc = current_user.get_username() + ' disabled btc donations'
         db.create_sitelog(10, desc, '')
         return json.dumps({'status': 'ok'})
+    return redirect(url_for('admin_area'))
+
+
+@do.route("/do/useinvitecode", methods=['POST'])
+def use_invite_code():
+    """ Enable invite code to register """
+    if not current_user.is_admin():
+        abort(404)
+
+    form = UseInviteCodeForm()
+
+    if form.validate():
+        db.update_site_metadata('useinvitecode', form.enableinvitecode.data)
+        db.update_site_metadata('invitecode', form.invitecode.data)
+
+        if form.enableinvitecode.data:
+            desc = current_user.get_username() + ' enabled invite code required'
+        else:
+            desc = current_user.get_username() + ' disabled invite code required'
+        db.create_sitelog(7, desc, '')
+        cache.delete_memoized(misc.enableInviteCode)
+        cache.delete_memoized(misc.getInviteCode)
+        # return json.dumps({'status': 'ok'})
     return redirect(url_for('admin_area'))
 
 

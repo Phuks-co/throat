@@ -27,6 +27,7 @@ from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DeletePost, CreateUserBadgeForm, EditMod2Form, DummyForm
 from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair
 from .forms import CreateSubFlair, UseBTCdonationForm, BanDomainForm
+from .forms import UseInviteCodeForm
 from .views import do, api
 from .views.api import oauth
 from . import misc, forms, caching
@@ -921,10 +922,18 @@ def admin_area():
             btc = UseBTCdonationForm(message=x, btcaddress=y)
         else:
             btc = UseBTCdonationForm()
+        invite = db.get_site_metadata('useinvitecode')['value']
+        if invite == '1':
+            a = db.get_site_metadata('invitecode')['value']
+            invite = UseInviteCodeForm(invitecode=a)
+        else:
+            invite = UseInviteCodeForm()
+
         return render_template('admin.html', badges=badges, subs=subs,
                                posts=posts, ups=ups, downs=downs, users=users,
                                createuserbadgeform=CreateUserBadgeForm(),
-                               comms=comms, usebtcdonationform=btc)
+                               comms=comms, usebtcdonationform=btc,
+                               useinvitecodeform=invite)
     else:
         return render_template('errors/404.html'), 404
 
