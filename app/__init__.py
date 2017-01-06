@@ -280,7 +280,8 @@ def all_new_more(pid=None):
 def all_domain_new(page, domain):
     """ The index page, all posts sorted as most recent posted first """
     c = db.query('SELECT * FROM `sub_post` WHERE `link` LIKE %s '
-                 'LIMIT %s,20', ('%://' + domain + '/%', (page - 1) * 20))
+                 'ORDER BY `posted` DESC LIMIT %s,20',
+                 ('%://' + domain + '/%', (page - 1) * 20))
     posts = c.fetchall()
     return render_template('domains.html', page=page, domain=domain,
                            sort_type='all_domain_new',
