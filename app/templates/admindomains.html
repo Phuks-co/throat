@@ -37,7 +37,7 @@
     {% for domain in domains %}
       <tr>
         <td>{{domain.value}}</td>
-        <td><a class="btn btn small"> remove</a></td>
+        <td><a data-domain="{{domain.value}}" class="removebanneddomain btn small"> remove</a></td>
       </tr>
     {% endfor %}
     </table>

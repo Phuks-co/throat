@@ -1200,6 +1200,20 @@ def ban_domain():
     return redirect(url_for('admin_domains'))
 
 
+@do.route("/do/remove_banned_domain/<domain>", methods=['POST'])
+def remove_banned_domain(domain):
+    """ Remove domain if ban list """
+    if not current_user.is_admin():
+        abort(404)
+
+    db.uquery('DELETE FROM `site_metadata` WHERE `key`=%s AND `value`=%s',
+              ('banned_domain', domain))
+    db.create_sitelog(5, current_user.get_username() +
+                      ' removed domain from ban list: ' + domain)
+
+    return json.dumps({'status': 'ok'})
+
+
 @do.route("/do/usebtcdonation", methods=['POST'])
 def use_btc_donation():
     """ Enable bitcoin donation module """

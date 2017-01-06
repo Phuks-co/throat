@@ -522,6 +522,20 @@ $(document).ready(function() {
       });
     });
 
+    $('.removebanneddomain').click(function(e){
+      var domain = $(e.currentTarget).data().domain
+      $.ajax({
+        type: "POST",
+        url: '/do/remove_banned_domain/' + domain,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).text('removed')
+          }
+        }
+      });
+    });
+
     $('.delete').click(function(e){
       var mid = $(e.currentTarget).data().mid
       $.ajax({
