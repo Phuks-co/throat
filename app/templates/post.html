@@ -59,7 +59,7 @@
     {% endif %}
     {% if not func.isRestricted(func.getSub(post.sid)) or (current_user.is_mod(func.getSub(post.sid)) and func.isRestricted(func.getSub(post.sid))) %}
     <div class="col-12">
-      <a href="{{url_for('submit_link', sub=func.getSub(post.sid).name)}}" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
+      <a href="{{url_for('submit_text', sub=func.getSub(post.sid).name)}}" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
     </div>
     <div class="col-12">
       <a href="{{url_for('submit_link', sub=func.getSub(post.sid).name)}}" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
