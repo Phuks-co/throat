@@ -24,15 +24,17 @@
   </div>
 </div>
 {% endif %}
-{% if func.getTodaysTopPosts() %}
+{% cache 300, 'toppost' %}
+{% set tp = func.getTodaysTopPosts()%}
+{% if tp %}
   <span class="col-12"><hr></span>
   <div class="col-12 row todaystop">
     <div class="col-12">
-      Today's top posts
+      Top posts in the last 24 hours
     </div>
     <div class="list">
       <ul>
-      {% for post in func.getTodaysTopPosts() %}
+      {% for post in tp %}
         <li><a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">{{post.title}}</a><br>
         <span class="sidelocale">
           <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}">/s/{{func.getSub(post.sid).name}}</a></li>
@@ -42,22 +44,23 @@
     </div>
   </div>
 {%endif%}
-
+{% endcache %}
 {% if func.enableBTCmod() %}
 <span class="col-12"><hr></span>
-<div class="col-12 row btcdonation">
-  <div class="btcmessage">
-    {{func.getBTCmsg()}}
-  </div>
-  <div class="btcaddr">
-    {{func.getBTCaddr()}}
-  </div>
-  <div class="btcqrcode">
-    <img src="https://chart.googleapis.com/chart?cht=qr&chl={{func.getBTCaddr()}}&chs=104x104&choe=UTF-8&chld=L|0">
+<div class="row buttons">
+  <div class="col-12">
+    <a href="{{url_for('donate')}}" class="btn btn-orange donate" style="width:100%;">Gib phuks</a>
   </div>
 </div>
 {% endif %}
-
+{% if current_user.is_authenticated %}
+<span class="col-12"><hr></span>
+<div class="row buttons">
+  <div class="col-12">
+    <a href="{{url_for('view_sitelog')}}" class="btn btn-orange donate" style="width:100%;">Site log</a>
+  </div>
+</div>
+{% endif %}
 {% endblock %}
 {% block navbar %}
 {{ super() }}
