@@ -455,17 +455,20 @@ def edit_sub(sub):
         abort(403)
 
 
-@app.route("/s/<sub>/sublog")
+@app.route("/s/<sub>/sublog", defaults={'page': 1})
+@app.route("/s/<sub>/sublog/<int:page>")
 @login_required
-def view_sublog(sub):
+def view_sublog(sub, page):
     """ Here we can see a log of mod/admin activity in the sub """
     sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)
 
-    logs = db.query('SELECT * FROM `sub_log` WHERE `sid`=%s', (sub['sid'], ))
+    logs = db.query('SELECT * FROM `sub_log` WHERE `sid`=%s ORDER BY `lid` '
+                    'DESC LIMIT 50 OFFSET %s ',
+                    (sub['sid'], ((page - 1) * 50)))
     logs = logs.fetchall()
-    return render_template('sublog.html', sub=sub, logs=logs)
+    return render_template('sublog.html', sub=sub, logs=logs, page=page)
 
 
 @app.route("/s/<sub>/mods")
