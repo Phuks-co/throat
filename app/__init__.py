@@ -922,8 +922,8 @@ def admin_area():
             btc = UseBTCdonationForm(message=x, btcaddress=y)
         else:
             btc = UseBTCdonationForm()
-        invite = db.get_site_metadata('useinvitecode')['value']
-        if invite == '1':
+        invite = db.get_site_metadata('useinvitecode')
+        if invite and invite['value'] == '1':
             a = db.get_site_metadata('invitecode')['value']
             invite = UseInviteCodeForm(invitecode=a)
         else:
