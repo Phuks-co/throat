@@ -221,6 +221,12 @@ def delete_post():
             db.create_sitelog(4, current_user.get_username() +
                               ' deleted a post',
                               url_for('view_sub', sub=sub['name']))
+        if not post['uid'] == current_user.get_id():
+            db.create_sublog(sub['sid'], 1, current_user.get_username() +
+                             ' deleted a post',
+                             url_for('view_post', sub=sub['name'],
+                                     pid=post['pid']))
+
         db.uquery('UPDATE `sub_post` SET `deleted`=%s WHERE pid=%s',
                   (deletion, post['pid']))
 
