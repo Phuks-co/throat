@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, PasswordField, TextField, TextAreaField
 from wtforms import BooleanField, HiddenField
 from wtforms.validators import DataRequired, Length, Email, Required, EqualTo
-from wtforms.validators import Optional
+from wtforms.validators import Optional, Regexp
 from wtforms.fields.html5 import EmailField
 
 
@@ -33,7 +33,8 @@ class OptionalIfFieldIsEmpty(Optional):
 
 class RegistrationForm(FlaskForm):
     """ Registration form. """
-    username = TextField('Username', [Length(min=2, max=32)])
+    username = TextField('Username', [Length(min=2, max=32),
+                                      Regexp(r'[a-zA-Z0-9_-]+')])
     email = EmailField('Email Address (optional)',
                        validators=[OptionalIfFieldIsEmpty('email'),
                                    Email("Invalid email address.")])

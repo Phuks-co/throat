@@ -4,6 +4,7 @@
 import json
 import time
 import re
+import uuid
 import random
 from wsgiref.handlers import format_date_time
 import datetime
@@ -96,8 +97,26 @@ css = Bundle(
     Bundle('css/magnific-popup.css', 'css/style.css',
            filters='cssmin,datauri'), output='gen/site.css')
 
+pure_css = Bundle('css/font-awesome.min.css',
+                  'css/pure/base.css',
+                  'css/pure/grids-responsive.css',
+                  'css/pure/menus.css',
+                  'css/pure/forms.css',
+                  'css/pure/buttons.css',
+                  'css/alt.css',
+                  filters='cssmin,datauri', output='gen/c_bundle.css')
+alt_js = Bundle('js/socket.io.js',
+                'js/mithril.js',
+                'js/alt.js', filters='jsmin', output='gen/j_bundle.js')
 assets.register('js_all', js)
 assets.register('css_all', css)
+assets.register('pure_css', pure_css)
+assets.register('alt_js', alt_js)
+
+
+@app.route('/alt')
+def alt():
+    return render_template('alt.html')
 
 
 @app.teardown_appcontext
@@ -115,6 +134,9 @@ def do_magic_stuff():
     """ We save the appconfig here because it can change during runtime
     (for unit tests) and we can't import app from some modules """
     g.appconfig = app.config
+    if 'usid' not in session:
+        print("SETTING USID")
+        session['usid'] = 'us' + str(uuid.uuid4())
 
 # @app.before_first_request
 # def initialize_database():

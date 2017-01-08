@@ -15,7 +15,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 from flask_cache import make_template_fragment_key
 import config
 from .. import forms, misc
-from ..socketio import socketio
+from ..socketio import socketio, send_uinfo
 from .. import database as db
 from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubFlair
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
@@ -51,8 +51,14 @@ def logout():
     """ Logout endpoint """
     form = LogOutForm()
     if form.validate():
+        if session.get('usid'):
+            socketio.emit('uinfo', {'loggedin': False}, namespace='/alt',
+                          room=session['usid'])
         logout_user()
-    return redirect(url_for('index'))
+    if request.get_json() and request.get_json().get('j'):
+        return jsonify(status='ok')
+    else:
+        return redirect(url_for('index'))
 
 
 @do.route("/do/title_search", methods=['POST'])
@@ -103,6 +109,7 @@ def login():
             if thash == user['password'].encode('utf-8'):
                 theuser = SiteUser(user)
                 login_user(theuser, remember=form.remember.data)
+                send_uinfo()
                 return json.dumps({'status': 'ok'})
             else:
                 return json.dumps({'status': 'error',
@@ -169,6 +176,9 @@ def edit_user(user):
         if form.delete_account.data:
             db.uquery('UPDATE `user` SET `status`=10 WHERE `uid`=%s',
                       (user['uid'],))
+            if session.get('usid'):
+                socketio.emit('uinfo', {'loggedin': False}, namespace='/alt',
+                              room=session['usid'])
             logout_user()
             return json.dumps({'status': 'ok',
                                'addr': '/'})
