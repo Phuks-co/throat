@@ -1128,7 +1128,7 @@ body.dark h1, body.dark h2, body.dark h3, body.dark h4, body.dark h5, body.dark 
 }
 
 body.dark input[type=search] {
-    background-color: #555;
+    background-color: #101010;
     border: solid transparent 1px;
 }
 body.dark .side .lightbtn i {
@@ -1185,6 +1185,9 @@ body.dark textarea:focus {
   padding: 15px 10px 10px 10px;
 }
 
+body.dark .search {
+    color: #fff;
+}
 /* message page */
 
 .inbox div a.btn {

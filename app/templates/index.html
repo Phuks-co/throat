@@ -4,6 +4,15 @@
 {% endblock %}
 {% block title %}{{config.LEMA}}{% endblock %}
 {% block sidebar %}
+<div class="col-12">
+  <form action="{{ url_for('do.title_search') }}" method="post">
+    <span class="search">
+        <span><i class="fa fa-search"></i></span>
+        <input id="term" name="term" type="search" placeholder="Title search...">
+    </span>
+  </form>
+</div>
+<span class="col-12"><hr><span>
 {{ super() }}
 {% if current_user.is_authenticated %}
 <div class="row buttons">

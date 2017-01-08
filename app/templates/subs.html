@@ -7,8 +7,6 @@
 {% endblock %}
 
 {% block sidebar %}
-{{ super() }}
-<span class="col-12"><hr></span>
 <div>
   <form action="{{ url_for('do.subs_title_search') }}" method="post">
     <span class="search">
@@ -17,6 +15,8 @@
     </span>
   </form>
 </div>
+<span class="col-12"><hr></span>
+{{ super() }}
 {% endblock %}
 
 {% block content %}

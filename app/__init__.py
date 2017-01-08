@@ -320,8 +320,8 @@ def search(page, term):
                  ('%' + term + '%', (page - 1) * 20))
     posts = c.fetchall()
 
-    return render_template('index.html', page=page, sort_type='all_new',
-                           posts=posts)
+    return render_template('indexsearch.html', page=page, sort_type='all_new',
+                           posts=posts, term=term)
 
 
 @app.route("/subs/search/<term>", defaults={'page': 1})

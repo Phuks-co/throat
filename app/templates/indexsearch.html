@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block title %}{{config.LEMA}}{% endblock %}
+{% block sidebar %}
+<div class="col-12">
+  <form action="{{ url_for('do.title_search') }}" method="post">
+    <span class="search">
+        <span><i class="fa fa-search"></i></span>
+        <input id="term" name="term" type="search" placeholder="Title search...">
+    </span>
+  </form>
+</div>
+<span class="col-12"><hr><span>
+{{ super() }}
+{% if current_user.is_authenticated %}
+<div class="row buttons">
+  <div class="col-12">
+    <a href="#csub-form" class="btn btn-orange create-sub" style="width:100%;">Create your own sub</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('view_subs')}}" class="btn btn-orange" style="width:100%;">View all subs</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('random_sub')}}" class="btn btn-orange" style="width:100%;">View random sub</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('submit_text', sub='')}}" class="btn btn-orange" style="width:100%;">Submit a text post</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('submit_link', sub='')}}" class="btn btn-orange" style="width:100%;">Submit a link post</a>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block navbar %}
+{{ super() }}
+{% if current_user.is_admin() %}<li><a href="{{url_for('admin_area')}}">Admin</a></li>{% endif %}
+{% endblock %}
+{% block content %}
+{{ super() }}
+
+{% if not posts %}<h1 class="noshit">No Results.</h1>{% endif %}
+<div class="alldaposts">
+{% include "indexpost.html" %}
+</div>
+{% if page > 1 %}
+<a href="{{url_for('search', term=term, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
+{% endif %}
+{% if posts|length == 20 %}
+<a href="{{url_for('search', term=term, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+{% endif %}
+
+{% endblock %}
+{%block pagefoot%}
+<!-- create sub form -->
+<form  method="POST" id="csub-form" data-redir="true" action="{{url_for('do.create_sub')}}" class="ajaxform mfp-hide white-popup-block">
+  {{ csubform.csrf_token }}
+  <h1>Create sub</h1>
+  <p>Create a sub. For you, for your friends or your favorite community</p>
+  <p>{{csubform.subname(placeholder=csubform.subname.label.text, required=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}</p>
+  <p>{{csubform.title(placeholder=csubform.title.label.text, required=True)}}</p>
+  <div class="alert div-error"></div>
+  <p><button type="submit" id="csub-btnsubmit" class="btn btn-blue" data-prog="Creating...">Create sub</button></p>
+</form>
+{% if current_user.is_labrat() %}
+  <script type="text/javascript" charset="utf-8">
+      socket.on('connect', function() {
+        window.sio = true;
+        {% if sort_type == 'all_new' %}
+          socket.emit('subscribe', {target: '/all/new'});
+        {% endif %}
+        $('article.post').each(function(i){
+          socket.emit('subscribe', {target: $(this).data('pid')});
+        })
+      });
+      socket.on('thread', function(data){
+        socket.emit('subscribe', {target: data.pid})
+        $('.alldaposts').prepend(data.html)
+      })
+      socket.on('threadscore', function(data){
+        console.log('article#' + data.pid + ' .count')
+        $('article#' + data.pid + ' .count').html(data.score)
+      })
+
+      socket.on('threadcomments', function(data){
+        console.log('article#' + data.pid + ' .ccount')
+        $('article#' + data.pid + ' .ccount').html(data.comments)
+      })
+  </script>
+{%endif%}
+{%endblock%}
