@@ -247,7 +247,7 @@
         </section>
         {%endif%}
         <section id="comments">
-          <h1>Comments</h1>
+          <h1><a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}">Comments</a> ({{db.get_post_comment_count(post.pid)}})</h1>
           {% if comments|length < 1 %}
           <p>
             Be the first to comment this post
