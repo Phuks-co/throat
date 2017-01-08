@@ -324,6 +324,16 @@ def search(page, term):
                            posts=posts)
 
 
+@app.route("/subs/search/<term>", defaults={'page': 1})
+@app.route("/subs/search/<term>/<int:page>")
+def subs_search(page, term):
+    """ The subs index page, with basic title search """
+    c = db.query('SELECT * FROM `sub` WHERE `name` LIKE %s '
+                 'ORDER BY `name` ASC LIMIT %s ,20',
+                 ('%' + term + '%', (page - 1) * 20))
+    return render_template('subs.html', page=page, subs=c.fetchall())
+
+
 @app.route("/all/top", defaults={'page': 1})
 @app.route("/all/top/<int:page>")
 def all_top(page):

@@ -69,6 +69,14 @@ def title_search():
     return redirect(url_for('search', term=term))
 
 
+@do.route("/do/subs_title_search", methods=['POST'])
+def subs_title_search():
+    """ Search subs list endpoint """
+    form = SearchForm()
+    term = form.term.data
+    return redirect(url_for('subs_search', term=term))
+
+
 @do.route("/do/admin_users_search", methods=['POST'])
 def admin_users_search():
     """ Search endpoint """
