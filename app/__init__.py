@@ -329,8 +329,8 @@ def search(page, term):
 def subs_search(page, term):
     """ The subs index page, with basic title search """
     c = db.query('SELECT * FROM `sub` WHERE `name` LIKE %s '
-                 'ORDER BY `name` ASC LIMIT %s ,20',
-                 ('%' + term + '%', (page - 1) * 20))
+                 'ORDER BY `name` ASC LIMIT %s ,30',
+                 ('%' + term + '%', (page - 1) * 30))
     return render_template('subs.html', page=page, subs=c.fetchall())
 
 
