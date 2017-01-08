@@ -8,7 +8,6 @@ import _mysql_exceptions
 import config
 from flask import g
 from .caching import cache
-from .socketio import socketio
 
 
 def connect_db(db=None):
@@ -16,7 +15,8 @@ def connect_db(db=None):
     if db is None:
         try:
             db = g.appconfig['DB_NAME']
-        except Attr
+        except AttributeError:
+            db = config.DB_NAME
     rv = MySQLdb.connect(host=config.DB_HOST,
                          user=config.DB_USER,
                          passwd=config.DB_PASSWD,
