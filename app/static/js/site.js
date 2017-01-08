@@ -1121,7 +1121,8 @@ $(document).ready(function() {
       var x = ''
        $.each($("#subslist .subinthebar"),function(){
            p = $(this).position();
-           if (p.left < 0 - ($(this).width()-30) || p.left > w){
+           pl = p.left + $(this).width();
+           if (pl < 0 - ($(this).width()-30) || pl > w){
               console.log($(this))
               x = x + '<li>' + $(this).html() + '</li>'
            }
