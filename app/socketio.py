@@ -10,9 +10,9 @@ socketio = SocketIO()
 
 def send_uinfo():
     socketio.emit('uinfo', {'loggedin': True, 'name': current_user.name,
-                            'given': current_user.get_post_score(),
+                            'taken': current_user.get_post_score(),
                             'ntf': current_user.new_count(),
-                            'taken':
+                            'given':
                             db.get_user_post_voting(current_user.uid)},
                   namespace='/alt',
                   room=session['usid'])

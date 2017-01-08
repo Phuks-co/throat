@@ -16,8 +16,7 @@ def connect_db(db=None):
     if db is None:
         try:
             db = g.appconfig['DB_NAME']
-        except AttributeError:
-            db = config.DB_NAME
+        except Attr
     rv = MySQLdb.connect(host=config.DB_HOST,
                          user=config.DB_USER,
                          passwd=config.DB_PASSWD,
@@ -312,10 +311,6 @@ def create_message(mfrom, to, subject, content, link, mtype):
            ', `content`, `posted`, `mtype`) VALUES (%s, %s, %s, %s, %s, %s, '
            '%s)', (mfrom, to, subject, link, content, posted, mtype))
     cache.delete_memoized(user_mail_count, to)
-    socketio.emit('notification',
-                  {'count': user_mail_count(to)},
-                  namespace='/snt',
-                  room='user' + to)
 
 
 def create_post(sid, uid, title, content, ptype, link=None, thumbnail=''):
@@ -390,7 +385,6 @@ def get_user_modded(uid):
     c = query('SELECT * FROM `sub_metadata` WHERE `key` IN %s and `value`=%s',
               (('mod1', 'mod2'), uid, ))
     return c.fetchall()
-
 
 @cache.memoize(10)
 def get_user_post_voting(uid):

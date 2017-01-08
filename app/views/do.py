@@ -800,6 +800,10 @@ def create_comment(sub, pid):
                               content='',
                               link=comment['cid'],
                               mtype=mtype)
+            socketio.emit('notification',
+                          {'count': db.user_mail_count(to)},
+                          namespace='/snt',
+                          room='user' + to)
 
         # 6 - Process mentions
         misc.workWithMentions(form.comment.data, to, post, sub)
@@ -884,6 +888,10 @@ def create_sendmsg():
                           content=form.content.data,
                           link=None,
                           mtype=1)
+        socketio.emit('notification',
+                      {'count': db.user_mail_count(form.to.data)},
+                      namespace='/snt',
+                      room='user' + form.to.data)
         return json.dumps({'status': 'ok',
                            'sentby': current_user.get_id()})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -913,7 +921,10 @@ def ban_user_sub(sub):
                               content='',
                               link=sub['name'],
                               mtype=7)
-
+            socketio.emit('notification',
+                          {'count': db.user_mail_count(user['uid'])},
+                          namespace='/snt',
+                          room='user' + user['uid'])
             db.create_sub_metadata(sub['sid'], 'ban', user['uid'])
 
             db.create_sublog(sub['sid'], 7, current_user.get_username() +
@@ -963,7 +974,10 @@ def inv_mod2(sub):
                               sub['name'],
                               link=sub['name'],
                               mtype=2)
-
+            socketio.emit('notification',
+                          {'count': db.user_mail_count(user['uid'])},
+                          namespace='/snt',
+                          room='user' + user['uid'])
             db.create_sub_metadata(sub['sid'], 'mod2i', user['uid'])
 
             db.create_sublog(sub['sid'], 6, current_user.get_username() +
@@ -996,7 +1010,10 @@ def remove_sub_ban(sub, user):
                           content='',
                           mtype=7,
                           link=sub['name'])
-
+        socketio.emit('notification',
+                      {'count': db.user_mail_count(user['uid'])},
+                      namespace='/snt',
+                      room='user' + user['uid'])
         db.create_sublog(sub['sid'], 7, current_user.get_username() +
                          ' removed ban on ' + user['name'],
                          url_for('view_sub_bans', sub=sub['name']))
