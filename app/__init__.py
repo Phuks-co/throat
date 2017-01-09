@@ -551,6 +551,25 @@ def sub_new_rss(sub):
     return fg.rss_str(pretty=True)
 
 
+@app.route("/m/<subs>", defaults={'page': 1})
+@app.route("/m/<subs>/<int:page>")
+def view_multisub_new(subs, page):
+    """ The multi index page, sorted as most recent posted first """
+    names = subs.split('+')
+    sids = []
+    for sub in names:
+        sub = db.get_sub_from_name(sub)
+        if sub:
+            sids.append(sub['sid'])
+
+    posts = db.query('SELECT * FROM `sub_post` WHERE `sid` IN %s '
+                     'ORDER BY `posted` DESC LIMIT %s,20',
+                     (sids, (page - 1) * 20, )).fetchall()
+
+    return render_template('indexmulti.html', page=page,
+                           posts=posts, subs=subs)
+
+
 @app.route("/s/<sub>/new", defaults={'page': 1})
 @app.route("/s/<sub>/new/<int:page>")
 def view_sub_new(sub, page):

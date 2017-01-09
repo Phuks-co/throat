@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block title %}{{config.LEMA}}{% endblock %}
+{% block sidebar %}
+<div class="col-12">
+  <form action="{{ url_for('do.title_search') }}" method="post">
+    <span class="search">
+        <span><i class="fa fa-search"></i></span>
+        <input id="term" name="term" type="search" placeholder="Title search...">
+    </span>
+  </form>
+</div>
+<span class="col-12"><hr><span>
+{{ super() }}
+{% if current_user.is_authenticated %}
+<div class="row buttons">
+  <div class="col-12">
+    <a href="{{url_for('view_subs')}}" class="btn btn-orange" style="width:100%;">View all subs</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('random_sub')}}" class="btn btn-orange" style="width:100%;">View random sub</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('submit_text', sub='')}}" class="btn btn-orange" style="width:100%;">Submit a text post</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('submit_link', sub='')}}" class="btn btn-orange" style="width:100%;">Submit a link post</a>
+  </div>
+</div>
+{% endif %}
+{% if func.enableBTCmod() %}
+<span class="col-12"><hr></span>
+<div class="row buttons">
+  <div class="col-12">
+    <a href="{{url_for('donate')}}" class="btn btn-orange donate" style="width:100%;">Gib phuks</a>
+  </div>
+</div>
+{% endif %}
+{% if current_user.is_authenticated %}
+<span class="col-12"><hr></span>
+<div class="row buttons">
+  <div class="col-12">
+    <a href="{{url_for('view_sitelog')}}" class="btn btn-orange donate" style="width:100%;">Site log</a>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+{% block navbar %}
+{{ super() }}
+{% if current_user.is_admin() %}<li><a href="{{url_for('admin_area')}}">Admin</a></li>{% endif %}
+{% endblock %}
+{% block content %}
+{{ super() }}
+
+{% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
+<div class="alldaposts">
+{% include "indexpost.html" %}
+</div>
+{% if page > 1 %}
+<a href="{{url_for('view_multisub_new', subs=subs, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
+{% endif %}
+{% if posts|length == 20 %}
+<a href="{{url_for('view_multisub_new', subs=subs, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+{% endif %}
+
+{% endblock %}
+{%block pagefoot%}
+
+{%endblock%}
