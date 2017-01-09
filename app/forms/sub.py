@@ -72,7 +72,7 @@ class EditSubForm(FlaskForm):
                                   ('v_three', 'Top')],
                          validators=[Optional()])
     sidebar = TextAreaField('Sidebar text',
-                            validators=[Length(min=2, max=8000)])
+                            validators=[Length(max=8000)])
 
 
 class EditMod2Form(FlaskForm):
