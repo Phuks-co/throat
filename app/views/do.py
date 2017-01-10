@@ -1104,7 +1104,7 @@ def refuse_mod2inv(sub, user):
     """ refuse Mod2 """
     user = db.get_user_from_name(user)
     sub = db.get_sub_from_name(sub)
-    if user.uid != current_user.get_id():
+    if user['uid'] != current_user.get_id():
         abort(403)
 
     if misc.isModInv(sub, user):
