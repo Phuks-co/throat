@@ -269,7 +269,7 @@ def create_sub():
         if misc.moddedSubCount(current_user.get_id()) >= 15:
             return json.dumps({'status': 'error',
                                'error': ["You can't mod more than 15 subs."]})
-        if misc.get_user_level(current_user.uid)[0] <= 4:
+        if misc.get_user_level(current_user.get_id())[0] <= 4:
             return json.dumps({'status': 'error',
                                'error': ["You must be at least level 5."]})
 
