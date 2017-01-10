@@ -8,6 +8,20 @@
 
 {% block sidebar %}
 {{ super() }}
+<div class="row buttons">
+  <div class="col-12">
+    <a href="{{url_for('view_mymodded_subs')}}" class="btn btn-orange" style="width:100%;">My subs</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('view_my_subs')}}" class="btn btn-orange" style="width:100%;">Subscribed subs</a>
+  </div>
+  <div class="col-12">
+    <a href="{{url_for('view_myblocked_subs')}}" class="btn btn-orange" style="width:100%;">Blocked subs</a>
+  </div>
+  <div class="col-12">
+    <a href="#" class="btn btn-orange" style="width:100%;">My Multis (coming soon)</a>
+  </div>
+</div>
 {% endblock %}
 
 {% block content %}
