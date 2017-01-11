@@ -117,7 +117,7 @@ class CreateMulti(FlaskForm):
 
 class EditMulti(FlaskForm):
     """ Edits ONE Multi """
-    mid = HiddenField()
+    multi = HiddenField()
     name = StringField('Nickname', validators=[DataRequired(),
                                                  Length(max=40)])
     subs = StringField('sub1+sub2+sub3+sub4', validators=[DataRequired(),
@@ -126,7 +126,7 @@ class EditMulti(FlaskForm):
 
 class DeleteMulti(FlaskForm):
     """ Used to delete Multis """
-    mid = HiddenField()
+    multi = HiddenField()
 
 
 class LogOutForm(FlaskForm):

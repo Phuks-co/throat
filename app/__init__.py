@@ -418,11 +418,10 @@ def view_my_multis():
         multis = c.fetchall()
         formmultis = []
         for multi in multis:
-            formmultis.append(EditMulti(mid=multi['mid'], name=multi['name'],
+            formmultis.append(EditMulti(multi=multi['mid'], name=multi['name'],
                                         subs=multi['subs']))
         return render_template('mymultis.html', multis=formmultis,
-                               createmulti=CreateMulti(),
-                               deletemulti=DeleteMulti())
+                               createmulti=CreateMulti())
     else:
         return render_template('errors/404.html'), 404
 

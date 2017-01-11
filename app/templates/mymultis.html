@@ -33,7 +33,7 @@
     {% for multi in multis %}
       <form  method="POST" action="{{url_for('do.edit_multi')}}" class="nice-form ajaxform">
         {{multi.csrf_token}}
-        {{multi.mid}}
+        {{multi.multi}}
         <div class="col-2">
           {{multi.name()}}
         </div>
@@ -50,7 +50,7 @@
         </div>
       </form>
       <form  method="POST" data-reload="true" action="{{url_for('do.delete_multi')}}" class="nice-form ajaxform">
-        {{deletemulti.csrf_token}}{{multi.mid}}
+        {{multi.csrf_token}}{{multi.multi}}
         <div class="col-1">
           <button type="submit" class="btn btn-orange" id="editmulti-btnsubmit" data-prog="Deleting..." data-success="Deleted!">Delete</button>
         </div>

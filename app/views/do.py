@@ -1409,16 +1409,15 @@ def edit_multi():
     if current_user.is_admin():
         form = EditMulti()
         if form.validate():
-            multi = db.query('SELECT * FROM `user_multi` WHERE `mid`=%s ',
-                             (form.mid.data, ))
-
-            if not multi.rowcount:
+            mid = form.multi.data
+            multi = db.get_user_multi(mid)
+            if not multi:
                 return json.dumps({'status': 'error',
                                    'error': ['Multi does not exist']})
 
-            db.uquery('UPDATE `user_multi` SET `name`=%s AND `subs`=%s '
-                      ' WHERE `mid`=%s',
-                      (form.name.data, form.subs.data, form.mid.data))
+            db.query('UPDATE `user_multi` SET `name`=%s AND `subs`=%s '
+                      'WHERE `mid`=%s ',
+                      (form.name.data, form.subs.data, mid))
             return json.dumps({'status': 'ok'})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
     else:
@@ -1433,12 +1432,13 @@ def delete_multi():
     if current_user.is_admin():
         form = DeleteMulti()
         if form.validate():
-            multi = db.query('SELECT * FROM `user_multi` WHERE `mid`=%s '
-                             (form.mid.data, ))
+            mid = form.multi.data
+            multi = db.get_user_multi(mid)
             if not multi:
                 return json.dumps({'status': 'error',
                                    'error': ['Multi does not exist']})
-            db.uquery('DELETE FROM `user_multi` WHERE `mid`=%s', (form.mid.data,))
+            db.uquery('DELETE FROM `user_multi` WHERE `mid`=%s ',
+                      (mid, ))
 
             return json.dumps({'status': 'ok'})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
