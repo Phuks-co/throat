@@ -1417,9 +1417,11 @@ def edit_multi():
                 return json.dumps({'status': 'error',
                                    'error': ['Multi does not exist']})
 
-            db.query('UPDATE `user_multi` SET `name`=%s, `subs`=%s '
-                     'WHERE `mid`=%s ',
-                     (form.name.data, form.subs.data, mid))
+            db.uquery('UPDATE `user_multi` SET `name`=%s, `subs`=%s '
+                      'WHERE `mid`=%s ',
+                      (form.name.data, form.subs.data, form.multi.data, ))
+
+
             return json.dumps({'status': 'ok'})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
     else:
@@ -1456,9 +1458,26 @@ def create_multi():
     if current_user.is_admin():
         form = CreateMulti()
         if form.validate():
-            db.uquery('INSERT INTO `user_multi` (`uid`, `name`, `subs`) '
-                      'VALUES (%s, %s, %s)',
-                      (current_user.uid, form.name.data, form.subs.data))
+            multiname = db.query('SELECT * FROM `user_multi` WHERE `uid`=%s '
+                                 'AND `name`=%s',
+                                 (current_user.uid, form.name.data))
+            if multiname.fetchone():
+                return json.dumps({'status': 'error',
+                                   'error': ['Name already in list']})
+            names = str(form.subs.data).split('+')
+            sids = []
+            for sub in names:
+                sub = db.get_sub_from_name(sub)
+                if sub:
+                    sids.append(sub['sid'])
+                else:
+                    return json.dumps({'status': 'error',
+                                       'error': ['Invalid sub in list']})
+
+            db.uquery('INSERT INTO `user_multi` (`uid`, `name`, `subs`, `sids`) '
+                      'VALUES (%s, %s, %s, %s)',
+                      (current_user.uid, form.name.data, form.subs.data,
+                      str(sids)))
             return json.dumps({'status': 'ok'})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
     else:

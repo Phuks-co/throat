@@ -678,7 +678,7 @@ class UserMulti(db.Model):
     uid = Column(String(40), db.ForeignKey('user.uid'))
     name = Column(String(40))
     subs = Column(String(255))  # sub+sub+sub
-
+    sids = Column(Text)
 
 # OAuth stuff
 
