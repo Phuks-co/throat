@@ -1166,7 +1166,7 @@ def readall_msgs(user, boxid):
         now = datetime.datetime.utcnow()
         for message in x:
             db.uquery('UPDATE `message` SET `read`=%s WHERE `mid`=%s',
-                      (message['mid'], now))
+                      (now, message['mid']))
         cache.delete_memoized(db.user_mail_count, current_user.uid)
         socketio.emit('notification',
                       {'count': db.user_mail_count(current_user.uid)},
