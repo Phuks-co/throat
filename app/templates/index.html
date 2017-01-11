@@ -157,7 +157,7 @@
   <script type="text/javascript" charset="utf-8">
       socket.on('connect', function() {
         window.sio = true;
-        {% if sort_type == 'all_new' %}
+        {% if sort_type == 'all_new' and page == 1 %}
           socket.emit('subscribe', {target: '/all/new'});
         {% endif %}
         $('article.post').each(function(i){
