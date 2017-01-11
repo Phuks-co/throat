@@ -108,6 +108,27 @@ class PasswordResetForm(FlaskForm):
     confirm = PasswordField('Repeat Password')
 
 
+class CreateMulti(FlaskForm):
+    """ Creates a Multi """
+    name = StringField('Nickname', validators=[DataRequired(),
+                                                 Length(max=40)])
+    subs = StringField('sub1+sub2+sub3+sub4', validators=[DataRequired(),
+                                                 Length(max=255)])
+
+class EditMulti(FlaskForm):
+    """ Edits ONE Multi """
+    mid = HiddenField()
+    name = StringField('Nickname', validators=[DataRequired(),
+                                                 Length(max=40)])
+    subs = StringField('sub1+sub2+sub3+sub4', validators=[DataRequired(),
+                                                 Length(max=255)])
+
+
+class DeleteMulti(FlaskForm):
+    """ Used to delete Multis """
+    mid = HiddenField()
+
+
 class LogOutForm(FlaskForm):
     """ Logout form. This form has no fields.
         We only use it for the CSRF stuff"""

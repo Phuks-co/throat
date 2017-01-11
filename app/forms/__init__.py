@@ -3,6 +3,7 @@ from flask_wtf import FlaskForm, RecaptchaField
 
 from .user import RegistrationForm, LoginForm, LogOutForm, PasswordResetForm
 from .user import CreateUserMessageForm, EditUserForm, PasswordRecoveryForm
+from .user import CreateMulti, EditMulti, DeleteMulti
 from .sub import CreateSubForm, EditSubForm, EditSubTextPostForm, EditSubFlair
 from .sub import CreateSubTextPost, CreateSubLinkPost, EditCommentForm
 from .sub import PostComment, DeletePost, EditSubLinkPostForm, SearchForm

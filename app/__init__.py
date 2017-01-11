@@ -28,6 +28,7 @@ from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DeletePost, CreateUserBadgeForm, EditMod2Form, DummyForm
 from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair
 from .forms import CreateSubFlair, UseBTCdonationForm, BanDomainForm
+from .forms import CreateMulti, EditMulti, DeleteMulti
 from .forms import UseInviteCodeForm
 from .views import do, api
 from .views.api import oauth
@@ -404,6 +405,26 @@ def view_myblocked_subs():
     """ Here we can view subscribed subs """
     subs = db.get_user_blocked(current_user.uid)
     return render_template('mysubs.html', subs=subs)
+
+
+@app.route("/mymultis")
+def view_my_multis():
+    """ Here we can view user multis """
+    # admin only for now
+    if current_user.is_admin():
+        # multis = db.get_user_multis(current_user.uid)
+        c = db.query('SELECT * FROM `user_multi` WHERE `uid`=%s',
+                     (current_user.uid, ))
+        multis = c.fetchall()
+        formmultis = []
+        for multi in multis:
+            formmultis.append(EditMulti(mid=multi['mid'], name=multi['name'],
+                                        subs=multi['subs']))
+        return render_template('mymultis.html', multis=formmultis,
+                               createmulti=CreateMulti(),
+                               deletemulti=DeleteMulti())
+    else:
+        return render_template('errors/404.html'), 404
 
 
 @app.route("/random")

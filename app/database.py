@@ -288,6 +288,26 @@ def create_subscription(uid, sid, stype):
            'VALUES (%s, %s, %s, %s)', (time, uid, sid, stype))
 
 
+def create_user_multi(uid, name, subs):
+    """ Creates an entry in in the user multi """
+    uquery('INSERT INTO `user_multi` (`uid`, `name`, `subs`) VALUES '
+           '(%s, %s, %s)', (uid, name, subs))
+
+
+def get_user_multis(uid):
+    """ Returns user multis from uid """
+    c = uquery('SELECT * FROM `user_multi` WHERE `uid`=%s ',
+               (uid, ))
+    return c.fetchall()
+
+
+def get_user_multi(mid):
+    """ Returns an entry in the user multi from multi id """
+    c = query('SELECT * FROM `user_multi` WHERE `mid`=%s ',
+              (mid, ))
+    return c.fetchone()
+
+
 # Action: 1- deletion, 2- users, 3- announcement, 4- subs (admin override),
 # 5- mods/admins, 6- sub creation --- 10- donations
 def create_sitelog(action, description, link=''):

@@ -667,6 +667,19 @@ class SiteLog(db.Model):
     link = Column(String(255))
 
 
+class UserMulti(db.Model):
+    """ User Multi sub lists """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
+    mid = Column(Integer, primary_key=True)  # multi id
+    uid = Column(String(40), db.ForeignKey('user.uid'))
+    name = Column(String(40))
+    subs = Column(String(255))  # sub+sub+sub
+
+
 # OAuth stuff
 
 class Client(db.Model):

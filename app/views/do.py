@@ -24,6 +24,7 @@ from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost, CaptchaForm
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form, EditSubFlair
 from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
+from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm
 from ..misc import SiteUser, cache, sendMail, getDefaultSubs
 
@@ -1398,6 +1399,68 @@ def create_flair(sub):
                   (sub['sid'], form.text.data))
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/edit_multi", methods=['POST'])
+@login_required
+def edit_multi():
+    """ Edits multi """
+    # admin only for now
+    if current_user.is_admin():
+        form = EditMulti()
+        if form.validate():
+            multi = db.query('SELECT * FROM `user_multi` WHERE `mid`=%s ',
+                             (form.mid.data, ))
+
+            if not multi.rowcount:
+                return json.dumps({'status': 'error',
+                                   'error': ['Multi does not exist']})
+
+            db.uquery('UPDATE `user_multi` SET `name`=%s AND `subs`=%s '
+                      ' WHERE `mid`=%s',
+                      (form.name.data, form.subs.data, form.mid.data))
+            return json.dumps({'status': 'ok'})
+        return json.dumps({'status': 'error', 'error': get_errors(form)})
+    else:
+        abort(404)
+
+
+@do.route("/do/delete_multi", methods=['POST'])
+@login_required
+def delete_multi():
+    """ Removes a multi """
+    # admin only for now
+    if current_user.is_admin():
+        form = DeleteMulti()
+        if form.validate():
+            multi = db.query('SELECT * FROM `user_multi` WHERE `mid`=%s '
+                             (form.mid.data, ))
+            if not multi:
+                return json.dumps({'status': 'error',
+                                   'error': ['Multi does not exist']})
+            db.uquery('DELETE FROM `user_multi` WHERE `mid`=%s', (form.mid.data,))
+
+            return json.dumps({'status': 'ok'})
+        return json.dumps({'status': 'error', 'error': get_errors(form)})
+    else:
+        abort(404)
+
+
+@do.route("/do/create_multi", methods=['POST'])
+@login_required
+def create_multi():
+    """ Creates a new multi """
+    # admin only for now
+    if current_user.is_admin():
+        form = CreateMulti()
+        if form.validate():
+            db.uquery('INSERT INTO `user_multi` (`uid`, `name`, `subs`) '
+                      'VALUES (%s, %s, %s)',
+                      (current_user.uid, form.name.data, form.subs.data))
+            return json.dumps({'status': 'ok'})
+        return json.dumps({'status': 'error', 'error': get_errors(form)})
+    else:
+        abort(404)
 
 
 @do.route("/do/recovery", methods=['POST'])
