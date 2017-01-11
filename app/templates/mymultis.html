@@ -8,6 +8,21 @@
 {% endif %}
 
 <h1>My Multis</h1>
+<div class="col-12">
+  <table class="col-12">
+    <tr>
+      <td>Link<td>
+      <td>Subs<td>
+    </tr>
+    {% for multi in multilist %}
+    <tr>
+      <td><a href="{{url_for('view_usermultisub_new', subs=multi.mid)}}">{{url_for('view_usermultisub_new', subs=multi.mid)}}</a><td>
+      <td>{{multi.subs}}<td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+<div class="col-12"><hr></div>
 <div class="col-12 admin-page-form">
   <form  method="POST" class="ajaxform nice-form" action="{{url_for('do.create_multi')}}" data-reload="true">
     <h4>Create new multi</h4>
