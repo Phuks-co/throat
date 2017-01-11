@@ -274,7 +274,7 @@ def create_sub():
         if not config.TESTING:
             if misc.get_user_level(current_user.get_id())[0] <= 2:
                 return json.dumps({'status': 'error',
-                                   'error': ["You must be at least level 4."]})
+                                   'error': ["You must be at least level 2."]})
 
         sub = db.create_sub(current_user.get_id(), form.subname.data,
                             form.title.data)
