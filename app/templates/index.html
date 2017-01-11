@@ -157,17 +157,19 @@
   <script type="text/javascript" charset="utf-8">
       socket.on('connect', function() {
         window.sio = true;
-        {% if sort_type == 'all_new' and page == 1 %}
+        {% if sort_type == 'all_new' %}
           socket.emit('subscribe', {target: '/all/new'});
         {% endif %}
         $('article.post').each(function(i){
           socket.emit('subscribe', {target: $(this).data('pid')});
         })
       });
+      {% if sort_type == 'all_new' and page == 1 %}
       socket.on('thread', function(data){
         socket.emit('subscribe', {target: data.pid})
         $('.alldaposts').prepend(data.html)
       })
+      {% endif %}
       socket.on('threadscore', function(data){
         console.log('article#' + data.pid + ' .count')
         $('article#' + data.pid + ' .count').html(data.score)
