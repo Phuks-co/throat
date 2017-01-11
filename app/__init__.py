@@ -605,7 +605,7 @@ def view_usermultisub_new(subs, page):
                      'ORDER BY `posted` DESC LIMIT %s,20',
                      (sids, (page - 1) * 20, ))
 
-    return render_template('indexmulti.html', page=page,
+    return render_template('indexmulti.html', page=page, names=names,
                            posts=posts.fetchall(), subs=subs,
                            multitype='view_usermultisub_new')
 

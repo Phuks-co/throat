@@ -30,22 +30,13 @@
   </div>
 </div>
 {% endif %}
-{% if func.enableBTCmod() %}
 <span class="col-12"><hr></span>
-<div class="row buttons">
-  <div class="col-12">
-    <a href="{{url_for('donate')}}" class="btn btn-orange donate" style="width:100%;">Gib phuks</a>
-  </div>
-</div>
-{% endif %}
-{% if current_user.is_authenticated %}
-<span class="col-12"><hr></span>
-<div class="row buttons">
-  <div class="col-12">
-    <a href="{{url_for('view_sitelog')}}" class="btn btn-orange donate" style="width:100%;">Site log</a>
-  </div>
-</div>
-{% endif %}
+<div>Subs in multi:</div>
+  <ul>
+{% for name in names if multitype == 'view_usermultisub_new' %}
+    <li><a href="{{url_for('view_sub', sub=name)}}">{{name}}</a></li>
+{% endfor %}
+  </ul>
 {% endblock %}
 {% block navbar %}
 {{ super() }}
