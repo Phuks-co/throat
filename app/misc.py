@@ -838,7 +838,7 @@ def get_thumbnail(form):
         req = safeRequest(form.link.data)
     except (requests.exceptions.RequestException, ValueError):
         return ''
-    ctype = req[0].headers['content-type'].split(";")[0].lower()
+    ctype = req[0].headers.get('content-type', '').split(";")[0].lower()
     filename = str(uuid.uuid4()) + '.jpg'
     good_types = ['image/gif', 'image/jpeg', 'image/png']
     if ctype in good_types:
