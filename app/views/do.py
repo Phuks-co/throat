@@ -271,7 +271,7 @@ def create_sub():
             return json.dumps({'status': 'error',
                                'error': ["You can't mod more than 15 subs."]})
 
-        if not config.TESTING:
+        if not getattr(config, 'TESTING', False):
             if misc.get_user_level(current_user.get_id())[0] <= 2:
                 return json.dumps({'status': 'error',
                                    'error': ["You must be at least level 2."]})
