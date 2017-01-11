@@ -1416,11 +1416,19 @@ def edit_multi():
             if not multi:
                 return json.dumps({'status': 'error',
                                    'error': ['Multi does not exist']})
-
-            db.uquery('UPDATE `user_multi` SET `name`=%s, `subs`=%s '
+            names = str(form.subs.data).split('+')
+            sids = []
+            for sub in names:
+                sub = db.get_sub_from_name(sub)
+                if sub:
+                    sids.append(sub['sid'])
+                else:
+                    return json.dumps({'status': 'error',
+                                       'error': ['Invalid sub in list']})
+            db.uquery('UPDATE `user_multi` SET `name`=%s, `subs`=%s, `sids`=%s '
                       'WHERE `mid`=%s ',
-                      (form.name.data, form.subs.data, form.multi.data, ))
-
+                      (form.name.data, form.subs.data, str(sids),
+                      form.multi.data))
 
             return json.dumps({'status': 'ok'})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
