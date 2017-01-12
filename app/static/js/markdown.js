@@ -1472,6 +1472,7 @@ function convert_tree_to_html( tree, references, options ) {
     break;
     case "link":
       jsonml[ 0 ] = "a";
+      attrs.target = "_blank";
       break;
     case "link_ref":
       jsonml[ 0 ] = "a";
