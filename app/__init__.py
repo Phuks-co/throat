@@ -377,6 +377,12 @@ def donate():
     return render_template('donate.html')
 
 
+@app.route("/userguide")
+def userguide():
+    """ User Guide page """
+    return render_template('userguide.html')
+
+
 @app.route("/subs", defaults={'page': 1})
 @app.route("/subs/<int:page>")
 def view_subs(page):
