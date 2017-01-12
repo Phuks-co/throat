@@ -937,6 +937,7 @@ form .link input {
 }
 .comment .close {
     text-align: right;
+    float:right;
     padding: 10px;
     cursor: pointer;
     font-size: 1.5em;
