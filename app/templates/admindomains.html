@@ -16,7 +16,7 @@
 <h2><i class="fa fa-list"></i> Banned Domains</h2>
 <div class="admin section domains">
   <div class="col-12 admin-page-form">
-    <form class="nice-form" method="POST" id="BanDomainForm" action="{{url_for('do.ban_domain')}}" data-redir="true" class="ajaxform">
+    <form class="nice-form ajaxform" method="POST" id="BanDomainForm" action="{{url_for('do.ban_domain')}}" data-reload="true">
       {% set bandomainform = form.BanDomainForm()%}
       {{bandomainform.csrf_token}}
       <h4>Add domain</h4>

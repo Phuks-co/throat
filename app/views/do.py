@@ -1240,10 +1240,15 @@ def ban_domain():
     form = BanDomainForm()
 
     if form.validate():
+        c = db.query('SELECT * FROM `site_metadata` WHERE `key`=%s '
+                     'AND `value`=%s', ('banned_domain', form.domain.data))
+        if c.fetchone():
+            return json.dumps({'status': 'error', 'error': ['Already banned']})
+
         db.create_site_metadata('banned_domain', form.domain.data)
         db.create_sitelog(5, current_user.get_username() +
                           ' banned domain ' + form.domain.data)
-
+        return json.dumps({'status': 'ok'})
     return redirect(url_for('admin_domains'))
 
 
