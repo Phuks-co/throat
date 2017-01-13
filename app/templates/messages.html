@@ -32,7 +32,7 @@
 {{ super() }}
 <div class="user-activity col-12">
     <h3>
-      {{messages|length}} {{box_name}}
+      {{box_name}}
       {% if box_name != 'Sent' and box_name != 'Replies' %}
         <a data-boxid="{{boxID}}" data-name="{{current_user.name}}" class="readall btn small right">
         <i class="fa fa-folder-open" aria-hidden="true"></i> Mark all as read</a>
@@ -102,6 +102,12 @@
     </article>
 {% endfor %}
 </div>
+{% if page > 1 %}
+<a href="{{url_for(box_route, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
+{% endif %}
+{% if messages|length == 20 %}
+<a href="{{url_for(box_route, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+{% endif %}
 
 <form data-reset="true" id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="ajaxform mfp-hide white-popup-block">
   {% set msgform = form.CreateUserMessageForm()%}

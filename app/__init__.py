@@ -907,36 +907,42 @@ def inbox_sort():
         return redirect(url_for('view_messages'))
 
 
-@app.route("/messages/inbox")
-def view_messages():
+@app.route("/messages/inbox", defaults={'page': 1})
+@app.route("/messages/inbox/<int:page>")
+def view_messages(page):
     """ WIP: View user's messages """
     user = session['user_id']
     if current_user.user['status'] == 10:
         abort(404)
     msgs = db.query('SELECT * FROM `message` WHERE `mtype` IN (1, 8)'
-                    'AND `receivedby`=%s ORDER BY `posted` DESC',
-                    (user,)).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
-                           box_name="Inbox", boxID="1")
+                    'AND `receivedby`=%s ORDER BY `posted` DESC LIMIT 20 '
+                    'OFFSET %s',
+                    (user, ((page - 1) * 20))).fetchall()
+    return render_template('messages.html', user=user, messages=msgs, page=page,
+                           box_name="Inbox", boxID="1",
+                           box_route='view_messages')
 
 
-@app.route("/messages/sent")
+@app.route("/messages/sent", defaults={'page': 1})
+@app.route("/messages/sent/<int:page>")
 @login_required
-def view_messages_sent():
+def view_messages_sent(page):
     """ WIP: View user's messages """
     user = session['user_id']
     if current_user.user['status'] == 10:
         abort(404)
     msgs = db.query('SELECT * FROM `message` WHERE `mtype`=1 '
-                    'AND `sentby`=%s ORDER BY `posted` DESC',
-                    (user,)).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
-                           box_name="Sent")
+                    'AND `sentby`=%s ORDER BY `posted` DESC '
+                    'LIMIT 20 OFFSET %s',
+                    (user, ((page - 1) * 20))).fetchall()
+    return render_template('messages.html', user=user, messages=msgs, page=page,
+                           box_name="Sent", box_route='view_messages_sent')
 
 
-@app.route("/messages/postreplies")
+@app.route("/messages/postreplies", defaults={'page': 1})
+@app.route("/messages/postreplies/<int:page>")
 @login_required
-def view_messages_postreplies():
+def view_messages_postreplies(page):
     """ WIP: View user's post replies """
     user = session['user_id']
     if current_user.user['status'] == 10:
@@ -950,15 +956,18 @@ def view_messages_postreplies():
                   namespace='/snt',
                   room='user' + current_user.uid)
     msgs = db.query('SELECT * FROM `message` WHERE `mtype`=4 '
-                    'AND `receivedby`=%s ORDER BY `posted` DESC',
-                    (user,)).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
-                           box_name="Replies", boxID="2")
+                    'AND `receivedby`=%s ORDER BY `posted` DESC '
+                    'LIMIT 20 OFFSET %s',
+                    (user, ((page - 1) * 20))).fetchall()
+    return render_template('messages.html', user=user, messages=msgs, page=page,
+                           box_name="Replies", boxID="2",
+                           box_route='view_messages_postreplies')
 
 
-@app.route("/messages/commentreplies")
+@app.route("/messages/commentreplies", defaults={'page': 1})
+@app.route("/messages/commentreplies/<int:page>")
 @login_required
-def view_messages_comreplies():
+def view_messages_comreplies(page):
     """ WIP: View user's comments replies """
     user = session['user_id']
     if current_user.user['status'] == 10:
@@ -972,37 +981,45 @@ def view_messages_comreplies():
                   namespace='/snt',
                   room='user' + current_user.uid)
     msgs = db.query('SELECT * FROM `message` WHERE `mtype`=5 '
-                    'AND `receivedby`=%s ORDER BY `posted` DESC',
-                    (user,)).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
-                           box_name="Replies", boxID="3")
+                    'AND `receivedby`=%s ORDER BY `posted` DESC '
+                    'LIMIT 20 OFFSET %s',
+                    (user, ((page - 1) * 20))).fetchall()
+    return render_template('messages.html', user=user, messages=msgs, page=page,
+                           box_name="Replies", boxID="3",
+                           box_route='view_messages_comreplies')
 
 
-@app.route("/messages/modmail")
+@app.route("/messages/modmail", defaults={'page': 1})
+@app.route("/messages/modmail/<int:page>")
 @login_required
-def view_messages_modmail():
+def view_messages_modmail(page):
     """ WIP: View user's modmail """
     user = session['user_id']
     if current_user.user['status'] == 10:
         abort(404)
     msgs = db.query('SELECT * FROM `message` WHERE `mtype` IN (2, 7) '
-                    'AND `receivedby`=%s ORDER BY `posted` DESC',
-                    (user,)).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
-                           box_name="ModMail", boxID="4")
+                    'AND `receivedby`=%s ORDER BY `posted` DESC '
+                    'LIMIT 20 OFFSET %s',
+                    (user, ((page - 1) * 20))).fetchall()
+    return render_template('messages.html', user=user, messages=msgs, page=page,
+                           box_name="ModMail", boxID="4",
+                           box_route='view_messages_modmail')
 
 
-@app.route("/messages/saved")
-def view_saved_messages():
+@app.route("/messages/saved", defaults={'page': 1})
+@app.route("/messages/saved/<int:page>")
+def view_saved_messages(page):
     """ WIP: View user's saved messages """
     user = session['user_id']
     if current_user.user['status'] == 10:
         abort(404)
     msgs = db.query('SELECT * FROM `message` WHERE `mtype`=9 '
-                    'AND `receivedby`=%s ORDER BY `posted` DESC',
-                    (user,)).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
-                           box_name="Saved Messages", boxID="5")
+                    'AND `receivedby`=%s ORDER BY `posted` DESC '
+                    'LIMIT 20 OFFSET %s',
+                    (user, ((page - 1) * 20))).fetchall()
+    return render_template('messages.html', user=user, messages=msgs, page=page,
+                           box_name="Saved Messages", boxID="5",
+                           box_route='view_saved_messages')
 
 
 @app.route("/admin")
