@@ -713,7 +713,7 @@ def view_post(sub, pid, comments=False):
     """ View post and comments (WIP) """
     post = db.get_post_from_pid(pid)
     ksub = db.get_sub_from_sid(post['sid'])
-    if not post or ksub['name'] != sub:
+    if not post or ksub['name'].lower() != sub.lower():
         abort(404)
 
     editflair = EditPostFlair()
