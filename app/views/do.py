@@ -1692,3 +1692,17 @@ def get_comments(cid):
 
     comments = db.get_all_post_comments(comment['pid'], cid)
     return render_template('postcomments.html', comments=comments)
+
+
+@do.route('/do/get_frontpage/all/new', defaults={'page': 1})
+@do.route('/do/get_frontpage/all/new/<int:page>')
+def get_all_new(page):
+    c = db.query('SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted` '
+                 'FROM `sub_post` WHERE `deleted`=0 ORDER BY `posted` DESC '
+                 'LIMIT %s,20', ((page - 1) * 20, ))
+    posts = c.fetchall()
+    fposts = []
+    for post in posts:
+        post['sub'] = db.get_sub_from_sid(post['sid'])
+        fposts.append(post)
+    return jsonify(status='ok', posts=fposts)

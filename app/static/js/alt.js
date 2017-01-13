@@ -1,11 +1,51 @@
 var socket = io.connect('//' + document.domain + ':' + location.port + '/alt');
 
+function renderPosts(posts){
+  var l = posts.length;
+  var tffs = [];
+  for (var i = 0; i < l; ++i) {
+    post = posts[i]
+    tffs.push(m('div.post.pure-g', {pid: post['pid']},
+                m('div.pure-u-1-24', '.'), // UV/DV/score
+                m('div.pure-u-2-24', '.'), // thumbnail
+                m('div.pure-u-21-24',
+                  m('a.title[href=/s/' + post['sub']['name'] + '/' + post['pid'] + ']', {}, post['title'])
+                )  //body
+              ));
+  }
+  return tffs;
+}
+
 var index = {
   controller: function (){
-    return {};
+    var ctrl = this;
+    ctrl.err = '';
+    ctrl.posts = []
+    ctrl.get_posts = function () {
+      m.startComputation();
+      m.request({
+        method: 'GET',
+        url: '/do/get_frontpage/all/new'
+      }).then(function(res) {
+          if (res.status == 'ok'){
+            ctrl.posts = res.posts;
+          } else {
+            ctrl.err = res.error
+          }
+          m.endComputation();
+      }).catch(function(err) {
+        ctrl.err = [err];
+        m.endComputation();
+      });
+    }
+    ctrl.get_posts();
   },
-  view: function (cont) {
-    return m('div.content.pure-u-1', {}, "things");
+  view: function (ctrl) {
+    if (ctrl.err != ''){
+      return m('div.content.pure-u-1', {}, "Error loading posts: " + ctrl.err);
+    }else {
+      return m('div.content.pure-u-1', {}, renderPosts(ctrl.posts));
+    }
   }
 };
 
