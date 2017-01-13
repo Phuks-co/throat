@@ -14,7 +14,7 @@ import bcrypt
 import markdown
 from sqlalchemy import func, or_
 from flask import Flask, render_template, session, redirect, url_for, abort, g
-from flask import make_response, request
+from flask import make_response, request, Markup
 from flask_assets import Environment, Bundle
 from flask_login import LoginManager, login_required, current_user
 from tld import get_tld
@@ -118,6 +118,12 @@ assets.register('alt_js', alt_js)
 @app.route('/alt')
 def alt():
     return render_template('alt.html')
+
+
+@app.template_filter('rnentity')
+def rnentity(text):
+    print(text.encode())
+    return Markup(text.replace('\r\n', '&#10;').replace('\n', '&#10;'))
 
 
 @app.teardown_appcontext

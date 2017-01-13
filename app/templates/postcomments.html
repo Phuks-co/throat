@@ -46,7 +46,7 @@
             {{markdown(comment.content)|safe}}
           {%endif%}</div>
         {%if not comment.status == 1 %}
-          <div hidden id="sauce-{{comment.cid}}">{{comment.content}}</div>
+          <div hidden id="sauce-{{comment.cid}}">{{comment.content|rnentity|e}}</div>
         {%endif%}
         <div class="bottombar">
           <span id="bott-{{comment.cid}}">
