@@ -1153,7 +1153,7 @@ def admin_post_search(term):
 
         return render_template('adminpostsearch.html', sub=sub, post=post,
                                votes=votes, ccount=ccount, pcount=pcount,
-                               upcount=upcount, downcount=downcount)
+                               upcount=upcount, downcount=downcount, user=user)
     else:
         return render_template('errors/404.html'), 404
 
