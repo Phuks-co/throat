@@ -4,7 +4,7 @@ body{
 }
 
 .custom-wrapper {
-  background-color: #1f8dd6;
+  background-color: #4175bf;
   margin-bottom: 0;
   -webkit-font-smoothing: antialiased;
   height: 5em;
@@ -16,7 +16,7 @@ body{
   -webkit-box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.75);
   -moz-box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.75);
   box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.75);
-
+  position: relative;
 }
 
 .cw-brand div{margin-left: 1em;}
@@ -126,13 +126,19 @@ body{
   padding-left: .4em;
   padding-top: 1em;
   padding-bottom: 60px;
-
+  webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .sidebar{
   padding-left: .3em;
   padding-top: 1em;
   background-color: #eaeaea;
+  float:right;
+  webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .footer{

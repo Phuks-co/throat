@@ -106,9 +106,14 @@ pure_css = Bundle('css/font-awesome.min.css',
                   'css/pure/buttons.css',
                   'css/alt.css',
                   filters='cssmin,datauri', output='gen/c_bundle.css')
-alt_js = Bundle('js/socket.io.js',
+alt_js = Bundle(
+            Bundle('js/CustomElements.min.js'),
+            Bundle(
+                'js/time-elements.js',
+                'js/socket.io.js',
                 'js/mithril.js',
-                'js/alt.js', filters='jsmin', output='gen/j_bundle.js')
+                'js/alt.js', filters='jsmin'),
+            output='gen/j_bundle.js')
 assets.register('js_all', js)
 assets.register('css_all', css)
 assets.register('pure_css', pure_css)

@@ -107,9 +107,9 @@ def get_sub_from_name(name):
 
 
 @cache.memoize(10)
-def get_sub_from_sid(sid):
+def get_sub_from_sid(sid, select='*'):
     """ Returns a sub's db info from the sid """
-    c = query('SELECT * FROM `sub` WHERE `sid`=%s', (sid, ))
+    c = query('SELECT ' + select + ' FROM `sub` WHERE `sid`=%s', (sid, ))
     return c.fetchone()
 
 

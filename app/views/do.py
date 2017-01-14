@@ -1704,7 +1704,7 @@ def get_all_new(page):
     posts = c.fetchall()
     fposts = []
     for post in posts:
-        post['sub'] = db.get_sub_from_sid(post['sid'])
+        post['sub'] = db.get_sub_from_sid(post['sid'], '`name`, `nsfw`')
         if current_user.is_authenticated:
             post['vote'] = misc.getVoteStatus(current_user.get_id(),
                                               post['pid'])
