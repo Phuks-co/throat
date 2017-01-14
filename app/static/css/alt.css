@@ -259,7 +259,12 @@ label span{margin-left: 7px;}
   margin-right: .4em;
 }
 
-.post .domain {
+.post .domain a, .post .domain {
     color: #8e8e8e;
     font-size: small;
+}
+
+.post .author {
+    font-size: small;
+    color: #5d5454;
 }

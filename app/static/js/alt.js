@@ -41,7 +41,12 @@ function renderPosts(posts){
                               m('span.domain', ' (', m('a[href=#]', {}, postdomain), ')')
                               ];
                     }
-                  }())
+                  }(),
+                  m('div.author', 'posted ',
+                    m('time-ago', {datetime: post.posted}),
+                    ' by ', (post.username == '[Deleted]') ? '[Deleted]' : m('a', {href: '/u/'+ post.username, config: m.route}, post.username)
+                  )
+                )
               ));
   }
   return tffs;
