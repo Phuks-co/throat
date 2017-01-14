@@ -735,8 +735,10 @@ def upvote(pid, value):
             return jsonify(status='ok', message='Vote flipped')
     else:
         positive = True if voteValue == 1 else False
-        db.uquery('INSERT INTO `sub_post_vote` (`pid`, `uid`, `positive`) '
-                  'VALUES (%s, %s, %s)', (pid, current_user.uid, positive))
+        now = datetime.datetime.utcnow()
+        db.uquery('INSERT INTO `sub_post_vote` (`pid`, `uid`, `positive`, '
+                  '`datetime`) VALUES (%s, %s, %s, %s)',
+                  (pid, current_user.uid, positive, now))
     db.uquery('UPDATE `sub_post` SET `score`=`score`+%s WHERE '
               '`pid`=%s', (voteValue, post['pid']))
     socketio.emit('threadscore',
@@ -1668,9 +1670,10 @@ def upvotecomment(cid, value):
             return jsonify(status='ok', message='Vote flipped')
     else:
         positive = True if voteValue == 1 else False
+        now = datetime.datetime.utcnow()
         db.uquery('INSERT INTO `sub_post_comment_vote` (`cid`, `uid`, '
-                  '`positive`) VALUES (%s, %s, %s)',
-                  (cid, current_user.uid, positive))
+                  '`positive`, `datetime`) VALUES (%s, %s, %s, %s)',
+                  (cid, current_user.uid, positive, now))
     db.uquery('UPDATE `sub_post_comment` SET `score`=`score`+%s WHERE '
               '`cid`=%s', (voteValue, comment['cid']))
     if user['score'] is not None:
