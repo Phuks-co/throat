@@ -100,7 +100,7 @@ css = Bundle(
 
 pure_css = Bundle('css/font-awesome.min.css',
                   'css/pure/base.css',
-                  'css/pure/grids.css',
+                  'css/pure/grids-responsive.css',
                   'css/pure/menus.css',
                   'css/pure/forms.css',
                   'css/pure/buttons.css',

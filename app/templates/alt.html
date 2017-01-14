@@ -12,7 +12,8 @@
     {% endassets %}
     <script>var CaptchaCallback = function(){
       grecaptcha.render(document.getElementById('g-recaptcha'), {sitekey: "{{config.RECAPTCHA_PUBLIC_KEY}}"});
-    };</script>
+    };
+    var thumbs = '{{config.THUMBNAIL_HOST}}';</script>
   </head>
   <body>
     {{dummyform.csrf_token}}

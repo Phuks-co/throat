@@ -1697,12 +1697,18 @@ def get_comments(cid):
 @do.route('/do/get_frontpage/all/new', defaults={'page': 1})
 @do.route('/do/get_frontpage/all/new/<int:page>')
 def get_all_new(page):
-    c = db.query('SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted` '
+    c = db.query('SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted`,'
+                 '`thumbnail`,`link` '
                  'FROM `sub_post` WHERE `deleted`=0 ORDER BY `posted` DESC '
                  'LIMIT %s,20', ((page - 1) * 20, ))
     posts = c.fetchall()
     fposts = []
     for post in posts:
         post['sub'] = db.get_sub_from_sid(post['sid'])
+        if current_user.is_authenticated:
+            post['vote'] = misc.getVoteStatus(current_user.get_id(),
+                                              post['pid'])
+        else:
+            post['vote'] = -1
         fposts.append(post)
     return jsonify(status='ok', posts=fposts)

@@ -200,3 +200,60 @@ a.glyphbutton {
 .error span{display:block;}
 
 label span{margin-left: 7px;}
+
+.post {
+  margin: 5px 0 5px 0;
+}
+.post .title {
+    text-decoration: none;
+    line-height: 1.2em;
+    font-size: larger;
+}
+
+.votebuttons {
+  text-align: center;
+}
+.icon{
+    display: inline-block;
+}
+.icon.small{
+  background-size: auto 100%;
+  width: 16px;
+  height: 16px;
+}
+
+.upvote, .downvote {
+  cursor: pointer;
+}
+
+.votebuttons {height: 100%;}
+
+.score{
+  margin: .4em 0 .4em 0;
+}
+
+.post .thumbnail img {
+    border-radius: 3px;
+    width: 8vmax;
+    height: 8vmax;
+    max-width: 70px;
+    max-height: 70px;
+}
+
+.post .thumbnail .fa-stack-2x {
+  font-size: 1.52em;
+}
+.post .thumbnail .fa-stack {
+  width: 1.52em;
+  height: 1.52em;
+  line-height: 1.52em;
+}
+.post .thumbnail {
+  display: inline-block;
+  margin-right: .4em;
+}
+
+.post .domain {
+    color: #8e8e8e;
+    font-size: small;
+}

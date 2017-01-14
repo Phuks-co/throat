@@ -1,16 +1,47 @@
 var socket = io.connect('//' + document.domain + ':' + location.port + '/alt');
 
+function get_hostname (url) {
+  if(!url){return;}
+  var matches = url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
+  return matches[1];
+}
 function renderPosts(posts){
   var l = posts.length;
   var tffs = [];
   for (var i = 0; i < l; ++i) {
     post = posts[i]
+    postdomain = get_hostname(post['link'])
+    console.log(postdomain)
     tffs.push(m('div.post.pure-g', {pid: post['pid']},
-                m('div.pure-u-1-24', '.'), // UV/DV/score
-                m('div.pure-u-2-24', '.'), // thumbnail
-                m('div.pure-u-21-24',
-                  m('a.title[href=/s/' + post['sub']['name'] + '/' + post['pid'] + ']', {}, post['title'])
-                )  //body
+                m('div.votebuttons.pure-u-1-24.pure-u-sm-1-24',
+                  m('div.fa.fa-chevron-up.upvote', {class: (post.vote == 1) ? 'upvoted' : '', title: 'Upvote'}),
+                  m('div.score', post.score),
+                  m('div.fa.fa-chevron-down.downvote', {class: (post.vote == 0) ? 'downvoted' : '', title: 'Downvote'})
+                ), // UV/DV/score
+                function(){
+                  if (post.ptype == 1) {
+                    return m('div.thumbnail', {}, function () {
+                              if (post.thumbnail != ''){
+                                return m('img', {src: thumbs + post.thumbnail})
+                              }else{
+                                return m('span.fa-stack.fa-3x',
+                                          m('i.fa.fa-square.fa-stack-2x'),
+                                          m('i.fa.fa-link.fa-stack-1x.fa-inverse')
+                                        );
+                              }
+                          }())
+                  }
+                }(),
+                m('div.pure-u-21-24.pure-u-sm-21-24',
+                  function () {
+                    if (post.ptype == 0){
+                      return m('a.title[href=/s/' + post['sub']['name'] + '/' + post['pid'] + ']', {}, post['title']);
+                    } else {
+                      return [m('a.title', {href: post['link']}, post['title']),
+                              m('span.domain', ' (', m('a[href=#]', {}, postdomain), ')')
+                              ];
+                    }
+                  }())
               ));
   }
   return tffs;
