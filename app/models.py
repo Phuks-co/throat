@@ -559,6 +559,7 @@ class SubPostCommentVote(db.Model, CacheableMixin):
     cid = Column(String(64))
     uid = Column(String(40), db.ForeignKey('user.uid'))
     positive = Column(Boolean)
+    datetime = Column(DateTime)
 
 
 class SubPostVote(db.Model, CacheableMixin):
@@ -573,6 +574,7 @@ class SubPostVote(db.Model, CacheableMixin):
     pid = Column(Integer, db.ForeignKey('sub_post.pid'))
     uid = Column(String(40), db.ForeignKey('user.uid'))
     positive = Column(Boolean)
+    datetime = Column(DateTime)
 
     @hybrid_property
     def getUsername(self):
