@@ -272,7 +272,7 @@ def create_sub():
                                'error': ["You can't mod more than 15 subs."]})
 
         if not config.TESTING:
-            if misc.get_user_level(current_user.get_id())[0] <= 4:
+            if misc.get_user_level(current_user.get_id())[0] <= 2:
                 return json.dumps({'status': 'error',
                                    'error': ["You must be at least level 4."]})
 
@@ -1417,9 +1417,9 @@ def edit_multi():
                 return json.dumps({'status': 'error',
                                    'error': ['Multi does not exist']})
 
-            db.query('UPDATE `user_multi` SET `name`=%s AND `subs`=%s '
-                      'WHERE `mid`=%s ',
-                      (form.name.data, form.subs.data, mid))
+            db.query('UPDATE `user_multi` SET `name`=%s, `subs`=%s '
+                     'WHERE `mid`=%s ',
+                     (form.name.data, form.subs.data, mid))
             return json.dumps({'status': 'ok'})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
     else:
