@@ -80,6 +80,8 @@ app.view_functions['static'] = cache_static
 # We use nested bundles here. One of them is for stuff that is already minified
 # And the other is for stuff that we have to minify. This makes the
 # bundle-making process a bit faster.
+assets.config['CLOSURE_COMPRESSOR_OPTIMIZATION'] = 'SIMPLE_OPTIMIZATIONS'
+
 js = Bundle(
     Bundle('js/jquery.min.js',
            'js/magnific-popup.min.js',
@@ -107,13 +109,11 @@ pure_css = Bundle('css/font-awesome.min.css',
                   'css/alt.css',
                   filters='cssmin,datauri', output='gen/c_bundle.css')
 alt_js = Bundle(
-            Bundle('js/CustomElements.min.js'),
-            Bundle(
+                'js/CustomElements.min.js',
                 'js/time-elements.js',
-                'js/socket.io.js',
+                'js/socket.io.slim.js',
                 'js/mithril.js',
-                'js/alt.js', filters='jsmin'),
-            output='gen/j_bundle.js')
+                'js/alt.js', filters='closure_js', output='gen/j_bundle.js')
 assets.register('js_all', js)
 assets.register('css_all', css)
 assets.register('pure_css', pure_css)
