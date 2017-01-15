@@ -215,9 +215,10 @@ label span{margin-left: 7px;}
   margin: 5px 0 5px 0;
 }
 .post .title {
-    text-decoration: none;
-    line-height: 1.2em;
-    font-size: larger;
+  text-decoration: none;
+  line-height: 1.2em;
+  font-size: larger;
+  word-wrap: break-word;
 }
 .icon{
     display: inline-block;
