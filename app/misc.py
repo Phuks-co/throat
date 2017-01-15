@@ -522,7 +522,7 @@ def getModCount(sub):
 @cache.memoize(60)
 def getSubPostCount(sub):
     """ Returns the sub's post count """
-    y = db.query('SELECT COUNT(*) AS c FROM `sub` WHERE `sid`=%s',
+    y = db.query('SELECT COUNT(*) AS c FROM `sub_post` WHERE `sid`=%s',
                  (sub['sid'],)).fetchone()['c']
     return y
 
