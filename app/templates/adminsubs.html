@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% block title %}{{config.LEMA}}{% endblock %}
-
+{% block head %}
+{{ super() }}
+<script src="{{url_for('static', filename='js/sorttable.js')}}"></script>
+{% endblock %}
 {% block navbar %}
 {{ super() }}
 <li><a href="{{url_for('admin_area')}}">Admin</a></li>
@@ -46,15 +49,15 @@
 </div>
 <div class="admin section subs">
   <div class="col-12">
-    <table class="col-12">
+    <table class="col-12 sortable">
       <tr>
-        <td>Sub Name</td>
-        <td>Created</td>
-        <td>Owner</td>
-        <td><i class="fa fa-user-plus" title="mods"></i></td>
-        <td><i class="fa fa-users" title="subscribers"></i></td>
-        <td><i class="fa fa-list" title="submissions"></i></td>
-        <td><i class="fa fa-comments" title="comments"></i></td>
+        <th>Sub Name</th>
+        <th>Created</th>
+        <th>Owner</th>
+        <th><i class="fa fa-user-plus" title="mods"></i></th>
+        <th><i class="fa fa-users" title="subscribers"></i></th>
+        <th><i class="fa fa-list" title="submissions"></i></th>
+        <th><i class="fa fa-comments" title="comments"></i></th>
       </tr>
       {% for sub in subs %}
       <tr>

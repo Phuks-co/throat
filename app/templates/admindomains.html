@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% block title %}{{config.LEMA}}{% endblock %}
-
+{% block head %}
+{{ super() }}
+<script src="{{url_for('static', filename='js/sorttable.js')}}"></script>
+{% endblock %}
 {% block navbar %}
 {{ super() }}
 <li><a href="{{url_for('admin_area')}}">Admin</a></li>
@@ -29,10 +32,10 @@
     </form>
   </div>
   <div class="col-12">
-    <table class="col-12 domains">
+    <table class="col-12 domains sortable">
       <tr>
-        <td>Domain</td>
-        <td>Remove</td>
+        <th>Domain</th>
+        <th>Remove</th>
       </tr>
     {% for domain in domains %}
       <tr>
