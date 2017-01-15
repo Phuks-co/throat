@@ -21,7 +21,7 @@ body{
 
 .cw-brand div{margin-left: 1em;}
 
-.cw-items a{color: #fff !important;}
+.cw-items a{color: #fff;}
 
 .pure-menu-active>.pure-menu-link, .pure-menu-link:hover, .pure-menu-link:focus{
   background-color: initial;
@@ -88,7 +88,10 @@ body{
     .custom-toggle {
         display: block;
     }
-    .cw-items{margin-top: 2em;}
+    .cw-items{
+      margin-top: .5em;
+      margin-right: .5em;
+    }
 }
 
 @media screen and (min-width: 48em){
@@ -97,7 +100,7 @@ body{
     -moz-transform-style: preserve-3d;
     transform-style: preserve-3d;
   }
-  .cw-items, #th-uinfo{
+  .cw-items{
     position: relative;
     top: 50%;
     transform: translateY(-60%);

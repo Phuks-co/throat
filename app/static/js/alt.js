@@ -304,7 +304,7 @@ user.controller = function(){
 
 user.view = function (ctrl){
   var u = user.vm.udata()
-  return m("div", {}, function(){
+  return m("div.cw-items", {}, function(){
           if (u.loggedin){
                 return [m('a', {href: '/u/' + u.name, class: 'smallcaps'}, u.name),
                 m('span', {class: 'separator'}),
