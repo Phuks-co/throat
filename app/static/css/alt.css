@@ -211,17 +211,13 @@ a.glyphbutton {
 label span{margin-left: 7px;}
 
 .post {
+  min-height: 70px;
   margin: 5px 0 5px 0;
 }
 .post .title {
     text-decoration: none;
     line-height: 1.2em;
     font-size: larger;
-}
-
-.votebuttons {
-  text-align: center;
-  margin-right: .2em;
 }
 .icon{
     display: inline-block;
@@ -234,12 +230,35 @@ label span{margin-left: 7px;}
 
 .upvote, .downvote {
   cursor: pointer;
+  position: absolute;
+  right: 0;
 }
 
-.votebuttons {height: 100%;}
+.downvote{
+  bottom: 0;
+}
+
+.upvote {
+  top: 0;
+}
+
+.votebuttons {
+  height: 100%;
+  position: relative;
+  text-align: center;
+  margin-right: .2em;
+  min-width: 1em;
+  max-height: 70px;
+}
 
 .score{
-  margin: .4em 0 .4em 0;
+  position: absolute;
+  height: 1em;
+  right: 0;
+  top: 50%;
+  margin-top: -.5em;
+  text-align: center;
+  min-width: 1em;
 }
 
 .post .thumbnail img, .post .thumbnail .placeholder{
@@ -324,6 +343,7 @@ label span{margin-left: 7px;}
   width: 70px;
   height: 70px;
   margin-right: 5px;
+  float:right;
 }
 
 .thcontainer span.pure-badge{
@@ -336,4 +356,8 @@ label span{margin-left: 7px;}
 
 .pbody {
   margin-top: 5px;
+}
+
+.misctainer {
+    max-width: calc(2em + 70px);
 }

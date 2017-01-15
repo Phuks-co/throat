@@ -13,6 +13,7 @@ function renderPosts(posts){
     postdomain = get_hostname(post['link'])
     console.log(postdomain)
     tffs.push(m('div.post.pure-g', {pid: post['pid']},
+               m('div.pure-u-8-24.pure-u-sm-3-24.misctainer',
                 m('div.votebuttons.pure-u-1-24.pure-u-sm-1-24',
                   m('div.fa.fa-chevron-up.upvote', {class: (post.vote == 1) ? 'upvoted' : '', title: 'Upvote'}),
                   m('div.score', post.score),
@@ -33,8 +34,9 @@ function renderPosts(posts){
                                         );
                               }
                           }())
-                }(), m('span.pure-badge', m('i.fa.fa-comments'), ' ', post.comments)),
-                m('div.pure-u-17-24.pure-u-sm-21-24.pbody',
+                }(), m('span.pure-badge', m('i.fa.fa-comments'), ' ', post.comments))
+               ),
+                m('div.pure-u-16-24.pure-u-sm-21-24.pbody',
                   function () {
                     if (post.ptype == 0){
                       return m('a.title[href=/s/' + post['sub']['name'] + '/' + post['pid'] + ']', {}, post['title']);
