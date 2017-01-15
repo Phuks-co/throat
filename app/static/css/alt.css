@@ -363,5 +363,5 @@ label span{margin-left: 7px;}
 }
 
 .misctainer {
-    max-width: calc(2em + 70px);
+    max-width: calc(2em - -70px);
 }
