@@ -36,7 +36,7 @@ function renderPosts(posts){
                               }
                           }())
                 }(), m('span.pure-badge', m('i.fa.fa-comments'), ' ', post.comments)),
-                m('div.pure-u-21-24.pure-u-sm-21-24',
+                m('div.pure-u-21-24.pure-u-sm-21-24.pbody',
                   function () {
                     if (post.ptype == 0){
                       return m('a.title[href=/s/' + post['sub']['name'] + '/' + post['pid'] + ']', {}, post['title']);
