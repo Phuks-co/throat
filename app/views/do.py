@@ -1707,6 +1707,7 @@ def get_all_new(page):
     posts = c.fetchall()
     fposts = []
     for post in posts:
+        post['comments'] = db.get_post_comment_count(post['pid'])
         post['username'] = db.get_user_from_uid(post['uid'])['name']
         post['posted'] = post['posted'].isoformat() + 'Z'  # silly hack
         post['sub'] = db.get_sub_from_sid(post['sid'], '`name`, `nsfw`')
@@ -1715,5 +1716,7 @@ def get_all_new(page):
                                               post['pid'])
         else:
             post['vote'] = -1
+        del post['sid']
+        del post['uid']
         fposts.append(post)
     return jsonify(status='ok', posts=fposts)

@@ -18,20 +18,24 @@ function renderPosts(posts){
                   m('div.score', post.score),
                   m('div.fa.fa-chevron-down.downvote', {class: (post.vote == 0) ? 'downvoted' : '', title: 'Downvote'})
                 ), // UV/DV/score
+                m('div.thcontainer',
                 function(){
-                  if (post.ptype == 1) {
                     return m('div.thumbnail', {}, function () {
-                              if (post.thumbnail != ''){
+                              if (post.thumbnail != '' && post.ptype == 1){
                                 return m('img', {src: thumbs + post.thumbnail})
-                              }else{
+                              }else if(post.ptype == 1){
                                 return m('span.fa-stack.fa-3x',
                                           m('i.fa.fa-square.fa-stack-2x'),
                                           m('i.fa.fa-link.fa-stack-1x.fa-inverse')
                                         );
+                              }else{
+                                return m('span.fa-stack.fa-3x',
+                                          m('i.fa.fa-square.fa-stack-2x'),
+                                          m('i.fa.fa-comments.fa-stack-1x.fa-inverse')
+                                        );
                               }
                           }())
-                  }
-                }(),
+                }(), m('span.pure-badge-info', m('i.fa.fa-comments'), ' ', post.comments)),
                 m('div.pure-u-21-24.pure-u-sm-21-24',
                   function () {
                     if (post.ptype == 0){
