@@ -503,6 +503,11 @@ def unsubscribe_from_all_subs(user):
     else:
         db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s '
                   'AND `status`=1', (userid, ))
+        # resub to defaults
+        defaults = getDefaultSubs()
+        for d in defaults:
+            db.create_subscription(userid, d['sid'], 1)
+            
         return jsonify(status='ok', message='unsubscribed from all')
     return redirect(url_for('view_my_subs'))
 

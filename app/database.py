@@ -383,7 +383,7 @@ def get_sub_stylesheet(sid, escape=True):
     return c
 
 
-@cache.memoize(10)
+@cache.memoize(4)
 def get_user_subscriptions(uid):
     """ Returns all the user's subscriptions from the uid """
     c = query('SELECT * FROM `sub_subscriber` WHERE `uid`=%s AND `status`=1',
