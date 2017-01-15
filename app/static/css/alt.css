@@ -311,12 +311,10 @@ label span{margin-left: 7px;}
   height: 70px;
 }
 
-.thcontainer span{
+.thcontainer span.pure-badge{
   position: absolute;
-  bottom: 0;
-  right: 0;
-}
-
-.thcontainer .pure-badge{
+  bottom: -.25em;
+  right: -.25em;
   margin: 0;
+  background-color: #4175bf;
 }

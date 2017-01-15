@@ -35,7 +35,7 @@ function renderPosts(posts){
                                         );
                               }
                           }())
-                }(), m('span.pure-badge-info', m('i.fa.fa-comments'), ' ', post.comments)),
+                }(), m('span.pure-badge', m('i.fa.fa-comments'), ' ', post.comments)),
                 m('div.pure-u-21-24.pure-u-sm-21-24',
                   function () {
                     if (post.ptype == 0){
