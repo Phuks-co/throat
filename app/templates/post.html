@@ -121,7 +121,7 @@
         <article class="text-post center no-padding">
           <div class="head" data-pid="{{post.pid}}">
             <div class="pull left vote" style="margin-right: 10px;">
-              {# vote arrow div #}
+              {% if not db.is_post_deleted(post) %}
                 <form class="uvform">
                   <div class="upvote{%if func.getVoteStatus(current_user.get_id(), post.pid) == 1%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
                   {% set uv = form.VoteForm() %}
@@ -133,6 +133,7 @@
                   {% set dv = form.VoteForm() %}
                   {{uv.csrf_token}}{{uv.post(value=post.pid)}}
                 </form>
+              {% endif %}
             </div>
             {% if func.getPostFlair(post) %}<span class="btn">{{func.getPostFlair(post)}}</span>{% endif %}
             {% if db.is_post_nsfw(post) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}

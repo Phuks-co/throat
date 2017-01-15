@@ -719,7 +719,9 @@ def upvote(pid, value):
     post = db.get_post_from_pid(pid)
     if not post:
         return jsonify(status='error', error=['Post does not exist'])
-
+    if db.is_post_deleted(post):
+        return jsonify(status='error',
+                       error=["You can't vote on deleted posts"])
     if post['uid'] == current_user.get_id():
         return jsonify(status='error',
                        error=["You can't vote on your own posts"])
