@@ -536,6 +536,21 @@ $(document).ready(function() {
       });
     });
 
+    $('.unsubsfromallsubs').click(function(e){
+      var user = $(e.currentTarget).data().user
+      $.ajax({
+        type: "POST",
+        url: '/do/unsubscribe_from_all_subs/' + user,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).text('Subscriptions Reset')
+            document.location.reload();
+          }
+        }
+      });
+    });
+
     $('.delete').click(function(e){
       var mid = $(e.currentTarget).data().mid
       $.ajax({

@@ -491,6 +491,21 @@ def unsubscribe_from_sub(sid):
     return jsonify(status='ok', message='unsubscribed')
 
 
+@do.route("/do/unsubscribe_from_all_subs/<user>", methods=['POST'])
+@login_required
+def unsubscribe_from_all_subs(user):
+    """ Unsubscribe from all subs """
+    userid = current_user.get_id()
+    username = current_user.get_username()
+
+    if username != user:
+        return jsonify(status='error', message='Knock it off')
+    else:
+        db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s '
+                  'AND `status`=1', (userid, ))
+        return jsonify(status='ok', message='unsubscribed from all')
+    return redirect(url_for('view_my_subs'))
+
 @do.route("/do/block/<sid>", methods=['POST'])
 @login_required
 def block_sub(sid):
