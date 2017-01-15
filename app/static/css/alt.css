@@ -239,28 +239,35 @@ label span{margin-left: 7px;}
   margin: .4em 0 .4em 0;
 }
 
-.post .thumbnail img {
-    border-radius: 3px;
-    width: 8vmax;
-    height: 8vmax;
-    max-width: 70px;
-    max-height: 70px;
+.post .thumbnail img, .post .thumbnail .placeholder{
+  border-radius: 4px;
+}
+
+.post .thumbnail {
+    width: 70px;
+    height: 70px;
 }
 
 .post .thumbnail .fa-stack-2x {
-  font-size: 1.52em;
+  font-size: 2em;
 }
 .post .thumbnail img{
   margin-top: .15em;
 }
-.post .thumbnail .fa-stack {
-  width: 1.52em;
-  height: 1.52em;
-  line-height: 1.52em;
+
+.post .thumbnail .placeholder .fa {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
 }
-.post .thumbnail {
+.post .thumbnail .placeholder {
+  background-color: black;
   display: inline-block;
-  margin-right: .4em;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  font-size: 2.4em;
 }
 
 .post .domain a, .post .domain {
@@ -311,10 +318,8 @@ label span{margin-left: 7px;}
 .thcontainer {
   display: inline-block;
   position: relative;
-  width: 8vmax;
-  height: 8vmax;
-  max-width: 70px;
-  max-height: 70px;
+  width: 70px;
+  height: 70px;
   margin-right: 5px;
 }
 

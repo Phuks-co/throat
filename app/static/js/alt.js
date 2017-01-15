@@ -24,19 +24,17 @@ function renderPosts(posts){
                               if (post.thumbnail != '' && post.ptype == 1){
                                 return m('img', {src: thumbs + post.thumbnail})
                               }else if(post.ptype == 1){
-                                return m('span.fa-stack.fa-3x',
-                                          m('i.fa.fa-square.fa-stack-2x'),
-                                          m('i.fa.fa-link.fa-stack-1x.fa-inverse')
+                                return m('span.placeholder',
+                                          m('i.fa.fa-link.fa-inverse')
                                         );
                               }else{
-                                return m('span.fa-stack.fa-3x',
-                                          m('i.fa.fa-square.fa-stack-2x'),
-                                          m('i.fa.fa-comments.fa-stack-1x.fa-inverse')
+                                return m('span.placeholder',
+                                         m('i.fa.fa-comments.fa-inverse')
                                         );
                               }
                           }())
                 }(), m('span.pure-badge', m('i.fa.fa-comments'), ' ', post.comments)),
-                m('div.pure-u-21-24.pure-u-sm-21-24.pbody',
+                m('div.pure-u-17-24.pure-u-sm-21-24.pbody',
                   function () {
                     if (post.ptype == 0){
                       return m('a.title[href=/s/' + post['sub']['name'] + '/' + post['pid'] + ']', {}, post['title']);
@@ -85,7 +83,8 @@ var index = {
     if (ctrl.err != ''){
       return m('div.content.pure-u-1', {}, "Error loading posts: " + ctrl.err);
     }else {
-      return m('div.content.pure-u-1', {}, renderPosts(ctrl.posts));
+      return [m('div.content.pure-u-1 pure-u-sm-18-24', {}, renderPosts(ctrl.posts)),
+              m('div.sidebar.pure-u-1 pure-u-sm-6-24')];
     }
   }
 };
