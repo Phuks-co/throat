@@ -507,7 +507,7 @@ def unsubscribe_from_all_subs(user):
         defaults = getDefaultSubs()
         for d in defaults:
             db.create_subscription(userid, d['sid'], 1)
-            
+
         return jsonify(status='ok', message='unsubscribed from all')
     return redirect(url_for('view_my_subs'))
 
@@ -603,6 +603,9 @@ def edit_txtpost(sub, pid):
     form = EditSubTextPostForm()
     if form.validate():
         post = db.get_post_from_pid(pid)
+        if db.is_post_deleted(post):
+            return jsonify(status='error',
+                           error=["You can't edit a deleted posts"])
         if not post:
             return jsonify(status='error', error=['No such post'])
         db.uquery('UPDATE `sub_post` SET `content`=%s, `nsfw`=%s WHERE '
@@ -700,6 +703,9 @@ def edit_linkpost(sub, pid):
         post = db.get_post_from_pid(pid)
         if not post:
             return jsonify(status='error', error=['No such post'])
+        if db.is_post_deleted(post):
+            return jsonify(status='error',
+                           error=["You can't edit a deleted posts"])
         db.uquery('UPDATE `sub_post` SET `nsfw`=%s WHERE `pid`=%s',
                   (form.nsfw.data, pid))
         return json.dumps({'status': 'ok', 'sub': sub, 'pid': pid})
@@ -1618,7 +1624,9 @@ def edit_comment():
 
         if comment['uid'] != current_user.uid and not current_user.is_admin():
             abort(403)
-
+        if comment['status'] == '1':
+            return jsonify(status='error',
+                           error=["You can't edit a deleted comment"])
         dt = datetime.datetime.utcnow()
         db.uquery('UPDATE `sub_post_comment` SET `content`=%s, `lastedit`=%s '
                   'WHERE `cid`=%s', (form.text.data, dt, form.cid.data))
