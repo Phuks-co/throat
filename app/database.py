@@ -383,11 +383,12 @@ def get_sub_stylesheet(sid, escape=True):
     return c
 
 
-def create_live_chat(name, message):
+def create_live_chat(username, message):
     """ Creates live chat message """
-    uquery('INSERT INTO `live_chat` (`username`, `message`)'
-           ' VALUES (%s, %s)', (name, message))
-
+    l = uquery('INSERT INTO `live_chat` (`username`, `message`) '
+           'VALUES (%s, %s)', (username, message))
+    g.db.commit()  # insta-commit
+    return {'xid': l.lastrowid, 'username': username, 'message': message}
 
 @cache.memoize(4)
 def get_live_chat(xid):

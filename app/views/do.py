@@ -227,12 +227,13 @@ def create_livechat():
         if not session['user_id']:
             return json.dumps({'status': 'error',
                                'error': ['Login required.']})
-        chat = db.create_live_chat(current_user.name, form.chatmsg.data)
+        chat = db.create_live_chat(username=current_user.name,
+                                   message=form.chatmsg.data)
         socketio.emit('livechatthread',
                      {'username': current_user.name,
                       'message': form.chatmsg.data,
                       'user': current_user.name,
-                      # 'xid': chat['xid'],  # breaks heres
+                      'xid': chat['xid'],
                       'html': render_template('sublivechats.html', nocheck=True,
                                               chat=[chat])},
                      namespace='/snt',
