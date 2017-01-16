@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% set sub = db.get_sub_from_name('live') %}
+{# set sub = db.get_sub_from_name('live') #}
 {% block title %}phuks live | {{config.LEMA}}{% endblock %}
 {% block navbar %}
 <li>
@@ -237,33 +237,39 @@
 {% if posts|length == 20 %}
 <a href="{{url_for(sort_type, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
 {% endif %}
-<script type="text/javascript" charset="utf-8">
-    socket.on('connect', function() {
-      window.sio = true;
-      socket.emit('subscribe', {target: '/live'});
-      $('article.post').each(function(i){
-        socket.emit('subscribe', {target: $(this).data('pid')});
-      })
-    });
-    {% if page == 1 %}
-    socket.on('thread', function(data){
-      socket.emit('subscribe', {target: data.pid})
-      $('.alldaposts').prepend(data.html)
-    })
-    {% endif %}
-    socket.on('threadscore', function(data){
-      console.log('article#' + data.pid + ' .count')
-      $('article#' + data.pid + ' .count').html(data.score)
-    })
-
-    socket.on('threadcomments', function(data){
-      console.log('article#' + data.pid + ' .ccount')
-      $('article#' + data.pid + ' .ccount').html(data.comments)
-    })
-</script>
 {% endblock %}
 {%block pagefoot%}
 {% if not current_user.block_styles() %}
   <style>{{db.get_sub_stylesheet(sub.sid)|safe}}</style>
+  <style>
+  /*
+  main.col-8.right.center {width: 97%;}
+  .col-3.side.right {display: none;}
+  */
+  </style>
+  <script type="text/javascript" charset="utf-8">
+      socket.on('connect', function() {
+        window.sio = true;
+        socket.emit('subscribe', {target: '/live'});
+        $('article.post').each(function(i){
+          socket.emit('subscribe', {target: $(this).data('pid')});
+        })
+      });
+      {% if page == 1 %}
+      socket.on('livethread', function(data){
+        socket.emit('subscribe', {target: data.pid})
+        $('.alldaposts').prepend(data.html)
+      })
+      {% endif %}
+      socket.on('threadscore', function(data){
+        console.log('article#' + data.pid + ' .count')
+        $('article#' + data.pid + ' .count').html(data.score)
+      })
+
+      socket.on('threadcomments', function(data){
+        console.log('article#' + data.pid + ' .ccount')
+        $('article#' + data.pid + ' .ccount').html(data.comments)
+      })
+  </script>
 {% endif %}
 {%endblock%}

@@ -580,9 +580,9 @@ def create_txtpost():
                                                posts=[post])},
                       namespace='/snt',
                       room='/all/new')
-        # didnt work
+        # for /live
         if sub['name'] == "live":
-           socketio.emit('thread',
+           socketio.emit('livethread',
                          {'addr': addr, 'sub': sub['name'], 'type': 'text',
                           'user': current_user.name, 'pid': post['pid'],
                           'html': render_template('sublivepost.html', nocheck=True,
@@ -698,6 +698,16 @@ def create_lnkpost():
                                                posts=[post])},
                       namespace='/snt',
                       room='/all/new')
+        # for /live
+        if sub['name'] == "live":
+            socketio.emit('livethread',
+                          {'addr': addr, 'sub': sub['name'], 'type': 'link',
+                           'user': current_user.name, 'url': form.link.data,
+                           'pid': post['pid'],
+                           'html': render_template('sublivepost.html', nocheck=True,
+                                                   posts=[post])},
+                          namespace='/snt',
+                          room='/live')
 
         return jsonify(status='ok', addr=addr)
     return json.dumps({'status': 'error', 'error': get_errors(form)})
