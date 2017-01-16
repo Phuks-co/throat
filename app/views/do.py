@@ -25,7 +25,7 @@ from ..forms import PostComment, CreateUserMessageForm, DeletePost, CaptchaForm
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form, EditSubFlair
 from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
-from ..forms import UseInviteCodeForm
+from ..forms import UseInviteCodeForm, LiveChat
 from ..misc import SiteUser, cache, sendMail, getDefaultSubs
 
 do = Blueprint('do', __name__)
@@ -211,6 +211,33 @@ def edit_user(user):
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_user', user=user['name'])})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/create_livechat", methods=['POST'])
+@login_required
+def create_livechat():
+    """ Post deletion endpoint """
+    form = LiveChat()
+
+    if form.validate():
+        # temp admin only check
+        if not current_user.is_admin():
+            return json.dumps({'status': 'error',
+                               'error': ['Coming soon.']})
+        if not session['user_id']:
+            return json.dumps({'status': 'error',
+                               'error': ['Login required.']})
+        chat = db.create_live_chat(current_user.name, form.chatmsg.data)
+        socketio.emit('livechatthread',
+                     {'username': current_user.name,
+                      'message': form.chatmsg.data,
+                      'user': current_user.name,
+                      # 'xid': chat['xid'],  # breaks heres
+                      'html': render_template('sublivechats.html', nocheck=True,
+                                              chat=[chat])},
+                     namespace='/snt',
+                     room='/live')
+        return json.dumps({'status': 'ok'})
 
 
 @do.route("/do/delete_post", methods=['POST'])

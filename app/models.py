@@ -682,6 +682,19 @@ class UserMulti(db.Model):
     subs = Column(String(255))  # sub+sub+sub
     sids = Column(Text)
 
+
+class LiveChat(db.Model):
+    """ /live chat v1 """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
+    xid = Column(Integer, primary_key=True)  # chat message id
+    username = Column(String(64))  # so it doesnt need to get every msg
+    message = Column(String(255))
+
+
 # OAuth stuff
 
 class Client(db.Model):

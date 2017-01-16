@@ -383,6 +383,20 @@ def get_sub_stylesheet(sid, escape=True):
     return c
 
 
+def create_live_chat(name, message):
+    """ Creates live chat message """
+    uquery('INSERT INTO `live_chat` (`username`, `message`)'
+           ' VALUES (%s, %s)', (name, message))
+
+
+@cache.memoize(4)
+def get_live_chat(xid):
+    """ Returns line on live chat """
+    c = query('SELECT * FROM `live_chat` WHERE `xid`=%s',
+              (xid, ))
+    return c.fetchone()
+
+
 @cache.memoize(4)
 def get_user_subscriptions(uid):
     """ Returns all the user's subscriptions from the uid """
@@ -405,6 +419,7 @@ def get_user_modded(uid):
     c = query('SELECT * FROM `sub_metadata` WHERE `key` IN %s and `value`=%s',
               (('mod1', 'mod2'), uid, ))
     return c.fetchall()
+
 
 @cache.memoize(10)
 def get_user_post_voting(uid):

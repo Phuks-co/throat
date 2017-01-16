@@ -111,38 +111,23 @@
 {{ super() }}
 <div class="col-5 chat">
   <div>
-    <form  method="POST" class="ajaxform nice-form" action="{#url_for('do.create_livechat')#}" data-reload="false" >
-      {#livechat.csrf_token#}
-      {% set uname = current_user.get_username() %}
-      {{livechat.uname}}
+    <form  method="POST" class="ajaxform nice-form" action="{{url_for('do.create_livechat')}}" >
+      {{livechat.csrf_token}}
       <div class="col-10">
-        {{livechat.chatmsg(placeholder="coming soon..")}}
+        {{livechat.chatmsg()}}
       </div>
       <div class="col-2">
-        <button type="submit" class="btn btn-blue" id="postlivechat-btnsubmit" data-prog="Saving..." data-success="Saved!">talk</button>
+        <button type="submit" class="btn btn-blue" id="postlivechat-btnsubmit" data-prog="Sending.." data-success="talk">talk</button>
       </div>
-      <div class="alert div-error col-10">
+      <div class="alert div-error col-12">
         <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
         <p></p>
       </div>
     </form>
   </div>
-  <div class="livemessage">Username: Message goes here</div>
-  <div class="livemessage">Username: Message goes here</div>
-  <div class="livemessage">Name: Message goes here</div>
-  <div class="livemessage">Username: Message goes here</div>
-  <div class="livemessage">Username: Message</div>
-  <div class="livemessage">Name: Message goes here</div>
-  <div class="livemessage">Username: Message goes here</div>
-  <div class="livemessage">Name: Message</div>
-  <div class="livemessage">Username: Message goes here</div>
-  <div class="livemessage">Username: Message goes here</div>
-  <div class="livemessage">Name: Message goes here</div>
-  <div class="livemessage">Username: Message goes here</div>
-  <div class="livemessage">Username: Message</div>
-  <div class="livemessage">Name: Message goes here</div>
-  <div class="livemessage">Username: Message goes here</div>
-  <div class="livemessage">Name: Message</div>
+  <div class="alldachats">
+  {% include "sublivechats.html" %}
+  </div>
 </div>
 <div class="col-7" style="border-left: 1px solid #999;">
 {% cache 300, 'sticky', sub.sid %}
@@ -270,6 +255,9 @@
         $('article.post').each(function(i){
           socket.emit('subscribe', {target: $(this).data('pid')});
         })
+        $('.livemessage').each(function(i){
+          socket.emit('subscribe', {target: $(this).data('xid')});
+        })
       });
       {% if page == 1 %}
       socket.on('livethread', function(data){
@@ -277,6 +265,10 @@
         $('.alldaposts').prepend(data.html)
       })
       {% endif %}
+      socket.on('livechatthread', function(data){
+        socket.emit('subscribe', {target: data.xid})
+        $('.alldachats').prepend(data.html)
+      })
       socket.on('threadscore', function(data){
         console.log('article#' + data.pid + ' .count')
         $('article#' + data.pid + ' .count').html(data.score)

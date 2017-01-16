@@ -166,7 +166,6 @@ class VoteForm(FlaskForm):
 
 
 class LiveChat(FlaskForm):
-    """ Post deletion form. """
-    username = HiddenField()
+    """ Live Chat form. """
     chatmsg = StringField('chat..',
                        validators=[DataRequired(), Length(min=1, max=255)])
