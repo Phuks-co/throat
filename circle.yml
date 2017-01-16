@@ -1,7 +1,7 @@
 notify:
   webhooks:
     - url: https://ph.polsaker.com/harbormaster/hook/circleci/
-    - url: https://discordapp.com/api/webhooks/270349000324939778/oS7NG6bwEgoMWBM05tyMn_IncBl0DpHZbvQduC5i8ZJeBXSxNLt0PB32iOOjZDZFkkNL
+    - url: https://discordapp.com/api/webhooks/270349000324939778/oS7NG6bwEgoMWBM05tyMn_IncBl0DpHZbvQduC5i8ZJeBXSxNLt0PB32iOOjZDZFkkNL/circleci
 machine:
   python:
     version: 3.4.2
