@@ -220,22 +220,17 @@ def create_livechat():
     form = LiveChat()
 
     if form.validate():
-        # temp admin only check
-        if not current_user.is_admin():
-            return json.dumps({'status': 'error',
-                               'error': ['Coming soon.']})
         if not session['user_id']:
             return json.dumps({'status': 'error',
                                'error': ['Login required.']})
         chat = db.create_live_chat(username=current_user.name,
                                    message=form.chatmsg.data)
         socketio.emit('livechatthread',
-                     {'username': current_user.name,
+                      {'xid': chat['xid'],
+                      'username': current_user.name,
                       'message': form.chatmsg.data,
-                      'user': current_user.name,
-                      'xid': chat['xid'],
                       'html': render_template('sublivechats.html', nocheck=True,
-                                              chat=[chat])},
+                                              chats=[chat])},
                      namespace='/snt',
                      room='/live')
         return json.dumps({'status': 'ok'})

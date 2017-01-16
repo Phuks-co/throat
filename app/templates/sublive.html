@@ -109,9 +109,11 @@
 
 {% block content %}
 {{ super() }}
+{% set sticks = func.getStickies(sub.sid) %}
+{% if sticks %}
 <div class="col-5 chat">
   <div>
-    <form  method="POST" class="ajaxform nice-form" action="{{url_for('do.create_livechat')}}" >
+    <form  method="POST" class="ajaxform nice-form" action="{{url_for('do.create_livechat')}}" data-reset="true">
       {{livechat.csrf_token}}
       <div class="col-10">
         {{livechat.chatmsg()}}
@@ -125,13 +127,17 @@
       </div>
     </form>
   </div>
-  <div class="alldachats">
-  {% include "sublivechats.html" %}
-  </div>
+  <table class="alldachats">
+    {% include "sublivechats.html" %}
+  </table>
 </div>
+{% else %}
+<div class="col-5 chat">
+  Chat enabled when sticky is active
+</div>
+{% endif %}
 <div class="col-7" style="border-left: 1px solid #999;">
 {% cache 300, 'sticky', sub.sid %}
-  {% set sticks = func.getStickies(sub.sid) %}
   {% for ann in sticks %}
   <article class="post" data-pid="{{ann.pid}}">
     {# vote arrow div #}
@@ -256,7 +262,7 @@
       $('article.post').each(function(i){
         socket.emit('subscribe', {target: $(this).data('pid')});
       })
-      $('div.livemessage').each(function(i){
+      $('tr.livemessage').each(function(i){
         socket.emit('subscribe', {target: $(this).data('xid')});
       })
     });
