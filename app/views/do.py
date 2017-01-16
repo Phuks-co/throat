@@ -220,6 +220,10 @@ def create_livechat():
     form = LiveChat()
 
     if form.validate():
+        sub = db.get_sub_from_name('live')
+        if not db.get_sub_metadata(sub['sid'], 'sticky', _all=True):
+            return json.dumps({'status': 'error',
+                               'error': ['Chat no longer active.']})
         if not session['user_id']:
             return json.dumps({'status': 'error',
                                'error': ['Login required.']})
