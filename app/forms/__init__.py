@@ -9,6 +9,7 @@ from .sub import CreateSubTextPost, CreateSubLinkPost, EditCommentForm
 from .sub import PostComment, DeletePost, EditSubLinkPostForm, SearchForm
 from .sub import BanUserSubForm, EditPostFlair, EditSubCSSForm, EditMod2Form
 from .sub import CreateSubFlair, DeleteSubFlair, VoteForm, DeleteCommentForm
+from .sub import LiveChat
 from .admin import CreateUserBadgeForm, EditModForm, UseBTCdonationForm
 from .admin import BanDomainForm, UseInviteCodeForm
 

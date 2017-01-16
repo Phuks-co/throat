@@ -163,3 +163,10 @@ class DeletePost(FlaskForm):
 class VoteForm(FlaskForm):
     """ form for voting """
     post = HiddenField()  # Post PID
+
+
+class LiveChat(FlaskForm):
+    """ Post deletion form. """
+    username = HiddenField()
+    chatmsg = StringField('chat..',
+                       validators=[DataRequired(), Length(min=1, max=255)])

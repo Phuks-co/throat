@@ -29,7 +29,7 @@ from .forms import DeletePost, CreateUserBadgeForm, EditMod2Form, DummyForm
 from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair
 from .forms import CreateSubFlair, UseBTCdonationForm, BanDomainForm
 from .forms import CreateMulti, EditMulti, DeleteMulti
-from .forms import UseInviteCodeForm
+from .forms import UseInviteCodeForm, LiveChat
 from .views import do, api
 from .views.api import oauth
 from . import misc, forms, caching
@@ -467,7 +467,7 @@ def view_live_sub(page):
     return render_template('sublive.html', sub=sub, page=page,
                            sort_type='view_live_sub',
                            posts=posts, mods=mods,
-                           txtpostform=createtxtpost,
+                           txtpostform=createtxtpost, livechat=LiveChat(),
                            lnkpostform=createlinkpost)
 
 

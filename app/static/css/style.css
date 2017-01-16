@@ -281,6 +281,10 @@ input[type='password']::-ms-reveal {
   Basic style
 */
 
+.livemessage {
+    margin-top: 4px;
+}
+
 h1, h2, h3, h4, h5 {
     font-family: Comfortaa, sans-serif;
     margin: .3em 0px .3em 0px;

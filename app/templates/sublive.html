@@ -110,7 +110,23 @@
 {% block content %}
 {{ super() }}
 <div class="col-5 chat">
-  <div style="border-bottom: 1px solid #999;">enter text form here (coming soon) - phuk it, do it live<button style="float:right">submit</button><p></p></div>
+  <div>
+    <form  method="POST" class="ajaxform nice-form" action="{#url_for('do.create_livechat')#}" data-reload="false" >
+      {#livechat.csrf_token#}
+      {% set uname = current_user.get_username() %}
+      {{livechat.uname}}
+      <div class="col-10">
+        {{livechat.chatmsg(placeholder="coming soon..")}}
+      </div>
+      <div class="col-2">
+        <button type="submit" class="btn btn-blue" id="postlivechat-btnsubmit" data-prog="Saving..." data-success="Saved!">talk</button>
+      </div>
+      <div class="alert div-error col-10">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        <p></p>
+      </div>
+    </form>
+  </div>
   <div class="livemessage">Username: Message goes here</div>
   <div class="livemessage">Username: Message goes here</div>
   <div class="livemessage">Name: Message goes here</div>
@@ -150,14 +166,14 @@
     <div class="image">
       {% if not ann.link %}
         <a href="{{url_for('view_post', sub=db.get_sub_from_sid(ann.sid).name, pid=ann.pid)}}">
-          <span class="fa-stack fa-3x" style="color: #616161;">
+          <span class="fa-stack fa-2x" style="color: #616161;">
             <i class="fa fa-square fa-stack-2x"></i>
             <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
           </span>
         </a>
       {% else %}
         <a href="{{ann.link}}" rel="noreferrer noopener">
-          <span class="fa-stack fa-3x" style="color: #616161;">
+          <span class="fa-stack fa-2x" style="color: #616161;">
             <i class="fa fa-square fa-stack-2x"></i>
             {% if func.isImage(ann.link) %}
             <i class="fa fa-image fa-stack-1x fa-inverse"></i>
