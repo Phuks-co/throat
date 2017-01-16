@@ -450,12 +450,35 @@ def random_sub():
     return redirect(url_for('view_sub', sub=c.fetchone()['name']))
 
 
+@app.route("/live", defaults={'page': 1})
+@app.route("/live/<int:page>")
+def view_live_sub(page):
+    sub = db.get_sub_from_name('live')
+    if not sub:
+        abort(404)
+
+    posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s '
+                     'ORDER BY `posted` DESC LIMIT %s,20',
+                     (sub['sid'], (page - 1) * 20, )).fetchall()
+    mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
+    createtxtpost = CreateSubTextPost(sub='live')
+    createlinkpost = CreateSubLinkPost(sub='live')
+
+    return render_template('sublive.html', sub=sub, page=page,
+                           sort_type='view_live_sub',
+                           posts=posts, mods=mods,
+                           txtpostform=createtxtpost,
+                           lnkpostform=createlinkpost)
+
+
 @app.route("/s/<sub>/")
 @app.route("/s/<sub>")
 def view_sub(sub):
     """ Here we can view subs """
     if sub.lower() == "all":
         return redirect(url_for('all_hot', page=1))
+    if sub.lower() == "live":
+        return redirect(url_for('view_live_sub', page=1))
     sub = db.get_sub_from_name(sub)
     if not sub:
         abort(404)

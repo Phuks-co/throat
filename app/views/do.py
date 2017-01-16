@@ -580,6 +580,15 @@ def create_txtpost():
                                                posts=[post])},
                       namespace='/snt',
                       room='/all/new')
+        # didnt work
+        # if sub['name'] == "live":
+        #     socketio.emit('thread',
+        #                   {'addr': addr, 'sub': sub['name'], 'type': 'text',
+        #                    'user': current_user.name, 'pid': post['pid'],
+        #                    'html': render_template('sublive.html', nocheck=True,
+        #                                            posts=[post])},
+        #                   namespace='/snt',
+        #                   room='/live')
         misc.workWithMentions(form.content.data, None, post, sub)
         misc.workWithMentions(form.title.data, None, post, sub)
         return jsonify(status='ok', addr=addr)
