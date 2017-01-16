@@ -255,7 +255,7 @@
         $('article.post').each(function(i){
           socket.emit('subscribe', {target: $(this).data('pid')});
         })
-        $('.livemessage').each(function(i){
+        $('div.livemessage').each(function(i){
           socket.emit('subscribe', {target: $(this).data('xid')});
         })
       });
@@ -273,7 +273,6 @@
         console.log('article#' + data.pid + ' .count')
         $('article#' + data.pid + ' .count').html(data.score)
       })
-
       socket.on('threadcomments', function(data){
         console.log('article#' + data.pid + ' .ccount')
         $('article#' + data.pid + ' .ccount').html(data.comments)
