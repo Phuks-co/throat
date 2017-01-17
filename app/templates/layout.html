@@ -38,6 +38,7 @@
         <li class="subinthebar"><a href="{{url_for('all_hot')}}">all</a></li>
         <li class="subinthebar"><a href="{{url_for('view_my_subs')}}">mysubs</a></li>
         <li class="subinthebar"><a href="{{url_for('view_my_multis')}}">mymultis</a></li>
+        <li class="subinthebar"><a href="{{url_for('view_modmulti_new')}}">modmulti</a></li>
         <li class="subinthebar"> | </li>
         {% endif %}
         {% for sub in func.getSubscriptions(current_user.get_id()) %}

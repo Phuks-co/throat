@@ -630,6 +630,24 @@ def view_multisub_new(subs, page):
                            multitype='view_multisub_new')
 
 
+@app.route("/modmulti", defaults={'page': 1})
+@app.route("/modmulti/<int:page>")
+def view_modmulti_new(page):
+    """ The multi page for subs the user mods, sorted as new first """
+    subs = db.get_user_modded(current_user.uid)
+    sids = []
+    for sub in subs:
+        sids.append(sub['sid'])
+
+    posts = db.query('SELECT * FROM `sub_post` WHERE `sid` IN %s '
+                     'ORDER BY `posted` DESC LIMIT %s,20',
+                     (sids, (page - 1) * 20, )).fetchall()
+
+    return render_template('indexmulti.html', page=page,
+                           posts=posts,
+                           multitype='view_modmulti_new')
+
+
 @app.route("/multi/<subs>", defaults={'page': 1})
 @app.route("/multi/<subs>/<int:page>")
 def view_usermultisub_new(subs, page):
