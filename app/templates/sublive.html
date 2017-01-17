@@ -111,9 +111,9 @@
 {{ super() }}
 {% set sticks = func.getStickies(sub.sid) %}
 {% if sticks %}
-<div class="col-5 chat">
-  <div>
-    <form  method="POST" class="ajaxform nice-form" action="{{url_for('do.create_livechat')}}" data-reset="true">
+<div class="col-12">
+  <div class="chat">
+    <form  method="POST" class="ajaxform nice-form col-12" action="{{url_for('do.create_livechat')}}" data-reset="true">
       {{livechat.csrf_token}}
       <div class="col-10">
         {{livechat.chatmsg()}}
@@ -127,16 +127,18 @@
       </div>
     </form>
   </div>
-  <table class="alldachats">
-    {% include "sublivechats.html" %}
-  </table>
+  <div class="chats">
+    <table class="alldachats">
+      {% include "sublivechats.html" %}
+    </table>
+  </div>
 </div>
 {% else %}
-<div class="col-5 chat">
-  Chat enabled when sticky is active
+<div class="col-12">
+  <p>Chat enabled when sticky is active</p>
 </div>
 {% endif %}
-<div class="col-7" style="border-left: 1px solid #999;">
+<div class="col-12" style="border-left: 1px solid #999;">
 {% cache 300, 'sticky', sub.sid %}
   {% for ann in sticks %}
   <article class="post" data-pid="{{ann.pid}}">

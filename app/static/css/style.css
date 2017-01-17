@@ -280,7 +280,15 @@ input[type='password']::-ms-reveal {
 /*
   Basic style
 */
-
+div.chat {
+    display: block;
+    height: 50px;
+}
+div.chats {
+    display: block;
+    height: 300px;
+    overflow-y: scroll;
+}
 tr.livemessage td p {
     margin: 4px 0;
 }
