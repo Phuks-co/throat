@@ -239,11 +239,11 @@ label span{margin-left: 7px;}
 }
 
 .downvote{
-  bottom: 0;
+  bottom: .1em;
 }
 
 .upvote {
-  top: 0;
+  top: .1em;
 }
 
 .votebuttons {
