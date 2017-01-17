@@ -359,7 +359,7 @@ main {
   margin-right: 0px;
 }
 .content {
-    margin-top: 3em;
+    margin: 3em;
 }
 input[type=search] {
     width: 100%;
@@ -392,7 +392,7 @@ input:focus {
         margin-top: 1em;
     }
     .content {
-        margin-top: 1em;
+        margin: 1em;
     }
 }
 blockquote {
@@ -445,7 +445,6 @@ blockquote em {
     border-radius: 3px;
     padding: 7px;
     text-align: center;
-    margin-right: 1em;
 }
 a.btn.login, a.btn.register, button.btn.logout {
     width: 100%;
@@ -485,10 +484,26 @@ a.btn.login, a.btn.register, button.btn.logout {
 @media only screen and (max-width: 768px) {
     /* For mobile phones: */
     .side {
-        margin-top: 1em;
+        margin: 24px auto;
+        width: 98%;
     }
     .side .buttons div {
         text-align: center;
+    }
+    main.center {
+        width: 98%;
+        margin: 0 auto;
+    }
+}
+@media only screen and (min-width: 768px) {
+    /* not For mobile phones: */
+    .side {
+        width: 340px;
+        float: right;
+        margin: 0;
+    }
+    main.center {
+        width: calc(96% - 320px);
     }
 }
 

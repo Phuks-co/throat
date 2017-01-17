@@ -67,7 +67,7 @@
     </header>
   </div>
   <div class="row content">
-    <div class="col-3 side right">
+    <div class="side">
       {% block sidebar %}
       {% if current_user.is_anonymous %}
       <div class="row buttons">
@@ -112,7 +112,7 @@
       {% endif %} {% endblock %}
     </div>
     {% block main %}
-    <main class="col-8 right center">{% block content %}{% endblock %}</main>{% endblock %}
+    <main class="center">{% block content %}{% endblock %}</main>{% endblock %}
   </div>
   <footer>
     {% block footer %}
