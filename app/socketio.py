@@ -3,12 +3,8 @@ from flask_socketio import SocketIO, join_room
 from flask_login import current_user
 from . import database as db
 from . import misc
-import config
-import eventlet
-eventlet.monkey_patch()
 
-socketio = SocketIO(message_queue=config.SOCKETIO_REDIS_URL,
-                    async_mode='eventlet')
+socketio = SocketIO()
 #  The new stuff
 
 

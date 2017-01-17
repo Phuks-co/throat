@@ -54,7 +54,7 @@ if app.config['TESTING']:
 
 # db.init_app(app)
 oauth.init_app(app)
-socketio.init_app(app)
+socketio.init_app(app, message_queue=app.config['SOCKETIO_REDIS_URL'])
 caching.cache.init_app(app)
 
 assets = Environment(app)
