@@ -138,7 +138,7 @@
   <p>Chat enabled when sticky is active</p>
 </div>
 {% endif %}
-<div class="col-12" style="border-left: 1px solid #999;">
+<div class="col-12">
 {% cache 300, 'sticky', sub.sid %}
   {% for ann in sticks %}
   <article class="post" data-pid="{{ann.pid}}">
