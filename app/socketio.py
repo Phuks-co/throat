@@ -7,7 +7,8 @@ import config
 import eventlet
 eventlet.monkey_patch()
 
-socketio = SocketIO(message_queue='redis://' + config.CACHE_REDIS_HOST)
+socketio = SocketIO(message_queue=config.SOCKETIO_REDIS_URL,
+                    async_mode='eventlet')
 #  The new stuff
 
 
