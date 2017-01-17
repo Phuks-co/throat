@@ -429,18 +429,14 @@ def view_myblocked_subs():
 @app.route("/mymultis")
 def view_my_multis():
     """ Here we can view user multis """
-    # admin only for now
-    if current_user.is_admin():
-        multis = db.get_user_multis(current_user.uid)
-        formmultis = []
-        for multi in multis:
-            formmultis.append(EditMulti(multi=multi['mid'], name=multi['name'],
-                                        subs=multi['subs']))
-        return render_template('mymultis.html', multis=formmultis,
-                               multilist=multis,
-                               createmulti=CreateMulti())
-    else:
-        return render_template('errors/404.html'), 404
+    multis = db.get_user_multis(current_user.uid)
+    formmultis = []
+    for multi in multis:
+        formmultis.append(EditMulti(multi=multi['mid'], name=multi['name'],
+                                    subs=multi['subs']))
+    return render_template('mymultis.html', multis=formmultis,
+                           multilist=multis,
+                           createmulti=CreateMulti())
 
 
 @app.route("/random")
@@ -638,13 +634,9 @@ def view_multisub_new(subs, page):
 @app.route("/multi/<subs>/<int:page>")
 def view_usermultisub_new(subs, page):
     """ The multi index page, sorted as most recent posted first """
-    multi = db.get_user_multi(subs)['subs']
-    names = str(multi).split('+')
-    sids = []
-    for sub in names:
-        sub = db.get_sub_from_name(sub)
-        if sub:
-            sids.append(sub['sid'])
+    multi = db.get_user_multi(subs)
+    sids = str(multi['sids']).split('+')
+    names = str(multi['subs']).split('+')
 
     posts = db.query('SELECT * FROM `sub_post` WHERE `sid` IN %s '
                      'ORDER BY `posted` DESC LIMIT %s,20',

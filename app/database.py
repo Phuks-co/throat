@@ -453,6 +453,13 @@ def get_post_comment_count(pid):
     return c.fetchone()['COUNT(*)']
 
 
+@cache.memoize(3)
+def get_usermulti_count(uid):
+    """ Returns a user's multisub count """
+    c = query('SELECT COUNT(*) FROM `user_multi` WHERE `uid`=%s', (uid,))
+    return c.fetchone()['COUNT(*)']
+
+
 @cache.memoize(15)
 def is_post_deleted(post):
     """ Returns true if a post was deleted """

@@ -1535,6 +1535,10 @@ body.dark input{
   margin: 0.5em;
   padding:0;
 }
+td.submultilist {
+    word-break: break-all;
+    padding: 2px;
+}
 #subslist{overflow: hidden;}
 #subsdropdown{
   text-align: center;

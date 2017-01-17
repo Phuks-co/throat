@@ -1488,89 +1488,81 @@ def create_flair(sub):
 @login_required
 def edit_multi():
     """ Edits multi """
-    # admin only for now
-    if current_user.is_admin():
-        form = EditMulti()
-        if form.validate():
-            mid = form.multi.data
-            multi = db.get_user_multi(mid)
-            if not multi:
+    form = EditMulti()
+    if form.validate():
+        mid = form.multi.data
+        multi = db.get_user_multi(mid)
+        if not multi:
+            return json.dumps({'status': 'error',
+                               'error': ['Multi does not exist']})
+        names = str(form.subs.data).split('+')
+        sids = ''
+        for sub in names:
+            sub = db.get_sub_from_name(sub)
+            if sub:
+                sids += str(sub['sid']) + '+'
+            else:
                 return json.dumps({'status': 'error',
-                                   'error': ['Multi does not exist']})
-            names = str(form.subs.data).split('+')
-            sids = []
-            for sub in names:
-                sub = db.get_sub_from_name(sub)
-                if sub:
-                    sids.append(sub['sid'])
-                else:
-                    return json.dumps({'status': 'error',
-                                       'error': ['Invalid sub in list']})
-            db.uquery('UPDATE `user_multi` SET `name`=%s, `subs`=%s, `sids`=%s '
-                      'WHERE `mid`=%s ',
-                      (form.name.data, form.subs.data, str(sids),
-                      form.multi.data))
+                                   'error': ['Invalid sub in list']})
+        db.uquery('UPDATE `user_multi` SET `name`=%s, `subs`=%s, `sids`=%s '
+                  'WHERE `mid`=%s ',
+                  (form.name.data, form.subs.data, sids[:-1],
+                  form.multi.data))
 
-            return json.dumps({'status': 'ok'})
-        return json.dumps({'status': 'error', 'error': get_errors(form)})
-    else:
-        abort(404)
+        return json.dumps({'status': 'ok'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/delete_multi", methods=['POST'])
 @login_required
 def delete_multi():
     """ Removes a multi """
-    # admin only for now
-    if current_user.is_admin():
-        form = DeleteMulti()
-        if form.validate():
-            mid = form.multi.data
-            multi = db.get_user_multi(mid)
-            if not multi:
-                return json.dumps({'status': 'error',
-                                   'error': ['Multi does not exist']})
-            db.uquery('DELETE FROM `user_multi` WHERE `mid`=%s ',
-                      (mid, ))
+    form = DeleteMulti()
+    if form.validate():
+        mid = form.multi.data
+        multi = db.get_user_multi(mid)
+        if not multi:
+            return json.dumps({'status': 'error',
+                               'error': ['Multi does not exist']})
+        db.uquery('DELETE FROM `user_multi` WHERE `mid`=%s ',
+                  (mid, ))
 
-            return json.dumps({'status': 'ok'})
-        return json.dumps({'status': 'error', 'error': get_errors(form)})
-    else:
-        abort(404)
+        return json.dumps({'status': 'ok'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/create_multi", methods=['POST'])
 @login_required
 def create_multi():
     """ Creates a new multi """
-    # admin only for now
-    if current_user.is_admin():
-        form = CreateMulti()
-        if form.validate():
-            multiname = db.query('SELECT * FROM `user_multi` WHERE `uid`=%s '
-                                 'AND `name`=%s',
-                                 (current_user.uid, form.name.data))
-            if multiname.fetchone():
-                return json.dumps({'status': 'error',
-                                   'error': ['Name already in list']})
-            names = str(form.subs.data).split('+')
-            sids = []
-            for sub in names:
-                sub = db.get_sub_from_name(sub)
-                if sub:
-                    sids.append(sub['sid'])
-                else:
-                    return json.dumps({'status': 'error',
-                                       'error': ['Invalid sub in list']})
+    form = CreateMulti()
+    if form.validate():
+        if db.get_usermulti_count(current_user.uid) >= 10:
+            return json.dumps({'status': 'error',
+                               'error': ['Only 10 allowed for now']})
 
-            db.uquery('INSERT INTO `user_multi` (`uid`, `name`, `subs`, `sids`) '
-                      'VALUES (%s, %s, %s, %s)',
-                      (current_user.uid, form.name.data, form.subs.data,
-                      str(sids)))
-            return json.dumps({'status': 'ok'})
-        return json.dumps({'status': 'error', 'error': get_errors(form)})
-    else:
-        abort(404)
+        multiname = db.query('SELECT * FROM `user_multi` WHERE `uid`=%s '
+                             'AND `name`=%s',
+                             (current_user.uid, form.name.data))
+        if multiname.fetchone():
+            return json.dumps({'status': 'error',
+                               'error': ['Name already in list']})
+        names = str(form.subs.data).split('+')
+        sids = ''
+        for sub in names:
+            sub = db.get_sub_from_name(sub)
+            if sub:
+                sids += str(sub['sid']) + '+'
+            else:
+                return json.dumps({'status': 'error',
+                                   'error': ['Invalid sub in list']})
+
+        db.uquery('INSERT INTO `user_multi` (`uid`, `name`, `subs`, `sids`) '
+                  'VALUES (%s, %s, %s, %s)',
+                  (current_user.uid, form.name.data, form.subs.data,
+                  sids[:-1]))
+        return json.dumps({'status': 'ok'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/recovery", methods=['POST'])
