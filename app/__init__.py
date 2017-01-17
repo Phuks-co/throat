@@ -129,7 +129,6 @@ def alt():
 
 @app.template_filter('rnentity')
 def rnentity(text):
-    print(text.encode())
     return Markup(text.replace('\r\n', '&#10;').replace('\n', '&#10;'))
 
 
@@ -149,7 +148,6 @@ def do_magic_stuff():
     (for unit tests) and we can't import app from some modules """
     g.appconfig = app.config
     if 'usid' not in session:
-        print("SETTING USID")
         session['usid'] = 'us' + str(uuid.uuid4())
 
 # @app.before_first_request

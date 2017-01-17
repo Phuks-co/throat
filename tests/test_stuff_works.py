@@ -42,7 +42,6 @@ class AABasicTestCase(unittest.TestCase):
     def test_index_loads_and_database_is_empty(self):
         """ Tests if the index loads """
         x = self.app.get('/')
-        print(x.get_data(True))
         assert 'There are no posts here, yet.' in x.get_data(True)
         assert x.status_code == 200
 
