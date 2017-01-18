@@ -68,7 +68,7 @@
             This user has not commented on anything, yet
           </p>
           {% else %}
-          {% for comment in comments if not comment.deleted %}
+          {% for comment in comments if comment.status != 1 %}
           <li>
             <div class="usercomments data">
               <p><a class="title" href="{{ url_for('view_post', sub=db.get_sub_from_pid(comment.pid).name, pid=comment.pid) }}">{{db.get_post_from_pid(comment.pid).title}}</a></p>
