@@ -181,7 +181,7 @@
           }
         }
 
-        $(document).ready(function() {
+        $(window).on("load", function() {
         fixBrokenImages('{{ url_for('static', filename='img/borkedthumb.png') }}');
         });
         </script>
