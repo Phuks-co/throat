@@ -633,13 +633,7 @@ def view_multisub_new(subs, page):
 def view_modmulti_new(page):
     """ The multi page for subs the user mods, sorted as new first """
     subs = db.get_user_modded(current_user.uid)
-    sids = []
-    for sub in subs:
-        sids.append(sub['sid'])
-
-    posts = db.query('SELECT * FROM `sub_post` WHERE `sid` IN %s '
-                     'ORDER BY `posted` DESC LIMIT %s,20',
-                     (sids, (page - 1) * 20, )).fetchall()
+    posts = db.getPostsFromSubs(subs)
 
     return render_template('indexmulti.html', page=page,
                            posts=posts,
