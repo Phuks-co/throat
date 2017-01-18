@@ -168,7 +168,23 @@
           }
         })
         socket.on('uscore', function(d){$('#postscore').html(d.score);})
-    </script>
+
+        //replaces default broken thumb img with local thumb
+        fixBrokenImages = function( url ){
+          var img = document.getElementsByTagName('img');
+          var i=0, l=img.length;
+          for(;i<l;i++){
+            var t = img[i];
+            if(t.naturalWidth === 0){
+                t.src = url;
+            }
+          }
+        }
+
+        $(document).ready(function() {
+        fixBrokenImages('{{ url_for('static', filename='img/borkedthumb.png') }}');
+        });
+        </script>
   {%block pagefoot%}{%endblock%}
   <a href="#kx" id="xk" style="display:none"></a>
 </body>
