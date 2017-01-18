@@ -576,7 +576,7 @@ def unblock_sub(sid):
 @misc.ratelimit(1, per=30, key_func=lambda: 'post')
 def create_txtpost():
     """ Sub text post creation endpoint """
-    if misc.get_user_level(current_user.uid)[0] <= 5:
+    if misc.get_user_level(current_user.uid)[0] <= 4:
         form = CaptchaForm()
         if not form.validate():
             return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -675,7 +675,7 @@ def grab_title():
 @misc.ratelimit(1, per=30, key_func=lambda: 'post')
 def create_lnkpost():
     """ Sub link post creation endpoint """
-    if misc.get_user_level(current_user.uid)[0] <= 5:
+    if misc.get_user_level(current_user.uid)[0] <= 4:
         form = CaptchaForm()
         if not form.validate():
             return json.dumps({'status': 'error', 'error': get_errors(form)})
