@@ -789,16 +789,10 @@ def view_post(sub, pid, comments=False):
     txtpedit.content.data = post['content']
     createtxtpost = CreateSubTextPost(sub=ksub['name'])
     createlinkpost = CreateSubLinkPost(sub=ksub['name'])
-    upcount = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
-                       '`pid`=%s AND `positive`=%s', (pid, 1)).fetchone()['c']
-    downcount = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
-                         '`pid`=%s AND `positive`=%s', (pid, 0)) \
-                  .fetchone()['c']
     if not comments:
         comments = db.get_all_post_comments(post['pid'])
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit, sub=ksub,
-                           upcount=upcount, downcount=downcount,
                            editlinkpostform=EditSubLinkPostForm(),
                            lnkpostform=createlinkpost, comments=comments,
                            txtpostform=createtxtpost, editpostflair=editflair)

@@ -30,7 +30,7 @@
   </p>
   {% endif %}
   <!--<p>xx views</p>-->
-  <p>{{upcount}} upvoted, {{downcount}} downvoted</p>
+  <p>{{func.get_post_upcount(post.pid)}} upvoted, {{func.get_post_downcount(post.pid)}} downvoted</p>
 
 </div>
 

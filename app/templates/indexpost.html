@@ -57,7 +57,7 @@
           {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
           <a class="title" href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=func.getDomain(post.link))}}">{{func.getDomain(post.link)}}</a>)</span>
           {% endif %}
-          <p class="author"><relative-time datetime="{{post.posted.isoformat()}}Z"></relative-time></p>
+          <p class="author">(+{{func.get_post_upcount(post.pid)}}|-{{func.get_post_downcount(post.pid)}}) <relative-time datetime="{{post.posted.isoformat()}}Z"></relative-time></p>
           <p class="container">
             {% if post.link %}
               {% if func.getDomain(post.link) == "youtube.com" or func.getDomain(post.link) == "www.youtube.com" or func.getDomain(post.link) == "youtu.be" %}

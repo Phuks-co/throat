@@ -414,6 +414,31 @@ def getVoteStatus(uid, pid):
     return int(vote['positive'])
 
 
+@cache.memoize(20)
+def get_post_upcount(pid):
+    """ Returns the upvote count """
+    c = db.query('SELECT positive FROM `sub_post_vote` WHERE '
+                 '`pid`=%s', (pid, ))
+    l = c.fetchall()
+    score = 0
+    for i in l:
+        if i['positive']:
+            score += 1
+    return score
+
+@cache.memoize(20)
+def get_post_downcount(pid):
+    """ Returns the downvote count """
+    c = db.query('SELECT positive FROM `sub_post_vote` WHERE '
+                 '`pid`=%s', (pid, ))
+    l = c.fetchall()
+    score = 0
+    for i in l:
+        if not i['positive']:
+            score += 1
+    return score
+
+
 @cache.memoize(50)
 def hasVotedComment(uid, comment, up=True):
     """ Checks if the user up/downvoted a comment. """
