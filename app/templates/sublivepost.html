@@ -17,45 +17,20 @@
       </div>
       {% cache 300, post.pid, 'subpost' %}
         <div class="image">
-          {% if not post.link %}
-            <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
-              <span class="fa-stack fa-2x" style="color: #616161;">
-                <i class="fa fa-square fa-stack-2x"></i>
-                <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
-              </span>
-            </a>
-          {% else %}
-            <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
-              <span class="fa-stack fa-2x" style="color: #616161;">
-                <i class="fa fa-square fa-stack-2x"></i>
-                {% if func.isImage(post.link) %}
-                <i class="fa fa-image fa-stack-1x fa-inverse"></i>
-                {% elif func.getDomain(post.link) == "youtube.com" or func.getDomain(post.link) == "www.youtube.com" or func.getDomain(post.link) == "youtu.be" %}
-                <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
-                {% elif func.getDomain(post.link) == "vimeo.com" %}
-                <i class="fa fa-vimeo fa-stack-1x fa-inverse"></i>
-                {% elif func.getDomain(post.link) == "vine.co" %}
-                <i class="fa fa-vine fa-stack-1x fa-inverse"></i>
-                {% elif func.isVideo(post.link) %}
-                <i class="fa fa-video-camera fa-stack-1x fa-inverse"></i>
-                {% else %}
-                <i class="fa fa-link fa-stack-1x fa-inverse"></i>
-                {% endif %}
-              </span>
-            </a>
-          {% endif %}
         </div>
         <div class="main">
           {% if func.getPostFlair(post) %}<span class="btn small postfl">{{func.getPostFlair(post)}}</span>{% endif %}
           {% if db.is_post_nsfw(post) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
           {% if not post.link %}
+          <i class="fa fa-comments"></i>
           <a class="title" href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}">{{post.title}}</a>
           {% else %}
+          <i class="fa fa-link"></i>
           {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
           <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} class="title" href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=func.getDomain(post.link))}}">{{func.getDomain(post.link)}}</a>)</span>
           {% endif %}
-          <p class="author"><time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago></p>
-          <p class="container">
+          <p class="author">
+          <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago>
           {% if post.link %}
             {% if func.getDomain(post.link) == "youtube.com" or func.getDomain(post.link) == "www.youtube.com" or func.getDomain(post.link) == "youtu.be" %}
               <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">

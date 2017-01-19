@@ -156,43 +156,19 @@
         {{uv.csrf_token}}{{uv.post(value=ann.pid)}}
       </form>
     </div>
-    <div class="image">
-      {% if not ann.link %}
-        <a href="{{url_for('view_post', sub=db.get_sub_from_sid(ann.sid).name, pid=ann.pid)}}">
-          <span class="fa-stack fa-2x" style="color: #616161;">
-            <i class="fa fa-square fa-stack-2x"></i>
-            <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
-          </span>
-        </a>
-      {% else %}
-        <a href="{{ann.link}}" rel="noreferrer noopener">
-          <span class="fa-stack fa-2x" style="color: #616161;">
-            <i class="fa fa-square fa-stack-2x"></i>
-            {% if func.isImage(ann.link) %}
-            <i class="fa fa-image fa-stack-1x fa-inverse"></i>
-            {% elif func.getDomain(ann.link) == "youtube.com" or func.getDomain(ann.link) == "www.youtube.com" or func.getDomain(ann.link) == "youtu.be" %}
-            <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
-            {% elif func.getDomain(ann.link) == "vimeo.com" %}
-            <i class="fa fa-vimeo fa-stack-1x fa-inverse"></i>
-            {% elif func.getDomain(ann.link) == "vine.co" %}
-            <i class="fa fa-vine fa-stack-1x fa-inverse"></i>
-            {% else %}
-            <i class="fa fa-link fa-stack-1x fa-inverse"></i>
-            {% endif %}
-          </span>
-        </a>
-      {% endif %}
-    </div>
+    <div class="image"></div>
     <div class="main">
       {% if db.is_post_nsfw(ann) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
       {% if not ann.link %}
-      <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} class="title" href="{{url_for('view_post', sub=sub.name, pid=ann.pid)}}"><div class="announcementPost">Sticky</div>{{ann.title}}</a>
+      <i class="fa fa-comments"></i>
+      <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} class="title" href="{{url_for('view_post', sub=sub.name, pid=ann.pid)}}"><div class="announcementPost">Live</div>{{ann.title}}</a>
       {% else %}
+      <i class="fa fa-link"></i>
       {% if ann.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
       <a class="title" href="{{ann.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener"><div class="announcementPost">Sticky</div>{{ann.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=func.getDomain(ann.link))}}">{{func.getDomain(ann.link)}}</a>)</span>
       {% endif %}
-      <p class="author"><time-ago datetime="{{ann.posted.isoformat()}}Z"></time-ago></p>
-      <p class="container">
+      <p class="author">
+        <time-ago datetime="{{ann.posted.isoformat()}}Z"></time-ago>
       {% if ann.link %}
         {% if func.getDomain(ann.link) == "youtube.com" or func.getDomain(ann.link) == "www.youtube.com" or func.getDomain(ann.link) == "youtu.be" %}
           <span id="youtubevid" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" class="closedvid">
