@@ -233,21 +233,10 @@ def home_hot(page):
 def home_new(page):
     """ /new for subscriptions """
     subs = misc.getSubscriptions(current_user.get_id())
-    posts = misc.getPostsFromSubs(subs)
+    posts = misc.getPostsFromSubs(subs, 200)
     sorter = NewSorting(posts)
     return render_template('index.html', page=page, sort_type='home_new',
                            posts=sorter.getPosts(page))
-
-
-@app.route("/new/more", defaults={'pid': None})
-@app.route('/new/more/<int:pid>')
-def home_new_more(pid=None):
-    if not pid:
-        abort(404)
-    subs = misc.getSubscriptions(current_user.get_id())
-    posts = misc.getPostsFromSubs(subs)
-
-    return render_template('indexpost.html', posts=posts, sort_type='all_new')
 
 
 @app.route("/top", defaults={'page': 1})
@@ -255,7 +244,7 @@ def home_new_more(pid=None):
 def home_top(page):
     """ /top for subscriptions """
     subs = misc.getSubscriptions(current_user.get_id())
-    posts = misc.getPostsFromSubs(subs)
+    posts = misc.getPostsFromSubs(subs, 200, 'score')
 
     sorter = VoteSorting(posts)
     return render_template('index.html', page=page, sort_type='home_top',
@@ -632,7 +621,7 @@ def view_multisub_new(subs, page):
 def view_modmulti_new(page):
     """ The multi page for subs the user mods, sorted as new first """
     subs = db.get_user_modded(current_user.uid)
-    posts = misc.getPostsFromSubs(subs)
+    posts = misc.getPostsFromSubs(subs, 200)
     sorter = NewSorting(posts)
 
     return render_template('indexmulti.html', page=page,

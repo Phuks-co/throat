@@ -698,19 +698,20 @@ def moddedSubCount(uid):
 
 
 @cache.memoize(120)
-def getPostsFromSubs(subs, pid=None):
+def getPostsFromSubs(subs, limit=False, orderby='pid'):
     """ Returns all posts from a list or subs """
     if not subs:
         return []
     qbody = "SELECT * FROM `sub_post` WHERE "
     qdata = []
-    if pid:
-        qbody += '`pid`<%s AND '
-        qdata.append(pid)
     for sub in subs:
         qbody += "`sid`=%s OR "
         qdata.append(sub['sid'])
-    qbody = qbody[:-4] + ' ORDER BY `pid`'
+    qbody = qbody[:-4] + ' ORDER BY %s'
+    qdata.append(orderby)
+    if limit:
+        qbody += ' LIMIT %s'
+        qdata.append(limit)
     c = db.query(qbody, tuple(qdata))
     return c.fetchall()
 
