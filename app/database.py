@@ -437,6 +437,19 @@ def get_user_post_voting(uid):
             score -= 1
     return score
 
+@cache.memoize(10)
+def get_user_post_count(uid):
+    c = query('SELECT COUNT(*) AS c FROM `sub_post` WHERE `uid`=%s',
+                      (uid, )).fetchone()['c']
+    return c
+
+
+@cache.memoize(10)
+def get_user_comment_count(uid):
+    c = query('SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE '
+                      '`uid`=%s', (uid, )).fetchone()['c']
+    return c
+
 
 @cache.memoize(10)
 def user_mail_count(uid):

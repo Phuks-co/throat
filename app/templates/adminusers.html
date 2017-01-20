@@ -33,16 +33,24 @@
     <table class="col-12 sortable">
       <tr>
         <th>Name</th>
+        <th>Posts</th>
+        <th>Comments</th>
+        <th>Level</th>
+        <th>XP</th>
         <th>Status</th>
         <th>Joined</th>
       </tr>
       {% for user in users %}
       <tr>
         <td>
-          <div class="username"><a href="{{url_for('view_user', user=user.name)}}"><i class="fa fa-user"></i> {{user.name}}</a></div>
+          <div class="username"><a href="{{url_for('view_user', user=user.name)}}">{{user.name}}</a></div>
         </td>
+        <td>{{db.get_user_post_count(user.uid)}}</td>
+        <td>{{db.get_user_comment_count(user.uid)}}</td>
+        <td>{{func.get_user_level(user.uid)[0]}}</td>
+        <td>{{func.get_user_level(user.uid)[1]}}</td>
         <td>{{user.status}}</td>
-        <td><time-ago datetime="{{user.joindate.isoformat()}}Z"></time-ago></p></td>
+        <td>{{user.joindate.isoformat()}}</td>
       </tr>
       {% endfor %}
     </table>
