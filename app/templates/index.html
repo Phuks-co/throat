@@ -189,19 +189,21 @@ $(document).ready(function () {
             if(window.loading){
               return
             }
-            if($(window).scrollTop() + $(window).height() >= ($(document).height()/100)*75) {
-                // $('article').last().data('pid')
-                var lastpid = $('article').last().data('pid')
-                window.loading = true;
-                $.ajax({
-                  type: "get",
-                  url: '{{url_for(request.endpoint + '_more')}}/' + lastpid,
-                  success: function(data) {
-                    $('.alldaposts').append(data);
-                    window.loading = false;
-                  }
-                });
-            }
+            {% if not request.endpoint.startswith('home') %}
+              if($(window).scrollTop() + $(window).height() >= ($(document).height()/100)*75) {
+                  // $('article').last().data('pid')
+                  var lastpid = $('article').last().data('pid')
+                  window.loading = true;
+                  $.ajax({
+                    type: "get",
+                    url: '{{url_for(request.endpoint + '_more')}}/' + lastpid,
+                    success: function(data) {
+                      $('.alldaposts').append(data);
+                      window.loading = false;
+                    }
+                  });
+              }
+              {% endif %}
         });
     })
 </script>
