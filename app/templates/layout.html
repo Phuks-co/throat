@@ -152,7 +152,7 @@
   <script type="text/javascript" src="{{ ASSET_URL }}"></script>
   {% endassets %}
     <script type="text/javascript" charset="utf-8">
-        //var socket = io.connect('//' + document.domain + ':' + location.port + '/snt');
+        var socket = io.connect('//' + document.domain + ':' + location.port + '/snt');
         socket.on('notification', function(d){
           // bahhh
           title = $('title').html().split('\n')
