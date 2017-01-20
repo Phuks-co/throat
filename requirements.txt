@@ -24,3 +24,5 @@ flask-oauthlib
 flask-socketio
 eventlet
 closure
+gunicorn
+cython

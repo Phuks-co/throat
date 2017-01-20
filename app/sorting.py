@@ -2,6 +2,9 @@
 from datetime import datetime
 from math import log
 from .caching import cache
+import pyximport
+pyximport.install()
+from .sort import hot  # noqa
 
 
 class BasicSorting(object):
@@ -41,7 +44,8 @@ class HotSorting(BasicSorting):
 
     def __init__(self, posts):
         super(HotSorting, self).__init__(posts)
-        self.posts.sort(key=self.get_score, reverse=True)
+        self.posts.sort(key=lambda x: hot.get_score(x['score'],
+                                                    x['posted'].timestamp()))
 
     def epoch_seconds(self, date):
         """ Returns seconds since the post was created """

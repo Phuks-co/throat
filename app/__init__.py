@@ -221,9 +221,8 @@ def index():
 @app.route("/hot/<int:page>")
 def home_hot(page):
     """ /hot for subscriptions """
-    subs = misc.getSubscriptions(current_user.get_id())
+    subs = misc.getSubscriptions(current_user.uid)
     posts = misc.getPostsFromSubs(subs)
-
     sorter = HotSorting(posts)
     return render_template('index.html', page=page, sort_type='home_hot',
                            posts=sorter.getPosts(page))
