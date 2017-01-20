@@ -45,7 +45,8 @@ class HotSorting(BasicSorting):
     def __init__(self, posts):
         super(HotSorting, self).__init__(posts)
         self.posts.sort(key=lambda x: hot.get_score(x['score'],
-                                                    x['posted'].timestamp()))
+                                                    x['posted'].timestamp()),
+                        reverse=True)
 
     def epoch_seconds(self, date):
         """ Returns seconds since the post was created """
