@@ -1385,7 +1385,7 @@ span.btn.accepted {
 .admin.section.subs a {
     text-decoration: none;
 }
-.admin.section.users table td {
+.admin table.col-12.sortable {
     text-align: center;
 }
 .admin.section div .sub {
