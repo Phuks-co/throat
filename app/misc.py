@@ -716,6 +716,25 @@ def getPostsFromSubs(subs, limit=False, orderby='pid'):
     return c.fetchall()
 
 
+@cache.memoize(120)
+def getPostsFromPids(pids, limit=False, orderby='pid'):
+    """ Returns all posts from a list of pids """
+    if not pids:
+        return []
+    qbody = "SELECT * FROM `sub_post` WHERE "
+    qdata = []
+    for post in pids:
+        qbody += "`pid`=%s OR "
+        qdata.append(post['pid'])
+    qbody = qbody[:-4] + ' ORDER BY %s'
+    qdata.append(orderby)
+    if limit:
+        qbody += ' LIMIT %s'
+        qdata.append(limit)
+    c = db.query(qbody, tuple(qdata))
+    return c.fetchall()
+
+
 def workWithMentions(data, receivedby, post, sub):
     """ Does all the job for mentions """
     mts = re.findall(RE_AMENTION, data)

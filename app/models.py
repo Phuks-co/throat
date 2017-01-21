@@ -669,6 +669,18 @@ class SiteLog(db.Model):
     link = Column(String(255))
 
 
+class UserSaved(db.Model):
+    """ User Saved posts """
+    cache_label = "default"  # region's label to use
+    cache_regions = regions  # regions to store cache
+    # Query handeling dogpile caching
+    query_class = query_callable(regions)
+
+    xid = Column(Integer, primary_key=True)
+    uid = Column(String(40), db.ForeignKey('user.uid'))
+    pid = Column(Integer)
+
+
 class UserMulti(db.Model):
     """ User Multi sub lists """
     cache_label = "default"  # region's label to use

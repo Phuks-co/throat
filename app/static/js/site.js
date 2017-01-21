@@ -566,6 +566,38 @@ $(document).ready(function() {
       });
     });
 
+    $('.savepost').click(function(e){
+      var pid = $(e.currentTarget).data().pid
+      $.ajax({
+        type: "POST",
+        url: '/do/save_post/' + pid,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).text('saved')
+          } else {
+            $(e.currentTarget).text('already saved')
+          }
+        }
+      });
+    });
+
+    $('.removesavedpost').click(function(e){
+      var pid = $(e.currentTarget).data().pid
+      $.ajax({
+        type: "POST",
+        url: '/do/remove_saved_post/' + pid,
+        dataType: 'json',
+        success: function(data) {
+          if(data.status == "ok"){
+            $(e.currentTarget).text('removed')
+          } else {
+            $(e.currentTarget).text('oops')
+          }
+        }
+      });
+    });
+
     $('.savepm').click(function(e){
       var mid = $(e.currentTarget).data().mid
       $.ajax({

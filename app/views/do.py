@@ -1342,6 +1342,27 @@ def remove_banned_domain(domain):
     return json.dumps({'status': 'ok'})
 
 
+@do.route("/do/save_post/<pid>", methods=['POST'])
+def save_post(pid):
+    """ Save a post to your Saved Posts """
+    if db.get_user_saved(current_user.uid, pid):
+        return json.dumps({'status': 'error', 'error': ['Already saved']})
+
+    db.create_user_saved(current_user.uid, pid)
+    return json.dumps({'status': 'ok'})
+
+
+@do.route("/do/remove_saved_post/<pid>", methods=['POST'])
+def remove_saved_post(pid):
+    """ Remove a saved post """
+    if not db.get_user_saved(current_user.uid, pid):
+        return json.dumps({'status': 'error', 'error': ['Already deleted']})
+
+    c = db.uquery('DELETE FROM `user_saved` WHERE `uid`=%s AND `pid`=%s',
+              (current_user.uid, pid))
+    return json.dumps({'status': 'ok'})
+
+
 @do.route("/do/usebtcdonation", methods=['POST'])
 def use_btc_donation():
     """ Enable bitcoin donation module """

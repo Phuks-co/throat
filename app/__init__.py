@@ -878,6 +878,29 @@ def view_user_posts(user, page):
                            owns=owns, mods=mods, posts=posts.fetchall())
 
 
+@app.route("/u/<user>/savedposts", defaults={'page': 1})
+@app.route("/u/<user>/savedposts/<int:page>")
+@login_required
+def view_user_savedposts(user, page):
+    """ WIP: View user's saved posts """
+    user = db.get_user_from_name(user)
+    if not user or user['status'] == 10:
+        abort(404)
+    if current_user.uid == user['uid']:
+        pids = db.get_all_user_saved(current_user.uid)
+        posts = misc.getPostsFromPids(pids)
+        sorter = NewSorting(posts)
+        owns = db.get_user_positions(user['uid'], 'mod1')
+        mods = db.get_user_positions(user['uid'], 'mod2')
+        badges = db.get_user_badges(user['uid'])
+        return render_template('userposts.html', user=user, page=page,
+                               saved='user_saved', owns=owns, mods=mods,
+                               badges=badges, posts=sorter.getPosts(page),
+                               msgform=CreateUserMessageForm())
+    else:
+        abort(403)
+
+
 @app.route("/u/<user>/comments", defaults={'page': 1})
 @app.route("/u/<user>/comments/<int:page>")
 @login_required

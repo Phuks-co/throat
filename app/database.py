@@ -288,6 +288,26 @@ def create_subscription(uid, sid, stype):
            'VALUES (%s, %s, %s, %s)', (time, uid, sid, stype))
 
 
+def create_user_saved(uid, pid):
+    """ Creates an entry in in the user saved post """
+    uquery('INSERT INTO `user_saved` (`uid`, `pid`) VALUES '
+           '(%s, %s)', (uid, pid))
+
+
+def get_user_saved(uid, pid):
+    """ Returns an entry in the user saved """
+    c = query('SELECT * FROM `user_saved` WHERE `uid`=%s AND `pid`=%s ',
+              (uid, pid))
+    return c.fetchone()
+
+
+def get_all_user_saved(uid):
+    """ Returns all the user saved pids """
+    c = query('SELECT `pid` FROM `user_saved` WHERE `uid`=%s ',
+              (uid, ))
+    return c.fetchall()
+
+
 def create_user_multi(uid, name, subs):
     """ Creates an entry in in the user multi """
     uquery('INSERT INTO `user_multi` (`uid`, `name`, `subs`) VALUES '

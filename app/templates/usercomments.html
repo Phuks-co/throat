@@ -5,6 +5,9 @@
   <li><a href="{{url_for('view_user', user=user.name)}}">{{user.name}}</a></li>
   <li><a href="{{url_for('view_user_posts', user=user.name)}}">Posts</a></li>
   <li><a href="{{url_for('view_user_comments', user=user.name)}}">Comments</a></li>
+    {% if user.uid == session['user_id'] %}
+    <li><a href="{{url_for('view_user_savedposts', user=user.name)}}">Saved</a></li>
+    {% endif %}
 </ul>
 {% endblock %}
 
