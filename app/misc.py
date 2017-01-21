@@ -182,7 +182,7 @@ class SiteUser(object):
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
     uid = False
-
+    
     def get_id(self):
         return False
 
