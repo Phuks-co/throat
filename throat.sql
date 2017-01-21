@@ -293,5 +293,5 @@ CREATE TABLE `user_saved` (
   `xid` int(11) NOT NULL AUTO_INCREMENT,
   `uid` varchar(40) DEFAULT NULL,
   `pid` int(128) DEFAULT NULL,
-  PRIMARY KEY (`xid`),
+  PRIMARY KEY (`xid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
