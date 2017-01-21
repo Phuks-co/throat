@@ -286,3 +286,12 @@ CREATE TABLE `user_metadata` (
   KEY `uid` (`uid`),
   CONSTRAINT `user_metadata_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `user_saved`;
+
+CREATE TABLE `user_saved` (
+  `xid` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` varchar(40) DEFAULT NULL,
+  `pid` int(128) DEFAULT NULL,
+  PRIMARY KEY (`xid`),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
