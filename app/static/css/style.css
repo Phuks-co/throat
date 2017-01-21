@@ -93,15 +93,14 @@ pre {
     overflow: hidden;
 }
 code {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: monospace;
     white-space: pre-wrap;
-    display: block;
-    margin-left: 10px;
-    border: 1px solid #d1d1d1;
-    padding: 6px;
+    display: inline-block;
+    padding: 3px;
+    background: #d7d7d7;
 }
-body.dark code {
-    border: 1px solid #555;
+body.dark code{
+  background: #353535;
 }
 ul, ol {
     list-style: none;
