@@ -1501,9 +1501,6 @@ body.dark span.bgred {
   padding: 3px 8px;
   margin: 0px 6px;
 }
-
-.cus-die-six:before{content:"\2685";}
-
 form .sub{text-align: center; font-size: larger;}
 form .sub input{width: 35%}
 .btn-editor{width: initial !important; }
