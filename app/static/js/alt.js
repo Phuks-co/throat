@@ -11,7 +11,6 @@ function renderPosts(posts){
   for (var i = 0; i < l; ++i) {
     post = posts[i]
     postdomain = get_hostname(post['link'])
-    console.log(postdomain)
     tffs.push(m('div.post.pure-g', {pid: post['pid']},
                m('div.pure-u-8-24.pure-u-md-3-24.misctainer',
                 m('div.votebuttons.pure-u-1-24.pure-u-md-1-24',
@@ -34,7 +33,7 @@ function renderPosts(posts){
                                         );
                               }
                           }())
-                }(), m('span.pure-badge', m('i.fa.fa-comments'), ' ', post.comments))
+                }(), m('span.pure-badge', m('i.fa.fa-comments'), ' ', post.comments)) // thumbnail
                ),
                 m('div.pure-u-16-24.pure-u-md-21-24.pbody',
                   function () {
@@ -46,6 +45,13 @@ function renderPosts(posts){
                               ];
                     }
                   }(),
+                  function () {
+                    if (post.ptype == 1){
+                      if ((postdomain == 'youtube.com') || (postdomain == 'www.youtube.com') || (postdomain == 'youtu.be')) {
+                        
+                      }
+                    }
+                  }
                   m('div.author', 'posted ',
                     m('time-ago', {datetime: post.posted}),
                     ' by ', (post.username == '[Deleted]') ? '[Deleted]' : m('a', {href: '/u/'+ post.username, config: m.route}, post.username),
