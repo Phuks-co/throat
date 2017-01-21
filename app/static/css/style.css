@@ -1004,6 +1004,14 @@ article .text-post{
 #edit-user-form p.fullw {
     margin-top: 100px;
 }
+i.fa.user-arotaes.fa-2x {
+    background: url(/static/img/vaporwave.png);
+    height: 38px;
+    width: 26px;
+    background-repeat: no-repeat;
+}
+
+
 /* user posts and permalink */
 .userposts.data {
     border-top: 1px solid #d3d3d3;
