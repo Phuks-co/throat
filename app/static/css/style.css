@@ -1532,7 +1532,6 @@ body.dark input{
     border-bottom: 1px solid #dedede;
     font-variant: small-caps;
 }
-
 .subscriptionbar ul{
   margin: 0.5em;
   padding:0;
@@ -1556,7 +1555,6 @@ body.dark .subscriptionbar {
     background: #101010;
     border: 1px solid #412b19
  }
-/* bitcoin module */
 .col-12.btcdonation div {
     margin: 10px 0;
 }
