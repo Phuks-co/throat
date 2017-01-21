@@ -6,6 +6,7 @@ import time
 import re
 import uuid
 import random
+import socket
 from wsgiref.handlers import format_date_time
 import datetime
 from urllib.parse import urlparse, urljoin
@@ -206,7 +207,7 @@ def utility_processor():
             'logoutform': LogOutForm(), 'sendmsg': CreateUserMessageForm(),
             'csubform': CreateSubForm(), 'markdown': misc.our_markdown,
             'commentform': PostComment(), 'dummyform': DummyForm(),
-            'delpostform': DeletePost(),
+            'delpostform': DeletePost(), 'hostname': socket.gethostname,
             'config': app.config, 'form': forms, 'db': db,
             'getSuscriberCount': getSuscriberCount, 'func': misc}
 
