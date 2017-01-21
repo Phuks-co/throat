@@ -182,7 +182,7 @@ class SiteUser(object):
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
     uid = False
-    
+
     def get_id(self):
         return False
 
@@ -588,7 +588,6 @@ def enableVideoMode(sub):
     return False if not x or x['value'] == '0' else True
 
 
-@cache.memoize(5)
 def getPostFlair(post):
     """ Returns true if the post has available flair """
     f = db.get_post_metadata(post['pid'], 'flair')

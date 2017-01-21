@@ -411,7 +411,7 @@ def assign_post_flair(sub, pid, fl):
                               ' assigned post flair',
                               url_for('view_post', sub=sub['name'],
                                       pid=post['pid']))
-
+        cache.delete_memoized(db.get_post_metadata, pid, 'flair')
         return json.dumps({'status': 'ok'})
     else:
         abort(403)
