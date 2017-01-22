@@ -80,7 +80,7 @@
                 <a href="{{ url_for('view_perm', sub=db.get_sub_from_pid(comment.pid).name, pid=comment.pid, cid=comment.cid) }}" class="btn small">
                   <i class="fa fa-link" aria-hidden="true"></i> permalink
                 </a>
-                ({{func.get_comment_score(comment)}}) Posted <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago> in
+                (+{{func.get_comment_upcount(comment.cid)}} | -{{func.get_comment_downcount(comment.cid)}}) Posted <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago> in
                 <a href="{{ url_for('view_sub', sub=db.get_sub_from_pid(comment.pid).name) }}">/s/{{db.get_sub_from_pid(comment.pid).name}}</a>
               </div>
             </div>
