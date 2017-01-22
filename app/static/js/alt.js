@@ -48,10 +48,10 @@ function renderPosts(posts){
                   function () {
                     if (post.ptype == 1){
                       if ((postdomain == 'youtube.com') || (postdomain == 'www.youtube.com') || (postdomain == 'youtu.be')) {
-                        
+
                       }
                     }
-                  }
+                  },
                   m('div.author', 'posted ',
                     m('time-ago', {datetime: post.posted}),
                     ' by ', (post.username == '[Deleted]') ? '[Deleted]' : m('a', {href: '/u/'+ post.username, config: m.route}, post.username),
