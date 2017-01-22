@@ -633,7 +633,7 @@ def view_multisub_new(subs, page):
 def view_modmulti_new(page):
     """ The multi page for subs the user mods, sorted as new first """
     subs = db.get_user_modded(current_user.uid)
-    posts = db.getPostsFromSubs(subs)
+    posts = misc.getPostsFromSubs(subs)
 
     return render_template('indexmulti.html', page=page,
                            posts=posts,
