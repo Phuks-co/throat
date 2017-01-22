@@ -76,7 +76,7 @@
             <div class="userposts data">
               <p><a class="title" href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">{{ post.title }}</a></p>
               <div class="postbar">
-                ({{post['score']}}) <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in
+                (+{{func.get_post_upcount(post.pid)}} | -{{func.get_post_downcount(post.pid)}}) <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in
                 <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}">/s/{{func.getSub(post.sid).name}}</a>
                 with {{db.get_post_comment_count(post.pid)}} <i class="fa fa-comments" aria-hidden="true"></i> comments
             </div>
