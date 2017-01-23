@@ -1101,8 +1101,12 @@ def admin_area():
                   .fetchone()['c']
         ups = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
                        '`positive`=1').fetchone()['c']
+        ups += db.query('SELECT COUNT(*) AS c FROM `sub_post_comment_vote` '
+                        'WHERE `positive`=1').fetchone()['c']
         downs = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
                          '`positive`=0').fetchone()['c']
+        downs += db.query('SELECT COUNT(*) AS c FROM `sub_post_comment_vote` '
+                          'WHERE `positive`=0').fetchone()['c']
         badges = db.query('SELECT * FROM `user_badge`').fetchall()
         btc = db.get_site_metadata('usebtc')
         if btc:
