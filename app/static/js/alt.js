@@ -5,12 +5,32 @@ function get_hostname (url) {
   var matches = url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
   return matches[1];
 }
+var youtube_regexp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+function postWrapper(post) {
+  var post = post;
+  post.domain = get_hostname(post.link);
+  post.close_expando = function () {
+    m.startComputation();
+    post.expando = false;
+    m.endComputation();
+  }
+  post.youtube_expando = function () {
+    var match = post.link.match(youtube_regexp);
+    if (match && match[2].length == 11) {
+      m.startComputation();
+      post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.iframewrapper',
+                      m('iframe', {width: '100%', src: 'https://www.youtube.com/embed/' + match[2]})
+                    )));
+      m.endComputation();
+    }
+  };
+  return post;
+}
 function renderPosts(posts){
   var l = posts.length;
   var tffs = [];
   for (var i = 0; i < l; ++i) {
-    post = posts[i]
-    postdomain = get_hostname(post['link'])
+    post = postWrapper(posts[i])
     tffs.push(m('div.post.pure-g', {pid: post['pid']},
                m('div.pure-u-8-24.pure-u-md-3-24.misctainer',
                 m('div.votebuttons.pure-u-1-24.pure-u-md-1-24',
@@ -41,24 +61,33 @@ function renderPosts(posts){
                       return m('a.title[href=/s/' + post['sub']['name'] + '/' + post['pid'] + ']', {}, post['title']);
                     } else {
                       return [m('a.title', {href: post['link']}, post['title']),
-                              m('span.domain', ' (', m('a[href=#]', {}, postdomain), ')')
+                              m('span.domain', ' (', m('a[href=#]', {}, post.domain), ')')
                               ];
                     }
                   }(),
-                  function () {
-                    if (post.ptype == 1){
-                      if ((postdomain == 'youtube.com') || (postdomain == 'www.youtube.com') || (postdomain == 'youtu.be')) {
-
+                  m('div.author',
+                    function () {
+                      if(post.expando){
+                        return m('div.expando', {onclick: post.close_expando}, m('i.fa.fa-close'));
+                      }else{
+                        if (post.ptype == 1){
+                          if ((post.domain == 'youtube.com') || (post.domain == 'www.youtube.com') || (post.domain == 'youtu.be')) {
+                              return m('div.expando', {onclick: post.youtube_expando}, m('i.fa.fa-youtube-play'));
+                          }
+                        }
                       }
-                    }
-                  },
-                  m('div.author', 'posted ',
+                    }(),'posted ',
                     m('time-ago', {datetime: post.posted}),
                     ' by ', (post.username == '[Deleted]') ? '[Deleted]' : m('a', {href: '/u/'+ post.username, config: m.route}, post.username),
                     ' on ', m('a', {href: '/s/' + post.sub.name, config: m.route}, post.sub.name)
                   )
                 )
-              ));
+              ),
+              function () {
+                if(post.expando){
+                  return post.expando;
+                }
+              }());
   }
   return tffs;
 }

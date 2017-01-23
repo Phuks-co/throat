@@ -304,6 +304,7 @@ label span{margin-left: 7px;}
 .post .author {
     font-size: small;
     color: #5d5454;
+    margin-top: .2em;
 }
 
 /* Badges/Pills */
@@ -364,4 +365,36 @@ label span{margin-left: 7px;}
 
 .misctainer {
     max-width: calc(2em - -70px);
+}
+
+.expando{
+  display: inline-block;
+  height: 2em;
+  width: 2em;
+  border-radius: 1em;
+  background-color: #ddd;
+  text-align: center;
+  line-height: 2em;
+  color: #444;
+  margin-right: .2em;
+  margin-left: .2em;
+}
+
+iframe {
+  border: 0;
+  display: block;
+}
+
+.iframewrapper {
+	position: relative;
+	padding-bottom: 56.25%; /* 16:9 */
+	padding-top: 25px;
+	height: 0;
+}
+.iframewrapper iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 }
