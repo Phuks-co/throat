@@ -32,7 +32,7 @@ function renderPosts(posts){
   for (var i = 0; i < l; ++i) {
     post = postWrapper(posts[i])
     tffs.push(m('div.post.pure-g', {pid: post['pid']},
-               m('div.pure-u-8-24.pure-u-md-3-24.misctainer',
+               m('div.pure-u-8-24.pure-u-md-4-24.misctainer',
                 m('div.votebuttons.pure-u-1-24.pure-u-md-1-24',
                   m('div.fa.fa-chevron-up.upvote', {class: (post.vote == 1) ? 'upvoted' : '', title: 'Upvote'}),
                   m('div.score', post.score),
@@ -55,7 +55,7 @@ function renderPosts(posts){
                           }())
                 }(), m('span.pure-badge', m('i.fa.fa-comments'), ' ', post.comments)) // thumbnail
                ),
-                m('div.pure-u-16-24.pure-u-md-21-24.pbody',
+                m('div.pure-u-16-24.pure-u-md-20-24.pbody',
                   function () {
                     if (post.ptype == 0){
                       return m('a.title[href=/s/' + post['sub']['name'] + '/' + post['pid'] + ']', {}, post['title']);
