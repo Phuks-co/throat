@@ -81,9 +81,6 @@ app.view_functions['static'] = cache_static
 # We use nested bundles here. One of them is for stuff that is already minified
 # And the other is for stuff that we have to minify. This makes the
 # bundle-making process a bit faster.
-assets.config['CLOSURE_COMPRESSOR_OPTIMIZATION'] = 'SIMPLE_OPTIMIZATIONS'
-if app.config['TESTING']:
-    assets.debug = True
 js = Bundle(
     Bundle('js/jquery.min.js',
            'js/magnific-popup.min.js',
