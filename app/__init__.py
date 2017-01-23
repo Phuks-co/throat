@@ -116,7 +116,7 @@ alt_js = Bundle(
                 'js/time-elements.js',
                 'js/socket.io.slim.js',
                 'js/mithril.js',
-                'js/alt.js', filters='closure_js', output='gen/j_bundle.js')
+                'js/alt.js', filters='jsmin', output='gen/j_bundle.js')
 assets.register('js_all', js)
 assets.register('css_all', css)
 assets.register('pure_css', pure_css)
