@@ -142,7 +142,7 @@ function renderPosts(posts){
                             return m('div.expando', {onclick: post.vine_expando}, m('i.fa.fa-vine'));
                           }else if (post.domain == 'vimeo.com') {
                             return m('div.expando', {onclick: post.vimeo_expando}, m('i.fa.fa-vimeo'));
-                          }else if(/(\.png|\.jpg|\.gif|\.tiff|\.svg|\.bmp|\.jpeg)$/i.test(post.link)) {
+                          }else if(/\.(png|jpg|gif|tiff|svg|bmp|jpeg)$/i.test(post.link)) {
                             return m('div.expando', {onclick: post.image_expando}, m('i.fa.fa-image'));
                           }
                         }
