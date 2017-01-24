@@ -380,6 +380,7 @@ label span{margin-left: 7px;}
   color: #444;
   margin-right: .2em;
   margin-left: .2em;
+  cursor: pointer;
 }
 
 iframe {
@@ -403,4 +404,8 @@ iframe {
 
 .expando img {
   max-width: 100%
+}
+
+#th-menu a.pure-menu-link:hover, #th-menu a.pure-menu-link.active {
+  background-color: rgb(57, 101, 164);
 }
