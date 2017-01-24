@@ -7,6 +7,7 @@ function get_hostname (url) {
 }
 var youtube_regexp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
 var gfycat_regexp = /^http(?:s?):\/\/gfycat\.com\/([a-zA-Z0-9]{1,60})$/;
+var vine_regexp = /^http(?:s?):\/\/(?:www\.)?vine\.co\/v\/([a-zA-Z0-9]{1,20})$/;
 function postWrapper(post) {
   var post = post;
   post.domain = get_hostname(post.link);
@@ -31,6 +32,16 @@ function postWrapper(post) {
       m.startComputation();
       post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.iframewrapper',
                       m('iframe', {width: '100%', src: 'https://gfycat.com/ifr/' + match[1]})
+                    )));
+      m.endComputation();
+    }
+  };
+  post.vine_expando = function () {
+    var match = post.link.match(vine_regexp);
+    if (match[1].length >= 2) {
+      m.startComputation();
+      post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.iframewrapper',
+                      m('iframe', {width: '100%', src: 'https://vine.co/v/' + match[1] + '/embed/simple'})
                     )));
       m.endComputation();
     }
@@ -87,6 +98,9 @@ function renderPosts(posts){
                           }
                           if (post.domain == 'gfycat.com') {
                               return m('div.expando', {onclick: post.gfycat_expando}, m('i.fa.fa-play'));
+                          }
+                          if (post.domain == 'vine.co') {
+                              return m('div.expando', {onclick: post.vine_expando}, m('i.fa.fa-vine'));
                           }
                         }
                       }
