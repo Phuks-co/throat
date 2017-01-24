@@ -1,5 +1,5 @@
 var socket = io.connect('//' + document.domain + ':' + location.port + '/alt');
-var md = converter = new showdown.Converter({tables: true});
+var md = converter = new showdown.Converter({tables: true, extensions: ['xssfilter']});
 
 /* Little hack so we can operate various modules with one route */
 m.routes = function mRoutes( defaultRoute, routesMap ){

@@ -1835,8 +1835,5 @@ def get_post_md(pid):
     if not c:
         return jsonify(status='error', error=['Post not found'])
     post = c['content']
-    post = post.replace(">", "&gt;")
-    post = post.replace("<", "&lt;")
-    post = post.replace("&", "&amp;")
 
     return jsonify(status='ok', content=post)

@@ -111,7 +111,9 @@ pure_css = Bundle('css/font-awesome.min.css',
 alt_js = Bundle(
                 'js/CustomElements.min.js',
                 'js/time-elements.js',
+                'js/xss.js',
                 'js/showdown.js',
+                'js/showdown-xss-filter.js',
                 'js/socket.io.slim.js',
                 'js/mithril.js',
                 'js/alt.js', filters='jsmin', output='gen/j_bundle.js')
