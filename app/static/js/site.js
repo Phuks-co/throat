@@ -839,7 +839,7 @@ $(document).ready(function() {
         });
       }
     });
-    $('span[id^="block"').click(function(e){
+    $('span[id^="block"]').click(function(e){
       var sid = $(e.currentTarget).data().sid
       if($(this).hasClass('unblocked'))  {
         $.ajax({
