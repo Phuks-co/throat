@@ -5,9 +5,33 @@ function get_hostname (url) {
   var matches = url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
   return matches[1];
 }
-var youtube_regexp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-var gfycat_regexp = /^http(?:s?):\/\/gfycat\.com\/([a-zA-Z0-9]{1,60})$/;
-var vine_regexp = /^http(?:s?):\/\/(?:www\.)?vine\.co\/v\/([a-zA-Z0-9]{1,20})$/;
+
+function vimeoID(url) {
+  var match = url.match(/https?:\/\/(?:www\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/);
+  if (match){
+    return match[3];
+	}
+}
+function vineID(url) {
+  var match = url.match(/^http(?:s?):\/\/(?:www\.)?vine\.co\/v\/([a-zA-Z0-9]{1,13})$/);
+  if (match){
+    return match[1];
+	}
+}
+function gfycatID(url) {
+  var match = url.match(/^http(?:s?):\/\/gfycat\.com\/([a-zA-Z0-9]{1,60})$/);
+  if (match){
+    return match[1];
+	}
+}
+
+function youtubeID (url) {
+  var match =  url.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+  if (match && match[2].length == 11) {
+    return match[2];
+  }
+}
+
 function postWrapper(post) {
   var post = post;
   post.domain = get_hostname(post.link);
@@ -17,31 +41,41 @@ function postWrapper(post) {
     m.endComputation();
   }
   post.youtube_expando = function () {
-    var match = post.link.match(youtube_regexp);
-    if (match && match[2].length == 11) {
+    var id = youtubeID(post.link);
+    if (id) {
       m.startComputation();
       post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.iframewrapper',
-                      m('iframe', {width: '100%', src: 'https://www.youtube.com/embed/' + match[2]})
+                      m('iframe', {width: '100%', src: 'https://www.youtube.com/embed/' + id})
                     )));
       m.endComputation();
     }
   };
   post.gfycat_expando = function () {
-    var match = post.link.match(gfycat_regexp);
-    if (match[1].length >= 2) {
+    var id = gfycatID(post.link);
+    if (id) {
       m.startComputation();
       post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.iframewrapper',
-                      m('iframe', {width: '100%', src: 'https://gfycat.com/ifr/' + match[1]})
+                      m('iframe', {width: '100%', src: 'https://gfycat.com/ifr/' + id})
                     )));
       m.endComputation();
     }
   };
   post.vine_expando = function () {
-    var match = post.link.match(vine_regexp);
-    if (match[1].length >= 2) {
+    var id = vineID(post.link)
+    if (id) {
       m.startComputation();
       post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.iframewrapper',
-                      m('iframe', {width: '100%', src: 'https://vine.co/v/' + match[1] + '/embed/simple'})
+                      m('iframe', {width: '100%', src: 'https://vine.co/v/' + id + '/embed/simple'})
+                    )));
+      m.endComputation();
+    }
+  };
+  post.vimeo_expando = function () {
+    var id = vimeoID(post.link)
+    if (id) {
+      m.startComputation();
+      post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.iframewrapper',
+                      m('iframe', {width: '100%', src: 'https://player.vimeo.com/video/' + id})
                     )));
       m.endComputation();
     }
@@ -94,13 +128,13 @@ function renderPosts(posts){
                       }else{
                         if (post.ptype == 1){
                           if ((post.domain == 'youtube.com') || (post.domain == 'www.youtube.com') || (post.domain == 'youtu.be')) {
-                              return m('div.expando', {onclick: post.youtube_expando}, m('i.fa.fa-youtube-play'));
-                          }
-                          if (post.domain == 'gfycat.com') {
-                              return m('div.expando', {onclick: post.gfycat_expando}, m('i.fa.fa-play'));
-                          }
-                          if (post.domain == 'vine.co') {
-                              return m('div.expando', {onclick: post.vine_expando}, m('i.fa.fa-vine'));
+                            return m('div.expando', {onclick: post.youtube_expando}, m('i.fa.fa-youtube-play'));
+                          }else if (post.domain == 'gfycat.com') {
+                            return m('div.expando', {onclick: post.gfycat_expando}, m('i.fa.fa-play'));
+                          }else if (post.domain == 'vine.co') {
+                            return m('div.expando', {onclick: post.vine_expando}, m('i.fa.fa-vine'));
+                          }else if (post.domain == 'vimeo.com') {
+                            return m('div.expando', {onclick: post.vimeo_expando}, m('i.fa.fa-vine'));
                           }
                         }
                       }
