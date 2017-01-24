@@ -45,7 +45,15 @@
       <p class="joindate">User has made {{pcount}} posts and {{ccount}} comments.</p>
       {# TODO user stats #}
       <div>
-        <h3>Badges:</h3>
+        <h3>Basic Stats</h3>
+        <ul id="userStats">
+          <li>{{func.get_user_level(user.uid)[1]}} xp</li>
+          <li>{{user.score}} phuks taken</li>
+          <li>{{db.get_user_post_voting(user.uid)}} phuks given</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Badges</h3>
         <ul id="userBadges" style="color: darkcyan;">
           {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
           {% for badge in badges if badges|length > 0 %}
@@ -56,7 +64,7 @@
         </ul>
       </div>
       <div>
-        <h3>Owns:</h3>
+        <h3>Owns</h3>
         <ul style="color: darkcyan;">
           {% for own in owns if owns|length > 0 %}
           <li><a href="{{url_for('view_sub', sub=own.name)}}">{{own.name}}</a></li>
@@ -66,7 +74,7 @@
         </ul>
       </div>
       <div>
-        <h3>Mods:</h3>
+        <h3>Mods</h3>
         <ul style="color: darkcyan;">
           {% for mod in mods if mods|length > 0 %}
           <li><a href="{{url_for('view_sub', sub=mod.name)}}">{{mod.name}}</a></li>
