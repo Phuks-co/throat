@@ -1,11 +1,10 @@
 var socket = io.connect('//' + document.domain + ':' + location.port + '/alt');
 console.log('foo')
-function get_hostname (url) {
+function get_hostname(url) {
   if(!url){return;}
   var matches = url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
   return matches[1];
 }
-
 function vimeoID(url) {
   var match = url.match(/https?:\/\/(?:www\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/);
   if (match){
@@ -24,14 +23,12 @@ function gfycatID(url) {
     return match[1];
 	}
 }
-
-function youtubeID (url) {
+function youtubeID(url) {
   var match =  url.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
   if (match && match[2].length == 11) {
     return match[2];
   }
 }
-
 function imgurID(url) {
   var match = url.match(/^http(?:s?):\/\/(i\.)?imgur\.com\/(.*?)(?:\/.gifv|$)/);
   if (match){
@@ -94,7 +91,6 @@ function postWrapper(post) {
                   ));
     m.endComputation();
   };
-
   post.video_expando = function () {
     m.startComputation();
     post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24',
@@ -104,7 +100,6 @@ function postWrapper(post) {
                   ));
     m.endComputation();
   };
-
   post.imgur_gifv_expando = function () {
     m.startComputation();
     post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24',
@@ -112,6 +107,13 @@ function postWrapper(post) {
                       m('source', {src: 'https://i.imgur.com/' + imgurID(post.link) + '.mp4'})
                     )
                   ));
+    m.endComputation();
+  };
+  post.tweet_expando = function () {
+    m.startComputation();
+    post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.iframewrapper',
+                    m('iframe', {width: '100%', src: 'https://twitframe.com/show?url=' + post.link})
+                  )));
     m.endComputation();
   };
   return post;
@@ -171,10 +173,12 @@ function renderPosts(posts){
                             return m('div.expando', {onclick: post.vimeo_expando}, m('i.fa.fa-vimeo'));
                           }else if(/\.(png|jpg|gif|tiff|svg|bmp|jpeg)$/i.test(post.link)) {
                             return m('div.expando', {onclick: post.image_expando}, m('i.fa.fa-image'));
-                          }else if(/\.(mp4|webm)$/i.test(post.link)) {
+                          }else if (/\.(mp4|webm)$/i.test(post.link)) {
                             return m('div.expando', {onclick: post.video_expando}, m('i.fa.fa-play'));
-                          }else if(post.domain == 'i.imgur.com' && /\.gifv$/i.test(post.link)) {
+                          }else if (post.domain == 'i.imgur.com' && /\.gifv$/i.test(post.link)) {
                             return m('div.expando', {onclick: post.imgur_gifv_expando}, m('i.fa.fa-play'));
+                          }else if (post.domain == 'twitter.com') {
+                            return m('div.expando', {onclick: post.tweet_expando}, m('i.fa.fa-twitter'));
                           }
                         }
                       }
