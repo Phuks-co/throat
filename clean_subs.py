@@ -3,6 +3,7 @@
 import MySQLdb
 import MySQLdb.cursors
 import config
+import datetime
 
 rv = MySQLdb.connect(host=config.DB_HOST,
                          user=config.DB_USER,
@@ -24,5 +25,5 @@ for sub in subs:
     c.execute('DELETE FROM `sub_flair` WHERE `sid`=%s', (sub['sid'],))
     c.execute('DELETE FROM `sub_log` WHERE `sid`=%s', (sub['sid'],))
     c.execute('DELETE FROM `sub` WHERE `sid`=%s', (sub['sid'],))
-
+    c.execute('INSERT INTO `site_log` (`time`, `action`, `desc`) VALUES (`%s`, `%s`, `%s`)', (datetime.datetime.utcnow(), 8, 'Deleted inactive sub ' + sub['name']))
     rv.commit()
