@@ -1802,7 +1802,7 @@ def get_all_new(sort, page):
         q += 'ORDER BY `score` DESC LIMIT %s,20'
         s.append((page - 1) * 20)
     elif sort == 'hot':
-        q += 'AND `posted` > NOW() - INTERVAL 7 DAY ORDER BY `score`'\
+        q += 'AND `posted` > NOW() - INTERVAL 7 DAY ORDER BY `score` DESC'\
              ' LIMIT 200'
 
     c = db.query(q, s)
