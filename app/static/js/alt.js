@@ -80,6 +80,13 @@ function postWrapper(post) {
       m.endComputation();
     }
   };
+  post.image_expando = function () {
+    m.startComputation();
+    post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24',
+                    m('img', {src: post.link, onclick: post.close_expando})
+                  ));
+    m.endComputation();
+  };
   return post;
 }
 function renderPosts(posts){
@@ -135,6 +142,8 @@ function renderPosts(posts){
                             return m('div.expando', {onclick: post.vine_expando}, m('i.fa.fa-vine'));
                           }else if (post.domain == 'vimeo.com') {
                             return m('div.expando', {onclick: post.vimeo_expando}, m('i.fa.fa-vimeo'));
+                          }else if(/(\.png|\.jpg|\.gif|\.tiff|\.svg|\.bmp|\.jpeg)$/i.test(post.link)) {
+                            return m('div.expando', {onclick: post.image_expando}, m('i.fa.fa-image'));
                           }
                         }
                       }
