@@ -6,6 +6,7 @@ function get_hostname (url) {
   return matches[1];
 }
 var youtube_regexp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+var gfycat_regexp = /^http(?:s?):\/\/gfycat\.com\/([a-zA-Z0-9]{1,60})$/;
 function postWrapper(post) {
   var post = post;
   post.domain = get_hostname(post.link);
@@ -20,6 +21,16 @@ function postWrapper(post) {
       m.startComputation();
       post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.iframewrapper',
                       m('iframe', {width: '100%', src: 'https://www.youtube.com/embed/' + match[2]})
+                    )));
+      m.endComputation();
+    }
+  };
+  post.gfycat_expando = function () {
+    var match = post.link.match(gfycat_regexp);
+    if (match[1].length >= 2) {
+      m.startComputation();
+      post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.iframewrapper',
+                      m('iframe', {width: '100%', src: 'https://gfycat.com/ifr/' + match[1]})
                     )));
       m.endComputation();
     }
@@ -73,6 +84,9 @@ function renderPosts(posts){
                         if (post.ptype == 1){
                           if ((post.domain == 'youtube.com') || (post.domain == 'www.youtube.com') || (post.domain == 'youtu.be')) {
                               return m('div.expando', {onclick: post.youtube_expando}, m('i.fa.fa-youtube-play'));
+                          }
+                          if (post.domain == 'gfycat.com') {
+                              return m('div.expando', {onclick: post.gfycat_expando}, m('i.fa.fa-play'));
                           }
                         }
                       }
