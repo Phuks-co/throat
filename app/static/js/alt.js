@@ -87,6 +87,16 @@ function postWrapper(post) {
                   ));
     m.endComputation();
   };
+
+  post.video_expando = function () {
+    m.startComputation();
+    post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24',
+                    m('video', {preload: 'auto', autoplay: 'autoplay', loop: 'loop', controls: true},
+                      m('source', {src: post.link})
+                    )
+                  ));
+    m.endComputation();
+  };
   return post;
 }
 function renderPosts(posts){
@@ -144,6 +154,8 @@ function renderPosts(posts){
                             return m('div.expando', {onclick: post.vimeo_expando}, m('i.fa.fa-vimeo'));
                           }else if(/\.(png|jpg|gif|tiff|svg|bmp|jpeg)$/i.test(post.link)) {
                             return m('div.expando', {onclick: post.image_expando}, m('i.fa.fa-image'));
+                          }else if(/\.(mp4|webm)$/i.test(post.link)) {
+                            return m('div.expando', {onclick: post.video_expando}, m('i.fa.fa-play'));
                           }
                         }
                       }
