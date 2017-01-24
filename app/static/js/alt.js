@@ -479,6 +479,13 @@ user.view = function (ctrl){
 };
 
 m.module(document.getElementById('th-uinfo'), {controller: user.controller, view: user.view});
+var lm = {};
+lm.view = function () {
+  return [
+    m("a.pure-menu-heading[href='/']", {config: m.route},[m("img[alt='Throat'][id='logo'][src='/static/img/logo-white.svg']")])]
+};
+
+m.module(document.getElementById('LogoMenu'), {view: lm.view});
 
 /* Menu */
 (function (window, document) {
@@ -518,4 +525,5 @@ m.module(document.getElementById('th-uinfo'), {controller: user.controller, view
   });
 
   window.addEventListener(WINDOW_CHANGE_EVENT, closeMenu);
+
 })(this, this.document);
