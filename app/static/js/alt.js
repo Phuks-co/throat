@@ -134,7 +134,7 @@ function renderPosts(posts){
                           }else if (post.domain == 'vine.co') {
                             return m('div.expando', {onclick: post.vine_expando}, m('i.fa.fa-vine'));
                           }else if (post.domain == 'vimeo.com') {
-                            return m('div.expando', {onclick: post.vimeo_expando}, m('i.fa.fa-vine'));
+                            return m('div.expando', {onclick: post.vimeo_expando}, m('i.fa.fa-vimeo'));
                           }
                         }
                       }
