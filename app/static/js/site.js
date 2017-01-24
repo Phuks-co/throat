@@ -807,7 +807,7 @@ $(document).ready(function() {
         }
       });
     });
-    $('span[id^="subscribe"').click(function(e){
+    $('span[id^="subscribe"]').click(function(e){
       var sid = $(e.currentTarget).data().sid
       if($(this).hasClass('unsubscribed'))  {
         $.ajax({
