@@ -13,7 +13,7 @@ rv = MySQLdb.connect(host=config.DB_HOST,
                          charset="utf8")
 c = rv.cursor()
 
-c.execute('SELECT sm.value AS creation, g.sid, COUNT(m.pid) AS posts FROM sub AS g LEFT JOIN sub_post AS m ON g.sid = m.sid LEFT JOIN sub_metadata AS sm ON sm.sid = g.sid AND sm.key = \'creation\' GROUP BY g.sid HAVING posts = 0 AND CAST(creation AS datetime) < NOW() - INTERVAL 1 DAY')
+c.execute('SELECT sm.value AS creation, g.name, g.sid, COUNT(m.pid) AS posts FROM sub AS g LEFT JOIN sub_post AS m ON g.sid = m.sid LEFT JOIN sub_metadata AS sm ON sm.sid = g.sid AND sm.key = \'creation\' GROUP BY g.sid HAVING posts = 0 AND CAST(creation AS datetime) < NOW() - INTERVAL 1 DAY')
 subs = c.fetchall()
 
 for sub in subs:
