@@ -32,6 +32,13 @@ function youtubeID (url) {
   }
 }
 
+function imgurID(url) {
+  var match = url.match(/^http(?:s?):\/\/(i\.)?imgur\.com\/(.*?)(?:\/.gifv|$)/);
+  if (match){
+    return match[2].replace(/.gifv/,'');
+	}
+}
+
 function postWrapper(post) {
   var post = post;
   post.domain = get_hostname(post.link);
@@ -97,6 +104,16 @@ function postWrapper(post) {
                   ));
     m.endComputation();
   };
+
+  post.imgur_gifv_expando = function () {
+    m.startComputation();
+    post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24',
+                    m('video', {preload: 'auto', autoplay: 'autoplay', loop: 'loop'},
+                      m('source', {src: 'https://i.imgur.com/' + imgurID(post.link) + '.mp4'})
+                    )
+                  ));
+    m.endComputation();
+  };
   return post;
 }
 function renderPosts(posts){
@@ -156,6 +173,8 @@ function renderPosts(posts){
                             return m('div.expando', {onclick: post.image_expando}, m('i.fa.fa-image'));
                           }else if(/\.(mp4|webm)$/i.test(post.link)) {
                             return m('div.expando', {onclick: post.video_expando}, m('i.fa.fa-play'));
+                          }else if(post.domain == 'i.imgur.com' && /\.gifv$/i.test(post.link)) {
+                            return m('div.expando', {onclick: post.imgur_gifv_expando}, m('i.fa.fa-play'));
                           }
                         }
                       }
