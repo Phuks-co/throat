@@ -477,9 +477,9 @@ var register = {
 var menu_index = {  // the menu for all the global index pages (home_*, all_*)
   controller: function () {},
   view: function (ctrl) {
-    return [m('li.pure-menu-item', m('a.pure-menu-link[href="/all/hot"]', {config: m.route},'Hot')),
-            m('li.pure-menu-item', m('a.pure-menu-link[href="/all/top"]', {config: m.route},'Top')),
-            m('li.pure-menu-item', m('a.pure-menu-link[href="/all/new"]', {config: m.route},'New'))]
+    return [m('li.pure-menu-item', {active: (m.route() == '/' || m.route() == '/all/hot') ? true : false}, m('a.pure-menu-link[href="/all/hot"]', {config: m.route},'Hot')),
+            m('li.pure-menu-item', {active: (m.route() == '/all/top') ? true : false}, m('a.pure-menu-link[href="/all/top"]', {config: m.route},'Top')),
+            m('li.pure-menu-item', {active: (m.route() == '/all/new') ? true : false}, m('a.pure-menu-link[href="/all/new"]', {config: m.route},'New'))]
   }
 };
 
