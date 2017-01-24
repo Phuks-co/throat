@@ -1,5 +1,5 @@
 var socket = io.connect('//' + document.domain + ':' + location.port + '/alt');
-console.log('foo')
+var md = converter = new showdown.Converter({tables: true});
 function get_hostname(url) {
   if(!url){return;}
   var matches = url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
@@ -116,6 +116,21 @@ function postWrapper(post) {
                   )));
     m.endComputation();
   };
+
+  post.text_expando = function () {
+    m.startComputation();
+    m.request({
+      method: 'GET',
+      url: '/do/get_post_md/' + post.pid
+    }).then(function(res) {
+        if (res.status == 'ok'){
+          post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24',
+                          m('span', m.trust(md.makeHtml(res.content)))
+                        ));
+        }
+        m.endComputation();
+    });
+  };
   return post;
 }
 function renderPosts(posts){
@@ -179,6 +194,10 @@ function renderPosts(posts){
                             return m('div.expando', {onclick: post.imgur_gifv_expando}, m('i.fa.fa-play'));
                           }else if (post.domain == 'twitter.com') {
                             return m('div.expando', {onclick: post.tweet_expando}, m('i.fa.fa-twitter'));
+                          }
+                        } else { // text post
+                          if (post.content) {
+                            return m('div.expando', {onclick: post.text_expando}, m('i.fa.fa-file-text-o'));
                           }
                         }
                       }
