@@ -268,7 +268,8 @@ all_hot.control = function (sort){
       ctrl.err = [err];
       m.endComputation();
     });
-  }
+  };
+  m.redraw();
   ctrl.get_posts();
   return ctrl;
 };
@@ -277,7 +278,8 @@ all_hot.view = function (ctrl) {
   if (ctrl.err != ''){
     return m('div.content.pure-u-1', {}, "Error loading posts: " + ctrl.err);
   }else {
-    if (ctrl.posts == []) {
+    if (!ctrl.posts.length) {
+
       return [m('div.content.pure-u-1 pure-u-md-18-24', {}, 'Loading...'),
               m('div.sidebar.pure-u-1 pure-u-md-6-24')];
     } else {
