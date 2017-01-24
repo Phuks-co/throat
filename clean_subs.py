@@ -17,7 +17,7 @@ c.execute('SELECT sm.value AS creation, g.sid, COUNT(m.pid) AS posts FROM sub AS
 subs = c.fetchall()
 
 for sub in subs:
-    print("Deleting {0}".format(sub['name'))
+    print("Deleting {0}".format(sub['name'])
     c.execute('DELETE FROM `sub_metadata` WHERE `sid`=%s', (sub['sid'],))
     c.execute('DELETE FROM `sub_stylesheet` WHERE `sid`=%s', (sub['sid'],))
     c.execute('DELETE FROM `sub_subscriber` WHERE `sid`=%s', (sub['sid'],))
