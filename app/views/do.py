@@ -17,6 +17,7 @@ import config
 from .. import forms, misc
 from ..socketio import socketio, send_uinfo
 from .. import database as db
+from ..sorting import HotSorting
 from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubFlair
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
@@ -1342,6 +1343,27 @@ def remove_banned_domain(domain):
     return json.dumps({'status': 'ok'})
 
 
+@do.route("/do/save_post/<pid>", methods=['POST'])
+def save_post(pid):
+    """ Save a post to your Saved Posts """
+    if db.get_user_saved(current_user.uid, pid):
+        return json.dumps({'status': 'error', 'error': ['Already saved']})
+
+    db.create_user_saved(current_user.uid, pid)
+    return json.dumps({'status': 'ok'})
+
+
+@do.route("/do/remove_saved_post/<pid>", methods=['POST'])
+def remove_saved_post(pid):
+    """ Remove a saved post """
+    if not db.get_user_saved(current_user.uid, pid):
+        return json.dumps({'status': 'error', 'error': ['Already deleted']})
+
+    c = db.uquery('DELETE FROM `user_saved` WHERE `uid`=%s AND `pid`=%s',
+                  (current_user.uid, pid))
+    return json.dumps({'status': 'ok'})
+
+
 @do.route("/do/usebtcdonation", methods=['POST'])
 def use_btc_donation():
     """ Enable bitcoin donation module """
@@ -1767,14 +1789,27 @@ def get_comments(cid):
 # Routes used in /alt
 
 
-@do.route('/do/get_frontpage/all/new', defaults={'page': 1})
-@do.route('/do/get_frontpage/all/new/<int:page>')
-def get_all_new(page):
-    c = db.query('SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted`,'
-                 '`thumbnail`,`link`,`content` '
-                 'FROM `sub_post` WHERE `deleted`=0 ORDER BY `posted` DESC '
-                 'LIMIT %s,20', ((page - 1) * 20, ))
-    posts = c.fetchall()
+@do.route('/do/get_frontpage/all/<sort>', defaults={'page': 1})
+@do.route('/do/get_frontpage/all/<sort>/<int:page>')
+def get_all_new(sort, page):
+    q = 'SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted`,'\
+        '`thumbnail`,`link`,`content` FROM `sub_post` WHERE `deleted`=0 '
+    s = []
+    if sort == 'new':
+        q += 'ORDER BY `posted` DESC LIMIT %s,20'
+        s.append((page - 1) * 20)
+    elif sort == 'top':
+        q += 'ORDER BY `score` DESC LIMIT %s,20'
+        s.append((page - 1) * 20)
+    elif sort == 'hot':
+        q += 'AND `posted` > NOW() - INTERVAL 7 DAY ORDER BY `score`'\
+             ' LIMIT 200'
+
+    c = db.query(q, s)
+    if sort == 'hot':
+        posts = HotSorting(c.fetchall()).getPosts(page)
+    else:
+        posts = c.fetchall()
     fposts = []
     for post in posts:
         post['content'] = False if post['content'] == '' else True
