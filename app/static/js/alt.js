@@ -488,9 +488,9 @@ m.route.mode = "hash";
 /* routing */
 m.routes('/', {// default route
     '/': {'#th-main': all_hot, '#th-menu': menu_index},
-    '/all/hot': {'#th-main': all_hot},
-    '/all/new': {'#th-main': all_new},
-    '/all/top': {'#th-main': all_top},
+    '/all/hot': {'#th-main': all_hot, '#th-menu': menu_index},
+    '/all/new': {'#th-main': all_new, '#th-menu': menu_index},
+    '/all/top': {'#th-main': all_top, '#th-menu': menu_index},
     '/login': {'#th-main': login},
     '/register': {'#th-main': register}
   })
