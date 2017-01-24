@@ -18,16 +18,16 @@
   <body>
     {{dummyform.csrf_token}}
     <!-- Menu -->
-    <div class="custom-wrapper pure-g" id="menu">
+    <div class="th-navbar pure-g" id="menu">
       <div class="cw-brand pure-u-1 pure-u-md-3-24">
         <div class="pure-menu">
           <span id="LogoMenu"><a class="pure-menu-heading" href='/'><img id="logo" src="{{ url_for('static', filename='img/logo-white.svg') }}" alt="Throat" ></a></span>
           <a href="#" class="custom-toggle" id="toggle"><s class="bar"></s><s class="bar"></s></a>
         </div>
       </div>
-      <div class="cw-items pure-u-1 pure-u-md-12-24">
-        <div class="pure-menu pure-menu-horizontal custom-can-transform">
-          <ul class="pure-menu-list th-main-menu">
+      <div class="pure-u-1 pure-u-md-12-24">
+        <div class="cw-items pure-menu pure-menu-horizontal custom-can-transform">
+          <ul class="pure-menu-list" id="th-menu">
           </ul>
         </div>
       </div>

@@ -1359,8 +1359,8 @@ def remove_saved_post(pid):
     if not db.get_user_saved(current_user.uid, pid):
         return json.dumps({'status': 'error', 'error': ['Already deleted']})
 
-    c = db.uquery('DELETE FROM `user_saved` WHERE `uid`=%s AND `pid`=%s',
-                  (current_user.uid, pid))
+    db.uquery('DELETE FROM `user_saved` WHERE `uid`=%s AND `pid`=%s',
+              (current_user.uid, pid))
     return json.dumps({'status': 'ok'})
 
 

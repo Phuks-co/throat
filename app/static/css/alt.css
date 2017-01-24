@@ -3,7 +3,7 @@ body{
   background-color: #f4f4f4;
 }
 
-.custom-wrapper {
+.th-navbar {
   background-color: #4175bf;
   margin-bottom: 0;
   -webkit-font-smoothing: antialiased;
@@ -17,6 +17,7 @@ body{
   -moz-box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.75);
   box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.75);
   position: relative;
+  padding-left: .3em;
 }
 
 .cw-brand div{margin-left: 1em;}
@@ -27,7 +28,7 @@ body{
   background-color: initial;
 }
 
-.custom-wrapper.open {
+.th-navbar.open {
     height: 10em;
 }
 
@@ -95,7 +96,7 @@ body{
 }
 
 @media screen and (min-width: 48em){
-  .custom-wrapper{
+  .th-navbar{
     -webkit-transform-style: preserve-3d;
     -moz-transform-style: preserve-3d;
     transform-style: preserve-3d;
@@ -119,10 +120,12 @@ body{
   .sidebar{
     border-bottom: 1px solid #ddd;
   }
-}
-
-#th-uinfo {
-  text-align: right;
+  #th-menu {
+    padding-left: 2em;
+  }
+  #th-uinfo {
+    text-align: right;
+  }
 }
 
 .content{

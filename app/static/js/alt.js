@@ -1,5 +1,34 @@
 var socket = io.connect('//' + document.domain + ':' + location.port + '/alt');
 var md = converter = new showdown.Converter({tables: true});
+
+/* Little hack so we can operate various modules with one route */
+m.routes = function mRoutes( defaultRoute, routesMap ){
+	var routes = {};
+
+	for( var route in routesMap ){
+		routes[ route ] = {
+			controller : subRouter( routesMap[ route ] ),
+			view       : noop
+		};
+	}
+
+	return m.route( document.body, defaultRoute, routes );
+
+	function subRouter( modules ){
+		return function routeChange(){
+			m.redraw.strategy( 'none' );
+
+			for( var key in modules ){
+				m.module( document.querySelector( key ), modules[ key ] );
+			}
+		};
+	}
+
+	function noop(){}
+};
+
+
+
 function get_hostname(url) {
   if(!url){return;}
   var matches = url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
@@ -217,38 +246,49 @@ function renderPosts(posts){
   return tffs;
 }
 
-var index = {
-  controller: function (){
-    var ctrl = this;
-    ctrl.err = '';
-    ctrl.posts = []
-    ctrl.get_posts = function () {
-      m.startComputation();
-      m.request({
-        method: 'GET',
-        url: '/do/get_frontpage/all/new'
-      }).then(function(res) {
-          if (res.status == 'ok'){
-            ctrl.posts = res.posts;
-          } else {
-            ctrl.err = res.error
-          }
-          m.endComputation();
-      }).catch(function(err) {
-        ctrl.err = [err];
+var all_hot = {}; // all_hot is the base for all the other sorters!
+all_hot.control = function (sort){
+  var ctrl = this;
+  ctrl.err = '';
+  ctrl.posts = [];
+  ctrl.get_posts = function () {
+    m.startComputation();
+    m.request({
+      method: 'GET',
+      url: '/do/get_frontpage/all/' + sort
+    }).then(function(res) {
+        if (res.status == 'ok'){
+          ctrl.posts = res.posts;
+        } else {
+          ctrl.err = res.error
+        }
         m.endComputation();
-      });
-    }
-    ctrl.get_posts();
-  },
-  view: function (ctrl) {
-    if (ctrl.err != ''){
-      return m('div.content.pure-u-1', {}, "Error loading posts: " + ctrl.err);
-    }else {
-      return [m('div.content.pure-u-1 pure-u-md-18-24', {}, renderPosts(ctrl.posts)),
-              m('div.sidebar.pure-u-1 pure-u-md-6-24')];
-    }
+    }).catch(function(err) {
+      ctrl.err = [err];
+      m.endComputation();
+    });
   }
+  ctrl.get_posts();
+  return ctrl;
+};
+all_hot.controller = function() {return all_hot.control('hot')};
+all_hot.view = function (ctrl) {
+  if (ctrl.err != ''){
+    return m('div.content.pure-u-1', {}, "Error loading posts: " + ctrl.err);
+  }else {
+    return [m('div.content.pure-u-1 pure-u-md-18-24', {}, renderPosts(ctrl.posts)),
+            m('div.sidebar.pure-u-1 pure-u-md-6-24')];
+  }
+};
+
+var all_new = {
+  controller: function (){ return all_hot.control('new'); },
+  view: function(ctrl) { return all_hot.view(ctrl); }
+};
+
+var all_top = {
+  controller: function (){ return all_hot.control('top'); },
+  view: function(ctrl) { return all_hot.view(ctrl); }
 };
 
 var login = {
@@ -426,14 +466,26 @@ var register = {
   }
 };
 
+var menu_index = {  // the menu for all the global index pages (home_*, all_*)
+  controller: function () {},
+  view: function (ctrl) {
+    return [m('li.pure-menu-item', m('a.pure-menu-link[href="/all/hot"]', {config: m.route},'Hot')),
+            m('li.pure-menu-item', m('a.pure-menu-link[href="/all/top"]', {config: m.route},'Top')),
+            m('li.pure-menu-item', m('a.pure-menu-link[href="/all/new"]', {config: m.route},'New'))]
+  }
+};
+
 m.route.mode = "hash";
 
 /* routing */
-m.route(document.getElementById('th-main'), "/", {
-    "/": index,
-    "/login": login,
-    "/register": register
-});
+m.routes('/', {// default route
+    '/': {'#th-main': all_hot, '#th-menu': menu_index},
+    '/all/hot': {'#th-main': all_hot},
+    '/all/new': {'#th-main': all_new},
+    '/all/top': {'#th-main': all_top},
+    '/login': {'#th-main': login},
+    '/register': {'#th-main': register}
+  })
 
 /* User view thingy controller */
 var user = {};
@@ -515,7 +567,7 @@ m.module(document.getElementById('LogoMenu'), {view: lm.view});
     [].forEach.call(
       document.getElementById('menu').querySelectorAll('.custom-can-transform'),
       function(el){
-        el.classList.toggle('pure-menu-horizontal');
+        //el.classList.toggle('pure-menu-horizontal');
       }
     );
   };
