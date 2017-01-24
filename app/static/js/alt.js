@@ -253,6 +253,7 @@ all_hot.control = function (sort){
   ctrl.posts = [];
   ctrl.get_posts = function () {
     m.startComputation();
+    window.stop();  // We're going to change pages, so cancel all requests.
     m.request({
       method: 'GET',
       url: '/do/get_frontpage/all/' + sort
@@ -276,8 +277,13 @@ all_hot.view = function (ctrl) {
   if (ctrl.err != ''){
     return m('div.content.pure-u-1', {}, "Error loading posts: " + ctrl.err);
   }else {
-    return [m('div.content.pure-u-1 pure-u-md-18-24', {}, renderPosts(ctrl.posts)),
-            m('div.sidebar.pure-u-1 pure-u-md-6-24')];
+    if (ctrl.posts == []) {
+      return [m('div.content.pure-u-1 pure-u-md-18-24', {}, 'Loading...'),
+              m('div.sidebar.pure-u-1 pure-u-md-6-24')];
+    } else {
+      return [m('div.content.pure-u-1 pure-u-md-18-24', {}, renderPosts(ctrl.posts)),
+              m('div.sidebar.pure-u-1 pure-u-md-6-24')];
+    }
   }
 };
 
