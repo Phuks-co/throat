@@ -610,7 +610,18 @@ subar.view = function (ctrl){ // sub bar
 m.module(document.getElementById('th-uinfo'), {controller: user.controller, view: user.view});
 m.module(document.getElementById('th-subar'), {controller: subar.controller, view: subar.view});
 var lm = {};
-lm.view = function () {};
+var logo = document.getElementById('kxlogo').innerHTML;
+lm.view = function () {
+	return [m("a.pure-menu-heading[href='/']", {config: m.route},[
+						m('span#kxlogo', {config: function (element, isInit, context){
+							context.retain = true;
+							if (!isInit && logo != undefined) {
+								document.getElementById('kxlogo').innerHTML = logo;
+							}
+						}})
+						//m("img[alt='Throat'][id='logo'][src='/static/img/logo-white.svg']")
+				 ])]
+};
 m.module(document.getElementById('LogoMenu'), {view: lm.view});
 
 /* Menu */
