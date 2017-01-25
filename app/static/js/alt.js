@@ -247,7 +247,7 @@ function renderPosts(posts){
 }
 
 var all_hot = {}; // all_hot is the base for all the other sorters!
-all_hot.control = function (sort){
+all_hot.control = function (type, sort){
   var ctrl = this;
   ctrl.err = '';
   ctrl.posts = [];
@@ -256,7 +256,7 @@ all_hot.control = function (sort){
     window.stop();  // We're going to change pages, so cancel all requests.
     m.request({
       method: 'GET',
-      url: '/do/get_frontpage/all/' + sort
+      url: '/do/get_frontpage/' + type + '/' + sort
     }).then(function(res) {
         if (res.status == 'ok'){
           ctrl.posts = res.posts;
@@ -273,7 +273,7 @@ all_hot.control = function (sort){
   ctrl.get_posts();
   return ctrl;
 };
-all_hot.controller = function() {return all_hot.control('hot')};
+all_hot.controller = function() {return all_hot.control('all', 'hot')};
 all_hot.view = function (ctrl) {
   if (ctrl.err != ''){
     return m('div.content.pure-u-1', {}, "Error loading posts: " + ctrl.err);
@@ -290,12 +290,28 @@ all_hot.view = function (ctrl) {
 };
 
 var all_new = {
-  controller: function (){ return all_hot.control('new'); },
+  controller: function (){ return all_hot.control('all', 'new'); },
   view: function(ctrl) { return all_hot.view(ctrl); }
 };
 
 var all_top = {
-  controller: function (){ return all_hot.control('top'); },
+  controller: function (){ return all_hot.control('all', 'top'); },
+  view: function(ctrl) { return all_hot.view(ctrl); }
+};
+
+var home_hot = {
+  controller: function (){ return all_hot.control('home', 'hot'); },
+  view: function(ctrl) { return all_hot.view(ctrl); }
+};
+
+var home_new = {
+  controller: function (){ return all_hot.control('home', 'new'); },
+  view: function(ctrl) { return all_hot.view(ctrl); }
+};
+
+
+var home_top = {
+  controller: function (){ return all_hot.control('home', 'top'); },
   view: function(ctrl) { return all_hot.view(ctrl); }
 };
 
@@ -474,23 +490,37 @@ var register = {
   }
 };
 
-var menu_index = {  // the menu for all the global index pages (home_*, all_*)
+var menu_home = {  // the menu for home_*
   controller: function () {},
   view: function (ctrl) {
-    return [m('li.pure-menu-item', {active: (m.route() == '/' || m.route() == '/all/hot') ? true : false}, m('a.pure-menu-link[href="/all/hot"]', {config: m.route},'Hot')),
-            m('li.pure-menu-item', {active: (m.route() == '/all/top') ? true : false}, m('a.pure-menu-link[href="/all/top"]', {config: m.route},'Top')),
-            m('li.pure-menu-item', {active: (m.route() == '/all/new') ? true : false}, m('a.pure-menu-link[href="/all/new"]', {config: m.route},'New'))]
+    return [m('li.pure-menu-item', {active: (m.route() == '/' || m.route() == '/hot') ? true : false}, m('a.pure-menu-link[href="/all/hot"]', {config: m.route},'Hot')),
+            m('li.pure-menu-item', {active: (m.route() == '/new') ? true : false}, m('a.pure-menu-link[href="/new"]', {config: m.route},'New')),
+            m('li.pure-menu-item', m('a.pure-menu-link[href="/all/new"]', {config: m.route}, 'Recent'))]
   }
 };
+
+var menu_all = {  // the menu for all_*
+  controller: function () {},
+  view: function (ctrl) {
+    return [m('li.pure-menu-item', m('span', m('b', 'All'))),
+						m('li.pure-menu-item', {active: (m.route() == '/all/hot') ? true : false}, m('a.pure-menu-link[href="/all/hot"]', {config: m.route},'Hot')),
+            m('li.pure-menu-item', {active: (m.route() == '/all/top') ? true : false}, m('a.pure-menu-link[href="/all/top"]', {config: m.route},'Top')),
+            m('li.pure-menu-item', {active: (m.route() == '/all/new') ? true : false}, m('a.pure-menu-link[href="/all/new"]', {config: m.route}, 'New'))]
+  }
+};
+
 
 m.route.mode = "hash";
 
 /* routing */
 m.routes('/', {// default route
-    '/': {'#th-main': all_hot, '#th-menu': menu_index},
-    '/all/hot': {'#th-main': all_hot, '#th-menu': menu_index},
-    '/all/new': {'#th-main': all_new, '#th-menu': menu_index},
-    '/all/top': {'#th-main': all_top, '#th-menu': menu_index},
+    '/': {'#th-main': home_hot, '#th-menu': menu_home},
+    '/all/hot': {'#th-main': all_hot, '#th-menu': menu_all},
+    '/all/new': {'#th-main': all_new, '#th-menu': menu_all},
+    '/all/top': {'#th-main': all_top, '#th-menu': menu_all},
+    '/top': {'#th-main': home_top, '#th-menu': menu_home},
+    '/new': {'#th-main': home_new, '#th-menu': menu_home},
+    '/hot': {'#th-main': home_hot, '#th-menu': menu_home},
     '/login': {'#th-main': login},
     '/register': {'#th-main': register}
   })

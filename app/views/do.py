@@ -1789,27 +1789,42 @@ def get_comments(cid):
 # Routes used in /alt
 
 
-@do.route('/do/get_frontpage/all/<sort>', defaults={'page': 1})
-@do.route('/do/get_frontpage/all/<sort>/<int:page>')
-def get_all_new(sort, page):
-    q = 'SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted`,'\
-        '`thumbnail`,`link`,`content` FROM `sub_post` WHERE `deleted`=0 '
-    s = []
-    if sort == 'new':
-        q += 'ORDER BY `posted` DESC LIMIT %s,20'
-        s.append((page - 1) * 20)
-    elif sort == 'top':
-        q += 'ORDER BY `score` DESC LIMIT %s,20'
-        s.append((page - 1) * 20)
-    elif sort == 'hot':
-        q += 'AND `posted` > NOW() - INTERVAL 7 DAY ORDER BY `score` DESC'\
-             ' LIMIT 200'
+@do.route('/do/get_frontpage/<gtype>/<sort>', defaults={'page': 1})
+@do.route('/do/get_frontpage/<gtype>/<sort>/<int:page>')
+def get_all_new(gtype, sort, page):
+    if gtype == 'all':
+        q = 'SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted`,'\
+            '`thumbnail`,`link`,`content` FROM `sub_post` WHERE `deleted`=0 '
+        s = []
+        if sort == 'new':
+            q += 'ORDER BY `posted` DESC LIMIT %s,20'
+            s.append((page - 1) * 20)
+        elif sort == 'top':
+            q += 'ORDER BY `score` DESC LIMIT %s,20'
+            s.append((page - 1) * 20)
+        elif sort == 'hot':
+            q += 'AND `posted` > NOW() - INTERVAL 7 DAY ORDER BY `score` DESC'\
+                 ' LIMIT 200'
+        else:
+            return jsonify(status='error', error=['wut'])
 
-    c = db.query(q, s)
-    if sort == 'hot':
-        posts = HotSorting(c.fetchall()).getPosts(page)
-    else:
-        posts = c.fetchall()
+        c = db.query(q, s)
+        if sort == 'hot':
+            posts = HotSorting(c.fetchall()).getPosts(page)
+        else:
+            posts = c.fetchall()
+    elif gtype == 'home':
+        subs = misc.getSubscriptions(current_user.get_id())
+        if sort == 'new':
+            posts = misc.getPostsFromSubs(subs, (page - 1), 'posted', 20)
+        elif sort == 'top':
+            posts = misc.getPostsFromSubs(subs, (page - 1), 'score', 20)
+        elif sort == 'hot':
+            posts = misc.getPostsFromSubs(subs, 200, 'score', False,
+                                          'AND `posted` > NOW() - INTERVAL '
+                                          '7 DAY')
+            posts = HotSorting(posts).getPosts(page)
+
     fposts = []
     for post in posts:
         post['content'] = False if post['content'] == '' else True

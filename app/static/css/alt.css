@@ -423,3 +423,7 @@ iframe {
 #th-menu a.pure-menu-link:hover, #th-menu li[active='true'] a {
   background-color: rgb(57, 101, 164);
 }
+
+li.pure-menu-item span{
+  margin-right: 1em;
+}

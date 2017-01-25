@@ -234,10 +234,9 @@ def home_hot(page):
 def home_new(page):
     """ /new for subscriptions """
     subs = misc.getSubscriptions(current_user.get_id())
-    posts = misc.getPostsFromSubs(subs, 200)
-    sorter = NewSorting(posts)
+    posts = misc.getPostsFromSubs(subs, (page - 1), 'pid', 20)
     return render_template('index.html', page=page, sort_type='home_new',
-                           posts=sorter.getPosts(page))
+                           posts=posts)
 
 
 @app.route("/top", defaults={'page': 1})
@@ -245,11 +244,10 @@ def home_new(page):
 def home_top(page):
     """ /top for subscriptions """
     subs = misc.getSubscriptions(current_user.get_id())
-    posts = misc.getPostsFromSubs(subs, 200, 'score')
+    posts = misc.getPostsFromSubs(subs, (page - 1), 'score', 20)
 
-    sorter = VoteSorting(posts)
     return render_template('index.html', page=page, sort_type='home_top',
-                           posts=sorter.getPosts(page))
+                           posts=posts)
 
 
 @app.route("/all/new.rss")

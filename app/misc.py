@@ -182,7 +182,7 @@ class SiteUser(object):
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
     uid = False
-    
+
     def get_id(self):
         return False
 
@@ -723,21 +723,26 @@ def moddedSubCount(uid):
 
 
 @cache.memoize(120)
-def getPostsFromSubs(subs, limit=False, orderby='pid'):
+def getPostsFromSubs(subs, limit=False, orderby='pid', paging=False, inj=''):
     """ Returns all posts from a list or subs """
     if not subs:
         return []
-    qbody = "SELECT * FROM `sub_post` WHERE "
+    qbody = "SELECT * FROM `sub_post` WHERE `sid` IN ("
     qdata = []
     for sub in subs:
-        qbody += "`sid`=%s OR "
+        qbody += "%s,"
         qdata.append(sub['sid'])
-    qbody = qbody[:-4] + ' ORDER BY %s'
-    qdata.append(orderby)
-    if limit:
+    qbody = qbody[:-1] + ') '
+    qbody += inj  # whee
+    qbody += ' ORDER BY `' + orderby + '` DESC'
+    if limit is not False:
         qbody += ' LIMIT %s'
         qdata.append(limit)
-    c = db.query(qbody, tuple(qdata))
+        if paging:
+            qbody += ',%s'
+            qdata.append(paging)
+    c = db.query(qbody, qdata)
+
     return c.fetchall()
 
 
