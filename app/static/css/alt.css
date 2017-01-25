@@ -131,8 +131,7 @@ body{
 }
 
 .content{
-  /*padding-left: 1%;*/
-  padding-top: .1em;
+  padding-top: .4em;
   padding-bottom: 60px;
 }
 
@@ -239,7 +238,7 @@ label span{margin-left: 7px;}
 .post .title {
   text-decoration: none;
   line-height: 1.2em;
-  font-size: larger;
+  font-size: 1em;
   word-wrap: break-word;
 }
 .icon{
@@ -325,6 +324,11 @@ label span{margin-left: 7px;}
     margin-top: .2em;
 }
 
+.pbody {
+  padding-left: .4em;
+}
+
+
 /* Badges/Pills */
 .pure-badge,
 .pure-badge-error,
@@ -376,9 +380,6 @@ label span{margin-left: 7px;}
   letter-spacing: initial;
 }
 
-.pbody {
-  padding-left: .4em;
-}
 
 .misctainer {
     max-width: calc(2em - -70px);
@@ -439,10 +440,15 @@ li.pure-menu-item span{
     display: inline-block;
     margin: 0 6px;
 }
-.subscriptionbar {
-    border-bottom: 1px solid #dedede;
-    font-variant: small-caps;
+.subscriptionbar a {
+  color: #4b6d9d;
 }
+.subscriptionbar {
+    background: #000;
+    font-variant: small-caps;
+    color: #ddd;
+}
+
 .subscriptionbar ul{
   margin: .2em;
   padding:0;

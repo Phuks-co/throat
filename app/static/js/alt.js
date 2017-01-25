@@ -1,6 +1,6 @@
 var socket = io.connect('//' + document.domain + ':' + location.port + '/alt');
 var md = converter = new showdown.Converter({tables: true, extensions: ['xssfilter']});
-
+var user = {}  // user info
 /* Little hack so we can operate various modules with one route */
 m.routes = function mRoutes( defaultRoute, routesMap ){
 	var routes = {};
@@ -192,15 +192,16 @@ function renderPosts(posts){
                 }(), m('span.pure-badge', m('i.fa.fa-comments'), ' ', post.comments)) // thumbnail
                ),
                 m('div.pure-u-16-24.pure-u-md-20-24.pbody',
-                  function () {
-                    if (post.ptype == 0){
-                      return m('a.title[href=/s/' + post['sub']['name'] + '/' + post['pid'] + ']', {}, post['title']);
-                    } else {
-                      return [m('a.title', {href: post['link']}, post['title']),
-                              m('span.domain', ' (', m('a[href=#]', {}, post.domain), ')')
-                              ];
-                    }
-                  }(),
+									m('div.post-heading',
+	                  function () {
+	                    if (post.ptype == 0){
+	                      return m('a.title[href=/s/' + post['sub']['name'] + '/' + post['pid'] + ']', {}, post['title']);
+	                    } else {
+	                      return [m('a.title', {href: post['link']}, post['title']),
+	                              m('span.domain', ' (', m('a[href=#]', {}, post.domain), ')')
+	                              ];
+	                    }
+	                  }()),
                   m('div.author',
                     function () {
                       if(post.expando){
@@ -527,11 +528,10 @@ m.routes('/', {// default route
 
 /* User view thingy controller */
 var user = {};
-
+user.udata = {};
 user.vm = new function () {
   var vm = {};
   vm.init = function () {
-    vm.udata = m.prop('lel');  // loadin'
     vm.logout = function() {
       m.request({
         method: "POST",
@@ -542,7 +542,7 @@ user.vm = new function () {
     vm.listen = (function() {
       m.startComputation();
       socket.on("uinfo", function (data) {
-        vm.udata(data);
+        user.udata = data;
         m.endComputation();
       });
     })();
@@ -554,8 +554,8 @@ user.controller = function(){
   user.vm.init();
 };
 
-user.view = function (ctrl){
-  var u = user.vm.udata()
+user.view = function (ctrl){  // login thingy
+  var u = user.udata;
   return m("div.cw-items", {}, function(){
           if (u.loggedin){
                 return [m('a', {href: '/u/' + u.name, class: 'smallcaps'}, u.name),
@@ -587,13 +587,30 @@ user.view = function (ctrl){
       )
 };
 
-m.module(document.getElementById('th-uinfo'), {controller: user.controller, view: user.view});
-var lm = {};
-lm.view = function () {
-  return [
-    m("a.pure-menu-heading[href='/']", {config: m.route},[m("img[alt='Throat'][id='logo'][src='/static/img/logo-white.svg']")])]
+var subar = {};
+subar.controller = function () {
+	var ctrl = {};
+	m.request({
+		method: 'GET',
+		url: '/do/get_subscriptions'
+	}).then(function(res) {
+			ctrl.subs = res.subscriptions;
+			m.endComputation();
+	});
+	return ctrl;
+};
+subar.view = function (ctrl){ // sub bar
+	x = [];
+	for( var i in ctrl.subs ){
+		x.push(m('li.subinthebar', m('a', {config: m.route, href: '/s/' + ctrl.subs[i]}, ctrl.subs[i].toLowerCase())))
+	}
+	return x;
 };
 
+m.module(document.getElementById('th-uinfo'), {controller: user.controller, view: user.view});
+m.module(document.getElementById('th-subar'), {controller: subar.controller, view: subar.view});
+var lm = {};
+lm.view = function () {};
 m.module(document.getElementById('LogoMenu'), {view: lm.view});
 
 /* Menu */

@@ -1852,3 +1852,13 @@ def get_post_md(pid):
     post = c['content']
 
     return jsonify(status='ok', content=post)
+
+
+@do.route('/do/get_subscriptions')
+def get_subscriptions():
+    """ Returns subscriptions for current user """
+    subsc = misc.getSubscriptions(current_user.get_id())
+    subs = []
+    for sub in subsc:
+        subs.append(db.get_sub_from_sid(sub['sid'])['name'])
+    return jsonify(status='ok', subscriptions=subs)
