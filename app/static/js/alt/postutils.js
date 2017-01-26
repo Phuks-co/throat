@@ -90,6 +90,21 @@ function postWrapper(post) {
     m.endComputation();
   };
 
+  post.xkcd_expando = function () {
+    m.startComputation();
+    m.request({
+      method: 'GET',
+      url: '/do/grabxkcd/' + xkcdID(post.link)
+    }).then(function(res) {
+        if (res.status == 'ok'){
+          post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24',
+                          m('img', {src: res.img})
+                        ));
+        }
+        m.endComputation();
+    });
+  };
+
   post.text_expando = function () {
     m.startComputation();
     m.request({
@@ -172,6 +187,8 @@ function renderPosts(posts){
                             return m('div.expando', {onclick: post.imgur_gifv_expando}, m('i.fa.fa-play'));
                           }else if (post.domain == 'twitter.com') {
                             return m('div.expando', {onclick: post.tweet_expando}, m('i.fa.fa-twitter'));
+                          }else if (post.domain == 'xkcd.com') {
+                            return m('div.expando', {onclick: post.xkcd_expando}, m('i.fa.fa-play '));
                           }
                         } else { // text post
                           if (post.content) {

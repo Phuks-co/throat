@@ -77,3 +77,9 @@ function imgurID(url) {
     return match[2].replace(/.gifv/,'');
 	}
 }
+function xkcdID(url) {
+  var match = url.match(/^http(?:s?):\/\/xkcd\.com\/([a-zA-Z0-9/]{1,10})$/);
+  if (match){
+    return match[1].replace(/\//,'');
+	}
+}
