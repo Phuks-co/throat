@@ -554,8 +554,21 @@ user.controller = function(){
   user.vm.init();
 };
 
+function toggle_darkmode () {
+	l = document.getElementsByTagName('body')[0].classList
+	l.toggle('dark');
+	var mode = getCookie("dayNight");
+	var d = new Date();
+	d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); //365 days
+	var expires = "expires=" + d.toGMTString();
+	document.cookie = "dayNight=" + (l.length == 1 && l[0] == 'dark')?'dark' : 'light' + "; " + expires + ";path=/";
+}
+
 user.view = function (ctrl){  // login thingy
   var u = user.udata;
+	if(u.loggedin == undefined) {
+		return m("div.cw-items", 'Loading...');
+	}
   return m("div.cw-items", {}, function(){
           if (u.loggedin){
                 return [m('a', {href: '/u/' + u.name, class: 'smallcaps'}, u.name),
@@ -566,7 +579,7 @@ user.view = function (ctrl){  // login thingy
                 m('span', {class: 'separator'}),
                 m('a', {class: 'glyphbutton sep', href: '#'},
                   m('i', {class: 'fa fa-sliders', title: 'Settings'})),
-                m('a', {class: 'glyphbutton sep', href: '#'},
+                m('a', {class: 'glyphbutton sep'},
                   m('i', {class: 'fa ' + function(){
                                   if (u.ntf == 0){
                                     return 'fa-envelope-o';
@@ -574,8 +587,8 @@ user.view = function (ctrl){  // login thingy
                                     return 'fa-envelope hasmail';
                                   }
                                 }(), title: 'Messages'})),
-                m('a', {class: 'glyphbutton', href: '#'},
-                  m('i', {class: 'fa fa-lightbulb-o', title: 'Toggle light mode'})),
+                m('a', {class: 'glyphbutton', id: 'toggledark'},
+                  m('i', {class: 'fa fa-lightbulb-o', title: 'Toggle light mode', onclick: toggle_darkmode})),
                 m('span', {class: 'separator'}),
                 m('a[href="#"]', {onclick: user.vm.logout}, 'Log out')]
           }else{

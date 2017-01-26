@@ -15,7 +15,7 @@
     };
     var thumbs = '{{config.THUMBNAIL_HOST}}';</script>
   </head>
-  <body>
+  <body {%if request.cookies.get( "dayNight")=="dark" %}class="dark"{%endif%}>
     {{dummyform.csrf_token}}
     <!-- Sub bar -->
     <div class="pure-g subscriptionbar">

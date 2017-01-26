@@ -106,7 +106,8 @@ pure_css = Bundle('css/font-awesome.min.css',
                   'css/pure/menus.css',
                   'css/pure/forms.css',
                   'css/pure/buttons.css',
-                  'css/alt.css',
+                  'css/alt/main.css',
+                  'css/alt/darkmode.css',
                   filters='cssmin,datauri', output='gen/c_bundle.css')
 alt_js = Bundle(
                 'js/CustomElements.min.js',
