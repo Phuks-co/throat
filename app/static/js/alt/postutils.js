@@ -93,8 +93,8 @@ function postWrapper(post) {
   post.xkcd_expando = function () {
     m.startComputation();
     m.request({
-      dataType: "jsonp",
-      url: 'https://dynamic.xkcd.com/api-0/jsonp/comic/' + id
+      dataType: 'jsonp',
+      url: 'https://dynamic.xkcd.com/api-0/jsonp/comic/' + xkcdID(post.link)
     }).then(function(res) {
         if (res.num == xkcdID(post.link)) {
           post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24',
