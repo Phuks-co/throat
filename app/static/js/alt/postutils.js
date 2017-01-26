@@ -229,7 +229,7 @@ function renderPosts(posts, sub){
                     m('time-ago', {datetime: post.posted}),
                     ' by ', (post.username == '[Deleted]') ? '[Deleted]' : m('a', {href: '/u/'+ post.username, config: m.route}, post.username),
                     function () {
-                      if (!sub) {' on ', m('a', {href: '/s/' + post.sub.name, config: m.route}, post.sub.name)}
+                      if (!sub) {return [' on ', m('a', {href: '/s/' + post.sub.name, config: m.route}, post.sub.name)];}
                     }()
                   )
                 )
