@@ -98,7 +98,7 @@ function postWrapper(post) {
     }).then(function(res) {
         if (res.num == xkcdID(post.link)) {
           post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24',
-                          m('img', {src: res.img})
+                          [m('div.expandotxt', res.safe_title + ': ' + res.alt), m('img', {src: res.img})]
                         ));
         }
         m.endComputation();
@@ -112,7 +112,7 @@ function postWrapper(post) {
       url: '/do/get_post_md/' + post.pid
     }).then(function(res) {
         if (res.status == 'ok'){
-          post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24',
+          post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24 expandotxt',
                           m('span', m.trust(md.makeHtml(res.content)))
                         ));
         }
