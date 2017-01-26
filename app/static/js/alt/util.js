@@ -88,6 +88,7 @@ function streamableID(url) {
   if (match){
     return match[1];
 	}
+}
 
 
 /* static mithril module for the logo */
