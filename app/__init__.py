@@ -116,7 +116,16 @@ alt_js = Bundle(
                 'js/showdown-xss-filter.js',
                 'js/socket.io.slim.js',
                 'js/mithril.js',
-                'js/alt.js', filters='jsmin', output='gen/j_bundle.js')
+                
+                'js/alt/util.js',
+                'js/alt/postutils.js',
+                'js/alt/index_views.js',
+                'js/alt/user_views.js',
+                'js/alt/sub_views.js',
+                'js/alt/site_views.js',
+                'js/alt/messaging_views.js',
+                'js/alt/main.js',
+                filters='jsmin', output='gen/j_bundle.js')
 assets.register('js_all', js)
 assets.register('css_all', css)
 assets.register('pure_css', pure_css)
