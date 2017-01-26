@@ -11,7 +11,8 @@ body{
   background-color: #4175bf;
   margin-bottom: 0;
   -webkit-font-smoothing: antialiased;
-  height: 5em;
+  height: 6em;
+  padding-top: 1em;
   overflow: hidden;
   -webkit-transition: height 0.5s;
   -moz-transition: height 0.5s;
@@ -449,6 +450,7 @@ li.pure-menu-item span{
     color: #ddd;
     overflow: hidden;
     font-size: 0.8em;
+    position: fixed;
 }
 
 .subscriptionbar ul{
