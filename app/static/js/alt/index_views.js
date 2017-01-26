@@ -17,7 +17,7 @@ all_hot.control = function (type, sort){
     window.stop();  // We're going to change pages, so cancel all requests.
     m.request({
       method: 'GET',
-      url: '/do/get_frontpage/' + type + '/' + sort
+      url: '/do/get_posts/' + type + '/' + sort
     }).then(function(res) {
         if (res.status == 'ok'){
           ctrl.posts = res.posts;
@@ -44,7 +44,7 @@ all_hot.view = function (ctrl) {
       return [m('div.content.pure-u-1 pure-u-md-18-24', {}, 'Loading...'),
               m('div.sidebar.pure-u-1 pure-u-md-6-24')];
     } else {
-      return [m('div.content.pure-u-1 pure-u-md-18-24', {}, renderPosts(ctrl.posts)),
+      return [m('div.content.pure-u-1 pure-u-md-18-24', {}, renderPosts(ctrl.posts, ctrl.sub)),
               m('div.sidebar.pure-u-1 pure-u-md-6-24')];
     }
   }

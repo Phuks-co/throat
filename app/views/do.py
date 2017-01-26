@@ -1789,13 +1789,36 @@ def get_comments(cid):
 # Routes used in /alt
 
 
-@do.route('/do/get_frontpage/<gtype>/<sort>', defaults={'page': 1})
-@do.route('/do/get_frontpage/<gtype>/<sort>/<int:page>')
-def get_all_new(gtype, sort, page):
-    if gtype == 'all':
+@do.route('/do/get_posts/<gtype>/<sort>', defaults={'page': 1})
+@do.route('/do/get_posts/<gtype>/<sort>/<int:page>')
+def get_posts(gtype, sort, page):
+    """ Returns the post listing for something """
+    # TODO: NSFW checks
+    subinfo = True
+    if gtype == 'home':
+        subs = misc.getSubscriptions(current_user.get_id())
+        if sort == 'new':
+            posts = misc.getPostsFromSubs(subs, (page - 1), 'posted', 20)
+        elif sort == 'top':
+            posts = misc.getPostsFromSubs(subs, (page - 1), 'score', 20)
+        elif sort == 'hot':
+            posts = misc.getPostsFromSubs(subs, 200, 'score', False,
+                                          'AND `posted` > NOW() - INTERVAL '
+                                          '7 DAY')
+            posts = HotSorting(posts).getPosts(page)
+        else:
+            return jsonify(status='error', error=['wut'])
+    else:
         q = 'SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted`,'\
             '`thumbnail`,`link`,`content` FROM `sub_post` WHERE `deleted`=0 '
         s = []
+        if gtype != 'all':
+            subinfo = False
+            sub = db.get_sub_from_name(gtype)
+            if not sub:
+                return jsonify(status='error', error=['Sub not found'])
+            q += 'AND `sid`=%s '
+            s.append(sub['sid'])
         if sort == 'new':
             q += 'ORDER BY `posted` DESC LIMIT %s,20'
             s.append((page - 1) * 20)
@@ -1813,17 +1836,6 @@ def get_all_new(gtype, sort, page):
             posts = HotSorting(c.fetchall()).getPosts(page)
         else:
             posts = c.fetchall()
-    elif gtype == 'home':
-        subs = misc.getSubscriptions(current_user.get_id())
-        if sort == 'new':
-            posts = misc.getPostsFromSubs(subs, (page - 1), 'posted', 20)
-        elif sort == 'top':
-            posts = misc.getPostsFromSubs(subs, (page - 1), 'score', 20)
-        elif sort == 'hot':
-            posts = misc.getPostsFromSubs(subs, 200, 'score', False,
-                                          'AND `posted` > NOW() - INTERVAL '
-                                          '7 DAY')
-            posts = HotSorting(posts).getPosts(page)
 
     fposts = []
     for post in posts:
@@ -1831,7 +1843,8 @@ def get_all_new(gtype, sort, page):
         post['comments'] = db.get_post_comment_count(post['pid'])
         post['username'] = db.get_user_from_uid(post['uid'])['name']
         post['posted'] = post['posted'].isoformat() + 'Z'  # silly hack
-        post['sub'] = db.get_sub_from_sid(post['sid'], '`name`, `nsfw`')
+        if subinfo:
+            post['sub'] = db.get_sub_from_sid(post['sid'], '`name`, `nsfw`')
         if current_user.is_authenticated:
             post['vote'] = misc.getVoteStatus(current_user.get_id(),
                                               post['pid'])
@@ -1862,3 +1875,18 @@ def get_subscriptions():
     for sub in subsc:
         subs.append(db.get_sub_from_sid(sub['sid'])['name'])
     return jsonify(status='ok', subscriptions=subs)
+
+
+@do.route('/do/get_sub/<sub>')
+def get_sub(sub):
+    sub = db.get_sub_from_name(sub, '`sid`,`name`,`sidebar`,`title`,`nsfw`')
+    if not sub:
+        return jsonify(status='error', error=['Sub not found'])
+    x = db.get_sub_metadata(sub['sid'], 'sort')
+    if not x or x['value'] == 'v':
+        sub['sort'] = 'hot'
+    elif x['value'] == 'v_two':
+        sub['sort'] = 'new'
+    elif x['value'] == 'v_three':
+        sub['sort'] = 'top'
+    return jsonify(status='ok', sub=sub)

@@ -27,6 +27,7 @@ m.route.mode = "hash";
 
 /* routing */
 m.routes('/', {// default route
+    /* Frontpage */
     '/': {'#th-main': home_hot, '#th-menu': menu_home},
     '/all/hot': {'#th-main': all_hot, '#th-menu': menu_all},
     '/all/new': {'#th-main': all_new, '#th-menu': menu_all},
@@ -34,8 +35,13 @@ m.routes('/', {// default route
     '/top': {'#th-main': home_top, '#th-menu': menu_home},
     '/new': {'#th-main': home_new, '#th-menu': menu_home},
     '/hot': {'#th-main': home_hot, '#th-menu': menu_home},
+
+    /* User */
     '/login': {'#th-main': login},
-    '/register': {'#th-main': register}
+    '/register': {'#th-main': register},
+
+    /* Sub */
+    '/s/:sub': {'#th-main': sub_auto},
   })
 
 /* User view thingy controller */
@@ -65,16 +71,6 @@ user.vm = new function () {
 user.controller = function(){
   user.vm.init();
 };
-
-function toggle_darkmode () {
-	l = document.getElementsByTagName('body')[0].classList
-	l.toggle('dark');
-	var mode = getCookie("dayNight");
-	var d = new Date();
-	d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); //365 days
-	var expires = "expires=" + d.toGMTString();
-	document.cookie = "dayNight=" + ((l.value == 'dark')?'dark' : 'light') + "; " + expires + ";path=/";
-}
 
 user.view = function (ctrl){  // login thingy
   var u = user.udata;
@@ -134,58 +130,3 @@ subar.view = function (ctrl){ // sub bar
 
 m.module(document.getElementById('th-uinfo'), {controller: user.controller, view: user.view});
 m.module(document.getElementById('th-subar'), {controller: subar.controller, view: subar.view});
-var lm = {};
-var logo = document.getElementById('kxlogo').innerHTML;
-lm.view = function () {
-	return [m("a.pure-menu-heading[href='/']", {config: m.route},[
-						m('span#kxlogo', {config: function (element, isInit, context){
-							context.retain = true;
-							if (!isInit && logo != undefined) {
-								document.getElementById('kxlogo').innerHTML = logo;
-							}
-						}})
-						//m("img[alt='Throat'][id='logo'][src='/static/img/logo-white.svg']")
-				 ])]
-};
-m.module(document.getElementById('LogoMenu'), {view: lm.view});
-
-/* Menu */
-(function (window, document) {
-  var menu = document.getElementById('menu'),
-    WINDOW_CHANGE_EVENT = ('onorientationchange' in window) ? 'orientationchange':'resize';
-
-  function toggleHorizontal() {
-    [].forEach.call(
-      document.getElementById('menu').querySelectorAll('.custom-can-transform'),
-      function(el){
-        //el.classList.toggle('pure-menu-horizontal');
-      }
-    );
-  };
-
-  function toggleMenu() {
-    // set timeout so that the panel has a chance to roll up
-    // before the menu switches states
-    if (menu.classList.contains('open')) {
-      setTimeout(toggleHorizontal, 500);
-    }else {
-      toggleHorizontal();
-    }
-    menu.classList.toggle('open');
-    document.getElementById('toggle').classList.toggle('x');
-  };
-
-  function closeMenu() {
-    if (menu.classList.contains('open')) {
-      toggleMenu();
-    }
-  };
-
-  document.getElementById('toggle').addEventListener('click', function (e) {
-    toggleMenu();
-    e.preventDefault();
-  });
-
-  window.addEventListener(WINDOW_CHANGE_EVENT, closeMenu);
-
-})(this, this.document);

@@ -149,11 +149,14 @@ function postWrapper(post) {
 
 
 /* Returns the necessary stuff to render a list of posts */
-function renderPosts(posts){
+function renderPosts(posts, sub){
   var l = posts.length;
   var tffs = [];
   for (var i = 0; i < l; ++i) {
     post = postWrapper(posts[i])
+    if (sub) {
+      post.sub = sub;
+    }
     tffs.push(m('div.post.pure-g', {pid: post['pid']},
                m('div.pure-u-8-24.pure-u-md-4-24.misctainer',
                 m('div.votebuttons.pure-u-1-24.pure-u-md-1-24',
@@ -225,7 +228,9 @@ function renderPosts(posts){
                     }(),'posted ',
                     m('time-ago', {datetime: post.posted}),
                     ' by ', (post.username == '[Deleted]') ? '[Deleted]' : m('a', {href: '/u/'+ post.username, config: m.route}, post.username),
-                    ' on ', m('a', {href: '/s/' + post.sub.name, config: m.route}, post.sub.name)
+                    function () {
+                      if (!sub) {' on ', m('a', {href: '/s/' + post.sub.name, config: m.route}, post.sub.name)}
+                    }()
                   )
                 )
               ),
