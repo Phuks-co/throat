@@ -1,0 +1,78 @@
+body.dark .th-navbar {
+    background-color: #0A0A0A;
+}
+ 
+body.dark .content {
+    background-color: #101010;
+    border-right: 1px transparent;
+    border-bottom: 1px transparent;
+}
+ 
+body.dark .post:nth-child(2n) {
+    background-color: #0d0d0d;
+}
+ 
+body.dark .sidebar {
+    background-color: #1b1b1b;
+}
+ 
+body.dark .score {
+    color: #ddd;
+}
+ 
+body.dark .upvote, downvote {
+    color: #888;
+}
+ 
+body.dark .downvote {
+    color: #888;
+}
+ 
+body.dark #th-menu a.pure-menu-link:hover, 
+body.dark #th-menu li[active='true'] a {
+    background-color: #1b1b1b;
+}
+ 
+body.dark .footer {
+    background-color: #0a0a0a;
+    color: #ddd;
+}
+ 
+body.dark .expando {
+    background-color: #000;
+    color: #e5e5e5;
+}
+ 
+body.dark .post .title {
+    color: #ab4409;
+}
+ 
+body.dark .post .title:visited {
+    color: #186b9c;
+}
+ 
+body.dark .post .title:hover {
+    color: #3391ca;
+}
+ 
+body.dark .cw-items a {
+    color: #bbb !important;
+}
+ 
+body.dark abbr[title] {
+    border-bottom: 1px dotted;
+    color: #bbb
+}
+ 
+body.dark .subscriptionbar a {
+    color: #ab4409;
+}
+ 
+body.dark .subscriptionbar {
+    background: #101010;
+}
+ 
+body.dark path.th-l-fill {fill: #ccc;}
+body.dark path.th-l-stroke {stroke: #ccc;}
+
+body.dark #toggledark i {color: yellow;}
