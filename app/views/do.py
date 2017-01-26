@@ -671,16 +671,6 @@ def grab_title():
     return jsonify(status='ok', title=title)
 
 
-@do.route("/do/grabxkcd/<id>", methods=['get'])
-@login_required
-def grab_xkcd_img(id):
-    if not id:
-        abort(400)
-    r = requests.get(url='https://xkcd.com/' + id + '/info.0.json')
-    img = r.json()['img']
-    return jsonify(status='ok', img=img)
-
-
 @do.route("/do/lnkpost", methods=['POST'])
 @login_required
 @misc.ratelimit(1, per=30, key_func=lambda: 'post')
