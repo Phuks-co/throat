@@ -446,11 +446,12 @@ li.pure-menu-item span{
   color: #4b6d9d;
 }
 .subscriptionbar {
-    background: #000;
-    color: #ddd;
-    overflow: hidden;
-    font-size: 0.8em;
-    position: fixed;
+  background: #000;
+  color: #ddd;
+  overflow: hidden;
+  font-size: 0.8em;
+  position: fixed;
+  z-index: 10;
 }
 
 .subscriptionbar ul{
