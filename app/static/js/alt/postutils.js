@@ -59,7 +59,7 @@ function postWrapper(post) {
     if (id) {
       m.startComputation();
       post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.iframewrapper',
-                      m('iframe', {width: '100%', src: 'http://streamable.com/e/' + id})
+                      m('iframe', {width: '100%', src: 'https://streamable.com/e/' + id})
                     )));
       m.endComputation();
     }
