@@ -79,6 +79,7 @@ body.dark .subscriptionbar a {
 
 body.dark .subscriptionbar {
     background: #101010;
+    border-bottom: 1px solid #412b19;
 }
 
 body.dark path.th-l-fill {fill: #ccc;}

@@ -452,6 +452,7 @@ li.pure-menu-item span{
   font-size: 0.8em;
   position: fixed;
   z-index: 10;
+  border-bottom: 1px transparent;
 }
 
 .subscriptionbar ul{
