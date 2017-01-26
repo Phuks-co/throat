@@ -445,8 +445,9 @@ li.pure-menu-item span{
 }
 .subscriptionbar {
     background: #000;
-    font-variant: small-caps;
     color: #ddd;
+    overflow: hidden;
+    font-size: 0.8em;
 }
 
 .subscriptionbar ul{
