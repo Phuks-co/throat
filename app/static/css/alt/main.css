@@ -46,7 +46,7 @@ body{
     height: 34px;
     display: block;
     position: absolute;
-    top: 0;
+    top: 25px;
     right: 0;
     display: none;
 }
