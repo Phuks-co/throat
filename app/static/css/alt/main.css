@@ -116,6 +116,7 @@ body{
     position: relative;
     top: 54%;
     transform: translateY(-55%);
+    width: 150px;
   }
 
   .content{
@@ -453,4 +454,9 @@ li.pure-menu-item span{
 .subscriptionbar ul{
   margin: .2em;
   padding:0;
+}
+
+#th-logo {
+  height: 65px;
+  width: 138px;
 }
