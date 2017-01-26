@@ -83,3 +83,9 @@ function xkcdID(url) {
     return match[1].replace(/\//,'');
 	}
 }
+function streamableID(url) {
+  var match = url.match(/^http(?:s?):\/\/streamable\.com\/([a-zA-Z0-9]{1,10})$/);
+  if (match){
+    return match[1];
+	}
+}

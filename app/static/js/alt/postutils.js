@@ -54,6 +54,17 @@ function postWrapper(post) {
     }
   };
 
+  post.streamable_expando = function () {
+    var id = streamableID(post.link)
+    if (id) {
+      m.startComputation();
+      post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.iframewrapper',
+                      m('iframe', {width: '100%', src: 'http://streamable.com/e/' + id})
+                    )));
+      m.endComputation();
+    }
+  };
+
   post.image_expando = function () {
     m.startComputation();
     post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24',
@@ -202,6 +213,8 @@ function renderPosts(posts){
                             return m('div.expando', {onclick: post.tweet_expando}, m('i.fa.fa-twitter'));
                           }else if (post.domain == 'xkcd.com') {
                             return m('div.expando', {onclick: post.xkcd_expando}, m('i.fa.fa-image'));
+                          }else if (post.domain == 'streamable.com') {
+                            return m('div.expando', {onclick: post.streamable_expando}, m('i.fa.fa-play'));
                           }
                         } else { // text post
                           if (post.content) {
