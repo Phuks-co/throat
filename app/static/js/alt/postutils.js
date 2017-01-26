@@ -73,20 +73,23 @@ function postWrapper(post) {
   };
 
   post.imgur_gifv_expando = function () {
-    m.startComputation();
-    post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24',
-                    m('video', {preload: 'auto', autoplay: 'autoplay', loop: 'loop'},
-                      m('source', {src: 'https://i.imgur.com/' + imgurID(post.link) + '.mp4'})
-                    )
-                  ));
-    m.endComputation();
+    var id = imgurID(post.link);
+    if (id) {
+      m.startComputation();
+      post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24',
+                      m('video', {preload: 'auto', autoplay: 'autoplay', loop: 'loop'},
+                        m('source', {src: 'https://i.imgur.com/' + id + '.mp4'})
+                      )
+                    ));
+      m.endComputation();
+    }
   };
 
   post.tweet_expando = function () {
     m.startComputation();
     m.request({
       dataType: 'jsonp',
-      url: 'https://publish.twitter.com/oembed?url=' + post.link + '&omit_script=true&height=300px'
+      url: 'https://publish.twitter.com/oembed?url=' + post.link + '&omit_script=true'
     }).then(function(res) {
         if (res.version == '1.0') {
           post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.tweetwrapper',
@@ -98,18 +101,21 @@ function postWrapper(post) {
   };
 
   post.xkcd_expando = function () {
-    m.startComputation();
-    m.request({
-      dataType: 'jsonp',
-      url: 'https://dynamic.xkcd.com/api-0/jsonp/comic/' + xkcdID(post.link)
-    }).then(function(res) {
-        if (res.num == xkcdID(post.link)) {
-          post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24',
-                          [m('div.expandotxt', res.safe_title + ': ' + res.alt), m('img', {src: res.img})]
-                        ));
-        }
-        m.endComputation();
-    });
+    var id = xkcdID(post.link);
+    if (id) {
+      m.startComputation();
+      m.request({
+        dataType: 'jsonp',
+        url: 'https://dynamic.xkcd.com/api-0/jsonp/comic/' + id
+      }).then(function(res) {
+          if (res.num == id) {
+            post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24',
+                            [m('div.expandotxt', res.safe_title + ': ' + res.alt), m('img', {src: res.img})]
+                          ));
+          }
+          m.endComputation();
+      });
+    }
   };
 
   post.text_expando = function () {
