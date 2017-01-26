@@ -575,7 +575,7 @@ function toggle_darkmode () {
 	var d = new Date();
 	d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); //365 days
 	var expires = "expires=" + d.toGMTString();
-	document.cookie = "dayNight=" + (l.length == 1 && l[0] == 'dark')?'dark' : 'light' + "; " + expires + ";path=/";
+	document.cookie = "dayNight=" + ((l.value == 'dark')?'dark' : 'light') + "; " + expires + ";path=/";
 }
 
 user.view = function (ctrl){  // login thingy
