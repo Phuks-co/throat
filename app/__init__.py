@@ -18,7 +18,6 @@ from flask import Flask, render_template, session, redirect, url_for, abort, g
 from flask import make_response, request, Markup
 from flask_assets import Environment, Bundle
 from flask_login import LoginManager, login_required, current_user
-from tld import get_tld
 from werkzeug.contrib.atom import AtomFeed
 from feedgen.feed import FeedGenerator
 

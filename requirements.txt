@@ -1,7 +1,5 @@
 flask
 flask-wtf
-sqlalchemy
-flask-sqlalchemy
 bcrypt
 flask-assets
 webassets
@@ -9,10 +7,8 @@ jsmin
 cssmin
 markdown
 flask-login
-tld
 feedgen
 flask-cache
-dogpile.cache
 mysqlclient
 redis
 requests
@@ -23,6 +19,5 @@ bs4
 flask-oauthlib
 flask-socketio
 eventlet
-closure
 gunicorn
 cython
