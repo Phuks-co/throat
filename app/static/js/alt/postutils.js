@@ -84,10 +84,17 @@ function postWrapper(post) {
 
   post.tweet_expando = function () {
     m.startComputation();
-    post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.iframewrapper',
-                    m('iframe', {width: '100%', src: 'https://twitframe.com/show?url=' + post.link})
-                  )));
-    m.endComputation();
+    m.request({
+      dataType: 'jsonp',
+      url: 'https://publish.twitter.com/oembed?url=' + post.link + '&omit_script=true&height=300px'
+    }).then(function(res) {
+        if (res.version == '1.0') {
+          post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.tweetwrapper',
+                          m('span', m.trust(md.makeHtml(res.html)))
+                        )));
+        }
+        m.endComputation();
+    });
   };
 
   post.xkcd_expando = function () {

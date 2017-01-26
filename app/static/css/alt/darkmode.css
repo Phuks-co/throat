@@ -42,9 +42,14 @@ body.dark .expando {
     background-color: #000;
     color: #e5e5e5;
 }
+
 body.dark .expandotxt {
     color: #e5e5e5;
     background-color: #101010;
+}
+
+body.dark .tweetwrapper {
+    color: #e5e5e5;
 }
 
 body.dark .post .title {
