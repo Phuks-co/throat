@@ -127,7 +127,7 @@ subar.controller = function () {
 subar.view = function (ctrl){ // sub bar
 	x = [];
 	for( var i in ctrl.subs ){
-		x.push(m('li.subinthebar', m('a', {config: m.route, href: '/s/' + ctrl.subs[i]}, ctrl.subs[i].toLowerCase())))
+		x.push(m('li.subinthebar', m('a', {config: m.route, href: '/s/' + ctrl.subs[i]}, ctrl.subs[i].toUpperCase())))
 	}
 	return x;
 };
