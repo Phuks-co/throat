@@ -82,8 +82,7 @@ body.dark .subscriptionbar {
     border-bottom: 1px solid #412b19;
 }
 
-body.dark path.th-l-fill {fill: #f95b00;}
-body.dark path.th-l-text {fill: #ccc;}
-body.dark path.th-l-stroke {stroke: #f95b00;}
+body.dark path.th-l-fill {fill: #ccc;}
+body.dark path.th-l-stroke {stroke: #ccc;}
 
 body.dark #toggledark i {color: yellow;}
