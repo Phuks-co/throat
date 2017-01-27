@@ -13,7 +13,6 @@ from urllib.parse import urlparse, urljoin
 
 import bcrypt
 import markdown
-from sqlalchemy import func, or_
 from flask import Flask, render_template, session, redirect, url_for, abort, g
 from flask import make_response, request, Markup
 from flask_assets import Environment, Bundle
@@ -116,7 +115,7 @@ alt_js = Bundle(
                 'js/showdown-xss-filter.js',
                 'js/socket.io.slim.js',
                 'js/mithril.js',
-                
+
                 'js/alt/util.js',
                 'js/alt/postutils.js',
                 'js/alt/index_views.js',
