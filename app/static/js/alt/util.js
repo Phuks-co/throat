@@ -34,7 +34,7 @@ function getCookie(cname) {
         while (c.charAt(0) == ' ') {
             c = c.substring(1);
         }
-        if (c.indexOf(name) == 0) {
+        if (c.indexOf(name) === 0) {
             return c.substring(name.length, c.length);
         }
     }
@@ -98,12 +98,12 @@ lm.view = function () {
 	return [m("a.pure-menu-heading[href='/']", {config: m.route},[
 						m('span#kxlogo', {config: function (element, isInit, context){
 							context.retain = true;
-							if (!isInit && logo != undefined) {
+							if (!isInit && logo !== undefined) {
 								document.getElementById('kxlogo').innerHTML = logo;
 							}
 						}})
 						//m("img[alt='Throat'][id='logo'][src='/static/img/logo-white.svg']")
-				 ])]
+				 ])];
 };
 m.module(document.getElementById('LogoMenu'), {view: lm.view});
 
@@ -120,7 +120,7 @@ m.module(document.getElementById('LogoMenu'), {view: lm.view});
         //el.classList.toggle('pure-menu-horizontal');
       }
     );
-  };
+  }
 
   function toggleMenu() {
     // set timeout so that the panel has a chance to roll up
@@ -132,13 +132,13 @@ m.module(document.getElementById('LogoMenu'), {view: lm.view});
     }
     menu.classList.toggle('open');
     document.getElementById('toggle').classList.toggle('x');
-  };
+  }
 
   function closeMenu() {
     if (menu.classList.contains('open')) {
       toggleMenu();
     }
-  };
+  }
 
   document.getElementById('toggle').addEventListener('click', function (e) {
     toggleMenu();
@@ -152,7 +152,7 @@ m.module(document.getElementById('LogoMenu'), {view: lm.view});
 
 /* Duh. Toggles dark mode */
 function toggle_darkmode () {
-	l = document.getElementsByTagName('body')[0].classList
+	l = document.getElementsByTagName('body')[0].classList;
 	l.toggle('dark');
 	var mode = getCookie("dayNight");
 	var d = new Date();

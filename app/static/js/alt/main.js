@@ -1,15 +1,14 @@
 var socket = io.connect('//' + document.domain + ':' + location.port + '/alt');
-var md = converter = new showdown.Converter({tables: true, extensions: ['xssfilter']});
-var user = {}  // user info
+var md = new showdown.Converter({tables: true, extensions: ['xssfilter']});
+var user = {};  // user info
 
 
 var menu_home = {  // the menu for home_*
   controller: function () {},
   view: function (ctrl) {
-    console.log("render")
     return [m('li.pure-menu-item', {active: (m.route() == '/' || m.route() == '/hot') ? true : false}, m('a.pure-menu-link[href="/all/hot"]', {config: m.route},'Hot')),
             m('li.pure-menu-item', {active: (m.route() == '/new') ? true : false}, m('a.pure-menu-link[href="/new"]', {config: m.route},'New')),
-            m('li.pure-menu-item', m('a.pure-menu-link[href="/all/new"]', {config: m.route}, 'Recent'))]
+            m('li.pure-menu-item', m('a.pure-menu-link[href="/all/new"]', {config: m.route}, 'Recent'))];
   }
 };
 
@@ -19,7 +18,7 @@ var menu_all = {  // the menu for all_*
     return [m('li.pure-menu-item', m('span', m('b', 'All'))),
 						m('li.pure-menu-item', {active: (m.route() == '/all/hot') ? true : false}, m('a.pure-menu-link[href="/all/hot"]', {config: m.route},'Hot')),
             m('li.pure-menu-item', {active: (m.route() == '/all/top') ? true : false}, m('a.pure-menu-link[href="/all/top"]', {config: m.route},'Top')),
-            m('li.pure-menu-item', {active: (m.route() == '/all/new') ? true : false}, m('a.pure-menu-link[href="/all/new"]', {config: m.route}, 'New'))]
+            m('li.pure-menu-item', {active: (m.route() == '/all/new') ? true : false}, m('a.pure-menu-link[href="/all/new"]', {config: m.route}, 'New'))];
   }
 };
 
@@ -41,7 +40,7 @@ var menu_sub = {  // the menu for sub_*
       return [m('li.pure-menu-item', m('span', m('b', current_sub.name))),
   						m('li.pure-menu-item', {active: (ep == 'hot') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/hot', config: m.route},'Hot')),
               m('li.pure-menu-item', {active: (ep == 'top') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/top', config: m.route},'Top')),
-              m('li.pure-menu-item', {active: (ep == 'new') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/new', config: m.route}, 'New'))]
+              m('li.pure-menu-item', {active: (ep == 'new') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/new', config: m.route}, 'New'))];
     }
   }
 };
@@ -69,39 +68,32 @@ m.routes('/', {// default route
     '/s/:sub/hot': {'#th-main': sub_hot, '#th-menu': menu_sub},
     '/s/:sub/top': {'#th-main': sub_top, '#th-menu': menu_sub},
     '/s/:sub/new': {'#th-main': sub_new, '#th-menu': menu_sub},
-  })
+  });
 
 /* User view thingy controller */
 var user = {};
 user.udata = {};
-user.vm = new function () {
-  var vm = {};
-  vm.init = function () {
-    vm.logout = function() {
-      m.request({
-        method: "POST",
-        url: "/do/logout",
-        data: {j: true, csrf_token: document.getElementById('csrf_token').value}
-      });
-    };
-    vm.listen = (function() {
-      m.startComputation();
-      socket.on("uinfo", function (data) {
-        user.udata = data;
-        m.endComputation();
-      });
-    })();
-  };
-  return vm;
-};
 
 user.controller = function(){
-  user.vm.init();
+  this.logout = function() {
+    m.request({
+      method: "POST",
+      url: "/do/logout",
+      data: {j: true, csrf_token: document.getElementById('csrf_token').value}
+    });
+  };
+  this.listen = function() {
+    m.startComputation();
+    socket.on("uinfo", function (data) {
+      user.udata = data;
+      m.endComputation();
+    });
+  }();
 };
 
 user.view = function (ctrl){  // login thingy
   var u = user.udata;
-	if(u.loggedin == undefined) {
+	if(u.loggedin === undefined) {
 		return m("div.cw-items", 'Loading...');
 	}
   return m("div.cw-items", {}, function(){
@@ -116,7 +108,7 @@ user.view = function (ctrl){  // login thingy
                   m('i', {class: 'fa fa-sliders', title: 'Settings'})),
                 m('a', {class: 'glyphbutton sep'},
                   m('i', {class: 'fa ' + function(){
-                                  if (u.ntf == 0){
+                                  if (u.ntf === 0){
                                     return 'fa-envelope-o';
                                   }else{
                                     return 'fa-envelope hasmail';
@@ -125,14 +117,14 @@ user.view = function (ctrl){  // login thingy
                 m('a', {class: 'glyphbutton', id: 'toggledark'},
                   m('i', {class: 'fa fa-lightbulb-o', title: 'Toggle light mode', onclick: toggle_darkmode})),
                 m('span', {class: 'separator'}),
-                m('a[href="#"]', {onclick: user.vm.logout}, 'Log out')]
+                m('a[href="#"]', {onclick: ctrl.logout}, 'Log out')];
           }else{
             return [m('a[href="/login"]', {config: m.route}, 'Log in'),
                     m('span.separator'),
-                    m('a[href="/register"]', {config: m.route}, 'Register')]
+                    m('a[href="/register"]', {config: m.route}, 'Register')];
           }
         }()
-      )
+      );
 };
 
 var subar = {};
@@ -150,7 +142,7 @@ subar.controller = function () {
 subar.view = function (ctrl){ // sub bar
 	x = [];
 	for( var i in ctrl.subs ){
-		x.push(m('li.subinthebar', m('a', {config: m.route, href: '/s/' + ctrl.subs[i]}, ctrl.subs[i].toUpperCase())))
+		x.push(m('li.subinthebar', m('a', {config: m.route, href: '/s/' + ctrl.subs[i]}, ctrl.subs[i].toUpperCase())));
 	}
 	return x;
 };

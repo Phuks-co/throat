@@ -5,10 +5,10 @@ import re
 import time
 import datetime
 import uuid
+from urllib.parse import urlparse
 import bcrypt
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse
 from flask import Blueprint, redirect, url_for, session, abort, jsonify
 from flask import render_template, request
 from flask_login import login_user, login_required, logout_user, current_user
@@ -232,12 +232,13 @@ def create_livechat():
                                    message=form.chatmsg.data)
         socketio.emit('livechatthread',
                       {'xid': chat['xid'],
-                      'username': current_user.name,
-                      'message': form.chatmsg.data,
-                      'html': render_template('sublivechats.html', nocheck=True,
-                                              chats=[chat])},
-                     namespace='/snt',
-                     room='/live')
+                       'username': current_user.name,
+                       'message': form.chatmsg.data,
+                       'html': render_template('sublivechats.html',
+                                               nocheck=True,
+                                               chats=[chat])},
+                      namespace='/snt',
+                      room='/live')
         return json.dumps({'status': 'ok'})
 
 
@@ -336,7 +337,7 @@ def edit_sub_css(sub):
         db.uquery('UPDATE `sub_stylesheet` SET `content`=%s WHERE `sid`=%s',
                   (form.css.data, sub['sid']))
         db.create_sublog(sub['sid'], 4,
-                          'CSS edited by ' + current_user.get_username())
+                         'CSS edited by ' + current_user.get_username())
 
         return json.dumps({'status': 'ok',
                            'addr': url_for('view_sub', sub=sub['name'])})
@@ -470,7 +471,7 @@ def edit_mod():
     if form.validate():
         db.update_sub_metadata(sub['sid'], 'mod1', user['uid'])
         db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s '
-                  'AND `sid`=%s', ('mod2',  user['uid'], sub['sid']))
+                  'AND `sid`=%s', ('mod2', user['uid'], sub['sid']))
         db.create_sublog(sid=sub['sid'], action=4,
                          description=current_user.get_username() +
                          ' transferred sub ownership to ' + user['name'],
@@ -538,6 +539,7 @@ def unsubscribe_from_all_subs(user):
 
         return jsonify(status='ok', message='unsubscribed from all')
     return redirect(url_for('view_my_subs'))
+
 
 @do.route("/do/block/<sid>", methods=['POST'])
 @login_required
@@ -610,13 +612,14 @@ def create_txtpost():
                       room='/all/new')
         # for /live
         if sub['name'] == "live":
-           socketio.emit('livethread',
-                         {'addr': addr, 'sub': sub['name'], 'type': 'text',
-                          'user': current_user.name, 'pid': post['pid'],
-                          'html': render_template('sublivepost.html', nocheck=True,
-                                                  posts=[post])},
-                         namespace='/snt',
-                         room='/live')
+            socketio.emit('livethread',
+                          {'addr': addr, 'sub': sub['name'], 'type': 'text',
+                           'user': current_user.name, 'pid': post['pid'],
+                           'html': render_template('sublivepost.html',
+                                                   nocheck=True,
+                                                   posts=[post])},
+                          namespace='/snt',
+                          room='/live')
         misc.workWithMentions(form.content.data, None, post, sub)
         misc.workWithMentions(form.title.data, None, post, sub)
         return jsonify(status='ok', addr=addr)
@@ -655,6 +658,7 @@ def edit_txtpost(sub, pid):
 @do.route("/do/grabtitle", methods=['get'])
 @login_required
 def grab_title():
+    """ Safely grabs the <title> from a page """
     url = request.args.get('u')
     if not url:
         abort(400)
@@ -694,10 +698,10 @@ def create_lnkpost():
         if misc.isRestricted(sub) and not current_user.is_mod(sub):
             return json.dumps({'status': 'error',
                                'error': ['You can\'t post on this sub']})
-        l = db.query('SELECT `pid` FROM `sub_post` WHERE `sid`=%s AND '
-                     '`link`=%s AND `posted` > DATE_SUB(NOW(), INTERVAL 1 '
-                     'MONTH)', (sub['sid'], form.link.data)).fetchone()
-        if l:
+        lx = db.query('SELECT `pid` FROM `sub_post` WHERE `sid`=%s AND '
+                      '`link`=%s AND `posted` > DATE_SUB(NOW(), INTERVAL 1 '
+                      'MONTH)', (sub['sid'], form.link.data)).fetchone()
+        if lx:
             return jsonify(status='error', error=['This link was recently '
                                                   'posted on this sub.'])
         bans = db.uquery('SELECT `value` FROM `site_metadata` WHERE `key`=%s',
@@ -732,7 +736,8 @@ def create_lnkpost():
                           {'addr': addr, 'sub': sub['name'], 'type': 'link',
                            'user': current_user.name, 'url': form.link.data,
                            'pid': post['pid'],
-                           'html': render_template('sublivepost.html', nocheck=True,
+                           'html': render_template('sublivepost.html',
+                                                   nocheck=True,
                                                    posts=[post])},
                           namespace='/snt',
                           room='/live')
@@ -1308,6 +1313,7 @@ def make_announcement():
 
     return redirect(url_for('index'))
 
+
 @do.route("/do/ban_domain", methods=['POST'])
 def ban_domain():
     """ Add domain to ban list """
@@ -1400,9 +1406,11 @@ def use_invite_code():
         db.update_site_metadata('invitecode', form.invitecode.data)
 
         if form.enableinvitecode.data:
-            desc = current_user.get_username() + ' enabled invite code required'
+            desc = current_user.get_username() + \
+                   ' enabled invite code requirement'
         else:
-            desc = current_user.get_username() + ' disabled invite code required'
+            desc = current_user.get_username() + \
+                  ' disabled invite code requirement'
         db.create_sitelog(7, desc, '')
         # return json.dumps({'status': 'ok'})
     return redirect(url_for('admin_area'))
@@ -1529,7 +1537,7 @@ def edit_multi():
         db.uquery('UPDATE `user_multi` SET `name`=%s, `subs`=%s, `sids`=%s '
                   'WHERE `mid`=%s ',
                   (form.name.data, form.subs.data, sids[:-1],
-                  form.multi.data))
+                   form.multi.data))
 
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -1582,7 +1590,7 @@ def create_multi():
         db.uquery('INSERT INTO `user_multi` (`uid`, `name`, `subs`, `sids`) '
                   'VALUES (%s, %s, %s, %s)',
                   (current_user.uid, form.name.data, form.subs.data,
-                  sids[:-1]))
+                   sids[:-1]))
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
@@ -1779,6 +1787,7 @@ def upvotecomment(cid, value):
 
 @do.route('/do/get_comments/<cid>', methods=['POST'])
 def get_comments(cid):
+    """ Gets children comments for <cid> """
     comment = db.get_comment_from_cid(cid)
     if not comment:
         return jsonify(status='error', error=['Wuddatcomment'])
@@ -1879,6 +1888,7 @@ def get_subscriptions():
 
 @do.route('/do/get_sub/<sub>')
 def get_sub(sub):
+    """ Returns basic sub information """
     sub = db.get_sub_from_name(sub, '`sid`,`name`,`sidebar`,`title`,`nsfw`')
     if not sub:
         return jsonify(status='error', error=['Sub not found'])

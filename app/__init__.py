@@ -74,6 +74,8 @@ def cache_static(*args, **kwargs):
     response.headers['Cache-Control'] = 'public, max-age=31536000'
     response.headers['Expires'] = format_date_time(expires_time)
     return response
+
+
 app.view_functions['static'] = cache_static
 
 # We use nested bundles here. One of them is for stuff that is already minified
@@ -107,8 +109,8 @@ pure_css = Bundle('css/font-awesome.min.css',
                   'css/alt/main.css',
                   'css/alt/darkmode.css',
                   filters='cssmin,datauri', output='gen/c_bundle.css')
-alt_js = Bundle(
-                'js/CustomElements.min.js',
+
+alt_js = Bundle('js/CustomElements.min.js',
                 'js/time-elements.js',
                 'js/xss.js',
                 'js/showdown.js',
@@ -133,11 +135,13 @@ assets.register('alt_js', alt_js)
 
 @app.route('/alt')
 def alt():
+    """ The new layout. """
     return render_template('alt.html')
 
 
 @app.template_filter('rnentity')
 def rnentity(text):
+    """ hacky fixes for escaping new lines on templates """
     return Markup(text.replace('\r\n', '&#10;').replace('\n', '&#10;'))
 
 
@@ -297,6 +301,7 @@ def all_new(page):
 @app.route("/all/new/more", defaults={'pid': None})
 @app.route('/all/new/more/<int:pid>')
 def all_new_more(pid=None):
+    """ Returns more posts for /all/new """
     if not pid:
         abort(404)
     c = db.query('SELECT * FROM `sub_post` WHERE `pid`<%s ORDER BY `posted` '
@@ -442,6 +447,7 @@ def random_sub():
 @app.route("/live", defaults={'page': 1})
 @app.route("/live/<int:page>")
 def view_live_sub(page):
+    """ God knows what this does """
     sub = db.get_sub_from_name('live')
     if not sub:
         abort(404)
@@ -990,7 +996,8 @@ def view_messages(page):
                     'AND `receivedby`=%s ORDER BY `posted` DESC LIMIT 20 '
                     'OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs, page=page,
+    return render_template('messages.html', user=user, messages=msgs,
+                           page=page,
                            box_name="Inbox", boxID="1",
                            box_route='view_messages')
 
@@ -1007,8 +1014,9 @@ def view_messages_sent(page):
                     'AND `sentby`=%s ORDER BY `posted` DESC '
                     'LIMIT 20 OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs, page=page,
-                           box_name="Sent", box_route='view_messages_sent')
+    return render_template('messages.html', user=user, messages=msgs,
+                           page=page, box_name="Sent",
+                           box_route='view_messages_sent')
 
 
 @app.route("/messages/postreplies", defaults={'page': 1})
@@ -1031,8 +1039,8 @@ def view_messages_postreplies(page):
                     'AND `receivedby`=%s ORDER BY `posted` DESC '
                     'LIMIT 20 OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs, page=page,
-                           box_name="Replies", boxID="2",
+    return render_template('messages.html', user=user, messages=msgs,
+                           page=page, box_name="Replies", boxID="2",
                            box_route='view_messages_postreplies')
 
 
@@ -1056,8 +1064,8 @@ def view_messages_comreplies(page):
                     'AND `receivedby`=%s ORDER BY `posted` DESC '
                     'LIMIT 20 OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs, page=page,
-                           box_name="Replies", boxID="3",
+    return render_template('messages.html', user=user, messages=msgs,
+                           page=page, box_name="Replies", boxID="3",
                            box_route='view_messages_comreplies')
 
 
@@ -1073,8 +1081,8 @@ def view_messages_modmail(page):
                     'AND `receivedby`=%s ORDER BY `posted` DESC '
                     'LIMIT 20 OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs, page=page,
-                           box_name="ModMail", boxID="4",
+    return render_template('messages.html', user=user, messages=msgs,
+                           page=page, box_name="ModMail", boxID="4",
                            box_route='view_messages_modmail')
 
 
@@ -1089,8 +1097,8 @@ def view_saved_messages(page):
                     'AND `receivedby`=%s ORDER BY `posted` DESC '
                     'LIMIT 20 OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs, page=page,
-                           box_name="Saved Messages", boxID="5",
+    return render_template('messages.html', user=user, messages=msgs,
+                           page=page, box_name="Saved Messages", boxID="5",
                            box_route='view_saved_messages')
 
 

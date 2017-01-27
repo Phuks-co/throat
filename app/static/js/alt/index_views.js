@@ -22,7 +22,7 @@ all_hot.control = function (type, sort){
         if (res.status == 'ok'){
           ctrl.posts = res.posts;
         } else {
-          ctrl.err = res.error
+          ctrl.err = res.error;
         }
         m.endComputation();
     }).catch(function(err) {
@@ -34,9 +34,9 @@ all_hot.control = function (type, sort){
   ctrl.get_posts();
   return ctrl;
 };
-all_hot.controller = function() {return all_hot.control('all', 'hot')};
+all_hot.controller = function() {return all_hot.control('all', 'hot');};
 all_hot.view = function (ctrl) {
-  if (ctrl.err != ''){
+  if (ctrl.err !== ''){
     return m('div.content.pure-u-1', {}, "Error loading posts: " + ctrl.err);
   }else {
     if (!ctrl.posts.length) {

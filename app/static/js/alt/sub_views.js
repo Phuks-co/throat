@@ -36,21 +36,21 @@ var sub_auto = {
             if (res.status == 'ok'){
               ctrl.posts = res.posts;
             } else {
-              ctrl.err = res.error
+              ctrl.err = res.error;
             }
             m.endComputation();
         }).catch(function(err) {
           ctrl.err = [err];
           m.endComputation();
         });
-      })
+      });
     };
     m.redraw();
     ctrl.get_posts();
     return ctrl;
   },
   view: function(ctrl) { return all_hot.view(ctrl); }
-}
+};
 
 var sub_hot = {
   controller: function () {return sub_auto.controller('hot');},
