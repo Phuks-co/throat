@@ -6,6 +6,7 @@ var user = {}  // user info
 var menu_home = {  // the menu for home_*
   controller: function () {},
   view: function (ctrl) {
+    console.log("render")
     return [m('li.pure-menu-item', {active: (m.route() == '/' || m.route() == '/hot') ? true : false}, m('a.pure-menu-link[href="/all/hot"]', {config: m.route},'Hot')),
             m('li.pure-menu-item', {active: (m.route() == '/new') ? true : false}, m('a.pure-menu-link[href="/new"]', {config: m.route},'New')),
             m('li.pure-menu-item', m('a.pure-menu-link[href="/all/new"]', {config: m.route}, 'Recent'))]
@@ -19,6 +20,29 @@ var menu_all = {  // the menu for all_*
 						m('li.pure-menu-item', {active: (m.route() == '/all/hot') ? true : false}, m('a.pure-menu-link[href="/all/hot"]', {config: m.route},'Hot')),
             m('li.pure-menu-item', {active: (m.route() == '/all/top') ? true : false}, m('a.pure-menu-link[href="/all/top"]', {config: m.route},'Top')),
             m('li.pure-menu-item', {active: (m.route() == '/all/new') ? true : false}, m('a.pure-menu-link[href="/all/new"]', {config: m.route}, 'New'))]
+  }
+};
+
+var menu_sub = {  // the menu for sub_*
+  controller: function () {return {sub: m.route.param("sub")};},
+  view: function (c) {
+    if (current_sub.name) {
+      switch(m.route()) {  // could use regexp here
+        case '/s/' + c.sub:
+          ep = current_sub.sort;
+          break;
+        case '/s/' + c.sub + '/hot':
+          ep = 'hot'; break;
+        case '/s/' + c.sub + '/new':
+          ep = 'new'; break;
+        case '/s/' + c.sub + '/top':
+          ep = 'top'; break;
+      }
+      return [m('li.pure-menu-item', m('span', m('b', current_sub.name))),
+  						m('li.pure-menu-item', {active: (ep == 'hot') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/hot', config: m.route},'Hot')),
+              m('li.pure-menu-item', {active: (ep == 'top') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/top', config: m.route},'Top')),
+              m('li.pure-menu-item', {active: (ep == 'new') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/new', config: m.route}, 'New'))]
+    }
   }
 };
 
@@ -41,7 +65,10 @@ m.routes('/', {// default route
     '/register': {'#th-main': register},
 
     /* Sub */
-    '/s/:sub': {'#th-main': sub_auto},
+    '/s/:sub': {'#th-main': sub_auto, '#th-menu': menu_sub},
+    '/s/:sub/hot': {'#th-main': sub_hot, '#th-menu': menu_sub},
+    '/s/:sub/top': {'#th-main': sub_top, '#th-menu': menu_sub},
+    '/s/:sub/new': {'#th-main': sub_new, '#th-menu': menu_sub},
   })
 
 /* User view thingy controller */
