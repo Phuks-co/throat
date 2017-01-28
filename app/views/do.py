@@ -1864,11 +1864,10 @@ def get_posts(gtype, sort, page):
     return jsonify(status='ok', posts=fposts)
 
 
-
-@do.route('/do/get_userposts/<name>/<int:page>')
 @do.route('/do/get_userposts/<name>', defaults={'page': 1})
+@do.route('/do/get_userposts/<name>/<int:page>')
 def get_userposts(name, page):
-    """ Returns the post listing for something """
+    """ Returns the users posts """
     # TODO: NSFW checks
     q = 'SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted`,'\
         '`thumbnail`,`link`,`content` FROM `sub_post` WHERE `deleted`=0 '
