@@ -130,7 +130,7 @@ user.view = function (ctrl){  // login thingy
 	}
   return m("div.cw-items", {}, function(){
           if (u.loggedin){
-                return [m('a', {href: '/alt#/u/' + u.name, class: 'smallcaps'}, u.name),
+                return [m('a', {href: '/u/' + u.name, class: 'smallcaps', config: m.route}, u.name),
                 m('span', {class: 'separator'}),
                 m('abbr', {title: 'Phuks taken', class: 'bold'}, u.taken),
                 m('span', {class: 'separator'}),
