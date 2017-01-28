@@ -73,7 +73,7 @@ m.routes('/', {// default route
     '/login': {'#th-main': login},
     '/register': {'#th-main': register},
     '/u/:user': {'#th-main': view_user, '#th-menu': menu_user},
-    // '/u/:user/posts': {'#th-main': view_user_posts, '#th-menu': menu_user},
+    '/u/:user/posts': {'#th-main': view_user_posts, '#th-menu': menu_user},
     // '/u/:user/comments': {'#th-main': view_user_comments, '#th-menu': menu_user},
     // '/u/:user/saved': {'#th-main': view_user_saved, '#th-menu': menu_user},
 

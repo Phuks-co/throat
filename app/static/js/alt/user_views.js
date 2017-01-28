@@ -230,3 +230,35 @@ var view_user = {
     }
   }
 };
+
+
+var view_user_posts = {
+  controller: function (sort){
+    var ctrl = this;
+    ctrl.err = '';
+    ctrl.posts = [];
+    ctrl.get_posts = function () {
+      m.startComputation();
+      window.stop();  // We're going to change pages, so cancel all requests.
+        m.request({
+          method: 'GET',
+          url: '/do/get_posts/userposts/' + m.route.param('user')
+        }).then(function(res) {
+            if (res.status == 'ok'){
+              ctrl.posts = res.posts;
+            } else {
+              ctrl.err = res.error;
+            }
+            m.endComputation();
+        }).catch(function(err) {
+          ctrl.err = [err];
+          m.endComputation();
+        });
+
+    };
+    m.redraw();
+    ctrl.get_posts();
+    return ctrl;
+  },
+  view: function(ctrl) { return all_hot.view(ctrl); }
+};

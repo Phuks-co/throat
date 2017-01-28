@@ -1821,13 +1821,20 @@ def get_posts(gtype, sort, page):
         q = 'SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted`,'\
             '`thumbnail`,`link`,`content` FROM `sub_post` WHERE `deleted`=0 '
         s = []
-        if gtype != 'all':
+        if gtype != 'all' and gtype != 'userposts':
             subinfo = False
             sub = db.get_sub_from_name(gtype)
             if not sub:
                 return jsonify(status='error', error=['Sub not found'])
             q += 'AND `sid`=%s '
             s.append(sub['sid'])
+        if gtype == 'userposts':
+            user = db.get_user_from_name(sort)  # use <sort> to pass user
+            if not user:
+                return jsonify(status='error', error=['User not found'])
+            q += 'AND `uid`=%s ORDER BY `posted` DESC LIMIT %s,20'
+            s.append(user['uid'])
+            s.append((page - 1) * 20)
         if sort == 'new':
             q += 'ORDER BY `posted` DESC LIMIT %s,20'
             s.append((page - 1) * 20)
@@ -1838,7 +1845,8 @@ def get_posts(gtype, sort, page):
             q += 'AND `posted` > NOW() - INTERVAL 7 DAY ORDER BY `score` DESC'\
                  ' LIMIT 200'
         else:
-            return jsonify(status='error', error=['wut'])
+            if not user:
+                return jsonify(status='error', error=['Bad sort'])
 
         c = db.query(q, s)
         if sort == 'hot':
