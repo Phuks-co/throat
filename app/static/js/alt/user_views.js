@@ -222,7 +222,7 @@ var view_user = {
         return [m('div.content.pure-u-1 pure-u-md-18-24', {},
                  [m('div.user.center', user.name),
                   m('div.user.center', 'Joined: ' + user.joindate),
-                  m('div.user.center', user.score + 'xp')];
+                  m('div.user.center', user.score + 'xp')]
 
                ),
                 m('div.sidebar.pure-u-1 pure-u-md-6-24')];
