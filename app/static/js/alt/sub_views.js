@@ -32,7 +32,7 @@ var sub_auto = {
         }
         m.request({
           method: 'GET',
-          url: '/do/get_posts/' + ctrl.sub.name + '/' + sort + '/' + ((page) ? '/' + page : '')
+          url: '/do/get_posts/' + ctrl.sub.name + '/' + sort + ((page) ? '/' + page : '')
         }).then(function(res) {
             if (res.status == 'ok'){
               ctrl.posts = res.posts;
