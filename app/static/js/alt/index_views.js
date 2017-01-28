@@ -45,7 +45,24 @@ all_hot.view = function (ctrl) {
       return [m('div.content.pure-u-1 pure-u-md-18-24', {}, 'Loading...'),
               m('div.sidebar.pure-u-1 pure-u-md-6-24')];
     } else {
-      return [m('div.content.pure-u-1 pure-u-md-18-24', {}, renderPosts(ctrl.posts, ctrl.sub)),
+      var page = m.route.param('page');
+      if (!page) {
+        page = '1';
+        var r = m.route();
+        nroute = r + '/2';
+      } else {
+        var r = m.route();
+        var nopage = r.slice(0, r.lastIndexOf("/"));
+        nroute = nopage + '/' + ((page*1)+1);
+        proute = nopage + '/' + ((page*1)-1);
+      }
+      return [m('div.content.pure-u-1 pure-u-md-18-24', {}, renderPosts(ctrl.posts, ctrl.sub),
+              m('div.pagenav.pure-u-1 pure-u-md-18-24',
+              ((page == 1) ?
+                [m('a.next', {href: nroute, config: m.route}, 'next')] :
+                [m('a.prev', {href: proute, config: m.route}, 'prev'),
+                m('a.next', {href: nroute, config: m.route}, 'next')])
+              )),
               m('div.sidebar.pure-u-1 pure-u-md-6-24')];
     }
   }

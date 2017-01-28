@@ -12,6 +12,14 @@ body.dark .post:nth-child(2n) {
     background-color: #0d0d0d;
 }
 
+body.dark a.prev,
+body.dark a.next {
+    margin: 20px;
+    padding: 10px 20px;
+    border: 2px solid #1b1b1b;
+    background: #0d0d0d;
+}
+
 body.dark .sidebar {
     background-color: #1b1b1b;
 }

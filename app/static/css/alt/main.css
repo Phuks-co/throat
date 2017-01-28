@@ -25,6 +25,17 @@ body{
   padding-left: .3em;
 }
 
+a.prev,
+a.next {
+  margin: 20px;
+  padding: 10px 20px;
+  border: 2px solid #dddddd;
+  background: #eaeaea;
+}
+.pagenav {
+  padding: 30px 0 0 20px;
+}
+
 .cw-brand div{margin-left: 1em;}
 
 .cw-items a{color: #fff;}
