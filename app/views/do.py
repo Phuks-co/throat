@@ -1900,3 +1900,14 @@ def get_sub(sub):
     elif x['value'] == 'v_three':
         sub['sort'] = 'top'
     return jsonify(status='ok', sub=sub)
+
+
+@do.route('/do/get_post/<pid>')
+def get_post(pid):
+    """ Returns a post """
+    post = db.get_post_from_pid(pid)
+    if not post:
+        return jsonify(status='error', error=['Post not found'])
+    if post['deleted'] == 0:
+        post['user'] = db.get_user_from_uid(post['uid'])['name']
+    return jsonify(status='ok', post=post)

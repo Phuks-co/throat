@@ -68,6 +68,9 @@ m.routes('/', {// default route
     '/s/:sub/hot': {'#th-main': sub_hot, '#th-menu': menu_sub},
     '/s/:sub/top': {'#th-main': sub_top, '#th-menu': menu_sub},
     '/s/:sub/new': {'#th-main': sub_new, '#th-menu': menu_sub},
+
+    /* Post */
+    '/s/:sub/:pid': {'#th-main': view_post, '#th-menu': menu_sub}
   });
 
 /* User view thingy controller */
