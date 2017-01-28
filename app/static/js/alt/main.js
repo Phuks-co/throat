@@ -68,20 +68,35 @@ m.routes('/', {// default route
     '/top': {'#th-main': home_top, '#th-menu': menu_home},
     '/new': {'#th-main': home_new, '#th-menu': menu_home},
     '/hot': {'#th-main': home_hot, '#th-menu': menu_home},
+    /* Frontpage page numbers */
+    '/all/hot/:page': {'#th-main': all_hot, '#th-menu': menu_all},
+    '/all/new/:page': {'#th-main': all_new, '#th-menu': menu_all},
+    '/all/top/:page': {'#th-main': all_top, '#th-menu': menu_all},
+    '/top/:page': {'#th-main': home_top, '#th-menu': menu_home},
+    '/new/:page': {'#th-main': home_new, '#th-menu': menu_home},
+    '/hot/:page': {'#th-main': home_hot, '#th-menu': menu_home},
 
     /* User */
     '/login': {'#th-main': login},
     '/register': {'#th-main': register},
     '/u/:user': {'#th-main': view_user, '#th-menu': menu_user},
     '/u/:user/posts': {'#th-main': view_user_posts, '#th-menu': menu_user},
-    // '/u/:user/comments': {'#th-main': view_user_comments, '#th-menu': menu_user},
-    // '/u/:user/saved': {'#th-main': view_user_saved, '#th-menu': menu_user},
+    // TODO '/u/:user/comments': {'#th-main': view_user_comments, '#th-menu': menu_user},
+    // TODO '/u/:user/saved': {'#th-main': view_user_saved, '#th-menu': menu_user},
+    /* User page numbers */
+    '/u/:user/posts/:page': {'#th-main': view_user_posts, '#th-menu': menu_user},
+    // TODO '/u/:user/comments/:page': {'#th-main': view_user_comments, '#th-menu': menu_user},
+    // TODO '/u/:user/saved/:page': {'#th-main': view_user_saved, '#th-menu': menu_user},
 
     /* Sub */
     '/s/:sub': {'#th-main': sub_auto, '#th-menu': menu_sub},
     '/s/:sub/hot': {'#th-main': sub_hot, '#th-menu': menu_sub},
     '/s/:sub/top': {'#th-main': sub_top, '#th-menu': menu_sub},
     '/s/:sub/new': {'#th-main': sub_new, '#th-menu': menu_sub},
+    /* Sub page numbers */
+    '/s/:sub/hot/:page': {'#th-main': sub_hot, '#th-menu': menu_sub},
+    '/s/:sub/top/:page': {'#th-main': sub_top, '#th-menu': menu_sub},
+    '/s/:sub/new/:page': {'#th-main': sub_new, '#th-menu': menu_sub},
 
     /* Post */
     '/s/:sub/:pid': {'#th-main': view_post, '#th-menu': menu_sub}

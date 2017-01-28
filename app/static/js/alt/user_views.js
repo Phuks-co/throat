@@ -235,6 +235,10 @@ var view_user = {
 var view_user_posts = {
   controller: function (sort){
     var ctrl = this;
+    var page = m.route.param('page')
+    if(!page) {
+      page = '1';
+    }
     ctrl.err = '';
     ctrl.posts = [];
     ctrl.get_posts = function () {
@@ -242,7 +246,7 @@ var view_user_posts = {
       window.stop();  // We're going to change pages, so cancel all requests.
         m.request({
           method: 'GET',
-          url: '/do/get_posts/userposts/' + m.route.param('user')
+          url: '/do/get_posts/userposts/' + m.route.param('user') + '/' + page
         }).then(function(res) {
             if (res.status == 'ok'){
               ctrl.posts = res.posts;
