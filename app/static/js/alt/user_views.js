@@ -182,3 +182,51 @@ var register = {
            );
   }
 };
+
+
+var view_user = {
+  controller: function (){
+    var ctrl = this;
+    ctrl.err = '';
+    ctrl.user = m.route.param('user');
+    m.startComputation();
+    window.stop();  // We're going to change pages, so cancel all requests.
+    m.request({
+      method: 'GET',
+      url: '/do/get_user/' + m.route.param('user')
+    }).then(function(res) {
+        if (res.status == 'ok'){
+          ctrl.user = res.user;
+        } else {
+          ctrl.err = res.error;
+        }
+        m.endComputation();
+    }).catch(function(err) {
+      ctrl.err = [err];
+      m.endComputation();
+    });
+  },
+  view: function(ctrl) {
+    if (ctrl.err !== ''){
+      return m('div.content.pure-u-1', {}, "Error loading user: " + ctrl.err);
+    }else {
+      if (!ctrl.user) {
+        return [m('div.content.pure-u-1 pure-u-md-18-24', {}, 'Loading...'),
+                m('div.sidebar.pure-u-1 pure-u-md-6-24')];
+      } else if (ctrl.status == 10) {
+        return [m('div.content.pure-u-1 pure-u-md-18-24', {}, '[Deleted]'),
+                m('div.sidebar.pure-u-1 pure-u-md-6-24')];
+
+      } else {
+        var user = ctrl.user;
+        return [m('div.content.pure-u-1 pure-u-md-18-24', {},
+                 [m('div.user.center', user.name),
+                  m('div.user.center', 'Joined: ' + user.joindate),
+                  m('div.user.center', user.score + 'xp')];
+
+               ),
+                m('div.sidebar.pure-u-1 pure-u-md-6-24')];
+      }
+    }
+  }
+};

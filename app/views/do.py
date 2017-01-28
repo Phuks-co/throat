@@ -1911,3 +1911,12 @@ def get_post(pid):
     if post['deleted'] == 0:
         post['user'] = db.get_user_from_uid(post['uid'])['name']
     return jsonify(status='ok', post=post)
+
+
+@do.route('/do/get_user/<user>')
+def get_user(user):
+    """ Returns user information """
+    user = db.get_user_from_name(user)
+    if not user:
+        return jsonify(status='error', error=['User not found'])
+    return jsonify(status='ok', user=user)

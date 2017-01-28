@@ -46,6 +46,16 @@ var menu_sub = {  // the menu for sub_*
 };
 
 
+var menu_user = {  // the menu for user_*
+  controller: function (ctrl) {return {user: m.route.param("user")};},
+  view: function (ctrl) {
+      return [m('li.pure-menu-item', m('span', m('b', m.route.param("user")))),
+              m('li.pure-menu-item', {}, m('a.pure-menu-link', {href: '/u/' + m.route.param("user") + '/posts', config: m.route},'Posts')),
+              m('li.pure-menu-item', {}, m('a.pure-menu-link', {href: '/u/' + m.route.param("user") + '/comments', config: m.route},'Comments'))];
+              // m('li.pure-menu-item', {}, m('a.pure-menu-link', {href: '/u/' + m.route.param("user") + '/saved', config: m.route}, 'Saved'))];
+  }
+};
+
 m.route.mode = "hash";
 
 /* routing */
@@ -62,6 +72,10 @@ m.routes('/', {// default route
     /* User */
     '/login': {'#th-main': login},
     '/register': {'#th-main': register},
+    '/u/:user': {'#th-main': view_user, '#th-menu': menu_user},
+    // '/u/:user/posts': {'#th-main': view_user_posts, '#th-menu': menu_user},
+    // '/u/:user/comments': {'#th-main': view_user_comments, '#th-menu': menu_user},
+    // '/u/:user/saved': {'#th-main': view_user_saved, '#th-menu': menu_user},
 
     /* Sub */
     '/s/:sub': {'#th-main': sub_auto, '#th-menu': menu_sub},
