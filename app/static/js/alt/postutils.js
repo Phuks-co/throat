@@ -128,6 +128,18 @@ function postWrapper(post) {
     }
   };
 
+  post.codepen_expando = function () {
+    var id = codepenID(post.link);
+    var user = codepenUSER(post.link);
+    if (id) {
+      m.startComputation();
+      post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div',
+                      m('iframe', {width: '100%', height:'530', frameborder:'no', allowtransparency:'true', allowfullscreen:'true', src: 'https://codepen.io/' + id + '/embed/' + user + '/?height=520&theme-id=0&default-tab=html,result&embed-version=2'})
+                    )));
+      m.endComputation();
+    }
+  };
+
   post.text_expando = function () {
     m.startComputation();
     m.request({
@@ -181,6 +193,8 @@ function work_expandos (post) {
         return m('div.expando', {onclick: post.xkcd_expando}, m('i.fa.fa-image'));
       }else if (post.domain == 'streamable.com') {
         return m('div.expando', {onclick: post.streamable_expando}, m('i.fa.fa-play'));
+      }else if (post.domain == 'codepen.io') {
+        return m('div.expando', {onclick: post.codepen_expando}, m('i.fa.fa-codepen'));
       }
     } else { // text post
       if (post.content) {
