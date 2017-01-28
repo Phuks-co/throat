@@ -1820,20 +1820,13 @@ def get_posts(gtype, sort, page):
         q = 'SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted`,'\
             '`thumbnail`,`link`,`content` FROM `sub_post` WHERE `deleted`=0 '
         s = []
-        if gtype != 'all' and gtype != 'userposts':
+        if gtype != 'all':
             subinfo = False
             sub = db.get_sub_from_name(gtype)
             if not sub:
                 return jsonify(status='error', error=['Sub not found'])
             q += 'AND `sid`=%s '
             s.append(sub['sid'])
-        if gtype == 'userposts':
-            user = db.get_user_from_name(sort)  # use <sort> to pass user
-            if not user:
-                return jsonify(status='error', error=['User not found'])
-            q += 'AND `uid`=%s ORDER BY `posted` DESC LIMIT %s,20'
-            s.append(user['uid'])
-            s.append((page - 1) * 20)
         if sort == 'new':
             q += 'ORDER BY `posted` DESC LIMIT %s,20'
             s.append((page - 1) * 20)
@@ -1844,8 +1837,7 @@ def get_posts(gtype, sort, page):
             q += 'AND `posted` > NOW() - INTERVAL 7 DAY ORDER BY `score` DESC'\
                  ' LIMIT 200'
         else:
-            if not user:
-                return jsonify(status='error', error=['Bad sort'])
+            return jsonify(status='error', error=['Bad sort'])
 
         c = db.query(q, s)
         if sort == 'hot':
@@ -1861,6 +1853,43 @@ def get_posts(gtype, sort, page):
         post['posted'] = post['posted'].isoformat() + 'Z'  # silly hack
         if subinfo:
             post['sub'] = db.get_sub_from_sid(post['sid'], '`name`, `nsfw`')
+        if current_user.is_authenticated:
+            post['vote'] = misc.getVoteStatus(current_user.get_id(),
+                                              post['pid'])
+        else:
+            post['vote'] = -1
+        del post['sid']
+        del post['uid']
+        fposts.append(post)
+    return jsonify(status='ok', posts=fposts)
+
+
+
+@do.route('/do/get_userposts/<name>/<int:page>')
+@do.route('/do/get_userposts/<name>', defaults={'page': 1})
+def get_userposts(name, page):
+    """ Returns the post listing for something """
+    # TODO: NSFW checks
+    q = 'SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted`,'\
+        '`thumbnail`,`link`,`content` FROM `sub_post` WHERE `deleted`=0 '
+    s = []
+    user = db.get_user_from_name(name)
+    if not user:
+        return jsonify(status='error', error=['User not found'])
+    q += 'AND `uid`=%s ORDER BY `posted` DESC LIMIT %s,20'
+    s.append(user['uid'])
+    s.append((page - 1) * 20)
+
+    c = db.query(q, s)
+    posts = c.fetchall()
+
+    fposts = []
+    for post in posts:
+        post['content'] = False if post['content'] == '' else True
+        post['comments'] = db.get_post_comment_count(post['pid'])
+        post['username'] = db.get_user_from_uid(post['uid'])['name']
+        post['posted'] = post['posted'].isoformat() + 'Z'  # silly hack
+        post['sub'] = db.get_sub_from_sid(post['sid'], '`name`, `nsfw`')
         if current_user.is_authenticated:
             post['vote'] = misc.getVoteStatus(current_user.get_id(),
                                               post['pid'])
