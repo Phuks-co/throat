@@ -1864,22 +1864,18 @@ def get_posts(gtype, sort, page):
     return jsonify(status='ok', posts=fposts)
 
 
-@do.route('/do/get_userposts/<name>', defaults={'page': 1})
 @do.route('/do/get_userposts/<name>/<int:page>')
+@do.route('/do/get_userposts/<name>', defaults={'page': 1})
 def get_userposts(name, page):
     """ Returns the users posts """
     # TODO: NSFW checks
-    q = 'SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted`,'\
-        '`thumbnail`,`link`,`content` FROM `sub_post` WHERE `deleted`=0 '
-    s = []
     user = db.get_user_from_name(name)
     if not user:
         return jsonify(status='error', error=['User not found'])
-    q += 'AND `uid`=%s ORDER BY `posted` DESC LIMIT %s,20'
-    s.append(user['uid'])
-    s.append((page - 1) * 20)
-
-    c = db.query(q, s)
+    c = db.query('SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted`, '
+        '`thumbnail`,`link`,`content` FROM `sub_post` WHERE `deleted`=0 '
+        'AND `uid`=%s ORDER BY `posted` DESC LIMIT %s,20',
+        (user['uid'], (page - 1) * 20))
     posts = c.fetchall()
 
     fposts = []
