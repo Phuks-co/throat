@@ -94,7 +94,7 @@ def get_user_from_name(name):
 @cache.memoize(10)
 def get_api_user_from_name(name):
     """ Return a user's db row from the name """
-    c = query('SELECT `name`, `joindate`, `score`, `status` FROM '
+    c = query('SELECT `uid`, `name`, `joindate`, `score`, `status` FROM '
               '`user` WHERE `name`=%s', (name, )).fetchone()
     if c and c['status'] == 10:  # Account deleted
         c['name'] = '[Deleted]'
