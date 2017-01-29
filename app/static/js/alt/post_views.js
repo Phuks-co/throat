@@ -43,6 +43,7 @@
                   m('article.post.center',
                     m('div.head',
                       (post.nsfw) ? m('div.bgred', {title: 'Not safe for work'}, 'NSFW') : '',
+                      (post.thumbnail) ? m('div.thpostcontainer', m('div.thumbnail', decide_thumb(post))) : '',
                       m('h1.title',
                         m('a', (post.ptype === 0) ? {href: '/s/' + ctrl.sub + '/' + post.pid, config: m.route} : {href: post.link}, post.title)
                       ), m('div.info', 'posted by ',

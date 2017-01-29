@@ -220,7 +220,7 @@ function renderPosts(posts, sub){
                   m('div.score', post.score),
                   m('div.fa.fa-chevron-down.downvote', {class: (post.vote === 0) ? 'downvoted' : '', title: 'Downvote'})
                 ), // UV/DV/score
-                m('div.thcontainer', m('div.thumbnail', decide_thumb(post)),
+                m('div.thcontainer', m('a.title[href=/s/' + post.sub.name + '/' + post.pid + ']', {config: m.route}, m('div.thumbnail', decide_thumb(post))),
                 m('span.pure-badge', m('i.fa.fa-comments'), ' ', post.comments)) // thumbnail
                ),
                 m('div.pure-u-16-24.pure-u-md-20-24.pbody',

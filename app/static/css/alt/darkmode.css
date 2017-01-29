@@ -1,3 +1,10 @@
+
+/* all text not tagged */
+body.dark {
+    color: #949494;
+}
+
+
 body.dark .th-navbar {
     background-color: #0A0A0A;
 }
