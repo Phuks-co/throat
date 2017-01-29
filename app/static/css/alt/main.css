@@ -479,3 +479,8 @@ li.pure-menu-item span{
   height: 65px;
   width: 138px;
 }
+
+/* user page */
+.user.center {
+    padding: 10px;
+}

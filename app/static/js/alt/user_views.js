@@ -220,9 +220,21 @@ var view_user = {
       } else {
         var user = ctrl.user;
         return [m('div.content.pure-u-1 pure-u-md-18-24', {},
-                 [m('div.user.center', user.name),
-                  m('div.user.center', 'Joined: ' + user.joindate),
-                  m('div.user.center', user.score + 'xp')]
+                 [m('div.user.center', m('h2', user.name)),
+                  m('div.user.center', 'joined ' + user.joindate),
+                  m('div.user.center', user.score + ' xp'),
+                  m('div.user.center', user.postcount + ' posts'),
+                  m('div.user.center', user.commentcount + ' comments'),
+                  m('div.user.center', user.badges.length + ' badges',
+                     (user.badges[0]) ? m('div.user.center', user.badges[0]['name']) : '' // todo loop
+                   ),
+                  m('div.user.center', 'owns ' + user.owns.length + ' subs',
+                     (user.owns[0]) ? m('div.user.center', user.owns[0]['name']) : '' // todo loop
+                   ),
+                  m('div.user.center', 'mods ' + user.mods.length + ' subs' ,
+                     (user.mods[0]) ? m('div.user.center', user.mods[0]['name']) : '' // todo loop
+                   )
+                ]
 
                ),
                 m('div.sidebar.pure-u-1 pure-u-md-6-24')];
