@@ -50,7 +50,7 @@
                         function () {
                           switch (post.deleted){
                             case 0:
-                              return m('a', {href: '/u/' + post.user}, post.user);
+                              return m('a', {href: '/u/' + post.user, config: m.route}, post.user);
                             case 1:
                               return '[Deleted by user]';
                             case 2:

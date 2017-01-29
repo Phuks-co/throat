@@ -92,6 +92,16 @@ def get_user_from_name(name):
 
 
 @cache.memoize(10)
+def get_api_user_from_name(name):
+    """ Return a user's db row from the name """
+    c = query('SELECT `uid`, `name`, `joindate`, `score`, `status` FROM '
+              '`user` WHERE `name`=%s', (name, )).fetchone()
+    if c and c['status'] == 10:  # Account deleted
+        c['name'] = '[Deleted]'
+    return c
+
+
+@cache.memoize(10)
 def get_sub_from_pid(pid):
     """ Returns a sub's db info from a post's pid """
     c = query('SELECT `sid` FROM `sub_post` WHERE `pid`=%s', (pid, ))

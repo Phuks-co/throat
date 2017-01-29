@@ -1947,7 +1947,16 @@ def get_post(pid):
 @do.route('/do/get_user/<user>')
 def get_user(user):
     """ Returns user information """
-    user = db.get_user_from_name(user)
+    user = db.get_api_user_from_name(user)
     if not user:
         return jsonify(status='error', error=['User not found'])
+
+    user['owns'] = db.get_user_positions(user['uid'], 'mod1')
+    user['mods'] = db.get_user_positions(user['uid'], 'mod2')
+    user['badges'] = db.get_user_badges(user['uid'])
+    user['postcount'] = db.query('SELECT COUNT(*) AS c FROM `sub_post` WHERE `uid`=%s',
+                      (user['uid'], )).fetchone()['c']
+    user['commentcount'] = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE '
+                      '`uid`=%s', (user['uid'], )).fetchone()['c']
+
     return jsonify(status='ok', user=user)
