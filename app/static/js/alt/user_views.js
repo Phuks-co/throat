@@ -222,7 +222,7 @@ var view_user = {
         return [m('div.content.pure-u-1 pure-u-md-18-24', {},
                  [m('div.user.center', m('h2', user.name)),
                   m('div.user.center', 'joined ' + user.joindate),
-                  m('div.user.center', user.score + ' xp'),
+                  m('div.user.center', 'level ' + user.level + ' (' + user.score + 'xp)'),
                   m('div.user.center', user.postcount + ' posts'),
                   m('div.user.center', user.commentcount + ' comments'),
                   m('div.user.center', user.badges.length + ' badges',
