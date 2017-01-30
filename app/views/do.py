@@ -1960,6 +1960,6 @@ def get_user(user):
                       '`uid`=%s', (user['uid'], )).fetchone()['c']
     user['level'] = misc.get_user_level(user['uid'])[0]
     user['xp'] = misc.get_user_level(user['uid'])[1]
-    user['uid'] = 'uid'
+    del user['uid']
 
     return jsonify(status='ok', user=user)

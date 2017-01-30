@@ -55,6 +55,7 @@ all_hot.view = function (ctrl) {
         var nopage = r.slice(0, r.lastIndexOf("/"));
         nroute = nopage + '/' + ((page*1)+1);
         proute = nopage + '/' + ((page*1)-1);
+        if (page == '2') {proute=nopage;}
       }
       return [m('div.content.pure-u-1 pure-u-md-18-24', {}, renderPosts(ctrl.posts, ctrl.sub),
               m('div.pagenav.pure-u-1 pure-u-md-18-24',

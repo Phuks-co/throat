@@ -98,6 +98,9 @@ m.routes('/', {// default route
     '/s/:sub/top/:page': {'#th-main': sub_top, '#th-menu': menu_sub},
     '/s/:sub/new/:page': {'#th-main': sub_new, '#th-menu': menu_sub},
 
+    /* domain page */
+    // TODO '/domain/:domain': {'#th-main': sub_hot},
+
     /* Post */
     '/s/:sub/:pid': {'#th-main': view_post, '#th-menu': menu_sub}
   });

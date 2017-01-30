@@ -44,22 +44,25 @@
                     m('div.head',
                       (post.nsfw) ? m('div.bgred', {title: 'Not safe for work'}, 'NSFW') : '',
                       (post.thumbnail) ? m('div.thpostcontainer', m('div.thumbnail', decide_thumb(post))) : '',
-                      m('h1.title',
-                        m('a', (post.ptype === 0) ? {href: '/s/' + ctrl.sub + '/' + post.pid, config: m.route} : {href: post.link}, post.title)
-                      ), m('div.info', 'posted by ',
+                      ((post.ptype === 0) ? m('div.title', post.title) :
+                        [m('a.title', {href: post.link}, post.title),
+                          m('span.domain', ' (', m('a', {href: '/domain/' + get_hostname(post.link), config: m.route}, get_hostname(post.link)), ')')]),
+                      m('div.author', (post.ptype === 1) ? work_expandos(post) : '','posted ',
+                        m('time-ago', {datetime: post.posted}),
                         function () {
                           switch (post.deleted){
                             case 0:
-                              return m('a', {href: '/u/' + post.user, config: m.route}, post.user);
+                              return  m('span',' by ', m('a', {href: '/u/' + post.user, config: m.route}, post.user));
                             case 1:
-                              return '[Deleted by user]';
+                              return ' by [Deleted by user]';
                             case 2:
-                              return '[Deleted]';
+                              return ' by [Deleted]';
                           }
                         }()
                         /* TODO: Save, edit, delete and flair buttons */
                       ),
-                      (post.ptype === 0) ? m('div.content', m.trust(md.makeHtml(post.content))) : ''
+                      [(post.ptype === 0) ? m('div.content', m.trust(md.makeHtml(post.content))) : '',
+                      (post.expando) ? post.expando : null]
                     )
                   )
                 ),
