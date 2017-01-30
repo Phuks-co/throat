@@ -109,6 +109,10 @@ a.next {
       margin-top: .5em;
       margin-right: .5em;
     }
+    /* expando img */
+    div.pure-u-1.pure-u-md-13-24 img {
+        width: 100%;
+    }
 }
 
 @media screen and (min-width: 48em){
@@ -140,6 +144,10 @@ a.next {
   }
   #th-uinfo {
     text-align: right;
+  }
+  /* expando img */
+  div.pure-u-1.pure-u-md-13-24 img {
+      width: 150%;
   }
 }
 
