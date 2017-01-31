@@ -11,9 +11,6 @@ var all_hot = {}; // all_hot is the base for all the other sorters!
 all_hot.control = function (type, sort){
   var ctrl = this;
   var page = m.route.param('page')
-  if(!page) {
-    page = '1';
-  }
   ctrl.err = '';
   ctrl.posts = [];
   ctrl.get_posts = function () {
@@ -21,7 +18,7 @@ all_hot.control = function (type, sort){
     window.stop();  // We're going to change pages, so cancel all requests.
     m.request({
       method: 'GET',
-      url: '/do/get_posts/' + type + '/' + sort + '/' + page
+      url: '/do/get_posts/' + type + '/' + sort  + ((page) ? '/' + page : '')
     }).then(function(res) {
         if (res.status == 'ok'){
           ctrl.posts = res.posts;

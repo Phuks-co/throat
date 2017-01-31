@@ -246,7 +246,7 @@ var view_user_posts = {
       window.stop();  // We're going to change pages, so cancel all requests.
         m.request({
           method: 'GET',
-          url: '/do/get_posts/userposts/' + m.route.param('user') + '/' + page
+          url: '/do/get_posts/userposts/' + m.route.param('user') + '/' + ((page) ? '/' + page : '')
         }).then(function(res) {
             if (res.status == 'ok'){
               ctrl.posts = res.posts;

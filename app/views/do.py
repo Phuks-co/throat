@@ -1797,9 +1797,8 @@ def get_comments(cid):
 
 # Routes used in /alt
 
-
-@do.route('/do/get_posts/<gtype>/<sort>', defaults={'page': 1})
 @do.route('/do/get_posts/<gtype>/<sort>/<int:page>')
+@do.route('/do/get_posts/<gtype>/<sort>', defaults={'page': 1})
 def get_posts(gtype, sort, page):
     """ Returns the post listing for something """
     # TODO: NSFW checks
