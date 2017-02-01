@@ -11,7 +11,7 @@
 function gettop5sidebar (posts) {
   list = [];
   for (var i in posts) {
-    list.push(m('li', m('span.score', posts[i].score), m('a', {href: '/s/' + posts[i].sub.name + '/' + posts[i].pid, config: m.route}, posts[i].title),
+    list.push(m('li', m('span.TPScore', posts[i].score), m('a', {href: '/s/' + posts[i].sub.name + '/' + posts[i].pid, config: m.route}, posts[i].title),
                       m('span.stuff', 'posted ', m('time-ago', {datetime: posts[i].posted}), ' in ', m('a', {href: '/s/' + posts[i].sub.name , config: m.route}, posts[i].sub.name)  )));
   }
   return list;
