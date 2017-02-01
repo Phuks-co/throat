@@ -34,6 +34,7 @@
              url: '/api/v1/getSub/' + ctrl.post.sub
            }).then(function(res) {
              ctrl.sub = res.sub;
+             current_sub = res.sub;
            })
          } else {
            ctrl.err = res.error;

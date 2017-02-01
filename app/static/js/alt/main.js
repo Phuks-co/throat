@@ -25,6 +25,7 @@ var menu_all = {  // the menu for all_*
 var menu_sub = {  // the menu for sub_*
   controller: function () {return {sub: m.route.param("sub")};},
   view: function (c) {
+    console.log(current_sub.name)
     if (current_sub.name) {
       switch(m.route()) {  // could use regexp here
         case '/s/' + c.sub:
@@ -36,6 +37,8 @@ var menu_sub = {  // the menu for sub_*
           ep = 'new'; break;
         case '/s/' + c.sub + '/top':
           ep = 'top'; break;
+        default:
+          ep = '';
       }
       return [m('li.pure-menu-item', m('span', m('b', current_sub.name))),
   						m('li.pure-menu-item', {active: (ep == 'hot') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/hot', config: m.route},'Hot')),
