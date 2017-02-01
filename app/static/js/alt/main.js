@@ -167,7 +167,7 @@ subar.controller = function () {
 	var ctrl = {};
 	m.request({
 		method: 'GET',
-		url: '/do/get_subscriptions'
+		url: '/api/v1/getSubscriptions'
 	}).then(function(res) {
 			ctrl.subs = res.subscriptions;
 			m.endComputation();

@@ -35,14 +35,14 @@ all_hot.control = function (type, sort){
   var ctrl = this;
   var page = m.route.param('page')
   ctrl.err = '';
-  ctrl.posts = [];
+  ctrl.posts = null;
   ctrl.topposts = [];
   ctrl.get_posts = function () {
     m.startComputation();
     window.stop();  // We're going to change pages, so cancel all requests.
     m.request({
       method: 'GET',
-      url: '/do/get_posts/' + type + '/' + sort  + ((page) ? '/' + page : '')
+      url: '/api/v1/listPosts/' + type + '/' + sort + '/' + ((page) ? page : '1')
     }).then(function(res) {
         if (res.status == 'ok'){
           ctrl.posts = res.posts;
@@ -78,9 +78,11 @@ all_hot.view = function (ctrl) {
   if (ctrl.err !== ''){
     return m('div.content.pure-u-1', {}, "Error loading posts: " + ctrl.err);
   }else {
-    if (!ctrl.posts.length) {
-
+    if (ctrl.posts === null) {
       return [m('div.content.pure-u-1 pure-u-md-18-24', {}, 'Loading...'),
+              m('div.sidebar.pure-u-1 pure-u-md-6-24')];
+    } else if (ctrl.posts.length === 0){
+      return [m('div.content.pure-u-1 pure-u-md-18-24', {}, 'No posts here'),
               m('div.sidebar.pure-u-1 pure-u-md-6-24')];
     } else {
       var page = m.route.param('page');

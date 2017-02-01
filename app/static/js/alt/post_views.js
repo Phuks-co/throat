@@ -25,13 +25,13 @@
      window.stop();  // We're going to change pages, so cancel all requests.
      m.request({
        method: 'GET',
-       url: '/do/get_post/' + m.route.param('pid')
+       url: '/api/v1/getPost/' + m.route.param('pid')
      }).then(function(res) {
          if (res.status == 'ok'){
            ctrl.post = res.post;
            m.request({
              method: 'GET',
-             url: '/do/get_sub/' + ctrl.post.sub
+             url: '/api/v1/getSub/' + ctrl.post.sub
            }).then(function(res) {
              ctrl.sub = res.sub;
            })

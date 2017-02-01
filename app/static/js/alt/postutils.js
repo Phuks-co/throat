@@ -144,7 +144,7 @@ function postWrapper(post) {
     m.startComputation();
     m.request({
       method: 'GET',
-      url: '/do/get_post_md/' + post.pid
+      url: '/api/v1/getPostContent/' + post.pid
     }).then(function(res) {
         if (res.status == 'ok'){
           post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24 expandotxt',

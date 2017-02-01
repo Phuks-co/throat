@@ -193,7 +193,7 @@ var view_user = {
     window.stop();  // We're going to change pages, so cancel all requests.
     m.request({
       method: 'GET',
-      url: '/do/get_user/' + m.route.param('user')
+      url: '/api/v1/getUser/' + m.route.param('user')
     }).then(function(res) {
         if (res.status == 'ok'){
           ctrl.user = res.user;
@@ -258,7 +258,7 @@ var view_user_posts = {
       window.stop();  // We're going to change pages, so cancel all requests.
         m.request({
           method: 'GET',
-          url: '/do/get_userposts/' + m.route.param('user') + ((page) ? '/' + page : '')
+          url: '/api/v1/listUserPosts/' + m.route.param('user') + ((page) ? '/' + page : '1')
         }).then(function(res) {
             if (res.status == 'ok'){
               ctrl.posts = res.posts;

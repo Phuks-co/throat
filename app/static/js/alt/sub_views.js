@@ -23,7 +23,7 @@ var sub_auto = {
       window.stop();  // We're going to change pages, so cancel all requests.
       m.request({
         method: 'GET',
-        url: '/do/get_sub/' + m.route.param('sub')
+        url: '/api/v1/getSub/' + m.route.param('sub')
       }).then(function(res) {
         ctrl.sub = res.sub;
         current_sub = res.sub;
@@ -32,7 +32,7 @@ var sub_auto = {
         }
         m.request({
           method: 'GET',
-          url: '/do/get_posts/' + ctrl.sub.name + '/' + sort + ((page) ? '/' + page : '')
+          url: '/api/v1/listPosts/' + ctrl.sub.name + '/' + sort + '/' + ((page) ? + page : '1')
         }).then(function(res) {
             if (res.status == 'ok'){
               ctrl.posts = res.posts;
