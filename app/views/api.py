@@ -369,8 +369,6 @@ def get_todays_top_posts():
 
     fposts = []
     for post in posts:
-        post['comments'] = db.get_post_comment_count(post['pid'])
-        post['username'] = db.get_user_from_uid(post['uid'])['name']
         post['posted'] = post['posted'].isoformat() + 'Z'  # silly hack
         post['sub'] = db.get_sub_from_sid(post['sid'], '`name`, `nsfw`')
 

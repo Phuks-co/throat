@@ -10,8 +10,9 @@
 
 function gettop5sidebar (posts) {
   list = [];
-  for (i = 0; i < posts.length; i++) {
-    list.push(m('li', 'coming soon.. ' + i));
+  for (var i in posts) {
+    list.push(m('li', m('span.score', posts[i].score), m('a', {href: '/s/' + posts[i].sub.name + '/' + posts[i].pid, config: m.route}, posts[i].title),
+                      m('span.stuff', 'posted ', m('time-ago', {datetime: posts[i].posted}), ' in ', m('a', {href: '/s/' + posts[i].sub.name , config: m.route}, posts[i].sub.name)  )));
   }
   return list;
 }
@@ -46,28 +47,30 @@ all_hot.control = function (type, sort){
     }).then(function(res) {
         if (res.status == 'ok'){
           ctrl.posts = res.posts;
-          if (!ctrl.sub) {
-            m.request({
-              method: 'GET',
-              url: '/do/get_todays_top_posts'
-            }).then(function(res2) {
-                if (res2.status == 'ok'){
-                  ctrl.topposts = res2.posts;
-                } else {
-                  ctrl.err = res2.error;
-                }
-                m.endComputation();
-            });
-          }
-
+          m.endComputation();
         } else {
           ctrl.err = res.error;
         }
         m.endComputation();
+
     }).catch(function(err) {
       ctrl.err = [err];
       m.endComputation();
     });
+    if (!ctrl.sub) {
+      m.startComputation();
+      m.request({
+        method: 'GET',
+        url: '/api/v1/getTopPosts/day'
+      }).then(function(res2) {
+          if (res2.status == 'ok'){
+            ctrl.topposts = res2.posts;
+          } else {
+            ctrl.err = res2.error;
+          }
+          m.endComputation();
+      });
+    }
   };
   m.redraw();
   ctrl.get_posts();

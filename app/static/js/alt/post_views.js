@@ -76,7 +76,7 @@
                         }()
                         /* TODO: Save, edit, delete and flair buttons */
                       ),
-                      [(post.ptype === 0) ? m('div.content', m.trust(md.makeHtml(post.content))) : '',
+                      [(post.ptype === 0) ? m('div.postContent', m.trust(md.makeHtml(post.content))) : '',
                       (post.expando) ? post.expando : null]
                     )
                   )
