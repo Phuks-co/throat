@@ -29,7 +29,7 @@ var login = {
             m.route('/');
             ctrl.success = 'Logged in!';
           } else {
-            ctrl.err = res.error
+            ctrl.err = res.error;
           }
       }).catch(function(err) {
         ctrl.err = [err];
@@ -96,7 +96,7 @@ var register = {
     ctrl.icode = false;
     ctrl.icodecheck = (function() {
       m.startComputation();
-      socket.emit('register', {})
+      socket.emit('register', {});
       socket.on("rsettings", function (data) {
         ctrl.icode = data.icode;
         m.endComputation();
@@ -116,7 +116,7 @@ var register = {
             m.route('/');
             ctrl.success = 'Registered!';
           } else {
-            ctrl.err = res.error
+            ctrl.err = res.error;
           }
       }).catch(function(err) {
         ctrl.err = [err];
@@ -226,13 +226,13 @@ var view_user = {
                   m('div.user.center', user.postcount + ' posts'),
                   m('div.user.center', user.commentcount + ' comments'),
                   m('div.user.center', user.badges.length + ' badges',
-                     (user.badges[0]) ? m('div.user.center', user.badges[0]['name']) : '' // todo loop
+                     (user.badges[0]) ? m('div.user.center', user.badges[0].name) : '' // todo loop
                    ),
                   m('div.user.center', 'owns ' + user.owns.length + ' subs',
-                     (user.owns[0]) ? m('div.user.center', user.owns[0]['name']) : '' // todo loop
+                     (user.owns[0]) ? m('div.user.center', user.owns[0].name) : '' // todo loop
                    ),
                   m('div.user.center', 'mods ' + user.mods.length + ' subs' ,
-                     (user.mods[0]) ? m('div.user.center', user.mods[0]['name']) : '' // todo loop
+                     (user.mods[0]) ? m('div.user.center', user.mods[0].name) : '' // todo loop
                    )
                 ]
 
@@ -247,7 +247,7 @@ var view_user = {
 var view_user_posts = {
   controller: function (sort){
     var ctrl = this;
-    var page = m.route.param('page')
+    var page = m.route.param('page');
     if(!page) {
       page = '1';
     }

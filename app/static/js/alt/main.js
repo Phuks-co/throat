@@ -25,7 +25,6 @@ var menu_all = {  // the menu for all_*
 var menu_sub = {  // the menu for sub_*
   controller: function () {return {sub: m.route.param("sub")};},
   view: function (c) {
-    console.log(current_sub.name)
     if (current_sub.name) {
       switch(m.route()) {  // could use regexp here
         case '/s/' + c.sub:

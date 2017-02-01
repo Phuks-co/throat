@@ -15,7 +15,7 @@ var sub_auto = {
   controller: function (sort){
     current_sub = {};
     var ctrl = this;
-    var page = m.route.param('page')
+    var page = m.route.param('page');
     ctrl.err = '';
     ctrl.posts = [];
     ctrl.get_posts = function () {

@@ -9,23 +9,23 @@
 
 
 function gettop5sidebar (posts) {
-  list = []
+  list = [];
   for (i = 0; i < posts.length; i++) {
-    list.push(m('li', 'coming soon.. ' + i))
+    list.push(m('li', 'coming soon.. ' + i));
   }
-  return list
+  return list;
 }
 
 
 function getsidebar (ctrl) {
   if (ctrl.sub) {
-    return [m('h4', ctrl.sub.name), m('div.sidebarrow', ctrl.sub.subscribercount + ' subscribers'), m('div.sidebarrow', 'Mod: ' + ctrl.sub['owner'])]
+    return [m('h4', ctrl.sub.name), m('div.sidebarrow', ctrl.sub.subscribercount + ' subscribers'), m('div.sidebarrow', 'Mod: ' + ctrl.sub.owner)];
   } else {
-    list = []
+    list = [];
     return [m('div.sidebarrow',
               m('div.top5title', 'Top posts in the last 24 hours',
                 m('ul.top5', gettop5sidebar(ctrl.topposts)
-            )))]
+            )))];
   }
 }
 
@@ -33,7 +33,7 @@ function getsidebar (ctrl) {
 var all_hot = {}; // all_hot is the base for all the other sorters!
 all_hot.control = function (type, sort){
   var ctrl = this;
-  var page = m.route.param('page')
+  var page = m.route.param('page');
   ctrl.err = '';
   ctrl.posts = null;
   ctrl.topposts = [];
@@ -88,10 +88,9 @@ all_hot.view = function (ctrl) {
       var page = m.route.param('page');
       if (!page) {
         page = '1';
-        var r = m.route();
-        nroute = r + '/2';
+        nroute = m.route() + '/2';
       } else {
-        var r = m.route();
+        r = m.route();
         var nopage = r.slice(0, r.lastIndexOf("/"));
         nroute = nopage + '/' + ((page*1)+1);
         proute = nopage + '/' + ((page*1)-1);

@@ -9,11 +9,11 @@
  */
 
  function getpostsidebar (ctrl) {
-     return [m('div.sidebarrow', 'Score: ' + ctrl.post['score']),
+     return [m('div.sidebarrow', 'Score: ' + ctrl.post.score),
               m('h4', ctrl.sub.name),
               m('div.sidebarrow', ctrl.sub.subscribercount + ' subscribers'),
-              m('div.sidebarrow', 'Mod: ' + ctrl.sub['owner'])
-            ]
+              m('div.sidebarrow', 'Mod: ' + ctrl.sub.owner)
+            ];
  }
 
  var view_post = {
@@ -35,7 +35,7 @@
            }).then(function(res) {
              ctrl.sub = res.sub;
              current_sub = res.sub;
-           })
+           });
          } else {
            ctrl.err = res.error;
          }
