@@ -8,6 +8,14 @@
  *  - [ ] Delete post
  */
 
+ function getpostsidebar (ctrl) {
+     return [m('div.sidebarrow', 'Score: ' + ctrl.post['score']),
+              m('h4', ctrl.sub.name),
+              m('div.sidebarrow', ctrl.sub.subscribercount + ' subscribers'),
+              m('div.sidebarrow', 'Mod: ' + ctrl.sub['owner'])
+            ]
+ }
+
  var view_post = {
    controller: function (){
      var ctrl = this;
@@ -21,6 +29,12 @@
      }).then(function(res) {
          if (res.status == 'ok'){
            ctrl.post = res.post;
+           m.request({
+             method: 'GET',
+             url: '/do/get_sub/' + ctrl.post.sub
+           }).then(function(res) {
+             ctrl.sub = res.sub;
+           })
          } else {
            ctrl.err = res.error;
          }
@@ -66,7 +80,9 @@
                     )
                   )
                 ),
-                 m('div.sidebar.pure-u-1 pure-u-md-6-24')];
+                  m('div.sidebar.pure-u-1 pure-u-md-6-24',
+                    m('div.sidebarcontent', getpostsidebar (ctrl))
+                  )];
        }
      }
    }

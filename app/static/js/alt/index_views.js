@@ -7,12 +7,36 @@
  *  - [X] home_new
  */
 
+
+function gettop5sidebar (posts) {
+  list = []
+  for (i = 0; i < posts.length; i++) {
+    list.push(m('li', 'coming soon.. ' + i))
+  }
+  return list
+}
+
+
+function getsidebar (ctrl) {
+  if (ctrl.sub) {
+    return [m('h4', ctrl.sub.name), m('div.sidebarrow', ctrl.sub.subscribercount + ' subscribers'), m('div.sidebarrow', 'Mod: ' + ctrl.sub['owner'])]
+  } else {
+    list = []
+    return [m('div.sidebarrow',
+              m('div.top5title', 'Top posts in the last 24 hours',
+                m('ul.top5', gettop5sidebar(ctrl.topposts)
+            )))]
+  }
+}
+
+
 var all_hot = {}; // all_hot is the base for all the other sorters!
 all_hot.control = function (type, sort){
   var ctrl = this;
   var page = m.route.param('page')
   ctrl.err = '';
   ctrl.posts = [];
+  ctrl.topposts = [];
   ctrl.get_posts = function () {
     m.startComputation();
     window.stop();  // We're going to change pages, so cancel all requests.
@@ -22,6 +46,20 @@ all_hot.control = function (type, sort){
     }).then(function(res) {
         if (res.status == 'ok'){
           ctrl.posts = res.posts;
+          if (!ctrl.sub) {
+            m.request({
+              method: 'GET',
+              url: '/do/get_todays_top_posts'
+            }).then(function(res2) {
+                if (res2.status == 'ok'){
+                  ctrl.topposts = res2.posts;
+                } else {
+                  ctrl.err = res2.error;
+                }
+                m.endComputation();
+            });
+          }
+
         } else {
           ctrl.err = res.error;
         }
@@ -64,7 +102,9 @@ all_hot.view = function (ctrl) {
                 [m('a.prev', {href: proute, config: m.route}, 'prev'),
                 m('a.next', {href: nroute, config: m.route}, 'next')])
               )),
-              m('div.sidebar.pure-u-1 pure-u-md-6-24')];
+              m('div.sidebar.pure-u-1 pure-u-md-6-24',
+                m('div.sidebarcontent', getsidebar (ctrl))
+              )];
     }
   }
 };

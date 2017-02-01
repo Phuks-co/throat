@@ -1930,6 +1930,9 @@ def get_sub(sub):
         sub['sort'] = 'new'
     elif x['value'] == 'v_three':
         sub['sort'] = 'top'
+    sub['subscribercount'] = misc.getSuscriberCount(sub)
+    sub['owner'] = misc.getSubUsers(sub, 'mod1')
+    del sub['sid']
     return jsonify(status='ok', sub=sub)
 
 
@@ -1941,6 +1944,9 @@ def get_post(pid):
         return jsonify(status='error', error=['Post not found'])
     if post['deleted'] == 0:
         post['user'] = db.get_user_from_uid(post['uid'])['name']
+    post['sub'] = db.get_sub_from_sid(post['sid'])['name']
+    del post['uid']
+    del post['sid']
     return jsonify(status='ok', post=post)
 
 
@@ -1963,3 +1969,23 @@ def get_user(user):
     del user['uid']
 
     return jsonify(status='ok', user=user)
+
+@do.route('/do/get_todays_top_posts')
+def get_todays_top_posts():
+    """ Returns the top 5 posts for the day """
+    # TODO: NSFW checks
+    posts = misc.getTodaysTopPosts()
+
+    fposts = []
+    for post in posts:
+        post['comments'] = db.get_post_comment_count(post['pid'])
+        post['username'] = db.get_user_from_uid(post['uid'])['name']
+        post['posted'] = post['posted'].isoformat() + 'Z'  # silly hack
+        post['sub'] = db.get_sub_from_sid(post['sid'], '`name`, `nsfw`')
+
+        del post['sid']
+        del post['uid']
+        del post['thumbnail']
+        del post['content']
+        fposts.append(post)
+    return jsonify(status='ok', posts=fposts)
