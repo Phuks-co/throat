@@ -40,7 +40,7 @@ var menu_sub = {  // the menu for sub_*
         default:
           ep = '';
       }
-      return [m('li.pure-menu-item', m('span', m('b', current_sub.name))),
+      return [m('li.pure-menu-item', m('span', m('a.bold', {href: '/s/' + current_sub.name, config: m.route}, current_sub.name))),
   						m('li.pure-menu-item', {active: (ep == 'hot') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/hot', config: m.route},'Hot')),
               m('li.pure-menu-item', {active: (ep == 'top') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/top', config: m.route},'Top')),
               m('li.pure-menu-item', {active: (ep == 'new') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/new', config: m.route}, 'New'))];
