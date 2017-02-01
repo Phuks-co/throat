@@ -226,13 +226,31 @@ var view_user = {
                   m('div.user.center', user.postcount + ' posts'),
                   m('div.user.center', user.commentcount + ' comments'),
                   m('div.user.center', user.badges.length + ' badges',
-                     (user.badges[0]) ? m('div.user.center', user.badges[0].name) : '' // todo loop
+                    function () {
+                      var l = [];
+                      for (var i in user.badges) {
+                        l.push(m('li', m('i', {class: 'fa ' + user.badges[i].badge, title: user.badges[i].text}), user.badges[i].name));
+                      }
+                      return m('div.user.center', m('ul', l));
+                    }()
                    ),
                   m('div.user.center', 'owns ' + user.owns.length + ' subs',
-                     (user.owns[0]) ? m('div.user.center', user.owns[0].name) : '' // todo loop
+                    function () {
+                      var l = [];
+                      for (var i in user.owns) {
+                        l.push(m('li', m('a', {href: '/s/' + user.owns[i].name, config: m.route}, user.owns[i].name)));
+                      }
+                      return m('div.user.center', m('ul', l));
+                    }()
                    ),
                   m('div.user.center', 'mods ' + user.mods.length + ' subs' ,
-                     (user.mods[0]) ? m('div.user.center', user.mods[0].name) : '' // todo loop
+                    function () {
+                      var l = [];
+                      for (var i in user.mods) {
+                        l.push(m('li', m('a', {href: '/s/' + user.mods[i].name, config: m.route}, user.mods[i].name)));
+                      }
+                      return m('div.user.center', m('ul', l));
+                    }()
                    )
                 ]
 
