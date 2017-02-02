@@ -378,3 +378,38 @@ def get_todays_top_posts():
         del post['content']
         fposts.append(post)
     return jsonify(status='ok', posts=fposts)
+
+
+def process_comment(comments):
+    coms = []
+    for com in comments:
+        c = {'cid': com['cid'],
+             'posted': com['time'].isoformat() + 'Z',  # silly hack
+             'deleted': True if com['status'] in [1, 2] else False,
+             'parent': com['parentcid']
+             }
+        if com['lastedit']:
+            c['lastedit'] = com['lastedit'].isoformat() + 'Z'  # silly hack
+        if not c['deleted']:
+            c['content'] = com['content']
+            c['score'] = com['score']
+        c['user'] = db.get_user_from_uid(com['uid'])['name']
+        c['children'] = process_comment(com['children'])
+        c['more'] = com['amt'] if com['more'] else False
+        coms.append(c)
+    return coms
+
+
+@api.route('/api/v1/getComments/<int:pid>/<int:parent>/<int:page>')
+def get_comments(pid, parent, page):
+    """ Returns the comments for a post """
+    post = db.get_post_from_pid(pid)
+    if not post:
+        return jsonify(status='error', error=['Post not found'])
+
+    if parent == 0:
+        parent = None
+    comms = db.get_all_post_comments(post['pid'], parent, page=page)
+    comments = process_comment(comms)
+
+    return jsonify(status='ok', comments=comments)

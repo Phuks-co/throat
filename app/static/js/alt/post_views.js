@@ -1,11 +1,12 @@
 /* Post-related views:
- *  - [ ] View post
- *     - [ ] View comments
- *     - [ ] Edit comments
- *     - [ ] Delete comments
+ *  - [X] View post
+ *    - [ ] Edit post
+ *    - [ ] Delete post
+ *    - [ ] Flair post
+ *  - [ ] View comments
+ *    - [ ] Edit comments
+ *    - [ ] Delete comments
  *  - [ ] Create post
- *  - [ ] Edit post
- *  - [ ] Delete post
  */
 
  function getpostsidebar (ctrl) {
@@ -14,6 +15,26 @@
               m('div.sidebarrow', ctrl.sub.subscribercount + ' subscribers'),
               m('div.sidebarrow', 'Mod: ' + ctrl.sub.owner)
             ];
+ }
+
+ function render_comments(comments, r) {
+   if(!r){
+     r = [];
+   }
+   for (var i in comments) {
+     comm = comments[i];
+     r.push(m('article.comment',
+             m('div.commentHead', // comment head, all comment info and collapse button
+               m('span', (comm.collapsed) ? '[-]' : '[+]'), ' ', // toggle
+               m('a.author', {href: '/u/' + comm.user, config: m.route}, comm.user), ' ',
+               m('time-ago', {datetime: comm.posted}),
+               (comm.lastedit) ? [' (edited ', m('time-ago', {datetime: comm.lastedit}), ')'] : ''
+             ),
+             m('div.commentContent', comm.content),
+             render_comments(comm.children)
+           ));
+   }
+   return r;
  }
 
  var view_post = {
@@ -29,19 +50,30 @@
      }).then(function(res) {
          if (res.status == 'ok'){
            ctrl.post = res.post;
-           m.request({
-             method: 'GET',
-             url: '/api/v1/getSub/' + ctrl.post.sub
-           }).then(function(res) {
-             ctrl.sub = res.sub;
-             current_sub = res.sub;
-           });
          } else {
            ctrl.err = res.error;
          }
          m.endComputation();
      }).catch(function(err) {
        ctrl.err = [err];
+       m.endComputation();
+     });
+     m.startComputation();
+     m.request({
+       method: 'GET',
+       url: '/api/v1/getSub/' + ctrl.sub
+     }).then(function(res) {
+       ctrl.sub = res.sub;
+       current_sub = res.sub;
+       m.endComputation();
+     });
+
+     m.startComputation();
+     m.request({
+       method: 'GET',
+       url: '/api/v1/getComments/' + m.route.param('pid') + '/0/0'
+     }).then(function(res) {
+       ctrl.comments = res.comments;
        m.endComputation();
      });
    },
@@ -59,7 +91,7 @@
                     m('div.head',
                       (post.nsfw) ? m('div.bgred', {title: 'Not safe for work'}, 'NSFW') : '',
                       (post.thumbnail) ? m('div.thpostcontainer', m('div.thumbnail', decide_thumb(post))) : '',
-                      ((post.ptype === 0) ? m('div.title', post.title) :
+                      ((post.ptype === 0) ? m('a.title', {href: '/s/' + post.sub + '/' + post.pid, config: m.route} , post.title) :
                         [m('a.title', {href: post.link}, post.title),
                           m('span.domain', ' (', m('a', {href: '/domain/' + get_hostname(post.link), config: m.route}, get_hostname(post.link)), ')')]),
                       m('div.postInfo', (post.ptype === 1) ? work_expandos(post) : '','posted ',
@@ -79,11 +111,22 @@
                       [(post.ptype === 0) ? m('div.postContent', m.trust(md.makeHtml(post.content))) : '',
                       (post.expando) ? post.expando : null]
                     )
-                  )
+                  ),
+                  m('div.comments',
+                    function () {
+                      if(ctrl.comments === undefined) {
+                        return m('span', 'Loading comments...');
+                      }else if(ctrl.comments.length === 0){
+                        return m('h3', 'No comments here... yet.');
+                      }else{
+                        return render_comments(ctrl.comments);
+                      }
+                    }()
+                  ) // comments
                 ),
-                  m('div.sidebar.pure-u-1 pure-u-md-6-24',
-                    m('div.sidebarcontent', getpostsidebar (ctrl))
-                  )];
+                m('div.sidebar.pure-u-1 pure-u-md-6-24',
+                  m('div.sidebarcontent', getpostsidebar (ctrl))
+                )];
        }
      }
    }

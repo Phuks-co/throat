@@ -154,6 +154,7 @@ a.next {
 .content{
   padding-top: .4em;
   padding-bottom: 60px;
+  padding-left: 1%;
 }
 
 * {
@@ -249,7 +250,7 @@ label span{margin-left: 7px;}
 
 .post {
   min-height: 70px;
-  padding: .4em 0 .4em 1%;
+  padding: .4em 0 .4em;
 }
 
 .post:nth-child(2n) {
@@ -496,8 +497,11 @@ li.pure-menu-item span{
 /* post page */
 div.head {
   width: 98%;
-  position: relative;
-  top: 12px
+  margin-top: 1em;
+}
+
+article.post {
+  margin-bottom: 2em;
 }
 
 article .post .title {
@@ -515,6 +519,7 @@ article .post .title {
 div.postInfo {
   padding-left: 10px;
   padding-right: 10px;
+  font-size: .8em;
 }
 
 div.postContent {
@@ -523,9 +528,12 @@ div.postContent {
   -webkit-box-shadow: 8px 8px 5px 0px rgba(205,205,205,1);
   -moz-box-shadow: 8px 8px 5px 0px rgba(205,205,205,1);
   box-shadow: 8px 8px 5px 0px rgba(205,205,205,1);
-  position: relative;
-  top: 32px;
+  margin-top: .3em;
   padding-left: 10px;
   padding-right: 10px;
   font-size: 14px;
+}
+
+article.comment article.comment {
+  margin-left: .7em;
 }

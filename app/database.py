@@ -575,17 +575,17 @@ def get_post_thumbnail(post):
 
 
 @cache.memoize(10)
-def get_post_comments(pid, parent=None):
+def get_post_comments(pid, parent=None, page=0):
     """ Returns some comments from a post. If the parentcid parameter is given,
     it returns all the child-comments from that cid. If not, it'll only return
     the root comments.  """
     q = 'SELECT * FROM `sub_post_comment` WHERE `pid`=%s'
     if parent:
-        q += ' AND `parentcid`=%s ORDER BY `score` DESC'
-        c = query(q, (pid, parent))
+        q += ' AND `parentcid`=%s ORDER BY `score` DESC LIMIT %s,%s'
+        c = query(q, (pid, parent, page, 8))
     else:
-        q += ' AND `parentcid` IS NULL ORDER BY `score` DESC'
-        c = query(q, (pid, ))
+        q += ' AND `parentcid` IS NULL ORDER BY `score` DESC LIMIT %s,%s'
+        c = query(q, (pid, page, 8))
 
     return c.fetchall()
 
@@ -637,11 +637,11 @@ def get_child_comment_count(cid):
     return query(q, (cid,)).fetchone()['c']
 
 
-def get_all_post_comments(pid, pa=None, depth=0):
-    posts = get_post_comments(pid, pa)
+def get_all_post_comments(pid, pa=None, depth=0, page=0):
+    posts = get_post_comments(pid, pa, page)
     f = []
     for post in posts:
-        x = get_all_post_comments(pid, post['cid'], depth+1)
+        x = get_all_post_comments(pid, post['cid'], depth+1, page)
         if depth == 4 and x:
             post['children'] = []
             post['amt'] = get_child_comment_count(post['cid'])
@@ -650,7 +650,10 @@ def get_all_post_comments(pid, pa=None, depth=0):
             post['more'] = False
             post['children'] = []
         else:
-            post['more'] = True
+            post['more'] = False
+            if len(x) != get_child_comment_count(post['cid']):
+                post['more'] = True
+                post['amt'] = get_child_comment_count(post['cid']) - len(x)
             post['children'] = x
         f.append(post)
     return f
