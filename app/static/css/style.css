@@ -456,7 +456,7 @@ a.btn.login, a.btn.register, button.btn.logout {
     margin: 0px 0.7vw 0px 0.7vw!important;
 }
 .side .lightbtn i {
-    font-size: 1.5vmax;
+    font-size: 1.5em;
 }
 .side .buttons {
     margin: 0.5em;
