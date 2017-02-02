@@ -62,7 +62,7 @@
                       ((post.ptype === 0) ? m('div.title', post.title) :
                         [m('a.title', {href: post.link}, post.title),
                           m('span.domain', ' (', m('a', {href: '/domain/' + get_hostname(post.link), config: m.route}, get_hostname(post.link)), ')')]),
-                      m('div.author', (post.ptype === 1) ? work_expandos(post) : '','posted ',
+                      m('div.postInfo', (post.ptype === 1) ? work_expandos(post) : '','posted ',
                         m('time-ago', {datetime: post.posted}),
                         function () {
                           switch (post.deleted){

@@ -101,3 +101,11 @@ body.dark path.th-l-fill {fill: #ccc;}
 body.dark path.th-l-stroke {stroke: #ccc;}
 
 body.dark #toggledark i {color: yellow;}
+
+body.dark div.postContent {
+  background-color: #0a0a0a;
+  -webkit-box-shadow: 8px 8px 5px 0px rgba(11,11,11,1);
+  -moz-box-shadow: 8px 8px 5px 0px rgba(11,11,11,1);
+  box-shadow: 8px 8px 5px 0px rgba(11,11,11,1);
+  border: 1px solid #050505;
+}
