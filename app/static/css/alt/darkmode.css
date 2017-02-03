@@ -109,3 +109,15 @@ body.dark div.postContent {
   box-shadow: 8px 8px 5px 0px rgba(11,11,11,1);
   border: 1px solid #050505;
 }
+
+/* post page */
+body.dark article.comment.even {
+  border-bottom: 1px solid #050505;
+}
+body.dark article.comment.even {
+  background-color: #0a0a0a;
+}
+body.dark article.comment.odd {
+  background-color: #101010;
+  border: 1px solid #181818;
+}

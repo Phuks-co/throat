@@ -551,28 +551,21 @@ article.comment article.comment {
 
 
 
-
+/* post page*/
 div.comments {
-    padding-right: 8px;
+  padding-right: 8px;
 }
 
 article.comment {
-    background-color: #eaeaea;
-    border: 1px solid #ccc;
-    padding-top: 7px;
-    padding-bottom: 10px;
-    padding-left: 5px
+  border-bottom: 1px solid #cecece;
+  padding: 7px 0 10px 7px
 }
-
-
-article.odd {
-  background-color: white;
+article.comment.odd {
+  background-color: #f4f4f4;
 }
-
-article.even {
-  background-color: yellow;
+article.comment.even {
+  background-color: #eaeaea
 }
-
 div.commentContent {
     padding-bottom: 5px;
 }
