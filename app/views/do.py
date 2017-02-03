@@ -104,6 +104,7 @@ def admin_post_search():
 
 
 @do.route("/do/login", methods=['POST'])
+@misc.ratelimit(5, per=30)
 def login():
     """ Login endpoint """
     form = LoginForm()
