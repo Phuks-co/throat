@@ -537,6 +537,7 @@ div.postContent {
   padding-left: 10px;
   padding-right: 10px;
   font-size: 14px;
+  width: 98%;
 }
 
 article.comment article.comment {
