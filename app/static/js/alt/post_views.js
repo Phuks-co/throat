@@ -26,7 +26,7 @@
      r.push(m('article.comment',
              m('div.commentHead', // comment head, all comment info and collapse button
                m('span', (comm.collapsed) ? '[-]' : '[+]'), ' ', // toggle
-               m('a.author', {href: '/u/' + comm.user, config: m.route}, comm.user), ' ',
+               m('a.author', {href: '/u/' + comm.user, oncreate: m.route.link}, comm.user), ' ',
                m('time-ago', {datetime: comm.posted}),
                (comm.lastedit) ? [' (edited ', m('time-ago', {datetime: comm.lastedit}), ')'] : ''
              ),
@@ -38,43 +38,36 @@
  }
 
  var view_post = {
-   controller: function (){
+   oninit: function (){
      var ctrl = this;
      ctrl.err = '';
      ctrl.sub = m.route.param('sub');
-     m.startComputation();
      window.stop();  // We're going to change pages, so cancel all requests.
      m.request({
        method: 'GET',
        url: '/api/v1/getPost/' + m.route.param('pid')
      }).then(function(res) {
-         if (res.status == 'ok'){
-           ctrl.post = res.post;
-         } else {
-           ctrl.err = res.error;
-         }
-         m.endComputation();
+       if (res.status == 'ok'){
+         ctrl.post = res.post;
+       } else {
+         ctrl.err = res.error;
+       }
      }).catch(function(err) {
        ctrl.err = [err];
-       m.endComputation();
      });
-     m.startComputation();
      m.request({
        method: 'GET',
        url: '/api/v1/getSub/' + ctrl.sub
      }).then(function(res) {
        ctrl.sub = res.sub;
        current_sub = res.sub;
-       m.endComputation();
      });
 
-     m.startComputation();
      m.request({
        method: 'GET',
        url: '/api/v1/getComments/' + m.route.param('pid') + '/0/0'
      }).then(function(res) {
        ctrl.comments = res.comments;
-       m.endComputation();
      });
    },
    view: function(ctrl) {
@@ -91,15 +84,15 @@
                     m('div.head',
                       (post.nsfw) ? m('div.bgred', {title: 'Not safe for work'}, 'NSFW') : '',
                       (post.thumbnail) ? m('div.thpostcontainer', m('div.thumbnail', decide_thumb(post))) : '',
-                      ((post.ptype === 0) ? m('a.title', {href: '/s/' + post.sub + '/' + post.pid, config: m.route} , post.title) :
+                      ((post.ptype === 0) ? m('a.title', {href: '/s/' + post.sub + '/' + post.pid, oncreate: m.route.link} , post.title) :
                         [m('a.title', {href: post.link}, post.title),
-                          m('span.domain', ' (', m('a', {href: '/domain/' + get_hostname(post.link), config: m.route}, get_hostname(post.link)), ')')]),
+                          m('span.domain', ' (', m('a', {href: '/domain/' + get_hostname(post.link), oncreate: m.route.link}, get_hostname(post.link)), ')')]),
                       m('div.postInfo', (post.ptype === 1) ? work_expandos(post) : '','posted ',
                         m('time-ago', {datetime: post.posted}),
                         function () {
                           switch (post.deleted){
                             case 0:
-                              return  m('span',' by ', m('a', {href: '/u/' + post.user, config: m.route}, post.user));
+                              return  m('span',' by ', m('a', {href: '/u/' + post.user, oncreate: m.route.link}, post.user));
                             case 1:
                               return ' by [Deleted by user]';
                             case 2:

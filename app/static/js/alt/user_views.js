@@ -9,7 +9,7 @@
 
 
 var login = {
-  controller: function () {
+  oninit: function () {
     var ctrl = this;
     ctrl.user = {
       username: '',
@@ -26,7 +26,7 @@ var login = {
         data: ctrl.user
       }).then(function(res) {
           if (res.status == 'ok'){
-            m.route('/');
+            m.route.set('/');
             ctrl.success = 'Logged in!';
           } else {
             ctrl.err = res.error;
@@ -74,7 +74,7 @@ var login = {
 
 
 var register = {
-  controller: function () {
+  oninit: function () {
     var ctrl = this;
     var recaptcha = document.createElement('script');
     recaptcha.setAttribute('src', 'https://www.google.com/recaptcha/api.js?onload=CaptchaCallback&render=explicit');
@@ -95,11 +95,9 @@ var register = {
     };
     ctrl.icode = false;
     ctrl.icodecheck = (function() {
-      m.startComputation();
       socket.emit('register', {});
       socket.on("rsettings", function (data) {
         ctrl.icode = data.icode;
-        m.endComputation();
       });
     })();
     ctrl.err = '';
@@ -113,7 +111,7 @@ var register = {
         data: ctrl.user
       }).then(function(res) {
           if (res.status == 'ok'){
-            m.route('/');
+            m.route.set('/');
             ctrl.success = 'Registered!';
           } else {
             ctrl.err = res.error;
@@ -185,25 +183,22 @@ var register = {
 
 
 var view_user = {
-  controller: function (){
+  oninit: function (){
     var ctrl = this;
     ctrl.err = '';
     ctrl.user = m.route.param('user');
-    m.startComputation();
     window.stop();  // We're going to change pages, so cancel all requests.
     m.request({
       method: 'GET',
       url: '/api/v1/getUser/' + m.route.param('user')
     }).then(function(res) {
-        if (res.status == 'ok'){
-          ctrl.user = res.user;
-        } else {
-          ctrl.err = res.error;
-        }
-        m.endComputation();
+      if (res.status == 'ok'){
+        ctrl.user = res.user;
+      } else {
+        ctrl.err = res.error;
+      }
     }).catch(function(err) {
       ctrl.err = [err];
-      m.endComputation();
     });
   },
   view: function(ctrl) {
@@ -238,7 +233,7 @@ var view_user = {
                     function () {
                       var l = [];
                       for (var i in user.owns) {
-                        l.push(m('li', m('a', {href: '/s/' + user.owns[i].name, config: m.route}, user.owns[i].name)));
+                        l.push(m('li', m('a', {href: '/s/' + user.owns[i].name, oncreate: m.route.link}, user.owns[i].name)));
                       }
                       return m('div.user.center', m('ul', l));
                     }()
@@ -247,7 +242,7 @@ var view_user = {
                     function () {
                       var l = [];
                       for (var i in user.mods) {
-                        l.push(m('li', m('a', {href: '/s/' + user.mods[i].name, config: m.route}, user.mods[i].name)));
+                        l.push(m('li', m('a', {href: '/s/' + user.mods[i].name, oncreate: m.route.link}, user.mods[i].name)));
                       }
                       return m('div.user.center', m('ul', l));
                     }()
@@ -263,7 +258,7 @@ var view_user = {
 
 
 var view_user_posts = {
-  controller: function (sort){
+  oninit: function (vnode){
     var ctrl = this;
     var page = m.route.param('page');
     if(!page) {
@@ -272,23 +267,19 @@ var view_user_posts = {
     ctrl.err = '';
     ctrl.posts = [];
     ctrl.get_posts = function () {
-      m.startComputation();
       window.stop();  // We're going to change pages, so cancel all requests.
-        m.request({
-          method: 'GET',
-          url: '/api/v1/listUserPosts/' + m.route.param('user') + ((page) ? '/' + page : '1')
-        }).then(function(res) {
-            if (res.status == 'ok'){
-              ctrl.posts = res.posts;
-            } else {
-              ctrl.err = res.error;
-            }
-            m.endComputation();
-        }).catch(function(err) {
-          ctrl.err = [err];
-          m.endComputation();
-        });
-
+      m.request({
+        method: 'GET',
+        url: '/api/v1/listUserPosts/' + m.route.param('user') + ((page) ? '/' + page : '1')
+      }).then(function(res) {
+        if (res.status == 'ok'){
+          ctrl.posts = res.posts;
+        } else {
+          ctrl.err = res.error;
+        }
+      }).catch(function(err) {
+        ctrl.err = [err];
+      });
     };
     m.redraw();
     ctrl.get_posts();

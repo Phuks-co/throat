@@ -4,29 +4,29 @@ var user = {};  // user info
 
 
 var menu_home = {  // the menu for home_*
-  controller: function () {},
+  oninit: function () {},
   view: function (ctrl) {
-    return [m('li.pure-menu-item', {active: (m.route() == '/' || m.route() == '/hot') ? true : false}, m('a.pure-menu-link[href="/all/hot"]', {config: m.route},'Hot')),
-            m('li.pure-menu-item', {active: (m.route() == '/new') ? true : false}, m('a.pure-menu-link[href="/new"]', {config: m.route},'New')),
-            m('li.pure-menu-item', m('a.pure-menu-link[href="/all/new"]', {config: m.route}, 'Recent'))];
+    return [m('li.pure-menu-item', {active: (m.route.get() == '/' || m.route.get() == '/hot') ? true : false}, m('a.pure-menu-link[href="/hot"]', {oncreate: m.route.link},'Hot')),
+            m('li.pure-menu-item', {active: (m.route.get() == '/new') ? true : false}, m('a.pure-menu-link[href="/new"]', {oncreate: m.route.link},'New')),
+            m('li.pure-menu-item', m('a.pure-menu-link[href="/all/new"]', {oncreate: m.route.link}, 'Recent'))];
   }
 };
 
 var menu_all = {  // the menu for all_*
-  controller: function () {},
+  oninit: function () {},
   view: function (ctrl) {
     return [m('li.pure-menu-item', m('span', m('b', 'All'))),
-						m('li.pure-menu-item', {active: (m.route() == '/all/hot') ? true : false}, m('a.pure-menu-link[href="/all/hot"]', {config: m.route},'Hot')),
-            m('li.pure-menu-item', {active: (m.route() == '/all/top') ? true : false}, m('a.pure-menu-link[href="/all/top"]', {config: m.route},'Top')),
-            m('li.pure-menu-item', {active: (m.route() == '/all/new') ? true : false}, m('a.pure-menu-link[href="/all/new"]', {config: m.route}, 'New'))];
+						m('li.pure-menu-item', {active: (m.route.get() == '/all/hot') ? true : false}, m('a.pure-menu-link[href="/all/hot"]', {oncreate: m.route.link},'Hot')),
+            m('li.pure-menu-item', {active: (m.route.get() == '/all/top') ? true : false}, m('a.pure-menu-link[href="/all/top"]', {oncreate: m.route.link},'Top')),
+            m('li.pure-menu-item', {active: (m.route.get() == '/all/new') ? true : false}, m('a.pure-menu-link[href="/all/new"]', {oncreate: m.route.link}, 'New'))];
   }
 };
 
 var menu_sub = {  // the menu for sub_*
-  controller: function () {return {sub: m.route.param("sub")};},
+  oninit: function () {return {sub: m.route.param("sub")};},
   view: function (c) {
     if (current_sub.name) {
-      switch(m.route()) {  // could use regexp here
+      switch(m.route.get()) {
         case '/s/' + c.sub:
           ep = current_sub.sort;
           break;
@@ -39,26 +39,26 @@ var menu_sub = {  // the menu for sub_*
         default:
           ep = '';
       }
-      return [m('li.pure-menu-item', m('span', m('a.bold', {href: '/s/' + current_sub.name, config: m.route}, current_sub.name))),
-  						m('li.pure-menu-item', {active: (ep == 'hot') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/hot', config: m.route},'Hot')),
-              m('li.pure-menu-item', {active: (ep == 'top') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/top', config: m.route},'Top')),
-              m('li.pure-menu-item', {active: (ep == 'new') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/new', config: m.route}, 'New'))];
+      return [m('li.pure-menu-item', m('span', m('a.bold', {href: '/s/' + current_sub.name, oncreate: m.route.link}, current_sub.name))),
+  						m('li.pure-menu-item', {active: (ep == 'hot') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/hot', oncreate: m.route.link},'Hot')),
+              m('li.pure-menu-item', {active: (ep == 'top') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/top', oncreate: m.route.link},'Top')),
+              m('li.pure-menu-item', {active: (ep == 'new') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/new', oncreate: m.route.link}, 'New'))];
     }
   }
 };
 
 
 var menu_user = {  // the menu for user_*
-  controller: function (ctrl) {return {user: m.route.param("user")};},
+  oninit: function (vnode) {return {user: m.route.param("user")};},
   view: function (ctrl) {
       return [m('li.pure-menu-item', m('span', m('b', m.route.param("user")))),
-              m('li.pure-menu-item', {}, m('a.pure-menu-link', {href: '/u/' + m.route.param("user") + '/posts', config: m.route},'Posts')),
-              m('li.pure-menu-item', {}, m('a.pure-menu-link', {href: '/u/' + m.route.param("user") + '/comments', config: m.route},'Comments'))];
+              m('li.pure-menu-item', {}, m('a.pure-menu-link', {href: '/u/' + m.route.param("user") + '/posts', oncreate: m.route.link},'Posts')),
+              m('li.pure-menu-item', {}, m('a.pure-menu-link', {href: '/u/' + m.route.param("user") + '/comments', oncreate: m.route.link},'Comments'))];
               // m('li.pure-menu-item', {}, m('a.pure-menu-link', {href: '/u/' + m.route.param("user") + '/saved', config: m.route}, 'Saved'))];
   }
 };
 
-m.route.mode = "hash";
+m.route.prefix("#");
 
 /* routing */
 m.routes('/', {// default route
@@ -110,32 +110,31 @@ m.routes('/', {// default route
 /* User view thingy controller */
 var user = {};
 user.udata = {};
-
-user.controller = function(){
-  this.logout = function() {
+user.oninit = function(vx){
+  var state = this;
+  state.logout = function() {
     m.request({
       method: "POST",
       url: "/do/logout",
       data: {j: true, csrf_token: document.getElementById('csrf_token').value}
     });
   };
-  this.listen = function() {
-    m.startComputation();
+  state.listen = function() {
     socket.on("uinfo", function (data) {
-      user.udata = data;
-      m.endComputation();
+      state.udata = data;
+      m.redraw();
     });
   }();
 };
 
 user.view = function (ctrl){  // login thingy
-  var u = user.udata;
+  var u = this.udata;
 	if(u.loggedin === undefined) {
 		return m("div.cw-items", 'Loading...');
 	}
   return m("div.cw-items", {}, function(){
           if (u.loggedin){
-                return [m('a', {href: '/u/' + u.name, class: 'smallcaps', config: m.route}, u.name),
+                return [m('a', {href: '/u/' + u.name, class: 'smallcaps', oncreate: m.route.link}, u.name),
                 m('span', {class: 'separator'}),
                 m('abbr', {title: 'Phuks taken', class: 'bold'}, u.taken),
                 m('span', {class: 'separator'}),
@@ -156,33 +155,35 @@ user.view = function (ctrl){  // login thingy
                 m('span', {class: 'separator'}),
                 m('a[href="#"]', {onclick: ctrl.logout}, 'Log out')];
           }else{
-            return [m('a[href="/login"]', {config: m.route}, 'Log in'),
+            return [m('a[href="/login"]', {oncreate: m.route.link}, 'Log in'),
                     m('span.separator'),
-                    m('a[href="/register"]', {config: m.route}, 'Register')];
+                    m('a[href="/register"]', {oncreate: m.route.link}, 'Register')];
           }
         }()
       );
 };
 
 var subar = {};
-subar.controller = function () {
-	var ctrl = {};
+subar.oninit = function (vx) {
+	var ctrl = this;
 	m.request({
 		method: 'GET',
 		url: '/api/v1/getSubscriptions'
 	}).then(function(res) {
-			ctrl.subs = res.subscriptions;
-			m.endComputation();
-	});
-	return ctrl;
+      ctrl.subs = res.subscriptions;
+  });
 };
 subar.view = function (ctrl){ // sub bar
 	x = [];
-	for( var i in ctrl.subs ){
-		x.push(m('li.subinthebar', m('a', {config: m.route, href: '/s/' + ctrl.subs[i]}, ctrl.subs[i].toUpperCase())));
+	for( var i in this.subs ){
+		x.push(m('li.subinthebar', m('a', {oncreate: m.route.link, href: '/s/' + this.subs[i]}, this.subs[i].toUpperCase())));
 	}
 	return x;
 };
 
-m.module(document.getElementById('th-uinfo'), {controller: user.controller, view: user.view});
-m.module(document.getElementById('th-subar'), {controller: subar.controller, view: subar.view});
+m.mount(
+    document.getElementById('th-uinfo'), user
+);
+m.mount(
+    document.getElementById('th-subar'), subar
+);

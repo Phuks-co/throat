@@ -451,7 +451,7 @@ iframe {
 #th-menu a.pure-menu-link {
   color: white;
 }
-#th-menu a.pure-menu-link:hover, #th-menu li[active='true'] a {
+#th-menu a.pure-menu-link:hover, #th-menu li[active='true'] a, #th-menu li[active] a {
   background-color: rgb(57, 101, 164);
 }
 

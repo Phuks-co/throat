@@ -6,21 +6,23 @@ m.routes = function mRoutes( defaultRoute, routesMap ){
 
 	for( var route in routesMap ){
 		routes[ route ] = {
-			controller : subRouter( routesMap[ route ] ),
+			oninit : subRouter( routesMap[ route ] ),
 			view       : noop
 		};
 	}
 
-	return m.route( document.body, defaultRoute, routes );
+	return m.route( document.querySelector( '.footer' ), defaultRoute, routes );
 
 	function subRouter( modules ){
-		return function routeChange(){
-			m.redraw.strategy( 'none' );
+		return function routeChange(l){
+					console.log(l);
+					l.redraw = true;
+					l.skip = false;
 
-			for( var key in modules ){
-				m.module( document.querySelector( key ), modules[ key ] );
-			}
-		};
+          for( var key in modules ){
+              m.mount(document.querySelector( key ), modules[ key ]);
+          }
+        };
 	}
 
 	function noop(){}
@@ -107,17 +109,12 @@ function codepenUSER(url) {
 var lm = {};
 var logo = document.getElementById('kxlogo').innerHTML;
 lm.view = function () {
-	return [m("a.pure-menu-heading[href='/']", {config: m.route},[
-						m('span#kxlogo', {config: function (element, isInit, context){
-							context.retain = true;
-							if (!isInit && logo !== undefined) {
-								document.getElementById('kxlogo').innerHTML = logo;
-							}
-						}})
+	return [m("a.pure-menu-heading[href='/']", {oncreate: m.route.link},[
+						m('span#kxlogo', m.trust(logo))
 						//m("img[alt='Throat'][id='logo'][src='/static/img/logo-white.svg']")
 				 ])];
 };
-m.module(document.getElementById('LogoMenu'), {view: lm.view});
+m.mount(document.getElementById('LogoMenu'), lm);
 
 
 /* Menu */

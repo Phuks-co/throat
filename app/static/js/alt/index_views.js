@@ -11,8 +11,8 @@
 function gettop5sidebar (posts) {
   list = [];
   for (var i in posts) {
-    list.push(m('li', m('span.TPScore', posts[i].score), m('a', {href: '/s/' + posts[i].sub.name + '/' + posts[i].pid, config: m.route}, posts[i].title),
-                      m('span.stuff', 'posted ', m('time-ago', {datetime: posts[i].posted}), ' in ', m('a', {href: '/s/' + posts[i].sub.name , config: m.route}, posts[i].sub.name)  )));
+    list.push(m('li', m('span.TPScore', posts[i].score), m('a', {href: '/s/' + posts[i].sub.name + '/' + posts[i].pid, oncreate: m.route.link}, posts[i].title),
+                      m('span.stuff', 'posted ', m('time-ago', {datetime: posts[i].posted}), ' in ', m('a', {href: '/s/' + posts[i].sub.name , oncreate: m.route.link}, posts[i].sub.name)  )));
   }
   return list;
 }
@@ -39,36 +39,29 @@ all_hot.control = function (type, sort){
   ctrl.posts = null;
   ctrl.topposts = [];
   ctrl.get_posts = function () {
-    m.startComputation();
     window.stop();  // We're going to change pages, so cancel all requests.
     m.request({
       method: 'GET',
       url: '/api/v1/listPosts/' + type + '/' + sort + '/' + ((page) ? page : '1')
     }).then(function(res) {
-        if (res.status == 'ok'){
-          ctrl.posts = res.posts;
-          m.endComputation();
-        } else {
-          ctrl.err = res.error;
-        }
-        m.endComputation();
-
+      if (res.status == 'ok'){
+        ctrl.posts = res.posts;
+      } else {
+        ctrl.err = res.error;
+      }
     }).catch(function(err) {
       ctrl.err = [err];
-      m.endComputation();
     });
     if (!ctrl.sub) {
-      m.startComputation();
       m.request({
         method: 'GET',
         url: '/api/v1/getTopPosts/day'
       }).then(function(res2) {
-          if (res2.status == 'ok'){
-            ctrl.topposts = res2.posts;
-          } else {
-            ctrl.err = res2.error;
-          }
-          m.endComputation();
+        if (res2.status == 'ok'){
+          ctrl.topposts = res2.posts;
+        } else {
+          ctrl.err = res2.error;
+        }
       });
     }
   };
@@ -76,8 +69,9 @@ all_hot.control = function (type, sort){
   ctrl.get_posts();
   return ctrl;
 };
-all_hot.controller = function() {return all_hot.control('all', 'hot');};
-all_hot.view = function (ctrl) {
+all_hot.oninit = function() {return all_hot.control('all', 'hot');};
+all_hot.view = function () {
+  var ctrl = this;
   if (ctrl.err !== ''){
     return m('div.content.pure-u-1', {}, "Error loading posts: " + ctrl.err);
   }else {
@@ -91,9 +85,9 @@ all_hot.view = function (ctrl) {
       var page = m.route.param('page');
       if (!page) {
         page = '1';
-        nroute = m.route() + '/2';
+        nroute = m.route.get() + '/2';
       } else {
-        r = m.route();
+        r = m.route.get();
         var nopage = r.slice(0, r.lastIndexOf("/"));
         nroute = nopage + '/' + ((page*1)+1);
         proute = nopage + '/' + ((page*1)-1);
@@ -102,9 +96,9 @@ all_hot.view = function (ctrl) {
       return [m('div.content.pure-u-1 pure-u-md-18-24', {}, renderPosts(ctrl.posts, ctrl.sub),
               m('div.pagenav.pure-u-1 pure-u-md-18-24',
               ((page == 1) ?
-                [m('a.next', {href: nroute, config: m.route}, 'next')] :
-                [m('a.prev', {href: proute, config: m.route}, 'prev'),
-                m('a.next', {href: nroute, config: m.route}, 'next')])
+                [m('a.next', {href: nroute, oncreate: m.route.link}, 'next')] :
+                [m('a.prev', {href: proute, oncreate: m.route.link}, 'prev'),
+                m('a.next', {href: nroute, oncreate: m.route.link}, 'next')])
               )),
               m('div.sidebar.pure-u-1 pure-u-md-6-24',
                 m('div.sidebarcontent', getsidebar (ctrl))
@@ -114,27 +108,27 @@ all_hot.view = function (ctrl) {
 };
 
 var all_new = {
-  controller: function (){ return all_hot.control('all', 'new'); },
+  oninit: function (){ return all_hot.control('all', 'new'); },
   view: function(ctrl) { return all_hot.view(ctrl); }
 };
 
 var all_top = {
-  controller: function (){ return all_hot.control('all', 'top'); },
+  oninit: function (){ return all_hot.control('all', 'top'); },
   view: function(ctrl) { return all_hot.view(ctrl); }
 };
 
 var home_hot = {
-  controller: function (){ return all_hot.control('home', 'hot'); },
+  oninit: function (){ return all_hot.control('home', 'hot'); },
   view: function(ctrl) { return all_hot.view(ctrl); }
 };
 
 var home_new = {
-  controller: function (){ return all_hot.control('home', 'new'); },
+  oninit: function (){ return all_hot.control('home', 'new'); },
   view: function(ctrl) { return all_hot.view(ctrl); }
 };
 
 
 var home_top = {
-  controller: function (){ return all_hot.control('home', 'top'); },
+  oninit: function (){ return all_hot.control('home', 'top'); },
   view: function(ctrl) { return all_hot.view(ctrl); }
 };
