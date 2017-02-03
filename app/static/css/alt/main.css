@@ -545,8 +545,22 @@ article.comment article.comment {
 }
 
 
-
-
+/* top 5 */
+ul.top5 {
+    padding: 0 14px 0 18px;
+}
+ul.top5 li {
+    margin: 6px 0;
+}
+span.TPTitle {
+    font-size: 16px;
+}
+div.TPlocal a {
+    font-size: 14px;
+}
+div.TPlocal {
+    font-size: 12px;
+}
 
 
 
