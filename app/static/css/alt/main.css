@@ -502,6 +502,7 @@ li.pure-menu-item span{
 div.head {
   width: 98%;
   margin-top: 1em;
+  min-height: 75px;
 }
 
 article.post {
