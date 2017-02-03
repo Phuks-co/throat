@@ -71,6 +71,7 @@
      });
    },
    view: function(ctrl) {
+     ctrl = this;
      if (ctrl.err !== ''){
        return m('div.content.pure-u-1', {}, "Error loading post: " + ctrl.err);
      }else {
