@@ -16,15 +16,12 @@
               m('div.sidebarrow', 'Mod: ' + ctrl.sub.owner)
             ];
  }
-function render_comments(comments, d, pd) {
+function render_comments(comments, d) {
   var r = [];
    if(!d){d=0;}
    for (var i in comments) {
      comm = comments[i];
-     if((pd % 2 == 1) && (d+r.length % 2 == 1)){
-       d += 1;
-     }
-     r.push(m('article.comment', {class: ((d+r.length) % 2 == 1) ? 'even' : 'odd'},
+     r.push(m('article.comment', {class: (d % 2 == 1) ? 'even' : 'odd'},
              m('div.commentHead', // comment head, all comment info and collapse button
                m('span', (comm.collapsed) ? '[-]' : '[+]'), ' ', // toggle
                m('a.author', {href: '/u/' + comm.user, oncreate: m.route.link}, comm.user), ' ',
