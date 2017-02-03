@@ -350,11 +350,6 @@ label span{margin-left: 7px;}
   padding-left: .4em;
 }
 
-.thpostcontainer {
-    float: left;
-    margin: 0 10px;
-}
-
 /* Badges/Pills */
 .pure-badge,
 .pure-badge-error,
@@ -393,9 +388,18 @@ label span{margin-left: 7px;}
 .thcontainer {
   display: inline-block;
   position: relative;
+  float:right;
   width: 70px;
   height: 70px;
-  float:right;
+}
+
+.thpostcontainer {
+    float: left;
+    margin: 0 10px;
+    width: 70px;
+    height: 70px;
+    position: relative;
+
 }
 
 .thcontainer span.pure-badge{

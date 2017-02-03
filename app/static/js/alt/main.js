@@ -25,7 +25,11 @@ var menu_all = {  // the menu for all_*
 var menu_sub = {  // the menu for sub_*
   view: function (c) {
     if (current_sub.name) {
-      var sub = m.route.param("sub").toLowerCase();
+      var sub = m.route.param("sub");
+      if(!sub){
+        return;
+      }
+      sub = sub.toLowerCase();
       ep = '';
       switch(m.route.get().toLowerCase()) {
         case '/s/' + sub:

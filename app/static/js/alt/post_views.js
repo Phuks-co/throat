@@ -84,7 +84,7 @@
                   m('article.post.center',
                     m('div.head',
                       (post.nsfw) ? m('div.bgred', {title: 'Not safe for work'}, 'NSFW') : '',
-                      (post.thumbnail) ? m('div.thpostcontainer', m('div.thumbnail', decide_thumb(post))) : '',
+                      m('div.thpostcontainer', m('div.thumbnail', decide_thumb(post))),
                       ((post.ptype === 0) ? m('a.title', {href: '/s/' + post.sub + '/' + post.pid, oncreate: m.route.link} , post.title) :
                         [m('a.title', {href: post.link}, post.title),
                           m('span.domain', ' (', m('a', {href: '/domain/' + get_hostname(post.link), oncreate: m.route.link}, get_hostname(post.link)), ')')]),
