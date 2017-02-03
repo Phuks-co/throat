@@ -543,3 +543,36 @@ div.postContent {
 article.comment article.comment {
   margin-left: .7em;
 }
+
+
+
+
+
+
+
+
+
+div.comments {
+    padding-right: 8px;
+}
+
+article.comment {
+    background-color: #eaeaea;
+    border: 1px solid #ccc;
+    padding-top: 7px;
+    padding-bottom: 10px;
+    padding-left: 5px
+}
+
+
+article.odd {
+  background-color: white;
+}
+
+article.even {
+  background-color: yellow;
+}
+
+div.commentContent {
+    padding-bottom: 5px;
+}

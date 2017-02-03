@@ -16,15 +16,15 @@
               m('div.sidebarrow', 'Mod: ' + ctrl.sub.owner)
             ];
  }
-var cl = 0;
-function render_comments(comments, r) {
-   if(!r){
-     r = [];
-   }
+function render_comments(comments, d, pd) {
+  var r = [];
+   if(!d){d=0;}
    for (var i in comments) {
      comm = comments[i];
-     cl++;
-     r.push(m('article.comment', {class: (cl % 2 == 1) ? 'odd' : 'even'},
+     if((pd % 2 == 1) && (d+r.length % 2 == 1)){
+       d += 1;
+     }
+     r.push(m('article.comment', {class: ((d+r.length) % 2 == 1) ? 'even' : 'odd'},
              m('div.commentHead', // comment head, all comment info and collapse button
                m('span', (comm.collapsed) ? '[-]' : '[+]'), ' ', // toggle
                m('a.author', {href: '/u/' + comm.user, oncreate: m.route.link}, comm.user), ' ',
@@ -32,7 +32,7 @@ function render_comments(comments, r) {
                (comm.lastedit) ? [' (edited ', m('time-ago', {datetime: comm.lastedit}), ')'] : ''
              ),
              m('div.commentContent', comm.content),
-             render_comments(comm.children)
+             render_comments(comm.children, (d+1), (d+r.length))
            ));
    }
    return r;
