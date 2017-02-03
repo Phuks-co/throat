@@ -79,7 +79,7 @@
          return [m('div.content.pure-u-1 pure-u-md-18-24', {}, 'Loading...'),
                  m('div.sidebar.pure-u-1 pure-u-md-6-24')];
        } else {
-         var post = ctrl.post;
+         var post = postWrapper(ctrl.post);
          return [m('div.content.pure-u-1 pure-u-md-18-24', {},
                   m('article.post.center',
                     m('div.head',
