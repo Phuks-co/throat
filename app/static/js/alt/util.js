@@ -15,7 +15,6 @@ m.routes = function mRoutes( defaultRoute, routesMap ){
 
 	function subRouter( modules ){
 		return function routeChange(l){
-					console.log(l);
 					l.redraw = true;
 					l.skip = false;
 

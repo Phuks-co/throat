@@ -23,21 +23,20 @@ var menu_all = {  // the menu for all_*
 };
 
 var menu_sub = {  // the menu for sub_*
-  oninit: function () {return {sub: m.route.param("sub")};},
   view: function (c) {
     if (current_sub.name) {
-      switch(m.route.get()) {
-        case '/s/' + c.sub:
+      var sub = m.route.param("sub").toLowerCase();
+      ep = '';
+      switch(m.route.get().toLowerCase()) {
+        case '/s/' + sub:
           ep = current_sub.sort;
           break;
-        case '/s/' + c.sub + '/hot':
+        case '/s/' + sub + '/hot':
           ep = 'hot'; break;
-        case '/s/' + c.sub + '/new':
+        case '/s/' + sub + '/new':
           ep = 'new'; break;
-        case '/s/' + c.sub + '/top':
+        case '/s/' + sub + '/top':
           ep = 'top'; break;
-        default:
-          ep = '';
       }
       return [m('li.pure-menu-item', m('span', m('a.bold', {href: '/s/' + current_sub.name, oncreate: m.route.link}, current_sub.name))),
   						m('li.pure-menu-item', {active: (ep == 'hot') ? true : false}, m('a.pure-menu-link', {href: '/s/' + current_sub.name + '/hot', oncreate: m.route.link},'Hot')),
