@@ -428,7 +428,9 @@ label span{margin-left: 7px;}
   margin-left: .2em;
   cursor: pointer;
 }
-
+.pure-u-1.pure-u-md-13-24.pastebin {
+    width: 80%;
+}
 iframe {
   border: 0;
   display: block;

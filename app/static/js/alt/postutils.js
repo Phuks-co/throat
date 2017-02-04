@@ -46,7 +46,7 @@ function postWrapper(post) {
   post.pastebin_expando = function () {
     var id = pastebinID(post.link);
     if (id) {
-      post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.iframewrapper',
+      post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24 pastebin', m('div.iframewrapper',
                       m('iframe', {width: '100%', src: 'https://pastebin.com/embed_iframe/' + id})
                     )));
     }
