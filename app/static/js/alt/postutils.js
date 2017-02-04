@@ -43,6 +43,15 @@ function postWrapper(post) {
     }
   };
 
+  post.pastebin_expando = function () {
+    var id = pastebinID(post.link);
+    if (id) {
+      post.expando = m('div.pure-g', m('div.pure-u-1.pure-u-md-3-24'), m('div.pure-u-1.pure-u-md-13-24', m('div.iframewrapper',
+                      m('iframe', {width: '100%', src: 'https://pastebin.com/raw/' + id})
+                    )));
+    }
+  };
+
   post.streamable_expando = function () {
     var id = streamableID(post.link);
     if (id) {
@@ -169,6 +178,8 @@ function work_expandos (post) {
         return m('div.expando', {onclick: post.streamable_expando}, m('i.fa.fa-play'));
       }else if (post.domain == 'codepen.io') {
         return m('div.expando', {onclick: post.codepen_expando}, m('i.fa.fa-codepen'));
+      }else if (post.domain == 'pastebin.com') {
+        return m('div.expando', {onclick: post.pastebin_expando}, m('i.fa.fa-file-text-o'));
       }
     } else { // text post
       if (post.content) {

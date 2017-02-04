@@ -102,7 +102,12 @@ function codepenUSER(url) {
     return match[2].replace(/\//,'');
 	}
 }
-
+function pastebinID(url) {
+  var match = url.match(/^http(?:s?):\/\/pastebin\.com\/([a-zA-Z0-9]{1,20})$/);
+	if (match){
+	 return match[1];
+	}
+}
 
 /* static mithril module for the logo */
 var lm = {};
