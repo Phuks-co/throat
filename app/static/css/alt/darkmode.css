@@ -121,3 +121,25 @@ body.dark article.comment.odd {
   background-color: #101010;
   border: 1px solid #181818;
 }
+
+/* top 5 sidebar */
+body.dark .sidebar ul.top5 {
+    color: #5d5454;
+    border-top: 2px dotted #3e3e3e;
+}
+body.dark .sidebar ul.top5 li a {
+    color: #ab4409;
+}
+body.dark div.TPlocal a {
+    color: #4b6d9d !important;
+}
+body.dark div.top5title {
+  color: #4b6d9d;
+  background-color: #101010;
+  -webkit-box-shadow: 5px 5px 5px 0px rgba(11,11,11,1);
+  -moz-box-shadow: 5px 5px 5px 0px rgba(11,11,11,1);
+  box-shadow: 5px 5px 5px 0px rgba(11,11,11,1);
+}
+body.dark div.TPlocal a:visited {
+    color: #186b9c !important;
+}
