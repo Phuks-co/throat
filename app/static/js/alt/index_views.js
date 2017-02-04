@@ -12,7 +12,7 @@ function gettop5sidebar (posts) {
   list = [];
   for (var i in posts) {
     list.push(m('li', m('div.TPTitle', m('a', {href: '/s/' + posts[i].sub.name + '/' + posts[i].pid, oncreate: m.route.link}, posts[i].title)),
-                      m('div.TPlocal', m('span.TPscore', posts[i].score), ' ', m('time-ago', {datetime: posts[i].posted}), ' in ', m('a', {href: '/s/' + posts[i].sub.name , oncreate: m.route.link}, posts[i].sub.name)  )));
+                      m('div.TPlocal', m('time-ago', {datetime: posts[i].posted}), ' in ', m('a', {href: '/s/' + posts[i].sub.name , oncreate: m.route.link}, posts[i].sub.name)  )));
   }
   return list;
 }

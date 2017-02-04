@@ -578,10 +578,8 @@ div.TPlocal a:visited {
 div.top5title {
   font-weight: bold;
   text-align: center;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 10px;
-  padding-bottom: 2px;
+  padding-left: 10px 10px 2px 10px;
+  margin-right: 6px;
   color: #4b6d9d;
   background-color: #f4f4f4;
   -webkit-box-shadow: 5px 5px 5px 0px rgba(205,205,205,1);
