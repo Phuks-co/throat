@@ -270,9 +270,32 @@ def all_new_rss():
     fg.title("/all/new")
     fg.subtitle("All new posts feed")
     fg.link(href=url_for('all_new', _external=True))
-    fg.generator("Throat")
+    fg.generator("Phuks")
     c = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC LIMIT 30')
     posts = c.fetchall()
+    sorter = BasicSorting(posts)
+    for post in sorter.getPosts():
+        fe = fg.add_entry()
+        url = url_for('view_post', sub=misc.getSub(post['sid'])['name'],
+                      pid=post['pid'],
+                      _external=True)
+        fe.id(url)
+        fe.link({'href': url, 'rel': 'self'})
+        fe.title(post['title'])
+
+    return fg.rss_str(pretty=True)
+
+
+@app.route("/my/new.rss")
+def my_new_rss():
+    """ RSS feed for user subscribed aubs """
+    fg = FeedGenerator()
+    fg.title("My subs")
+    fg.subtitle("New posts from my subscribed subs feed")
+    fg.link(href=url_for('home_new', _external=True))
+    fg.generator("Phuks")
+    subs = misc.getSubscriptions(current_user.get_id())
+    posts = misc.getPostsFromSubs(subs, 1, 'pid', 20)
     sorter = BasicSorting(posts)
     for post in sorter.getPosts():
         fe = fg.add_entry()
@@ -594,7 +617,7 @@ def sub_new_rss(sub):
     fg.title("/s/{}".format(sub['name']))
     fg.subtitle("All new posts for {} feed".format(sub['name']))
     fg.link(href=url_for('view_sub_new', sub=sub['name'], _external=True))
-    fg.generator("Throat")
+    fg.generator("Phuks")
     posts = db.query('SELECT * FROM `sub_post` WHERE sid=%s'
                      ' ORDER BY `posted` DESC LIMIT 30', (sub['sid'], )) \
               .fetchall()
