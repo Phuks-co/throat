@@ -288,15 +288,15 @@ def all_new_rss():
 
 @app.route("/my/new.rss")
 def my_new_rss():
-    """ RSS feed for user subscribed aubs """
+    """ RSS feed for subs you mod """
     fg = FeedGenerator()
     fg.title("My subs")
-    fg.subtitle("New posts from my subscribed subs feed")
-    fg.link(href=url_for('home_new', _external=True))
+    fg.subtitle("New posts from subs you mod feed")
+    fg.link(href=url_for('view_modmulti_new', _external=True))
     fg.generator("Phuks")
-    subs = misc.getSubscriptions(current_user.get_id())
-    posts = misc.getPostsFromSubs(subs, 1, 'pid', 20)
-    sorter = BasicSorting(posts)
+    subs = db.get_user_modded(current_user.uid)
+    posts = misc.getPostsFromSubs(subs, 200)
+    sorter = NewSorting(posts)
     for post in sorter.getPosts():
         fe = fg.add_entry()
         url = url_for('view_post', sub=misc.getSub(post['sid'])['name'],
