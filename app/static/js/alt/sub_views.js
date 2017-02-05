@@ -12,7 +12,7 @@
 var current_sub = {};
 
 var sub_auto = {
-  oninit: function (sort){
+  oninit: function (vx, sort){
     current_sub = {};
     var ctrl = this;
     var page = m.route.param('page');
@@ -52,16 +52,16 @@ var sub_auto = {
 };
 
 var sub_hot = {
-  oninit: function (ctrl) {ctrl.state = sub_auto.oninit('hot');},
+  oninit: function (ctrl) {ctrl.state = sub_auto.oninit(ctrl, 'hot');},
   view: function (ctrl) { return sub_auto.view(ctrl);}
 };
 
 var sub_top = {
-  oninit: function (ctrl) {ctrl.state = sub_auto.oninit('top');},
+  oninit: function (ctrl) {ctrl.state = sub_auto.oninit(ctrl, 'top');},
   view: function (ctrl) {return sub_auto.view(ctrl);}
 };
 
 var sub_new = {
-  oninit: function (ctrl) {ctrl.state = sub_auto.oninit('new');},
+  oninit: function (ctrl) {ctrl.state = sub_auto.oninit(ctrl, 'new');},
   view: function (ctrl) { return sub_auto.view(ctrl);}
 };
