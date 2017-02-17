@@ -36,7 +36,7 @@ class EditCommentForm(FlaskForm):
     cid = HiddenField()  # comment id
     text = TextAreaField('Your comment',
                          validators=[DataRequired(),
-                                     Length(min=1, max=2048)])
+                                     Length(min=1, max=16384)])
 
 
 class CreateSubFlair(FlaskForm):
