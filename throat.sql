@@ -310,5 +310,5 @@ CREATE TABLE `user_multi` (
   `sids` text DEFAULT NULL,
   PRIMARY KEY (`mid`),
   KEY `uid` (`uid`),
-  CONSTRAINT `user_saved_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`)
+  CONSTRAINT `user_multi_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
