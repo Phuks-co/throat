@@ -293,5 +293,22 @@ CREATE TABLE `user_saved` (
   `xid` int(11) NOT NULL AUTO_INCREMENT,
   `uid` varchar(40) DEFAULT NULL,
   `pid` int(128) DEFAULT NULL,
-  PRIMARY KEY (`xid`)
+  PRIMARY KEY (`xid`),
+  KEY `uid` (`uid`),
+  KEY `pid` (`pid`),
+  CONSTRAINT `user_saved_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`),
+  CONSTRAINT `user_saved_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `post` (`pid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `user_multi`;
+
+CREATE TABLE `user_multi` (
+  `mid` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` varchar(40) DEFAULT NULL,
+  `name` varchar(40) DEFAULT NULL,
+  `subs` varchar(256) DEFAULT NULL,
+  `sids` text DEFAULT NULL,
+  PRIMARY KEY (`mid`),
+  KEY `uid` (`uid`),
+  CONSTRAINT `user_saved_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
