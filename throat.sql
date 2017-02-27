@@ -297,7 +297,7 @@ CREATE TABLE `user_saved` (
   KEY `uid` (`uid`),
   KEY `pid` (`pid`),
   CONSTRAINT `user_saved_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`),
-  CONSTRAINT `user_saved_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `post` (`pid`)
+  CONSTRAINT `user_saved_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `sub_post` (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `user_multi`;
