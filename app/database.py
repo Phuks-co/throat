@@ -363,7 +363,7 @@ def create_message(mfrom, to, subject, content, link, mtype):
     cache.delete_memoized(user_mail_count, to)
 
 
-def create_post(sid, uid, title, content, ptype, link=None, thumbnail=''):
+def create_post(sid, uid, title, content, ptype, nsfw, link=None, thumbnail=''):
     """ Duh. Creates a post """
     posted = datetime.datetime.utcnow()
     user = get_user_from_uid(uid)
@@ -371,7 +371,7 @@ def create_post(sid, uid, title, content, ptype, link=None, thumbnail=''):
                '`posted`, `ptype`, `score`, `thumbnail`, `deleted`, `nsfw`, '
                '`content`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
                '%s)', (sid, uid, title, link, posted, ptype, 1, thumbnail, 0,
-                       0, content))
+                       nsfw, content))
     if user['score'] is not None:
         uquery('UPDATE `user` SET `score`=`score`+1 WHERE '
                '`uid`=%s', (uid, ))

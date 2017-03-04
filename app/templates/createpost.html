@@ -20,6 +20,7 @@ var recaptchaCallback = function(){
     <div class="pull right"><a href="{{url_for('submit_link', sub=sub)}}">Submit a link post</a></div>
     <p class="sub">/s/{{txtpostform.sub(value=sub, placeholder="Enter sub name.", required=True)}}</p>
     <p class="title">{{txtpostform.title(placeholder=txtpostform.title.label.text, required=True)}}</p>
+    <p><label>{{txtpostform.nsfw.label.text}} {{txtpostform.nsfw()}}</label></p>
     <p>{{txtpostform.content(placeholder="(Optional) Write your post content here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}</p>
     {% if func.get_user_level(current_user.uid)[0] <= 4 %}
       <div class="g-recaptcha"></div>

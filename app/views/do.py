@@ -602,7 +602,8 @@ def create_txtpost():
                               uid=current_user.uid,
                               title=form.title.data,
                               content=form.content.data,
-                              ptype=0)
+                              ptype=0,
+                              nsfw=form.nsfw.data)
         addr = url_for('view_post', sub=sub['name'], pid=post['pid'])
         socketio.emit('thread',
                       {'addr': addr, 'sub': sub['name'], 'type': 'text',
@@ -720,6 +721,7 @@ def create_lnkpost():
                               title=form.title.data,
                               link=form.link.data,
                               ptype=1,
+                              nsfw=form.nsfw.data,
                               content='', thumbnail=img)
         addr = url_for('view_post', sub=sub['name'], pid=post['pid'])
         misc.workWithMentions(form.title.data, None, post, sub)

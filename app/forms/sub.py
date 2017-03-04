@@ -89,6 +89,7 @@ class CreateSubTextPost(FlaskForm):
                         validators=[DataRequired(), Length(min=4, max=350)])
     content = TextAreaField('Post content',
                             validators=[Length(min=0, max=16384)])
+    nsfw = BooleanField('NSFW?')
 
     def __init__(self, *args, **kwargs):
         super(CreateSubTextPost, self).__init__(*args, **kwargs)
