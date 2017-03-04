@@ -1133,7 +1133,7 @@ def remove_mod2(sub, user):
             return jsonify(status='error', error=['User is not mod'])
 
         db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s '
-                  ' AND `sid`=%s',
+                  'AND `sid`=%s',
                   ('mod2', user['uid'], sub['sid']))
 
         db.create_sublog(sub['sid'], 6, current_user.get_username() +
