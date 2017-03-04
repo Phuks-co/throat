@@ -147,10 +147,12 @@
               {% else %}
                 [Deleted]
               {% endif %}
-              {% if db.get_user_saved(current_user.uid, post.pid) %}
-                <a class="removesavedpost btn small" data-pid="{{post.pid}}"><i class="fa fa-save" aria-hidden="true"></i> unsave</a>
-              {% else %}
-                <a class="savepost btn small" data-pid="{{post.pid}}"><i class="fa fa-save" aria-hidden="true"></i> save</a>
+              {% if current_user.is_authenticated %}
+                {% if db.get_user_saved(current_user.uid, post.pid) %}
+                  <a class="removesavedpost btn small" data-pid="{{post.pid}}"><i class="fa fa-save" aria-hidden="true"></i> unsave</a>
+                {% else %}
+                  <a class="savepost btn small" data-pid="{{post.pid}}"><i class="fa fa-save" aria-hidden="true"></i> save</a>
+                {% endif %}
               {% endif %}
             {% if func.getUser(post.uid).uid == session['user_id'] or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
               {% if func.userCanFlair(func.getSub(post.sid)) or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
