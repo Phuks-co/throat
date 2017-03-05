@@ -54,7 +54,7 @@
   </div>
 {%endif%}
 {% endcache %}
-{% cache 21600, 'rdmsub' %}
+{# cache 21600, 'rdmsub' %}
 {% set rs = func.getRdmSub()%}
 {% if rs %}
   <span class="col-12"><hr></span>
@@ -75,7 +75,7 @@
     </div>
   </div>
 {%endif%}
-{% endcache %}
+{% endcache #}
 {% if func.enableBTCmod() %}
 <span class="col-12"><hr></span>
 <div class="row buttons">
