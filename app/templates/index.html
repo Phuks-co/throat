@@ -54,7 +54,7 @@
   </div>
 {%endif%}
 {% endcache %}
-{# cache 21600, 'rdmsub' %}
+{% cache 21600, 'rdmsubsixhr' %}
 {% set rs = func.getRdmSub()%}
 {% if rs %}
   <span class="col-12"><hr></span>
@@ -69,13 +69,12 @@
           <a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a><br>
           <span class="sidelocale">{{sub.title}}</span>
         </li>
-
       {% endfor %}
       </ul>
     </div>
   </div>
 {%endif%}
-{% endcache #}
+{% endcache %}
 {% if func.enableBTCmod() %}
 <span class="col-12"><hr></span>
 <div class="row buttons">
