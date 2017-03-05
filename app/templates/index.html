@@ -54,6 +54,28 @@
   </div>
 {%endif%}
 {% endcache %}
+{% cache 21600, 'rdmsub' %}
+{% set rs = func.getRdmSub()%}
+{% if rs %}
+  <span class="col-12"><hr></span>
+  <div class="col-12 row todaystop">
+    <div class="col-12">
+      Random sub every 6 hours
+    </div>
+    <div class="list">
+      <ul>
+      {% for sub in rs %}
+        <li>
+          <a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a><br>
+          <span class="sidelocale">{{sub.title}}</span>
+        </li>
+
+      {% endfor %}
+      </ul>
+    </div>
+  </div>
+{%endif%}
+{% endcache %}
 {% if func.enableBTCmod() %}
 <span class="col-12"><hr></span>
 <div class="row buttons">

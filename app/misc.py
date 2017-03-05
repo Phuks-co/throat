@@ -686,6 +686,13 @@ def getTodaysTopPosts():
     return list(posts)[:5]
 
 
+def getRdmSub():
+    """ Returns a random sub for index sidebar """
+    sub = db.query('SELECT `name`,`title` FROM `throat`.`sub` WHERE `nsfw`=%s '
+                 'ORDER BY RAND() LIMIT 1', (0, ))
+    return sub.fetchall()
+
+
 def sendMail(to, subject, content):
     """ Sends a mail through sendgrid """
     sg = sendgrid.SendGridAPIClient(api_key=config.SENDGRID_API_KEY)
