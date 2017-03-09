@@ -632,6 +632,18 @@ def getDefaultSubs():
     return defaults
 
 
+@cache.memoize(600)
+def getDefaultSubs_list():
+    """ Returns a list of all the default subs """
+    md = db.get_site_metadata('default', True)
+    defaults = []
+    for i in md:
+        sub = db.get_sub_from_sid(i['value'])
+        defaults.append(sub['name'])
+        defaults = sorted(defaults, key=str.lower)
+    return defaults
+
+
 def getSubscriptions(uid):
     """ Returns all the subs the current user is subscribed to """
     if uid:
@@ -646,7 +658,7 @@ def getSubscriptions_list(uid):
     if uid:
         subs = db.get_user_subscriptions_list(uid)
     else:
-        subs = getDefaultSubs()
+        subs = getDefaultSubs_list()
     return list(subs)
 
 
