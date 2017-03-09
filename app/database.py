@@ -436,6 +436,19 @@ def get_user_subscriptions(uid):
     return c.fetchall()
 
 
+@cache.memoize(600)
+def get_user_subscriptions_list(uid):
+    """ Returns all the user's subscriptions from the uid """
+    c = query('SELECT * FROM `sub_subscriber` WHERE `uid`=%s AND `status`=1',
+              (uid, ))
+    r = []
+    for i in c.fetchall():
+        sub = get_sub_from_sid(i['sid'])
+        r.append(sub['name'])
+        r = sorted(r, key=str.lower)
+    return r
+
+
 @cache.memoize(10)
 def get_user_blocked(uid):
     """ Returns all the user's blocked from the uid """

@@ -641,6 +641,15 @@ def getSubscriptions(uid):
     return list(subs)
 
 
+def getSubscriptions_list(uid):
+    """ Returns all the subs the current user is subscribed to """
+    if uid:
+        subs = db.get_user_subscriptions_list(uid)
+    else:
+        subs = getDefaultSubs()
+    return list(subs)
+
+
 @cache.memoize(600)
 def enableBTCmod():
     """ Returns true if BTC donation module is enabled """

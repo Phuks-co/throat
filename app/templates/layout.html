@@ -41,8 +41,8 @@
         <li class="subinthebar"><a href="{{url_for('view_modmulti_new')}}">modmulti</a></li>
         <li class="subinthebar"> | </li>
         {% endif %}
-        {% for sub in func.getSubscriptions(current_user.get_id()) %}
-          <li class="subinthebar"><a href="{{url_for('view_sub', sub=db.get_sub_from_sid(sub.sid).name)}}">{{db.get_sub_from_sid(sub.sid).name}}</a></li>
+        {% for sub in func.getSubscriptions_list(current_user.get_id()) %}
+          <li class="subinthebar"><a href="{{url_for('view_sub', sub=sub)}}">{{sub}}</a></li>
         {% endfor %}
       </ul>
     </div>

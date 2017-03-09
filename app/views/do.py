@@ -501,6 +501,8 @@ def subscribe_to_sub(sid):
     if current_user.has_blocked(sid):
         db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s AND `sid`=%s '
                   'AND `status`=2', (userid, sid))
+
+    cache.delete_memoized(db.get_user_subscriptions_list, userid)
     return json.dumps({'status': 'ok', 'message': 'subscribed'})
 
 
@@ -518,6 +520,8 @@ def unsubscribe_from_sub(sid):
 
     db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s AND `sid`=%s '
               'AND `status`=1', (userid, sid))
+
+    cache.delete_memoized(db.get_user_subscriptions_list, userid)
     return jsonify(status='ok', message='unsubscribed')
 
 
