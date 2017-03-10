@@ -313,8 +313,8 @@ def my_new_rss():
 @app.route("/all/new/<int:page>")
 def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
-    c = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC '
-                 'LIMIT %s,20', ((page - 1) * 20, ))
+    c = db.query('SELECT * FROM `sub_post` ORDER BY `posted` AND '
+                 '`deleted` != 1 DESC LIMIT %s,20', ((page - 1) * 20, ))
     posts = c.fetchall()
     # sorter = BasicSorting(posts)
 
@@ -328,7 +328,8 @@ def all_new_more(pid=None):
     """ Returns more posts for /all/new """
     if not pid:
         abort(404)
-    c = db.query('SELECT * FROM `sub_post` WHERE `pid`<%s ORDER BY `posted` '
+    c = db.query('SELECT * FROM `sub_post` WHERE `pid`<%s AND '
+                 '`deleted` != 1 ORDER BY `posted` '
                  'DESC LIMIT 20', (pid, ))
     posts = c.fetchall()
     return render_template('indexpost.html', posts=posts, sort_type='all_new')
@@ -707,8 +708,9 @@ def view_sub_new(sub, page):
     if not sub:
         abort(404)
 
-    posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s '
-                     'ORDER BY `posted` DESC LIMIT %s,20',
+    posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s AND '
+                     '`deleted` != 1 ORDER BY `posted` DESC '
+                     'LIMIT %s,20',
                      (sub['sid'], (page - 1) * 20, )).fetchall()
     mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
     createtxtpost = CreateSubTextPost(sub=sub['name'])
@@ -768,8 +770,8 @@ def view_sub_top(sub, page):
     if not sub:
         abort(404)
 
-    posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s '
-                     'ORDER BY `score` DESC LIMIT %s,20',
+    posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s AND'
+                     '`deleted` != 1 ORDER BY `score` DESC LIMIT %s,20',
                      (sub['sid'], (page - 1) * 20, )).fetchall()
 
     mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
@@ -793,7 +795,8 @@ def view_sub_hot(sub, page):
     if not sub:
         abort(404)
 
-    c = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s LIMIT 500',
+    c = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s AND '
+                 '`deleted` != 1 LIMIT 500',
                  (sub['sid'], )).fetchall()
     sorter = HotSorting(c)
     mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
