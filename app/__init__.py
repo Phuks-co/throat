@@ -430,35 +430,47 @@ def view_subs(page):
 @app.route("/mysubs")
 def view_my_subs():
     """ Here we can view subscribed subs """
-    subs = db.get_user_subscriptions(current_user.uid)
-    return render_template('mysubs.html', subs=subs)
+    if current_user.is_authenticated:
+        subs = db.get_user_subscriptions(current_user.uid)
+        return render_template('mysubs.html', subs=subs)
+    else:
+        abort(403)
 
 
 @app.route("/modsubs")
 def view_mymodded_subs():
     """ Here we can view subscribed subs """
-    subs = db.get_user_modded(current_user.uid)
-    return render_template('mysubs.html', subs=subs)
+    if current_user.is_authenticated:
+        subs = db.get_user_modded(current_user.uid)
+        return render_template('mysubs.html', subs=subs)
+    else:
+        abort(403)
 
 
 @app.route("/myblockedsubs")
 def view_myblocked_subs():
     """ Here we can view subscribed subs """
-    subs = db.get_user_blocked(current_user.uid)
-    return render_template('mysubs.html', subs=subs)
+    if current_user.is_authenticated:
+        subs = db.get_user_blocked(current_user.uid)
+        return render_template('mysubs.html', subs=subs)
+    else:
+        abort(403)
 
 
 @app.route("/mymultis")
 def view_my_multis():
     """ Here we can view user multis """
-    multis = db.get_user_multis(current_user.uid)
-    formmultis = []
-    for multi in multis:
-        formmultis.append(EditMulti(multi=multi['mid'], name=multi['name'],
-                                    subs=multi['subs']))
-    return render_template('mymultis.html', multis=formmultis,
-                           multilist=multis,
-                           createmulti=CreateMulti())
+    if current_user.is_authenticated:
+        multis = db.get_user_multis(current_user.uid)
+        formmultis = []
+        for multi in multis:
+            formmultis.append(EditMulti(multi=multi['mid'], name=multi['name'],
+                                        subs=multi['subs']))
+        return render_template('mymultis.html', multis=formmultis,
+                               multilist=multis,
+                               createmulti=CreateMulti())
+    else:
+        abort(403)
 
 
 @app.route("/random")
@@ -657,14 +669,16 @@ def view_multisub_new(subs, page):
 @app.route("/modmulti/<int:page>")
 def view_modmulti_new(page):
     """ The multi page for subs the user mods, sorted as new first """
-    subs = db.get_user_modded(current_user.uid)
-    posts = misc.getPostsFromSubs(subs, 200)
-    sorter = NewSorting(posts)
+    if current_user.is_authenticated:
+        subs = db.get_user_modded(current_user.uid)
+        posts = misc.getPostsFromSubs(subs, 200)
+        sorter = NewSorting(posts)
 
-    return render_template('indexmulti.html', page=page,
-                           posts=sorter.getPosts(page),
-                           multitype='view_modmulti_new')
-
+        return render_template('indexmulti.html', page=page,
+                               posts=sorter.getPosts(page),
+                               multitype='view_modmulti_new')
+    else:
+        abort(403)
 
 @app.route("/multi/<subs>", defaults={'page': 1})
 @app.route("/multi/<subs>/<int:page>")
