@@ -449,6 +449,19 @@ def get_user_subscriptions_list(uid):
     return r
 
 
+@cache.memoize(600)
+def get_user_subscriptions_subs(uid):
+    """ Returns all the user's subscriptions from the uid, sorted by name """
+    c = query('SELECT * FROM `sub_subscriber` WHERE `uid`=%s AND `status`=1',
+              (uid, ))
+    subs = []
+    for i in c.fetchall():
+        sub = get_sub_from_sid(i['sid'])
+        subs.append(sub)
+    subs.sort(key=lambda x: x['name'])
+    return subs
+
+
 @cache.memoize(10)
 def get_user_blocked(uid):
     """ Returns all the user's blocked from the uid """
@@ -457,12 +470,36 @@ def get_user_blocked(uid):
     return c.fetchall()
 
 
+@cache.memoize(600)
+def get_user_blocked_subs(uid):
+    """ Returns all the user's blocked from the uid, sorted by name """
+    sids = get_user_blocked(uid)
+    subs = []
+    for i in sids:
+        sub = get_sub_from_sid(i['sid'])
+        subs.append(sub)
+    subs.sort(key=lambda x: x['name'])
+    return subs
+
+
 @cache.memoize(10)
 def get_user_modded(uid):
     """ Returns all the user's owned/modded from the uid """
     c = query('SELECT * FROM `sub_metadata` WHERE `key` IN %s and `value`=%s',
               (('mod1', 'mod2'), uid, ))
     return c.fetchall()
+
+
+@cache.memoize(600)
+def get_user_modded_subs(uid):
+    """ Returns all the user's owned/modded from the uid, sorted by name """
+    sids = get_user_modded(uid)
+    subs = []
+    for i in sids:
+        sub = get_sub_from_sid(i['sid'])
+        subs.append(sub)
+    subs.sort(key=lambda x: x['name'])
+    return subs
 
 
 @cache.memoize(10)

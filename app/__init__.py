@@ -431,7 +431,7 @@ def view_subs(page):
 def view_my_subs():
     """ Here we can view subscribed subs """
     if current_user.is_authenticated:
-        subs = db.get_user_subscriptions(current_user.uid)
+        subs = db.get_user_subscriptions_subs(current_user.uid)
         return render_template('mysubs.html', subs=subs)
     else:
         abort(403)
@@ -441,7 +441,7 @@ def view_my_subs():
 def view_mymodded_subs():
     """ Here we can view subscribed subs """
     if current_user.is_authenticated:
-        subs = db.get_user_modded(current_user.uid)
+        subs = db.get_user_modded_subs(current_user.uid)
         return render_template('mysubs.html', subs=subs)
     else:
         abort(403)
@@ -451,7 +451,7 @@ def view_mymodded_subs():
 def view_myblocked_subs():
     """ Here we can view subscribed subs """
     if current_user.is_authenticated:
-        subs = db.get_user_blocked(current_user.uid)
+        subs = db.get_user_blocked_subs(current_user.uid)
         return render_template('mysubs.html', subs=subs)
     else:
         abort(403)

@@ -503,6 +503,7 @@ def subscribe_to_sub(sid):
                   'AND `status`=2', (userid, sid))
 
     cache.delete_memoized(db.get_user_subscriptions_list, userid)
+    cache.delete_memoized(db.get_user_subscriptions_subs, userid)
     return json.dumps({'status': 'ok', 'message': 'subscribed'})
 
 
@@ -522,6 +523,7 @@ def unsubscribe_from_sub(sid):
               'AND `status`=1', (userid, sid))
 
     cache.delete_memoized(db.get_user_subscriptions_list, userid)
+    cache.delete_memoized(db.get_user_subscriptions_subs, userid)
     return jsonify(status='ok', message='unsubscribed')
 
 
