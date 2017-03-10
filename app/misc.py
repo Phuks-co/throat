@@ -640,7 +640,7 @@ def getDefaultSubs_list():
     for i in md:
         sub = db.get_sub_from_sid(i['value'])
         defaults.append(sub['name'])
-        defaults = sorted(defaults, key=str.lower)
+    defaults = sorted(defaults, key=str.lower)
     return defaults
 
 

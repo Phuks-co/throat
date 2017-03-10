@@ -445,7 +445,7 @@ def get_user_subscriptions_list(uid):
     for i in c.fetchall():
         sub = get_sub_from_sid(i['sid'])
         r.append(sub['name'])
-        r = sorted(r, key=str.lower)
+    r = sorted(r, key=str.lower)
     return r
 
 
