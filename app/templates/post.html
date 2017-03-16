@@ -156,12 +156,14 @@
               {% endif %}
             {% if func.getUser(post.uid).uid == session['user_id'] or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
               {% if func.userCanFlair(func.getSub(post.sid)) or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
-              <a href="#edit-flair-form" class="btn btn-orange edit small edit-flair-form" aria-hidden="true"><i class="fa fa-flag"></i> Flair</a>
+                <a href="#edit-flair-form" class="btn btn-orange edit small edit-flair-form" aria-hidden="true"><i class="fa fa-flag"></i> Flair</a>
               {% endif %}
-              {% if post.ptype == 0 %}
-              <a href="#edit-txtpost-form" class="btn btn-orange edit small edit-txtpost-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
-              {% else %}
-              <a href="#edit-linkpost-form" class="btn btn-orange edit small edit-linkpost-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
+              {% if func.getUser(post.uid).uid == session['user_id'] or current_user.is_admin() %}
+                {% if post.ptype == 0 %}
+                <a href="#edit-txtpost-form" class="btn btn-orange edit small edit-txtpost-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
+                {% else %}
+                <a href="#edit-linkpost-form" class="btn btn-orange edit small edit-linkpost-form"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit </a>
+                {% endif %}
               {% endif %}
               {% if not db.is_post_deleted(post) %}
               <a href="#delete-post-form" data-post="{{post.pid}}" class="btn btn-orange edit small btn-red delete-post-form"><i class="fa fa-trash" aria-hidden="true"></i> Delete </a>
