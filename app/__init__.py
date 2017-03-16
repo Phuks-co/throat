@@ -313,8 +313,8 @@ def my_new_rss():
 @app.route("/all/new/<int:page>")
 def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
-    c = db.query('SELECT * FROM `sub_post` ORDER BY `posted` AND '
-                 '`deleted` != 1 DESC LIMIT %s,20', ((page - 1) * 20, ))
+    c = db.query('SELECT * FROM `sub_post` WHERE `deleted` != 1 ORDER BY '
+                 '`posted` DESC LIMIT %s,20', ((page - 1) * 20, ))
     posts = c.fetchall()
     # sorter = BasicSorting(posts)
 
