@@ -4,6 +4,7 @@ import json
 import re
 import time
 import datetime
+from datetime import timedelta
 import uuid
 from urllib.parse import urlparse
 import bcrypt
@@ -364,6 +365,20 @@ def edit_sub(sub):
             db.update_sub_metadata(sub['sid'], 'ucf', form.usercanflair.data)
             db.update_sub_metadata(sub['sid'], 'videomode',
                                    form.videomode.data)
+#           tmp: saving my place, pembos stash is borked
+#            if form.timer.data:
+#                if form.timer.data == '0':
+#                    db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
+#                              'AND `sid`=%s', ('timer', sub['sid']))
+#                    db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
+#                              'AND `sid`=%s', ('timermsg', sub['sid']))
+#                else:
+#               IF get_sub_metadata(time thingy):
+#                    now = datetime.datetime.utcnow()
+#                    newtime = now + datetime.timedelta(hours=int(form.timer.data))
+#                    db.create_sub_metadata(sub['sid'], 'timer', newtime)
+#                    db.create_sub_metadata(sub['sid'], 'timermsg',
+#                                           form.timermsg.data)
 
             if form.subsort.data != "None":
                 db.update_sub_metadata(sub['sid'], 'sort',

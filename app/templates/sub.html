@@ -15,6 +15,14 @@
 {% endblock %}
 
 {% block sidebar %}
+{# TODO: detect countdown clock
+ #  if func.subcountdown(sub.sid)
+ # <div class="subcountdown">
+ #  <div class="col-12"> put time left here -  func.subcountdown(sub.sid)</div>
+ #  <div class="col-12"> put msg here       -  func.subcountdownmsg(sub.sid)</div>
+ # </div>
+ # <span class="col-12"><hr><span>
+ #}
 {% if func.enableVideoMode(sub) %}
   <div class="musicmodediv">
     {% include 'videomodeplayer.html' %}

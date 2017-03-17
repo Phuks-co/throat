@@ -3,7 +3,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, BooleanField, HiddenField
 from wtforms import RadioField
-from wtforms.validators import DataRequired, Length, URL, Optional
+from wtforms.validators import DataRequired, Length, URL
+from wtforms.validators import Optional, Regexp
 
 
 class SearchForm(FlaskForm):
@@ -71,6 +72,11 @@ class EditSubForm(FlaskForm):
                          choices=[('v', 'Hot'), ('v_two', 'New'),
                                   ('v_three', 'Top')],
                          validators=[Optional()])
+    timermsg = StringField('Enable a countdown clock, message here',
+                        validators=[DataRequired(), Length(min=1, max=128)])
+    timer = StringField('number of hours, 0 to reset and remove the clock',
+                        validators=[DataRequired(), Length(min=1, max=4),
+                                    Regexp(r'[0-9]')])
     sidebar = TextAreaField('Sidebar text',
                             validators=[Length(max=8000)])
 
