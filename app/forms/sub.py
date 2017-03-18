@@ -73,7 +73,7 @@ class EditSubForm(FlaskForm):
                                   ('v_three', 'Top')],
                          validators=[Optional()])
     showtimer = BooleanField('Show Timer, uncheck to reset and remove the clock')
-    timermsg = StringField('Enable a countdown clock, message here',
+    timermsg = StringField('Countdown clock message',
                            validators=[Length(min=0, max=128)])
     timer = StringField('Number of hours',
                         validators=[Length(min=0, max=4)])

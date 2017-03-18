@@ -34,7 +34,7 @@
   <div class="col-12">
     <h2>Countdown clock (beta)</h2>
     <p><label>{{editsubform.showtimer(checked=func.getShowSubTimer(sub))}} {{editsubform.showtimer.label.text}}</label></p>
-    <p><label>{{editsubform.timermsg.label.text}}</label> {{editsubform.timermsg}}</p>
+    <p><label>{{editsubform.timermsg.label.text}}</label> {{editsubform.timermsg(value=func.getSubTimerMsg(sub))}}</p>
     <p><label>{{editsubform.timer.label.text}}</label> {{editsubform.timer}}</p>
     {% if func.getShowSubTimer(sub) %}
     <p>--- Current Time Remaining ---</p>

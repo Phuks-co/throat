@@ -3,7 +3,7 @@
 
 {% block head %}
 {{ super() }}
-{% if func.getSubTimer(sub) %}
+{% if func.getShowSubTimer(sub) %}
 <script> var end = new Date('{{func.getSubTimer(sub)}}Z'); </script>
 <script src="{{ url_for('static', filename='js/subcountdown.js') }}"></script>
 {% endif %}
