@@ -365,20 +365,46 @@ def edit_sub(sub):
             db.update_sub_metadata(sub['sid'], 'ucf', form.usercanflair.data)
             db.update_sub_metadata(sub['sid'], 'videomode',
                                    form.videomode.data)
-#           tmp: saving my place, pembos stash is borked
-#            if form.timer.data:
-#                if form.timer.data == '0':
-#                    db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
-#                              'AND `sid`=%s', ('timer', sub['sid']))
-#                    db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
-#                              'AND `sid`=%s', ('timermsg', sub['sid']))
-#                else:
-#               IF get_sub_metadata(time thingy):
-#                    now = datetime.datetime.utcnow()
-#                    newtime = now + datetime.timedelta(hours=int(form.timer.data))
-#                    db.create_sub_metadata(sub['sid'], 'timer', newtime)
-#                    db.create_sub_metadata(sub['sid'], 'timermsg',
-#                                           form.timermsg.data)
+            if form.showtimer.data == 0:
+                db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
+                          'AND `sid`=%s', ('timer', sub['sid']))
+                db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
+                          'AND `sid`=%s', ('timermsg', sub['sid']))
+                db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
+                          'AND `sid`=%s', ('showtimer', sub['sid']))
+                cache.delete_memoized(db.get_sub_metadata, sub['sid'],
+                                      'timer', _all=True)
+                cache.delete_memoized(db.get_sub_metadata, sub['sid'],
+                                      'timermsg', _all=True)
+                cache.delete_memoized(db.get_sub_metadata, sub['sid'],
+                                      'showtimer', _all=True)
+            else:
+                now = datetime.datetime.utcnow()
+                timer = db.get_sub_metadata(sub['sid'], 'timer')
+                timermsg = db.get_sub_metadata(sub['sid'], 'timermsg')
+                showtimer = db.get_sub_metadata(sub['sid'], 'showtimer')
+                if form.timer.data:
+                    newtime = now + datetime.timedelta(hours=int(form.timer.data))
+                if timer:
+                    if form.timer.data:
+                        db.update_sub_metadata(sub['sid'], 'timer', newtime)
+                else:
+                    db.create_sub_metadata(sub['sid'], 'timer', newtime)
+                if timermsg:
+                    db.update_sub_metadata(sub['sid'], 'timermsg',
+                                           form.timermsg.data)
+                    cache.delete_memoized(db.get_sub_metadata, sub['sid'],
+                                          'timermsg', _all=True)
+                else:
+                    db.create_sub_metadata(sub['sid'], 'timermsg',
+                                           form.timermsg.data)
+                if showtimer:
+                    db.update_sub_metadata(sub['sid'], 'showtimer',
+                                           form.showtimer.data)
+                    cache.delete_memoized(db.get_sub_metadata, sub['sid'],
+                                          'showtimer', _all=True)
+                else:
+                    db.create_sub_metadata(sub['sid'], 'showtimer', 1)
 
             if form.subsort.data != "None":
                 db.update_sub_metadata(sub['sid'], 'sort',

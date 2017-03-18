@@ -1283,7 +1283,8 @@ button#text-post-icon, button#link-post-icon {
 input#nsfw,
 input#restricted,
 input#usercanflair,
-input#videomode {
+input#videomode,
+input#showtimer {
     width: 30px;
 }
 #edit-sub-form h2 {

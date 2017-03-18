@@ -1,5 +1,14 @@
 {% extends "layout.html" %}
 {% block title %}{{config.LEMA}}{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% if func.getSubTimer(sub) %}
+<script> var end = new Date('{{func.getSubTimer(sub)}}Z'); </script>
+<script src="{{ url_for('static', filename='js/subcountdown.js') }}"></script>
+{% endif %}
+{% endblock %}
+
 {% block navbar %}
 <ul class="right">
   <li class="large"><a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a></li>
@@ -15,23 +24,28 @@
 <h1>Edit /s/{{sub.name}}</h1>
 <form  method="POST" id="edit-sub-form" action="{{url_for('do.edit_sub', sub=sub.name)}}" class="nice-form ajaxform">
   {{editsubform.csrf_token}}
-  <div>
+  <div class="col-12">
     <p><label>{{editsubform.title.label.text}}</label> {{editsubform.title(value=sub.title, required=True)}}</p>
     <p><label>{{editsubform.nsfw(checked=func.isNSFW(sub))}} {{editsubform.nsfw.label.text}}</label></p>
     <p><label>{{editsubform.restricted(checked=func.isRestricted(sub))}} {{editsubform.restricted.label.text}}</label></p>
     <p><label>{{editsubform.usercanflair(checked=func.userCanFlair(sub))}} {{editsubform.usercanflair.label.text}}</label></p>
     <p><label>{{editsubform.videomode(checked=func.enableVideoMode(sub))}} {{editsubform.videomode.label.text}}</label></p>
   </div>
-  <div>
-    <h2>Countdown clock (coming soon)</h2>
+  <div class="col-12">
+    <h2>Countdown clock (beta)</h2>
+    <p><label>{{editsubform.showtimer(checked=func.getShowSubTimer(sub))}} {{editsubform.showtimer.label.text}}</label></p>
     <p><label>{{editsubform.timermsg.label.text}}</label> {{editsubform.timermsg}}</p>
     <p><label>{{editsubform.timer.label.text}}</label> {{editsubform.timer}}</p>
+    {% if func.getShowSubTimer(sub) %}
+    <p>--- Current Time Remaining ---</p>
+    <div id="countdown" class="col-12"></div>
+    {% endif %}
   </div>
-  <div>
+  <div class="col-12">
     <h2><i class="fa fa-sort-amount-asc"></i> Default sub page post sorting</h2>
     <p>{{ editsubform.subsort() }}</p>
   </div>
-  <div>
+  <div class="col-12">
     <h2>Sidebar text</h2>
     {{editsubform.sidebar(placeholder="Sidebar text", rows="10", **{'data-provide' :"markdown"})}}
   </div>

@@ -1,5 +1,14 @@
 {% extends "layout.html" %}
 {% block title %}{{sub.title}} | {{config.LEMA}}{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% if func.getSubTimer(sub) %}
+<script> var end = new Date('{{func.getSubTimer(sub)}}Z'); </script>
+<script src="{{ url_for('static', filename='js/subcountdown.js') }}"></script>
+{% endif %}
+{% endblock %}
+
 {% block navbar %}
 <li>
   <a href="{{url_for('view_sub', sub=sub.name)}}">
@@ -15,14 +24,13 @@
 {% endblock %}
 
 {% block sidebar %}
-{# TODO: detect countdown clock
- #  if func.subcountdown(sub.sid)
- # <div class="subcountdown">
- #  <div class="col-12"> put time left here -  func.subcountdown(sub.sid)</div>
- #  <div class="col-12"> put msg here       -  func.subcountdownmsg(sub.sid)</div>
- # </div>
- # <span class="col-12"><hr><span>
- #}
+{% if func.getShowSubTimer(sub) %}
+  <div class="subcountdown">
+    <div id="countdown" class="col-12"></div>
+    <div class="col-12">{{func.getSubTimerMsg(sub)}}</div>
+  </div>
+  <span class="col-12"><hr><span>
+{% endif %}
 {% if func.enableVideoMode(sub) %}
   <div class="musicmodediv">
     {% include 'videomodeplayer.html' %}

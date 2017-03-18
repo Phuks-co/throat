@@ -543,6 +543,33 @@ def getSubUsers(sub, key):
         return db.get_user_from_uid(x['value'])['name']
 
 
+@cache.memoize(20)
+def getSubTimer(sub):
+    """ Returns the sub's timer time metadata """
+    x = db.get_sub_metadata(sub['sid'], 'timer')
+    if x:
+        return x['value']
+    else:
+        return False
+
+
+@cache.memoize(600)
+def getSubTimerMsg(sub):
+    """ Returns the sub's timer msg metadata """
+    x = db.get_sub_metadata(sub['sid'], 'timermsg')
+    if x:
+        return x['value']
+    else:
+        return False
+
+
+@cache.memoize(600)
+def getShowSubTimer(sub):
+    """ Returns true if show sub timer """
+    x = db.get_sub_metadata(sub['sid'], 'showtimer')
+    return False if not x or x == '0' else True
+
+
 @cache.memoize(600)
 def getSubCreation(sub):
     """ Returns the sub's 'creation' metadata """
