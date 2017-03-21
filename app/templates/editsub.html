@@ -32,7 +32,7 @@
     <p><label>{{editsubform.videomode(checked=func.enableVideoMode(sub))}} {{editsubform.videomode.label.text}}</label></p>
   </div>
   <div class="col-12">
-    <h2>Countdown clock (beta)</h2>
+    <h2><i class="fa fa-clock-o"></i> Countdown clock (beta)</h2>
     <p><label>{{editsubform.showtimer(checked=func.getShowSubTimer(sub))}} {{editsubform.showtimer.label.text}}</label></p>
     <p><label>{{editsubform.timermsg.label.text}}</label> {{editsubform.timermsg(value=func.getSubTimerMsg(sub))}}</p>
     <p><label>{{editsubform.timer.label.text}}</label> {{editsubform.timer}}</p>
@@ -44,6 +44,20 @@
   <div class="col-12">
     <h2><i class="fa fa-sort-amount-asc"></i> Default sub page post sorting</h2>
     <p>{{ editsubform.subsort() }}</p>
+  </div>
+  <div class="col-12">
+    <h2><i class="fa fa-tags"></i> Sub tags</h2>
+    <p>Enter up to 10 tags to describe this sub (separated by +)</p>
+    <p><label>{{editsubform.subtags.label.text}}</label> {{editsubform.subtags(value=func.getSubTags(sub))}}</p>
+    {% set tags = func.getSubTagsList(sub) %}
+    {% if tags %}
+      <p>Current tags:</p>
+      <ul>
+        {% for tag in tags %}
+          <li>- {{tag.value}}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
   </div>
   <div class="col-12">
     <h2>Sidebar text</h2>

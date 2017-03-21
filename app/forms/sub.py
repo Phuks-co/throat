@@ -77,6 +77,7 @@ class EditSubForm(FlaskForm):
                            validators=[Length(min=0, max=128)])
     timer = StringField('Number of hours',
                         validators=[Length(min=0, max=4)])
+    subtags = StringField('Tags')
     sidebar = TextAreaField('Sidebar text',
                             validators=[Length(max=8000)])
 

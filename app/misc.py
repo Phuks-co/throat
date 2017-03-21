@@ -570,6 +570,38 @@ def getShowSubTimer(sub):
     return False if not x or x == '0' else True
 
 
+@cache.memoize(6)
+def getSubTags(sub):
+    """ Returns sub tags for form """
+    x = db.uquery('Select `value` FROM `sub_metadata` WHERE `key`=%s '
+                  'AND `sid`=%s', ('tag', sub['sid']))
+    i = ''
+    for y in x:
+        i += str(y['value']) + '+'
+    return str(i)[:-1]
+
+
+@cache.memoize(60)
+def getSubTagsStr(sub):
+    """ Returns sub tags as sentence for subs page """
+    x = db.uquery('Select `value` FROM `sub_metadata` WHERE `key`=%s '
+                  'AND `sid`=%s', ('tag', sub['sid']))
+    if x.fetchall():
+        i = ''
+        for y in x:
+            i += str(y['value']) + ', '
+        return str(i)[:-2]
+    else:
+        return False
+
+@cache.memoize(6)
+def getSubTagsList(sub):
+    """ Returns sub tags for edit sub page """
+    x = db.uquery('Select `value` FROM `sub_metadata` WHERE `key`=%s '
+                  'AND `sid`=%s', ('tag', sub['sid']))
+    return x.fetchall()
+
+
 @cache.memoize(600)
 def getSubCreation(sub):
     """ Returns the sub's 'creation' metadata """

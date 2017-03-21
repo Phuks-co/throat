@@ -410,6 +410,21 @@ def edit_sub(sub):
                 db.update_sub_metadata(sub['sid'], 'sort',
                                        form.subsort.data)
 
+            if form.subtags.data:
+                tags = str(form.subtags.data).split('+')
+                if len(tags) > 10:
+                    return json.dumps({'status': 'error',
+                                       'error': ['Only 10 sub tags allowed '
+                                       'for now']})
+                db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
+                          'AND `sid`=%s', ('tag', sub['sid']))
+
+                for tag in tags:
+                    db.create_sub_metadata(sub['sid'], 'tag', tag)
+            else:
+                db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
+                          'AND `sid`=%s', ('tag', sub['sid']))
+
             db.create_sublog(sub['sid'], 4, 'Sub settings edited by ' +
                              current_user.get_username())
 
