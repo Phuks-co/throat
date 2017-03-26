@@ -582,17 +582,30 @@ def getSubTags(sub):
 
 
 @cache.memoize(60)
-def getSubTagsStr(sub):
-    """ Returns sub tags as sentence for subs page """
-    x = db.uquery('Select `value` FROM `sub_metadata` WHERE `key`=%s '
-                  'AND `sid`=%s', ('tag', sub['sid']))
-    if x.fetchall():
-        i = ''
-        for y in x:
-            i += str(y['value']) + ', '
-        return str(i)[:-2]
-    else:
-        return False
+def getSubTagsSearch(page, term):
+    """ Returns sub tags search for subs page """
+    c = db.query('SELECT * FROM `sub_metadata` WHERE `key`=%s AND `value` LIKE %s '
+                 ' LIMIT %s ,30',
+                 ('tag', '%' + term + '%', (page - 1) * 30))
+    subs = []
+    for i in c.fetchall():
+        sub = db.get_sub_from_sid(i['sid'])
+        if sub not in subs:
+            subs.append(sub)
+    return subs
+
+
+@cache.memoize(60)
+def getSubTagsSidebar():
+    """ Returns sub tags subs page sidebar"""
+    c = db.query('SELECT * FROM `sub_metadata` WHERE `key`=%s ',
+                 ('tag', ))
+    tags = []
+    for i in c.fetchall():
+        if i['value'] not in tags:
+            tags.append(i['value'])
+    return tags
+
 
 @cache.memoize(6)
 def getSubTagsList(sub):

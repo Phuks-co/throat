@@ -371,6 +371,14 @@ def subs_search(page, term):
     return render_template('subs.html', page=page, subs=c.fetchall())
 
 
+@app.route("/subs/tag/<term>", defaults={'page': 1})
+@app.route("/subs/tag/<term>/<int:page>")
+def subs_tag_search(page, term):
+    """ The subs index page, with basic tag search """
+    subs = misc.getSubTagsSearch(page=page, term=term)
+    return render_template('subs.html', page=page, subs=subs)
+
+
 @app.route("/all/top", defaults={'page': 1})
 @app.route("/all/top/<int:page>")
 def all_top(page):
