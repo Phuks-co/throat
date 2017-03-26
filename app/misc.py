@@ -604,6 +604,7 @@ def getSubTagsSidebar():
     for i in c.fetchall():
         if i['value'] not in tags:
             tags.append(i['value'])
+    tags = list(set(tags))
     return tags
 
 
