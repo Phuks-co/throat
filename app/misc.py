@@ -586,7 +586,7 @@ def getSubTagsSearch(page, term):
     """ Returns sub tags search for subs page """
     c = db.query('SELECT * FROM `sub_metadata` WHERE `key`=%s AND `value` LIKE %s '
                  ' LIMIT %s ,30',
-                 ('tag', '%' + term + '%', (page - 1) * 30))
+                 ('tag', term, (page - 1) * 30))
     subs = []
     for i in c.fetchall():
         sub = db.get_sub_from_sid(i['sid'])
@@ -604,7 +604,8 @@ def getSubTagsSidebar():
     for i in c.fetchall():
         if i['value'] not in tags:
             tags.append(i['value'])
-    tags = list(set(tags))
+    tags = list(set(tags))  # random
+    # tags = sorted(tags, key=str.lower)  # alphabetical
     return tags
 
 
