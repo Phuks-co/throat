@@ -376,7 +376,12 @@ def subs_search(page, term):
 def subs_tag_search(page, term):
     """ The subs index page, with basic tag search """
     subs = misc.getSubTagsSearch(page=page, term=term)
-    return render_template('subs.html', page=page, subs=subs)
+    sublist = ''
+    for sub in subs:
+        sublist += sub['name'] + '+'
+    ptype = 'tagmatch'
+    return render_template('subs.html', page=page, subs=subs, ptype=ptype,
+                            sublist=sublist[:-1])
 
 
 @app.route("/all/top", defaults={'page': 1})

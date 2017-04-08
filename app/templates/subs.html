@@ -1,6 +1,11 @@
 {% extends "layout.html" %}
 {% block title %}Subs | {{config.LEMA}}{% endblock %}
 {% block navbar %}
+
+{% if ptype == 'tagmatch' %}
+  <li><a href="{{ url_for('view_multisub_new', subs=sublist) }}">View multi of these subs</a></li>
+{% endif %}
+
 <ul class="right">
   <li class="large">Subs</li>
 </ul>
