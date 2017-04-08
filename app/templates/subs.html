@@ -22,11 +22,11 @@
   Current sub tags
 </div>
 {% set sidebartags = func.getSubTagsSidebar() %}
-<ul>
+<div>
 {% for tag in sidebartags %}
-  <li><a href="{{url_for('subs_tag_search', term=tag)}}">{{tag}}</a></li>
+  <span class="sidetag"><a href="{{url_for('subs_tag_search', term=tag)}}">{{tag}}</a></span>
 {% endfor %}
-<ul>
+</div>
 {% endblock %}
 
 {% block content %}

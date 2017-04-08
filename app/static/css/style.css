@@ -1481,6 +1481,9 @@ article.post.apidoc {
   font-size: 12px;
   height: 30px;
 }
+span.sidetag {
+    margin: 4px;
+}
 
 /* colors */
 .red {color: red;}
