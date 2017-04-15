@@ -611,6 +611,9 @@ body.dark textarea#comment {
     float: left;
     margin: 0 6px;
 }
+.postthumb img {
+    border-radius: 10px;
+}
 .post .image img {
     width: 8vmax;
     height: 8vmax;
