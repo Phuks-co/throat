@@ -135,6 +135,11 @@
                 </form>
               {% endif %}
             </div>
+            {% if db.get_post_thumbnail(post) %}
+            <div class="postthumb">
+              <img src="{{config.THUMBNAIL_HOST}}{{db.get_post_thumbnail(post)}}">
+            </div>
+            {% endif %}
             {% if func.getPostFlair(post) %}<span class="btn">{{func.getPostFlair(post)}}</span>{% endif %}
             {% if db.is_post_nsfw(post) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
             <h1 class="title"><a href="{%if post.ptype== 0 %}{{url_for('view_post', sub=sub.name, pid=post.pid)}}{% else %}{{post.link}}{%endif%}">{{post.title}}</a></h1>

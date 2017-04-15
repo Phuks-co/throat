@@ -607,6 +607,10 @@ body.dark textarea#comment {
     width: auto;
     text-align: center;
 }
+.postthumb {
+    float: left;
+    margin: 0 6px;
+}
 .post .image img {
     width: 8vmax;
     height: 8vmax;
