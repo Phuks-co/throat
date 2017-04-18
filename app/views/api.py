@@ -6,7 +6,7 @@ Some rules we should follow:
 """
 
 from datetime import datetime, timedelta
-from flask import Blueprint, jsonify, request, render_template, g
+from flask import Blueprint, jsonify, request, render_template, g, send_file
 from flask_login import login_required, current_user
 from flask_oauthlib.provider import OAuth2Provider
 from .. import misc, sorting
@@ -435,7 +435,7 @@ def whoamiv2():
 @api.route('/api/paint/canvas')
 def getCanvas():
     pixels = db.query('SELECT * FROM `pixel`').fetchall()
-    final = ''
+    final = b''
 
     for pixel in pixels:
         final += bytes([pixel['posy'],
@@ -443,4 +443,4 @@ def getCanvas():
                         pixel['color'],
                         pixel['value'], 0])
 
-    return final
+    return send_file(final, mimetype='application/octet-stream')
