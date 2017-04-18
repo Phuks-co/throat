@@ -441,6 +441,6 @@ def getCanvas():
         final += bytes([pixel['posy'],
                         pixel['posx'],
                         pixel['color'],
-                        pixel['price'], 0])
+                        pixel['value'], 0])
 
     return final
