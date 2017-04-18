@@ -323,3 +323,15 @@ CREATE TABLE `shekels` (
   KEY `uid` (`uid`),
   CONSTRAINT `shekels_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `pixel`;
+
+CREATE TABLE `pixel` (
+  `xid` int(11) NOT NULL AUTO_INCREMENT,
+  `posx` int(128) DEFAULT 0,
+  `posy` int(128) DEFAULT 0,
+  `value` int(128) DEFAULT 1,
+  `color` int(128) DEFAULT NULL,
+  PRIMARY KEY (`xid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

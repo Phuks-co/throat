@@ -430,3 +430,17 @@ def whoamiv2():
                        shekels=shekels)
     else:
         return jsonify(status='ok', loggedin=False)
+
+
+@api.route('/api/paint/canvas')
+def getCanvas():
+    pixels = db.query('SELECT * FROM `pixel`').fetchall()
+    final = ''
+
+    for px in pixels:
+        final += bytes([pixel['posy'],
+                        pixel['posx'],
+                        pixel['color'],
+                        pixel['price'], 0])
+
+    return final
