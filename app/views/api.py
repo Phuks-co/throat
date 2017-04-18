@@ -419,8 +419,8 @@ def get_comments(pid, parent, page):
 def whoamiv2():
     if current_user.is_authenticated:
         ba = db.query('SELECT * FROM `shekels` WHERE `uid`=%s',
-                      (current_user.uid,))
-        if ba.fetchone():
+                      (current_user.uid,)).fetchone()
+        if ba:
             shekels = ba['shekels']
         else:
             db.uquery('INSERT INTO `shekels` (`uid`, `shekels`) VALUES '
