@@ -437,7 +437,7 @@ def getCanvas():
     pixels = db.query('SELECT * FROM `pixel`').fetchall()
     final = ''
 
-    for px in pixels:
+    for pixel in pixels:
         final += bytes([pixel['posy'],
                         pixel['posx'],
                         pixel['color'],
