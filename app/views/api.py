@@ -413,3 +413,11 @@ def get_comments(pid, parent, page):
     comments = process_comment(comms)
 
     return jsonify(status='ok', comments=comments)
+
+
+@api.route('/api/v2/whoami')
+def whoamiv2():
+    if current_user.is_authenticated:
+        return jsonify(status='ok', loggedin=True, name=current_user.name)
+    else:
+        return jsonify(status='ok', loggedin=False)
