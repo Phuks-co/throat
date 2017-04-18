@@ -415,7 +415,7 @@ def get_comments(pid, parent, page):
     return jsonify(status='ok', comments=comments)
 
 
-@api.route('/api/v2/user/whoami')
+@api.route('/api/paint/user/whoami')
 def whoamiv2():
     if current_user.is_authenticated:
         return jsonify(status='ok', loggedin=True, name=current_user.name)
