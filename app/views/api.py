@@ -5,6 +5,7 @@ Some rules we should follow:
  - If status is "error", return an "errors" _list_
 """
 
+import io
 from datetime import datetime, timedelta
 from flask import Blueprint, jsonify, request, render_template, g, send_file
 from flask_login import login_required, current_user
@@ -443,4 +444,4 @@ def getCanvas():
                         pixel['color'],
                         pixel['value'], 0])
 
-    return send_file(final, mimetype='application/octet-stream')
+    return send_file(io.BytesIO(final), mimetype='application/octet-stream')
