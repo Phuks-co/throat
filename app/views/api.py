@@ -420,7 +420,7 @@ def whoamiv2():
     if current_user.is_authenticated:
         ba = db.query('SELECT * FROM `shekels` WHERE `uid`=%s',
                       (current_user.uid,))
-        if ba:
+        if ba.fetchone():
             shekels = ba['shekels']
         else:
             db.uquery('INSERT INTO `shekels` (`uid`, `shekels`) VALUES '
