@@ -427,6 +427,6 @@ def whoamiv2():
                       '(%s, 0)', (current_user.uid,))
             shekels = 0
         return jsonify(status='ok', loggedin=True, name=current_user.name,
-                       shekels=0)
+                       shekels=shekels)
     else:
         return jsonify(status='ok', loggedin=False)
