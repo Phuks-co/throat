@@ -418,6 +418,15 @@ def get_comments(pid, parent, page):
 @api.route('/api/paint/user/whoami')
 def whoamiv2():
     if current_user.is_authenticated:
-        return jsonify(status='ok', loggedin=True, name=current_user.name)
+        ba = db.query('SELECT * FROM `shekels` WHERE `uid`=%s',
+                      (current_user.uid,))
+        if ba:
+            shekels = ba['shekels']
+        else:
+            db.uquery('INSERT INTO `shekels` (`uid`, `shekels`) VALUES '
+                      '(%s, 0)', (current_user.uid,))
+            shekels = 0
+        return jsonify(status='ok', loggedin=True, name=current_user.name,
+                       shekels=0)
     else:
         return jsonify(status='ok', loggedin=False)

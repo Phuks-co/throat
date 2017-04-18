@@ -312,3 +312,14 @@ CREATE TABLE `user_multi` (
   KEY `uid` (`uid`),
   CONSTRAINT `user_multi_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `shekels`;
+
+CREATE TABLE `shekels` (
+  `xid` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` varchar(40) DEFAULT NULL,
+  `shekels` int(128) DEFAULT 0,
+  PRIMARY KEY (`xid`),
+  KEY `uid` (`uid`),
+  CONSTRAINT `shekels_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
