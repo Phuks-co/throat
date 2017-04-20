@@ -9,6 +9,7 @@ CREATE TABLE `user` (
   `status` int(11) DEFAULT NULL,
   `joindate` datetime DEFAULT NULL,
   `score` int(11) DEFAULT NULL,
+  `resets` int(11) DEFAULT 0,
   PRIMARY KEY (`uid`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
