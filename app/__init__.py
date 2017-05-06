@@ -1327,7 +1327,8 @@ def register():
 @login_required
 def submit_text(sub):
     """ Endpoint for text submission creation """
-    return render_template('createpost.html', type='text', sub=sub)
+    subs = db.get_all_sub_names()
+    return render_template('createpost.html', type='text', sub=sub, subs=subs)
 
 
 @app.route("/submit/link", defaults={'sub': ''})
@@ -1335,7 +1336,8 @@ def submit_text(sub):
 @login_required
 def submit_link(sub):
     """ Endpoint for link submission creation """
-    return render_template('createpost.html', type='link', sub=sub)
+    subs = db.get_all_sub_names()
+    return render_template('createpost.html', type='link', sub=sub, subs=subs)
 
 
 @app.route("/recover")

@@ -18,7 +18,14 @@ var recaptchaCallback = function(){
     {{txtpostform.csrf_token}}
     <h1>Submit a text post</h1>
     <div class="pull right"><a href="{{url_for('submit_link', sub=sub)}}">Submit a link post</a></div>
-    <p class="sub">/s/{{txtpostform.sub(value=sub, placeholder="Enter sub name.", required=True)}}</p>
+    <p class="sub">
+      /s/<input name="sub" type="text" id="sub" list="subdatalist" value="{{sub}}" required>
+      <datalist id="subdatalist">
+        {% for subname in subs %}
+        <option value="{{subname}}">
+        {% endfor %}
+      </datalist>
+    </p>
     <p class="title">{{txtpostform.title(placeholder=txtpostform.title.label.text, required=True)}}</p>
     <p><label>{{txtpostform.nsfw.label.text}} {{txtpostform.nsfw()}}</label></p>
     <p>{{txtpostform.content(placeholder="(Optional) Write your post content here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}</p>
@@ -37,8 +44,14 @@ var recaptchaCallback = function(){
     {{lnkpostform.csrf_token}}
     <h1>Submit a link post</h1>
     <div class="pull right"><a href="{{url_for('submit_text', sub=sub)}}">Submit a text post</a></div>
-    <p class="sub">/s/{{lnkpostform.sub(value=sub, placeholder="Enter sub name.", required=True)}}</p>
-    <p class="title">{{lnkpostform.title(placeholder="Title", required=True)}}</p>
+    <p class="sub">
+      /s/<input name="sub" type="text" id="sub" list="subdatalist" value="{{sub}}" required>
+      <datalist id="subdatalist">
+        {% for subname in subs %}
+        <option value="{{subname}}">
+        {% endfor %}
+      </datalist>
+    </p>    <p class="title">{{lnkpostform.title(placeholder="Title", required=True)}}</p>
     <div class="row">
       <div class="col-10 link" style="padding:0;">{{lnkpostform.link(type="url", pattern="https?://.+", required=True, placeholder="URL")}}</div>
       <a class="col-2 btn btn-blue" id="graburl">Grab title</a>

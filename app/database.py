@@ -123,6 +123,18 @@ def get_sub_from_sid(sid, select='*'):
     return c.fetchone()
 
 
+@cache.memoize(600)
+def get_all_sub_names():
+    """ Returns all the subnames name for ajax form"""
+    c = query('SELECT `name` FROM `sub`')
+    subs = []
+    for i in c.fetchall():
+        sub = i['name']
+        subs.append(sub)
+    #  subs.sort(key=lambda x: i['name'])  #  sort by name
+    return subs
+
+
 @cache.memoize(10)
 def get_post_from_pid(pid):
     """ Returns a post's db info from the pid """
