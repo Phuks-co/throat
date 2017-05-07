@@ -87,7 +87,7 @@
       <ul>
         <li><a href="{{url_for('view_post', sub=func.getSub(cl.sid).name, pid=cl.pid)}}">{{cl.title}}</a><br>
         <span class="sidelocale">
-          <time-ago datetime="{{cl.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=func.getSub(cl.sid).name)}}">/s/{{func.getSub(cl.sid).name}}</a></li>
+          <time-ago datetime="{{cl.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub='changelog')}}">/s/changelog</a></li>
         </span>
       </ul>
     </div>
