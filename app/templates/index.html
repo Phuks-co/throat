@@ -75,6 +75,25 @@
   </div>
 {%endif%}
 {% endcache %}
+{% cache 300, 'changelog' %}
+{% set cl = func.getChangelog()%}
+{% if cl %}
+  <span class="col-12"><hr></span>
+  <div class="col-12 row todaystop">
+    <div class="col-12">
+      Recent changes
+    </div>
+    <div class="list">
+      <ul>
+        <li><a href="{{url_for('view_post', sub=func.getSub(cl.sid).name, pid=cl.pid)}}">{{cl.title}}</a><br>
+        <span class="sidelocale">
+          <time-ago datetime="{{cl.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=func.getSub(cl.sid).name)}}">/s/{{func.getSub(cl.sid).name}}</a></li>
+        </span>
+      </ul>
+    </div>
+  </div>
+{% endif %}
+{% endcache %}
 {% if func.enableBTCmod() %}
 <span class="col-12"><hr></span>
 <div class="row buttons">

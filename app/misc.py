@@ -176,7 +176,7 @@ class SiteUser(object):
 
     @cache.memoize(300)
     def get_user_level(self):
-        """ Returns the post vote score of a user. """
+        """ Returns the level and xp of a user. """
         return get_user_level(self.uid)
 
 
@@ -786,6 +786,17 @@ def getTodaysTopPosts():
     posts = c.fetchall()
     posts = VoteSorting(posts).getPosts(1)
     return list(posts)[:5]
+
+
+def getChangelog():
+    """ Returns most recent changelog post """
+    b = db.query('SELECT * FROM `sub` WHERE `name`=%s',
+                 ('changelog', ))
+    sub = b.fetchone()
+    c = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s',
+                 (sub['sid'], ))
+    post = c.fetchone()
+    return post
 
 
 def getRdmSub():
