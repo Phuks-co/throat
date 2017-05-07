@@ -790,9 +790,7 @@ def getTodaysTopPosts():
 
 def getChangelog():
     """ Returns most recent changelog post """
-    b = db.query('SELECT * FROM `sub` WHERE `name`=%s',
-                 ('changelog', ))
-    sub = b.fetchone()
+    sub = db.get_sub_from_name('changelog')
     c = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s '
                  'ORDER BY `pid` DESC', (sub['sid'], ))
     post = c.fetchone()
