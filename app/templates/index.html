@@ -76,7 +76,7 @@
 {%endif%}
 {% endcache %}
 {% cache 300, 'changelog' %}
-{% set cl = func.getChangelog()%}
+{% set cl = func.getChangelog() %}
 {% if cl %}
   <span class="col-12"><hr></span>
   <div class="col-12 row todaystop">
