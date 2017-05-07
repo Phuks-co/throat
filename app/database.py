@@ -522,12 +522,16 @@ def get_user_post_voting(uid):
               '`uid`=%s', (uid, uid))
     l = c.fetchall()
     score = 0
+    posscore = 0
+    negscore = 0
     for i in l:
         if i['positive']:
             score += 1
+            posscore += 1
         else:
             score -= 1
-    return score
+            negscore += 1
+    return (score,posscore,negscore)
 
 @cache.memoize(10)
 def get_user_post_count(uid):

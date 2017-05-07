@@ -173,6 +173,13 @@ class SiteUser(object):
         """ Returns the post vote score of a user. """
         return get_user_post_score(self.user)
 
+
+    @cache.memoize(300)
+    def get_user_level(self):
+        """ Returns the post vote score of a user. """
+        return get_user_level(self.uid)
+
+
     @cache.memoize(120)
     def get_post_voting(self):
         """ Returns the post voting for a user. """

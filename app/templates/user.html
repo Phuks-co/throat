@@ -49,7 +49,7 @@
         <ul id="userStats">
           <li>{{func.get_user_level(user.uid)[1]}} xp</li>
           <li>{{user.score}} phuks taken</li>
-          <li>{{db.get_user_post_voting(user.uid)}} phuks given</li>
+          <li>{{db.get_user_post_voting(user.uid)[0]}} phuks given (+{{db.get_user_post_voting(user.uid)[1]}}|-{{db.get_user_post_voting(user.uid)[2]}})</li>
         </ul>
       </div>
       <div>
