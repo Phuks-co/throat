@@ -791,10 +791,13 @@ def getTodaysTopPosts():
 def getChangelog():
     """ Returns most recent changelog post """
     sub = db.get_sub_from_name('changelog')
-    c = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s '
-                 'ORDER BY `pid` DESC', (sub['sid'], ))
-    post = c.fetchone()
-    return post
+    if sub:
+        c = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s '
+                     'ORDER BY `pid` DESC', (sub['sid'], ))
+        post = c.fetchone()
+        return post
+    else:
+        return False
 
 
 def getRdmSub():
