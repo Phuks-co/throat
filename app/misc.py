@@ -793,10 +793,9 @@ def getChangelog():
     b = db.query('SELECT * FROM `sub` WHERE `name`=%s',
                  ('changelog', ))
     sub = b.fetchone()
-    c = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s'
-                 ' ORDER BY `pid` DESC LIMIT %s',
-                 (sub['sid'], 1))
-    post = c.fetchall()
+    c = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s',
+                 (sub['sid'], ))
+    post = c.fetchone()
     return post
 
 
