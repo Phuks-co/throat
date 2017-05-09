@@ -1017,6 +1017,8 @@ def get_user_post_score(user):
         return count
     return user['score']
 
+
+@cache.memoize(300)
 def get_user_post_score_counts(user):
     """ Returns the user's post and comment scores """
     count = 0

@@ -49,8 +49,8 @@
         <ul id="userStats">
           <li>{{func.get_user_level(user.uid)[1]}} xp</li>
           <li>{{user.score}} phuks taken</li>
-            <li title="Post Score"> - <i class="fa fa-list" aria-hidden="true"></i> (+{{current_user.get_post_score_counts()[1]}}|-{{current_user.get_post_score_counts()[2]}})</li>
-            <li title="Comment Score"> - <i class="fa fa-comments" aria-hidden="true"></i> (+{{current_user.get_post_score_counts()[3]}}|-{{current_user.get_post_score_counts()[4]}})</li>
+            <li title="Post Score"> - <i class="fa fa-list" aria-hidden="true"></i> (+{{func.get_user_post_score_counts(user)[1]}}|-{{func.get_user_post_score_counts(user)[2]}})</li>
+            <li title="Comment Score"> - <i class="fa fa-comments" aria-hidden="true"></i> (+{{func.get_user_post_score_counts(user)[3]}}|-{{func.get_user_post_score_counts(user)[4]}})</li>
           <li>{{db.get_user_post_voting(user.uid)[0]}} phuks given (+{{db.get_user_post_voting(user.uid)[1]}}|-{{db.get_user_post_voting(user.uid)[2]}})</li>
         </ul>
       </div>
