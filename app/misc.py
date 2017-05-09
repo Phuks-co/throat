@@ -175,6 +175,12 @@ class SiteUser(object):
 
 
     @cache.memoize(300)
+    def get_post_score_counts(self):
+        """ Returns the post vote score of a user. """
+        return get_user_post_score_counts(self.user)
+
+
+    @cache.memoize(300)
     def get_user_level(self):
         """ Returns the level and xp of a user. """
         return get_user_level(self.uid)
@@ -1010,6 +1016,59 @@ def get_user_post_score(user):
                   (count, user['uid']))
         return count
     return user['score']
+
+def get_user_post_score_counts(user):
+    """ Returns the user's post and comment scores """
+    count = 0
+    postpos = 0
+    postneg = 0
+    commpos = 0
+    commneg = 0
+    mposts = db.query('SELECT * FROM `sub_post` WHERE `uid`=%s',
+                      (user['uid'], )).fetchall()
+
+    q = "SELECT `positive` FROM `sub_post_vote` WHERE `pid` IN ("
+    l = []
+    for post in mposts:
+        q += '%s, '
+        l.append(post['pid'])
+    q = q[:-2] + ")"
+    if l:
+        votes = db.query(q, list(l)).fetchall()
+
+        for vote in votes:
+            if vote['positive']:
+                count += 1
+                postpos = +1
+            else:
+                count -= 1
+                postneg += 1
+
+    mposts = db.query('SELECT * FROM `sub_post_comment` WHERE '
+                      '`uid`=%s', (user['uid'], )).fetchall()
+    q = "SELECT `positive` FROM `sub_post_comment_vote`"
+    q += " WHERE `cid` IN ("
+
+    l = []
+    for post in mposts:
+        q += '%s, '
+        l.append(post['cid'])
+    q = q[:-2] + ")"
+    if l:
+        votes = db.query(q, list(l)).fetchall()
+
+        for vote in votes:
+            if vote['positive']:
+                count += 1
+                commpos += 1
+            else:
+                count -= 1
+                commneg += 1
+
+    db.uquery('UPDATE `user` SET `score`=%s WHERE `uid`=%s',
+              (count, user['uid']))
+    score = count
+    return (score, postpos, postneg, commpos, commneg)
 
 
 @cache.memoize(10)

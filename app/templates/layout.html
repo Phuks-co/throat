@@ -83,10 +83,13 @@
       {% else %}
       <div class="row">
         <div class="col-12">
-          <a class="btn small" href="{{ url_for('view_user', user=current_user.name) }}"><i class="fa fa-user" aria-hidden="true"></i> {{current_user.get_username()}} : lvl {{current_user.get_user_level()[0]}} :  {{current_user.get_user_level()[1]}}xp</a>
-          <span class="btn small" title="Phuks taken"><i class="fa fa-list" aria-hidden="true"></i> <span id="postscore">{{current_user.get_post_score()}}</span></span>
-          <!--<span class="btn small" title="Comment Score"><i class="fa fa-comments" aria-hidden="true"></i> xx</span>-->
-          <span class="btn small" title="Phuks given"><i class="fa fa-expand" aria-hidden="true"></i> +{{current_user.get_post_voting()[1]}}/-{{current_user.get_post_voting()[2]}}</span>
+          <div class="">
+            <a class="btn small" href="{{ url_for('view_user', user=current_user.name) }}"><i class="fa fa-user" aria-hidden="true"></i> {{current_user.get_username()}} : lvl {{current_user.get_user_level()[0]}} :  {{current_user.get_user_level()[1]}}xp</a>
+          </div>
+          <div class="">
+            <span class="btn small" title="Post Score"><i class="fa fa-list" aria-hidden="true"></i> +{{current_user.get_post_score_counts()[1]}} / -{{current_user.get_post_score_counts()[2]}}</span></span>
+            <span class="btn small" title="Comment Score"><i class="fa fa-comments" aria-hidden="true"></i> +{{current_user.get_post_score_counts()[3]}} / -{{current_user.get_post_score_counts()[4]}}</span>
+          </div>
         </div>
       </div>
       <div class="row buttons">
