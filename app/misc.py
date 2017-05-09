@@ -1039,7 +1039,7 @@ def get_user_post_score_counts(user):
         for vote in votes:
             if vote['positive']:
                 count += 1
-                postpos = +1
+                postpos += 1
             else:
                 count -= 1
                 postneg += 1
