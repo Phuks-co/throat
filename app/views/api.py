@@ -405,6 +405,8 @@ def process_comment(comments):
 def get_comments(pid, parent, page):
     """ Returns the comments for a post """
     post = db.get_post_from_pid(pid)
+    if parent == -1:
+        parent = None
     if not post:
         return jsonify(status='error', error=['Post not found'])
 
