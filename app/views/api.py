@@ -401,10 +401,14 @@ def process_comment(comments):
     return coms
 
 
-@api.route('/api/v1/getComments/<int:pid>/<int:parent>/<int:page>')
+@api.route('/api/v1/getComments/<int:pid>/<parent>/<int:page>')
 def get_comments(pid, parent, page):
     """ Returns the comments for a post """
     post = db.get_post_from_pid(pid)
+    try:
+        parent = int(parent)
+    except ValueError:
+        return jsonify(status='error', error=['invalid parent'])
     if parent == -1:
         parent = None
     if not post:
