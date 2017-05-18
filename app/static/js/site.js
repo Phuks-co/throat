@@ -888,6 +888,7 @@ $(document).ready(function() {
         frame.width = '480px';
         frame.height = '320px';
         frame.style = 'display:block;'
+        frame.setAttribute('allowFullScreen', '')
         frame.src = 'https://www.youtube.com/embed/' + vid_id;
         playerid = 'player' + pid;
         $(e.currentTarget).addClass('openedvid').removeClass('closedvid');
