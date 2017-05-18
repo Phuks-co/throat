@@ -1574,6 +1574,10 @@ body.dark .subscriptionbar {
 .col-12.btcdonation div {
     margin: 10px 0;
 }
+.row.paypaldonation,
+.row.btcdonation {
+    padding: 20px;
+}
 
 /* todays top posts */
 .todaystop .list ul li {

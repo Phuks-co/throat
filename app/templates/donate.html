@@ -4,15 +4,28 @@
 {% block content %}
 {{ super() }}
 <h1>Donate to Phuks</h1>
-<div class="col-12 row btcdonation">
-  <div class="btcmessage">
-    {{func.getBTCmsg()}}
+{% if func.enableBTCmod() %}
+  <div class="col-12 row btcdonation">
+    <h3>via Bitcoin</h3>
+    <div class="btcmessage">
+      {{func.getBTCmsg()}}
+    </div>
+    <div class="btcaddr">
+     <a href="https://blockchain.info/address/{{func.getBTCaddr()}}" target="_blank">{{func.getBTCaddr()}}</a>
+    </div>
+    <div class="btcqrcode">
+      <img src="https://chart.googleapis.com/chart?cht=qr&chl={{func.getBTCaddr()}}&chs=104x104&choe=UTF-8&chld=L|0">
+    </div>
   </div>
-  <div class="btcaddr">
-   <a href="https://blockchain.info/address/{{func.getBTCaddr()}}" target="_blank">{{func.getBTCaddr()}}</a>
-  </div>
-  <div class="btcqrcode">
-    <img src="https://chart.googleapis.com/chart?cht=qr&chl={{func.getBTCaddr()}}&chs=104x104&choe=UTF-8&chld=L|0">
-  </div>
+{% endif %}
+
+<div class="col-12 row paypaldonation">
+  <h3>via Paypal </h3>
+  <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+    <input type="hidden" name="cmd" value="_s-xclick">
+    <input type="hidden" name="hosted_button_id" value="USR35RXUAX5AW">
+    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+    <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+  </form>
 </div>
 {% endblock %}
