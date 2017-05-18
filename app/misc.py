@@ -1088,6 +1088,15 @@ def get_user_level(uid):
     return (int(level), xp)
 
 
+def _image_entropy(img):
+    """calculate the entropy of an image"""
+    hist = img.histogram()
+    hist_size = sum(hist)
+    hist = [float(h) / hist_size for h in hist]
+
+    return -sum(p * math.log(p, 2) for p in hist if p != 0)
+
+
 def get_thumbnail(form):
     """ Tries to fetch a thumbnail """
     # 1 - Check if it's an image
@@ -1114,16 +1123,23 @@ def get_thumbnail(form):
         im = Image.open(BytesIO(req[1])).convert('RGB')
     else:
         return ''
-    background = Image.new('RGB', (70, 70), (0, 0, 0))
+
+    x, y = im.size
+    while y > x:
+        slice_height = min(y - x, 10)
+        bottom = im.crop((0, y - slice_height, x, y))
+        top = im.crop((0, 0, x, slice_height))
+
+        if _image_entropy(bottom) < _image_entropy(top):
+            im = im.crop((0, 0, x, y - slice_height))
+        else:
+            im = im.crop((0, slice_height, x, y))
+
+        x, y = im.size
 
     im.thumbnail((70, 70), Image.ANTIALIAS)
 
-    bg_w, bg_h = background.size
-    img_w, img_h = im.size
-    background.paste(im, (int((bg_w - img_w) / 2),
-                          int((bg_h - img_h) / 2)))
-    background.save(config.THUMBNAILS + '/' + filename, "JPEG")
+    im.save(config.THUMBNAILS + '/' + filename, "JPEG")
     im.close()
-    background.close()
 
     return filename
