@@ -69,6 +69,7 @@ def title_search():
     """ Search endpoint """
     form = SearchForm()
     term = form.term.data
+    term = re.sub('[^A-Za-z0-9.,\-_\'" ]+', '', term)
     return redirect(url_for('search', term=term))
 
 
@@ -77,6 +78,7 @@ def subs_title_search():
     """ Search subs list endpoint """
     form = SearchForm()
     term = form.term.data
+    term = re.sub('[^A-Za-z0-9\-_]+', '', term)
     return redirect(url_for('subs_search', term=term))
 
 
@@ -85,6 +87,7 @@ def admin_users_search():
     """ Search endpoint """
     form = SearchForm()
     term = form.term.data
+    term = re.sub('[^A-Za-z0-9\-_]+', '', term)
     return redirect(url_for('admin_users_search', term=term))
 
 
@@ -93,6 +96,7 @@ def admin_subs_search():
     """ Search endpoint """
     form = SearchForm()
     term = form.term.data
+    term = re.sub('[^A-Za-z0-9\-_]+', '', term)
     return redirect(url_for('admin_subs_search', term=term))
 
 
@@ -101,6 +105,7 @@ def admin_post_search():
     """ Search endpoint """
     form = SearchForm()
     term = form.term.data
+    term = re.sub('[^A-Za-z0-9.,\-_\'" ]+', '', term)
     return redirect(url_for('admin_post_search', term=term))
 
 
@@ -411,7 +416,8 @@ def edit_sub(sub):
                                        form.subsort.data)
 
             if form.subtags.data:
-                tags = str(form.subtags.data).split('+')
+                tags = re.sub('[^A-Za-z0-9.\-_+]+', '', form.subtags.data)
+                tags = str(tags).split('+')
                 if len(tags) > 10:
                     return json.dumps({'status': 'error',
                                        'error': ['Only 10 sub tags allowed '

@@ -339,6 +339,7 @@ def all_new_more(pid=None):
 @app.route("/domain/<domain>/<int:page>")
 def all_domain_new(page, domain):
     """ The index page, all posts sorted as most recent posted first """
+    domain = re.sub('[^A-Za-z0-9.\-_]+', '', domain)
     c = db.query('SELECT * FROM `sub_post` WHERE `link` LIKE %s '
                  'ORDER BY `posted` DESC LIMIT %s,20',
                  ('%://' + domain + '/%', (page - 1) * 20))
@@ -352,6 +353,7 @@ def all_domain_new(page, domain):
 @app.route("/search/<term>/<int:page>")
 def search(page, term):
     """ The index page, with basic title search """
+    term = re.sub('[^A-Za-z0-9.,\-_\'" ]+', '', term)
     c = db.query('SELECT * FROM `sub_post` WHERE `title` LIKE %s '
                  'ORDER BY `posted` DESC LIMIT %s,20',
                  ('%' + term + '%', (page - 1) * 20))
@@ -365,6 +367,7 @@ def search(page, term):
 @app.route("/subs/search/<term>/<int:page>")
 def subs_search(page, term):
     """ The subs index page, with basic title search """
+    term = re.sub('[^A-Za-z0-9\-_]+', '', term)
     c = db.query('SELECT * FROM `sub` WHERE `name` LIKE %s '
                  'ORDER BY `name` ASC LIMIT %s ,30',
                  ('%' + term + '%', (page - 1) * 30))
@@ -375,6 +378,7 @@ def subs_search(page, term):
 @app.route("/subs/tag/<term>/<int:page>")
 def subs_tag_search(page, term):
     """ The subs index page, with basic tag search """
+    term = re.sub('[^A-Za-z0-9.\-_]+', '', term)
     subs = misc.getSubTagsSearch(page=page, term=term)
     sublist = ''
     for sub in subs:
