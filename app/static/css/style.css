@@ -615,8 +615,6 @@ body.dark textarea#comment {
     border-radius: 10px;
 }
 .post .image img {
-    width: 8vmax;
-    height: 8vmax;
     max-width: 70px;
     max-height: 70px;
 }
