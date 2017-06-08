@@ -3,6 +3,8 @@ from urllib.parse import urlparse, parse_qs
 import math
 import uuid
 import time
+import os
+import hashlib
 import re
 from io import BytesIO
 from PIL import Image
@@ -1097,6 +1099,9 @@ def _image_entropy(img):
     return -sum(p * math.log(p, 2) for p in hist if p != 0)
 
 
+THUMB_NAMESPACE = uuid.UUID('f674f09a-4dcf-4e4e-a0b2-79153e27e387')
+
+
 def get_thumbnail(form):
     """ Tries to fetch a thumbnail """
     # 1 - Check if it's an image
@@ -1105,7 +1110,6 @@ def get_thumbnail(form):
     except (requests.exceptions.RequestException, ValueError):
         return ''
     ctype = req[0].headers.get('content-type', '').split(";")[0].lower()
-    filename = str(uuid.uuid4()) + '.jpg'
     good_types = ['image/gif', 'image/jpeg', 'image/png']
     if ctype in good_types:
         # yay, it's an image!!1
@@ -1139,7 +1143,18 @@ def get_thumbnail(form):
 
     im.thumbnail((70, 70), Image.ANTIALIAS)
 
-    im.save(config.THUMBNAILS + '/' + filename, "JPEG")
+    im.seek(0)
+    md5 = hashlib.md5()
+    while True:
+        data = im.read(65536)
+        if not data:
+            break
+        md5.update(data)
+
+    filename = str(uuid.uuid5(THUMB_NAMESPACE, md5.hexdigest())) + '.jpg'
+    im.seek(0)
+    if not os.path.isfile(os.path.join(config.THUMBNAILS, filename)):
+        im.save(os.path.join(config.THUMBNAILS, filename), "JPEG")
     im.close()
 
     return filename
