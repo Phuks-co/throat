@@ -1144,13 +1144,7 @@ def get_thumbnail(form):
     im.thumbnail((70, 70), Image.ANTIALIAS)
 
     im.seek(0)
-    md5 = hashlib.md5()
-    while True:
-        data = im.read(65536)
-        if not data:
-            break
-        md5.update(data)
-
+    md5 = hashlib.md5(im.tobytes())
     filename = str(uuid.uuid5(THUMB_NAMESPACE, md5.hexdigest())) + '.jpg'
     im.seek(0)
     if not os.path.isfile(os.path.join(config.THUMBNAILS, filename)):
