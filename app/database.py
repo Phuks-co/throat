@@ -381,8 +381,8 @@ def create_post(sid, uid, title, content, ptype, nsfw, link=None, thumbnail=''):
     user = get_user_from_uid(uid)
     l = uquery('INSERT INTO `sub_post` (`sid`, `uid`, `title`, `link`, '
                '`posted`, `ptype`, `score`, `thumbnail`, `deleted`, `nsfw`, '
-               '`content`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
-               '%s)', (sid, uid, title, link, posted, ptype, 1, thumbnail, 0,
+               '`content`, `comments`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
+               '%s, 0)', (sid, uid, title, link, posted, ptype, 1, thumbnail, 0,
                        nsfw, content))
     if user['score'] is not None:
         uquery('UPDATE `user` SET `score`=`score`+1 WHERE '
