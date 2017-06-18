@@ -152,6 +152,7 @@ CREATE TABLE `sub_post` (
   `thumbnail` varchar(128) DEFAULT NULL,
   `deleted` int(11) DEFAULT NULL,
   `nsfw` int(11) DEFAULT NULL,
+  `comments` int(50) DEFAULT NULL,
   PRIMARY KEY (`pid`),
   KEY `sid` (`sid`),
   KEY `uid` (`uid`),

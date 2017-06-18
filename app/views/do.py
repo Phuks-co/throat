@@ -939,7 +939,7 @@ def create_comment(sub, pid):
                                     uid=current_user.uid,
                                     content=form.comment.data.encode(),
                                     parentcid=form.parent.data)
-
+        db.uquery('UPDATE `sub_post` SET comments=comments+1 where pid=%s;', (pid,))
         x = db.get_post_comment_count(pid)
         socketio.emit('threadcomments',
                       {'pid': post['pid'],
