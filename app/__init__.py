@@ -601,7 +601,6 @@ def edit_sub(sub):
 
 @app.route("/s/<sub>/sublog", defaults={'page': 1})
 @app.route("/s/<sub>/sublog/<int:page>")
-@login_required
 def view_sublog(sub, page):
     """ Here we can see a log of mod/admin activity in the sub """
     sub = db.get_sub_from_name(sub)
