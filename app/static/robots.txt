@@ -1,0 +1,8 @@
+User-Agent: *
+Disallow: /*.rss
+Disallow: /register
+Disallow: /login
+Disallow: /s/*/sublog
+Disallow: /submit/*
+Disallow: /oauth/*
+Allow: /

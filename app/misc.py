@@ -365,6 +365,17 @@ class URLifyPattern(markdown.inlinepatterns.LinkPattern):
         return el
 
 
+MARK_RE = r'(\~\~)(.*?)(\~\~)'
+
+
+class StrikethroughExtension(markdown.Extension):
+    """Adds MARK_RE extension to Markdown class."""
+    def extendMarkdown(self, md, md_globals):
+        """Modifies inline patterns."""
+        mark_tag = markdown.inlinepatterns.SimpleTagPattern(MARK_RE, 's')
+        md.inlinePatterns.add('strike', mark_tag, '_begin')
+
+
 class NiceLinkPattern(markdown.inlinepatterns.LinkPattern):
     """ Return a link element from the given match. """
     def handleMatch(self, m):
@@ -383,6 +394,7 @@ class NiceLinkPattern(markdown.inlinepatterns.LinkPattern):
             el.set("href", "")
 
         return el
+
 
 RE_AMENTION = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/s\/)' \
               r'([A-Za-z0-9\-\_]+))'
@@ -410,7 +422,8 @@ def our_markdown(text):
     try:
         return markdown.markdown(text,
                                  extensions=['markdown.extensions.tables',
-                                             RestrictedMarkdown()],
+                                             RestrictedMarkdown(),
+                                             StrikethroughExtension()],
                                  safe_mode='escape')
     except RecursionError:
         return '> tfw tried to break the site'
