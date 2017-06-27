@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 from functools import update_wrapper
 import requests
 import markdown
+from mdx_gfm import GithubFlavoredMarkdownExtension
 from redis import Redis
 import sendgrid
 import config
@@ -348,34 +349,6 @@ def safeRequest(url):
     return (r, f)
 
 
-class URLifyPattern(markdown.inlinepatterns.LinkPattern):
-    """ Return a link element from the given match. """
-    def handleMatch(self, m):
-        el = markdown.util.etree.Element("a")
-        el.text = markdown.util.AtomicString(m.group(2))
-        href = m.group(2)
-
-        if not href.split('://')[0] in ('http', 'https'):
-            if '@' in href and '/' not in href:
-                href = 'mailto:' + href
-            else:
-                href = 'http://' + href
-        el.set('href', href)
-
-        return el
-
-
-MARK_RE = r'(\~\~)(.*?)(\~\~)'
-
-
-class StrikethroughExtension(markdown.Extension):
-    """Adds MARK_RE extension to Markdown class."""
-    def extendMarkdown(self, md, md_globals):
-        """Modifies inline patterns."""
-        mark_tag = markdown.inlinepatterns.SimpleTagPattern(MARK_RE, 's')
-        md.inlinePatterns.add('strike', mark_tag, '_begin')
-
-
 class NiceLinkPattern(markdown.inlinepatterns.LinkPattern):
     """ Return a link element from the given match. """
     def handleMatch(self, m):
@@ -411,9 +384,7 @@ class RestrictedMarkdown(markdown.Extension):
         del md.inlinePatterns['image_link']
         del md.inlinePatterns['image_reference']
         user_tag = NiceLinkPattern(RE_AMENTION, md)
-        url = URLifyPattern(self.RE_URL, md)
         md.inlinePatterns.add('user', user_tag, '<not_strong')
-        md.inlinePatterns.add('url', url, '>user')
 
 
 def our_markdown(text):
@@ -423,7 +394,7 @@ def our_markdown(text):
         return markdown.markdown(text,
                                  extensions=['markdown.extensions.tables',
                                              RestrictedMarkdown(),
-                                             StrikethroughExtension()],
+                                             GithubFlavoredMarkdownExtension()],
                                  safe_mode='escape')
     except RecursionError:
         return '> tfw tried to break the site'
