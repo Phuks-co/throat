@@ -87,8 +87,8 @@
             <a class="btn small" href="{{ url_for('view_user', user=current_user.name) }}"><i class="fa fa-user" aria-hidden="true"></i> {{current_user.get_username()}} : lvl {{current_user.get_user_level()[0]}} :  {{current_user.get_user_level()[1]}}xp</a>
           </div>
           <div class="">
-            <span class="btn small" title="Post Score"><i class="fa fa-list" aria-hidden="true"></i> +{{current_user.get_post_score_counts()[1]}} / -{{current_user.get_post_score_counts()[2]}}</span></span>
-            <span class="btn small" title="Comment Score"><i class="fa fa-comments" aria-hidden="true"></i> +{{current_user.get_post_score_counts()[3]}} / -{{current_user.get_post_score_counts()[4]}}</span>
+            <a href="{{url_for('view_user_posts', user=current_user.name)}}" class="btn small" title="Post Score"><i class="fa fa-list" aria-hidden="true"></i> +{{current_user.get_post_score_counts()[1]}} / -{{current_user.get_post_score_counts()[2]}}</a>
+            <a href="{{url_for('view_user_comments', user=current_user.name)}}" class="btn small" title="Comment Score"><i class="fa fa-comments" aria-hidden="true"></i> +{{current_user.get_post_score_counts()[3]}} / -{{current_user.get_post_score_counts()[4]}}</a>
           </div>
         </div>
       </div>
