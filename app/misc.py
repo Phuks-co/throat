@@ -32,6 +32,7 @@ class SiteUser(object):
 
     def __init__(self, userclass=None):
         self.user = userclass
+        self.notifications = self.user['notifications']
         self.name = self.user['name']
         self.uid = self.user['uid']
         # If status is not 0, user is banned
@@ -75,8 +76,8 @@ class SiteUser(object):
         return self.admin
 
     def get_blocked(self):
-        l = db.get_user_blocked(self.uid)
-        return [x['sid'] for x in l]
+        ib = db.get_user_blocked(self.uid)
+        return [x['sid'] for x in ib]
 
     def is_topmod(self, sub):
         """ Returns True if the current user is a mod of 'sub' """
@@ -176,18 +177,15 @@ class SiteUser(object):
         """ Returns the post vote score of a user. """
         return get_user_post_score(self.user)
 
-
     @cache.memoize(300)
     def get_post_score_counts(self):
         """ Returns the post vote score of a user. """
         return get_user_post_score_counts(self.user)
 
-
     @cache.memoize(300)
     def get_user_level(self):
         """ Returns the level and xp of a user. """
         return get_user_level(self.uid)
-
 
     @cache.memoize(120)
     def get_post_voting(self):
@@ -419,21 +417,20 @@ def get_post_upcount(pid):
     """ Returns the upvote count """
     c = db.query('SELECT positive FROM `sub_post_vote` WHERE '
                  '`pid`=%s', (pid, ))
-    l = c.fetchall()
     score = 0
-    for i in l:
+    for i in c.fetchall():
         if i['positive']:
             score += 1
     return score
+
 
 @cache.memoize(20)
 def get_post_downcount(pid):
     """ Returns the downvote count """
     c = db.query('SELECT positive FROM `sub_post_vote` WHERE '
                  '`pid`=%s', (pid, ))
-    l = c.fetchall()
     score = 0
-    for i in l:
+    for i in c.fetchall():
         if not i['positive']:
             score += 1
     return score
@@ -444,21 +441,20 @@ def get_comment_upcount(cid):
     """ Returns the upvote count """
     c = db.query('SELECT positive FROM `sub_post_comment_vote` WHERE '
                  '`cid`=%s', (cid, ))
-    l = c.fetchall()
     score = 0
-    for i in l:
+    for i in c.fetchall():
         if i['positive']:
             score += 1
     return score
+
 
 @cache.memoize(20)
 def get_comment_downcount(cid):
     """ Returns the downvote count """
     c = db.query('SELECT positive FROM `sub_post_comment_vote` WHERE '
                  '`cid`=%s', (cid, ))
-    l = c.fetchall()
     score = 0
-    for i in l:
+    for i in c.fetchall():
         if not i['positive']:
             score += 1
     return score
@@ -488,9 +484,7 @@ def getCommentParentUID(cid):
 
 def getCommentSub(cid):
     """ Returns the sub for a comment """
-    l = db.get_comment_from_cid(cid)
-
-    return db.get_sub_from_pid(l['pid'])
+    return db.get_sub_from_pid(db.get_comment_from_cid(cid)['pid'])
 
 
 @cache.memoize(600)
@@ -795,7 +789,7 @@ def getChangelog():
 def getRdmSub():
     """ Returns a random sub for index sidebar """
     sub = db.query('SELECT `name`,`title` FROM `sub` WHERE `nsfw`=%s '
-                 'ORDER BY RAND() LIMIT 1', (0, ))
+                   'ORDER BY RAND() LIMIT 1', (0, ))
     return sub.fetchall()
 
 
@@ -962,15 +956,15 @@ def get_user_post_score(user):
                           (user['uid'], )).fetchall()
 
         q = "SELECT `positive` FROM `sub_post_vote` WHERE `pid` IN ("
-        l = []
+        lst = []
         for post in mposts:
             q += '%s, '
-            l.append(post['pid'])
+            lst.append(post['pid'])
         q = q[:-2] + ")"
         count = 0
 
-        if l:
-            votes = db.query(q, list(l)).fetchall()
+        if lst:
+            votes = db.query(q, list(lst)).fetchall()
 
             for vote in votes:
                 if vote['positive']:
@@ -983,14 +977,14 @@ def get_user_post_score(user):
         q = "SELECT `positive` FROM `sub_post_comment_vote`"
         q += " WHERE `cid` IN ("
 
-        l = []
+        lst = []
         for post in mposts:
             q += '%s, '
-            l.append(post['cid'])
+            lst.append(post['cid'])
         q = q[:-2] + ")"
 
-        if l:
-            votes = db.query(q, list(l)).fetchall()
+        if lst:
+            votes = db.query(q, list(lst)).fetchall()
 
             for vote in votes:
                 if vote['positive']:
@@ -1016,13 +1010,13 @@ def get_user_post_score_counts(user):
                       (user['uid'], )).fetchall()
 
     q = "SELECT `positive` FROM `sub_post_vote` WHERE `pid` IN ("
-    l = []
+    lst = []
     for post in mposts:
         q += '%s, '
-        l.append(post['pid'])
+        lst.append(post['pid'])
     q = q[:-2] + ")"
-    if l:
-        votes = db.query(q, list(l)).fetchall()
+    if lst:
+        votes = db.query(q, list(lst)).fetchall()
 
         for vote in votes:
             if vote['positive']:
@@ -1037,13 +1031,13 @@ def get_user_post_score_counts(user):
     q = "SELECT `positive` FROM `sub_post_comment_vote`"
     q += " WHERE `cid` IN ("
 
-    l = []
+    lst = []
     for post in mposts:
         q += '%s, '
-        l.append(post['cid'])
+        lst.append(post['cid'])
     q = q[:-2] + ")"
-    if l:
-        votes = db.query(q, list(l)).fetchall()
+    if lst:
+        votes = db.query(q, list(lst)).fetchall()
 
         for vote in votes:
             if vote['positive']:
@@ -1070,7 +1064,7 @@ def get_user_level(uid):
         xp += badge['value']
     if xp <= 0:  # We don't want to do the sqrt of a negative number
         return (0, xp)
-    level = math.sqrt(xp/10)
+    level = math.sqrt(xp / 10)
     return (int(level), xp)
 
 

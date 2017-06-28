@@ -34,6 +34,15 @@ RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
 THUMBNAILS = "./thumbs"
 THUMBNAIL_HOST = "https://foo.bar"
 
+# peewee
+DATABASE = {
+    'name': 'throat',
+    'engine': 'MySQLDatabase',
+    'user': 'root',
+    'password': 'hunter2'
+}
+
+
 # Only for debugging and testing:
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 DEBUG = True

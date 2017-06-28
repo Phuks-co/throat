@@ -22,3 +22,5 @@ eventlet
 gunicorn
 cython
 py-gfm
+peewee
+flask-webpack

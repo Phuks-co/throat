@@ -1,23 +1,17 @@
 # -*- coding: utf-8
 """ Here is where all the good stuff happens """
 
-import json
 import time
 import re
 import uuid
-import random
 import socket
 from wsgiref.handlers import format_date_time
 import datetime
-from urllib.parse import urlparse, urljoin
 
-import bcrypt
-import markdown
 from flask import Flask, render_template, session, redirect, url_for, abort, g
-from flask import make_response, request, Markup
-from flask_assets import Environment, Bundle
+from flask import make_response, Markup
 from flask_login import LoginManager, login_required, current_user
-from werkzeug.contrib.atom import AtomFeed
+from flask_webpack import Webpack
 from feedgen.feed import FeedGenerator
 
 from .forms import RegistrationForm, LoginForm, LogOutForm, EditSubFlair
@@ -27,7 +21,7 @@ from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DeletePost, CreateUserBadgeForm, EditMod2Form, DummyForm
 from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair
 from .forms import CreateSubFlair, UseBTCdonationForm, BanDomainForm
-from .forms import CreateMulti, EditMulti, DeleteMulti
+from .forms import CreateMulti, EditMulti
 from .forms import UseInviteCodeForm, LiveChat
 from .views import do, api
 from .views.api import oauth
@@ -35,10 +29,14 @@ from . import misc, forms, caching
 from .socketio import socketio
 from . import database as db
 from .misc import SiteUser, SiteAnon, getSuscriberCount
-from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
+from .sorting import BasicSorting, HotSorting, NewSorting
+from .models import db as pdb
+from .models import User, Sub, UserMetadata, Message, SubSubscriber
+from peewee import fn, SQL, Clause, JOIN
 # from werkzeug.contrib.profiler import ProfilerMiddleware
 
 app = Flask(__name__)
+webpack = Webpack()
 app.jinja_env.cache = {}
 
 # app.config['PROFILE'] = True
@@ -47,16 +45,17 @@ app.jinja_env.cache = {}
 app.register_blueprint(do)
 app.register_blueprint(api)
 app.config.from_object('config')
+app.config['WEBPACK_MANIFEST_PATH'] = 'manifest.json'
 if app.config['TESTING']:
     import logging
     logging.basicConfig(level=logging.DEBUG)
 
-# db.init_app(app)
+webpack.init_app(app)
+pdb.init_app(app)
 oauth.init_app(app)
 socketio.init_app(app, message_queue=app.config['SOCKETIO_REDIS_URL'])
 caching.cache.init_app(app)
 
-assets = Environment(app)
 login_manager = LoginManager(app)
 login_manager.anonymous_user = SiteAnon
 origstatic = app.view_functions['static']
@@ -77,67 +76,6 @@ def cache_static(*args, **kwargs):
 
 
 app.view_functions['static'] = cache_static
-
-# We use nested bundles here. One of them is for stuff that is already minified
-# And the other is for stuff that we have to minify. This makes the
-# bundle-making process a bit faster.
-js = Bundle(
-    Bundle('js/jquery.min.js',
-           'js/magnific-popup.min.js',
-           'js/bootstrap.buttons.min.js',
-           'js/CustomElements.min.js'),
-    Bundle('js/time-elements.js',
-           'js/konami.js',
-           'js/socket.io.slim.js',
-           'js/markdown.js',
-           'js/bootstrap-markdown.js',
-           'js/site.js', filters='jsmin'),
-    output='gen/site.js')
-css = Bundle(
-    Bundle('css/font-awesome.min.css',
-           'css/bootstrap-markdown.min.css'),
-    Bundle('css/magnific-popup.css', 'css/style.css',
-           filters='cssmin,datauri'), output='gen/site.css')
-
-pure_css = Bundle('css/font-awesome.min.css',
-                  'css/pure/base.css',
-                  'css/pure/grids.css',
-                  'css/pure/grids-responsive.css',
-                  'css/pure/menus.css',
-                  'css/pure/forms.css',
-                  'css/pure/buttons.css',
-                  'css/alt/main.css',
-                  'css/alt/darkmode.css',
-                  filters='cssmin,datauri', output='gen/c_bundle.css')
-
-alt_js = Bundle('js/CustomElements.min.js',
-                'js/time-elements.js',
-                'js/xss.js',
-                'js/showdown.js',
-                'js/showdown-xss-filter.js',
-                'js/socket.io.slim.js',
-                'js/mithril.js',
-
-                'js/alt/util.js',
-                'js/alt/postutils.js',
-                'js/alt/index_views.js',
-                'js/alt/user_views.js',
-                'js/alt/post_views.js',
-                'js/alt/sub_views.js',
-                'js/alt/site_views.js',
-                'js/alt/messaging_views.js',
-                'js/alt/main.js',
-                filters='jsmin', output='gen/j_bundle.js')
-assets.register('js_all', js)
-assets.register('css_all', css)
-assets.register('pure_css', pure_css)
-assets.register('alt_js', alt_js)
-
-
-@app.route('/alt')
-def alt():
-    """ The new layout. """
-    return render_template('alt.html')
 
 
 @app.template_filter('rnentity')
@@ -175,11 +113,18 @@ def do_magic_stuff():
 def load_user(user_id):
     """ This is used by flask_login to reload an user from a previously stored
     unique identifier. Required for the 'remember me' functionality. """
-    user = db.get_user_from_uid(user_id)
-    if not user:
-        return None
-    else:
+    user = User.select(fn.GROUP_CONCAT(Clause(SQL('Distinct'), Sub.name)).alias('subscriptions'),
+                       fn.Count(Clause(SQL('Distinct'), Message.mid)).alias('notifications'),
+                       User.given, User.score, User.name, User.uid, User.status,
+                       fn.GROUP_CONCAT(Clause(SQL('Distinct'), UserMetadata.key)).alias('prefs'))
+    user = user.join(UserMetadata, JOIN.RIGHT_OUTER, on=((UserMetadata.uid == User.uid) & (UserMetadata.value == 1) & (UserMetadata.key << ['admin', 'canupload', 'exlinks', 'nostyles', 'labrat']))).switch(User)
+    user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & Message.read.is_null(True))).switch(User)
+    user = user.join(SubSubscriber, JOIN.LEFT_OUTER).join(Sub, JOIN.LEFT_OUTER).where(User.uid == user_id).dicts()
+    try:
+        user = user.get()
         return SiteUser(user)
+    except User.DoesNotExist:
+        return None
 
 
 @app.before_request
@@ -384,8 +329,7 @@ def subs_tag_search(page, term):
     for sub in subs:
         sublist += sub['name'] + '+'
     ptype = 'tagmatch'
-    return render_template('subs.html', page=page, subs=subs, ptype=ptype,
-                            sublist=sublist[:-1])
+    return render_template('subs.html', page=page, subs=subs, ptype=ptype, sublist=sublist[:-1])
 
 
 @app.route("/all/top", defaults={'page': 1})
@@ -696,6 +640,7 @@ def view_modmulti_new(page):
                                multitype='view_modmulti_new')
     else:
         abort(403)
+
 
 @app.route("/multi/<subs>", defaults={'page': 1})
 @app.route("/multi/<subs>/<int:page>")

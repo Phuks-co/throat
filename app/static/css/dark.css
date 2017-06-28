@@ -1,0 +1,193 @@
+/* dark mode styles */
+body.dark .pure-menu a svg path[stroke="#fff"] {
+    stroke: #cdcdcd;
+}
+
+body.dark .pure-menu a svg path[fill="#fff"] {
+    fill: #cdcdcd;
+}
+
+body.dark {
+  background-color: #0d0d0d;
+}
+
+body.dark a {
+  color: #7b4a3f;
+}
+
+body.dark .content,
+body.dark #container2 {
+  color: #555555;
+}
+
+body.dark .hasmail i{
+  color: #e14f00;
+}
+
+body.dark #toggledark i {
+    color: #ff0;
+}
+
+/* Hot, Top, New, Domain */
+
+body.dark div#sortbuttons span {
+    color: #ddd;
+    background-color: #101010;
+}
+
+body.dark div#sortbuttons {
+  color: #7b4a3f;
+}
+
+body.dark #sortbuttons a:visited {
+  color: #7b4a3f;
+}
+
+body.dark a:hover,
+body.dark #sortbuttons a:hover, {
+  color: #d17262;
+}
+
+body.dark .post .domain a,
+body.dark .post .domain {
+    color: #555;
+}
+
+/* Header */
+
+body.dark .th-navbar {
+  background-color: #0a0a0a;
+  -webkit-box-shadow: 0 3px 5px 0 rgba(0,0,0,0.75);
+  -moz-box-shadow: 0 3px 5px 0 rgba(0,0,0,0.75);
+  box-shadow: 0 3px 5px 0 rgba(0,0,0,0.75);
+}
+
+/* Sub bar */
+
+body.dark .th-subbar{
+  background-color: #000;
+  border-bottom: 1px solid rgba(171, 68, 9, 0.62);
+}
+
+body.dark .th-subbar ul li {
+    color:#cdcdcd;
+}
+
+body.dark .th-subbar a {
+    color: #ab4409;
+}
+
+body.dark .th-subbar a:hover {
+    color: #d17262;
+}
+
+/* Posts */
+
+body.dark .post:nth-child(2n) {
+  background-color: #101010;
+    -webkit-box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.4);
+    -moz-box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.4);
+    box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.4);
+
+}
+
+body.dark .votebuttons {
+  fill: #7d7d7d;
+  color: #7d7d7d;
+}
+
+body.dark .post .title {
+  color: #ccc;
+}
+
+body.dark .post .title:hover {
+  color: #ff6d15;
+}
+
+body.dark .post .title:visited {
+  color: #d95204;
+  }
+
+body.dark .thumbnail .placeholder svg path {
+    fill: #555;
+}
+
+/* Buttons */
+
+body.dark .button-secondary,
+body.dark .pure-button {
+  background: rgba(51, 51, 51, 0.5);
+  color: #ddd;
+}
+
+body.dark .button-secondary:hover,
+body.dark .pure-button:hover {
+  background: rgba(51, 51, 51, 0.8);
+  color: #ffffff;
+}
+
+body.dark .pure-button-primary {
+  background-color: #101010;
+}
+
+body.dark a#nextp,
+body.dark a#prevp {
+  color: #c0c0c0;
+}
+
+body.dark a#nextp:hover,
+body.dark a#prevp:hover {
+  color: #ffffff;
+}
+
+/* Expandos */
+
+body.dark .expando {
+    background-color: #0a0a0a;
+}
+
+body.dark .post .expandotxt,
+body.dark .post:nth-child(2n) .expandotxt {
+    background-color: #202020;
+    color: #aaa;
+}
+
+body.dark .pure-control-group label,
+body.dark .form label {
+    color: #a63c00;
+}
+
+body.dark input[type="text"],
+body.dark input[type="password"] {
+  color: #ffffff;
+  background-color: #404040;
+  box-shadow: inset 0 1px 3px #303030;
+}
+
+body.dark input#buyamount ~ b {
+    color: #c2c2c2;
+}
+
+/* Sidebar */
+
+body.dark .sidebar{
+  background-color: #1b1b1b;
+}
+
+body.dark .sidebar h4 {
+	color: #ccc;
+}
+
+body.dark input[type="search"] {
+  background-color: #000;
+  color: #fff;
+  border: none;
+}
+
+body.dark .sidebar ul.top5 li a {
+    color: #ab4409;
+}
+
+body.dark hr {
+   border-bottom: 2px dashed #545454;
+   }
