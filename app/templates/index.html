@@ -1,130 +1,87 @@
 {% extends "layout.html" %}
-{% block head %}
-{{ super() }}
-{% endblock %}
-{% block title %}{{config.LEMA}}{% endblock %}
+
 {% block sidebar %}
-<div class="col-12">
-  <form action="{{ url_for('do.title_search') }}" method="post">
-    <span class="search">
-        <span><i class="fa fa-search"></i></span>
-        <input id="term" name="term" type="search" placeholder="Title search...">
-    </span>
-  </form>
+
+<div id="sortbuttons">
+  <span>Sort:
+    {% if sort_type.startswith('all') %}
+      {% if request.endpoint == 'all_hot' %}<b>Hot</b>{%else%}<a href="{{url_for('all_hot')}}">Hot</a>{%endif%}
+      {% if request.endpoint == 'all_top' %}<b>Top</b>{%else%}<a href="{{url_for('all_top')}}">Top</a>{%endif%}
+      {% if request.endpoint == 'all_new' %}<b>New</b>{%else%}<a href="{{url_for('all_new')}}">New</a>{%endif%}
+    {% else %}
+      {% if request.endpoint in ('home_hot', 'index') %}<b>Hot</b>{%else%}<a href="{{url_for('home_hot')}}">Hot</a>{%endif%}
+      {% if request.endpoint == 'home_top' %}<b>Top</b>{%else%}<a href="{{url_for('home_top')}}">Top</a>{%endif%}
+      {% if request.endpoint == 'home_new' %}<b>New</b>{%else%}<a href="{{url_for('home_new')}}">New</a>{%endif%}
+    {%endif%}
+  </span>
 </div>
-<span class="col-12"><hr><span>
-{{ super() }}
+
+<form class="pure-g search" action="{{ url_for('do.title_search') }}" method="post">
+  <div class="icon" data-icon="search"> </div>
+  <input name="term" placeholder="Title search..." type="search" class="pure-u-1">
+</form>
+
 {% if current_user.is_authenticated %}
-<div class="row buttons">
-  <div class="col-12">
-    <a href="#csub-form" class="btn btn-orange create-sub" style="width:100%;">Create your own sub</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('view_subs')}}" class="btn btn-orange" style="width:100%;">View all subs</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('random_sub')}}" class="btn btn-orange" style="width:100%;">View random sub</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('submit_text', sub='')}}" class="btn btn-orange" style="width:100%;">Submit a text post</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('submit_link', sub='')}}" class="btn btn-orange" style="width:100%;">Submit a link post</a>
-  </div>
-</div>
+<a href="{{url_for('submit_text', sub='')}}" class="sbm-post pure-button">Submit a text post</a>
+<a href="{{url_for('submit_link', sub='')}}" class="sbm-post pure-button">Submit a link post</a>
+<hr>
+<a href="#" class="sbm-post pure-button pure-button-primary">Create a sub</a>
 {% endif %}
 {% cache 300, 'toppost' %}
 {% set tp = func.getTodaysTopPosts()%}
 {% if tp %}
-  <span class="col-12"><hr></span>
-  <div class="col-12 row todaystop">
-    <div class="col-12">
-      Top posts in the last 24 hours
-    </div>
-    <div class="list">
-      <ul>
+  <hr>
+  <div class="sidebarlists">
+    <h4 class="center">Top posts in the last 24 hours</h4>
+    <ul class="top5">
       {% for post in tp %}
-        <li><a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">{{post.title}}</a><br>
-        <span class="sidelocale">
-          <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}">/s/{{func.getSub(post.sid).name}}</a></li>
-        </span>
+        <li><a class="title" href="{{url_for('view_post', sub=post.sub, pid=post.pid)}}">{{post.title}}</a>
+          <div class="sidelocale">
+            <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=post.sub)}}">/s/{{post.sub}}</a>
+          </div></li>
       {% endfor %}
-      </ul>
-    </div>
+    </ul>
   </div>
 {%endif%}
 {% endcache %}
-{% cache 21600, 'rdmsubsixhr' %}
-{% set rs = func.getRdmSub()%}
+
+{% cache 21600, 'suboftheday' %}
+{% set rs = func.getRandomSub()%}
 {% if rs %}
-  <span class="col-12"><hr></span>
-  <div class="col-12 row todaystop">
-    <div class="col-12">
-      Random sub every 6 hours
-    </div>
-    <div class="list">
-      <ul>
-      {% for sub in rs %}
-        <li>
-          <a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a><br>
-          <span class="sidelocale">{{sub.title}}</span>
-        </li>
-      {% endfor %}
-      </ul>
-    </div>
+  <hr>
+  <div class="sidebarlists">
+    <h4 class="center">Sub of the day</h4>
+    <ul>
+      <li><a href="{{url_for('view_sub', sub=rs.name)}}">/s/{{rs.name}}</a>
+        <div class="sidelocale">{{rs.title}}</div></li>
+    </ul>
   </div>
 {%endif%}
 {% endcache %}
 {% cache 300, 'changelog' %}
 {% set cl = func.getChangelog() %}
 {% if cl %}
-  <span class="col-12"><hr></span>
-  <div class="col-12 row todaystop">
-    <div class="col-12">
-      Recent changes
-    </div>
-    <div class="list">
-      <ul>
-        <li><a href="{{url_for('view_post', sub=func.getSub(cl.sid).name, pid=cl.pid)}}">{{cl.title}}</a><br>
-        <span class="sidelocale">
-          <time-ago datetime="{{cl.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub='changelog')}}">/s/changelog</a></li>
-        </span>
-      </ul>
-    </div>
+  <hr>
+  <div class="sidebarlists">
+    <ul>
+      <li><a class="title" href="{{url_for('view_post', sub=cl.sub, pid=cl.pid)}}">{{cl.title}}</a><br>
+      <span class="sidelocale">
+        <time-ago datetime="{{cl.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=cl.sub)}}">/s/{{cl.sub}}</a></li>
+      </span>
+    </ul>
   </div>
 {% endif %}
 {% endcache %}
 {% if func.enableBTCmod() %}
-<span class="col-12"><hr></span>
-<div class="row buttons">
-  <div class="col-12">
-    <a href="{{url_for('donate')}}" class="btn btn-orange donate" style="width:100%;">Gib phuks</a>
-  </div>
-</div>
+<hr>
+<a href="{{url_for('donate')}}" class="sbm-post pure-button">Gib phuks</a>
 {% endif %}
 {% if current_user.is_authenticated %}
-<span class="col-12"><hr></span>
-<div class="row buttons">
-  <div class="col-12">
-    <a href="{{url_for('view_sitelog')}}" class="btn btn-orange donate" style="width:100%;">Site log</a>
-  </div>
-</div>
+<hr>
+<a href="{{url_for('view_sitelog')}}" class="sbm-post pure-button">Site logs</a>
 {% endif %}
 {% endblock %}
-{% block navbar %}
-{{ super() }}
-{% if sort_type.startswith('all') %}
-  <li><a href="/all/hot">Hot</a></li>
-  <li><a href="/all/top">Top</a></li>
-  <li><a href="/all/new">New</a></li>
-{% else %}
-  <li><a href="/hot">Hot</a></li>
-  <li><a href="/top">Top</a></li>
-  <li><a href="/new">New</a></li>
-  <li><a href="/all/new">All new posts</a></li>
-{%endif%}
-{% if current_user.is_admin() %}<li><a href="{{url_for('admin_area')}}">Admin</a></li>{% endif %}
-{% endblock %}
+
 {% block content %}
 {{ super() }}
 {% cache 120, 'announcement' %}
@@ -184,15 +141,6 @@
 {% endblock %}
 {%block pagefoot%}
 <!-- create sub form -->
-<form  method="POST" id="csub-form" data-redir="true" action="{{url_for('do.create_sub')}}" class="ajaxform mfp-hide white-popup-block">
-  {{ csubform.csrf_token }}
-  <h1>Create sub</h1>
-  <p>Create a sub. For you, for your friends or your favorite community</p>
-  <p>{{csubform.subname(placeholder=csubform.subname.label.text, required=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}</p>
-  <p>{{csubform.title(placeholder=csubform.title.label.text, required=True)}}</p>
-  <div class="alert div-error"></div>
-  <p><button type="submit" id="csub-btnsubmit" class="btn btn-blue" data-prog="Creating...">Create sub</button></p>
-</form>
 {% if current_user.is_labrat() %}
   <script type="text/javascript" charset="utf-8">
       socket.on('connect', function() {

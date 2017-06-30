@@ -5,6 +5,9 @@
   box-sizing: border-box;
 }
 
+abbr[title]{
+  text-decoration: none;
+}
 .cw-brand div{margin-left: 1em;}
 
 .custom-toggle {
@@ -113,24 +116,6 @@ a {
 
 a:hover {
   color: #64a6ca;
-}
-
-canvas#canvas {
-  z-index: -1;
-  image-rendering: optimizeSpeed;
-  -ms-interpolation-mode: nearest-neighbor;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: -webkit-crisp-edges;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: -o-crisp-edges;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  user-select: none;
-  background: #7b7b7b;
-  transform-origin: 0 0 0;
-      transition: transform 0.3s;
-      transition-timing-function: ease-in-out;
-      transform: translate(0,0) scale(1);
 }
 
 /* Header */
@@ -283,6 +268,27 @@ span#notification.fade {
   transform-origin: 0% 0%;
   left: 0;
 }
+
+.p-icon {
+  margin-top: 5px;
+  width: 16px;
+  height: 16px;
+  display:block;
+}
+
+.p-icon path{
+  fill: #e3e3e3;
+}
+
+.icon {
+  margin-top: 4px;
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  margin-right: auto;
+  display:block;
+}
+
 
 .hasmail i{
   color: #101010;

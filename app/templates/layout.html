@@ -68,24 +68,22 @@
         <abbr title="Phuks given">689</abbr>
         <span class="separator"></span>
         <div class="glyphbutton">
-          <a href="{{ url_for('edit_user', user=current_user.name) }}"><i class="fa fa-cog" aria-hidden="true"></i></a>
+          <a href="{{ url_for('edit_user', user=current_user.name) }}"><span class="p-icon" data-icon="cog"></span></a>
         </div>
         <div class="glyphbutton sep ">
           <a href="{{ url_for('inbox_sort') }}">
             {% if current_user.notifications != 0 %}
               <span class="hasmail">
-                <i class="fa fa-envelope hasmail" aria-hidden="true"></i>
+                <span class="p-icon" data-icon="mail"></span>
                 <span class="mailcount">{{current_user.notifications}}</span>
               </span>
             {% else %}
-              <span>
-                <i class="fa fa-envelope" aria-hidden="true"></i>
-              </span>
+              <span class="p-icon" data-icon="mail"></span>
             {% endif %}
           </a>
         </div>
         <div id="toggledark" class="glyphbutton">
-          <i class="fa fa-lightbulb-o" aria-hidden="true"></i>
+          <span class="p-icon" data-icon="sun"></span>
         </div>
         <button id="logout" class="pure-button button-secondary">Log out</button></div></div>
   </div>

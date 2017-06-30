@@ -6,6 +6,7 @@ import time
 import os
 import hashlib
 import re
+from datetime import datetime, timedelta
 from io import BytesIO
 from PIL import Image
 from bs4 import BeautifulSoup
@@ -18,9 +19,11 @@ import sendgrid
 import config
 from flask import url_for, request, g, jsonify
 from flask_login import AnonymousUserMixin, current_user
-from .sorting import VoteSorting
 from .caching import cache
 from . import database as db
+
+from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber
+from peewee import JOIN, fn
 
 redis = Redis(host=config.CACHE_REDIS_HOST,
               port=config.CACHE_REDIS_PORT,
@@ -35,6 +38,7 @@ class SiteUser(object):
         self.notifications = self.user['notifications']
         self.name = self.user['name']
         self.uid = self.user['uid']
+        self.prefs = self.user['prefs'].split(',')
         # If status is not 0, user is banned
         if self.user['status'] != 0:
             self.is_active = False
@@ -765,34 +769,6 @@ def getBTCaddr():
         return x['value']
 
 
-def getTodaysTopPosts():
-    """ Returns top posts in the last 24 hours """
-    c = db.query('SELECT * FROM `sub_post` WHERE '
-                 '`posted` > NOW() - INTERVAL 1 DAY')
-    posts = c.fetchall()
-    posts = VoteSorting(posts).getPosts(1)
-    return list(posts)[:5]
-
-
-def getChangelog():
-    """ Returns most recent changelog post """
-    sub = db.get_sub_from_name('changelog')
-    if sub:
-        c = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s '
-                     'ORDER BY `pid` DESC', (sub['sid'], ))
-        post = c.fetchone()
-        return post
-    else:
-        return False
-
-
-def getRdmSub():
-    """ Returns a random sub for index sidebar """
-    sub = db.query('SELECT `name`,`title` FROM `sub` WHERE `nsfw`=%s '
-                   'ORDER BY RAND() LIMIT 1', (0, ))
-    return sub.fetchall()
-
-
 def sendMail(to, subject, content):
     """ Sends a mail through sendgrid """
     sg = sendgrid.SendGridAPIClient(api_key=config.SENDGRID_API_KEY)
@@ -1130,3 +1106,66 @@ def get_thumbnail(form):
     im.close()
 
     return filename
+
+# -----------------------------------
+# Stuff after this line was checked™
+# -----------------------------------
+
+
+def getTodaysTopPosts():
+    """ Returns top posts in the last 24 hours """
+    td = datetime.utcnow() - timedelta(days=1)
+    posts = (SubPost.select(SubPost.pid, Sub.name.alias('sub'), SubPost.title, SubPost.posted, SubPost.score)
+                    .where(SubPost.posted > td).order_by(SubPost.score.desc()).limit(5)
+                    .join(Sub, JOIN.LEFT_OUTER).dicts())
+    top_posts = []
+    for p in posts:
+        top_posts.append(p)
+    return top_posts
+
+
+def getRandomSub():
+    """ Returns a random sub for index sidebar """
+    sub = Sub.select(Sub.sid, Sub.name, Sub.title).order_by(fn.Rand()).dicts().get()
+    return sub
+
+
+def getChangelog():
+    """ Returns most recent changelog post """
+    td = datetime.utcnow() - timedelta(days=15)
+    changepost = (SubPost.select(Sub.name.alias('sub'), SubPost.pid, SubPost.title, SubPost.posted)
+                         .where(SubPost.posted > td).where(SubPost.sid == config.CHANGELOG_SUB)
+                         .join(Sub, JOIN.LEFT_OUTER).dicts())
+
+    try:
+        return changepost.get()
+    except SubPost.DoesNotExist:
+        return None
+
+
+def postListQueryBase():
+    posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
+                           SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
+                           SubPost.comments, SubPost.deleted)
+    posts = posts.join(User).switch(SubPost).join(Sub).where(SubPost.deleted == 0)
+    if (not current_user.is_authenticated) or ('nsfw' not in current_user.prefs):
+        posts = posts.where(SubPost.nsfw == 0).where(Sub.nsfw == 0)
+    return posts
+
+
+def postListQueryHome():
+    if current_user.is_authenticated:
+        return postListQueryBase().join(SubSubscriber, JOIN.LEFT_OUTER, on=(SubSubscriber.uid == current_user.uid)).where(SubPost.sid == SubSubscriber.sid)
+    else:
+        return postListQueryBase().join(SiteMetadata, JOIN.LEFT_OUTER, on=(SiteMetadata.key == 'default')).where(SubPost.sid == SiteMetadata.value)
+
+
+def getPostList(baseQuery, sort, page):
+    if sort == "hot":
+        posts = baseQuery.order_by((SubPost.score * 20 + (SubPost.posted - 1134028003) / 5000).desc()).limit(100).dicts()
+        return posts[(page - 1) * 25:page * 25]
+    elif sort == "top":
+        posts = baseQuery.order_by(SubPost.score.desc()).paginate(page, 25)
+    elif sort == "new":
+        posts = baseQuery.order_by(SubPost.pid.desc()).paginate(page, 25)
+    return posts

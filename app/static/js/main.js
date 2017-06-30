@@ -7,3 +7,6 @@ import 'purecss/build/menus.css';
 
 require('../css/main.css');
 require('../css/dark.css');
+
+require('./Icon');
+require('./Expando');
