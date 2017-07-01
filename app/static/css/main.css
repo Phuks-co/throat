@@ -60,6 +60,10 @@ abbr[title]{
   color: #fff;
 }
 
+.cw-items form{
+  display: inline-block;
+}
+
 .pure-menu-active>.pure-menu-link, .pure-menu-link:hover, .pure-menu-link:focus{
   background-color: initial;
 }

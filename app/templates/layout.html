@@ -18,8 +18,8 @@
 
     <title>
       {% if not current_user.is_anonymous %}
-        {% if current_user.has_mail() %}
-          ({{current_user.new_count()}})
+        {% if current_user.notifications >0 %}
+          ({{current_user.notifications}})
         {% endif %}
       {% endif %}
       {% block title %}{{config.LEMA}}{% endblock %}</title>
@@ -34,7 +34,7 @@
     <ul>
       <li><a href="{{url_for('all_hot')}}">all</a></li>
       <li>|</li>
-      {% for sub in func.getSubscriptions_list(current_user.get_id()) %}
+      {% for sub in current_user.subscriptions %}
         <li class="subinthebar"><a href="{{url_for('view_sub', sub=sub)}}">{{sub}}</a></li>
       {% endfor %}
     </ul>
@@ -61,11 +61,14 @@
 
     <div id="th-uinfo" class="pure-u-1 pure-u-md-8-24">
       <div class="cw-items">
-        <a href="#!/u/Polsaker" class="smallcaps">Polsaker</a>
+        {% if current_user.is_anonymous %}
+
+        {%else%}
+        <a href="{{ url_for('view_user', user=current_user.name) }}" class="smallcaps">{{current_user.name}}</a>
         <span class="separator"></span>
-        <abbr title="Phuks taken" class="bold">1802</abbr>
+        <abbr title="Phuks taken" class="bold">{{current_user.score}}</abbr>
         <span class="separator"></span>
-        <abbr title="Phuks given">689</abbr>
+        <abbr title="Phuks given">{{current_user.given}}</abbr>
         <span class="separator"></span>
         <div class="glyphbutton">
           <a href="{{ url_for('edit_user', user=current_user.name) }}"><span class="p-icon" data-icon="cog"></span></a>
@@ -85,7 +88,13 @@
         <div id="toggledark" class="glyphbutton">
           <span class="p-icon" data-icon="sun"></span>
         </div>
-        <button id="logout" class="pure-button button-secondary">Log out</button></div></div>
+        <form method="POST" action="{{ url_for('do.logout') }}">
+          {{ logoutform.csrf_token }}
+          <button type="submit" id="logout" class="pure-button button-secondary">Log out</button>
+        </form>
+        {%endif%}
+      </div>
+    </div>
   </div>
 
   <div class="pure-g">
@@ -113,8 +122,8 @@
       <a href="{{url_for('canary')}}">Canary</a> |
       <a href="{{url_for('donate')}}">Donate</a>
       <br>
-      Served by {{hostname()}}
-      {%if config.DEBUG or current_user.is_admin()%} | Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries{%endif%}
+      Served by {{hostname}}
+      {%if config.DEBUG or current_user.admin%} | Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries{%endif%}
     {% endblock %}
   </div>
   <script type="text/javascript" src="{{ asset_url_for('main.js') }}"></script>

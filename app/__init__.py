@@ -113,18 +113,7 @@ def do_magic_stuff():
 def load_user(user_id):
     """ This is used by flask_login to reload an user from a previously stored
     unique identifier. Required for the 'remember me' functionality. """
-    user = User.select(fn.GROUP_CONCAT(Clause(SQL('Distinct'), Sub.name)).alias('subscriptions'),
-                       fn.Count(Clause(SQL('Distinct'), Message.mid)).alias('notifications'),
-                       User.given, User.score, User.name, User.uid, User.status,
-                       fn.GROUP_CONCAT(Clause(SQL('Distinct'), UserMetadata.key)).alias('prefs'))
-    user = user.join(UserMetadata, JOIN.RIGHT_OUTER, on=((UserMetadata.uid == User.uid) & (UserMetadata.value == 1) & (UserMetadata.key << ['admin', 'canupload', 'exlinks', 'nostyles', 'labrat']))).switch(User)
-    user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & Message.read.is_null(True))).switch(User)
-    user = user.join(SubSubscriber, JOIN.LEFT_OUTER).join(Sub, JOIN.LEFT_OUTER).where(User.uid == user_id).dicts()
-    try:
-        user = user.get()
-        return SiteUser(user)
-    except User.DoesNotExist:
-        return None
+    return misc.load_user(user_id)
 
 
 @app.before_request
@@ -165,7 +154,7 @@ def utility_processor():
             'logoutform': LogOutForm(), 'sendmsg': CreateUserMessageForm(),
             'csubform': CreateSubForm(), 'markdown': misc.our_markdown,
             'commentform': PostComment(), 'dummyform': DummyForm(),
-            'delpostform': DeletePost(), 'hostname': socket.gethostname,
+            'delpostform': DeletePost(), 'hostname': socket.gethostname(),
             'config': app.config, 'form': forms, 'db': db,
             'getSuscriberCount': getSuscriberCount, 'func': misc}
 
@@ -180,7 +169,7 @@ def index():
 @app.route("/hot/<int:page>")
 def home_hot(page):
     """ /hot for subscriptions """
-    posts = misc.getPostList(misc.postListQueryBase(), 'hot', page)
+    posts = misc.getPostList(misc.postListQueryHome(), 'hot', page).dicts()
     return render_template('index.html', page=page, sort_type='home_hot',
                            posts=posts)
 

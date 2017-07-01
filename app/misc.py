@@ -22,8 +22,8 @@ from flask_login import AnonymousUserMixin, current_user
 from .caching import cache
 from . import database as db
 
-from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber
-from peewee import JOIN, fn
+from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
+from peewee import JOIN, fn, Clause, SQL
 
 redis = Redis(host=config.CACHE_REDIS_HOST,
               port=config.CACHE_REDIS_PORT,
@@ -39,6 +39,10 @@ class SiteUser(object):
         self.name = self.user['name']
         self.uid = self.user['uid']
         self.prefs = self.user['prefs'].split(',')
+        self.subscriptions = self.user['subscriptions'].split(',')
+
+        self.score = self.user['score']
+        self.given = self.user['given']
         # If status is not 0, user is banned
         if self.user['status'] != 0:
             self.is_active = False
@@ -47,7 +51,7 @@ class SiteUser(object):
         if self.user:
             self.is_authenticated = True
             self.is_anonymous = False
-            self.admin = bool(db.get_user_metadata(self.uid, 'admin'))
+            self.admin = 'admin' in self.prefs
         else:
             self.is_authenticated = False
             self.is_anonymous = True
@@ -79,6 +83,7 @@ class SiteUser(object):
         """ Returns true if the current user is a site admin. """
         return self.admin
 
+    @cache.memoize(5)
     def get_blocked(self):
         ib = db.get_user_blocked(self.uid)
         return [x['sid'] for x in ib]
@@ -89,7 +94,7 @@ class SiteUser(object):
 
     def has_mail(self):
         """ Returns True if the current user has unread messages """
-        return bool(db.user_mail_count(self.uid))
+        return (self.notifications > 0)
 
     def new_pm_count(self):
         """ Returns new message count """
@@ -97,13 +102,6 @@ class SiteUser(object):
                      ' AND `mtype` IN (1, 8) AND `receivedby`=%s',
                      (self.user['uid'],)).fetchone()['c']
         return x
-
-    def is_labrat(self):
-        x = db.get_user_metadata(self.uid, 'labrat')
-        if x:
-            return True if x == '1' else False
-        else:
-            return False
 
     def new_modmail_count(self):
         """ Returns new modmail msg count """
@@ -489,15 +487,6 @@ def getCommentParentUID(cid):
 def getCommentSub(cid):
     """ Returns the sub for a comment """
     return db.get_sub_from_pid(db.get_comment_from_cid(cid)['pid'])
-
-
-@cache.memoize(600)
-def getAnnouncement():
-    """ Returns sitewide announcement post or False """
-    ann = db.get_site_metadata('announcement')
-    if ann:
-        ann = db.get_post_from_pid(ann['value'])
-    return ann
 
 
 def isMod(sub, user):
@@ -1147,25 +1136,51 @@ def postListQueryBase():
     posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                            SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                            SubPost.comments, SubPost.deleted)
-    posts = posts.join(User).switch(SubPost).join(Sub).where(SubPost.deleted == 0)
+    posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER).where(SubPost.deleted == 0)
     if (not current_user.is_authenticated) or ('nsfw' not in current_user.prefs):
-        posts = posts.where(SubPost.nsfw == 0).where(Sub.nsfw == 0)
+        posts = posts.where(SubPost.nsfw == 0)
     return posts
 
 
 def postListQueryHome():
     if current_user.is_authenticated:
-        return postListQueryBase().join(SubSubscriber, JOIN.LEFT_OUTER, on=(SubSubscriber.uid == current_user.uid)).where(SubPost.sid == SubSubscriber.sid)
+        return (postListQueryBase().where(SubPost.sid << current_user.user['subsid'].split(',')))
     else:
         return postListQueryBase().join(SiteMetadata, JOIN.LEFT_OUTER, on=(SiteMetadata.key == 'default')).where(SubPost.sid == SiteMetadata.value)
 
 
 def getPostList(baseQuery, sort, page):
     if sort == "hot":
-        posts = baseQuery.order_by((SubPost.score * 20 + (SubPost.posted - 1134028003) / 5000).desc()).limit(100).dicts()
-        return posts[(page - 1) * 25:page * 25]
+        posts = baseQuery.order_by((SubPost.score * 20 + (SubPost.posted - 1134028003) / 5000).desc()).limit(100).paginate(page, 25)
     elif sort == "top":
         posts = baseQuery.order_by(SubPost.score.desc()).paginate(page, 25)
     elif sort == "new":
         posts = baseQuery.order_by(SubPost.pid.desc()).paginate(page, 25)
     return posts
+
+
+@cache.memoize(600)
+def getAnnouncement():
+    """ Returns sitewide announcement post or False """
+    try:
+        ann = SiteMetadata.select().where(SiteMetadata.value == 'announcement').get()
+        return SubPost.select(SubPost.posted, SubPost.title, SubPost.comments, SubPost.pid,
+                              User.name.alias('user'), Sub.name.alias('sub')).where(SubPost.pid == ann.value)
+    except SiteMetadata.DoesNotExist:
+        return False
+
+
+def load_user(user_id):
+    user = User.select(fn.GROUP_CONCAT(Clause(SQL('Distinct'), Sub.name)).alias('subscriptions'),
+                       fn.GROUP_CONCAT(Clause(SQL('Distinct'), Sub.sid)).alias('subsid'),
+                       fn.Count(Clause(SQL('Distinct'), Message.mid)).alias('notifications'),
+                       User.given, User.score, User.name, User.uid, User.status,
+                       fn.GROUP_CONCAT(Clause(SQL('Distinct'), UserMetadata.key)).alias('prefs'))
+    user = user.join(UserMetadata, JOIN.RIGHT_OUTER, on=((UserMetadata.uid == User.uid) & (UserMetadata.value == 1) & (UserMetadata.key << ['admin', 'canupload', 'exlinks', 'nostyles', 'labrat']))).switch(User)
+    user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & Message.read.is_null(True))).switch(User)
+    user = user.join(SubSubscriber, JOIN.LEFT_OUTER).join(Sub, JOIN.LEFT_OUTER).where(User.uid == user_id).dicts()
+    try:
+        user = user.get()
+        return SiteUser(user)
+    except User.DoesNotExist:
+        return None

@@ -85,44 +85,38 @@
 {% block content %}
 {{ super() }}
 {% cache 120, 'announcement' %}
-  {% set ann = func.getAnnouncement() %}
-  {% if ann %}
-  <article id="{{ann.pid}}" class="post" data-pid="{{ann.pid}}">
-    {# vote arrow div #}
-    <div class="pull left vote">
-      <form class="uvform">
-        <div class="upvote{%if func.getVoteStatus(current_user.get_id(), ann.pid) == 1%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
-        {% set uv = form.VoteForm() %}
-        {{uv.csrf_token}}{{uv.post(value=ann.pid)}}
-      </form>
-      <p class="count">{{ann['score']}}</p>
-      <form class="dvform">
-        <div class="downvote{%if func.getVoteStatus(current_user.get_id(), ann.pid) == 0%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
-        {% set dv = form.VoteForm() %}
-        {{uv.csrf_token}}{{uv.post(value=ann.pid)}}
-      </form>
-    </div>
-      <div class="image">
-          <a href="{{url_for('view_post_inbox', pid=ann.pid)}}">
-            <span class="fa-stack fa-3x" style="color: #616161;">
-              <i class="fa fa-square fa-stack-2x"></i>
-              <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
-            </span>
+  {% if announcement %}
+  <div pid="{{post.pid}}" class="post">
+    <div class="pure-g">
+      <div class="misctainer">
+        <div class="votebuttons">
+          <div title="Upvote" class="upvote " data-icon="upvote"></div>
+          <div class="score">{{announcement.score}}</div>
+          <div title="Downvote" class="downvote "  data-icon="downvote"></div>
+        </div>
+        <div class="thcontainer">
+          <a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">
+            <div class="thumbnail">
+                <span class="placeholder" data-icon="chat"></span>
+            </div>
           </a>
+        </div>
       </div>
-      <div class="main">
-        <a class="title" {% if current_user.has_exlinks() %}target="_blank" {% endif %} href="{{url_for('view_post_inbox', pid=ann.pid)}}"><div class="announcementPost">Announcement</div>{{ann.title}}</a>
-        <p class="author">(+{{func.get_post_upcount(ann.pid)}}|-{{func.get_post_downcount(ann.pid)}}) <relative-time datetime="{{ann.posted.isoformat()}}Z"></relative-time></p>
-        <p class="container">
-            <span id="opentextpost" data-pid="{{ann.pid}}" class="closedtextpost">
-              <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
-            </span>
-          <a href="{{url_for('view_sub', sub=func.getSub(ann.sid).name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{{func.getSub(ann.sid).name}}</a>
-          <a href="{{url_for('view_user', user=func.getUser(ann.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(ann.uid).name}}</a>
-          <a href="{{url_for('view_post_inbox', pid=ann.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> <span class="ccount">{{db.get_post_comment_count(ann.pid)}}</span></a>
-          </p>
+      <div class="pure-u-16-24 pure-u-md-20-24 pbody">
+        <div class="post-heading">
+          <a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">{{announcement.title}}</a>
+        </div>
+        <div class="author">
+          posted <time-ago datetime="{{announcement.posted.isoformat()}}Z"></time-ago> by
+          <a href="{{url_for('view_user', user=announcement.user)}}">{{announcement.user}}</a> on
+          <a href="{{url_for('view_sub', sub=announcement.sub)}}">{{announcement.sub}}</a>
+        </div>
+        <div class="links">
+          <a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}">comments {%if announcement.comments>0%}({{announcement.comments}}){%endif%}</a>
+        </div>
       </div>
-  </article>
+    </div>
+  </div>
   <hr/>
   {%endif%}
 {% endcache %}
@@ -141,7 +135,7 @@
 {% endblock %}
 {%block pagefoot%}
 <!-- create sub form -->
-{% if current_user.is_labrat() %}
+{% if "labrat" in current_user.prefs %}
   <script type="text/javascript" charset="utf-8">
       socket.on('connect', function() {
         window.sio = true;

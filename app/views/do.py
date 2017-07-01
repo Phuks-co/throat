@@ -124,7 +124,7 @@ def login():
             thash = bcrypt.hashpw(form.password.data.encode('utf-8'),
                                   user['password'].encode('utf-8'))
             if thash == user['password'].encode('utf-8'):
-                theuser = SiteUser(user)
+                theuser = misc.load_user(user['uid'])
                 login_user(theuser, remember=form.remember.data)
                 send_uinfo()
                 return json.dumps({'status': 'ok'})
@@ -169,7 +169,7 @@ def register():
         for d in defaults:
             db.create_subscription(user['uid'], d['sid'], 1)
 
-        login_user(SiteUser(user))
+        login_user(misc.load_user(user['uid']))
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
@@ -1747,7 +1747,7 @@ def reset():
 
         # All good. Set da password.
         db.update_user_password(user['uid'], form.password.data)
-        login_user(SiteUser(user))
+        login_user(misc.load_user(user['uid']))
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 

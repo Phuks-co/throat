@@ -1,16 +1,14 @@
-{% for post in posts if not post.pid == func.getAnnouncement().pid and not post.sid in current_user.get_blocked() %}
+{% for post in posts %}
 <div pid="{{post.pid}}" class="post">
   <div class="pure-g">
     <div class="misctainer">
       <div class="votebuttons">
         <div title="Upvote" class="upvote " data-icon="upvote"></div>
         <div class="score">{{post.score}}</div>
-        <div title="Downvote" class="downvote "  data-icon="downvote">
-          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28"><title>chevron-down</title><path d="M26.297 12.625l-11.594 11.578c-0.391 0.391-1.016 0.391-1.406 0l-11.594-11.578c-0.391-0.391-0.391-1.031 0-1.422l2.594-2.578c0.391-0.391 1.016-0.391 1.406 0l8.297 8.297 8.297-8.297c0.391-0.391 1.016-0.391 1.406 0l2.594 2.578c0.391 0.391 0.391 1.031 0 1.422z"></path></svg>
-        </div>
+        <div title="Downvote" class="downvote "  data-icon="downvote"></div>
       </div>
       <div class="thcontainer">
-        <a href="#!/s/AskPhuks/14204" class="title">
+        <a href="{{url_for('view_post', sub=post.sub, pid=post.pid)}}" class="title">
           <div class="thumbnail">
             {% if post.thumbnail != '' and post.link != None %}
               <img src="{{config.THUMBNAIL_HOST}}{{post.thumbnail}}"/>
@@ -26,6 +24,9 @@
     </div>
     <div class="pure-u-16-24 pure-u-md-20-24 pbody">
       <div class="post-heading">
+        {% if post.nsfw %}
+        <div class="nsfw" alt="Not safe for work">NSFW</div>
+        {%endif%}
         {% if post.link == None %}
           <a href="{{url_for('view_post', sub=post.sub, pid=post.pid)}}" class="title">{{post.title}}</a>
         {% else %}
