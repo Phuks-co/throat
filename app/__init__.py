@@ -648,10 +648,8 @@ def view_sub_new(sub, page):
     if not sub:
         abort(404)
 
-    posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s AND '
-                     '`deleted` != 1 ORDER BY `posted` DESC '
-                     'LIMIT %s,20',
-                     (sub['sid'], (page - 1) * 20, )).fetchall()
+    posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid == sub['sid']),
+                             'new', page).dicts()
     mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
     createtxtpost = CreateSubTextPost(sub=sub['name'])
     createlinkpost = CreateSubLinkPost(sub=sub['name'])
@@ -710,9 +708,8 @@ def view_sub_top(sub, page):
     if not sub:
         abort(404)
 
-    posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s AND'
-                     '`deleted` != 1 ORDER BY `score` DESC LIMIT %s,20',
-                     (sub['sid'], (page - 1) * 20, )).fetchall()
+    posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid == sub['sid']),
+                             'top', page).dicts()
 
     mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
     createtxtpost = CreateSubTextPost(sub=sub['name'])
@@ -735,17 +732,15 @@ def view_sub_hot(sub, page):
     if not sub:
         abort(404)
 
-    c = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s AND '
-                 '`deleted` != 1 LIMIT 500',
-                 (sub['sid'], )).fetchall()
-    sorter = HotSorting(c)
+    posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid == sub['sid']),
+                             'hot', page).dicts()
     mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
     createtxtpost = CreateSubTextPost(sub=sub['name'])
     createlinkpost = CreateSubLinkPost(sub=sub['name'])
 
     return render_template('sub.html', sub=sub, page=page,
                            sort_type='view_sub_hot',
-                           posts=sorter.getPosts(page), mods=mods,
+                           posts=posts, mods=mods,
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
 
