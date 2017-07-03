@@ -240,7 +240,7 @@ def all_domain_new(domain, page):
     domain = re.sub('[^A-Za-z0-9.\-_]+', '', domain)
     posts = misc.getPostList(misc.postListQueryBase().where(SubPost.link % ('%://' + domain + '/%')),
                              'new', 1).dicts()
-    return render_template('index.html', page=page, domain=domain,
+    return render_template('index.html', page=page, kw={'domain': domain},
                            sort_type='all_domain_new',
                            posts=posts)
 
@@ -254,7 +254,7 @@ def search(page, term):
                              'new', 1).dicts()
 
     return render_template('index.html', page=page, sort_type='search',
-                           posts=posts, term=term)
+                           posts=posts, kw={'term': term})
 
 
 @app.route("/all/top", defaults={'page': 1})
