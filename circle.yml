@@ -14,3 +14,6 @@ machine:
     DB_USER: ubuntu
     DB_PASSWD: ~
     DB_NAME: 'circle_test'
+test:
+  pre:
+    - npm run build
