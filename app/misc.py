@@ -194,7 +194,7 @@ class SiteUser(object):
         """ Returns the post voting for a user. """
         return db.get_user_post_voting(self.uid)
 
-    def subscriptions(self):
+    def get_subscriptions(self):
         return self.subscriptions
 
 
@@ -229,7 +229,7 @@ class SiteAnon(AnonymousUserMixin):
     def get_blocked(cls):
         return []
 
-    def subscriptions(self):
+    def get_subscriptions(self):
         return getDefaultSubs_list()
 
     @classmethod
