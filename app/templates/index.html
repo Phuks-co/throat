@@ -86,7 +86,7 @@
 {{ super() }}
 {% cache 120, 'announcement' %}
   {% if announcement %}
-  <div pid="{{post.pid}}" class="post">
+  <div pid="{{announcement.pid}}" class="post">
     <div class="pure-g">
       <div class="misctainer">
         <div class="votebuttons">
@@ -123,7 +123,9 @@
 
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
 <div class="alldaposts">
-{% include "indexpost.html" %}
+{% for post in posts %}
+  {% include "indexpost.html" %}
+{%endfor%}
 </div>
 {% if page > 1 %}
 <a href="{{url_for(sort_type, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>

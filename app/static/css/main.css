@@ -280,6 +280,12 @@ span#notification.fade {
   display:block;
 }
 
+.i-icon{
+  width: 16px;
+  height: 16px;
+  display:inline-block;
+}
+
 .p-icon path{
   fill: #e3e3e3;
 }
@@ -695,15 +701,18 @@ span.hasmail {
 
 .sbm-icon{
   position: relative;
-  padding-left: 20px;
+  padding-left: 1em;
 }
 
 .sbm-icon svg{
   height: 16px;
   position: absolute;
-  left: 4px;
+  left: -.5em;
   top: 50%;
   transform: translateY(-50%);
+}
+.button-secondary svg{
+  fill: white;
 }
 
 hr {
