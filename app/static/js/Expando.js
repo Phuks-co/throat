@@ -49,40 +49,53 @@ $(document).on('click', '.expando-btn', function(){
   if($('div.expando-master[pid="'+pid+'"]').get(0)){
     return close_expando(pid);
   }
-  var domain = get_hostname(link);
-
   var expando = $('<div pid="'+pid+'" class="expando-master pure-g"><div class="pure-u-1 pure-u-md-1-24"></div><div class="pure-u-1 pure-u-md-15-24 expandotxt"></div></div>');
-  if((domain == 'youtube.com') || (domain == 'www.youtube.com') || (domain == 'youtu.be')){
-    expando.children('.expandotxt')[0].innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://www.youtube.com/embed/' + youtubeID(link) +'"></iframe></div>';
-  }else if(domain == 'gfycat.com'){
-    expando.children('.expandotxt')[0].innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://gfycat.com/ifr/' + gfycatID(link) +'"></iframe></div>';
-  }else if(domain == 'vimeo.com'){
-    expando.children('.expandotxt')[0].innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://player.vimeo.com/video/' + vimeoID(link) +'"></iframe></div>';
-  }else if(domain == 'vine.co'){
-    expando.children('.expandotxt')[0].innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://vine.co/v/' + vineID(link) +'/embed/simple"></iframe></div>';
-  }else if(/\.(png|jpg|gif|tiff|svg|bmp|jpeg)$/i.test(link)) {
-    var img = document.createElement( "img" );
-    img.src = link;
-    img.onclick = function(){close_expando(pid);};
-    expando.children('.expandotxt').append(img);
-  }else if (/\.(mp4|webm)$/i.test(link)) {
-    var vid = document.createElement( "video" );
-    vid.src = link;
-    vid.preload = 'auto';
-    vid.autoplay = true;
-    vid.loop = true;
-    vid.controls = true;
-    vid.innerHTML = document.createElement("source").src = link;
-    expando.children('.expandotxt').append(vid);
-  }else if(domain == 'i.imgur.com' && /\.gifv$/i.test(link)){
-    var vidx = document.createElement( "video" );
-    vidxsrc = link;
-    vidx.preload = 'auto';
-    vidx.autoplay = true;
-    vidx.loop = true;
-    vidx.controls = true;
-    vidx.innerHTML = document.createElement("source").src = 'https://i.imgur.com/' + imgurID(link) + '.mp4';
-    expando.children('.expandotxt').append(vidx);
+  if(link == "None"){ // Found a Python here :(
+    $.ajax({
+      type: "GET",
+      url: '/do/get_txtpost/' + pid, // XXX: Hardcoded URL
+      dataType: 'json',
+      success: function(data) {
+        if (data.status == "ok") {
+          expando.children('.expandotxt')[0].innerHTML = data.content;
+        }
+      }
+    });
+  }else{
+    var domain = get_hostname(link);
+
+    if((domain == 'youtube.com') || (domain == 'www.youtube.com') || (domain == 'youtu.be')){
+      expando.children('.expandotxt')[0].innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://www.youtube.com/embed/' + youtubeID(link) +'"></iframe></div>';
+    }else if(domain == 'gfycat.com'){
+      expando.children('.expandotxt')[0].innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://gfycat.com/ifr/' + gfycatID(link) +'"></iframe></div>';
+    }else if(domain == 'vimeo.com'){
+      expando.children('.expandotxt')[0].innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://player.vimeo.com/video/' + vimeoID(link) +'"></iframe></div>';
+    }else if(domain == 'vine.co'){
+      expando.children('.expandotxt')[0].innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://vine.co/v/' + vineID(link) +'/embed/simple"></iframe></div>';
+    }else if(/\.(png|jpg|gif|tiff|svg|bmp|jpeg)$/i.test(link)) {
+      var img = document.createElement( "img" );
+      img.src = link;
+      img.onclick = function(){close_expando(pid);};
+      expando.children('.expandotxt').append(img);
+    }else if (/\.(mp4|webm)$/i.test(link)) {
+      var vid = document.createElement( "video" );
+      vid.src = link;
+      vid.preload = 'auto';
+      vid.autoplay = true;
+      vid.loop = true;
+      vid.controls = true;
+      vid.innerHTML = document.createElement("source").src = link;
+      expando.children('.expandotxt').append(vid);
+    }else if(domain == 'i.imgur.com' && /\.gifv$/i.test(link)){
+      var vidx = document.createElement( "video" );
+      vidxsrc = link;
+      vidx.preload = 'auto';
+      vidx.autoplay = true;
+      vidx.loop = true;
+      vidx.controls = true;
+      vidx.innerHTML = document.createElement("source").src = 'https://i.imgur.com/' + imgurID(link) + '.mp4';
+      expando.children('.expandotxt').append(vidx);
+    }
   }
   this.innerHTML = icon.close;
   $('div.post[pid="'+pid+'"]').append(expando);
