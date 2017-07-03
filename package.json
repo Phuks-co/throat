@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "webpack-dev-server --progress --colors --port 2992 --content-base app/static/gen",
-    "build": "NODE_ENV=production webpack -p --optimize-minimize --progress"
+    "build": "NODE_ENV=production webpack -p --optimize-minimize --progress",
+    "test": "npm build"
   },
   "repository": {
     "type": "git",

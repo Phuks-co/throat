@@ -1,0 +1,16 @@
+notify:
+  webhooks:
+    - url: https://ph.polsaker.com/harbormaster/hook/circleci/
+    - url: https://discordapp.com/api/webhooks/270349000324939778/oS7NG6bwEgoMWBM05tyMn_IncBl0DpHZbvQduC5i8ZJeBXSxNLt0PB32iOOjZDZFkkNL/circleci
+machine:
+  python:
+    version: 3.4.2
+  node:
+    version: 7.10.0
+  services:
+     - redis
+     - mysql
+  environment:
+    DB_USER: ubuntu
+    DB_PASSWD: ~
+    DB_NAME: 'circle_test'
