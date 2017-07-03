@@ -1,12 +1,13 @@
 """ This is the config file. Pretty obvious, right? """
+import os
 # Site title
 LEMA = "Throat: Open discussion ;D"
 COPY = "2016 Throat. All Rights Reserved."
 
 DB_HOST = 'localhost'
-DB_USER = 'root'
-DB_PASSWD = ''
-DB_NAME = 'phuks'
+DB_USER = os.getenv('DB_USER') or 'root'
+DB_PASSWD = os.getenv('DB_USER') or ''
+DB_NAME = os.getenv('DB_USER') or 'phuks'
 
 CACHE_TYPE = 'simple'
 CACHE_REDIS_HOST = '127.0.0.1'
@@ -29,10 +30,10 @@ THUMBNAIL_HOST = "https://foo.bar"
 
 # peewee
 DATABASE = {
-    'name': 'throat',
+    'name': DB_NAME,
     'engine': 'MySQLDatabase',
-    'user': 'root',
-    'password': 'hunter2'
+    'user': DB_USER,
+    'password': DB_PASSWD
 }
 
 # SID of changelog sub
