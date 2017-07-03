@@ -127,11 +127,12 @@
   {% include "indexpost.html" %}
 {%endfor%}
 </div>
+
 {% if page > 1 %}
-<a href="{{url_for(sort_type, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
+  <a href="{{url_for(sort_type, page=(page-1), domain=domain,term=term)}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
 {% endif %}
-{% if posts|length == 20 %}
-<a href="{{url_for(sort_type, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+{% if posts|length == 25 %}
+  <a href="{{url_for(sort_type, page=(page+1), domain=domain,term=term)}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
 {% endif %}
 
 {% endblock %}
@@ -165,7 +166,7 @@
       })
   </script>
 {%endif%}
-{% if sort_type.endswith('new') and current_user.likes_scroll()%}
+{% if sort_type in ('all_new', 'view_sub_new') and current_user.likes_scroll()%}
 <script>
 $(document).ready(function () {
     window.loading = false;

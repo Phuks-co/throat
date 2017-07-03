@@ -28,11 +28,10 @@ from .views.api import oauth
 from . import misc, forms, caching
 from .socketio import socketio
 from . import database as db
-from .misc import SiteUser, SiteAnon, getSuscriberCount
-from .sorting import BasicSorting, HotSorting, NewSorting
+from .misc import SiteAnon, getSuscriberCount
+from .sorting import NewSorting
 from .models import db as pdb
-from .models import User, Sub, UserMetadata, Message, SubSubscriber
-from peewee import fn, SQL, Clause, JOIN
+from .models import Sub, SubPost
 # from werkzeug.contrib.profiler import ProfilerMiddleware
 
 app = Flask(__name__)
@@ -201,35 +200,10 @@ def all_new_rss():
     fg.subtitle("All new posts feed")
     fg.link(href=url_for('all_new', _external=True))
     fg.generator("Phuks")
-    c = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC LIMIT 30')
-    posts = c.fetchall()
-    sorter = BasicSorting(posts)
-    for post in sorter.getPosts():
+    posts = misc.getPostList(misc.postListQueryBase(), 'new', 1).dicts()
+    for post in posts:
         fe = fg.add_entry()
-        url = url_for('view_post', sub=misc.getSub(post['sid'])['name'],
-                      pid=post['pid'],
-                      _external=True)
-        fe.id(url)
-        fe.link({'href': url, 'rel': 'self'})
-        fe.title(post['title'])
-
-    return fg.rss_str(pretty=True)
-
-
-@app.route("/my/new.rss")
-def my_new_rss():
-    """ RSS feed for subs you mod """
-    fg = FeedGenerator()
-    fg.title("My subs")
-    fg.subtitle("New posts from subs you mod feed")
-    fg.link(href=url_for('view_modmulti_new', _external=True))
-    fg.generator("Phuks")
-    subs = db.get_user_modded(current_user.uid)
-    posts = misc.getPostsFromSubs(subs, 200)
-    sorter = NewSorting(posts)
-    for post in sorter.getPosts():
-        fe = fg.add_entry()
-        url = url_for('view_post', sub=misc.getSub(post['sid'])['name'],
+        url = url_for('view_post', sub=post['sub'],
                       pid=post['pid'],
                       _external=True)
         fe.id(url)
@@ -252,26 +226,21 @@ def all_new(page):
 @app.route("/all/new/more", defaults={'pid': None})
 @app.route('/all/new/more/<int:pid>')
 def all_new_more(pid=None):
-    """ Returns more posts for /all/new """
+    """ Returns more posts for /all/new (used for infinite scroll) """
     if not pid:
         abort(404)
-    c = db.query('SELECT * FROM `sub_post` WHERE `pid`<%s AND '
-                 '`deleted` != 1 ORDER BY `posted` '
-                 'DESC LIMIT 20', (pid, ))
-    posts = c.fetchall()
+    posts = misc.getPostList(misc.postListQueryBase().where(SubPost.pid < pid), 'new', 1).dicts()
     return render_template('indexpost.html', posts=posts, sort_type='all_new')
 
 
 @app.route("/domain/<domain>", defaults={'page': 1})
 @app.route("/domain/<domain>/<int:page>")
-def all_domain_new(page, domain):
+def all_domain_new(domain, page):
     """ The index page, all posts sorted as most recent posted first """
     domain = re.sub('[^A-Za-z0-9.\-_]+', '', domain)
-    c = db.query('SELECT * FROM `sub_post` WHERE `link` LIKE %s '
-                 'ORDER BY `posted` DESC LIMIT %s,20',
-                 ('%://' + domain + '/%', (page - 1) * 20))
-    posts = c.fetchall()
-    return render_template('domains.html', page=page, domain=domain,
+    posts = misc.getPostList(misc.postListQueryBase().where(SubPost.link % ('%://' + domain + '/%')),
+                             'new', 1).dicts()
+    return render_template('index.html', page=page, domain=domain,
                            sort_type='all_domain_new',
                            posts=posts)
 
@@ -281,14 +250,35 @@ def all_domain_new(page, domain):
 def search(page, term):
     """ The index page, with basic title search """
     term = re.sub('[^A-Za-z0-9.,\-_\'" ]+', '', term)
-    c = db.query('SELECT * FROM `sub_post` WHERE `title` LIKE %s '
-                 'ORDER BY `posted` DESC LIMIT %s,20',
-                 ('%' + term + '%', (page - 1) * 20))
-    posts = c.fetchall()
+    posts = misc.getPostList(misc.postListQueryBase().where(SubPost.title % ('%' + term + '%')),
+                             'new', 1).dicts()
 
-    return render_template('indexsearch.html', page=page, sort_type='all_new',
+    return render_template('index.html', page=page, sort_type='search',
                            posts=posts, term=term)
 
+
+@app.route("/all/top", defaults={'page': 1})
+@app.route("/all/top/<int:page>")
+def all_top(page):
+    """ The index page, all posts sorted as most recent posted first """
+    posts = misc.getPostList(misc.postListQueryBase(), 'top', page).dicts()
+
+    return render_template('index.html', page=page, sort_type='all_top',
+                           posts=posts)
+
+
+@app.route("/all", defaults={'page': 1})
+@app.route("/all/hot", defaults={'page': 1})
+@app.route("/all/hot/<int:page>")
+def all_hot(page):
+    """ The index page, all posts sorted as most recent posted first """
+    posts = misc.getPostList(misc.postListQueryBase(), 'hot', page).dicts()
+
+    return render_template('index.html', page=page, sort_type='all_hot',
+                           posts=posts)
+
+
+# Note for future self: I rewrote until this part. You should do the rest.
 
 @app.route("/subs/search/<term>", defaults={'page': 1})
 @app.route("/subs/search/<term>/<int:page>")
@@ -312,27 +302,6 @@ def subs_tag_search(page, term):
         sublist += sub['name'] + '+'
     ptype = 'tagmatch'
     return render_template('subs.html', page=page, subs=subs, ptype=ptype, sublist=sublist[:-1])
-
-
-@app.route("/all/top", defaults={'page': 1})
-@app.route("/all/top/<int:page>")
-def all_top(page):
-    """ The index page, all posts sorted as most recent posted first """
-    posts = misc.getPostList(misc.postListQueryBase(), 'top', page).dicts()
-
-    return render_template('index.html', page=page, sort_type='all_top',
-                           posts=posts)
-
-
-@app.route("/all", defaults={'page': 1})
-@app.route("/all/hot", defaults={'page': 1})
-@app.route("/all/hot/<int:page>")
-def all_hot(page):
-    """ The index page, all posts sorted as most recent posted first """
-    posts = misc.getPostList(misc.postListQueryBase(), 'hot', page).dicts()
-
-    return render_template('index.html', page=page, sort_type='all_hot',
-                           posts=posts)
 
 
 @app.route("/welcome")
