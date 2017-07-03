@@ -178,8 +178,7 @@ def home_hot(page):
 @app.route("/new/<int:page>")
 def home_new(page):
     """ /new for subscriptions """
-    subs = misc.getSubscriptions(current_user.get_id())
-    posts = misc.getPostsFromSubs(subs, (page - 1), 'pid', 20)
+    posts = misc.getPostList(misc.postListQueryHome(), 'new', page).dicts()
     return render_template('index.html', page=page, sort_type='home_new',
                            posts=posts)
 
@@ -188,8 +187,7 @@ def home_new(page):
 @app.route("/top/<int:page>")
 def home_top(page):
     """ /top for subscriptions """
-    subs = misc.getSubscriptions(current_user.get_id())
-    posts = misc.getPostsFromSubs(subs, (page - 1), 'score', 20)
+    posts = misc.getPostList(misc.postListQueryHome(), 'top', page).dicts()
 
     return render_template('index.html', page=page, sort_type='home_top',
                            posts=posts)
@@ -245,10 +243,7 @@ def my_new_rss():
 @app.route("/all/new/<int:page>")
 def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
-    c = db.query('SELECT * FROM `sub_post` WHERE `deleted` != 1 ORDER BY '
-                 '`posted` DESC LIMIT %s,20', ((page - 1) * 20, ))
-    posts = c.fetchall()
-    # sorter = BasicSorting(posts)
+    posts = misc.getPostList(misc.postListQueryBase(), 'new', page).dicts()
 
     return render_template('index.html', page=page, sort_type='all_new',
                            posts=posts)
@@ -323,9 +318,7 @@ def subs_tag_search(page, term):
 @app.route("/all/top/<int:page>")
 def all_top(page):
     """ The index page, all posts sorted as most recent posted first """
-    c = db.query('SELECT * FROM `sub_post` ORDER BY `score` DESC LIMIT '
-                 '%s,20', ((page - 1) * 20, ))
-    posts = c.fetchall()
+    posts = misc.getPostList(misc.postListQueryBase(), 'top', page).dicts()
 
     return render_template('index.html', page=page, sort_type='all_top',
                            posts=posts)
@@ -336,11 +329,10 @@ def all_top(page):
 @app.route("/all/hot/<int:page>")
 def all_hot(page):
     """ The index page, all posts sorted as most recent posted first """
-    c = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC LIMIT 500 ')
-    sorter = HotSorting(c.fetchall())
+    posts = misc.getPostList(misc.postListQueryBase(), 'hot', page).dicts()
 
     return render_template('index.html', page=page, sort_type='all_hot',
-                           posts=sorter.getPosts(page))
+                           posts=posts)
 
 
 @app.route("/welcome")

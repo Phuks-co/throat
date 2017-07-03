@@ -194,6 +194,9 @@ class SiteUser(object):
         """ Returns the post voting for a user. """
         return db.get_user_post_voting(self.uid)
 
+    def subscriptions(self):
+        return self.subscriptions
+
 
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
@@ -225,6 +228,9 @@ class SiteAnon(AnonymousUserMixin):
     @classmethod
     def get_blocked(cls):
         return []
+
+    def subscriptions(self):
+        return getDefaultSubs_list()
 
     @classmethod
     def has_subscribed(cls, sub):

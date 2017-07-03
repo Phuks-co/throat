@@ -34,7 +34,7 @@
     <ul>
       <li><a href="{{url_for('all_hot')}}">all</a></li>
       <li>|</li>
-      {% for sub in current_user.subscriptions %}
+      {% for sub in current_user.subscriptions()[0:25] %}
         <li class="subinthebar"><a href="{{url_for('view_sub', sub=sub)}}">{{sub}}</a></li>
       {% endfor %}
     </ul>
