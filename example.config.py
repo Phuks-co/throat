@@ -6,8 +6,8 @@ COPY = "2016 Throat. All Rights Reserved."
 
 DB_HOST = 'localhost'
 DB_USER = os.getenv('DB_USER') or 'root'
-DB_PASSWD = os.getenv('DB_USER') or ''
-DB_NAME = os.getenv('DB_USER') or 'phuks'
+DB_PASSWD = os.getenv('DB_PASSWD') or ''
+DB_NAME = os.getenv('DB_NAME') or 'phuks'
 
 CACHE_TYPE = 'simple'
 CACHE_REDIS_HOST = '127.0.0.1'
