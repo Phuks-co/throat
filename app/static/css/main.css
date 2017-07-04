@@ -545,18 +545,8 @@ a#prevp{
 
 
 
-#sortbuttons, #sortbuttons a {
-  text-align: center;
-}
-
-#sortbuttons a, #sortbuttons b{
-  margin: 4px;
-  display: inline-block;
-  padding: .5em 0;
-}
-
-#sortbuttons a:visited{
-  color: #fff;
+#sortbuttons div {
+  justify-content: center;
 }
 
 .links{
