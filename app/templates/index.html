@@ -3,17 +3,15 @@
 {% block sidebar %}
 
 <div id="sortbuttons">
-  <span>Sort:
-    {% if sort_type.startswith('all') %}
-      {% if request.endpoint == 'all_hot' %}<b>Hot</b>{%else%}<a href="{{url_for('all_hot')}}">Hot</a>{%endif%}
-      {% if request.endpoint == 'all_top' %}<b>Top</b>{%else%}<a href="{{url_for('all_top')}}">Top</a>{%endif%}
-      {% if request.endpoint == 'all_new' %}<b>New</b>{%else%}<a href="{{url_for('all_new')}}">New</a>{%endif%}
-    {% else %}
-      {% if request.endpoint in ('home_hot', 'index') %}<b>Hot</b>{%else%}<a href="{{url_for('home_hot')}}">Hot</a>{%endif%}
-      {% if request.endpoint == 'home_top' %}<b>Top</b>{%else%}<a href="{{url_for('home_top')}}">Top</a>{%endif%}
-      {% if request.endpoint == 'home_new' %}<b>New</b>{%else%}<a href="{{url_for('home_new')}}">New</a>{%endif%}
-    {%endif%}
-  </span>
+  {% if sort_type.startswith('all') %}
+    <a href="{{url_for('all_hot')}}" class="sbm-post pure-button pure-button{% if request.endpoint == 'all_hot' %}-primary{%endif%} pure-u-md-6-24">Hot</a>
+    <a href="{{url_for('all_new')}}" class="sbm-post pure-button pure-button{% if request.endpoint == 'all_new' %}-primary{%endif%} pure-u-md-6-24">New</a>
+    <a href="{{url_for('all_top')}}" class="sbm-post pure-button pure-button{% if request.endpoint == 'all_top' %}-primary{%endif%} pure-u-md-6-24">Top</a>
+  {% else %}
+    <a href="{{url_for('home_hot')}}" class="sbm-post pure-button pure-button{% if request.endpoint in ('home_hot', 'index') %}-primary{%endif%} pure-u-md-6-24">Hot</a>
+    <a href="{{url_for('home_new')}}" class="sbm-post pure-button pure-button{% if request.endpoint == 'home_new' %}-primary{%endif%} pure-u-md-6-24">New</a>
+    <a href="{{url_for('home_top')}}" class="sbm-post pure-button pure-button{% if request.endpoint == 'home_top' %}-primary{%endif%} pure-u-md-6-24">Top</a>
+  {%endif%}
 </div>
 
 <form class="pure-g search" action="{{ url_for('do.title_search') }}" method="post">

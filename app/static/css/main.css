@@ -544,26 +544,19 @@ a#prevp{
 }
 
 
-div#sortbuttons span {
-    color: #1b1b1b;
-    border-radius: 2px;
-    background-color: #e8e6e6;
-    padding-left:3px;
-    position:relative;
-    top:2px;
-}
 
-#sortbuttons {
-  text-align: right;
-  margin-right: 3em;
+#sortbuttons, #sortbuttons a {
+  text-align: center;
 }
 
 #sortbuttons a, #sortbuttons b{
   margin: 4px;
+  display: inline-block;
+  padding: .5em 0;
 }
 
 #sortbuttons a:visited{
-  color: #4b6d9d;
+  color: #fff;
 }
 
 .links{

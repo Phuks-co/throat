@@ -3,11 +3,11 @@
 
 
 {% block sidebar %}
-<span>Sort:
-  {% if request.endpoint in ('view_sub', 'view_sub_hot') %}<b>Hot</b>{%else%}<a href="{{url_for('view_sub_hot', sub=sub.name)}}">Hot</a>{%endif%}
-  {% if request.endpoint == 'view_sub_top' %}<b>Top</b>{%else%}<a href="{{url_for('view_sub_top', sub=sub.name)}}">Top</a>{%endif%}
-  {% if request.endpoint == 'view_sub_new' %}<b>New</b>{%else%}<a href="{{url_for('view_sub_new', sub=sub.name)}}">New</a>{%endif%}
-</span>
+<div id="sortbuttons">
+  <a href="{{url_for('view_sub_hot', sub=sub.name)}}" class="sbm-post pure-button pure-button{% if request.endpoint in ('view_sub', 'view_sub_hot') %}-primary{%endif%} pure-u-md-6-24">Hot</a>
+  <a href="{{url_for('view_sub_new', sub=sub.name)}}" class="sbm-post pure-button pure-button{% if request.endpoint == 'view_sub_new' %}-primary{%endif%} pure-u-md-6-24">New</a>
+  <a href="{{url_for('view_sub_top', sub=sub.name)}}" class="sbm-post pure-button pure-button{% if request.endpoint == 'view_sub_top' %}-primary{%endif%} pure-u-md-6-24">Top</a>
+</div>
 <form class="pure-g search" action="{{ url_for('do.title_search') }}" method="post">
   <div class="icon" data-icon="search"> </div>
   <input name="term" placeholder="Title search..." type="search" class="pure-u-1">
