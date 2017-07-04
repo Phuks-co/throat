@@ -28,7 +28,7 @@ from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form, EditSubFlair
 from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm, LiveChat
-from ..misc import SiteUser, cache, sendMail, getDefaultSubs
+from ..misc import cache, sendMail, getDefaultSubs
 
 do = Blueprint('do', __name__)
 
@@ -107,34 +107,6 @@ def admin_post_search():
     term = form.term.data
     term = re.sub('[^A-Za-z0-9.,\-_\'" ]+', '', term)
     return redirect(url_for('admin_post_search', term=term))
-
-
-@do.route("/do/login", methods=['POST'])
-@misc.ratelimit(5, per=30)
-def login():
-    """ Login endpoint """
-    form = LoginForm()
-    if form.validate():
-        user = db.get_user_from_name(form.username.data)
-        if not user or user['status'] == 10:
-            return json.dumps({'status': 'error',
-                               'error': ['User does not exist.']})
-
-        if user['crypto'] == 1:  # bcrypt
-            thash = bcrypt.hashpw(form.password.data.encode('utf-8'),
-                                  user['password'].encode('utf-8'))
-            if thash == user['password'].encode('utf-8'):
-                theuser = misc.load_user(user['uid'])
-                login_user(theuser, remember=form.remember.data)
-                send_uinfo()
-                return json.dumps({'status': 'ok'})
-            else:
-                return json.dumps({'status': 'error',
-                                   'error': ['Invalid password.']})
-        else:
-            return json.dumps({'status': 'error',
-                               'error': ['Unknown password hash']})
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/register", methods=['POST'])

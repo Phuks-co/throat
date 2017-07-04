@@ -7,10 +7,10 @@ import uuid
 import socket
 from wsgiref.handlers import format_date_time
 import datetime
-
+import bcrypt
 from flask import Flask, render_template, session, redirect, url_for, abort, g
-from flask import make_response, Markup
-from flask_login import LoginManager, login_required, current_user
+from flask import make_response, Markup, request
+from flask_login import LoginManager, login_required, current_user, login_user
 from flask_webpack import Webpack
 from feedgen.feed import FeedGenerator
 
@@ -26,7 +26,7 @@ from .forms import UseInviteCodeForm, LiveChat
 from .views import do, api
 from .views.api import oauth
 from . import misc, forms, caching
-from .socketio import socketio
+from .socketio import socketio, send_uinfo
 from . import database as db
 from .misc import SiteAnon, getSuscriberCount
 from .sorting import NewSorting
@@ -1211,6 +1211,32 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     return render_template('register.html')
+
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    """ Endpoint for the login form """
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = db.get_user_from_name(form.username.data)
+        if not user or user['status'] == 10:
+            return render_template("login.html", error="Invalid username or password.")
+
+        if user['crypto'] == 1:  # bcrypt
+            thash = bcrypt.hashpw(form.password.data.encode('utf-8'),
+                                  user['password'].encode('utf-8'))
+            if thash == user['password'].encode('utf-8'):
+                theuser = misc.load_user(user['uid'])
+                login_user(theuser, remember=form.remember.data)
+                send_uinfo()
+                return form.redirect('index')
+            else:
+                return render_template("login.html", error="Invalid username or password")
+        else:  # Unknown hash
+            return render_template("login.html", error="Something is really borked. Please file a bug report.")
+    return render_template("login.html")
 
 
 @app.route("/submit/text", defaults={'sub': ''})
