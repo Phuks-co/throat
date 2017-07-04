@@ -38,8 +38,8 @@ class SiteUser(object):
         self.notifications = self.user['notifications']
         self.name = self.user['name']
         self.uid = self.user['uid']
-        self.prefs = self.user['prefs'].split(',')
-        self.subscriptions = self.user['subscriptions'].split(',')
+        self.prefs = self.user['prefs'].split(',') if self.user['prefs'] else []
+        self.subscriptions = self.user['subscriptions'].split(',') if self.user['subscriptions'] else []
 
         self.score = self.user['score']
         self.given = self.user['given']

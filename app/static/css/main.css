@@ -689,6 +689,14 @@ span.hasmail {
     font-size: 14px;
 }
 
+.sidebarlists ul li  {
+  padding-top: 8px;
+}
+
+.sidebar h4 {
+  padding-top: 3px;
+}
+
 .sidebarlists {
    color: #5d5454;
    }
