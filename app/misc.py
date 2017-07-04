@@ -1121,7 +1121,10 @@ def getTodaysTopPosts():
 
 def getRandomSub():
     """ Returns a random sub for index sidebar """
-    sub = Sub.select(Sub.sid, Sub.name, Sub.title).order_by(fn.Rand()).dicts().get()
+    try:
+        sub = Sub.select(Sub.sid, Sub.name, Sub.title).order_by(fn.Rand()).dicts().get()
+    except Sub.DoesNotExist:
+        return False
     return sub
 
 

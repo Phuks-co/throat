@@ -122,6 +122,13 @@ a:hover {
   color: #64a6ca;
 }
 
+.footer {
+  text-align: center;
+  font-size: small;
+  color: #5d5454;
+  padding: 2em;
+}
+
 /* Header */
 
 .th-navbar {
