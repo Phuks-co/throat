@@ -357,10 +357,10 @@ span#notification.fade {
 }
 
 .post:nth-child(2n) {
-    background-color: #e8e6e6;
-    -webkit-box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.25);
-    -moz-box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.25);
-    box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.25);
+    background-color: #f7f7f7;
+    -webkit-box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.1);
+    -moz-box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.1);
+    box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.1);
 }
 
 .post:nth-child(2n) .expandotxt {
