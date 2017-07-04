@@ -18,18 +18,16 @@ app.config['WTF_CSRF_ENABLED'] = False
 
 d = db.connect_db('')
 f = d.cursor()
-f.execute('DROP DATABASE IF EXISTS throat_unit')
+f.execute('DROP DATABASE IF EXISTS {0}'.format(app.config['DB_NAME']))
 d.commit()
-f.execute('CREATE DATABASE throat_unit')
+f.execute('CREATE DATABASE {0}'.format(app.config['DB_NAME']))
 d.commit()
-f.execute('USE throat_unit')
+f.execute('USE {0}'.format(app.config['DB_NAME']))
 xx = open('throat.sql').read().split(';')
 for o in xx[:-1]:
     f.execute(o)
     d.commit()
 d.close()
-app.config['DB_NAME'] = 'throat_unit'
-app.config['DATABASE']['name'] = 'throat_unit'
 app.config['TESTING'] = True
 
 # -- Real shit starts here
