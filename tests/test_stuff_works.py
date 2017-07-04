@@ -18,12 +18,18 @@ app.config['WTF_CSRF_ENABLED'] = False
 
 d = db.connect_db('')
 f = d.cursor()
-f.execute('USE {0}'.format(app.config['DB_NAME']))
+f.execute('DROP DATABASE IF EXISTS throat_unit')
+d.commit()
+f.execute('CREATE DATABASE throat_unit')
+d.commit()
+f.execute('USE throat_unit')
 xx = open('throat.sql').read().split(';')
 for o in xx[:-1]:
     f.execute(o)
     d.commit()
 d.close()
+app.config['DB_NAME'] = 'throat_unit'
+app.config['DATABASE']['name'] = 'throat_unit'
 app.config['TESTING'] = True
 
 # -- Real shit starts here
@@ -37,6 +43,7 @@ class AABasicTestCase(unittest.TestCase):
     def test_index_loads_and_database_is_empty(self):
         """ Tests if the index loads """
         x = self.app.get('/')
+        print(x.get_data(True))
         assert 'There are no posts here, yet.' in x.get_data(True)
         assert x.status_code == 200
 
@@ -54,7 +61,7 @@ class ABAccountTestCase(unittest.TestCase):
                                                    'accept_tos': '1'})
 
     def login(self, user, password):
-        return self.app.post('/do/login', data={'username': user,
+        return self.app.post('/login', data={'username': user,
                                                 'password': password})
 
     def create_sub(self, name, title):
@@ -77,8 +84,7 @@ class ABAccountTestCase(unittest.TestCase):
         x = json.loads(x.get_data(True))
         assert x['status'] == 'ok'
         x = self.login('foo', 'foofoofoobar')
-        x = json.loads(x.get_data(True))
-        assert x['status'] == 'ok'
+        assert x.status_code == 302
         x = self.app.post('/do/logout')
         assert x.status_code == 302
 

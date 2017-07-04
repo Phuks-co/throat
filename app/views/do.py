@@ -16,10 +16,9 @@ from flask_login import login_user, login_required, logout_user, current_user
 from flask_cache import make_template_fragment_key
 import config
 from .. import forms, misc
-from ..socketio import socketio, send_uinfo
+from ..socketio import socketio
 from .. import database as db
-from ..sorting import HotSorting
-from ..forms import RegistrationForm, LoginForm, LogOutForm, CreateSubFlair
+from ..forms import RegistrationForm, LogOutForm, CreateSubFlair
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
@@ -29,6 +28,7 @@ from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm, LiveChat
 from ..misc import cache, sendMail, getDefaultSubs
+from ..models import SubPost
 
 do = Blueprint('do', __name__)
 
@@ -645,11 +645,12 @@ def create_txtpost():
                               ptype=0,
                               nsfw=form.nsfw.data)
         addr = url_for('view_post', sub=sub['name'], pid=post['pid'])
+        posts = misc.getPostList(misc.postListQueryBase().where(SubPost.pid == post['pid']), 'new', 1).dicts()
         socketio.emit('thread',
                       {'addr': addr, 'sub': sub['name'], 'type': 'text',
                        'user': current_user.name, 'pid': post['pid'],
                        'html': render_template('indexpost.html', nocheck=True,
-                                               posts=[post])},
+                                               post=posts[0])},
                       namespace='/snt',
                       room='/all/new')
         # for /live
@@ -765,12 +766,13 @@ def create_lnkpost():
                               content='', thumbnail=img)
         addr = url_for('view_post', sub=sub['name'], pid=post['pid'])
         misc.workWithMentions(form.title.data, None, post, sub)
+        posts = misc.getPostList(misc.postListQueryBase().where(SubPost.pid == post['pid']), 'new', 1).dicts()
         socketio.emit('thread',
                       {'addr': addr, 'sub': sub['name'], 'type': 'link',
                        'user': current_user.name, 'url': form.link.data,
                        'pid': post['pid'],
                        'html': render_template('indexpost.html', nocheck=True,
-                                               posts=[post])},
+                                               post=posts[0])},
                       namespace='/snt',
                       room='/all/new')
         # for /live

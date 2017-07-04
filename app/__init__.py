@@ -9,7 +9,7 @@ from wsgiref.handlers import format_date_time
 import datetime
 import bcrypt
 from flask import Flask, render_template, session, redirect, url_for, abort, g
-from flask import make_response, Markup, request
+from flask import make_response, Markup
 from flask_login import LoginManager, login_required, current_user, login_user
 from flask_webpack import Webpack
 from feedgen.feed import FeedGenerator
@@ -1230,7 +1230,7 @@ def login():
             if thash == user['password'].encode('utf-8'):
                 theuser = misc.load_user(user['uid'])
                 login_user(theuser, remember=form.remember.data)
-                send_uinfo()
+                send_uinfo(theuser)
                 return form.redirect('index')
             else:
                 return render_template("login.html", error="Invalid username or password")
@@ -1307,7 +1307,7 @@ def privacy():
 @app.errorhandler(401)
 def unauthorized(error):
     """ 401 Unauthorized """
-    return render_template('errors/401.html'), 401
+    return redirect(url_for('login'))
 
 
 @app.errorhandler(403)
