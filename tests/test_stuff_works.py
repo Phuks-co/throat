@@ -18,7 +18,7 @@ app.config['WTF_CSRF_ENABLED'] = False
 
 d = db.connect_db('')
 f = d.cursor()
-f.execute('USE {0}'.format(app.config['DB_NAME'])
+f.execute('USE {0}'.format(app.config['DB_NAME']))
 xx = open('throat.sql').read().split(';')
 for o in xx[:-1]:
     f.execute(o)
