@@ -821,19 +821,14 @@ def view_user(user):
 def view_user_posts(user, page):
     """ WIP: View user's recent posts """
     user = db.get_user_from_name(user)
+    username = user['name']
     if not user or user['status'] == 10:
         abort(404)
 
-    owns = db.get_user_positions(user['uid'], 'mod1')
-    mods = db.get_user_positions(user['uid'], 'mod2')
-    badges = db.get_user_badges(user['uid'])
-    posts = db.query('SELECT * FROM `sub_post` WHERE `uid`=%s '
-                     'ORDER BY `posted` DESC LIMIT 20 OFFSET %s ',
-                     (user['uid'], ((page - 1) * 20)))
-    return render_template('userposts.html', user=user, badges=badges,
-                           msgform=CreateUserMessageForm(), page=page,
-                           owns=owns, mods=mods, posts=posts.fetchall())
 
+    posts = misc.getUserPostList(misc.postListQueryBase(), 'user', page, user['uid']).dicts()
+    return render_template('index.html', page=page, sort_type='view_user_posts',
+                           posts=posts, kw={'user': username})
 
 @app.route("/u/<user>/savedposts", defaults={'page': 1})
 @app.route("/u/<user>/savedposts/<int:page>")

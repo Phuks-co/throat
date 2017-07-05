@@ -5,14 +5,15 @@
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
       {% if sort_type.startswith('all') %}
-        <a href="{{url_for('all_hot')}}" class="sbm-post pure-button pure-button button-xsmall {% if request.endpoint == 'all_hot' %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
-        <a href="{{url_for('all_new')}}" class="sbm-post pure-button pure-button button-xsmall {% if request.endpoint == 'all_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
-        <a href="{{url_for('all_top')}}" class="sbm-post pure-button pure-button button-xsmall {% if request.endpoint == 'all_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
-      {% else %}
-        <a href="{{url_for('home_hot')}}" class="sbm-post pure-button pure-button button-xsmall {% if request.endpoint in ('home_hot', 'index') %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
-        <a href="{{url_for('home_new')}}" class="sbm-post pure-button pure-button button-xsmall {% if request.endpoint == 'home_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
-        <a href="{{url_for('home_top')}}" class="sbm-post pure-button pure-button button-xsmall {% if request.endpoint == 'home_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
-      {%endif%}
+        <a href="{{url_for('all_hot')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'all_hot' %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
+        <a href="{{url_for('all_new')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'all_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
+        <a href="{{url_for('all_top')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'all_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
+      {% endif %}
+      {% if sort_type.startswith('home') %}
+        <a href="{{url_for('home_hot')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint in ('home_hot', 'index') %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
+        <a href="{{url_for('home_new')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'home_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
+        <a href="{{url_for('home_top')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'home_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
+      {% endif %}
   </div>
 </div>
 
