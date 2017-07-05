@@ -826,7 +826,7 @@ def view_user_posts(user, page):
         abort(404)
 
 
-    posts = misc.getUserPostList(misc.postListQueryBase(), 'user', page, user['uid']).dicts()
+    posts = misc.getUserPostList(misc.postListQueryBase(), page, user['uid']).dicts()
     return render_template('index.html', page=page, sort_type='view_user_posts',
                            posts=posts, kw={'user': username})
 

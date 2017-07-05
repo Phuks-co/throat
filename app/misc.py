@@ -1168,7 +1168,7 @@ def getPostList(baseQuery, sort, page):
     return posts
 
 
-def getUserPostList(baseQuery, sort, page, uid):
+def getUserPostList(baseQuery, page, uid):
     posts = baseQuery.order_by(SubPost.pid.desc()).where(User.uid == uid).paginate(page, 25)
     return posts
 
