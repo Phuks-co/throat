@@ -1143,11 +1143,15 @@ def getChangelog():
 
 
 def postListQueryBase():
-    posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
-                           SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
-                           SubPost.comments, SubPost.deleted, SubPostVote.positive)
     if current_user.is_authenticated:
+        posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
+                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
+                               SubPost.comments, SubPost.deleted, SubPostVote.positive)
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(SubPost)
+    else:
+        posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
+                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
+                               SubPost.comments, SubPost.deleted)
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER).where(SubPost.deleted == 0)
     if (not current_user.is_authenticated) or ('nsfw' not in current_user.prefs):
         posts = posts.where(SubPost.nsfw == 0)
