@@ -8,8 +8,7 @@
         <a href="{{url_for('all_hot')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'all_hot' %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
         <a href="{{url_for('all_new')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'all_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
         <a href="{{url_for('all_top')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'all_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
-      {% endif %}
-      {% if sort_type.startswith('home') %}
+      {% elif sort_type.startswith('home') %}
         <a href="{{url_for('home_hot')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint in ('home_hot', 'index') %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
         <a href="{{url_for('home_new')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'home_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
         <a href="{{url_for('home_top')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'home_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
@@ -85,42 +84,45 @@
 
 {% block content %}
 {{ super() }}
-{% cache 120, 'announcement' %}
-  {% if announcement %}
-  <div pid="{{announcement.pid}}" class="post">
-    <div class="pure-g">
-      <div class="misctainer">
-        <div class="votebuttons">
-          <div title="Upvote" class="upvote " data-icon="upvote"></div>
-          <div class="score">{{announcement.score}}</div>
-          <div title="Downvote" class="downvote "  data-icon="downvote"></div>
+{% if sort_type.startswith('home_') or sort_type.startswith('all_')%}
+  {% cache 120, 'announcement' %}
+    {% set announcement = func.getAnnouncement() %}
+    {% if announcement %}
+    <div pid="{{announcement.pid}}" class="post">
+      <div class="pure-g">
+        <div class="misctainer">
+          <div class="votebuttons">
+            <div title="Upvote" class="upvote " data-icon="upvote"></div>
+            <div class="score">{{announcement.score}}</div>
+            <div title="Downvote" class="downvote "  data-icon="downvote"></div>
+          </div>
+          <div class="thcontainer">
+            <a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">
+              <div class="thumbnail">
+                  <span class="placeholder" data-icon="chat"></span>
+              </div>
+            </a>
+          </div>
         </div>
-        <div class="thcontainer">
-          <a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">
-            <div class="thumbnail">
-                <span class="placeholder" data-icon="chat"></span>
-            </div>
-          </a>
-        </div>
-      </div>
-      <div class="pure-u-16-24 pure-u-md-20-24 pbody">
-        <div class="post-heading">
-          <a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">{{announcement.title}}</a>
-        </div>
-        <div class="author">
-          posted <time-ago datetime="{{announcement.posted.isoformat()}}Z"></time-ago> by
-          <a href="{{url_for('view_user', user=announcement.user)}}">{{announcement.user}}</a> on
-          <a href="{{url_for('view_sub', sub=announcement.sub)}}">{{announcement.sub}}</a>
-        </div>
-        <div class="links">
-          <a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}">comments {%if announcement.comments>0%}({{announcement.comments}}){%endif%}</a>
+        <div class="pure-u-16-24 pure-u-md-20-24 pbody">
+          <div class="post-heading">
+            <a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">{{announcement.title}}</a>
+          </div>
+          <div class="author">
+            posted <time-ago datetime="{{announcement.posted.isoformat()}}Z"></time-ago> by
+            <a href="{{url_for('view_user', user=announcement.user)}}">{{announcement.user}}</a> on
+            <a href="{{url_for('view_sub', sub=announcement.sub)}}">{{announcement.sub}}</a>
+          </div>
+          <div class="links">
+            <a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}">comments {%if announcement.comments>0%}({{announcement.comments}}){%endif%}</a>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <hr/>
-  {%endif%}
-{% endcache %}
+    <hr/>
+    {%endif%}
+  {% endcache %}
+{%endif%}
 
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
 <div class="alldaposts">

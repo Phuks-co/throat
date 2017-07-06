@@ -31,7 +31,7 @@ from . import database as db
 from .misc import SiteAnon, getSuscriberCount
 from .sorting import NewSorting
 from .models import db as pdb
-from .models import Sub, SubPost
+from .models import Sub, SubPost, User
 # from werkzeug.contrib.profiler import ProfilerMiddleware
 
 app = Flask(__name__)
@@ -825,10 +825,11 @@ def view_user_posts(user, page):
     if not user or user['status'] == 10:
         abort(404)
 
-
-    posts = misc.getUserPostList(misc.postListQueryBase(), page, user['uid']).dicts()
+    posts = misc.getPostList(misc.postListQueryBase().where(User.uid == user['uid']),
+                             'new', page).dicts()
     return render_template('index.html', page=page, sort_type='view_user_posts',
                            posts=posts, kw={'user': username})
+
 
 @app.route("/u/<user>/savedposts", defaults={'page': 1})
 @app.route("/u/<user>/savedposts/<int:page>")
