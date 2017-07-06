@@ -218,7 +218,6 @@ def all_new_rss():
 def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = misc.getPostList(misc.postListQueryBase(), 'new', page).dicts()
-
     return render_template('index.html', page=page, sort_type='all_new',
                            posts=posts)
 

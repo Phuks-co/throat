@@ -23,7 +23,7 @@ function vote(obj, how){
       if(data.status == "ok"){
         obj.addClass((how == 'up') ? 'upvoted' : 'downvoted');
         obj.parent().children((how == 'up') ? '.downvote' : '.upvote').removeClass((how == 'up') ? 'downvoted' : 'upvoted');
-        var count = obj.parent().children((how == 'up') ? '.downvote' : '.upvote');
+        var count = obj.parent().children('.score');
         count.text((how == 'up') ? (parseInt(count.text())+1) : (parseInt(count.text())-1));
       }
     }

@@ -2,9 +2,9 @@
   <div class="pure-g">
     <div class="misctainer">
       <div class="votebuttons">
-        <div title="Upvote" class="upvote" data-pid="{{post.pid}}" data-icon="upvote"></div>
+        <div title="Upvote" class="upvote{%if post.positive == 1%} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
         <div class="score">{{post.score}}</div>
-        <div title="Downvote" class="downvote" data-pid="{{post.pid}}" data-icon="downvote"></div>
+        <div title="Downvote" class="downvote{%if post.positive == 0%} downvoted{%endif%}" data-pid="{{post.pid}}" data-icon="downvote"></div>
       </div>
       <div class="thcontainer">
         <a href="{{url_for('view_post', sub=post.sub, pid=post.pid)}}" class="title">
