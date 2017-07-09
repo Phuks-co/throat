@@ -1228,6 +1228,7 @@ def register():
         # defaults
         defaults = getDefaultSubs()
         for d in defaults:
+            print(d)
             db.create_subscription(user['uid'], d['sid'], 1)
 
         login_user(misc.load_user(user['uid']))

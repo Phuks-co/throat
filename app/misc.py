@@ -1191,13 +1191,13 @@ def getAnnouncement():
 
 def load_user(user_id):
     user = User.select(fn.GROUP_CONCAT(Clause(SQL('Distinct'), Sub.name)).alias('subscriptions'),
-                       fn.GROUP_CONCAT(Clause(SQL('Distinct'), Sub.sid)).alias('subsid'),
+                       fn.GROUP_CONCAT(Clause(SQL('Distinct'), SubSubscriber.sid)).alias('subsid'),
                        fn.Count(Clause(SQL('Distinct'), Message.mid)).alias('notifications'),
                        User.given, User.score, User.name, User.uid, User.status,
                        fn.GROUP_CONCAT(Clause(SQL('Distinct'), UserMetadata.key)).alias('prefs'))
-    user = user.join(UserMetadata, JOIN.RIGHT_OUTER, on=((UserMetadata.uid == User.uid) & (UserMetadata.value == 1) & (UserMetadata.key << ['admin', 'canupload', 'exlinks', 'nostyles', 'labrat']))).switch(User)
+    user = user.join(UserMetadata, JOIN.LEFT_OUTER, on=((UserMetadata.uid == User.uid) & (UserMetadata.value == 1) & (UserMetadata.key << ['admin', 'canupload', 'exlinks', 'nostyles', 'labrat']))).switch(User)
     user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & Message.read.is_null(True))).switch(User)
-    user = user.join(SubSubscriber, JOIN.LEFT_OUTER).join(Sub, JOIN.LEFT_OUTER).where(User.uid == user_id).dicts()
+    user = user.join(SubSubscriber, JOIN.LEFT_OUTER, on=((SubSubscriber.uid == User.uid) & (SubSubscriber.status == 1))).join(Sub, JOIN.LEFT_OUTER).where(User.uid == user_id).dicts()
     try:
         user = user.get()
         return SiteUser(user)

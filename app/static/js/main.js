@@ -44,3 +44,64 @@ $(document).on('click', '.downvote', function(){
   var obj = $(this);
   vote(obj, 'down');
 });
+
+$(document).ready(function() {
+  // shitless forms
+  $(document).on('submit', ".ajaxform", function(e){
+    e.preventDefault();
+    var target = $(e.target);
+    var button = $(target.find("[type=submit]")[0]);
+    var btnorm = button.text();
+    button.prop('disabled', true);
+    button.text(button.data('prog'));
+    $.ajax({
+      type: "POST",
+      dataType: 'json',
+      url: target.prop('action'),
+      data: target.serialize(),
+      success: function(data) {
+        if (data.status != "ok") {
+          button.prop('disabled', false);
+          var obj = data.error,
+            ul = $("<ul>"); // >_>
+          for (var i = 0, l = obj.length; i < l; ++i) {
+            ul.append("<li>" + obj[i] + "</li>");
+          }
+          target.find('.div-error').html('<span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span>' +
+                        '<ul>' + ul.html() + '</ul>');
+          target.find('.div-error').show();
+          button.text(btnorm);
+          if (typeof grecaptcha != "undefined") {
+              grecaptcha.reset();
+          }
+        } else { // success
+          if(target.data('reset')){
+            target[0].reset();
+          }
+          if(button.data('success')){
+            button.text(button.data('success'));
+          }
+          if(target.data('redir')){
+            if(target.data('redir') === true){
+              document.location = data.addr;
+            }else{
+              document.location = target.data('redir');
+            }
+          }else if (target.data('reload')) {
+            console.log('tried');
+            document.location.reload();
+          }else{
+            button.prop('disabled', false);
+          }
+        }
+      },
+      error: function(data, err) {
+        target.find('.div-error').html('<span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> <p><ul><li>Error while contacting the server</li></ul></p>');
+        target.find('.div-error').show();
+        button.prop('disabled', false);
+        button.text(btnorm);
+      }
+    });
+    console.log(target.data());
+  });
+});
