@@ -395,6 +395,7 @@ span#notification.fade {
   padding-right: .2em;
   display: inline-block;
   width: 110px;
+  float: left;
 }
 
 .pbody{
