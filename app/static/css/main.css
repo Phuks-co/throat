@@ -393,6 +393,11 @@ span#notification.fade {
 
 .misctainer {
   padding-right: .2em;
+  display: inline-block;
+}
+
+.pbody{
+  display: inline-block;
 }
 
 .expando{

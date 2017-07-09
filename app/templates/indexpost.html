@@ -1,5 +1,4 @@
 <div pid="{{post.pid}}" class="post">
-  <div class="pure-g">
     <div class="misctainer">
       <div class="votebuttons">
         <div title="Upvote" class="upvote{%if post.positive == 1%} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
@@ -21,7 +20,7 @@
         </a>
       </div>
     </div>
-    <div class="pure-u-16-24 pure-u-md-20-24 pbody">
+    <div class="pbody">
       <div class="post-heading">
         {% if post.nsfw %}
         <div class="nsfw" alt="Not safe for work">NSFW</div>
@@ -54,5 +53,4 @@
         <a href="{{url_for('view_post', sub=post.sub, pid=post.pid)}}">comments {%if post.comments>0%}({{post.comments}}){%endif%}</a>
       </div>
     </div>
-  </div>
 </div>
