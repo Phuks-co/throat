@@ -402,7 +402,7 @@ span#notification.fade {
   display: inline-block;
   width: calc(100% - 120px);
 }
-
+.clear{clear:both;}
 .expando{
   display: inline-block;
   height: 22px;
