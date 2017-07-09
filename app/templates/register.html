@@ -4,31 +4,55 @@
 <script src="https://www.google.com/recaptcha/api.js?onload=recaptchaCallback&render=explicit" type="text/javascript"></script>
 <script>
 var recaptchaCallback = function(){
-   grecaptcha.render($('.g-recaptcha')[0], {sitekey: "{{config.RECAPTCHA_PUBLIC_KEY}}"});
+  grecaptcha.render(document.getElementById('g-recaptcha'), {sitekey: "{{config.RECAPTCHA_PUBLIC_KEY}}"});
 }
 </script>
 {% endblock %}
 {% block content %}
-{{ super() }}
-<form method="POST" id="register-form" class="ajaxform white-popup-block" action="{{url_for('do.register')}}" data-redir="{{url_for('welcome')}}">
-    <div id="the-register-form-itself">
-        {{ regform.csrf_token }}
-        <h1>Register</h1>
-        <p>Registering is free. All you need is a username and password.</p>
-        <p>{{regform.username(placeholder=regform.username.label.text, required=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}</p>
+<div id="center-container">
+  <div class="content">
+    <form method="POST" class="pure-form pure-form-aligned">
+      {{ regform.csrf_token }}
+      <h1>Register</h1>
+      <fieldset>
+        <div class="pure-control-group">
+          <label for="username">{{regform.username.label.text}}</label>
+          {{regform.username(required=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}
+        </div>
         {% if func.enableInviteCode() %}
-          <p>{{regform.invitecode(placeholder=regform.invitecode.label.text, autocomplete="off", title="A code is required for new registrations")}}</p>
-        {% endif %}
-        <p>{{regform.password(placeholder=regform.password.label.text, required=True, autocomplete="off")}}</p>
-        <p>{{regform.confirm(placeholder=regform.confirm.label.text, required=True, autocomplete="off")}}</p>
-        <p>{{regform.email(placeholder=regform.email.label.text)}}</p>
-        <p>
-            {{regform.accept_tos(style="width: auto", required=True)}}
-            <a href="{{url_for('tos')}}"><label for="tos">{{regform.accept_tos.label.text}}</label></a>
-        </p>
-        <div class="g-recaptcha"></div>
-        <div class="alert div-error" style="margin-top: 2em;"></div>
-        <p><button type="submit" class="btn btn-blue" style="margin-top: 4%" data-prog="Registering..." id="reg-btnsubmit">Register</button></p>
-    </div>
-</form>
+        <div class="pure-control-group">
+          <label for="invitecode">{{regform.invitecode.label.text}}</label>
+          {{regform.invitecode(autocomplete="off", title="A code is required for new registrations")}}
+        </div>
+        {%endif%}
+        <div class="pure-control-group">
+          <label for="password">{{regform.password.label.text}}</label>
+          {{regform.password(autocomplete="off", required=True)}}
+        </div>
+
+        <div class="pure-control-group">
+          <label for="confirm">{{regform.confirm.label.text}}</label>
+          {{regform.confirm(autocomplete="off", required=True)}}
+        </div>
+
+        <div class="pure-control-group">
+          <label for="email">{{regform.email.label.text}}</label>
+          {{regform.email()}}
+        </div>
+
+        <div class="pure-controls">
+          <label for="accept_tos" class="pure-checkbox">
+            {{regform.accept_tos(required=True)}} {{regform.accept_tos.label.text}}
+          </label>
+
+          <div id="g-recaptcha"></div>
+          {% if error %}
+            <div class="error" style="margin-top: 2em;">{{error}}</div>
+          {%endif%}
+          <button type="submit" class="pure-button pure-button-primary">Register</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>
 {%endblock%}

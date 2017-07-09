@@ -27,25 +27,12 @@ from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form, EditSubFlair
 from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm, LiveChat
-from ..misc import cache, sendMail, getDefaultSubs
+from ..misc import cache, sendMail, getDefaultSubs, allowedNames, get_errors
 from ..models import SubPost
 
 do = Blueprint('do', __name__)
 
-# Regex to match allowed names in subs and usernames
-allowedNames = re.compile("^[a-zA-Z0-9_-]+$")
 # allowedCSS = re.compile("\'(^[0-9]{1,5}[a-zA-Z ]+$)|none\'")
-
-
-def get_errors(form):
-    """ A simple function that returns a list with all the form errors. """
-    ret = []
-    for field, errors in form.errors.items():
-        for error in errors:
-            ret.append(u"Error in the '%s' field - %s" % (
-                getattr(form, field).label.text,
-                error))
-    return ret
 
 
 @do.route("/do/logout", methods=['POST'])
@@ -107,43 +94,6 @@ def admin_post_search():
     term = form.term.data
     term = re.sub('[^A-Za-z0-9.,\-_\'" ]+', '', term)
     return redirect(url_for('admin_post_search', term=term))
-
-
-@do.route("/do/register", methods=['POST'])
-def register():
-    """ Registration endpoint """
-    form = RegistrationForm()
-    if form.validate():
-        if not allowedNames.match(form.username.data):
-            return json.dumps({'status': 'error',
-                               'error': ['Username has invalid characters']})
-        # check if user or email are in use
-        if db.get_user_from_name(form.username.data):
-            return json.dumps({'status': 'error',
-                               'error': ['Username is already registered.']})
-        x = db.query('SELECT `uid` FROM `user` WHERE `email`=%s',
-                     (form.email.data,))
-        if x.fetchone() and form.email.data != '':
-            return json.dumps({'status': 'error',
-                               'error': ['Email is alredy in use.']})
-
-        y = db.get_site_metadata('useinvitecode')
-        y = y['value'] if y else False
-        if y == '1':
-            z = db.get_site_metadata('invitecode')['value']
-            if z != form.invitecode.data:
-                return json.dumps({'status': 'error',
-                                   'error': ['Incorrect invite code.']})
-        user = db.create_user(form.username.data, form.email.data,
-                              form.password.data)
-        # defaults
-        defaults = getDefaultSubs()
-        for d in defaults:
-            db.create_subscription(user['uid'], d['sid'], 1)
-
-        login_user(misc.load_user(user['uid']))
-        return json.dumps({'status': 'ok'})
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/edit_user/<user>", methods=['POST'])

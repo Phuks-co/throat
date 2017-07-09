@@ -30,6 +30,9 @@ redis = Redis(host=config.CACHE_REDIS_HOST,
               port=config.CACHE_REDIS_PORT,
               db=config.CACHE_REDIS_DB)
 
+# Regex that matches VALID user and sub names
+allowedNames = re.compile("^[a-zA-Z0-9_-]+$")
+
 
 class SiteUser(object):
     """ Representation of a site user. Used on the login manager. """
@@ -1200,3 +1203,16 @@ def load_user(user_id):
         return SiteUser(user)
     except User.DoesNotExist:
         return None
+
+
+def get_errors(form):
+    """ A simple function that returns a list with all the form errors. """
+    if request.method == 'GET':
+        return []
+    ret = []
+    for field, errors in form.errors.items():
+        for error in errors:
+            ret.append(u"Error in the '%s' field - %s" % (
+                getattr(form, field).label.text,
+                error))
+    return ret

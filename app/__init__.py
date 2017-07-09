@@ -28,7 +28,7 @@ from .views.api import oauth
 from . import misc, forms, caching
 from .socketio import socketio, send_uinfo
 from . import database as db
-from .misc import SiteAnon, getSuscriberCount
+from .misc import SiteAnon, getSuscriberCount, getDefaultSubs, allowedNames, get_errors
 from .sorting import NewSorting
 from .models import db as pdb
 from .models import Sub, SubPost, User
@@ -1200,12 +1200,40 @@ def view_sitelog(page):
     return render_template('sitelog.html', logs=logs.fetchall(), page=page)
 
 
-@app.route("/register")
+@app.route("/register", methods=['GET', 'POST'])
 def register():
     """ Endpoint for the registration form """
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    return render_template('register.html')
+    form = RegistrationForm()
+    if form.validate():
+        if not allowedNames.match(form.username.data):
+            return render_template('register.html', errror="Username has invalid characters.")
+        # check if user or email are in use
+        if db.get_user_from_name(form.username.data):
+            return render_template('register.html', error="Username is not available.")
+        x = db.query('SELECT `uid` FROM `user` WHERE `email`=%s',
+                     (form.email.data,))
+        if x.fetchone() and form.email.data != '':
+            return render_template('register.html', error="E-mail address is already in use.")
+
+        y = db.get_site_metadata('useinvitecode')
+        y = y['value'] if y else False
+        if y == '1':
+            z = db.get_site_metadata('invitecode')['value']
+            if z != form.invitecode.data:
+                return render_template('register.html', error="Invalid invite code.")
+        user = db.create_user(form.username.data, form.email.data,
+                              form.password.data)
+        # defaults
+        defaults = getDefaultSubs()
+        for d in defaults:
+            db.create_subscription(user['uid'], d['sid'], 1)
+
+        login_user(misc.load_user(user['uid']))
+        return redirect(url_for('welcome'))
+
+    return render_template('register.html', error=get_errors(form))
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -1231,7 +1259,7 @@ def login():
                 return render_template("login.html", error="Invalid username or password")
         else:  # Unknown hash
             return render_template("login.html", error="Something is really borked. Please file a bug report.")
-    return render_template("login.html")
+    return render_template("login.html", error=get_errors(form))
 
 
 @app.route("/submit/text", defaults={'sub': ''})

@@ -129,6 +129,9 @@ a:hover {
   padding: 2em;
 }
 
+.center-container form h1{
+  text-align: center;
+}
 /* Header */
 
 .th-navbar {
