@@ -394,13 +394,13 @@ span#notification.fade {
 .misctainer {
   padding-right: .2em;
   display: inline-block;
-  width: 110px;
+  width: 120px;
   float: left;
 }
 
 .pbody{
   display: inline-block;
-  width: calc(100% - 120px);
+  width: calc(100% - 130px);
 }
 
 .post:after {
