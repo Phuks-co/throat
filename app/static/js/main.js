@@ -11,7 +11,7 @@ import $ from 'jquery';
 require('../css/main.css');
 require('../css/dark.css');
 
-require('./Icon');
+var icons = require('./Icon');
 require('./Expando');
 require('./Post');
 
@@ -106,3 +106,36 @@ $(document).ready(function() {
     console.log(target.data());
   });
 });
+
+// toggle dark mode
+$("#toggledark").click(function() {
+  var mode = getCookie("dayNight");
+  var d = new Date();
+  d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); //365 days
+  var expires = "expires=" + d.toGMTString();
+  if (mode == "dark") {
+    document.cookie = "dayNight" + "=" + "light" + "; " + expires + ";path=/";
+    $("body").removeClass("dark");
+    $('#toggledark span').html(icons.moon);
+  } else {
+    document.cookie = "dayNight" + "=" + "dark" + "; " + expires + ";path=/";
+    $("body").addClass("dark");
+    $('#toggledark span').html(icons.sun);
+  }
+});
+
+// TODO: move to util
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) === 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}

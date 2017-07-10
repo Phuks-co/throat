@@ -29,7 +29,7 @@
     {% endblock %}
   </head>
 
-<body>
+<body {%if request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous %}class="dark" {%endif%}>
   <div class="th-subbar pure-u-1">
     <ul>
       <li><a href="{{url_for('all_hot')}}">all</a></li>
@@ -87,7 +87,7 @@
           </a>
         </div>
         <div id="toggledark" class="glyphbutton">
-          <span class="p-icon" data-icon="sun"></span>
+          <span class="p-icon" data-icon="{%if request.cookies.get( "dayNight")=="dark" %}sun{%else%}moon{%endif%}"></span>
         </div>
         <form method="POST" action="{{ url_for('do.logout') }}" id="logout">
           {{ logoutform.csrf_token }}
@@ -129,15 +129,5 @@
   </div>
   <script type="text/javascript" src="{{ asset_url_for('main.js') }}"></script>
   {%block pagefoot%}{%endblock%}
-
-  <!-- dark mode toggle -->
-  <script>
-    var l = document.getElementsByTagName('body')[0].classList;
-    if(localStorage.getItem('dark')=='true'){
-      l.add('dark');
-    }else{
-      l.remove('dark');
-    }
-  </script>
 </body>
 </html>
