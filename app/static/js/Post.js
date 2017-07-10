@@ -54,3 +54,16 @@ $(document).on('click', '.delete-post', function(){
     });
   });
 });
+
+// post source
+$('.post-source').click(function(e){
+  var elem = document.getElementById('postcontent');
+  var oc = document.innerHTML;
+  var back =  document.createElement( "a" );
+  back.innerHTML = "<s>source</s>";
+  back.onclick = function(){
+    elem.innerHTML = oc;
+  };
+  elem.innerHTML = '<textarea>' + document.getElementById('post-source').innerHTML + '</textarea>';
+  $(this).parent().html(back);
+});

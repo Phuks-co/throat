@@ -831,17 +831,18 @@ input[type=search] {
   margin-top: .3em;
 }
 
-.postcontent {
+#postcontent {
   background-color: #e8e6e6;
   padding: 1px 1em; /* 1px margin on botton and top so it respects <p>'s margin */
   margin-top: .5em;
 }
 
-.postcontent textarea, .commentContent textarea{
-  resize: none;
+#postcontent textarea, .commentContent textarea{
+  resize: vertical;
   width: 100%;
-  height: 100%;
   margin: 6px;
+  min-height: 7em;
+  overflow: auto;
 }
 
 div.comments {

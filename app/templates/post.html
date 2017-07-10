@@ -125,7 +125,7 @@
        </div>
        {% if post.content %}
        {% if not db.is_post_deleted(post) %}
-         <div class="postcontent">
+         <div id="postcontent">
            {{markdown(post.content)|safe}}
          </div>
          <div id="post-source">{{post.content}}</div>
