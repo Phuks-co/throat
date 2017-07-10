@@ -24,17 +24,9 @@
     <div class="row" id="comment-{{comment.cid}}" {% if comment.status == 1 %}hidden{%endif%}>
       <div class="pull left votecomment" style="margin-left: 10px;">
         {# vote arrow div #}
-          <form class="cuvform" id="cuvform-{{comment.cid}}">
-            <div class="cupvote{%if func.hasVotedComment(current_user.get_id(), comment)%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
-            {% set uv = form.VoteForm() %}
-            {{uv.csrf_token}}{{uv.post(value=comment.cid)}}
-          </form>
-          <p class="count">{{func.get_comment_score(comment)}}</p>
-          <form class="cdvform" id="cdvform-{{comment.cid}}">
-            <div class="cdownvote{%if func.hasVotedComment(current_user.get_id(), comment, False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
-            {% set dv = form.VoteForm() %}
-            {{uv.csrf_token}}{{uv.post(value=comment.cid)}}
-          </form>
+        <div title="Upvote" class="c-upvote{%if func.hasVotedComment(current_user.get_id(), comment, True)%} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
+        <div class="score">{{func.get_comment_score(comment)}}</div>
+        <div title="Downvote" class="c-downvote{%if func.hasVotedComment(current_user.get_id(), comment, False)%} downvoted{%endif%}" data-pid="{{post.pid}}" data-icon="downvote"></div>
       </div>
       <div class="col-11">
         <div class="content" id="content-{{comment.cid}}">
