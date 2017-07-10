@@ -467,7 +467,7 @@ iframe {
   margin-top: .15em;
 }
 
-.upvote, .downvote {
+.c-upvote, .c-downvote, .upvote, .downvote {
   height: 20px;
   text-align: center
 }
