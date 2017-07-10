@@ -52,10 +52,6 @@
   <hr>
 {%endif%}
 
-<div class="createdby">
-  Created by {{func.getSubUsers(func.getSub(sub.sid), 'mod')}}
-  <time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago>
-</div>
 <div class="moderators">
   Moderators
   <ul>
@@ -64,6 +60,11 @@
   <li><a href="{{url_for('view_user', user=db.get_user_from_uid(mod.value).name)}}">{{db.get_user_from_uid(mod.value).name}}</a></li>
   {% endfor %}
   </ul>
+</div>
+
+<div class="createdby">
+  Created by {{func.getSubUsers(func.getSub(sub.sid), 'mod')}}
+  <time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago>
 </div>
 
 {% if current_user.is_mod(sub) or current_user.is_admin() %}

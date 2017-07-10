@@ -26,7 +26,9 @@ var Icons = {
   search: require('../svg/search.svg'),
 
   check: require('../svg/check.svg'),
-  add: require('../svg/add.svg')
+  add: require('../svg/add.svg'),
+
+  owner: require('../svg/star.svg')
 };
 
 // here we apply em.
