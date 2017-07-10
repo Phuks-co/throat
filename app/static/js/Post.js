@@ -56,7 +56,7 @@ $(document).on('click', '.delete-post', function(){
 });
 
 // post source
-$('.post-source').click(function(e){
+$(document).on('click', '.post-source', function(){
   var elem = document.getElementById('postcontent');
   var oc = elem.innerHTML;
   var back =  document.createElement( "a" );
