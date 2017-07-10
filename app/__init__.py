@@ -1310,6 +1310,21 @@ def password_reset(uid, key):
     return render_template('password_reset.html', resetpw=form)
 
 
+@app.route('/delete/<pid>', methods=['GET', 'POST'])
+def delete_post(pid):
+    pass
+
+
+@app.route('/edit/<pid>', methods=['GET', 'POST'])
+def edit_post(pid):
+    pass
+
+
+@app.route('/stick/<pid>', methods=['GET', 'POST'])
+def stick_post(pid):
+    pass
+
+
 @app.route("/api")
 def view_api():
     """ View API help page """
@@ -1344,12 +1359,6 @@ def Forbidden(error):
 def not_found(error):
     """ 404 Not found error """
     return render_template('errors/404.html'), 404
-
-
-@app.errorhandler(418)
-def teapot(error):
-    """ 404 I'm a teapot """
-    return render_template('errors/418.html'), 404
 
 
 @app.errorhandler(500)

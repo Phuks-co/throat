@@ -341,7 +341,7 @@ span#notification.fade {
 }
 
 /*  UPLOADER STYLES  */
-#upload-input, #pbar, #filetable {
+.hide, #upload-input, #pbar, #filetable {
   display: none;
 }
 
@@ -607,6 +607,37 @@ a#prevp{
   border: 1px solid #e22;
 }
 /* /POST LIST STYLES */
+
+/* POST PAGE STYLES */
+#post-source{
+  display: none;
+}
+
+.wholepost{
+  margin-top: 1.5em;
+}
+.comment-form textarea{
+  width: 95%;
+  display: block;
+}
+
+.comment-form{
+  margin-top: 1em;
+  margin-left: 2em;
+}
+
+.comment-form button{
+  margin-top: .2em;
+}
+
+.alertbox{
+  display:none;
+}
+
+.comments{
+  margin-left: 1em;
+}
+/* /POST PAGE STYLES */
 
 /* COLOR BUTTONS, USED ERRYWHERE */
 .button-xsmall {
