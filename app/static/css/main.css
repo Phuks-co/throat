@@ -469,6 +469,7 @@ iframe {
 
 .c-upvote, .c-downvote, .upvote, .downvote {
   height: 20px;
+  width: 16px;
   text-align: center
 }
 

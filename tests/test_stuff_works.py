@@ -53,7 +53,7 @@ class ABAccountTestCase(unittest.TestCase):
 
     def register(self, user, password):
         """ Registers an account """
-        return self.app.post('/do/register', data={'username': user,
+        return self.app.post('/register', data={'username': user,
                                                    'password': password,
                                                    'confirm': password,
                                                    'accept_tos': '1'})
@@ -79,8 +79,7 @@ class ABAccountTestCase(unittest.TestCase):
     def test_accounts(self):
         """ Tests if registration works (not the captcha) """
         x = self.register('foo', 'foofoofoobar')
-        x = json.loads(x.get_data(True))
-        assert x['status'] == 'ok'
+        assert x.status_code == 302
         x = self.login('foo', 'foofoofoobar')
         assert x.status_code == 302
         x = self.app.post('/do/logout')
