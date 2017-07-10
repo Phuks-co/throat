@@ -610,6 +610,13 @@ a#prevp{
 /* /POST LIST STYLES */
 
 /* POST PAGE STYLES */
+.red-confirm{
+  color: red;
+  font-size: 0.8em;
+}
+.red-confirm a{
+  margin-left: 7px;
+}
 #post-source{
   display: none;
 }

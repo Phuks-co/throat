@@ -1310,11 +1310,6 @@ def password_reset(uid, key):
     return render_template('password_reset.html', resetpw=form)
 
 
-@app.route('/delete/<pid>', methods=['GET', 'POST'])
-def delete_post(pid):
-    pass
-
-
 @app.route('/edit/<pid>', methods=['GET', 'POST'])
 def edit_post(pid):
     pass

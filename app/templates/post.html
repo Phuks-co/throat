@@ -133,7 +133,7 @@
         <div class="deleted">[deleted]</div>
        {%endif%}
        {%endif%}
-       <ul class="links">
+       <ul class="links" data-pid="{{post.pid}}">
          {% if current_user.is_authenticated and not db.is_post_deleted(post) %}
           <li><a class="post-source">source</a></li>
 
@@ -146,10 +146,11 @@
              <li><a class="editflair">flair</a></li>
            {% endif %}
            {% if func.getUser(post.uid).uid == session['user_id'] %}
-             <li><a href="{{url_for('edit_post', pid=post.pid)}}">edit</a></li>
+             <li><a class="edit-post">edit</a></li>
            {% endif %}
            {% if func.getUser(post.uid).uid == session['user_id'] or current_user.is_admin() %}
-             <li><a href="{{url_for('delete_post', pid=post.pid)}}"> delete </a></li>
+             <li><a class="delete-post"> delete </a></li>
+             <form id="delete-post-form" class="hide">{{delpostform.csrf_token}}{{delpostform.post(value=post.pid)}}</form>
            {%endif%}
            {% if post in func.getStickies(post['sid']) %}
              <li><a href="{{url_for('stick_post', pid=post.pid)}}">unstick</a></li>

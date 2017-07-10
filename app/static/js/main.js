@@ -13,6 +13,7 @@ require('../css/dark.css');
 
 require('./Icon');
 require('./Expando');
+require('./Post');
 
 
 function vote(obj, how){
