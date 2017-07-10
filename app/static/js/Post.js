@@ -55,6 +55,31 @@ $(document).on('click', '.delete-post', function(){
   });
 });
 
+// Stick post
+$(document).on('click', '.stick-post', function(){
+  // confirmation
+  var pid = $(this).parent().parent().data('pid');
+  TextConfirm(this, function(){
+    $.ajax({
+      type: "POST",
+      url: '/do/stick/' + pid,
+      data: $("#delete-post-form").serialize(),
+      dataType: 'json',
+      success: function(data) {
+          if (data.status != "ok") {
+            $(this).parent().html('Error.');
+          } else {
+            $(this).parent().html('Done!');
+            document.location.reload();
+          }
+      },
+      error: function(data, err) {
+          $(this).parent().html('could not contact server');
+      }
+    });
+  });
+});
+
 // post source
 $(document).on('click', '.post-source', function(){
   var elem = document.getElementById('postcontent');

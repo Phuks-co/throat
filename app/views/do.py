@@ -1440,7 +1440,7 @@ def toggle_sticky(post):
         ckey = make_template_fragment_key('sticky', vary_on=[post['sid']])
         cache.delete(ckey)
 
-    return redirect(url_for('view_sub', sub=sub['name']))
+    return jsonify(status='ok')
 
 
 @do.route("/do/flair/<sub>/edit", methods=['POST'])

@@ -150,13 +150,15 @@
            {% endif %}
            {% if func.getUser(post.uid).uid == session['user_id'] or current_user.is_admin() %}
              <li><a class="delete-post"> delete </a></li>
-             <form id="delete-post-form" class="hide">{{delpostform.csrf_token}}{{delpostform.post(value=post.pid)}}</form>
            {%endif%}
-           {% if post in func.getStickies(post['sid']) %}
-             <li><a href="{{url_for('stick_post', pid=post.pid)}}">unstick</a></li>
-           {% else %}
-             <li><a href="{{url_for('stick_post', pid=post.pid)}}">make sticky</a></li>
-           {% endif %}
+           <form id="delete-post-form" class="hide">{{delpostform.csrf_token}}{{delpostform.post(value=post.pid)}}</form>
+           {% if current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
+             {% if post in func.getStickies(post['sid']) %}
+               <li><a class="stick-post">unstick</a></li>
+             {% else %}
+               <li><a class="stick-post">make sticky</a></li>
+             {% endif %}
+           {%endif%}
          {%endif%}
        </ul>
      </div>
