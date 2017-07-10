@@ -144,9 +144,9 @@ a:hover {
   -moz-transition: height 0.5s;
   -ms-transition: height 0.5s;
   transition: height 0.5s;
-        -webkit-box-shadow: 0 3px 5px 0 rgba(0,0,0,.6);
-    -moz-box-shadow: 0 3px 5px 0 rgba(0,0,0,.6);
-    box-shadow: 0 3px 5px 0 rgba(0,0,0,.6);
+  -webkit-box-shadow: 0 3px 5px 0 rgba(0,0,0,.6);
+  -moz-box-shadow: 0 3px 5px 0 rgba(0,0,0,.6);
+  box-shadow: 0 3px 5px 0 rgba(0,0,0,.6);
   position: relative;
   height: 5.3em;
   z-index: 100;

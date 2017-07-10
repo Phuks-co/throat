@@ -181,7 +181,7 @@ body.dark .sidebar h4 {
 body.dark input[type="search"] {
   background-color: #000;
   color: #fff;
-  border: none;
+  border-color: black;
 }
 
 body.dark .sidebar ul.top5 li a {
