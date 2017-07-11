@@ -1,25 +1,25 @@
 {% for comment in comments recursive %}
   <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="{% if comment.hl %}active{%endif%} text-post no-padding comment sub-{{loop.depth0}}">
     <div class="head">
-      <div class="info">
-        <a class="btn small {% if comment.status == 1 %}expand{%else%}collapse{%endif%}" data-cid="{{comment.cid}}"><i class="fa fa-{% if comment.status == 1 %}plus{%else%}minus{%endif%}" aria-hidden="true"></i></a>
+        <a class="btn small {% if comment.status == 1 %}expand{%else%}collapse{%endif%}" data-cid="{{comment.cid}}">
+          <span class="icon" data-icon="{% if comment.status == 1 %}plus{%else%}minus{%endif%}"></span>
+        </a>
       {# if post.ptype == 1 %}
-        <p class="modpost"><i class="fa fa-user fa-2x" aria-hidden="true"></i> Mod post</p>
+        <p class="modpost"> Mod post</p>
       {% endif #}
         {% if not comment.status == 1 %}
-          <a href="{{ url_for('view_user', user=db.get_user_from_uid(comment.uid).name) }}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{ db.get_user_from_uid(comment.uid).name }}</a>
+          <a href="{{ url_for('view_user', user=db.get_user_from_uid(comment.uid).name) }}" class="poster">{{ db.get_user_from_uid(comment.uid).name }}</a>
         {%else%}
-          <a class="btn small"><i class="fa fa-user" aria-hidden="true"></i>[Deleted]</a>
+          <a class="poster deleted">[Deleted]</a>
         {%endif%}
-        <span class="time btn small">
-          <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago>
+        <span class="time ">
+          Posted <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago>
         </span>
       {% if comment.lastedit and not comment.status == 1 %}
-        <span class="time btn small">
-          <i class="fa fa-clock-o" aria-hidden="true"></i> Edited <time-ago datetime="{{comment.lastedit.isoformat()}}Z"></time-ago>
+        <span class="time edited">
+          Edited <time-ago datetime="{{comment.lastedit.isoformat()}}Z"></time-ago>
         </span>
       {% endif %}
-      </div>
     </div>
     <div class="row" id="comment-{{comment.cid}}" {% if comment.status == 1 %}hidden{%endif%}>
       <div class="pull left votecomment" style="margin-left: 10px;">
