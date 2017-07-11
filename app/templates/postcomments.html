@@ -1,8 +1,8 @@
 {% for comment in comments recursive %}
   <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="{% if comment.hl %}active{%endif%} text-post no-padding comment sub-{{loop.depth0}}">
     <div class="head">
-        <a class="btn small {% if comment.status == 1 %}expand{%else%}collapse{%endif%}" data-cid="{{comment.cid}}">
-          <span class="icon" data-icon="{% if comment.status == 1 %}plus{%else%}minus{%endif%}"></span>
+        <a class="{% if comment.status == 1 %}expand{%else%}collapse{%endif%}" data-cid="{{comment.cid}}">
+          <span class="icon" data-icon="{% if comment.status == 1 %}add{%else%}remove{%endif%}"></span>
         </a>
       {# if post.ptype == 1 %}
         <p class="modpost"> Mod post</p>
