@@ -1340,7 +1340,13 @@ def submit_text(sub):
 def submit_link(sub):
     """ Endpoint for link submission creation """
     subs = db.get_all_sub_names()
-    return render_template('createpost.html', type='link', sub=sub, subs=subs)
+    lnkpostform = CreateSubLinkPost()
+    if request.args.get('title'):
+        lnkpostform.title.data = request.args.get('title')
+    if request.args.get('url'):
+        lnkpostform.link.data = request.args.get('url')
+    return render_template('createpost.html', type='link', sub=sub, subs=subs,
+                           lnkpostform=lnkpostform)
 
 
 @app.route("/recover")
