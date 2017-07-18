@@ -40,7 +40,6 @@ var recaptchaCallback = function(){
   </form>
 {% else %}
   <form  method="POST" id="link-post-form" action="{{url_for('do.create_lnkpost')}}" data-redir="true" class="ajaxform">
-    {% set lnkpostform = form.CreateSubLinkPost()%}
     {{lnkpostform.csrf_token}}
     <h1>Submit a link post</h1>
     <div class="pull right"><a href="{{url_for('submit_text', sub=sub)}}">Submit a text post</a></div>
@@ -51,7 +50,10 @@ var recaptchaCallback = function(){
         <option value="{{subname}}">
         {% endfor %}
       </datalist>
-    </p>    <p class="title">{{lnkpostform.title(placeholder="Title", required=True)}}</p>
+    </p>
+    <div class="row">
+      <p class="title">{{lnkpostform.title(placeholder="Title", required=True)}}</p>
+    </div>
     <div class="row">
       <div class="col-10 link" style="padding:0;">{{lnkpostform.link(type="url", pattern="https?://.+", required=True, placeholder="URL")}}</div>
       <a class="col-2 btn btn-blue" id="graburl">Grab title</a>

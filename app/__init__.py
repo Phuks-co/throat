@@ -9,7 +9,7 @@ from wsgiref.handlers import format_date_time
 import datetime
 import bcrypt
 from flask import Flask, render_template, session, redirect, url_for, abort, g
-from flask import make_response, Markup
+from flask import make_response, Markup, request
 from flask_login import LoginManager, login_required, current_user, login_user
 from flask_webpack import Webpack
 from feedgen.feed import FeedGenerator
@@ -1278,7 +1278,13 @@ def submit_text(sub):
 def submit_link(sub):
     """ Endpoint for link submission creation """
     subs = db.get_all_sub_names()
-    return render_template('createpost.html', type='link', sub=sub, subs=subs)
+    lnkpostform = CreateSubLinkPost()
+    if request.args.get('title'):
+        lnkpostform.title.data = request.args.get('title')
+    if request.args.get('url'):
+        lnkpostform.link.data = request.args.get('url')
+    return render_template('createpost.html', type='link', sub=sub, subs=subs,
+                           lnkpostform=lnkpostform)
 
 
 @app.route("/recover")
