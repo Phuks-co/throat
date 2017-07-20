@@ -90,6 +90,24 @@ $(document).on('click', '.post-source', function(){
     elem.innerHTML = oc;
     $(this).parent().html('<a class="post-source">source</a>');
   };
-  elem.innerHTML = '<textarea>' + document.getElementById('post-source').innerHTML + '</textarea>';
+  var h = elem.clientHeight-6;
+  elem.innerHTML = '<textarea style="height: ' + h + 'px">' + document.getElementById('post-source').innerHTML + '</textarea>';
   $(this).parent().html(back);
+});
+
+
+// comment source
+$(document).on('click', '.comment-source', function(){
+  var cid = $(this).data('cid');
+  var elem = document.getElementById('content-' + cid);
+  var oc = elem.innerHTML;
+  var back =  document.createElement( "a" );
+  back.innerHTML = "<s>source</s>";
+  back.onclick = function(){
+    elem.innerHTML = oc;
+    $(this).parent().html('source');
+  };
+  var h = elem.clientHeight + 28;
+  elem.innerHTML = '<textarea style="height: ' + h + 'px">' + document.getElementById('sauce-' + cid).innerHTML + '</textarea>';
+  $(this).html(back);
 });

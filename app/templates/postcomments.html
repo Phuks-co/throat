@@ -52,7 +52,7 @@
                 <a href="#delete-comment-form" class="btn btn-orange edit small delete-comment-form" data-cid="{{comment.cid}}"><i class="fa fa-times-circle" aria-hidden="true"></i> delete </a>
               {% endif %}
             {%endif%}
-            <a class="comment-source" data-cid="{{comment.cid}}">source</a>
+            {%if comment.status != 1 %}<a class="comment-source" data-cid="{{comment.cid}}">source</a>{%endif%}
           </span>
         </div>
       </div>

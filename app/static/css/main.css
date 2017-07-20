@@ -652,8 +652,17 @@ a#prevp{
   margin-right: 5px;
 }
 
+.togglecomment{
+  cursor: pointer;
+}
+
+.bottombar a{
+  cursor: pointer;
+}
+
 .commblock{
-  display: inline-block
+  display: inline-block;
+  width: calc(100% - 5em);
 }
 /* /POST PAGE STYLES */
 
@@ -847,11 +856,9 @@ input[type=search] {
   margin-top: .5em;
 }
 
-#postcontent textarea, .commentContent textarea{
+#postcontent textarea, .commblock textarea{
   resize: vertical;
   width: 100%;
-  margin: 6px;
-  min-height: 7em;
   overflow: auto;
 }
 
