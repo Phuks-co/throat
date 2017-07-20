@@ -210,12 +210,9 @@
       <p><button type="submit" class="btn btn-blue" data-prog="Saving..">Edit comment</button></p>
     </form>
 
-    <form action="{{url_for('do.delete_comment')}}" data-reload="true" id="delete-comment-form"  method="POST" class="ajaxform hide white-popup-block">
-      <h2>Deleting comment</h2>
-      <p>Are you sure you want to do this?</p>
+    <form action="{{url_for('do.delete_comment')}}" id="delete-comment-form"  method="POST" class="ajaxform hide white-popup-block">
       {% set cf = form.DeleteCommentForm() %}
       {{cf.csrf_token}}{{cf.cid(id="dcf-cid")}}
-      <p><button type="submit" class="btn btn-blue" data-prog="Deleting..">Yup!</button></p>
     </form>
   {%endif%}
   {% if func.getUser(post.uid).uid == session['user_id'] or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}

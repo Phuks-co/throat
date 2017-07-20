@@ -111,3 +111,30 @@ $(document).on('click', '.comment-source', function(){
   elem.innerHTML = '<textarea style="height: ' + h + 'px">' + document.getElementById('sauce-' + cid).innerHTML + '</textarea>';
   $(this).html(back);
 });
+
+
+// Delete comment
+$(document).on('click', '.delete-comment', function(){
+  // confirmation
+  var cid = $(this).data('cid');
+  $("#dcf-cid").val(cid);
+  TextConfirm(this, function(){
+    $.ajax({
+      type: "POST",
+      url: '/do/delete_comment',
+      data: $("#delete-comment-form").serialize(),
+      dataType: 'json',
+      success: function(data) {
+          if (data.status != "ok") {
+            $(this).parent().html('There was an error while deleting the comment.');
+          } else {
+            $(this).parent().html('Comment removed');
+            document.location.reload();
+          }
+      },
+      error: function(data, err) {
+          $(this).parent().html('could not contact server');
+      }
+    });
+  });
+});
