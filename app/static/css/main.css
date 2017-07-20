@@ -645,6 +645,16 @@ a#prevp{
 .comments{
   margin-left: 1em;
 }
+
+.votecomment{
+  float: left;
+  width: 1.2em;
+  margin-right: 5px;
+}
+
+.commblock{
+  display: inline-block
+}
 /* /POST PAGE STYLES */
 
 /* COLOR BUTTONS, USED ERRYWHERE */

@@ -1,38 +1,40 @@
 {% for comment in comments recursive %}
   <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="{% if comment.hl %}active{%endif%} text-post no-padding comment sub-{{loop.depth0}}">
-    <div class="head">
-        <a class="{% if comment.status == 1 %}expand{%else%}collapse{%endif%}" data-cid="{{comment.cid}}">
-          <span class="icon" data-icon="{% if comment.status == 1 %}add{%else%}remove{%endif%}"></span>
-        </a>
-      {# if post.ptype == 1 %}
-        <p class="modpost"> Mod post</p>
-      {% endif #}
-        {% if not comment.status == 1 %}
-          <a href="{{ url_for('view_user', user=db.get_user_from_uid(comment.uid).name) }}" class="poster">{{ db.get_user_from_uid(comment.uid).name }}</a>
-        {%else%}
-          <a class="poster deleted">[Deleted]</a>
-        {%endif%}
-        <span class="time ">
-          Posted <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago>
-        </span>
-      {% if comment.lastedit and not comment.status == 1 %}
-        <span class="time edited">
-          Edited <time-ago datetime="{{comment.lastedit.isoformat()}}Z"></time-ago>
-        </span>
-      {% endif %}
-    </div>
-    <div class="row" id="comment-{{comment.cid}}" {% if comment.status == 1 %}hidden{%endif%}>
-      <div class="pull left votecomment" style="margin-left: 10px;">
+    <div class="commentrow" id="comment-{{comment.cid}}" {% if comment.status == 1 %}hidden{%endif%}>
+      <div class="pull left votecomment">
         {# vote arrow div #}
         <div title="Upvote" class="c-upvote{%if func.hasVotedComment(current_user.get_id(), comment, True)%} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
         <div class="score">{{func.get_comment_score(comment)}}</div>
         <div title="Downvote" class="c-downvote{%if func.hasVotedComment(current_user.get_id(), comment, False)%} downvoted{%endif%}" data-pid="{{post.pid}}" data-icon="downvote"></div>
       </div>
-      <div class="col-11">
+      <div class="commblock">
+        <div class="commenthead">
+            <a class="togglecomment {% if comment.status == 1 %}expand{%else%}collapse{%endif%}" data-cid="{{comment.cid}}">
+              {% if comment.status == 1 %}[+]{%else%}[-]{%endif%}
+            </a>
+          {# if post.ptype == 1 %}
+            <p class="modpost"> Mod post</p>
+          {% endif #}
+            {% if not comment.status == 1 %}
+              <a href="{{ url_for('view_user', user=db.get_user_from_uid(comment.uid).name) }}" class="poster">{{ db.get_user_from_uid(comment.uid).name }}</a>
+            {%else%}
+              <a class="poster deleted">[Deleted]</a>
+            {%endif%}
+            <span class="time ">
+              Posted <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago>
+            </span>
+          {% if comment.lastedit and not comment.status == 1 %}
+            <span class="time edited">
+              Edited <time-ago datetime="{{comment.lastedit.isoformat()}}Z"></time-ago>
+            </span>
+          {% endif %}
+        </div>
+
         <div class="content" id="content-{{comment.cid}}">
           {% if comment.status == 1 %}[Deleted]{%else%}
             {{markdown(comment.content)|safe}}
-          {%endif%}</div>
+          {%endif%}
+        </div>
         {%if not comment.status == 1 %}
           <div hidden id="sauce-{{comment.cid}}">{{comment.content|rnentity|e}}</div>
         {%endif%}
