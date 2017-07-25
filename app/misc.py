@@ -902,13 +902,7 @@ def isImage(link):
 @cache.memoize(300)
 def isGifv(link):
     """ Returns True if link ends with video suffix """
-    domains = ['imgur.com', 'i.imgur.com', 'i.sli.mg', 'sli.mg']
-    if link.lower().endswith('.gifv'):
-        for domain in domains:
-            if domain in link.lower():
-                return True
-    else:
-        return False
+    return link.lower().endswith('.gifv')
 
 
 @cache.memoize(300)

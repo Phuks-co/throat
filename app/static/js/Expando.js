@@ -88,7 +88,7 @@ $(document).on('click', '.expando-btn', function(){
       expando.children('.expandotxt').append(vid);
     }else if(domain == 'i.imgur.com' && /\.gifv$/i.test(link)){
       var vidx = document.createElement( "video" );
-      vidxsrc = link;
+      vidx.src = 'https://i.imgur.com/' + imgurID(link) + '.mp4';
       vidx.preload = 'auto';
       vidx.autoplay = true;
       vidx.loop = true;
