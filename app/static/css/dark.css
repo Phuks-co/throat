@@ -112,6 +112,10 @@ body.dark .thumbnail .placeholder svg path {
     fill: #555;
 }
 
+body.dark .p-icon[data-icon="exclaim"] path {
+    fill: #7b4a34;
+}
+
 /* Buttons */
 
 body.dark .button-secondary,

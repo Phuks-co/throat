@@ -409,6 +409,16 @@ span#notification.fade {
   clear: both;
 }
 
+.p-icon[data-icon="exclaim"] {
+    display: inline-block;
+    top: 6px;
+    position: relative;
+}
+
+.p-icon[data-icon="exclaim"] path {
+    fill: #d94f00;
+}
+
 .expando{
   display: inline-block;
   height: 22px;

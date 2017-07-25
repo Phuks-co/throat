@@ -16,6 +16,7 @@ var Icons = {
   image: require('../svg/image.svg'),
   text: require('../svg/file-text.svg'),
   close: require('../svg/close.svg'),
+  exclaim: require('../svg/exclaim.svg'),
 
   chat: require('../svg/chat.svg') ,
   link: require('../svg/link.svg') ,

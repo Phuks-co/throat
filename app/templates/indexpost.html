@@ -28,6 +28,7 @@
         {% if post.link == None %}
           <a href="{{url_for('view_post', sub=post.sub, pid=post.pid)}}" class="title">{{post.title}}</a>
         {% else %}
+          {% if post.link.startswith('http:') %}<span title="not https" class="p-icon" data-icon="exclaim"></span>{% endif %}
           <a href="{{post.link}}" class="title">{{post.title}}</a> <a href="{{url_for('all_domain_new', domain=func.getDomain(post.link), page=1)}}" class="domain">({{func.getDomain(post.link)}})</a>
         {% endif %}
       </div>
