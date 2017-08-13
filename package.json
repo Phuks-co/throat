@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "start": "webpack --progress --colors --watch --content-base app/static/gen",
+    "start": "webpack --progress --colors --watch",
     "build": "NODE_ENV=production webpack -p --optimize-minimize --progress",
     "test": "npm build"
   },
