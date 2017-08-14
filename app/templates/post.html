@@ -171,7 +171,9 @@
        {{commentform.sub(value=func.getSub(post.sid).name)}}
        {{commentform.post(value=post.pid)}}
        {{commentform.parent(value='0')}}
-       {{commentform.comment(id="comment2", placeholder="Write your comment here. Styling with Markdown format is supported.", rows="6")}}
+       <div class="markdown-editor">
+         {{commentform.comment(id="comment2", placeholder="Write your comment here. Styling with Markdown format is supported.", rows="6")}}
+       </div>
        <div class="error alertbox"></div>
        <button type="submit" class="pure-button pure-button-primary">Submit comment</button>
      </form>

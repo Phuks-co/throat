@@ -14,6 +14,7 @@ require('../css/dark.css');
 var icons = require('./Icon');
 require('./Expando');
 require('./Post');
+require('./Editor');
 
 
 function vote(obj, how){

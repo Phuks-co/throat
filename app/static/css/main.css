@@ -900,3 +900,35 @@ article.comment .score{
   line-height: 15px;
 }
 /* /POST PAGE STYLES */
+
+/* EDITOR STYLES */
+.editbtns {
+  height: 24px;
+  padding-top: 2px;
+  padding-left: .2em;
+  width: 95%;
+  border: 1px solid #ccc;
+}
+
+.editbtns div{
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  border: solid 1px black;
+  margin-right: 1px;
+  text-align: center;
+  padding-top: 1px;
+}
+
+.editbtns div svg{
+  height: 14px;
+}
+
+.markdown-editor textarea {
+  padding-top: .3em;
+  border-top: none;
+  margin-top: 0;
+  box-shadow: none;
+  border-top-left-radius: unset;
+  border-top-right-radius: unset;
+}

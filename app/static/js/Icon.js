@@ -31,6 +31,11 @@ var Icons = {
   remove: require('../svg/remove.svg'),
 
   owner: require('../svg/star.svg'),
+
+  bold: require('../svg/bold.svg'),
+  italic: require('../svg/italic.svg'),
+  underline: require('../svg/underline.svg'),
+  strikethrough: require('../svg/strikethrough.svg'),
 };
 
 // here we apply em.
