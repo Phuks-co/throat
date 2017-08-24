@@ -769,8 +769,9 @@ def create_lnkpost():
             return json.dumps({'status': 'error',
                                'error': ['You can\'t post on this sub']})
         lx = db.query('SELECT `pid` FROM `sub_post` WHERE `sid`=%s AND '
-                      '`link`=%s AND `posted` > DATE_SUB(NOW(), INTERVAL 1 '
-                      'MONTH)', (sub['sid'], form.link.data)).fetchone()
+                      '`deleted`=%s AND `link`=%s AND `posted` > '
+                      'DATE_SUB(NOW(), INTERVAL 1 MONTH)',
+                      (sub['sid'], 0, form.link.data)).fetchone()
         if lx:
             return jsonify(status='error', error=['This link was recently '
                                                   'posted on this sub.'])
