@@ -178,8 +178,9 @@ a:hover {
   border-radius: 3px;
 }
 
-.error span{display:block;}
-
+.error span{
+  display:block;
+}
 
 #bottombar {
   height: 4em;
@@ -848,6 +849,18 @@ input[type=search] {
 }
 
 /* /SIDEBAR STYLES */
+
+/* CREATE POST PAGE STYLES */
+.content.createpost {
+  width: 100%
+}
+
+.createpost input#title,
+.createpost input#link,
+.createpost textarea#content {
+    width: calc(100% - 210px);
+}
+/* / CREATE POST PAGE STYLES */
 
 /* POST PAGE STYLES */
 .wholepost .title{

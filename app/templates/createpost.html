@@ -10,63 +10,109 @@ var recaptchaCallback = function(){
 </script>
 {%endif%}
 {% endblock %}
+{% block sidebar %}
+<div id="sortbuttons" role="group" class="pure-button-group">
+  <div class="pure-g">
+    {% if type == "text" %}
+      <a href="{{url_for('submit_link', sub=sub)}}" class="pure-button">Change to link post</a>
+    {% else %}
+      <a href="{{url_for('submit_text', sub=sub)}}" class="pure-button">Change to text post</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
 {% block content %}
 {{ super() }}
-{% if type == "text" %}
-  <form  method="POST" id="post-form" action="{{url_for('do.create_txtpost')}}" data-redir="true" class="ajaxform">
-    {% set txtpostform = form.CreateSubTextPost()%}
-    {{txtpostform.csrf_token}}
-    <h1>Submit a text post</h1>
-    <div class="pull right"><a href="{{url_for('submit_link', sub=sub)}}">Submit a link post</a></div>
-    <p class="sub">
-      /s/<input name="sub" type="text" id="sub" list="subdatalist" value="{{sub}}" required>
-      <datalist id="subdatalist">
-        {% for subname in subs %}
-        <option value="{{subname}}">
-        {% endfor %}
-      </datalist>
-    </p>
-    <p class="title">{{txtpostform.title(placeholder=txtpostform.title.label.text, required=True)}}</p>
-    <p><label>{{txtpostform.nsfw.label.text}} {{txtpostform.nsfw()}}</label></p>
-    <p>{{txtpostform.content(placeholder="(Optional) Write your post content here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}</p>
-    {% if func.get_user_level(current_user.uid)[0] <= 4 %}
-      <div class="g-recaptcha"></div>
+<div id="center-container">
+  <div class="content createpost">
+    {% if type == "text" %}
+      <form  method="POST" id="post-form" action="{{url_for('do.create_txtpost')}}" data-redir="true" class="pure-form pure-form-aligned">
+        {% set txtpostform = form.CreateSubTextPost()%}
+        {{txtpostform.csrf_token}}
+        <h1>Submit a text post</h1>
+        <fieldset>
+          <div class="pure-control-group">
+            <span class="sub">
+              <label for="sub">Sub</label>
+              <input name="sub" type="text" id="sub" list="subdatalist" value="{{sub}}" required>
+              <datalist id="subdatalist">
+                {% for subname in subs %}
+                  <option value="{{subname}}">
+                {% endfor %}
+              </datalist>
+            </span>
+          </div>
+          <div class="pure-control-group">
+            <label for="title">Title</label>
+            {{txtpostform.title(placeholder=txtpostform.title.label.text, required=True)}}
+          </div>
+          <div class="pure-control-group">
+            <label for="content">Content</label>
+            {{txtpostform.content(placeholder="(Optional) Write your post content here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}
+          </div>
+          <div class="pure-control-group">
+            <label>{{txtpostform.nsfw.label.text}}</label>
+            {{txtpostform.nsfw()}}
+          </div>
+          {% if func.get_user_level(current_user.uid)[0] <= 4 %}
+            <div class="pure-control-group">
+              <div class="g-recaptcha"></div>
+            </div>
+          {% endif %}
+          <div class="pure-controls">
+            {% if error %}
+              <div class="error">{{error}}</div>
+            {% endif %}
+            <button type="submit" class="pure-button pure-button-primary">Submit post</button>
+          </div>
+        </fieldset>
+      </form>
+    {% else %}
+      <form  method="POST" id="link-post-form" action="{{url_for('do.create_lnkpost')}}" data-redir="true" class="pure-form pure-form-aligned ajaxform">
+        {{lnkpostform.csrf_token}}
+        <h1>Submit a link post</h1>
+        <fieldset>
+          <div class="pure-control-group">
+            <span class="sub">
+              <label for="sub">Sub</label>
+              <input name="sub" type="text" id="sub" list="subdatalist" value="{{sub}}" required>
+              <datalist id="subdatalist">
+                {% for subname in subs %}
+                  <option value="{{subname}}">
+                {% endfor %}
+              </datalist>
+            </span>
+          </div>
+          <div class="pure-control-group">
+            <label for="title">Title</label>
+            {{lnkpostform.title(placeholder="Post title", required=True)}}
+          </div>
+          <div class="pure-control-group">
+            <label for="link">Link</label>
+            <span name="link" style="padding:0;">{{lnkpostform.link(type="url", pattern="https?://.+", required=True, placeholder="URL")}}</span>
+          </div>
+          <div class="pure-control-group">
+            <label for="graburl"></label>
+            <a class="pure-button" id="graburl">Grab title</a>
+          </div>
+          <div class="pure-control-group">
+            <label>{{lnkpostform.nsfw.label.text}}</label>
+            {{lnkpostform.nsfw()}}
+          </div>
+          {% if func.get_user_level(current_user.uid)[0] <= 4 %}
+            <div class="pure-control-group">
+              <div class="g-recaptcha"></div>
+            </div>
+          {% endif %}
+          <div class="pure-controls">
+            {% if error %}
+              <div class="error">{{error}}</div>
+            {% endif %}
+            <button type="submit" class="pure-button pure-button-primary">Submit link</button>
+          </div>
+        </fieldset>
+      </form>
     {% endif %}
-    <div class="alert div-error">
-      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-      <p></p>
-    </div>
-    <p><button type="submit" class="btn btn-blue" data-prog="Sending...">Submit post</button></p>
-  </form>
-{% else %}
-  <form  method="POST" id="link-post-form" action="{{url_for('do.create_lnkpost')}}" data-redir="true" class="ajaxform">
-    {{lnkpostform.csrf_token}}
-    <h1>Submit a link post</h1>
-    <div class="pull right"><a href="{{url_for('submit_text', sub=sub)}}">Submit a text post</a></div>
-    <p class="sub">
-      /s/<input name="sub" type="text" id="sub" list="subdatalist" value="{{sub}}" required>
-      <datalist id="subdatalist">
-        {% for subname in subs %}
-        <option value="{{subname}}">
-        {% endfor %}
-      </datalist>
-    </p>
-    <div class="row">
-      <p class="title">{{lnkpostform.title(placeholder="Title", required=True)}}</p>
-    </div>
-    <div class="row">
-      <div class="col-10 link" style="padding:0;">{{lnkpostform.link(type="url", pattern="https?://.+", required=True, placeholder="URL")}}</div>
-      <a class="col-2 btn btn-blue" id="graburl">Grab title</a>
-    </div>
-    <p><label>{{lnkpostform.nsfw.label.text}} {{lnkpostform.nsfw()}}</label></p>
-      {% if func.get_user_level(current_user.uid)[0] <= 4 %}
-        <div class="g-recaptcha"></div>
-      {% endif %}
-      <div class="alert div-error">
-      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-      <p></p>
-    </div>
-    <p><button type="submit" class="btn btn-blue" data-prog="Sending...">Submit link</button></p>
-  </form>
-{% endif %}
-{%endblock%}
+  </div>
+</div>
+{% endblock %}

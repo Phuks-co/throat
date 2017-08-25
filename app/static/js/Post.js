@@ -138,3 +138,26 @@ $(document).on('click', '.delete-comment', function(){
     });
   });
 });
+
+// Grab post title from url
+$(document).on('click', '#graburl', function(){
+  $(this).prop('disabled', true);
+  $(this).html('Grabbing...');
+  $.ajax({
+    type: "GET",
+    dataType: 'json',
+    url: '/do/grabtitle',
+    data: {'u': $('#link').prop('value')},
+    success: function(data) {
+      if(data.status == 'error'){
+        $('#title').prop('value', 'Error fetching title');
+        $('#graburl').prop('disabled', false);
+        $('#graburl').html('Grab title');
+      }else{
+        $('#title').prop('value', data.title);
+        $('#graburl').prop('disabled', false);
+        $('#graburl').html('Done!');
+      }
+    }
+  });
+});
