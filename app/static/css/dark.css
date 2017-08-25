@@ -162,6 +162,8 @@ body.dark .form label {
 }
 
 body.dark input[type="text"],
+body.dark input[type="url"],
+body.dark textarea#content,
 body.dark input[type="password"] {
   color: #ffffff;
   background-color: #404040;
