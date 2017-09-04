@@ -182,6 +182,20 @@ a:hover {
   display:block;
 }
 
+.alert.div-error {
+  background: #d94f00;
+  color: #ffffff;
+  margin: 6px;
+}
+
+.div-error span.closebtn {
+  margin: 4px;
+}
+
+.alert.div-error ul {
+    padding-bottom: 10px;
+}
+
 #bottombar {
   height: 4em;
   width: 100%;
