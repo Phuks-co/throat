@@ -3,10 +3,12 @@
 
 
 {% block sidebar %}
-<div id="sortbuttons">
-  <a href="{{url_for('view_sub_hot', sub=sub.name)}}" class="sbm-post pure-button pure-button{% if request.endpoint in ('view_sub', 'view_sub_hot') %}-primary{%endif%} pure-u-md-6-24">Hot</a>
-  <a href="{{url_for('view_sub_new', sub=sub.name)}}" class="sbm-post pure-button pure-button{% if request.endpoint == 'view_sub_new' %}-primary{%endif%} pure-u-md-6-24">New</a>
-  <a href="{{url_for('view_sub_top', sub=sub.name)}}" class="sbm-post pure-button pure-button{% if request.endpoint == 'view_sub_top' %}-primary{%endif%} pure-u-md-6-24">Top</a>
+<div id="sortbuttons" role="group" class="pure-button-group">
+  <div class="pure-g">
+    <a href="{{url_for('view_sub_hot', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_hot' %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
+    <a href="{{url_for('view_sub_top', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
+    <a href="{{url_for('view_sub_new', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
+  </div>
 </div>
 <form class="pure-g search" action="{{ url_for('do.title_search') }}" method="post">
   <div class="icon" data-icon="search"> </div>
