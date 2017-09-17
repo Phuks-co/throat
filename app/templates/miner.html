@@ -455,20 +455,23 @@ div#miner {
 
 {% block sidebar %}
 {{ super() }}
-<div>
-  <h2>Stats</h2>
-  <div>
-    {% set hashrate = func.getCurrentHashrate() %}
-    <div id="miningstats">
-      <ul>
-        <li>Current site hashrate: <b>{{hashrate['hashesPerSecond']}}</b>H/s.</li>
-        <li>Total hashes submitted: <b>{{hashrate['hashesTotal']}}</b>.</li>
-        <li>Total XMR pending: <b>{{hashrate['xmrPending']}}</b>XMR.</li>
-        <li>Total XMR paid to phuks: <b>{{hashrate['xmrPaid']}}</b>XMR.</li>
-      </ul>
-    </div>
-  </div>
-</div>
+{% cache 300, 'minerstats' %}
+
+	<div>
+	  <h2>Stats</h2>
+	  <div>
+	    {% set hashrate = func.getCurrentHashrate() %}
+	    <div id="miningstats">
+	      <ul>
+	        <li>Current site hashrate: <b>{{hashrate['hashesPerSecond']}}</b>H/s.</li>
+	        <li>Total hashes submitted: <b>{{hashrate['hashesTotal']}}</b>.</li>
+	        <li>Total XMR pending: <b>{{hashrate['xmrPending']}}</b>XMR.</li>
+	        <li>Total XMR paid to phuks: <b>{{hashrate['xmrPaid']}}</b>XMR.</li>
+	      </ul>
+	    </div>
+	  </div>
+	</div>
+{%endcache%}
 {% endblock %}
 
 
