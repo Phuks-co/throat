@@ -39,6 +39,10 @@ DATABASE = {
 # SID of changelog sub
 CHANGELOG_SUB = '9a79b49e-7bd3-4535-8ad6-ba11fc1d0ef5'
 
+# coinhive mining
+COIN_HIVE_PUBLIC = ''
+COIN_HIVE_SECRET = ''
+
 # Only for debugging and testing:
 DEBUG = True
 TESTING = True  # This makes all the captchas valid
