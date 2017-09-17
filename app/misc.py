@@ -11,7 +11,6 @@ from io import BytesIO
 from PIL import Image
 from bs4 import BeautifulSoup
 from functools import update_wrapper
-import requests
 import markdown
 from mdx_gfm import GithubFlavoredMarkdownExtension
 from redis import Redis
@@ -25,6 +24,7 @@ from . import database as db
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
 from .models import SubPostVote
 from peewee import JOIN, fn, Clause, SQL
+import requests
 
 redis = Redis(host=config.CACHE_REDIS_HOST,
               port=config.CACHE_REDIS_PORT,
@@ -1210,3 +1210,9 @@ def get_errors(form):
                 getattr(form, field).label.text,
                 error))
     return ret
+
+
+def getCurrentHashrate():
+    hr = requests.get('https://api.coin-hive.com/stats/site?secret={0}'.format(config.COIN_HIVE_SECRET))
+    hr = hr.json()
+    return hr['hashesPerSecond']
