@@ -315,6 +315,12 @@ def canary():
     return render_template('canary.html')
 
 
+@app.route("/miner")
+def miner():
+    """ miner """
+    return render_template('miner.html')
+
+
 @app.route("/donate")
 def donate():
     """ Donation page """

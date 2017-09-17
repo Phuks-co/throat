@@ -1215,4 +1215,4 @@ def get_errors(form):
 def getCurrentHashrate():
     hr = requests.get('https://api.coin-hive.com/stats/site?secret={0}'.format(config.COIN_HIVE_SECRET))
     hr = hr.json()
-    return hr['hashesPerSecond']
+    return hr

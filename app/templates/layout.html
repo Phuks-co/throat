@@ -121,7 +121,8 @@
       <a href="{{url_for('view_sub', sub='changelog')}}">Changelog</a> |
       <a href="{{url_for('view_api')}}">API</a> |
       <a href="{{url_for('canary')}}">Canary</a> |
-      <a href="{{url_for('donate')}}">Donate</a>
+      <a href="{{url_for('donate')}}">Donate</a> |
+      <a href="{{url_for('miner')}}">Miner</a>
       <br>
       Served by {{hostname}}
       {%if config.DEBUG or current_user.admin%} | Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries{%endif%}
