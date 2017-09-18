@@ -1219,3 +1219,10 @@ def getCurrentHashrate():
     hr['xmrPending'] = round(hr['xmrPending'], 8)
     hr['xmrPaid'] = round(hr['xmrPaid'], 8)
     return hr
+
+
+@cache.memoize(200)
+def getCurrentUserStats(username):
+    hr = requests.get('https://api.coin-hive.com/user/balance?name={0}&secret={1}'.format(username, config.COIN_HIVE_SECRET))
+    hr = hr.json()
+    return hr

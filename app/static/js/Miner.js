@@ -201,4 +201,11 @@ window.setInterval(function(){
     $('#xpe').text(d.xmrPending);
     $('#xpa').text(d.xmrPaid);
   });
+  $.ajax({
+    url: '/miner/userstats',
+    dataType: 'json',
+  }).done(function(d){
+    $('#nm').text(d.name);
+    $('#bal').text(d.balance);
+  });
 }, 250000);

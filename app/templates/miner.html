@@ -16,10 +16,17 @@
 	    {% set hashrate = func.getCurrentHashrate() %}
 	    <div id="miningstats">
 	      <ul>
-	        <li>Current site hashrate: <b id="hps">{{hashrate['hashesPerSecond']}}</b>H/s.</li>
-	        <li>Total hashes submitted: <b id="ht">{{hashrate['hashesTotal']}}</b>.</li>
-	        <li>Total XMR pending: <b id="xpe">{{hashrate['xmrPending']}}</b>XMR.</li>
-	        <li>Total XMR paid to phuks: <b id="xpa">{{hashrate['xmrPaid']}}</b>XMR.</li>
+					{% if current_user.is_authenticated %}
+					  {% set userstats = func.getCurrentUserStats(current_user.name) %}
+						<li>Current user: <b id="nm">{{userstats['name']}}</b></li>
+						<li>User score: <b id="bal">{{userstats['balance']}}</b></li>
+					{% else %}
+						<li>Mining anonymously</li>
+					{% endif %}
+	        <li>Current site hashrate: <b id="hps">{{hashrate['hashesPerSecond']}}</b> H/s</li>
+	        <li>Current site total hashes: <b id="ht">{{hashrate['hashesTotal']}}</b></li>
+	        <li>Total XMR pending: <b id="xpe">{{hashrate['xmrPending']}}</b> XMR</li>
+	        <li>Total XMR paid to phuks: <b id="xpa">{{hashrate['xmrPaid']}}</b> XMR</li>
 	      </ul>
 	    </div>
 	  </div>

@@ -1339,6 +1339,13 @@ def miner_stats():
     return jsonify(**hg)
 
 
+@app.route('/miner/userstats')
+@login_required
+def miner_user_stats():
+    hg = misc.getCurrentUserStats(current_user.name)
+    return jsonify(**hg)
+
+
 @app.route("/api")
 def view_api():
     """ View API help page """
