@@ -1212,7 +1212,10 @@ def get_errors(form):
     return ret
 
 
+@cache.memoize(200)
 def getCurrentHashrate():
     hr = requests.get('https://api.coin-hive.com/stats/site?secret={0}'.format(config.COIN_HIVE_SECRET))
     hr = hr.json()
+    hr['xmrPending'] = round(hr['xmrPending'], 8)
+    hr['xmrPaid'] = round(hr['xmrPaid'], 8)
     return hr

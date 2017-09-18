@@ -9,7 +9,7 @@ from wsgiref.handlers import format_date_time
 import datetime
 import bcrypt
 from flask import Flask, render_template, session, redirect, url_for, abort, g
-from flask import make_response, Markup, request
+from flask import make_response, Markup, request, jsonify
 from flask_login import LoginManager, login_required, current_user, login_user
 from flask_webpack import Webpack
 from feedgen.feed import FeedGenerator
@@ -1330,6 +1330,13 @@ def edit_post(pid):
 @app.route('/stick/<pid>', methods=['GET', 'POST'])
 def stick_post(pid):
     pass
+
+
+@app.route('/miner/stats')
+@login_required
+def miner_stats():
+    hg = misc.getCurrentHashrate()
+    return jsonify(**hg)
 
 
 @app.route("/api")

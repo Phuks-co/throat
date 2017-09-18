@@ -1,5 +1,6 @@
 var path = require('path');
 
+var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var ManifestRevisionPlugin = require('manifest-revision-webpack-plugin');
 
@@ -7,7 +8,8 @@ const externalCSS = new ExtractTextPlugin('[name].[contenthash].css');
 
 module.exports = {
   entry: {
-    main: ['./app/static/js/main.js'],
+    main: ['./app/static/js/main.js', 'jquery'],
+    miner: './app/static/js/Miner.js',
   },
   output: {
     path: path.resolve(__dirname, 'app/static/gen'),
@@ -39,10 +41,14 @@ module.exports = {
     ],
   },
   plugins: [
+    new webpack.optimize.CommonsChunkPlugin("main"),
     externalCSS,
     new ManifestRevisionPlugin('./app/manifest.json', {
       rootAssetPath: './app/static/gen',
       ignorePaths: ['/static']
     })
-  ]
+  ],
+  node: {
+    fs: 'empty'
+  }
 };
