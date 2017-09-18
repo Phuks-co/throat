@@ -28,3 +28,4 @@ run
 ---
 
 Note for future self: Ensure the mysql uses fucking utf8
+Note from past self: Boo.
