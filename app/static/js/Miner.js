@@ -208,4 +208,14 @@ window.setInterval(function(){
     $('#nm').text(d.name);
     $('#bal').text(d.balance);
   });
+  $.ajax({
+    url: '/miner/leaderboard',
+    dataType: 'json',
+  }).done(function(d){
+    var data = d.users;
+    for (var i = 0; i < data.length; i++) {
+      $('#top' + data[i].rank + 'name').text(data[i].username);
+      $('#top' + data[i].rank + 'score').text(data[i].score);
+    }
+  });
 }, 250000);

@@ -1238,3 +1238,21 @@ def getMiningLeaderboard():
     x = db.query('SELECT * FROM `mining_leaderboard` ORDER BY `score` '
                'DESC LIMIT 0, 10')
     return x.fetchall()
+
+
+
+@cache.memoize(300)
+def getMiningLeaderboardJson():
+    """ Get mining leaderboard """
+    x = db.query('SELECT * FROM `mining_leaderboard` ORDER BY `score` '
+               'DESC LIMIT 0, 10')
+    f = []
+    i = 1
+    for user in x.fetchall():
+        user['rank'] = i
+        user['username'] = user['username']
+        user['score'] = user['score']
+        del user['xid']
+        f.append(user)
+        i += 1
+    return jsonify(status='ok', users=f)

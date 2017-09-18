@@ -34,11 +34,14 @@
 			<h2>Top 10 Leaderboard</h2>
 			{% set leaderboard = func.getMiningLeaderboard() %}
 			<div id="miningleaderboard">
-				<ul>
+				<table>
 					{% for user in leaderboard %}
-						<li>{{user['username']}}: <b>{{user['score']}}</b></li>
+						<tr>
+							<td>{{loop.index}}: <span id="top{{loop.index}}name">{{user['username']}}</span> </td>
+							<td><b><span id="top{{loop.index}}score">{{user['score']}}</span></b></td>
+						</tr>
 					{% endfor %}
-				</ul>
+				</table>
 			</div>
 	  </div>
 	</div>

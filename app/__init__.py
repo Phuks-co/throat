@@ -1346,6 +1346,12 @@ def miner_user_stats():
     return jsonify(**hg)
 
 
+@app.route('/miner/leaderboard')
+def miner_leaderboard():
+    hg = misc.getMiningLeaderboardJson()
+    return hg
+
+
 @app.route("/api")
 def view_api():
     """ View API help page """
