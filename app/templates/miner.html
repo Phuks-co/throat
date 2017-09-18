@@ -37,7 +37,8 @@
 				<table>
 					{% for user in leaderboard %}
 						<tr>
-							<td>{{loop.index}}: <span id="top{{loop.index}}name">{{user['username']}}</span> </td>
+							<td class="center">{{loop.index}}</td>
+							<td><span id="top{{loop.index}}name">{{user['username']}}</span></td>
 							<td><b><span id="top{{loop.index}}score">{{user['score']}}</span></b></td>
 						</tr>
 					{% endfor %}

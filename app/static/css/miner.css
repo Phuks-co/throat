@@ -147,6 +147,10 @@ td, th {
 	margin: 0;
 }
 
+body.dark td, body.dark th {
+    border-bottom: 1px solid #424242;
+}
+
 th:first-child, td:first-child {
 	padding-left: 0;
 }
@@ -170,6 +174,10 @@ tr.inactive {
 
 tr:hover {
 	background-color: #fbfbfb;
+}
+
+body.dark tr:hover {
+    background-color: #000000;
 }
 
 tr.inactive:hover {
