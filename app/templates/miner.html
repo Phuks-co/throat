@@ -450,6 +450,32 @@ div#miner {
 .ct-legend-o {border-bottom: 1px solid #a748ca;}
 
 </style>
+<script type="text/javascript">
+function throttleUp() {
+	var throttle = miner.getThrottle()
+	if (throttle != 0) {
+		var step = 10;
+		var stepb = 0.1;
+		var newlvl = Math.round((throttle - stepb) * 10) / 10;
+		var newperc = parseInt((throttle - stepb) * 100);
+		document.getElementById("mining-throttle").innerHTML = Math.round(100 - newperc);
+		miner.setThrottle(newlvl)
+		console.log("throttle up to " + Math.round(100 - newperc) + '%')
+	}
+}
+function throttleDown() {
+	var throttle = miner.getThrottle()
+	if (throttle != 0.9) {
+		var step = 10;
+		var stepb = 0.1;
+		var newlvl = Math.round((throttle + stepb) * 10) / 10;
+		var newperc = parseInt((throttle + stepb) * 100);
+		document.getElementById("mining-throttle").innerHTML = Math.round(100 - newperc);
+		miner.setThrottle(newlvl)
+		console.log("throttle down to " + Math.round(100 - newperc) + '%')
+	}
+}
+</script>
 {% endblock %}
 
 
@@ -485,15 +511,15 @@ div#miner {
         <h2>Miner</h2>
         <div class="six columns stopped" id="miner">
       		<div class="row">
-      			<div class="four columns">
+      			<div class="five columns">
       				<h4 class="number-label">Hashes/s</h4>
       				<h2 id="mining-hashes-per-second">0.0</h2>
       			</div>
-      			<div class="four columns">
+      			<div class="five columns">
       				<h4 class="number-label">Total</h4>
       				<h2 id="mining-hashes-total">0</h2>
       			</div>
-      			<div class="four columns">
+      			<div class="five columns">
       				<h4 class="number-label">Threads</h4>
       				<h2>
       					<span id="mining-threads">2</span>
@@ -502,6 +528,15 @@ div#miner {
       					<span id="mining-threads-remove" class="action">−</span>
       				</h2>
       			</div>
+						<div class="five columns">
+							<h4 class="number-label">Throttle</h4>
+							<h2>
+								<span id="mining-throttle">100</span>%
+								<span id="mining-throttle-add" class="action" onclick="throttleUp()">+</span>
+								<span class="mining-divide"> / </span>
+								<span id="mining-throttle-subtract" class="action" onclick="throttleDown()">−</span>
+							</h2>
+						</div>
       		</div>
       		<div id="mining-stats-container">
       			<canvas id="mining-stats-canvas"></canvas>
@@ -530,16 +565,15 @@ div#miner {
   {% if current_user.is_authenticated %}
     <script type="text/javascript">
       var miner = new CoinHive.User('{{config.COIN_HIVE_PUBLIC}}', '{{current_user.name}}', {
-      	threads: 2
-      	//autoThreads: false,
-      	//throttle: 0.8,
-      	//forceASMJS: false
+      	threads: 2,
+      	throttle: 0
       });
     </script>
   {% else %}
     <script type="text/javascript">
       var miner = new CoinHive.Anonymous('{{config.COIN_HIVE_PUBLIC}}', {
-        threads: 2
+        threads: 2,
+				throttle: 0
       });
     </script>
   {% endif %}
@@ -580,7 +614,6 @@ div#miner {
   	this.intervalDrawGraph = setInterval(this.drawGraph.bind(this), 500);
 
   	this.elements.threads.textContent = this.miner.getNumThreads();
-
   	ev.preventDefault();
   	return false;
   };
