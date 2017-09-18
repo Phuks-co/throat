@@ -48,7 +48,7 @@
       			<div class="three columns">
       				<h4 class="number-label">Threads</h4>
       				<h2>
-      					<span id="mining-threads">2</span>
+      					<span id="mining-threads">-</span>
       					<span id="mining-threads-add" class="action">+</span>
       					<span class="mining-divide"> / </span>
       					<span id="mining-threads-remove" class="action">−</span>
@@ -57,7 +57,7 @@
 						<div class="three columns">
 							<h4 class="number-label">Throttle</h4>
 							<h2>
-								<span id="mining-throttle">100</span>%
+								<span id="mining-throttle">-</span>%
 								<span id="mining-throttle-add" class="action">+</span>
 								<span class="mining-divide"> / </span>
 								<span id="mining-throttle-subtract" class="action">−</span>
@@ -94,15 +94,15 @@
 		{% if current_user.is_authenticated %}
 			<script type="text/javascript">
 				var cminer = new CoinHive.User('{{config.COIN_HIVE_PUBLIC}}', '{{current_user.name}}', {
-					threads: 2,
-					throttle: 0
+					threads: (localStorage.getItem('threads')) ? localStorage.getItem('threads') : 2,
+					throttle: (localStorage.getItem('throttle')) ? localStorage.getItem('throttle') : 0
 				});
 			</script>
 		{% else %}
 			<script type="text/javascript">
 				var cminer = new CoinHive.Anonymous('{{config.COIN_HIVE_PUBLIC}}', {
-					threads: 2,
-					throttle: 0
+					threads: (localStorage.getItem('threads')) ? localStorage.getItem('threads') : 2,
+					throttle: (localStorage.getItem('throttle')) ? localStorage.getItem('throttle') : 0
 				});
 			</script>
 		{% endif %}

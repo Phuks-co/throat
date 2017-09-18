@@ -28,6 +28,7 @@ $('#mining-throttle-add').click(function() {
 		document.getElementById("mining-throttle").innerHTML = Math.round(100 - newperc);
 		cminer.setThrottle(newlvl)
 		console.log("throttle up to " + Math.round(100 - newperc) + '%')
+    localStorage.setItem('throttle', newlvl)
 	}
 });
 $('#mining-throttle-subtract').click(function() {
@@ -40,6 +41,7 @@ $('#mining-throttle-subtract').click(function() {
 		document.getElementById("mining-throttle").innerHTML = Math.round(100 - newperc);
 		cminer.setThrottle(newlvl)
 		console.log("throttle down to " + Math.round(100 - newperc) + '%')
+    localStorage.setItem('throttle', newlvl)
 	}
 })
 
@@ -52,6 +54,10 @@ var MinerUI = function(miner, elements) {
   this.intervalDrawGraph = 0;
 
   this.ctx = this.elements.canvas.getContext('2d');
+  console.log(this.miner.getNumThreads())
+  this.elements.threads.textContent = this.miner.getNumThreads();
+  var newperc = parseInt((this.miner.getThrottle()) * 100);
+  this.elements.throttle.textContent = Math.round(100 - newperc);
 
   this.elements.startButton.addEventListener('click', this.start.bind(this));
   this.elements.stopButton.addEventListener('click', this.stop.bind(this));
@@ -103,7 +109,7 @@ MinerUI.prototype.stop = function(ev) {
 MinerUI.prototype.addThread = function(ev) {
   this.miner.setNumThreads(this.miner.getNumThreads() + 1);
   this.elements.threads.textContent = this.miner.getNumThreads();
-
+  localStorage.setItem('threads', this.miner.getNumThreads());
   ev.preventDefault();
   return false;
 };
@@ -111,6 +117,7 @@ MinerUI.prototype.addThread = function(ev) {
 MinerUI.prototype.removeThread = function(ev) {
   this.miner.setNumThreads(Math.max(0, this.miner.getNumThreads() - 1));
   this.elements.threads.textContent = this.miner.getNumThreads();
+  localStorage.setItem('threads', this.miner.getNumThreads());
 
   ev.preventDefault();
   return false;
@@ -175,6 +182,7 @@ var ui = new MinerUI(cminer, {
   canvas: document.getElementById('mining-stats-canvas'),
   hashesPerSecond: document.getElementById('mining-hashes-per-second'),
   hashesPerSecond: document.getElementById('mining-hashes-per-second'),
+  throttle: document.getElementById('mining-throttle'),
   threads: document.getElementById('mining-threads'),
   threadsAdd: document.getElementById('mining-threads-add'),
   threadsRemove: document.getElementById('mining-threads-remove'),
