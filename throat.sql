@@ -338,3 +338,12 @@ CREATE TABLE `pixel` (
   `color` int(128) DEFAULT NULL,
   PRIMARY KEY (`xid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `mining_leaderboard`;
+
+CREATE TABLE `mining_leaderboard` (
+  `xid` INT(11) NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(64) NULL,
+  `score` INT(11) DEFAULT NULL,
+  PRIMARY KEY (`xid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

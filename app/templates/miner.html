@@ -11,14 +11,14 @@
 {{ super() }}
 
 	<div id="minerstats">
-	  <h2>Stats</h2>
-	  <div>
+		<div>
+	  	<h2>Stats</h2>
 	    {% set hashrate = func.getCurrentHashrate() %}
 	    <div id="miningstats">
 	      <ul>
 					{% if current_user.is_authenticated %}
 					  {% set userstats = func.getCurrentUserStats(current_user.name) %}
-						<li>Current user: <b id="nm">{{userstats['name']}}</b></li>
+						<li>Current user: <b id="nm">{{current_user.name}}</b></li>
 						<li>User score: <b id="bal">{{userstats['balance']}}</b></li>
 					{% else %}
 						<li>Mining anonymously</li>
@@ -29,6 +29,17 @@
 	        <li>Total XMR paid to phuks: <b id="xpa">{{hashrate['xmrPaid']}}</b> XMR</li>
 	      </ul>
 	    </div>
+		</div>
+		<div>
+			<h2>Top 10 Leaderboard</h2>
+			{% set leaderboard = func.getMiningLeaderboard() %}
+			<div id="miningleaderboard">
+				<ul>
+					{% for user in leaderboard %}
+						<li>{{user['username']}}: <b>{{user['score']}}</b></li>
+					{% endfor %}
+				</ul>
+			</div>
 	  </div>
 	</div>
 {% endblock %}

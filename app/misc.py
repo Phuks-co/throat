@@ -1225,4 +1225,16 @@ def getCurrentHashrate():
 def getCurrentUserStats(username):
     hr = requests.get('https://api.coin-hive.com/user/balance?name={0}&secret={1}'.format(username, config.COIN_HIVE_SECRET))
     hr = hr.json()
+    if hr['success']:
+        db.update_mining_leaderboard(username, hr['balance'])
+    else:
+        hr['balance'] = 0
     return hr
+
+
+@cache.memoize(300)
+def getMiningLeaderboard():
+    """ Get mining leaderboard """
+    x = db.query('SELECT * FROM `mining_leaderboard` ORDER BY `score` '
+               'DESC LIMIT 0, 10')
+    return x.fetchall()
