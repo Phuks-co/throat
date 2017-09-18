@@ -60,7 +60,10 @@ var MinerUI = function(miner, elements) {
   this.elements.threadsRemove.addEventListener('click', this.removeThread.bind(this));
 
   this.stats = [];
-  for (var i = 0, x = 0; x < 300; i++, x += 5) {
+  /*for (var i = 0, x = 0; x < 300; i++, x += 5) {
+    this.stats.push({hashes: 0, accepted: 0});
+  }*/
+  for (var i = 0, x = 0; x < (this.elements.canvas.offsetWidth/9)-10; i++, x += 1) {
     this.stats.push({hashes: 0, accepted: 0});
   }
 
@@ -129,6 +132,7 @@ MinerUI.prototype.drawGraph = function() {
   var h = this.elements.canvas.height;
 
 
+
   var current = this.stats.shift();
   var last = this.stats[this.stats.length-1];
   current.hashes = this.miner.getHashesPerSecond();
@@ -142,7 +146,6 @@ MinerUI.prototype.drawGraph = function() {
     var v = this.stats[i].hashes;
     if (v > vmax) { vmax = v; }
   }
-
   // Draw all bars
   this.ctx.clearRect(0, 0, w, h);
   for (var i = this.stats.length, j = 1; i--; j++) {
