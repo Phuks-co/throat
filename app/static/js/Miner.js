@@ -150,7 +150,6 @@ MinerUI.prototype.drawGraph = function() {
     var mode = getCookie("dayNight");
     var vh = ((s.hashes/vmax) * (h - 16))|0;
     if (s.accepted) {
-      console.log(s.accepted)
       if(mode == "dark"){
         this.ctx.fillStyle = '#555'
       }else{
