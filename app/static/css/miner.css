@@ -216,7 +216,7 @@ table.reference td:first-child {
 }
 
 
-a {
+body.dark a, a {
 	color: #1e9ee0;
 	text-decoration: none;
 	background-color: transparent;
@@ -289,9 +289,21 @@ div#miner {
 	color: #888;
 }
 
+body.dark #miner h4.number-label,
+body.dark #miner h2 {
+	color: #444;
+}
+
+
+
 #miner.running h4.number-label,
 #miner.running h2 {
 	color: #222;
+}
+
+body.dark #miner.running h4.number-label,
+body.dark #miner.running h2 {
+	color: #888;
 }
 
 #mining-stats-container {
@@ -438,3 +450,7 @@ div#miner {
 .ct-legend-m {border-bottom: 1px solid #b2c326;}
 .ct-legend-n {border-bottom: 1px solid #6188e2;}
 .ct-legend-o {border-bottom: 1px solid #a748ca;}
+
+body.dark #minerstats{
+	color: #aaa;
+}

@@ -2,6 +2,22 @@ import $ from 'jquery';
 
 require('../css/miner.css');
 
+// todo: move to util
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) === 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
 $('#mining-throttle-add').click(function() {
 	var throttle = cminer.getThrottle()
 	if (throttle != 0) {
@@ -131,14 +147,23 @@ MinerUI.prototype.drawGraph = function() {
   this.ctx.clearRect(0, 0, w, h);
   for (var i = this.stats.length, j = 1; i--; j++) {
     var s = this.stats[i];
-
+    var mode = getCookie("dayNight");
     var vh = ((s.hashes/vmax) * (h - 16))|0;
     if (s.accepted) {
-      this.ctx.fillStyle = '#aaa';
+      console.log(s.accepted)
+      if(mode == "dark"){
+        this.ctx.fillStyle = '#555'
+      }else{
+        this.ctx.fillStyle = '#aaa'
+      }
       this.ctx.fillRect(w - j*10, h - vh, 9, vh);
     }
     else {
-      this.ctx.fillStyle = '#ccc';
+      if(mode == "dark"){
+        this.ctx.fillStyle = '#222'
+      }else{
+        this.ctx.fillStyle = '#ccc'
+      }
       this.ctx.fillRect(w - j*10, h - vh, 9, vh);
     }
   }
