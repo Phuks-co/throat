@@ -707,7 +707,7 @@ def get_all_post_comments(pid, pa=None, depth=0, page=0):
     posts = get_post_comments(pid, pa, page)
     f = []
     for post in posts:
-        x = get_all_post_comments(pid, post['cid'], depth+1, page)
+        x = get_all_post_comments(pid, post['cid'], depth + 1, page)
         if depth == 4 and x:
             post['children'] = []
             post['amt'] = get_child_comment_count(post['cid'])

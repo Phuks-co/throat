@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import __fix
 import MySQLdb
 import MySQLdb.cursors
 import config
