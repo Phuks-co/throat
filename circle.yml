@@ -4,7 +4,7 @@ notify:
     - url: https://discordapp.com/api/webhooks/270349000324939778/oS7NG6bwEgoMWBM05tyMn_IncBl0DpHZbvQduC5i8ZJeBXSxNLt0PB32iOOjZDZFkkNL/circleci
 machine:
   python:
-    version: 3.4.2
+    version: 3.5
   node:
     version: 7.10.0
   services:
