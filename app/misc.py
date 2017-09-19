@@ -1230,7 +1230,7 @@ def getCurrentUserStats(username):
     hr = hr.json()
     if hr['success']:
         try:
-            mle = MiningLeaderboard.get(username == username)
+            mle = MiningLeaderboard.get(MiningLeaderboard.username == username)
             mle.score = hr['balance']
         except MiningLeaderboard.DoesNotExist:
             mle = MiningLeaderboard(username=username, score=hr['balance'])
