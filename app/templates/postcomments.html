@@ -58,10 +58,11 @@
           </div>
         </div>
       </div>
-      <div id="child-{{comment.cid}}" class="pchild" {% if comment.status == 1 %}hidden{%endif%}>
-        {% if comment['moresiblings'] %}
+      {% if comment['moresiblings'] %}
         <a href="#" class="loadsibling" data-page="{{siblingpage}}" data-cid="{{comment.cid}}">Load more ({{comment.moresiblings}} comments)</a>
-        {% elif comment['morechildren'] %}
+      {% endif %}
+      <div id="child-{{comment.cid}}" class="pchild" {% if comment.status == 1 %}hidden{%endif%}>
+        {% if comment['morechildren'] %}
         <a href="#" class="loadchildren" data-pid="{{post.pid}}" data-cid="{{comment.cid}}">Load more ({{comment.ccount}} comments)</a>
         {% elif comment['children'] %}
           {{loop(comment['children'])}}

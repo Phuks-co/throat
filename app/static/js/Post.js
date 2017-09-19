@@ -180,3 +180,30 @@ $(document).on('click', '.loadchildren', function(e){
     }
   });
 });
+
+// collapse/expand comment
+$(document).on('click', '.togglecomment.collapse', function(e){
+  e.preventDefault();
+  var cid = $(this).data('cid');
+  $('#comment-'+cid+' .votecomment').hide();
+  $('#comment-'+cid+' .bottombar').hide();
+  $('#content-'+cid).hide();
+  $('#child-'+cid).hide();
+  $(this).removeClass('collapse');
+  $(this).addClass('expand');
+  $(this).parent().parent().css('margin-left', '1.3em');
+  $(this).text = '[+]';
+})
+
+$(document).on('click', '.togglecomment.expand', function(e){
+  e.preventDefault();
+  var cid = $(this).data('cid');
+  $('#comment-'+cid+' .votecomment').show();
+  $('#comment-'+cid+' .bottombar').show();
+  $('#child-'+cid).show();
+  $('#content-'+cid).show();
+  $(this).removeClass('expand');
+  $(this).addClass('collapse');
+  $(this).text = '[-]';
+  $(this).parent().parent().css('margin-left', '0');
+})
