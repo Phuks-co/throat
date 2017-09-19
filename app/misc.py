@@ -1251,7 +1251,7 @@ def getMiningLeaderboardJson():
     for user in x.fetchall():
         user['rank'] = i
         user['username'] = user['username']
-        user['score'] = user['score']
+        user['score'] = "{:,}".format(user['score'])
         del user['xid']
         f.append(user)
         i += 1
