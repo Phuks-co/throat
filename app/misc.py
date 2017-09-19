@@ -22,7 +22,7 @@ from .caching import cache
 from . import database as db
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
-from .models import SubPostVote, MiningLeaderboard
+from .models import SubPostVote, MiningLeaderboard, SubPostComment, SubPostCommentVote
 from peewee import JOIN, fn, Clause, SQL
 import requests
 
@@ -397,15 +397,17 @@ class RestrictedMarkdown(markdown.Extension):
         md.inlinePatterns.add('user', user_tag, '<not_strong')
 
 
+md_class = markdown.Markdown(extensions=['markdown.extensions.tables',
+                                         RestrictedMarkdown(),
+                                         GithubFlavoredMarkdownExtension()],
+                             safe_mode='escape')
+
+
 def our_markdown(text):
     """ Here we create a custom markdown function where we load all the
     extensions we need. """
     try:
-        return markdown.markdown(text,
-                                 extensions=['markdown.extensions.tables',
-                                             RestrictedMarkdown(),
-                                             GithubFlavoredMarkdownExtension()],
-                                 safe_mode='escape')
+        return md_class.convert(text)
     except RecursionError:
         return '> tfw tried to break the site'
 
@@ -474,6 +476,7 @@ def get_comment_downcount(cid):
 
 @cache.memoize(50)
 def hasVotedComment(uid, comment, up=True):
+    # TODO: blast this from orbit
     """ Checks if the user up/downvoted a comment. """
     if not uid:
         return False
@@ -1256,3 +1259,105 @@ def getMiningLeaderboardJson():
         f.append(user)
         i += 1
     return jsonify(status='ok', users=f)
+
+
+def build_comment_tree(comments):
+    """ Creates the nested list structure for the comments """
+    # 1. Group by parent
+    parents = {}
+    for comment in comments:
+        try:
+            parents[comment['parentcid']].append(comment['cid'])
+        except KeyError:
+            parents[comment['parentcid']] = [comment['cid']]
+
+    getstuff = []  # list of cids we must fully fetch on the next pass.
+
+    def do_the_needful(com, depth=0):
+        # here we get all the child of com, iterate, etc
+        if depth > 5:  # hard stop.
+            return []
+        f = []
+        if parents.get(com, None) is not None:
+            for k in parents[com]:
+                if depth < 3:
+                    getstuff.append(k)
+                tmpnm = {'cid': k, 'children': do_the_needful(k, depth + 1)}
+                ccount = len(tmpnm['children'])
+                for m in tmpnm['children']:
+                    ccount += m['ccount']
+                tmpnm['ccount'] = ccount
+                if len(tmpnm['children']) > 5:
+                    tmpnm['moresiblings'] = len(tmpnm['children']) - 5
+                    tmpnm['children'] = tmpnm['children'][:5]
+                f.append(tmpnm)
+        return f
+
+    finct = []
+    if len(parents[None]) > 8:
+        tmpnm = {'cid': 0, 'moresiblings': len(parents[None]) - 8}
+        parents[None] = parents[None][:8]
+        finct.append(tmpnm)
+    for ct in parents[None]:
+        getstuff.append(ct)
+        tmpnm = {'cid': ct, 'children': do_the_needful(ct)}
+        if len(tmpnm['children']) > 5:
+            tmpnm['moresiblings'] = len(tmpnm['children']) - 10
+            tmpnm['children'] = tmpnm['children'][:5]
+        else:
+            finct.append(tmpnm)
+
+    return (finct, getstuff)
+
+
+def expand_comment_tree(comsx):
+    coms = comsx[0]
+    expcomms = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
+                                     SubPostComment.score, SubPostComment.status, SubPostComment.time,
+                                     User.name.alias('username'), SubPostCommentVote.positive)
+    expcomms = expcomms.join(User).switch(SubPostComment)
+    expcomms = expcomms.join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == SubPostComment.cid)))
+    expcomms = expcomms.where(SubPostComment.cid << comsx[1]).dicts()
+    lcomms = {}
+    print(comsx[1])
+    for k in expcomms:
+        lcomms[k['cid']] = k
+
+    def i_like_recursion(xm, depth=0):
+        if depth == 3:
+            return []
+        ret = []
+        for dom in xm:
+            fmt = {**dom, **lcomms[dom['cid']]}
+
+            if depth == 2 and len(fmt['children']) != 0:
+                fmt['morechildren'] = True
+            else:
+                fmt['children'] = i_like_recursion(fmt['children'], depth=depth + 1)
+            ret.append(fmt)
+        return ret
+
+    dcom = []
+    for com in coms:
+        if com['cid'] != 0:
+            fmt = {**com, **lcomms[com['cid']]}
+            fmt['children'] = i_like_recursion(fmt['children'])
+            dcom.append(fmt)
+        else:
+            dcom.append(com)
+
+    return dcom
+
+
+def get_post_comments(pid, cid=None):
+    """ Returns the comments for a post `pid`.
+    if `cid` is not None, it returns the comment `cid` and children.
+    """
+    # ---
+    # 1. Query for all the comments for the post, sorted. Only get cid and parentcid.
+    cmskel = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
+    cmskel = cmskel.where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
+    # 2 - Create the tree structure for the comments
+    cmxk = build_comment_tree(cmskel)
+    # 3 - Expand the tree structure with the data n' stuff
+    return expand_comment_tree(cmxk)

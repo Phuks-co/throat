@@ -742,7 +742,8 @@ def view_post(sub, pid, comments=False):
     createtxtpost = CreateSubTextPost(sub=ksub['name'])
     createlinkpost = CreateSubLinkPost(sub=ksub['name'])
     if not comments:
-        comments = db.get_all_post_comments(post['pid'])
+        comments = misc.get_post_comments(post['pid'])
+        #comments = db.get_all_post_comments(post['pid'])
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit, sub=ksub,
                            editlinkpostform=EditSubLinkPostForm(),
