@@ -4,10 +4,8 @@ import json
 import re
 import time
 import datetime
-from datetime import timedelta
 import uuid
 from urllib.parse import urlparse
-import bcrypt
 import requests
 from bs4 import BeautifulSoup
 from flask import Blueprint, redirect, url_for, session, abort, jsonify
@@ -18,7 +16,7 @@ import config
 from .. import forms, misc
 from ..socketio import socketio
 from .. import database as db
-from ..forms import RegistrationForm, LogOutForm, CreateSubFlair
+from ..forms import LogOutForm, CreateSubFlair
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
@@ -342,8 +340,7 @@ def edit_sub(sub):
                 tags = str(tags).split('+')
                 if len(tags) > 10:
                     return json.dumps({'status': 'error',
-                                       'error': ['Only 10 sub tags allowed '
-                                       'for now']})
+                                       'error': ['Only 10 sub tags allowed for now']})
                 db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
                           'AND `sid`=%s', ('tag', sub['sid']))
 
@@ -794,17 +791,17 @@ def upvote(pid, value):
             db.uquery('UPDATE `sub_post_vote` SET `positive`=%s WHERE '
                       '`xid`=%s', (positive, qvote['xid']))
             db.uquery('UPDATE `sub_post` SET `score`=`score`+%s WHERE '
-                      '`pid`=%s', (voteValue*2, post['pid']))
+                      '`pid`=%s', (voteValue * 2, post['pid']))
             if user['score'] is not None:
                 db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
-                          '`uid`=%s', (voteValue*2, post['uid']))
+                          '`uid`=%s', (voteValue * 2, post['uid']))
                 socketio.emit('uscore',
-                              {'score': user['score'] + voteValue*2},
+                              {'score': user['score'] + voteValue * 2},
                               namespace='/snt',
                               room="user" + post['uid'])
             socketio.emit('threadscore',
                           {'pid': post['pid'],
-                           'score': post['score'] + voteValue*2},
+                           'score': post['score'] + voteValue * 2},
                           namespace='/snt',
                           room=post['pid'])
             cache.delete_memoized(db.get_post_from_pid, pid)
@@ -1381,8 +1378,7 @@ def use_btc_donation():
         db.update_site_metadata('btcmsg', form.message.data)
 
         if form.enablebtcmod.data:
-            desc = current_user.get_username() + ' enabled btc donations: ' + \
-                  form.btcaddress.data
+            desc = current_user.get_username() + ' enabled btc donations: ' + form.btcaddress.data
         else:
             desc = current_user.get_username() + ' disabled btc donations'
         db.create_sitelog(10, desc, '')
@@ -1403,11 +1399,9 @@ def use_invite_code():
         db.update_site_metadata('invitecode', form.invitecode.data)
 
         if form.enableinvitecode.data:
-            desc = current_user.get_username() + \
-                   ' enabled invite code requirement'
+            desc = current_user.get_username() + ' enabled invite code requirement'
         else:
-            desc = current_user.get_username() + \
-                  ' disabled invite code requirement'
+            desc = current_user.get_username() + ' disabled invite code requirement'
         db.create_sitelog(7, desc, '')
         # return json.dumps({'status': 'ok'})
     return redirect(url_for('admin_area'))
@@ -1754,12 +1748,12 @@ def upvotecomment(cid, value):
             db.uquery('UPDATE `sub_post_comment_vote` SET `positive`=%s WHERE '
                       '`xid`=%s', (positive, qvote['xid']))
             db.uquery('UPDATE `sub_post_comment` SET `score`=`score`+%s WHERE '
-                      '`cid`=%s', (voteValue*2, comment['cid']))
+                      '`cid`=%s', (voteValue * 2, comment['cid']))
             if user['score'] is not None:
                 db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
-                          '`uid`=%s', (voteValue*2, comment['uid']))
+                          '`uid`=%s', (voteValue * 2, comment['uid']))
                 socketio.emit('uscore',
-                              {'score': user['score'] + voteValue*2},
+                              {'score': user['score'] + voteValue * 2},
                               namespace='/snt',
                               room="user" + comment['uid'])
             return jsonify(status='ok', message='Vote flipped')
