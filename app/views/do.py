@@ -26,7 +26,7 @@ from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm, LiveChat
 from ..misc import cache, sendMail, getDefaultSubs, allowedNames, get_errors
-from ..models import SubPost
+from ..models import SubPost, SubPostComment
 
 do = Blueprint('do', __name__)
 
@@ -1776,12 +1776,16 @@ def upvotecomment(cid, value):
     return json.dumps({'status': 'ok'})
 
 
-@do.route('/do/get_comments/<cid>', methods=['POST'])
-def get_comments(cid):
+@do.route('/do/get_children/<pid>/<cid>', methods=['POST'])
+def get_children(pid, cid):
     """ Gets children comments for <cid> """
-    comment = db.get_comment_from_cid(cid)
-    if not comment:
-        return jsonify(status='error', error=['Wuddatcomment'])
-
-    comments = db.get_all_post_comments(comment['pid'], cid)
-    return render_template('postcomments.html', comments=comments)
+    tq = SubPostComment.select(SubPostComment.cid).where(SubPostComment.parentcid == cid).alias('jq')
+    cmskel = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
+    cmskel = cmskel.join(tq, on=((tq.c.cid == SubPostComment.parentcid) | (SubPostComment.parentcid == cid)))
+    cmskel = cmskel.group_by(SubPostComment.cid)
+    cmskel = cmskel.order_by(SubPostComment.score.desc()).dicts()
+    if cmskel.count() == 0:
+        return jsonify(status='ok', posts=[])
+    cmxk = misc.build_comment_tree(cmskel, cid)
+    post = SubPost.select(SubPost.pid, SubPost.sid).where(SubPost.pid == pid)
+    return render_template('postcomments.html', post=post, comments=misc.expand_comment_tree(cmxk))

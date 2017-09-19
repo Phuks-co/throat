@@ -1261,7 +1261,7 @@ def getMiningLeaderboardJson():
     return jsonify(status='ok', users=f)
 
 
-def build_comment_tree(comments):
+def build_comment_tree(comments, root=None):
     """ Creates the nested list structure for the comments """
     # 1. Group by parent
     parents = {}
@@ -1294,11 +1294,11 @@ def build_comment_tree(comments):
         return f
 
     finct = []
-    if len(parents[None]) > 8:
-        tmpnm = {'cid': 0, 'moresiblings': len(parents[None]) - 8}
-        parents[None] = parents[None][:8]
+    if len(parents[root]) > 8:
+        tmpnm = {'cid': 0, 'moresiblings': len(parents[root]) - 8}
+        parents[root] = parents[root][:8]
         finct.append(tmpnm)
-    for ct in parents[None]:
+    for ct in parents[root]:
         getstuff.append(ct)
         tmpnm = {'cid': ct, 'children': do_the_needful(ct)}
         if len(tmpnm['children']) > 5:
@@ -1349,17 +1349,13 @@ def expand_comment_tree(comsx):
     return dcom
 
 
-def get_post_comments(pid, cid=None):
-    """ Returns the comments for a post `pid`.
-    if `cid` is not None, it returns the comment `cid` and children.
-    """
-    # ---
-    # 1. Query for all the comments for the post, sorted. Only get cid and parentcid.
+def get_post_comments(pid):
+    """ Returns the comments for a post `pid`"""
     cmskel = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
     cmskel = cmskel.where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
+
     if cmskel.count() == 0:
         return []
-    # 2 - Create the tree structure for the comments
+
     cmxk = build_comment_tree(cmskel)
-    # 3 - Expand the tree structure with the data n' stuff
     return expand_comment_tree(cmxk)

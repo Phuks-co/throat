@@ -1,6 +1,7 @@
 // Post page-related code.
 import TextConfirm from  './utils/TextConfirm';
 import $ from 'jquery';
+import Icons from './Icon';
 
 // Saving/unsaving posts.
 $('.savepost').click(function(e){
@@ -158,6 +159,24 @@ $(document).on('click', '#graburl', function(){
         $('#graburl').prop('disabled', false);
         $('#graburl').html('Done!');
       }
+    }
+  });
+});
+
+// Load children
+$(document).on('click', '.loadchildren', function(e){
+  e.preventDefault();
+  var ob = $(this)
+  $.ajax({
+    type: "POST",
+    dataType: 'json',
+    url: '/do/get_children/' + $(this).data('pid') + '/' + $(this).data('cid'),
+    dataType: 'html',
+    success: function(data){
+      ob.parent().html(data);
+      $('div[data-icon],span[data-icon]').each(function(i){
+        this.innerHTML = Icons[$(this).data('icon')];
+      });
     }
   });
 });
