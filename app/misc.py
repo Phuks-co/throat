@@ -1319,7 +1319,7 @@ def expand_comment_tree(comsx):
     expcomms = expcomms.join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == SubPostComment.cid)))
     expcomms = expcomms.where(SubPostComment.cid << comsx[1]).dicts()
     lcomms = {}
-    print(comsx[1])
+
     for k in expcomms:
         lcomms[k['cid']] = k
 
@@ -1357,6 +1357,8 @@ def get_post_comments(pid, cid=None):
     # 1. Query for all the comments for the post, sorted. Only get cid and parentcid.
     cmskel = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
     cmskel = cmskel.where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
+    if cmskel.count() == 0:
+        return []
     # 2 - Create the tree structure for the comments
     cmxk = build_comment_tree(cmskel)
     # 3 - Expand the tree structure with the data n' stuff
