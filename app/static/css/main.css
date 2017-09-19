@@ -959,3 +959,13 @@ article.comment .score{
   border-top-left-radius: unset;
   border-top-right-radius: unset;
 }
+
+::-webkit-scrollbar {
+   width: 4px;
+   background: #d94f00;
+   z-index: -1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgb(16, 16, 16);
+}
