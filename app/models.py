@@ -300,3 +300,12 @@ class Shekels(db.Model):
 
     class Meta:
         db_table = 'shekels'
+
+
+class MiningLeaderboard(db.Model):
+    xid = PrimaryKeyField()
+    username = CharField()
+    score = IntegerField()
+
+    class Meta:
+        db_table = 'mining_leaderboard'

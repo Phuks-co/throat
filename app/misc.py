@@ -22,7 +22,7 @@ from .caching import cache
 from . import database as db
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
-from .models import SubPostVote
+from .models import SubPostVote, MiningLeaderboard
 from peewee import JOIN, fn, Clause, SQL
 import requests
 
@@ -1226,31 +1226,31 @@ def getCurrentUserStats(username):
     hr = requests.get('https://api.coin-hive.com/user/balance?name={0}&secret={1}'.format(username, config.COIN_HIVE_SECRET))
     hr = hr.json()
     if hr['success']:
-        db.update_mining_leaderboard(username, hr['balance'])
+        try:
+            mle = MiningLeaderboard.get(username == username)
+            mle.score = hr['balance']
+        except:
+            mle = MiningLeaderboard(username=username, score=hr['balance'])
+        mle.save()
     else:
         hr['balance'] = 0
     return hr
 
 
-@cache.memoize(300)
 def getMiningLeaderboard():
     """ Get mining leaderboard """
-    x = db.query('SELECT * FROM `mining_leaderboard` ORDER BY `score` '
-               'DESC LIMIT 0, 10')
-    return x.fetchall()
-
+    x = MiningLeaderboard.select().order_by(MiningLeaderboard.score.desc()).limit(10).dicts()
+    return x
 
 
 @cache.memoize(300)
 def getMiningLeaderboardJson():
     """ Get mining leaderboard """
-    x = db.query('SELECT * FROM `mining_leaderboard` ORDER BY `score` '
-               'DESC LIMIT 0, 10')
+    x = getMiningLeaderboard()
     f = []
     i = 1
-    for user in x.fetchall():
+    for user in x:
         user['rank'] = i
-        user['username'] = user['username']
         user['score'] = "{:,}".format(user['score'])
         del user['xid']
         f.append(user)

@@ -31,19 +31,21 @@
 	    </div>
 		</div>
 		<div>
-			<h2>Top 10 Leaderboard</h2>
-			{% set leaderboard = func.getMiningLeaderboard() %}
-			<div id="miningleaderboard">
-				<table>
-					{% for user in leaderboard %}
-						<tr>
-							<td class="center">{{loop.index}}</td>
-							<td><span id="top{{loop.index}}name">{{user['username']}}</span></td>
-							<td><b><span id="top{{loop.index}}score">{{"{:,}".format(user['score'])}}</span></b></td>
-						</tr>
-					{% endfor %}
-				</table>
-			</div>
+			{% cache 200, 'minerleaderboard' %}
+				<h2>Top 10 Leaderboard</h2>
+				{% set leaderboard = func.getMiningLeaderboard() %}
+				<div id="miningleaderboard">
+					<table>
+						{% for user in leaderboard %}
+							<tr>
+								<td class="center">{{loop.index}}</td>
+								<td><span id="top{{loop.index}}name">{{user['username']}}</span></td>
+								<td><b><span id="top{{loop.index}}score">{{"{:,}".format(user['score'])}}</span></b></td>
+							</tr>
+						{% endfor %}
+					</table>
+				</div>
+			{%endcache%}
 	  </div>
 	</div>
 {% endblock %}
