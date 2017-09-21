@@ -1229,12 +1229,12 @@ def getCurrentUserStats(username):
     hr = requests.get('https://api.coin-hive.com/user/balance?name={0}&secret={1}'.format(username, config.COIN_HIVE_SECRET))
     hr = hr.json()
     if hr['success']:
-        try:
-            mle = MiningLeaderboard.get(MiningLeaderboard.username == username)
-            mle.score = hr['balance']
-        except MiningLeaderboard.DoesNotExist:
-            mle = MiningLeaderboard(username=username, score=hr['balance'])
-        mle.save()
+#        try:
+#            mle = MiningLeaderboard.get(MiningLeaderboard.username == username)
+#            mle.score = hr['balance']
+#        except MiningLeaderboard.DoesNotExist:
+#            mle = MiningLeaderboard(username=username, score=hr['balance'])
+#        mle.save()
     else:
         hr['balance'] = 0
     return hr
