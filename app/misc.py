@@ -1226,19 +1226,11 @@ def getCurrentHashrate():
 
 @cache.memoize(200)
 def getCurrentUserStats(username):
-    hr = requests.get('https://api.coin-hive.com/user/balance?name={0}&secret={1}'.format(username, config.COIN_HIVE_SECRET))
-    hr = hr.json()
-    if hr['success']:
-#        try:
-#            mle = MiningLeaderboard.get(MiningLeaderboard.username == username)
-#            mle.score = hr['balance']
-#        except MiningLeaderboard.DoesNotExist:
-#            mle = MiningLeaderboard(username=username, score=hr['balance'])
-#        mle.save()
-        return hr
-    else:
-        hr['balance'] = 0
-    return hr
+    try:
+        x = MiningLeaderboard.select().where(MiningLeaderboard.username == username).get()
+        return {'balance': x.score}
+    except MiningLeaderboard.DoesNotExist:
+        return {'balance': 0}
 
 
 def getMiningLeaderboard():
