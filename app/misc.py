@@ -1235,6 +1235,7 @@ def getCurrentUserStats(username):
 #        except MiningLeaderboard.DoesNotExist:
 #            mle = MiningLeaderboard(username=username, score=hr['balance'])
 #        mle.save()
+        return hr
     else:
         hr['balance'] = 0
     return hr
