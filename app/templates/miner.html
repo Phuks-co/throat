@@ -23,10 +23,10 @@
 					{% else %}
 						<li>Mining anonymously</li>
 					{% endif %}
-	        <li>Current site hashrate: <b id="hps">{{hashrate['hashesPerSecond']}}</b> H/s</li>
-	        <li>Current site total hashes: <b id="ht">{{hashrate['hashesTotal']}}</b></li>
-	        <li>Total XMR pending: <b id="xpe">{{hashrate['xmrPending']}}</b> XMR</li>
-	        <li>Total XMR paid to phuks: <b id="xpa">{{hashrate['xmrPaid']}}</b> XMR</li>
+	        <li>Current site hashrate: <b id="hps">{{hashrate['hash']}}</b> H/s</li>
+	        <li>Current site total hashes: <b id="ht">{{hashrate['totalHashes']}}</b></li>
+	        <li>Total XMR pending: <b id="xpe">{{hashrate['amtDue']}}</b> XMR</li>
+	        <li>Total XMR paid to phuks: <b id="xpa">{{hashrate['amtPaid']}}</b> XMR</li>
 	      </ul>
 	    </div>
 		</div>
