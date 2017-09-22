@@ -1215,7 +1215,7 @@ def get_errors(form):
     return ret
 
 
-@cache.memoize(200)
+@cache.memoize(90)
 def getCurrentHashrate():
     hr = requests.get('https://supportxmr.com/api/miner/{0}/stats'.format(config.XMR_ADDRESS))
     hr = hr.json()
@@ -1224,11 +1224,11 @@ def getCurrentHashrate():
     return hr
 
 
-@cache.memoize(200)
+@cache.memoize(60)
 def getCurrentUserStats(username):
     try:
         x = MiningLeaderboard.select().where(MiningLeaderboard.username == username).get()
-        return {'balance': int(x.score / 1000000)}
+        return {'balance': x.score}
     except MiningLeaderboard.DoesNotExist:
         return {'balance': 0}
 
@@ -1239,7 +1239,7 @@ def getMiningLeaderboard():
     return x
 
 
-@cache.memoize(300)
+@cache.memoize(60)
 def getMiningLeaderboardJson():
     """ Get mining leaderboard """
     x = getMiningLeaderboard()

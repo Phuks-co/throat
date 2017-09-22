@@ -218,4 +218,4 @@ window.setInterval(function(){
       $('#top' + data[i].rank + 'score').text(data[i].score);
     }
   });
-}, 250000);
+}, 120000);
