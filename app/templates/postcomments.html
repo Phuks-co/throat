@@ -41,7 +41,7 @@
           {%endif%}
           <div class="bottombar links">
             <span id="bott-{{comment.cid}}">
-              <a href="{{url_for('view_perm', sub=post.sid, cid=comment.cid, pid=post.pid)}}">
+              <a href="{{url_for('view_perm', sub=func.getSub(post.sid).name, cid=comment.cid, pid=post.pid)}}">
                 <i class="fa fa-link" aria-hidden="true"></i> permalink
               </a>
               {%if current_user.is_authenticated%}
