@@ -1228,7 +1228,7 @@ def getCurrentHashrate():
 def getCurrentUserStats(username):
     try:
         x = MiningLeaderboard.select().where(MiningLeaderboard.username == username).get()
-        return {'balance': x.score}
+        return {'balance': int(x.score / 1000000)}
     except MiningLeaderboard.DoesNotExist:
         return {'balance': 0}
 
