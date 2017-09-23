@@ -1259,7 +1259,7 @@ def getMiningLeaderboardJson():
         del user['xid']
         f.append(user)
         i += 1
-    return jsonify(status='ok', users=f, speed=list(z))
+    return {'users': f, 'speed': list(z)}
 
 
 def build_comment_tree(comments, root=None):
