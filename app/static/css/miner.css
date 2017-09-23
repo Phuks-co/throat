@@ -318,7 +318,6 @@ body.dark #miner.running h2 {
 	position: relative;
 	text-align: center;
 	height: 96px;
-	border-bottom: 1px solid #f0f0f0;
 }
 
 #mining-stats-canvas {
