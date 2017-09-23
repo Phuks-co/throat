@@ -309,3 +309,11 @@ class MiningLeaderboard(db.Model):
 
     class Meta:
         db_table = 'mining_leaderboard'
+
+
+class MiningSpeedLeaderboard(db.Model):
+    username = CharField()
+    hashes = IntegerField()
+
+    class Meta:
+        db_table = 'mining_speed_leaderboard'
