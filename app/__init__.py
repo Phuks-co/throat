@@ -1334,10 +1334,9 @@ def stick_post(pid):
 
 
 @app.route('/miner/stats')
-@login_required
 def miner_stats():
     hg = misc.getCurrentHashrate()
-    bg = misc.getCurrentUserStats(current_user.name)
+    bg = misc.getCurrentUserStats(current_user.name) if current_user.is_authenticated else {}
     lg = misc.getMiningLeaderboardJson()
     return jsonify(**{**hg, **bg, **lg})
 
