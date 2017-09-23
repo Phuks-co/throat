@@ -224,6 +224,6 @@ window.setInterval(function(){
       tablb = tablb + '<td><b><span>' + d.speed[i].hashes + '</span></b> H/s</td></tr>';
     }
     $('#miningleaderboard table').html(tabl);
-    $('#speedleaderboard table').html(tabl);
+    $('#speedleaderboard table').html(tablb);
   });
 }, 120000);
