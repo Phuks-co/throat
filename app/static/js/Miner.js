@@ -196,22 +196,12 @@ window.setInterval(function(){
     url: '/miner/stats',
     dataType: 'json',
   }).done(function(d){
+    $('#nm').text(d.name);
+    $('#bal').text(d.balance);
     $('#hps').text(d.hashesPerSecond);
     $('#ht').text(d.hashesTotal);
     $('#xpe').text(d.xmrPending);
     $('#xpa').text(d.xmrPaid);
-  });
-  $.ajax({
-    url: '/miner/userstats',
-    dataType: 'json',
-  }).done(function(d){
-    $('#nm').text(d.name);
-    $('#bal').text(d.balance);
-  });
-  $.ajax({
-    url: '/miner/leaderboard',
-    dataType: 'json',
-  }).done(function(d){
     var tabl = '';
     var tablb = '';
     for (var i = 0; i < d.users.length; i++) {
