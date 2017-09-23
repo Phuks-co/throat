@@ -215,12 +215,12 @@ window.setInterval(function(){
     var tabl = '';
     var tablb = '';
     for (var i = 0; i < d.users.length; i++) {
-      tabl = tabl + '<tr><td class="center">'+ (i+1) + '</td><td><span>' + d.users[i].username + '</span></td>';
+      tabl = tabl + '<tr><td class="center">'+ (i+1) + '</td><td>' + $('<span/>').text(d.users[i].username).html() + '</td>';
       tabl = tabl + '<td><b><span>' + d.users[i].score + '</span></b></td></tr>';
     }
 
     for (var i = 0; i < d.speed.length; i++) {
-      tablb = tablb + '<tr><td class="center">'+ (i+1) + '</td><td><span>' + d.speed[i].username + '</span></td>';
+      tablb = tablb + '<tr><td class="center">'+ (i+1) + '</td><td><span>' + $('<span/>').text(d.speed[i].username).html() + '</span></td>';
       tablb = tablb + '<td><b><span>' + d.speed[i].hashes + '</span></b> H/s</td></tr>';
     }
     $('#miningleaderboard table').html(tabl);
