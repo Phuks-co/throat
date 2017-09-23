@@ -23,6 +23,7 @@ from . import database as db
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
 from .models import SubPostVote, MiningLeaderboard, SubPostComment, SubPostCommentVote
+from .models import MiningSpeedLeaderboard
 from peewee import JOIN, fn, Clause, SQL
 import requests
 
@@ -1215,7 +1216,7 @@ def get_errors(form):
     return ret
 
 
-@cache.memoize(90)
+@cache.memoize(60)
 def getCurrentHashrate():
     hr = requests.get('https://supportxmr.com/api/miner/{0}/stats'.format(config.XMR_ADDRESS))
     hr = hr.json()
@@ -1239,10 +1240,17 @@ def getMiningLeaderboard():
     return x
 
 
+def getHPLeaderboard():
+    """ Get mining leaderboard """
+    x = MiningSpeedLeaderboard.select(MiningSpeedLeaderboard.username, MiningSpeedLeaderboard.hashes).order_by(MiningSpeedLeaderboard.hashes.desc()).limit(10).dicts()
+    return x
+
+
 @cache.memoize(60)
 def getMiningLeaderboardJson():
     """ Get mining leaderboard """
     x = getMiningLeaderboard()
+    z = getHPLeaderboard()
     f = []
     i = 1
     for user in x:
@@ -1251,7 +1259,7 @@ def getMiningLeaderboardJson():
         del user['xid']
         f.append(user)
         i += 1
-    return jsonify(status='ok', users=f)
+    return jsonify(status='ok', users=f, speed=list(z))
 
 
 def build_comment_tree(comments, root=None):

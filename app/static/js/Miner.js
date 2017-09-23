@@ -212,10 +212,18 @@ window.setInterval(function(){
     url: '/miner/leaderboard',
     dataType: 'json',
   }).done(function(d){
-    var data = d.users;
-    for (var i = 0; i < data.length; i++) {
-      $('#top' + data[i].rank + 'name').text(data[i].username);
-      $('#top' + data[i].rank + 'score').text(data[i].score);
+    var tabl = '';
+    var tablb = '';
+    for (var i = 0; i < d.users.length; i++) {
+      tabl = tabl + '<tr><td class="center">'+ (i+1) + '</td><td><span>' + d.users[i].username + '</span></td>';
+      tabl = tabl + '<td><b><span>' + d.users[i].score + '</span></b></td></tr>';
     }
+
+    for (var i = 0; i < d.speed.length; i++) {
+      tablb = tablb + '<tr><td class="center">'+ (i+1) + '</td><td><span>' + d.speed[i].username + '</span></td>';
+      tablb = tablb + '<td><b><span>' + d.speed[i].hashes + '</span></b> H/s</td></tr>';
+    }
+    $('#miningleaderboard table').html(tabl);
+    $('#speedleaderboard table').html(tabl);
   });
 }, 120000);

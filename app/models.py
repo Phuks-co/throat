@@ -304,7 +304,7 @@ class Shekels(db.Model):
 
 class MiningLeaderboard(db.Model):
     xid = PrimaryKeyField()
-    username = CharField()
+    username = CharField()  # TODO: MAKE UNIQUE!!
     score = IntegerField()
 
     class Meta:
@@ -312,7 +312,7 @@ class MiningLeaderboard(db.Model):
 
 
 class MiningSpeedLeaderboard(db.Model):
-    username = CharField()
+    username = CharField()  # TODO: MAKE UNIQUE!!
     hashes = IntegerField()
 
     class Meta:

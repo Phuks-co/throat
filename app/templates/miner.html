@@ -30,23 +30,6 @@
 	      </ul>
 	    </div>
 		</div>
-		<div>
-			{% cache 200, 'minerleaderboard' %}
-				<h2>Top 10 Leaderboard</h2>
-				{% set leaderboard = func.getMiningLeaderboard() %}
-				<div id="miningleaderboard">
-					<table>
-						{% for user in leaderboard %}
-							<tr>
-								<td class="center">{{loop.index}}</td>
-								<td><span id="top{{loop.index}}name">{{user['username']}}</span></td>
-								<td><b><span id="top{{loop.index}}score">{{"{:,}".format(user['score'])}}</span></b></td>
-							</tr>
-						{% endfor %}
-					</table>
-				</div>
-			{%endcache%}
-	  </div>
 	</div>
 {% endblock %}
 
@@ -109,6 +92,44 @@
       		</div>
       	</div>
       </div>
+			<hr>
+			<h2>Leaderboard</h2>
+			<div class="pure-g">
+				<div class="pure-u-8-24">
+					<h3>Total contributed</h3>
+					{% cache 60, 'minerleaderboard' %}
+						{% set leaderboard = func.getMiningLeaderboard() %}
+						<div id="miningleaderboard">
+							<table>
+								{% for user in leaderboard %}
+									<tr>
+										<td class="center">{{loop.index}}</td>
+										<td><span id="top{{loop.index}}name">{{user['username']}}</span></td>
+										<td><b><span id="top{{loop.index}}score">{{"{:,}".format(user['score'])}}</span></b></td>
+									</tr>
+								{% endfor %}
+							</table>
+						</div>
+					{%endcache%}
+				</div>
+				<div class="pure-u-8-24">
+					{% cache 60, 'hashleaderboard' %}
+						<h3>Hashing power</h3>
+						{% set leaderboard = func.getHPLeaderboard() %}
+						<div id="speedleaderboard">
+							<table>
+								{% for user in leaderboard %}
+									<tr>
+										<td class="center">{{loop.index}}</td>
+										<td><span id="top{{loop.index}}name">{{user['username']}}</span></td>
+										<td><b><span id="top{{loop.index}}score">{{"{:,}".format(user['score'])}}</span></b></td>
+									</tr>
+								{% endfor %}
+							</table>
+						</div>
+					{%endcache%}
+				</div>
+			</div>
     </div>
   </div>
 
