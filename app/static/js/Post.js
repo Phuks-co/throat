@@ -211,7 +211,7 @@ $(document).on('click', '.togglecomment.collapse', function(e){
   $('#'+cid+' .pchild').hide();
   $(this).removeClass('collapse');
   $(this).addClass('expand');
-  $(this).parent().parent().css('margin-left', '1.3em');
+  $(this).parent().parent().css('margin-left', '1.6em');
   $(this).text = '[+]';
 })
 
