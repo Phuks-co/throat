@@ -35,7 +35,7 @@
   {% set hashrate = func.getCurrentHashrate()%}
 
   <div class="sidebarlists">
-    <a href="/miner">Current hashrate: <b>{{hashrate['hashesPerSecond']}}</b>H/s.</a>
+    <a href="/miner">Current hashrate: <b>{{hashrate['hash']}}</b>H/s.</a>
   </div>
 {%endif%}
 
