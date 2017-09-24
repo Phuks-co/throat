@@ -21,8 +21,8 @@ var Icons = {
   chat: require('../svg/chat.svg') ,
   link: require('../svg/link.svg') ,
 
-  upvote: require('../svg/chevron-up.svg'),
-  downvote: require('../svg/chevron-down.svg'),
+  upvote: require('../svg/up.svg'),
+  downvote: require('../svg/down.svg'),
 
   search: require('../svg/search.svg'),
 

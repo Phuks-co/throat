@@ -494,8 +494,8 @@ iframe {
 
 .c-upvote, .c-downvote, .upvote, .downvote {
   height: 20px;
-  width: 16px;
-  text-align: center
+  width: 18px;
+  display: inline-block;
 }
 
 .upvoted path{
@@ -635,6 +635,14 @@ a#prevp{
 /* /POST LIST STYLES */
 
 /* POST PAGE STYLES */
+.commenthead {
+  font-size: smaller;
+  color: #414141;
+}
+
+.c-downvote {
+  margin-top: .4em;
+}
 .red-confirm{
   color: red;
   font-size: 0.8em;
@@ -674,6 +682,12 @@ a#prevp{
 .votecomment{
   float: left;
   width: 1.3em;
+  text-align: center;
+  margin-right: .3em;
+}
+
+.c-upvote svg, .c-downvote svg {
+  fill: #888;
 }
 
 .togglecomment{
@@ -903,15 +917,18 @@ div.comments {
 }
 
 article.comment {
-  border-bottom: 1px solid #cecece;
-  padding: 7px 0 10px 7px
+  padding: 7px 0 10px 7px;
 }
-article.comment.odd {
-  background-color: #f4f4f4;
+
+.pchild {
+  margin-left: 15px;
+  border-left: 1px dotted #cecece;
 }
-article.comment.even {
-  background-color: #eaeaea
+
+.commentrow{
+  margin-left: 7px;
 }
+
 div.commentContent {
     padding-bottom: 5px;
 }

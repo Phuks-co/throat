@@ -218,7 +218,7 @@ $(document).on('click', '.togglecomment.collapse', function(e){
 $(document).on('click', '.togglecomment.expand', function(e){
   e.preventDefault();
   var cid = $(this).data('cid');
-  $(this).text('[-]')
+  $(this).text('[–]')
   $('#comment-'+cid+' .votecomment').show();
   $('#comment-'+cid+' .bottombar').show();
   $('#comment-'+cid+' .commblock .content').show();

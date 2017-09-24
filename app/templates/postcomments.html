@@ -5,13 +5,12 @@
         <div class="pull left votecomment">
           {# vote arrow div #}
           <div title="Upvote" class="c-upvote{%if comment.positive == True %} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
-          <div class="score">{{func.get_comment_score(comment)}}</div>
           <div title="Downvote" class="c-downvote{%if comment.positive == False %} downvoted{%endif%}" data-pid="{{post.pid}}" data-icon="downvote"></div>
         </div>
         <div class="commblock">
           <div class="commenthead">
               <a class="togglecomment {% if comment.status == 1 %}expand{%else%}collapse{%endif%}" data-cid="{{comment.cid}}">
-                {% if comment.status == 1 %}[+]{%else%}[-]{%endif%}
+                {% if comment.status == 1 %}[+]{%else%}[–]{%endif%}
               </a>
             {# if post.ptype == 1 %}
               <p class="modpost"> Mod post</p>
@@ -21,8 +20,9 @@
               {%else%}
                 <a class="poster deleted">[Deleted]</a>
               {%endif%}
+              <b>{{func.get_comment_score(comment)}} points</b>
               <span class="time ">
-                Posted <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago>
+                 <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago>
               </span>
             {% if comment.lastedit and not comment.status == 1 %}
               <span class="time edited">
