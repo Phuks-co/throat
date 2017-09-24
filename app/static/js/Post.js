@@ -204,6 +204,7 @@ $(document).on('click', '.loadsibling', function(e){
 $(document).on('click', '.togglecomment.collapse', function(e){
   e.preventDefault();
   var cid = $(this).data('cid');
+  $(this).text('[+]')
   $('#comment-'+cid+' .votecomment').hide();
   $('#comment-'+cid+' .bottombar').hide();
   $('#comment-'+cid+' .commblock .content').hide();
@@ -217,10 +218,11 @@ $(document).on('click', '.togglecomment.collapse', function(e){
 $(document).on('click', '.togglecomment.expand', function(e){
   e.preventDefault();
   var cid = $(this).data('cid');
+  $(this).text('[-]')
   $('#comment-'+cid+' .votecomment').show();
   $('#comment-'+cid+' .bottombar').show();
-  $('#child-'+cid).show();
-  $('#content-'+cid).show();
+  $('#comment-'+cid+' .commblock .content').show();
+  $('#'+cid+' .pchild').show();
   $(this).removeClass('expand');
   $(this).addClass('collapse');
   $(this).text = '[-]';
