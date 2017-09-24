@@ -59,7 +59,7 @@
         </div>
       </div>
       {% if comment['moresiblings'] %}
-        <a href="#" class="loadsibling" data-page="{{siblingpage}}" data-cid="{{comment.cid}}">Load more ({{comment.moresiblings}} comments)</a>
+        <a href="#" class="loadsibling" data-page="{{siblingpage}}" data-cid="{{comment.parent}}">Load more ({{comment.moresiblings}} comments)</a>
       {% endif %}
       <div id="child-{{comment.cid}}" class="pchild" {% if comment.status == 1 %}hidden{%endif%}>
         {% if comment['morechildren'] %}
@@ -72,5 +72,5 @@
   {%endif%}
 {%endfor%}
 {% if comments[0]['cid'] == 0 %}
-  <a href="#" class="loadmore">Load more ({{comments[0].moresiblings}} comments)</a>
+  <a href="#" class="loadsibling" data-pid="{{post.pid}}" data-page="{{siblingpage}}" data-cid="">Load more ({{comments[0].moresiblings}} comments)</a>
 {% endif %}

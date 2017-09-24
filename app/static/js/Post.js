@@ -181,14 +181,33 @@ $(document).on('click', '.loadchildren', function(e){
   });
 });
 
+$(document).on('click', '.loadsibling', function(e){
+  e.preventDefault();
+  var ob = $(this)
+  var page = (ob.data('page') !== '') ? ob.data('page') : 1;
+  var parent = (ob.data('cid') !== '') ? ob.data('cid') : 1;
+  $.ajax({
+    type: "POST",
+    dataType: 'json',
+    url: '/do/get_sibling/' + $(this).data('pid') + '/' + parent + '/' + page,
+    dataType: 'html',
+    success: function(data){
+      ob.replaceWith(data);
+      $('div[data-icon],span[data-icon]').each(function(i){
+        this.innerHTML = Icons[$(this).data('icon')];
+      });
+    }
+  });
+});
+
 // collapse/expand comment
 $(document).on('click', '.togglecomment.collapse', function(e){
   e.preventDefault();
   var cid = $(this).data('cid');
   $('#comment-'+cid+' .votecomment').hide();
   $('#comment-'+cid+' .bottombar').hide();
-  $('#content-'+cid).hide();
-  $('#child-'+cid).hide();
+  $('#comment-'+cid+' .commblock .content').hide();
+  $('#'+cid+' .pchild').hide();
   $(this).removeClass('collapse');
   $(this).addClass('expand');
   $(this).parent().parent().css('margin-left', '1.3em');
