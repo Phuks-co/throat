@@ -407,9 +407,7 @@ span#notification.fade {
 }
 
 .misctainer {
-  padding-right: .2em;
   display: inline-block;
-  width: 120px;
   float: left;
 }
 
@@ -526,7 +524,6 @@ iframe {
   position: relative;
   width: 70px;
   height: 70px;
-  margin: 0 6px;
 }
 
 .expando svg path{
@@ -635,6 +632,13 @@ a#prevp{
 /* /POST LIST STYLES */
 
 /* POST PAGE STYLES */
+
+@media screen and (max-width: 48em) {
+  .wholepost .thcontainer {
+    display: none;
+  }
+}
+
 .commenthead {
   font-size: smaller;
   color: #414141;
