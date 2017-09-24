@@ -124,16 +124,6 @@
           <span class="deleted">[deleted]</span>
         {%endif%}
        </div>
-       {% if post.content %}
-       {% if not db.is_post_deleted(post) %}
-         <div id="postcontent">
-           {{markdown(post.content)|safe}}
-         </div>
-         <div id="post-source">{{post.content}}</div>
-       {%else%}
-        <div class="deleted">[deleted]</div>
-       {%endif%}
-       {%endif%}
        <ul class="links" data-pid="{{post.pid}}">
          {% if current_user.is_authenticated and not db.is_post_deleted(post) %}
           <li><a class="post-source">source</a></li>
@@ -162,8 +152,19 @@
            {%endif%}
          {%endif%}
        </ul>
+
+    </div>
+  </div>
+   {% if post.content %}
+   {% if not db.is_post_deleted(post) %}
+     <div id="postcontent">
+       {{markdown(post.content)|safe}}
      </div>
-   </div>
+     <div id="post-source">{{post.content}}</div>
+   {%else%}
+    <div class="deleted">[deleted]</div>
+   {%endif%}
+   {%endif%}
 
    {%if current_user.is_authenticated %}
      <form data-reset="true" data-reload='true' action="{{url_for('do.create_comment', sub=func.getSub(post.sid).name, pid=post.pid)}}" class="comment-form ajaxform static pure-form">
