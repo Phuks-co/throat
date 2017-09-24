@@ -414,6 +414,7 @@ span#notification.fade {
 .pbody{
   display: inline-block;
   width: calc(100% - 130px);
+  padding-left: .5em;
 }
 
 .post:after {
@@ -487,7 +488,9 @@ iframe {
     height: 70px;
 }
 .post .thumbnail img{
-  margin-top: .15em;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .c-upvote, .c-downvote, .upvote, .downvote {
