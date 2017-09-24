@@ -20,7 +20,7 @@
               {%else%}
                 <a class="poster deleted">[Deleted]</a>
               {%endif%}
-              <b>{{func.get_comment_score(comment)}} points</b>
+              <b><span class="cscore">{{func.get_comment_score(comment)}}</span> points</b>
               <span class="time ">
                  <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago>
               </span>
