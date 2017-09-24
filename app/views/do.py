@@ -1792,7 +1792,7 @@ def get_children(pid, cid):
     return render_template('postcomments.html', sub=sub, post=post, comments=misc.expand_comment_tree(cmxk))
 
 
-@do.route('/do/get_sibling/<pid>/<cid>/<int:page>', methods=['POST', 'GET'])
+@do.route('/do/get_sibling/<pid>/<cid>/<int:page>', methods=['POST'])
 def get_sibling(pid, cid, page):  # XXX: Really similar to get_children. Should merge them in the future
     """ Gets children comments for <cid> """
     if cid == '1':
