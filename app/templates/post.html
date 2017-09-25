@@ -1,25 +1,12 @@
 {% extends "layout.html" %}
 {% block title %}{{post.title}} | {{config.LEMA}}{% endblock %}
 
-{% block navbar %}
-<li>
-  <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}">
-    {% if func.isNSFW(func.getSub(post.sid)) %}
-      <span class="bgred" alt="Not safe for work">NSFW</span>
-    {% endif %}
-    {{func.getSub(post.sid).name}}
-  </a>
-</li>
-<li><a href="{{url_for('view_sub_hot', sub=func.getSub(post.sid).name)}}">Hot</a></li>
-<li><a href="{{url_for('view_sub_top', sub=func.getSub(post.sid).name)}}">Top</a></li>
-<li><a href="{{url_for('view_sub_new', sub=func.getSub(post.sid).name)}}">New</a></li>
-{% endblock %}
 {% block sidebar %}
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
-    <a href="{{url_for('view_sub_hot', sub=func.getSub(post.sid).name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_hot' %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
-    <a href="{{url_for('view_sub_top', sub=func.getSub(post.sid).name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
-    <a href="{{url_for('view_sub_new', sub=func.getSub(post.sid).name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
+    <a href="{{url_for('view_sub_hot', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_hot' %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
+    <a href="{{url_for('view_sub_top', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
+    <a href="{{url_for('view_sub_new', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
   </div>
 </div>
 
@@ -90,7 +77,7 @@
         <div title="Downvote" class="downvote{%if post.positive == 0%} downvoted{%endif%}" data-pid="{{post.pid}}" data-icon="downvote"></div>
       </div>
       <div class="thcontainer">
-        <a href="{{url_for('view_post', sub=post.sub, pid=post.pid)}}" class="title">
+        <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}" class="title">
           <div class="thumbnail">
             {% if post.thumbnail != '' and post.link != None %}
               <img src="{{config.THUMBNAIL_HOST}}{{post.thumbnail}}"/>
@@ -111,7 +98,7 @@
         {%endif%}
         {% if func.getPostFlair(post) %}<span class="flair">{{func.getPostFlair(post)}}</span>{% endif %}
         {% if post.link == None %}
-          <a href="{{url_for('view_post', sub=post.sub, pid=post.pid)}}" class="title">{{post.title}}</a>
+          <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}" class="title">{{post.title}}</a>
         {% else %}
           <a href="{{post.link}}" class="title">{{post.title}}</a> <a href="{{url_for('all_domain_new', domain=func.getDomain(post.link), page=1)}}" class="domain">({{func.getDomain(post.link)}})</a>
         {% endif %}
@@ -167,9 +154,9 @@
    {%endif%}
 
    {%if current_user.is_authenticated %}
-     <form data-reset="true" data-reload='true' action="{{url_for('do.create_comment', sub=func.getSub(post.sid).name, pid=post.pid)}}" class="comment-form ajaxform static pure-form">
+     <form data-reset="true" data-reload='true' action="{{url_for('do.create_comment', sub=sub.name, pid=post.pid)}}" class="comment-form ajaxform static pure-form">
        {{commentform.csrf_token}}
-       {{commentform.sub(value=func.getSub(post.sid).name)}}
+       {{commentform.sub(value=sub.name)}}
        {{commentform.post(value=post.pid)}}
        {{commentform.parent(value='0')}}
        <div class="markdown-editor">
@@ -178,10 +165,10 @@
        <div class="error alertbox"></div>
        <button type="submit" class="pure-button pure-button-primary">Submit comment</button>
      </form>
-     <form data-reset="true" data-reload='true'  method="POST" action="{{url_for('do.create_comment', sub=func.getSub(post.sid).name, pid=post.pid)}}" class="ajaxform comment-form moving" style="display:none">
+     <form data-reset="true" data-reload='true'  method="POST" action="{{url_for('do.create_comment', sub=sub.name, pid=post.pid)}}" class="ajaxform comment-form moving" style="display:none">
        <span class="close">×</span>
        {{commentform.csrf_token}}
-       {{commentform.sub(value=func.getSub(post.sid).name)}}
+       {{commentform.sub(value=sub.name)}}
        {{commentform.post(value=post.pid)}}
        {{commentform.parent(value='0')}}
        {{commentform.comment(class="commenttxtbox",placeholder="Write your comment here. Styling with Markdown format is supported.", rows="6")}}
@@ -225,13 +212,13 @@
     {% if func.getPostFlair(post) %}
     <h3>Current flair</h3>
     <p><div class="btn">{{func.getPostFlair(post)}}</div></p>
-    <p><div class="btn btn-blue" id="removepostflair" data-sub="{{func.getSub(post.sid).name}}" data-post="{{post.pid}}"><i class="fa fa-remove"></i> Remove current flair</div></p>
+    <p><div class="btn btn-blue" id="removepostflair" data-sub="{{sub.name}}" data-post="{{post.pid}}"><i class="fa fa-remove"></i> Remove current flair</div></p>
 
     {% endif %}
     <h3>Avalable post flairs</h3>
     <div class="btn-group" data-toggle="buttons">
       {% for ll in editpostflair.flair %}
-        <label class="btn btn-default assignpostflair" data-fl="{{ll.data}}" data-sub="{{func.getSub(post.sid).name}}" data-post="{{post.pid}}">
+        <label class="btn btn-default assignpostflair" data-fl="{{ll.data}}" data-sub="{{sub.name}}" data-post="{{post.pid}}">
           {{ll}}
           {{ll.label}}</label>
       {%endfor %}
