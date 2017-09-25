@@ -1792,7 +1792,7 @@ def get_children(pid, cid):
     return render_template('postcomments.html', sub=sub, post=post, comments=misc.expand_comment_tree(cmxk))
 
 
-@do.route('/do/get_sibling/<pid>/<cid>/<int:page>', methods=['POST'])
+@do.route('/do/get_sibling/<pid>/<cid>/<int:page>', methods=['POST', 'GET'])
 def get_sibling(pid, cid, page):  # XXX: Really similar to get_children. Should merge them in the future
     """ Gets children comments for <cid> """
     if cid == '1':
@@ -1801,7 +1801,7 @@ def get_sibling(pid, cid, page):  # XXX: Really similar to get_children. Should 
     else:
         ppage = 5
 
-    tq = SubPostComment.select(SubPostComment.cid).where(SubPostComment.parentcid == cid).where(SubPostComment.pid == pid).limit(1000).offset(page * ppage).alias('jq')
+    tq = SubPostComment.select(SubPostComment.cid).where(SubPostComment.parentcid == cid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).limit(1000).offset(page * ppage).alias('jq')
     cmskel = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
     cmskel = cmskel.join(tq, on=((tq.c.cid == SubPostComment.parentcid) | (tq.c.cid == SubPostComment.cid)))
     cmskel = cmskel.group_by(SubPostComment.cid)
