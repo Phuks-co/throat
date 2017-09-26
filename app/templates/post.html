@@ -106,7 +106,7 @@
       <div class="author">
         posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> by
         {% if not db.is_post_deleted(post) %}
-          <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}">{{func.getUser(post.uid).name}}</a>
+          <a class="authorlink" namedata="{{func.getUser(post.uid).name}}" href="{{url_for('view_user', user=func.getUser(post.uid).name)}}">{{func.getUser(post.uid).name}}</a>
         {% else %}
           <span class="deleted">[deleted]</span>
         {%endif%}
