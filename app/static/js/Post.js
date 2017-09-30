@@ -102,8 +102,8 @@ $(document).on('click', '.comment-source', function(){
   var cid = $(this).data('cid');
   var elem = document.getElementById('content-' + cid);
   var oc = elem.innerHTML;
-  var back =  document.createElement( "a" );
-  back.innerHTML = "<s>source</s>";
+  var back =  document.createElement( "s" );
+  back.innerHTML = "source";
   back.onclick = function(){
     elem.innerHTML = oc;
     $(this).parent().html('source');

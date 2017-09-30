@@ -39,19 +39,17 @@
           {%if not comment.status == 1 %}
             <div hidden id="sauce-{{comment.cid}}">{{comment.content|rnentity|e}}</div>
           {%endif%}
-          <div class="bottombar links">
-            <span id="bott-{{comment.cid}}">
-              <a href="{{url_for('view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a>
-              {%if current_user.is_authenticated%}
-                <a href="#reply" class="lnkreply" data-to="{{comment.cid}}">reply</a>
-                {% if (comment.uid == session['user_id'] or current_user.is_admin()) and not comment.status == 1 %}
-                  <a href="#edit-comment-form" class="btn btn-orange edit small edit-comment-form" data-cid="{{comment.cid}}">edit</a>
-                  <a class="delete-comment" data-cid="{{comment.cid}}">delete</a>
-                {% endif %}
-              {%endif%}
-              {%if comment.status != 1 %}<a class="comment-source" data-cid="{{comment.cid}}">source</a>{%endif%}
-            </span>
-          </div>
+          <ul class="bottombar links">
+            <li><a href="{{url_for('view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></li>
+            {%if current_user.is_authenticated%}
+              <li><a href="#reply" class="lnkreply" data-to="{{comment.cid}}">reply</a></li>
+              {% if (comment.uid == session['user_id'] or current_user.is_admin()) and not comment.status == 1 %}
+                <li><a href="#edit-comment-form" class="btn btn-orange edit small edit-comment-form" data-cid="{{comment.cid}}">edit</a></li>
+                <li><a class="delete-comment" data-cid="{{comment.cid}}">delete</a></li>
+              {% endif %}
+            {%endif%}
+            {%if comment.status != 1 %}<li><a class="comment-source" data-cid="{{comment.cid}}">source</a></li>{%endif%}
+          </ul>
         </div>
       </div>
       {% if comment['moresiblings'] %}
