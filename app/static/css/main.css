@@ -632,6 +632,20 @@ a#prevp{
   margin-right: .3em;
   border: 1px solid #e22;
 }
+
+.stickyposts{
+  margin-bottom: .5em;
+  padding-bottom: .5em;
+  border-bottom: 1px solid #bdbdbd;
+}
+
+.styckyposts .post{
+  border: 1px solid #d9d8d6;
+}
+
+.stick {
+  color: #009300
+}
 /* /POST LIST STYLES */
 
 /* POST PAGE STYLES */

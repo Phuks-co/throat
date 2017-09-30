@@ -1428,12 +1428,11 @@ def toggle_sticky(post):
         else:
             db.uquery('DELETE FROM `sub_metadata` WHERE `value`=%s AND '
                       '`key`=%s', (post['pid'], 'sticky'))
-        cache.delete_memoized(misc.getStickies, post['sid'])
+        cache.delete_memoized(misc.getStickyPid, post['sid'])
         cache.delete_memoized(db.get_sub_metadata, post['sid'], 'sticky',
                               _all=True)
         ckey = make_template_fragment_key('sticky', vary_on=[post['sid']])
         cache.delete(ckey)
-
     return jsonify(status='ok')
 
 

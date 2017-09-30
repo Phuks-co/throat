@@ -85,15 +85,19 @@
 
 {% block content %}
 {{ super() }}
-{% cache 300, 'sticky', sub.sid %}
-  {% set sticks = func.getStickies(sub.sid) %}
-  {% for post in sticks %}
-    {% include "indexpost.html" %}
-  {%endfor%}
-{% endcache %}
+{% if func.getStickyPid %}
+<div class="stickyposts">
+  {% cache 300, 'sticky', sub.sid %}
+    {% set sticks = func.getStickies(sub.sid) %}
+    {% for post in sticks %}
+      {% include "indexpost.html" %}
+    {%endfor%}
+  {% endcache %}
+</div>
+{% endif %}
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
 {# cache 120, 'subposts', sub.sid, sort_type, page|string #}
-  {% for post in posts if not db.is_post_deleted(post) and not post in func.getStickies(sub.sid)%}
+  {% for post in posts if not db.is_post_deleted(post) and not post.pid in func.getStickyPid(sub.sid)%}
     {% include "indexpost.html" %}
   {% endfor %}
 {# endcache #}

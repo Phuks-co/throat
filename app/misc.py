@@ -23,7 +23,7 @@ from . import database as db
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
 from .models import SubPostVote, MiningLeaderboard, SubPostComment, SubPostCommentVote
-from .models import MiningSpeedLeaderboard
+from .models import MiningSpeedLeaderboard, SubMetadata
 from peewee import JOIN, fn, Clause, SQL
 import requests
 
@@ -652,16 +652,6 @@ def getSubPostCount(sub):
     return y
 
 
-@cache.memoize(5)
-def getStickies(sid):
-    """ Returns a list of stickied SubPosts """
-    x = db.get_sub_metadata(sid, 'sticky', _all=True)
-    r = []
-    for i in x:
-        r.append(db.get_post_from_pid(i['value']))
-    return r
-
-
 @cache.memoize(60)
 def isRestricted(sub):
     """ Returns true if the sub is marked as Restricted """
@@ -1185,6 +1175,19 @@ def getAnnouncement():
                               User.name.alias('user'), Sub.name.alias('sub')).where(SubPost.pid == ann.value)
     except SiteMetadata.DoesNotExist:
         return False
+
+
+@cache.memoize(5)
+def getStickyPid(sid):
+    """ Returns a list of stickied SubPosts """
+    x = SubMetadata.select(SubMetadata.value).where(SubMetadata.sid == sid).where(SubMetadata.key == 'sticky').dicts()
+    return [int(y['value']) for y in x]
+
+
+def getStickies(sid):
+    sp = getStickyPid(sid)
+    posts = postListQueryBase().where(SubPost.pid << sp).dicts()
+    return posts
 
 
 def load_user(user_id):

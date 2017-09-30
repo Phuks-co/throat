@@ -131,7 +131,7 @@
            {%endif%}
            <form id="delete-post-form" class="hide">{{delpostform.csrf_token}}{{delpostform.post(value=post.pid)}}</form>
            {% if current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
-             {% if post in func.getStickies(post['sid']) %}
+             {% if post.pid in func.getStickyPid(post['sid']) %}
                <li><a class="stick-post">unstick</a></li>
              {% else %}
                <li><a class="stick-post">make sticky</a></li>
