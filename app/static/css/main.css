@@ -108,9 +108,10 @@ abbr[title]{
 }
 
 .separator {
-  margin-left: 7px;
-  margin-right: 7px;
-  border-left: 1px #444 dotted;
+  margin-left: .1em;
+  margin-right: .25em;
+  border-left: 1px #444 solid;
+  padding-top: 3px;
 }
 
 a {
@@ -968,13 +969,14 @@ article.comment .score{
 /* EDITOR STYLES */
 .editbtns {
   height: 24px;
-  padding-top: 2px;
+  margin-top: 2px;
   padding-left: .2em;
   width: 95%;
   border: 1px solid #ccc;
 }
 
 .editbtns div{
+  margin-top: 2px;
   display: inline-block;
   height: 18px;
   width: 18px;
@@ -982,6 +984,10 @@ article.comment .score{
   margin-right: 1px;
   text-align: center;
   padding-top: 1px;
+}
+
+.editbtns div:hover{
+  background-color: #ccc;
 }
 
 .editbtns div svg{
@@ -996,6 +1002,9 @@ article.comment .score{
   border-top-left-radius: unset;
   border-top-right-radius: unset;
 }
+
+
+/* MISC */
 
 ::-webkit-scrollbar {
    width: 4px;

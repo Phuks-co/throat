@@ -11,7 +11,7 @@ from io import BytesIO
 from PIL import Image
 from bs4 import BeautifulSoup
 from functools import update_wrapper
-import markdown
+import misaka as m
 from mdx_gfm import GithubFlavoredMarkdownExtension
 from redis import Redis
 import sendgrid
@@ -360,55 +360,39 @@ def safeRequest(url):
     return (r, f)
 
 
-class NiceLinkPattern(markdown.inlinepatterns.LinkPattern):
-    """ Return a link element from the given match. """
-    def handleMatch(self, m):
-        el = markdown.util.etree.Element("a")
-        el.text = markdown.util.AtomicString(m.group(2))
-        if el.text.startswith('@') or el.text.startswith('/u/'):
-            href = '/u/' + m.group(4)
-        elif el.text.startswith('/s/'):
-            href = '/s/' + m.group(4)
-
-        if href:
-            if href[0] == "<":
-                href = href[1:-1]
-            el.set("href", self.sanitize_url(self.unescape(href.strip())))
-        else:
-            el.set("href", "")
-
-        return el
+RE_AMENTION = re.compile(r'(?:(\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/s\/)([A-Za-z0-9\-\_]+)))')
 
 
-RE_AMENTION = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/s\/)' \
-              r'([A-Za-z0-9\-\_]+))'
+class PhuksDown(m.SaferHtmlRenderer):
+    _allowed_url_re = re.compile(r'^(https?:|\/)', re.I)
+
+    def image(self, raw_url, title='', alt=''):
+        return False
+
+    def check_url(self, url, is_image_src=False):
+        return bool(self._allowed_url_re.match(url))
 
 
-class RestrictedMarkdown(markdown.Extension):
-    """ Class to restrict some markdown stuff """
-    RE_URL = r'(<(?:f|ht)tps?://[^>]*>|\b(?:f|ht)tps?://[^)<>\s\'"]+[^.,)' \
-             r'<>\s\'"]|\bwww\.[^)<>\s\'"]+[^.,)<>\s\'"]|[^(<\s\'"]+\.' \
-             r'(?:com|net|org)\b)'
-
-    def extendMarkdown(self, md, md_globals):
-        """ Here we disable stuff """
-        del md.inlinePatterns['image_link']
-        del md.inlinePatterns['image_reference']
-        user_tag = NiceLinkPattern(RE_AMENTION, md)
-        md.inlinePatterns.add('user', user_tag, '<not_strong')
-
-
-md_class = markdown.Markdown(extensions=['markdown.extensions.tables',
-                                         RestrictedMarkdown(),
-                                         GithubFlavoredMarkdownExtension()],
-                             safe_mode='escape')
+md = m.Markdown(PhuksDown(sanitization_mode='escape'),
+                extensions=['tables', 'fenced-code', 'autolink', 'strikethrough',
+                            'superscript'])
 
 
 def our_markdown(text):
     """ Here we create a custom markdown function where we load all the
     extensions we need. """
+    def repl(match):
+        if match.group(3) is None:
+            return match.group(0)
+
+        if match.group(3) == '@':
+            ln = '/u/' + match.group(4)
+        else:
+            ln = match.group(4)
+        return '[{0}]({1})'.format(match.group(2), ln)
+    text = RE_AMENTION.sub(repl, text)
     try:
-        return md_class.convert(text)
+        return md(text)
     except RecursionError:
         return '> tfw tried to break the site'
 
