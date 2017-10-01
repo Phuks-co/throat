@@ -12,7 +12,6 @@ from PIL import Image
 from bs4 import BeautifulSoup
 from functools import update_wrapper
 import misaka as m
-from mdx_gfm import GithubFlavoredMarkdownExtension
 from redis import Redis
 import sendgrid
 import config
@@ -1272,8 +1271,8 @@ def build_comment_tree(comments, root=None):
                     getstuff.append(k)
                 tmpnm = {'cid': k, 'children': do_the_needful(k, depth + 1)}
                 ccount = len(tmpnm['children'])
-                for m in tmpnm['children']:
-                    ccount += m['ccount']
+                for k in tmpnm['children']:
+                    ccount += k['ccount']
                 tmpnm['ccount'] = ccount
                 if len(tmpnm['children']) > 5:
                     tmpnm['moresiblings'] = len(tmpnm['children']) - 5
