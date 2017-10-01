@@ -5,7 +5,7 @@ flask-assets
 webassets
 jsmin
 cssmin
-markdown2
+misaka
 flask-login
 feedgen
 flask-cache
