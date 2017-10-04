@@ -7,107 +7,142 @@
 {% block sidebar %}
 {{ super() }}
 <div class="row buttons inbox">
-  <div class="col-3"><a class="btn{% if current_user.new_pm_count() > 0 %} btn-orange{% endif %}" href="{{ url_for('view_messages') }}">
-    <i class="fa fa-user" aria-hidden="true"></i>{% if current_user.new_pm_count() > 0 %} <i class="fa fa-envelope" aria-hidden="true"></i> {{current_user.new_pm_count()}}{% endif %}</a>
+  <div class="">
+    <a class="sbm-post pure-button" href="{{ url_for('view_messages') }}">
+      Inbox
+      {% if current_user.new_pm_count() > 0 %}
+        <span class="newmsgcount" style="inline-block;"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{current_user.new_pm_count()}}</span>
+      {% endif %}
+    </a>
   </div>
-  <div class="col-3"><a class="btn{% if current_user.new_postreply_count() > 0 %} btn-orange{% endif %}" href="{{ url_for('view_messages_postreplies') }}">
-    <i class="fa fa-list" aria-hidden="true"></i>{% if current_user.new_postreply_count() > 0 %} <i class="fa fa-envelope" aria-hidden="true"></i> {{current_user.new_postreply_count()}}{% endif %}</a>
+
+  <div class="">
+    <a class="sbm-post pure-button" href="{{ url_for('view_messages_postreplies') }}">
+      Post Replies
+      {% if current_user.new_postreply_count() > 0 %}
+        <span class="newmsgcount" style="inline-block;"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{current_user.new_postreply_count()}}</span>
+      {% endif %}
+    </a>
   </div>
-  <div class="col-3"><a class="btn{% if current_user.new_comreply_count() > 0 %} btn-orange{% endif %}" href="{{ url_for('view_messages_comreplies') }}">
-    <i class="fa fa-comments" aria-hidden="true"></i>{% if current_user.new_comreply_count() > 0 %} <i class="fa fa-envelope" aria-hidden="true"></i> {{current_user.new_comreply_count()}}{% endif %}</a>
+
+  <div class="">
+    <a class="sbm-post pure-button" href="{{ url_for('view_messages_comreplies') }}">
+      Comment Replies
+      {% if current_user.new_comreply_count() > 0 %}
+        <span class="newmsgcount" style="inline-block;"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{current_user.new_comreply_count()}}</span>
+      {% endif %}
+    </a>
   </div>
-  <div class="col-3"><a class="btn"  href="{{ url_for('view_messages_sent') }}">
-    <i class="fa fa-send-o" aria-hidden="true"></i></a>
+
+  <hr>
+
+  <div class="">
+    <a class="sbm-post pure-button" href="{{ url_for('view_messages_modmail') }}">
+    Modmail
+    {% if current_user.new_modmail_count() > 0 %}
+      <span class="newmsgcount" style="inline-block;"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{current_user.new_modmail_count()}}</span>
+    {% endif %}
+    </a>
   </div>
-  <div class="col-12"><a class="btn{% if current_user.new_modmail_count() > 0 %} btn-orange{% endif %}"  href="{{ url_for('view_messages_modmail') }}">
-    <i class="fa fa-user-plus" aria-hidden="true"></i> Modmail {% if current_user.new_modmail_count() > 0 %} <i class="fa fa-envelope" aria-hidden="true"></i> {{current_user.new_modmail_count()}}{% endif %}</a>
+
+  <hr>
+
+  <div class="">
+    <a class="sbm-post pure-button" href="{{ url_for('view_messages_sent') }}">
+      Sent Messages
+    </a>
   </div>
-  <div class="col-12"><a class="btn"  href="{{ url_for('view_saved_messages') }}">
-    <i class="fa fa-save" aria-hidden="true"></i> Saved Messages</a>
+
+  <div class=""><a class="sbm-post pure-button"  href="{{ url_for('view_saved_messages') }}">
+    Saved Messages</a>
   </div>
 </div>
 {% endblock %}
 
 {% block content %}
 {{ super() }}
-<div class="user-activity col-12">
-    <h3>
-      {{box_name}}
-      {% if box_name != 'Sent' and box_name != 'Replies' %}
-        <a data-boxid="{{boxID}}" data-name="{{current_user.name}}" class="readall btn small right">
-        <i class="fa fa-folder-open" aria-hidden="true"></i> Mark all as read</a>
-      {% endif %}
-    </h3>
-{% for message in messages %}
-    <article class="pmessage post" data-replyto='{{message.sentby}}'
-    {% if box_name == 'Replies' %}data-sub='{{func.getCommentSub(message.mlink).name}}' data-post='{{db.get_comment_from_cid(message.mlink).pid}}' data-parent='{{message.mlink}}'{%endif%}
-    data-replytitle='Re: {{message.subject}}'>
-      <div class="main">
-        {% if box_name == 'Replies' %}
-          <div class="pull left votecomment" style="margin-right: 10px;">
-            {# vote arrow div #}
-              <form class="cuvform" id="cuvform-{{db.get_comment_from_cid(message.mlink).cid}}">
-                <div class="cupvote{%if func.hasVotedComment(current_user.get_id(), db.get_comment_from_cid(message.mlink))%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
-                {% set uv = form.VoteForm() %}
-                {{uv.csrf_token}}{{uv.post(value=db.get_comment_from_cid(message.mlink).cid)}}
-              </form>
-              <p class="count">{{func.get_comment_score(db.get_comment_from_cid(message.mlink))}}</p>
-              <form class="cdvform" id="cdvform-{{db.get_comment_from_cid(message.mlink).cid}}">
-                <div class="cdownvote{%if func.hasVotedComment(current_user.get_id(), db.get_comment_from_cid(message.mlink), False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
-                {% set dv = form.VoteForm() %}
-                {{uv.csrf_token}}{{uv.post(value=db.get_comment_from_cid(message.mlink).cid)}}
-              </form>
-          </div>
-          <div>
-            <p class="title"><a href="{{url_for('view_comment_inbox', cid=message.mlink)}}">{{message.subject}}</a></p>
-            <p class="container">{{markdown(db.get_comment_from_cid(message.mlink).content)|safe}}</p>
-          </div>
-        {% else %}
-          <p class="title">{{message.subject}}</p>
-          <p class="container">{{markdown(message.content)|safe}}</p>
-        {% endif %}
-        {% if message.mtype == 2 %}
-          <p>Please visit: <a href="{{url_for('edit_sub_mods', sub=message.mlink)}}"> /s/{{message.mlink}}/mods</a><p>
-        {% endif %}
-        {% if message.mtype == 7 %}
-          <p>Please visit: <a href="{{url_for('view_sub_bans', sub=message.mlink)}}"> /s/{{message.mlink}}/bannedusers</a><p>
-        {% endif %}
-        <p class="author"><time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>
-        <p class="container">
-          {% if box_name != 'Sent' %}
-            <a href="{{url_for('view_user', user=db.get_user_from_uid(message.sentby).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{db.get_user_from_uid(message.sentby).name}}</a>
-            {% if not message.read %}
-                <a class="unread btn btn-orange edit small" data-mid="{{message.mid}}"><i class="fa fa-circle-o" aria-hidden="true"></i> {% if box_name != "Replies" %}mark as read{%else%}new{%endif%}</a>
-            {% else %}
-              <a class="read btn small"><i class="fa fa-folder-open" aria-hidden="true"></i> read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
-            {% endif %}
-            {% if message.mtype != 8 %}
-              {% if box_name == 'Replies' %}
-                <a href="#comment-form" class="btn small replycomment popup"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
-                <a href="{{ url_for('view_perm', sub=func.getCommentSub(message.mlink).name, pid=db.get_comment_from_cid(message.mlink).pid, cid=message.mlink) }}" class="btn small"><i class="fa fa-link" aria-hidden="true"></i> permalink</a>
-              {%else%}
-                <a href="#msg-form" data-mid="{{message.mid}}" class="btn small replymsg popup"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
-              {%endif%}
-              <!--<a class="btn small"><i class="fa fa-mail-forward" aria-hidden="true"></i> forward</a>-->
-            {%endif%}
-            {% if boxID != "5" %}
-              <a class="savepm btn small btn-green" data-mid="{{message.mid}}"><i class="fa fa-save" aria-hidden="true"></i> save</a>
-            {% endif %}
-            <a class="delete btn small btn-red" data-mid="{{message.mid}}"><i class="fa fa-trash" aria-hidden="true"></i> delete</a>
-          {% else %}
-            <a href="{{url_for('view_user', user=db.get_user_from_uid(message.receivedby).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{db.get_user_from_uid(message.receivedby).name}}</a>
+<div id="center-container">
+  <div class="content">
+    <div class="user-activity col-12">
+        <h3>
+          {{box_name}}
+          {% if box_name != 'Sent' and box_name != 'Replies' %}
+            <a data-boxid="{{boxID}}" data-name="{{current_user.name}}" class="readall btn small right">
+            <i class="fa fa-folder-open" aria-hidden="true"></i> Mark all as read</a>
           {% endif %}
-        </p>
-      </div>
-    </article>
-{% endfor %}
+        </h3>
+    {% for message in messages %}
+        <article class="pmessage post" data-replyto='{{message.sentby}}'
+        {% if box_name == 'Replies' %}data-sub='{{func.getCommentSub(message.mlink).name}}' data-post='{{db.get_comment_from_cid(message.mlink).pid}}' data-parent='{{message.mlink}}'{%endif%}
+        data-replytitle='Re: {{message.subject}}'>
+          <div class="main">
+            {% if box_name == 'Replies' %}
+              <div class="pull left votecomment" style="margin-right: 10px;">
+                {# vote arrow div #}
+                  <form class="cuvform" id="cuvform-{{db.get_comment_from_cid(message.mlink).cid}}">
+                    <div class="cupvote{%if func.hasVotedComment(current_user.get_id(), db.get_comment_from_cid(message.mlink))%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
+                    {% set uv = form.VoteForm() %}
+                    {{uv.csrf_token}}{{uv.post(value=db.get_comment_from_cid(message.mlink).cid)}}
+                  </form>
+                  <p class="count">{{func.get_comment_score(db.get_comment_from_cid(message.mlink))}}</p>
+                  <form class="cdvform" id="cdvform-{{db.get_comment_from_cid(message.mlink).cid}}">
+                    <div class="cdownvote{%if func.hasVotedComment(current_user.get_id(), db.get_comment_from_cid(message.mlink), False)%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+                    {% set dv = form.VoteForm() %}
+                    {{uv.csrf_token}}{{uv.post(value=db.get_comment_from_cid(message.mlink).cid)}}
+                  </form>
+              </div>
+              <div>
+                <p class="title"><a href="{{url_for('view_comment_inbox', cid=message.mlink)}}">{{message.subject}}</a></p>
+                <p class="container">{{markdown(db.get_comment_from_cid(message.mlink).content)|safe}}</p>
+              </div>
+            {% else %}
+              <p class="title">{{message.subject}}</p>
+              <p class="container">{{markdown(message.content)|safe}}</p>
+            {% endif %}
+            {% if message.mtype == 2 %}
+              <p>Please visit: <a href="{{url_for('edit_sub_mods', sub=message.mlink)}}"> /s/{{message.mlink}}/mods</a><p>
+            {% endif %}
+            {% if message.mtype == 7 %}
+              <p>Please visit: <a href="{{url_for('view_sub_bans', sub=message.mlink)}}"> /s/{{message.mlink}}/bannedusers</a><p>
+            {% endif %}
+            <p class="author"><time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>
+            <p class="container">
+              {% if box_name != 'Sent' %}
+                <a href="{{url_for('view_user', user=db.get_user_from_uid(message.sentby).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{db.get_user_from_uid(message.sentby).name}}</a>
+                {% if not message.read %}
+                    <a class="unread btn btn-orange edit small" data-mid="{{message.mid}}"><i class="fa fa-circle-o" aria-hidden="true"></i> {% if box_name != "Replies" %}mark as read{%else%}new{%endif%}</a>
+                {% else %}
+                  <a class="read btn small"><i class="fa fa-folder-open" aria-hidden="true"></i> read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
+                {% endif %}
+                {% if message.mtype != 8 %}
+                  {% if box_name == 'Replies' %}
+                    <a href="#comment-form" class="btn small replycomment popup"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
+                    <a href="{{ url_for('view_perm', sub=func.getCommentSub(message.mlink).name, pid=db.get_comment_from_cid(message.mlink).pid, cid=message.mlink) }}" class="btn small"><i class="fa fa-link" aria-hidden="true"></i> permalink</a>
+                  {%else%}
+                    <a href="#msg-form" data-mid="{{message.mid}}" class="btn small replymsg popup"><i class="fa fa-mail-reply" aria-hidden="true"></i> reply</a>
+                  {%endif%}
+                  <!--<a class="btn small"><i class="fa fa-mail-forward" aria-hidden="true"></i> forward</a>-->
+                {%endif%}
+                {% if boxID != "5" %}
+                  <a class="savepm btn small btn-green" data-mid="{{message.mid}}"><i class="fa fa-save" aria-hidden="true"></i> save</a>
+                {% endif %}
+                <a class="delete btn small btn-red" data-mid="{{message.mid}}"><i class="fa fa-trash" aria-hidden="true"></i> delete</a>
+              {% else %}
+                <a href="{{url_for('view_user', user=db.get_user_from_uid(message.receivedby).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i>/u/{{db.get_user_from_uid(message.receivedby).name}}</a>
+              {% endif %}
+            </p>
+          </div>
+        </article>
+    {% endfor %}
+    </div>
+    {% if page > 1 %}
+    <a href="{{url_for(box_route, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
+    {% endif %}
+    {% if messages|length == 20 %}
+    <a href="{{url_for(box_route, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+    {% endif %}
+  </div>
 </div>
-{% if page > 1 %}
-<a href="{{url_for(box_route, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
-{% endif %}
-{% if messages|length == 20 %}
-<a href="{{url_for(box_route, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
-{% endif %}
 
 <form data-reset="true" id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="ajaxform mfp-hide white-popup-block">
   {% set msgform = form.CreateUserMessageForm()%}

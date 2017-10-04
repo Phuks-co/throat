@@ -1002,7 +1002,36 @@ article.comment .score{
   border-top-left-radius: unset;
   border-top-right-radius: unset;
 }
+/* /EDITOR STYLES */
 
+/* MESSAGES STYLES */
+.pmessage.post p.title {
+  border-bottom: 1px solid #c8c8c8;
+  margin-left: 30px;
+}
+.pmessage.post {
+  min-height: 70px;
+  padding: .8em;
+  border-radius: 8px 0 0 8px;
+  background-color: #fefefe;
+  -webkit-box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
+  -moz-box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
+  box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
+  margin: 8px 0;
+}
+.pmessage.post:nth-child(2n) {
+  background-color: #f7f7f7;
+  -webkit-box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
+  -moz-box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
+  box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
+}
+.pmessage p.container a:before {
+  content: "• ";
+}
+.pmessage p.container a {
+  margin-right: 13px;
+}
+/* /MESSAGES STYLES */
 
 /* MISC */
 

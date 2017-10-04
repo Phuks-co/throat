@@ -175,7 +175,6 @@ body.dark input#buyamount ~ b {
 }
 
 /* Sidebar */
-
 body.dark .sidebar{
   background-color: #1b1b1b;
 }
@@ -196,4 +195,17 @@ body.dark .sidebar ul.top5 li a {
 
 body.dark hr {
    border-bottom: 2px dashed #545454;
-   }
+}
+/* /Sidebar */
+
+/* MESSAGES STYLES */
+body.dark .pmessage.post p.title {
+    border-bottom: 1px solid #343434;
+}
+body.dark .pmessage.post {
+    background-color: #000000;
+}
+body.dark .pmessage.post:nth-child(2n) {
+    background-color: #101010;
+}
+/* /MESSAGES STYLES */
