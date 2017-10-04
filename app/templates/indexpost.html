@@ -45,7 +45,7 @@
           <div class="expando"><div data-pid="{{post.pid}}" class="icon expando-btn" data-t="txt" data-link="{{post.link}}" data-icon="text"></div></div>
           {% endif %}
         posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> by
-        <a href="{{url_for('view_user', user=post.user)}}">{{post.user}}</a>
+        <a class="authorlink" href="{{url_for('view_user', user=post.user)}}">{{post.user}}</a>
         {% if sub and post.pid in func.getStickyPid(sub.sid) %}
         - <span class="stick">sticky</span>
         {% endif %}
