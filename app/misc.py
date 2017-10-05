@@ -1209,6 +1209,8 @@ def getCurrentHashrate():
         hr = hr.json()
         hr['amtDue'] = round(hr['amtDue'] / 1000000000000, 8)
         hr['amtPaid'] = round(hr['amtPaid'] / 1000000000000, 8)
+        hr['hash'] = int(hr['hash'])
+        hr['totalHashes'] = int(hr['totalHashes'])
         return hr
     except (ValueError, HTTPError) as err:
         return {'error': err}
