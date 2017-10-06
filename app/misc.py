@@ -1372,3 +1372,23 @@ def getMessagesSent(page):
     except msg.DoesNotExist:
         return False
     return msg
+
+
+def getMessagesModmail(page):
+    """ Returns modmail """
+    try:
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
+        msg = msg.join(User).where(Message.mtype << [2,7]).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+    except msg.DoesNotExist:
+        return False
+    return msg
+
+
+def getMessagesSaved(page):
+    """ Returns modmail """
+    try:
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
+        msg = msg.join(User).where(Message.mtype == 9).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+    except msg.DoesNotExist:
+        return False
+    return msg

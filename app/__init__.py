@@ -1016,13 +1016,9 @@ def view_messages_modmail(page):
     user = session['user_id']
     if current_user.user['status'] == 10:
         abort(404)
-    msgs = db.query('SELECT * FROM `message` WHERE `mtype` IN (2, 7) '
-                    'AND `receivedby`=%s ORDER BY `posted` DESC '
-                    'LIMIT 20 OFFSET %s',
-                    (user, ((page - 1) * 20))).fetchall()
+    msgs = misc.getMessagesModmail(page)
     return render_template('messages/modmail.html', user=user, messages=msgs,
-                           page=page, boxID="4",
-                           box_route='view_messages_modmail')
+                           page=page, box_route='view_messages_modmail')
 
 
 @app.route("/messages/saved", defaults={'page': 1})
@@ -1032,13 +1028,9 @@ def view_saved_messages(page):
     user = session['user_id']
     if current_user.user['status'] == 10:
         abort(404)
-    msgs = db.query('SELECT * FROM `message` WHERE `mtype`=9 '
-                    'AND `receivedby`=%s ORDER BY `posted` DESC '
-                    'LIMIT 20 OFFSET %s',
-                    (user, ((page - 1) * 20))).fetchall()
+    msgs = misc.getMessagesSaved(page)
     return render_template('messages/saved.html', user=user, messages=msgs,
-                           page=page, boxID="5",
-                           box_route='view_saved_messages')
+                           page=page, box_route='view_saved_messages')
 
 
 @app.route("/admin")

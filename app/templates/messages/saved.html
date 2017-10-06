@@ -22,11 +22,11 @@
             <p class="container">{{markdown(message.content)|safe}}</p>
             <p class="author"><time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>
             <p class="container">
-              <a href="{{url_for('view_user', user=db.get_user_from_uid(message.sentby).name)}}" class="btn small">/u/{{db.get_user_from_uid(message.sentby).name}}</a>
-              {% if not message.read %}
-                <a class="unread btn btn-orange edit small" data-mid="{{message.mid}}">mark as read</a>
-              {% else %}
+              <a href="{{url_for('view_user', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
+              {% if message.read %}
                 <a class="read btn small">read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
+              {% else %}
+                <a class="unread btn btn-orange edit small" data-mid="{{message.mid}}">mark as read</a>
               {% endif %}
               <a href="#msg-form" data-mid="{{message.mid}}" class="btn small replymsg popup">reply</a>
               <!--<a class="btn small">forward</a>-->
