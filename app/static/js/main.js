@@ -15,6 +15,7 @@ var icons = require('./Icon');
 require('./Expando');
 require('./Post');
 require('./Editor');
+require('./Messages');
 
 
 function vote(obj, how){

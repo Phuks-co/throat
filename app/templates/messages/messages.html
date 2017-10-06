@@ -16,7 +16,7 @@
     <div class="user-activity col-12">
       <h3><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> Inbox</h3>
       {% for message in messages %}
-        <article class="pmessage post" data-replyto='{{message.sentby}}' data-replytitle='Re: {{message.subject}}'>
+        <article class="pmessage post{% if not message.read %} newmsg{% endif %}" data-replyto='{{message.sentby}}' data-replytitle='Re: {{message.subject}}'>
           <div class="main">
             <p class="title">{{message.subject}}</p>
             <p class="container">{{markdown(message.content)|safe}}</p>
@@ -24,14 +24,14 @@
             <p class="container">
               <a href="{{url_for('view_user', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
               {% if message.read %}
-                <a class="read btn small">read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
+                <a class="read">read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
               {% else %}
-                <a class="unread btn btn-orange edit small" data-mid="{{message.mid}}">mark as read</a>
+                <a class="readmsg" data-mid="{{message.mid}}">mark as read</a>
               {% endif %}
               <a href="#msg-form" data-mid="{{message.mid}}" class="btn small replymsg popup">reply</a>
               <!--<a class="btn small">forward</a>-->
-              <a class="savepm btn small btn-green" data-mid="{{message.mid}}">save</a>
-              <a class="delete btn small btn-red" data-mid="{{message.mid}}">delete</a>
+              <a class="savemsg" data-mid="{{message.mid}}">save</a>
+              <a class="deletemsg" data-mid="{{message.mid}}">delete</a>
             </p>
           </div>
         </article>
