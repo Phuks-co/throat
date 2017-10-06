@@ -961,9 +961,8 @@ def view_messages_sent(page):
                     'AND `sentby`=%s ORDER BY `posted` DESC '
                     'LIMIT 20 OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
-                           page=page, box_name="Sent",
-                           box_route='view_messages_sent')
+    return render_template('messagessent.html', user=user, messages=msgs,
+                           page=page, box_route='view_messages_sent')
 
 
 @app.route("/messages/postreplies", defaults={'page': 1})
@@ -986,7 +985,7 @@ def view_messages_postreplies(page):
                     'AND `receivedby`=%s ORDER BY `posted` DESC '
                     'LIMIT 20 OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
+    return render_template('messagespostreply.html', user=user, messages=msgs,
                            page=page, box_name="Replies", boxID="2",
                            box_route='view_messages_postreplies')
 
@@ -1011,7 +1010,7 @@ def view_messages_comreplies(page):
                     'AND `receivedby`=%s ORDER BY `posted` DESC '
                     'LIMIT 20 OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
+    return render_template('messagescommreply.html', user=user, messages=msgs,
                            page=page, box_name="Replies", boxID="3",
                            box_route='view_messages_comreplies')
 
@@ -1028,8 +1027,8 @@ def view_messages_modmail(page):
                     'AND `receivedby`=%s ORDER BY `posted` DESC '
                     'LIMIT 20 OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
-                           page=page, box_name="ModMail", boxID="4",
+    return render_template('messagesmodmail.html', user=user, messages=msgs,
+                           page=page, boxID="4",
                            box_route='view_messages_modmail')
 
 
@@ -1044,8 +1043,8 @@ def view_saved_messages(page):
                     'AND `receivedby`=%s ORDER BY `posted` DESC '
                     'LIMIT 20 OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
-                           page=page, box_name="Saved Messages", boxID="5",
+    return render_template('messagessaved.html', user=user, messages=msgs,
+                           page=page, boxID="5",
                            box_route='view_saved_messages')
 
 

@@ -304,6 +304,9 @@ span#notification.fade {
   height: 16px;
   display:block;
 }
+.inboxside .p-icon {
+  margin-top: 0px;
+}
 
 .i-icon{
   width: 16px;
@@ -327,6 +330,10 @@ span#notification.fade {
 
 .hasmail i{
   color: #101010;
+}
+
+.content .hasmail path {
+  fill: #d94f00;
 }
 
 .sidebar .pure-button-primary {

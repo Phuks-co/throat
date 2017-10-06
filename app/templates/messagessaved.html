@@ -14,7 +14,7 @@
 <div id="center-container">
   <div class="content">
     <div class="user-activity col-12">
-      <h3><span class="p-icon{% if current_user.new_pm_count() > 0 %} hasmail{% endif %}" data-icon="mail" style="display: inline-block;"></span> Inbox</h3>
+      <h3><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> Saved Messages</h3>
       {% for message in messages %}
         <article class="pmessage post" data-replyto='{{message.sentby}}' data-replytitle='Re: {{message.subject}}'>
           <div class="main">
@@ -30,7 +30,7 @@
               {% endif %}
               <a href="#msg-form" data-mid="{{message.mid}}" class="btn small replymsg popup">reply</a>
               <!--<a class="btn small">forward</a>-->
-              <a class="savepm btn small btn-green" data-mid="{{message.mid}}"><save</a>
+              <!--<a class="unsave btn small btn-red" data-mid="{{message.mid}}">unsave</a>-->
               <a class="delete btn small btn-red" data-mid="{{message.mid}}">delete</a>
             </p>
           </div>
@@ -54,8 +54,7 @@
   </div>
   <p><button type="submit" id="msg-btnsubmit" class="btn btn-blue" data-prog="Sending...">Send Message</button></p>
 </form>
-
 {% endblock %}
-{%block pagefoot%}
 
+{%block pagefoot%}
 {%endblock%}

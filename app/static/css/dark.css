@@ -124,6 +124,10 @@ body.dark .pure-button {
   color: #ddd;
 }
 
+body.dark .inboxside .button-secondary {
+    background: rgba(51, 51, 51, 0.2);
+}
+
 body.dark .button-secondary:hover,
 body.dark .pure-button:hover {
   background: rgba(51, 51, 51, 0.8);
