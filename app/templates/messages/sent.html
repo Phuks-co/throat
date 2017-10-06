@@ -21,7 +21,7 @@
             <p class="title">{{message.subject}}</p>
             <p class="container">{{markdown(message.content)|safe}}</p>
             <p class="author">&#10148;
-              <a href="{{url_for('view_user', user=db.get_user_from_uid(message.receivedby).name)}}" class="btn small">/u/{{db.get_user_from_uid(message.receivedby).name}}</a>
+              <a href="{{url_for('view_user', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
               <time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago>
             </p>
           </div>

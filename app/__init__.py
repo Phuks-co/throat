@@ -935,17 +935,13 @@ def inbox_sort():
 @app.route("/messages/inbox", defaults={'page': 1})
 @app.route("/messages/inbox/<int:page>")
 def view_messages(page):
-    """ WIP: View user's messages """
+    """ View user's messages """
     user = session['user_id']
     if current_user.user['status'] == 10:
         abort(404)
-    msgs = db.query('SELECT * FROM `message` WHERE `mtype` IN (1, 8)'
-                    'AND `receivedby`=%s ORDER BY `posted` DESC LIMIT 20 '
-                    'OFFSET %s',
-                    (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages/messages.html', user=user, messages=msgs,
-                           page=page,
-                           box_name="Inbox", boxID="1",
+    msgs = misc.getMessagesIndex(page)
+    return render_template('messages/messages.html', user=user, page=page,
+                           messages=msgs, box_name="Inbox", boxID="1",
                            box_route='view_messages')
 
 
@@ -953,14 +949,11 @@ def view_messages(page):
 @app.route("/messages/sent/<int:page>")
 @login_required
 def view_messages_sent(page):
-    """ WIP: View user's messages """
+    """ View user's messages sent """
     user = session['user_id']
     if current_user.user['status'] == 10:
         abort(404)
-    msgs = db.query('SELECT * FROM `message` WHERE `mtype`=1 '
-                    'AND `sentby`=%s ORDER BY `posted` DESC '
-                    'LIMIT 20 OFFSET %s',
-                    (user, ((page - 1) * 20))).fetchall()
+    msgs = misc.getMessagesSent(page)
     return render_template('messages/sent.html', user=user, messages=msgs,
                            page=page, box_route='view_messages_sent')
 

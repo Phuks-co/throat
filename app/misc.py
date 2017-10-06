@@ -1350,3 +1350,25 @@ def get_post_comments(pid):
 
     cmxk = build_comment_tree(cmskel)
     return expand_comment_tree(cmxk)
+
+
+# messages
+
+def getMessagesIndex(page):
+    """ Returns messages inbox """
+    try:
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
+        msg = msg.join(User).where(Message.mtype << [1,8]).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+    except msg.DoesNotExist:
+        return False
+    return msg
+
+
+def getMessagesSent(page):
+    """ Returns messages sent """
+    try:
+        msg = Message.select(Message.mid, Message.sentby, User.name.alias('username'), Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
+        msg = msg.join(User).where(Message.mtype == 1).where(Message.sentby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+    except msg.DoesNotExist:
+        return False
+    return msg

@@ -14,7 +14,7 @@
 <div id="center-container">
   <div class="content">
     <div class="user-activity col-12">
-      <h3><span class="p-icon{% if current_user.new_comreply_count() > 0 %} hasmail{% endif %}" data-icon="mail" style="display: inline-block;"></span> Comment Replies</h3>
+      <h3><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> Comment Replies</h3>
       {% for message in messages %}
         <article class="pmessage post" data-replyto='{{message.sentby}}' data-sub='{{func.getCommentSub(message.mlink).name}}' data-post='{{db.get_comment_from_cid(message.mlink).pid}}' data-parent='{{message.mlink}}' data-replytitle='Re: {{message.subject}}'>
           <div class="main">
