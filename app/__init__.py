@@ -918,7 +918,7 @@ def edit_user(user):
 @app.route("/messages")
 @login_required
 def inbox_sort():
-    """ Inbox? """
+    """ Go to inbox with the new message """
     if current_user.new_pm_count() == 0 \
        and current_user.new_postreply_count() > 0:
         return redirect(url_for('view_messages_postreplies'))
@@ -943,7 +943,7 @@ def view_messages(page):
                     'AND `receivedby`=%s ORDER BY `posted` DESC LIMIT 20 '
                     'OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
+    return render_template('messages/messages.html', user=user, messages=msgs,
                            page=page,
                            box_name="Inbox", boxID="1",
                            box_route='view_messages')
@@ -961,7 +961,7 @@ def view_messages_sent(page):
                     'AND `sentby`=%s ORDER BY `posted` DESC '
                     'LIMIT 20 OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messagessent.html', user=user, messages=msgs,
+    return render_template('messages/sent.html', user=user, messages=msgs,
                            page=page, box_route='view_messages_sent')
 
 
@@ -985,7 +985,7 @@ def view_messages_postreplies(page):
                     'AND `receivedby`=%s ORDER BY `posted` DESC '
                     'LIMIT 20 OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messagespostreply.html', user=user, messages=msgs,
+    return render_template('messages/postreply.html', user=user, messages=msgs,
                            page=page, box_name="Replies", boxID="2",
                            box_route='view_messages_postreplies')
 
@@ -1010,7 +1010,7 @@ def view_messages_comreplies(page):
                     'AND `receivedby`=%s ORDER BY `posted` DESC '
                     'LIMIT 20 OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messagescommreply.html', user=user, messages=msgs,
+    return render_template('messages/commreply.html', user=user, messages=msgs,
                            page=page, box_name="Replies", boxID="3",
                            box_route='view_messages_comreplies')
 
@@ -1027,7 +1027,7 @@ def view_messages_modmail(page):
                     'AND `receivedby`=%s ORDER BY `posted` DESC '
                     'LIMIT 20 OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messagesmodmail.html', user=user, messages=msgs,
+    return render_template('messages/modmail.html', user=user, messages=msgs,
                            page=page, boxID="4",
                            box_route='view_messages_modmail')
 
@@ -1043,7 +1043,7 @@ def view_saved_messages(page):
                     'AND `receivedby`=%s ORDER BY `posted` DESC '
                     'LIMIT 20 OFFSET %s',
                     (user, ((page - 1) * 20))).fetchall()
-    return render_template('messagessaved.html', user=user, messages=msgs,
+    return render_template('messages/saved.html', user=user, messages=msgs,
                            page=page, boxID="5",
                            box_route='view_saved_messages')
 
@@ -1082,7 +1082,7 @@ def admin_area():
         else:
             invite = UseInviteCodeForm()
 
-        return render_template('admin.html', badges=badges, subs=subs,
+        return render_template('admin/admin.html', badges=badges, subs=subs,
                                posts=posts, ups=ups, downs=downs, users=users,
                                createuserbadgeform=CreateUserBadgeForm(),
                                comms=comms, usebtcdonationform=btc,
@@ -1097,7 +1097,7 @@ def admin_users():
     """ WIP: View users. """
     if current_user.is_admin():
         users = db.query('SELECT * FROM `user` ORDER BY `joindate`').fetchall()
-        return render_template('adminusershome.html', users=users)
+        return render_template('admin/usershome.html', users=users)
     else:
         return render_template('errors/404.html'), 404
 
@@ -1109,7 +1109,7 @@ def admin_users_search(term):
     if current_user.is_admin():
         users = db.query('SELECT * FROM `user` WHERE `name` LIKE %s'
                          'ORDER BY `name` ASC', ('%' + term + '%',))
-        return render_template('adminusers.html', users=users)
+        return render_template('admin/users.html', users=users)
     else:
         return render_template('errors/404.html'), 404
 
@@ -1120,7 +1120,7 @@ def admin_subs():
     """ WIP: View subs. Assign new owners """
     if current_user.is_admin():
         subs = db.query('SELECT * FROM `sub`').fetchall()
-        return render_template('adminsubs.html', subs=subs,
+        return render_template('admin/subs.html', subs=subs,
                                editmodform=EditModForm())
     else:
         return render_template('errors/404.html'), 404
@@ -1133,7 +1133,7 @@ def admin_subs_search(term):
     if current_user.is_admin():
         subs = db.query('SELECT * FROM `sub` WHERE `name` LIKE %s'
                         'ORDER BY `name` ASC', ('%' + term + '%',))
-        return render_template('adminsubs.html', subs=subs,
+        return render_template('admin/subs.html', subs=subs,
                                editmodform=EditModForm())
     else:
         return render_template('errors/404.html'), 404
@@ -1147,7 +1147,7 @@ def admin_post(page):
     if current_user.is_admin():
         posts = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC '
                          'LIMIT 100 OFFSET %s', (((page - 1) * 100),))
-        return render_template('adminpost.html', page=page,
+        return render_template('admin/post.html', page=page,
                                sort_type='all_new', posts=posts.fetchall())
     else:
         return render_template('errors/404.html'), 404
@@ -1176,7 +1176,7 @@ def admin_post_search(term):
         ccount = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE '
                           '`uid`=%s', (user['uid'],)).fetchone()['c']
 
-        return render_template('adminpostsearch.html', sub=sub, post=post,
+        return render_template('admin/postsearch.html', sub=sub, post=post,
                                votes=votes, ccount=ccount, pcount=pcount,
                                upcount=upcount, downcount=downcount, user=user)
     else:
@@ -1190,7 +1190,7 @@ def admin_domains(page):
     """ WIP: View Banned Domains """
     if current_user.is_admin():
         domains = db.get_site_metadata('banned_domain', _all=True)
-        return render_template('admindomains.html', domains=domains, page=page,
+        return render_template('admin/domains.html', domains=domains, page=page,
                                bandomainform=BanDomainForm())
     else:
         return render_template('errors/404.html'), 404

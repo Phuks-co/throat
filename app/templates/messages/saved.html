@@ -6,7 +6,7 @@
 
 {% block sidebar %}
 {{ super() }}
-{% include 'messagessidebar.html' %}
+{% include 'messages/sidebar.html' %}
 {% endblock %}
 
 {% block content %}
@@ -37,7 +37,7 @@
         </article>
       {% endfor %}
     </div>
-    {% include 'messagesnav.html' %}
+    {% include 'messages/nav.html' %}
   </div>
 </div>
 
