@@ -55,7 +55,9 @@
     <div class="pure-u-1 pure-u-md-11-24">
       <div class="cw-items pure-menu pure-menu-horizontal">
         <!-- Menu -->
-        <ul id="th-menu" class="pure-menu-list"></ul>
+        <ul id="th-menu" class="pure-menu-list">
+          {% block navbar %}{% endblock %}
+        </ul>
       </div>
     </div>
 

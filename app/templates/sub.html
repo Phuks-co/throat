@@ -1,6 +1,12 @@
 {% extends "layout.html" %}
 {% block title %}{{sub.title}} | {{config.LEMA}}{% endblock %}
 
+{% block navbar %}
+{{ super() }}
+<li>
+  <a href="{{url_for('view_sub', sub=sub.name)}}" class="1">{{sub.name}}</a>
+</li>
+{% endblock %}
 
 {% block sidebar %}
 <div id="sortbuttons" role="group" class="pure-button-group">
