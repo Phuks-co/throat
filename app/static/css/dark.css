@@ -237,8 +237,8 @@ body.dark .pmessage.post:nth-child(2n) {
 /* misc */
 
 body.dark path[stroke="#ff6d15"] {
-    stroke: #886048;
+    stroke: #7b4a3f;
 }
 body.dark path[fill="#ff6d15"] {
-    fill: #886048;
+    fill: #7b4a3f;
 }
