@@ -1012,6 +1012,9 @@ article.comment .score{
 /* /EDITOR STYLES */
 
 /* MESSAGES STYLES */
+.center-container .content{
+  max-width: 100%;
+}
 .pmessage.post p.title {
   border-bottom: 1px solid #c8c8c8;
   margin-left: 30px;
