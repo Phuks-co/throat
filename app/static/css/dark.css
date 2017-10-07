@@ -232,6 +232,18 @@ body.dark .pmessage p.container a.savedmsg {
 body.dark .pmessage.post:nth-child(2n) {
     background-color: #101010;
 }
+
+body.dark .modal-content {
+    background-color: #222222;
+    border: 1px solid #4d4848;
+    box-shadow: 4px 4px 16px #1d1d1d;
+}
+body.dark .modal-content h3 {
+    color: #cccccc;
+}
+body.dark .modal-content .closemsg {
+    color: #999;
+}
 /* /MESSAGES STYLES */
 
 /* misc */

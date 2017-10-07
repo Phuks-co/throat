@@ -1064,6 +1064,51 @@ article.comment .score{
 article.pmessage.post.newmsg {
     border-left: 5px solid #00b421;
 }
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  border-radius: 10px;
+  box-shadow: 4px 4px 16px #555;
+}
+
+form#msg-form {
+  padding: 20px;
+}
+
+.closemsg {
+  float: right;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+#msgpop {
+  position: fixed;
+  top: 20px;
+  left: 15%;
+  z-index: 100;
+  padding-top: 108px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+}
+input#subject, textarea#content {
+    width: calc(100% - 300px);
+}
+form#msg-form h3 {
+    margin-top: 0;
+}
+form#msg-form .editbtns {
+    width: calc(100% - 300px);
+    margin-left: 180px;
+}
 /* /MESSAGES STYLES */
 
 /* MISC */
@@ -1083,17 +1128,10 @@ ul#th-menu ul.left li {
     margin-left: 4px;
 }
 
-#msgpop {
-    position: fixed;
-    top: 20px;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    background-color: #fefefe;
-    z-index: 100;
-  }
-
 .sidebar-logo {
   margin: 5% 20%;
+}
+
+.pure-menu a svg.logo {
+    height: 30px;
 }

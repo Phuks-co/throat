@@ -46,3 +46,20 @@ $('.deletemsg').click(function(e){
     }
   });
 });
+
+// Toggle message reply form popup
+$('.pmessage .replymsg').click(function(e){
+  e.preventDefault();
+  var replyto = $(e.currentTarget).data().replyto
+  var title = $(e.currentTarget).data().replytitle
+  var mid = $(e.currentTarget).data().mid
+  $('#msg-form #to').prop('value', replyto);
+  $('#msg-form #subject').prop('value', title);
+  var modal = document.getElementById('msgpop');
+  modal.style.display = "block";
+});
+$('.modal-content .closemsg').click(function(e){
+  e.preventDefault();
+  var modal = document.getElementById('msgpop');
+  modal.style.display = "none";
+});

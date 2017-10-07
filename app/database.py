@@ -369,9 +369,10 @@ def create_sublog(sid, action, description, link=''):
 def create_message(mfrom, to, subject, content, link, mtype):
     """ Creates a message. """
     posted = datetime.datetime.utcnow()
+    user = get_user_from_name(to)['uid']
     uquery('INSERT INTO `message` (`sentby`, `receivedby`, `subject`, `mlink`'
            ', `content`, `posted`, `mtype`) VALUES (%s, %s, %s, %s, %s, %s, '
-           '%s)', (mfrom, to, subject, link, content, posted, mtype))
+           '%s)', (mfrom, user, subject, link, content, posted, mtype))
     cache.delete_memoized(user_mail_count, to)
 
 

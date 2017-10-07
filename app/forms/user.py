@@ -112,7 +112,8 @@ class EditUserForm(FlaskForm):
 
 class CreateUserMessageForm(FlaskForm):
     """ CreateUserMessage form. """
-    to = HiddenField()
+    to = TextField('to', [Length(min=2, max=32),
+                                      Regexp(r'[a-zA-Z0-9_-]+')])
     subject = StringField('subject',
                           validators=[DataRequired(), Length(min=1, max=400)])
 
