@@ -209,6 +209,26 @@ body.dark .pmessage.post p.title {
 body.dark .pmessage.post {
     background-color: #000000;
 }
+
+body.dark .pmessage.post p.container a{
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+body.dark .pmessage.post p.container a:hover{
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #b66f5f;
+}
+
+body.dark .pmessage p.container a.deletedmsg {
+    background-color: rgba(226, 0, 0, 0.3);
+    color: #a8a8a8;
+}
+
+body.dark .pmessage p.container a.savedmsg {
+    background-color: rgba(0, 170, 9, 0.3);
+    color: #a8a8a8;
+}
+
 body.dark .pmessage.post:nth-child(2n) {
     background-color: #101010;
 }

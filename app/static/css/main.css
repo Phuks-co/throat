@@ -1045,14 +1045,15 @@ article.comment .score{
     cursor: pointer;
     padding: .5em 1em;
     border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.06);
 }
 
-a.deletedmsg {
+.pmessage p.container a.deletedmsg {
     background: #e20000;
     color: #ffffff;
 }
 
-a.savedmsg {
+.pmessage p.container a.savedmsg {
     background: #00aa09;
     color: #ffffff;
 }
