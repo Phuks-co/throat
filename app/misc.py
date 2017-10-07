@@ -1354,13 +1354,11 @@ def get_post_comments(pid):
 
 # messages
 
-def getMessagesIndex(page):
+def getMessagesIndex(uid, page):
     """ Returns messages inbox """
-    try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
-        msg = msg.join(User).where(Message.mtype << [1,8]).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
-    except msg.DoesNotExist:
-        return False
+    msg = db.query('SELECT * FROM `message` WHERE `mtype` IN (1, 8)'
+                   'AND `receivedby`=%s ORDER BY `mid` DESC LIMIT 20 '
+                   'OFFSET %s', (uid, ((page - 1) * 20))).fetchall()
     return msg
 
 
@@ -1374,21 +1372,17 @@ def getMessagesSent(page):
     return msg
 
 
-def getMessagesModmail(page):
+def getMessagesModmail(uid, page):
     """ Returns modmail """
-    try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
-        msg = msg.join(User).where(Message.mtype << [2,7]).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
-    except msg.DoesNotExist:
-        return False
+    msg = db.query('SELECT * FROM `message` WHERE `mtype` IN (2, 7)'
+                   'AND `receivedby`=%s ORDER BY `mid` DESC LIMIT 20 '
+                   'OFFSET %s', (uid, ((page - 1) * 20))).fetchall()
     return msg
 
 
-def getMessagesSaved(page):
-    """ Returns modmail """
-    try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
-        msg = msg.join(User).where(Message.mtype == 9).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
-    except msg.DoesNotExist:
-        return False
+def getMessagesSaved(uid, page):
+    """ Returns saved messages """
+    msg = db.query('SELECT * FROM `message` WHERE `mtype`=9 '
+                   'AND `receivedby`=%s ORDER BY `mid` DESC LIMIT 20 '
+                   'OFFSET %s', (uid, ((page - 1) * 20))).fetchall()
     return msg

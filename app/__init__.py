@@ -939,7 +939,7 @@ def view_messages(page):
     user = session['user_id']
     if current_user.user['status'] == 10:
         abort(404)
-    msgs = misc.getMessagesIndex(page)
+    msgs = misc.getMessagesIndex(current_user.uid, page)
     return render_template('messages/messages.html', user=user, page=page,
                            messages=msgs, box_name="Inbox", boxID="1",
                            box_route='view_messages')
@@ -1016,7 +1016,7 @@ def view_messages_modmail(page):
     user = session['user_id']
     if current_user.user['status'] == 10:
         abort(404)
-    msgs = misc.getMessagesModmail(page)
+    msgs = misc.getMessagesModmail(current_user.uid, page)
     return render_template('messages/modmail.html', user=user, messages=msgs,
                            page=page, box_route='view_messages_modmail')
 
@@ -1028,7 +1028,7 @@ def view_saved_messages(page):
     user = session['user_id']
     if current_user.user['status'] == 10:
         abort(404)
-    msgs = misc.getMessagesSaved(page)
+    msgs = misc.getMessagesSaved(current_user.uid, page)
     return render_template('messages/saved.html', user=user, messages=msgs,
                            page=page, box_route='view_saved_messages')
 
