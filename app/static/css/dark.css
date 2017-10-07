@@ -233,3 +233,12 @@ body.dark .pmessage.post:nth-child(2n) {
     background-color: #101010;
 }
 /* /MESSAGES STYLES */
+
+/* misc */
+
+body.dark path[stroke="#ff6d15"] {
+    stroke: #886048;
+}
+body.dark path[fill="#ff6d15"] {
+    fill: #886048;
+}

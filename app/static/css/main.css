@@ -1074,3 +1074,23 @@ article.pmessage.post.newmsg {
 ::-webkit-scrollbar-thumb {
     background: rgb(16, 16, 16);
 }
+
+ul#th-menu ul.left li {
+    display: inline-block;
+    margin-left: 4px;
+}
+
+#msgpop {
+    position: fixed;
+    top: 20px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    background-color: #fefefe;
+    z-index: 100;
+  }
+
+.sidebar-logo {
+  margin: 10%;
+}
