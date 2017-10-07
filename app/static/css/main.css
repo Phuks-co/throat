@@ -110,7 +110,7 @@ abbr[title]{
 .separator {
   margin-left: .1em;
   margin-right: .25em;
-  border-left: 1px #444 solid;
+  border-left: 1px #444 dotted;
   padding-top: 3px;
 }
 
@@ -975,30 +975,30 @@ article.comment .score{
 
 /* EDITOR STYLES */
 .editbtns {
-  height: 24px;
+  height: 26px;
   margin-top: 2px;
   padding-left: .2em;
   width: 95%;
   border: 1px solid #ccc;
 }
 
+.editbtns .separator{
+  border: none;
+}
+
 .editbtns div{
   margin-top: 2px;
   display: inline-block;
-  height: 18px;
-  width: 18px;
+  height: 20px;
+  width: 20px;
   border: solid 1px black;
   margin-right: 1px;
   text-align: center;
   padding-top: 1px;
 }
 
-.editbtns div:hover{
-  background-color: #ccc;
-}
-
 .editbtns div svg{
-  height: 14px;
+  height: 18px;
 }
 
 .markdown-editor textarea {

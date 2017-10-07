@@ -36,6 +36,11 @@ var Icons = {
   italic: require('../svg/italic.svg'),
   underline: require('../svg/underline.svg'),
   strikethrough: require('../svg/strikethrough.svg'),
+  title: require('../svg/title.svg'),
+  bulletlist: require('../svg/bulletlist.svg'),
+  numberlist: require('../svg/numberlist.svg'),
+  code: require('../svg/code.svg'),
+  quote: require('../svg/quote.svg'),
 };
 
 // here we apply em.
