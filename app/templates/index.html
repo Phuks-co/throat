@@ -25,6 +25,8 @@
 <a href="{{url_for('submit_text', sub='')}}" class="sbm-post pure-button">Submit a text post</a>
 <a href="{{url_for('submit_link', sub='')}}" class="sbm-post pure-button">Submit a link post</a>
 <hr>
+<a href="{{url_for('view_subs')}}" class="sbm-post pure-button">View all subs</a>
+<a href="{{url_for('random_sub')}}" class="sbm-post pure-button">Go to random sub</a>
 <a href="#" class="sbm-post pure-button pure-button-primary">Create a sub</a>
 {% endif %}
 {% cache 300, 'toppost' %}
