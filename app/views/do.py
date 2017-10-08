@@ -971,8 +971,12 @@ def create_sendmsg():
     """ User PM message creation endpoint """
     form = CreateUserMessageForm()
     if form.validate():
+        user = db.get_user_from_name(form.to.data)
+        if not user:
+            return json.dumps({'status': 'error',
+                               'error': ['User does not exist']})
         db.create_message(mfrom=current_user.uid,
-                          to=form.to.data,
+                          to=user['uid'],
                           subject=form.subject.data,
                           content=form.content.data,
                           link=None,
