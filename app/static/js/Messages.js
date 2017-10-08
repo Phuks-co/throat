@@ -62,10 +62,7 @@ $('.pmessage .replymsg').click(function(e){
 $('.pmessage .formpopmsg').click(function(e){
   e.preventDefault();
   var replyto = $(e.currentTarget).data().replyto
-  var title = $(e.currentTarget).data().replytitle
-  var mid = $(e.currentTarget).data().mid
   $('#msg-form #to').prop('value', replyto);
-  $('#msg-form #subject').prop('value', title);
   var modal = document.getElementById('formpop');
   modal.style.display = "block";
 });
