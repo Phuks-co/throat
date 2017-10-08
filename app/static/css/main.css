@@ -1129,9 +1129,10 @@ ul#th-menu ul.left li {
 }
 
 .sidebar-logo {
-  margin: 5% 20%;
+  margin: 1% 30%;
 }
 
 .pure-menu a svg.logo {
-    height: 30px;
+    /* height: 30px; */
+    display: none;
 }
