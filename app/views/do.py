@@ -1688,12 +1688,12 @@ def edit_comment():
             abort(403)
         if comment['status'] == '1':
             return jsonify(status='error',
-                           error=["You can't edit a deleted comment"])
+                           error="You can't edit a deleted comment")
         dt = datetime.datetime.utcnow()
         db.uquery('UPDATE `sub_post_comment` SET `content`=%s, `lastedit`=%s '
                   'WHERE `cid`=%s', (form.text.data, dt, form.cid.data))
         return jsonify(status='ok')
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
+    return json.dumps({'status': 'error', 'error': get_errors(form)[0]})
 
 
 @do.route("/do/delete_comment", methods=['POST'])

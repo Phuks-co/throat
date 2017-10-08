@@ -2,6 +2,7 @@
 import TextConfirm from  './utils/TextConfirm';
 import $ from 'jquery';
 import Icons from './Icon';
+import initializeEditor from './Editor';
 
 // Saving/unsaving posts.
 $('.savepost').click(function(e){
@@ -109,10 +110,54 @@ $(document).on('click', '.comment-source', function(){
     $(this).parent().html('source');
   };
   var h = elem.clientHeight + 28;
-  elem.innerHTML = '<textarea style="height: ' + h + 'px">' + document.getElementById('sauce-' + cid).innerHTML + '</textarea>';
+  elem.innerHTML = '<div class="cwrap"><textarea style="height: ' + h + 'px">' + document.getElementById('sauce-' + cid).innerHTML + '</textarea></div>';
   $(this).html(back);
 });
 
+// edit comment
+$(document).on('click', '.edit-comment', function(){
+  var cid = $(this).data('cid');
+  var elem = document.getElementById('content-' + cid);
+  var oc = elem.innerHTML;
+  var back =  document.createElement( "s" );
+  back.innerHTML = "edit";
+  back.onclick = function(){
+    elem.innerHTML = oc;
+    $(this).parent().html('edit');
+  };
+  var h = elem.clientHeight + 28;
+  elem.innerHTML = '<div class="cwrap markdown-editor" id="ecomm-'+cid+'"><textarea style="height: ' + h + 'px">' + document.getElementById('sauce-' + cid).innerHTML + '</textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary btn-editcomment" data-cid="'+cid+'">Save changes</button>';
+  $(this).html(back);
+  initializeEditor($('#ecomm-' + cid));
+});
+
+$(document).on('click', '.btn-editcomment', function(){
+  var obj = $(this);
+  var cid = obj.data('cid');
+  var content = $('#ecomm-' + cid + ' textarea')[0].value;
+  obj.prop('disabled', true);
+  $.ajax({
+    type: "POST",
+    url: '/do/edit_comment',
+    data: {'csrf_token': $('#csrf_token')[0].value, cid: cid, text: content},
+    dataType: 'json',
+    success: function(data) {
+        if (data.status != "ok") {
+          obj.parent().children('.error').show();
+          obj.parent().children('.error').html('There was an error while editing: ' + data.error);
+          obj.prop('disabled', false);
+        } else {
+          obj.html('Saved.');
+          document.location.reload();
+        }
+    },
+    error: function(data, err) {
+      obj.parent().children('.error').show();
+      obj.parent().children('.error').html('could not contact server');
+      obj.prop('disabled', false);
+    }
+  });
+});
 
 // Delete comment
 $(document).on('click', '.delete-comment', function(){
