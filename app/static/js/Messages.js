@@ -58,6 +58,21 @@ $('.pmessage .replymsg').click(function(e){
   var modal = document.getElementById('msgpop');
   modal.style.display = "block";
 });
+$('.pmessage .replycom').click(function(e){
+  e.preventDefault();
+  var replyto = $(e.currentTarget).data().replyto
+  var post = $(e.currentTarget).data().post
+  var sub = $(e.currentTarget).data().sub
+  var parentid = $(e.currentTarget).data().parentid
+  $('#comment-form #from').text(replyto);
+  $('#comment-form #sub').text(sub);
+  $('#comment-form #post').prop('value', post);
+  $('#comment-form #sub').prop('value', sub);
+  $('#comment-form #parent').prop('value', parentid);
+  var modal = document.getElementById('msgpop');
+  modal.style.display = "block";
+});
+
 $('.modal-content .closemsg').click(function(e){
   e.preventDefault();
   var modal = document.getElementById('msgpop');

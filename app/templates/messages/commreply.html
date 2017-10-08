@@ -16,7 +16,7 @@
     <div class="user-activity col-12">
       <h3><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> Comment Replies</h3>
       {% for message in messages %}
-        <article class="pmessage post" data-replyto='{{message.username}}' data-sub='{{func.getCommentSub(message.mlink).name}}' data-post='{{db.get_comment_from_cid(message.mlink).pid}}' data-parent='{{message.mlink}}' data-replytitle='Re: {{message.subject}}'>
+        <article class="pmessage post">
           <div class="main">
             <div class="pull left votecomment" style="margin-right: 10px;">
               {# vote arrow div
@@ -34,7 +34,7 @@
               {% else %}
                 <a class="readmsg">read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
               {% endif %}
-              <a href="#comment-form" class="replymsg">reply</a>
+              <a href="#comment-form" class="replycom" data-replyto='{{message.username}}' data-sub='{{func.getCommentSub(message.mlink).name}}' data-post='{{db.get_comment_from_cid(message.mlink).pid}}' data-parentid='{{message.mlink}}' data-replytitle='{{message.subject}}'>reply</a>
               <a href="{{ url_for('view_perm', sub=func.getCommentSub(message.mlink).name, pid=db.get_comment_from_cid(message.mlink).pid, cid=message.mlink) }}" class="btn small">permalink</a>
               <!--<a class="savemsg" data-mid="{{message.mid}}">save</a>-->
               <a class="deletemsg" data-mid="{{message.mid}}">delete</a>
@@ -50,14 +50,24 @@
 <div id="msgpop" style="display:none;">
   <div class="modal-content">
     <span class="closemsg">&times;</span>
-    <form data-reset="true" method="POST" data-redir='true' action="{{url_for('do.create_comment', sub='0', pid='0')}}" class="ajaxform comment-form mfp-hide white-popup-block" id="comment-form">
-      <h2>Reply to comment</h2>
+    <form data-reset="true" method="POST" data-redir='true' action="{{url_for('do.create_comment', sub='0', pid='0')}}" class="ajaxform comment-form pure-form pure-form-aligned" id="comment-form">
+      {% set commentform = form.PostComment()%}
       {{commentform.csrf_token}}
       {{commentform.sub()}}
       {{commentform.post()}}
       {{commentform.parent(value='0')}}
-      <div class="CommentContent">{{commentform.comment(id="comment2", placeholder="Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}</div>
-      <button type="submit" class="btn btn-orange">Submit comment</button>
+      <h3>Reply to comment from <span id="from"></span> in /s/<span id="sub"></span></h3>
+      <fieldset>
+        <div class="pure-control-group markdown-editor">
+          {{commentform.comment(placeholder="Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}
+        </div>
+        <div class="pure-controls">
+          {% if error %}
+            <div class="error">{{error}}</div>
+          {%endif%}
+          <button type="submit" id="msg-btnsubmit" class="pure-button pure-button-primary" data-prog="Sending...">Send Comment</button>
+        </div>
+      </fieldset>
     </form>
   </div>
 </div>
