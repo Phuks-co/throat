@@ -1133,6 +1133,10 @@ ul#th-menu ul.left li {
   margin: auto;
 }
 
+.sidebar-logo {
+  margin: 1% 30%;
+}
+
 .pure-menu a svg.logo {
   height: 40px;
   margin-top: -2px;
