@@ -12,7 +12,7 @@
 {% block content %}
 {{ super() }}
 <div id="center-container">
-  <div class="content">
+  <div class="inbox content">
     <div class="user-activity col-12">
       <h3><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> Modmail</h3>
       {% for message in messages %}
@@ -38,6 +38,7 @@
               <a class="deletemsg" data-mid="{{message.mid}}">delete</a>
             </p>
           </div>
+          <div id="replyto{{message.mid}}"><div>
         </article>
       {% endfor %}
     </div>

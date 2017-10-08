@@ -47,7 +47,7 @@ $('.deletemsg').click(function(e){
   });
 });
 
-// Toggle message reply form popup
+// Toggle message reply form
 $('.pmessage .replymsg').click(function(e){
   e.preventDefault();
   var replyto = $(e.currentTarget).data().replyto
@@ -56,6 +56,7 @@ $('.pmessage .replymsg').click(function(e){
   $('#msg-form #to').prop('value', replyto);
   $('#msg-form #subject').prop('value', title);
   var modal = document.getElementById('msgpop');
+  $("#msgpop").appendTo("#replyto" + mid);
   modal.style.display = "block";
 });
 $('.pmessage .replycom').click(function(e){
@@ -64,12 +65,14 @@ $('.pmessage .replycom').click(function(e){
   var post = $(e.currentTarget).data().post
   var sub = $(e.currentTarget).data().sub
   var parentid = $(e.currentTarget).data().parentid
+  var mid = $(e.currentTarget).data().mid
   $('#comment-form #from').text(replyto);
   $('#comment-form #sub').text(sub);
   $('#comment-form #post').prop('value', post);
   $('#comment-form #sub').prop('value', sub);
   $('#comment-form #parent').prop('value', parentid);
   var modal = document.getElementById('msgpop');
+  $("#msgpop").appendTo("#replyto" + mid);
   modal.style.display = "block";
 });
 
