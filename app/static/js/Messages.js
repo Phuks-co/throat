@@ -59,6 +59,21 @@ $('.pmessage .replymsg').click(function(e){
   $("#msgpop").appendTo("#replyto" + mid);
   modal.style.display = "block";
 });
+$('.pmessage .formpopmsg').click(function(e){
+  e.preventDefault();
+  var replyto = $(e.currentTarget).data().replyto
+  var title = $(e.currentTarget).data().replytitle
+  var mid = $(e.currentTarget).data().mid
+  $('#msg-form #to').prop('value', replyto);
+  $('#msg-form #subject').prop('value', title);
+  var modal = document.getElementById('formpop');
+  modal.style.display = "block";
+});
+$('.createsub').click(function(e){
+  e.preventDefault();
+  var modal = document.getElementById('formpop');
+  modal.style.display = "block";
+});
 $('.pmessage .replycom').click(function(e){
   e.preventDefault();
   var replyto = $(e.currentTarget).data().replyto
@@ -76,8 +91,13 @@ $('.pmessage .replycom').click(function(e){
   modal.style.display = "block";
 });
 
-$('.modal-content .closemsg').click(function(e){
+$('#msgpop .closemsg').click(function(e){
   e.preventDefault();
   var modal = document.getElementById('msgpop');
+  modal.style.display = "none";
+});
+$('#formpop .closemsg').click(function(e){
+  e.preventDefault();
+  var modal = document.getElementById('formpop');
   modal.style.display = "none";
 });

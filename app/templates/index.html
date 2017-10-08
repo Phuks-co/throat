@@ -27,7 +27,7 @@
 <hr>
 <a href="{{url_for('view_subs')}}" class="sbm-post pure-button">View all subs</a>
 <a href="{{url_for('random_sub')}}" class="sbm-post pure-button">Go to random sub</a>
-<a href="#" class="sbm-post pure-button pure-button-primary">Create a sub</a>
+<a href="#formpop" class="createsub sbm-post pure-button pure-button-primary">Create a sub</a>
 {% endif %}
 {% cache 300, 'toppost' %}
 {% set tp = func.getTodaysTopPosts()%}
@@ -151,6 +151,35 @@
 {% if posts|length == 25 %}
   <a href="{{url_for(sort_type, page=(page+1), **kw)}}" class="pure-button">next</a>
 {% endif %}
+
+<!-- create sub form -->
+<div id="formpop" style="display:none;">
+  <div class="modal-content">
+    <span class="closemsg">&times;</span>
+    <form id="csub-form" action="{{url_for('do.create_sub')}}" data-redir="true" class="pure-form pure-form-aligned ajaxform">
+      {% set csubform = form.CreateSubForm()%}
+      {{csubform.csrf_token}}
+      <h3>Create sub</h3>
+      <p>Create a sub for you, your friends, or for your favorite community</p>
+      <fieldset>
+        <div class="pure-control-group">
+          <label for="subname">Subname</label>
+          {{csubform.subname(placeholder=csubform.subname.label.text, required=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}
+        </div>
+        <div class="pure-control-group">
+          <label for="subject">Subject</label>
+          {{csubform.title(placeholder=csubform.title.label.text, required=True)}}
+        </div>
+        <div class="pure-controls">
+          {% if error %}
+            <div class="error">{{error}}</div>
+          {%endif%}
+          <button type="submit" id="csub-btnsubmit" class="pure-button pure-button-primary" data-prog="Sending...">Create sub</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>
 
 {% endblock %}
 {%block pagefoot%}

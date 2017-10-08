@@ -233,18 +233,31 @@ body.dark .pmessage.post:nth-child(2n) {
     background-color: #101010;
 }
 
-body.dark .modal-content {
+body.dark .modal-content,
+body.dark #formpop .modal-content {
     background-color: #222222;
     border: 1px solid #4d4848;
     box-shadow: 4px 4px 16px #1d1d1d;
 }
-body.dark .modal-content h3 {
+body.dark .modal-content h3,
+body.dark #formpop .modal-content h3,
+body.dark #formpop .modal-content p {
     color: #cccccc;
 }
-body.dark .modal-content .closemsg {
+body.dark .modal-content .closemsg,
+body.dark #formpop .modal-content .closemsg {
     color: #999;
 }
 /* /MESSAGES STYLES */
+
+/* SUBS PAGE */
+body.dark .subsentry {
+    background-color: #1b1b1b;
+}
+body.dark .subsentry:nth-child(2n) {
+    background-color: #111111;
+}
+/* /SUBS PAGE */
 
 /* misc */
 
