@@ -1212,8 +1212,9 @@ def getCurrentHashrate():
         hr['hash'] = int(hr['hash'])
         hr['totalHashes'] = int(hr['totalHashes'])
         return hr
-    except (ValueError, HTTPError) as err:
+    except (ValueError, requests.HTTPError) as err:
         return {'error': err}
+
 
 @cache.memoize(60)
 def getCurrentUserStats(username):
@@ -1358,7 +1359,7 @@ def getMessagesIndex(page):
     """ Returns messages inbox """
     try:
         msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
-        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype << [1,8]).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype << [1, 8]).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except msg.DoesNotExist:
         return False
     return msg
@@ -1378,7 +1379,7 @@ def getMessagesModmail(page):
     """ Returns modmail """
     try:
         msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
-        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype << [2,7]).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype << [2, 7]).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except msg.DoesNotExist:
         return False
     return msg
