@@ -1392,3 +1392,23 @@ def getMessagesSaved(page):
     except msg.DoesNotExist:
         return False
     return msg
+
+
+def getMsgCommReplies(page):
+    """ Returns comment replies messages """
+    try:
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
+        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 5).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+    except msg.DoesNotExist:
+        return False
+    return msg
+
+
+def getMsgPostReplies(page):
+    """ Returns post replies messages """
+    try:
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
+        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 4).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+    except msg.DoesNotExist:
+        return False
+    return msg

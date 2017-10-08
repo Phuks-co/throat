@@ -974,10 +974,7 @@ def view_messages_postreplies(page):
                   {'count': db.user_mail_count(current_user.uid)},
                   namespace='/snt',
                   room='user' + current_user.uid)
-    msgs = db.query('SELECT * FROM `message` WHERE `mtype`=4 '
-                    'AND `receivedby`=%s ORDER BY `posted` DESC '
-                    'LIMIT 20 OFFSET %s',
-                    (user, ((page - 1) * 20))).fetchall()
+    msgs = misc.getMsgPostReplies(page)
     return render_template('messages/postreply.html', user=user, messages=msgs,
                            page=page, box_name="Replies", boxID="2",
                            box_route='view_messages_postreplies')
@@ -999,12 +996,9 @@ def view_messages_comreplies(page):
                   {'count': db.user_mail_count(current_user.uid)},
                   namespace='/snt',
                   room='user' + current_user.uid)
-    msgs = db.query('SELECT * FROM `message` WHERE `mtype`=5 '
-                    'AND `receivedby`=%s ORDER BY `posted` DESC '
-                    'LIMIT 20 OFFSET %s',
-                    (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages/commreply.html', user=user, messages=msgs,
-                           page=page, box_name="Replies", boxID="3",
+    msgs = misc.getMsgCommReplies(page)
+    return render_template('messages/commreply.html', user=user,
+                           page=page, box_name="Replies", messages=msgs,
                            box_route='view_messages_comreplies')
 
 
