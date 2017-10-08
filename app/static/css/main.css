@@ -939,6 +939,7 @@ input[type=search] {
   resize: vertical;
   width: 100%;
   overflow: auto;
+  margin-top: 5px;
 }
 
 div.comments {
