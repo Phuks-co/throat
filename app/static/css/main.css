@@ -686,10 +686,6 @@ a#prevp{
 .wholepost{
   margin-top: 1.5em;
 }
-.comment-form textarea{
-  width: 95%;
-  display: block;
-}
 
 .comment-form{
   margin-top: 1em;
@@ -939,7 +935,11 @@ input[type=search] {
   resize: vertical;
   width: 100%;
   overflow: auto;
+}
+
+.cwrap {
   margin-top: 5px;
+  width: 100%;
 }
 
 div.comments {
@@ -979,7 +979,7 @@ article.comment .score{
   height: 26px;
   margin-top: 2px;
   padding-left: .2em;
-  width: 95%;
+  width: 100%;
   border: 1px solid #ccc;
 }
 
@@ -1009,6 +1009,7 @@ article.comment .score{
   box-shadow: none;
   border-top-left-radius: unset;
   border-top-right-radius: unset;
+  width: 100%
 }
 /* /EDITOR STYLES */
 
@@ -1129,13 +1130,13 @@ article.subsentry.subsubscribed {
 
 /* MISC */
 
-::-webkit-scrollbar {
+body::-webkit-scrollbar {
    width: 4px;
    background: #d94f00;
    z-index: -1;
 }
 
-::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb {
     background: rgb(16, 16, 16);
 }
 

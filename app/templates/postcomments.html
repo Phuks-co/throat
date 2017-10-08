@@ -42,9 +42,9 @@
           <ul class="bottombar links">
             <li><a href="{{url_for('view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></li>
             {%if current_user.is_authenticated%}
-              <li><a href="#reply" class="lnkreply" data-to="{{comment.cid}}">reply</a></li>
+              <li><a class="reply-comment" data-to="{{comment.cid}}">reply</a></li>
               {% if (comment.uid == session['user_id'] or current_user.is_admin()) and not comment.status == 1 %}
-                <li><a href="#edit-comment-form" class="btn btn-orange edit small edit-comment-form" data-cid="{{comment.cid}}">edit</a></li>
+                <li><a class="edit-comment" data-cid="{{comment.cid}}">edit</a></li>
                 <li><a class="delete-comment" data-cid="{{comment.cid}}">delete</a></li>
               {% endif %}
             {%endif%}

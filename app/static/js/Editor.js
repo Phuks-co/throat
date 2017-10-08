@@ -114,3 +114,5 @@ function setSelection(textarea, begin, end){
     tra.select();
   }
 }
+
+module.exports = initializeEditor;
