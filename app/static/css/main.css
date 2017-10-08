@@ -1112,6 +1112,41 @@ form#msg-form .editbtns {
 }
 /* /MESSAGES STYLES */
 
+/* SUBS PAGE */
+.subsentry:nth-child(2n) {
+    background-color: #f7f7f7;
+}
+
+.subsentry, .subsentry:nth-child(2n) {
+    -webkit-box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
+    -moz-box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
+    box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
+}
+
+.subsentry {
+    min-height: 70px;
+    padding: .8em;
+    border-radius: 8px 0 0 8px;
+    background-color: #fefefe;
+    margin: 8px 0;
+}
+
+.subs.content {
+    width: 90%;
+}
+
+.subsentry p.container a {
+    margin-right: 4px;
+    cursor: pointer;
+    padding: .5em 1em;
+    border-radius: 3px;
+    background-color: rgba(0,0,0,.06);
+}
+article.subsentry.subsubscribed {
+  border-left: 5px solid #00b421;
+}
+/* /SUBS PAGE */
+
 /* MISC */
 
 ::-webkit-scrollbar {
