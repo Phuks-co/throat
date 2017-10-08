@@ -2,7 +2,12 @@ import $ from 'jquery';
 var icon = require('./Icon');
 
 $(document).ready(function(){
-  $('.markdown-editor').each(function(i){
+  $('.markdown-editor').each(function(){
+    initializeEditor($(this));
+  })
+});
+
+function initializeEditor(element){
     // we are manually aplying the icons here, because we can.
     var txps = '<div class="editbtns"><div class="bold" data-icon="bold" title="Bold">' + icon.bold + '</div>' +
                 '<div class="italic" data-icon="italic" title="Italic">' + icon.italic + '</div>' +
@@ -17,9 +22,8 @@ $(document).ready(function(){
                 '<div class="quote" data-icon="quote" title="Quote block">' + icon.quote + '</div>' +
                 '<div class="code" data-icon="code" title="Code block">' + icon.code + '</div>' +
                '</div>';
-    $(this).prepend(txps);
-  });
-});
+    element.prepend(txps);
+}
 
 $(document).on('click', '.editbtns .link', function(){
   var textarea = $(this).parent().parent().children('textarea')[0];
