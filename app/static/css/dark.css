@@ -1,9 +1,9 @@
 /* dark mode styles */
-body.dark .pure-menu a svg path[stroke="#fff"] {
+body.dark .th-l-stroke[stroke="#fff"] {
     stroke: #cdcdcd;
 }
 
-body.dark .pure-menu a svg path[fill="#fff"] {
+body.dark .th-l-fill[fill="#fff"] {
     fill: #cdcdcd;
 }
 
