@@ -1138,7 +1138,7 @@ ul#th-menu ul.left li {
 }
 
 .pure-menu a svg.logo {
-  height: 40px;
-  margin-top: -2px;
+  height: 2.2em;
+  margin-top: 0px;
     /* display: none; */
 }
