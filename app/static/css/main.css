@@ -149,7 +149,7 @@ a:hover {
   -moz-box-shadow: 0 3px 5px 0 rgba(0,0,0,.6);
   box-shadow: 0 3px 5px 0 rgba(0,0,0,.6);
   position: relative;
-  height: 3em;
+  height: 3.6em;
   z-index: 100;
 }
 
@@ -1128,17 +1128,7 @@ ul#th-menu ul.left li {
     margin-left: 4px;
 }
 
-.footer-logo {
-  width: 100px;
-  margin: auto;
-}
-
-.sidebar-logo {
-  margin: 1% 30%;
-}
-
 .pure-menu a svg.logo {
-  height: 2.2em;
-  margin-top: 0px;
-    /* display: none; */
+    height: 2.8em;
+    margin-top: 0px;
 }
