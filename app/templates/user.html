@@ -32,69 +32,71 @@
 
 {% block content %}
 {{ super() }}
-<div id="center-container">
-  <div class="uprofile content">
-    <div class="uprofile-top">
-      <div class="uprofile-level-box">
-        <div class="uprofile-level">
-          {{func.get_user_level(user.uid)[0]}}
+<div id="container">
+  <div class="content">
+    {% if user.status == 0 %}
+      <div class="uprofile-top">
+        <div class="pblock">
+          <div class="uprofile-level-box">
+            <div class="uprofile-level">
+              {{func.get_user_level(user.uid)[0]}}
+            </div>
+          </div>
+          <h1 style="margin-right: 0px; margin-left:0px;" class="noshit">{{user.name}}</h1>
+        </div>
+        <div class="pblock">
+          <div class="statdiv">
+            <div class="ucount">{{pcount}}</div>
+            <div>posts</div>
+          </div>
+          <div class="statdiv">
+            <div class="ucount">{{ccount}}</div>
+            <div>comments</div>
+          </div>
+        </div>
+        <div class="pblock">
+          <div class="statdiv">
+            <div class="ucount">{{db.get_user_post_voting(user.uid)[0]}}</div>
+            <div>Phuks given</div>
+          </div>
+          <div class="statdiv">
+            <div class="ucount">{{current_user.score}}</div>
+            <div>Total score</div>
+          </div>
         </div>
       </div>
-      <div><h1 style="margin-right: 0px; margin-left:0px;" class="noshit col-11">{{user.name}}</h1></div>
-    </div>
-    {% if not user.status == 10 %}
-      <div class="user-activity col-6">
-        <div>
-          <table class="ustattable">
-            <tr>
-              <td class="ustatblock">
-                <div class="statdiv">
-                  <div class="ucount">{{pcount}}</div>
-                  <div>posts</div>
-                  <div>(+{{func.get_user_post_score_counts(user)[1]}}|-{{func.get_user_post_score_counts(user)[2]}})</div>
-                </div>
-              </td>
-              <td class="ustatblock">
-                <div class="statdiv">
-                  <div class="ucount">{{ccount}}</div>
-                  <div>comments</div>
-                  <div>(+{{func.get_user_post_score_counts(user)[3]}}|-{{func.get_user_post_score_counts(user)[4]}})</div>
-                </div>
-              </td>
-            </tr>
-          </table>
-          <ul id="userStats">
-            <li>{{db.get_user_post_voting(user.uid)[0]}} phuks given (+{{db.get_user_post_voting(user.uid)[1]}}|-{{db.get_user_post_voting(user.uid)[2]}})</li>
-          </ul>
-        </div>
+      <div>
         {% if badges|length > 0 %}
         <div>
+          <h3>Badges</h3>
           <ul id="userBadges" style="color: darkcyan;">
             {% for badge in badges %}
-            <li class="profilebadge" title="{{badge.text}},"><div class="profilebadgename">{{badge.name}}</div><div class="profilebadgexp">{{badge.value}}XP<div></li>
+            <li class="profilebadge" title="{{badge.text}},"><div class="profilebadgename" data-icon="{{badge.name}}">{{badge.name}}</div></li>
               {% endfor %}
           </ul>
         </div>
         {% endif %}
-        <div>
-          <h3>Owns</h3>
-          <ul style="color: darkcyan;">
-            {% for own in owns if owns|length > 0 %}
-            <li><a href="{{url_for('view_sub', sub=own.name)}}">{{own.name}}</a></li>
-            {% else %}
-            <li>none</li>
-            {% endfor %}
-          </ul>
-        </div>
-        <div>
-          <h3>Mods</h3>
-          <ul style="color: darkcyan;">
-            {% for mod in mods if mods|length > 0 %}
-            <li><a href="{{url_for('view_sub', sub=mod.name)}}">{{mod.name}}</a></li>
-            {% else %}
-            <li>none</li>
-            {% endfor %}
-          </ul>
+        <div style="vertical-align: top;">
+          <div class="pblock">
+            <h3>Owns</h3>
+            <ul style="color: darkcyan;">
+              {% for own in owns if owns|length > 0 %}
+              <li><a href="{{url_for('view_sub', sub=own.name)}}">{{own.name}}</a></li>
+              {% else %}
+              <li>none</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="pblock">
+            <h3>Mods</h3>
+            <ul style="color: darkcyan;">
+              {% for mod in mods if mods|length > 0 %}
+              <li><a href="{{url_for('view_sub', sub=mod.name)}}">{{mod.name}}</a></li>
+              {% else %}
+              <li>none</li>
+              {% endfor %}
+            </ul>
+          </div>
         </div>
       </div>
 
