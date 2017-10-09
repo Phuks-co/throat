@@ -69,9 +69,13 @@
         {% if badges|length > 0 %}
         <div>
           <h3>Badges</h3>
-          <ul id="userBadges" style="color: darkcyan;">
+          <ul id="userBadges">
             {% for badge in badges %}
-            <li class="profilebadge" title="{{badge.text}}"><div class="profilebadgename" data-icon="{{badge.name}}">{{badge.name}}</div></li>
+            <li class="profilebadge" title="{{badge.text}}">
+              <div class="profilebadgeicon">&#9734;</div>
+              <div class="profilebadgename">{{badge.name}}</div>
+              <div class="profilebadgexp">{{badge.value}}xp</div>
+            </li>
               {% endfor %}
           </ul>
         </div>
