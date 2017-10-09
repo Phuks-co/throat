@@ -44,29 +44,38 @@
     </div>
     {% if not user.status == 10 %}
       <div class="user-activity col-6">
-        <p class="joindate">User has made {{pcount}} posts and {{ccount}} comments.</p>
-        {# TODO user stats #}
         <div>
-          <h3>Basic Stats</h3>
+          <table class="ustattable">
+            <tr>
+              <td class="ustatblock">
+                <div class="statdiv">
+                  <div class="ucount">{{pcount}}</div>
+                  <div>posts</div>
+                  <div>(+{{func.get_user_post_score_counts(user)[1]}}|-{{func.get_user_post_score_counts(user)[2]}})</div>
+                </div>
+              </td>
+              <td class="ustatblock">
+                <div class="statdiv">
+                  <div class="ucount">{{ccount}}</div>
+                  <div>comments</div>
+                  <div>(+{{func.get_user_post_score_counts(user)[3]}}|-{{func.get_user_post_score_counts(user)[4]}})</div>
+                </div>
+              </td>
+            </tr>
+          </table>
           <ul id="userStats">
-            <li>{{func.get_user_level(user.uid)[1]}} xp</li>
-            <li>{{user.score}} phuks taken</li>
-              <li title="Post Score"> - <i class="fa fa-list" aria-hidden="true"></i> (+{{func.get_user_post_score_counts(user)[1]}}|-{{func.get_user_post_score_counts(user)[2]}})</li>
-              <li title="Comment Score"> - <i class="fa fa-comments" aria-hidden="true"></i> (+{{func.get_user_post_score_counts(user)[3]}}|-{{func.get_user_post_score_counts(user)[4]}})</li>
             <li>{{db.get_user_post_voting(user.uid)[0]}} phuks given (+{{db.get_user_post_voting(user.uid)[1]}}|-{{db.get_user_post_voting(user.uid)[2]}})</li>
           </ul>
         </div>
+        {% if badges|length > 0 %}
         <div>
-          <h3>Badges</h3>
           <ul id="userBadges" style="color: darkcyan;">
-            {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
-            {% for badge in badges if badges|length > 0 %}
-            <li title="{{badge.text}}, {{badge.value}}XP"><i class="fa {{badge.badge}} fa-2x"></i> {{badge.name}}</li>
-            {% else %}
-            <li>none</li>
-            {% endfor %}
+            {% for badge in badges %}
+            <li class="profilebadge" title="{{badge.text}},"><div class="profilebadgename">{{badge.name}}</div><div class="profilebadgexp">{{badge.value}}XP<div></li>
+              {% endfor %}
           </ul>
         </div>
+        {% endif %}
         <div>
           <h3>Owns</h3>
           <ul style="color: darkcyan;">

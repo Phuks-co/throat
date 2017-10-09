@@ -47,7 +47,7 @@ $('.deletemsg').click(function(e){
   });
 });
 
-// Toggle message reply form
+// Toggle message reply
 $('.pmessage .replymsg').click(function(e){
   e.preventDefault();
   var replyto = $(e.currentTarget).data().replyto

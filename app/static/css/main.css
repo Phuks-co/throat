@@ -1182,6 +1182,36 @@ div#center-container {
     box-shadow: 2px 2px 8px #555;
     background: rgba(255, 255, 255, 0.95);
 }
+table.ustattable {
+    width: 100%;
+}
+td.ustatblock {
+    text-align: center;
+    width: 50%;
+    padding: 20px;
+}
+.statdiv {
+    border: 2px solid #555;
+    padding: 12px;
+    border-radius: 10px;
+}
+li.profilebadge {
+    list-style: none;
+    display: inline-block;
+    height: 60px;
+    width: 60px;
+    border: 2px solid #555;
+    border-radius: 10px;
+    margin: 4px;
+    text-align: center;
+}
+ul#userBadges {
+    min-height: 78px;
+}
+.ucount {
+    font-size: 34px;
+    font-weight: bold;
+}
 /* /USER PAGE*/
 
 
