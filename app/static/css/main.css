@@ -1204,6 +1204,9 @@ ul#userBadges {
     font-size: 34px;
     font-weight: bold;
 }
+.pblock.level {
+    padding-top: 30px;
+}
 /* /USER PAGE*/
 
 

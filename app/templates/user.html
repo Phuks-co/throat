@@ -36,13 +36,13 @@
   <div class="content">
     {% if user.status == 0 %}
       <div class="uprofile-top">
-        <div class="pblock">
+        <h1 style="margin-right: 0px; margin-left:0px;" class="noshit">{{user.name}}</h1>
+        <div class="pblock level">
           <div class="uprofile-level-box">
             <div class="uprofile-level">
               {{func.get_user_level(user.uid)[0]}}
             </div>
           </div>
-          <h1 style="margin-right: 0px; margin-left:0px;" class="noshit">{{user.name}}</h1>
         </div>
         <div class="pblock">
           <div class="statdiv">
@@ -71,7 +71,7 @@
           <h3>Badges</h3>
           <ul id="userBadges" style="color: darkcyan;">
             {% for badge in badges %}
-            <li class="profilebadge" title="{{badge.text}},"><div class="profilebadgename" data-icon="{{badge.name}}">{{badge.name}}</div></li>
+            <li class="profilebadge" title="{{badge.text}}"><div class="profilebadgename" data-icon="{{badge.name}}">{{badge.name}}</div></li>
               {% endfor %}
           </ul>
         </div>
