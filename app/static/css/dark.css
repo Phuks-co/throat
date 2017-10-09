@@ -259,6 +259,16 @@ body.dark .subsentry:nth-child(2n) {
 }
 /* /SUBS PAGE */
 
+/* USER PAGE */
+body.dark .uprofile-level-box {
+    border: 4px solid #474747;
+}
+body.dark .uprofile.content {
+    border: 2px solid #474747;
+    background: rgba(0, 0, 0, 0.9);
+}
+/* /USER PAGE */
+
 /* misc */
 
 body.dark path[stroke="#ff6d15"] {

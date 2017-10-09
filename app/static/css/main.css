@@ -1153,6 +1153,38 @@ article.subsentry.subsubscribed {
 }
 /* /SUBS PAGE */
 
+/* USER PAGE */
+.uprofile-top {
+    text-align: center;
+    vertical-align: middle;
+}
+.uprofile-level {
+  font-size: 90px;
+  font-weight: bold;
+  width: 100px;
+  height: 100px;
+  margin: auto;
+}
+.uprofile-level-box {
+  border: 4px solid #d94f00;
+      border-radius: 100px;
+      overflow: hidden;
+      width: 108px;
+      margin: auto;
+}
+div#center-container {
+    background: url(/static/img/throat.svg) 50% no-repeat;
+}
+.uprofile.content {
+    padding: 41px;
+    border: 2px solid #555;
+    border-radius: 16px;
+    box-shadow: 2px 2px 8px #555;
+    background: rgba(255, 255, 255, 0.95);
+}
+/* /USER PAGE*/
+
+
 /* MISC */
 
 body::-webkit-scrollbar {

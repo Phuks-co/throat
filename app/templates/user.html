@@ -33,13 +33,14 @@
 {% block content %}
 {{ super() }}
 <div id="center-container">
-  <div class="content">
-    <div class="row">
-      <div><h1 style="margin-right: 0px; margin-left:0px;" class="noshit col-11">{{user.name}}</h1></div>
-      <div class="col-1 admin-page-form">
-        <div class="row noshit">Level</div>
-        <div class="row"><h2 class="noshit" title="{{func.get_user_level(user.uid)[1]}}XP">{{func.get_user_level(user.uid)[0]}}</h2></div>
+  <div class="uprofile content">
+    <div class="uprofile-top">
+      <div class="uprofile-level-box">
+        <div class="uprofile-level">
+          {{func.get_user_level(user.uid)[0]}}
+        </div>
       </div>
+      <div><h1 style="margin-right: 0px; margin-left:0px;" class="noshit col-11">{{user.name}}</h1></div>
     </div>
     {% if not user.status == 10 %}
       <div class="user-activity col-6">
