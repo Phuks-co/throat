@@ -1211,7 +1211,8 @@ ul#userBadges {
     font-size: 38px;
     padding: 0;
 }
-.profilebadgexp {
+.profilebadgexp,
+.profilebadgename {
     font-size: 12px;
 }
 /* /USER PAGE*/
