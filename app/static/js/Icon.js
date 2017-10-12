@@ -45,8 +45,12 @@ var Icons = {
 
 // here we apply em.
 $(document).ready(function(){
-  $('div[data-icon],span[data-icon]').each(function(i){
-    this.innerHTML = Icons[$(this).data('icon')];
+  $('*[data-icon]').each(function(i){
+    if(Icons[$(this).data('icon')]){
+      this.innerHTML = Icons[$(this).data('icon')];
+    }else{
+      this.innerHTML = Icons.close;
+    }
   });
 });
 

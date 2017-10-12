@@ -1190,15 +1190,12 @@ article.subsentry.subsubscribed {
 li.profilebadge {
     list-style: none;
     display: inline-block;
-    height: 90px;
-    width: 90px;
+    height: 48px;
+    width: 48px;
     border: 2px solid #555;
     border-radius: 10px;
     margin: 4px;
     text-align: center;
-}
-ul#userBadges {
-    min-height: 78px;
 }
 .ucount {
     font-size: 34px;
