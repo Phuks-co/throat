@@ -32,6 +32,15 @@ var Icons = {
 
   owner: require('../svg/star.svg'),
 
+  bug: require('../svg/bug.svg'),
+  piechart: require('../svg/pie-chart.svg'),
+  trophy: require('../svg/trophy.svg'),
+  paypal: require('../svg/paypal.svg'),
+  rss: require('../svg/rss.svg'),
+  rss2: require('../svg/rss2.svg'),
+  evil: require('../svg/evil.svg'),
+  heart: require('../svg/heart.svg'),
+
   bold: require('../svg/bold.svg'),
   italic: require('../svg/italic.svg'),
   underline: require('../svg/underline.svg'),
