@@ -50,7 +50,7 @@
       {{msgform.csrf_token}}
       <h3>Send user message</h3>
       <fieldset>
-        <div class="pure-control-group">
+        <div id="lto" class="pure-control-group">
           <label for="to">User</label>
           {{msgform.to(placeholder=msgform.to.label.text, required=True)}}
         </div>

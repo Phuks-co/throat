@@ -54,7 +54,8 @@ $('.pmessage .replymsg').click(function(e){
   var title = $(e.currentTarget).data().replytitle
   var mid = $(e.currentTarget).data().mid
   $('#msg-form #to').prop('value', replyto);
-  $('#msg-form #subject').prop('value', title);
+  $('#msg-form #lto').hide();
+  $('#msg-form #subject').prop('value', 'Re:' + title);
   var modal = document.getElementById('msgpop');
   $("#msgpop").appendTo("#replyto" + mid);
   modal.style.display = "block";
@@ -63,6 +64,7 @@ $('.pmessage .formpopmsg').click(function(e){
   e.preventDefault();
   var replyto = $(e.currentTarget).data().replyto
   $('#msg-form #to').prop('value', replyto);
+  $('#msg-form #lto').hide();
   var modal = document.getElementById('formpop');
   modal.style.display = "block";
 });
