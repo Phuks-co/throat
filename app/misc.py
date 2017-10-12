@@ -1,5 +1,6 @@
 """ Misc helper function and classes. """
 from urllib.parse import urlparse, parse_qs
+import json
 import math
 import uuid
 import time
@@ -334,12 +335,11 @@ def ratelimit(limit, per=300, send_x_headers=True,
     return decorator
 
 
-def safeRequest(url):
+def safeRequest(url, recieve_timeout=10):
     """ Gets stuff for the internet, with timeouts and size restrictions """
     # Returns (Response, File)
     max_size = 25000000  # won't download more than 25MB
-    recieve_timeout = 10  # won't download for more than 10s
-    r = requests.get(url, stream=True, timeout=20)
+    r = requests.get(url, stream=True, timeout=recieve_timeout)
     r.raise_for_status()
 
     if int(r.headers.get('Content-Length', 1)) > max_size:
@@ -1205,8 +1205,8 @@ def get_errors(form):
 @cache.memoize(60)
 def getCurrentHashrate():
     try:
-        hr = requests.get('https://supportxmr.com/api/miner/{0}/stats'.format(config.XMR_ADDRESS))
-        hr = hr.json()
+        hr = safeRequest('https://supportxmr.com/api/miner/{0}/stats'.format(config.XMR_ADDRESS), 0)
+        hr = json.loads(hr[1])
         hr['amtDue'] = round(hr['amtDue'] / 1000000000000, 8)
         hr['amtPaid'] = round(hr['amtPaid'] / 1000000000000, 8)
         hr['hash'] = int(hr['hash'])
