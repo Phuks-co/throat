@@ -1205,7 +1205,7 @@ def get_errors(form):
 @cache.memoize(60)
 def getCurrentHashrate():
     try:
-        hr = safeRequest('https://supportxmr.com/api/miner/{0}/stats'.format(config.XMR_ADDRESS), 0)
+        hr = safeRequest('https://supportxmr.com/api/miner/{0}/stats'.format(config.XMR_ADDRESS), 1)
         hr = json.loads(hr[1])
         hr['amtDue'] = round(hr['amtDue'] / 1000000000000, 8)
         hr['amtPaid'] = round(hr['amtPaid'] / 1000000000000, 8)
