@@ -4,7 +4,8 @@
 {% block head %}
 {{ super() }}
 <style>
-.demo.content div.icon {width:160px;height:160px;display:block;float:left;margin:10px}
+.demo.content div.icon {width:100px;height:100px;display:block;float:left;margin:10px}
+body.dark div.icon svg, body.dark div.icon span[data-icon="strikethrough"] svg path {fill: #822f00;}
 </style>
 {% endblock %}
 
