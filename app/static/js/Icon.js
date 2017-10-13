@@ -40,7 +40,7 @@ var Icons = {
   rss2: require('../svg/rss2.svg'),
   evil: require('../svg/evil.svg'),
   heart: require('../svg/heart.svg'),
-
+  comments: require('../svg/bubbles.svg'),
   bold: require('../svg/bold.svg'),
   italic: require('../svg/italic.svg'),
   underline: require('../svg/underline.svg'),
