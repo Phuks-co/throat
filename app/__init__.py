@@ -1337,6 +1337,12 @@ def privacy():
     return render_template('privacy.html')
 
 
+@app.route("/assets")
+def assets():
+    """ Shows the site's assets. """
+    return render_template('assets.html')
+
+
 @app.errorhandler(401)
 def unauthorized(error):
     """ 401 Unauthorized """
