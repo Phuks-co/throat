@@ -41,6 +41,7 @@ var Icons = {
   evil: require('../svg/evil.svg'),
   heart: require('../svg/heart.svg'),
   comments: require('../svg/bubbles.svg'),
+
   bold: require('../svg/bold.svg'),
   italic: require('../svg/italic.svg'),
   underline: require('../svg/underline.svg'),
@@ -50,6 +51,10 @@ var Icons = {
   numberlist: require('../svg/numberlist.svg'),
   code: require('../svg/code.svg'),
   quote: require('../svg/quote.svg'),
+
+  coffee: require('../svg/coffee.svg'),
+  donor: require('../svg/donor.svg'),
+  copyright: require('../svg/copyright.svg'),
 };
 
 // here we apply em.
