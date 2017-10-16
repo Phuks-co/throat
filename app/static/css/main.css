@@ -345,12 +345,12 @@ span#notification.fade {
   background-color: #282828;
 }
 
-.pure-button {
+.pure-button-primary {
     background-color: #d94f00;
     color: #fff;
 }
 
-.pure-button:hover {
+.pure-button-primary:hover {
       background-color:#ff6d15;
     color: #fff;
 }
