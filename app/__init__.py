@@ -31,7 +31,7 @@ from . import database as db
 from .misc import SiteAnon, getSuscriberCount, getDefaultSubs, allowedNames, get_errors
 from .sorting import NewSorting
 from .models import db as pdb
-from .models import Sub, SubPost, User
+from .models import Sub, SubPost, User, SubPostComment
 # from werkzeug.contrib.profiler import ProfilerMiddleware
 
 app = Flask(__name__)
@@ -780,24 +780,17 @@ def view_perm(sub, pid, cid):
     the_comment = db.get_comment_from_cid(cid)
     if not the_comment:
         abort(404)
-    # ... its children ...
-    the_comment['children'] = db.get_all_post_comments(pid, the_comment['cid'],
-                                                       2)
-    the_comment['hl'] = True
-    # ... and its parent ...
-    if the_comment['parentcid']:
-        p1 = db.get_comment_from_cid(the_comment['parentcid'])
-        p1['children'] = [the_comment]
-        # ... and the parent of its parent ...
-        if p1['parentcid']:
-            p2 = db.get_comment_from_cid(p1['parentcid'])
-            p2['children'] = [p1]
-            root = p2
-        else:
-            root = p1
-    else:
-        root = the_comment
-    return view_post(sub, pid, [root])
+    tc = cid if not the_comment['parentcid'] else the_comment['parentcid']
+    tq = SubPostComment.select(SubPostComment.cid).where(SubPostComment.parentcid == tc).alias('jq')
+    cmskel = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
+    cmskel = cmskel.join(tq, on=((tq.c.cid == SubPostComment.parentcid) | (SubPostComment.parentcid == tc)))
+    cmskel = cmskel.group_by(SubPostComment.cid)
+    cmskel = cmskel.order_by(SubPostComment.score.desc()).dicts()
+    if cmskel.count() == 0:
+        return view_post(sub, pid, [])
+    cmxk = misc.build_comment_tree(cmskel, tc)
+
+    return view_post(sub, pid, misc.expand_comment_tree(cmxk))
 
 
 @app.route("/u/<user>")
