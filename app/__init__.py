@@ -720,7 +720,7 @@ def view_sub_hot(sub, page):
 
 
 @app.route("/s/<sub>/<pid>")
-def view_post(sub, pid, comments=False):
+def view_post(sub, pid, comments=False, highlight=None):
     """ View post and comments (WIP) """
     post = db.get_post_from_pid(pid)
     ksub = db.get_sub_from_sid(post['sid'])
@@ -748,7 +748,7 @@ def view_post(sub, pid, comments=False):
                            edittxtpostform=txtpedit, sub=ksub,
                            editlinkpostform=EditSubLinkPostForm(),
                            lnkpostform=createlinkpost, comments=comments,
-                           txtpostform=createtxtpost, editpostflair=editflair)
+                           txtpostform=createtxtpost, editpostflair=editflair, highlight=highlight)
 
 
 @app.route("/p/<pid>")
@@ -774,8 +774,7 @@ def view_comment_inbox(cid):
 
 @app.route("/s/<sub>/<pid>/<cid>")
 def view_perm(sub, pid, cid):
-    """ WIP: Permalink to comment, see rTH7ed77c7c69c3,
-    currently using :active css to flag comment in comment chain """
+    """ Permalink to comment """
     # We get the comment...
     the_comment = db.get_comment_from_cid(cid)
     if not the_comment:
@@ -789,8 +788,11 @@ def view_perm(sub, pid, cid):
     if cmskel.count() == 0:
         return view_post(sub, pid, [])
     cmxk = misc.build_comment_tree(cmskel, tc)
-
-    return view_post(sub, pid, misc.expand_comment_tree(cmxk))
+    print('WEEEEEEEEEEEEEEEEEEEEEE', cmxk)
+    if the_comment['parentcid']:
+        cmxk[1].append(the_comment['parentcid'])
+        cmxk = ([{'cid': the_comment['parentcid'], 'children': cmxk[0]}], cmxk[1])
+    return view_post(sub, pid, misc.expand_comment_tree(cmxk), cid)
 
 
 @app.route("/u/<user>")

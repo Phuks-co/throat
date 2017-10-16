@@ -1,7 +1,7 @@
 {% for comment in comments recursive %}
   {%if comment.cid != 0 %}
     <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="{% if comment.hl %}active{%endif%} text-post no-padding comment sub-{{loop.depth0}}">
-      <div class="commentrow" id="comment-{{comment.cid}}" {% if comment.status == 1 %}hidden{%endif%}>
+      <div class="commentrow {%if comment.cid == highlight %}highlight{%endif%}" id="comment-{{comment.cid}}" {% if comment.status == 1 %}hidden{%endif%}>
         <div class="pull left votecomment">
           {# vote arrow div #}
           <div title="Upvote" class="c-upvote{%if comment.positive == True %} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>

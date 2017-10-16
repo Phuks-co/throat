@@ -1096,6 +1096,10 @@ form#msg-form {
   cursor: pointer;
 }
 
+.highlight{
+  background-color: rgba(244, 194, 10, 0.35);
+}
+
 #formpop {
   position: fixed;
   top: 20px;
