@@ -130,7 +130,6 @@ class EditSubTextPostForm(FlaskForm):
     content = TextAreaField('Post content',
                             validators=[DataRequired(),
                                         Length(min=1, max=16384)])
-    nsfw = BooleanField('NSFW?')
 
 
 class EditSubLinkPostForm(FlaskForm):

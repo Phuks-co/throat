@@ -98,6 +98,23 @@ $(document).on('click', '.post-source', function(){
 });
 
 
+// edit post
+$(document).on('click', '.edit-post', function(){
+  var elem = document.getElementById('postcontent');
+  var oc = elem.innerHTML;
+  var back =  document.createElement( "a" );
+  back.innerHTML = "edit";
+  back.onclick = function(){
+    elem.innerHTML = oc;
+    $(this).parent().html('edit');
+  };
+  var h = elem.clientHeight-6;
+  elem.innerHTML = '<div id="editpost" class="cwrap markdown-editor"><textarea style="height: ' + h + 'px">' + document.getElementById('post-source').innerHTML + '</textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-editpost" data-pid="' + $(this).data('pid') +'">Save changes</button> <button class="pure-button button-xsmall btn-preview" data-pvid="editpost" >Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">×</span><div class="cpreview-content"></div></div>';
+  $(this).parent().html(back);
+  initializeEditor($('#editpost'));
+});
+
+
 // comment source
 $(document).on('click', '.comment-source', function(){
   var cid = $(this).data('cid');
@@ -131,6 +148,34 @@ $(document).on('click', '.edit-comment', function(){
   initializeEditor($('#ecomm-' + cid));
 });
 
+$(document).on('click', '.btn-editpost', function(){
+  var obj=$(this);
+  var content=$('#editpost textarea')[0].value;
+  obj.prop('disabled', true);
+  $.ajax({
+    type: "POST",
+    url: '/do/edit_txtpost/' + obj.data('pid'),
+    data: {'csrf_token': $('#csrf_token')[0].value, content: content},
+    dataType: 'json',
+    success: function(data) {
+        if (data.status != "ok") {
+          obj.parent().children('.error').show();
+          obj.parent().children('.error').html('There was an error while editing: ' + data.error);
+          obj.prop('disabled', false);
+        } else {
+          obj.html('Saved.');
+          document.location.reload();
+        }
+    },
+    error: function(data, err) {
+      obj.parent().children('.error').show();
+      obj.parent().children('.error').html('could not contact server');
+      obj.prop('disabled', false);
+    }
+  })
+});
+
+
 $(document).on('click', '.btn-editcomment', function(){
   var obj = $(this);
   var cid = obj.data('cid');
@@ -162,7 +207,6 @@ $(document).on('click', '.btn-editcomment', function(){
 $(document).on('click', '.btn-preview', function(e){
   e.preventDefault();
   var obj = $(this);
-  var cid = obj.data('cid');
   var content = $('#' + $(this).data('pvid') + ' textarea')[0].value;
   obj.prop('disabled', true);
   obj.text('Loading...');

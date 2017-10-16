@@ -626,22 +626,22 @@ def get_txtpost(pid):
         return jsonify(status='error', error=['No longer available'])
 
 
-@do.route("/do/edit_txtpost/<sub>/<pid>", methods=['POST'])
+@do.route("/do/edit_txtpost/<pid>", methods=['POST'])
 @login_required
-def edit_txtpost(sub, pid):
+def edit_txtpost(pid):
     """ Sub text post creation endpoint """
     form = EditSubTextPostForm()
     if form.validate():
         post = db.get_post_from_pid(pid)
         if db.is_post_deleted(post):
             return jsonify(status='error',
-                           error=["You can't edit a deleted posts"])
+                           error=["You can't edit a deleted post"])
         if not post:
             return jsonify(status='error', error=['No such post'])
-        db.uquery('UPDATE `sub_post` SET `content`=%s, `nsfw`=%s WHERE '
-                  '`pid`=%s', (form.content.data, form.nsfw.data, pid))
+        db.uquery('UPDATE `sub_post` SET `content`=%s WHERE '
+                  '`pid`=%s', (form.content.data, pid))
         cache.delete_memoized(db.get_post_from_pid, pid)
-        return json.dumps({'status': 'ok', 'sub': sub, 'pid': pid})
+        return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 

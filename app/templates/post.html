@@ -131,7 +131,7 @@
              <li><a class="editflair">flair</a></li>
            {% endif %}
            {% if func.getUser(post.uid).uid == session['user_id'] %}
-             <li><a class="edit-post">edit</a></li>
+             <li><a class="edit-post" data-pid="{{post.pid}}">edit</a></li>
            {% endif %}
            {% if func.getUser(post.uid).uid == session['user_id'] or current_user.is_admin() %}
              <li><a class="delete-post"> delete </a></li>
