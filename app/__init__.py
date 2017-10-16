@@ -788,7 +788,6 @@ def view_perm(sub, pid, cid):
     if cmskel.count() == 0:
         return view_post(sub, pid, [])
     cmxk = misc.build_comment_tree(cmskel, tc)
-    print('WEEEEEEEEEEEEEEEEEEEEEE', cmxk)
     if the_comment['parentcid']:
         cmxk[1].append(the_comment['parentcid'])
         cmxk = ([{'cid': the_comment['parentcid'], 'children': cmxk[0]}], cmxk[1])
@@ -1208,7 +1207,6 @@ def register():
         # defaults
         defaults = getDefaultSubs()
         for d in defaults:
-            print(d)
             db.create_subscription(user['uid'], d['sid'], 1)
 
         login_user(misc.load_user(user['uid']))

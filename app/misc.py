@@ -1313,7 +1313,6 @@ def expand_comment_tree(comsx):
     lcomms = {}
 
     for k in expcomms:
-        print(k)
         lcomms[k['cid']] = k
 
     def i_like_recursion(xm, depth=0):
