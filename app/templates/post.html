@@ -179,7 +179,7 @@
        </div>
      </form>
      <form data-reset="true" data-reload='true'  method="POST" action="{{url_for('do.create_comment', sub=sub.name, pid=post.pid)}}" class="ajaxform comment-form moving" style="display:none">
-       <span class="close">×</span>
+       <span class="close">&times;</span>
        {{commentform.csrf_token}}
        {{commentform.sub(value=sub.name)}}
        {{commentform.post(value=post.pid)}}

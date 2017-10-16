@@ -109,7 +109,7 @@ $(document).on('click', '.edit-post', function(){
     $(this).parent().html('<a class="edit-post">edit</a>');
   };
   var h = elem.clientHeight-6;
-  elem.innerHTML = '<div id="editpost" class="cwrap markdown-editor"><textarea style="height: ' + h + 'px">' + document.getElementById('post-source').innerHTML + '</textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-editpost" data-pid="' + $(this).data('pid') +'">Save changes</button> <button class="pure-button button-xsmall btn-preview" data-pvid="editpost" >Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">×</span><div class="cpreview-content"></div></div>';
+  elem.innerHTML = '<div id="editpost" class="cwrap markdown-editor"><textarea style="height: ' + h + 'px">' + document.getElementById('post-source').innerHTML + '</textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-editpost" data-pid="' + $(this).data('pid') +'">Save changes</button> <button class="pure-button button-xsmall btn-preview" data-pvid="editpost" >Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span><div class="cpreview-content"></div></div>';
   $(this).parent().html(back);
   initializeEditor($('#editpost'));
 });
@@ -143,7 +143,7 @@ $(document).on('click', '.edit-comment', function(){
     $(this).parent().html('edit');
   };
   var h = elem.clientHeight + 28;
-  elem.innerHTML = '<div class="cwrap markdown-editor" id="ecomm-'+cid+'"><textarea style="height: ' + h + 'px">' + document.getElementById('sauce-' + cid).innerHTML + '</textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-editcomment" data-cid="'+cid+'">Save changes</button> <button class="pure-button button-xsmall btn-preview" data-pvid="ecomm-'+cid+'">Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">×</span><div class="cpreview-content"></div></div>';
+  elem.innerHTML = '<div class="cwrap markdown-editor" id="ecomm-'+cid+'"><textarea style="height: ' + h + 'px">' + document.getElementById('sauce-' + cid).innerHTML + '</textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-editcomment" data-cid="'+cid+'">Save changes</button> <button class="pure-button button-xsmall btn-preview" data-pvid="ecomm-'+cid+'">Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span><div class="cpreview-content"></div></div>';
   $(this).html(back);
   initializeEditor($('#ecomm-' + cid));
 });
