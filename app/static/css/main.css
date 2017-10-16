@@ -704,6 +704,21 @@ a#prevp{
   margin-left: 1em;
 }
 
+.canclose .closemsg{
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.canclose{
+  position: relative;
+}
+
+.cmpreview{
+  margin-top: .7em;
+  margin-bottom: .4em;
+}
+
 .votecomment{
   float: left;
   width: 1.3em;

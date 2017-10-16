@@ -90,13 +90,8 @@ $('.pmessage .replycom').click(function(e){
   modal.style.display = "block";
 });
 
-$('#msgpop .closemsg').click(function(e){
+
+$(document).on('click', '.closemsg', function(e){
   e.preventDefault();
-  var modal = document.getElementById('msgpop');
-  modal.style.display = "none";
-});
-$('#formpop .closemsg').click(function(e){
-  e.preventDefault();
-  var modal = document.getElementById('formpop');
-  modal.style.display = "none";
+  $(this).parent().hide();
 });

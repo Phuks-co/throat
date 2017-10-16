@@ -126,7 +126,7 @@ $(document).on('click', '.edit-comment', function(){
     $(this).parent().html('edit');
   };
   var h = elem.clientHeight + 28;
-  elem.innerHTML = '<div class="cwrap markdown-editor" id="ecomm-'+cid+'"><textarea style="height: ' + h + 'px">' + document.getElementById('sauce-' + cid).innerHTML + '</textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary btn-editcomment" data-cid="'+cid+'">Save changes</button>';
+  elem.innerHTML = '<div class="cwrap markdown-editor" id="ecomm-'+cid+'"><textarea style="height: ' + h + 'px">' + document.getElementById('sauce-' + cid).innerHTML + '</textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-editcomment" data-cid="'+cid+'">Save changes</button> <button class="pure-button button-xsmall btn-preview" data-pvid="ecomm-'+cid+'">Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">×</span><div class="cpreview-content"></div></div>';
   $(this).html(back);
   initializeEditor($('#ecomm-' + cid));
 });
@@ -155,6 +155,38 @@ $(document).on('click', '.btn-editcomment', function(){
       obj.parent().children('.error').show();
       obj.parent().children('.error').html('could not contact server');
       obj.prop('disabled', false);
+    }
+  });
+});
+
+$(document).on('click', '.btn-preview', function(e){
+  e.preventDefault();
+  var obj = $(this);
+  var cid = obj.data('cid');
+  var content = $('#' + $(this).data('pvid') + ' textarea')[0].value;
+  obj.prop('disabled', true);
+  obj.text('Loading...');
+  $.ajax({
+    type: "POST",
+    url: '/do/preview',
+    data: {'csrf_token': $('#csrf_token')[0].value, text: content},
+    dataType: 'json',
+    success: function(data) {
+      if (data.status == "ok") {
+        obj.parent().children('.cmpreview').children('.cpreview-content').html(data.text);
+        obj.parent().children('.cmpreview').show()
+      }else{
+        obj.parent().children('.error').show();
+        obj.parent().children('.error').html('could not contact server');
+      }
+      obj.prop('disabled', false);
+      obj.text('Preview');
+    },
+    error: function(data, err) {
+      obj.parent().children('.error').show();
+      obj.parent().children('.error').html('could not contact server');
+      obj.prop('disabled', false);
+      obj.text('Preview');
     }
   });
 });

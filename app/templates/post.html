@@ -166,11 +166,17 @@
        {{commentform.sub(value=sub.name)}}
        {{commentform.post(value=post.pid)}}
        {{commentform.parent(value='0')}}
-       <div class="markdown-editor">
+       <div class="markdown-editor" id="ncme">
          {{commentform.comment(id="comment2", placeholder="Write your comment here. Styling with Markdown format is supported.", rows="6")}}
        </div>
        <div class="error alertbox"></div>
        <button type="submit" class="pure-button pure-button-primary">Submit comment</button>
+       <button data-pvid="ncme" class="pure-button btn-preview">Preview</button>
+       <div class="cmpreview canclose" style="display:none;">
+         <h4>Comment preview</h4>
+         <span class="closemsg">×</span>
+         <div class="cpreview-content"></div>
+       </div>
      </form>
      <form data-reset="true" data-reload='true'  method="POST" action="{{url_for('do.create_comment', sub=sub.name, pid=post.pid)}}" class="ajaxform comment-form moving" style="display:none">
        <span class="close">×</span>

@@ -16,7 +16,7 @@ import config
 from .. import forms, misc
 from ..socketio import socketio
 from .. import database as db
-from ..forms import LogOutForm, CreateSubFlair
+from ..forms import LogOutForm, CreateSubFlair, DummyForm
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
 from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
@@ -1815,3 +1815,15 @@ def get_sibling(pid, cid, page):  # XXX: Really similar to get_children. Should 
     post = SubPost.select(SubPost.pid, SubPost.sid).where(SubPost.pid == pid).get()
     sub = Sub.select(Sub.name).where(Sub.sid == post.sid).get()
     return render_template('postcomments.html', sub=sub, post=post, comments=misc.expand_comment_tree(cmxk))
+
+
+@do.route('/do/preview', methods=['POST'])
+def preview():
+    """ Returns parsed markdown. Used for post and comment previews. """
+    form = DummyForm()
+    if form.validate():
+        if request.form.get('text'):
+            return jsonify(status='ok', text=misc.our_markdown(request.form.get('text')))
+    else:
+        return jsonify(status='error', error='Missing text')
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
