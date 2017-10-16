@@ -1305,14 +1305,15 @@ def build_comment_tree(comments, root=None):
 def expand_comment_tree(comsx):
     coms = comsx[0]
     expcomms = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
-                                     SubPostComment.score, SubPostComment.status, SubPostComment.time,
+                                     SubPostComment.score, SubPostComment.status, SubPostComment.time, SubPostComment.pid,
                                      User.name.alias('username'), SubPostCommentVote.positive)
-    expcomms = expcomms.join(User).switch(SubPostComment)
+    expcomms = expcomms.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
     expcomms = expcomms.join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == SubPostComment.cid)))
     expcomms = expcomms.where(SubPostComment.cid << comsx[1]).dicts()
     lcomms = {}
 
     for k in expcomms:
+        print(k)
         lcomms[k['cid']] = k
 
     def i_like_recursion(xm, depth=0):

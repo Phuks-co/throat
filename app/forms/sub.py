@@ -139,7 +139,6 @@ class EditSubLinkPostForm(FlaskForm):
 
 class PostComment(FlaskForm):
     """ Comment submission form """
-    sub = HiddenField()
     post = HiddenField()
     parent = HiddenField()
 

@@ -830,32 +830,20 @@ def upvote(pid, value):
     return jsonify(status='ok')
 
 
-@do.route('/do/sendcomment/<sub>/<pid>', methods=['POST'])
+@do.route('/do/sendcomment/<pid>', methods=['POST'])
 @login_required
 @misc.ratelimit(1, per=30)  # Once every 30 secs
-def create_comment(sub, pid):
+def create_comment(pid):
     """ Here we send comments. """
     form = PostComment()
     if form.validate():
-        if sub == '0':
-            sub = form.sub.data
         if pid == '0':
             pid = form.post.data
-        # 1 - Check if sub exists.
-        sub = db.get_sub_from_name(sub)
-        if not sub:
-            return json.dumps({'status': 'error',
-                               'error': ['Sub does not exist']})
         # 2 - Check if post exists.
         post = db.get_post_from_pid(pid)
         if not post:
             return json.dumps({'status': 'error',
                                'error': ['Post does not exist']})
-        # 3 - Check if the post is in that sub.
-        if not post['sid'] == sub['sid']:
-            return json.dumps({'status': 'error',
-                               'error': ['Post does not exist']})
-
         # 4 - All OK, post dem comment.
         comment = db.create_comment(pid=pid,
                                     uid=current_user.uid,
@@ -895,6 +883,7 @@ def create_comment(sub, pid):
                           room='user' + to)
 
         # 6 - Process mentions
+        sub = db.get_sub_from_sid(post['sid'])
         misc.workWithMentions(form.comment.data, to, post, sub)
 
         return json.dumps({'status': 'ok', 'addr': url_for('view_post_inbox',
@@ -1818,6 +1807,7 @@ def get_sibling(pid, cid, page):  # XXX: Really similar to get_children. Should 
 
 
 @do.route('/do/preview', methods=['POST'])
+@login_required
 def preview():
     """ Returns parsed markdown. Used for post and comment previews. """
     form = DummyForm()

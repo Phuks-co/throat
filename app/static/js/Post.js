@@ -349,3 +349,50 @@ $(document).on('click', '.togglecomment.expand', function(e){
   $(this).text = '[-]';
   $(this).parent().parent().css('margin-left', '0');
 })
+
+// reply to comment
+$(document).on('click', '.reply-comment', function(){
+  var cid = $(this).data('to');
+  var pid = $(this).data('pid');
+  var back =  document.createElement( "s" );
+  back.innerHTML = "reply";
+  back.onclick = function(){
+    $('#rblock-' + cid).remove();
+    $(this).parent().html('reply');
+  };
+
+  $(this).parent().parent().parent().append('<div id="rblock-'+cid+'"><div class="cwrap markdown-editor" id="rcomm-'+cid+'"><textarea style="height: 8em;"></textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-postcomment" data-pid="'+pid+'" data-cid="'+cid+'">Post comment</button> <button class="pure-button button-xsmall btn-preview" data-pvid="rcomm-'+cid+'">Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span><div class="cpreview-content"></div></div></div>');
+  initializeEditor($('#rcomm-' + cid));
+  $(this).html(back);
+
+});
+
+$(document).on('click', '.btn-postcomment', function(){
+  var obj = $(this);
+  var cid = obj.data('cid');
+  var pid = obj.data('pid');
+  var content = $('#rcomm-' + cid + ' textarea')[0].value;
+  obj.prop('disabled', true);
+  $.ajax({
+    type: "POST",
+    url: '/do/sendcomment/' + pid,
+    data: {'csrf_token': $('#csrf_token')[0].value, parent: cid, post: pid, comment: content},
+    dataType: 'json',
+    success: function(data) {
+        if (data.status != "ok") {
+          obj.parent().children('.error').show();
+          obj.parent().children('.error').html('There was an error saving your comment: ' + data.error);
+          obj.prop('disabled', false);
+        } else {
+          obj.html('Saved.');
+          document.location.reload();
+        }
+    },
+    error: function(data, err) {
+      obj.parent().children('.error').show();
+      obj.parent().children('.error').html('could not contact server');
+      obj.prop('disabled', false);
+    }
+  });
+
+});
