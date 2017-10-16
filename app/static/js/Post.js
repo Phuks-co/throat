@@ -103,10 +103,10 @@ $(document).on('click', '.edit-post', function(){
   var elem = document.getElementById('postcontent');
   var oc = elem.innerHTML;
   var back =  document.createElement( "a" );
-  back.innerHTML = "edit";
+  back.innerHTML = "<s>edit</s>";
   back.onclick = function(){
     elem.innerHTML = oc;
-    $(this).parent().html('edit');
+    $(this).parent().html('<a class="edit-post">edit</a>');
   };
   var h = elem.clientHeight-6;
   elem.innerHTML = '<div id="editpost" class="cwrap markdown-editor"><textarea style="height: ' + h + 'px">' + document.getElementById('post-source').innerHTML + '</textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-editpost" data-pid="' + $(this).data('pid') +'">Save changes</button> <button class="pure-button button-xsmall btn-preview" data-pvid="editpost" >Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">×</span><div class="cpreview-content"></div></div>';
