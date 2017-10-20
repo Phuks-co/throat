@@ -43,8 +43,8 @@
 </div>
 
 <div id="msgpop" style="display:none;">
+  <span class="closemsg">&times;</span>
   <div class="modal-content">
-    <span class="closemsg">&times;</span>
     <form data-reset="true" id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="pure-form pure-form-aligned ajaxform">
       {% set msgform = form.CreateUserMessageForm()%}
       {{msgform.csrf_token}}

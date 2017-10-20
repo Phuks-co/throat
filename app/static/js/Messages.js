@@ -90,3 +90,7 @@ $(document).on('click', '.closemsg', function(e){
   e.preventDefault();
   $(this).parent().hide();
 });
+$(document).on('click', '.closepopmsg', function(e){
+  e.preventDefault();
+  $(this).parent().parent().hide();
+});

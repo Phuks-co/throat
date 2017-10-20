@@ -49,12 +49,11 @@
 </div>
 
 <div id="msgpop" style="display:none;">
+  <span class="closemsg">&times;</span>
   <div class="modal-content">
-    <span class="closemsg">&times;</span>
     <form data-reset="true" method="POST" data-redir='true' action="{{url_for('do.create_comment', sub='0', pid='0')}}" class="ajaxform comment-form pure-form pure-form-aligned" id="comment-form">
       {% set commentform = form.PostComment()%}
       {{commentform.csrf_token}}
-      {{commentform.sub()}}
       {{commentform.post()}}
       {{commentform.parent(value='0')}}
       <h3>Reply to comment from <span id="from"></span> in /s/<span id="sub"></span></h3>
