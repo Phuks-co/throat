@@ -68,11 +68,6 @@ $('.pmessage .formpopmsg').click(function(e){
   var modal = document.getElementById('formpop');
   modal.style.display = "block";
 });
-$('.createsub').click(function(e){
-  e.preventDefault();
-  var modal = document.getElementById('formpop');
-  modal.style.display = "block";
-});
 $('.pmessage .replycom').click(function(e){
   e.preventDefault();
   var replyto = $(e.currentTarget).data().replyto

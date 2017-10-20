@@ -420,6 +420,16 @@ def view_live_sub(page):
                            lnkpostform=createlinkpost)
 
 
+@app.route("/createsub")
+def create_sub():
+    """ Here we can view the create sub form """
+    if current_user.is_authenticated:
+        createsub = CreateSubForm()
+        return render_template('createsub.html', csubform=createsub)
+    else:
+        abort(403)
+
+
 @app.route("/s/<sub>/")
 @app.route("/s/<sub>")
 def view_sub(sub):
