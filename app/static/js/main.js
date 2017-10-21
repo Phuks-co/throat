@@ -18,15 +18,28 @@ require('./Editor');
 require('./Messages');
 
 
-function vote(obj, how){
+function vote(obj, how, comment){
+  if(comment){
+    var kl = 'votecomment';
+    var unid = obj.parent().parent().parent().data('cid');
+    var count = obj.parent().parent().children('.cscore');
+  } else {
+    var kl = 'vote';
+    var unid = obj.data('pid');
+    var count = obj.parent().children('.score');
+  }
   $.ajax({
     type: "POST",
-    url: '/do/vote/'+ obj.data('pid') + '/' + how,
+    url: '/do/' + kl + '/'+ unid + '/' + how,
+    data: {csrf_token: $('#csrf_token')[0].value},
+    dataType: 'json',
     success: function(data) {
+      console.log(data)
       if(data.status == "ok"){
+        console.log(obj)
         obj.addClass((how == 'up') ? 'upvoted' : 'downvoted');
-        obj.parent().children((how == 'up') ? '.downvote' : '.upvote').removeClass((how == 'up') ? 'downvoted' : 'upvoted');
-        var count = obj.parent().children('.score');
+        obj.parent().children((how == 'up') ? '.downvoted' : '.upvoted').removeClass((how == 'up') ? 'downvoted' : 'upvoted');
+
         count.text((how == 'up') ? (parseInt(count.text())+1) : (parseInt(count.text())-1));
       }
     }
@@ -46,6 +59,16 @@ $(document).on('click', '.upvote', function(){
 $(document).on('click', '.downvote', function(){
   var obj = $(this);
   vote(obj, 'down');
+});
+
+$(document).on('click', '.c-upvote', function(){
+  var obj = $(this);
+  vote(obj, 'up', true);
+});
+
+$(document).on('click', '.c-downvote', function(){
+  var obj = $(this);
+  vote(obj, 'down', true);
 });
 
 $(document).ready(function() {

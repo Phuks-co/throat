@@ -759,6 +759,9 @@ def edit_linkpost(sub, pid):
 @do.route('/do/vote/<pid>/<value>', methods=['POST'])
 def upvote(pid, value):
     """ Logs an upvote to a post. """
+    form = DummyForm()
+    if not form.validate():
+        return json.dumps({'status': 'error', 'error': get_errors(form)})
     if not current_user.is_authenticated:
         abort(403)
     if value == "up":
@@ -1712,6 +1715,10 @@ def delete_comment():
 @login_required
 def upvotecomment(cid, value):
     """ Logs an upvote to a post. """
+    form = DummyForm()
+    if not form.validate():
+        return json.dumps({'status': 'error', 'error': get_errors(form)})
+
     if value == "up":
         voteValue = 1
     elif value == "down":

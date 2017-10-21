@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, BooleanField, HiddenField
 from wtforms import RadioField
 from wtforms.validators import DataRequired, Length, URL
-from wtforms.validators import Optional, Regexp
+from wtforms.validators import Optional
 
 
 class SearchForm(FlaskForm):
@@ -174,4 +174,4 @@ class VoteForm(FlaskForm):
 class LiveChat(FlaskForm):
     """ Live Chat form. """
     chatmsg = StringField('chat..',
-                       validators=[DataRequired(), Length(min=1, max=255)])
+                          validators=[DataRequired(), Length(min=1, max=255)])
