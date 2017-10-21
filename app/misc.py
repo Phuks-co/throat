@@ -131,10 +131,7 @@ class SiteUser(object):
 
     def has_subscribed(self, sid):
         """ Returns True if the current user has subscribed to sub """
-        x = db.query('SELECT xid FROM `sub_subscriber` '
-                     'WHERE `sid`=%s AND `uid`=%s AND `status`=%s',
-                     (sid, self.uid, 1))
-        return bool(x.fetchone())
+        return sid in self.subscriptions
 
     def has_blocked(self, sid):
         """ Returns True if the current user has blocked sub """
@@ -165,19 +162,11 @@ class SiteUser(object):
 
     def block_styles(self):
         """ Returns true if user selects to block sub styles """
-        x = db.get_user_metadata(self.uid, 'nostyles')
-        if x:
-            return True if x == '1' else False
-        else:
-            return False
+        return 'nostyles' in self.prefs
 
     def show_nsfw(self):
         """ Returns true if user selects show nsfw posts """
-        x = db.get_user_metadata(self.uid, 'nsfw')
-        if x:
-            return True if x == '1' else False
-        else:
-            return False
+        return 'nsfw' in self.prefs
 
     @cache.memoize(300)
     def get_post_score(self):
@@ -1116,18 +1105,18 @@ def getChangelog():
         return None
 
 
-def postListQueryBase():
+def postListQueryBase(*extra, nofilter=False):
     if current_user.is_authenticated:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
-                               SubPost.comments, SubPost.deleted, SubPostVote.positive)
+                               SubPost.comments, SubPost.deleted, SubPostVote.positive, *extra)
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(SubPost)
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.comments, SubPost.deleted)
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER).where(SubPost.deleted == 0)
-    if (not current_user.is_authenticated) or ('nsfw' not in current_user.prefs):
+    if (nofilter) or ((not current_user.is_authenticated) or ('nsfw' not in current_user.prefs)):
         posts = posts.where(SubPost.nsfw == 0)
     return posts
 
@@ -1179,7 +1168,7 @@ def load_user(user_id):
                        fn.Count(Clause(SQL('Distinct'), Message.mid)).alias('notifications'),
                        User.given, User.score, User.name, User.uid, User.status,
                        fn.GROUP_CONCAT(Clause(SQL('Distinct'), UserMetadata.key)).alias('prefs'))
-    user = user.join(UserMetadata, JOIN.LEFT_OUTER, on=((UserMetadata.uid == User.uid) & (UserMetadata.value == 1) & (UserMetadata.key << ['admin', 'canupload', 'exlinks', 'nostyles', 'labrat']))).switch(User)
+    user = user.join(UserMetadata, JOIN.LEFT_OUTER, on=((UserMetadata.uid == User.uid) & (UserMetadata.value == 1) & (UserMetadata.key << ['admin', 'canupload', 'exlinks', 'nostyles', 'labrat', 'nsfw']))).switch(User)
     user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & Message.read.is_null(True))).switch(User)
     user = user.join(SubSubscriber, JOIN.LEFT_OUTER, on=((SubSubscriber.uid == User.uid) & (SubSubscriber.status == 1))).join(Sub, JOIN.LEFT_OUTER).where(User.uid == user_id).dicts()
     try:

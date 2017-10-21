@@ -112,14 +112,14 @@
       </div>
       <div class="author">
         posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> by
-        {% if not db.is_post_deleted(post) %}
-          <a class="authorlink" namedata="{{func.getUser(post.uid).name}}" href="{{url_for('view_user', user=func.getUser(post.uid).name)}}">{{func.getUser(post.uid).name}}</a>
+        {% if not post.deleted %}
+          <a class="authorlink" namedata="{{post.user}}" href="{{url_for('view_user', user=post.user)}}">{{post.user}}</a>
         {% else %}
           <span class="deleted">[deleted]</span>
         {%endif%}
        </div>
        <ul class="links" data-pid="{{post.pid}}">
-         {% if current_user.is_authenticated and not db.is_post_deleted(post) %}
+         {% if current_user.is_authenticated and not post.deleted %}
           <li><a class="post-source">source</a></li>
 
            {% if db.get_user_saved(current_user.uid, post.pid) %}
@@ -130,10 +130,10 @@
            {% if func.userCanFlair(func.getSub(post.sid)) or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
              <li><a class="editflair">flair</a></li>
            {% endif %}
-           {% if func.getUser(post.uid).uid == session['user_id'] %}
+           {% if post.uid == current_user.uid %}
              <li><a class="edit-post" data-pid="{{post.pid}}">edit</a></li>
            {% endif %}
-           {% if func.getUser(post.uid).uid == session['user_id'] or current_user.is_admin() %}
+           {% if post.uid == current_user.uid or current_user.is_admin() %}
              <li><a class="delete-post"> delete </a></li>
            {%endif%}
            <form id="delete-post-form" class="hide">{{delpostform.csrf_token}}{{delpostform.post(value=post.pid)}}</form>
@@ -150,7 +150,7 @@
     </div>
   </div>
    {% if post.content %}
-   {% if not db.is_post_deleted(post) %}
+   {% if not post.deleted %}
      <div id="postcontent">
        {{markdown(post.content)|safe}}
      </div>
@@ -206,7 +206,7 @@
       {{cf.csrf_token}}{{cf.cid(id="dcf-cid")}}
     </form>
   {%endif%}
-  {% if func.getUser(post.uid).uid == session['user_id'] or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
+  {% if post.uid == current_user.uid or current_user.is_mod(func.getSub(post.sid)) or current_user.is_admin() %}
   <form id="edit-flair-form" class="hide white-popup-block ajaxform" action="" method="POST">
     {{editpostflair.csrf_token}}
     {{editpostflair.post(value=post.pid)}}

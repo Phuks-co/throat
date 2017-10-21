@@ -44,6 +44,7 @@ def get_cursor():
 
 
 def query(qr, params=()):
+    print(qr, params)
     """ Queries the database and returns the cursor """
     c = get_cursor()
     try:

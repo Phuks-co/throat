@@ -732,11 +732,14 @@ def view_sub_hot(sub, page):
 @app.route("/s/<sub>/<pid>")
 def view_post(sub, pid, comments=False, highlight=None):
     """ View post and comments (WIP) """
-    post = db.get_post_from_pid(pid)
+    try:
+        post = misc.postListQueryBase(SubPost.sid, SubPost.uid, SubPost.content, SubPost.pid, nofilter=True).where(SubPost.pid == pid).dicts().get()
+    except SubPost.DoesNotExist:
+        abort(404)
     ksub = db.get_sub_from_sid(post['sid'])
     if not post or ksub['name'].lower() != sub.lower():
         abort(404)
-
+    print(post['posted'])
     editflair = EditPostFlair()
     editflair.flair.choices = []
     if post['uid'] == current_user.get_id() or current_user.is_mod(ksub) \

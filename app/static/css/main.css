@@ -726,7 +726,7 @@ a#prevp{
   margin-right: .3em;
 }
 
-.c-upvote svg, .c-downvote svg {
+.c-upvote svg, .c-downvote svg, .upvote svg, .downvote svg {
   fill: #888;
 }
 
