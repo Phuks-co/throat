@@ -181,7 +181,7 @@ def delete_post():
             return json.dumps({'status': 'error',
                                'error': ['Post does not exist.']})
         sub = db.get_sub_from_sid(post['sid'])
-        if not current_user.is_mod(sub) and not current_user.is_admin() \
+        if not current_user.is_mod(sub['sid']) and not current_user.is_admin() \
            and not post['uid'] == current_user.get_id():
             return json.dumps({'status': 'error',
                                'error': ['Not authorized.']})
@@ -191,7 +191,7 @@ def delete_post():
         else:
             deletion = 2
 
-        if not current_user.is_mod(sub) and current_user.is_admin() \
+        if not current_user.is_mod(sub['sid']) and current_user.is_admin() \
            and not post['uid'] == current_user.get_id():
             db.create_sitelog(4, current_user.get_username() +
                               ' deleted a post',
@@ -256,7 +256,7 @@ def edit_sub_css(sub):
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    if not current_user.is_mod(sub) and not current_user.is_admin():
+    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
         abort(403)
 
     form = EditSubCSSForm()
@@ -279,7 +279,7 @@ def edit_sub(sub):
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    if current_user.is_mod(sub) or current_user.is_admin():
+    if current_user.is_mod(sub['sid']) or current_user.is_admin():
         form = EditSubForm()
         if form.validate():
             db.uquery('UPDATE `sub` SET `title`=%s, `sidebar`=%s, `nsfw`=%s '
@@ -353,7 +353,7 @@ def edit_sub(sub):
             db.create_sublog(sub['sid'], 4, 'Sub settings edited by ' +
                              current_user.get_username())
 
-            if not current_user.is_mod(sub) and current_user.is_admin():
+            if not current_user.is_mod(sub['sid']) and current_user.is_admin():
                 db.create_sitelog(4, 'Sub settings edited by ' +
                                   current_user.get_username(),
                                   url_for('view_sub', sub=sub['name']))
@@ -376,7 +376,7 @@ def assign_post_flair(sub, pid, fl):
     if not post:
         return json.dumps({'status': 'error',
                            'error': ['Post does not exist']})
-    if current_user.is_mod(sub) or post['uid'] == current_user.get_id() \
+    if current_user.is_mod(sub['sid']) or post['uid'] == current_user.get_id() \
        or current_user.is_admin():
         flair = db.query('SELECT * FROM `sub_flair` WHERE `xid`=%s AND '
                          '`sid`=%s', (fl, sub['sid'])).fetchone()
@@ -390,7 +390,7 @@ def assign_post_flair(sub, pid, fl):
                          url_for('view_post', sub=sub['name'],
                                  pid=post['pid']))
 
-        if not current_user.is_mod(sub) and current_user.is_admin():
+        if not current_user.is_mod(sub['sid']) and current_user.is_admin():
             db.create_sitelog(4, current_user.get_username() +
                               ' assigned post flair',
                               url_for('view_post', sub=sub['name'],
@@ -412,7 +412,7 @@ def remove_post_flair(sub, pid):
     if not post:
         return json.dumps({'status': 'error',
                            'error': ['Post does not exist']})
-    if current_user.is_mod(sub) or post['uid'] == current_user.get_id() \
+    if current_user.is_mod(sub['sid']) or post['uid'] == current_user.get_id() \
        or current_user.is_admin():
         postfl = misc.getPostFlair(post)
         if not postfl:
@@ -425,7 +425,7 @@ def remove_post_flair(sub, pid):
                              ' removed post flair',
                              url_for('view_post', sub=sub['name'], pid=pid))
 
-            if not current_user.is_mod(sub) and current_user.is_admin():
+            if not current_user.is_mod(sub['sid']) and current_user.is_admin():
                 db.create_sitelog(4, current_user.get_username() +
                                   ' removed post flair',
                                   url_for('view_post', sub=sub['name'],
@@ -582,7 +582,7 @@ def create_txtpost():
             return json.dumps({'status': 'error',
                                'error': ['You\'re banned from posting on this'
                                          ' sub']})
-        if misc.isRestricted(sub) and not current_user.is_mod(sub):
+        if misc.isRestricted(sub) and not current_user.is_mod(sub['sid']):
             return json.dumps({'status': 'error',
                                'error': ['You can\'t post on this sub']})
         post = db.create_post(sid=sub['sid'],
@@ -685,7 +685,7 @@ def create_lnkpost():
             return json.dumps({'status': 'error',
                                'error': ['You\'re banned from posting on this'
                                          ' sub']})
-        if misc.isRestricted(sub) and not current_user.is_mod(sub):
+        if misc.isRestricted(sub) and not current_user.is_mod(sub['sid']):
             return json.dumps({'status': 'error',
                                'error': ['You can\'t post on this sub']})
         lx = db.query('SELECT `pid` FROM `sub_post` WHERE `sid`=%s AND '
@@ -990,7 +990,7 @@ def ban_user_sub(sub):
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    if current_user.is_mod(sub) or current_user.is_admin():
+    if current_user.is_mod(sub['sid']) or current_user.is_admin():
         form = BanUserSubForm()
         if form.validate():
             user = db.get_user_from_name(form.user.data)
@@ -1038,7 +1038,7 @@ def inv_mod2(sub):
                 return json.dumps({'status': 'error',
                                    'error': ['User does not exist.']})
 
-            if misc.isMod(sub, user):
+            if misc.isMod(sub['sid'], user['uid']):
                 return json.dumps({'status': 'error',
                                    'error': ['User is already a mod.']})
 
@@ -1081,7 +1081,7 @@ def remove_sub_ban(sub, user):
     """ Remove Mod2 """
     user = db.get_user_from_name(user)
     sub = db.get_sub_from_name(sub)
-    if current_user.is_mod(sub) or current_user.is_admin():
+    if current_user.is_mod(sub['sid']) or current_user.is_admin():
         if not misc.isSubBan(sub, user):
             return jsonify(status='error', error=['User was not banned'])
 
@@ -1408,7 +1408,7 @@ def toggle_sticky(post):
     """ Toggles post stickyness - not api """
     post = db.get_post_from_pid(post)
     sub = db.get_sub_from_sid(post['sid'])
-    if not current_user.is_mod(sub) and not current_user.is_admin():
+    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
         abort(403)
 
     form = DeletePost()
@@ -1440,7 +1440,7 @@ def edit_flair(sub):
     if not sub:
         abort(404)
 
-    if not current_user.is_mod(sub) and not current_user.is_admin():
+    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
         abort(403)
 
     form = EditSubFlair()
@@ -1466,7 +1466,7 @@ def delete_flair(sub):
     if not sub:
         abort(404)
 
-    if not current_user.is_mod(sub) and not current_user.is_admin():
+    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
         abort(403)
 
     form = DeleteSubFlair()
@@ -1490,7 +1490,7 @@ def create_flair(sub):
     if not sub:
         abort(404)
 
-    if not current_user.is_mod(sub) and not current_user.is_admin():
+    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
         abort(403)
     form = CreateSubFlair()
     if form.validate():

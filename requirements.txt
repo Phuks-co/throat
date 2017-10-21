@@ -8,7 +8,7 @@ cssmin
 misaka
 flask-login
 feedgen
-flask-cache
+flask-caching
 mysqlclient
 redis
 requests

@@ -72,9 +72,9 @@ class SiteUser(object):
         """ Returns the user name. Used on load_user """
         return self.name
 
-    def is_mod(self, sub):
+    def is_mod(self, sid):
         """ Returns True if the current user is a mod of 'sub' """
-        return isMod(sub, self.user)
+        return isMod(sid, self.uid)
 
     def is_subban(self, sub):
         """ Returns True if the current user is banned from 'sub' """
@@ -475,13 +475,13 @@ def getCommentSub(cid):
     return db.get_sub_from_pid(db.get_comment_from_cid(cid)['pid'])
 
 
-def isMod(sub, user):
+def isMod(sid, uid):
     """ Returns True if 'user' is a mod of 'sub' """
-    x = db.get_sub_metadata(sub['sid'], 'mod1', value=user['uid'])
+    x = db.get_sub_metadata(sid, 'mod1', value=uid)
     if x:
         return True
 
-    x = db.get_sub_metadata(sub['sid'], 'mod2', value=user['uid'])
+    x = db.get_sub_metadata(sid, 'mod2', value=uid)
     if x:
         return True
     return False
@@ -876,12 +876,6 @@ def isVideo(link):
     """ Returns True if link ends with video suffix """
     suffix = ('.mp4', '.webm')
     return link.lower().endswith(suffix)
-
-
-@cache.memoize(30)
-def get_comment_score(comment):
-    """ Returns the score for comment """
-    return comment['score'] if comment['score'] else 0
 
 
 def get_user_post_score(user):

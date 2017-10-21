@@ -8,6 +8,7 @@ import _mysql_exceptions
 import config
 from flask import g
 from .caching import cache
+from .deprecate import deprecated
 
 
 def connect_db(db=None):
@@ -43,6 +44,7 @@ def get_cursor():
     return db.cursor()
 
 
+@deprecated
 def query(qr, params=()):
     print(qr, params)
     """ Queries the database and returns the cursor """
@@ -57,6 +59,7 @@ def query(qr, params=()):
     return c
 
 
+@deprecated
 def uquery(qr, params=()):
     """ Queries the database to alter data """
     c = get_cursor()

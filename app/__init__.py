@@ -155,7 +155,7 @@ def utility_processor():
             'commentform': PostComment(), 'dummyform': DummyForm(),
             'delpostform': DeletePost(), 'hostname': socket.gethostname(),
             'config': app.config, 'form': forms, 'db': db,
-            'getSuscriberCount': getSuscriberCount, 'func': misc}
+            'getSuscriberCount': getSuscriberCount, 'func': misc, 'time': time}
 
 
 @app.route("/")
@@ -459,7 +459,7 @@ def edit_sub_css(sub):
     if not sub:
         abort(404)
 
-    if not current_user.is_mod(sub) and not current_user.is_admin():
+    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
         abort(403)
 
     c = db.query('SELECT `content` FROM `sub_stylesheet` WHERE `sid`=%s',
@@ -478,7 +478,7 @@ def edit_sub_flairs(sub):
     if not sub:
         abort(404)
 
-    if not current_user.is_mod(sub) and not current_user.is_admin():
+    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
         abort(403)
 
     c = db.query('SELECT * FROM `sub_flair` WHERE `sid`=%s', (sub['sid'], ))
@@ -498,7 +498,7 @@ def edit_sub(sub):
     if not sub:
         abort(404)
 
-    if current_user.is_mod(sub) or current_user.is_admin():
+    if current_user.is_mod(sub['sid']) or current_user.is_admin():
         form = EditSubForm(subsort=db.get_sub_metadata(sub['sid'], 'sort'))
         form.sidebar.data = sub['sidebar']
         return render_template('editsub.html', sub=sub, editsubform=form)
@@ -529,7 +529,7 @@ def edit_sub_mods(sub):
     if not sub:
         abort(404)
 
-    if current_user.is_mod(sub) or current_user.is_modinv(sub) \
+    if current_user.is_mod(sub['sid']) or current_user.is_modinv(sub) \
        or current_user.is_admin():
         xmods = db.get_sub_metadata(sub['sid'], 'xmod2', _all=True)
         mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
@@ -732,36 +732,37 @@ def view_sub_hot(sub, page):
 @app.route("/s/<sub>/<pid>")
 def view_post(sub, pid, comments=False, highlight=None):
     """ View post and comments (WIP) """
+    kkk = time.time()
     try:
         post = misc.postListQueryBase(SubPost.sid, SubPost.uid, SubPost.content, SubPost.pid, nofilter=True).where(SubPost.pid == pid).dicts().get()
     except SubPost.DoesNotExist:
         abort(404)
-    ksub = db.get_sub_from_sid(post['sid'])
-    if not post or ksub['name'].lower() != sub.lower():
+    if post['sub'].lower() != sub.lower():
         abort(404)
-    print(post['posted'])
     editflair = EditPostFlair()
+
     editflair.flair.choices = []
-    if post['uid'] == current_user.get_id() or current_user.is_mod(ksub) \
+    if post['uid'] == current_user.get_id() or current_user.is_mod(post['sid']) \
        or current_user.is_admin():
         flairs = db.query('SELECT `xid`, `text` FROM `sub_flair` '
-                          'WHERE `sid`=%s', (ksub['sid'], )).fetchall()
+                          'WHERE `sid`=%s', (post['sid'], )).fetchall()
         for flair in flairs:
             editflair.flair.choices.append((flair['xid'], flair['text']))
 
     mods = db.get_sub_metadata(post['sid'], 'mod2', _all=True)
     txtpedit = EditSubTextPostForm()
     txtpedit.content.data = post['content']
-    createtxtpost = CreateSubTextPost(sub=ksub['name'])
-    createlinkpost = CreateSubLinkPost(sub=ksub['name'])
     if not comments:
         comments = misc.get_post_comments(post['pid'])
+
+    ksub = db.get_sub_from_sid(post['sid'])
+    print('PRE FINAL TIMINGS ', time.time() - kkk)
 
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit, sub=ksub,
                            editlinkpostform=EditSubLinkPostForm(),
-                           lnkpostform=createlinkpost, comments=comments,
-                           txtpostform=createtxtpost, editpostflair=editflair, highlight=highlight)
+                           comments=comments,
+                           editpostflair=editflair, highlight=highlight)
 
 
 @app.route("/p/<pid>")

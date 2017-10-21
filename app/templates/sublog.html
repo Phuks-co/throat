@@ -22,7 +22,7 @@
 {% block content %}
 {{ super() }}
 
-{% if not current_user.is_mod(sub) and current_user.is_admin() %}
+{% if not current_user.is_mod(sub.sid) and current_user.is_admin() %}
 <center><h3>Viewing as Admin</h3></center>
 {% endif %}
 
