@@ -841,8 +841,8 @@ def view_user_posts(user, page):
 
     posts = misc.getPostList(misc.postListQueryBase().where(User.uid == user['uid']),
                              'new', page).dicts()
-    return render_template('index.html', page=page, sort_type='view_user_posts',
-                           posts=posts, kw={'user': username})
+    return render_template('userposts.html', page=page, sort_type='view_user_posts',
+                           posts=posts, user=user)
 
 
 @app.route("/u/<user>/savedposts", defaults={'page': 1})
@@ -857,13 +857,9 @@ def view_user_savedposts(user, page):
         pids = db.get_all_user_saved(current_user.uid)
         posts = misc.getPostsFromPids(pids)
         sorter = NewSorting(posts)
-        owns = db.get_user_positions(user['uid'], 'mod1')
-        mods = db.get_user_positions(user['uid'], 'mod2')
-        badges = db.get_user_badges(user['uid'])
         return render_template('userposts.html', user=user, page=page,
-                               saved='user_saved', owns=owns, mods=mods,
-                               badges=badges, posts=sorter.getPosts(page),
-                               msgform=CreateUserMessageForm())
+                               sort_type='view_user_savedposts',
+                               posts=sorter.getPosts(page))
     else:
         abort(403)
 
@@ -877,15 +873,11 @@ def view_user_comments(user, page):
     if not user or user['status'] == 10:
         abort(404)
 
-    owns = db.get_user_positions(user['uid'], 'mod1')
-    mods = db.get_user_positions(user['uid'], 'mod2')
-    badges = db.get_user_badges(user['uid'])
     comments = db.query('SELECT * FROM `sub_post_comment` WHERE `uid`=%s '
                         'ORDER BY `time` DESC LIMIT 20 OFFSET %s ',
                         (user['uid'], ((page - 1) * 20)))
-    return render_template('usercomments.html', user=user, badges=badges,
-                           msgform=CreateUserMessageForm(), page=page,
-                           comments=comments.fetchall(), owns=owns, mods=mods)
+    return render_template('usercomments.html', user=user, page=page,
+                           comments=comments.fetchall())
 
 
 @app.route("/u/<user>/edit")
