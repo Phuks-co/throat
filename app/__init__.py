@@ -736,7 +736,7 @@ def view_post(sub, pid, comments=False, highlight=None):
     try:
         post = misc.postListQueryBase(SubPost.sid, SubPost.uid, SubPost.content, SubPost.pid, nofilter=True).where(SubPost.pid == pid).dicts().get()
     except SubPost.DoesNotExist:
-        abort(404)
+        abort(403)
     if post['sub'].lower() != sub.lower():
         abort(404)
     editflair = EditPostFlair()

@@ -1824,3 +1824,21 @@ def preview():
     else:
         return jsonify(status='error', error='Missing text')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route('/do/nsfw', methods=['POST'])
+@login_required
+def toggle_nsfw():
+    """ Toggles NSFW tag on posts """
+    form = DeletePost()
+
+    if form.validate():
+        try:
+            post = SubPost.get(SubPost.pid == form.post.data)
+        except SubPost.DoesNotExist:
+            return json.dumps({'status': 'error', 'error': 'Post does not exist'})
+
+        post.nsfw = 1 if post.nsfw == 0 else 0
+        post.save()
+        return json.dumps({'status': 'ok', 'msg': 'NSFW set to {0}'.format(bool(post.nsfw))})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
