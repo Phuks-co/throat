@@ -82,7 +82,7 @@
           </div>
           <div class="pblock">
             <h3>Mods</h3>
-            <ul style="color: darkcyan;">
+            <ul>
               {% for mod in mods if mods|length > 0 %}
               <li><a href="{{url_for('view_sub', sub=mod.name)}}">{{mod.name}}</a></li>
               {% else %}
