@@ -29,11 +29,11 @@
 
   {% if current_user.is_admin() or current_user.is_topmod(sub) or current_user.is_mod(sub.sid) %}
   <div class="editmoderators">
-    <form id="ban-user-form" data-reload="true" data-sub="{{sub.name}}" class="ajaxform" action="{{url_for('do.ban_user_sub', sub=sub.name)}}">
+    <form id="ban-user-form" data-reload="true" data-sub="{{sub.name}}" class="ajaxform pure-form" action="{{url_for('do.ban_user_sub', sub=sub.name)}}">
       {{banuserform.csrf_token}}
       <p>
         <label>Ban user from posting: {{banuserform.user(placeholder=banuserform.user.label.text, required=True)}}</label>
-        <button type="submit" class="pure-button pure-button-primary button-xsmall" id="banuser-btnsubmit">Banhammer</button>
+        <button type="submit" class="pure-button pure-button-primary" id="banuser-btnsubmit">Banhammer</button>
       </p>
       <div class="alert div-error">
         <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>

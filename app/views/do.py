@@ -1471,32 +1471,6 @@ def toggle_sticky(post):
     return jsonify(status='ok')
 
 
-@do.route("/do/flair/<sub>/edit", methods=['POST'])
-@login_required
-def edit_flair(sub):
-    """ Edits flairs (from edit flair page) """
-    sub = db.get_sub_from_name(sub)
-    if not sub:
-        abort(404)
-
-    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
-        abort(403)
-
-    form = EditSubFlair()
-    if form.validate():
-        flair = db.query('SELECT * FROM `sub_flair` WHERE `sid`=%s AND '
-                         '`xid`=%s', (sub['sid'], form.flair.data))
-
-        if not flair.rowcount:
-            return json.dumps({'status': 'error',
-                               'error': ['Flair does not exist']})
-
-        db.uquery('UPDATE `sub_flair` SET `text`=%s WHERE `xid`=%s',
-                  (form.text.data, form.flair.data))
-        return json.dumps({'status': 'ok'})
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
-
-
 @do.route("/do/flair/<sub>/delete", methods=['POST'])
 @login_required
 def delete_flair(sub):

@@ -57,11 +57,11 @@
 
   {% if current_user.is_admin() or current_user.is_topmod(sub) %}
   <div class="editmoderators col-12">
-    <form data-reload="true" action="{{url_for('do.inv_mod2', sub=sub.name)}}" id="edit-mod2-form" data-sub="{{sub.name}}" class="ajaxform">
+    <form data-reload="true" action="{{url_for('do.inv_mod2', sub=sub.name)}}" id="edit-mod2-form" data-sub="{{sub.name}}" class="pure-form ajaxform">
       {{editmod2form.csrf_token}}
       <p>
         <label>Invite new mod: {{editmod2form.user(placeholder=editmod2form.user.label.text, required=True)}}</label>
-        <button type="submit" class="pure-button pure-button-primary button-xsmall" id="editmod2-btnsubmit">Invite mod</button>
+        <button type="submit" class="pure-button pure-button-primary" id="editmod2-btnsubmit">Invite mod</button>
       </p>
       <div class="alert div-error">
         <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>

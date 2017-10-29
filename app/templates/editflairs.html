@@ -9,20 +9,16 @@
 {{ super() }}
 
 {% if not current_user.is_mod(sub.sid) and current_user.is_admin() %}
-<center><h3>Editing as Admin</h3></center>
+<div class="important"><h3>Editing as Admin</h3></div>
 {% endif %}
 
 <h1>Editing /s/{{sub.name}}'s flairs</h1>
 <div class="col-12 admin-page-form">
-  <form  method="POST" class="ajaxform nice-form" action="{{url_for('do.create_flair', sub=sub.name)}}" data-reload="true">
+  <form  method="POST" class="ajaxform pure-form" action="{{url_for('do.create_flair', sub=sub.name)}}" data-reload="true">
     <h4>Create new flair</h4>
     {{createflair.csrf_token}}
-    <div class="col-10">
       {{createflair.text(placeholder="Flair text")}}
-    </div>
-    <div class="col-2">
-      <button type="submit" class="btn btn-blue" id="editsub-btnsubmit" data-prog="Saving..." data-success="Saved!">Add flair</button>
-    </div>
+      <button type="submit" class="pure-button pure-button-primary" id="editsub-btnsubmit" data-prog="Saving..." data-success="Saved!">Add flair</button>
     <div class="alert div-error col-10">
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
       <p></p>
@@ -31,34 +27,16 @@
 </div>
 
 {% if flairs %}
+<hr>
+<h4>Flairs</h4>
   <div class="col-12 admin-page-form">
+    <ul>
     {% for flair in flairs %}
-      <form  method="POST" action="{{url_for('do.edit_flair', sub=sub.name)}}" class="nice-form ajaxform">
-        {{flair.csrf_token}}
-        {{flair.flair}}
-        <div class="col-10">
-          {{flair.text(placeholder="Flair text")}}
-        </div>
-        <div class="col-1">
-          <button type="submit" class="btn btn-blue" id="editsub-btnsubmit" data-prog="Saving..." data-success="Saved!">Save</button>
-        </div>
-
-        <div class="alert div-error col-10">
-          <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-          <p></p>
-        </div>
-      </form>
-      <form  method="POST" data-reload="true" action="{{url_for('do.delete_flair', sub=sub.name)}}" class="nice-form ajaxform">
-        {{flair.csrf_token}}{{flair.flair}}
-        <div class="col-1">
-          <button type="submit" class="btn btn-orange" id="editsub-btnsubmit" data-prog="Deleting..." data-success="Deleted!">Delete</button>
-        </div>
-        <div class="alert div-error col-10">
-          <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-          <p></p>
-        </div>
-      </form>
+    <li><span class="postflair">{{flair.text.data}}</span>
+      <form  method="POST" data-reload="true" action="{{url_for('do.delete_flair', sub=sub.name)}}" class="ajaxform" style="display: inline-block; margin-left: 1em; margin-top: 5px;">
+      {{flair.csrf_token}}{{flair.flair}}<button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="Deleting..." data-success="Deleted!">Delete</button></form>
     {% endfor %}
+  </ul>
   </div>
 {% endif %}
 {% endblock %}

@@ -485,6 +485,7 @@ def edit_sub_flairs(sub):
     flairs = c.fetchall()
     formflairs = []
     for flair in flairs:
+        print(flair)
         formflairs.append(EditSubFlair(flair=flair['xid'], text=flair['text']))
     return render_template('editflairs.html', sub=sub, flairs=formflairs,
                            createflair=CreateSubFlair())
@@ -499,7 +500,9 @@ def edit_sub(sub):
         abort(404)
 
     if current_user.is_mod(sub['sid']) or current_user.is_admin():
-        form = EditSubForm(subsort=db.get_sub_metadata(sub['sid'], 'sort')['value'])
+        form = EditSubForm()
+        pp = db.get_sub_metadata(sub['sid'], 'sort')
+        form.subsort.data = pp.get('value') if pp else ''
         form.sidebar.data = sub['sidebar']
         return render_template('editsub.html', sub=sub, editsubform=form)
     else:
