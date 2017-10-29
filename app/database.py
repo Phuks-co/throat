@@ -330,8 +330,11 @@ def get_user_saved(uid, pid):
 def get_all_user_saved(uid):
     """ Returns all the user saved pids """
     c = query('SELECT `pid` FROM `user_saved` WHERE `uid`=%s ',
-              (uid, ))
-    return c.fetchall()
+              (uid, )).fetchall()
+    pids = []
+    for i in c:
+        pids.append(i['pid'])
+    return pids
 
 
 def create_user_multi(uid, name, subs):

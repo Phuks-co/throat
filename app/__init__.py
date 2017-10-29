@@ -856,11 +856,11 @@ def view_user_savedposts(user, page):
         abort(404)
     if current_user.uid == user['uid']:
         pids = db.get_all_user_saved(current_user.uid)
-        posts = misc.getPostsFromPids(pids)
-        sorter = NewSorting(posts)
-        return render_template('userposts.html', user=user, page=page,
+        posts = misc.getPostList(misc.postListQueryBase().where(SubPost.pid << pids),
+                                 'new', page).dicts()
+        return render_template('userposts.html', page=page,
                                sort_type='view_user_savedposts',
-                               posts=sorter.getPosts(page))
+                               posts=posts, user=user)
     else:
         abort(403)
 
