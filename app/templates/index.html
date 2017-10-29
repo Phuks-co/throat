@@ -22,8 +22,8 @@
 </form>
 
 {% if current_user.is_authenticated %}
-<a href="{{url_for('submit_text', sub='')}}" class="sbm-post pure-button">Submit a text post</a>
-<a href="{{url_for('submit_link', sub='')}}" class="sbm-post pure-button">Submit a link post</a>
+<a href="{{url_for('submit', ptype='text', sub='')}}" class="sbm-post pure-button">Submit a text post</a>
+<a href="{{url_for('submit', ptype='link', sub='')}}" class="sbm-post pure-button">Submit a link post</a>
 <hr>
 <a href="{{url_for('view_subs')}}" class="sbm-post pure-button">View all subs</a>
 <a href="{{url_for('random_sub')}}" class="sbm-post pure-button">Go to random sub</a>

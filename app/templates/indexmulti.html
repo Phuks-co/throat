@@ -23,10 +23,10 @@
     <a href="{{url_for('random_sub')}}" class="btn btn-orange" style="width:100%;">View random sub</a>
   </div>
   <div class="col-12">
-    <a href="{{url_for('submit_text', sub='')}}" class="btn btn-orange" style="width:100%;">Submit a text post</a>
+    <a href="{{url_for('submit', ptype='text', sub='')}}" class="btn btn-orange" style="width:100%;">Submit a text post</a>
   </div>
   <div class="col-12">
-    <a href="{{url_for('submit_link', sub='')}}" class="btn btn-orange" style="width:100%;">Submit a link post</a>
+    <a href="{{url_for('submit', ptype='link', sub='')}}" class="btn btn-orange" style="width:100%;">Submit a link post</a>
   </div>
 </div>
 {% endif %}

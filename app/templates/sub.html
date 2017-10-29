@@ -34,8 +34,8 @@
     {%if current_user.is_subban(sub) %}
       <div>You are currently banned from posting.</div>
     {%else%}
-      <a href="{{url_for('submit_text', sub=sub.name)}}" class="sbm-post pure-button">Submit a text post</a>
-      <a href="{{url_for('submit_link', sub=sub.name)}}" class="sbm-post pure-button">Submit a link post</a>
+      <a href="{{url_for('submit', ptype='text', sub=sub.name)}}" class="sbm-post pure-button">Submit a text post</a>
+      <a href="{{url_for('submit', ptype='link', sub=sub.name)}}" class="sbm-post pure-button">Submit a link post</a>
     {%endif%}
   {%endif%}
 {%endif%}

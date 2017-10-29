@@ -48,10 +48,10 @@
   {%endif%}
   {% if not func.isRestricted(sub) or (current_user.is_mod(sub.sid) and func.isRestricted(sub)) %}
   <div class="col-12">
-    <a href="{{url_for('submit_text', sub=sub.name)}}" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
+    <a href="{{url_for('submit', ptype='text', sub=sub.name)}}" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
   </div>
   <div class="col-12">
-    <a href="{{url_for('submit_link', sub=sub.name)}}" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
+    <a href="{{url_for('submit', ptype='link', sub=sub.name)}}" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
   </div>
   {% endif %}
 

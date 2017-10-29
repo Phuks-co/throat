@@ -1251,7 +1251,7 @@ def login():
 @app.route("/submit/<ptype>", defaults={'sub': ''})
 @app.route("/submit/<ptype>/<sub>")
 @login_required
-def submit_text(ptype, sub):
+def submit(ptype, sub):
     if ptype not in ['link', 'text']:
         abort(404)
     txtpostform = CreateSubTextPost()
