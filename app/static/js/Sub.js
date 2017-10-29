@@ -89,18 +89,18 @@ $('#ptoggle').click(function(){
   $('#ptype').html(val);
   if(val=='text'){
     $('#txcont').show();
-    $('#lncont').hide();
+    $('.lncont').hide();
     $('#link').prop('required', false);
     $('#content').prop('required', true);
   }else{
     $('#txcont').hide();
-    $('#lncont').show();
+    $('.lncont').show();
     $('#link').prop('required', true);
     $('#content').prop('required', false);
   }
 });
 
-$('.blk,.unblk,.sub,.unsub').click(function(){
+$('button.blk,button.unblk,button.sub,button.unsub').click(function(){
   var sid=$(this).parent().data('sid');
   var act=$(this).data('ac')
   $.ajax({

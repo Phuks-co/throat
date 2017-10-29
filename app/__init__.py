@@ -647,30 +647,6 @@ def view_sub_new(sub, page):
                            lnkpostform=createlinkpost)
 
 
-@app.route("/s/<sub>/deletedposts", defaults={'page': 1})
-@app.route("/s/<sub>/deletedposts/<int:page>")
-def view_sub_deleted(sub, page):
-    """ The index page, all posts sorted as most recent posted first """
-    if sub.lower() == "all":
-        return redirect(url_for('all_new', page=1))
-    sub = db.get_sub_from_name(sub)
-    if not sub:
-        abort(404)
-
-    posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s AND '
-                     '`deleted`= %s ORDER BY `posted` DESC LIMIT %s,20',
-                     (sub['sid'], '2', (page - 1) * 20, )).fetchall()
-    mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
-    createtxtpost = CreateSubTextPost(sub=sub['name'])
-    createlinkpost = CreateSubLinkPost(sub=sub['name'])
-
-    return render_template('subdeleted.html', sub=sub, page=page,
-                           sort_type='view_sub_deleted',
-                           posts=posts, mods=mods,
-                           txtpostform=createtxtpost,
-                           lnkpostform=createlinkpost)
-
-
 @app.route("/s/<sub>/bannedusers")
 def view_sub_bans(sub):
     """ See banned users for the sub """

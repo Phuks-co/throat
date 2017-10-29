@@ -47,10 +47,14 @@ var recaptchaCallback = function(){
               <label for="content">Content</label>
               {{txtpostform.content(placeholder="(Optional) Write your post content here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}
             </div>
-            <div class="pure-control-group" id="lncont" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
+            <div class="pure-control-group lncont pure-u-21-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
               <label for="link">Link</label>
-              <span name="link" style="padding:0;">{{txtpostform.link(type="url", pattern="https?://.+", required=True if txtpostform.ptype.data=="link" else False, placeholder="URL")}}</span>
+              {{txtpostform.link(type="url", pattern="https?://.+", required=True if txtpostform.ptype.data=="link" else False, placeholder="URL")}}
             </div>
+            <div class="pure-control-group pure-u-2-24 lncont" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
+              <button id="graburl" class="pure-button">Grab title</button>
+            </div>
+
 
           <div class="pure-control-group">
             <label>{{txtpostform.nsfw.label.text}}</label>

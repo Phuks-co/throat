@@ -312,7 +312,9 @@ $(document).on('click', '.delete-comment', function(){
 });
 
 // Grab post title from url
-$(document).on('click', '#graburl', function(){
+$(document).on('click', '#graburl', function(e){
+  e.preventDefault();
+  if($('#link').prop('value') === ''){return;}
   $(this).prop('disabled', true);
   $(this).html('Grabbing...');
   $.ajax({
