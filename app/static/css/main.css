@@ -769,6 +769,7 @@ a.slink{
   width: 1.3em;
   text-align: center;
   margin-right: .3em;
+  margin-top: .3em;
 }
 
 .c-upvote svg, .c-downvote svg, .upvote svg, .downvote svg {
@@ -1275,6 +1276,22 @@ li.profilebadge {
 .profilebadgexp,
 .profilebadgename {
     font-size: 12px;
+}
+article.comment {
+    min-height: 70px;
+    padding: .8em;
+    border-radius: 8px 0 0 8px;
+    background-color: #fefefe;
+    margin: 8px 0;
+}
+article.comment:nth-child(2n) {
+    background-color: #f7f7f7;
+}
+.commtitle {
+    margin: .3em;
+}
+.commtitle span.title {
+    font-size: 1.3em;
 }
 /* /USER PAGE*/
 

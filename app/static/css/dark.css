@@ -267,6 +267,12 @@ body.dark .uprofile.content {
     border: 2px solid #474747;
     background: rgba(0, 0, 0, 0.9);
 }
+body.dark article.comment {
+    background-color: #000000;
+}
+body.dark article.comment:nth-child(2n) {
+    background-color: #101010;
+}
 /* /USER PAGE */
 
 /* misc */

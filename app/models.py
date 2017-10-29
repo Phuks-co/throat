@@ -175,6 +175,7 @@ class SubPostComment(db.Model):
 
 
 class SubPostCommentVote(db.Model):
+    datetime = DateTimeField(null=True)
     cid = CharField(null=True)
     positive = IntegerField(null=True)
     uid = ForeignKeyField(db_column='uid', null=True, rel_model=User,

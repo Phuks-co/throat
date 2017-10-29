@@ -874,11 +874,9 @@ def view_user_comments(user, page):
     if not user or user['status'] == 10:
         abort(404)
 
-    comments = db.query('SELECT * FROM `sub_post_comment` WHERE `uid`=%s '
-                        'ORDER BY `time` DESC LIMIT 20 OFFSET %s ',
-                        (user['uid'], ((page - 1) * 20)))
+    comments = misc.getUserComments(user['uid'], page)
     return render_template('usercomments.html', user=user, page=page,
-                           comments=comments.fetchall())
+                           comments=comments)
 
 
 @app.route("/u/<user>/edit")
