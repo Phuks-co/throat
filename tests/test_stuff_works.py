@@ -54,13 +54,13 @@ class ABAccountTestCase(unittest.TestCase):
     def register(self, user, password):
         """ Registers an account """
         return self.app.post('/register', data={'username': user,
-                                                   'password': password,
-                                                   'confirm': password,
-                                                   'accept_tos': '1'})
+                                                'password': password,
+                                                'confirm': password,
+                                                'accept_tos': '1'})
 
     def login(self, user, password):
         return self.app.post('/login', data={'username': user,
-                                                'password': password})
+                                             'password': password})
 
     def create_sub(self, name, title):
         return self.app.post('/do/create_sub', data={'subname': name,
