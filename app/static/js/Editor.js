@@ -1,81 +1,62 @@
-import $ from 'jquery';
+import u from './Util';
 var icon = require('./Icon');
 
-$(document).ready(function(){
-  $('.markdown-editor').each(function(){
-    initializeEditor($(this));
+u.ready(function(){
+  u.each('.markdown-editor', function(el,i){
+    initializeEditor(el);
   })
 });
 
-function initializeEditor(element){
-    // we are manually aplying the icons here, because we can.
-    var txps = '<div class="editbtns"><div class="bold" data-icon="bold" title="Bold">' + icon.bold + '</div>' +
-                '<div class="italic" data-icon="italic" title="Italic">' + icon.italic + '</div>' +
-                '<div class="strikethrough" data-icon="strikethrough" title="Strikethrough">' + icon.strikethrough + '</div>' +
-                '<div class="title" data-icon="title" title="Title">' + icon.title + '</div>' +
-                '<span class="separator"></span>' +
-                '<div class="link" data-icon="link" title="Hyperlink">' + icon.link + '</div>' +
-                '<span class="separator"></span>' +
-                '<div class="bulletlist" data-icon="link" title="Bullet list">' + icon.bulletlist + '</div>' +
-                '<div class="numberlist" data-icon="link" title="Number list">' + icon.numberlist + '</div>' +
-                '<span class="separator"></span>' +
-                '<div class="quote" data-icon="quote" title="Quote block">' + icon.quote + '</div>' +
-                '<div class="code" data-icon="code" title="Code block">' + icon.code + '</div>' +
-               '</div>';
-    element.prepend(txps);
+function makeThingy(name, title, fn){
+  var x = document.createElement( "div" );
+  x.title=title,x.className=name;
+  x.setAttribute('data-icon', name);
+  x.innerHTML = icon[name];
+  x.onclick = fn;
+  return x;
 }
 
-$(document).on('click', '.editbtns .link', function(){
-  var textarea = $(this).parent().parent().children('textarea')[0];
-  var uri = prompt('Insert hyperlink');
-  if(uri){
-    if(getCursorSelection(textarea)[1] == ''){
-      addTags(textarea, '[', 'Link Title', '](' + uri + ')');
-    }else{
-      addTags(textarea, '[', '](' + uri + ')');
-    }
-  }
-});
+function initializeEditor(element){
+    var el =  document.createElement( "div" );
+    var textarea = element.children[0];
+    el.classList.add('editbtns');
 
-$(document).on('click', '.editbtns .title', function(){
-  var textarea = $(this).parent().parent().children('textarea')[0];
-  addTags(textarea, '## ', '');
-});
+    el.appendChild(makeThingy('bold', 'Bold', function(e){addTags(textarea, '**', '**');}));
+    el.appendChild(makeThingy('italic', 'Italic', function(e){addTags(textarea, '*', '*');}));
+    el.appendChild(makeThingy('strikethrough', 'Strikethrough', function(e){addTags(textarea, '~~', '~~');}));
+    el.appendChild(makeThingy('title', 'Title', function(e){addTags(textarea, '# ', '');}));
 
-$(document).on('click', '.editbtns .bold', function(){
-  var textarea = $(this).parent().parent().children('textarea')[0];
-  addTags(textarea, '**', '**');
-});
+    var x = document.createElement('span');
+    x.className='separator';
+    el.appendChild(x);
 
-$(document).on('click', '.editbtns .italic', function(){
-  var textarea = $(this).parent().parent().children('textarea')[0];
-  addTags(textarea, '*', '*');
-});
+    el.appendChild(makeThingy('link', 'Insert link', function(e){
+      var uri = prompt('Insert hyperlink');
+      if(uri){
+        if(getCursorSelection(textarea)[1] == ''){
+          addTags(textarea, '[', 'Link Title', '](' + uri + ')');
+        }else{
+          addTags(textarea, '[', '](' + uri + ')');
+        }
+      }
+    }));
 
-$(document).on('click', '.editbtns .bulletlist', function(){
-  var textarea = $(this).parent().parent().children('textarea')[0];
-  addTags(textarea, '* ', '');
-});
+    x = document.createElement('span');
+    x.className='separator';
+    el.appendChild(x);
 
-$(document).on('click', '.editbtns .numberlist', function(){
-  var textarea = $(this).parent().parent().children('textarea')[0];
-  addTags(textarea, '1. ', '');
-});
+    el.appendChild(makeThingy('bulletlist', 'Bullet list', function(e){addTags(textarea, '- ', '');}));
+    el.appendChild(makeThingy('numberlist', 'Number list', function(e){addTags(textarea, '1. ', '');}));
 
-$(document).on('click', '.editbtns .quote', function(){
-  var textarea = $(this).parent().parent().children('textarea')[0];
-  addTags(textarea, '> ', '');
-});
+    x = document.createElement('span');
+    x.className='separator';
+    el.appendChild(x);
 
-$(document).on('click', '.editbtns .code', function(){
-  var textarea = $(this).parent().parent().children('textarea')[0];
-  addTags(textarea, '`', '`');
-});
+    el.appendChild(makeThingy('code', 'Code', function(e){addTags(textarea, '`', '`');}));
+    el.appendChild(makeThingy('quote', 'Quote', function(e){addTags(textarea, '> ', '');}));
 
-$(document).on('click', '.editbtns .strikethrough', function(){
-  var textarea = $(this).parent().parent().children('textarea')[0];
-  addTags(textarea, '~~', '~~');
-});
+    element.insertBefore(el, element.firstChild);
+}
 
 
 function addTags(textarea, begin, end, bm){
