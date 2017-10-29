@@ -388,10 +388,11 @@ def assign_post_flair(sub, pid, fl):
                                    'error': ['Flair does not exist']})
 
             db.update_post_metadata(post['pid'], 'flair', flair['text'])
-            db.create_sublog(sub['sid'], 3, current_user.get_username() +
-                             ' assigned post flair',
-                             url_for('view_post', sub=sub['name'],
-                                     pid=post['pid']))
+            if current_user.is_mod(sub['sid']):
+                db.create_sublog(sub['sid'], 3, current_user.get_username() +
+                                 ' assigned post flair',
+                                 url_for('view_post', sub=sub['name'],
+                                         pid=post['pid']))
 
             if not current_user.is_mod(sub['sid']) and current_user.is_admin():
                 db.create_sitelog(4, current_user.get_username() +
@@ -425,9 +426,10 @@ def remove_post_flair(sub, pid):
         else:
             db.uquery('DELETE FROM `sub_post_metadata` WHERE `pid`=%s AND '
                       '`key`=%s', (post['pid'], 'flair'))
-            db.create_sublog(sub['sid'], 3, current_user.get_username() +
-                             ' removed post flair',
-                             url_for('view_post', sub=sub['name'], pid=pid))
+            if current_user.is_mod(sub['sid']):
+                db.create_sublog(sub['sid'], 3, current_user.get_username() +
+                                 ' removed post flair',
+                                 url_for('view_post', sub=sub['name'], pid=pid))
 
             if not current_user.is_mod(sub['sid']) and current_user.is_admin():
                 db.create_sitelog(4, current_user.get_username() +
@@ -460,8 +462,7 @@ def edit_mod():
                   'AND `sid`=%s', ('mod2', user['uid'], sub['sid']))
         db.create_sublog(sid=sub['sid'], action=4,
                          description=current_user.get_username() +
-                         ' transferred sub ownership to ' + user['name'],
-                         link=url_for('view_sub', sub=sub['name']))
+                         ' transferred sub ownership to ' + user['name'])
         db.create_sitelog(action=4,
                           description=current_user.get_username() +
                           ' transferred sub ownership to ' + user['name'],
@@ -1003,6 +1004,11 @@ def ban_user_sub(sub):
                                    'error': ['User does not exist.']})
             if db.get_sub_metadata(sub['sid'], 'ban', value=user['uid']):
                 return jsonify(status='error', error=['Already banned'])
+            db.create_sublog(sub['sid'], 2, current_user.get_username() + ' banned ' + form.user.data)
+            if not current_user.is_mod(sub['sid']) and current_user.is_admin():
+                db.create_sitelog(4, current_user.get_username() +
+                                  ' banned ' + form.user.data + ' from /s/' + sub['name'],
+                                  url_for('view_sub', sub=sub['name']))
             db.create_message(mfrom=current_user.uid,
                               to=user['uid'],
                               subject='You have been banned from /s/' +
@@ -1070,8 +1076,7 @@ def inv_mod2(sub):
             db.create_sub_metadata(sub['sid'], 'mod2i', user['uid'])
 
             db.create_sublog(sub['sid'], 6, current_user.get_username() +
-                             ' invited ' + user['name'] + ' to the mod team',
-                             url_for('edit_sub_mods', sub=sub['name']))
+                             ' invited ' + user['name'] + ' to the mod team')
             return json.dumps({'status': 'ok',
                                'sentby': current_user.get_id()})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -1091,6 +1096,11 @@ def remove_sub_ban(sub, user):
 
         db.uquery('UPDATE `sub_metadata` SET `key`=%s WHERE `key`=%s AND '
                   '`value`=%s', ('xban', 'ban', user['uid']))
+        db.create_sublog(sub['sid'], 2, current_user.get_username() + ' unbanned ' + user)
+        if not current_user.is_mod(sub['sid']) and current_user.is_admin():
+            db.create_sitelog(4, current_user.get_username() +
+                              ' unbanned ' + user + ' from /s/' + sub['name'],
+                              url_for('view_sub', sub=sub['name']))
 
         db.create_message(mfrom=current_user.uid,
                           to=user['uid'],
@@ -1127,8 +1137,7 @@ def remove_mod2(sub, user):
                   ('mod2', user['uid'], sub['sid']))
 
         db.create_sublog(sub['sid'], 6, current_user.get_username() +
-                         ' removed ' + user['name'] + ' from the mod team',
-                         url_for('edit_sub_mods', sub=sub['name']))
+                         ' removed ' + user['name'] + ' from the mod team')
 
         return json.dumps({'status': 'ok', 'msg': 'user demodded'})
     else:
@@ -1149,8 +1158,7 @@ def revoke_mod2inv(sub, user):
                   ('mod2i', user['uid']))
 
         db.create_sublog(sub['sid'], 6, current_user.get_username() +
-                         ' canceled ' + user['name'] + '\'s mod invite',
-                         url_for('edit_sub_mods', sub=sub['name']))
+                         ' canceled ' + user['name'] + '\'s mod invite')
         return json.dumps({'status': 'ok', 'msg': 'user invite revoked'})
     else:
         abort(403)
@@ -1170,8 +1178,7 @@ def accept_mod2inv(sub, user):
                                'error': ["You can't mod more than 15 subs"]})
         db.uquery('UPDATE `sub_metadata` SET `key`=%s WHERE `key`=%s AND '
                   '`value`=%s', ('mod2', 'mod2i', user['uid']))
-        db.create_sublog(sub['sid'], 6, user['name'] + ' accepted mod invite',
-                         url_for('edit_sub_mods', sub=sub['name']))
+        db.create_sublog(sub['sid'], 6, user['name'] + ' accepted mod invite')
 
         if not current_user.has_subscribed(sub['sid']):
             db.create_subscription(current_user.uid, sub['sid'], 1)
@@ -1193,8 +1200,7 @@ def refuse_mod2inv(sub, user):
         db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s',
                   ('mod2i', user['uid']))
 
-        db.create_sublog(sub['sid'], 6, user['name'] + ' rejected mod invite',
-                         url_for('edit_sub_mods', sub=sub['name']))
+        db.create_sublog(sub['sid'], 6, user['name'] + ' rejected mod invite')
         return json.dumps({'status': 'ok', 'msg': 'invite refused'})
     else:
         abort(404)
