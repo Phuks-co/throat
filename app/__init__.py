@@ -825,8 +825,8 @@ def view_user(user):
                       (user['uid'], )).fetchone()['c']
     ccount = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE '
                       '`uid`=%s', (user['uid'], )).fetchone()['c']
-
-    return render_template('user.html', user=user, badges=badges,
+    habit = db.get_user_post_count_habit(user['uid'])
+    return render_template('user.html', user=user, badges=badges, habit=habit,
                            msgform=CreateUserMessageForm(), pcount=pcount,
                            ccount=ccount, owns=owns, mods=mods)
 

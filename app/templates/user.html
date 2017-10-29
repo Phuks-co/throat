@@ -25,7 +25,7 @@
 
 {% block content %}
 {{ super() }}
-<div id="container">
+<div id="center-container">
   <div class="content">
     {% if user.status == 0 %}
       <div class="uprofile-top">
@@ -60,7 +60,7 @@
       </div>
       <div>
         {% if badges|length > 0 %}
-        <div>
+        <div class="userrow">
           <h3>Badges</h3>
           <ul id="userBadges">
             {% for badge in badges %}
@@ -69,7 +69,7 @@
           </ul>
         </div>
         {% endif %}
-        <div style="vertical-align: top;">
+        <div class="userrow">
           <div class="pblock">
             <h3>Owns</h3>
             <ul style="color: darkcyan;">
@@ -90,6 +90,16 @@
               {% endfor %}
             </ul>
           </div>
+        </div>
+        <div class="userrow">
+          <h3>Posting habits</h3>
+          <ul id="userHabit">
+            {% for i in habit if habit|length > 0 %}
+              <li class="habitentry"><a href="{{url_for('view_sub', sub=db.get_sub_from_sid(i[0]).name)}}">{{db.get_sub_from_sid(i[0]).name}}</a> - {{i[1]}}</li>
+            {% else %}
+              <li>no posts yet</li>
+            {% endfor %}
+          </ul>
         </div>
       </div>
 

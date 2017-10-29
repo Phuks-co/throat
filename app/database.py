@@ -9,6 +9,7 @@ import config
 from flask import g
 from .caching import cache
 from .deprecate import deprecated
+from collections import Counter
 
 
 def connect_db(db=None):
@@ -540,11 +541,23 @@ def get_user_post_voting(uid):
             negscore += 1
     return (score,posscore,negscore)
 
+
 @cache.memoize(10)
 def get_user_post_count(uid):
     c = query('SELECT COUNT(*) AS c FROM `sub_post` WHERE `uid`=%s',
                       (uid, )).fetchone()['c']
     return c
+
+
+@cache.memoize(10)
+def get_user_post_count_habit(uid):
+    c = query('SELECT `sid` FROM `sub_post` WHERE `uid`=%s',
+                      (uid, )).fetchall()
+    hab = []
+    for d in c:
+        hab.append(d['sid'])
+    hab = Counter(hab).most_common(10)
+    return hab
 
 
 @cache.memoize(10)

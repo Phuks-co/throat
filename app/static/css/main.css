@@ -1293,6 +1293,20 @@ article.comment:nth-child(2n) {
 .commtitle span.title {
     font-size: 1.3em;
 }
+.userrow {
+    text-align: center;
+}
+.userrow h3 {
+    text-align: left;
+}
+.userrow .pblock {
+    width: 49%;
+    text-align: left;
+}
+li.habitentry {
+    list-style: none;
+    text-align: left;
+}
 /* /USER PAGE*/
 
 
