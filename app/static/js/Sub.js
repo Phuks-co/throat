@@ -79,3 +79,23 @@ $('.revoke-ban').click(function(){
     }
   });
 });
+
+
+$('#ptoggle').click(function(){
+  var oval = $('#ptypeval').val();
+  $('#ptypeval').val(($('#ptypeval').val() == 'text') ? 'link' : 'text' );
+  var val = $('#ptypeval').val();
+  $(this).html('Change to ' + oval + ' post');
+  $('#ptype').html(val);
+  if(val=='text'){
+    $('#txcont').show();
+    $('#lncont').hide();
+    $('#link').prop('required', false);
+    $('#content').prop('required', true);
+  }else{
+    $('#txcont').hide();
+    $('#lncont').show();
+    $('#link').prop('required', true);
+    $('#content').prop('required', false);
+  }
+});

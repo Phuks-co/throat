@@ -485,7 +485,6 @@ def edit_sub_flairs(sub):
     flairs = c.fetchall()
     formflairs = []
     for flair in flairs:
-        print(flair)
         formflairs.append(EditSubFlair(flair=flair['xid'], text=flair['text']))
     return render_template('editflairs.html', sub=sub, flairs=formflairs,
                            createflair=CreateSubFlair())
@@ -838,7 +837,6 @@ def view_user(user):
 def view_user_posts(user, page):
     """ WIP: View user's recent posts """
     user = db.get_user_from_name(user)
-    username = user['name']
     if not user or user['status'] == 10:
         abort(404)
 
@@ -1196,7 +1194,7 @@ def register():
     form = RegistrationForm()
     if form.validate():
         if not allowedNames.match(form.username.data):
-            return render_template('register.html', errror="Username has invalid characters.")
+            return render_template('register.html', error="Username has invalid characters.")
         # check if user or email are in use
         if db.get_user_from_name(form.username.data):
             return render_template('register.html', error="Username is not available.")
@@ -1250,28 +1248,20 @@ def login():
     return render_template("login.html", error=get_errors(form))
 
 
-@app.route("/submit/text", defaults={'sub': ''})
-@app.route("/submit/text/<sub>")
+@app.route("/submit/<ptype>", defaults={'sub': ''})
+@app.route("/submit/<ptype>/<sub>")
 @login_required
-def submit_text(sub):
-    """ Endpoint for text submission creation """
-    subs = db.get_all_sub_names()
-    return render_template('createpost.html', type='text', sub=sub, subs=subs)
-
-
-@app.route("/submit/link", defaults={'sub': ''})
-@app.route("/submit/link/<sub>")
-@login_required
-def submit_link(sub):
-    """ Endpoint for link submission creation """
-    subs = db.get_all_sub_names()
-    lnkpostform = CreateSubLinkPost()
+def submit_text(ptype, sub):
+    if ptype not in ['link', 'text']:
+        abort(404)
+    txtpostform = CreateSubTextPost()
+    txtpostform.ptype.data = ptype
+    txtpostform.sub.data = sub
     if request.args.get('title'):
-        lnkpostform.title.data = request.args.get('title')
+        txtpostform.title.data = request.args.get('title')
     if request.args.get('url'):
-        lnkpostform.link.data = request.args.get('url')
-    return render_template('createpost.html', type='link', sub=sub, subs=subs,
-                           lnkpostform=lnkpostform)
+        txtpostform.link.data = request.args.get('url')
+    return render_template('createpost.html', txtpostform=txtpostform)
 
 
 @app.route("/recover")

@@ -95,7 +95,13 @@ class CreateSubTextPost(FlaskForm):
     title = StringField('Post title',
                         validators=[DataRequired(), Length(min=4, max=350)])
     content = TextAreaField('Post content',
-                            validators=[Length(min=0, max=16384)])
+                            validators=[Length(max=16384)])
+    link = StringField('Post link',
+                       validators=[Length(min=10, max=256), Optional(),
+                                   URL(require_tld=True)])
+    ptype = RadioField('Post type',
+                       choices=[('text', 'Text post'), ('link', 'Link post')],
+                       validators=[DataRequired()])
     nsfw = BooleanField('NSFW?')
 
     def __init__(self, *args, **kwargs):

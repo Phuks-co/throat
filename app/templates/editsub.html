@@ -12,7 +12,7 @@
   {% endif %}
 <div class="content">
   <h1>Editing settings of /s/{{sub.name}}</h1>
-  <form  method="POST" id="edit-sub-form" action="{{url_for('do.edit_sub', sub=sub.name)}}" class="pure-form ajaxform">
+  <form data-redir="true"  method="POST" id="edit-sub-form" action="{{url_for('do.edit_sub', sub=sub.name)}}" class="pure-form ajaxform">
     {{editsubform.csrf_token}}
     <fieldset>
       <div class="pure-control-group">
@@ -62,7 +62,8 @@
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
       <p></p>
     </div>
-    <p><button type="submit" class="pure-button pure-button-primary" id="editsub-btnsubmit" data-prog="Saving..." data-success="Saved!">Save changes</button></p>
+    <p>
+    <button type="submit" class="pure-button pure-button-primary" id="editsub-btnsubmit" data-prog="Saving..." data-success="Saved!">Save changes</button></p>
 
   </form>
 

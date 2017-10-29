@@ -19,9 +19,9 @@ from .. import database as db
 from ..forms import LogOutForm, CreateSubFlair, DummyForm
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
-from ..forms import CreateSubTextPost, CreateSubLinkPost, EditSubTextPostForm
+from ..forms import CreateSubTextPost, EditSubTextPostForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost, CaptchaForm
-from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form, EditSubFlair
+from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm, LiveChat
@@ -567,60 +567,6 @@ def unblock_sub(sid):
     return jsonify(status='ok', message='unblocked')
 
 
-@do.route("/do/txtpost", methods=['POST'])
-@login_required
-@misc.ratelimit(1, per=30, key_func=lambda: 'post')
-def create_txtpost():
-    """ Sub text post creation endpoint """
-    if misc.get_user_level(current_user.uid)[0] <= 4:
-        form = CaptchaForm()
-        if not form.validate():
-            return json.dumps({'status': 'error', 'error': get_errors(form)})
-    form = CreateSubTextPost()
-    if form.validate():
-        # Put pre-posting checks here
-        sub = db.get_sub_from_name(form.sub.data)
-        if not sub:
-            return json.dumps({'status': 'error',
-                               'error': ['Sub does not exist']})
-        if current_user.is_subban(sub):
-            return json.dumps({'status': 'error',
-                               'error': ['You\'re banned from posting on this'
-                                         ' sub']})
-        if misc.isRestricted(sub) and not current_user.is_mod(sub['sid']):
-            return json.dumps({'status': 'error',
-                               'error': ['You can\'t post on this sub']})
-        post = db.create_post(sid=sub['sid'],
-                              uid=current_user.uid,
-                              title=form.title.data,
-                              content=form.content.data,
-                              ptype=0,
-                              nsfw=form.nsfw.data)
-        addr = url_for('view_post', sub=sub['name'], pid=post['pid'])
-        posts = misc.getPostList(misc.postListQueryBase().where(SubPost.pid == post['pid']), 'new', 1).dicts()
-        socketio.emit('thread',
-                      {'addr': addr, 'sub': sub['name'], 'type': 'text',
-                       'user': current_user.name, 'pid': post['pid'],
-                       'html': render_template('indexpost.html', nocheck=True,
-                                               post=posts[0])},
-                      namespace='/snt',
-                      room='/all/new')
-        # for /live
-        if sub['name'] == "live":
-            socketio.emit('livethread',
-                          {'addr': addr, 'sub': sub['name'], 'type': 'text',
-                           'user': current_user.name, 'pid': post['pid'],
-                           'html': render_template('sublivepost.html',
-                                                   nocheck=True,
-                                                   posts=[post])},
-                          namespace='/snt',
-                          room='/live')
-        misc.workWithMentions(form.content.data, None, post, sub)
-        misc.workWithMentions(form.title.data, None, post, sub)
-        return jsonify(status='ok', addr=addr)
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
-
-
 @do.route("/do/get_txtpost/<pid>", methods=['GET'])
 def get_txtpost(pid):
     """ Sub text post expando get endpoint """
@@ -670,59 +616,57 @@ def grab_title():
     return jsonify(status='ok', title=title)
 
 
-@do.route("/do/lnkpost", methods=['POST'])
+@do.route("/do/post", methods=['POST'])
 @login_required
 @misc.ratelimit(1, per=30, key_func=lambda: 'post')
-def create_lnkpost():
+def create_post():
     """ Sub link post creation endpoint """
     if misc.get_user_level(current_user.uid)[0] <= 4:
         form = CaptchaForm()
         if not form.validate():
             return json.dumps({'status': 'error', 'error': get_errors(form)})
-    form = CreateSubLinkPost()
+    form = CreateSubTextPost()
     if form.validate():
         # Put pre-posting checks here
         sub = db.get_sub_from_name(form.sub.data)
         if not sub:
-            return json.dumps({'status': 'error',
-                               'error': ['Sub does not exist']})
+            return render_template('createpost.html', txtpostform=form, error="Sub does not exist")
         if current_user.is_subban(sub):
-            return json.dumps({'status': 'error',
-                               'error': ['You\'re banned from posting on this'
-                                         ' sub']})
+            return render_template('createpost.html', txtpostform=form, error="You're banned from posting on this sub")
         if misc.isRestricted(sub) and not current_user.is_mod(sub['sid']):
-            return json.dumps({'status': 'error',
-                               'error': ['You can\'t post on this sub']})
-        lx = db.query('SELECT `pid` FROM `sub_post` WHERE `sid`=%s AND '
-                      '`link`=%s AND `posted` > DATE_SUB(NOW(), INTERVAL 1 '
-                      'MONTH)', (sub['sid'], form.link.data)).fetchone()
-        if lx:
-            return jsonify(status='error', error=['This link was recently '
-                                                  'posted on this sub.'])
-        bans = db.uquery('SELECT `value` FROM `site_metadata` WHERE `key`=%s',
-                         ('banned_domain',)).fetchall()
-        ben = []
-        for i in bans:
-            ben.append(i['value'])
-        url = urlparse(form.link.data)
-        if url.netloc in ben:
-            return jsonify(status='error', error=['This domain is banned'])
+            return render_template('createpost.html', txtpostform=form, error="Only mods can post on this sub")
 
-        img = misc.get_thumbnail(form)
+        if form.ptype.data == 'link':
+            lx = db.query('SELECT `pid` FROM `sub_post` WHERE `sid`=%s AND '
+                          '`link`=%s AND `posted` > DATE_SUB(NOW(), INTERVAL 1 '
+                          'MONTH)', (sub['sid'], form.link.data)).fetchone()
+            if lx:
+                return render_template('createpost.html', txtpostform=form, error="This link was recently posted on this sub")
+            bans = db.uquery('SELECT `value` FROM `site_metadata` WHERE `key`=%s',
+                             ('banned_domain',)).fetchall()
+            ben = []
+            for i in bans:
+                ben.append(i['value'])
+            url = urlparse(form.link.data)
+            if url.netloc in ben:
+                return render_template('createpost.html', txtpostform=form, error="This domain is banned")
+
+            img = misc.get_thumbnail(form)
+        ptype = 1 if form.ptype.data == 'link' else 0
+
         post = db.create_post(sid=sub['sid'],
                               uid=current_user.uid,
                               title=form.title.data,
-                              link=form.link.data,
-                              ptype=1,
+                              content=form.content.data if ptype == 0 else '',
+                              link=form.link.data if ptype == 1 else None,
+                              ptype=ptype,
                               nsfw=form.nsfw.data,
-                              content='', thumbnail=img)
+                              thumbnail=img if ptype == 1 else '')
         addr = url_for('view_post', sub=sub['name'], pid=post['pid'])
-        misc.workWithMentions(form.title.data, None, post, sub)
         posts = misc.getPostList(misc.postListQueryBase().where(SubPost.pid == post['pid']), 'new', 1).dicts()
         socketio.emit('thread',
-                      {'addr': addr, 'sub': sub['name'], 'type': 'link',
-                       'user': current_user.name, 'url': form.link.data,
-                       'pid': post['pid'],
+                      {'addr': addr, 'sub': sub['name'], 'type': form.ptype.data,
+                       'user': current_user.name, 'pid': post['pid'],
                        'html': render_template('indexpost.html', nocheck=True,
                                                post=posts[0])},
                       namespace='/snt',
@@ -730,17 +674,17 @@ def create_lnkpost():
         # for /live
         if sub['name'] == "live":
             socketio.emit('livethread',
-                          {'addr': addr, 'sub': sub['name'], 'type': 'link',
-                           'user': current_user.name, 'url': form.link.data,
-                           'pid': post['pid'],
+                          {'addr': addr, 'sub': sub['name'], 'type': form.ptype.data,
+                           'user': current_user.name, 'pid': post['pid'],
                            'html': render_template('sublivepost.html',
                                                    nocheck=True,
                                                    posts=[post])},
                           namespace='/snt',
                           room='/live')
-
-        return jsonify(status='ok', addr=addr)
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
+        misc.workWithMentions(form.content.data, None, post, sub)
+        misc.workWithMentions(form.title.data, None, post, sub)
+        return redirect(addr)
+    return render_template('createpost.html', txtpostform=form, error=get_errors(form)[0])
 
 
 @do.route("/do/edit_linkpost/<sub>/<pid>", methods=['POST'])
