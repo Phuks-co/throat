@@ -479,18 +479,20 @@ def subscribe_to_sub(sid):
     sub = db.get_sub_from_sid(sid)
     if not sub:
         return jsonify(status='error', message='sub not found')
+    form = DummyForm()
+    if form.validate():
+        if current_user.has_subscribed(sub['name']):
+            return jsonify(status='ok', message='already subscribed')
 
-    if current_user.has_subscribed(sid):
-        return jsonify(status='ok', message='already subscribed')
+        db.create_subscription(userid, sub['sid'], 1)
+        if current_user.has_blocked(sub['sid']):
+            db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s AND `sid`=%s '
+                      'AND `status`=2', (userid, sid))
 
-    db.create_subscription(userid, sub['sid'], 1)
-    if current_user.has_blocked(sid):
-        db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s AND `sid`=%s '
-                  'AND `status`=2', (userid, sid))
-
-    cache.delete_memoized(db.get_user_subscriptions_list, userid)
-    cache.delete_memoized(db.get_user_subscriptions_subs, userid)
-    return json.dumps({'status': 'ok', 'message': 'subscribed'})
+        cache.delete_memoized(db.get_user_subscriptions_list, userid)
+        cache.delete_memoized(db.get_user_subscriptions_subs, userid)
+        return json.dumps({'status': 'ok', 'message': 'subscribed'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/unsubscribe/<sid>", methods=['POST'])
@@ -501,16 +503,18 @@ def unsubscribe_from_sub(sid):
     sub = db.get_sub_from_sid(sid)
     if not sub:
         return jsonify(status='error', message='sub not found')
+    form = DummyForm()
+    if form.validate():
+        if not current_user.has_subscribed(sub['name']):
+            return jsonify(status='ok', message='not subscribed')
 
-    if not current_user.has_subscribed(sid):
-        return jsonify(status='ok', message='not subscribed')
+        db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s AND `sid`=%s '
+                  'AND `status`=1', (userid, sid))
 
-    db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s AND `sid`=%s '
-              'AND `status`=1', (userid, sid))
-
-    cache.delete_memoized(db.get_user_subscriptions_list, userid)
-    cache.delete_memoized(db.get_user_subscriptions_subs, userid)
-    return jsonify(status='ok', message='unsubscribed')
+        cache.delete_memoized(db.get_user_subscriptions_list, userid)
+        cache.delete_memoized(db.get_user_subscriptions_subs, userid)
+        return jsonify(status='ok', message='unsubscribed')
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/unsubscribe_from_all_subs/<user>", methods=['POST'])
@@ -539,15 +543,20 @@ def unsubscribe_from_all_subs(user):
 def block_sub(sid):
     """ Block sub """
     userid = current_user.get_id()
+    sub = db.get_sub_from_sid(sid)
+    if not sub:
+        return jsonify(status='error', message='sub not found')
     if current_user.has_blocked(sid):
         return json.dumps({'status': 'ok', 'message': 'already blocked'})
+    form = DummyForm()
+    if form.validate():
+        db.create_subscription(userid, sid, 2)
 
-    db.create_subscription(userid, sid, 2)
-
-    if current_user.has_subscribed(sid):
-        db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s AND `sid`=%s '
-                  'AND `status`=1', (userid, sid))
-    return json.dumps({'status': 'ok', 'message': 'blocked'})
+        if current_user.has_subscribed(sub['name']):
+            db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s AND `sid`=%s '
+                      'AND `status`=1', (userid, sid))
+        return json.dumps({'status': 'ok', 'message': 'blocked'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/unblock/<sid>", methods=['POST'])
@@ -561,10 +570,12 @@ def unblock_sub(sid):
 
     if not current_user.has_blocked(sid):
         return jsonify(status='ok', message='not blocked')
-
-    db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s AND `sid`=%s '
-              'AND `status`=2', (userid, sid))
-    return jsonify(status='ok', message='unblocked')
+    form = DummyForm()
+    if form.validate():
+        db.uquery('DELETE FROM `sub_subscriber` WHERE `uid`=%s AND `sid`=%s '
+                  'AND `status`=2', (userid, sid))
+        return jsonify(status='ok', message='unblocked')
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/get_txtpost/<pid>", methods=['GET'])
@@ -1144,7 +1155,7 @@ def accept_mod2inv(sub, user):
                       '`value`=%s', ('mod2', 'mod2i', user['uid']))
             db.create_sublog(sub['sid'], 6, user['name'] + ' accepted mod invite')
 
-            if not current_user.has_subscribed(sub['sid']):
+            if not current_user.has_subscribed(sub['name']):
                 db.create_subscription(current_user.uid, sub['sid'], 1)
             caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2', _all=True)
             caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', _all=True)

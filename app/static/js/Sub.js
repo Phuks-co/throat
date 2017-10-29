@@ -99,3 +99,19 @@ $('#ptoggle').click(function(){
     $('#content').prop('required', false);
   }
 });
+
+$('.blk,.unblk,.sub,.unsub').click(function(){
+  var sid=$(this).parent().data('sid');
+  var act=$(this).data('ac')
+  $.ajax({
+    type: "POST",
+    url: '/do/' + act + '/' + sid,
+    data: {'csrf_token': $('#csrf_token')[0].value},
+    dataType: 'json',
+    success: function(data) {
+        if (data.status == "ok") {
+          document.location.reload();
+        }
+    }
+  });
+});

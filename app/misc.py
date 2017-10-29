@@ -129,9 +129,9 @@ class SiteUser(object):
                      (self.user['uid'],)).fetchone()['c']
         return x
 
-    def has_subscribed(self, sid):
+    def has_subscribed(self, name):
         """ Returns True if the current user has subscribed to sub """
-        return sid in self.subscriptions
+        return name in self.subscriptions
 
     def has_blocked(self, sid):
         """ Returns True if the current user has blocked sub """

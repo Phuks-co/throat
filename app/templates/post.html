@@ -28,16 +28,16 @@
 </div>
 <div class="subs">{{getSuscriberCount(sub)}} subscribers</div>
 
-<div role="group" class="pure-button-group">
-  {% if current_user.has_subscribed(sub.sid) %}
-    <button class="button-secondary pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>Subscribed</button>
+<div role="group" class="pure-button-group" data-sid="{{sub.sid}}">
+  {% if current_user.has_subscribed(sub.name) %}
+    <button data-ac="unsubscribe" class="sub button-secondary pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>Subscribed</button>
   {%else%}
-    <button class="button-secondary pure-button button-xsmall"><span class="sbm-icon" data-icon="add"></span>Subscribe</button>
+    <button data-ac="subscribe" class="unsub button-secondary pure-button button-xsmall"><span class="sbm-icon" data-icon="add"></span>Subscribe</button>
   {%endif%}
   {% if current_user.has_blocked(sub.sid) %}
-    <button class="button-warning pure-button button-xsmal pure-button-activel"><span class="sbm-icon" data-icon="check"></span>Blocked</button>
+    <button data-ac="unblock" class="blk button-warning pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>Blocked</button>
   {%else%}
-    <button class="button-warning pure-button button-xsmall"><span class="sbm-icon" data-icon="close"></span>Block</button>
+    <button data-ac="block" class="unblk button-warning pure-button button-xsmall"><span class="sbm-icon" data-icon="close"></span>Block</button>
   {%endif%}
 </div>
 <hr>
