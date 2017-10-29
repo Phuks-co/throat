@@ -664,6 +664,30 @@ a#prevp{
   }
 }
 
+#postflairs {
+  width: 50%;
+  position: absolute;
+  top: 5em;
+  left: 25%;
+  background-color: white;
+  padding: 1em;
+  border: 1px solid gray;
+  z-index: 100;
+}
+
+.postflair, .selflair {
+  border: 1px solid #aaa;
+  border-radius: 2px;
+  background-color: #eee;
+  padding: 5px;
+  line-height: 2em;
+  white-space: nowrap;
+}
+
+.selflair:hover {
+  background-color: #d5d5d5;
+}
+
 .commenthead {
   font-size: smaller;
   color: #414141;

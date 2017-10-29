@@ -365,7 +365,8 @@ def edit_sub(sub):
         abort(403)
 
 
-@do.route("/do/assign_post_flair/<sub>/<pid>/<fl>", methods=['POST'])
+@do.route("/do/flair/<sub>/<pid>/<fl>", methods=['POST'])
+@login_required
 def assign_post_flair(sub, pid, fl):
     """ Assign a post's flair """
     sub = db.get_sub_from_name(sub)
@@ -376,29 +377,32 @@ def assign_post_flair(sub, pid, fl):
     if not post:
         return json.dumps({'status': 'error',
                            'error': ['Post does not exist']})
-    if current_user.is_mod(sub['sid']) or post['uid'] == current_user.get_id() \
-       or current_user.is_admin():
-        flair = db.query('SELECT * FROM `sub_flair` WHERE `xid`=%s AND '
-                         '`sid`=%s', (fl, sub['sid'])).fetchone()
-        if not flair:
-            return json.dumps({'status': 'error',
-                               'error': ['Flair does not exist']})
+    form = DummyForm()
+    if form.validate():
+        if current_user.is_mod(sub['sid']) or post['uid'] == current_user.get_id() \
+           or current_user.is_admin():
+            flair = db.query('SELECT * FROM `sub_flair` WHERE `xid`=%s AND '
+                             '`sid`=%s', (fl, sub['sid'])).fetchone()
+            if not flair:
+                return json.dumps({'status': 'error',
+                                   'error': ['Flair does not exist']})
 
-        db.update_post_metadata(post['pid'], 'flair', flair['text'])
-        db.create_sublog(sub['sid'], 3, current_user.get_username() +
-                         ' assigned post flair',
-                         url_for('view_post', sub=sub['name'],
-                                 pid=post['pid']))
+            db.update_post_metadata(post['pid'], 'flair', flair['text'])
+            db.create_sublog(sub['sid'], 3, current_user.get_username() +
+                             ' assigned post flair',
+                             url_for('view_post', sub=sub['name'],
+                                     pid=post['pid']))
 
-        if not current_user.is_mod(sub['sid']) and current_user.is_admin():
-            db.create_sitelog(4, current_user.get_username() +
-                              ' assigned post flair',
-                              url_for('view_post', sub=sub['name'],
-                                      pid=post['pid']))
-        cache.delete_memoized(db.get_post_metadata, pid, 'flair')
-        return json.dumps({'status': 'ok'})
-    else:
-        abort(403)
+            if not current_user.is_mod(sub['sid']) and current_user.is_admin():
+                db.create_sitelog(4, current_user.get_username() +
+                                  ' assigned post flair',
+                                  url_for('view_post', sub=sub['name'],
+                                          pid=post['pid']))
+            cache.delete_memoized(db.get_post_metadata, pid, 'flair')
+            return json.dumps({'status': 'ok'})
+        else:
+            return json.dumps({'status': 'error', 'error': 'Not authorized'})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/remove_post_flair/<sub>/<pid>", methods=['POST'])

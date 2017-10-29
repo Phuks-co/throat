@@ -82,6 +82,31 @@ $(document).on('click', '.stick-post', function(){
   });
 });
 
+$(document).on('click', '.editflair', function(){
+  $('#postflairs').show();
+});
+
+$(document).on('click', '.selflair', function(){
+  var pid=$(this).data('pid');
+  var flair=$(this).data('flair');
+  var nsub=$(this).data('sub');
+  $.ajax({
+    type: "POST",
+    url: '/do/flair/' + nsub + '/' + pid + '/' + flair,
+    data: $("#delete-post-form").serialize(),
+    dataType: 'json',
+    success: function(data) {
+        if (data.status != "ok") {
+          $(this).parent().html('Error. ' + data.error);
+        } else {
+          $(this).parent().html('Done!');
+          document.location.reload();
+        }
+    }
+  });
+});
+
+
 $(document).on('click', '.nsfw-post', function(){
   // confirmation
   var pid = $(this).parent().parent().data('pid');

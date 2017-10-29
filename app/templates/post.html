@@ -103,7 +103,7 @@
         {% if post.nsfw or sub.nsfw %}
         <div class="nsfw" alt="Not safe for work">NSFW</div>
         {%endif%}
-        {% if func.getPostFlair(post) %}<span class="flair">{{func.getPostFlair(post)}}</span>{% endif %}
+        {% if func.getPostFlair(post) %}<span class="postflair">{{func.getPostFlair(post)}}</span>{% endif %}
         {% if post.link == None %}
           <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}" class="title">{{post.title}}</a>
         {% else %}
@@ -157,6 +157,18 @@
 
     </div>
   </div>
+  {% if (func.userCanFlair(func.getSub(post.sid)) and current_user.uid == post.uid) or current_user.is_mod(post.sid) %}
+    <div style="display:none;" id="postflairs">
+      <span class="closemsg">×</span>
+      {% if func.getPostFlair(post) %}
+      <div>Current flair: <span class="postflair">{{func.getPostFlair(post)}}</span>. <a id="remove-flair">Remove</a>.</div>
+      {%endif%}
+      <h4>Select a new flair</h4>
+      {% for ll in editpostflair.flair %}
+        <span class="selflair" data-sub="{{post.sub}}" data-flair="{{ll.data}}" data-pid="{{post.pid}}">{{ll.label}}</span>
+      {% endfor %}
+    </div>
+  {%endif %}
    {% if post.content %}
    {% if not post.deleted %}
      <div id="postcontent">
