@@ -2,73 +2,69 @@
 {% block title %}{{config.LEMA}}{% endblock %}
 
 {% block head %}
-{{ super() }}
-{% if func.getSubTimer(sub) %}
-<script> var end = new Date('{{func.getSubTimer(sub)}}Z'); </script>
-<script src="{{ url_for('static', filename='js/subcountdown.js') }}"></script>
-{% endif %}
+  {{ super() }}
 {% endblock %}
 
-{% block navbar %}
-<ul class="right">
-  <li class="large"><a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a></li>
-</ul>
-{% endblock %}
 {% block content %}
 {{ super() }}
+  {% if not current_user.is_mod(sub.sid) and current_user.is_admin() %}
+    <div class="important"><h3>Editing as Admin</h3></div>
+  {% endif %}
+<div class="content">
+  <h1>Editing settings of /s/{{sub.name}}</h1>
+  <form  method="POST" id="edit-sub-form" action="{{url_for('do.edit_sub', sub=sub.name)}}" class="pure-form ajaxform">
+    {{editsubform.csrf_token}}
+    <fieldset>
+      <div class="pure-control-group">
+        <label for="title">{{editsubform.title.label.text}}</label>
+        {{editsubform.title(value=sub.title, required=True, class="pure-u-12-24")}}
+      </div>
 
-{% if not current_user.is_mod(sub.sid) and current_user.is_admin() %}
-<center><h3>Editing as Admin</h3></center>
-{% endif %}
+      <div class="pure-control-group">
+        <label for="nsfw" class="pure-checkbox">
+          {{editsubform.nsfw(checked=func.isNSFW(sub))}}
+          {{editsubform.nsfw.label.text}}
+        </label>
+      </div>
 
-<h1>Edit /s/{{sub.name}}</h1>
-<form  method="POST" id="edit-sub-form" action="{{url_for('do.edit_sub', sub=sub.name)}}" class="nice-form ajaxform">
-  {{editsubform.csrf_token}}
-  <div class="col-12">
-    <p><label>{{editsubform.title.label.text}}</label> {{editsubform.title(value=sub.title, required=True)}}</p>
-    <p><label>{{editsubform.nsfw(checked=func.isNSFW(sub))}} {{editsubform.nsfw.label.text}}</label></p>
-    <p><label>{{editsubform.restricted(checked=func.isRestricted(sub))}} {{editsubform.restricted.label.text}}</label></p>
-    <p><label>{{editsubform.usercanflair(checked=func.userCanFlair(sub))}} {{editsubform.usercanflair.label.text}}</label></p>
-    <p><label>{{editsubform.videomode(checked=func.enableVideoMode(sub))}} {{editsubform.videomode.label.text}}</label></p>
-  </div>
-  <div class="col-12">
-    <h2><i class="fa fa-clock-o"></i> Countdown clock (beta)</h2>
-    <p><label>{{editsubform.showtimer(checked=func.getShowSubTimer(sub))}} {{editsubform.showtimer.label.text}}</label></p>
-    <p><label>{{editsubform.timermsg.label.text}}</label> {{editsubform.timermsg(value=func.getSubTimerMsg(sub))}}</p>
-    <p><label>{{editsubform.timer.label.text}}</label> {{editsubform.timer}}</p>
-    {% if func.getShowSubTimer(sub) %}
-    <p>--- Current Time Remaining ---</p>
-    <div id="countdown" class="col-12"></div>
-    {% endif %}
-  </div>
-  <div class="col-12">
-    <h2><i class="fa fa-sort-amount-asc"></i> Default sub page post sorting</h2>
-    <p>{{ editsubform.subsort() }}</p>
-  </div>
-  <div class="col-12">
-    <h2><i class="fa fa-tags"></i> Sub tags</h2>
-    <p>Enter up to 10 tags to describe this sub (single words separated by +)</p>
-    <p><label>{{editsubform.subtags.label.text}}</label> {{editsubform.subtags(value=func.getSubTags(sub))}}</p>
-    {% set tags = func.getSubTagsList(sub) %}
-    {% if tags %}
-      <p>Current tags:</p>
-      <ul>
-        {% for tag in tags %}
-          <li>- {{tag.value}}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-  </div>
-  <div class="col-12">
-    <h2>Sidebar text</h2>
-    {{editsubform.sidebar(placeholder="Sidebar text", rows="10", **{'data-provide' :"markdown"})}}
-  </div>
+      <div class="pure-control-group">
+        <label for="restricted" class="pure-checkbox">
+          {{editsubform.restricted(checked=func.isRestricted(sub))}}
+          {{editsubform.restricted.label.text}}
+        </label>
+      </div>
 
-  <div class="alert div-error">
-    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-    <p></p>
-  </div>
-  <p><button type="submit" class="btn btn-orange" id="editsub-btnsubmit" data-prog="Saving..." data-success="Saved!">Edit sub</button></p>
+      <div class="pure-control-group">
+        <label for="usercanflair" class="pure-checkbox">
+          {{editsubform.usercanflair(checked=func.userCanFlair(sub))}}
+          {{editsubform.usercanflair.label.text}}
+        </label>
+      </div>
+      <h4>Default post sort</h4>
+      {% for kl in editsubform.subsort %}
+        <div class="pure-control-group">
+          <label for="{{kl.id}}" class="pure-checkbox">
+            {{kl(checked=True if editsubform.subsort.data.value==kl.name else False)}}
+            {{kl.label.text}}
+          </label>
+        </div>
+      {% endfor %}
+      <hr/>
+      <h4>Sidebar text</h4>
+      <div class="pure-control-group">
+        <div class="markdown-editor">
+          {{editsubform.sidebar(class="pure-u-12-24", placeholder="Sidebar text. Markdown allowed.", rows="10")}}
+        </div>
+      </div>
+    </fieldset>
 
-</form>
+    <div class="alert div-error">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      <p></p>
+    </div>
+    <p><button type="submit" class="pure-button pure-button-primary" id="editsub-btnsubmit" data-prog="Saving..." data-success="Saved!">Save changes</button></p>
+
+  </form>
+
+</div>
 {% endblock %}

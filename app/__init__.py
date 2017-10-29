@@ -499,7 +499,7 @@ def edit_sub(sub):
         abort(404)
 
     if current_user.is_mod(sub['sid']) or current_user.is_admin():
-        form = EditSubForm(subsort=db.get_sub_metadata(sub['sid'], 'sort'))
+        form = EditSubForm(subsort=db.get_sub_metadata(sub['sid'], 'sort')['value'])
         form.sidebar.data = sub['sidebar']
         return render_template('editsub.html', sub=sub, editsubform=form)
     else:
