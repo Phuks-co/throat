@@ -30,14 +30,8 @@
             in <a href="{{ url_for('view_sub', sub=comment.sub) }}">{{comment.sub}}</a>
           </div>
           <div class="commentrow {%if comment.cid == highlight %}highlight{%endif%}" id="comment-{{comment.cid}}">
-            <div class="pull left votecomment">
-              {# vote arrow div #}
-              <div title="Upvote" class="c-upvote{%if comment.positive == True %} upvoted{%endif%}" data-pid="{{comment.pid}}" data-icon="upvote"></div>
-              <div title="Downvote" class="c-downvote{%if comment.positive == False %} downvoted{%endif%}" data-pid="{{comment.pid}}" data-icon="downvote"></div>
-            </div>
             <div class="commblock">
               <div class="commenthead">
-                  <a class="togglecomment collapse" data-cid="{{comment.cid}}">[–]</a>
                   <a href="{{ url_for('view_user', user=user.name) }}" class="poster">{{user.name}}</a> -
                   <b><span class="cscore">{{comment.score}}</span> points</b>
                   <span class="time">
