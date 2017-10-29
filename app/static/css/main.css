@@ -355,7 +355,7 @@ span#notification.fade {
   background-color: #282828;
 }
 
-.pure-button-primary {
+.pure-button-primary, a.pure-button-primary {
     background-color: #d94f00;
     color: #fff;
 }
