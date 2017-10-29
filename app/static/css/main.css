@@ -1290,9 +1290,6 @@ article.comment:nth-child(2n) {
 .commtitle {
     margin: .3em;
 }
-.commtitle span.title {
-    font-size: 1.3em;
-}
 .userrow {
     text-align: center;
 }

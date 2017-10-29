@@ -26,9 +26,8 @@
         {% for comment in comments %}
         <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="text-post no-padding comment usercomments">
           <div class="commtitle">
-            <!-- TODO Needs sub and post.title from peewee -->
-            <span class="title"><a href="{{ url_for('view_post', sub=db.get_sub_from_pid(comment.pid).name, pid=comment.pid) }}">{{db.get_post_from_pid(comment.pid).title}}</a></span>
-            in <a href="{{ url_for('view_sub', sub=db.get_sub_from_pid(comment.pid).name) }}">{{db.get_sub_from_pid(comment.pid).name}}</a>
+            <span class="title"><a href="{{ url_for('view_post', sub=comment.sub, pid=comment.pid) }}">{{comment.title}}</a></span>
+            in <a href="{{ url_for('view_sub', sub=comment.sub) }}">{{comment.sub}}</a>
           </div>
           <div class="commentrow {%if comment.cid == highlight %}highlight{%endif%}" id="comment-{{comment.cid}}">
             <div class="pull left votecomment">
@@ -56,7 +55,7 @@
                 <div hidden id="sauce-{{comment.cid}}">{{comment.content|rnentity|e}}</div>
               <ul class="bottombar links">
                 <!-- TODO needs peewee <li><a href="{# url_for('view_perm', sub=sub.name, cid=comment.cid, pid=post.pid) #}">permalink</a></li>-->
-                <li><a href="{{url_for('view_perm', sub=db.get_sub_from_pid(comment.pid).name, pid=comment.pid, cid=comment.cid)}}">permalink</a></li>
+                <li><a href="{{url_for('view_perm', sub=comment.sub, pid=comment.pid, cid=comment.cid)}}">permalink</a></li>
                 {%if current_user.is_authenticated%}
                   <li><a class="reply-comment" data-pid="{{comment.pid}}" data-to="{{comment.cid}}">reply</a></li>
                   {% if (comment.uid == session['user_id'] or current_user.is_admin()) %}

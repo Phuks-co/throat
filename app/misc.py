@@ -1404,9 +1404,8 @@ def getMsgPostReplies(page):
 def getUserComments(uid, page):
     """ Returns comments for a user """
     try:
-        com = SubPostComment.select(SubPostComment.cid, SubPostComment.pid, SubPostComment.uid, SubPostComment.time, SubPostComment.lastedit, SubPostComment.content, SubPostComment.status, SubPostComment.score, SubPostComment.parentcid)
-        # TODO join Sub for sub name from pid, join SubPost for post title from pid
-        # com = com.join(SubPost, on=(SubPost.pid == SubPostComment.pid)).join(Sub)
+        com = SubPostComment.select(Sub.name.alias('sub'), SubPost.title, SubPostComment.cid, SubPostComment.pid, SubPostComment.uid, SubPostComment.time, SubPostComment.lastedit, SubPostComment.content, SubPostComment.status, SubPostComment.score, SubPostComment.parentcid)
+        com = com.join(SubPost).switch(SubPostComment).join(Sub, on=(Sub.sid == SubPost.sid))
         com = com.where(SubPostComment.uid == uid).where(SubPostComment.status.is_null()).order_by(SubPostComment.time.desc()).paginate(page, 20).dicts()
     except com.DoesNotExist:
         return False
