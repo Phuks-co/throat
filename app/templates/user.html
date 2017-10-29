@@ -72,7 +72,7 @@
         <div class="userrow">
           <div class="pblock">
             <h3>Owns</h3>
-            <ul style="color: darkcyan;">
+            <ul>
               {% for own in owns if owns|length > 0 %}
               <li><a href="{{url_for('view_sub', sub=own.name)}}">{{own.name}}</a></li>
               {% else %}
