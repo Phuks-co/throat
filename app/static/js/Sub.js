@@ -63,3 +63,19 @@ $('.revoke-mod2').click(function(){
     }
   });
 });
+
+$('.revoke-ban').click(function(){
+  var user=$(this).data('user');
+  var nsub=$(this).data('sub');
+  $.ajax({
+    type: "POST",
+    url: '/do/remove_sub_ban/' + nsub + '/' + user,
+    data: {'csrf_token': $('#csrf_token')[0].value},
+    dataType: 'json',
+    success: function(data) {
+        if (data.status == "ok") {
+          document.location.reload();
+        }
+    }
+  });
+});

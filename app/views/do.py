@@ -995,41 +995,45 @@ def ban_user_sub(sub):
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    if current_user.is_mod(sub['sid']) or current_user.is_admin():
-        form = BanUserSubForm()
-        if form.validate():
-            user = db.get_user_from_name(form.user.data)
-            if not user:
-                return json.dumps({'status': 'error',
-                                   'error': ['User does not exist.']})
-            if db.get_sub_metadata(sub['sid'], 'ban', value=user['uid']):
-                return jsonify(status='error', error=['Already banned'])
-            db.create_sublog(sub['sid'], 2, current_user.get_username() + ' banned ' + form.user.data)
-            if not current_user.is_mod(sub['sid']) and current_user.is_admin():
-                db.create_sitelog(4, current_user.get_username() +
-                                  ' banned ' + form.user.data + ' from /s/' + sub['name'],
-                                  url_for('view_sub', sub=sub['name']))
-            db.create_message(mfrom=current_user.uid,
-                              to=user['uid'],
-                              subject='You have been banned from /s/' +
-                              sub['name'],
-                              content='',
-                              link=sub['name'],
-                              mtype=7)
-            socketio.emit('notification',
-                          {'count': db.user_mail_count(user['uid'])},
-                          namespace='/snt',
-                          room='user' + user['uid'])
-            db.create_sub_metadata(sub['sid'], 'ban', user['uid'])
+    form = DummyForm()
+    if form.validate():
+        if current_user.is_mod(sub['sid']) or current_user.is_admin():
+            form = BanUserSubForm()
+            if form.validate():
+                user = db.get_user_from_name(form.user.data)
+                if not user:
+                    return json.dumps({'status': 'error',
+                                       'error': ['User does not exist.']})
+                if db.get_sub_metadata(sub['sid'], 'ban', value=user['uid']):
+                    return jsonify(status='error', error=['Already banned'])
+                db.create_sublog(sub['sid'], 2, current_user.get_username() + ' banned ' + form.user.data)
+                if not current_user.is_mod(sub['sid']) and current_user.is_admin():
+                    db.create_sitelog(4, current_user.get_username() +
+                                      ' banned ' + form.user.data + ' from /s/' + sub['name'],
+                                      url_for('view_sub', sub=sub['name']))
+                db.create_message(mfrom=current_user.uid,
+                                  to=user['uid'],
+                                  subject='You have been banned from /s/' +
+                                  sub['name'],
+                                  content='',
+                                  link=sub['name'],
+                                  mtype=7)
+                socketio.emit('notification',
+                              {'count': db.user_mail_count(user['uid'])},
+                              namespace='/snt',
+                              room='user' + user['uid'])
+                db.create_sub_metadata(sub['sid'], 'ban', user['uid'])
 
-            db.create_sublog(sub['sid'], 7, current_user.get_username() +
-                             ' banned ' + user['name'],
-                             url_for('view_sub_bans', sub=sub['name']))
-            return json.dumps({'status': 'ok',
-                               'sentby': current_user.get_id()})
-        return json.dumps({'status': 'error', 'error': get_errors(form)})
-    else:
-        abort(403)
+                db.create_sublog(sub['sid'], 7, current_user.get_username() +
+                                 ' banned ' + user['name'],
+                                 url_for('view_sub_bans', sub=sub['name']))
+                caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'ban', _all=True)
+                return json.dumps({'status': 'ok',
+                                   'sentby': current_user.get_id()})
+            return json.dumps({'status': 'error', 'error': get_errors(form)})
+        else:
+            abort(403)
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/inv_mod2/<sub>", methods=['POST'])
@@ -1092,35 +1096,40 @@ def remove_sub_ban(sub, user):
     """ Remove Mod2 """
     user = db.get_user_from_name(user)
     sub = db.get_sub_from_name(sub)
-    if current_user.is_mod(sub['sid']) or current_user.is_admin():
-        if not misc.isSubBan(sub, user):
-            return jsonify(status='error', error=['User was not banned'])
+    form = DummyForm()
+    if form.validate():
+        if current_user.is_mod(sub['sid']) or current_user.is_admin():
+            if not misc.isSubBan(sub, user):
+                return jsonify(status='error', error=['User was not banned'])
 
-        db.uquery('UPDATE `sub_metadata` SET `key`=%s WHERE `key`=%s AND '
-                  '`value`=%s', ('xban', 'ban', user['uid']))
-        db.create_sublog(sub['sid'], 2, current_user.get_username() + ' unbanned ' + user)
-        if not current_user.is_mod(sub['sid']) and current_user.is_admin():
-            db.create_sitelog(4, current_user.get_username() +
-                              ' unbanned ' + user + ' from /s/' + sub['name'],
-                              url_for('view_sub', sub=sub['name']))
+            db.uquery('UPDATE `sub_metadata` SET `key`=%s WHERE `key`=%s AND '
+                      '`value`=%s', ('xban', 'ban', user['uid']))
+            db.create_sublog(sub['sid'], 2, current_user.get_username() + ' unbanned ' + user['name'])
+            if not current_user.is_mod(sub['sid']) and current_user.is_admin():
+                db.create_sitelog(4, current_user.get_username() +
+                                  ' unbanned ' + user['name'] + ' from /s/' + sub['name'],
+                                  url_for('view_sub', sub=sub['name']))
 
-        db.create_message(mfrom=current_user.uid,
-                          to=user['uid'],
-                          subject='You have been unbanned from /s/' +
-                          sub['name'],
-                          content='',
-                          mtype=7,
-                          link=sub['name'])
-        socketio.emit('notification',
-                      {'count': db.user_mail_count(user['uid'])},
-                      namespace='/snt',
-                      room='user' + user['uid'])
-        db.create_sublog(sub['sid'], 7, current_user.get_username() +
-                         ' removed ban on ' + user['name'],
-                         url_for('view_sub_bans', sub=sub['name']))
-        return json.dumps({'status': 'ok', 'msg': 'user ban removed'})
-    else:
-        abort(403)
+            db.create_message(mfrom=current_user.uid,
+                              to=user['uid'],
+                              subject='You have been unbanned from /s/' +
+                              sub['name'],
+                              content='',
+                              mtype=7,
+                              link=sub['name'])
+            socketio.emit('notification',
+                          {'count': db.user_mail_count(user['uid'])},
+                          namespace='/snt',
+                          room='user' + user['uid'])
+            db.create_sublog(sub['sid'], 7, current_user.get_username() +
+                             ' removed ban on ' + user['name'],
+                             url_for('view_sub_bans', sub=sub['name']))
+            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'ban', _all=True)
+            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'xban', _all=True)
+            return json.dumps({'status': 'ok', 'msg': 'user ban removed'})
+        else:
+            abort(403)
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/remove_mod2/<sub>/<user>", methods=['POST'])
