@@ -623,6 +623,16 @@ a#prevp{
   padding: 0;
 }
 
+a.slink{
+  color: #12619c;
+  font-weight: 700;
+  cursor: pointer;
+  -ms-user-select:none;
+  -moz-user-select:none;
+  -webkit-user-select:none;
+  user-select: none;
+}
+
 .links a{
   color: #12619c;
   font-weight: 700;

@@ -16,6 +16,7 @@ require('./Expando');
 require('./Post');
 require('./Editor');
 require('./Messages');
+require('./Sub');
 
 
 function vote(obj, how, comment){

@@ -13,7 +13,7 @@ from flask import render_template, request
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_cache import make_template_fragment_key
 import config
-from .. import forms, misc
+from .. import forms, misc, caching
 from ..socketio import socketio
 from .. import database as db
 from ..forms import LogOutForm, CreateSubFlair, DummyForm
@@ -1052,7 +1052,7 @@ def inv_mod2(sub):
                 return json.dumps({'status': 'error',
                                    'error': ['User is already a mod.']})
 
-            if db.get_sub_metadata(sub['sid'], 'mod2i', user['uid']):
+            if db.get_sub_metadata(sub['sid'], 'mod2i', value=user['uid']):
                 return json.dumps({'status': 'error',
                                    'error': ['User has a pending invite.']})
 
@@ -1077,6 +1077,8 @@ def inv_mod2(sub):
 
             db.create_sublog(sub['sid'], 6, current_user.get_username() +
                              ' invited ' + user['name'] + ' to the mod team')
+            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', value=user['uid'])
+
             return json.dumps({'status': 'ok',
                                'sentby': current_user.get_id()})
         return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -1127,21 +1129,24 @@ def remove_mod2(sub, user):
     """ Remove Mod2 """
     user = db.get_user_from_name(user)
     sub = db.get_sub_from_name(sub)
-    if current_user.is_topmod(sub) or current_user.is_admin():
-        x = db.get_sub_metadata(sub['sid'], 'mod2', value=user['uid'])
-        if not x:
-            return jsonify(status='error', error=['User is not mod'])
+    form = DummyForm()
+    if form.validate():
+        if current_user.is_topmod(sub) or current_user.is_admin():
+            x = db.get_sub_metadata(sub['sid'], 'mod2', value=user['uid'])
+            if not x:
+                return jsonify(status='error', error=['User is not mod'])
 
-        db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s '
-                  'AND `sid`=%s',
-                  ('mod2', user['uid'], sub['sid']))
+            db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s '
+                      'AND `sid`=%s',
+                      ('mod2', user['uid'], sub['sid']))
 
-        db.create_sublog(sub['sid'], 6, current_user.get_username() +
-                         ' removed ' + user['name'] + ' from the mod team')
-
-        return json.dumps({'status': 'ok', 'msg': 'user demodded'})
-    else:
-        abort(403)
+            db.create_sublog(sub['sid'], 6, current_user.get_username() +
+                             ' removed ' + user['name'] + ' from the mod team')
+            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2', _all=True)
+            return json.dumps({'status': 'ok', 'msg': 'user demodded'})
+        else:
+            abort(403)
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/revoke_mod2inv/<sub>/<user>", methods=['POST'])
@@ -1150,18 +1155,22 @@ def revoke_mod2inv(sub, user):
     """ revoke Mod2 inv """
     user = db.get_user_from_name(user)
     sub = db.get_sub_from_name(sub)
-    if current_user.is_topmod(sub) or current_user.is_admin():
-        x = db.get_sub_metadata(sub['sid'], 'mod2i', value=user['uid'])
-        if not x:
-            return jsonify(status='error', error=['User is not mod'])
-        db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s',
-                  ('mod2i', user['uid']))
+    form = DummyForm()
+    if form.validate():
+        if current_user.is_topmod(sub) or current_user.is_admin():
+            x = db.get_sub_metadata(sub['sid'], 'mod2i', value=user['uid'])
+            if not x:
+                return jsonify(status='error', error=['User is not mod'])
+            db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s',
+                      ('mod2i', user['uid']))
 
-        db.create_sublog(sub['sid'], 6, current_user.get_username() +
-                         ' canceled ' + user['name'] + '\'s mod invite')
-        return json.dumps({'status': 'ok', 'msg': 'user invite revoked'})
-    else:
-        abort(403)
+            db.create_sublog(sub['sid'], 6, current_user.get_username() +
+                             ' canceled ' + user['name'] + '\'s mod invite')
+            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', _all=True)
+            return json.dumps({'status': 'ok', 'msg': 'user invite revoked'})
+        else:
+            abort(403)
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/accept_mod2inv/<sub>/<user>", methods=['POST'])
@@ -1172,19 +1181,25 @@ def accept_mod2inv(sub, user):
     if user['uid'] != current_user.get_id():
         abort(403)
     sub = db.get_sub_from_name(sub)
-    if misc.isModInv(sub, user):
-        if misc.moddedSubCount(user['uid']) >= 15:
-            return json.dumps({'status': 'error',
-                               'error': ["You can't mod more than 15 subs"]})
-        db.uquery('UPDATE `sub_metadata` SET `key`=%s WHERE `key`=%s AND '
-                  '`value`=%s', ('mod2', 'mod2i', user['uid']))
-        db.create_sublog(sub['sid'], 6, user['name'] + ' accepted mod invite')
+    form = DummyForm()
+    if form.validate():
+        if misc.isModInv(sub, user):
+            if misc.moddedSubCount(user['uid']) >= 15:
+                return json.dumps({'status': 'error',
+                                   'error': ["You can't mod more than 15 subs"]})
+            db.uquery('UPDATE `sub_metadata` SET `key`=%s WHERE `key`=%s AND '
+                      '`value`=%s', ('mod2', 'mod2i', user['uid']))
+            db.create_sublog(sub['sid'], 6, user['name'] + ' accepted mod invite')
 
-        if not current_user.has_subscribed(sub['sid']):
-            db.create_subscription(current_user.uid, sub['sid'], 1)
-        return json.dumps({'status': 'ok', 'msg': 'user modded'})
-    else:
-        abort(404)
+            if not current_user.has_subscribed(sub['sid']):
+                db.create_subscription(current_user.uid, sub['sid'], 1)
+            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2', _all=True)
+            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', _all=True)
+            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', value=user['uid'])
+            return json.dumps({'status': 'ok', 'msg': 'user modded'})
+        else:
+            abort(404)
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/refuse_mod2inv/<sub>/<user>", methods=['POST'])
@@ -1196,14 +1211,19 @@ def refuse_mod2inv(sub, user):
     if user['uid'] != current_user.get_id():
         abort(403)
 
-    if misc.isModInv(sub, user):
-        db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s',
-                  ('mod2i', user['uid']))
+    form = DummyForm()
+    if form.validate():
+        if misc.isModInv(sub, user):
+            db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s',
+                      ('mod2i', user['uid']))
 
-        db.create_sublog(sub['sid'], 6, user['name'] + ' rejected mod invite')
-        return json.dumps({'status': 'ok', 'msg': 'invite refused'})
-    else:
-        abort(404)
+            db.create_sublog(sub['sid'], 6, user['name'] + ' rejected mod invite')
+            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', _all=True)
+            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', value=user['uid'])
+            return json.dumps({'status': 'ok', 'msg': 'invite refused'})
+        else:
+            abort(404)
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/read_pm/<mid>", methods=['POST'])
