@@ -67,14 +67,16 @@ class ABAccountTestCase(unittest.TestCase):
                                                      'title': title})
 
     def text_post(self, sub, title, content):
-        return self.app.post('/do/txtpost', data={'sub': sub,
-                                                  'title': title,
-                                                  'content': content})
+        return self.app.post('/do/post', data={'sub': sub,
+                                               'title': title,
+                                               'ptype': 'text',
+                                               'content': content})
 
     def link_post(self, sub, title, link):
-        return self.app.post('/do/lnkpost', data={'sub': sub,
-                                                  'title': title,
-                                                  'link': link})
+        return self.app.post('/do/post', data={'sub': sub,
+                                               'ptype': 'link',
+                                               'title': title,
+                                               'link': link})
 
     def test_accounts(self):
         """ Tests if registration works (not the captcha) """
@@ -99,15 +101,13 @@ class ABAccountTestCase(unittest.TestCase):
         assert 'There are no posts here, yet.' in x.get_data(True)
         # posting tests
         x = self.text_post('testing', 'yo im testing', '# yeah, test')
-        p = json.loads(x.get_data(True))
-        assert p['status'] == 'ok'
-        x = self.app.get(p['addr'])
+        assert x.status_code == 302
+        x = self.app.get(x.location)
         assert 'yo im testing' in x.get_data(True)
 
         x = self.link_post('testing', 'still testing', 'https://google.com')
-        p = json.loads(x.get_data(True))
-        assert p['status'] == 'ok'
-        x = self.app.get(p['addr'])
+        assert x.status_code == 302
+        x = self.app.get(x.location)
         assert 'still testing' in x.get_data(True)
 
         # NOT empty subpage tests :)
