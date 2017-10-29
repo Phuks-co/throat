@@ -19,21 +19,23 @@
 {{ super() }}
 
 <h1> Site log </h1>
-<table class="col-12">
-  <tr>
-    <td>Time</td>
-    <td>action</td>
-    <td>desc</td>
-    <td>link</td>
-  </tr>
-  {% for log in logs %}
-  <tr>
-    <td>{{log.time}}</td>
-    <td>{{log.action}}</td>
-    <td>{{log.desc}}</td>
-    <td><a href="{{log.link}}">{{log.link}}</a></td>
-  </tr>
-  {% endfor %}
+<table class="pure-table">
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>Action</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log in logs %}
+      <tr>
+        <td><time-ago datetime="{{log.time}}Z">{{log.time}}</time-ago></td>
+        <td>{{log.desc}}</td>
+        <td>{%if log.link%}<a href="{{log.link}}">Link</a>{%endif%}</td>
+      </tr>
+    {%endfor%}
+  </tbody>
 </table>
 {% if page > 1 %}
 <a href="{{url_for('view_sitelog', page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
