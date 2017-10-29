@@ -632,7 +632,8 @@ a.slink{
   -webkit-user-select:none;
   user-select: none;
 }
-
+.subinfo{text-align: center;}
+.subs{margin-bottom: .6em;}
 .links a{
   color: #12619c;
   font-weight: 700;

@@ -41,7 +41,7 @@
 {%endif%}
 
 <div class="subinfo">
-  <h3>/s/{{sub.name}} {% if sub.nsfw %}<div class="nsfw" alt="Not safe for work">NSFW</div>{%endif%}</h3>
+  <h3><a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a> {% if sub.nsfw %}<div class="nsfw" alt="Not safe for work">NSFW</div>{%endif%}</h3>
 </div>
 <div class="subs">{{getSuscriberCount(sub)}} subscribers</div>
 
