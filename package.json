@@ -33,6 +33,7 @@
   "dependencies": {
     "jquery": "^3.2.1",
     "purecss": "^1.0.0",
+    "socket.io-client": "^2.0.4",
     "socketio": "^1.0.0",
     "time-elements": "^0.6.1"
   }

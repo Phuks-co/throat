@@ -1136,7 +1136,7 @@ def getPostList(baseQuery, sort, page):
 def getAnnouncement():
     """ Returns sitewide announcement post or False """
     try:
-        ann = SiteMetadata.select().where(SiteMetadata.value == 'announcement').get()
+        ann = SiteMetadata.select().where(SiteMetadata.key == 'announcement').get()
         return SubPost.select(SubPost.posted, SubPost.title, SubPost.comments, SubPost.pid,
                               User.name.alias('user'), Sub.name.alias('sub')).where(SubPost.pid == ann.value)
     except SiteMetadata.DoesNotExist:
