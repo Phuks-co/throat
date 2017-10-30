@@ -1306,7 +1306,13 @@ article.comment {
     padding: .8em;
     border-radius: 8px 0 0 8px;
     background-color: #fefefe;
-    margin: 8px 0;
+    margin: 4px 0;
+}
+article.comment:nth-child(2n) {
+    background-color: #f7f7f7;
+    -webkit-box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
+    -moz-box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
+    box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
 }
 .commtitle {
     margin: .3em;

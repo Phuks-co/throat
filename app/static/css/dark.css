@@ -295,7 +295,9 @@ body.dark .uprofile.content {
 body.dark article.comment {
     background-color: #101010;
 }
-
+body.dark article.comment:nth-child(2n) {
+    background-color: #0d0d0d;
+}
 /* /USER PAGE */
 
 /* misc */
