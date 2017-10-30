@@ -14,7 +14,7 @@
 
 <h1>Moderators for /s/{{sub.name}}</h1>
 {% if current_user.is_modinv(sub)  %}
-<div class="mod2-inv" style="background-color: #eee; border: 1px solid gray; padding: 1em;">
+<div class="mod2-inv" >
   You currently have an invite for this sub pending.
   <a id="accept-mod2-inv" data-sub="{{sub.name}}" data-user="{{current_user.user.name}}" class="slink">Accept</a> /
   <a id="refuse-mod2-inv" data-sub="{{sub.name}}" data-user="{{current_user.user.name}}" class="slink">No thanks</a>

@@ -35,6 +35,7 @@
     "fs": "0.0.1-security",
     "jquery": "^3.2.1",
     "purecss": "^1.0.0",
+    "socketio": "^1.0.0",
     "time-elements": "^0.6.1"
   }
 }

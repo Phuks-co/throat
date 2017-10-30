@@ -69,7 +69,7 @@
         {%else%}
         <a href="{{ url_for('view_user', user=current_user.name) }}" class="smallcaps">{{current_user.name}}</a>
         <span class="separator"></span>
-        <abbr title="Phuks taken" class="bold">{{current_user.score}}</abbr>
+        <abbr title="Phuks taken" class="bold" id="postscore">{{current_user.score}}</abbr>
         <span class="separator"></span>
         <abbr title="Phuks given">{{current_user.given}}</abbr>
         <span class="separator"></span>
@@ -78,14 +78,10 @@
         </div>
         <div class="glyphbutton sep ">
           <a href="{{ url_for('inbox_sort') }}">
-            {% if current_user.notifications != 0 %}
-              <span class="hasmail">
-                <span class="p-icon" data-icon="mail"></span>
-                <span class="mailcount">{{current_user.notifications}}</span>
-              </span>
-            {% else %}
-              <span class="p-icon" data-icon="mail"></span>
-            {% endif %}
+            <span class="hasmail">
+              <span class="p-icon{% if current_user.notifications != 0 %} hasmail{%endif%}" data-icon="mail"></span>
+              <span id="mailcount" class="mailcount" {% if current_user.notifications == 0 %}style="display:none;"{%endif%}>{{current_user.notifications}}</span>
+          </span>
           </a>
         </div>
         <div id="toggledark" class="glyphbutton">
@@ -130,6 +126,9 @@
       {%if config.DEBUG or current_user.admin%} | Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries{%endif%}
     {% endblock %}
   </div>
+  <script type="text/javascript">
+    window.wsserver = '{{config.WEBSOCKET_SERVER}}';
+  </script>
   <script type="text/javascript" src="{{ asset_url_for('main.js') }}"></script>
   {%block pagefoot%}{%endblock%}
 </body>

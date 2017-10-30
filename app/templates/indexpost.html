@@ -55,7 +55,7 @@
         {%endif%}
       </div>
       <div class="links">
-        <a href="{{url_for('view_post', sub=post.sub, pid=post.pid)}}">comments {%if post.comments>0%}({{post.comments}}){%endif%}</a>
+        <a class="comments" href="{{url_for('view_post', sub=post.sub, pid=post.pid)}}">comments {%if post.comments>0%}({{post.comments}}){%endif%}</a>
       </div>
     </div>
 </div>
