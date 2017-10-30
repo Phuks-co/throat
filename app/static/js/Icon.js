@@ -1,7 +1,7 @@
 /* Icon.js
 Our own solution for svg icons :(
 */
-import $ from 'jquery';
+import u from './Util';
 
 
 // list of all the icons
@@ -57,15 +57,16 @@ var Icons = {
   copyright: require('../svg/copyright.svg'),
 };
 
-// here we apply em.
-$(document).ready(function(){
-  $('*[data-icon]').each(function(i){
-    if(Icons[$(this).data('icon')]){
-      this.innerHTML = Icons[$(this).data('icon')];
+u.ready(function(){
+  u.each('*[data-icon]', function(el,i){
+    if(Icons[el.getAttribute('data-icon')]){
+      el.innerHTML = Icons[el.getAttribute('data-icon')];
     }else{
-      this.innerHTML = Icons.close;
+      el.innerHTML = Icons.close;
     }
-  });
+  })
 });
+
+// here we apply em.
 
 module.exports = Icons;
