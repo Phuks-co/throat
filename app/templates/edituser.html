@@ -4,109 +4,82 @@
 <script src="https://www.google.com/recaptcha/api.js" type="text/javascript"></script>
 {% endblock %}
 {% block title %}{{config.LEMA}}{% endblock %}
-{% block navbar %}
-<ul class="right">
-  <li class="large"><a href="{{url_for('view_user', user=user.name)}}" class="btn">/u/{{user.name}}</a></li>
-</ul>
-{% endblock %}
 {% block sidebar %}
 {{ super() }}
-<hr/>
 <script>
 var recaptchaCallback = function(){
     grecaptcha.render($('.g-recaptcha')[0], {sitekey: $('.g-recaptcha').data().sitekey});
 }
 </script>
 
-<div>
-  <h3>Badges:</h3>
-  <ul id="userBadges" style="color: darkcyan;">
-    {% if user.name == 'v' %}<li>\o/ Cheerleader</li>{% endif %}
-    {% for badge in badges if badges|length > 0 %}
-    <div class="ubadge">
-      <li title="{{badge.text}}"><i class="fa {{badge.badge}}"></i> {{badge.name}}
-      {% if current_user.is_admin() %}
-      <span id="removebadge" data-bid="{{badge.value}}" data-uid="{{user.uid}}" class="removebadge btn">x</span>
-      {% endif %}
-      </li>
-    </div>
-    {% else %}
-    <li>none</li>
-    {% endfor %}
-  </ul>
-</div>
-<hr>
-<div>
-  <h3>Owns:</h3>
-  <ul style="color: darkcyan;">
-    {% for own in owns if owns|length > 0 %}
-    <li><a href="{{url_for('view_sub', sub=own.name)}}">{{own.name}}</a></li>
-    {% else %}
-    <li>none</li>
-    {% endfor %}
-  </ul>
-</div>
-<hr>
-<div>
-  <h3>Mods:</h3>
-  <ul style="color: darkcyan;">
-    {% for mod in mods if mods|length > 0 %}
-    <li><a href="{{url_for('view_sub', sub=mod.name)}}">{{mod.name}}</a></li>
-    {% else %}
-    <li>none</li>
-    {% endfor %}
-  </ul>
-  <hr>
-  <p class="joindate">User has made {{pcount}} posts<br>and {{ccount}} comments since<br>registering <time-ago datetime="{{ user.joindate.isoformat() }}Z"></time-ago></p>
-</div>
+{% if not user.status == 10 %}
+  <h3><a href="{{url_for('view_user', user=user.name)}}" class="sbm-post">{{user.name}}</a></h3>
+  <a href="{{url_for('view_user_posts', user=user.name)}}" class="sbm-post pure-button">View posts</a>
+  <a href="{{url_for('view_user_comments', user=user.name)}}" class="sbm-post pure-button">View comments</a>
+  {% if user.uid == session['user_id'] %}
+    <a href="{{url_for('view_user_savedposts', user=user.name)}}" class="sbm-post pure-button">View saved posts</a>
+  {% endif %}
+{% endif %}
 {% endblock %}
+
 {% block content %}
 {{ super() }}
 <div class="edituser">
-  {% if current_user.is_admin() %}
-  <div class="adminbadges col-12 admin-page-form">
-    <div class=""><h3>Admin options</h3></div>
-    <div class="col-12"><h2><i class="fa fa-beer"></i> Assign User Badge</h2>
-      {% for badge in adminbadges %}
-      <div id="assignbadge" class="col-3 btn" data-bid="{{badge.bid}}" data-uid="{{user.uid}}">{{loop.index}} - <i title="{{badge.text}}" class="fa {{badge.badge}}"></i> {{badge.name}}</div>
-      {% endfor %}
-    </div>
-  </div>
-  {% endif %}
-
   <h1>Edit info for {{user.name}}</h1>
-  <form  method="POST" id="edit-user-form" data-redir='true'  action="{{url_for('do.edit_user', user=user.name)}}" class="ajaxform">
-      <div id="the-edit-user-form-itself">
-          {{edituserform.csrf_token}}
-
-          <p><label for="email" class="left">{{edituserform.email.label.text}}</label>{{edituserform.email(value=user.email, class="right")}}</p>
-          <p>{{edituserform.external_links()}}<label for="external_links">{{edituserform.external_links.label.text}}</label></p>
-          <p>{{edituserform.disable_sub_style()}}<label for="disable_sub_style">{{edituserform.disable_sub_style.label.text}}</label></p>
-          <p>{{edituserform.show_nsfw()}}<label for="show_nsfw">{{edituserform.show_nsfw.label.text}}</label></p>
-          <hr>
-          <p>{{edituserform.experimental()}}<label for="experimental"><abbr title="Enables untested experimental features">{{edituserform.experimental.label.text}}</abbr></label></p>
-          <p>{{edituserform.noscroll()}}<label for="noscroll">{{edituserform.noscroll.label.text}}</label></p>
-          <hr>
-          <p class='admin-page-form'>{{edituserform.delete_account()}}<label for="delete_account">{{edituserform.delete_account.label.text}}</label></p>
-          <hr>
-          <p>{{edituserform.password(placeholder=edituserform.password.label.text, required=False, autocomplete="off")}}</p>
-          <p>{{edituserform.confirm(placeholder=edituserform.confirm.label.text, required=False, autocomplete="off")}}</p>
-          <hr>
-          <p>{{edituserform.oldpassword(placeholder=edituserform.oldpassword.label.text, required=True, autocomplete="off")}}</p>
-
-          {{edituserform.recaptcha}}
-          <div class="alert div-error"></div>
-          <p><button type="submit" class="btn btn-blue" id="edituser-btnsubmit" data-prog="Editing..." data-success="Saved!">Edit user</button></p>
+  <form  method="POST" id="edit-user-form" data-redir='true'  action="{{url_for('do.edit_user', user=user.name)}}" class="ajaxform pure-form pure-form-aligned">
+    {{edituserform.csrf_token}}
+    <fieldset>
+      <div class="pure-control-group">
+        <label for="email">{{edituserform.email.label.text}}</label>
+        {{edituserform.email(value=user.email, class="right")}}
       </div>
+      <div class="pure-control-group">
+        <label for="external_links" class="pure-checkbox">{{edituserform.external_links.label.text}}</label>
+        {{edituserform.external_links()}}
+      </div>
+      <div class="pure-control-group">
+        <label for="disable_sub_style" class="pure-checkbox">{{edituserform.disable_sub_style.label.text}}</label>
+        {{edituserform.disable_sub_style()}}
+      </div>
+      <div class="pure-control-group">
+        <label for="show_nsfw" class="pure-checkbox">{{edituserform.show_nsfw.label.text}}</label>
+        {{edituserform.show_nsfw()}}
+      </div>
+      <hr>
+      <div class="pure-control-group">
+        <label for="experimental" class="pure-checkbox">{{edituserform.experimental.label.text}}</label>
+        {{edituserform.experimental()}}
+      </div>
+      <div class="pure-control-group">
+        <label for="noscroll" class="pure-checkbox">{{edituserform.noscroll.label.text}}</label>
+        {{edituserform.noscroll()}}
+      </div>
+      <hr style="border-color: red;">
+      <div class="pure-control-group" style="color: red; font-weight: 900;">
+        <label for="delete_account">{{edituserform.delete_account.label.text}}</label>
+        {{edituserform.delete_account()}}
+      </div>
+      <hr style="border-color: red;">
+      <h4>Change password</h4>
+      <div class="pure-control-group">
+        <label for="password">{{edituserform.password.label.text}}</label>
+        {{edituserform.password(placeholder=edituserform.password.label.text, required=False, autocomplete="off")}}
+      </div>
+      <div class="pure-control-group">
+        <label for="confirm">{{edituserform.confirm.label.text}}</label>
+        {{edituserform.confirm(placeholder=edituserform.confirm.label.text, required=False, autocomplete="off")}}
+      </div>
+      <hr>
+      <div class="pure-control-group">
+        <label for="oldpassword">{{edituserform.oldpassword.label.text}}</label>
+        {{edituserform.oldpassword(placeholder=edituserform.oldpassword.label.text, required=True, autocomplete="off")}}
+      </div>
+
+      {{edituserform.recaptcha}}
+      <div class="alert div-error"></div>
+      <button type="submit" class="pure-button pure-button-primary" id="edituser-btnsubmit" data-prog="Editing..." data-success="Saved!">Edit user</button>
+    </fieldset>
   </form>
+
 </div>
-<div id="delete-account-form" class="mfp-hide white-popup-block">
-  <h3>Are you REALLY sure you want to <b>PERMANENTLY</b> delete this account?</h3>
-  <div class="alert div-error">
-    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-    <p></p>
-  </div>
-  <div><button class="btn btn-red" id="delac" style='margin-right:50%;'>Yup!</button><button class="btn btn-blue delac-close">No.</button></div>
-</div>
-<a href='#delete-account-form' class='delete-account-form popup'></a>
 {% endblock %}

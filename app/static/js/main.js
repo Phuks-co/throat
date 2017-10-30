@@ -141,3 +141,12 @@ function getCookie(cname) {
     }
     return "";
 }
+
+document.getElementById('delete_account').addEventListener('click', function(e){
+  if(document.getElementById('delete_account').checked){
+    if(!confirm('Are you sure you want to PERMANENTLY delete your account?')){
+      e.preventDefault()
+      return false;
+    }
+  }
+})
