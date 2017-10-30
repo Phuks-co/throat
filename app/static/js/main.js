@@ -7,6 +7,7 @@ import 'purecss/build/grids-responsive.css';
 import 'purecss/build/tables.css';
 import 'time-elements/time-elements.js';
 import $ from 'jquery';
+import u from './Util';
 
 require('../css/main.css');
 require('../css/dark.css');
@@ -22,55 +23,30 @@ require('./Sub');
 function vote(obj, how, comment){
   if(comment){
     var kl = 'votecomment';
-    var unid = obj.parent().parent().parent().data('cid');
-    var count = obj.parent().parent().children('.cscore');
+    var unid = obj.parentNode.parentNode.parentNode.getAttribute('data-cid');
+    var count = obj.parentNode.parentNode.querySelector('.cscore');
   } else {
     var kl = 'vote';
-    var unid = obj.data('pid');
-    var count = obj.parent().children('.score');
+    var unid = obj.getAttribute('data-pid');
+    var count = obj.parentNode.querySelector('.score');
   }
-  $.ajax({
-    type: "POST",
-    url: '/do/' + kl + '/'+ unid + '/' + how,
-    data: {csrf_token: $('#csrf_token')[0].value},
-    dataType: 'json',
-    success: function(data) {
-      console.log(data)
-      if(data.status == "ok"){
-        console.log(obj)
-        obj.addClass((how == 'up') ? 'upvoted' : 'downvoted');
-        obj.parent().children((how == 'up') ? '.downvoted' : '.upvoted').removeClass((how == 'up') ? 'downvoted' : 'upvoted');
-
-        count.text((how == 'up') ? (parseInt(count.text())+1) : (parseInt(count.text())-1));
-      }
+  u.post('/do/' + kl + '/'+ unid + '/' + how, {}, function(data){
+    console.log(data)
+    if(data.status == "ok"){
+      console.log(obj);
+      obj.classList.add((how == 'up') ? 'upvoted' : 'downvoted');
+      obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted').classList.remove((how == 'up') ? 'downvoted' : 'upvoted')
+      count.innerHTML = (how == 'up') ? (parseInt(count.innerHTML)+1) : (parseInt(count.innerHTML)-1)
     }
-  }).catch(function(e){
-    if(e.status == 403){
-      // TODO: Show error if user is not authenticated
-    }
-  });
+  }, function(err){
+    //TODO: show errors
+  })
 }
 
 // up/downvote buttons.
-$(document).on('click', '.upvote', function(){
-  var obj = $(this);
-  vote(obj, 'up');
-});
-
-$(document).on('click', '.downvote', function(){
-  var obj = $(this);
-  vote(obj, 'down');
-});
-
-$(document).on('click', '.c-upvote', function(){
-  var obj = $(this);
-  vote(obj, 'up', true);
-});
-
-$(document).on('click', '.c-downvote', function(){
-  var obj = $(this);
-  vote(obj, 'down', true);
-});
+u.addEventForChild(document, 'click', '.upvote,.downvote,.c-upvote,.c-downvote', function(e, target){
+  vote(target, target.className.endsWith('upvote') ? 'up' : 'down', target.className.startsWith('c-'))
+})
 
 $(document).ready(function() {
   // shitless forms
