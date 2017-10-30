@@ -32,17 +32,10 @@
 {% cache 300, 'toppost' %}
 {% set tp = func.getTodaysTopPosts()%}
 
-{%if config.COIN_HIVE_SECRET %}
   <hr>
-  {% set hashrate = func.getCurrentHashrate()%}
   <div class="sidebarlists">
-    {% if hashrate['hash'] %}
-      <a href="/miner">Current hashrate: <b>{{hashrate['hash']}}</b>H/s.</a>
-    {% else %}
       <a href="/miner">Mine some phuks</a>
-    {% endif %}
   </div>
-{%endif%}
 
 {% if tp %}
   <hr>
