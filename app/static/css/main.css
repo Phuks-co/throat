@@ -1303,7 +1303,6 @@ li.profilebadge {
     font-size: 12px;
 }
 article.comment {
-    min-height: 70px;
     padding: .8em;
     border-radius: 8px 0 0 8px;
     background-color: #fefefe;
