@@ -38,35 +38,15 @@ u.get = function(url, success, error){ //
       var data = JSON.parse(this.response);
       success(data);
     } else {
-      error(this.response, 'Status ' + this.status);
+      success(data);
     }
   };
 
   request.onerror = function(err) {
-    error(err, 'Could not contact the server')
+    error(err)
   };
 
   request.send();
-};
-
-u.post = function(url, data, success, error){
-  var request = new XMLHttpRequest();
-  request.open('POST', url, true);
-  request.setRequestHeader("Content-Type", "application/json");
-  request.onload = function() {
-    if (this.status >= 200 && this.status < 400) {
-      var data = JSON.parse(this.response);
-      success(data);
-    } else {
-      error(this.response, 'Status ' + this.status);
-    }
-  };
-
-  request.onerror = function() {
-    error(err, 'Could not contact the server')
-  };
-  data['csrf_token'] = document.getElementById('csrf_token').value;
-  request.send(JSON.stringify(data));
 }
 
 module.exports = u;
