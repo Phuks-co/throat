@@ -121,7 +121,7 @@
         </div>
         <div class="pure-u-16-24 pure-u-md-20-24 pbody">
           <div class="post-heading">
-            <a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">{{announcement.title}}</a>
+            <span class="announcement">Announcement</span><a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">{{announcement.title}}</a>
           </div>
           <div class="author">
             posted <time-ago datetime="{{announcement.posted.isoformat()}}Z"></time-ago> by

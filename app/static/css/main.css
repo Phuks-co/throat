@@ -27,6 +27,14 @@ blockquote{
   padding: .3em 0 .3em .7em;
 }
 
+.announcement{
+  padding: 3px;
+  margin-right: .5em;
+  border-radius: 5px;
+  color: white;
+  background-color: #a61515;
+}
+
 .mod2-inv{
   background-color: #eee;
   border: 1px solid gray;
