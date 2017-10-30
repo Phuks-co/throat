@@ -20,6 +20,13 @@ abbr[title]{
     display: none;
 }
 
+blockquote p{margin: 0;}
+blockquote{
+  border-left: 3px solid gray;
+  margin: .3em 0 .3em 1em;
+  padding: .3em 0 .3em .7em;
+}
+
 .custom-toggle .bar {
     background-color: #fff;
     display: block;
@@ -685,6 +692,10 @@ a.slink{
   }
 }
 
+.postinfo{
+  display:inline-block;
+}
+
 #postflairs {
   width: 50%;
   position: absolute;
@@ -1283,9 +1294,6 @@ article.comment {
     border-radius: 8px 0 0 8px;
     background-color: #fefefe;
     margin: 8px 0;
-}
-article.comment:nth-child(2n) {
-    background-color: #f7f7f7;
 }
 .commtitle {
     margin: .3em;

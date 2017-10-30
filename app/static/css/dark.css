@@ -39,10 +39,6 @@ body.dark div#sortbuttons {
   color: #7b4a3f;
 }
 
-body.dark #sortbuttons a:visited {
-  color: #7b4a3f;
-}
-
 body.dark a:hover,
 body.dark #sortbuttons a:hover, {
   color: #d17262;
@@ -135,7 +131,7 @@ body.dark .pure-button:hover {
 }
 
 body.dark .pure-button-primary {
-  background-color: #101010;
+  background-color: #161616;
 }
 
 body.dark a#nextp,
@@ -166,12 +162,41 @@ body.dark .form label {
 }
 
 body.dark input[type="text"],
+body.dark input[type="email"],
 body.dark input[type="url"],
-body.dark textarea#content,
+body.dark textarea,
 body.dark input[type="password"] {
   color: #ffffff;
-  background-color: #404040;
+  background-color: #252525;
   box-shadow: inset 0 1px 3px #303030;
+  border-color: #444;
+}
+
+body.dark{
+  color: #666;
+}
+
+body.dark #postcontent{
+  background: #111;
+}
+body.dark .editbtns{
+  border-color: #444;
+}
+
+body.dark .editbtns div{
+  border-color: #292929;
+}
+
+body.dark .editbtns svg path{
+  fill: #666;
+}
+
+body.dark input[type="text"]::placeholder,
+body.dark input[type="email"]::placeholder,
+body.dark input[type="url"]::placeholder,
+body.dark textarea::placeholder,
+body.dark input[type="password"]::placeholder {
+  color: #555;
 }
 
 body.dark input#buyamount ~ b {
@@ -268,9 +293,6 @@ body.dark .uprofile.content {
     background: rgba(0, 0, 0, 0.9);
 }
 body.dark article.comment {
-    background-color: #000000;
-}
-body.dark article.comment:nth-child(2n) {
     background-color: #101010;
 }
 /* /USER PAGE */

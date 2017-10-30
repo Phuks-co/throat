@@ -75,8 +75,8 @@
 
 {% block main %}
 <div class="wholepost">
-  <div class="pure-g postbar">
-    <div class="misctainer pure-u-md-3-24 pure-u-2-24">
+  <div class="postbar">
+    <div class="misctainer">
       <div class="votebuttons">
         <div title="Upvote" class="upvote{%if post.positive == 1%} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
         <div class="score">{{post.score}}</div>
@@ -98,7 +98,7 @@
       </div>
     </div>
 
-    <div class="postinfo pure-u-md-21-24 pure-u-22-24">
+    <div class="postinfo">
       <div class="post-heading">
         {% if post.nsfw or sub.nsfw %}
         <div class="nsfw" alt="Not safe for work">NSFW</div>
