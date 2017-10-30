@@ -21,14 +21,32 @@ u.addEventForChild = function(parent, eventName, childSelector, cb){
     const clickedElement = event.target,
       matchingChild = clickedElement.closest(childSelector)
       if(matchingChild !== null){
-      console.log(matchingChild)
-      if(matchingChild.className == childSelector){
-        console.log('woot')
-        cb(event, matchingChild)
+        console.log(matchingChild)
+        if(matchingChild.matches(childSelector)){
+          cb(event, matchingChild)
+        }
       }
-    }
   })
 };
 
+u.get = function(url, success, error){ //
+  var request = new XMLHttpRequest();
+  request.open('GET', url, true);
+
+  request.onload = function() {
+    if (this.status >= 200 && this.status < 400) {
+      var data = JSON.parse(this.response);
+      success(data);
+    } else {
+      success(data);
+    }
+  };
+
+  request.onerror = function(err) {
+    error(err)
+  };
+
+  request.send();
+}
 
 module.exports = u;
