@@ -161,7 +161,7 @@ $(document).on('click', '.edit-post', function(){
   var h = elem.clientHeight-6;
   elem.innerHTML = '<div id="editpost" class="cwrap markdown-editor"><textarea style="height: ' + h + 'px">' + document.getElementById('post-source').innerHTML + '</textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-editpost" data-pid="' + $(this).data('pid') +'">Save changes</button> <button class="pure-button button-xsmall btn-preview" data-pvid="editpost" >Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span><div class="cpreview-content"></div></div>';
   $(this).parent().html(back);
-  initializeEditor($('#editpost'));
+  initializeEditor($('#editpost')[0]);
 });
 
 
@@ -195,7 +195,7 @@ $(document).on('click', '.edit-comment', function(){
   var h = elem.clientHeight + 28;
   elem.innerHTML = '<div class="cwrap markdown-editor" id="ecomm-'+cid+'"><textarea style="height: ' + h + 'px">' + document.getElementById('sauce-' + cid).innerHTML + '</textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-editcomment" data-cid="'+cid+'">Save changes</button> <button class="pure-button button-xsmall btn-preview" data-pvid="ecomm-'+cid+'">Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span><div class="cpreview-content"></div></div>';
   $(this).html(back);
-  initializeEditor($('#ecomm-' + cid));
+  initializeEditor($('#ecomm-' + cid)[0]);
 });
 
 $(document).on('click', '.btn-editpost', function(){
@@ -414,7 +414,7 @@ $(document).on('click', '.reply-comment', function(){
   };
 
   $(this).parent().parent().parent().append('<div id="rblock-'+cid+'"><div class="cwrap markdown-editor" id="rcomm-'+cid+'"><textarea style="height: 8em;"></textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-postcomment" data-pid="'+pid+'" data-cid="'+cid+'">Post comment</button> <button class="pure-button button-xsmall btn-preview" data-pvid="rcomm-'+cid+'">Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span><div class="cpreview-content"></div></div></div>');
-  initializeEditor($('#rcomm-' + cid));
+  initializeEditor($('#rcomm-' + cid)[0]);
   $(this).html(back);
 
 });
