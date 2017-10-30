@@ -1108,7 +1108,7 @@ def postListQueryBase(*extra, nofilter=False):
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
-                               SubPost.comments, SubPost.deleted, User.uid)
+                               SubPost.comments, SubPost.deleted, User.uid, *extra)
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER).where(SubPost.deleted == 0)
     if (not nofilter) or ((not current_user.is_authenticated) or ('nsfw' not in current_user.prefs)):
         posts = posts.where(SubPost.nsfw == 0)

@@ -712,7 +712,7 @@ def view_post(sub, pid, comments=False, highlight=None):
     """ View post and comments (WIP) """
     kkk = time.time()
     try:
-        post = misc.postListQueryBase(SubPost.sid, SubPost.uid, SubPost.content, SubPost.pid, nofilter=True).where(SubPost.pid == pid).dicts().get()
+        post = misc.postListQueryBase(SubPost.sid, SubPost.content, nofilter=True).where(SubPost.pid == pid).dicts().get()
     except SubPost.DoesNotExist:
         abort(403)
     if post['sub'].lower() != sub.lower():
