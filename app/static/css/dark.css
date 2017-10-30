@@ -260,7 +260,7 @@ body.dark .pmessage.post:nth-child(2n) {
 
 body.dark .modal-content,
 body.dark #formpop .modal-content {
-    background-color: #222222;
+    background-color: #111;
     border: 1px solid #4d4848;
     box-shadow: 4px 4px 16px #1d1d1d;
 }
@@ -295,10 +295,16 @@ body.dark .uprofile.content {
 body.dark article.comment {
     background-color: #101010;
 }
+
 /* /USER PAGE */
 
 /* misc */
-
+body.dark .pure-table td, body.dark .pure-table th, body.dark .pure-table{
+  border-color: #4e4e4e;
+}
+body.dark .pure-table thead{
+  background-color: #5c5c5c;
+}
 body.dark path[stroke="#ff6d15"] {
     stroke: #7b4a3f;
 }
