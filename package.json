@@ -31,8 +31,6 @@
     "webpack-dev-server": "^2.4.1"
   },
   "dependencies": {
-    "coin-hive": "^1.1.1",
-    "fs": "0.0.1-security",
     "jquery": "^3.2.1",
     "purecss": "^1.0.0",
     "socketio": "^1.0.0",
