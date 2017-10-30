@@ -42,7 +42,7 @@ function vote(obj, how, comment){
         obj.addClass((how == 'up') ? 'upvoted' : 'downvoted');
         obj.parent().children((how == 'up') ? '.downvoted' : '.upvoted').removeClass((how == 'up') ? 'downvoted' : 'upvoted');
 
-        //count.text((how == 'up') ? (parseInt(count.text())+1) : (parseInt(count.text())-1));
+        count.text(data.score);
       }
     }
   }).catch(function(e){

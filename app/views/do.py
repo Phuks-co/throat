@@ -747,7 +747,7 @@ def upvote(pid, value):
                           namespace='/snt',
                           room=post['pid'])
             cache.delete_memoized(db.get_post_from_pid, pid)
-            return jsonify(status='ok', message='Vote flipped')
+            return jsonify(status='ok', message='Vote flipped', score=post['score'] + voteValue * 2)
     else:
         positive = True if voteValue == 1 else False
         now = datetime.datetime.utcnow()
@@ -769,7 +769,7 @@ def upvote(pid, value):
                       {'score': user['score'] + voteValue},
                       namespace='/snt',
                       room="user" + post['uid'])
-    return jsonify(status='ok')
+    return jsonify(status='ok', score=post['score'] + voteValue)
 
 
 @do.route('/do/sendcomment/<pid>', methods=['POST'])
