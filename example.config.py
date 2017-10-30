@@ -46,3 +46,5 @@ COIN_HIVE_SECRET = ''
 # Only for debugging and testing:
 DEBUG = True
 TESTING = True  # This makes all the captchas valid
+
+WEBSOCKET_SERVER = '127.0.0.1:5000'
