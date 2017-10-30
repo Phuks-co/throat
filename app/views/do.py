@@ -746,6 +746,8 @@ def upvote(pid, value):
                            'score': post['score'] + voteValue * 2},
                           namespace='/snt',
                           room=post['pid'])
+            db.uquery('UPDATE `user` SET `given`=`given`+%s WHERE '
+                      '`uid`=%s', (voteValue, current_user.uid))
             cache.delete_memoized(db.get_post_from_pid, pid)
             return jsonify(status='ok', message='Vote flipped', score=post['score'] + voteValue * 2)
     else:
@@ -769,6 +771,8 @@ def upvote(pid, value):
                       {'score': user['score'] + voteValue},
                       namespace='/snt',
                       room="user" + post['uid'])
+    db.uquery('UPDATE `user` SET `given`=`given`+%s WHERE '
+              '`uid`=%s', (voteValue, current_user.uid))
     return jsonify(status='ok', score=post['score'] + voteValue)
 
 
