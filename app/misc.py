@@ -38,13 +38,22 @@ allowedNames = re.compile("^[a-zA-Z0-9_-]+$")
 class SiteUser(object):
     """ Representation of a site user. Used on the login manager. """
 
-    def __init__(self, userclass=None):
+    def __init__(self, userclass=None, subs=[]):
         self.user = userclass
         self.notifications = self.user['notifications']
         self.name = self.user['name']
         self.uid = self.user['uid']
         self.prefs = self.user['prefs'].split(',') if self.user['prefs'] else []
-        self.subscriptions = self.user['subscriptions'].split(',') if self.user['subscriptions'] else []
+
+        self.subsid = []
+        self.subscriptions = []
+        self.blocksid = []
+        for i in subs:
+            if i['status'] == 1:
+                self.subscriptions.append(i['name'])
+                self.subsid.append(i['sid'])
+            else:
+                self.blocksid.append(i['sid'])
 
         self.score = self.user['score']
         self.given = self.user['given']
@@ -1117,7 +1126,7 @@ def postListQueryBase(*extra, nofilter=False):
 
 def postListQueryHome():
     if current_user.is_authenticated:
-        return (postListQueryBase().where(SubPost.sid << current_user.user['subsid'].split(',')))
+        return (postListQueryBase().where(SubPost.sid << current_user.subsid))
     else:
         return postListQueryBase().join(SiteMetadata, JOIN.LEFT_OUTER, on=(SiteMetadata.key == 'default')).where(SubPost.sid == SiteMetadata.value)
 
@@ -1156,17 +1165,17 @@ def getStickies(sid):
 
 
 def load_user(user_id):
-    user = User.select(fn.GROUP_CONCAT(Clause(SQL('Distinct'), Sub.name)).alias('subscriptions'),
-                       fn.GROUP_CONCAT(Clause(SQL('Distinct'), SubSubscriber.sid)).alias('subsid'),
-                       fn.Count(Clause(SQL('Distinct'), Message.mid)).alias('notifications'),
+    user = User.select(fn.Count(Clause(SQL('Distinct'), Message.mid)).alias('notifications'),
                        User.given, User.score, User.name, User.uid, User.status,
                        fn.GROUP_CONCAT(Clause(SQL('Distinct'), UserMetadata.key)).alias('prefs'))
     user = user.join(UserMetadata, JOIN.LEFT_OUTER, on=((UserMetadata.uid == User.uid) & (UserMetadata.value == 1) & (UserMetadata.key << ['admin', 'canupload', 'exlinks', 'nostyles', 'labrat', 'nsfw']))).switch(User)
     user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & Message.read.is_null(True))).switch(User)
-    user = user.join(SubSubscriber, JOIN.LEFT_OUTER, on=((SubSubscriber.uid == User.uid) & (SubSubscriber.status == 1))).join(Sub, JOIN.LEFT_OUTER).where(User.uid == user_id).dicts()
+    user = user.where(User.uid == user_id).dicts()
+
     try:
         user = user.get()
-        return SiteUser(user)
+        subs = SubSubscriber.select(SubSubscriber.sid, Sub.name, SubSubscriber.status).join(Sub, on=(Sub.sid == SubSubscriber.sid)).switch(SubSubscriber).where(SubSubscriber.uid == user_id).dicts()
+        return SiteUser(user, subs)
     except User.DoesNotExist:
         return None
 
