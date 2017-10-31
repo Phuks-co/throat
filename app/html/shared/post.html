@@ -1,0 +1,66 @@
+@def singlePost(post, sub):
+<div pid="@{post['pid']!!s}" class="post">
+    <div class="misctainer">
+      <div class="votebuttons">
+        <div title="Upvote" class="upvote @{(post['positive'] == 1) and 'upvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="upvote"></div>
+        <div class="score">@{post['score']!!s}</div>
+        <div title="Downvote" class="downvote @{(post['positive'] == 0) and 'downvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="downvote"></div>
+      </div>
+      <div class="thcontainer">
+        <a href="@{url_for('view_post', sub=post['sub'], pid=post['pid'])}" class="title">
+          <div class="thumbnail">
+            @if post['thumbnail'] != '' and post['link'] != None:
+              <img src="@{config.THUMBNAIL_HOST}@{post['thumbnail']}"/>
+            @elif post['link'] != None:
+              <span class="placeholder" data-icon="link"></span>
+            @else:
+              <span class="placeholder" data-icon="chat"></span>
+            @end
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="pbody">
+      <div class="post-heading">
+        @if post['nsfw']:
+        <div class="nsfw" alt="Not safe for work">NSFW</div> \
+        @end
+        @if func.getPostFlair(post):
+        <span class="postflair">@{func.getPostFlair(post)}</span> \
+        @end
+        @if post['link'] == None:
+          <a href="@{url_for('view_post', sub=post['sub'], pid=post['pid'])}" class="title">@{post['title']}</a> \
+        @else:
+          @if post['link'].startswith('http:'):
+          <span title="not https" class="p-icon" data-icon="exclaim"></span> \
+          @end
+          <a href="@{post['link']}" class="title">@{post['title']}</a> <a href="@{url_for('all_domain_new', domain=func.getDomain(post['link']), page=1)}" class="domain">(@{func.getDomain(post['link'])})</a>
+        @end
+      </div>
+      <div class="author">
+        @if post['link']:
+          @if func.getDomain(post['link']) in ('youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'vimeo.com', 'vine.co'):
+          <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="lnk" data-link="@{post['link']}" data-icon="play"></div></div>
+          @elif post['link'].endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
+          <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="lnk" data-link="@{post['link']}" data-icon="image"></div></div>
+          @elif post['link'].endswith(('.mp4', '.webm', '.gifv')):
+          <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="lnk" data-link="@{post['link']}" data-icon="play"></div></div>
+          @end
+        @elif post['content'] != '':
+        <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="txt" data-link="None" data-icon="text"></div></div>
+        @end
+        posted <time-ago datetime="@{post['posted'].isoformat()}Z"></time-ago> by
+        <a class="authorlink" href="@{url_for('view_user', user=post['user'])}">@{post['user']}</a>
+        @if sub and post['pid'] in func.getStickyPid(sub['sid']):
+        - <span class="stick">sticky</span>
+        @end
+        @if not sub:
+        on <a href="@{url_for('view_sub', sub=post['sub'])}">@{post['sub']}</a>
+        @end
+      </div>
+      <div class="links">
+        <a class="comments" href="@{url_for('view_post', sub=post['sub'], pid=post['pid'])}">@{(post['comments']>0) and 'comments (' + str(post['comments']) +')' or 'comment'}</a>
+      </div>
+    </div>
+</div>
+@end

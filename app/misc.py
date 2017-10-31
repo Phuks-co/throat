@@ -23,7 +23,7 @@ from . import database as db
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
 from .models import SubPostVote, MiningLeaderboard, SubPostComment, SubPostCommentVote
-from .models import MiningSpeedLeaderboard, SubMetadata
+from .models import MiningSpeedLeaderboard, SubMetadata, rconn
 from peewee import JOIN, fn, Clause, SQL
 import requests
 
@@ -860,7 +860,6 @@ def getUser(uid):
     return db.get_user_from_uid(uid)
 
 
-@cache.memoize(300)
 def getDomain(link):
     """ Gets Domain from url """
     x = urlparse(link)
@@ -1074,6 +1073,7 @@ def get_thumbnail(form):
 # -----------------------------------
 
 
+@cache.memoize(300)
 def getTodaysTopPosts():
     """ Returns top posts in the last 24 hours """
     td = datetime.utcnow() - timedelta(days=1)
@@ -1093,6 +1093,22 @@ def getRandomSub():
     except Sub.DoesNotExist:
         return False
     return sub
+
+
+@cache.memoize(10)
+def getSubOfTheDay():
+    daysub = rconn.get('daysub')
+    if not daysub:
+        today = datetime.utcnow()
+        tomorrow = datetime(year=today.year, month=today.month, day=today.day) + timedelta(seconds=86400)
+        timeuntiltomorrow = tomorrow - today
+        daysub = Sub.select(Sub.sid, Sub.name, Sub.title).order_by(fn.Rand()).get()
+        rconn.setex('daysub', daysub.sid, timeuntiltomorrow)
+    else:
+        try:
+            daysub = Sub.select(Sub.name, Sub.title).where(Sub.sid == daysub).get()
+        except Sub.DoesNotExist:  # ???
+            return False
 
 
 def getChangelog():
@@ -1418,3 +1434,7 @@ def getUserComments(uid, page):
     except com.DoesNotExist:
         return False
     return com
+
+
+def ktime():
+    print(time.time())

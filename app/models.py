@@ -1,6 +1,11 @@
 from peewee import IntegerField, DateTimeField
 from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
 from playhouse.flask_utils import FlaskDB
+import config
+import redis
+
+# Why not here? >_>
+rconn = redis.from_url(config.SOCKETIO_REDIS_URL)
 
 
 db = FlaskDB()

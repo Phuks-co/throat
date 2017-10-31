@@ -28,6 +28,7 @@
     "style-loader": "^0.13.2",
     "svg-inline-loader": "^0.7.1",
     "webpack": "^2.4.1",
+    "webpack-bundle-analyzer": "^2.9.0",
     "webpack-dev-server": "^2.4.1"
   },
   "dependencies": {

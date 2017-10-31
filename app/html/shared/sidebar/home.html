@@ -1,0 +1,61 @@
+@require(subOfTheDay, changeLog)
+<form class="pure-g search" action="@{ url_for('do.title_search') }" method="post">
+  <div class="icon" data-icon="search"> </div>
+  <input name="term" placeholder="Title search..." type="search" class="pure-u-1">
+</form>
+
+@if current_user.is_authenticated:
+<a href="@{url_for('submit', ptype='text', sub='')}" class="sbm-post pure-button">Submit a text post</a>
+<a href="@{url_for('submit', ptype='link', sub='')}" class="sbm-post pure-button">Submit a link post</a>
+<hr>
+<a href="@{url_for('view_subs')}" class="sbm-post pure-button">View all subs</a>
+<a href="@{url_for('random_sub')}" class="sbm-post pure-button">Go to random sub</a>
+<a href="@{url_for('create_sub')}" class="sbm-post pure-button">Create a sub</a>
+@end
+
+  <hr>
+  <div class="sidebarlists">
+      <a href="/miner">Mine some phuks</a>
+  </div>
+  @if func.getTodaysTopPosts():
+  <hr>
+  <div class="sidebarlists">
+    <h4 class="center">Top posts in the last 24 hours</h4>
+    <ul class="top5">
+      @for post in func.getTodaysTopPosts():
+        <li><a class="title" href="@{url_for('view_post', sub=post['sub'], pid=post['pid'])}">@{post['title']}</a>
+          <div class="sidelocale">
+            <time-ago datetime="@{post['posted'].isoformat()}Z"></time-ago> in <a href="@{url_for('view_sub', sub=post['sub'])}">/s/@{post['sub']}</a>
+          </div></li>
+      @end
+    </ul>
+  </div>
+  @end
+
+@if subOfTheDay:
+  <hr>
+  <div class="sidebarlists">
+    <h4 class="center">Sub of the day</h4>
+    <ul>
+      <li><a href="@{url_for('view_sub', sub=subOfTheDay.name)}">/s/@{subOfTheDay.name}</a>
+        <div class="sidelocale">@{subOfTheDay.title}</div></li>
+    </ul>
+  </div>
+@end
+@if changeLog:
+  <hr>
+  <div class="sidebarlists">
+    <ul>
+      <li><a class="title" href="@{url_for('view_post', sub=changeLog.sub, pid=changeLog.pid)}">@{changeLog.title}</a><br>
+      <span class="sidelocale">
+        <time-ago datetime="@{changeLog.posted.isoformat()}Z"></time-ago> in <a href="@{url_for('view_sub', sub=changeLog.sub)}">/s/@{cl.sub}</a></li>
+      </span>
+    </ul>
+  </div>
+@end
+<hr>
+<a href="@{url_for('donate')}" class="sbm-post pure-button">Gib phuks</a>
+@if current_user.is_authenticated:
+<hr>
+<a href="@{url_for('view_sitelog')}" class="sbm-post pure-button">Site logs</a>
+@end

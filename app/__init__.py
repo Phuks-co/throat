@@ -32,6 +32,18 @@ from .misc import SiteAnon, getSuscriberCount, getDefaultSubs, allowedNames, get
 from .sorting import NewSorting
 from .models import db as pdb
 from .models import Sub, SubPost, User, SubPostComment
+
+# /!\ EXPERIMENTAL /!\
+import config
+from wheezy.template.engine import Engine
+from wheezy.template.ext.core import CoreExtension
+from wheezy.template.loader import FileLoader
+
+engine = Engine(
+    loader=FileLoader(['app/html']),
+    extensions=[CoreExtension()]
+)
+
 # from werkzeug.contrib.profiler import ProfilerMiddleware
 
 app = Flask(__name__)
@@ -58,6 +70,10 @@ caching.cache.init_app(app)
 login_manager = LoginManager(app)
 login_manager.anonymous_user = SiteAnon
 origstatic = app.view_functions['static']
+
+engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config,
+                           'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,
+                           'form': forms, 'hostname': socket.gethostname()})
 
 
 def cache_static(*args, **kwargs):
@@ -168,9 +184,12 @@ def index():
 @app.route("/hot/<int:page>")
 def home_hot(page):
     """ /hot for subscriptions """
-    posts = misc.getPostList(misc.postListQueryHome(), 'hot', page).dicts()
-    return render_template('index.html', page=page, sort_type='home_hot',
-                           posts=posts)
+    posts = list(misc.getPostList(misc.postListQueryHome(), 'hot', page).dicts())
+    print(time.time())
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home_hot', 'page': page,
+                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
+                                                     'kw': {}})
 
 
 @app.route("/new", defaults={'page': 1})
@@ -217,9 +236,12 @@ def all_new_rss():
 @app.route("/all/new/<int:page>")
 def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
-    posts = misc.getPostList(misc.postListQueryBase(), 'new', page).dicts()
-    return render_template('index.html', page=page, sort_type='all_new',
-                           posts=posts)
+    k = time.time()
+    posts = list(misc.getPostList(misc.postListQueryBase(), 'new', page).dicts())
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_new', 'page': page,
+                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
+                                                     'kw': {}})
 
 
 @app.route("/all/new/more", defaults={'pid': None})
