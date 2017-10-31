@@ -33,11 +33,7 @@
     <link rel="stylesheet" type="text/css" href="@{asset_url_for('main.css') }">
   </head>
 
-<body \
-@if request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous:
-  class="dark" \
-@end
->
+<body @{(request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous) and 'class="dark"' or ''}>
   <div class="th-subbar pure-u-1">
     <ul>
       <li><a href="@{url_for('all_hot')}">all</a></li>
@@ -139,7 +135,7 @@
 
   </div>
   <script type="text/javascript">
-  //  window.wsserver = '@{config.WEBSOCKET_SERVER!!s}';
+    window.wsserver = '@{config.WEBSOCKET_SERVER!!s}';
   </script>
   <script type="text/javascript" src="@{ asset_url_for('main.js') }"></script>
   @def pagefoot():
