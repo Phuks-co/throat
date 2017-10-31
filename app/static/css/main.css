@@ -510,8 +510,8 @@ iframe {
 	height: 100%;
 }
 
-.expando img {
-  max-width: 100%
+.expandotxt img {
+    width: 100%;
 }
 .post .domain a, .post .domain {
     color: #8e8e8e;

@@ -56,7 +56,7 @@ u.addEventForChild(document, 'click', '.expando-btn', function(e, ematch){
     expando.setAttribute('pid', pid);
     expando.classList.add('expando-master');
     expando.classList.add('pure-g');
-    expando.innerHTML = '<div class="pure-u-1 pure-u-md-1-24"></div><div class="pure-u-1 pure-u-md-15-24 expandotxt"></div>';
+    expando.innerHTML = '<div class="pure-u-1 pure-u-md-1-24"></div><div class="pure-u-1 pure-u-md-22-24 expandotxt"></div>';
     if(link == 'None'){
       u.get('/do/get_txtpost/' + pid, function(data){
         if(data.status == 'ok'){
