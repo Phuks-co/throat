@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
+import icon from './Icon'
 import u from './Util';
 
 const socket = io('//' + window.wsserver + '/snt');
@@ -22,7 +23,8 @@ socket.on('uscore', function(d){
 
 socket.on('thread', function(data){
   socket.emit('subscribe', {target: data.pid})
-  document.getElementByClassName('alldaposts')[0].innerHTML = data.html + document.getElementByClassName('alldaposts')[0].innerHTML;
+  document.getElementsByClassName('alldaposts')[0].innerHTML = data.html + document.getElementsByClassName('alldaposts')[0].innerHTML;
+  icon.rendericons();
 })
 
 socket.on('threadscore', function(data){
@@ -36,10 +38,12 @@ socket.on('threadcomments', function(data){
 })
 
 u.ready(function(){
-  console.log(window.labrat)
   if(window.labrat){
     socket.on('connect', function() {
       window.sio = true;
+      if(window.nposts){
+        socket.emit('subscribe', {target: window.nposts});
+      }
       u.each('div.post', function(t, i){
         socket.emit('subscribe', {target: parseInt(t.getAttribute('pid'))});
       })

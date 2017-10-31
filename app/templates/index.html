@@ -154,6 +154,9 @@
 {% if "labrat" in current_user.prefs %}
   <script type="text/javascript" charset="utf-8">
       window.labrat = true;
+      {% if sort_type in ('all_new') %} // TODO: add for subs
+      window.nposts = '/all/new';
+      {%endif%}
   </script>
 {%endif%}
 {% if sort_type in ('all_new', 'view_sub_new') and current_user.likes_scroll()%}

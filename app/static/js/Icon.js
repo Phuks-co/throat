@@ -3,6 +3,15 @@ Our own solution for svg icons :(
 */
 import u from './Util';
 
+function rendericons(){
+  u.each('*[data-icon]', function(el,i){
+    if(Icons[el.getAttribute('data-icon')]){
+      el.innerHTML = Icons[el.getAttribute('data-icon')];
+    }else{
+      el.innerHTML = Icons.close;
+    }
+  })
+}
 
 // list of all the icons
 var Icons = {
@@ -55,16 +64,11 @@ var Icons = {
   coffee: require('../svg/coffee.svg'),
   donor: require('../svg/donor.svg'),
   copyright: require('../svg/copyright.svg'),
+  rendericons: rendericons,
 };
 
 u.ready(function(){
-  u.each('*[data-icon]', function(el,i){
-    if(Icons[el.getAttribute('data-icon')]){
-      el.innerHTML = Icons[el.getAttribute('data-icon')];
-    }else{
-      el.innerHTML = Icons.close;
-    }
-  })
+  rendericons();
 });
 
 // here we apply em.
