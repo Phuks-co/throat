@@ -1099,10 +1099,13 @@ def getRandomSub():
 def getSubOfTheDay():
     daysub = rconn.get('daysub')
     if not daysub:
+        try:
+            daysub = Sub.select(Sub.sid, Sub.name, Sub.title).order_by(fn.Rand()).get()
+        except Sub.DoesNotExist:  # No subs
+            return False
         today = datetime.utcnow()
         tomorrow = datetime(year=today.year, month=today.month, day=today.day) + timedelta(seconds=86400)
         timeuntiltomorrow = tomorrow - today
-        daysub = Sub.select(Sub.sid, Sub.name, Sub.title).order_by(fn.Rand()).get()
         rconn.setex('daysub', daysub.sid, timeuntiltomorrow)
     else:
         try:
