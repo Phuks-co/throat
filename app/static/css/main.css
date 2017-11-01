@@ -633,8 +633,6 @@ a#prevp{
   border-radius: 4px;
 }
 
-
-
 #sortbuttons div {
   justify-content: center;
 }
@@ -704,10 +702,14 @@ a.slink{
   .wholepost .thcontainer {
     display: none;
   }
+  .misctainer{
+    float:none;
+  }
 }
 
 .postinfo{
   display:inline-block;
+  width: 90%;
 }
 
 #postflairs {
@@ -758,8 +760,7 @@ a.slink{
 }
 
 .comment-form{
-  margin-top: 1em;
-  margin-left: 2em;
+  margin: 1em 1em 0 1em;
 }
 
 .comment-form button{
@@ -1002,6 +1003,12 @@ input[type=search] {
 /* / CREATE POST PAGE STYLES */
 
 /* POST PAGE STYLES */
+.postbar{
+  white-space: nowrap;
+}
+.postbar *{
+  white-space: normal;
+}
 .wholepost .title{
   font-size: 1.2em;
 }
