@@ -10,15 +10,6 @@ abbr[title]{
 }
 .cw-brand div{margin-left: 1em;}
 
-.custom-toggle {
-    width: 34px;
-    height: 34px;
-    display: block;
-    position: absolute;
-    top: 25px;
-    right: 0;
-    display: none;
-}
 
 blockquote p{margin: 0;}
 blockquote{
@@ -26,6 +17,8 @@ blockquote{
   margin: .3em 0 .3em 1em;
   padding: .3em 0 .3em .7em;
 }
+
+
 
 .announcement{
   padding: 3px;
@@ -41,8 +34,40 @@ blockquote{
   padding: 1em;
 }
 
-.custom-toggle .bar {
-    background-color: #fff;
+/* mobile menu  */
+.th-navbar {
+  margin-bottom: 1em;
+  -webkit-font-smoothing: antialiased;
+  height: 2.1em;
+  overflow: hidden;
+  -webkit-transition: height 0.5s;
+  -moz-transition: height 0.5s;
+  -ms-transition: height 0.5s;
+  transition: height 0.5s;
+}
+
+.th-navbar.open {
+    height: 8em;
+}
+
+#th-uinfo {
+    text-align: right;
+    height: 100%;
+}
+
+.th-toggle {
+    width: 34px;
+    height: 34px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: none;
+    margin-top: .8em;
+    margin-right: .5em;
+}
+
+.th-toggle .bar {
+    background-color: #777;
     display: block;
     width: 20px;
     height: 2px;
@@ -56,26 +81,37 @@ blockquote{
     transition: all 0.5s;
 }
 
-.custom-toggle .bar:first-child {
+.th-toggle .bar:first-child {
     -webkit-transform: translateY(-6px);
     -moz-transform: translateY(-6px);
     -ms-transform: translateY(-6px);
     transform: translateY(-6px);
 }
 
-.custom-toggle.x .bar {
+.th-toggle.x .bar {
     -webkit-transform: rotate(45deg);
     -moz-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
 }
 
-.custom-toggle.x .bar:first-child {
+.th-toggle.x .bar:first-child {
     -webkit-transform: rotate(-45deg);
     -moz-transform: rotate(-45deg);
     -ms-transform: rotate(-45deg);
     transform: rotate(-45deg);
 }
+
+@media (max-width: 47.999em) {
+  #th-uinfo {
+      text-align: left;
+  }
+  .th-toggle {
+      display: block;
+  }
+}
+
+/* /mobile menu */
 
 .cw-items a{
   color: #fff;
@@ -99,7 +135,6 @@ blockquote{
   display: none;
 }
 
-#th-uinfo{height: 100%;}
 @media screen and (min-width: 48em){
   #th-menu {
     padding-left: 2em;
@@ -702,7 +737,7 @@ a.slink{
   .wholepost .thcontainer {
     display: none;
   }
-  .misctainer{
+  .wholepost .misctainer{
     float:none;
   }
 }

@@ -68,7 +68,7 @@
     </div>
 
     <div id="th-uinfo" class="pure-u-1 pure-u-md-12-24"> <!-- class="pure-u-1 pure-u-md-8-24" -->
-      <div class="cw-items">
+      <div class="cw-items can-transform">
         @if current_user.is_anonymous:
         <a href="@{url_for('login', next=request.path)}" class="pure-button pure-button-primary">Log in</a>
         <a href="@{url_for('register')}" class="pure-button button-secondary">Register</a>
