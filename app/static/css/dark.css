@@ -279,8 +279,8 @@ body.dark #formpop .modal-content .closemsg {
 body.dark .subsentry {
     background-color: #1b1b1b;
 }
-body.dark .subsentry:nth-child(2n) {
-    background-color: #111111;
+body.dark .subsentry svg {
+    fill: #fff;
 }
 /* /SUBS PAGE */
 

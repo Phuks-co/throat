@@ -41,11 +41,11 @@
 <div id="center-container">
   <div class="subs content">
     {% for sub in subs %}
-        <article class="subsentry{% if current_user.has_subscribed(sub.name) %} subsubscribed{% endif %}" data-sid="{{sub.sid}}">
+        <article class="subsentry{% if current_user.has_subscribed(sub.name) %} subsubscribed{% endif %}{% if current_user.has_blocked(sub.sid) %} blocked{% endif %}" data-sid="{{sub.sid}}">
           <div class="main">
             <a class="title" href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>
             <p class="author">{% if sub.nsfw  %}<span class="btn small" style="color:white;background:red">nsfw</span>{% endif %} {{sub.title}}</p>
-            <p class="author">Created <time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago></p>
+            <p class="created">Created <time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago></p>
             {% if func.getSubTagsList(sub) %}
               <p class="author">Tags:
                 {% set tags = func.getSubTagsList(sub) %}
@@ -56,17 +56,19 @@
               </p>
             {% endif %}
             <p class="container">
-              <a class="">{{getSuscriberCount(sub)}}</a>
-              {% if current_user.has_subscribed(sub.name) %}
-              <span id="subscribe" class="subscribed" data-sid="{{sub.sid}}"><a class="">Subscribed</a></span>
-              {% else %}
-              <span id="subscribe" class="unsubscribed" data-sid="{{sub.sid}}"><a class="">Subscribe</a></span>
-              {% endif %}
-              {% if current_user.has_blocked(sub.sid) %}
-              <span id="block" class="blocked" data-sid="{{sub.sid}}"><a class="btn small">Blocked</a></span>
-              {% else %}
-              <span id="block" class="unblocked" data-sid="{{sub.sid}}"><a class="btn small">Block</a></span>
-              {% endif %}
+              <div role="group" class="pure-button-group" data-sid="{{sub.sid}}">
+                 <button class="subcount pure-button">{{getSuscriberCount(sub)}}</button>
+                {% if current_user.has_subscribed(sub.name) %}
+                  <button data-ac="unsubscribe" class="sub pure-button"><span class="sbm-icon" data-icon="check"></span>Subscribed</button>
+                {%else%}
+                  <button data-ac="subscribe" class="unsub pure-button"><span class="sbm-icon" data-icon="add"></span>Subscribe</button>
+                {%endif%}
+                {% if current_user.has_blocked(sub.sid) %}
+                  <button data-ac="unblock" class="blk pure-button blocked"><span class="sbm-icon" data-icon="check"></span>Blocked</button>
+                {%else%}
+                  <button data-ac="block" class="unblk pure-button unblocked"><span class="sbm-icon" data-icon="close"></span>Block</button>
+                {%endif%}
+              </div>
             </p>
           </div>
         </article>
