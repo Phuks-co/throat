@@ -42,7 +42,7 @@ module.exports = {
     ],
   },
   plugins: [
-    new BundleAnalyzerPlugin(),
+//    new BundleAnalyzerPlugin(),
     new webpack.optimize.CommonsChunkPlugin("main"),
     externalCSS,
     new ManifestRevisionPlugin('./app/manifest.json', {

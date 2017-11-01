@@ -895,6 +895,7 @@ span.hasmail {
 /* SIDEBAR STYLES */
 .sidebar{
   padding: 1em 5px 5px 5px;
+  overflow-wrap: break-word;
 }
 .sidebar h4{
   color: #1b1b1b;
