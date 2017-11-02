@@ -48,7 +48,7 @@
               <a href="@{url_for('view_sub', sub=ann['sub'])}">@{ann['sub']}</a>
             </div>
             <div class="links">
-              <a href="@{url_for('view_post', sub=ann['sub'], pid=ann['pid'])}">comments @{(ann['comments']>0) and '(' + ann['comments'] +')' or ''}</a>
+              <a href="@{url_for('view_post', sub=ann['sub'], pid=ann['pid'])}">@{(post['comments']>0) and 'comments (' + str(post['comments']) +')' or 'comment'}</a>
             </div>
           </div>
         </div>
@@ -61,7 +61,7 @@
     <h1 class="noshit">There are no posts here, yet.</h1>
   @end
   <div class="alldaposts">
-    @for post in posts[1:20]:
+    @for post in posts:
       @ipost.singlePost(post, False)
     @end
   </div>
