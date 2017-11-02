@@ -1122,7 +1122,7 @@ def admin_subs(page):
     """ WIP: View subs. Assign new owners """
     if current_user.is_admin():
         subs = db.query('SELECT * FROM `sub` '
-                        'LIMIT 50 OFFSET %s', (((page - 1) * 50),))
+                        'LIMIT 50 OFFSET %s', (((page - 1) * 50),)).fetchall()
         return render_template('admin/subs.html', subs=subs, page=page,
                                admin_route='admin_subs',
                                editmodform=EditModForm())
