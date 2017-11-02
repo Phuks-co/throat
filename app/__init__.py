@@ -1154,7 +1154,7 @@ def admin_posts(page):
         posts = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC '
                          'LIMIT 50 OFFSET %s', (((page - 1) * 50),))
         return render_template('admin/posts.html', page=page,
-                               admin_route='admin_subs_search',
+                               admin_route='admin_posts',
                                posts=posts.fetchall())
     else:
         abort(404)
