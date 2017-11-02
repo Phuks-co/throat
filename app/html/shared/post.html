@@ -2,9 +2,9 @@
 <div pid="@{post['pid']!!s}" class="post">
     <div class="misctainer">
       <div class="votebuttons">
-        <div title="Upvote" class="upvote @{(post['positive'] == 1) and 'upvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="upvote"></div>
+        <div title="Upvote" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="upvote"></div>
         <div class="score">@{post['score']!!s}</div>
-        <div title="Downvote" class="downvote @{(post['positive'] == 0) and 'downvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="downvote"></div>
+        <div title="Downvote" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="downvote"></div>
       </div>
       <div class="thcontainer">
         <a href="@{url_for('view_post', sub=post['sub'], pid=post['pid'])}" class="title">
