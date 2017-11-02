@@ -21,7 +21,7 @@
     <title>
       @if not current_user.is_anonymous:
         @if current_user.notifications >0:
-          (@{current_user.notifications!!s})
+          @current_user.notifications
         @end
       @end
       @def title():
@@ -37,6 +37,9 @@
   <div class="th-subbar pure-u-1">
     <ul>
       <li><a href="@{url_for('all_hot')}">all</a></li>
+      @if not current_user.is_anonymous:
+        <li><a href="{{url_for('view_modmulti_new')}}">modmulti</a></li>
+      @end
       <li>|</li>
       @for sub in current_user.get_subscriptions()[0:25]:
         <li class="subinthebar"><a href="@{url_for('view_sub', sub=sub)}">@{sub}</a></li>
