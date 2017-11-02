@@ -1,18 +1,27 @@
 {% extends "layout.html" %}
-{% block title %}{{config.LEMA}}{% endblock %}
+{% block title %}Admin - {{config.LEMA}}{% endblock %}
+
 {% block head %}
 {{ super() }}
 <script src="{{url_for('static', filename='js/sorttable.js')}}"></script>
 {% endblock %}
-{% block navbar %}
-{{ super() }}
-<li><a href="{{url_for('admin_area')}}">Admin</a></li>
-{% endblock %}
+
 {% block sidebar %}
 {{ super() }}
+<div class="col-12 admin section search">
+  <form action="{{ url_for('do.admin_subs_search') }}" method="post">
+  <span class="search">
+      <span><i class="fa fa-search"></i></span>
+      <input id="term" name="term" type="search" placeholder="Search Subs...">
+      <span>
+        <button class="pure-button" type="submit">Submit</button>
+      </span>
+  </span>
+  </form>
+</div>
 <hr>
 {% include 'admin/sidebar.html' %}
-<span class="col-12"><hr></span>
+<hr>
 <ul>
   <li>Default subs:
   {% for sub in func.getDefaultSubs() %}
@@ -23,56 +32,65 @@
 
 {% block content %}
 {{ super() }}
-<h2><i class="fa fa-list"></i> Subs</h2>
-<div class="col-12 admin section search">
-  <form action="{{ url_for('do.admin_subs_search') }}" method="post">
-  <span class="search">
-      <span><i class="fa fa-search"></i></span>
-      <input id="term" name="term" type="search" placeholder="Search Subs...">
-      <span>
-        <button class="btn" type="submit">Submit</button>
-      </span>
-  </span>
-  </form>
-</div>
-<div class="col-12 admin-page-form">
-  <div>
-    <form  method="POST" class="ajaxform" id="edit-mod-form" data-reload="true" action="{{url_for('do.edit_mod')}}">
-      {{editmodform.csrf_token}}
-      <h4>Change owner of sub</h4>
-      <div class="col-3">{{editmodform.sub(placeholder=editmodform.sub.label.text, required=True)}}</div>
-      <div class="col-3">{{editmodform.user(placeholder=editmodform.user.label.text, required=True,)}}</div>
-      <div class="col-3"><button type="submit" class="btn btn-blue" data-prog="Doing the magic...">Transfer sub</button></div>
-      <div class="alert div-error"></div>
-    </form>
-  </div>
-</div>
-<div class="admin section subs">
-  <div class="col-12">
-    <table class="col-12 sortable">
-      <tr>
-        <th>Sub Name</th>
-        <th>Created</th>
-        <th>Owner</th>
-        <th><i class="fa fa-user-plus" title="mods"></i></th>
-        <th><i class="fa fa-users" title="subscribers"></i></th>
-        <th><i class="fa fa-list" title="submissions"></i></th>
-        <th><i class="fa fa-comments" title="comments"></i></th>
-      </tr>
-      {% for sub in subs %}
-      <tr>
-        <td>
-          <div class="subname" title="{{sub.title}}"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>{% if sub.getNSFW %} <i title="NSFW" class="fa fa-eye-slash"></i>{% endif %}</div>
-        </td>
-        <td><time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago></td>
-        <td><a href="{{url_for('view_user', user=func.getSubUsers(sub, 'mod1'))}}">{{func.getSubUsers(sub, 'mod1')}}</a></td>
-        <td>{{func.getModCount(sub)}}</td>
-        <td>{{func.getSuscriberCount(sub)}}</td>
-        <td>{{func.getSubPostCount(sub)}}</td>
-        <td>xx</td>
-      </tr>
-      {% endfor %}
-    </table>
+<div id="center-container">
+  <div class="content">
+
+    <h2>Subs</h2>
+    <hr>
+    <div class="col-12 admin-page-form">
+      <div>
+        <form  method="POST" class="ajaxform" id="edit-mod-form" data-reload="true" action="{{url_for('do.edit_mod')}}">
+          {{editmodform.csrf_token}}
+          <h4>Change owner of sub</h4>
+          <div>{{editmodform.sub(placeholder=editmodform.sub.label.text, required=True)}}</div>
+          <div>{{editmodform.user(placeholder=editmodform.user.label.text, required=True,)}}</div>
+          <div><button type="submit" class="pure-button" data-prog="Doing the magic...">Transfer sub</button></div>
+          <div class="alert div-error"></div>
+        </form>
+      </div>
+    </div>
+    <hr>
+    <div class="admin section subs">
+      <div>
+        {% if admin_route == 'admin_subs_search' %}
+          <div>Showing results for: {{term}}</div>
+        {% endif %}
+        <table class="sortable pure-table">
+          <thead>
+            <tr>
+              <th>Sub Name</th>
+              <th>Created</th>
+              <th>Owner</th>
+              <th>Mods</th>
+              <th>Subscribers</th>
+              <th>Submissions</th>
+              <th>Comments</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for sub in subs %}
+            <tr>
+              <td>
+                <div class="subname" title="{{sub.title}}"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>{% if sub.getNSFW %}[nsfw]{% endif %}</div>
+              </td>
+              <td><time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago></td>
+              <td><a href="{{url_for('view_user', user=func.getSubUsers(sub, 'mod1'))}}">{{func.getSubUsers(sub, 'mod1')}}</a></td>
+              <td>{{func.getModCount(sub)}}</td>
+              <td>{{func.getSuscriberCount(sub)}}</td>
+              <td>{{func.getSubPostCount(sub)}}</td>
+              <td>xx</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+{% if admin_route == 'admin_users'  %}
+  {% set items = users %}
+  {% include 'admin/nav.html' %}
+{% endif %}
+
   </div>
 </div>
 {% endblock %}

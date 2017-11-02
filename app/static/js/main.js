@@ -179,6 +179,22 @@ if(document.getElementById('delete_account')){
 }
 
 
+// admin - remove banned domain
+$('button.removebanneddomain').click(function(){
+  var domain=$(this).data('domain')
+  $.ajax({
+    type: "POST",
+    url: '/do/remove_banned_domain/' + domain,
+    dataType: 'json',
+    success: function(data) {
+        if (data.status == "ok") {
+          document.location.reload();
+        }
+    }
+  });
+});
+
+
 /* purecss*/
 var menu = document.getElementById('menu'),
     WINDOW_CHANGE_EVENT = ('onorientationchange' in window) ? 'orientationchange':'resize';

@@ -1,63 +1,79 @@
 {% extends "layout.html" %}
-{% block title %}{{config.LEMA}}{% endblock %}
-{% block head %}
-{{ super() }}
-<script src="{{url_for('static', filename='js/sorttable.js')}}"></script>
-{% endblock %}
-{% block navbar %}
-{{ super() }}
-<li><a href="{{url_for('admin_area')}}">Admin</a></li>
-{% endblock %}
+{% block title %}Admin - {{config.LEMA}}{% endblock %}
+
 {% block sidebar %}
 {{ super() }}
-<hr>
 {% include 'admin/sidebar.html' %}
 {% endblock %}
 
 {% block content %}
 {{ super() }}
-<h2><i class="fa fa-list"></i> Recent Posts</h2>
-<div class="col-12 admin section search">
-  <form action="{{ url_for('do.admin_post_search') }}" method="post">
-  <span class="search">
-      <span><i class="fa fa-search"></i></span>
-      <input id="term" name="term" type="search" placeholder="Post number...">
-      <span>
-        <button class="btn" type="submit">Submit</button>
-      </span>
-  </span>
-  </form>
+<div id="center-container">
+  <div class="content">
+
+    <div class="col-12 admin section users">
+      <h2><i class="fa fa-list"></i> Post: <a href="{{url_for('view_post_inbox', pid=post.pid)}}">{{post.title}}</a></h2>
+      <div>
+        <div>NSFW: {% if db.is_post_nsfw(post) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% else %}no{% endif %}</div>
+        <div>When: <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago></div>
+        <div>Sub: <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}">{{func.getSub(post.sid).name}}</a></div>
+      </div>
+    </div>
+    <div class="col-12 admin section users">
+      <h2><i class="fa fa-user"></i> User: <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a></h2>
+      <div class="col-11">Posts: {{pcount}}</div>
+      <div class="col-11">Comments: {{ccount}}</div>
+      <div class="col-11">Registered: {{user.joindate}}</div>
+      <div class="col-11">Level: {{func.get_user_level(user.uid)[0]}}</div>
+    </div>
+    <div class="col-12 admin section users">
+      <h2><i class="fa fa-expand"></i> Votes: ( +{{upcount}} | -{{downcount}} )</h2>
+      <div class="col-12">
+        <table class="pure-table">
+          <thead>
+            <tr>
+              <td>vote</td>
+              <td>user</td>
+              <td>datetime</td>
+            </tr>
+          </thead>
+          <tbody>
+            {% for vote in votes %}
+            <tr>
+              <td>{% if vote.positive %}<span class="upvoted">up</span>{% else %}<span class="downvoted">down</span>{% endif %}</td>
+              <td><a href="{{url_for('view_user', user=db.get_user_from_uid(vote.uid).name)}}">{{db.get_user_from_uid(vote.uid).name}}</a></td>
+              <td>{{vote.datetime}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="col-12 admin section users">
+      <h2><i class="fa fa-comments"></i> Comments: {{db.get_post_comment_count(post.pid)}}</h2>
+      <div>
+        <table class="pure-table">
+          <thead>
+            <tr>
+              <td>user</td>
+              <td>comment</td>
+              <td>permalink</td>
+            </tr>
+          </thead>
+          <tbody>
+            {#<!-- TODO:  -->#}
+            <tr>
+              <td>coming soon..</td>
+              <td>xx</td>
+              <td>xx</td>
+            </tr>
+            {#<!-- TODO:  -->#}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
 </div>
-<div class="admin section subs posts">
-  <div class="col-12">
-    <table class="col-12 sortable">
-      <tr>
-        <th>AdminID</th>
-        <th>Ups</th>
-        <th>Downs</th>
-        <th>Sub</th>
-        <th>User</th>
-        <th>Title</th>
-      </tr>
-    {% for post in posts %}
-      <tr>
-        <td><a href="{{url_for('admin_post_search', term=post.pid)}}">{{post.pid}}</a></td>
-        <td>{{func.get_post_upcount(post.pid)}}</td>
-        <td>{{func.get_post_downcount(post.pid)}}</td>
-        <td><a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}">{{func.getSub(post.sid).name}}</a></td>
-        <td><a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}">{{func.getUser(post.uid).name}}</a></td>
-        <td><a href="{{url_for('view_post_inbox', pid=post.pid)}}">{{post.title}}</a></td>
-      </tr>
-    {% endfor %}
-    </table>
-  </div>
-<div>
-<div class="col-12">
-  {% if page > 1 %}
-  <a href="{{url_for('admin_post', page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
-  {% endif %}
-  {% if posts|length == 100 %}
-  <a href="{{url_for('admin_post', page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
-  {% endif %}
 </div>
 {% endblock %}

@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+{% block title %}{{config.LEMA}}{% endblock %}
+{% block head %}
+{{ super() }}
+<script src="{{url_for('static', filename='js/sorttable.js')}}"></script>
+{% endblock %}
+{% block navbar %}
+{{ super() }}
+<li><a href="{{url_for('admin_area')}}">Admin</a></li>
+{% endblock %}
+{% block sidebar %}
+{{ super() }}
+<div class="col-12 admin section search">
+  <form action="{{ url_for('do.admin_post_search') }}" method="post">
+  <span class="search">
+      <span><i class="fa fa-search"></i></span>
+      <input id="term" name="term" type="search" placeholder="Post number...">
+      <span>
+        <button class="pure-button" type="submit">Submit</button>
+      </span>
+  </span>
+  </form>
+</div>
+<hr>
+{% include 'admin/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+
+<div id="center-container">
+  <div class="content">
+    <h2>Posts</h2>
+    <div class="admin section subs posts">
+      <div>
+        {% if admin_route == 'admin_post_search' %}
+          <div>Showing results for: {{term}}</div>
+        {% endif %}
+        <table class="sortable pure-table">
+          <thead>
+            <tr>
+              <th>AdminID</th>
+              <th>Ups</th>
+              <th>Downs</th>
+              <th>Sub</th>
+              <th>User</th>
+              <th>Title</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for post in posts %}
+              <tr>
+                <td><a href="{{url_for('admin_post_search', term=post.pid)}}">{{post.pid}}</a></td>
+                <td>{{func.get_post_upcount(post.pid)}}</td>
+                <td>{{func.get_post_downcount(post.pid)}}</td>
+                <td><a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}">{{func.getSub(post.sid).name}}</a></td>
+                <td><a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}">{{func.getUser(post.uid).name}}</a></td>
+                <td><a href="{{url_for('view_post_inbox', pid=post.pid)}}">{{post.title}}</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+{% if admin_route == 'admin_posts'  %}
+  {% set items = posts %}
+  {% include 'admin/nav.html' %}
+{% endif %}
+
+  </div>
+</div>
+{% endblock %}

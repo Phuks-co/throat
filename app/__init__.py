@@ -1067,76 +1067,105 @@ def admin_area():
                                comms=comms, usebtcdonationform=btc,
                                useinvitecodeform=invite)
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
-@app.route("/admin/users")
+@app.route("/admin/users", defaults={'page': 1})
+@app.route("/admin/users/<int:page>")
 @login_required
-def admin_users():
+def admin_users(page):
     """ WIP: View users. """
     if current_user.is_admin():
-        users = db.query('SELECT * FROM `user` ORDER BY `joindate`').fetchall()
-        return render_template('admin/usershome.html', users=users)
+        users = db.query('SELECT * FROM `user` ORDER BY `joindate` DESC '
+                         'LIMIT 50 OFFSET %s', (((page - 1) * 50),)).fetchall()
+        return render_template('admin/users.html', users=users, page=page,
+                               admin_route='admin_users')
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
-@app.route("/admin/users/<term>")
+@app.route("/admin/admins")
+@login_required
+def view_admins():
+    """ WIP: View admins. """
+    if current_user.is_admin():
+        uids = db.query('SELECT * FROM `user_metadata` WHERE `key`=%s',
+                        ('admin', )).fetchall()
+        users = []
+        for u in uids:
+            user = db.get_user_from_uid(u['uid'])
+            users.append(user)
+        return render_template('admin/users.html', users=users,
+                               admin_route='view_admins')
+    else:
+        abort(404)
+
+
+@app.route("/admin/usersearch/<term>")
 @login_required
 def admin_users_search(term):
-    """ WIP: View users. """
+    """ WIP: Search users. """
     if current_user.is_admin():
+        term = re.sub('[^A-Za-z0-9.\-_]+', '', term)
         users = db.query('SELECT * FROM `user` WHERE `name` LIKE %s'
-                         'ORDER BY `name` ASC', ('%' + term + '%',))
-        return render_template('admin/users.html', users=users)
+                         'ORDER BY `name` ASC', ('%' + term + '%',)).fetchall()
+        return render_template('admin/users.html', users=users, term=term,
+                               admin_route='admin_users_search')
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
-@app.route("/admin/subs")
+@app.route("/admin/subs", defaults={'page': 1})
+@app.route("/admin/subs/<int:page>")
 @login_required
-def admin_subs():
+def admin_subs(page):
     """ WIP: View subs. Assign new owners """
     if current_user.is_admin():
-        subs = db.query('SELECT * FROM `sub`').fetchall()
-        return render_template('admin/subs.html', subs=subs,
+        subs = db.query('SELECT * FROM `sub` '
+                        'LIMIT 50 OFFSET %s', (((page - 1) * 50),))
+        return render_template('admin/subs.html', subs=subs, page=page,
+                               admin_route='admin_subs',
                                editmodform=EditModForm())
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
-@app.route("/admin/subs/<term>")
+@app.route("/admin/subsearch/<term>")
 @login_required
 def admin_subs_search(term):
-    """ WIP: View users. """
+    """ WIP: Search for a sub. """
     if current_user.is_admin():
+        term = re.sub('[^A-Za-z0-9.\-_]+', '', term)
         subs = db.query('SELECT * FROM `sub` WHERE `name` LIKE %s'
                         'ORDER BY `name` ASC', ('%' + term + '%',))
-        return render_template('admin/subs.html', subs=subs,
+        return render_template('admin/subs.html', subs=subs, term=term,
+                               admin_route='admin_subs_search',
                                editmodform=EditModForm())
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
-@app.route("/admin/post/all/", defaults={'page': 1})
-@app.route("/admin/post/all/<int:page>")
+@app.route("/admin/posts/all/", defaults={'page': 1})
+@app.route("/admin/posts/all/<int:page>")
 @login_required
-def admin_post(page):
-    """ WIP: View post. """
+def admin_posts(page):
+    """ WIP: View posts. """
     if current_user.is_admin():
         posts = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC '
-                         'LIMIT 100 OFFSET %s', (((page - 1) * 100),))
-        return render_template('admin/post.html', page=page,
-                               sort_type='all_new', posts=posts.fetchall())
+                         'LIMIT 50 OFFSET %s', (((page - 1) * 50),))
+        return render_template('admin/posts.html', page=page,
+                               admin_route='admin_subs_search',
+                               posts=posts.fetchall())
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
 @app.route("/admin/post/search/<term>")
 @login_required
 def admin_post_search(term):
-    """ WIP: View users. """
+    """ WIP: Post search result. """
     if current_user.is_admin():
+        term = re.sub('[^A-Za-z0-9.\-_]+', '', term)
         post = db.get_post_from_pid(term)
         user = db.get_user_from_uid(post['uid'])
         sub = db.get_sub_from_sid(post['sid'])
@@ -1155,11 +1184,11 @@ def admin_post_search(term):
         ccount = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE '
                           '`uid`=%s', (user['uid'],)).fetchone()['c']
 
-        return render_template('admin/postsearch.html', sub=sub, post=post,
+        return render_template('admin/post.html', sub=sub, post=post,
                                votes=votes, ccount=ccount, pcount=pcount,
                                upcount=upcount, downcount=downcount, user=user)
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
 @app.route("/admin/domains", defaults={'page': 1})
@@ -1169,10 +1198,11 @@ def admin_domains(page):
     """ WIP: View Banned Domains """
     if current_user.is_admin():
         domains = db.get_site_metadata('banned_domain', _all=True)
-        return render_template('admin/domains.html', domains=domains, page=page,
+        return render_template('admin/domains.html', domains=domains,
+                               page=page, admin_route='admin_domains',
                                bandomainform=BanDomainForm())
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
 @app.route("/sitelog", defaults={'page': 1})

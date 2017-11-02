@@ -1,57 +1,57 @@
 {% extends "layout.html" %}
-{% block title %}{{config.LEMA}}{% endblock %}
+{% block title %}Admin - {{config.LEMA}}{% endblock %}
+
 {% block head %}
 {{ super() }}
 <script src="{{url_for('static', filename='js/sorttable.js')}}"></script>
 {% endblock %}
-{% block navbar %}
-{{ super() }}
-<li><a href="{{url_for('admin_area')}}">Admin</a></li>
-{% endblock %}
+
 {% block sidebar %}
 {{ super() }}
-<hr>
 {% include 'admin/sidebar.html' %}
 {% endblock %}
 
 {% block content %}
 {{ super() }}
-<h2><i class="fa fa-list"></i> Banned Domains</h2>
-<div class="admin section domains">
-  <div class="col-12 admin-page-form">
-    <form class="nice-form ajaxform" method="POST" id="BanDomainForm" action="{{url_for('do.ban_domain')}}" data-reload="true">
-      {% set bandomainform = form.BanDomainForm()%}
-      {{bandomainform.csrf_token}}
-      <h4>Add domain</h4>
-      <div class="col-12">{{bandomainform.domain(placeholder=bandomainform.domain.label.text, required=True)}}</div>
-      <div class="col-3"><button type="submit" class="btn btn-blue" data-prog="Sending..." id="banneddomainform-btnsubmit">Add</button></div>
-      <div class="alert div-error">
-        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-        <p></p>
+
+<div id="center-container">
+  <div class="content">
+    <h2>Banned Domains</h2>
+    <div class="admin section domains">
+      <hr>
+      <div class="col-12 admin-page-form">
+        <form class="nice-form ajaxform" method="POST" id="BanDomainForm" action="{{url_for('do.ban_domain')}}" data-reload="true">
+          {% set bandomainform = form.BanDomainForm()%}
+          {{bandomainform.csrf_token}}
+          <h4>Add domain</h4>
+          <div class="col-12">{{bandomainform.domain(placeholder=bandomainform.domain.label.text, required=True)}}</div>
+          <div class="col-3"><button type="submit" class="pure-button" data-prog="Sending..." id="banneddomainform-btnsubmit">Add</button></div>
+          <div class="alert div-error">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+            <p></p>
+          </div>
+        </form>
       </div>
-    </form>
+    <hr>
+
+      <div class="col-12">
+        <table class="col-12 domains sortable pure-table">
+          <thead>
+            <tr>
+              <th>Domain</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for domain in domains %}
+            <tr>
+              <td>{{domain.value}} <button data-domain="{{domain.value}}" type="submit" class="removebanneddomain pure-button">remove</button></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-  <div class="col-12">
-    <table class="col-12 domains sortable">
-      <tr>
-        <th>Domain</th>
-        <th>Remove</th>
-      </tr>
-    {% for domain in domains %}
-      <tr>
-        <td>{{domain.value}}</td>
-        <td><a data-domain="{{domain.value}}" class="removebanneddomain btn small"> remove</a></td>
-      </tr>
-    {% endfor %}
-    </table>
-  </div>
-<div>
-<div class="col-12">
-  {% if page > 1 %}
-  <a href="{{url_for('admin_domains', page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
-  {% endif %}
-  {% if posts|length == 100 %}
-  <a href="{{url_for('admin_domains', page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
-  {% endif %}
 </div>
+
 {% endblock %}
