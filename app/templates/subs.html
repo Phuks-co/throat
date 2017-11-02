@@ -46,15 +46,16 @@
             <a class="title" href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>
             <p class="author">{% if sub.nsfw  %}<span class="btn small" style="color:white;background:red">nsfw</span>{% endif %} {{sub.title}}</p>
             <p class="created">Created <time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago></p>
-            {% if func.getSubTagsList(sub) %}
-              <p class="author">Tags:
+            <p class="created">Tags:
+              {% if func.getSubTagsList(sub) %}
                 {% set tags = func.getSubTagsList(sub) %}
                 {% for tag in tags %}
-                 <a href="{{url_for('subs_tag_search', term=tag.value)}}" style="text-decoration: underline;">{{tag.value}}</a>
+                  <a href="{{url_for('subs_tag_search', term=tag.value)}}" style="text-decoration: underline;">{{tag.value}}</a>
                 {% endfor %}
-
-              </p>
-            {% endif %}
+              {% else %}
+                none
+              {% endif %}
+            </p>
             <p class="container">
               <div role="group" class="pure-button-group" data-sid="{{sub.sid}}">
                  <button class="subcount pure-button">{{getSuscriberCount(sub)}}</button>
