@@ -208,6 +208,7 @@ class SiteAnon(AnonymousUserMixin):
     subscriptions = []
     blocksid = []
     prefs = []
+    admin = []
 
     def get_id(self):
         return False
