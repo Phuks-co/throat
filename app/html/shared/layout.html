@@ -38,7 +38,7 @@
     <ul>
       <li><a href="@{url_for('all_hot')}">all</a></li>
       @if not current_user.is_anonymous:
-        <li><a href="{{url_for('view_modmulti_new')}}">modmulti</a></li>
+        <li><a href="@{url_for('view_modmulti_new')}">modmulti</a></li>
       @end
       <li>|</li>
       @for sub in current_user.get_subscriptions()[0:25]:
