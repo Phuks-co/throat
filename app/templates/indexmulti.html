@@ -1,67 +1,38 @@
 {% extends "layout.html" %}
-{% block head %}
-{{ super() }}
-{% endblock %}
-{% block title %}{{config.LEMA}}{% endblock %}
+{% block title %}ModMulti - {{config.LEMA}}{% endblock %}
+
 {% block sidebar %}
-<div class="col-12">
-  <form action="{{ url_for('do.title_search') }}" method="post">
-    <span class="search">
-        <span><i class="fa fa-search"></i></span>
-        <input id="term" name="term" type="search" placeholder="Title search...">
-    </span>
-  </form>
-</div>
-<span class="col-12"><hr><span>
 {{ super() }}
-{% if current_user.is_authenticated %}
-<div class="row buttons">
-  <div class="col-12">
-    <a href="{{url_for('view_subs')}}" class="btn btn-orange" style="width:100%;">View all subs</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('random_sub')}}" class="btn btn-orange" style="width:100%;">View random sub</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('submit', ptype='text', sub='')}}" class="btn btn-orange" style="width:100%;">Submit a text post</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('submit', ptype='link', sub='')}}" class="btn btn-orange" style="width:100%;">Submit a link post</a>
-  </div>
+<div class="sidebarlists">
+  <h4 class="center">New posts from:</h4>
+  <ul>
+    {% for sub in subs %}
+      <li><a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a>
+      <div class="sidelocale">{{sub.title}}</div></li>
+    {%endfor%}
+  </ul>
 </div>
-{% endif %}
-{% if not multitype == 'view_modmulti_new' %}
-  <span class="col-12"><hr></span>
-  <div>Subs in multi:</div>
-    <ul>
-      {% for name in names if multitype == 'view_usermultisub_new' %}
-      <li><a href="{{url_for('view_sub', sub=name)}}">{{name}}</a></li>
-      {% endfor %}
-    </ul>
-{% endif %}
 {% endblock %}
 
 {% block content %}
 {{ super() }}
-
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
 <div class="alldaposts">
-{% include "indexpost.html" %}
+{% for post in posts if post.pid != func.getAnnouncement().pid %}
+  {% include "indexpost.html" %}
+{%endfor %}
 </div>
 
-{% if not multitype == 'view_modmulti_new' %}
-  {% if page > 1 %}
-  <a href="{{url_for(multitype, subs=subs, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
-  {% endif %}
-  {% if posts|length == 20 %}
-  <a href="{{url_for(multitype, subs=subs, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
-  {% endif %}
-{% else %}
-  {% if page > 1 %}
-  <a href="{{url_for(multitype, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
-  {% endif %}
-  {% if posts|length == 20 %}
-  <a href="{{url_for(multitype, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
-  {% endif %}
+{% if not kw %}
+  {% set kw = {} %}
+{%endif%}
+{% if page > 1 %}
+  <a href="{{url_for(sort_type, page=(page-1), **kw)}}" class="pure-button">prev</a>
+{% endif %}
+{% if posts|length == 25 %}
+  <a href="{{url_for(sort_type, page=(page+1), **kw)}}" class="pure-button">next</a>
 {% endif %}
 {% endblock %}
+
+{%block pagefoot%}
+{%endblock%}

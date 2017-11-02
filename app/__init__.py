@@ -618,13 +618,16 @@ def view_multisub_new(subs, page):
 def view_modmulti_new(page):
     """ The multi page for subs the user mods, sorted as new first """
     if current_user.is_authenticated:
-        subs = db.get_user_modded(current_user.uid)
-        posts = misc.getPostsFromSubs(subs, 200)
-        sorter = NewSorting(posts)
+        subs = db.get_user_modded_subs(current_user.uid)
+        sids = []
+        for i in subs:
+            sids.append(i['sid'])
 
+        posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid << sids),
+                                 'new', page).dicts()
         return render_template('indexmulti.html', page=page,
-                               posts=sorter.getPosts(page),
-                               multitype='view_modmulti_new')
+                               sort_type='view_modmulti_new',
+                               posts=posts, subs=subs)
     else:
         abort(403)
 
