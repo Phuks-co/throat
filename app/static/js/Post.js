@@ -294,7 +294,7 @@ $(document).on('click', '.delete-comment', function(){
     $.ajax({
       type: "POST",
       url: '/do/delete_comment',
-      data: $("#delete-comment-form").serialize(),
+      data: {'csrf_token': $('#csrf_token')[0].value, cid: cid},
       dataType: 'json',
       success: function(data) {
           if (data.status != "ok") {

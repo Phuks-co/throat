@@ -25,7 +25,7 @@ from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm, LiveChat
-from ..misc import cache, sendMail, getDefaultSubs, allowedNames, get_errors
+from ..misc import cache, sendMail, allowedNames, get_errors
 from ..models import SubPost, SubPostComment, Sub
 
 do = Blueprint('do', __name__)
