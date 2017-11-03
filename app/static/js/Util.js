@@ -35,10 +35,14 @@ u.get = function(url, success, error){ //
 
   request.onload = function() {
     if (this.status >= 200 && this.status < 400) {
-      var data = JSON.parse(this.response);
-      success(data);
+      try{
+        var data = JSON.parse(this.response);
+        success(data);
+      }catch(e){
+        success(this.response);
+      }
     } else {
-      success(data);
+      success(this.response);
     }
   };
 

@@ -86,29 +86,7 @@
   @end
 @if sort_type in ('all_new', 'view_sub_new') and current_user.likes_scroll():
 <script>
-$(document).ready(function () {
-    window.loading = false;
-        $(window).scroll(function () {
-            if(window.loading){
-              return
-            }
-            @if not request.endpoint.startswith('home'):
-              if($(window).scrollTop() + $(window).height() >= ($(document).height()/100)*75) {
-                  // $('article').last().data('pid')
-                  var lastpid = $('article').last().data('pid')
-                  window.loading = true;
-                  $.ajax({
-                    type: "get",
-                    url: '@{url_for(request.endpoint + '_more')}/' + lastpid,
-                    success: function(data) {
-                      $('.alldaposts').append(data);
-                      window.loading = false;
-                    }
-                  });
-              }
-              @end
-        });
-    })
+  window.moreuri = '@{url_for(request.endpoint + '_more')}/';
 </script>
 @end
 @end

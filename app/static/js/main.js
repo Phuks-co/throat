@@ -7,6 +7,7 @@ import 'purecss/build/grids-responsive.css';
 import 'purecss/build/tables.css';
 import 'time-elements/time-elements.js';
 import $ from 'jquery';
+import u from './Util';
 
 require('../css/main.css');
 require('../css/dark.css');
@@ -233,3 +234,26 @@ document.getElementById('toggle').addEventListener('click', function (e) {
 });
 
 window.addEventListener(WINDOW_CHANGE_EVENT, closeMenu);
+
+/* infinite scroll */
+u.ready(function(){
+if(window.moreuri){
+  window.loading = false;
+  window.addEventListener('scroll', function () {
+      if(window.loading){
+        return
+      }
+      if(window.scrollY + window.innerHeight >= (document.getElementsByTagName('body')[0].clientHeight/100)*75) {
+          // $('article').last().data('pid')
+          var k = document.querySelectorAll('div.post')
+          var lastpid = k[k.length-1].getAttribute('pid')
+          window.loading = true;
+          u.get(window.moreuri + lastpid,
+            function(data) {
+              document.querySelector('.alldaposts').innerHTML = document.querySelector('.alldaposts').innerHTML + data;
+              window.loading = false;
+            })
+      }
+  });
+}
+})

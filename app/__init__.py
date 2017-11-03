@@ -251,7 +251,7 @@ def all_new_more(pid=None):
     if not pid:
         abort(404)
     posts = misc.getPostList(misc.postListQueryBase().where(SubPost.pid < pid), 'new', 1).dicts()
-    return render_template('indexpost.html', posts=posts, sort_type='all_new')
+    return engine.get_template('shared/post.html').render({'posts': posts, 'sub': False})
 
 
 @app.route("/domain/<domain>", defaults={'page': 1})

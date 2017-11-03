@@ -1,3 +1,4 @@
+@require(posts, sub)
 @def singlePost(post, sub):
 <div pid="@{post['pid']!!s}" class="post">
     <div class="misctainer">
@@ -63,4 +64,8 @@
       </div>
     </div>
 </div>
+@end
+
+@for post in posts:
+  @singlePost(post, sub)
 @end
