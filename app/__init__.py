@@ -599,17 +599,19 @@ def view_multisub_new(subs, page):
     """ The multi index page, sorted as most recent posted first """
     names = subs.split('+')
     sids = []
+    ksubs = []
     for sub in names:
         sub = db.get_sub_from_name(sub)
         if sub:
             sids.append(sub['sid'])
+            ksubs.append(sub)
 
     posts = db.query('SELECT * FROM `sub_post` WHERE `sid` IN %s '
                      'ORDER BY `posted` DESC LIMIT %s,20',
                      (sids, (page - 1) * 20, )).fetchall()
 
     return render_template('indexmulti.html', page=page,
-                           posts=posts, subs=subs,
+                           posts=posts, subs=ksubs,
                            multitype='view_multisub_new')
 
 
