@@ -219,6 +219,10 @@ def create_sub():
             return json.dumps({'status': 'error',
                                'error': ['Sub name has invalid characters']})
 
+        if form.subname.data.lower() in ('all', 'new', 'hot', 'top', 'admin'):
+            return json.dumps({'status': 'error',
+                               'error': ['Invalid sub name']})
+
         if db.get_sub_from_name(form.subname.data):
             return json.dumps({'status': 'error',
                                'error': ['Sub is already registered.']})
