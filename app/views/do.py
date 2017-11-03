@@ -122,7 +122,7 @@ def edit_user(user):
         db.uquery('UPDATE `user` SET `email`=%s WHERE `uid`=%s',
                   (form.email.data, user['uid']))
         if form.password.data:
-            db.update_user_password(form.password.data)
+            db.update_user_password(user['uid'], form.password.data)
 
         db.update_user_metadata(user['uid'], 'exlinks',
                                 form.external_links.data)
