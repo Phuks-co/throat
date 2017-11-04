@@ -151,6 +151,7 @@ CREATE TABLE `sub_post` (
   `ptype` int(11) DEFAULT NULL,
   `score` int(11) DEFAULT NULL,
   `thumbnail` varchar(128) DEFAULT NULL,
+  `flair` varchar(25) DEFAULT NULL,
   `deleted` int(11) DEFAULT NULL,
   `nsfw` int(11) DEFAULT NULL,
   `comments` int(50) DEFAULT NULL,

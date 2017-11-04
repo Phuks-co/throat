@@ -236,7 +236,9 @@ def all_new_rss():
 @app.route("/all/new/<int:page>")
 def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
+    k = time.time()
     posts = list(misc.getPostList(misc.postListQueryBase(), 'new', page).dicts())
+    print('------ ', time.time() - k)
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_new', 'page': page,
                                                      'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
