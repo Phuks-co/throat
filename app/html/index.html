@@ -60,7 +60,6 @@
   @if not posts:
     <h1 class="noshit">There are no posts here, yet.</h1>
   @end
-  @{func.ktime0()!!s}
   <div class="alldaposts">
     @for post in posts:
       @if not ann or ann['pid'] != post['pid']:
@@ -68,7 +67,6 @@
       @end
     @end
   </div>
-  @{func.ktime()!!s}
 
   @if page > 1:
     <a href="@{url_for(sort_type, page=(page-1), **kw)}" class="pure-button">prev</a>
