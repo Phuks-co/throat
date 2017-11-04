@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% block title %}{{config.LEMA}}{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+.demo.content div.icon {width:100px;height:100px;display:block;float:left;margin:10px}
+body.dark div.icon svg, body.dark div.icon span[data-icon="strikethrough"] svg path {fill: #c8c8c8;}
+</style>
+{% endblock %}
+
+{% block sidebar %}
+{{ super() }}
+<a href="#" class="sbm-post pure-button">pure-button</a>
+<a href="#" class="sbm-post pure-button">pure-button</a>
+<hr>
+<a href="#" class="sbm-post pure-button">pure-button</a>
+<a href="#" class="sbm-post pure-button button-secondary">button-secondary</a>
+{% endblock %}
+
+
+{% block content %}
+{{ super() }}
+<div id="center-container">
+  <div class="demo content">
+    <h3>Demo page</h3>
+
+    <div title="mail" class="icon"><span data-icon="mail"></span></div>
+    <div title="cog" class="icon"><span data-icon="cog"></span></div>
+    <div title="sun" class="icon"><span data-icon="sun"></span></div>
+    <div title="moon" class="icon"><span data-icon="moon"></span></div>
+
+    <div title="play" class="icon"><span data-icon="play"></span></div>
+    <div title="twitter" class="icon"><span data-icon="twitter"></span></div>
+    <div title="image" class="icon"><span data-icon="image"></span></div>
+    <div title="text" class="icon"><span data-icon="text"></span></div>
+    <div title="close" class="icon"><span data-icon="close"></span></div>
+    <div title="exclaim" class="icon"><span data-icon="exclaim"></span></div>
+
+    <div title="chat" class="icon"><span data-icon="chat"></span></div>
+    <div title="link" class="icon"><span data-icon="link"></span></div>
+
+    <div title="upvote" class="icon"><span data-icon="upvote"></span></div>
+    <div title="downvote" class="icon"><span data-icon="downvote"></span></div>
+
+    <div title="search" class="icon"><span data-icon="search"></span></div>
+
+    <div title="check" class="icon"><span data-icon="check"></span></div>
+    <div title="add" class="icon"><span data-icon="add"></span></div>
+    <div title="remove" class="icon"><span data-icon="remove"></span></div>
+
+    <div title="owner" class="icon"><span data-icon="owner"></span></div>
+    <div title="comments" class="icon"><span data-icon="comments"></span></div>
+    <div title="bug" class="icon"><span data-icon="bug"></span></div>
+    <div title="piechart" class="icon"><span data-icon="piechart"></span></div>
+    <div title="trophy" class="icon"><span data-icon="trophy"></span></div>
+    <div title="paypal" class="icon"><span data-icon="paypal"></span></div>
+    <div title="rss" class="icon"><span data-icon="rss"></span></div>
+    <div title="rss2" class="icon"><span data-icon="rss2"></span></div>
+    <div title="evil" class="icon"><span data-icon="evil"></span></div>
+    <div title="heart" class="icon"><span data-icon="heart"></span></div>
+    <div title="bold" class="icon"><span data-icon="bold"></span></div>
+    <div title="italic" class="icon"><span data-icon="italic"></span></div>
+    <div title="underline" class="icon"><span data-icon="underline"></span></div>
+    <div title="strikethrough" class="icon"><span data-icon="strikethrough"></span></div>
+    <div title="title" class="icon"><span data-icon="title"></span></div>
+    <div title="bulletlist" class="icon"><span data-icon="bulletlist"></span></div>
+    <div title="numberlist" class="icon"><span data-icon="numberlist"></span></div>
+    <div title="code" class="icon"><span data-icon="code"></span></div>
+    <div title="quote" class="icon"><span data-icon="quote"></span></div>
+    <div title="coffee" class="icon"><span data-icon="coffee"></span></div>
+    <div title="donor" class="icon"><span data-icon="donor"></span></div>
+    <div title="copyright" class="icon"><span data-icon="copyright"></span></div>
+  </div>
+</div>
+{% endblock %}

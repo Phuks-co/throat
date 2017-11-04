@@ -1,0 +1,43 @@
+
+<div class="row buttons inboxside">
+  <div class="">
+    <a class="sbm-post pure-button{% if box_route=='view_messages' %} button-secondary{% endif %}" href="{{ url_for('view_messages') }}">
+      Inbox
+      {% if current_user.new_pm_count() > 0 %}
+        <span class="newmsgcount" style="inline-block;"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{current_user.new_pm_count()}}</span>
+      {% endif %}
+    </a>
+  </div>
+  <div class="">
+    <a class="sbm-post pure-button{% if box_route=='view_messages_postreplies' %} button-secondary{% endif %}" href="{{ url_for('view_messages_postreplies') }}">
+      Post Replies
+      {% if current_user.new_postreply_count() > 0 %}
+        <span class="newmsgcount" style="inline-block;"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{current_user.new_postreply_count()}}</span>
+      {% endif %}
+    </a>
+  </div>
+  <div class="">
+    <a class="sbm-post pure-button{% if box_route=='view_messages_comreplies' %} button-secondary{% endif %}" href="{{ url_for('view_messages_comreplies') }}">
+      Comment Replies
+      {% if current_user.new_comreply_count() > 0 %}
+        <span class="newmsgcount" style="inline-block;"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{current_user.new_comreply_count()}}</span>
+      {% endif %}
+    </a>
+  </div>
+<hr>
+  <div class="">
+    <a class="sbm-post pure-button{% if box_route=='view_messages_modmail' %} button-secondary{% endif %}" href="{{ url_for('view_messages_modmail') }}">
+    Modmail
+    {% if current_user.new_modmail_count() > 0 %}
+      <span class="newmsgcount" style="inline-block;"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{current_user.new_modmail_count()}}</span>
+    {% endif %}
+    </a>
+  </div>
+<hr>
+  <div class="">
+    <a class="sbm-post pure-button{% if box_route=='view_messages_sent' %} button-secondary{% endif %}" href="{{ url_for('view_messages_sent') }}">Sent Messages</a>
+  </div>
+  <div class="">
+    <a class="sbm-post pure-button{% if box_route=='view_saved_messages' %} button-secondary{% endif %}"  href="{{ url_for('view_saved_messages') }}">Saved Messages</a>
+  </div>
+</div>

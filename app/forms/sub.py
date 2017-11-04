@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, BooleanField, HiddenField
 from wtforms import RadioField
 from wtforms.validators import DataRequired, Length, URL
-from wtforms.validators import Optional, Regexp
+from wtforms.validators import Optional
 
 
 class SearchForm(FlaskForm):
@@ -95,7 +95,13 @@ class CreateSubTextPost(FlaskForm):
     title = StringField('Post title',
                         validators=[DataRequired(), Length(min=4, max=350)])
     content = TextAreaField('Post content',
-                            validators=[Length(min=0, max=16384)])
+                            validators=[Length(max=16384)])
+    link = StringField('Post link',
+                       validators=[Length(min=10, max=256), Optional(),
+                                   URL(require_tld=True)])
+    ptype = RadioField('Post type',
+                       choices=[('text', 'Text post'), ('link', 'Link post')],
+                       validators=[DataRequired()])
     nsfw = BooleanField('NSFW?')
 
     def __init__(self, *args, **kwargs):
@@ -130,7 +136,6 @@ class EditSubTextPostForm(FlaskForm):
     content = TextAreaField('Post content',
                             validators=[DataRequired(),
                                         Length(min=1, max=16384)])
-    nsfw = BooleanField('NSFW?')
 
 
 class EditSubLinkPostForm(FlaskForm):
@@ -140,7 +145,6 @@ class EditSubLinkPostForm(FlaskForm):
 
 class PostComment(FlaskForm):
     """ Comment submission form """
-    sub = HiddenField()
     post = HiddenField()
     parent = HiddenField()
 
@@ -176,4 +180,4 @@ class VoteForm(FlaskForm):
 class LiveChat(FlaskForm):
     """ Live Chat form. """
     chatmsg = StringField('chat..',
-                       validators=[DataRequired(), Length(min=1, max=255)])
+                          validators=[DataRequired(), Length(min=1, max=255)])

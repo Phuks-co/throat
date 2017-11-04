@@ -9,6 +9,7 @@ CREATE TABLE `user` (
   `status` int(11) DEFAULT NULL,
   `joindate` datetime DEFAULT NULL,
   `score` int(11) DEFAULT NULL,
+  `given` int(11) DEFAULT NULL,
   `resets` int(11) DEFAULT 0,
   PRIMARY KEY (`uid`),
   UNIQUE KEY `name` (`name`)
@@ -335,5 +336,14 @@ CREATE TABLE `pixel` (
   `posy` int(128) DEFAULT 0,
   `value` int(128) DEFAULT 1,
   `color` int(128) DEFAULT NULL,
+  PRIMARY KEY (`xid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `mining_leaderboard`;
+
+CREATE TABLE `mining_leaderboard` (
+  `xid` INT(11) NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(64) NULL,
+  `score` INT(11) DEFAULT NULL,
   PRIMARY KEY (`xid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

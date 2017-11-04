@@ -5,43 +5,27 @@
   <li class="large"><a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a></li>
 </ul>
 {% endblock %}
-{% block sidebar %}
-{{ super() }}
-<p></p>
-<hr/>
-<ul>
-  <li>1 deletion</li>
-  <li>2 user ban</li>
-  <li>3 flair</li>
-  <li>4 mod edit sub</li>
-  <li>5 comment related</li>
-  <li>6 mod related</li>
-  <li>7 ban user related</li>
-</ul>
-{% endblock %}
 {% block content %}
 {{ super() }}
 
-{% if not current_user.is_mod(sub) and current_user.is_admin() %}
-<center><h3>Viewing as Admin</h3></center>
-{% endif %}
-
 <h1> Sub log </h1>
-<table class="col-12">
-  <tr>
-    <td>Time</td>
-    <td>action</td>
-    <td>desc</td>
-    <td>link</td>
-  </tr>
-  {% for log in logs %}
-  <tr>
-    <td>{{log.time}}</td>
-    <td>{{log.action}}</td>
-    <td>{{log.desc}}</td>
-    <td><a href="{{log.link}}">{{log.link}}</a></td>
-  </tr>
-  {% endfor %}
+<table class="pure-table">
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>Action</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log in logs %}
+      <tr>
+        <td><time-ago datetime="{{log.time}}Z">{{log.time}}</time-ago></td>
+        <td>{{log.desc}}</td>
+        <td>{%if log.link%}<a href="{{log.link}}">Link</a>{%endif%}</td>
+      </tr>
+    {%endfor%}
+  </tbody>
 </table>
 {% if page > 1 %}
 <a href="{{url_for('view_sublog', sub=sub.name, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>

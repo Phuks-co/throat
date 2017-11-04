@@ -25,7 +25,7 @@
 <hr/>
 <div class="row buttons">
   <div class="sidebar col-12">
-    {% if current_user.has_subscribed(sub.sid) %}
+    {% if current_user.has_subscribed(sub.name) %}
     <span id="subscribe" class="subscribed" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Subscribed</a></span>
     {% else %}
     <span id="subscribe" class="unsubscribed" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-plus" aria-hidden="true"></i> Subscribe</a></span>
@@ -46,12 +46,12 @@
   {% if func.isRestricted(sub) %}
   <div class="col-12">Only mods can post.</div>
   {%endif%}
-  {% if not func.isRestricted(sub) or (current_user.is_mod(sub) and func.isRestricted(sub)) %}
+  {% if not func.isRestricted(sub) or (current_user.is_mod(sub.sid) and func.isRestricted(sub)) %}
   <div class="col-12">
-    <a href="{{url_for('submit_text', sub=sub.name)}}" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
+    <a href="{{url_for('submit', ptype='text', sub=sub.name)}}" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
   </div>
   <div class="col-12">
-    <a href="{{url_for('submit_link', sub=sub.name)}}" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
+    <a href="{{url_for('submit', ptype='link', sub=sub.name)}}" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
   </div>
   {% endif %}
 
@@ -79,7 +79,7 @@
   {% endfor %}
   </ul>
 </div>
-{% if current_user.is_mod(sub) or current_user.is_admin() %}
+{% if current_user.is_mod(sub.sid) or current_user.is_admin() %}
 <div class="row buttons">
   <div class="col-12">
     <a href="{{url_for('edit_sub', sub=sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Info</a>

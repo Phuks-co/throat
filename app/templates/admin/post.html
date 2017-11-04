@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+{% block title %}Admin - {{config.LEMA}}{% endblock %}
+
+{% block sidebar %}
+{{ super() }}
+{% include 'admin/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<div id="center-container">
+  <div class="content">
+
+    <div class="col-12 admin section users">
+      <h2><i class="fa fa-list"></i> Post: <a href="{{url_for('view_post_inbox', pid=post.pid)}}">{{post.title}}</a></h2>
+      <div>
+        <div>NSFW: {% if db.is_post_nsfw(post) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% else %}no{% endif %}</div>
+        <div>When: <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago></div>
+        <div>Sub: <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}">{{func.getSub(post.sid).name}}</a></div>
+      </div>
+    </div>
+    <div class="col-12 admin section users">
+      <h2><i class="fa fa-user"></i> User: <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a></h2>
+      <div class="col-11">Posts: {{pcount}}</div>
+      <div class="col-11">Comments: {{ccount}}</div>
+      <div class="col-11">Registered: {{user.joindate}}</div>
+      <div class="col-11">Level: {{func.get_user_level(user.uid)[0]}}</div>
+    </div>
+    <div class="col-12 admin section users">
+      <h2><i class="fa fa-expand"></i> Votes: ( +{{upcount}} | -{{downcount}} )</h2>
+      <div class="col-12">
+        <table class="pure-table">
+          <thead>
+            <tr>
+              <td>vote</td>
+              <td>user</td>
+              <td>datetime</td>
+            </tr>
+          </thead>
+          <tbody>
+            {% for vote in votes %}
+            <tr>
+              <td>{% if vote.positive %}<span class="upvoted">up</span>{% else %}<span class="downvoted">down</span>{% endif %}</td>
+              <td><a href="{{url_for('view_user', user=db.get_user_from_uid(vote.uid).name)}}">{{db.get_user_from_uid(vote.uid).name}}</a></td>
+              <td>{{vote.datetime}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="col-12 admin section users">
+      <h2><i class="fa fa-comments"></i> Comments: {{db.get_post_comment_count(post.pid)}}</h2>
+      <div>
+        <table class="pure-table">
+          <thead>
+            <tr>
+              <td>user</td>
+              <td>comment</td>
+              <td>permalink</td>
+            </tr>
+          </thead>
+          <tbody>
+            {#<!-- TODO:  -->#}
+            <tr>
+              <td>coming soon..</td>
+              <td>xx</td>
+              <td>xx</td>
+            </tr>
+            {#<!-- TODO:  -->#}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+</div>
+</div>
+{% endblock %}

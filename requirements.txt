@@ -5,10 +5,10 @@ flask-assets
 webassets
 jsmin
 cssmin
-markdown
+misaka
 flask-login
 feedgen
-flask-cache
+flask-caching
 mysqlclient
 redis
 requests
@@ -21,4 +21,6 @@ flask-socketio
 eventlet
 gunicorn
 cython
-py-gfm
+peewee
+flask-webpack
+wheezy.template

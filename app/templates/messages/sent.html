@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block title %}My messages | {{config.LEMA}}{% endblock %}
+
+{% block navbar %}
+{% endblock %}
+
+{% block sidebar %}
+{{ super() }}
+{% include 'messages/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<div id="center-container">
+  <div class="inbox content">
+    <div class="user-activity col-12">
+      <h3><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> Sent</h3>
+      {% for message in messages %}
+        <article class="pmessage post">
+          <div class="main">
+            <p class="title">{{message.subject}}</p>
+            <p class="container">{{markdown(message.content)|safe}}</p>
+            <p class="author">&#10148;
+              <a href="{{url_for('view_user', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
+              <time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago>
+            </p>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+    {% include 'messages/nav.html' %}
+  </div>
+</div>
+{% endblock %}

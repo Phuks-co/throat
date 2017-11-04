@@ -1,0 +1,120 @@
+{% extends "layout.html" %}
+{% block title %}Admin - {{config.LEMA}}{% endblock %}
+
+{% block sidebar %}
+{{ super() }}
+{% include 'admin/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<div id="center-container">
+  <div class="content">
+    <h1>Admin</h1>
+    <div class="admin section stats">
+      <table class="pure-table">
+        <thead>
+          <tr>
+            <td>Users</td>
+            <td>Subs</td>
+            <td>Posts</td>
+            <td>Comments</td>
+            <td>votes</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{users}}</td>
+            <td>{{subs}}</td>
+            <td>{{posts}}</td>
+            <td>{{comms}}</td>
+            <td>+{{ups}} | -{{downs}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <hr>
+    <div class="admin section">
+        <div class="col-12 admin-page-form">
+          <h3>Announcements</h3>
+          {% set ann = func.getAnnouncement() %}
+          {%if not ann %}<h4>No active announcements</h4>
+          {%else%}
+          <div class="post">
+            <a href="{{url_for('do.deleteannouncement')}}" class="btn btn-red">Nuke!</a> |
+            <a href="{{url_for('view_post_inbox', pid=ann.pid)}}">{{ann.title}}</a> by {{db.get_user_from_uid(ann.uid).name}}, <relative-time datetime="{{ann.posted.isoformat()}}Z"></relative-time>
+          </div>
+
+          {%endif%}
+      </div>
+    </div>
+    <hr>
+    <div class="admin section badges">
+      <div class="col-12"><h2><i class="fa fa-beer"></i> User Badges</h2>
+        {% for badge in badges %}
+        <div>{{loop.index}} - <i title="{{badge.text}}" class="fa {{badge.badge}}"></i> {{badge.name}}</div>
+        {% endfor %}
+      </div>
+      <div class="col-12 admin-page-form">
+        <div>
+          <form id="create-user-badge" class="nice-form">
+            {{createuserbadgeform.csrf_token}}
+            <h4>Create new user badge (<a href="http://fontawesome.io/cheatsheet/">cheatsheet</a>)</h4>
+            <div>{{createuserbadgeform.badge(placeholder=createuserbadgeform.badge.label.text, required=True)}}</div>
+            <div>{{createuserbadgeform.name(placeholder=createuserbadgeform.name.label.text)}}</div>
+            <div>{{createuserbadgeform.text(placeholder=createuserbadgeform.text.label.text)}}</div>
+            <div>{{createuserbadgeform.value(placeholder=createuserbadgeform.value.label.text, value=100)}}</div>
+            <div><button type="submit" class="btn btn-blue" id="create-user-badge-btnsubmit">Create badge</button></div>
+            <div class="alert div-error">
+              <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+              <p></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div class="admin section BTCaddress">
+      <div class="col-12"><h2><i class="fa fa-btc"></i> Bitcoin Donation: {% if func.enableBTCmod() %}Enabled{% else %}Disabled{% endif %}</h2>
+      </div>
+      <div class="col-12 admin-page-form">
+        <div>
+          <form id="usebtcdonation" class="nice-form">
+            {{usebtcdonationform.csrf_token}}
+            <h4>Bitcoin donation address and message</h4>
+            <div class="col-12"><label>{{usebtcdonationform.enablebtcmod(checked=func.enableBTCmod())}} {{usebtcdonationform.enablebtcmod.label.text}}</label></div>
+            <div class="col-12">{{usebtcdonationform.message(placeholder=usebtcdonationform.message.label.text)}}</div>
+            <div class="col-12">{{usebtcdonationform.btcaddress(placeholder=usebtcdonationform.btcaddress.label.text)}}</div>
+            <div><button type="submit" class="btn btn-blue" id="usebtcdonation-btnsubmit">Save</button></div>
+            <div class="alert div-error">
+              <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+              <p></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div class="admin section invitecode">
+      <div class="col-12"><h2>Invite Code to register: {% if func.enableInviteCode() %}Enabled ({{func.getInviteCode()}}){% else %}Disabled{% endif %}</h2>
+      </div>
+      <div class="col-12 admin-page-form">
+        <div>
+          <form id="useinvitecode" class="nice-form" method="POST" action="{{url_for('do.use_invite_code')}}" data-redir="true" class="ajaxform">
+            {{useinvitecodeform.csrf_token}}
+            <div class="col-12"><label>{{useinvitecodeform.enableinvitecode(checked=func.enableInviteCode())}} {{useinvitecodeform.enableinvitecode.label.text}}</label></div>
+            <div class="col-12">{{useinvitecodeform.invitecode(placeholder=useinvitecodeform.invitecode.label.text)}}</div>
+            <div><button type="submit" class="btn btn-blue" id="useinvitecodeform-btnsubmit">Save</button></div>
+            <div class="alert div-error">
+              <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+              <p></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

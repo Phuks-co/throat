@@ -1,0 +1,316 @@
+/* dark mode styles */
+body.dark .th-l-stroke[stroke="#fff"] {
+    stroke: #cdcdcd;
+}
+
+body.dark .th-l-fill[fill="#fff"] {
+    fill: #cdcdcd;
+}
+
+body.dark {
+  background-color: #0d0d0d;
+}
+
+body.dark a {
+  color: #7b4a3f;
+}
+
+body.dark .content,
+body.dark #container2 {
+  color: #555555;
+}
+
+body.dark .hasmail i{
+  color: #e14f00;
+}
+
+body.dark #toggledark i {
+    color: #ff0;
+}
+
+/* Hot, Top, New, Domain */
+
+body.dark div#sortbuttons span {
+    color: #ddd;
+    background-color: #101010;
+}
+
+body.dark div#sortbuttons {
+  color: #7b4a3f;
+}
+
+body.dark a:hover,
+body.dark #sortbuttons a:hover, {
+  color: #d17262;
+}
+
+body.dark .post .domain a,
+body.dark .post .domain {
+    color: #555;
+}
+
+/* Header */
+
+body.dark .th-navbar {
+  background-color: #0a0a0a;
+  -webkit-box-shadow: 0 3px 5px 0 rgba(0,0,0,0.75);
+  -moz-box-shadow: 0 3px 5px 0 rgba(0,0,0,0.75);
+  box-shadow: 0 3px 5px 0 rgba(0,0,0,0.75);
+}
+
+/* Sub bar */
+
+body.dark .th-subbar{
+  background-color: #000;
+  border-bottom: 1px solid rgba(171, 68, 9, 0.62);
+}
+
+body.dark .th-subbar ul li {
+    color:#cdcdcd;
+}
+
+body.dark .th-subbar a {
+    color: #ab4409;
+}
+
+body.dark .th-subbar a:hover {
+    color: #d17262;
+}
+
+/* Posts */
+
+body.dark .post:nth-child(2n) {
+  background-color: #101010;
+    -webkit-box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.4);
+    -moz-box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.4);
+    box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.4);
+
+}
+
+body.dark .votebuttons {
+  fill: #7d7d7d;
+  color: #7d7d7d;
+}
+
+body.dark .post .title {
+  color: #ccc;
+}
+
+body.dark .post .title:hover {
+  color: #ff6d15;
+}
+
+body.dark .post .title:visited {
+  color: #d95204;
+  }
+
+body.dark .thumbnail .placeholder svg path {
+    fill: #555;
+}
+
+body.dark .p-icon[data-icon="exclaim"] path {
+    fill: #7b4a34;
+}
+
+/* Buttons */
+
+body.dark .button-secondary,
+body.dark .pure-button {
+  background: rgba(51, 51, 51, 0.5);
+  color: #ddd;
+}
+
+body.dark .inboxside .button-secondary {
+    background: rgba(51, 51, 51, 0.2);
+}
+
+body.dark .button-secondary:hover,
+body.dark .pure-button:hover {
+  background: rgba(51, 51, 51, 0.8);
+  color: #ffffff;
+}
+
+body.dark .pure-button-primary {
+  background-color: #161616;
+}
+
+body.dark a#nextp,
+body.dark a#prevp {
+  color: #c0c0c0;
+}
+
+body.dark a#nextp:hover,
+body.dark a#prevp:hover {
+  color: #ffffff;
+}
+
+/* Expandos */
+
+body.dark .expando {
+    background-color: #0a0a0a;
+}
+
+body.dark .post .expandotxt,
+body.dark .post:nth-child(2n) .expandotxt {
+    background-color: #202020;
+    color: #aaa;
+}
+
+body.dark .pure-control-group label,
+body.dark .form label {
+    color: #a63c00;
+}
+
+body.dark input[type="text"],
+body.dark input[type="email"],
+body.dark input[type="url"],
+body.dark textarea,
+body.dark input[type="password"] {
+  color: #ffffff;
+  background-color: #252525;
+  box-shadow: inset 0 1px 3px #303030;
+  border-color: #444;
+}
+
+body.dark{
+  color: #666;
+}
+
+body.dark #postcontent{
+  background: #111;
+}
+body.dark .editbtns{
+  border-color: #444;
+}
+
+body.dark .editbtns div{
+  border-color: #292929;
+}
+
+body.dark .editbtns svg path{
+  fill: #666;
+}
+
+body.dark input[type="text"]::placeholder,
+body.dark input[type="email"]::placeholder,
+body.dark input[type="url"]::placeholder,
+body.dark textarea::placeholder,
+body.dark input[type="password"]::placeholder {
+  color: #555;
+}
+
+body.dark input#buyamount ~ b {
+    color: #c2c2c2;
+}
+
+/* Sidebar */
+body.dark .sidebar{
+  background-color: #0d0d0d;
+}
+
+body.dark .sidebar h4 {
+	color: #ccc;
+}
+
+body.dark input[type="search"] {
+  background-color: #000;
+  color: #fff;
+  border-color: black;
+}
+
+body.dark .sidebar ul.top5 li a {
+    color: #ab4409;
+}
+
+body.dark hr {
+   border-bottom: 2px dashed #545454;
+}
+/* /Sidebar */
+
+/* MESSAGES STYLES */
+body.dark .pmessage.post p.title {
+    border-bottom: 1px solid #343434;
+}
+body.dark .pmessage.post {
+    background-color: #000000;
+}
+
+body.dark .pmessage.post p.container a{
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+body.dark .pmessage.post p.container a:hover{
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #b66f5f;
+}
+
+body.dark .pmessage p.container a.deletedmsg {
+    background-color: rgba(226, 0, 0, 0.3);
+    color: #a8a8a8;
+}
+
+body.dark .pmessage p.container a.savedmsg {
+    background-color: rgba(0, 170, 9, 0.3);
+    color: #a8a8a8;
+}
+
+body.dark .pmessage.post:nth-child(2n) {
+    background-color: #101010;
+}
+
+body.dark .modal-content,
+body.dark #formpop .modal-content {
+    background-color: #111;
+    border: 1px solid #4d4848;
+    box-shadow: 4px 4px 16px #1d1d1d;
+}
+body.dark .modal-content h3,
+body.dark #formpop .modal-content h3,
+body.dark #formpop .modal-content p {
+    color: #cccccc;
+}
+body.dark .modal-content .closemsg,
+body.dark #formpop .modal-content .closemsg {
+    color: #999;
+}
+/* /MESSAGES STYLES */
+
+/* SUBS PAGE */
+body.dark .subsentry {
+    background-color: #1b1b1b;
+}
+body.dark .subsentry svg {
+    fill: #fff;
+}
+/* /SUBS PAGE */
+
+/* USER PAGE */
+body.dark .uprofile-level-box {
+    border: 4px solid #474747;
+}
+body.dark .uprofile.content {
+    border: 2px solid #474747;
+    background: rgba(0, 0, 0, 0.9);
+}
+body.dark article.comment {
+    background-color: #101010;
+}
+body.dark article.comment:nth-child(2n) {
+    background-color: #0d0d0d;
+}
+/* /USER PAGE */
+
+/* misc */
+body.dark .pure-table td, body.dark .pure-table th, body.dark .pure-table{
+  border-color: #4e4e4e;
+}
+body.dark .pure-table thead{
+  background-color: #5c5c5c;
+}
+body.dark path[stroke="#ff6d15"] {
+    stroke: #7b4a3f;
+}
+body.dark path[fill="#ff6d15"] {
+    fill: #7b4a3f;
+}
+body.dark .mod2-inv{background-color: #060606;}

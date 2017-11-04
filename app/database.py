@@ -8,6 +8,8 @@ import _mysql_exceptions
 import config
 from flask import g
 from .caching import cache
+from .deprecate import deprecated
+from collections import Counter
 
 
 def connect_db(db=None):
@@ -43,7 +45,9 @@ def get_cursor():
     return db.cursor()
 
 
+@deprecated
 def query(qr, params=()):
+    print(qr, params)
     """ Queries the database and returns the cursor """
     c = get_cursor()
     try:
@@ -56,6 +60,7 @@ def query(qr, params=()):
     return c
 
 
+@deprecated
 def uquery(qr, params=()):
     """ Queries the database to alter data """
     c = get_cursor()
@@ -326,8 +331,11 @@ def get_user_saved(uid, pid):
 def get_all_user_saved(uid):
     """ Returns all the user saved pids """
     c = query('SELECT `pid` FROM `user_saved` WHERE `uid`=%s ',
-              (uid, ))
-    return c.fetchall()
+              (uid, )).fetchall()
+    pids = []
+    for i in c:
+        pids.append(i['pid'])
+    return pids
 
 
 def create_user_multi(uid, name, subs):
@@ -533,11 +541,23 @@ def get_user_post_voting(uid):
             negscore += 1
     return (score,posscore,negscore)
 
+
 @cache.memoize(10)
 def get_user_post_count(uid):
     c = query('SELECT COUNT(*) AS c FROM `sub_post` WHERE `uid`=%s',
                       (uid, )).fetchone()['c']
     return c
+
+
+@cache.memoize(10)
+def get_user_post_count_habit(uid):
+    c = query('SELECT `sid` FROM `sub_post` WHERE `uid`=%s',
+                      (uid, )).fetchall()
+    hab = []
+    for d in c:
+        hab.append(d['sid'])
+    hab = Counter(hab).most_common(10)
+    return hab
 
 
 @cache.memoize(10)
@@ -707,7 +727,7 @@ def get_all_post_comments(pid, pa=None, depth=0, page=0):
     posts = get_post_comments(pid, pa, page)
     f = []
     for post in posts:
-        x = get_all_post_comments(pid, post['cid'], depth+1, page)
+        x = get_all_post_comments(pid, post['cid'], depth + 1, page)
         if depth == 4 and x:
             post['children'] = []
             post['amt'] = get_child_comment_count(post['cid'])
@@ -723,3 +743,17 @@ def get_all_post_comments(pid, pa=None, depth=0, page=0):
             post['children'] = x
         f.append(post)
     return f
+
+
+# mining
+
+def update_mining_leaderboard(username, score):
+    """ Updates user mining score """
+    x = uquery('SELECT * FROM `mining_leaderboard` WHERE `username`=%s ',
+               (username, )).fetchone()
+    if x:
+        uquery('UPDATE `mining_leaderboard` SET `score`=%s WHERE `username`=%s',
+               (score, username))
+    else:
+        uquery('INSERT INTO `mining_leaderboard` (`username`, `score`) VALUES '
+               '(%s, %s)', (username, score))

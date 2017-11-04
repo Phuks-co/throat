@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %}Login | {{config.LEMA}}{% endblock %}
+
+{% block content %}
+<div id="center-container">
+  <div class="content">
+      <form method="POST" class="pure-form pure-form-aligned">
+        <h1>Login</h1> {{ loginform.csrf_token }}
+        <fieldset>
+          <div class="pure-control-group">
+            <label for="username">Username</label>
+            {{loginform.username(placeholder=loginform.username.label.text, required=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}
+          </div>
+          <div class="pure-control-group">
+            <label for="password">Password</label>
+            {{loginform.password(placeholder=loginform.password.label.text, required=True)}}
+          </div>
+          <div class="pure-controls">
+            <label for="remember" class="pure-checkbox">
+              {{loginform.remember()}} Remember me
+            </label>
+            {% if error %}
+              <div class="error">{{error}}</div>
+            {%endif%}
+            <button type="submit" class="pure-button pure-button-primary">Log in</button>
+          </div>
+        </fieldset>
+      </form>
+  </div>
+</div>
+{% endblock %}

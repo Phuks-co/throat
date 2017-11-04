@@ -18,17 +18,16 @@ app.config['WTF_CSRF_ENABLED'] = False
 
 d = db.connect_db('')
 f = d.cursor()
-f.execute('DROP DATABASE IF EXISTS throat_unit')
+f.execute('DROP DATABASE IF EXISTS {0}'.format(app.config['DB_NAME']))
 d.commit()
-f.execute('CREATE DATABASE throat_unit')
+f.execute('CREATE DATABASE {0}'.format(app.config['DB_NAME']))
 d.commit()
-f.execute('USE throat_unit')
+f.execute('USE {0}'.format(app.config['DB_NAME']))
 xx = open('throat.sql').read().split(';')
 for o in xx[:-1]:
     f.execute(o)
     d.commit()
 d.close()
-app.config['DB_NAME'] = 'throat_unit'
 app.config['TESTING'] = True
 
 # -- Real shit starts here
@@ -42,6 +41,7 @@ class AABasicTestCase(unittest.TestCase):
     def test_index_loads_and_database_is_empty(self):
         """ Tests if the index loads """
         x = self.app.get('/')
+        print(x.get_data(True))
         assert 'There are no posts here, yet.' in x.get_data(True)
         assert x.status_code == 200
 
@@ -53,37 +53,37 @@ class ABAccountTestCase(unittest.TestCase):
 
     def register(self, user, password):
         """ Registers an account """
-        return self.app.post('/do/register', data={'username': user,
-                                                   'password': password,
-                                                   'confirm': password,
-                                                   'accept_tos': '1'})
+        return self.app.post('/register', data={'username': user,
+                                                'password': password,
+                                                'confirm': password,
+                                                'accept_tos': '1'})
 
     def login(self, user, password):
-        return self.app.post('/do/login', data={'username': user,
-                                                'password': password})
+        return self.app.post('/login', data={'username': user,
+                                             'password': password})
 
     def create_sub(self, name, title):
         return self.app.post('/do/create_sub', data={'subname': name,
                                                      'title': title})
 
     def text_post(self, sub, title, content):
-        return self.app.post('/do/txtpost', data={'sub': sub,
-                                                  'title': title,
-                                                  'content': content})
+        return self.app.post('/do/post', data={'sub': sub,
+                                               'title': title,
+                                               'ptype': 'text',
+                                               'content': content})
 
     def link_post(self, sub, title, link):
-        return self.app.post('/do/lnkpost', data={'sub': sub,
-                                                  'title': title,
-                                                  'link': link})
+        return self.app.post('/do/post', data={'sub': sub,
+                                               'ptype': 'link',
+                                               'title': title,
+                                               'link': link})
 
     def test_accounts(self):
         """ Tests if registration works (not the captcha) """
         x = self.register('foo', 'foofoofoobar')
-        x = json.loads(x.get_data(True))
-        assert x['status'] == 'ok'
+        assert x.status_code == 302
         x = self.login('foo', 'foofoofoobar')
-        x = json.loads(x.get_data(True))
-        assert x['status'] == 'ok'
+        assert x.status_code == 302
         x = self.app.post('/do/logout')
         assert x.status_code == 302
 
@@ -101,15 +101,13 @@ class ABAccountTestCase(unittest.TestCase):
         assert 'There are no posts here, yet.' in x.get_data(True)
         # posting tests
         x = self.text_post('testing', 'yo im testing', '# yeah, test')
-        p = json.loads(x.get_data(True))
-        assert p['status'] == 'ok'
-        x = self.app.get(p['addr'])
+        assert x.status_code == 302
+        x = self.app.get(x.location)
         assert 'yo im testing' in x.get_data(True)
 
         x = self.link_post('testing', 'still testing', 'https://google.com')
-        p = json.loads(x.get_data(True))
-        assert p['status'] == 'ok'
-        x = self.app.get(p['addr'])
+        assert x.status_code == 302
+        x = self.app.get(x.location)
         assert 'still testing' in x.get_data(True)
 
         # NOT empty subpage tests :)

@@ -2,42 +2,45 @@
 {% block title %}Welcome{%endblock%}
 {% block content %}
 {{ super() }}
-<h1>{{config.LEMA}}</h1>
+<div id="center-container">
+  <div class="content">
+    <h1>{{config.LEMA}}</h1>
 
-<p>Thanks for registering! Here you'll find a brief introduction on how to use this site</p>
-<hr>
+    <p>Thanks for registering! Here you'll find a brief introduction on how to use this site</p>
+    <hr>
 
-<p>Your message indicator, a link to your profile settings, and some basic functions are in the sidebar.</p>
-<ul>
-  <li><i class="fa fa-lightbulb-o" aria-hidden="true"></i> Toggles Day/Night mode </li>
-  <li><i class="fa fa-envelope" aria-hidden="true"></i> Takes you to your message center where you can see replies and PMs.</li>
-  <li>The envelope will change colors and have a number next to it if you have a new message.</li>
-</ul>
-<hr>
-<p>Your user profile has options that can be set: click the <i class="fa fa-cog" aria-hidden="true"></i> </p>
-<ul>
-  <li>Open external links in a new window</li>
-  <li>Disable custom sub styles: Disables custom CSS styles on subs.</li>
-  <li>Show NSFW content: Shows posts that may contain nudity or extreme content.</li>
-</ul>
-<hr>
-<p>This site is composed of <a href="{{url_for('view_subs')}}">subs</a>. Each sub has its own
-theme, rules, moderators, etc. which can include:</p>
-<ul>
-  <li>Extra CSS to change the colors and look of the sub</li>
-  <li>Sidebar information with links to other sites that may not be affiliated with this site</li>
-  <li>Choose the default sort of your sub when a user goes to it (New/Hot/Top)</li>
-  <li>A video player mode that can play the all the youtube posts that have been posted (experimental)</li>
-</ul>
+    <p>Your message indicator, a link to your profile settings, and some basic functions are in the sidebar.</p>
+    <ul>
+      <li><i class="fa fa-lightbulb-o" aria-hidden="true"></i> Toggles Day/Night mode </li>
+      <li><i class="fa fa-envelope" aria-hidden="true"></i> Takes you to your message center where you can see replies and PMs.</li>
+      <li>The envelope will change colors and have a number next to it if you have a new message.</li>
+    </ul>
+    <hr>
+    <p>Your user profile has options that can be set: click the <i class="fa fa-cog" aria-hidden="true"></i> </p>
+    <ul>
+      <li>Open external links in a new window</li>
+      <li>Disable custom sub styles: Disables custom CSS styles on subs.</li>
+      <li>Show NSFW content: Shows posts that may contain nudity or extreme content.</li>
+    </ul>
+    <hr>
+    <p>This site is composed of <a href="{{url_for('view_subs')}}">subs</a>. Each sub has its own
+    theme, rules, moderators, etc. which can include:</p>
+    <ul>
+      <li>Extra CSS to change the colors and look of the sub</li>
+      <li>Sidebar information with links to other sites that may not be affiliated with this site</li>
+      <li>Choose the default sort of your sub when a user goes to it (New/Hot/Top)</li>
+      <li>A video player mode that can play the all the youtube posts that have been posted (experimental)</li>
+    </ul>
+    <!--
+    <p>Blah blah blah blah. This page is not finished because a guy didn't move his fat ass yet</p> -->
 
-<!--
-<p>Blah blah blah blah. This page is not finished because a guy didn't move his fat ass yet</p> -->
+    <h2>How to report bugs</h2>
+    If you find any bug, glitch or any other nasty thing, you should open a task in <a href="https://phab.phuks.co">here</a> and
+    we'll take care of it.
 
-<h2>How to report bugs</h2>
-If you find any bug, glitch or any other nasty thing, you should open a task in <a href="https://phab.phuks.co">here</a> and
-we'll take care of it.
+    <p><a href="{{url_for('privacy')}}">Privacy Policy Information</a></p>
 
-<p><a href="{{url_for('privacy')}}">Privacy Policy Information</a></p>
-
-<p><a href="{{url_for('tos')}}">Terms of Service</a></p>
+    <p><a href="{{url_for('tos')}}">Terms of Service</a></p>
+  </div>
+</div>
 {%endblock%}

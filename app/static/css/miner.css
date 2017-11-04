@@ -1,0 +1,263 @@
+/* Base -------------------------------------------------------------------- */
+
+.container {
+	position: relative;
+	width: 100%;
+	max-width: 720px;
+	margin: 0 auto;
+	padding: 0 20px;
+}
+
+.container:after, .row:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.column, .columns {
+	width: 100%;
+	float: left;
+}
+
+@media (min-width: 400px) {
+	.container {
+		width: 85%;
+		padding: 0;
+	}
+}
+
+@media (min-width: 550px) {
+	.container {
+		width: 80%;
+	}
+	.column, .columns {
+		margin-left: 4%;
+	}
+	.column:first-child,
+	.columns:first-child {
+		margin-left: 0;
+	}
+
+	.one.column, .one.columns { width: 4.66666666667%; }
+	.two.columns { width: 13.3333333333%; }
+	.three.columns { width: 22%; }
+	.four.columns  { width: 30.6666666667%; }
+	.five.columns  { width: 39.3333333333%; }
+	.six.columns { width: 48%; }
+	.seven.columns { width: 56.6666666667%; }
+	.eight.columns { width: 65.3333333333%; }
+	.nine.columns  { width: 74.0%; }
+	.ten.columns { width: 82.6666666667%; }
+	.eleven.columns  { width: 91.3333333333%; }
+	.twelve.columns  { width: 100%; margin-left: 0; }
+
+	.one-third.column  { width: 30.6666666667%; }
+	.two-thirds.column { width: 65.3333333333%; }
+
+	.one-half.column { width: 48%; }
+}
+
+.full-width {
+	width: 100%;
+}
+.max-full-width {
+	max-width: 100%;
+}
+/* Tables ------------------------------------------------------------------- */
+
+div.overflow-container {
+	overflow: auto;
+	width: 100%;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	width: 100%;
+}
+
+td, th {
+	text-align: left;
+	border-bottom: 1px solid #f1f1f1;
+	padding: 0.5em 1em;
+	margin: 0;
+}
+
+body.dark td, body.dark th {
+    border-bottom: 1px solid #424242;
+}
+
+th:first-child, td:first-child {
+	padding-left: 0;
+}
+th:last-child, td:last-child {
+	padding-right: 0;
+}
+
+th.number, td.number {
+	text-align: right;
+	width: 4em;
+}
+
+td input {
+	margin-bottom: 0;
+}
+
+tr.inactive {
+	background-color: #eee;
+	opacity: 0.3;
+}
+
+tr:hover {
+	background-color: #fbfbfb;
+}
+
+body.dark tr:hover {
+    background-color: #000000;
+}
+
+tr.inactive:hover {
+	background-color: #ddd;
+}
+
+p.fine-print {
+	font-size: 80%;
+	color: #aaa;
+	text-align: right;
+}
+
+table.reference td {
+	vertical-align: top;
+}
+
+table.reference td:first-child {
+	width: 25%;
+	text-align: right;
+	font-family: monospace, monospace;
+	font-size: 0.9em;
+}
+
+/* Notices ------------------------------------------------------------------ */
+
+
+body.dark a, a {
+	color: #1e9ee0;
+	text-decoration: none;
+	background-color: transparent;
+}
+
+.action {
+	cursor: pointer;
+	color: #1e9ee0;
+	text-decoration: none;
+}
+
+span.link-disabled {
+	color: #ccc;
+}
+
+span.punct {
+	color: #eee;
+}
+
+.pagination {
+	text-align: right;
+}
+
+.action.action-delete {
+	color: #f30;
+	font-size: 160%;
+}
+
+/* Landing Page Miner ------------------------------------------------------- */
+div#miner {
+  width: 90%;
+  display: block;
+}
+#miner h4.number-label,
+#miner h2 {
+	color: #888;
+}
+
+body.dark #miner h4.number-label,
+body.dark #miner h2 {
+	color: #444;
+}
+
+
+
+#miner.running h4.number-label,
+#miner.running h2 {
+	color: #222;
+}
+
+body.dark #miner.running h4.number-label,
+body.dark #miner.running h2 {
+	color: #888;
+}
+
+#mining-stats-container {
+	position: relative;
+	text-align: center;
+	height: 96px;
+}
+
+#mining-stats-canvas {
+	z-index: 1;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+}
+
+#mining-controls {
+	z-index: 2;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	padding: 32px 0;
+}
+
+#mining-start {
+	text-transform: uppercase;
+	font-size: 120%;
+	display: inline-block;
+}
+
+#miner.running #mining-start {
+	position: relative;
+	z-index: 2;
+	display: none;
+}
+
+#mining-stop {
+	display: none;
+}
+
+#miner.running #mining-controls:hover #mining-stop {
+	position: relative;
+	z-index: 2;
+	display: inline-block;
+}
+
+.mining-icon {
+	width: 32px;
+	height: 32px;
+	vertical-align: -37%;
+	margin-right: 4px;
+}
+
+.mining-icon .mining-stroke { stroke: #1e9ee0; }
+.mining-icon .mining-fill { fill: #1e9ee0; }
+.mining-button:hover .mining-icon .mining-stroke { stroke: #555; }
+.mining-button:hover .mining-icon .mining-fill { fill: #555; }
+
+#miner.stopped .action { color: #aaa; }
+.mining-divide { font-size: 80%; color: #eee; }
+
+body.dark #minerstats{
+	color: #aaa;
+}

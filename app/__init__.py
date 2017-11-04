@@ -1,23 +1,17 @@
 # -*- coding: utf-8
 """ Here is where all the good stuff happens """
 
-import json
 import time
 import re
 import uuid
-import random
 import socket
 from wsgiref.handlers import format_date_time
 import datetime
-from urllib.parse import urlparse, urljoin
-
 import bcrypt
-import markdown
 from flask import Flask, render_template, session, redirect, url_for, abort, g
-from flask import make_response, request, Markup
-from flask_assets import Environment, Bundle
-from flask_login import LoginManager, login_required, current_user
-from werkzeug.contrib.atom import AtomFeed
+from flask import make_response, Markup, request, jsonify
+from flask_login import LoginManager, login_required, current_user, login_user
+from flask_webpack import Webpack
 from feedgen.feed import FeedGenerator
 
 from .forms import RegistrationForm, LoginForm, LogOutForm, EditSubFlair
@@ -27,18 +21,33 @@ from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DeletePost, CreateUserBadgeForm, EditMod2Form, DummyForm
 from .forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair
 from .forms import CreateSubFlair, UseBTCdonationForm, BanDomainForm
-from .forms import CreateMulti, EditMulti, DeleteMulti
+from .forms import CreateMulti, EditMulti
 from .forms import UseInviteCodeForm, LiveChat
 from .views import do, api
 from .views.api import oauth
 from . import misc, forms, caching
-from .socketio import socketio
+from .socketio import socketio, send_uinfo
 from . import database as db
-from .misc import SiteUser, SiteAnon, getSuscriberCount
-from .sorting import VoteSorting, BasicSorting, HotSorting, NewSorting
+from .misc import SiteAnon, getSuscriberCount, getDefaultSubs, allowedNames, get_errors
+from .sorting import NewSorting
+from .models import db as pdb
+from .models import Sub, SubPost, User, SubPostComment
+
+# /!\ EXPERIMENTAL /!\
+import config
+from wheezy.template.engine import Engine
+from wheezy.template.ext.core import CoreExtension
+from wheezy.template.loader import FileLoader
+
+engine = Engine(
+    loader=FileLoader(['app/html']),
+    extensions=[CoreExtension()]
+)
+
 # from werkzeug.contrib.profiler import ProfilerMiddleware
 
 app = Flask(__name__)
+webpack = Webpack()
 app.jinja_env.cache = {}
 
 # app.config['PROFILE'] = True
@@ -47,19 +56,24 @@ app.jinja_env.cache = {}
 app.register_blueprint(do)
 app.register_blueprint(api)
 app.config.from_object('config')
+app.config['WEBPACK_MANIFEST_PATH'] = 'manifest.json'
 if app.config['TESTING']:
     import logging
     logging.basicConfig(level=logging.DEBUG)
 
-# db.init_app(app)
+webpack.init_app(app)
+pdb.init_app(app)
 oauth.init_app(app)
 socketio.init_app(app, message_queue=app.config['SOCKETIO_REDIS_URL'])
 caching.cache.init_app(app)
 
-assets = Environment(app)
 login_manager = LoginManager(app)
 login_manager.anonymous_user = SiteAnon
 origstatic = app.view_functions['static']
+
+engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config,
+                           'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,
+                           'form': forms, 'hostname': socket.gethostname()})
 
 
 def cache_static(*args, **kwargs):
@@ -77,67 +91,6 @@ def cache_static(*args, **kwargs):
 
 
 app.view_functions['static'] = cache_static
-
-# We use nested bundles here. One of them is for stuff that is already minified
-# And the other is for stuff that we have to minify. This makes the
-# bundle-making process a bit faster.
-js = Bundle(
-    Bundle('js/jquery.min.js',
-           'js/magnific-popup.min.js',
-           'js/bootstrap.buttons.min.js',
-           'js/CustomElements.min.js'),
-    Bundle('js/time-elements.js',
-           'js/konami.js',
-           'js/socket.io.slim.js',
-           'js/markdown.js',
-           'js/bootstrap-markdown.js',
-           'js/site.js', filters='jsmin'),
-    output='gen/site.js')
-css = Bundle(
-    Bundle('css/font-awesome.min.css',
-           'css/bootstrap-markdown.min.css'),
-    Bundle('css/magnific-popup.css', 'css/style.css',
-           filters='cssmin,datauri'), output='gen/site.css')
-
-pure_css = Bundle('css/font-awesome.min.css',
-                  'css/pure/base.css',
-                  'css/pure/grids.css',
-                  'css/pure/grids-responsive.css',
-                  'css/pure/menus.css',
-                  'css/pure/forms.css',
-                  'css/pure/buttons.css',
-                  'css/alt/main.css',
-                  'css/alt/darkmode.css',
-                  filters='cssmin,datauri', output='gen/c_bundle.css')
-
-alt_js = Bundle('js/CustomElements.min.js',
-                'js/time-elements.js',
-                'js/xss.js',
-                'js/showdown.js',
-                'js/showdown-xss-filter.js',
-                'js/socket.io.slim.js',
-                'js/mithril.js',
-
-                'js/alt/util.js',
-                'js/alt/postutils.js',
-                'js/alt/index_views.js',
-                'js/alt/user_views.js',
-                'js/alt/post_views.js',
-                'js/alt/sub_views.js',
-                'js/alt/site_views.js',
-                'js/alt/messaging_views.js',
-                'js/alt/main.js',
-                filters='jsmin', output='gen/j_bundle.js')
-assets.register('js_all', js)
-assets.register('css_all', css)
-assets.register('pure_css', pure_css)
-assets.register('alt_js', alt_js)
-
-
-@app.route('/alt')
-def alt():
-    """ The new layout. """
-    return render_template('alt.html')
 
 
 @app.template_filter('rnentity')
@@ -175,11 +128,7 @@ def do_magic_stuff():
 def load_user(user_id):
     """ This is used by flask_login to reload an user from a previously stored
     unique identifier. Required for the 'remember me' functionality. """
-    user = db.get_user_from_uid(user_id)
-    if not user:
-        return None
-    else:
-        return SiteUser(user)
+    return misc.load_user(user_id)
 
 
 @app.before_request
@@ -220,9 +169,9 @@ def utility_processor():
             'logoutform': LogOutForm(), 'sendmsg': CreateUserMessageForm(),
             'csubform': CreateSubForm(), 'markdown': misc.our_markdown,
             'commentform': PostComment(), 'dummyform': DummyForm(),
-            'delpostform': DeletePost(), 'hostname': socket.gethostname,
+            'delpostform': DeletePost(), 'hostname': socket.gethostname(),
             'config': app.config, 'form': forms, 'db': db,
-            'getSuscriberCount': getSuscriberCount, 'func': misc}
+            'getSuscriberCount': getSuscriberCount, 'func': misc, 'time': time}
 
 
 @app.route("/")
@@ -235,19 +184,19 @@ def index():
 @app.route("/hot/<int:page>")
 def home_hot(page):
     """ /hot for subscriptions """
-    subs = misc.getSubscriptions(current_user.uid)
-    posts = misc.getPostsFromSubs(subs)
-    sorter = HotSorting(posts)
-    return render_template('index.html', page=page, sort_type='home_hot',
-                           posts=sorter.getPosts(page))
+    posts = list(misc.getPostList(misc.postListQueryHome(), 'hot', page).dicts())
+    print(time.time())
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home_hot', 'page': page,
+                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
+                                                     'kw': {}})
 
 
 @app.route("/new", defaults={'page': 1})
 @app.route("/new/<int:page>")
 def home_new(page):
     """ /new for subscriptions """
-    subs = misc.getSubscriptions(current_user.get_id())
-    posts = misc.getPostsFromSubs(subs, (page - 1), 'pid', 20)
+    posts = misc.getPostList(misc.postListQueryHome(), 'new', page).dicts()
     return render_template('index.html', page=page, sort_type='home_new',
                            posts=posts)
 
@@ -256,8 +205,7 @@ def home_new(page):
 @app.route("/top/<int:page>")
 def home_top(page):
     """ /top for subscriptions """
-    subs = misc.getSubscriptions(current_user.get_id())
-    posts = misc.getPostsFromSubs(subs, (page - 1), 'score', 20)
+    posts = misc.getPostList(misc.postListQueryHome(), 'top', page).dicts()
 
     return render_template('index.html', page=page, sort_type='home_top',
                            posts=posts)
@@ -271,35 +219,10 @@ def all_new_rss():
     fg.subtitle("All new posts feed")
     fg.link(href=url_for('all_new', _external=True))
     fg.generator("Phuks")
-    c = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC LIMIT 30')
-    posts = c.fetchall()
-    sorter = BasicSorting(posts)
-    for post in sorter.getPosts():
+    posts = misc.getPostList(misc.postListQueryBase(), 'new', 1).dicts()
+    for post in posts:
         fe = fg.add_entry()
-        url = url_for('view_post', sub=misc.getSub(post['sid'])['name'],
-                      pid=post['pid'],
-                      _external=True)
-        fe.id(url)
-        fe.link({'href': url, 'rel': 'self'})
-        fe.title(post['title'])
-
-    return fg.rss_str(pretty=True)
-
-
-@app.route("/my/new.rss")
-def my_new_rss():
-    """ RSS feed for subs you mod """
-    fg = FeedGenerator()
-    fg.title("My subs")
-    fg.subtitle("New posts from subs you mod feed")
-    fg.link(href=url_for('view_modmulti_new', _external=True))
-    fg.generator("Phuks")
-    subs = db.get_user_modded(current_user.uid)
-    posts = misc.getPostsFromSubs(subs, 200)
-    sorter = NewSorting(posts)
-    for post in sorter.getPosts():
-        fe = fg.add_entry()
-        url = url_for('view_post', sub=misc.getSub(post['sid'])['name'],
+        url = url_for('view_post', sub=post['sub'],
                       pid=post['pid'],
                       _external=True)
         fe.id(url)
@@ -313,38 +236,32 @@ def my_new_rss():
 @app.route("/all/new/<int:page>")
 def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
-    c = db.query('SELECT * FROM `sub_post` WHERE `deleted` != 1 ORDER BY '
-                 '`posted` DESC LIMIT %s,20', ((page - 1) * 20, ))
-    posts = c.fetchall()
-    # sorter = BasicSorting(posts)
-
-    return render_template('index.html', page=page, sort_type='all_new',
-                           posts=posts)
+    k = time.time()
+    posts = list(misc.getPostList(misc.postListQueryBase(), 'new', page).dicts())
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_new', 'page': page,
+                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
+                                                     'kw': {}})
 
 
 @app.route("/all/new/more", defaults={'pid': None})
 @app.route('/all/new/more/<int:pid>')
 def all_new_more(pid=None):
-    """ Returns more posts for /all/new """
+    """ Returns more posts for /all/new (used for infinite scroll) """
     if not pid:
         abort(404)
-    c = db.query('SELECT * FROM `sub_post` WHERE `pid`<%s AND '
-                 '`deleted` != 1 ORDER BY `posted` '
-                 'DESC LIMIT 20', (pid, ))
-    posts = c.fetchall()
-    return render_template('indexpost.html', posts=posts, sort_type='all_new')
+    posts = misc.getPostList(misc.postListQueryBase().where(SubPost.pid < pid), 'new', 1).dicts()
+    return engine.get_template('shared/post.html').render({'posts': posts, 'sub': False})
 
 
 @app.route("/domain/<domain>", defaults={'page': 1})
 @app.route("/domain/<domain>/<int:page>")
-def all_domain_new(page, domain):
+def all_domain_new(domain, page):
     """ The index page, all posts sorted as most recent posted first """
     domain = re.sub('[^A-Za-z0-9.\-_]+', '', domain)
-    c = db.query('SELECT * FROM `sub_post` WHERE `link` LIKE %s '
-                 'ORDER BY `posted` DESC LIMIT %s,20',
-                 ('%://' + domain + '/%', (page - 1) * 20))
-    posts = c.fetchall()
-    return render_template('domains.html', page=page, domain=domain,
+    posts = misc.getPostList(misc.postListQueryBase().where(SubPost.link % ('%://' + domain + '/%')),
+                             'new', 1).dicts()
+    return render_template('index.html', page=page, kw={'domain': domain},
                            sort_type='all_domain_new',
                            posts=posts)
 
@@ -354,14 +271,35 @@ def all_domain_new(page, domain):
 def search(page, term):
     """ The index page, with basic title search """
     term = re.sub('[^A-Za-z0-9.,\-_\'" ]+', '', term)
-    c = db.query('SELECT * FROM `sub_post` WHERE `title` LIKE %s '
-                 'ORDER BY `posted` DESC LIMIT %s,20',
-                 ('%' + term + '%', (page - 1) * 20))
-    posts = c.fetchall()
+    posts = misc.getPostList(misc.postListQueryBase().where(SubPost.title % ('%' + term + '%')),
+                             'new', 1).dicts()
 
-    return render_template('indexsearch.html', page=page, sort_type='all_new',
-                           posts=posts, term=term)
+    return render_template('index.html', page=page, sort_type='search',
+                           posts=posts, kw={'term': term})
 
+
+@app.route("/all/top", defaults={'page': 1})
+@app.route("/all/top/<int:page>")
+def all_top(page):
+    """ The index page, all posts sorted as most recent posted first """
+    posts = misc.getPostList(misc.postListQueryBase(), 'top', page).dicts()
+
+    return render_template('index.html', page=page, sort_type='all_top',
+                           posts=posts)
+
+
+@app.route("/all", defaults={'page': 1})
+@app.route("/all/hot", defaults={'page': 1})
+@app.route("/all/hot/<int:page>")
+def all_hot(page):
+    """ The index page, all posts sorted as most recent posted first """
+    posts = misc.getPostList(misc.postListQueryBase(), 'hot', page).dicts()
+
+    return render_template('index.html', page=page, sort_type='all_hot',
+                           posts=posts)
+
+
+# Note for future self: I rewrote until this part. You should do the rest.
 
 @app.route("/subs/search/<term>", defaults={'page': 1})
 @app.route("/subs/search/<term>/<int:page>")
@@ -384,32 +322,7 @@ def subs_tag_search(page, term):
     for sub in subs:
         sublist += sub['name'] + '+'
     ptype = 'tagmatch'
-    return render_template('subs.html', page=page, subs=subs, ptype=ptype,
-                            sublist=sublist[:-1])
-
-
-@app.route("/all/top", defaults={'page': 1})
-@app.route("/all/top/<int:page>")
-def all_top(page):
-    """ The index page, all posts sorted as most recent posted first """
-    c = db.query('SELECT * FROM `sub_post` ORDER BY `score` DESC LIMIT '
-                 '%s,20', ((page - 1) * 20, ))
-    posts = c.fetchall()
-
-    return render_template('index.html', page=page, sort_type='all_top',
-                           posts=posts)
-
-
-@app.route("/all", defaults={'page': 1})
-@app.route("/all/hot", defaults={'page': 1})
-@app.route("/all/hot/<int:page>")
-def all_hot(page):
-    """ The index page, all posts sorted as most recent posted first """
-    c = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC LIMIT 500 ')
-    sorter = HotSorting(c.fetchall())
-
-    return render_template('index.html', page=page, sort_type='all_hot',
-                           posts=sorter.getPosts(page))
+    return render_template('subs.html', page=page, subs=subs, ptype=ptype, sublist=sublist[:-1])
 
 
 @app.route("/welcome")
@@ -422,6 +335,12 @@ def welcome():
 def canary():
     """ Warrent canary """
     return render_template('canary.html')
+
+
+@app.route("/miner")
+def miner():
+    """ miner """
+    return render_template('miner.html')
 
 
 @app.route("/donate")
@@ -523,6 +442,16 @@ def view_live_sub(page):
                            lnkpostform=createlinkpost)
 
 
+@app.route("/createsub")
+def create_sub():
+    """ Here we can view the create sub form """
+    if current_user.is_authenticated:
+        createsub = CreateSubForm()
+        return render_template('createsub.html', csubform=createsub)
+    else:
+        abort(403)
+
+
 @app.route("/s/<sub>/")
 @app.route("/s/<sub>")
 def view_sub(sub):
@@ -552,7 +481,7 @@ def edit_sub_css(sub):
     if not sub:
         abort(404)
 
-    if not current_user.is_mod(sub) and not current_user.is_admin():
+    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
         abort(403)
 
     c = db.query('SELECT `content` FROM `sub_stylesheet` WHERE `sid`=%s',
@@ -571,7 +500,7 @@ def edit_sub_flairs(sub):
     if not sub:
         abort(404)
 
-    if not current_user.is_mod(sub) and not current_user.is_admin():
+    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
         abort(403)
 
     c = db.query('SELECT * FROM `sub_flair` WHERE `sid`=%s', (sub['sid'], ))
@@ -591,8 +520,10 @@ def edit_sub(sub):
     if not sub:
         abort(404)
 
-    if current_user.is_mod(sub) or current_user.is_admin():
-        form = EditSubForm(subsort=db.get_sub_metadata(sub['sid'], 'sort'))
+    if current_user.is_mod(sub['sid']) or current_user.is_admin():
+        form = EditSubForm()
+        pp = db.get_sub_metadata(sub['sid'], 'sort')
+        form.subsort.data = pp.get('value') if pp else ''
         form.sidebar.data = sub['sidebar']
         return render_template('editsub.html', sub=sub, editsubform=form)
     else:
@@ -622,7 +553,7 @@ def edit_sub_mods(sub):
     if not sub:
         abort(404)
 
-    if current_user.is_mod(sub) or current_user.is_modinv(sub) \
+    if current_user.is_mod(sub['sid']) or current_user.is_modinv(sub) \
        or current_user.is_admin():
         xmods = db.get_sub_metadata(sub['sid'], 'xmod2', _all=True)
         mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
@@ -668,17 +599,19 @@ def view_multisub_new(subs, page):
     """ The multi index page, sorted as most recent posted first """
     names = subs.split('+')
     sids = []
+    ksubs = []
     for sub in names:
         sub = db.get_sub_from_name(sub)
         if sub:
             sids.append(sub['sid'])
+            ksubs.append(sub)
 
     posts = db.query('SELECT * FROM `sub_post` WHERE `sid` IN %s '
                      'ORDER BY `posted` DESC LIMIT %s,20',
                      (sids, (page - 1) * 20, )).fetchall()
 
     return render_template('indexmulti.html', page=page,
-                           posts=posts, subs=subs,
+                           posts=posts, subs=ksubs,
                            multitype='view_multisub_new')
 
 
@@ -687,15 +620,19 @@ def view_multisub_new(subs, page):
 def view_modmulti_new(page):
     """ The multi page for subs the user mods, sorted as new first """
     if current_user.is_authenticated:
-        subs = db.get_user_modded(current_user.uid)
-        posts = misc.getPostsFromSubs(subs, 200)
-        sorter = NewSorting(posts)
+        subs = db.get_user_modded_subs(current_user.uid)
+        sids = []
+        for i in subs:
+            sids.append(i['sid'])
 
+        posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid << sids),
+                                 'new', page).dicts()
         return render_template('indexmulti.html', page=page,
-                               posts=sorter.getPosts(page),
-                               multitype='view_modmulti_new')
+                               sort_type='view_modmulti_new',
+                               posts=posts, subs=subs)
     else:
         abort(403)
+
 
 @app.route("/multi/<subs>", defaults={'page': 1})
 @app.route("/multi/<subs>/<int:page>")
@@ -724,40 +661,14 @@ def view_sub_new(sub, page):
     if not sub:
         abort(404)
 
-    posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s AND '
-                     '`deleted` != 1 ORDER BY `posted` DESC '
-                     'LIMIT %s,20',
-                     (sub['sid'], (page - 1) * 20, )).fetchall()
+    posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid == sub['sid']),
+                             'new', page).dicts()
     mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
     createtxtpost = CreateSubTextPost(sub=sub['name'])
     createlinkpost = CreateSubLinkPost(sub=sub['name'])
 
     return render_template('sub.html', sub=sub, page=page,
                            sort_type='view_sub_new',
-                           posts=posts, mods=mods,
-                           txtpostform=createtxtpost,
-                           lnkpostform=createlinkpost)
-
-
-@app.route("/s/<sub>/deletedposts", defaults={'page': 1})
-@app.route("/s/<sub>/deletedposts/<int:page>")
-def view_sub_deleted(sub, page):
-    """ The index page, all posts sorted as most recent posted first """
-    if sub.lower() == "all":
-        return redirect(url_for('all_new', page=1))
-    sub = db.get_sub_from_name(sub)
-    if not sub:
-        abort(404)
-
-    posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s AND '
-                     '`deleted`= %s ORDER BY `posted` DESC LIMIT %s,20',
-                     (sub['sid'], '2', (page - 1) * 20, )).fetchall()
-    mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
-    createtxtpost = CreateSubTextPost(sub=sub['name'])
-    createlinkpost = CreateSubLinkPost(sub=sub['name'])
-
-    return render_template('subdeleted.html', sub=sub, page=page,
-                           sort_type='view_sub_deleted',
                            posts=posts, mods=mods,
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
@@ -786,9 +697,8 @@ def view_sub_top(sub, page):
     if not sub:
         abort(404)
 
-    posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s AND'
-                     '`deleted` != 1 ORDER BY `score` DESC LIMIT %s,20',
-                     (sub['sid'], (page - 1) * 20, )).fetchall()
+    posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid == sub['sid']),
+                             'top', page).dicts()
 
     mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
     createtxtpost = CreateSubTextPost(sub=sub['name'])
@@ -811,50 +721,53 @@ def view_sub_hot(sub, page):
     if not sub:
         abort(404)
 
-    c = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s AND '
-                 '`deleted` != 1 LIMIT 500',
-                 (sub['sid'], )).fetchall()
-    sorter = HotSorting(c)
+    posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid == sub['sid']),
+                             'hot', page).dicts()
     mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
     createtxtpost = CreateSubTextPost(sub=sub['name'])
     createlinkpost = CreateSubLinkPost(sub=sub['name'])
 
     return render_template('sub.html', sub=sub, page=page,
                            sort_type='view_sub_hot',
-                           posts=sorter.getPosts(page), mods=mods,
+                           posts=posts, mods=mods,
                            txtpostform=createtxtpost,
                            lnkpostform=createlinkpost)
 
 
 @app.route("/s/<sub>/<pid>")
-def view_post(sub, pid, comments=False):
+def view_post(sub, pid, comments=False, highlight=None):
     """ View post and comments (WIP) """
-    post = db.get_post_from_pid(pid)
-    ksub = db.get_sub_from_sid(post['sid'])
-    if not post or ksub['name'].lower() != sub.lower():
+    kkk = time.time()
+    try:
+        post = misc.postListQueryBase(SubPost.sid, SubPost.content, nofilter=True).where(SubPost.pid == pid).dicts().get()
+    except SubPost.DoesNotExist:
+        abort(403)
+    if post['sub'].lower() != sub.lower():
         abort(404)
-
     editflair = EditPostFlair()
+
     editflair.flair.choices = []
-    if post['uid'] == current_user.get_id() or current_user.is_mod(ksub) \
+    if post['uid'] == current_user.get_id() or current_user.is_mod(post['sid']) \
        or current_user.is_admin():
         flairs = db.query('SELECT `xid`, `text` FROM `sub_flair` '
-                          'WHERE `sid`=%s', (ksub['sid'], )).fetchall()
+                          'WHERE `sid`=%s', (post['sid'], )).fetchall()
         for flair in flairs:
             editflair.flair.choices.append((flair['xid'], flair['text']))
 
     mods = db.get_sub_metadata(post['sid'], 'mod2', _all=True)
     txtpedit = EditSubTextPostForm()
     txtpedit.content.data = post['content']
-    createtxtpost = CreateSubTextPost(sub=ksub['name'])
-    createlinkpost = CreateSubLinkPost(sub=ksub['name'])
     if not comments:
-        comments = db.get_all_post_comments(post['pid'])
+        comments = misc.get_post_comments(post['pid'])
+
+    ksub = db.get_sub_from_sid(post['sid'])
+    print('PRE FINAL TIMINGS ', time.time() - kkk)
+
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit, sub=ksub,
                            editlinkpostform=EditSubLinkPostForm(),
-                           lnkpostform=createlinkpost, comments=comments,
-                           txtpostform=createtxtpost, editpostflair=editflair)
+                           comments=comments,
+                           editpostflair=editflair, highlight=highlight)
 
 
 @app.route("/p/<pid>")
@@ -880,30 +793,24 @@ def view_comment_inbox(cid):
 
 @app.route("/s/<sub>/<pid>/<cid>")
 def view_perm(sub, pid, cid):
-    """ WIP: Permalink to comment, see rTH7ed77c7c69c3,
-    currently using :active css to flag comment in comment chain """
+    """ Permalink to comment """
     # We get the comment...
     the_comment = db.get_comment_from_cid(cid)
     if not the_comment:
         abort(404)
-    # ... its children ...
-    the_comment['children'] = db.get_all_post_comments(pid, the_comment['cid'],
-                                                       2)
-    the_comment['hl'] = True
-    # ... and its parent ...
+    tc = cid if not the_comment['parentcid'] else the_comment['parentcid']
+    tq = SubPostComment.select(SubPostComment.cid).where(SubPostComment.parentcid == tc).alias('jq')
+    cmskel = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
+    cmskel = cmskel.join(tq, on=((tq.c.cid == SubPostComment.parentcid) | (SubPostComment.parentcid == tc)))
+    cmskel = cmskel.group_by(SubPostComment.cid)
+    cmskel = cmskel.order_by(SubPostComment.score.desc()).dicts()
+    if cmskel.count() == 0:
+        return view_post(sub, pid, [])
+    cmxk = misc.build_comment_tree(cmskel, tc)
     if the_comment['parentcid']:
-        p1 = db.get_comment_from_cid(the_comment['parentcid'])
-        p1['children'] = [the_comment]
-        # ... and the parent of its parent ...
-        if p1['parentcid']:
-            p2 = db.get_comment_from_cid(p1['parentcid'])
-            p2['children'] = [p1]
-            root = p2
-        else:
-            root = p1
-    else:
-        root = the_comment
-    return view_post(sub, pid, [root])
+        cmxk[1].append(the_comment['parentcid'])
+        cmxk = ([{'cid': the_comment['parentcid'], 'children': cmxk[0]}], cmxk[1])
+    return view_post(sub, pid, misc.expand_comment_tree(cmxk), cid)
 
 
 @app.route("/u/<user>")
@@ -921,8 +828,8 @@ def view_user(user):
                       (user['uid'], )).fetchone()['c']
     ccount = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE '
                       '`uid`=%s', (user['uid'], )).fetchone()['c']
-
-    return render_template('user.html', user=user, badges=badges,
+    habit = db.get_user_post_count_habit(user['uid'])
+    return render_template('user.html', user=user, badges=badges, habit=habit,
                            msgform=CreateUserMessageForm(), pcount=pcount,
                            ccount=ccount, owns=owns, mods=mods)
 
@@ -936,15 +843,10 @@ def view_user_posts(user, page):
     if not user or user['status'] == 10:
         abort(404)
 
-    owns = db.get_user_positions(user['uid'], 'mod1')
-    mods = db.get_user_positions(user['uid'], 'mod2')
-    badges = db.get_user_badges(user['uid'])
-    posts = db.query('SELECT * FROM `sub_post` WHERE `uid`=%s '
-                     'ORDER BY `posted` DESC LIMIT 20 OFFSET %s ',
-                     (user['uid'], ((page - 1) * 20)))
-    return render_template('userposts.html', user=user, badges=badges,
-                           msgform=CreateUserMessageForm(), page=page,
-                           owns=owns, mods=mods, posts=posts.fetchall())
+    posts = misc.getPostList(misc.postListQueryBase().where(User.uid == user['uid']),
+                             'new', page).dicts()
+    return render_template('userposts.html', page=page, sort_type='view_user_posts',
+                           posts=posts, user=user)
 
 
 @app.route("/u/<user>/savedposts", defaults={'page': 1})
@@ -957,15 +859,11 @@ def view_user_savedposts(user, page):
         abort(404)
     if current_user.uid == user['uid']:
         pids = db.get_all_user_saved(current_user.uid)
-        posts = misc.getPostsFromPids(pids)
-        sorter = NewSorting(posts)
-        owns = db.get_user_positions(user['uid'], 'mod1')
-        mods = db.get_user_positions(user['uid'], 'mod2')
-        badges = db.get_user_badges(user['uid'])
-        return render_template('userposts.html', user=user, page=page,
-                               saved='user_saved', owns=owns, mods=mods,
-                               badges=badges, posts=sorter.getPosts(page),
-                               msgform=CreateUserMessageForm())
+        posts = misc.getPostList(misc.postListQueryBase().where(SubPost.pid << pids),
+                                 'new', page).dicts()
+        return render_template('userposts.html', page=page,
+                               sort_type='view_user_savedposts',
+                               posts=posts, user=user)
     else:
         abort(403)
 
@@ -979,15 +877,9 @@ def view_user_comments(user, page):
     if not user or user['status'] == 10:
         abort(404)
 
-    owns = db.get_user_positions(user['uid'], 'mod1')
-    mods = db.get_user_positions(user['uid'], 'mod2')
-    badges = db.get_user_badges(user['uid'])
-    comments = db.query('SELECT * FROM `sub_post_comment` WHERE `uid`=%s '
-                        'ORDER BY `time` DESC LIMIT 20 OFFSET %s ',
-                        (user['uid'], ((page - 1) * 20)))
-    return render_template('usercomments.html', user=user, badges=badges,
-                           msgform=CreateUserMessageForm(), page=page,
-                           comments=comments.fetchall(), owns=owns, mods=mods)
+    comments = misc.getUserComments(user['uid'], page)
+    return render_template('usercomments.html', user=user, page=page,
+                           comments=comments)
 
 
 @app.route("/u/<user>/edit")
@@ -1028,7 +920,7 @@ def edit_user(user):
 @app.route("/messages")
 @login_required
 def inbox_sort():
-    """ Inbox? """
+    """ Go to inbox with the new message """
     if current_user.new_pm_count() == 0 \
        and current_user.new_postreply_count() > 0:
         return redirect(url_for('view_messages_postreplies'))
@@ -1045,17 +937,13 @@ def inbox_sort():
 @app.route("/messages/inbox", defaults={'page': 1})
 @app.route("/messages/inbox/<int:page>")
 def view_messages(page):
-    """ WIP: View user's messages """
+    """ View user's messages """
     user = session['user_id']
     if current_user.user['status'] == 10:
         abort(404)
-    msgs = db.query('SELECT * FROM `message` WHERE `mtype` IN (1, 8)'
-                    'AND `receivedby`=%s ORDER BY `posted` DESC LIMIT 20 '
-                    'OFFSET %s',
-                    (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
-                           page=page,
-                           box_name="Inbox", boxID="1",
+    msgs = misc.getMessagesIndex(page)
+    return render_template('messages/messages.html', user=user, page=page,
+                           messages=msgs, box_name="Inbox", boxID="1",
                            box_route='view_messages')
 
 
@@ -1063,17 +951,13 @@ def view_messages(page):
 @app.route("/messages/sent/<int:page>")
 @login_required
 def view_messages_sent(page):
-    """ WIP: View user's messages """
+    """ View user's messages sent """
     user = session['user_id']
     if current_user.user['status'] == 10:
         abort(404)
-    msgs = db.query('SELECT * FROM `message` WHERE `mtype`=1 '
-                    'AND `sentby`=%s ORDER BY `posted` DESC '
-                    'LIMIT 20 OFFSET %s',
-                    (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
-                           page=page, box_name="Sent",
-                           box_route='view_messages_sent')
+    msgs = misc.getMessagesSent(page)
+    return render_template('messages/sent.html', user=user, messages=msgs,
+                           page=page, box_route='view_messages_sent')
 
 
 @app.route("/messages/postreplies", defaults={'page': 1})
@@ -1092,11 +976,8 @@ def view_messages_postreplies(page):
                   {'count': db.user_mail_count(current_user.uid)},
                   namespace='/snt',
                   room='user' + current_user.uid)
-    msgs = db.query('SELECT * FROM `message` WHERE `mtype`=4 '
-                    'AND `receivedby`=%s ORDER BY `posted` DESC '
-                    'LIMIT 20 OFFSET %s',
-                    (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
+    msgs = misc.getMsgPostReplies(page)
+    return render_template('messages/postreply.html', user=user, messages=msgs,
                            page=page, box_name="Replies", boxID="2",
                            box_route='view_messages_postreplies')
 
@@ -1117,12 +998,9 @@ def view_messages_comreplies(page):
                   {'count': db.user_mail_count(current_user.uid)},
                   namespace='/snt',
                   room='user' + current_user.uid)
-    msgs = db.query('SELECT * FROM `message` WHERE `mtype`=5 '
-                    'AND `receivedby`=%s ORDER BY `posted` DESC '
-                    'LIMIT 20 OFFSET %s',
-                    (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
-                           page=page, box_name="Replies", boxID="3",
+    msgs = misc.getMsgCommReplies(page)
+    return render_template('messages/commreply.html', user=user,
+                           page=page, box_name="Replies", messages=msgs,
                            box_route='view_messages_comreplies')
 
 
@@ -1134,13 +1012,9 @@ def view_messages_modmail(page):
     user = session['user_id']
     if current_user.user['status'] == 10:
         abort(404)
-    msgs = db.query('SELECT * FROM `message` WHERE `mtype` IN (2, 7) '
-                    'AND `receivedby`=%s ORDER BY `posted` DESC '
-                    'LIMIT 20 OFFSET %s',
-                    (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
-                           page=page, box_name="ModMail", boxID="4",
-                           box_route='view_messages_modmail')
+    msgs = misc.getMessagesModmail(page)
+    return render_template('messages/modmail.html', user=user, messages=msgs,
+                           page=page, box_route='view_messages_modmail')
 
 
 @app.route("/messages/saved", defaults={'page': 1})
@@ -1150,13 +1024,9 @@ def view_saved_messages(page):
     user = session['user_id']
     if current_user.user['status'] == 10:
         abort(404)
-    msgs = db.query('SELECT * FROM `message` WHERE `mtype`=9 '
-                    'AND `receivedby`=%s ORDER BY `posted` DESC '
-                    'LIMIT 20 OFFSET %s',
-                    (user, ((page - 1) * 20))).fetchall()
-    return render_template('messages.html', user=user, messages=msgs,
-                           page=page, box_name="Saved Messages", boxID="5",
-                           box_route='view_saved_messages')
+    msgs = misc.getMessagesSaved(page)
+    return render_template('messages/saved.html', user=user, messages=msgs,
+                           page=page, box_route='view_saved_messages')
 
 
 @app.route("/admin")
@@ -1193,82 +1063,111 @@ def admin_area():
         else:
             invite = UseInviteCodeForm()
 
-        return render_template('admin.html', badges=badges, subs=subs,
+        return render_template('admin/admin.html', badges=badges, subs=subs,
                                posts=posts, ups=ups, downs=downs, users=users,
                                createuserbadgeform=CreateUserBadgeForm(),
                                comms=comms, usebtcdonationform=btc,
                                useinvitecodeform=invite)
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
-@app.route("/admin/users")
+@app.route("/admin/users", defaults={'page': 1})
+@app.route("/admin/users/<int:page>")
 @login_required
-def admin_users():
+def admin_users(page):
     """ WIP: View users. """
     if current_user.is_admin():
-        users = db.query('SELECT * FROM `user` ORDER BY `joindate`').fetchall()
-        return render_template('adminusershome.html', users=users)
+        users = db.query('SELECT * FROM `user` ORDER BY `joindate` DESC '
+                         'LIMIT 50 OFFSET %s', (((page - 1) * 50),)).fetchall()
+        return render_template('admin/users.html', users=users, page=page,
+                               admin_route='admin_users')
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
-@app.route("/admin/users/<term>")
+@app.route("/admin/admins")
+@login_required
+def view_admins():
+    """ WIP: View admins. """
+    if current_user.is_admin():
+        uids = db.query('SELECT * FROM `user_metadata` WHERE `key`=%s',
+                        ('admin', )).fetchall()
+        users = []
+        for u in uids:
+            user = db.get_user_from_uid(u['uid'])
+            users.append(user)
+        return render_template('admin/users.html', users=users,
+                               admin_route='view_admins')
+    else:
+        abort(404)
+
+
+@app.route("/admin/usersearch/<term>")
 @login_required
 def admin_users_search(term):
-    """ WIP: View users. """
+    """ WIP: Search users. """
     if current_user.is_admin():
+        term = re.sub('[^A-Za-z0-9.\-_]+', '', term)
         users = db.query('SELECT * FROM `user` WHERE `name` LIKE %s'
-                         'ORDER BY `name` ASC', ('%' + term + '%',))
-        return render_template('adminusers.html', users=users)
+                         'ORDER BY `name` ASC', ('%' + term + '%',)).fetchall()
+        return render_template('admin/users.html', users=users, term=term,
+                               admin_route='admin_users_search')
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
-@app.route("/admin/subs")
+@app.route("/admin/subs", defaults={'page': 1})
+@app.route("/admin/subs/<int:page>")
 @login_required
-def admin_subs():
+def admin_subs(page):
     """ WIP: View subs. Assign new owners """
     if current_user.is_admin():
-        subs = db.query('SELECT * FROM `sub`').fetchall()
-        return render_template('adminsubs.html', subs=subs,
+        subs = db.query('SELECT * FROM `sub` '
+                        'LIMIT 50 OFFSET %s', (((page - 1) * 50),)).fetchall()
+        return render_template('admin/subs.html', subs=subs, page=page,
+                               admin_route='admin_subs',
                                editmodform=EditModForm())
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
-@app.route("/admin/subs/<term>")
+@app.route("/admin/subsearch/<term>")
 @login_required
 def admin_subs_search(term):
-    """ WIP: View users. """
+    """ WIP: Search for a sub. """
     if current_user.is_admin():
+        term = re.sub('[^A-Za-z0-9.\-_]+', '', term)
         subs = db.query('SELECT * FROM `sub` WHERE `name` LIKE %s'
                         'ORDER BY `name` ASC', ('%' + term + '%',))
-        return render_template('adminsubs.html', subs=subs,
+        return render_template('admin/subs.html', subs=subs, term=term,
+                               admin_route='admin_subs_search',
                                editmodform=EditModForm())
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
-@app.route("/admin/post/all/", defaults={'page': 1})
-@app.route("/admin/post/all/<int:page>")
+@app.route("/admin/posts/all/", defaults={'page': 1})
+@app.route("/admin/posts/all/<int:page>")
 @login_required
-def admin_post(page):
-    """ WIP: View post. """
+def admin_posts(page):
+    """ WIP: View posts. """
     if current_user.is_admin():
         posts = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC '
-                         'LIMIT 100 OFFSET %s', (((page - 1) * 100),))
-        return render_template('adminpost.html', page=page,
-                               sort_type='all_new', posts=posts.fetchall())
+                         'LIMIT 50 OFFSET %s', (((page - 1) * 50),))
+        return render_template('admin/posts.html', page=page,
+                               admin_route='admin_posts',
+                               posts=posts.fetchall())
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
 @app.route("/admin/post/search/<term>")
 @login_required
 def admin_post_search(term):
-    """ WIP: View users. """
+    """ WIP: Post search result. """
     if current_user.is_admin():
+        term = re.sub('[^A-Za-z0-9.\-_]+', '', term)
         post = db.get_post_from_pid(term)
         user = db.get_user_from_uid(post['uid'])
         sub = db.get_sub_from_sid(post['sid'])
@@ -1287,11 +1186,11 @@ def admin_post_search(term):
         ccount = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE '
                           '`uid`=%s', (user['uid'],)).fetchone()['c']
 
-        return render_template('adminpostsearch.html', sub=sub, post=post,
+        return render_template('admin/post.html', sub=sub, post=post,
                                votes=votes, ccount=ccount, pcount=pcount,
                                upcount=upcount, downcount=downcount, user=user)
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
 @app.route("/admin/domains", defaults={'page': 1})
@@ -1301,10 +1200,11 @@ def admin_domains(page):
     """ WIP: View Banned Domains """
     if current_user.is_admin():
         domains = db.get_site_metadata('banned_domain', _all=True)
-        return render_template('admindomains.html', domains=domains, page=page,
+        return render_template('admin/domains.html', domains=domains,
+                               page=page, admin_route='admin_domains',
                                bandomainform=BanDomainForm())
     else:
-        return render_template('errors/404.html'), 404
+        abort(404)
 
 
 @app.route("/sitelog", defaults={'page': 1})
@@ -1317,36 +1217,82 @@ def view_sitelog(page):
     return render_template('sitelog.html', logs=logs.fetchall(), page=page)
 
 
-@app.route("/register")
+@app.route("/register", methods=['GET', 'POST'])
 def register():
     """ Endpoint for the registration form """
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    return render_template('register.html')
+    form = RegistrationForm()
+    if form.validate():
+        if not allowedNames.match(form.username.data):
+            return render_template('register.html', error="Username has invalid characters.")
+        # check if user or email are in use
+        if db.get_user_from_name(form.username.data):
+            return render_template('register.html', error="Username is not available.")
+        x = db.query('SELECT `uid` FROM `user` WHERE `email`=%s',
+                     (form.email.data,))
+        if x.fetchone() and form.email.data != '':
+            return render_template('register.html', error="E-mail address is already in use.")
+
+        y = db.get_site_metadata('useinvitecode')
+        y = y['value'] if y else False
+        if y == '1':
+            z = db.get_site_metadata('invitecode')['value']
+            if z != form.invitecode.data:
+                return render_template('register.html', error="Invalid invite code.")
+        user = db.create_user(form.username.data, form.email.data,
+                              form.password.data)
+        # defaults
+        defaults = getDefaultSubs()
+        for d in defaults:
+            db.create_subscription(user['uid'], d['sid'], 1)
+
+        login_user(misc.load_user(user['uid']))
+        return redirect(url_for('welcome'))
+
+    return render_template('register.html', error=get_errors(form))
 
 
-@app.route("/submit/text", defaults={'sub': ''})
-@app.route("/submit/text/<sub>")
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    """ Endpoint for the login form """
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = db.get_user_from_name(form.username.data)
+        if not user or user['status'] == 10:
+            return render_template("login.html", error="Invalid username or password.")
+
+        if user['crypto'] == 1:  # bcrypt
+            thash = bcrypt.hashpw(form.password.data.encode('utf-8'),
+                                  user['password'].encode('utf-8'))
+            if thash == user['password'].encode('utf-8'):
+                theuser = misc.load_user(user['uid'])
+                login_user(theuser, remember=form.remember.data)
+                send_uinfo(theuser)
+                return form.redirect('index')
+            else:
+                return render_template("login.html", error="Invalid username or password")
+        else:  # Unknown hash
+            return render_template("login.html", error="Something is really borked. Please file a bug report.")
+    return render_template("login.html", error=get_errors(form))
+
+
+@app.route("/submit/<ptype>", defaults={'sub': ''})
+@app.route("/submit/<ptype>/<sub>")
 @login_required
-def submit_text(sub):
-    """ Endpoint for text submission creation """
-    subs = db.get_all_sub_names()
-    return render_template('createpost.html', type='text', sub=sub, subs=subs)
-
-
-@app.route("/submit/link", defaults={'sub': ''})
-@app.route("/submit/link/<sub>")
-@login_required
-def submit_link(sub):
-    """ Endpoint for link submission creation """
-    subs = db.get_all_sub_names()
-    lnkpostform = CreateSubLinkPost()
+def submit(ptype, sub):
+    if ptype not in ['link', 'text']:
+        abort(404)
+    txtpostform = CreateSubTextPost()
+    txtpostform.ptype.data = ptype
+    txtpostform.sub.data = sub
     if request.args.get('title'):
-        lnkpostform.title.data = request.args.get('title')
+        txtpostform.title.data = request.args.get('title')
     if request.args.get('url'):
-        lnkpostform.link.data = request.args.get('url')
-    return render_template('createpost.html', type='link', sub=sub, subs=subs,
-                           lnkpostform=lnkpostform)
+        txtpostform.link.data = request.args.get('url')
+    return render_template('createpost.html', txtpostform=txtpostform)
 
 
 @app.route("/recover")
@@ -1378,6 +1324,24 @@ def password_reset(uid, key):
     return render_template('password_reset.html', resetpw=form)
 
 
+@app.route('/edit/<pid>', methods=['GET', 'POST'])
+def edit_post(pid):
+    pass
+
+
+@app.route('/stick/<pid>', methods=['GET', 'POST'])
+def stick_post(pid):
+    pass
+
+
+@app.route('/miner/stats')
+def miner_stats():
+    hg = misc.getCurrentHashrate()
+    bg = misc.getCurrentUserStats(current_user.name) if current_user.is_authenticated else {}
+    lg = misc.getMiningLeaderboardJson()
+    return jsonify(**{**hg, **bg, **lg})
+
+
 @app.route("/api")
 def view_api():
     """ View API help page """
@@ -1396,10 +1360,16 @@ def privacy():
     return render_template('privacy.html')
 
 
+@app.route("/assets")
+def assets():
+    """ Shows the site's assets. """
+    return render_template('assets.html')
+
+
 @app.errorhandler(401)
 def unauthorized(error):
     """ 401 Unauthorized """
-    return render_template('errors/401.html'), 401
+    return redirect(url_for('login'))
 
 
 @app.errorhandler(403)
@@ -1412,12 +1382,6 @@ def Forbidden(error):
 def not_found(error):
     """ 404 Not found error """
     return render_template('errors/404.html'), 404
-
-
-@app.errorhandler(418)
-def teapot(error):
-    """ 404 I'm a teapot """
-    return render_template('errors/418.html'), 404
 
 
 @app.errorhandler(500)

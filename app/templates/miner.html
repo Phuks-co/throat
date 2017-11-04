@@ -1,0 +1,162 @@
+{% extends "layout.html" %}
+{% block title %}{{config.LEMA}}{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ asset_url_for('miner.css') }}">
+{% endblock %}
+
+
+{% block sidebar %}
+{{ super() }}
+
+	<div id="minerstats">
+		<div>
+	  	<h2>Stats</h2>
+	    {% set hashrate = func.getCurrentHashrate() %}
+	    <div id="miningstats">
+	      <ul>
+					{% if current_user.is_authenticated %}
+					  {% set userstats = func.getCurrentUserStats(current_user.name) %}
+						<li>Current user: <b id="nm">{{current_user.name}}</b></li>
+						<li>User score: <b id="bal">{{userstats['balance']}}</b></li>
+					{% else %}
+						<li>Mining anonymously</li>
+					{% endif %}
+	        <li>Current site hashrate: <b id="hps">{{hashrate['hash']}}</b> H/s</li>
+	        <li>Current site total hashes: <b id="ht">{{hashrate['totalHashes']}}</b></li>
+	        <li>Total XMR pending: <b id="xpe">{{hashrate['amtDue']}}</b> XMR</li>
+	        <li>Total XMR paid to phuks: <b id="xpa">{{hashrate['amtPaid']}}</b> XMR</li>
+	      </ul>
+	    </div>
+		</div>
+	</div>
+{% endblock %}
+
+
+
+{% block content %}
+{{ super() }}
+{% if config.COIN_HIVE_SECRET %}
+  <div>
+    <div class="content">
+      <div style="overflow: hidden;">
+        <h2>Miner</h2>
+        <div class="six columns stopped" id="miner">
+      		<div class="row">
+      			<div class="three columns">
+      				<h4 class="number-label">Hashes/s</h4>
+      				<h2 id="mining-hashes-per-second">0.0</h2>
+      			</div>
+      			<div class="three columns">
+      				<h4 class="number-label">Total</h4>
+      				<h2 id="mining-hashes-total">0</h2>
+      			</div>
+      			<div class="three columns">
+      				<h4 class="number-label">Threads</h4>
+      				<h2>
+      					<span id="mining-threads">-</span>
+      					<span id="mining-threads-add" class="action">+</span>
+      					<span class="mining-divide"> / </span>
+      					<span id="mining-threads-remove" class="action">−</span>
+      				</h2>
+      			</div>
+						<div class="three columns">
+							<h4 class="number-label">Throttle</h4>
+							<h2>
+								<span id="mining-throttle">-</span>%
+								<span id="mining-throttle-add" class="action">+</span>
+								<span class="mining-divide"> / </span>
+								<span id="mining-throttle-subtract" class="action">−</span>
+							</h2>
+						</div>
+      		</div>
+      		<div id="mining-stats-container">
+      			<canvas id="mining-stats-canvas"></canvas>
+      			<div id="mining-controls">
+      				<a href="#" class="mining-button" id="mining-start">
+      					<svg class="mining-icon play-button" viewBox="0 0 200 200" alt="Start Mining">
+      						<circle cx="100" cy="100" r="90" fill="none" stroke-width="15" class="mining-stroke"/>
+      						<polygon points="70, 55 70, 145 145, 100" class="mining-fill"></polygon>
+      					</svg>
+      					Start Mining
+      				</a>
+      				<a href="#" class="mining-button" id="mining-stop">
+      					<svg class="mining-icon pause-button" viewBox="0 0 200 200" alt="Pause">
+      						<circle cx="100" cy="100" r="90" fill="none" stroke-width="15" class="mining-stroke"/>
+      						<rect x="70" y="50" width="20" height="100" class="mining-fill"/>
+      						<rect x="110" y="50" width="20" height="100" class="mining-fill"/>
+      					</svg>
+      				</a>
+      			</div>
+      		</div>
+      	</div>
+      </div>
+			<div>
+				<hr>
+				<h2 style="margin-top: 1em;">Leaderboards</h2>
+				<div class="pure-g">
+					<div class="pure-u-8-24">
+						<h3>Total contributed</h3>
+						{% cache 60, 'minerleaderboard' %}
+							{% set leaderboard = func.getMiningLeaderboard() %}
+							<div id="miningleaderboard">
+								<table>
+									{% for user in leaderboard %}
+										<tr>
+											<td class="center">{{loop.index}}</td>
+											<td><span id="top{{loop.index}}name">{{user['username']}}</span></td>
+											<td><b><span id="top{{loop.index}}score">{{"{:,}".format(user['score'])}}</span></b></td>
+										</tr>
+									{% endfor %}
+								</table>
+							</div>
+						{%endcache%}
+					</div>
+					<div class="pure-u-8-24" style="padding-left: 1.2em;">
+						{% cache 60, 'hashleaderboard' %}
+							<h3>Hashing power</h3>
+							{% set leaderboard = func.getHPLeaderboard() %}
+							<div id="speedleaderboard">
+								<table>
+									{% for user in leaderboard %}
+										<tr>
+											<td class="center">{{loop.index}}</td>
+											<td><span id="top{{loop.index}}name">{{user['username']}}</span></td>
+											<td><b><span id="top{{loop.index}}score">{{"{:,}".format(user['hashes'])}}</span></b> H/s</td>
+										</tr>
+									{% endfor %}
+								</table>
+							</div>
+						{%endcache%}
+					</div>
+				</div>
+			</div>
+    </div>
+  </div>
+
+
+	{%block pagefoot%}
+		<script src="/static/js/ch.js"></script>
+		{% if current_user.is_authenticated %}
+			<script type="text/javascript">
+				var cminer = new CoinHive.User('{{config.COIN_HIVE_PUBLIC}}', '{{current_user.name}}', {
+					threads: (localStorage.getItem('threads')) ? localStorage.getItem('threads') : 2,
+					throttle: (localStorage.getItem('throttle')) ? localStorage.getItem('throttle') : 0
+				});
+			</script>
+		{% else %}
+			<script type="text/javascript">
+				var cminer = new CoinHive.Anonymous('{{config.COIN_HIVE_PUBLIC}}', {
+					threads: (localStorage.getItem('threads')) ? localStorage.getItem('threads') : 2,
+					throttle: (localStorage.getItem('throttle')) ? localStorage.getItem('throttle') : 0
+				});
+			</script>
+		{% endif %}
+
+		<script src="{{ asset_url_for('miner.js') }}"></script>
+	{%endblock%}
+{% endif %}
+
+
+{% endblock %}

@@ -72,3 +72,7 @@ config.py
 # thumbs
 thumbs/*
 .pylint
+
+manifest.json
+node_modules/
+package-lock.json

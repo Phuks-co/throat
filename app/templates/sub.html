@@ -1,347 +1,117 @@
 {% extends "layout.html" %}
 {% block title %}{{sub.title}} | {{config.LEMA}}{% endblock %}
 
-{% block head %}
-{{ super() }}
-{% if func.getShowSubTimer(sub) %}
-<script> var end = new Date('{{func.getSubTimer(sub)}}Z'); </script>
-<script src="{{ url_for('static', filename='js/subcountdown.js') }}"></script>
-{% endif %}
-{% endblock %}
-
 {% block navbar %}
+{{ super() }}
 <li>
-  <a href="{{url_for('view_sub', sub=sub.name)}}">
-    {% if sub.nsfw %}
-      <span class="bgred" alt="Not safe for work">NSFW</span>
-    {% endif %}
-    {{sub.name}}
-  </a>
+  <a href="{{url_for('view_sub', sub=sub.name)}}" class="1">{{sub.name}}</a>
 </li>
-<li><a href="{{url_for('view_sub_hot', sub=sub.name)}}">Hot</a></li>
-<li><a href="{{url_for('view_sub_top', sub=sub.name)}}">Top</a></li>
-<li><a href="{{url_for('view_sub_new', sub=sub.name)}}">New</a></li>
 {% endblock %}
 
 {% block sidebar %}
-{% if func.getShowSubTimer(sub) %}
-  <div class="subcountdown">
-    <div id="countdown" class="col-12"></div>
-    <div class="col-12">{{func.getSubTimerMsg(sub)}}</div>
+<div id="sortbuttons" role="group" class="pure-button-group">
+  <div class="pure-g">
+    <a href="{{url_for('view_sub_hot', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_hot' %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
+    <a href="{{url_for('view_sub_top', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
+    <a href="{{url_for('view_sub_new', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
   </div>
-  <span class="col-12"><hr><span>
-{% endif %}
+</div>
+<form class="pure-g search" action="{{ url_for('do.title_search') }}" method="post">
+  <div class="icon" data-icon="search"> </div>
+  <input name="term" placeholder="Title search..." type="search" class="pure-u-1">
+</form>
+
 {% if func.enableVideoMode(sub) %}
   <div class="musicmodediv">
     {% include 'videomodeplayer.html' %}
   </div>
-<span class="col-12"><hr><span>
+<hr>
 {% endif %}
-{{ super() }}
-<p></p>
-<hr/>
-<div class="row buttons">
-  <div class="sidebar col-12">
-    {% if current_user.has_subscribed(sub.sid) %}
-    <span id="subscribe" class="subscribed" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Subscribed</a></span>
-    {% else %}
-    <span id="subscribe" class="unsubscribed" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-plus" aria-hidden="true"></i> Subscribe</a></span>
-    {% endif %}
-    {% if current_user.has_blocked(sub.sid) %}
-    <span id="block" class="blocked" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-check" aria-hidden="true"></i> Blocked</a></span>
-    {% else %}
-    <span id="block" class="unblocked" data-sid="{{sub.sid}}"><a class="btn small"><i class="fa fa-remove" aria-hidden="true"></i> Block</a></span>
-    {% endif %}
-  </div>
-
-  <div class="subscribercount col-12">
-    <i class="fa fa-users" aria-hidden="true"></i> {{getSuscriberCount(sub)}} Subscribers
-  </div>
-
 {% if current_user.is_authenticated %}
-  <span class="col-12"><hr><span>
-  {% if func.isRestricted(sub) %}
-  <div class="col-12">Only mods can post.</div>
+  {% if func.isRestricted(sub) and not current_user.is_mod(sub.sid) %}
+    <div>Only mods can post.</div>
+  {%else%}
+    {%if current_user.is_subban(sub) %}
+      <div>You are currently banned from posting.</div>
+    {%else%}
+      <a href="{{url_for('submit', ptype='text', sub=sub.name)}}" class="sbm-post pure-button">Submit a text post</a>
+      <a href="{{url_for('submit', ptype='link', sub=sub.name)}}" class="sbm-post pure-button">Submit a link post</a>
+    {%endif%}
   {%endif%}
-  {% if not func.isRestricted(sub) or (current_user.is_mod(sub) and func.isRestricted(sub)) %}
-  <div class="col-12">
-    <a href="{{url_for('submit_text', sub=sub.name)}}" class="btn btn-orange create-post" style="width:100%;">Submit a text post</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('submit_link', sub=sub.name)}}" class="btn btn-orange create-post" style="width:100%;">Submit a link post</a>
-  </div>
-  {% endif %}
+{%endif%}
 
-  {% if current_user.is_subban(sub) %}
-  <div class="col-12">
-    You are currently banned from posting.
-  </div>
-  {% endif %}
-{% endif %}
+<div class="subinfo">
+  <h3><a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a> {% if sub.nsfw %}<div class="nsfw" alt="Not safe for work">NSFW</div>{%endif%}</h3>
 </div>
+<div class="subs">{{getSuscriberCount(sub)}} subscribers</div>
 
-{{markdown(sub.sidebar)|safe}}
+<div role="group" class="pure-button-group" data-sid="{{sub.sid}}">
+  {% if current_user.has_subscribed(sub.name) %}
+    <button data-ac="unsubscribe" class="sub button-secondary pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>Subscribed</button>
+  {%else%}
+    <button data-ac="subscribe" class="unsub button-secondary pure-button button-xsmall"><span class="sbm-icon" data-icon="add"></span>Subscribe</button>
+  {%endif%}
+  {% if current_user.has_blocked(sub.sid) %}
+    <button data-ac="unblock" class="blk button-warning pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>Blocked</button>
+  {%else%}
+    <button data-ac="block" class="unblk button-warning pure-button button-xsmall"><span class="sbm-icon" data-icon="close"></span>Block</button>
+  {%endif%}
+</div>
+<hr>
+{%if sub.sidebar != ''%}
+  {{markdown(sub.sidebar)|safe}}
+  <hr>
+{%endif%}
 
-<span class="col-12"><hr><span>
-
-<p class="createdby">Created by {% if func.getSubUsers(func.getSub(sub.sid), 'mod') == '[Deleted]' %} Pkuks {% else %} {{func.getSubUsers(func.getSub(sub.sid), 'mod')}} {% endif %}
-  <time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago>
-</p>
-<div class="moderators col-12">
+<div class="moderators">
   Moderators
   <ul>
-  <li><i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=func.getSubUsers(sub, 'mod1'))}}">{{func.getSubUsers(sub, 'mod1')}}</a></li>
+  <li><span title="Owner" class="i-icon" data-icon="owner"></span> <a href="{{url_for('view_user', user=func.getSubUsers(sub, 'mod1'))}}">{{func.getSubUsers(sub, 'mod1')}}</a></li>
   {% for mod in mods %}
   <li><a href="{{url_for('view_user', user=db.get_user_from_uid(mod.value).name)}}">{{db.get_user_from_uid(mod.value).name}}</a></li>
   {% endfor %}
   </ul>
 </div>
-{% if current_user.is_mod(sub) or current_user.is_admin() %}
-<div class="row buttons">
-  <div class="col-12">
-    <a href="{{url_for('edit_sub', sub=sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Info</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('edit_sub_flairs', sub=sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Flairs</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('edit_sub_css', sub=sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Edit Sub Stylesheet</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('edit_sub_mods', sub=sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Moderators</a>
-  </div>
+<div class="createdby">
+  Created by {{func.getSubUsers(func.getSub(sub.sid), 'mod')}}
+  <time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago>
 </div>
-{% endif %}
-<span class="col-12"><hr><span>
 
-<div class="row buttons">
-  <div class="col-12">
-    <a href="{{url_for('view_sublog', sub=sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Sub Log</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('view_sub_bans', sub=sub.name)}}" class="btn btn-orange edit-sub" style="width:100%;">Banned Users</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('random_sub')}}" class="btn btn-orange" style="width:100%;">View another random sub</a>
-  </div>
-</div>
+{% if current_user.is_mod(sub.sid) or current_user.is_admin() %}
+  <a href="{{url_for('edit_sub', sub=sub.name)}}" class="sbm-post pure-button">Edit Sub Info</a>
+  <a href="{{url_for('edit_sub_flairs', sub=sub.name)}}" class="sbm-post pure-button">Edit Sub Flairs</a>
+  <a href="{{url_for('edit_sub_css', sub=sub.name)}}" class="sbm-post pure-button">Edit Sub Stylesheet</a>
+  <a href="{{url_for('edit_sub_mods', sub=sub.name)}}" class="sbm-post pure-button">Moderators</a>
+{% endif %}
+<hr>
+
+<a href="{{url_for('view_sublog', sub=sub.name)}}" class="sbm-post pure-button">Sub Log</a>
+<a href="{{url_for('view_sub_bans', sub=sub.name)}}" class="sbm-post pure-button">Banned Users</a>
 {% endblock %}
 
 {% block content %}
 {{ super() }}
-{% cache 300, 'sticky', sub.sid %}
-  {% set sticks = func.getStickies(sub.sid) %}
-  {% for ann in sticks %}
-  <article class="post" data-pid="{{ann.pid}}">
-    {# vote arrow div #}
-    <div class="pull left vote">
-      <form class="uvform">
-        <div class="upvote{%if func.getVoteStatus(current_user.get_id(), ann.pid) == 1%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
-        {% set uv = form.VoteForm() %}
-        {{uv.csrf_token}}{{uv.post(value=ann.pid)}}
-      </form>
-      <p class="count">{{ann.score}}</p>
-      <form class="dvform">
-        <div class="downvote{%if func.getVoteStatus(current_user.get_id(), ann.pid) == 0%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
-        {% set dv = form.VoteForm() %}
-        {{uv.csrf_token}}{{uv.post(value=ann.pid)}}
-      </form>
-    </div>
-    <div class="image">
-      {% if not ann.link %}
-        <a href="{{url_for('view_post', sub=db.get_sub_from_sid(ann.sid).name, pid=ann.pid)}}">
-          <span class="fa-stack fa-3x" style="color: #616161;">
-            <i class="fa fa-square fa-stack-2x"></i>
-            <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
-          </span>
-        </a>
-      {% else %}
-        <a href="{{ann.link}}" rel="noreferrer noopener">
-          <span class="fa-stack fa-3x" style="color: #616161;">
-            <i class="fa fa-square fa-stack-2x"></i>
-            {% if func.isImage(ann.link) %}
-            <i class="fa fa-image fa-stack-1x fa-inverse"></i>
-            {% elif func.getDomain(ann.link) == "youtube.com" or func.getDomain(ann.link) == "www.youtube.com" or func.getDomain(ann.link) == "youtu.be" %}
-            <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
-            {% elif func.getDomain(ann.link) == "vimeo.com" %}
-            <i class="fa fa-vimeo fa-stack-1x fa-inverse"></i>
-            {% elif func.getDomain(ann.link) == "vine.co" %}
-            <i class="fa fa-vine fa-stack-1x fa-inverse"></i>
-            {% else %}
-            <i class="fa fa-link fa-stack-1x fa-inverse"></i>
-            {% endif %}
-          </span>
-        </a>
-      {% endif %}
-    </div>
-    <div class="main">
-      {% if db.is_post_nsfw(ann) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
-      {% if not ann.link %}
-      <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} class="title" href="{{url_for('view_post', sub=sub.name, pid=ann.pid)}}"><div class="announcementPost">Sticky</div>{{ann.title}}</a>
-      {% else %}
-      {% if ann.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
-      <a class="title" href="{{ann.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener"><div class="announcementPost">Sticky</div>{{ann.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=func.getDomain(ann.link))}}">{{func.getDomain(ann.link)}}</a>)</span>
-      {% endif %}
-      <p class="author">(+{{func.get_post_upcount(ann.pid)}}|-{{func.get_post_downcount(ann.pid)}}) <time-ago datetime="{{ann.posted.isoformat()}}Z"></time-ago></p>
-      <p class="container">
-      {% if ann.link %}
-        {% if func.getDomain(ann.link) == "youtube.com" or func.getDomain(ann.link) == "www.youtube.com" or func.getDomain(ann.link) == "youtu.be" %}
-          <span id="youtubevid" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" class="closedvid">
-            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
-          </span>
-        {% elif func.getDomain(ann.link) == "vimeo.com" %}
-          <span id="vimeovid" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" class="closedvid">
-            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
-          </span>
-        {% elif func.getDomain(ann.link) == "vine.co" %}
-          <span id="vinevid" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" class="closedvine">
-            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-vine" aria-hidden="true"></i></a></span>
-          </span>
-        {% elif func.isImage(ann.link) %}
-          <span id="openimg" data-img="{{ann.link}}" data-pid="{{ann.pid}}" class="closedimg">
-            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
-          </span>
-        {% elif func.isVideo(ann.link) %}
-          <span id="openvideo" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" data-domain="{{func.getDomain(ann.link)}}" class="closedvid">
-            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
-          </span>
-        {% elif func.isGifv(ann.link) %}
-          <span id="gifv" data-vid="{{ann.link}}" data-pid="{{ann.pid}}" data-domain="{{func.getDomain(ann.link)}}" class="closedgifv">
-            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
-          </span>
-        {% elif func.getDomain(ann.link) == "twitter.com" %}
-          <span id="tweet" data-url="{{ann.link}}" data-pid="{{ann.pid}}" class="closedtweet">
-            <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-twitter" aria-hidden="true"></i></a></span>
-          </span>
-        {% endif %}
-      {% elif ann.content != '' %}
-        <span id="opentextpost" data-pid="{{ann.pid}}" class="closedtextpost">
-          <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
-        </span>
-      {% endif %}
-        <a href="{{url_for('view_user', user=db.get_user_from_uid(ann.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{db.get_user_from_uid(ann.uid).name}}</a>
-        <a href="{{url_for('view_post', sub=sub.name, pid=ann.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> {{db.get_post_comment_count(ann.pid)}}</a>
-      </p>
-    </div>
-  </article>
-  {%endfor%}
-{% endcache %}
+{% if func.getStickyPid %}
+<div class="stickyposts">
+  {% cache 300, 'sticky', sub.sid %}
+    {% set sticks = func.getStickies(sub.sid) %}
+    {% for post in sticks %}
+      {% include "indexpost.html" %}
+    {%endfor%}
+  {% endcache %}
+</div>
+{% endif %}
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
 {# cache 120, 'subposts', sub.sid, sort_type, page|string #}
-  {% for post in posts if not db.is_post_deleted(post) and not post in func.getStickies(sub.sid)%}
-      <article class="post" data-pid="{{post.pid}}">
-        {# vote div #}
-        <div class="pull left vote">
-          <form class="uvform">
-            <div class="upvote{%if func.getVoteStatus(current_user.get_id(), post.pid) == 1 %} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
-            {% set uv = form.VoteForm() %}
-            {{uv.csrf_token}}{{uv.post(value=post.pid)}}
-          </form>
-          <p class="count">{{post['score']}}</p>
-          <form class="dvform">
-            <div class="downvote{%if func.getVoteStatus(current_user.get_id(), post.pid) == 0%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
-            {% set dv = form.VoteForm() %}
-            {{uv.csrf_token}}{{uv.post(value=post.pid)}}
-          </form>
-        </div>
-        {% cache 300, post.pid, 'subpost' %}
-          <div class="image">
-            {% if not ((db.is_post_nsfw(post) or db.is_sub_nsfw(sub)) and current_user.show_nsfw()) and db.get_post_thumbnail(post) %}
-              <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
-                <img src="{{config.THUMBNAIL_HOST}}{{db.get_post_thumbnail(post)}}">
-              </a>
-              {% elif not post.link %}
-              <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
-                <span class="fa-stack fa-3x" style="color: #616161;">
-                  <i class="fa fa-square fa-stack-2x"></i>
-                  <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
-                </span>
-              </a>
-            {% else %}
-              <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
-                <span class="fa-stack fa-3x" style="color: #616161;">
-                  <i class="fa fa-square fa-stack-2x"></i>
-                  {% if func.isImage(post.link) %}
-                  <i class="fa fa-image fa-stack-1x fa-inverse"></i>
-                  {% elif func.getDomain(post.link) == "youtube.com" or func.getDomain(post.link) == "www.youtube.com" or func.getDomain(post.link) == "youtu.be" %}
-                  <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
-                  {% elif func.getDomain(post.link) == "vimeo.com" %}
-                  <i class="fa fa-vimeo fa-stack-1x fa-inverse"></i>
-                  {% elif func.getDomain(post.link) == "vine.co" %}
-                  <i class="fa fa-vine fa-stack-1x fa-inverse"></i>
-                  {% elif func.isVideo(post.link) %}
-                  <i class="fa fa-video-camera fa-stack-1x fa-inverse"></i>
-                  {% else %}
-                  <i class="fa fa-link fa-stack-1x fa-inverse"></i>
-                  {% endif %}
-                </span>
-              </a>
-            {% endif %}
-          </div>
-          <div class="main">
-            {% if func.getPostFlair(post) %}<span class="btn small postfl">{{func.getPostFlair(post)}}</span>{% endif %}
-            {% if db.is_post_nsfw(post) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
-            {% if not post.link %}
-            <a class="title" href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}">{{post.title}}</a>
-            {% else %}
-            {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
-            <a {% if current_user.has_exlinks() %}target="_blank" {% endif %} class="title" href="{{post.link}}" {% if current_user.has_exlinks() %}target="_blank" {% endif %}rel="noreferrer noopener">{{post.title}}</a> <span class="postdomain">(<a href="{{url_for('all_domain_new', domain=func.getDomain(post.link))}}">{{func.getDomain(post.link)}}</a>)</span>
-            {% endif %}
-            <p class="author">(+{{func.get_post_upcount(post.pid)}}|-{{func.get_post_downcount(post.pid)}}) <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago></p>
-            <p class="container">
-            {% if post.link %}
-              {% if func.getDomain(post.link) == "youtube.com" or func.getDomain(post.link) == "www.youtube.com" or func.getDomain(post.link) == "youtu.be" %}
-                <span id="youtubevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
-                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></span>
-                </span>
-              {% elif func.getDomain(post.link) == "vimeo.com" %}
-                <span id="vimeovid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvid">
-                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vimeo" aria-hidden="true"></i></a></span>
-                </span>
-              {% elif func.getDomain(post.link) == "vine.co" %}
-                <span id="vinevid" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedvine">
-                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-vine" aria-hidden="true"></i></a></span>
-                </span>
-              {% elif func.getDomain(post.link) == "gfycat.com" %}
-                <span id="gfycat" data-vid="{{post.link}}" data-pid="{{post.pid}}" class="closedgfycat">
-                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-video-camera" aria-hidden="true"></i></a></span>
-                </span>
-              {% elif func.isImage(post.link) %}
-                <span id="openimg" data-img="{{post.link}}" data-pid="{{post.pid}}" class="closedimg">
-                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-image" aria-hidden="true"></i></a></span>
-                </span>
-              {% elif func.isVideo(post.link) %}
-                <span id="openvideo" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{func.getDomain(post.link)}}" class="closedvid">
-                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
-                </span>
-              {% elif func.isGifv(post.link) %}
-                <span id="gifv" data-vid="{{post.link}}" data-pid="{{post.pid}}" data-domain="{{func.getDomain(post.link)}}" class="closedgifv">
-                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-play" aria-hidden="true"></i></a></span>
-                </span>
-              {% elif func.getDomain(post.link) == "twitter.com" %}
-                <span id="tweet" data-url="{{post.link}}" data-pid="{{post.pid}}" class="closedtweet">
-                  <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-twitter" aria-hidden="true"></i></a></span>
-                </span>
-              {% endif %}
-            {% elif post.content != '' %}
-              <span id="opentextpost" data-pid="{{post.pid}}" class="closedtextpost">
-                <span id="player{{post.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
-              </span>
-            {% endif %}
-              <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a>
-
-              <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> {{db.get_post_comment_count(post.pid)}}</a>
-            </p>
-          </div>
-        {%endcache%}
-      </article>
+  {% for post in posts if not db.is_post_deleted(post) and not post.pid in func.getStickyPid(sub.sid)%}
+    {% include "indexpost.html" %}
   {% endfor %}
 {# endcache #}
 {% if page > 1 %}
-<a href="{{url_for(sort_type, sub=sub.name, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
+<a href="{{url_for(sort_type, sub=sub.name, page=(page-1))}}" class="pure-button">prev</a>
 {% endif %}
 {% if posts|length == 20 %}
-<a href="{{url_for(sort_type, sub=sub.name, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+<a href="{{url_for(sort_type, sub=sub.name, page=(page+1))}}" class="pure-button">next</a>
 {% endif %}
 
 {% endblock %}

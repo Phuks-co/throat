@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block title %}Create Sub | {{config.LEMA}}{% endblock %}
+
+{% block content %}
+{{ super() }}
+<div id="center-container">
+  <div class="content createsub">
+    <!-- create sub form -->
+    <form id="csub-form" action="{{url_for('do.create_sub')}}" data-redir="true" class="pure-form pure-form-aligned ajaxform">
+      {{csubform.csrf_token}}
+      <h3>Create sub</h3>
+      <p>Create a sub for you, your friends, or for your favorite community</p>
+      <fieldset>
+        <div class="pure-control-group">
+          <label for="subname">Sub name</label>
+          {{csubform.subname(placeholder=csubform.subname.label.text, required=True, pattern="[a-zA-Z0-9]+", title="Alphanumeric characters")}}
+        </div>
+        <div class="pure-control-group">
+          <label for="description">Description</label>
+          {{csubform.title(placeholder=csubform.title.label.text, required=True)}}
+        </div>
+        <div class="pure-controls">
+          {% if error %}
+            <div class="error">{{error}}</div>
+          {% endif %}
+          <button type="submit" id="csub-btnsubmit" class="pure-button pure-button-primary" data-prog="Sending...">Create sub</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>
+{% endblock %}

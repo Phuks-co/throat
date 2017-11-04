@@ -1,3 +1,5 @@
+BIG PHAT WARNING: Throat only works with Python 3.5+
+
 #throat
 
 https://phuks.co/
@@ -28,3 +30,4 @@ run
 ---
 
 Note for future self: Ensure the mysql uses fucking utf8
+Note from past self: Boo.

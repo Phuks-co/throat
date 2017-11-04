@@ -1,227 +1,165 @@
 {% extends "layout.html" %}
-{% block head %}
-{{ super() }}
-{% endblock %}
-{% block title %}{{config.LEMA}}{% endblock %}
+
 {% block sidebar %}
-<div class="col-12">
-  <form action="{{ url_for('do.title_search') }}" method="post">
-    <span class="search">
-        <span><i class="fa fa-search"></i></span>
-        <input id="term" name="term" type="search" placeholder="Title search...">
-    </span>
-  </form>
+
+<div id="sortbuttons" role="group" class="pure-button-group">
+  <div class="pure-g">
+      {% if sort_type.startswith('all') %}
+        <a href="{{url_for('all_hot')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'all_hot' %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
+        <a href="{{url_for('all_top')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'all_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
+        <a href="{{url_for('all_new')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'all_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
+      {% elif sort_type.startswith('home') %}
+        <a href="{{url_for('home_hot')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint in ('home_hot', 'index') %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
+        <a href="{{url_for('home_top')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'home_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
+        <a href="{{url_for('home_new')}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'home_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
+      {% endif %}
+  </div>
 </div>
-<span class="col-12"><hr><span>
-{{ super() }}
+
+<form class="pure-g search" action="{{ url_for('do.title_search') }}" method="post">
+  <div class="icon" data-icon="search"> </div>
+  <input name="term" placeholder="Title search..." type="search" class="pure-u-1">
+</form>
+
 {% if current_user.is_authenticated %}
-<div class="row buttons">
-  <div class="col-12">
-    <a href="#csub-form" class="btn btn-orange create-sub" style="width:100%;">Create your own sub</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('view_subs')}}" class="btn btn-orange" style="width:100%;">View all subs</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('random_sub')}}" class="btn btn-orange" style="width:100%;">View random sub</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('submit_text', sub='')}}" class="btn btn-orange" style="width:100%;">Submit a text post</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('submit_link', sub='')}}" class="btn btn-orange" style="width:100%;">Submit a link post</a>
-  </div>
-</div>
+<a href="{{url_for('submit', ptype='text', sub='')}}" class="sbm-post pure-button">Submit a text post</a>
+<a href="{{url_for('submit', ptype='link', sub='')}}" class="sbm-post pure-button">Submit a link post</a>
+<hr>
+<a href="{{url_for('view_subs')}}" class="sbm-post pure-button">View all subs</a>
+<a href="{{url_for('random_sub')}}" class="sbm-post pure-button">Go to random sub</a>
+<a href="{{url_for('create_sub')}}" class="sbm-post pure-button">Create a sub</a>
 {% endif %}
 {% cache 300, 'toppost' %}
 {% set tp = func.getTodaysTopPosts()%}
+
+  <hr>
+  <div class="sidebarlists">
+      <a href="/miner">Mine some phuks</a>
+  </div>
+
 {% if tp %}
-  <span class="col-12"><hr></span>
-  <div class="col-12 row todaystop">
-    <div class="col-12">
-      Top posts in the last 24 hours
-    </div>
-    <div class="list">
-      <ul>
+  <hr>
+  <div class="sidebarlists">
+    <h4 class="center">Top posts in the last 24 hours</h4>
+    <ul class="top5">
       {% for post in tp %}
-        <li><a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">{{post.title}}</a><br>
-        <span class="sidelocale">
-          <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}">/s/{{func.getSub(post.sid).name}}</a></li>
-        </span>
+        <li><a class="title" href="{{url_for('view_post', sub=post.sub, pid=post.pid)}}">{{post.title}}</a>
+          <div class="sidelocale">
+            <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=post.sub)}}">/s/{{post.sub}}</a>
+          </div></li>
       {% endfor %}
-      </ul>
-    </div>
+    </ul>
   </div>
 {%endif%}
 {% endcache %}
-{% cache 21600, 'rdmsubsixhr' %}
-{% set rs = func.getRdmSub()%}
+
+{% cache 21600, 'suboftheday' %}
+{% set rs = func.getRandomSub()%}
 {% if rs %}
-  <span class="col-12"><hr></span>
-  <div class="col-12 row todaystop">
-    <div class="col-12">
-      Random sub every 6 hours
-    </div>
-    <div class="list">
-      <ul>
-      {% for sub in rs %}
-        <li>
-          <a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a><br>
-          <span class="sidelocale">{{sub.title}}</span>
-        </li>
-      {% endfor %}
-      </ul>
-    </div>
+  <hr>
+  <div class="sidebarlists">
+    <h4 class="center">Sub of the day</h4>
+    <ul>
+      <li><a href="{{url_for('view_sub', sub=rs.name)}}">/s/{{rs.name}}</a>
+        <div class="sidelocale">{{rs.title}}</div></li>
+    </ul>
   </div>
 {%endif%}
 {% endcache %}
 {% cache 300, 'changelog' %}
 {% set cl = func.getChangelog() %}
 {% if cl %}
-  <span class="col-12"><hr></span>
-  <div class="col-12 row todaystop">
-    <div class="col-12">
-      Recent changes
-    </div>
-    <div class="list">
-      <ul>
-        <li><a href="{{url_for('view_post', sub=func.getSub(cl.sid).name, pid=cl.pid)}}">{{cl.title}}</a><br>
-        <span class="sidelocale">
-          <time-ago datetime="{{cl.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub='changelog')}}">/s/changelog</a></li>
-        </span>
-      </ul>
-    </div>
+  <hr>
+  <div class="sidebarlists">
+    <ul>
+      <li><a class="title" href="{{url_for('view_post', sub=cl.sub, pid=cl.pid)}}">{{cl.title}}</a><br>
+      <span class="sidelocale">
+        <time-ago datetime="{{cl.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=cl.sub)}}">/s/{{cl.sub}}</a></li>
+      </span>
+    </ul>
   </div>
 {% endif %}
 {% endcache %}
 {% if func.enableBTCmod() %}
-<span class="col-12"><hr></span>
-<div class="row buttons">
-  <div class="col-12">
-    <a href="{{url_for('donate')}}" class="btn btn-orange donate" style="width:100%;">Gib phuks</a>
-  </div>
-</div>
+<hr>
+<a href="{{url_for('donate')}}" class="sbm-post pure-button">Gib phuks</a>
 {% endif %}
 {% if current_user.is_authenticated %}
-<span class="col-12"><hr></span>
-<div class="row buttons">
-  <div class="col-12">
-    <a href="{{url_for('view_sitelog')}}" class="btn btn-orange donate" style="width:100%;">Site log</a>
-  </div>
-</div>
+<hr>
+<a href="{{url_for('view_sitelog')}}" class="sbm-post pure-button">Site logs</a>
 {% endif %}
 {% endblock %}
-{% block navbar %}
-{{ super() }}
-{% if sort_type.startswith('all') %}
-  <li><a href="/all/hot">Hot</a></li>
-  <li><a href="/all/top">Top</a></li>
-  <li><a href="/all/new">New</a></li>
-{% else %}
-  <li><a href="/hot">Hot</a></li>
-  <li><a href="/top">Top</a></li>
-  <li><a href="/new">New</a></li>
-  <li><a href="/all/new">All new posts</a></li>
-{%endif%}
-{% if current_user.is_admin() %}<li><a href="{{url_for('admin_area')}}">Admin</a></li>{% endif %}
-{% endblock %}
+
 {% block content %}
 {{ super() }}
-{% cache 120, 'announcement' %}
-  {% set ann = func.getAnnouncement() %}
-  {% if ann %}
-  <article id="{{ann.pid}}" class="post" data-pid="{{ann.pid}}">
-    {# vote arrow div #}
-    <div class="pull left vote">
-      <form class="uvform">
-        <div class="upvote{%if func.getVoteStatus(current_user.get_id(), ann.pid) == 1%} upvoted{%endif%}"><i class="fa fa-chevron-up" aria-hidden="true"></i></div>
-        {% set uv = form.VoteForm() %}
-        {{uv.csrf_token}}{{uv.post(value=ann.pid)}}
-      </form>
-      <p class="count">{{ann['score']}}</p>
-      <form class="dvform">
-        <div class="downvote{%if func.getVoteStatus(current_user.get_id(), ann.pid) == 0%} downvoted{%endif%}"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>
-        {% set dv = form.VoteForm() %}
-        {{uv.csrf_token}}{{uv.post(value=ann.pid)}}
-      </form>
+{% if sort_type.startswith('home_') or sort_type.startswith('all_')%}
+  {% cache 120, 'announcement' %}
+    {% set announcement = func.getAnnouncement() %}
+    {% if announcement %}
+    <div pid="{{announcement.pid}}" class="post">
+      <div class="pure-g">
+        <div class="misctainer">
+          <div class="votebuttons">
+            <div title="Upvote" class="upvote " data-icon="upvote"></div>
+            <div class="score">{{announcement.score}}</div>
+            <div title="Downvote" class="downvote "  data-icon="downvote"></div>
+          </div>
+          <div class="thcontainer">
+            <a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">
+              <div class="thumbnail">
+                  <span class="placeholder" data-icon="chat"></span>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="pure-u-16-24 pure-u-md-20-24 pbody">
+          <div class="post-heading">
+            <span class="announcement">Announcement</span><a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">{{announcement.title}}</a>
+          </div>
+          <div class="author">
+            posted <time-ago datetime="{{announcement.posted.isoformat()}}Z"></time-ago> by
+            <a href="{{url_for('view_user', user=announcement.user)}}">{{announcement.user}}</a> on
+            <a href="{{url_for('view_sub', sub=announcement.sub)}}">{{announcement.sub}}</a>
+          </div>
+          <div class="links">
+            <a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}">comments {%if announcement.comments>0%}({{announcement.comments}}){%endif%}</a>
+          </div>
+        </div>
+      </div>
     </div>
-      <div class="image">
-          <a href="{{url_for('view_post_inbox', pid=ann.pid)}}">
-            <span class="fa-stack fa-3x" style="color: #616161;">
-              <i class="fa fa-square fa-stack-2x"></i>
-              <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
-            </span>
-          </a>
-      </div>
-      <div class="main">
-        <a class="title" {% if current_user.has_exlinks() %}target="_blank" {% endif %} href="{{url_for('view_post_inbox', pid=ann.pid)}}"><div class="announcementPost">Announcement</div>{{ann.title}}</a>
-        <p class="author">(+{{func.get_post_upcount(ann.pid)}}|-{{func.get_post_downcount(ann.pid)}}) <relative-time datetime="{{ann.posted.isoformat()}}Z"></relative-time></p>
-        <p class="container">
-            <span id="opentextpost" data-pid="{{ann.pid}}" class="closedtextpost">
-              <span id="player{{ann.pid}}"><a class="btn small"><i class="fa fa-comments" aria-hidden="true"></i></a></span>
-            </span>
-          <a href="{{url_for('view_sub', sub=func.getSub(ann.sid).name)}}" class="btn small"><i class="fa fa-users" aria-hidden="true"></i> /s/{{func.getSub(ann.sid).name}}</a>
-          <a href="{{url_for('view_user', user=func.getUser(ann.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(ann.uid).name}}</a>
-          <a href="{{url_for('view_post_inbox', pid=ann.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> <span class="ccount">{{db.get_post_comment_count(ann.pid)}}</span></a>
-          </p>
-      </div>
-  </article>
-  <hr/>
-  {%endif%}
-{% endcache %}
+    <hr/>
+    {%endif%}
+  {% endcache %}
+{%endif%}
 
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
 <div class="alldaposts">
-{% include "indexpost.html" %}
+{% for post in posts if post.pid != func.getAnnouncement().pid %}
+  {% include "indexpost.html" %}
+{%endfor%}
 </div>
+{% if not kw %}
+  {% set kw = {} %}
+{%endif%}
 {% if page > 1 %}
-<a href="{{url_for(sort_type, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
+  <a href="{{url_for(sort_type, page=(page-1), **kw)}}" class="pure-button">prev</a>
 {% endif %}
-{% if posts|length == 20 %}
-<a href="{{url_for(sort_type, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+{% if posts|length == 25 %}
+  <a href="{{url_for(sort_type, page=(page+1), **kw)}}" class="pure-button">next</a>
 {% endif %}
 
 {% endblock %}
 {%block pagefoot%}
 <!-- create sub form -->
-<form  method="POST" id="csub-form" data-redir="true" action="{{url_for('do.create_sub')}}" class="ajaxform mfp-hide white-popup-block">
-  {{ csubform.csrf_token }}
-  <h1>Create sub</h1>
-  <p>Create a sub. For you, for your friends or your favorite community</p>
-  <p>{{csubform.subname(placeholder=csubform.subname.label.text, required=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}}</p>
-  <p>{{csubform.title(placeholder=csubform.title.label.text, required=True)}}</p>
-  <div class="alert div-error"></div>
-  <p><button type="submit" id="csub-btnsubmit" class="btn btn-blue" data-prog="Creating...">Create sub</button></p>
-</form>
-{% if current_user.is_labrat() %}
+{% if "labrat" in current_user.prefs %}
   <script type="text/javascript" charset="utf-8">
-      socket.on('connect', function() {
-        window.sio = true;
-        {% if sort_type == 'all_new' %}
-          socket.emit('subscribe', {target: '/all/new'});
-        {% endif %}
-        $('article.post').each(function(i){
-          socket.emit('subscribe', {target: $(this).data('pid')});
-        })
-      });
-      {% if sort_type == 'all_new' and page == 1 %}
-      socket.on('thread', function(data){
-        socket.emit('subscribe', {target: data.pid})
-        $('.alldaposts').prepend(data.html)
-      })
-      {% endif %}
-      socket.on('threadscore', function(data){
-        console.log('article#' + data.pid + ' .count')
-        $('article#' + data.pid + ' .count').html(data.score)
-      })
-
-      socket.on('threadcomments', function(data){
-        console.log('article#' + data.pid + ' .ccount')
-        $('article#' + data.pid + ' .ccount').html(data.comments)
-      })
+      window.labrat = true;
+      {% if sort_type in ('all_new') %} // TODO: add for subs
+      window.nposts = '/all/new';
+      {%endif%}
   </script>
 {%endif%}
-{% if sort_type.endswith('new') and current_user.likes_scroll()%}
+{% if sort_type in ('all_new', 'view_sub_new') and current_user.likes_scroll()%}
 <script>
 $(document).ready(function () {
     window.loading = false;

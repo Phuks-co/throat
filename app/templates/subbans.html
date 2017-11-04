@@ -8,7 +8,7 @@
 {% block content %}
 {{ super() }}
 
-{% if not current_user.is_mod(sub) and current_user.is_admin() %}
+{% if not current_user.is_mod(sub.sid) and current_user.is_admin() %}
 <center><h3>Editing as Admin</h3></center>
 {% endif %}
 
@@ -17,23 +17,23 @@
   <p>Banned users: {% if banned|length < 1 %}none{% endif %}</p>
   <ul>
   {% for ban in banned if banned|length > 0 %}
-  <span class="editbanbtn col-4">
+  <span class="editbanbtn">
     <li><i class="fa fa-remove"></i> <a href="{{url_for('view_user', user=db.get_user_from_uid(ban.value).name)}}">{{db.get_user_from_uid(ban.value).name}}</a>
-      {% if current_user.is_admin() or current_user.is_topmod(sub) or current_user.is_mod(sub) %}
-      <span id="revoke-ban" data-sub="{{sub.name}}" data-user="{{db.get_user_from_uid(ban.value).name}}" class="btn revoke">unban</span>
+      {% if current_user.is_admin() or current_user.is_topmod(sub) or current_user.is_mod(sub.sid) %}
+      (<a data-sub="{{sub.name}}" data-user="{{db.get_user_from_uid(ban.value).name}}" class="slink revoke-ban">unban</a>)
       {% endif %}
     </li>
     </span>
     {% endfor %}
   </ul>
 
-  {% if current_user.is_admin() or current_user.is_topmod(sub) or current_user.is_mod(sub) %}
-  <div class="editmoderators col-12">
-    <form id="ban-user-form" data-sub="{{sub.name}}" class="">
+  {% if current_user.is_admin() or current_user.is_topmod(sub) or current_user.is_mod(sub.sid) %}
+  <div class="editmoderators">
+    <form id="ban-user-form" data-reload="true" data-sub="{{sub.name}}" class="ajaxform pure-form" action="{{url_for('do.ban_user_sub', sub=sub.name)}}">
       {{banuserform.csrf_token}}
       <p>
         <label>Ban user from posting: {{banuserform.user(placeholder=banuserform.user.label.text, required=True)}}</label>
-        <button type="submit" class="btn btn-orange" id="banuser-btnsubmit">Banhammer</button>
+        <button type="submit" class="pure-button pure-button-primary" id="banuser-btnsubmit">Banhammer</button>
       </p>
       <div class="alert div-error">
         <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>

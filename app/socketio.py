@@ -8,12 +8,14 @@ socketio = SocketIO()
 #  The new stuff
 
 
-def send_uinfo():
-    socketio.emit('uinfo', {'loggedin': True, 'name': current_user.name,
-                            'taken': current_user.get_post_score(),
-                            'ntf': current_user.new_count(),
+def send_uinfo(user=None):
+    if not user:
+        user = current_user
+    socketio.emit('uinfo', {'loggedin': True, 'name': user.name,
+                            'taken': user.get_post_score(),
+                            'ntf': user.new_count(),
                             'given':
-                            db.get_user_post_voting(current_user.uid)},
+                            db.get_user_post_voting(user.uid)},
                   namespace='/alt',
                   room=session['usid'])
 

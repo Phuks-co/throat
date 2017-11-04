@@ -1,0 +1,92 @@
+@extends("shared/layout.html")
+@import "shared/post.html" as ipost
+@require(sort_type, ann, page, posts, kw)
+@def sidebar():
+<div id="sortbuttons" role="group" class="pure-button-group">
+  <div class="pure-g">
+      @if sort_type.startswith('all'):
+        <a href="@{url_for('all_hot')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_hot') and 'pure-button-primary' or ''} pure-u-md-7-24">Hot</a>
+        <a href="{url_for('all_top')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_top') and 'pure-button-primary' or ''} pure-u-md-7-24">Top</a>
+        <a href="@{url_for('all_new')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_new') and 'pure-button-primary' or ''} pure-u-md-7-24">New</a>
+      @elif sort_type.startswith('home'):
+        <a href="@{url_for('home_hot')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home_hot') and 'pure-button-primary' or ''} pure-u-md-7-24">Hot</a>
+        <a href="@{url_for('home_top')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home_top') and 'pure-button-primary' or ''} pure-u-md-7-24">Top</a>
+        <a href="@{url_for('home_new')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home_new') and 'pure-button-primary' or ''} pure-u-md-7-24">New</a>
+      @end
+  </div>
+</div>
+@include('shared/sidebar/home.html')
+@end
+
+@def main():
+<div id="container">
+  @if sort_type.startswith('home_') or sort_type.startswith('all_'):
+    @if ann:
+      <div pid="@{ann['pid']!!s}" class="post">
+        <div class="pure-g">
+          <div class="misctainer">
+            <div class="votebuttons">
+              <div title="Upvote" class="upvote " data-icon="upvote"></div>
+              <div class="score">@{ann['score']!!s}</div>
+              <div title="Downvote" class="downvote "  data-icon="downvote"></div>
+            </div>
+            <div class="thcontainer">
+              <a href="@{url_for('view_post', sub=ann['sub'], pid=ann['pid'])}" class="title">
+                <div class="thumbnail">
+                    <span class="placeholder" data-icon="chat"></span>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="pure-u-16-24 pure-u-md-20-24 pbody">
+            <div class="post-heading">
+              <span class="announcement">Announcement</span><a href="@{url_for('view_post', sub=ann['sub'], pid=ann['pid'])}" class="title">@{ann['title']}</a>
+            </div>
+            <div class="author">
+              posted <time-ago datetime="@{ann['posted'].isoformat()}Z"></time-ago> by
+              <a href="@{url_for('view_user', user=ann['user'])}">@{ann['user']}</a> on
+              <a href="@{url_for('view_sub', sub=ann['sub'])}">@{ann['sub']}</a>
+            </div>
+            <div class="links">
+              <a href="@{url_for('view_post', sub=ann['sub'], pid=ann['pid'])}">@{(ann['comments']>0) and 'comments (' + str(ann['comments']) +')' or 'comment'}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr/>
+    @end
+  @end
+
+  @if not posts:
+    <h1 class="noshit">There are no posts here, yet.</h1>
+  @end
+  <div class="alldaposts">
+    @for post in posts:
+      @ipost.singlePost(post, False)
+    @end
+  </div>
+  @if page > 1:
+    <a href="@{url_for(sort_type, page=(page-1), **kw)}" class="pure-button">prev</a>
+  @end
+  @if len(posts) == 25:
+    <a href="@{url_for(sort_type, page=(page+1), **kw)}" class="pure-button">next</a>
+  @end
+</div>
+@end
+@def pagefoot():
+
+  @if "labrat" in current_user.prefs:
+    <script type="text/javascript" charset="utf-8">
+        window.labrat = true;
+        @if sort_type in ('all_new'):
+        // TODO: add for subs
+        window.nposts = '/all/new';
+        @end
+    </script>
+  @end
+@if sort_type in ('all_new', 'view_sub_new') and current_user.likes_scroll():
+<script>
+  window.moreuri = '@{url_for(request.endpoint + '_more')}/';
+</script>
+@end
+@end
