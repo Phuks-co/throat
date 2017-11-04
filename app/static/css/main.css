@@ -21,7 +21,13 @@ blockquote{
   padding: .3em 0 .3em .7em;
 }
 
-
+.pure-control-group .markdown-editor .editbtns{
+  display: inline-block;
+}
+.pure-control-group .markdown-editor{
+  display: inline-block;
+  width: calc(100% - 210px);
+}
 
 .announcement{
   padding: 3px;
