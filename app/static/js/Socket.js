@@ -2,7 +2,7 @@ import io from 'socket.io-client';
 import icon from './Icon'
 import u from './Util';
 
-const socket = io('//' + window.wsserver + '/snt');
+const socket = io('//' + window.wsserver + '/snt', {transports: ['websocket'], upgrade: false});
 socket.on('notification', function(d){
   // bahhh
   var title = document.getElementsByTagName('title')[0].innerHTML.split('\n');
