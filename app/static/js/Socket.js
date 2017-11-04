@@ -10,11 +10,11 @@ socket.on('notification', function(d){
   if(d.count == 0){
     document.title = '\n' + title;
     document.getElementById('mailcount').innerHTML = '';
-    document.getElementById('mailcount').styles.display = 'none';
+    document.getElementById('mailcount').style.display = 'none';
   }else{
     document.title = '(' + d.count + ')\n ' + title;
     document.getElementById('mailcount').innerHTML = d.count;
-    document.getElementById('mailcount').styles.display = 'inline-block';
+    document.getElementById('mailcount').style.display = 'inline-block';
   }
 })
 socket.on('uscore', function(d){
