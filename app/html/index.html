@@ -62,7 +62,9 @@
   @end
   <div class="alldaposts">
     @for post in posts:
-      @ipost.singlePost(post, False)
+      @if not ann or ann.pid != post.pid:
+        @ipost.singlePost(post, False)
+      @end
     @end
   </div>
   @if page > 1:
