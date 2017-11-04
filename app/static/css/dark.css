@@ -28,7 +28,10 @@ body.dark .hasmail i{
 body.dark #toggledark i {
     color: #ff0;
 }
-
+body.dark .postflair {
+  background-color: #000;
+  border: 1px solid #1d1d1d;
+}
 /* Hot, Top, New, Domain */
 
 body.dark div#sortbuttons span {
