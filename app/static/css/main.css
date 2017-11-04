@@ -1065,7 +1065,7 @@ input[type=search] {
 }
 
 #postcontent {
-  background-color: #e8e6e6;
+  background-color: #f6f6f6;
   padding: 1px 1em; /* 1px margin on botton and top so it respects <p>'s margin */
   margin-top: .5em;
 }
@@ -1414,3 +1414,35 @@ ul#th-menu ul.left li {
     height: 2.8em;
     margin-top: 0px;
 }
+
+/* TABLE STYLES (from purecss) */
+table {
+    /* Remove spacing between table cells (from Normalize.css) */
+    border-collapse: collapse;
+    border-spacing: 0;
+    empty-cells: show;
+    border: 1px solid #cbcbcb;
+}
+table td,
+table th {
+    border-left: 1px solid #cbcbcb;/*  inner column border */
+    border-width: 0 0 0 1px;
+    font-size: inherit;
+    margin: 0;
+    overflow: visible; /*to make ths where the title is really long work*/
+    padding: 0.5em 1em; /* cell padding */
+}
+
+table thead {
+    background-color: #e0e0e0;
+    color: #000;
+    text-align: left;
+    vertical-align: bottom;
+}
+
+table td {
+    background-color: transparent;
+}
+
+
+/* /TABLE STYLES */

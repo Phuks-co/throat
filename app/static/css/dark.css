@@ -305,10 +305,10 @@ body.dark article.comment:nth-child(2n) {
 /* /USER PAGE */
 
 /* misc */
-body.dark .pure-table td, body.dark .pure-table th, body.dark .pure-table{
+body.dark table td, body.dark table th, body.dark table{
   border-color: #4e4e4e;
 }
-body.dark .pure-table thead{
+body.dark table thead{
   background-color: #5c5c5c;
 }
 body.dark path[stroke="#ff6d15"] {

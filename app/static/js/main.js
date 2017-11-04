@@ -4,7 +4,6 @@ import 'purecss/build/forms.css';
 import 'purecss/build/buttons.css';
 import 'purecss/build/grids.css';
 import 'purecss/build/grids-responsive.css';
-import 'purecss/build/tables.css';
 import 'time-elements/time-elements.js';
 import $ from 'jquery';
 import u from './Util';
