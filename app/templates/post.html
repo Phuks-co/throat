@@ -107,7 +107,7 @@
         {% if post.link == None %}
           <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}" class="title">{{post.title}}</a>
         {% else %}
-          <a href="{{post.link}}" class="title">{{post.title}}</a> <a href="{{url_for('all_domain_new', domain=func.getDomain(post.link), page=1)}}" class="domain">({{func.getDomain(post.link)}})</a>
+          <a href="{% if not post.deleted%}{{post.link}}{%else%}#{%endif%}" class="title">{{post.title}}</a> {%if not post.deleted%}<a href="{{url_for('all_domain_new', domain=func.getDomain(post.link), page=1)}}" class="domain">({{func.getDomain(post.link)}})</a>{%endif%}
         {% endif %}
       </div>
       <div class="author">
