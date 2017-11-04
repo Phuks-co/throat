@@ -82,6 +82,32 @@ $(document).on('click', '.stick-post', function(){
   });
 });
 
+
+$(document).on('click', '.announce-post', function(){
+  // confirmation
+  var pid = $(this).parent().parent().data('pid');
+  TextConfirm(this, function(){
+    $.ajax({
+      type: "POST",
+      url: '/do/makeannouncement',
+      data: {'csrf_token': $('#csrf_token')[0].value, post: pid},
+      dataType: 'json',
+      success: function(data) {
+          if (data.status != "ok") {
+            $(this).parent().html('Error.');
+          } else {
+            $(this).parent().html('Done!');
+            document.location.reload();
+          }
+      },
+      error: function(data, err) {
+          $(this).parent().html('could not contact server');
+      }
+    });
+  });
+});
+
+
 $(document).on('click', '.editflair', function(){
   $('#postflairs').show();
 });

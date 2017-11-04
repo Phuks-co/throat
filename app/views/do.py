@@ -1265,6 +1265,7 @@ def deleteannouncement():
     db.uquery('DELETE FROM `site_metadata` WHERE `key`=%s', ('announcement',))
     db.create_sitelog(3, current_user.get_username() +
                       ' removed the announcement')
+    cache.delete_memoized(misc.getAnnouncement)
     return redirect(url_for('admin_area'))
 
 
@@ -1281,8 +1282,9 @@ def make_announcement():
         db.create_sitelog(3, current_user.get_username() +
                           ' made an announcement',
                           url_for('view_post_inbox', pid=form.post.data))
-
-    return redirect(url_for('index'))
+        cache.delete_memoized(misc.getAnnouncement)
+        return jsonify(status='ok')
+    return jsonify(status='error', error=get_errors(form))
 
 
 @do.route("/do/ban_domain", methods=['POST'])

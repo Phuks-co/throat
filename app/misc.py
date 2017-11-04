@@ -1170,6 +1170,8 @@ def getAnnouncement():
     """ Returns sitewide announcement post or False """
     try:
         ann = SiteMetadata.select().where(SiteMetadata.key == 'announcement').get()
+        if not ann.value:
+            return False
         return postListQueryBase(nofilter=True).where(SubPost.pid == ann.value).dicts().get()
     except SiteMetadata.DoesNotExist:
         return False
