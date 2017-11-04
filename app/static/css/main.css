@@ -1,4 +1,7 @@
-body{background-color: white;}
+body{
+  background-color: white;
+  color: black;
+}
 * {
   webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;

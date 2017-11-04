@@ -9,6 +9,7 @@ body.dark .th-l-fill[fill="#fff"] {
 
 body.dark {
   background-color: #0d0d0d;
+  color: #7d7d7d;
 }
 
 body.dark a {
