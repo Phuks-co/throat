@@ -39,7 +39,7 @@
             <li><a href="{{url_for('view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></li>
             {%if current_user.is_authenticated and not post.deleted %}
               <li><a class="reply-comment" data-pid="{{comment.pid}}" data-to="{{comment.cid}}">reply</a></li>
-              {% if (comment.uid == session['user_id'] or current_user.is_admin()) and not comment.status == 1 %}
+              {% if (comment.uid == current_user.uid or current_user.is_admin()) and not comment.status == 1 %}
                 <li><a class="edit-comment" data-cid="{{comment.cid}}">edit</a></li>
                 <li><a class="delete-comment" data-cid="{{comment.cid}}">delete</a></li>
               {% endif %}
