@@ -145,6 +145,7 @@ $("#toggledark").click(function() {
   if (mode == "dark" || mode == "dank") {
     document.cookie = "dayNight" + "=" + "light" + "; " + expires + ";path=/";
     $("body").removeClass("dark");
+    $("body").removeClass("dank");
     $('#toggledark span').html(icons.moon);
   } else {
     document.cookie = "dayNight" + "=" + "dark" + "; " + expires + ";path=/";
