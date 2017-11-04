@@ -7,6 +7,7 @@ import 'purecss/build/grids-responsive.css';
 import 'time-elements/time-elements.js';
 import $ from 'jquery';
 import u from './Util';
+import Konami from './ext/konami';
 
 require('../css/main.css');
 require('../css/dark.css');
@@ -141,7 +142,7 @@ $("#toggledark").click(function() {
   var d = new Date();
   d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); //365 days
   var expires = "expires=" + d.toGMTString();
-  if (mode == "dark") {
+  if (mode == "dark" || mode == "dank") {
     document.cookie = "dayNight" + "=" + "light" + "; " + expires + ";path=/";
     $("body").removeClass("dark");
     $('#toggledark span').html(icons.moon);
@@ -256,3 +257,13 @@ if(window.moreuri){
   });
 }
 })
+
+new Konami(function() {
+  var d = new Date();
+  d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); //365 days
+  var expires = "expires=" + d.toGMTString();
+    document.cookie = "dayNight" + "=" + "dank" + "; " + expires + ";path=/";
+    document.getElementsByTagName('body')[0].classList.add('dark');
+    document.getElementsByTagName('body')[0].classList.add('dank');
+    document.querySelector('#toggledark span').innerHTML = icons.sun;
+});

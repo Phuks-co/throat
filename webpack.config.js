@@ -3,7 +3,7 @@ var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var ManifestRevisionPlugin = require('manifest-revision-webpack-plugin');
-//var BundleAnalyzerPlugin = 	require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+var BundleAnalyzerPlugin = 	require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const externalCSS = new ExtractTextPlugin('[name].[contenthash].css');
 
@@ -42,7 +42,7 @@ module.exports = {
     ],
   },
   plugins: [
-//    new BundleAnalyzerPlugin(),
+    new BundleAnalyzerPlugin(),
     new webpack.optimize.CommonsChunkPlugin("main"),
     externalCSS,
     new ManifestRevisionPlugin('./app/manifest.json', {

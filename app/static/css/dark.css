@@ -321,3 +321,16 @@ body.dark path[fill="#ff6d15"] {
     fill: #7b4a3f;
 }
 body.dark .mod2-inv{background-color: #060606;}
+
+body.dank div:not(.pure-menu):not(.cw-brand):not(#menu) {
+    filter: grayscale(100%);
+}
+
+body.dank::-webkit-scrollbar{
+     background: #555;
+}
+
+body.dank .th-l-stroke {animation: rb 1s infinite; }
+body.dank .th-l-fill {animation: rb2 1s infinite; }
+@keyframes rb2{20%{fill: red;}40%{fill: yellow;}60%{fill: green;}80%{fill: blue;}100%{fill: orange;} }
+@keyframes rb{20%{stroke: red;}40%{stroke: yellow;}60%{stroke: green;}80%{stroke: blue;}100%{stroke: orange;}}

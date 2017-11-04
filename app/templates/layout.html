@@ -29,7 +29,7 @@
     {% endblock %}
   </head>
 
-<body {%if request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous %}class="dark" {%endif%}>
+<body {%if request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous %}class="dark"{%elif request.cookies.get( "dayNight")=="dank" and not current_user.is_anonymous%}class="dark dank"{%endif%}>
   <div class="th-subbar pure-u-1">
     <ul>
       <li><a href="{{url_for('all_hot')}}">all</a></li>
