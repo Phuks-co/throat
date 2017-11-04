@@ -287,8 +287,8 @@ def create_user(username, email, password):
     uid = str(uuid.uuid4())
     joindate = datetime.datetime.utcnow()
     uquery('INSERT INTO `user` (`uid`, `name`, `password`, `email`, `crypto`, '
-           '`status`, `joindate`, `score`) VALUES '
-           '(%s, %s, %s, %s, 1, 0, %s, 0)', (uid, username, password, email,
+           '`status`, `joindate`, `score`, `given`) VALUES '
+           '(%s, %s, %s, %s, 1, 0, %s, 0, 0)', (uid, username, password, email,
                                              joindate))
     return {'uid': uid, 'name': username, 'password': password, 'email': email,
             'status': 0, 'crypto': 1, 'joindate': joindate, 'score': 0}
