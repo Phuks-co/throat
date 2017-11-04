@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "jquery": "^3.2.1",
-    "konamijs": "^0.3.1",
     "purecss": "^1.0.0",
     "socket.io-client": "^2.0.4",
     "time-elements": "^0.6.1"
