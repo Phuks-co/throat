@@ -5,7 +5,7 @@
  <script src="https://www.google.com/recaptcha/api.js?onload=recaptchaCallback&render=explicit" type="text/javascript"></script>
 <script>
 var recaptchaCallback = function(){
-    grecaptcha.render($('.g-recaptcha')[0], {sitekey: "{{config.RECAPTCHA_PUBLIC_KEY}}"});
+    grecaptcha.render(document.getElementById('gcaptcha'), {sitekey: "{{config.RECAPTCHA_PUBLIC_KEY}}"});
 }
 </script>
 {%endif%}
@@ -64,7 +64,7 @@ var recaptchaCallback = function(){
           </div>
           {% if func.get_user_level(current_user.uid)[0] <= 4 %}
             <div class="pure-control-group">
-              <div class="g-recaptcha"></div>
+              <div id="gcaptcha" class="g-recaptcha"></div>
             </div>
           {% endif %}
           <div class="pure-controls">
