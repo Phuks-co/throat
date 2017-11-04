@@ -1049,6 +1049,7 @@ input[type=search] {
 /* POST PAGE STYLES */
 .postbar{
   white-space: nowrap;
+  min-height: 70px;
 }
 .postbar *{
   white-space: normal;
