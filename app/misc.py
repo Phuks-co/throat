@@ -1132,7 +1132,7 @@ def getChangelog():
         return None
 
 
-def postListQueryBase(*extra, nofilter=False):
+def postListQueryBase(*extra, nofilter=False, noAllFilter=False):
     if current_user.is_authenticated:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
@@ -1143,8 +1143,10 @@ def postListQueryBase(*extra, nofilter=False):
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.comments, SubPost.deleted, User.uid, *extra)
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
-    if not nofilter:
+    if not noAllFilter and not nofilter:
         posts = posts.where(SubPost.deleted == 0)
+        if current_user.is_authenticated and current_user.blocksid:
+            posts = posts.where(SubPost.sid.not_in(current_user.blocksid))
     if (not nofilter) or ((not current_user.is_authenticated) or ('nsfw' not in current_user.prefs)):
         posts = posts.where(SubPost.nsfw == 0)
     return posts

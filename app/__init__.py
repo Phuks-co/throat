@@ -258,7 +258,7 @@ def all_new_more(pid=None):
 def all_domain_new(domain, page):
     """ The index page, all posts sorted as most recent posted first """
     domain = re.sub('[^A-Za-z0-9.\-_]+', '', domain)
-    posts = misc.getPostList(misc.postListQueryBase().where(SubPost.link % ('%://' + domain + '/%')),
+    posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(SubPost.link % ('%://' + domain + '/%')),
                              'new', 1).dicts()
     return render_template('index.html', page=page, kw={'domain': domain},
                            sort_type='all_domain_new',
@@ -660,7 +660,7 @@ def view_sub_new(sub, page):
     if not sub:
         abort(404)
 
-    posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid == sub['sid']),
+    posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub['sid']),
                              'new', page).dicts()
     mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
     createtxtpost = CreateSubTextPost(sub=sub['name'])
@@ -696,7 +696,7 @@ def view_sub_top(sub, page):
     if not sub:
         abort(404)
 
-    posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid == sub['sid']),
+    posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub['sid']),
                              'top', page).dicts()
 
     mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
@@ -720,7 +720,7 @@ def view_sub_hot(sub, page):
     if not sub:
         abort(404)
 
-    posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid == sub['sid']),
+    posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub['sid']),
                              'hot', page).dicts()
     mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
     createtxtpost = CreateSubTextPost(sub=sub['name'])
@@ -842,7 +842,7 @@ def view_user_posts(user, page):
     if not user or user['status'] == 10:
         abort(404)
 
-    posts = misc.getPostList(misc.postListQueryBase().where(User.uid == user['uid']),
+    posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(User.uid == user['uid']),
                              'new', page).dicts()
     return render_template('userposts.html', page=page, sort_type='view_user_posts',
                            posts=posts, user=user)
@@ -858,7 +858,7 @@ def view_user_savedposts(user, page):
         abort(404)
     if current_user.uid == user['uid']:
         pids = db.get_all_user_saved(current_user.uid)
-        posts = misc.getPostList(misc.postListQueryBase().where(SubPost.pid << pids),
+        posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(SubPost.pid << pids),
                                  'new', page).dicts()
         return render_template('userposts.html', page=page,
                                sort_type='view_user_savedposts',
