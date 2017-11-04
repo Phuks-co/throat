@@ -665,11 +665,7 @@ def enableVideoMode(sub):
 
 def getPostFlair(post):
     """ Returns true if the post has available flair """
-    f = db.get_post_metadata(post['pid'], 'flair')
-    if not f:
-        return False
-    else:
-        return f['value']
+    return post['flair']
 
 
 @cache.memoize(600)
@@ -1135,12 +1131,12 @@ def getChangelog():
 def postListQueryBase(*extra, nofilter=False, noAllFilter=False):
     if current_user.is_authenticated:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
-                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
+                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair,
                                SubPost.comments, SubPost.deleted, SubPostVote.positive, User.uid, *extra)
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(SubPost)
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
-                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
+                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair,
                                SubPost.comments, SubPost.deleted, User.uid, *extra)
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
     if not noAllFilter and not nofilter:

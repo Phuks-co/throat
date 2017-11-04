@@ -338,21 +338,6 @@ def edit_sub(sub):
                 db.update_sub_metadata(sub['sid'], 'sort',
                                        form.subsort.data)
 
-            if form.subtags.data:
-                tags = re.sub('[^A-Za-z0-9.\-_+]+', '', form.subtags.data)
-                tags = str(tags).split('+')
-                if len(tags) > 10:
-                    return json.dumps({'status': 'error',
-                                       'error': ['Only 10 sub tags allowed for now']})
-                db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
-                          'AND `sid`=%s', ('tag', sub['sid']))
-
-                for tag in tags:
-                    db.create_sub_metadata(sub['sid'], 'tag', tag)
-            else:
-                db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
-                          'AND `sid`=%s', ('tag', sub['sid']))
-
             db.create_sublog(sub['sid'], 4, 'Sub settings edited by ' +
                              current_user.get_username())
 
@@ -374,38 +359,32 @@ def assign_post_flair(sub, pid, fl):
     """ Assign a post's flair """
     sub = db.get_sub_from_name(sub)
     if not sub:
-        return json.dumps({'status': 'error',
-                           'error': ['Sub does not exist']})
-    post = db.get_post_from_pid(pid)
-    if not post:
-        return json.dumps({'status': 'error',
-                           'error': ['Post does not exist']})
+        return jsonify(status='error', error='Sub does not exist')
+
+    try:
+        post = SubPost.get(SubPost.pid == pid)
+    except SubPost.DoesNotExist:
+        return jsonify(status='error', error=['Post does not exist'])
+
     form = DummyForm()
     if form.validate():
-        if current_user.is_mod(sub['sid']) or post['uid'] == current_user.get_id() \
-           or current_user.is_admin():
+        if current_user.is_mod(sub['sid']) or (post.uid == current_user.uid and misc.userCanFlair(sub)):
             flair = db.query('SELECT * FROM `sub_flair` WHERE `xid`=%s AND '
                              '`sid`=%s', (fl, sub['sid'])).fetchone()
             if not flair:
-                return json.dumps({'status': 'error',
-                                   'error': ['Flair does not exist']})
+                return jsonify(status='error', error='Flair does not exist')
 
-            db.update_post_metadata(post['pid'], 'flair', flair['text'])
+            post.flair = flair['text']
+            post.save()
+
             if current_user.is_mod(sub['sid']):
-                db.create_sublog(sub['sid'], 3, current_user.get_username() +
-                                 ' assigned post flair',
-                                 url_for('view_post', sub=sub['name'],
-                                         pid=post['pid']))
+                db.create_sublog(sub['sid'], 3, current_user.get_username() + ' assigned post flair',
+                                 url_for('view_post', sub=sub['name'], pid=post.pid))
 
-            if not current_user.is_mod(sub['sid']) and current_user.is_admin():
-                db.create_sitelog(4, current_user.get_username() +
-                                  ' assigned post flair',
-                                  url_for('view_post', sub=sub['name'],
-                                          pid=post['pid']))
             cache.delete_memoized(db.get_post_metadata, pid, 'flair')
-            return json.dumps({'status': 'ok'})
+            return jsonify(status='ok')
         else:
-            return json.dumps({'status': 'error', 'error': 'Not authorized'})
+            return jsonify(status='error', error='Not authorized')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -416,19 +395,18 @@ def remove_post_flair(sub, pid):
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    post = db.get_post_from_pid(pid)
-    if not post:
-        return json.dumps({'status': 'error',
-                           'error': ['Post does not exist']})
-    if current_user.is_mod(sub['sid']) or post['uid'] == current_user.get_id() \
-       or current_user.is_admin():
-        postfl = misc.getPostFlair(post)
-        if not postfl:
+    try:
+        post = SubPost.get(SubPost.pid == pid)
+    except SubPost.DoesNotExist:
+        return jsonify(status='error', error=['Post does not exist'])
+
+    if current_user.is_mod(sub['sid']) or (post.uid == current_user.uid and misc.userCanFlair(sub)):
+        if not post.flair:
             return json.dumps({'status': 'error',
                                'error': ['Flair does not exist']})
         else:
-            db.uquery('DELETE FROM `sub_post_metadata` WHERE `pid`=%s AND '
-                      '`key`=%s', (post['pid'], 'flair'))
+            post.flair = None
+            post.save()
             if current_user.is_mod(sub['sid']):
                 db.create_sublog(sub['sid'], 3, current_user.get_username() +
                                  ' removed post flair',

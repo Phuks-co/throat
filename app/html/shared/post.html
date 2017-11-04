@@ -26,8 +26,8 @@
         @if post['nsfw']:
         <div class="nsfw" alt="Not safe for work">NSFW</div> \
         @end
-        @if func.getPostFlair(post):
-        <span class="postflair">@{func.getPostFlair(post)}</span> \
+        @if post['flair']:
+        <span class="postflair">@{post['flair']}</span> \
         @end
         @if post['link'] == None:
           <a href="@{url_for('view_post', sub=post['sub'], pid=post['pid'])}" class="title">@{post['title']}</a> \

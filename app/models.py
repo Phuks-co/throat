@@ -156,6 +156,7 @@ class SubPost(db.Model):
     comments = IntegerField()
     uid = ForeignKeyField(db_column='uid', null=True, rel_model=User,
                           to_field='uid')
+    flair = CharField(null=True, max_length=25)
 
     class Meta:
         db_table = 'sub_post'
