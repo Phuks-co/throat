@@ -163,11 +163,7 @@ class SiteUser(object):
 
     def likes_scroll(self):
         """ Returns true if user likes scroll """
-        x = db.get_user_metadata(self.uid, 'noscroll')
-        if x:
-            return False if x == '1' else True
-        else:
-            return True
+        return 'noscroll' not in self.prefs
 
     def block_styles(self):
         """ Returns true if user selects to block sub styles """
@@ -1446,5 +1442,10 @@ def getUserComments(uid, page):
     return com
 
 
+def ktime0():
+    print('bvo')
+    g.boolkk = time.time()
+
+
 def ktime():
-    print(time.time())
+    print('partial load: ', int((time.time() - g.boolkk) * 1000))

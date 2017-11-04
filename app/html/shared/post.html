@@ -8,7 +8,7 @@
         <div title="Downvote" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="downvote"></div>
       </div>
       <div class="thcontainer">
-        <a href="@{url_for('view_post', sub=post['sub'], pid=post['pid'])}" class="title">
+        <a href="/s/@{post['sub']}/@{post['pid']!!s}" class="title">
           <div class="thumbnail">
             @if post['thumbnail'] != '' and post['link'] != None:
               <img src="@{config.THUMBNAIL_HOST}@{post['thumbnail']}"/>
@@ -30,12 +30,12 @@
         <span class="postflair">@{post['flair']}</span> \
         @end
         @if post['link'] == None:
-          <a href="@{url_for('view_post', sub=post['sub'], pid=post['pid'])}" class="title">@{post['title']}</a> \
+          <a href="/s/@{post['sub']}/@{post['pid']!!s}" class="title">@{post['title']}</a> \
         @else:
           @if post['link'].startswith('http:'):
-          <span title="not https" class="p-icon" data-icon="exclaim"></span> \
+            <span title="not https" class="p-icon" data-icon="exclaim"></span> \
           @end
-          <a href="@{post['link']}" class="title">@{post['title']}</a> <a href="@{url_for('all_domain_new', domain=func.getDomain(post['link']), page=1)}" class="domain">(@{func.getDomain(post['link'])})</a>
+          <a href="@{post['link']}" class="title">@{post['title']}</a> <a href="/domain/@{func.getDomain(post['link'])}" class="domain">(@{func.getDomain(post['link'])})</a>
         @end
       </div>
       <div class="author">
@@ -48,19 +48,19 @@
           <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="lnk" data-link="@{post['link']}" data-icon="play"></div></div>
           @end
         @elif post['content'] != '':
-        <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="txt" data-link="None" data-icon="text"></div></div>
+          <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="txt" data-link="None" data-icon="text"></div></div>
         @end
         posted <time-ago datetime="@{post['posted'].isoformat()}Z"></time-ago> by
-        <a class="authorlink" href="@{url_for('view_user', user=post['user'])}">@{post['user']}</a>
+        <a class="authorlink" href="/u/@{post['user']}">@{post['user']}</a>
         @if sub and post['pid'] in func.getStickyPid(sub['sid']):
         - <span class="stick">sticky</span>
         @end
         @if not sub:
-        on <a href="@{url_for('view_sub', sub=post['sub'])}">@{post['sub']}</a>
+        on <a href="/s/@{post['sub']}">@{post['sub']}</a>
         @end
       </div>
       <div class="links">
-        <a class="comments" href="@{url_for('view_post', sub=post['sub'], pid=post['pid'])}">@{(post['comments']>0) and 'comments (' + str(post['comments']) +')' or 'comment'}</a>
+        <a class="comments" href="/s/@{post['sub']}/@{post['pid']!!s}">@{(post['comments']>0) and 'comments (' + str(post['comments']) +')' or 'comment'}</a>
       </div>
     </div>
 </div>

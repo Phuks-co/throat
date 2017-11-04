@@ -29,7 +29,6 @@ from . import misc, forms, caching
 from .socketio import socketio, send_uinfo
 from . import database as db
 from .misc import SiteAnon, getSuscriberCount, getDefaultSubs, allowedNames, get_errors
-from .sorting import NewSorting
 from .models import db as pdb
 from .models import Sub, SubPost, User, SubPostComment
 
@@ -185,7 +184,6 @@ def index():
 def home_hot(page):
     """ /hot for subscriptions """
     posts = list(misc.getPostList(misc.postListQueryHome(), 'hot', page).dicts())
-    print(time.time())
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home_hot', 'page': page,
                                                      'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
@@ -236,9 +234,7 @@ def all_new_rss():
 @app.route("/all/new/<int:page>")
 def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
-    k = time.time()
     posts = list(misc.getPostList(misc.postListQueryBase(), 'new', page).dicts())
-    print('------ ', time.time() - k)
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_new', 'page': page,
                                                      'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
