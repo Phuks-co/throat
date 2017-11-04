@@ -895,13 +895,15 @@ button#logout{
 
 span.mailcount {
   position: absolute;
-  top: 9px;
-  right: -4px;
+  top: 12px;
+  right: -8px;
   line-height: 1em;
-  border-radius: 4px;
+  min-width: 1em;
+  border-radius: 1em;
   background: rgba(106, 102, 93, 0.71);
   font-size: small;
   display: inline-block;
+  text-align: center;
   padding: 0.05em 0.12em;
   margin-right: 3px;
 }

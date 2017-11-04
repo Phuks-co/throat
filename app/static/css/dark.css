@@ -305,6 +305,9 @@ body.dark article.comment:nth-child(2n) {
 /* /USER PAGE */
 
 /* misc */
+body.dark span.mailcount {
+  background: red;
+}
 body.dark table td, body.dark table th, body.dark table{
   border-color: #4e4e4e;
 }
