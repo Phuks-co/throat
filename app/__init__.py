@@ -896,11 +896,11 @@ def edit_user(user):
                       (user['uid'], )).fetchone()['c']
     ccount = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE '
                       '`uid`=%s', (user['uid'], )).fetchone()['c']
-    exlink = int(db.get_user_metadata(user['uid'], 'exlinks'))
-    styles = int(db.get_user_metadata(user['uid'], 'nostyles'))
-    nsfw = int(db.get_user_metadata(user['uid'], 'nsfw'))
-    exp = int(db.get_user_metadata(user['uid'], 'labrat'))
-    noscroll = int(db.get_user_metadata(user['uid'], 'noscroll'))
+    exlink = 'exlinks' in current_user.prefs
+    styles = 'nostyles' in current_user.prefs
+    nsfw = 'nsfw' in current_user.prefs
+    exp = 'labrat' in current_user.prefs
+    noscroll = 'noscroll' in current_user.prefs
     form = EditUserForm(external_links=bool(exlink), show_nsfw=bool(nsfw),
                         disable_sub_style=bool(styles), experimental=bool(exp),
                         noscroll=bool(noscroll))

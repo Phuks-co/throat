@@ -27,7 +27,7 @@ var recaptchaCallback = function(){
 {{ super() }}
 <div class="edituser">
   <h1>Edit info for {{user.name}}</h1>
-  <form  method="POST" id="edit-user-form" data-redir='true'  action="{{url_for('do.edit_user', user=user.name)}}" class="ajaxform pure-form pure-form-aligned">
+  <form  method="POST" id="edit-user-form" data-refresh='true'  action="{{url_for('do.edit_user', user=user.name)}}" class="ajaxform pure-form pure-form-aligned">
     {{edituserform.csrf_token}}
     <fieldset>
       <div class="pure-control-group">
