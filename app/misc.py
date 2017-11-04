@@ -833,7 +833,7 @@ def workWithMentions(data, receivedby, post, sub):
     if mts:
         mts = list(set(mts))  # Removes dupes
         # Filter only users
-        mts = [x[2] for x in mts if x[1] == "/u/" or x[1] == "@"]
+        mts = [x[3] for x in mts if x[2] == "/u/" or x[2] == "@"]
         for mtn in mts[:5]:
             # Send notifications.
             user = db.get_user_from_name(mtn)
