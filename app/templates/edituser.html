@@ -1,16 +1,17 @@
 {% extends "layout.html" %}
 {% block head %}
 {{ super() }}
-<script src="https://www.google.com/recaptcha/api.js" type="text/javascript"></script>
+<script src="https://www.google.com/recaptcha/api.js?onload=recaptchaCallback&render=explicit" type="text/javascript"></script>
+<script>
+var recaptchaCallback = function(){
+    grecaptcha.render(document.getElementById('g-recaptcha'), {sitekey: '{{config.RECAPTCHA_PUBLIC_KEY}}'});
+}
+</script>
+
 {% endblock %}
 {% block title %}{{config.LEMA}}{% endblock %}
 {% block sidebar %}
 {{ super() }}
-<script>
-var recaptchaCallback = function(){
-    grecaptcha.render($('.g-recaptcha')[0], {sitekey: $('.g-recaptcha').data().sitekey});
-}
-</script>
 
 {% if not user.status == 10 %}
   <h3><a href="{{url_for('view_user', user=user.name)}}" class="sbm-post">{{user.name}}</a></h3>
@@ -74,8 +75,9 @@ var recaptchaCallback = function(){
         <label for="oldpassword">{{edituserform.oldpassword.label.text}}</label>
         {{edituserform.oldpassword(placeholder=edituserform.oldpassword.label.text, required=True, autocomplete="off")}}
       </div>
-
-      {{edituserform.recaptcha}}
+      <div class="pure-control-group">
+        <div id="g-recaptcha"></div>
+      </div>
       <div class="alert div-error"></div>
       <button type="submit" class="pure-button pure-button-primary" id="edituser-btnsubmit" data-prog="Editing..." data-success="Saved!">Edit user</button>
     </fieldset>
