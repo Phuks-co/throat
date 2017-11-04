@@ -794,6 +794,9 @@ def create_comment(pid):
         if not post:
             return json.dumps({'status': 'error',
                                'error': ['Post does not exist']})
+        if post['deleted']:
+            return json.dumps({'status': 'error',
+                               'error': ['Post was deleted']})
         # 4 - All OK, post dem comment.
         comment = db.create_comment(pid=pid,
                                     uid=current_user.uid,
