@@ -51,6 +51,38 @@ u.get = function(url, success, error){ //
   };
 
   request.send();
-}
+};
+
+u.rawpost = function(url, data, success, error){
+  var request = new XMLHttpRequest();
+  request.open('POST', url, true);
+  if(!data instanceof FormData){
+    request.setRequestHeader("Content-Type", "application/json");
+  }
+  request.onload = function() {
+    if (this.status >= 200 && this.status < 400) {
+      try{
+        var data = JSON.parse(this.response);
+      }catch(e){
+        return success(this.response);
+      }
+      success(data);
+    } else {
+      error(this.response, 'Status ' + this.status);
+    }
+  };
+
+  request.onerror = function() {
+    error(err, 'Could not contact the server')
+  };
+  request.send(data);
+};
+
+u.post = function(url, data, success, error){
+  data['csrf_token'] = document.getElementById('csrf_token').value;
+  data = JSON.stringify(data);
+  u.rawpost(url, data, success, error);
+};
+
 
 module.exports = u;

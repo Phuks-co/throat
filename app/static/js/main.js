@@ -5,7 +5,6 @@ import 'purecss/build/buttons.css';
 import 'purecss/build/grids.css';
 import 'purecss/build/grids-responsive.css';
 import 'time-elements/time-elements.js';
-import $ from 'jquery';
 import u from './Util';
 import Konami from './ext/konami';
 
@@ -22,137 +21,109 @@ require('./Socket');
 
 
 function vote(obj, how, comment){
+  console.log(how)
   if(comment){
     var kl = 'votecomment';
-    var unid = obj.parent().parent().parent().data('cid');
-    var count = obj.parent().parent().children('.cscore');
+    var unid = obj.parentNode.parentNode.parentNode.getAttribute('data-cid');
+    var count = obj.parentNode.parentNode.querySelector('.cscore');
   } else {
     var kl = 'vote';
-    var unid = obj.data('pid');
-    var count = obj.parent().children('.score');
+    var unid = obj.getAttribute('data-pid');
+    var count = obj.parentNode.querySelector('.score');
   }
-  $.ajax({
-    type: "POST",
-    url: '/do/' + kl + '/'+ unid + '/' + how,
-    data: {csrf_token: $('#csrf_token')[0].value},
-    dataType: 'json',
-    success: function(data) {
-      console.log(data)
-      if(data.status == "ok"){
-        console.log(obj)
-        obj.addClass((how == 'up') ? 'upvoted' : 'downvoted');
-        obj.parent().children((how == 'up') ? '.downvoted' : '.upvoted').removeClass((how == 'up') ? 'downvoted' : 'upvoted');
-
-        count.text(data.score);
-      }
+  u.post('/do/' + kl + '/'+ unid + '/' + how, {}, function(data){
+    console.log(data)
+    if(data.status == "ok"){
+      console.log(obj);
+      obj.classList.add((how == 'up') ? 'upvoted' : 'downvoted');
+      obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted').classList.remove((how == 'up') ? 'downvoted' : 'upvoted')
+      count.innerHTML = (how == 'up') ? (parseInt(count.innerHTML)+1) : (parseInt(count.innerHTML)-1)
     }
-  }).catch(function(e){
-    if(e.status == 403){
-      // TODO: Show error if user is not authenticated
-    }
-  });
+  }, function(err){
+    //TODO: show errors
+  })
 }
 
 // up/downvote buttons.
-$(document).on('click', '.upvote', function(){
-  var obj = $(this);
-  vote(obj, 'up');
-});
+u.addEventForChild(document, 'click', '.upvote,.downvote,.c-upvote,.c-downvote', function(e, target){
+  vote(target, target.className.replace(' ', '').endsWith('upvote') ? 'up' : 'down', target.className.replace(' ', '').startsWith('c-'))
+})
 
-$(document).on('click', '.downvote', function(){
-  var obj = $(this);
-  console.log(obj)
-  vote(obj, 'down');
-});
 
-$(document).on('click', '.c-upvote', function(){
-  var obj = $(this);
-  vote(obj, 'up', true);
-});
-
-$(document).on('click', '.c-downvote', function(){
-  var obj = $(this);
-  vote(obj, 'down', true);
-});
-
-$(document).ready(function() {
+u.ready(function() {
   // shitless forms
-  $(document).on('submit', ".ajaxform", function(e){
+  u.addEventForChild(document, 'submit', '.ajaxform', function(e, target){
     e.preventDefault();
-    var target = $(e.target);
-    var button = $(target.find("[type=submit]")[0]);
-    var btnorm = button.text();
-    button.prop('disabled', true);
-    button.text(button.data('prog'));
-    $.ajax({
-      type: "POST",
-      dataType: 'json',
-      url: target.prop('action'),
-      data: target.serialize(),
-      success: function(data) {
+    var button = target.querySelector("[type=submit]");
+    var btnorm = button.innerHTML;
+    var data = new FormData(target);
+
+    button.removeAttribute('disabled');
+    button.innerHTML = button.getAttribute('data-prog');
+    u.rawpost(target.getAttribute('action'), data,
+      function(data){ // success
         if (data.status != "ok") {
-          button.prop('disabled', false);
-          var obj = data.error,
-            ul = $("<ul>"); // >_>
-          for (var i = 0, l = obj.length; i < l; ++i) {
-            ul.append("<li>" + obj[i] + "</li>");
+          button.removeAttribute('disabled');
+          var obj = data.error, q = data.error.length,
+            ul = document.createElement('ul'); // >_>
+          for (var i = 0; i < q; i++) {
+            ul.innerHTML = ul.innerHTML + "<li>" + obj[i] + "</li>";
           }
-          target.find('.div-error').html('<span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span>' +
-                        '<ul>' + ul.html() + '</ul>');
-          target.find('.div-error').show();
-          button.text(btnorm);
+          if(target.querySelector('.div-error')){
+            target.querySelector('.div-error').innerHTML = '<span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span>' +
+                    '<ul>' + ul.innerHTML + '</ul>';
+            target.querySelector('.div-error').style.display = 'block';
+          }
+          button.innerHTML = btnorm;
           if (typeof grecaptcha != "undefined") {
               grecaptcha.reset();
           }
         } else { // success
-          if(target.data('reset')){
-            target[0].reset();
+          if(target.getAttribute('data-reset')){
+            target.reset();
           }
-          if(button.data('success')){
-            button.text(button.data('success'));
+          if(button.getAttribute('data-success')){
+            button.innerHTML = button.getAttribute('data-success');
           }
-          if(target.data('redir')){
-            if(target.data('redir') === true){
+          if(target.getAttribute('data-redir')){
+            if(target.getAttribute('data-redir') == "true"){
               document.location = data.addr;
             }else{
-              document.location = target.data('redir');
+              document.location = target.getAttribute('data-redir');
             }
-          }else if (target.data('reload')) {
+          }else if (target.getAttribute('data-reload')) {
             console.log('tried');
             document.location.reload();
           }else{
-            button.prop('disabled', false);
+            button.removeAttribute('disabled');
           }
         }
-      },
-      error: function(data, err) {
-        target.find('.div-error').html('<span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> <p><ul><li>Error while contacting the server</li></ul></p>');
-        target.find('.div-error').show();
-        button.prop('disabled', false);
-        button.text(btnorm);
-      }
-    });
-    console.log(target.data());
+      }, function() { //error
+        target.querySelector('.div-error').innerHTML = '<span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> <p><ul><li>Error while contacting the server</li></ul></p>';
+        target.querySelector('.div-error').style.display = 'block';
+        button.removeAttribute('disabled');
+        button.innerHTML = btnorm;
+      })
   });
 });
 
 // toggle dark mode
-$("#toggledark").click(function() {
+document.getElementById('toggledark').addEventListener('click', function(){
   var mode = getCookie("dayNight");
   var d = new Date();
   d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); //365 days
   var expires = "expires=" + d.toGMTString();
   if (mode == "dark" || mode == "dank") {
     document.cookie = "dayNight" + "=" + "light" + "; " + expires + ";path=/";
-    $("body").removeClass("dark");
-    $("body").removeClass("dank");
-    $('#toggledark span').html(icons.moon);
+    document.getElementsByTagName('body')[0].classList.remove('dark');
+    document.getElementsByTagName('body')[0].classList.remove('dank');
+    document.querySelector('#toggledark span').innerHTML = icons.moon;
   } else {
     document.cookie = "dayNight" + "=" + "dark" + "; " + expires + ";path=/";
-    $("body").addClass("dark");
-    $('#toggledark span').html(icons.sun);
+    document.getElementsByTagName('body')[0].classList.add('dark');
+    document.querySelector('#toggledark span').innerHTML = icons.sun;
   }
-});
+})
 
 // TODO: move to util
 function getCookie(cname) {
@@ -182,19 +153,16 @@ if(document.getElementById('delete_account')){
 
 
 // admin - remove banned domain
-$('button.removebanneddomain').click(function(){
-  var domain=$(this).data('domain')
-  $.ajax({
-    type: "POST",
-    url: '/do/remove_banned_domain/' + domain,
-    dataType: 'json',
-    success: function(data) {
-        if (data.status == "ok") {
-          document.location.reload();
-        }
-    }
+if(document.querySelector('button.removebanneddomain')){
+  document.querySelector('button.removebanneddomain').addEventListener('click', function(){
+    var domain=this.getAttribute('data-domain');
+    u.post('/do/remove_banned_domain/' + domain, {}, function(data){
+      if (data.status == "ok") {
+        document.location.reload();
+      }
+    })
   });
-});
+}
 
 
 /* purecss*/
@@ -245,7 +213,6 @@ if(window.moreuri){
         return
       }
       if(window.scrollY + window.innerHeight >= (document.getElementsByTagName('body')[0].clientHeight/100)*75) {
-          // $('article').last().data('pid')
           var k = document.querySelectorAll('div.post')
           var lastpid = k[k.length-1].getAttribute('pid')
           window.loading = true;

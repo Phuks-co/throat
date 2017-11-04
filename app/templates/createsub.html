@@ -20,9 +20,7 @@
           {{csubform.title(placeholder=csubform.title.label.text, required=True)}}
         </div>
         <div class="pure-controls">
-          {% if error %}
-            <div class="error">{{error}}</div>
-          {% endif %}
+          <div class="alert div-error"></div>
           <button type="submit" id="csub-btnsubmit" class="pure-button pure-button-primary" data-prog="Sending...">Create sub</button>
         </div>
       </fieldset>

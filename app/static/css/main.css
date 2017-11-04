@@ -259,13 +259,16 @@ a:hover {
 }
 
 .alert.div-error {
-  background: #d94f00;
+  background: #d92800;
   color: #ffffff;
   margin: 6px;
+  padding-top: .1em;
+  padding-bottom: .1em;
 }
 
 .div-error span.closebtn {
   margin: 4px;
+  float: right;
 }
 
 .alert.div-error ul {
