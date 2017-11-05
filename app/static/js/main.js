@@ -59,7 +59,9 @@ u.ready(function() {
     var data = new FormData(target);
 
     button.removeAttribute('disabled');
-    button.innerHTML = button.getAttribute('data-prog');
+    if(button.getAttribute('data-prog')){
+      button.innerHTML = button.getAttribute('data-prog');
+    }
     u.rawpost(target.getAttribute('action'), data,
       function(data){ // success
         if (data.status != "ok") {
