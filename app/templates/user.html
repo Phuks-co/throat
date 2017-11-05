@@ -111,9 +111,9 @@
             {{msgform.csrf_token}}
             <h3>Send user message</h3>
             <fieldset>
-              <div class="pure-control-group">
+              <div id="lto" class="pure-control-group" style="display:none">
                 <label for="to">User</label>
-                {{msgform.to(placeholder=msgform.to.label.text, required=True)}}
+                {{msgform.to(placeholder=msgform.to.label.text, required=True, value=user.name)}}
               </div>
               <div class="pure-control-group">
                 <label for="subject">Subject</label>

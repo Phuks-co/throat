@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import u from './Util'
 
 require('../css/miner.css');
 
@@ -17,8 +17,7 @@ function getCookie(cname) {
     }
     return "";
 }
-
-$('#mining-throttle-add').click(function() {
+u.sub('#mining-throttle-add', 'click', function(e){
 	var throttle = cminer.getThrottle()
 	if (throttle != 0) {
 		var step = 10;
@@ -31,7 +30,7 @@ $('#mining-throttle-add').click(function() {
     localStorage.setItem('throttle', newlvl)
 	}
 });
-$('#mining-throttle-subtract').click(function() {
+u.sub('#mining-throttle-subtract', 'click', function(e){
 	var throttle = cminer.getThrottle()
 	if (throttle != 0.9) {
 		var step = 10;
@@ -190,30 +189,34 @@ var ui = new MinerUI(cminer, {
   startButton: document.getElementById('mining-start'),
   stopButton: document.getElementById('mining-stop')
 });
+function escapeHtml(html)
+{
+    var text = document.createTextNode(html);
+    var div = document.createElement('div');
+    div.appendChild(text);
+    return div.innerHTML;
+}
 
 window.setInterval(function(){
-  $.ajax({
-    url: '/miner/stats',
-    dataType: 'json',
-  }).done(function(d){
-    $('#nm').text(d.name);
-    $('#bal').text(d.balance);
-    $('#hps').text(d.hashesPerSecond);
-    $('#ht').text(d.hashesTotal);
-    $('#xpe').text(d.xmrPending);
-    $('#xpa').text(d.xmrPaid);
+  u.get('/miner/stats', function(d){
+    document.getElementById('nm').innerHTML = d.name;
+    document.getElementById('bal').innerHTML = d.balance;
+    document.getElementById('hps').innerHTML = d.hashesPerSecond;
+    document.getElementById('ht').innerHTML = d.hashesTotal;
+    document.getElementById('xpe').innerHTML = d.xmrPending;
+    document.getElementById('xpa').innerHTML = d.xmrPaid;
     var tabl = '';
     var tablb = '';
     for (var i = 0; i < d.users.length; i++) {
-      tabl = tabl + '<tr><td class="center">'+ (i+1) + '</td><td>' + $('<span/>').text(d.users[i].username).html() + '</td>';
+      tabl = tabl + '<tr><td class="center">'+ (i+1) + '</td><td>' + escapeHtml(d.users[i].username) + '</td>';
       tabl = tabl + '<td><b><span>' + d.users[i].score + '</span></b></td></tr>';
     }
 
     for (var i = 0; i < d.speed.length; i++) {
-      tablb = tablb + '<tr><td class="center">'+ (i+1) + '</td><td><span>' + $('<span/>').text(d.speed[i].username).html() + '</span></td>';
+      tablb = tablb + '<tr><td class="center">'+ (i+1) + '</td><td><span>' + escapeHtml(d.speed[i].username) + '</span></td>';
       tablb = tablb + '<td><b><span>' + d.speed[i].hashes + '</span></b> H/s</td></tr>';
     }
-    $('#miningleaderboard table').html(tabl);
-    $('#speedleaderboard table').html(tablb);
-  });
+    document.querySelector('#miningleaderboard table').innerHTML = tabl;
+    document.querySelector('#speedleaderboard table').innerHTML = tablb;
+  })
 }, 120000);

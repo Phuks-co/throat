@@ -1,96 +1,93 @@
 // Message pages
 // import TextConfirm from  './utils/TextConfirm';
 // import Icons from './Icon';
-import $ from 'jquery';
+import u from './Util';
 
 // Mark message as read.
-$('.readmsg').click(function(e){
-  var mid = $(e.currentTarget).data().mid;
-  $.ajax({
-    type: "POST",
-    url: '/do/read_pm/' + mid,
-    dataType: 'json',
-    success: function(data) {
-      $(e.currentTarget).text('read');
-      $(e.currentTarget).removeClass("readmsg").addClass("read");
-      $(e.currentTarget).parent().parent().parent().removeClass("newmsg");
+u.sub('.readmsg', 'click', function(e){
+  var mid = this.getAttribute('data-mid'),obj=this;
+  u.post('/do/read_pm/'+mid, {},
+  function(data){
+    if (data.status == "ok") {
+      obj.innerHTML = 'read';
+      obj.classList.remove('readmsg');
+      obj.classList.add('read');
+      obj.parentNode.parentNode.parentNode.classList.remove('newmsg');
     }
   });
 });
 
 // Saving/unsaving message.
-$('.savemsg').click(function(e){
-  var mid = $(e.currentTarget).data().mid;
-  $.ajax({
-    type: "POST",
-    url: '/do/save_pm/' + mid,
-    dataType: 'json',
-    success: function(data) {
-      $(e.currentTarget).text('saved');
-      $(e.currentTarget).removeClass("savemsg").addClass("savedmsg");
-
+u.sub('.savemsg', 'click', function(e){
+  var mid = this.getAttribute('data-mid'),obj=this;
+  u.post('/do/save_pm/'+mid, {},
+  function(data){
+    if (data.status == "ok") {
+      obj.innerHTML = 'saved';
+      obj.classList.remove('savemsg');
+      obj.classList.add('savedmsg');
     }
   });
 });
 
 // Delete message.
-$('.deletemsg').click(function(e){
-  var mid = $(e.currentTarget).data().mid;
-  $.ajax({
-    type: "POST",
-    url: '/do/delete_pm/' + mid,
-    dataType: 'json',
-    success: function(data) {
-      $(e.currentTarget).text('deleted');
-      $(e.currentTarget).removeClass("deletemsg").addClass("deletedmsg");
+u.sub('.deletemsg', 'click', function(e){
+  var mid = this.getAttribute('data-mid'),obj=this;
+  u.post('/do/delete_pm/'+mid, {},
+  function(data){
+    if (data.status == "ok") {
+      obj.innerHTML = 'deleted';
+      obj.classList.remove('deletemsg');
+      obj.classList.add('deletedmsg');
     }
   });
 });
 
 // Toggle message reply
-$('.pmessage .replymsg').click(function(e){
+u.sub('.pmessage .replymsg', 'click', function(e){
   e.preventDefault();
-  var replyto = $(e.currentTarget).data().replyto
-  var title = $(e.currentTarget).data().replytitle
-  var mid = $(e.currentTarget).data().mid
-  $('#msg-form #to').prop('value', replyto);
-  $('#msg-form #lto').hide();
-  $('#msg-form #subject').prop('value', 'Re:' + title);
+  var replyto = this.getAttribute('data-replyto')
+  var title = this.getAttribute('data-replytitle')
+  var mid = this.getAttribute('data-mid')
+  document.querySelector('#msg-form #to').setAttribute('value', replyto);
+  if(document.querySelector('#msg-form #lto')){
+    document.querySelector('#msg-form #lto').style.display = 'none';
+  }
+  document.querySelector('#msg-form #subject').setAttribute('value', 'Re:' + title);
   var modal = document.getElementById('msgpop');
-  $("#msgpop").appendTo("#replyto" + mid);
+  document.querySelector('#replyto'+mid).appendChild(document.getElementById('msgpop'));
   modal.style.display = "block";
 });
-$('.pmessage .formpopmsg').click(function(e){
+
+u.sub('.pmessage .formpopmsg', 'click', function(e){
   e.preventDefault();
-  var replyto = $(e.currentTarget).data().replyto
-  $('#msg-form #to').prop('value', replyto);
-  $('#msg-form #lto').hide();
+  var replyto = this.getAttribute('data-replyto')
+  document.querySelector('#msg-form #to').setAttribute('value', replyto);
   var modal = document.getElementById('formpop');
   modal.style.display = "block";
 });
-$('.pmessage .replycom').click(function(e){
-  e.preventDefault();
-  var replyto = $(e.currentTarget).data().replyto
-  var post = $(e.currentTarget).data().post
-  var sub = $(e.currentTarget).data().sub
-  var parentid = $(e.currentTarget).data().parentid
-  var mid = $(e.currentTarget).data().mid
-  $('#comment-form #from').text(replyto);
-  $('#comment-form #sub').text(sub);
-  $('#comment-form #post').prop('value', post);
-  $('#comment-form #sub').prop('value', sub);
-  $('#comment-form #parent').prop('value', parentid);
+
+u.sub('.pmessage .replycom', 'click', function(e){
+  var replyto = this.getAttribute('data-replyto')
+  var post = this.getAttribute('data-post')
+  var sub = this.getAttribute('data-sub')
+  var parentid = this.getAttribute('data-parentid')
+  var mid = this.getAttribute('data-mid')
+  document.querySelector('#comment-form #from').innerHTML = replyto;
+  document.querySelector('#comment-form #sub').innerHTML = sub;
+  document.querySelector('#comment-form #post').setAttribute('value', post);
+  document.querySelector('#comment-form #sub').setAttribute('value', sub);
+  document.querySelector('#comment-form #parent').setAttribute('value', parentid);
   var modal = document.getElementById('msgpop');
-  $("#msgpop").appendTo("#replyto" + mid);
+  document.querySelector('#replyto'+mid).appendChild(document.getElementById('msgpop'));
   modal.style.display = "block";
 });
 
-
-$(document).on('click', '.closemsg', function(e){
+u.addEventForChild(document, 'click', '.closemsg', function(e, qelem){
   e.preventDefault();
-  $(this).parent().hide();
+  qelem.parentNode.style.display = 'none';
 });
-$(document).on('click', '.closepopmsg', function(e){
+u.addEventForChild(document, 'click', '.closepopmsg', function(e, qelem){
   e.preventDefault();
-  $(this).parent().parent().hide();
+  this.parentNode.parentNode.style.display = 'none';
 });

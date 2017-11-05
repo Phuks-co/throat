@@ -9,7 +9,7 @@ const externalCSS = new ExtractTextPlugin('[name].[contenthash].css');
 
 module.exports = {
   entry: {
-    main: ['./app/static/js/main.js', 'jquery'],
+    main: ['./app/static/js/main.js'],
     miner: './app/static/js/Miner.js',
   },
   output: {
