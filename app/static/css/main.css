@@ -593,8 +593,9 @@ iframe {
   fill: red;
 }
 
-.misctainer .votebuttons{
+.misctainer{
   padding-left: .8em;
+  padding-right: .6em;
 }
 
 .votebuttons {
