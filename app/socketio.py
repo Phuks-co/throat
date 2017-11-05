@@ -37,6 +37,12 @@ def register_check(g):
                   namespace='/alt')
 
 
+@socketio.on('msg', namespace='/snt')
+def chat_message(g):
+    if g.get('msg'):
+        socketio.emit('msg', {'user': current_user.name, 'msg': g.get('msg')},
+                      namespace='/snt', room='chat')
+
 # The old stuff
 
 

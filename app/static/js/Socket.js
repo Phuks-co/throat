@@ -36,7 +36,6 @@ socket.on('threadcomments', function(data){
   console.log('article#' + data.pid + ' .ccount')
   document.querySelector('div[pid="' + data.pid + '"] .comments').innerHTML = 'comments (' + data.comments + ')';
 })
-
 u.ready(function(){
   if(window.labrat){
     socket.on('connect', function() {
@@ -50,3 +49,47 @@ u.ready(function(){
     });
   }
 })
+
+
+u.sub('#chtitle', 'click', function(e){
+  var hid = this.getAttribute('hid');
+  if(!hid){ // hid
+    this.parentNode.style.height = '1.65em';
+    document.getElementById('chbott').style.display='none';
+    this.setAttribute('hid', true);
+  }else{
+    this.parentNode.style.height = '50%';
+    document.getElementById('chbott').style.display='block';
+    this.removeAttribute('hid');
+  }
+})
+
+function isScrolledIntoView(el) {
+    var elemTop = el.getBoundingClientRect().top;
+    var elemBottom = el.getBoundingClientRect().bottom;
+    var isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
+    return isVisible;
+}
+
+u.sub('#chsend', 'keydown', function(e){
+  if(e.keyCode == 13){
+    socket.emit('msg', {msg: this.value})
+    this.value = '';
+    var x = document.getElementById('chcont');
+    x.scrollTop = x.scrollHeight
+  }
+})
+
+socket.on('msg', function(data){
+  var cont = document.getElementById('chcont')
+  cont.innerHTML = cont.innerHTML + '<div class="msg"><span class="msguser">' + data.user + '&gt;</span><span class="damsg">' + data.msg + '</span></div>';
+  var k = document.getElementsByClassName('msg')
+  if(k.length > 3){
+    if(isScrolledIntoView(k[k.length-2])){
+      k[k.length-2].scrollIntoView();
+    }
+  }
+})
+
+
+module.exports = socket;

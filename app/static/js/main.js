@@ -17,7 +17,7 @@ require('./Post');
 require('./Editor');
 require('./Messages');
 require('./Sub');
-require('./Socket');
+var socket = require('./Socket');
 
 
 function vote(obj, how, comment){
@@ -120,6 +120,7 @@ document.getElementById('toggledark').addEventListener('click', function(){
     document.getElementsByTagName('body')[0].classList.remove('dark');
     document.getElementsByTagName('body')[0].classList.remove('dank');
     document.querySelector('#toggledark span').innerHTML = icons.moon;
+    document.getElementById('chpop').style.display='none'
   } else {
     document.cookie = "dayNight" + "=" + "dark" + "; " + expires + ";path=/";
     document.getElementsByTagName('body')[0].classList.add('dark');
@@ -208,6 +209,11 @@ window.addEventListener(WINDOW_CHANGE_EVENT, closeMenu);
 
 /* infinite scroll */
 u.ready(function(){
+  var mode = getCookie("dayNight");
+  if(mode == 'dank'){
+    socket.emit('subscribe', {target: 'chat'});
+  }
+
 if(window.moreuri){
   window.loading = false;
   window.addEventListener('scroll', function () {
@@ -232,6 +238,8 @@ new Konami(function() {
   var d = new Date();
   d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); //365 days
   var expires = "expires=" + d.toGMTString();
+  socket.emit('subscribe', {target: 'chat'});
+  document.getElementById('chpop').style.display='block'
     document.cookie = "dayNight" + "=" + "dank" + "; " + expires + ";path=/";
     document.getElementsByTagName('body')[0].classList.add('dark');
     document.getElementsByTagName('body')[0].classList.add('dank');

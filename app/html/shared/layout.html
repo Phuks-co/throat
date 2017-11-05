@@ -138,6 +138,11 @@
       @end
 
   </div>
+  <div id="chpop" @{(request.cookies.get( "dayNight")!="dank" or current_user.is_anonymous) and 'style="display:none"' or ''}>
+    <div id="chtitle">Main</div>
+    <div id="chcont"></div>
+    <div id="chbott"><input type="text" id="chsend" placeholder="Type here"/></div>
+  </div>
   <script type="text/javascript">
     window.wsserver = '@{config.WEBSOCKET_SERVER!!s}';
   </script>
