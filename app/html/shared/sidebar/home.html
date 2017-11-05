@@ -46,9 +46,9 @@
   <hr>
   <div class="sidebarlists">
     <ul>
-      <li><a class="title" href="@{url_for('view_post', sub=changeLog.sub, pid=changeLog.pid)}">@{changeLog.title}</a><br>
+      <li><a class="title" href="@{url_for('view_post', sub=changeLog['sub'], pid=changeLog['pid'])}">@{changeLog['title']}</a><br>
       <span class="sidelocale">
-        <time-ago datetime="@{changeLog.posted.isoformat()}Z"></time-ago> in <a href="@{url_for('view_sub', sub=changeLog.sub)}">/s/@{cl.sub}</a></li>
+        <time-ago datetime="@{changeLog['posted'].isoformat()}Z"></time-ago> in <a href="@{url_for('view_sub', sub=changeLog['sub'])}">/s/@{changeLog['sub']}</a></li>
       </span>
     </ul>
   </div>
