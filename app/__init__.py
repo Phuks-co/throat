@@ -268,7 +268,7 @@ def all_domain_new(domain, page):
 def search(page, term):
     """ The index page, with basic title search """
     term = re.sub('[^A-Za-z0-9.,\-_\'" ]+', '', term)
-    posts = misc.getPostList(misc.postListQueryBase().where(SubPost.title % ('%' + term + '%')),
+    posts = misc.getPostList(misc.postListQueryBase().where(SubPost.title ** ('%' + term + '%')),
                              'new', 1).dicts()
 
     return render_template('index.html', page=page, sort_type='search',
