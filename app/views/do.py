@@ -587,15 +587,23 @@ def grab_title():
     return jsonify(status='ok', title=title)
 
 
+def post_over_limit(limit):
+    if misc.get_user_level(current_user.uid)[0] <= 4:
+        form = CaptchaForm()
+    else:
+        form = CreateSubTextPost()
+    return render_template('createpost.html', txtpostform=form, error='Wait a bit before posting.')
+
+
 @do.route("/do/post", methods=['POST'])
 @login_required
-@misc.ratelimit(1, per=30, key_func=lambda: 'post')
+@misc.ratelimit(1, per=30, over_limit=post_over_limit)
 def create_post():
     """ Sub link post creation endpoint """
     if misc.get_user_level(current_user.uid)[0] <= 4:
         form = CaptchaForm()
         if not form.validate():
-            return json.dumps({'status': 'error', 'error': get_errors(form)})
+            return render_template('createpost.html', txtpostform=form, error=get_errors(form)[0])
     form = CreateSubTextPost()
     if form.validate():
         # Put pre-posting checks here
