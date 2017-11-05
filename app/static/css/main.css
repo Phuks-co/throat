@@ -593,6 +593,10 @@ iframe {
   fill: red;
 }
 
+.misctainer .votebuttons{
+  padding-left: .8em;
+}
+
 .votebuttons {
   height: 100%;
   min-width: 1em;
