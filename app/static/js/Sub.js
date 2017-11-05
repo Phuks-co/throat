@@ -1,117 +1,85 @@
-import $ from 'jquery';
+import u from './Util';
 
-$(document).on('click', '.revoke-mod2inv', function(){
-  var user=$(this).data('user');
-  var nsub=$(this).data('sub');
-  $.ajax({
-    type: "POST",
-    url: '/do/revoke_mod2inv/' + nsub + '/' + user,
-    data: {'csrf_token': $('#csrf_token')[0].value},
-    dataType: 'json',
-    success: function(data) {
-        if (data.status == "ok") {
-          document.location.reload();
-        }
+u.sub('.revoke-mod2inv', 'click', function(e){
+  var user=this.getAttribute('data-user');
+  var nsub=this.getAttribute('data-sub');
+  u.post('/do/revoke_mod2inv/'+nsub+'/'+user, {},
+  function(data){
+    if (data.status == "ok") {
+      document.location.reload();
     }
   });
 });
 
-$('#accept-mod2-inv').click(function(){
-  var user=$(this).data('user');
-  var nsub=$(this).data('sub');
-  $.ajax({
-    type: "POST",
-    url: '/do/accept_mod2inv/' + nsub + '/' + user,
-    data: {'csrf_token': $('#csrf_token')[0].value},
-    dataType: 'json',
-    success: function(data) {
-        if (data.status == "ok") {
-          document.location.reload();
-        }
+u.sub('#accept-mod2-inv', 'click', function(e){
+  var user=this.getAttribute('data-user');
+  var nsub=this.getAttribute('data-sub');
+  u.post('/do/accept_mod2inv/'+nsub+'/'+user, {},
+  function(data){
+    if (data.status == "ok") {
+      document.location.reload();
     }
   });
 });
 
-$('#refuse-mod2-inv').click(function(){
-  var user=$(this).data('user');
-  var nsub=$(this).data('sub');
-  $.ajax({
-    type: "POST",
-    url: '/do/refuse_mod2inv/' + nsub + '/' + user,
-    data: {'csrf_token': $('#csrf_token')[0].value},
-    dataType: 'json',
-    success: function(data) {
-        if (data.status == "ok") {
-          document.location.reload();
-        }
+u.sub('#refuse-mod2-inv', 'click', function(e){
+  var user=this.getAttribute('data-user');
+  var nsub=this.getAttribute('data-sub');
+  u.post('/do/refuse_mod2inv/'+nsub+'/'+user, {},
+  function(data){
+    if (data.status == "ok") {
+      document.location.reload();
     }
   });
 });
 
-$('.revoke-mod2').click(function(){
-  var user=$(this).data('user');
-  var nsub=$(this).data('sub');
-  $.ajax({
-    type: "POST",
-    url: '/do/remove_mod2/' + nsub + '/' + user,
-    data: {'csrf_token': $('#csrf_token')[0].value},
-    dataType: 'json',
-    success: function(data) {
-        if (data.status == "ok") {
-          document.location.reload();
-        }
+u.sub('.revoke-mod2', 'click', function(e){
+  var user=this.getAttribute('data-user');
+  var nsub=this.getAttribute('data-sub');
+  u.post('/do/remove_mod2/'+nsub+'/'+user, {},
+  function(data){
+    if (data.status == "ok") {
+      document.location.reload();
     }
   });
 });
 
-$('.revoke-ban').click(function(){
-  var user=$(this).data('user');
-  var nsub=$(this).data('sub');
-  $.ajax({
-    type: "POST",
-    url: '/do/remove_sub_ban/' + nsub + '/' + user,
-    data: {'csrf_token': $('#csrf_token')[0].value},
-    dataType: 'json',
-    success: function(data) {
-        if (data.status == "ok") {
-          document.location.reload();
-        }
+u.sub('.revoke-ban', 'click', function(e){
+  var user=this.getAttribute('data-user');
+  var nsub=this.getAttribute('data-sub');
+  u.post('/do/remove_sub_ban/'+nsub+'/'+user, {},
+  function(data){
+    if (data.status == "ok") {
+      document.location.reload();
     }
   });
 });
 
-
-$('#ptoggle').click(function(){
-  var oval = $('#ptypeval').val();
-  $('#ptypeval').val(($('#ptypeval').val() == 'text') ? 'link' : 'text' );
-  var val = $('#ptypeval').val();
-  $(this).html('Change to ' + oval + ' post');
-  $('#ptype').html(val);
+u.sub('#ptoggle', 'click', function(e){
+  var oval = document.getElementById('ptypeval').value;
+  document.getElementById('ptypeval').value = (document.getElementById('ptypeval').value == 'text') ? 'link' : 'text' ;
+  var val = document.getElementById('ptypeval').value;
+  this.innerHTML = 'Change to ' + oval + ' post';
   if(val=='text'){
-    $('#txcont').show();
-    $('.lncont').hide();
-    $('#link').prop('required', false);
-    $('#content').prop('required', true);
+    document.getElementById('txcont').style.display = 'block';
+    document.getElementById('link').removeAttribute('required');
+    document.getElementById('content').setAttribute('required', true);
+    u.each('.lncont', function(e){e.style.display='none';});
   }else{
-    $('#txcont').hide();
-    $('.lncont').show();
-    $('#link').prop('required', true);
-    $('#content').prop('required', false);
+    document.getElementById('txcont').style.display = 'none';
+    document.getElementById('link').setAttribute('required', true);
+    document.getElementById('content').removeAttribute('required');
+    u.each('.lncont', function(e){e.style.display='inline-block';});
   }
 });
 
-$('button.blk,button.unblk,button.sub,button.unsub').click(function(){
-  var sid=$(this).parent().data('sid');
-  var act=$(this).data('ac')
-  $.ajax({
-    type: "POST",
-    url: '/do/' + act + '/' + sid,
-    data: {'csrf_token': $('#csrf_token')[0].value},
-    dataType: 'json',
-    success: function(data) {
-        if (data.status == "ok") {
-          document.location.reload();
-        }
+u.sub('button.blk,button.unblk,button.sub,button.unsub', 'click', function(e){
+  var sid=this.parentNode.getAttribute('data-sid');
+  var act=this.getAttribute('data-ac')
+  u.post('/do/' + act + '/' + sid, {},
+  function(data){
+    if (data.status == "ok") {
+      document.location.reload();
     }
   });
 });
