@@ -1,6 +1,5 @@
 // Post page-related code.
 import TextConfirm from  './utils/TextConfirm';
-import $ from 'jquery';
 import Icons from './Icon';
 import u from './Util';
 import initializeEditor from './Editor';
@@ -240,8 +239,8 @@ u.addEventForChild(document, 'click', '.btn-preview', function(e, qelem){
 u.addEventForChild(document, 'click', '.delete-comment', function(e, qelem){
   // confirmation
   var cid = qelem.getAttribute('data-cid'), tg=qelem;
-  TextConfirm(this, function(){
-    u.rawpost('/do/delete_comment', {cid: cid},
+  TextConfirm(qelem, function(){
+    u.post('/do/delete_comment', {cid: cid},
     function(data){
       if (data.status != "ok") {
         tg.parentNode.innerHTML = 'Error.';
