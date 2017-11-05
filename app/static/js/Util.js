@@ -21,7 +21,6 @@ u.addEventForChild = function(parent, eventName, childSelector, cb){
     const clickedElement = event.target,
       matchingChild = clickedElement.closest(childSelector)
       if(matchingChild !== null){
-        console.log(matchingChild)
         if(matchingChild.matches(childSelector)){
           cb(event, matchingChild)
         }
@@ -56,7 +55,7 @@ u.get = function(url, success, error){ //
 u.rawpost = function(url, data, success, error){
   var request = new XMLHttpRequest();
   request.open('POST', url, true);
-  if(!data instanceof FormData){
+  if(!(data instanceof FormData)){
     request.setRequestHeader("Content-Type", "application/json");
   }
   request.onload = function() {
@@ -68,7 +67,9 @@ u.rawpost = function(url, data, success, error){
       }
       success(data);
     } else {
-      error(this.response, 'Status ' + this.status);
+      if(error){
+        error(this.response, 'Status ' + this.status);
+      }
     }
   };
 
@@ -84,5 +85,10 @@ u.post = function(url, data, success, error){
   u.rawpost(url, data, success, error);
 };
 
+u.sub = function(query, event, fn){
+  u.each(query, function(k){
+    k.addEventListener(event, fn);
+  })
+}
 
 module.exports = u;

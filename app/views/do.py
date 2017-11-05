@@ -567,11 +567,11 @@ def edit_txtpost(pid):
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
-@do.route("/do/grabtitle", methods=['get'])
+@do.route("/do/grabtitle", methods=['POST'])
 @login_required
 def grab_title():
     """ Safely grabs the <title> from a page """
-    url = request.args.get('u')
+    url = request.json.get('u')
     if not url:
         abort(400)
     try:
@@ -1756,10 +1756,10 @@ def preview():
     """ Returns parsed markdown. Used for post and comment previews. """
     form = DummyForm()
     if form.validate():
-        if request.form.get('text'):
-            return jsonify(status='ok', text=misc.our_markdown(request.form.get('text')))
-    else:
-        return jsonify(status='error', error='Missing text')
+        if request.json.get('text'):
+            return jsonify(status='ok', text=misc.our_markdown(request.json.get('text')))
+        else:
+            return jsonify(status='error', error='Missing text')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
