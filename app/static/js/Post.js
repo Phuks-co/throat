@@ -214,6 +214,7 @@ u.addEventForChild(document, 'click', '.btn-editcomment', function(e, qelem){
 u.addEventForChild(document, 'click', '.btn-preview', function(e, qelem){
   e.preventDefault();
   var content = document.querySelector('#' + qelem.getAttribute('data-pvid') + ' textarea').value;
+  if(content == ''){return;}
   qelem.setAttribute('disabled', true);
   qelem.innerHTML = 'Loading...';
   u.post('/do/preview', {text: content},
