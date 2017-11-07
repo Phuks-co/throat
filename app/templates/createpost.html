@@ -49,11 +49,11 @@ var recaptchaCallback = function(){
                 {{txtpostform.content(placeholder="(Optional) Write your post content here. Styling with Markdown format is supported.", rows="10", style="width: 100%")}}
               </div>
             </div>
-            <div class="pure-control-group lncont pure-u-21-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
+            <div class="pure-control-group lncont pure-u-sm-20-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
               <label for="link">Link</label>
               {{txtpostform.link(type="url", pattern="https?://.+", required=True if txtpostform.ptype.data=="link" else False, placeholder="URL")}}
             </div>
-            <div class="pure-control-group pure-u-2-24 lncont" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
+            <div class="pure-control-group pure-u-sm-3-24 lncont" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
               <button id="graburl" class="pure-button">Grab title</button>
             </div>
 

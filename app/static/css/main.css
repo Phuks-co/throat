@@ -1235,6 +1235,12 @@ form#msg-form {
   background-color: rgba(244, 194, 10, 0.35);
 }
 
+@media (max-width: 35.5em){
+  .createpost input#title, .createpost input#link, .createpost textarea#content{
+    width: auto;
+  }
+}
+
 #formpop {
   position: fixed;
   top: 20px;
