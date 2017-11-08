@@ -1139,7 +1139,7 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False):
         posts = posts.where(SubPost.deleted == 0)
         if current_user.is_authenticated and current_user.blocksid:
             posts = posts.where(SubPost.sid.not_in(current_user.blocksid))
-    if (not nofilter) or ((not current_user.is_authenticated) or ('nsfw' not in current_user.prefs)):
+    if (not nofilter) and ((not current_user.is_authenticated) or ('nsfw' not in current_user.prefs)):
         posts = posts.where(SubPost.nsfw == 0)
     return posts
 

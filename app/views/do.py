@@ -639,7 +639,7 @@ def create_post():
                               nsfw=form.nsfw.data,
                               thumbnail=img if ptype == 1 else '')
         addr = url_for('view_post', sub=sub['name'], pid=post['pid'])
-        posts = misc.getPostList(misc.postListQueryBase().where(SubPost.pid == post['pid']), 'new', 1).dicts()
+        posts = misc.getPostList(misc.postListQueryBase(nofilter=True).where(SubPost.pid == post['pid']), 'new', 1).dicts()
         socketio.emit('thread',
                       {'addr': addr, 'sub': sub['name'], 'type': form.ptype.data,
                        'user': current_user.name, 'pid': post['pid'],
