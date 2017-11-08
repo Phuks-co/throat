@@ -39,7 +39,7 @@ function vote(obj, how, comment){
       if(obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted')){
         obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted').classList.remove((how == 'up') ? 'downvoted' : 'upvoted')
       }
-      count.innerHTML = (how == 'up') ? (parseInt(count.innerHTML)+1) : (parseInt(count.innerHTML)-1)
+      count.innerHTML = data.score;
     }
   }, function(err){
     //TODO: show errors
