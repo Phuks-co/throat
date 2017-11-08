@@ -583,6 +583,7 @@ iframe {
   height: 20px;
   width: 18px;
   display: inline-block;
+  cursor: pointer;
 }
 
 .upvoted path{
