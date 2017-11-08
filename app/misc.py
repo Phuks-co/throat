@@ -1329,13 +1329,12 @@ def expand_comment_tree(comsx):
         lcomms[k['cid']] = k
 
     def i_like_recursion(xm, depth=0):
-        if depth == 3:
+        if depth == 2:
             return []
         ret = []
         for dom in xm:
             fmt = {**dom, **lcomms[dom['cid']]}
-
-            if depth == 2 and len(fmt['children']) != 0:
+            if depth == 1 and len(fmt['children']) != 0:
                 fmt['morechildren'] = True
             else:
                 fmt['children'] = i_like_recursion(fmt['children'], depth=depth + 1)

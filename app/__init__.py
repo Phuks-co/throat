@@ -58,7 +58,7 @@ app.config.from_object('config')
 app.config['WEBPACK_MANIFEST_PATH'] = 'manifest.json'
 if app.config['TESTING']:
     import logging
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.WARNING)
 
 webpack.init_app(app)
 pdb.init_app(app)

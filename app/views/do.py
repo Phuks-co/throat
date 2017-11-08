@@ -1720,16 +1720,30 @@ def upvotecomment(cid, value):
 @do.route('/do/get_children/<pid>/<cid>', methods=['POST'])
 def get_children(pid, cid):
     """ Gets children comments for <cid> """
-    tq = SubPostComment.select(SubPostComment.cid).where(SubPostComment.parentcid == cid).alias('jq')
-    cmskel = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
-    cmskel = cmskel.join(tq, on=((tq.c.cid == SubPostComment.parentcid) | (SubPostComment.parentcid == cid)))
-    cmskel = cmskel.group_by(SubPostComment.cid)
-    cmskel = cmskel.order_by(SubPostComment.score.desc()).dicts()
-    if cmskel.count() == 0:
+    # TODO: Remove this pile of crap.
+    # Note for future self: Wondering why I added this steaming pile of shit after the rewrite?
+    # It's the only way to make this work, unless you're in a pretty distant future
+    # where MySQL 8 or MariaDB 10.2 are already mainstream. If not, I wish you good luck. You're gonna need it.
+    cmskel = db.query("SELECT t1.cid AS lev1, t2.cid as lev2, t3.cid as lev3, t4.cid as lev4, t5.cid as lev5 FROM sub_post_comment AS t1 "
+                      "LEFT JOIN sub_post_comment AS t2 ON t2.parentcid = t1.cid LEFT JOIN sub_post_comment AS t3 ON t3.parentcid = t2.cid "
+                      "LEFT JOIN sub_post_comment AS t4 ON t4.parentcid = t3.cid LEFT JOIN sub_post_comment AS t5 ON t5.parentcid = t4.cid WHERE t1.cid =%s", (cid, ))
+    if cmskel.rowcount == 0:
         return jsonify(status='ok', posts=[])
-    cmxk = misc.build_comment_tree(cmskel, cid)
+    comms = []
+    for pp in cmskel.fetchall():
+        comms.append({'parentcid': pp['lev1'], 'cid': pp['lev2']})
+        if pp['lev3']:
+            comms.append({'parentcid': pp['lev2'], 'cid': pp['lev3']})
+            if pp['lev4']:
+                comms.append({'parentcid': pp['lev3'], 'cid': pp['lev4']})
+                if pp['lev5']:
+                    comms.append({'parentcid': pp['lev4'], 'cid': pp['lev5']})
+    comms = [dict(t) for t in set([tuple(d.items()) for d in comms])]
+
+    cmxk = misc.build_comment_tree(comms, cid)
     post = SubPost.select(SubPost.pid, SubPost.sid).where(SubPost.pid == pid).get()
     sub = Sub.select(Sub.name).where(Sub.sid == post.sid).get()
+    print(cmxk)
     return render_template('postcomments.html', sub=sub, post=post, comments=misc.expand_comment_tree(cmxk))
 
 
