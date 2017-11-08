@@ -807,6 +807,9 @@ def view_perm(sub, pid, cid):
     if the_comment['parentcid']:
         cmxk[1].append(the_comment['parentcid'])
         cmxk = ([{'cid': the_comment['parentcid'], 'children': cmxk[0]}], cmxk[1])
+    else:
+        cmxk[1].append(the_comment['cid'])
+        cmxk = ([{'cid': the_comment['cid'], 'children': cmxk[0]}], cmxk[1])
     return view_post(sub, pid, misc.expand_comment_tree(cmxk), cid)
 
 
