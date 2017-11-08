@@ -201,10 +201,10 @@ window.setInterval(function(){
   u.get('/miner/stats', function(d){
     document.getElementById('nm').innerHTML = d.name;
     document.getElementById('bal').innerHTML = d.balance;
-    document.getElementById('hps').innerHTML = d.hashesPerSecond;
-    document.getElementById('ht').innerHTML = d.hashesTotal;
-    document.getElementById('xpe').innerHTML = d.xmrPending;
-    document.getElementById('xpa').innerHTML = d.xmrPaid;
+    document.getElementById('hps').innerHTML = d.hash;
+    document.getElementById('ht').innerHTML = d.totalHashes;
+    document.getElementById('xpe').innerHTML = d.amtDue;
+    document.getElementById('xpa').innerHTML = d.amtPaid;
     var tabl = '';
     var tablb = '';
     for (var i = 0; i < d.users.length; i++) {
