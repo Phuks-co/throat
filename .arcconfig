@@ -1,4 +1,4 @@
 {
-  "phabricator.uri" : "https://ph.polsaker.com/",
+  "phabricator.uri" : "https://phab.phuks.co/",
   "unit.engine": "PytestTestEngine"
 }
