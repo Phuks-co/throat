@@ -588,10 +588,7 @@ def grab_title():
 
 
 def post_over_limit(limit):
-    if misc.get_user_level(current_user.uid)[0] <= 4:
-        form = CaptchaForm()
-    else:
-        form = CreateSubTextPost()
+    form = CreateSubTextPost()
     return render_template('createpost.html', txtpostform=form, error='Wait a bit before posting.')
 
 

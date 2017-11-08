@@ -390,7 +390,7 @@ def create_post(sid, uid, title, content, ptype, nsfw, link=None, thumbnail=''):
                '`posted`, `ptype`, `score`, `thumbnail`, `deleted`, `nsfw`, '
                '`content`, `comments`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
                '%s, 0)', (sid, uid, title, link, posted, ptype, 1, thumbnail, 0,
-                       nsfw, content))
+                          nsfw, content))
     if user['score'] is not None:
         uquery('UPDATE `user` SET `score`=`score`+1 WHERE '
                '`uid`=%s', (uid, ))
