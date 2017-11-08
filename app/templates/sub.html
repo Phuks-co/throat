@@ -102,15 +102,14 @@
 </div>
 {% endif %}
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
-{# cache 120, 'subposts', sub.sid, sort_type, page|string #}
   {% for post in posts if not db.is_post_deleted(post) and not post.pid in func.getStickyPid(sub.sid)%}
     {% include "indexpost.html" %}
   {% endfor %}
-{# endcache #}
+
 {% if page > 1 %}
 <a href="{{url_for(sort_type, sub=sub.name, page=(page-1))}}" class="pure-button">prev</a>
 {% endif %}
-{% if posts|length == 20 %}
+{% if posts|length == 25 %}
 <a href="{{url_for(sort_type, sub=sub.name, page=(page+1))}}" class="pure-button">next</a>
 {% endif %}
 
