@@ -1237,7 +1237,8 @@ form#msg-form {
 }
 
 @media (max-width: 35.5em){
-  .createpost input#title, .createpost input#link, .createpost textarea#content{
+  .createpost input#title, .createpost input#link, textarea#content,
+  input#subject, form#msg-form .editbtns{
     width: auto;
   }
 }
@@ -1267,16 +1268,14 @@ form#msg-form {
   box-shadow: 4px 4px 16px #555;
 }
 
-input#subject, textarea#content {
+textarea#content {
     width: calc(100% - 300px);
 }
+#msgpop textarea#content{width:100%;}
 form#msg-form h3 {
     margin-top: 0;
 }
-form#msg-form .editbtns {
-    width: calc(100% - 300px);
-    margin-left: 180px;
-}
+
 /* /MESSAGES STYLES */
 
 /* SUBS PAGE */
