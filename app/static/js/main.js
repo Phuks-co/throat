@@ -228,6 +228,7 @@ if(window.moreuri){
             function(data) {
               document.querySelector('.alldaposts').innerHTML = document.querySelector('.alldaposts').innerHTML + data;
               window.loading = false;
+              icons.rendericons();
             })
       }
   });
