@@ -36,7 +36,9 @@ function vote(obj, how, comment){
     if(data.status == "ok"){
       console.log(obj);
       obj.classList.add((how == 'up') ? 'upvoted' : 'downvoted');
-      obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted').classList.remove((how == 'up') ? 'downvoted' : 'upvoted')
+      if(obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted')){
+        obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted').classList.remove((how == 'up') ? 'downvoted' : 'upvoted')
+      }
       count.innerHTML = (how == 'up') ? (parseInt(count.innerHTML)+1) : (parseInt(count.innerHTML)-1)
     }
   }, function(err){
@@ -46,7 +48,9 @@ function vote(obj, how, comment){
 
 // up/downvote buttons.
 u.addEventForChild(document, 'click', '.upvote,.downvote,.c-upvote,.c-downvote', function(e, target){
-  vote(target, target.className.replace(' ', '').endsWith('upvote') ? 'up' : 'down', target.className.replace(' ', '').startsWith('c-'))
+  var upvote = (target.classList.contains('upvote') || target.classList.contains('c-upvote'))
+  var comment = (target.classList.contains('c-upvote') || target.classList.contains('c-downvote'))
+  vote(target, upvote ? 'up':'down', comment)
 })
 
 
