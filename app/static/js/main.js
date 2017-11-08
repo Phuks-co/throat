@@ -230,7 +230,13 @@ if(window.moreuri){
           window.loading = true;
           u.get(window.moreuri + lastpid,
             function(data) {
-              document.querySelector('.alldaposts').innerHTML = document.querySelector('.alldaposts').innerHTML + data;
+              var ndata = document.createElement( "div" );
+              ndata.innerHTML = data;
+
+              while (ndata.firstChild) {
+                  document.querySelector('.alldaposts').appendChild(ndata.firstChild);
+              }
+
               window.loading = false;
               icons.rendericons();
             })
