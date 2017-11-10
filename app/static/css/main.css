@@ -1096,10 +1096,6 @@ div.comments {
   padding-right: 8px;
 }
 
-article.comment {
-  padding: 7px 0 10px 7px;
-}
-
 .pchild {
   margin-left: 15px;
   border-left: 1px dotted #cecece;
@@ -1379,7 +1375,7 @@ li.profilebadge {
     font-size: 12px;
 }
 article.comment {
-    padding: .8em;
+    padding: .8em 0 0 .5em;
     border-radius: 8px 0 0 8px;
     background-color: #fefefe;
     margin: 4px 0;
