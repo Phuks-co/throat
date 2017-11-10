@@ -3,20 +3,31 @@ import icon from './Icon'
 import u from './Util';
 
 const socket = io('//' + window.wsserver + '/snt', {transports: ['websocket'], upgrade: false});
-socket.on('notification', function(d){
-  // bahhh
+
+function updateNotifications(count){
   var title = document.getElementsByTagName('title')[0].innerHTML.split('\n');
   title = title[title.length-1]
-  if(d.count == 0){
+  if(count == 0){
     document.title = '\n' + title;
     document.getElementById('mailcount').innerHTML = '';
     document.getElementById('mailcount').style.display = 'none';
   }else{
-    document.title = '(' + d.count + ')\n ' + title;
-    document.getElementById('mailcount').innerHTML = d.count;
+    document.title = '(' + count + ')\n ' + title;
+    document.getElementById('mailcount').innerHTML = count;
     document.getElementById('mailcount').style.display = 'inline-block';
   }
-})
+
+}
+
+socket.on('notification', function(d){
+  updateNotifications(d.count)
+});
+
+socket.on('uinfo', function(d){
+  updateNotifications(d.ntf);
+  document.getElementById('postscore').innerHTML = d.taken;
+});
+
 socket.on('uscore', function(d){
   document.getElementById('postscore').innerHTML = d.score;
 })

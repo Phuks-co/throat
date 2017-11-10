@@ -26,7 +26,7 @@ from .forms import UseInviteCodeForm, LiveChat
 from .views import do, api
 from .views.api import oauth
 from . import misc, forms, caching
-from .socketio import socketio, send_uinfo
+from .socketio import socketio
 from . import database as db
 from .misc import SiteAnon, getSuscriberCount, getDefaultSubs, allowedNames, get_errors
 from .models import db as pdb
@@ -1274,7 +1274,6 @@ def login():
             if thash == user['password'].encode('utf-8'):
                 theuser = misc.load_user(user['uid'])
                 login_user(theuser, remember=form.remember.data)
-                send_uinfo(theuser)
                 return form.redirect('index')
             else:
                 return render_template("login.html", error="Invalid username or password")

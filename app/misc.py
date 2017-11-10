@@ -151,7 +151,7 @@ class SiteUser(object):
 
     def new_count(self):
         """ Returns new message count """
-        return db.user_mail_count(self.uid)
+        return self.notifications
 
     def has_exlinks(self):
         """ Returns true if user selects to open links in a new window """
