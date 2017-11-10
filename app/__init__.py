@@ -796,13 +796,17 @@ def view_perm(sub, pid, cid):
     if not the_comment:
         abort(404)
     tc = cid if not the_comment['parentcid'] else the_comment['parentcid']
-    tq = SubPostComment.select(SubPostComment.cid).where(SubPostComment.parentcid == tc).alias('jq')
+    tq = SubPostComment.select(SubPostComment.cid).where(SubPostComment.parentcid == cid).alias('jq')
     cmskel = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
-    cmskel = cmskel.join(tq, on=((tq.c.cid == SubPostComment.parentcid) | (SubPostComment.parentcid == tc)))
+    cmskel = cmskel.join(tq, on=((tq.c.cid == SubPostComment.parentcid) | (SubPostComment.parentcid == cid)))
     cmskel = cmskel.group_by(SubPostComment.cid)
     cmskel = cmskel.order_by(SubPostComment.score.desc()).dicts()
-    if cmskel.count() == 0:
-        return view_post(sub, pid, [])
+
+    cmskel = list(cmskel)
+    cmskel.append({'cid': cid, 'parentcid': the_comment['parentcid']})
+    if the_comment['parentcid']:
+        cmskel.append({'cid': the_comment['parentcid'], 'parentcid': ''})
+    print(cmskel)
     cmxk = misc.build_comment_tree(cmskel, tc)
     if the_comment['parentcid']:
         cmxk[1].append(the_comment['parentcid'])
