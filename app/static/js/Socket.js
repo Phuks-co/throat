@@ -34,7 +34,14 @@ socket.on('uscore', function(d){
 
 socket.on('thread', function(data){
   socket.emit('subscribe', {target: data.pid})
-  document.getElementsByClassName('alldaposts')[0].innerHTML = data.html + document.getElementsByClassName('alldaposts')[0].innerHTML;
+  var ndata = document.createElement( "div" );
+  ndata.innerHTML = data.html;
+  var x =document.getElementsByClassName('alldaposts')[0];
+
+  while (ndata.firstChild) {
+    x.insertBefore(ndata.firstChild ,x.children[0]);
+  }
+
   icon.rendericons();
 })
 
