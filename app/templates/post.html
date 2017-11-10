@@ -208,7 +208,7 @@
     <div class="comments"><h3>No comments yet...</h3></div>
    {%else%}
     <div class="comments">
-      <h3>{{comments|length}} comments</h3>
+      <h2><a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}">{{ncomments}} comments</a></h2>
       {% include "postcomments.html" %}
     </div>
    {%endif%}

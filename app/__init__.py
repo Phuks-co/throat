@@ -758,12 +758,11 @@ def view_post(sub, pid, comments=False, highlight=None):
         comments = misc.get_post_comments(post['pid'])
 
     ksub = db.get_sub_from_sid(post['sid'])
-    print('PRE FINAL TIMINGS ', time.time() - kkk)
-
+    ncomments = SubPostComment.select().where(SubPostComment.pid == post['pid']).count()
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit, sub=ksub,
                            editlinkpostform=EditSubLinkPostForm(),
-                           comments=comments,
+                           comments=comments, ncomments=ncomments,
                            editpostflair=editflair, highlight=highlight)
 
 
