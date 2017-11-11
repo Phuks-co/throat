@@ -865,7 +865,7 @@ a.slink{
 
 .commblock{
   display: inline-block;
-  width: calc(100% - 5em);
+  width: calc(100% - 2em);
 }
 /* /POST PAGE STYLES */
 
