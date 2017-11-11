@@ -95,8 +95,8 @@
 			<div>
 				<hr>
 				<h2 style="margin-top: 1em;">Leaderboards</h2>
-				<div class="pure-g">
-					<div class="pure-u-8-24">
+				<div class="">
+					<div style="width: 20em; display: inline-block; padding-right: 1.2em;">
 						<h3>Total contributed</h3>
 						{% cache 60, 'minerleaderboard' %}
 							{% set leaderboard = func.getMiningLeaderboard() %}
@@ -113,7 +113,7 @@
 							</div>
 						{%endcache%}
 					</div>
-					<div class="pure-u-8-24" style="padding-left: 1.2em;">
+					<div style="width: 20em; display: inline-block;">
 						{% cache 60, 'hashleaderboard' %}
 							<h3>Hashing power</h3>
 							{% set leaderboard = func.getHPLeaderboard() %}
