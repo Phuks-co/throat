@@ -1667,18 +1667,18 @@ def upvotecomment(cid, value):
         voteValue = -1
     else:
         abort(403)
-    comment = db.get_comment_from_cid(cid)
-    if not comment:
+    try:
+        comment = SubPostComment.get(SubPostComment.cid == cid)
+    except SubPostComment.DoesNotExist:
         return json.dumps({'status': 'error',
                            'error': ['Comment does not exist']})
-
-    if comment['uid'] == current_user.get_id():
+    user = comment.uid
+    if user.uid == current_user.get_id():
         return json.dumps({'status': 'error',
                            'error': ['You can\'t vote on your own comments']})
 
     qvote = db.query('SELECT * FROM `sub_post_comment_vote` WHERE `cid`=%s AND'
                      ' `uid`=%s', (cid, current_user.uid)).fetchone()
-    user = db.get_user_from_uid(comment['uid'])
 
     if qvote:
         if bool(qvote['positive']) == (True if voteValue == 1 else False):
@@ -1688,33 +1688,33 @@ def upvotecomment(cid, value):
             positive = True if voteValue == 1 else False
             db.uquery('UPDATE `sub_post_comment_vote` SET `positive`=%s WHERE '
                       '`xid`=%s', (positive, qvote['xid']))
-            db.uquery('UPDATE `sub_post_comment` SET `score`=`score`+%s WHERE '
-                      '`cid`=%s', (voteValue * 2, comment['cid']))
-            if user['score'] is not None:
+            comment.score += voteValue * 2
+            comment.save()
+            if user.score is not None:
                 db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
-                          '`uid`=%s', (voteValue * 2, comment['uid']))
+                          '`uid`=%s', (voteValue * 2, user.uid))
                 socketio.emit('uscore',
-                              {'score': user['score'] + voteValue * 2},
+                              {'score': user.score + voteValue * 2},
                               namespace='/snt',
-                              room="user" + comment['uid'])
-            return jsonify(status='ok', message='Vote flipped')
+                              room="user" + user.uid)
+            return jsonify(status='ok', message='Vote flipped', score=comment.score)
     else:
         positive = True if voteValue == 1 else False
         now = datetime.datetime.utcnow()
         db.uquery('INSERT INTO `sub_post_comment_vote` (`cid`, `uid`, '
                   '`positive`, `datetime`) VALUES (%s, %s, %s, %s)',
                   (cid, current_user.uid, positive, now))
-    db.uquery('UPDATE `sub_post_comment` SET `score`=`score`+%s WHERE '
-              '`cid`=%s', (voteValue, comment['cid']))
-    if user['score'] is not None:
-        db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
-                  '`uid`=%s', (voteValue, comment['uid']))
-        socketio.emit('uscore',
-                      {'score': user['score'] + voteValue},
-                      namespace='/snt',
-                      room="user" + comment['uid'])
 
-    return json.dumps({'status': 'ok'})
+    comment.score += voteValue
+    if user.score is not None:
+        db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
+                  '`uid`=%s', (voteValue, user.uid))
+        socketio.emit('uscore',
+                      {'score': user.score + voteValue},
+                      namespace='/snt',
+                      room="user" + user.uid)
+
+    return jsonify(status='ok', score=comment.score)
 
 
 @do.route('/do/get_children/<pid>/<cid>', methods=['POST'])
