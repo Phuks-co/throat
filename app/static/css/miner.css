@@ -76,36 +76,14 @@ table {
 	width: 100%;
 }
 
-td, th {
-	text-align: left;
-	border-bottom: 1px solid #f1f1f1;
-	padding: 0.5em 1em;
-	margin: 0;
-}
 
 body.dark td, body.dark th {
     border-bottom: 1px solid #424242;
 }
 
-th:first-child, td:first-child {
-	padding-left: 0;
-}
-th:last-child, td:last-child {
-	padding-right: 0;
-}
-
 th.number, td.number {
 	text-align: right;
 	width: 4em;
-}
-
-td input {
-	margin-bottom: 0;
-}
-
-tr.inactive {
-	background-color: #eee;
-	opacity: 0.3;
 }
 
 tr:hover {
