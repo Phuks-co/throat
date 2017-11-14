@@ -1706,6 +1706,7 @@ def upvotecomment(cid, value):
                   (cid, current_user.uid, positive, now))
 
     comment.score += voteValue
+    comment.save()
     if user.score is not None:
         db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
                   '`uid`=%s', (voteValue, user.uid))
