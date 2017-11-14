@@ -13,6 +13,10 @@ abbr[title]{
 }
 .cw-brand div{margin-left: 1em;}
 
+.content{
+  word-wrap: break-word;
+}
+
 
 blockquote p{margin: 0;}
 blockquote{
