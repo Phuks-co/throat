@@ -100,9 +100,9 @@
       <div class="pure-g">
         <div class="misctainer">
           <div class="votebuttons">
-            <div title="Upvote" class="upvote " data-icon="upvote"></div>
+            <div title="Upvote" class="upvote " data-pid="{{announcement.pid}}" data-icon="upvote"></div>
             <div class="score">{{announcement.score}}</div>
-            <div title="Downvote" class="downvote "  data-icon="downvote"></div>
+            <div title="Downvote" class="downvote " data-pid="{{announcement.pid}}" data-icon="downvote"></div>
           </div>
           <div class="thcontainer">
             <a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">

@@ -26,9 +26,9 @@
         <div class="pure-g">
           <div class="misctainer">
             <div class="votebuttons">
-              <div title="Upvote" class="upvote " data-icon="upvote"></div>
+              <div title="Upvote" class="upvote " data-pid="@{ann['pid']!!s}" data-icon="upvote"></div>
               <div class="score">@{ann['score']!!s}</div>
-              <div title="Downvote" class="downvote "  data-icon="downvote"></div>
+              <div title="Downvote" class="downvote " data-pid="@{ann['pid']!!s}" data-icon="downvote"></div>
             </div>
             <div class="thcontainer">
               <a href="@{url_for('view_post', sub=ann['sub'], pid=ann['pid'])}" class="title">
