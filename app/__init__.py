@@ -37,9 +37,9 @@ import config
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
 from wheezy.template.loader import FileLoader
-
+import os
 engine = Engine(
-    loader=FileLoader(['app/html']),
+    loader=FileLoader([os.path.split(__file__)[0] + '/html']),
     extensions=[CoreExtension()]
 )
 

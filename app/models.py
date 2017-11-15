@@ -1,4 +1,4 @@
-from peewee import IntegerField, DateTimeField
+from peewee import IntegerField, DateTimeField, BooleanField
 from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
 from playhouse.flask_utils import FlaskDB
 import config
@@ -12,16 +12,17 @@ db = FlaskDB()
 
 
 class User(db.Model):
-    crypto = IntegerField(null=True)
+    uid = CharField(primary_key=True, max_length=40)
+    crypto = IntegerField()
     email = CharField(null=True)
     joindate = DateTimeField(null=True)
-    name = CharField(null=True, unique=True)
+    name = CharField(null=True, unique=True, max_length=64)
     password = CharField(null=True)
-    score = IntegerField(null=True)  # AKA phuks taken
-    given = IntegerField(null=True)  # AKA phuks given
-    status = IntegerField(null=True)
-    uid = CharField(primary_key=True)
-    resets = IntegerField(null=True)
+
+    score = IntegerField(default=0)  # AKA phuks taken
+    given = IntegerField(default=0)  # AKA phuks given
+    status = IntegerField(default=0)
+    resets = IntegerField(default=0)
 
     class Meta:
         db_table = 'user'
@@ -30,10 +31,10 @@ class User(db.Model):
 class Client(db.Model):
     _default_scopes = TextField(null=True)
     _redirect_uris = TextField(null=True)
-    client = CharField(db_column='client_id', primary_key=True)
-    client_secret = CharField(unique=True)
-    is_confidential = IntegerField(null=True)
-    name = CharField(null=True)
+    client = CharField(db_column='client_id', primary_key=True, max_length=40)
+    client_secret = CharField(unique=True, max_length=55)
+    is_confidential = BooleanField(null=True)
+    name = CharField(null=True, max_length=40)
     user = ForeignKeyField(db_column='user_id', null=True, rel_model=User,
                            to_field='uid')
 
@@ -93,12 +94,12 @@ class SiteMetadata(db.Model):
 
 
 class Sub(db.Model):
-    name = CharField(null=True, unique=True)
+    name = CharField(null=True, unique=True, max_length=32)
     nsfw = IntegerField(null=True)
-    sid = CharField(primary_key=True)
+    sid = CharField(primary_key=True, max_length=40)
     sidebar = TextField(null=True)
     status = IntegerField(null=True)
-    title = CharField(null=True)
+    title = CharField(null=True, max_length=50)
     sort = CharField()
     creation = DateTimeField()
 
@@ -163,7 +164,7 @@ class SubPost(db.Model):
 
 
 class SubPostComment(db.Model):
-    cid = CharField(primary_key=True)
+    cid = CharField(primary_key=True, max_length=40)
     content = TextField(null=True)
     lastedit = DateTimeField(null=True)
     parentcid = ForeignKeyField(db_column='parentcid', null=True,
@@ -242,12 +243,12 @@ class SubSubscriber(db.Model):
 
 class Token(db.Model):
     _scopes = TextField(null=True)
-    access_token = CharField(null=True, unique=True)
+    access_token = CharField(null=True, unique=True, max_length=100)
     client = ForeignKeyField(db_column='client_id', rel_model=Client,
                              to_field='client')
     expires = DateTimeField(null=True)
-    refresh_token = CharField(null=True, unique=True)
-    token_type = CharField(null=True)
+    refresh_token = CharField(null=True, unique=True, max_length=100)
+    token_type = CharField(null=True, max_length=40)
     user = ForeignKeyField(db_column='user_id', null=True, rel_model=User,
                            to_field='uid')
 
@@ -257,8 +258,8 @@ class Token(db.Model):
 
 class UserBadge(db.Model):
     badge = CharField(null=True)
-    bid = CharField(primary_key=True)
-    name = CharField(null=True)
+    bid = CharField(primary_key=True, max_length=40)
+    name = CharField(null=True, max_length=40)
     text = CharField(null=True)
     value = IntegerField(null=True)
 
