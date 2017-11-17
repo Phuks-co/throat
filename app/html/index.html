@@ -6,7 +6,7 @@
   <div class="pure-g">
       @if sort_type.startswith('all'):
         <a href="@{url_for('all_hot')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_hot') and 'pure-button-primary' or ''} pure-u-md-7-24">Hot</a>
-        <a href="{url_for('all_top')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_top') and 'pure-button-primary' or ''} pure-u-md-7-24">Top</a>
+        <a href="@{url_for('all_top')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_top') and 'pure-button-primary' or ''} pure-u-md-7-24">Top</a>
         <a href="@{url_for('all_new')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_new') and 'pure-button-primary' or ''} pure-u-md-7-24">New</a>
       @elif sort_type.startswith('home'):
         <a href="@{url_for('home_hot')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home_hot') and 'pure-button-primary' or ''} pure-u-md-7-24">Hot</a>
