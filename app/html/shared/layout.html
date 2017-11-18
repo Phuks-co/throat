@@ -37,7 +37,8 @@
 <body @{(request.cookies.get( "dayNight")=="dank" and not current_user.is_anonymous) and 'class="dark dank"' or ''} @{(request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous) and 'class="dark"' or ''}>
   <div class="th-subbar pure-u-1">
     <ul>
-      <li><a href="@{url_for('all_hot')}">all</a></li>
+      <li><a href="/all">all</a></li>
+      <li><a href="/all/new">new</a></li>
       @if not current_user.is_anonymous:
         <li><a href="@{url_for('view_modmulti_new')}">modmulti</a></li>
       @end
