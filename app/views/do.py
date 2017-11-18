@@ -1688,8 +1688,7 @@ def upvotecomment(cid, value):
             positive = True if voteValue == 1 else False
             db.uquery('UPDATE `sub_post_comment_vote` SET `positive`=%s WHERE '
                       '`xid`=%s', (positive, qvote['xid']))
-            comment.score += voteValue * 2
-            comment.save()
+            SubPostComment.update(score=SubPostComment.score + (voteValue * 2)).where(SubPostComment.cid == cid).execute()
             if user.score is not None:
                 db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
                           '`uid`=%s', (voteValue * 2, user.uid))
@@ -1697,7 +1696,7 @@ def upvotecomment(cid, value):
                               {'score': user.score + voteValue * 2},
                               namespace='/snt',
                               room="user" + user.uid)
-            return jsonify(status='ok', message='Vote flipped', score=comment.score)
+            return jsonify(status='ok', message='Vote flipped', score=comment.score + voteValue * 2)
     else:
         positive = True if voteValue == 1 else False
         now = datetime.datetime.utcnow()
@@ -1705,8 +1704,8 @@ def upvotecomment(cid, value):
                   '`positive`, `datetime`) VALUES (%s, %s, %s, %s)',
                   (cid, current_user.uid, positive, now))
 
-    comment.score += voteValue
-    comment.save()
+    SubPostComment.update(score=SubPostComment.score + voteValue).where(SubPostComment.cid == cid).execute()
+
     if user.score is not None:
         db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
                   '`uid`=%s', (voteValue, user.uid))
@@ -1715,7 +1714,7 @@ def upvotecomment(cid, value):
                       namespace='/snt',
                       room="user" + user.uid)
 
-    return jsonify(status='ok', score=comment.score)
+    return jsonify(status='ok', score=comment.score + voteValue)
 
 
 @do.route('/do/get_children/<pid>/<cid>', methods=['POST'])
