@@ -39,11 +39,11 @@
         </div>
         <div class="pblock">
           <div class="statdiv">
-            <div class="ucount">{{pcount}}</div>
+            <div class="ucount"><a href="{{url_for('view_user_posts', user=user.name)}}">{{pcount}}</a></div>
             <div>posts</div>
           </div>
           <div class="statdiv">
-            <div class="ucount">{{ccount}}</div>
+            <div class="ucount"><a href="{{url_for('view_user_comments', user=user.name)}}">{{ccount}}</a></div>
             <div>comments</div>
           </div>
         </div>
@@ -70,37 +70,37 @@
         </div>
         {% endif %}
         <div class="userrow">
+          {% if owns|length > 0 %}
           <div class="pblock">
             <h3>Owns</h3>
             <ul>
-              {% for own in owns if owns|length > 0 %}
+              {% for own in owns %}
               <li><a href="{{url_for('view_sub', sub=own.name)}}">{{own.name}}</a></li>
-              {% else %}
-              <li>none</li>
-              {% endfor %}
+              {%endfor%}
             </ul>
           </div>
+          {% endif %}
+          {% if mods|length > 0 %}
           <div class="pblock">
             <h3>Mods</h3>
             <ul>
-              {% for mod in mods if mods|length > 0 %}
+              {% for mod in mods %}
               <li><a href="{{url_for('view_sub', sub=mod.name)}}">{{mod.name}}</a></li>
-              {% else %}
-              <li>none</li>
               {% endfor %}
             </ul>
           </div>
+          {% endif %}
         </div>
+        {% if habit|length > 0 %}
         <div class="userrow">
           <h3>Posting habits</h3>
           <ul id="userHabit">
-            {% for i in habit if habit|length > 0 %}
+            {% for i in habit %}
               <li class="habitentry"><a href="{{url_for('view_sub', sub=db.get_sub_from_sid(i[0]).name)}}">{{db.get_sub_from_sid(i[0]).name}}</a> - {{i[1]}}</li>
-            {% else %}
-              <li>no posts yet</li>
             {% endfor %}
           </ul>
         </div>
+        {%endif%}
       </div>
 
       <div id="formpop" style="display:none;">
