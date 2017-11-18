@@ -734,7 +734,6 @@ def view_sub_hot(sub, page):
 @app.route("/s/<sub>/<pid>")
 def view_post(sub, pid, comments=False, highlight=None):
     """ View post and comments (WIP) """
-    kkk = time.time()
     try:
         post = misc.postListQueryBase(SubPost.sid, SubPost.content, nofilter=True).where(SubPost.pid == pid).dicts().get()
     except SubPost.DoesNotExist:

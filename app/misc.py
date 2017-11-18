@@ -434,27 +434,18 @@ def get_post_downcount(pid):
 
 
 @cache.memoize(20)
-def get_comment_upcount(cid):
-    """ Returns the upvote count """
+def get_comment_voting(cid):
+    """ Returns a tuple with the up/downvote counts """
     c = db.query('SELECT positive FROM `sub_post_comment_vote` WHERE '
                  '`cid`=%s', (cid, ))
-    score = 0
+    upvote = 0
+    downvote = 0
     for i in c.fetchall():
         if i['positive']:
-            score += 1
-    return score
-
-
-@cache.memoize(20)
-def get_comment_downcount(cid):
-    """ Returns the downvote count """
-    c = db.query('SELECT positive FROM `sub_post_comment_vote` WHERE '
-                 '`cid`=%s', (cid, ))
-    score = 0
-    for i in c.fetchall():
-        if not i['positive']:
-            score += 1
-    return score
+            upvote += 1
+        else:
+            downvote += 1
+    return (upvote, downvote)
 
 
 @cache.memoize(50)
