@@ -110,7 +110,7 @@ u.addEventForChild(document, 'click', '.post-source', function(e, qelem){
     this.parentNode.innerHTML = '<a class="post-source">source</a>';
   };
   var h = elem.clientHeight-6;
-  elem.innerHTML = '<textarea style="height: ' + h + 'px">' + document.getElementById('post-source').innerHTML + '</textarea>';
+  elem.innerHTML = '<textarea class="exalert" style="height: ' + h + 'px">' + document.getElementById('post-source').innerHTML + '</textarea>';
   qelem.replaceWith(back);
 });
 
@@ -328,7 +328,7 @@ u.addEventForChild(document, 'click', '.reply-comment', function(e, qelem){
     document.querySelector('#rblock-' + cid).outerHTML = ''
     this.parentNode.innerHTML = 'reply'
   };
-  qelem.parentNode.parentNode.parentNode.innerHTML += '<div id="rblock-'+cid+'"><div class="cwrap markdown-editor" id="rcomm-'+cid+'"><textarea style="height: 8em;"></textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-postcomment" data-pid="'+pid+'" data-cid="'+cid+'">Post comment</button> <button class="pure-button button-xsmall btn-preview" data-pvid="rcomm-'+cid+'">Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span><div class="cpreview-content"></div></div></div>';
+  qelem.parentNode.parentNode.parentNode.innerHTML += '<div id="rblock-'+cid+'"><div class="cwrap markdown-editor" id="rcomm-'+cid+'"><textarea class="exalert" style="height: 8em;"></textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-postcomment" data-pid="'+pid+'" data-cid="'+cid+'">Post comment</button> <button class="pure-button button-xsmall btn-preview" data-pvid="rcomm-'+cid+'">Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span><div class="cpreview-content"></div></div></div>';
   initializeEditor(document.querySelector('#rcomm-' + cid));
   var cNode = qelem.cloneNode(false);
   cNode.appendChild(back)

@@ -256,3 +256,16 @@ new Konami(function() {
     document.getElementsByTagName('body')[0].classList.add('dank');
     document.querySelector('#toggledark span').innerHTML = icons.sun;
 });
+
+
+window.onbeforeunload = function (e) {
+  var flag = false;
+  u.each('.exalert', function(e){
+    if(e.value !== ''){
+      flag = true;
+    }
+  })
+  if(flag){
+    return 'Sure?';
+  }
+};

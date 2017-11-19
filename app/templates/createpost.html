@@ -46,7 +46,7 @@ var recaptchaCallback = function(){
             <div class="pure-control-group" id="txcont" {% if txtpostform.ptype.data!="text" %}style="display:none"{%endif%}>
               <label for="content">Content</label>
               <div class="markdown-editor">
-                {{txtpostform.content(placeholder="(Optional) Write your post content here. Styling with Markdown format is supported.", rows="10", style="width: 100%")}}
+                {{txtpostform.content(class="exalert", placeholder="(Optional) Write your post content here. Styling with Markdown format is supported.", rows="10", style="width: 100%")}}
               </div>
             </div>
             <div class="pure-control-group lncont pure-u-sm-20-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
