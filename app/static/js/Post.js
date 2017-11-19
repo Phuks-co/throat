@@ -340,6 +340,7 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function(e, qelem){
   var pid = qelem.getAttribute('data-pid');
   var content = document.querySelector('#rcomm-' + cid + ' textarea').value;
   qelem.setAttribute('disabled', true);
+  window.sending = true;
   u.post('/do/sendcomment/' + pid, {parent: cid, post: pid, comment: content},
   function(data){
     if (data.status != "ok") {

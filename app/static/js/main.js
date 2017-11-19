@@ -272,7 +272,7 @@ window.onbeforeunload = function (e) {
 
 u.addEventForChild(document, 'click', '#postcontent a,.commblock .content a', function(e, qelem){
   var uri = qelem.getAttribute('href');
-  if(uri.match(/\.(jpg|png|gif|jpeg)$/i)){
+  if(uri.match(/\.(jpg|png|gif|jpeg)$/i) && (!window.sending)){
     e.preventDefault();
     var nn = document.createElement('img');
     nn.src = uri;
