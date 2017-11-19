@@ -269,3 +269,18 @@ window.onbeforeunload = function (e) {
     return 'Sure?';
   }
 };
+
+u.addEventForChild(document, 'click', '#postcontent a,.commblock .content a', function(e, qelem){
+  var uri = qelem.getAttribute('href');
+  if(uri.match(/\.(jpg|png|gif|jpeg)$/i)){
+    e.preventDefault();
+    var nn = document.createElement('img');
+    nn.src = uri;
+    nn.classList.add('alimg');
+    qelem.parentNode.insertBefore(nn, qelem.nextSibling);
+  }
+})
+
+u.addEventForChild(document, 'click', 'img.alimg', function(e, qelem){
+  qelem.parentNode.removeChild(qelem);
+})
