@@ -16,4 +16,7 @@ badges = {  # "intname": {"name": "foo", "alt": "a badge for foo", "icon": "bar.
 
 
 for bg in badges:
-    badges[bg]['icon'] = open('./app/static/svg/' + badges[bg]['icon']).read()
+    try:
+        badges[bg]['icon'] = open('./app/static/svg/' + badges[bg]['icon']).read()
+    except FileNotFoundError:
+        pass
