@@ -195,8 +195,10 @@ def home_hot(page):
 def home_new(page):
     """ /new for subscriptions """
     posts = misc.getPostList(misc.postListQueryHome(), 'new', page).dicts()
-    return render_template('index.html', page=page, sort_type='home_new',
-                           posts=posts)
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home_new', 'page': page,
+                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
+                                                     'kw': {}})
 
 
 @app.route("/top", defaults={'page': 1})
@@ -204,9 +206,10 @@ def home_new(page):
 def home_top(page):
     """ /top for subscriptions """
     posts = misc.getPostList(misc.postListQueryHome(), 'top', page).dicts()
-
-    return render_template('index.html', page=page, sort_type='home_top',
-                           posts=posts)
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home_top', 'page': page,
+                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
+                                                     'kw': {}})
 
 
 @app.route("/all/new.rss")
@@ -258,9 +261,10 @@ def all_domain_new(domain, page):
     domain = re.sub('[^A-Za-z0-9.\-_]+', '', domain)
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(SubPost.link % ('%://' + domain + '/%')),
                              'new', 1).dicts()
-    return render_template('index.html', page=page, kw={'domain': domain},
-                           sort_type='all_domain_new',
-                           posts=posts)
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_domain_new', 'page': page,
+                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
+                                                     'kw': {'domain': domain}})
 
 
 @app.route("/search/<term>", defaults={'page': 1})
@@ -270,9 +274,10 @@ def search(page, term):
     term = re.sub('[^A-Za-z0-9.,\-_\'" ]+', '', term)
     posts = misc.getPostList(misc.postListQueryBase().where(SubPost.title ** ('%' + term + '%')),
                              'new', 1).dicts()
-
-    return render_template('index.html', page=page, sort_type='search',
-                           posts=posts, kw={'term': term})
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'search', 'page': page,
+                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
+                                                     'kw': {'term': term}})
 
 
 @app.route("/all/top", defaults={'page': 1})
@@ -280,9 +285,10 @@ def search(page, term):
 def all_top(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = misc.getPostList(misc.postListQueryBase(), 'top', page).dicts()
-
-    return render_template('index.html', page=page, sort_type='all_top',
-                           posts=posts)
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_top', 'page': page,
+                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
+                                                     'kw': {}})
 
 
 @app.route("/all", defaults={'page': 1})
@@ -292,8 +298,10 @@ def all_hot(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = misc.getPostList(misc.postListQueryBase(), 'hot', page).dicts()
 
-    return render_template('index.html', page=page, sort_type='all_hot',
-                           posts=posts)
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_hot', 'page': page,
+                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
+                                                     'kw': {}})
 
 
 # Note for future self: I rewrote until this part. You should do the rest.
