@@ -7,6 +7,10 @@ body.dark .th-l-fill[fill="#fff"] {
     fill: #cdcdcd;
 }
 
+body.dark .profilebadge path {
+  fill: #686868;
+}
+
 body.dark .th-toggle .bar{
   background-color: #666;
 }

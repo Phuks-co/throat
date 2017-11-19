@@ -827,7 +827,7 @@ def view_user(user):
 
     owns = db.get_user_positions(user['uid'], 'mod1')
     mods = db.get_user_positions(user['uid'], 'mod2')
-    badges = db.get_user_badges(user['uid'])
+    badges = misc.getUserBadges(user['uid'])
     pcount = db.query('SELECT COUNT(*) AS c FROM `sub_post` WHERE `uid`=%s',
                       (user['uid'], )).fetchone()['c']
     ccount = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE '

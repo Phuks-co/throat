@@ -20,6 +20,7 @@ from flask import url_for, request, g, jsonify
 from flask_login import AnonymousUserMixin, current_user
 from .caching import cache
 from . import database as db
+from .badges import badges
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
 from .models import SubPostVote, MiningLeaderboard, SubPostComment, SubPostCommentVote
@@ -984,9 +985,9 @@ def get_user_level(uid):
     user = db.get_user_from_uid(uid)
     xp = get_user_post_score(user)
     # xp += db.get_user_post_voting(uid)/2
-    badges = db.get_user_badges(uid)
+    badges = getUserBadges(uid)
     for badge in badges:
-        xp += badge['value']
+        xp += badge['score']
     if xp <= 0:  # We don't want to do the sqrt of a negative number
         return (0, xp)
     level = math.sqrt(xp / 10)
@@ -1430,6 +1431,15 @@ def getUserComments(uid, page):
     except com.DoesNotExist:
         return False
     return com
+
+
+def getUserBadges(uid):
+    um = UserMetadata.select().where(UserMetadata.uid == uid & UserMetadata.key == 'badge').dicts()
+    ret = []
+    for bg in um:
+        if badges.get(bg['value']):
+            ret.append(badges[bg['value']])
+    return ret
 
 
 def ktime0():
