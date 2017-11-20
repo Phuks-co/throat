@@ -265,14 +265,14 @@ window.onbeforeunload = function (e) {
       flag = true;
     }
   })
-  if(flag){
+  if(flag && !window.sending){
     return 'Sure?';
   }
 };
 
 u.addEventForChild(document, 'click', '#postcontent a,.commblock .content a', function(e, qelem){
   var uri = qelem.getAttribute('href');
-  if(uri.match(/\.(jpg|png|gif|jpeg)$/i) && (!window.sending)){
+  if(uri.match(/\.(jpg|png|gif|jpeg)$/i)){
     e.preventDefault();
     var nn = document.createElement('img');
     nn.src = uri;

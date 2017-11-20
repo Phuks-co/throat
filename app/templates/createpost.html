@@ -71,7 +71,7 @@ var recaptchaCallback = function(){
             {% if error %}
               <div class="error">{{error}}</div>
             {% endif %}
-            <button type="submit" class="pure-button pure-button-primary">Submit post</button>
+            <button onclick="window.sending=true;" type="submit" class="pure-button pure-button-primary">Submit post</button>
           </div>
         </fieldset>
       </form>
