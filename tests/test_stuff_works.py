@@ -14,7 +14,7 @@ r = redis.StrictRedis(host=app.config['CACHE_REDIS_HOST'],
 r.flushall()
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + tempfile.mkstemp()[1]
-app.config['WTF_CSRF_ENABLED'] = False
+# app.config['WTF_CSRF_ENABLED'] = False
 
 d = db.connect_db('')
 f = d.cursor()
