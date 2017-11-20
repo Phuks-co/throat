@@ -110,7 +110,7 @@ u.addEventForChild(document, 'click', '.post-source', function(e, qelem){
     this.parentNode.innerHTML = '<a class="post-source">source</a>';
   };
   var h = elem.clientHeight-6;
-  elem.innerHTML = '<textarea class="exalert" style="height: ' + h + 'px">' + document.getElementById('post-source').innerHTML + '</textarea>';
+  elem.innerHTML = '<textarea style="height: ' + h + 'px">' + document.getElementById('post-source').innerHTML + '</textarea>';
   qelem.replaceWith(back);
 });
 
