@@ -6,6 +6,54 @@
 <h2>API v1</h2>
 
 <article class="post apidoc" class="col-12">
-  <h1>We're proud of our completely undocumented API</h1>
+  <h1>API v2 documentation.</h1>
+  <h3>/api/v2/getPostList/&lt;source&gt;/&lt;sort&gt;[/page]</h3>
+  <p>
+    Returns a post list. <code>source</code> can be <code>home</code>, <code>all</code>
+    or a sub. <code>sort</code> must be one of <code>hot</code>, <code>top</code> or
+    <code>new</code>.
+  </p>
+  <p>Fields returned for each post found:
+    <ul>
+      <li><code>comments</code>: the total count of comments for that post</li>
+      <li><code>content</code>: the content of the post if it is a text post</li>
+      <li><code>flair</code>: the flair of the post or null if there is no flair</li>
+      <li><code>link</code>: the post's link or null if it is a text post</li>
+      <li><code>nsfw</code>: true if the post was marked as NSFW</li>
+      <li><code>pid</code>: the post's unique ID</li>
+      <li><code>posted</code>: date/time the post was posted</li>
+      <li><code>score</code>: the sum of upvotes-downvoted</li>
+      <li><code>sub</code>: the name of the sub the post belongs to</li>
+      <li><code>thumbnail</code>: filename of the post's thumbnail</li>
+      <li><code>title</code>: title of the post</li>
+      <li><code>user</code>: name of the user that created the post</li>
+      <li><code>uid</code>: unique identifier for <code>user</code></li>
+    </ul>
+  </p>
+  Example response:
+    <pre>
+  {
+    "posts": [
+      {
+        "comments": 1,
+        "content": "dasdasd",
+        "flair": null,
+        "link": null,
+        "nsfw": false,
+        "pid": 13667,
+        "posted": "Mon, 20 Nov 2017 04:40:00 GMT",
+        "score": 1,
+        "sub": "test",
+        "thumbnail": "",
+        "title": "Test post",
+        "uid": "9dd8ec5e-4852-492a-a1ab-35eab6625280",
+        "user": "Polsaker"
+      },
+      ....
+    ],
+      "status": "ok"
+    }
+    </pre>
+
 </article>
 {% endblock %}

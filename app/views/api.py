@@ -5,12 +5,12 @@ Some rules we should follow:
  - If status is "error", return an "errors" _list_
 """
 
-import io
 from datetime import datetime, timedelta
-from flask import Blueprint, jsonify, request, render_template, g, send_file
+from flask import Blueprint, jsonify, request, render_template, g
 from flask_login import login_required, current_user
 from flask_oauthlib.provider import OAuth2Provider
-from .. import misc, sorting
+from .. import misc
+from ..models import Sub
 from .. import database as db
 
 api = Blueprint('api', __name__)
@@ -188,266 +188,26 @@ def token_thingy():
     return None
 
 
-# /api/v1
+# /api/v2
 
-@api.route('/api/v1/listPosts/<scope>/<sort>/<int:page>')
-def get_posts(scope, sort, page):
-    """ Returns the post listing for something """
-    # TODO: NSFW checks
-    subinfo = True
-    if scope == 'home':
-        subs = misc.getSubscriptions(current_user.get_id())
-        if sort == 'new':
-            posts = misc.getPostsFromSubs(subs, (page - 1), 'posted', 20)
-        elif sort == 'top':
-            posts = misc.getPostsFromSubs(subs, (page - 1), 'score', 20)
-        elif sort == 'hot':
-            posts = misc.getPostsFromSubs(subs, 200, 'score', False,
-                                          'AND `posted` > NOW() - INTERVAL '
-                                          '7 DAY')
-            posts = sorting.HotSorting(posts).getPosts(page)
-        else:
-            return jsonify(status='error', error=['wut'])
+@api.route('/api/v2/getPostList/<target>/<sort>', defaults={'page': 1}, methods=['GET'])
+@api.route('/api/v2/getPostList/<target>/<sort>/<int:page>', methods=['GET'])
+def getPostList(target, sort, page):
+    if sort not in ('hot', 'top', 'new'):
+        return jsonify(status="error", error="Invalid sort")
+    if page < 1:
+        return jsonify(status="error", error="Invalid page number")
+
+    if target == 'home':
+        posts = misc.getPostList(misc.postListQueryHome(noDetail=True, nofilter=True), sort, page).dicts()
+    elif target == 'all':
+        posts = misc.getPostList(misc.postListQueryBase(noDetail=True, nofilter=True), sort, page).dicts()
     else:
-        q = 'SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted`,'\
-            '`thumbnail`,`link`,`content` FROM `sub_post` WHERE `deleted`=0 '
-        s = []
-        if scope != 'all':
-            subinfo = False
-            sub = db.get_sub_from_name(scope)
-            if not sub:
-                return jsonify(status='error', error=['Sub not found'])
-            q += 'AND `sid`=%s '
-            s.append(sub['sid'])
-        if sort == 'new':
-            q += 'ORDER BY `posted` DESC LIMIT %s,20'
-            s.append((page - 1) * 20)
-        elif sort == 'top':
-            q += 'ORDER BY `score` DESC LIMIT %s,20'
-            s.append((page - 1) * 20)
-        elif sort == 'hot':
-            q += 'AND `posted` > NOW() - INTERVAL 7 DAY ORDER BY `score` DESC'\
-                 ' LIMIT 200'
-        else:
-            return jsonify(status='error', error=['Bad sort'])
-
-        c = db.query(q, s)
-        if sort == 'hot':
-            posts = sorting.HotSorting(c.fetchall()).getPosts(page)
-        else:
-            posts = c.fetchall()
-
-    fposts = []
-    for post in posts:
-        post['content'] = False if post['content'] == '' else True
-        post['comments'] = db.get_post_comment_count(post['pid'])
-        post['username'] = db.get_user_from_uid(post['uid'])['name']
-        post['posted'] = post['posted'].isoformat() + 'Z'  # silly hack
-        if subinfo:
-            post['sub'] = db.get_sub_from_sid(post['sid'], '`name`, `nsfw`')
-        if current_user.is_authenticated:
-            post['vote'] = misc.getVoteStatus(current_user.get_id(),
-                                              post['pid'])
-        else:
-            post['vote'] = -1
-        del post['sid']
-        del post['uid']
-        fposts.append(post)
-    return jsonify(status='ok', posts=fposts)
-
-
-@api.route('/api/v1/listUserPosts/<username>/<int:page>')
-def get_userposts(username, page):
-    """ Returns the users posts """
-    user = db.get_user_from_name(username)
-    if not user:
-        return jsonify(status='error', error=['User not found'])
-    c = db.query('SELECT `pid`,`sid`,`uid`,`title`,`score`,`ptype`,`posted`, '
-                 '`thumbnail`,`link`,`content` FROM `sub_post` WHERE '
-                 '`deleted`=0 AND `uid`=%s ORDER BY `posted` DESC LIMIT %s,20',
-                 (user['uid'], (page - 1) * 20))
-    posts = c.fetchall()
-
-    fposts = []
-    for post in posts:
-        post['content'] = False if post['content'] == '' else True
-        post['comments'] = db.get_post_comment_count(post['pid'])
-        post['username'] = db.get_user_from_uid(post['uid'])['name']
-        post['posted'] = post['posted'].isoformat() + 'Z'  # silly hack
-        post['sub'] = db.get_sub_from_sid(post['sid'], '`name`, `nsfw`')
-        if current_user.is_authenticated:
-            post['vote'] = misc.getVoteStatus(current_user.get_id(),
-                                              post['pid'])
-        else:
-            post['vote'] = -1
-        del post['sid']
-        del post['uid']
-        fposts.append(post)
-    return jsonify(status='ok', posts=fposts)
-
-
-@api.route('/api/v1/getPostContent/<int:pid>')
-def get_post_content(pid):
-    """ Returns the raw post contents """
-    c = db.get_post_from_pid(pid)
-    if not c:
-        return jsonify(status='error', error=['Post not found'])
-    post = c['content']
-
-    return jsonify(status='ok', content=post)
-
-
-@api.route('/api/v1/getSubscriptions')
-def get_subscriptions():
-    """ Returns subscriptions for current user """
-    subsc = misc.getSubscriptions(current_user.get_id())
-    subs = []
-    for sub in subsc:
-        subs.append(db.get_sub_from_sid(sub['sid'])['name'])
-    return jsonify(status='ok', subscriptions=subs)
-
-
-@api.route('/api/v1/getSub/<name>')
-def get_sub(name):
-    """ Returns basic sub information """
-    sub = db.get_sub_from_name(name, '`sid`,`name`,`sidebar`,`title`,`nsfw`')
-    if not sub:
-        return jsonify(status='error', error=['Sub not found'])
-    x = db.get_sub_metadata(sub['sid'], 'sort')
-    if not x or x['value'] == 'v':
-        sub['sort'] = 'hot'
-    elif x['value'] == 'v_two':
-        sub['sort'] = 'new'
-    elif x['value'] == 'v_three':
-        sub['sort'] = 'top'
-    sub['subscribercount'] = misc.getSuscriberCount(sub)
-    sub['owner'] = misc.getSubUsers(sub, 'mod1')
-    del sub['sid']
-    return jsonify(status='ok', sub=sub)
-
-
-@api.route('/api/v1/getPost/<int:pid>')
-def get_post(pid):
-    """ Returns a post """
-    post = db.get_post_from_pid(pid)
-    if not post:
-        return jsonify(status='error', error=['Post not found'])
-    if post['deleted'] == 0:
-        post['user'] = db.get_user_from_uid(post['uid'])['name']
-    post['sub'] = db.get_sub_from_sid(post['sid'])['name']
-    del post['uid']
-    del post['sid']
-    return jsonify(status='ok', post=post)
-
-
-@api.route('/api/v1/getUser/<username>')
-def get_user(username):
-    """ Returns user information """
-    user = db.get_api_user_from_name(username)
-    if not user:
-        return jsonify(status='error', error=['User not found'])
-
-    user['owns'] = db.get_user_positions(user['uid'], 'mod1')
-    user['mods'] = db.get_user_positions(user['uid'], 'mod2')
-    user['badges'] = db.get_user_badges(user['uid'])
-    user['postcount'] = db.query('SELECT COUNT(*) AS c FROM `sub_post` WHERE '
-                                 '`uid`=%s', (user['uid'], )).fetchone()['c']
-    user['commentcount'] = db.query('SELECT COUNT(*) AS c FROM '
-                                    '`sub_post_comment` WHERE  `uid`=%s',
-                                    (user['uid'], )).fetchone()['c']
-    user['level'] = misc.get_user_level(user['uid'])[0]
-    user['xp'] = misc.get_user_level(user['uid'])[1]
-    del user['uid']
-
-    return jsonify(status='ok', user=user)
-
-
-@api.route('/api/v1/getTopPosts/day')
-def get_todays_top_posts():
-    """ Returns the top 5 posts for the day """
-    # TODO: NSFW checks
-    posts = misc.getTodaysTopPosts()
-
-    fposts = []
-    for post in posts:
-        post['posted'] = post['posted'].isoformat() + 'Z'  # silly hack
-        post['sub'] = db.get_sub_from_sid(post['sid'], '`name`, `nsfw`')
-
-        del post['sid']
-        del post['uid']
-        del post['thumbnail']
-        del post['content']
-        fposts.append(post)
-    return jsonify(status='ok', posts=fposts)
-
-
-def process_comment(comments):
-    coms = []
-    for com in comments:
-        c = {'cid': com['cid'],
-             'posted': com['time'].isoformat() + 'Z',  # silly hack
-             'deleted': True if com['status'] in [1, 2] else False,
-             'parent': com['parentcid']
-             }
-        if com['lastedit']:
-            c['lastedit'] = com['lastedit'].isoformat() + 'Z'  # silly hack
-        if not c['deleted']:
-            c['content'] = com['content']
-            c['score'] = com['score']
-        c['user'] = db.get_user_from_uid(com['uid'])['name']
-        c['children'] = process_comment(com['children'])
-        c['more'] = com['amt'] if com['more'] else False
-        coms.append(c)
-    return coms
-
-
-@api.route('/api/v1/getComments/<int:pid>/<parent>/<int:page>')
-def get_comments(pid, parent, page):
-    """ Returns the comments for a post """
-    post = db.get_post_from_pid(pid)
-    try:
-        parent = int(parent)
-    except ValueError:
-        return jsonify(status='error', error=['invalid parent'])
-    if parent == -1:
-        parent = None
-    if not post:
-        return jsonify(status='error', error=['Post not found'])
-
-    if parent == 0:
-        parent = None
-    comms = db.get_all_post_comments(post['pid'], parent, page=page)
-    comments = process_comment(comms)
-
-    return jsonify(status='ok', comments=comments)
-
-
-@api.route('/api/paint/user/whoami')
-def whoamiv2():
-    if current_user.is_authenticated:
-        ba = db.query('SELECT * FROM `shekels` WHERE `uid`=%s',
-                      (current_user.uid,)).fetchone()
-        if ba:
-            shekels = ba['shekels']
-        else:
-            db.uquery('INSERT INTO `shekels` (`uid`, `shekels`) VALUES '
-                      '(%s, 0)', (current_user.uid,))
-            shekels = 0
-        return jsonify(status='ok', loggedin=True, name=current_user.name,
-                       shekels=shekels)
-    else:
-        return jsonify(status='ok', loggedin=False)
-
-
-@api.route('/api/paint/canvas')
-def getCanvas():
-    pixels = db.query('SELECT * FROM `pixel`').fetchall()
-    final = b''
-
-    for pixel in pixels:
-        final += bytes([pixel['posy'],
-                        pixel['posx'],
-                        pixel['color'],
-                        pixel['value'], 0])
-
-    return send_file(io.BytesIO(final), mimetype='application/octet-stream')
+        try:
+            sub = Sub.get(Sub.name == target)
+        except Sub.DoesNotExist:
+            return jsonify(status="error", error="Target does not exist")
+        posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True, nofilter=True, noDetail=True).where(Sub.sid == sub.sid),
+                                 sort, page).dicts()
+                                 
+    return jsonify(status='ok', posts=list(posts))

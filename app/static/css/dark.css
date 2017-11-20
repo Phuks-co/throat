@@ -7,6 +7,10 @@ body.dark .th-l-fill[fill="#fff"] {
     fill: #cdcdcd;
 }
 
+body.dark code, body.dark pre{
+  background: #161616;
+}
+
 body.dark .profilebadge path {
   fill: #686868;
 }

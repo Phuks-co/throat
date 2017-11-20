@@ -95,7 +95,7 @@ class SiteMetadata(db.Model):
 
 class Sub(db.Model):
     name = CharField(null=True, unique=True, max_length=32)
-    nsfw = IntegerField(null=True)
+    nsfw = BooleanField(null=True)
     sid = CharField(primary_key=True, max_length=40)
     sidebar = TextField(null=True)
     status = IntegerField(null=True)
@@ -145,7 +145,7 @@ class SubPost(db.Model):
     content = TextField(null=True)
     deleted = IntegerField(null=True)
     link = CharField(null=True)
-    nsfw = IntegerField(null=True)
+    nsfw = BooleanField(null=True)
     pid = PrimaryKeyField()
     posted = DateTimeField(null=True)
     ptype = IntegerField(null=True)

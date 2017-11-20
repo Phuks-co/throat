@@ -102,7 +102,7 @@
 </div>
 {% endif %}
 {% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
-  {% for post in posts if not db.is_post_deleted(post) and not post.pid in func.getStickyPid(sub.sid)%}
+  {% for post in posts if not post.pid in func.getStickyPid(sub.sid)%}
     {% include "indexpost.html" %}
   {% endfor %}
 

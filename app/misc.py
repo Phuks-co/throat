@@ -1116,19 +1116,19 @@ def getChangelog():
         return None
 
 
-def postListQueryBase(*extra, nofilter=False, noAllFilter=False):
-    if current_user.is_authenticated:
+def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False):
+    if current_user.is_authenticated and not noDetail:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair,
-                               SubPost.comments, SubPost.deleted, SubPostVote.positive, User.uid, *extra)
+                               SubPost.comments, SubPostVote.positive, User.uid, *extra)
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(SubPost)
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair,
-                               SubPost.comments, SubPost.deleted, User.uid, *extra)
+                               SubPost.comments, User.uid, *extra)
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
+    posts = posts.where(SubPost.deleted == 0)
     if not noAllFilter and not nofilter:
-        posts = posts.where(SubPost.deleted == 0)
         if current_user.is_authenticated and current_user.blocksid:
             posts = posts.where(SubPost.sid.not_in(current_user.blocksid))
     if (not nofilter) and ((not current_user.is_authenticated) or ('nsfw' not in current_user.prefs)):
@@ -1136,11 +1136,11 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False):
     return posts
 
 
-def postListQueryHome():
+def postListQueryHome(noDetail=False, nofilter=False):
     if current_user.is_authenticated:
-        return (postListQueryBase().where(SubPost.sid << current_user.subsid))
+        return (postListQueryBase(noDetail=noDetail, nofilter=nofilter).where(SubPost.sid << current_user.subsid))
     else:
-        return postListQueryBase().join(SiteMetadata, JOIN.LEFT_OUTER, on=(SiteMetadata.key == 'default')).where(SubPost.sid == SiteMetadata.value)
+        return postListQueryBase(noDetail=noDetail, nofilter=nofilter).join(SiteMetadata, JOIN.LEFT_OUTER, on=(SiteMetadata.key == 'default')).where(SubPost.sid == SiteMetadata.value)
 
 
 def getPostList(baseQuery, sort, page):
