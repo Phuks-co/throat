@@ -62,7 +62,7 @@ u.ready(function() {
     var btnorm = button.innerHTML;
     var data = new FormData(target);
 
-    button.removeAttribute('disabled');
+    button.setAttribute('disabled', true);
     if(button.getAttribute('data-prog')){
       button.innerHTML = button.getAttribute('data-prog');
     }
