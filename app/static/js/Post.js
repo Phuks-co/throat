@@ -325,14 +325,21 @@ u.addEventForChild(document, 'click', '.reply-comment', function(e, qelem){
   var back =  document.createElement( "s" );
   back.innerHTML = "reply";
   back.onclick = function(){
+    console.log('ob')
     document.querySelector('#rblock-' + cid).outerHTML = ''
     this.parentNode.innerHTML = 'reply'
   };
-  qelem.parentNode.parentNode.parentNode.innerHTML += '<div id="rblock-'+cid+'"><div class="cwrap markdown-editor" id="rcomm-'+cid+'"><textarea class="exalert" style="height: 8em;"></textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-postcomment" data-pid="'+pid+'" data-cid="'+cid+'">Post comment</button> <button class="pure-button button-xsmall btn-preview" data-pvid="rcomm-'+cid+'">Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span><div class="cpreview-content"></div></div></div>';
-  initializeEditor(document.querySelector('#rcomm-' + cid));
+  var pN = qelem.parentNode;
   var cNode = qelem.cloneNode(false);
   cNode.appendChild(back)
-  qelem.parentNode.replaceChild(cNode,qelem );
+  pN.replaceChild(cNode,qelem );
+
+  var lm = document.createElement('div');
+  lm.id = 'rblock-' + cid;
+  lm.innerHTML ='<div class="cwrap markdown-editor" id="rcomm-'+cid+'"><textarea class="exalert" style="height: 8em;"></textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-postcomment" data-pid="'+pid+'" data-cid="'+cid+'">Post comment</button> <button class="pure-button button-xsmall btn-preview" data-pvid="rcomm-'+cid+'">Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span><div class="cpreview-content"></div></div>';
+  pN.parentNode.appendChild(lm);
+  initializeEditor(document.querySelector('#rcomm-' + cid));
+
 });
 
 u.addEventForChild(document, 'click', '.btn-postcomment', function(e, qelem){

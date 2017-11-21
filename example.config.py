@@ -12,9 +12,9 @@ DB_NAME = os.getenv('DB_NAME') or 'phuks'
 # Method used to memoize stuff.
 CACHE_TYPE = 'simple'
 # Only used if CACHE_TYPE is 'redis'.
-CACHE_REDIS_HOST = '127.0.0.1'
-CACHE_REDIS_PORT = 6379
-CACHE_REDIS_DB = 5
+# CACHE_REDIS_HOST = '127.0.0.1'
+# CACHE_REDIS_PORT = 6379
+# CACHE_REDIS_DB = 5
 
 # The Redis that we use for SocketIO. This must be the same for all instances
 SOCKETIO_REDIS_URL = 'redis://127.0.0.1:6379/1'

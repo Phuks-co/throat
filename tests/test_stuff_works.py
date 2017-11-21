@@ -2,16 +2,11 @@
 import sys
 import json
 import unittest
-import redis
 
 sys.path.append('..')
 from app import app  # noqa
 import app.database as db  # noqa
 
-# Misc setup common for all tests
-r = redis.StrictRedis(host=app.config['CACHE_REDIS_HOST'],
-                      port=app.config['CACHE_REDIS_PORT'])
-r.flushall()
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + tempfile.mkstemp()[1]
 app.config['WTF_CSRF_ENABLED'] = False
@@ -118,7 +113,6 @@ class ABAccountTestCase(unittest.TestCase):
         x = self.app.get('/s/testing/new')
         assert 'There are no posts here, yet.' not in x.get_data(True)
 
-        r.flushall()
         x = self.app.get('/all/hot')
         assert 'There are no posts here, yet.' not in x.get_data(True)
 
