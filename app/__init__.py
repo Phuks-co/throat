@@ -743,7 +743,7 @@ def view_sub_hot(sub, page):
 def view_post(sub, pid, comments=False, highlight=None):
     """ View post and comments (WIP) """
     try:
-        post = misc.postListQueryBase(SubPost.sid, SubPost.content, nofilter=True).where(SubPost.pid == pid).dicts().get()
+        post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
         abort(403)
     if post['sub'].lower() != sub.lower():
