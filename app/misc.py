@@ -1127,6 +1127,7 @@ def getSinglePost(pid):
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair,
                                SubPost.comments, User.uid)
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER).where(SubPost.pid == pid).dicts().get()
+    return posts
 
 
 
