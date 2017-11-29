@@ -1117,7 +1117,7 @@ def getChangelog():
 
 
 def getSinglePost(pid):
-    if current_user.is_authenticated and not noDetail:
+    if current_user.is_authenticated:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair,
                                SubPost.comments, SubPostVote.positive, User.uid, *extra)
