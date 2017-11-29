@@ -744,6 +744,7 @@ def view_post(sub, pid, comments=False, highlight=None):
     """ View post and comments (WIP) """
     try:
         post = misc.getSinglePost(pid)
+        post = post[0]
     except SubPost.DoesNotExist:
         abort(403)
     if post['sub'].lower() != sub.lower():
