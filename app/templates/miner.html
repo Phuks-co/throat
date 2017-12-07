@@ -37,7 +37,6 @@
 
 {% block content %}
 {{ super() }}
-{% if config.COIN_HIVE_SECRET %}
   <div>
     <div class="content">
       <div style="overflow: hidden;">
@@ -156,7 +155,5 @@
 
 		<script src="{{ asset_url_for('miner.js') }}"></script>
 	{%endblock%}
-{% endif %}
-
 
 {% endblock %}
