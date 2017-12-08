@@ -269,7 +269,7 @@ u.sub('#graburl', 'click', function(e){
     }else{
       document.getElementById('title').value = data.title;
       document.getElementById('graburl').removeAttribute('disabled');
-      document.getElementById('graburl').innerHTML = 'Done';
+      document.getElementById('graburl').innerHTML = 'Grab again';
     }
   })
 })
