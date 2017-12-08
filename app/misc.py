@@ -1130,7 +1130,6 @@ def getSinglePost(pid):
     return posts
 
 
-
 def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False):
     if current_user.is_authenticated and not noDetail:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,

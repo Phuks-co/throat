@@ -30,7 +30,7 @@
         <span class="postflair">@{post['flair']}</span> \
         @end
         @if post['link'] == None:
-          <a href="/s/@{post['sub']}/@{post['pid']!!s}" class="title">@{post['title']}</a> \
+          <a @{('exlinks' in current_user.prefs) and 'target="_blank" ' or ''}href="/s/@{post['sub']}/@{post['pid']!!s}" class="title">@{post['title']}</a> \
         @else:
           @if post['link'].startswith('http:'):
             <span title="not https" class="p-icon" data-icon="exclaim"></span> \
