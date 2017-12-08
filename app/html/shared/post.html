@@ -40,7 +40,7 @@
       </div>
       <div class="author">
         @if post['link']:
-          @if func.getDomain(post['link']) in ('youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'vimeo.com', 'vine.co'):
+          @if func.getDomain(post['link']) in ('hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'vimeo.com', 'vine.co'):
           <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="lnk" data-link="@{post['link']}" data-icon="play"></div></div>
           @elif post['link'].endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
           <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="lnk" data-link="@{post['link']}" data-icon="image"></div></div>
