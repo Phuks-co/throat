@@ -66,7 +66,7 @@ u.addEventForChild(document, 'click', '.expando-btn', function(e, ematch){
     }else{
       var domain = get_hostname(link);
       if((domain == 'youtube.com') || (domain == 'www.youtube.com') || (domain == 'youtu.be')){
-        expando.querySelector('.expandotxt').innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://www.youtube.com/embed/' + youtubeID(link) +'"></iframe></div>';
+        expando.querySelector('.expandotxt').innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://www.youtube.com/embed/' + youtubeID(link) +'" allowfullscreen=""></iframe></div>';
       }else if(domain == 'gfycat.com'){
         expando.querySelector('.expandotxt').innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://gfycat.com/ifr/' + gfycatID(link) +'"></iframe></div>';
       }else if(domain == 'vimeo.com'){
