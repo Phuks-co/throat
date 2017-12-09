@@ -114,24 +114,25 @@ u.ready(function() {
 });
 
 // toggle dark mode
-document.getElementById('toggledark').addEventListener('click', function(){
-  var mode = getCookie("dayNight");
-  var d = new Date();
-  d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); //365 days
-  var expires = "expires=" + d.toGMTString();
-  if (mode == "dark" || mode == "dank") {
-    document.cookie = "dayNight" + "=" + "light" + "; " + expires + ";path=/";
-    document.getElementsByTagName('body')[0].classList.remove('dark');
-    document.getElementsByTagName('body')[0].classList.remove('dank');
-    document.querySelector('#toggledark span').innerHTML = icons.moon;
-    document.getElementById('chpop').style.display='none'
-  } else {
-    document.cookie = "dayNight" + "=" + "dark" + "; " + expires + ";path=/";
-    document.getElementsByTagName('body')[0].classList.add('dark');
-    document.querySelector('#toggledark span').innerHTML = icons.sun;
-  }
-})
-
+if(document.getElementById('toggledark')){
+  document.getElementById('toggledark').addEventListener('click', function(){
+    var mode = getCookie("dayNight");
+    var d = new Date();
+    d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); //365 days
+    var expires = "expires=" + d.toGMTString();
+    if (mode == "dark" || mode == "dank") {
+      document.cookie = "dayNight" + "=" + "light" + "; " + expires + ";path=/";
+      document.getElementsByTagName('body')[0].classList.remove('dark');
+      document.getElementsByTagName('body')[0].classList.remove('dank');
+      document.querySelector('#toggledark span').innerHTML = icons.moon;
+      document.getElementById('chpop').style.display='none'
+    } else {
+      document.cookie = "dayNight" + "=" + "dark" + "; " + expires + ";path=/";
+      document.getElementsByTagName('body')[0].classList.add('dark');
+      document.querySelector('#toggledark span').innerHTML = icons.sun;
+    }
+  })
+}
 // TODO: move to util
 function getCookie(cname) {
     var name = cname + "=";
