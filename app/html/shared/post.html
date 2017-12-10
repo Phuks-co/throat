@@ -35,17 +35,17 @@
           @if post['link'].startswith('http:'):
             <span title="not https" class="p-icon" data-icon="exclaim"></span> \
           @end
-          <a href="@{post['link']}" class="title">@{post['title']}</a> <a href="/domain/@{func.getDomain(post['link'])}" class="domain">(@{func.getDomain(post['link'])!!e})</a>
+          <a href="@{post['link']!!e}" class="title">@{post['title']!!e}</a> <a href="/domain/@{func.getDomain(post['link'])!!e}" class="domain">(@{func.getDomain(post['link'])!!e})</a>
         @end
       </div>
       <div class="author">
         @if post['link']:
           @if func.getDomain(post['link']) in ('hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'vimeo.com', 'vine.co'):
-          <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="lnk" data-link="@{post['link']}" data-icon="play"></div></div>
+          <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="lnk" data-link="@{post['link']!!e}" data-icon="play"></div></div>
           @elif post['link'].endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
-          <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="lnk" data-link="@{post['link']}" data-icon="image"></div></div>
+          <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="lnk" data-link="@{post['link']!!e}" data-icon="image"></div></div>
           @elif post['link'].endswith(('.mp4', '.webm', '.gifv')):
-          <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="lnk" data-link="@{post['link']}" data-icon="play"></div></div>
+          <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="lnk" data-link="@{post['link']!!e}" data-icon="play"></div></div>
           @end
         @elif post['content'] != '':
           <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="txt" data-link="None" data-icon="text"></div></div>
