@@ -27,15 +27,15 @@
         <div class="nsfw" alt="Not safe for work">NSFW</div> \
         @end
         @if post['flair']:
-        <span class="postflair">@{post['flair']}</span> \
+        <span class="postflair">@{post['flair']!!e}</span> \
         @end
         @if post['link'] == None:
-          <a @{('exlinks' in current_user.prefs) and 'target="_blank" ' or ''}href="/s/@{post['sub']}/@{post['pid']!!s}" class="title">@{post['title']}</a> \
+          <a @{('exlinks' in current_user.prefs) and 'target="_blank" ' or ''}href="/s/@{post['sub']}/@{post['pid']!!s}" class="title">@{post['title']!!e}</a> \
         @else:
           @if post['link'].startswith('http:'):
             <span title="not https" class="p-icon" data-icon="exclaim"></span> \
           @end
-          <a href="@{post['link']}" class="title">@{post['title']}</a> <a href="/domain/@{func.getDomain(post['link'])}" class="domain">(@{func.getDomain(post['link'])})</a>
+          <a href="@{post['link']}" class="title">@{post['title']}</a> <a href="/domain/@{func.getDomain(post['link'])}" class="domain">(@{func.getDomain(post['link'])!!e})</a>
         @end
       </div>
       <div class="author">

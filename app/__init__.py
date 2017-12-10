@@ -37,6 +37,8 @@ import config
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
 from wheezy.template.loader import FileLoader
+from wheezy.html.utils import escape_html
+
 import os
 engine = Engine(
     loader=FileLoader([os.path.split(__file__)[0] + '/html']),
@@ -72,7 +74,8 @@ origstatic = app.view_functions['static']
 
 engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config,
                            'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,
-                           'form': forms, 'hostname': socket.gethostname()})
+                           'form': forms, 'hostname': socket.gethostname(),
+                           'e': escape_html})
 
 
 def cache_static(*args, **kwargs):
