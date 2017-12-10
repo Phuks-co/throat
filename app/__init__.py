@@ -620,7 +620,7 @@ def view_multisub_new(subs, page):
 
     return render_template('indexmulti.html', page=page,
                            posts=posts, subs=ksubs,
-                           multitype='view_multisub_new')
+                           sort_type='view_multisub_new')
 
 
 @app.route("/modmulti", defaults={'page': 1})
@@ -656,7 +656,7 @@ def view_usermultisub_new(subs, page):
 
     return render_template('indexmulti.html', page=page, names=names,
                            posts=posts.fetchall(), subs=subs,
-                           multitype='view_usermultisub_new')
+                           sort_type='view_usermultisub_new')
 
 
 @app.route("/s/<sub>/new", defaults={'page': 1})
