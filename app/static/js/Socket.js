@@ -79,6 +79,8 @@ u.sub('#chtitle', 'click', function(e){
     this.parentNode.style.height = '50%';
     document.getElementById('chbott').style.display='block';
     this.removeAttribute('hid');
+    var x = document.getElementById('chcont');
+    x.scrollTop = x.scrollHeight
   }
 })
 

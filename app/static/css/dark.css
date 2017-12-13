@@ -349,3 +349,16 @@ body.dank .th-l-stroke {animation: rb 1s infinite; }
 body.dank .th-l-fill {animation: rb2 1s infinite; }
 @keyframes rb2{20%{fill: red;}40%{fill: yellow;}60%{fill: green;}80%{fill: blue;}100%{fill: orange;} }
 @keyframes rb{20%{stroke: red;}40%{stroke: yellow;}60%{stroke: green;}80%{stroke: blue;}100%{stroke: orange;}}
+
+/* chat */
+body.dark #chtitle:hover, body.dank #chtitle:hover{
+  color: #888;
+  background: #2a2a2b;
+}
+body.dark #chtitle, body.dank #chtitle {
+  background: #262627;
+}
+body.dark #chpop, body.dank #chpop {
+  border: 1px solid #292929;
+  background: #444;
+}

@@ -125,7 +125,7 @@ if(document.getElementById('toggledark')){
       document.getElementsByTagName('body')[0].classList.remove('dark');
       document.getElementsByTagName('body')[0].classList.remove('dank');
       document.querySelector('#toggledark span').innerHTML = icons.moon;
-      document.getElementById('chpop').style.display='none'
+      //document.getElementById('chpop').style.display='none'
     } else {
       document.cookie = "dayNight" + "=" + "dark" + "; " + expires + ";path=/";
       document.getElementsByTagName('body')[0].classList.add('dark');
@@ -215,9 +215,9 @@ window.addEventListener(WINDOW_CHANGE_EVENT, closeMenu);
 /* infinite scroll */
 u.ready(function(){
   var mode = getCookie("dayNight");
-  if(mode == 'dank'){
+  //if(mode == 'dank'){
     socket.emit('subscribe', {target: 'chat'});
-  }
+  //}
 
 if(window.moreuri){
   window.loading = false;
