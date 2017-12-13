@@ -12,7 +12,7 @@ redis = redis.from_url(config.SOCKETIO_REDIS_URL)
 
 @socketio.on('msg', namespace='/snt')
 def chat_message(g):
-    if g.get('msg'):
+    if g.get('msg') and current_user.is_authenticated:
         message = {'user': current_user.name, 'msg': g.get('msg')}
         redis.lpush('chathistory', json.dumps(message))
         redis.ltrim('chathistory', 0, 20)
