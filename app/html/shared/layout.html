@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="@{asset_url_for('main.css') }">
   </head>
 
-<body @{(request.cookies.get( "dayNight")=="dank" and not current_user.is_anonymous) and 'class="dark dank"' or ''} @{(request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous) and 'class="dark"' or ''}>
+<body @{(request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous) and 'class="dark dank"' or ''} @{(request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous) and 'class="dark"' or ''}>
   <div class="th-subbar pure-u-1">
     <ul>
       <li><a href="/all">all</a></li>
@@ -139,7 +139,7 @@
       @end
 
   </div>
-  <div id="chpop" @{(request.cookies.get( "dayNight")!="dank" or current_user.is_anonymous) and 'style="display:none"' or ''}>
+  <div id="chpop" @{(request.cookies.get( "dayNight") not in ["dark", "dank"] or current_user.is_anonymous) and 'style="display:none"' or ''}>
     <div id="chtitle">Main</div>
     <div id="chcont"></div>
     <div id="chbott"><input type="text" id="chsend" placeholder="Type here"/></div>

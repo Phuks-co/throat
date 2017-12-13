@@ -39,4 +39,4 @@ def handle_subscription(data):
         if sub == 'chat':
             msgs = redis.lrange('chathistory', 0, 20)
             for m in msgs[::-1]:
-                socketio.emit('msg', json.loads(m), namespace='/snt', room=request.sid)
+                socketio.emit('msg', json.loads(m.decode()), namespace='/snt', room=request.sid)
