@@ -55,8 +55,12 @@ socket.on('threadcomments', function(data){
   document.querySelector('div[pid="' + data.pid + '"] .comments').innerHTML = 'comments (' + data.comments + ')';
 })
 u.ready(function(){
+  socket.on('connect', function() {
+    socket.emit('subscribe', {target: 'chat'});
+  });
   if(window.labrat){
     socket.on('connect', function() {
+      socket.emit('subscribe', {target: 'chat'});
       window.sio = true;
       if(window.nposts){
         socket.emit('subscribe', {target: window.nposts});

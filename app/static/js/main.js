@@ -250,7 +250,6 @@ new Konami(function() {
   var d = new Date();
   d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); //365 days
   var expires = "expires=" + d.toGMTString();
-  socket.emit('subscribe', {target: 'chat'});
   document.getElementById('chpop').style.display='block'
     document.cookie = "dayNight" + "=" + "dank" + "; " + expires + ";path=/";
     document.getElementsByTagName('body')[0].classList.add('dark');
