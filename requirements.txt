@@ -25,3 +25,4 @@ peewee
 Flask-Webpack==0.1.0
 wheezy.template
 wheezy.html
+python-libmagic
