@@ -4,6 +4,7 @@ import json
 import math
 import uuid
 import time
+import magic
 import os
 import hashlib
 import re
@@ -70,6 +71,8 @@ class SiteUser(object):
         else:
             self.is_authenticated = False
             self.is_anonymous = True
+
+        self.canupload = True if 'canupload' in self.prefs or self.admin else False
 
     def __repr__(self):
         return "<SiteUser {0}>".format(self.uid)
@@ -206,6 +209,7 @@ class SiteAnon(AnonymousUserMixin):
     blocksid = []
     prefs = []
     admin = False
+    canupload = False
 
     def get_id(self):
         return False
@@ -1004,6 +1008,7 @@ def _image_entropy(img):
 
 
 THUMB_NAMESPACE = uuid.UUID('f674f09a-4dcf-4e4e-a0b2-79153e27e387')
+FILE_NAMESPACE = uuid.UUID('acd2da84-91a2-4169-9fdb-054583b364c4')
 
 
 def get_thumbnail(form):
@@ -1463,3 +1468,43 @@ def ktime0():
 
 def ktime():
     print('partial load: ', int((time.time() - g.boolkk) * 1000))
+
+
+def upload_file():
+    if 'canupload' not in current_user.prefs or not current_user.admin:
+        return False
+
+    if 'files' not in request.files:
+        print('fail 2')
+        return False
+
+    ufile = request.files.getlist('files')[0]
+    if ufile.filename == '':
+        print('fail 3')
+        return False
+
+    mtype = magic.from_buffer(ufile.read(1024), mime=True)
+
+    if mtype == 'image/jpeg':
+        extension = '.jpg'
+    elif mtype == 'image/png':
+        extension = '.png'
+    elif mtype == 'image/gif':
+        extension = '.gif'
+    else:
+        print('fail 4')
+        return False
+    ufile.seek(0)
+    md5 = hashlib.md5()
+    while True:
+        data = ufile.read(65536)
+        if not data:
+            break
+        md5.update(data)
+
+    f_name = str(uuid.uuid5(FILE_NAMESPACE, md5.hexdigest())) + extension
+    ufile.seek(0)
+
+    if not os.path.isfile(os.path.join(config.STORAGE, f_name)):
+        ufile.save(os.path.join(config.STORAGE, f_name))
+    return f_name

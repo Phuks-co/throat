@@ -31,7 +31,10 @@ RECAPTCHA_PUBLIC_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
 RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
 
 THUMBNAILS = "./thumbs"
-THUMBNAIL_HOST = "https://foo.bar"
+THUMBNAIL_HOST = "https://foo.bar/"
+
+STORAGE = "./stor"
+STORAGE_HOST = "https://i.foo.bar/"
 
 # peewee
 DATABASE = {

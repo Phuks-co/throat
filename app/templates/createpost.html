@@ -21,7 +21,7 @@ var recaptchaCallback = function(){
 {{ super() }}
 <div id="center-container">
   <div class="content createpost">
-      <form  method="POST" id="post-form" action="{{url_for('do.create_post')}}" data-redir="true" class="pure-form pure-form-aligned">
+      <form  method="POST" id="post-form" action="{{url_for('do.create_post')}}" data-redir="true" class="pure-form pure-form-aligned" enctype="multipart/form-data">
         {% set subs = db.get_all_sub_names()%}
         <input type="hidden" id="ptypeval" name="ptype" value="{{txtpostform.ptype.data}}">
         {{txtpostform.csrf_token}}
@@ -50,12 +50,21 @@ var recaptchaCallback = function(){
               </div>
             </div>
             <div class="pure-control-group lncont pure-u-sm-20-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
+            {%if current_user.canupload %}You can either upload an image or post a link{%endif%}
+            </div>
+            <div class="pure-control-group lncont pure-u-sm-20-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
               <label for="link">Link</label>
-              {{txtpostform.link(type="url", pattern="https?://.+", required=True if txtpostform.ptype.data=="link" else False, placeholder="URL")}}
+              {{txtpostform.link(type="url", pattern="https?://.+", required=True if txtpostform.ptype.data=="link" and not current_user.canupload else False, placeholder="URL")}}
             </div>
             <div class="pure-control-group pure-u-sm-3-24 lncont" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
               <button id="graburl" class="pure-button">Grab title</button>
             </div>
+            {%if current_user.canupload %}
+            <div class="pure-control-group lncont pure-u-sm-20-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
+              <label for="files">File</label>
+              <input type="file" name="files" placeholder="Only images allowed" />
+            </div>
+            {%endif %}
 
 
           <div class="pure-control-group">

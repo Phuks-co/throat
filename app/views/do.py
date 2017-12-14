@@ -613,6 +613,13 @@ def create_post():
             return render_template('createpost.html', txtpostform=form, error="Only mods can post on this sub")
 
         if form.ptype.data == 'link':
+            fupload = misc.upload_file()
+            if fupload:
+                form.link.data = config.STORAGE_HOST + fupload
+
+            if not form.link.data:
+                return render_template('createpost.html', txtpostform=form, error="No link provided")
+
             lx = db.query('SELECT `pid` FROM `sub_post` WHERE `sid`=%s AND '
                           '`link`=%s AND `posted` > DATE_SUB(NOW(), INTERVAL 1 '
                           'MONTH)', (sub['sid'], form.link.data)).fetchone()
