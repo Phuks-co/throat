@@ -100,9 +100,11 @@ u.sub('#chsend', 'keydown', function(e){
   }
 })
 
+var ircStylize = require("irc-style-parser");
+
 socket.on('msg', function(data){
   var cont = document.getElementById('chcont')
-  cont.innerHTML = cont.innerHTML + '<div class="msg"><span class="msguser">' + data.user + '&gt;</span><span class="damsg">' + data.msg + '</span></div>';
+  cont.innerHTML = cont.innerHTML + '<div class="msg"><span class="msguser">' + data.user + '&gt;</span><span class="damsg">' + ircStylize(data.msg) + '</span></div>';
   var k = document.getElementsByClassName('msg')
   if(k.length > 3){
     if(isScrolledIntoView(k[k.length-2])){

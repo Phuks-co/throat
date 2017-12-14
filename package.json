@@ -32,6 +32,7 @@
     "webpack-dev-server": "^2.4.1"
   },
   "dependencies": {
+    "irc-style-parser": "^0.2.5",
     "jquery": "^3.2.1",
     "purecss": "^1.0.0",
     "socket.io-client": "^2.0.4",

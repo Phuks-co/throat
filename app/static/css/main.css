@@ -1529,3 +1529,42 @@ table td {
 #chcont::-webkit-scrollbar-thumb {
     background: rgb(16, 16, 16);
 }
+
+/* chat text format */
+.irc-underline{text-decoration: underline;}
+.irc-underline{font-style: italic;}
+.irc-bold{font-weight: bold;}
+
+.irc-fg0{color: white;}
+.irc-fg1{color: black;}
+.irc-fg2{color: darkblue;}
+.irc-fg3{color: darkgreen;}
+.irc-fg4{color: red;}
+.irc-fg5{color: darkred;}
+.irc-fg6{color: darkmagenta;}
+.irc-fg7{color: orange;}
+.irc-fg8{color: yellow;}
+.irc-fg9{color: green;}
+.irc-fg10{color: darkcyan;}
+.irc-fg11{color: cyan;}
+.irc-fg12{color: blue;}
+.irc-fg13{color: magenta;}
+.irc-fg14{color: darkgray;}
+.irc-fg15{color: lightgray;}
+
+.irc-bg0{background-color: white;}
+.irc-bg1{background-color: black;}
+.irc-bg2{background-color: darkblue;}
+.irc-bg3{background-color: darkgreen;}
+.irc-bg4{background-color: red;}
+.irc-bg5{background-color: darkred;}
+.irc-bg6{background-color: darkmagenta;}
+.irc-bg7{background-color: orange;}
+.irc-bg8{background-color: yellow;}
+.irc-bg9{background-color: green;}
+.irc-bg10{background-color: darkcyan;}
+.irc-bg11{background-color: cyan;}
+.irc-bg12{background-color: blue;}
+.irc-bg13{background-color: magenta;}
+.irc-bg14{background-color: darkgray;}
+.irc-bg15{background-color: lightgray;}
