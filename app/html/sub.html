@@ -1,0 +1,53 @@
+@extends("shared/layout.html")
+@import "shared/post.html" as ipost
+@require(sub, posts, page, sort_type, subInfo)
+
+
+@def title():
+  @{sub['title']} |\
+@end
+
+@def sidebar():
+<div id="sortbuttons" role="group" class="pure-button-group">
+  <div class="pure-g">
+    <a href="@{url_for('view_sub_hot', sub=sub['name'])}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_hot' %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
+    <a href="@{url_for('view_sub_top', sub=sub['name'])}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
+    <a href="@{url_for('view_sub_new', sub=sub['name'])}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
+  </div>
+</div>
+@include('shared/sidebar/sub.html')
+@end
+
+@def main():
+
+  @if func.getStickyPid:
+    <div class="stickyposts">
+      @for post in func.getStickies(sub['sid']):
+        @ipost.singlePost(post, sub)
+      @end
+    </div>
+  @end
+  @if not posts:
+    <h1 class="noshit">There are no posts here, yet.</h1>
+  @end
+  @for post in posts:
+    @if not post['pid'] in func.getStickyPid(sub['sid']):
+      @ipost.singlePost(post, sub)
+    @end
+  @end
+
+  @if page > 1:
+    <a href="@{url_for(sort_type, sub=sub['name'], page=(page-1))}" class="pure-button">prev</a>
+  @end
+  @if len(posts) == 25:
+  <a href="@{url_for(sort_type, sub=sub['name'], page=(page+1))}" class="pure-button">next</a>
+  @end
+
+@end
+
+@def pagefoot():
+
+  @if not current_user.block_styles():
+    <style>@{subInfo['stylesheet']}</style>
+  @end
+@end

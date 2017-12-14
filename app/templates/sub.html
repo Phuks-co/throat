@@ -21,12 +21,6 @@
   <input name="term" placeholder="Title search..." type="search" class="pure-u-1">
 </form>
 
-{% if func.enableVideoMode(sub) %}
-  <div class="musicmodediv">
-    {% include 'videomodeplayer.html' %}
-  </div>
-<hr>
-{% endif %}
 {% if current_user.is_authenticated %}
   {% if func.isRestricted(sub) and not current_user.is_mod(sub.sid) %}
     <div>Only mods can post.</div>

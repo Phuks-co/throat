@@ -25,7 +25,7 @@ from .badges import badges
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
 from .models import SubPostVote, MiningLeaderboard, SubPostComment, SubPostCommentVote
-from .models import MiningSpeedLeaderboard, SubMetadata, rconn
+from .models import MiningSpeedLeaderboard, SubMetadata, rconn, SubStylesheet
 from peewee import JOIN, fn, Clause, SQL
 import requests
 
@@ -148,10 +148,11 @@ class SiteUser(object):
 
     def has_blocked(self, sid):
         """ Returns True if the current user has blocked sub """
-        x = db.query('SELECT xid FROM `sub_subscriber` '
-                     'WHERE `sid`=%s AND `uid`=%s AND `status`=%s',
-                     (sid, self.uid, 2))
-        return bool(x.fetchone())
+        try:
+            x = SubSubscriber.get((SubSubscriber.sid == sid) & (SubSubscriber.uid == self.uid) & (SubSubscriber.status == 2))
+            return True if x.status == 2 else False
+        except SubSubscriber.DoesNotExist:
+            return False
 
     def new_count(self):
         """ Returns new message count """
@@ -649,12 +650,6 @@ def userCanFlair(sub):
     return False if not x or x['value'] == '0' else True
 
 
-def enableVideoMode(sub):
-    """ Returns true if the sub has video/music player enabled """
-    x = db.get_sub_metadata(sub['sid'], 'videomode')
-    return False if not x or x['value'] == '0' else True
-
-
 def getPostFlair(post):
     """ Returns true if the post has available flair """
     return post['flair']
@@ -850,7 +845,7 @@ def getSub(sid):
 
 def getUser(uid):
     """ Returns user from uid, db proxy now """
-    return db.get_user_from_uid(uid)
+    return User.select().where(User.uid == uid).dicts()
 
 
 def getDomain(link):
@@ -1505,3 +1500,28 @@ def upload_file():
     if not os.path.isfile(os.path.join(config.STORAGE, f_name)):
         ufile.save(os.path.join(config.STORAGE, f_name))
     return f_name
+
+
+def getSubData(sid):
+    sdata = SubMetadata.select().where(SubMetadata.sid == sid)
+    data = {'mods': [], 'mod2': []}
+    for p in sdata:
+        if p.key in ['mod2', 'tag', 'ban']:
+            if data.get(p.key):
+                data[p.key].append(p.value)
+            else:
+                data[p.key] = [p.value]
+        else:
+            data[p.key] = p.value
+    data['subs'] = SubSubscriber.select().where((SubSubscriber.sid == sid) & (SubSubscriber.status == 1)).count()
+
+    if data.get('mod2', []) != []:
+        data['mods'] = User.select(User.uid, User.name).where(User.uid << data['mod2']).dicts()
+    data['owner'] = User.select(User.uid, User.name).where(User.uid == data['mod1']).dicts().get()
+    data['creator'] = User.select(User.uid, User.name).where(User.uid == data['mod']).dicts().get()
+
+    try:
+        data['stylesheet'] = SubStylesheet.get(SubStylesheet.sid == sid).content
+    except SubStylesheet.DoesNotExist:
+        data['stylesheet'] = ''
+    return data

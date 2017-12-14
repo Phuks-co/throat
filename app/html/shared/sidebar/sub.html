@@ -1,0 +1,71 @@
+@require(sub, subInfo)
+
+<form class="pure-g search" action="@{ url_for('do.title_search') }" method="post">
+  <div class="icon" data-icon="search"> </div>
+  <input name="term" placeholder="Title search..." type="search" class="pure-u-1">
+</form>
+
+@if current_user.is_authenticated:
+  @if subInfo.get('restricted') and not current_user.uid in subInfo['mod2']:
+    <div>Only mods can post.</div>
+  @else:
+    @if current_user.uid in subInfo.get('ban', []):
+      <div>You are currently banned from posting.</div>
+    @else:
+      <a href="@{url_for('submit', ptype='text', sub=sub['name'])}" class="sbm-post pure-button">Submit a text post</a>
+      <a href="@{url_for('submit', ptype='link', sub=sub['name'])}" class="sbm-post pure-button">Submit a link post</a>
+    @endif
+  @end
+@end
+
+<div class="subinfo">
+  <h3><a href="@{url_for('view_sub', sub=sub['name'])}">/s/@{sub['name']}</a> \
+  @if sub['nsfw']:
+    <div class="nsfw" alt="Not safe for work">NSFW</div> \
+  @end
+  </h3>
+</div>
+<div class="subs">@{subInfo['subs']!!s} subscribers</div>
+
+<div role="group" class="pure-button-group" data-sid="{{sub.sid}}">
+  @if current_user.has_subscribed(sub['name']):
+    <button data-ac="unsubscribe" class="sub button-secondary pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>Subscribed</button>
+  @else:
+    <button data-ac="subscribe" class="unsub button-secondary pure-button button-xsmall"><span class="sbm-icon" data-icon="add"></span>Subscribe</button>
+  @end
+  @if current_user.has_blocked(sub['sid']):
+    <button data-ac="unblock" class="blk button-warning pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>Blocked</button>
+  @else:
+    <button data-ac="block" class="unblk button-warning pure-button button-xsmall"><span class="sbm-icon" data-icon="close"></span>Block</button>
+  @end
+</div>
+<hr>
+@if sub['sidebar'] != '':
+  @{func.our_markdown(sub['sidebar'])}
+  <hr>
+@end
+
+<div class="moderators">
+  Moderators
+  <ul>
+  <li><span title="Owner" class="i-icon" data-icon="owner"></span> <a href="@{url_for('view_user', user=subInfo['owner']['name'])}">@{subInfo['owner']['name']}</a></li>
+  @for mod in subInfo['mods']:
+  <li><a href="@{url_for('view_user', user=mod['name'])}">@{mod['name']}</a></li>
+  @end
+  </ul>
+</div>
+<div class="createdby">
+  Created by @{subInfo['creator']['name']}
+  <time-ago datetime="@{subInfo['creation']}Z"></time-ago>
+</div>
+
+@if current_user.uid in subInfo['mod2'] or current_user.is_admin():
+  <a href="@{url_for('edit_sub', sub=sub['name'])}" class="sbm-post pure-button">Edit Sub Info</a>
+  <a href="@{url_for('edit_sub_flairs', sub=sub['name'])}" class="sbm-post pure-button">Edit Sub Flairs</a>
+  <a href="@{url_for('edit_sub_css', sub=sub['name'])}" class="sbm-post pure-button">Edit Sub Stylesheet</a>
+  <a href="@{url_for('edit_sub_mods', sub=sub['name'])}" class="sbm-post pure-button">Moderators</a>
+@end
+<hr>
+
+<a href="@{url_for('view_sublog', sub=sub['name'])}" class="sbm-post pure-button">Sub Log</a>
+<a href="@{url_for('view_sub_bans', sub=sub['name'])}" class="sbm-post pure-button">Banned Users</a>

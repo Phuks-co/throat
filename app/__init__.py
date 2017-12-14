@@ -30,7 +30,7 @@ from .socketio import socketio
 from . import database as db
 from .misc import SiteAnon, getSuscriberCount, getDefaultSubs, allowedNames, get_errors
 from .models import db as pdb
-from .models import Sub, SubPost, User, SubPostComment
+from .models import Sub, SubPost, User, SubPostComment, SubMetadata
 
 # /!\ EXPERIMENTAL /!\
 import config
@@ -468,17 +468,23 @@ def view_sub(sub):
         return redirect(url_for('all_hot', page=1))
     if sub.lower() == "live":
         return redirect(url_for('view_live_sub', page=1))
-    sub = db.get_sub_from_name(sub)
-    if not sub:
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
         abort(404)
 
-    x = db.get_sub_metadata(sub['sid'], 'sort')
-    if not x or x['value'] == 'v':
-        return redirect(url_for('view_sub_hot', sub=sub['name']))
-    elif x['value'] == 'v_two':
-        return redirect(url_for('view_sub_new', sub=sub['name']))
-    elif x['value'] == 'v_three':
-        return redirect(url_for('view_sub_top', sub=sub['name']))
+    try:
+        x = SubMetadata.select().where(SubMetadata.sid == sub.sid)
+        x = x.where(SubMetadata.key == 'sort').get()
+        x = x.value
+    except SubMetadata.DoesNotExist:
+        x = 'v'
+    if x == 'v':
+        return redirect(url_for('view_sub_hot', sub=sub.name))
+    elif x == 'v_two':
+        return redirect(url_for('view_sub_new', sub=sub.name))
+    elif x == 'v_three':
+        return redirect(url_for('view_sub_top', sub=sub.name))
 
 
 @app.route("/s/<sub>/edit/css")
@@ -665,21 +671,17 @@ def view_sub_new(sub, page):
     """ The index page, all posts sorted as most recent posted first """
     if sub.lower() == "all":
         return redirect(url_for('all_new', page=1))
-    sub = db.get_sub_from_name(sub)
-    if not sub:
+
+    try:
+        sub = Sub.select().where(Sub.name == sub).dicts().get()
+    except Sub.DoesNotExist:
         abort(404)
 
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub['sid']),
                              'new', page).dicts()
-    mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
-    createtxtpost = CreateSubTextPost(sub=sub['name'])
-    createlinkpost = CreateSubLinkPost(sub=sub['name'])
 
-    return render_template('sub.html', sub=sub, page=page,
-                           sort_type='view_sub_new',
-                           posts=posts, mods=mods,
-                           txtpostform=createtxtpost,
-                           lnkpostform=createlinkpost)
+    return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']),
+                                                   'posts': posts, 'page': page, 'sort_type': 'view_sub_hot'})
 
 
 @app.route("/s/<sub>/bannedusers")
@@ -701,22 +703,18 @@ def view_sub_top(sub, page):
     """ The index page, /top sorting """
     if sub.lower() == "all":
         return redirect(url_for('all_top', page=1))
-    sub = db.get_sub_from_name(sub)
-    if not sub:
+
+    try:
+        sub = Sub.select().where(Sub.name == sub).dicts().get()
+    except Sub.DoesNotExist:
         abort(404)
 
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub['sid']),
                              'top', page).dicts()
 
-    mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
-    createtxtpost = CreateSubTextPost(sub=sub['name'])
-    createlinkpost = CreateSubLinkPost(sub=sub['name'])
+    return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']),
+                                                   'posts': posts, 'page': page, 'sort_type': 'view_sub_hot'})
 
-    return render_template('sub.html', sub=sub, page=page,
-                           sort_type='view_sub_top',
-                           posts=posts, mods=mods,
-                           txtpostform=createtxtpost,
-                           lnkpostform=createlinkpost)
 
 
 @app.route("/s/<sub>/hot", defaults={'page': 1})
@@ -725,21 +723,16 @@ def view_sub_hot(sub, page):
     """ The index page, /hot sorting """
     if sub.lower() == "all":
         return redirect(url_for('all_hot', page=1))
-    sub = db.get_sub_from_name(sub)
-    if not sub:
+    try:
+        sub = Sub.select().where(Sub.name == sub).dicts().get()
+    except Sub.DoesNotExist:
         abort(404)
 
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub['sid']),
                              'hot', page).dicts()
-    mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
-    createtxtpost = CreateSubTextPost(sub=sub['name'])
-    createlinkpost = CreateSubLinkPost(sub=sub['name'])
 
-    return render_template('sub.html', sub=sub, page=page,
-                           sort_type='view_sub_hot',
-                           posts=posts, mods=mods,
-                           txtpostform=createtxtpost,
-                           lnkpostform=createlinkpost)
+    return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']),
+                                                   'posts': posts, 'page': page, 'sort_type': 'view_sub_hot'})
 
 
 @app.route("/s/<sub>/<pid>")
