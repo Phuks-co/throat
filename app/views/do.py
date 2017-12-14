@@ -621,7 +621,7 @@ def create_post():
                 return render_template('createpost.html', txtpostform=form, error="No link provided")
 
             lx = db.query('SELECT `pid` FROM `sub_post` WHERE `sid`=%s AND '
-                          '`link`=%s AND `posted` > DATE_SUB(NOW(), INTERVAL 1 '
+                          '`link`=%s AND `deleted`=0 AND `posted` > DATE_SUB(NOW(), INTERVAL 1 '
                           'MONTH)', (sub['sid'], form.link.data)).fetchone()
             if lx:
                 return render_template('createpost.html', txtpostform=form, error="This link was recently posted on this sub")
