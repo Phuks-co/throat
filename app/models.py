@@ -100,7 +100,7 @@ class Sub(db.Model):
     sidebar = TextField(null=True)
     status = IntegerField(null=True)
     title = CharField(null=True, max_length=50)
-    sort = CharField()
+    # sort = CharField()
     creation = DateTimeField()
 
     class Meta:
