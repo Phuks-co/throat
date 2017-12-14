@@ -29,6 +29,13 @@ def handle_message():
                       room='user' + current_user.uid)
 
 
+@socketio.on('getchatbacklog', namespace='/snt')
+def get_chat_backlog():
+    msgs = redis.lrange('chathistory', 0, 20)
+    for m in msgs[::-1]:
+        socketio.emit('msg', json.loads(m.decode()), namespace='/snt', room=request.sid)
+
+
 @socketio.on('subscribe', namespace='/snt')
 def handle_subscription(data):
     sub = data.get('target')
@@ -36,7 +43,3 @@ def handle_subscription(data):
         return
     if not str(sub).startswith('user'):
         join_room(sub)
-        if sub == 'chat':
-            msgs = redis.lrange('chathistory', 0, 20)
-            for m in msgs[::-1]:
-                socketio.emit('msg', json.loads(m.decode()), namespace='/snt', room=request.sid)
