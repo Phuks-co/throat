@@ -1475,12 +1475,10 @@ def upload_file():
         return False
 
     if 'files' not in request.files:
-        print('fail 2')
         return False
 
     ufile = request.files.getlist('files')[0]
     if ufile.filename == '':
-        print('fail 3')
         return False
 
     mtype = magic.from_buffer(ufile.read(1024), mime=True)
@@ -1492,7 +1490,6 @@ def upload_file():
     elif mtype == 'image/gif':
         extension = '.gif'
     else:
-        print('fail 4')
         return False
     ufile.seek(0)
     md5 = hashlib.md5()
