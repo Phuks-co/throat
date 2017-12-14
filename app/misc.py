@@ -1466,7 +1466,7 @@ def ktime():
 
 
 def upload_file():
-    if 'canupload' not in current_user.prefs or not current_user.admin:
+    if 'canupload' not in current_user.prefs and not current_user.admin:
         return False
 
     if 'files' not in request.files:
