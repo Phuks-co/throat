@@ -101,7 +101,7 @@ class Sub(db.Model):
     status = IntegerField(null=True)
     title = CharField(null=True, max_length=50)
     # sort = CharField()
-    creation = DateTimeField()
+    # creation = DateTimeField()
 
     class Meta:
         db_table = 'sub'
