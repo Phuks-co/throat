@@ -351,14 +351,23 @@ body.dank .th-l-fill {animation: rb2 1s infinite; }
 @keyframes rb{20%{stroke: red;}40%{stroke: yellow;}60%{stroke: green;}80%{stroke: blue;}100%{stroke: orange;}}
 
 /* chat */
-body.dark #chtitle:hover, body.dank #chtitle:hover{
+body.dark #chtitle:hover{
   color: #888;
-  background: #2a2a2b;
+  background: #000;
 }
-body.dark #chtitle, body.dank #chtitle {
-  background: #262627;
+body.dark #chtitle {
+  background: #0d0d0d;
+  color: #ccc;
 }
-body.dark #chpop, body.dank #chpop {
+body.dark #chpop {
   border: 1px solid #292929;
-  background: #444;
+  background: #202020;
+}
+body.dark #chcont {
+  border-bottom: none;
+  color: #ccc;
+}
+
+body.dark #chsend {
+    background-color: #0d0d0d;
 }

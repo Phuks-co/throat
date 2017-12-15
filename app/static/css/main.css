@@ -1476,13 +1476,16 @@ table td {
 
 /* chat */
 #chpop{
-  position: fixed;
+  -webkit-box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.75);
+  border:none;
   width: 25%;
+  position: fixed;
   right: 1em;
   bottom: 0;
   background: #eee;
   border-radius: 2px 2px 0 0;
-  border: 1px solid #aaa;
   max-height: 20em;
   height: 50%;
 }
@@ -1499,10 +1502,13 @@ table td {
   padding-left: 5px;
 }
 #chcont{
+  border-bottom: solid 1px #bbb;
+  margin-left: 2px;
   height: calc(100% - 4.1em);
 }
 #chtitle{
-  background: #999;
+  background: #d94f00;
+  color: #ccc;
   font-size: smaller;
   height: 1.8em;
   padding-top: .2em;
@@ -1510,7 +1516,7 @@ table td {
   cursor: pointer;
 }
 #chtitle:hover{
-  background: #888;
+  background: #b74500;
 }
 #chcont{
   color: #111;
@@ -1535,36 +1541,36 @@ table td {
 .irc-underline{font-style: italic;}
 .irc-bold{font-weight: bold;}
 
-.irc-fg0{color: white;}
-.irc-fg1{color: black;}
-.irc-fg2{color: darkblue;}
-.irc-fg3{color: darkgreen;}
-.irc-fg4{color: red;}
-.irc-fg5{color: darkred;}
-.irc-fg6{color: darkmagenta;}
-.irc-fg7{color: orange;}
-.irc-fg8{color: yellow;}
-.irc-fg9{color: green;}
-.irc-fg10{color: darkcyan;}
-.irc-fg11{color: cyan;}
-.irc-fg12{color: blue;}
-.irc-fg13{color: magenta;}
-.irc-fg14{color: darkgray;}
-.irc-fg15{color: lightgray;}
+.irc-fg0 {color:#ccc}
+.irc-fg1 {color:#000}
+.irc-fg2 {color:#3535b3}
+.irc-fg3 {color:#2a8c2a}
+.irc-fg4 {color:#c33b3b}
+.irc-fg5 {color:#c73232}
+.irc-fg6 {color:#80267f}
+.irc-fg7 {color:#66361f}
+.irc-fg8 {color:#d9a641}
+.irc-fg9 {color:#3dcc3d}
+.irc-fg10{color:#195555}
+.irc-fg11{color:#2e8c74}
+.irc-fg12{color:#4545e6}
+.irc-fg13{color:#b037b0}
+.irc-fg14{color:#4c4c4c}
+.irc-fg15{color:#959595}
 
-.irc-bg0{background-color: white;}
-.irc-bg1{background-color: black;}
-.irc-bg2{background-color: darkblue;}
-.irc-bg3{background-color: darkgreen;}
-.irc-bg4{background-color: red;}
-.irc-bg5{background-color: darkred;}
-.irc-bg6{background-color: darkmagenta;}
-.irc-bg7{background-color: orange;}
-.irc-bg8{background-color: yellow;}
-.irc-bg9{background-color: green;}
-.irc-bg10{background-color: darkcyan;}
-.irc-bg11{background-color: cyan;}
-.irc-bg12{background-color: blue;}
-.irc-bg13{background-color: magenta;}
-.irc-bg14{background-color: darkgray;}
-.irc-bg15{background-color: lightgray;}
+.irc-bg0 {background-color:#ccc}
+.irc-bg1 {background-color:#000}
+.irc-bg2 {background-color:#3535b3}
+.irc-bg3 {background-color:#2a8c2a}
+.irc-bg4 {background-color:#c33b3b}
+.irc-bg5 {background-color:#c73232}
+.irc-bg6 {background-color:#80267f}
+.irc-bg7 {background-color:#66361f}
+.irc-bg8 {background-color:#d9a641}
+.irc-bg9 {background-color:#3dcc3d}
+.irc-bg10{background-color:#195555}
+.irc-bg11{background-color:#2e8c74}
+.irc-bg12{background-color:#4545e6}
+.irc-bg13{background-color:#b037b0}
+.irc-bg14{background-color:#4c4c4c}
+.irc-bg15{background-color:#959595}

@@ -77,10 +77,12 @@ u.sub('#chtitle', 'click', function(e){
   var hid = this.getAttribute('hid');
   if(!hid){ // hid
     this.parentNode.style.height = '1.65em';
+    this.parentNode.style.width = '25%';
     document.getElementById('chbott').style.display='none';
     this.setAttribute('hid', true);
   }else{
     this.parentNode.style.height = '50%';
+    this.parentNode.style.width = '50%';
     document.getElementById('chbott').style.display='block';
     this.removeAttribute('hid');
     var x = document.getElementById('chcont');
