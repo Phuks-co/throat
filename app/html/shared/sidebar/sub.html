@@ -6,7 +6,7 @@
 </form>
 
 @if current_user.is_authenticated:
-  @if subInfo.get('restricted') and not current_user.uid in subInfo['mod2']:
+  @if subInfo.get('restricted', 0) == 1 and not current_user.uid in subInfo['mod2']:
     <div>Only mods can post.</div>
   @else:
     @if current_user.uid in subInfo.get('ban', []):
