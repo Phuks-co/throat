@@ -56,11 +56,12 @@ socket.on('threadcomments', function(data){
 })
 u.ready(function(){
   socket.on('connect', function() {
-    socket.emit('subscribe', {target: 'chat'});
+    if(document.getElementById('chpop')){
+      socket.emit('subscribe', {target: 'chat'});
+    }
   });
   if(window.labrat){
     socket.on('connect', function() {
-      socket.emit('subscribe', {target: 'chat'});
       window.sio = true;
       if(window.nposts){
         socket.emit('subscribe', {target: window.nposts});

@@ -138,13 +138,13 @@
       @end
 
   </div>
+  @if not current_user.is_anonymous:
   <div id="chpop" style="height: 1.65em">
     <div id="chtitle" hid="true">Chat</div>
     <div id="chcont"></div>
-    @if not current_user.is_anonymous:
     <div id="chbott" style="display: none"><input type="text" id="chsend" placeholder="Type here"/></div>
-    @end
   </div>
+  @end
   <script type="text/javascript">
     window.wsserver = '@{config.WEBSOCKET_SERVER!!s}';
   </script>

@@ -214,7 +214,9 @@ window.addEventListener(WINDOW_CHANGE_EVENT, closeMenu);
 
 /* infinite scroll */
 u.ready(function(){
-  socket.emit('getchatbacklog');
+  if(document.getElementById('chpop')){
+    socket.emit('getchatbacklog');
+  }
   var mode = getCookie("dayNight");
   //if(mode == 'dank'){
     socket.emit('subscribe', {target: 'chat'});
