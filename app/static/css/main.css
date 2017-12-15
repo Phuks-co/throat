@@ -1526,6 +1526,7 @@ table td {
 }
 .msguser{
   padding-right: 5px;
+  color: #b74500;
 }
 #chcont::-webkit-scrollbar {
    width: 4px;
