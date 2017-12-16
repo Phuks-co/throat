@@ -72,7 +72,7 @@ class SiteUser(object):
             self.is_authenticated = False
             self.is_anonymous = True
 
-        self.canupload = True if 'canupload' in self.prefs or self.admin else False
+        self.canupload = True if ('canupload' in self.prefs) or (self.admin) else False
 
     def __repr__(self):
         return "<SiteUser {0}>".format(self.uid)
@@ -1466,7 +1466,7 @@ def ktime():
 
 
 def upload_file():
-    if 'canupload' not in current_user.prefs and not current_user.admin:
+    if not current_user.canupload:
         return False
 
     if 'files' not in request.files:

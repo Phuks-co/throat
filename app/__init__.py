@@ -716,7 +716,6 @@ def view_sub_top(sub, page):
                                                    'posts': posts, 'page': page, 'sort_type': 'view_sub_hot'})
 
 
-
 @app.route("/s/<sub>/hot", defaults={'page': 1})
 @app.route("/s/<sub>/hot/<int:page>")
 def view_sub_hot(sub, page):
