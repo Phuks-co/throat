@@ -421,6 +421,9 @@ span#notification.fade {
   display:block;
 }
 
+.wholepost .icon.expando-btn {
+    margin-top: 0;
+}
 
 .hasmail i{
   color: #101010;
