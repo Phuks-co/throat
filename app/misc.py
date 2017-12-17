@@ -117,7 +117,14 @@ class SiteUser(object):
     def new_pm_count(self):
         """ Returns new message count """
         x = db.query('SELECT COUNT(*) AS c FROM `message` WHERE `read` IS NULL'
-                     ' AND `mtype` IN (1, 8) AND `receivedby`=%s',
+                     ' AND `mtype`=1 AND `receivedby`=%s',
+                     (self.user['uid'],)).fetchone()['c']
+        return x
+
+    def new_mentions_count(self):
+        """ Returns new user name mention count """
+        x = db.query('SELECT COUNT(*) AS c FROM `message` WHERE `read` IS NULL'
+                     ' AND `mtype`=8 AND `receivedby`=%s',
                      (self.user['uid'],)).fetchone()['c']
         return x
 
@@ -1377,7 +1384,17 @@ def getMessagesIndex(page):
     """ Returns messages inbox """
     try:
         msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
-        msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby)).where(Message.mtype << [1, 8]).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+        msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby)).where(Message.mtype == 1).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+    except msg.DoesNotExist:
+        return False
+    return msg
+
+
+def getMentionsIndex(page):
+    """ Returns user mentions inbox """
+    try:
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
+        msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby)).where(Message.mtype == 8).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except msg.DoesNotExist:
         return False
     return msg

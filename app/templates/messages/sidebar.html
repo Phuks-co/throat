@@ -9,6 +9,14 @@
     </a>
   </div>
   <div class="">
+    <a class="sbm-post pure-button{% if box_route=='view_mentions' %} button-secondary{% endif %}" href="{{ url_for('view_mentions') }}">
+      Mentions
+      {% if current_user.new_mentions_count() > 0 %}
+        <span class="newmsgcount" style="inline-block;"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{current_user.new_mentions_count()}}</span>
+      {% endif %}
+    </a>
+  </div>
+  <div class="">
     <a class="sbm-post pure-button{% if box_route=='view_messages_postreplies' %} button-secondary{% endif %}" href="{{ url_for('view_messages_postreplies') }}">
       Post Replies
       {% if current_user.new_postreply_count() > 0 %}

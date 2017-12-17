@@ -929,6 +929,9 @@ def edit_user(user):
 def inbox_sort():
     """ Go to inbox with the new message """
     if current_user.new_pm_count() == 0 \
+       and current_user.new_mentions_count() > 0:
+        return redirect(url_for('view_mentions'))
+    if current_user.new_pm_count() == 0 \
        and current_user.new_postreply_count() > 0:
         return redirect(url_for('view_messages_postreplies'))
     if current_user.new_pm_count() == 0 \
@@ -952,6 +955,19 @@ def view_messages(page):
     return render_template('messages/messages.html', user=user, page=page,
                            messages=msgs, box_name="Inbox", boxID="1",
                            box_route='view_messages')
+
+
+@app.route("/messages/mentions", defaults={'page': 1})
+@app.route("/messages/mentions/<int:page>")
+def view_mentions(page):
+    """ View user name mentions """
+    user = session['user_id']
+    if current_user.user['status'] == 10:
+        abort(404)
+    msgs = misc.getMentionsIndex(page)
+    return render_template('messages/messages.html', user=user, page=page,
+                           messages=msgs, box_name="Mentions", boxID="8",
+                           box_route='view_mentions')
 
 
 @app.route("/messages/sent", defaults={'page': 1})
