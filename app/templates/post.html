@@ -133,7 +133,7 @@
       </div>
       <ul class="links" data-pid="{{post.pid}}">
         {% if post.link %}
-          {% if func.getDomain(post.link) in ('youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'vimeo.com', 'vine.co') %}
+          {% if func.getDomain(post.link) in ('youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'vimeo.com', 'vine.co', 'hooktube.com') %}
           <li><div class="expando"><div data-pid="{{post.pid}}" class="icon expando-btn" data-t="lnk" data-link="{{post.link}}" data-icon="play"></div></div></li>
           {% elif func.isImage(post.link) %}
           <li><div class="expando"><div data-pid="{{post.pid}}" class="icon expando-btn" data-t="lnk" data-link="{{post.link}}" data-icon="image"></div></div></li>
