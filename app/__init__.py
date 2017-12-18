@@ -1230,6 +1230,17 @@ def admin_domains(page):
         abort(404)
 
 
+@app.route("/admin/mining")
+@login_required
+def admin_mining():
+    """ WIP: View Mining Leaderboard """
+    if current_user.is_admin():
+        return render_template('admin/mining.html',
+                               admin_route='admin_mining')
+    else:
+        abort(404)
+
+
 @app.route("/sitelog", defaults={'page': 1})
 @app.route("/sitelog/<int:page>")
 @login_required

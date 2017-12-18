@@ -1257,6 +1257,12 @@ def getMiningLeaderboard():
     return x
 
 
+def getAdminMiningLeaderboard():
+    """ Get mining leaderboard for admin section """
+    x = MiningLeaderboard.select().order_by(MiningLeaderboard.score.desc()).dicts()
+    return x
+
+
 def getHPLeaderboard():
     """ Get mining leaderboard """
     x = MiningSpeedLeaderboard.select(MiningSpeedLeaderboard.username, MiningSpeedLeaderboard.hashes).order_by(MiningSpeedLeaderboard.hashes.desc()).limit(10).dicts()
