@@ -59,7 +59,7 @@
   <time-ago datetime="@{subInfo['creation']}Z"></time-ago>
 </div>
 
-@if current_user.uid in subInfo['mod2'] or current_user.is_admin():
+@if current_user.uid in subInfo['mod2'] or current_user.uid in subInfo['owner']['uid'] or current_user.is_admin():
   <a href="@{url_for('edit_sub', sub=sub['name'])}" class="sbm-post pure-button">Edit Sub Info</a>
   <a href="@{url_for('edit_sub_flairs', sub=sub['name'])}" class="sbm-post pure-button">Edit Sub Flairs</a>
   <a href="@{url_for('edit_sub_css', sub=sub['name'])}" class="sbm-post pure-button">Edit Sub Stylesheet</a>
