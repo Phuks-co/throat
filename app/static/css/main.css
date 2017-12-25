@@ -1295,21 +1295,12 @@ form#msg-form h3 {
 
 /* SUBS PAGE */
 
-.subsentry {
-    -webkit-box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
-    -moz-box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
-    box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
+.sortable td {
+    -webkit-box-shadow: -3px 2px 4px 0 rgba(0,0,0,.04);
+    -moz-box-shadow: -3px 2px 4px 0 rgba(0,0,0,.04);
+    box-shadow: -3px 2px 4px 0 rgba(0,0,0,.04);
 }
 
-.subsentry {
-    min-height: 70px;
-    padding: .8em;
-    border-radius: 8px 0 0 8px;
-    background-color: #f7f7f7;
-    margin: 6px;
-    width: 48%;
-    float: left;
-}
 
 .subs.content {
     width: 90%;
@@ -1327,11 +1318,16 @@ form#msg-form h3 {
     border-radius: 3px;
     background-color: rgba(0,0,0,.06);
 }
-article.subsentry.subsubscribed {
-  border-left: 5px solid #00b421;
+
+td.subsentry.subsubscribed {
+  border-left: 4px solid #00b421;
 }
-article.subsentry.blocked {
-    border-left: 5px solid #b40000;
+
+td.subsentry.blocked {
+    border-left: 4px solid #b40000;
+}
+.sortable th svg {
+  height: 16px;
 }
 /* /SUBS PAGE */
 

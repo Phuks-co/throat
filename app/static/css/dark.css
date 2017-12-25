@@ -295,10 +295,10 @@ body.dark #formpop .modal-content .closemsg {
 /* /MESSAGES STYLES */
 
 /* SUBS PAGE */
-body.dark .subsentry {
-    background-color: #1b1b1b;
-}
 body.dark .subsentry svg {
+    fill: #fff;
+}
+body.dark .sbm-icon svg {
     fill: #fff;
 }
 /* /SUBS PAGE */

@@ -40,47 +40,61 @@
 {% if not subs %}<h1 class="noshit">There are no subs here, yet.</h1>{% endif %}
 <div id="center-container">
   <div class="subs content">
-    {% for sub in subs %}
-        <article class="subsentry{% if current_user.has_subscribed(sub.name) %} subsubscribed{% endif %}{% if current_user.has_blocked(sub.sid) %} blocked{% endif %}" data-sid="{{sub.sid}}">
-          <div class="main">
-            <a class="title" href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>
-            <p class="author">{% if sub.nsfw  %}<span class="btn small" style="color:white;background:red">nsfw</span>{% endif %} {{sub.title}}</p>
-            <p class="created">Created <time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago></p>
-            <p class="created">Tags:
-              {% if func.getSubTagsList(sub) %}
-                {% set tags = func.getSubTagsList(sub) %}
-                {% for tag in tags %}
-                  <a href="{{url_for('subs_tag_search', term=tag.value)}}" style="text-decoration: underline;">{{tag.value}}</a>
-                {% endfor %}
-              {% else %}
-                none
-              {% endif %}
-            </p>
-            <p class="container">
-              <div role="group" class="pure-button-group" data-sid="{{sub.sid}}">
-                 <button class="subcount pure-button">{{getSuscriberCount(sub)}}</button>
-                {% if current_user.has_subscribed(sub.name) %}
-                  <button data-ac="unsubscribe" class="sub pure-button"><span class="sbm-icon" data-icon="check"></span>Subscribed</button>
-                {%else%}
-                  <button data-ac="subscribe" class="unsub pure-button"><span class="sbm-icon" data-icon="add"></span>Subscribe</button>
-                {%endif%}
-                {% if current_user.has_blocked(sub.sid) %}
-                  <button data-ac="unblock" class="blk pure-button blocked"><span class="sbm-icon" data-icon="check"></span>Blocked</button>
-                {%else%}
-                  <button data-ac="block" class="unblk pure-button unblocked"><span class="sbm-icon" data-icon="close"></span>Block</button>
-                {%endif%}
-              </div>
-            </p>
-          </div>
-        </article>
-    {% endfor %}
- </div>
+    <table class="sortable pure-table" >
+      <thead>
+        <tr>
+          <th>Sub Name</th>
+          <th>Created</th>
+          <th><span class="placeholder" data-icon="check"></span></th>
+          <th>Subscribe</th>
+          <th>Block</th>
+          <th><span class="placeholder" data-icon="bulletlist"></span></th>
+          <th><span class="placeholder" data-icon="chat"></span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sub in subs %}
+        <tr>
+          <td  class="subsentry{% if current_user.has_subscribed(sub.name) %} subsubscribed{% endif %}{% if current_user.has_blocked(sub.sid) %} blocked{% endif %}" data-sid="{{sub.sid}}">
+            <div class="subname" title="{{sub.title}}">
+              {% if sub.nsfw  %}<span style="color:white;background:red">nsfw</span>{% endif %}
+              <a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>
+            </div>
+          </td>
+          <td><time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago></td>
+
+          <td>{{getSuscriberCount(sub)}}</td>
+          <td>
+            <div role="group" class="pure-button-group" data-sid="{{sub.sid}}">
+              {% if current_user.has_subscribed(sub.name) %}
+                <button data-ac="unsubscribe" class="sub pure-button" style="display:inline-block"><span class="sbm-icon" data-icon="check"></span>Subscribed</button>
+              {%else%}
+                <button data-ac="subscribe" class="unsub pure-button" style="display:inline-block"><span class="sbm-icon" data-icon="add"></span>Subscribe</button>
+              {%endif%}
+            </div>
+          </td>
+          <td>
+            <div role="group" class="pure-button-group" data-sid="{{sub.sid}}">
+              {% if current_user.has_blocked(sub.sid) %}
+                <button data-ac="unblock" class="blk pure-button blocked" style="display:inline-block"><span class="sbm-icon" data-icon="check"></span>Blocked</button>
+              {%else%}
+                <button data-ac="block" class="unblk pure-button unblocked" style="display:inline-block"><span class="sbm-icon" data-icon="close"></span>Block</button>
+              {%endif%}
+            </div>
+          </td>
+          <td>{{func.getSubPostCount(sub)}}</td>
+          <td>xx</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 <div class="col-12">
   {% if page > 1 %}
   <a href="{{url_for('view_subs', page=(page-1))}}" class="pure-button">prev</a>
   {% endif %}
-  {% if subs|length == 30 %}
+  {% if subs|length == 50 %}
   <a href="{{url_for('view_subs', page=(page+1))}}" class="pure-button">next</a>
   {% endif %}
 </div>

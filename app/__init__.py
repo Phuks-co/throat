@@ -315,8 +315,8 @@ def subs_search(page, term):
     """ The subs index page, with basic title search """
     term = re.sub('[^A-Za-z0-9\-_]+', '', term)
     c = db.query('SELECT * FROM `sub` WHERE `name` LIKE %s '
-                 'ORDER BY `name` ASC LIMIT %s ,30',
-                 ('%' + term + '%', (page - 1) * 30))
+                 'ORDER BY `name` ASC LIMIT %s ,50',
+                 ('%' + term + '%', (page - 1) * 50))
     return render_template('subs.html', page=page, subs=c.fetchall())
 
 
@@ -367,8 +367,8 @@ def userguide():
 @app.route("/subs/<int:page>")
 def view_subs(page):
     """ Here we can view available subs """
-    c = db.query('SELECT * FROM `sub` ORDER BY `name` ASC Limit 30 OFFSET %s',
-                 (((page - 1) * 30),))
+    c = db.query('SELECT * FROM `sub` ORDER BY `name` ASC Limit 50 OFFSET %s',
+                 (((page - 1) * 50),))
     return render_template('subs.html', page=page, subs=c.fetchall())
 
 
