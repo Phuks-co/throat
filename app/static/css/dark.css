@@ -361,6 +361,8 @@ body.dark #chtitle {
 }
 body.dark #chpop {
   background: #202020;
+  border-top: 1px solid #d94f00;
+  border-left: 1px solid #d94f00;
 }
 body.dark #chcont {
   border-bottom: none;
