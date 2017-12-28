@@ -33,7 +33,6 @@ code{
 blockquote p{margin: 0;}
 
 
-inspector-stylesheet:1
 blockquote > p:not(:last-child) {
     margin-bottom: 1em;
 }
