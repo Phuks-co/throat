@@ -31,6 +31,12 @@ code{
 }
 
 blockquote p{margin: 0;}
+
+
+inspector-stylesheet:1
+blockquote > p:not(:last-child) {
+    margin-bottom: 1em;
+}
 blockquote{
   border-left: 3px solid gray;
   margin: .3em 0 .3em 1em;
