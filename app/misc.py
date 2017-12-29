@@ -1127,12 +1127,12 @@ def getSinglePost(pid):
     if current_user.is_authenticated:
         posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair,
-                               SubPost.comments, SubPostVote.positive, User.uid)
+                               SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'))
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(SubPost)
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair,
-                               SubPost.comments, User.uid)
+                               SubPost.comments, User.uid, User.status.alias('userstatus'))
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER).where(SubPost.pid == pid).dicts().get()
     return posts
 
@@ -1141,12 +1141,12 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False)
     if current_user.is_authenticated and not noDetail:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair,
-                               SubPost.comments, SubPostVote.positive, User.uid, *extra)
+                               SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'), *extra)
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(SubPost)
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair,
-                               SubPost.comments, User.uid, *extra)
+                               SubPost.comments, User.uid, User.status.alias('userstatus'), *extra)
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
     posts = posts.where(SubPost.deleted == 0)
     if not noAllFilter and not nofilter:
@@ -1338,7 +1338,8 @@ def expand_comment_tree(comsx):
     coms = comsx[0]
     expcomms = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
                                      SubPostComment.score, SubPostComment.status, SubPostComment.time, SubPostComment.pid,
-                                     User.name.alias('username'), SubPostCommentVote.positive, SubPostComment.uid)
+                                     User.name.alias('username'), SubPostCommentVote.positive, SubPostComment.uid,
+                                     User.status.alias('userstatus'))
     expcomms = expcomms.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
     expcomms = expcomms.join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == SubPostComment.cid)))
     expcomms = expcomms.where(SubPostComment.cid << comsx[1]).dicts()

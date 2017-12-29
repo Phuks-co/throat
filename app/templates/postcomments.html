@@ -4,8 +4,10 @@
       <div class="commentrow {%if comment.cid == highlight %}highlight{%endif%}" id="comment-{{comment.cid}}">
         <div class="pull left votecomment" {% if comment.status == 1 %}hidden{%endif%}>
           {# vote arrow div #}
-          <div title="Upvote" class="c-upvote{%if comment.positive == True %} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
-          <div title="Downvote" class="c-downvote{%if comment.positive == False %} downvoted{%endif%}" data-pid="{{post.pid}}" data-icon="downvote"></div>
+          {% if comment.userstatus != 10 %}
+            <div title="Upvote" class="c-upvote{%if comment.positive == True %} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
+            <div title="Downvote" class="c-downvote{%if comment.positive == False %} downvoted{%endif%}" data-pid="{{post.pid}}" data-icon="downvote"></div>
+          {%endif%}
         </div>
         <div class="commblock">
           <div class="commenthead">
@@ -13,7 +15,11 @@
                 {% if comment.status == 1 %}[+]{%else%}[–]{%endif%}
               </a>
               {% if not comment.status == 1 %}
+                {% if comment.userstatus != 0 %}
+                <a class="poster deleted">[Deleted]</a>
+                {%else%}
                 <a href="{{ url_for('view_user', user=comment.username) }}" class="poster">{{ comment.username }}</a>
+                {%endif%}
               {%else%}
                 <a class="poster deleted">[Deleted]</a>
               {%endif%}

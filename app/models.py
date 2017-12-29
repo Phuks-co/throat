@@ -21,6 +21,7 @@ class User(db.Model):
 
     score = IntegerField(default=0)  # AKA phuks taken
     given = IntegerField(default=0)  # AKA phuks given
+    # status: 0 = OK; 10 = deleted
     status = IntegerField(default=0)
     resets = IntegerField(default=0)
 

@@ -3,9 +3,11 @@
 <div pid="@{post['pid']!!s}" class="post">
     <div class="misctainer">
       <div class="votebuttons">
+        @if post['userstatus'] != 10:
         <div title="Upvote" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="upvote"></div>
         <div class="score">@{post['score']!!s}</div>
         <div title="Downvote" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="downvote"></div>
+        @end
       </div>
       <div class="thcontainer">
         <a href="/s/@{post['sub']}/@{post['pid']!!s}" class="title">
@@ -51,7 +53,11 @@
           <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="txt" data-link="None" data-icon="text"></div></div>
         @end
         posted <time-ago datetime="@{post['posted'].isoformat()}Z"></time-ago> by
-        <a class="authorlink" href="/u/@{post['user']}">@{post['user']}</a>
+        @if post['userstatus'] != 10:
+          <a class="authorlink" href="/u/@{post['user']}">@{post['user']}</a>
+        @else:
+          <a class="authorlink deleted">[Deleted]</a>
+        @end
         @if sub and post['pid'] in func.getStickyPid(sub['sid']):
         - <span class="stick">sticky</span>
         @end
