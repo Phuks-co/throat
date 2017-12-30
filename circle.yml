@@ -16,4 +16,5 @@ machine:
     DB_NAME: 'circle_test'
 test:
   pre:
+    - sudo apt-get update; sudo apt-get install -y libexiv2-dev libboost-python-dev
     - npm run build
