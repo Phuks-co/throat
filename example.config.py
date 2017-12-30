@@ -53,3 +53,6 @@ DEBUG = True
 TESTING = True  # This makes all the captchas valid
 
 WEBSOCKET_SERVER = '127.0.0.1:5000'
+
+
+MAX_CONTENT_LENGTH = (1024 * 1024) * 10  # 10MB limit
