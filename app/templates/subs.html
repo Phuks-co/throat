@@ -13,26 +13,12 @@
 
 {% block sidebar %}
 <div>
-  <form action="{{ url_for('do.subs_title_search') }}" method="post">
-    <span class="search">
-        <span><i class="fa fa-search"></i></span>
-        <input id="term" name="term" type="search" placeholder="Search...">
-    </span>
+  <form class="pure-g search" action="{{ url_for('do.subs_title_search') }}" method="post">
+    <div class="icon" data-icon="search"> </div>
+    <input name="term" placeholder="Search sub..." type="search" class="pure-u-1">
   </form>
 </div>
-<span class="col-12"><hr></span>
 {{ super() }}
-<a href="{{url_for('view_subs')}}" class="sbm-post pure-button">View all subs</a>
-<span class="col-12"><hr></span>
-<div class="col-12">
-  Current sub tags
-</div>
-{% set sidebartags = func.getSubTagsSidebar() %}
-<div>
-{% for tag in sidebartags %}
-  <span class="sidetag"><a href="{{url_for('subs_tag_search', term=tag)}}">{{tag}}</a></span>
-{% endfor %}
-</div>
 {% endblock %}
 
 {% block content %}
@@ -45,11 +31,8 @@
         <tr>
           <th>Sub Name</th>
           <th>Created</th>
-          <th><span class="placeholder" data-icon="check"></span></th>
           <th>Subscribe</th>
-          <th>Block</th>
-          <th><span class="placeholder" data-icon="bulletlist"></span></th>
-          <th><span class="placeholder" data-icon="chat"></span></th>
+          <th><span class="placeholder" title="Posts" data-icon="bulletlist"></span></th>
         </tr>
       </thead>
       <tbody>
@@ -62,28 +45,19 @@
             </div>
           </td>
           <td><time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago></td>
+          <td>
+            <div role="group" class="pure-button-group" data-sid="{{sub.sid}}" style="display:inline-block;">
 
-          <td>{{getSuscriberCount(sub)}}</td>
-          <td>
-            <div role="group" class="pure-button-group" data-sid="{{sub.sid}}">
               {% if current_user.has_subscribed(sub.name) %}
-                <button data-ac="unsubscribe" class="sub pure-button" style="display:inline-block"><span class="sbm-icon" data-icon="check"></span>Subscribed</button>
+                <button data-ac="unsubscribe" class="sub pure-button button-xsmall" style="display:inline-block; width: 8em;"><span class="sbm-icon" data-icon="check"></span>Subscribed</button>
               {%else%}
-                <button data-ac="subscribe" class="unsub pure-button" style="display:inline-block"><span class="sbm-icon" data-icon="add"></span>Subscribe</button>
+                <button data-ac="subscribe" class="unsub pure-button button-xsmall" style="display:inline-block; width: 8em;"><span class="sbm-icon" data-icon="add"></span>Subscribe</button>
               {%endif%}
             </div>
-          </td>
-          <td>
-            <div role="group" class="pure-button-group" data-sid="{{sub.sid}}">
-              {% if current_user.has_blocked(sub.sid) %}
-                <button data-ac="unblock" class="blk pure-button blocked" style="display:inline-block"><span class="sbm-icon" data-icon="check"></span>Blocked</button>
-              {%else%}
-                <button data-ac="block" class="unblk pure-button unblocked" style="display:inline-block"><span class="sbm-icon" data-icon="close"></span>Block</button>
-              {%endif%}
-            </div>
+            <span style="margin-left: .3em;">{{getSuscriberCount(sub)}}</span>
+
           </td>
           <td>{{func.getSubPostCount(sub)}}</td>
-          <td>xx</td>
         </tr>
         {% endfor %}
       </tbody>
