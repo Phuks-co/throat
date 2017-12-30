@@ -314,23 +314,9 @@ def all_hot(page):
 def subs_search(page, term):
     """ The subs index page, with basic title search """
     term = re.sub('[^A-Za-z0-9\-_]+', '', term)
-    c = db.query('SELECT * FROM `sub` WHERE `name` LIKE %s '
-                 'ORDER BY `name` ASC LIMIT %s ,50',
-                 ('%' + term + '%', (page - 1) * 50))
-    return render_template('subs.html', page=page, subs=c.fetchall())
-
-
-@app.route("/subs/tag/<term>", defaults={'page': 1})
-@app.route("/subs/tag/<term>/<int:page>")
-def subs_tag_search(page, term):
-    """ The subs index page, with basic tag search """
-    term = re.sub('[^A-Za-z0-9.\-_]+', '', term)
-    subs = misc.getSubTagsSearch(page=page, term=term)
-    sublist = ''
-    for sub in subs:
-        sublist += sub['name'] + '+'
-    ptype = 'tagmatch'
-    return render_template('subs.html', page=page, subs=subs, ptype=ptype, sublist=sublist[:-1])
+    c = Sub.select().where(Sub.name ** '%' + term + '%')
+    c = c.order_by(Sub.name.asc()).paginate(page, 50).dicts()
+    return render_template('subs.html', page=page, subs=c)
 
 
 @app.route("/welcome")
