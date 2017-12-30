@@ -175,37 +175,36 @@ def delete_post():
     form = DeletePost()
 
     if form.validate():
-        post = db.get_post_from_pid(form.post.data)
-        if not post:
-            return json.dumps({'status': 'error',
-                               'error': ['Post does not exist.']})
-        sub = db.get_sub_from_sid(post['sid'])
-        if not current_user.is_mod(sub['sid']) and not current_user.is_admin() \
-           and not post['uid'] == current_user.get_id():
-            return json.dumps({'status': 'error',
-                               'error': ['Not authorized.']})
+        try:
+            post = SubPost.get(SubPost.pid == form.post.data)
+        except SubPost.DoesNotExist:
+            return jsonify(status='error', error=['Post does not exist'])
 
-        if post['uid'] == session['user_id']:
+        if post.deleted != 0:
+            return jsonify(status='error', error=['Post was already deleted'])
+
+        sub = Sub.get(Sub.sid == post.sid)
+        subI = misc.getSubData(post.sid)
+
+        if current_user.uid not in subI['mod2'] and not current_user.is_admin() and not post.uid == current_user.uid:
+            return jsonify(status='error', error=['Not authorized'])
+
+        if post.uid == current_user.uid:
             deletion = 1
         else:
             deletion = 2
+            if current_user.uid not in subI['mod2'] and current_user.is_admin():
+                db.create_sitelog(4, current_user.get_username() + ' deleted a post',
+                                  url_for('view_sub', sub=sub.name))
 
-        if not current_user.is_mod(sub['sid']) and current_user.is_admin() \
-           and not post['uid'] == current_user.get_id():
-            db.create_sitelog(4, current_user.get_username() +
-                              ' deleted a post',
-                              url_for('view_sub', sub=sub['name']))
-        if not post['uid'] == current_user.get_id():
-            db.create_sublog(sub['sid'], 1, current_user.get_username() +
-                             ' deleted a post',
-                             url_for('view_post', sub=sub['name'],
-                                     pid=post['pid']))
+            db.create_sublog(sub.sid, 1, current_user.get_username() + ' deleted a post',
+                             url_for('view_post', sub=sub.name, pid=post.pid))
 
-        db.uquery('UPDATE `sub_post` SET `deleted`=%s WHERE pid=%s',
-                  (deletion, post['pid']))
+        post.deleted = deletion
+        post.save()
 
-        return json.dumps({'status': 'ok'})
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
+        return jsonify(status='ok')
+    return jsonify(status='ok', error=get_errors(form))
 
 
 @do.route("/do/create_sub", methods=['POST'])
