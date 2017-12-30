@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="col-12 admin section users">
-      <h2><i class="fa fa-user"></i> User: <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a></h2>
+      <h2>User: <a href="{{url_for('view_user', user=user.name)}}">{{user.name}}</a></h2>
       <div class="col-11">Posts: {{pcount}}</div>
       <div class="col-11">Comments: {{ccount}}</div>
       <div class="col-11">Registered: {{user.joindate}}</div>
@@ -56,19 +56,50 @@
         <table class="pure-table">
           <thead>
             <tr>
+              <td>score</td>
               <td>user</td>
               <td>comment</td>
               <td>permalink</td>
             </tr>
           </thead>
           <tbody>
-            {#<!-- TODO:  -->#}
+            {% for comment in comms if not comment.status == 1 %}
             <tr>
-              <td>coming soon..</td>
-              <td>xx</td>
-              <td>xx</td>
+              <td>{{comment.score}}</td>
+              <td>
+                <a href="{{ url_for('view_user', user=db.get_user_from_uid(comment.uid).name) }}" class="poster">
+                {{db.get_user_from_uid(comment.uid).name}}</a>
+              </td>
+              <td>{{comment.content|rnentity|e}}</td>
+              <td><a href="{{url_for('view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></td>
             </tr>
-            {#<!-- TODO:  -->#}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h4>Deleted comments:</h4>
+        <table class="pure-table">
+          <thead>
+            <tr>
+              <td>score</td>
+              <td>user</td>
+              <td>comment</td>
+              <td>permalink</td>
+            </tr>
+          </thead>
+          <tbody>
+            {% for comment in comms if comment.status == 1 %}
+            <tr>
+              <td>{{comment.score}}</td>
+              <td>
+                <a href="{{ url_for('view_user', user=db.get_user_from_uid(comment.uid).name) }}" class="poster">
+                {{db.get_user_from_uid(comment.uid).name}}</a>
+              </td>
+              <td>{{comment.content|rnentity|e}}</td>
+              <td><a href="{{url_for('view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></td>
+            </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>

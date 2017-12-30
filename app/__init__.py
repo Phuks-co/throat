@@ -1194,7 +1194,8 @@ def admin_post_search(term):
         post = db.get_post_from_pid(term)
         user = db.get_user_from_uid(post['uid'])
         sub = db.get_sub_from_sid(post['sid'])
-
+        comms = db.query('SELECT * FROM `sub_post_comment` WHERE `pid`=%s',
+                         (post['pid'],)).fetchall()
         votes = db.query('SELECT * FROM `sub_post_vote` WHERE `pid`=%s',
                          (post['pid'],)).fetchall()
         upcount = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
@@ -1211,7 +1212,8 @@ def admin_post_search(term):
 
         return render_template('admin/post.html', sub=sub, post=post,
                                votes=votes, ccount=ccount, pcount=pcount,
-                               upcount=upcount, downcount=downcount, user=user)
+                               upcount=upcount, downcount=downcount,
+                               comms=comms, user=user)
     else:
         abort(404)
 
