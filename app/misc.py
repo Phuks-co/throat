@@ -8,6 +8,7 @@ import magic
 import os
 import hashlib
 import re
+import pyexiv2
 from datetime import datetime, timedelta
 from io import BytesIO
 from PIL import Image
@@ -1521,14 +1522,20 @@ def upload_file():
     f_name = str(uuid.uuid5(FILE_NAMESPACE, md5.hexdigest())) + extension
     ufile.seek(0)
 
-    img = Image.open(ufile)
-
-    data = list(img.getdata())
-    imgfinal = Image.new(img.mode, img.size)
-    imgfinal.putdata(data)
-
     if not os.path.isfile(os.path.join(config.STORAGE, f_name)):
-        imgfinal.save(os.path.join(config.STORAGE, f_name))
+        ufile.save(os.path.join(config.STORAGE, f_name))
+        # remove metadata
+        md = pyexiv2.ImageMetadata(os.path.join(config.STORAGE, f_name))
+        md.read()
+        for k in md.exif_keys:
+            md[k] = ''
+
+        for k in md.iptc_keys:
+            md[k] = ''
+
+        for k in md.xmp_keys:
+            md[k] = ''
+        md.write()
     return f_name
 
 
