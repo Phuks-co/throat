@@ -1,6 +1,11 @@
 {% extends "layout.html" %}
 {% block title %}Admin - {{config.LEMA}}{% endblock %}
 
+{% block head %}
+{{ super() }}
+<script src="{{url_for('static', filename='js/sorttable.js')}}"></script>
+{% endblock %}
+
 {% block sidebar %}
 {{ super() }}
 {% include 'admin/sidebar.html' %}
@@ -29,12 +34,12 @@
     <div class="col-12 admin section users">
       <h2><i class="fa fa-expand"></i> Votes: ( +{{upcount}} | -{{downcount}} )</h2>
       <div class="col-12">
-        <table class="pure-table">
+        <table class="pure-table sortable">
           <thead>
             <tr>
-              <td>vote</td>
-              <td>user</td>
-              <td>datetime</td>
+              <th>vote</th>
+              <th>user</th>
+              <th>datetime</th>
             </tr>
           </thead>
           <tbody>
@@ -53,13 +58,13 @@
     <div class="col-12 admin section users">
       <h2><i class="fa fa-comments"></i> Comments: {{db.get_post_comment_count(post.pid)}}</h2>
       <div>
-        <table class="pure-table">
+        <table class="pure-table sortable">
           <thead>
             <tr>
-              <td>score</td>
-              <td>user</td>
-              <td>comment</td>
-              <td>permalink</td>
+              <th>score</th>
+              <th>user</th>
+              <th>comment</th>
+              <th>permalink</th>
             </tr>
           </thead>
           <tbody>
@@ -79,13 +84,13 @@
       </div>
       <div>
         <h4>Deleted comments:</h4>
-        <table class="pure-table">
+        <table class="pure-table sortable">
           <thead>
             <tr>
-              <td>score</td>
-              <td>user</td>
-              <td>comment</td>
-              <td>permalink</td>
+              <th>score</th>
+              <th>user</th>
+              <th>comment</th>
+              <th>permalink</th>
             </tr>
           </thead>
           <tbody>
