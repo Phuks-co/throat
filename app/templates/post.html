@@ -25,7 +25,7 @@
 <hr/>
 <div class="author" style="padding:.5em;">
   Posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> by
-  {% if not post.deleted %}
+  {% if post.deleted == 0 %}
     {% if post.userstatus != 10 %}
     <a class="authorlink" namedata="{{post.user}}" href="{{url_for('view_user', user=post.user)}}">{{post.user}}</a>
     {%else%}
@@ -134,7 +134,7 @@
         {% if post.link == None %}
           <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}" class="title">{{post.title}}</a>
         {% else %}
-          <a href="{% if not post.deleted%}{{post.link}}{%else%}#{%endif%}" class="title">{{post.title}}</a> {%if not post.deleted%}<a href="{{url_for('all_domain_new', domain=func.getDomain(post.link), page=1)}}" class="domain">({{func.getDomain(post.link)}})</a>{%endif%}
+          <a href="{% if post.deleted == 0%}{{post.link}}{%else%}#{%endif%}" class="title">{{post.title}}</a> {%if post.deleted == 0%}<a href="{{url_for('all_domain_new', domain=func.getDomain(post.link), page=1)}}" class="domain">({{func.getDomain(post.link)}})</a>{%endif%}
         {% endif %}
       </div>
       <ul class="links" data-pid="{{post.pid}}">
@@ -147,7 +147,7 @@
           <li><div class="expando"><div data-pid="{{post.pid}}" class="icon expando-btn" data-t="lnk" data-link="{{post.link}}" data-icon="play"></div></div></li>
           {% endif %}
         {% endif %}
-          {% if current_user.is_authenticated and not post.deleted %}
+          {% if current_user.is_authenticated and post.deleted == 0 %}
            <li><a class="post-source">source</a></li>
             {% if db.get_user_saved(current_user.uid, post.pid) %}
               <li><a class="removesavedpost" data-pid="{{post.pid}}">unsave</a></li>
@@ -201,7 +201,7 @@
     </div>
   {%endif %}
    {% if post.content %}
-   {% if not post.deleted %}
+   {% if post.deleted == 0 %}
      <div id="postcontent">
        {{markdown(post.content)|safe}}
      </div>
@@ -211,7 +211,7 @@
    {%endif%}
    {%endif%}
 
-   {%if current_user.is_authenticated and not post.deleted %}
+   {%if current_user.is_authenticated and post.deleted == 0 %}
      <form data-reset="true" data-reload='true' action="{{url_for('do.create_comment', sub=sub.name, pid=post.pid)}}" class="comment-form ajaxform static pure-form">
        {{commentform.csrf_token}}
        {{commentform.post(value=post.pid)}}

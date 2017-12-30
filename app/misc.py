@@ -1127,12 +1127,12 @@ def getSinglePost(pid):
     if current_user.is_authenticated:
         posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair,
-                               SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'))
+                               SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'), SubPost.deleted)
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(SubPost)
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair,
-                               SubPost.comments, User.uid, User.status.alias('userstatus'))
+                               SubPost.comments, User.uid, User.status.alias('userstatus'), SubPost.deleted)
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER).where(SubPost.pid == pid).dicts().get()
     return posts
 
