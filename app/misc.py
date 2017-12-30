@@ -1525,17 +1525,12 @@ def upload_file():
     if not os.path.isfile(os.path.join(config.STORAGE, f_name)):
         ufile.save(os.path.join(config.STORAGE, f_name))
         # remove metadata
-        md = pyexiv2.ImageMetadata(os.path.join(config.STORAGE, f_name))
-        md.read()
-        for k in md.exif_keys:
-            md[k] = ''
-
-        for k in md.iptc_keys:
-            md[k] = ''
-
-        for k in md.xmp_keys:
-            md[k] = ''
-        md.write()
+        if mtype != 'image/gif':  # Apparently we cannot write to gif images
+            md = pyexiv2.ImageMetadata(os.path.join(config.STORAGE, f_name))
+            md.read()
+            for k in (md.exif_keys + md.iptc_keys + md.xmp_keys):
+                md[k] = ''
+            md.write()
     return f_name
 
 
