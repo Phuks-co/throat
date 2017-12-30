@@ -1521,8 +1521,14 @@ def upload_file():
     f_name = str(uuid.uuid5(FILE_NAMESPACE, md5.hexdigest())) + extension
     ufile.seek(0)
 
+    img = Image.open(ufile)
+
+    data = list(img.getdata())
+    imgfinal = Image.new(img.mode, img.size)
+    imgfinal.putdata(data)
+
     if not os.path.isfile(os.path.join(config.STORAGE, f_name)):
-        ufile.save(os.path.join(config.STORAGE, f_name))
+        imgfinal.save(os.path.join(config.STORAGE, f_name))
     return f_name
 
 
