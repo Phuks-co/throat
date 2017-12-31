@@ -595,7 +595,7 @@ def sub_new_rss(sub):
 
 @app.route("/m/<subs>", defaults={'page': 1})
 @app.route("/m/<subs>/<int:page>")
-def view_multisub_new(subs, page):
+def view_multisub_new(subs, page=1):
     """ The multi index page, sorted as most recent posted first """
     names = subs.split('+')
     sids = []
@@ -607,12 +607,12 @@ def view_multisub_new(subs, page):
             ksubs.append(sub)
 
     posts = db.query('SELECT * FROM `sub_post` WHERE `sid` IN %s '
-                     'ORDER BY `posted` DESC LIMIT %s,20',
+                     'ORDER BY `posted` DESC LIMIT %s,25',
                      (sids, (page - 1) * 20, )).fetchall()
 
     return render_template('indexmulti.html', page=page,
                            posts=posts, subs=ksubs,
-                           sort_type='view_multisub_new')
+                           sort_type='view_multisub_new', kw={'subs': subs})
 
 
 @app.route("/modmulti", defaults={'page': 1})
