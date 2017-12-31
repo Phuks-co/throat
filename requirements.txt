@@ -9,6 +9,7 @@ misaka
 Flask-Login==0.4.0
 feedgen
 flask-caching
+flask-cache
 mysqlclient
 redis
 requests

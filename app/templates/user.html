@@ -17,7 +17,8 @@
   {% endif %}
   <hr>
   <div class="pmessage">
-    <a href="#msg-form" data-replyto='{{user.name}}' data-replytitle='' class="formpopmsg sbm-post pure-button">Send a message to {{user.name}}</a>
+    <a href="#msg-form" data-replyto='{{user.name}}' data-replytitle='' class="formpopmsg sbm-post pure-button">
+      Send a message to user</a>
   </div>
 {% endif %}
 <p>Registered <time-ago datetime="{{ user.joindate.isoformat() }}Z"></time-ago></p>
