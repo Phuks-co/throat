@@ -27,7 +27,7 @@
 </div>
 <div class="subs">@{subInfo['subs']!!s} subscribers</div>
 
-<div role="group" class="pure-button-group" data-sid="@{sub.sid}">
+<div role="group" class="pure-button-group" data-sid="@{sub.sid!!s}">
   @if current_user.has_subscribed(sub['name']):
     <button data-ac="unsubscribe" class="sub button-secondary pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>Subscribed</button>
   @else:
