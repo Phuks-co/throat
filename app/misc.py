@@ -1239,7 +1239,7 @@ def getCurrentHashrate():
         hr['hash'] = int(hr['hash'])
         hr['totalHashes'] = int(hr['totalHashes'])
         return hr
-    except (ValueError, requests.RequestException) as err:
+    except (ValueError, requests.RequestException, TypeError) as err:
         return {'error': err}
 
 
