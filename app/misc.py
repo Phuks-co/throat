@@ -352,7 +352,7 @@ def safeRequest(url, recieve_timeout=10):
     """ Gets stuff for the internet, with timeouts and size restrictions """
     # Returns (Response, File)
     max_size = 25000000  # won't download more than 25MB
-    r = requests.get(url, stream=True, timeout=recieve_timeout)
+    r = requests.get(url, stream=True, timeout=recieve_timeout, headers={'User-Agent': 'Throat/1 (Phuks)'})
     r.raise_for_status()
 
     if int(r.headers.get('Content-Length', 1)) > max_size:
