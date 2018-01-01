@@ -932,26 +932,22 @@ def inbox_sort():
 
 @app.route("/messages/inbox", defaults={'page': 1})
 @app.route("/messages/inbox/<int:page>")
+@login_required
 def view_messages(page):
     """ View user's messages """
-    user = session['user_id']
-    if current_user.user['status'] == 10:
-        abort(404)
     msgs = misc.getMessagesIndex(page)
-    return render_template('messages/messages.html', user=user, page=page,
+    return render_template('messages/messages.html', page=page,
                            messages=msgs, box_name="Inbox", boxID="1",
                            box_route='view_messages')
 
 
 @app.route("/messages/mentions", defaults={'page': 1})
 @app.route("/messages/mentions/<int:page>")
+@login_required
 def view_mentions(page):
     """ View user name mentions """
-    user = session['user_id']
-    if current_user.user['status'] == 10:
-        abort(404)
     msgs = misc.getMentionsIndex(page)
-    return render_template('messages/messages.html', user=user, page=page,
+    return render_template('messages/messages.html', page=page,
                            messages=msgs, box_name="Mentions", boxID="8",
                            box_route='view_mentions')
 
@@ -961,11 +957,8 @@ def view_mentions(page):
 @login_required
 def view_messages_sent(page):
     """ View user's messages sent """
-    user = session['user_id']
-    if current_user.user['status'] == 10:
-        abort(404)
     msgs = misc.getMessagesSent(page)
-    return render_template('messages/sent.html', user=user, messages=msgs,
+    return render_template('messages/sent.html', messages=msgs,
                            page=page, box_route='view_messages_sent')
 
 
@@ -974,19 +967,16 @@ def view_messages_sent(page):
 @login_required
 def view_messages_postreplies(page):
     """ WIP: View user's post replies """
-    user = session['user_id']
-    if current_user.user['status'] == 10:
-        abort(404)
     now = datetime.datetime.utcnow()
     db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
-              '`receivedby`=%s AND `mtype`=4', (now, user))
+              '`receivedby`=%s AND `mtype`=4', (now, current_user.uid))
     caching.cache.delete_memoized(db.user_mail_count, current_user.uid)
     socketio.emit('notification',
                   {'count': db.user_mail_count(current_user.uid)},
                   namespace='/snt',
                   room='user' + current_user.uid)
     msgs = misc.getMsgPostReplies(page)
-    return render_template('messages/postreply.html', user=user, messages=msgs,
+    return render_template('messages/postreply.html', messages=msgs,
                            page=page, box_name="Replies", boxID="2",
                            box_route='view_messages_postreplies')
 
@@ -996,19 +986,16 @@ def view_messages_postreplies(page):
 @login_required
 def view_messages_comreplies(page):
     """ WIP: View user's comments replies """
-    user = session['user_id']
-    if current_user.user['status'] == 10:
-        abort(404)
     now = datetime.datetime.utcnow()
     db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
-              '`receivedby`=%s AND `mtype`=5', (now, user))
+              '`receivedby`=%s AND `mtype`=5', (now, current_user.uid))
     caching.cache.delete_memoized(db.user_mail_count, current_user.uid)
     socketio.emit('notification',
                   {'count': db.user_mail_count(current_user.uid)},
                   namespace='/snt',
                   room='user' + current_user.uid)
     msgs = misc.getMsgCommReplies(page)
-    return render_template('messages/commreply.html', user=user,
+    return render_template('messages/commreply.html',
                            page=page, box_name="Replies", messages=msgs,
                            box_route='view_messages_comreplies')
 
@@ -1018,23 +1005,18 @@ def view_messages_comreplies(page):
 @login_required
 def view_messages_modmail(page):
     """ WIP: View user's modmail """
-    user = session['user_id']
-    if current_user.user['status'] == 10:
-        abort(404)
     msgs = misc.getMessagesModmail(page)
-    return render_template('messages/modmail.html', user=user, messages=msgs,
+    return render_template('messages/modmail.html', messages=msgs,
                            page=page, box_route='view_messages_modmail')
 
 
 @app.route("/messages/saved", defaults={'page': 1})
 @app.route("/messages/saved/<int:page>")
+@login_required
 def view_saved_messages(page):
     """ WIP: View user's saved messages """
-    user = session['user_id']
-    if current_user.user['status'] == 10:
-        abort(404)
     msgs = misc.getMessagesSaved(page)
-    return render_template('messages/saved.html', user=user, messages=msgs,
+    return render_template('messages/saved.html', messages=msgs,
                            page=page, box_route='view_saved_messages')
 
 
