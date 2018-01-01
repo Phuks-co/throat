@@ -648,7 +648,8 @@ def view_usermultisub_new(subs, page):
 
     return render_template('indexmulti.html', page=page, names=names,
                            posts=posts.fetchall(), subs=subs,
-                           sort_type='view_usermultisub_new')
+                           sort_type='view_usermultisub_new',
+                           kw={'subs': subs})
 
 
 @app.route("/s/<sub>/new", defaults={'page': 1})
