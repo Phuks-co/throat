@@ -611,6 +611,7 @@ def create_post():
         if misc.isRestricted(sub) and not current_user.is_mod(sub['sid']):
             return render_template('createpost.html', txtpostform=form, error="Only mods can post on this sub")
 
+        fileid = False
         if form.ptype.data == 'link':
             fupload = misc.upload_file()
             if fupload:
