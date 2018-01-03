@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block title %}Uploads | {{config.LEMA}}{% endblock %}
+
+
+{% block content %}
+{{ super() }}
+{% if not uploads %}<h3 class="noshit">There are no uploads, yet.</h3>{% endif %}
+<div id="center-container">
+  <div class="uploads content">
+      {% for item in uploads %}
+        <div>
+          {% if item.thumbnail != '' %}
+            <img src="{{config.THUMBNAIL_HOST}}{{item.thumbnail}}"/>
+          {% else %}
+            <span class="placeholder" data-icon="link"></span>
+          {% endif %}
+          <div>
+            <a href="{{url_for('view_post_inbox', pid=item.pid)}}">Post</a>
+            :: <a href="{{config.STORAGE_HOST}}{{item.fileid}}">Direct</a></div>
+        </div>
+      {% endfor %}
+  </div>
+</div>
+<div class="col-12">
+  {% if page > 1 %}
+  <a href="{{url_for('view_user_uploads', page=(page-1))}}" class="pure-button">prev</a>
+  {% endif %}
+  {% if subs|length == 30 %}
+  <a href="{{url_for('view_user_uploads', page=(page+1))}}" class="pure-button">next</a>
+  {% endif %}
+</div>
+{% endblock %}

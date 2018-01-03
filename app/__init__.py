@@ -309,6 +309,16 @@ def all_hot(page):
 
 # Note for future self: I rewrote until this part. You should do the rest.
 
+@app.route("/uploads", defaults={'page': 1})
+@app.route("/uploads/<int:page>")
+@login_required
+def view_user_uploads(page):
+    """ View user uploads """
+    c = db.query('SELECT * FROM `user_uploads` WHERE `uid`=%s Limit 30 OFFSET %s',
+                 (current_user.uid, (page - 1) * 30))
+    return render_template('uploads.html', page=page, uploads=c.fetchall())
+
+
 @app.route("/subs/search/<term>", defaults={'page': 1})
 @app.route("/subs/search/<term>/<int:page>")
 def subs_search(page, term):

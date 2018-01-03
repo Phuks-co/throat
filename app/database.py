@@ -399,6 +399,13 @@ def create_post(sid, uid, title, content, ptype, nsfw, link=None, thumbnail=''):
             'deleted': False, 'nsfw': False, 'score': 1,
             'thumbnail': thumbnail}
 
+def create_user_upload_post(pid, uid, fileid, thumbnail=''):
+    """ Saves uploaded info to user """
+    uquery('INSERT INTO `user_uploads` (`pid`, `uid`, `fileid`, '
+           '`thumbnail`, `status`) VALUES (%s, %s, %s, %s, %s);',
+           (pid, uid, fileid, thumbnail, 0))
+    return {'fileid': fileid}
+
 
 def create_comment(pid, uid, content, parentcid):
     """ Creates a comment """

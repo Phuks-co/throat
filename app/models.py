@@ -326,3 +326,17 @@ class MiningSpeedLeaderboard(db.Model):
 
     class Meta:
         db_table = 'mining_speed_leaderboard'
+
+
+class UserUploads(db.Model):
+    xid = PrimaryKeyField()
+    pid = ForeignKeyField(db_column='pid', null=True, rel_model=SubPost,
+                          to_field='pid')
+    uid = ForeignKeyField(db_column='uid', null=True, rel_model=User,
+                          to_field='uid')
+    fileid = CharField(null=True)
+    thumbnail = CharField(null=True)
+    status = IntegerField()
+
+    class Meta:
+        db_table = 'user_uploads'

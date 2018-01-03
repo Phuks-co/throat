@@ -615,6 +615,7 @@ def create_post():
             fupload = misc.upload_file()
             if fupload:
                 form.link.data = config.STORAGE_HOST + fupload
+                fileid = fupload
 
             if not form.link.data:
                 return render_template('createpost.html', txtpostform=form, error="No link provided")
@@ -653,6 +654,11 @@ def create_post():
                                                post=posts[0])},
                       namespace='/snt',
                       room='/all/new')
+        if fileid:
+            uploadedimg = db.create_user_upload_post(pid=post['pid'],
+                                  uid=current_user.uid,
+                                  fileid=fileid,
+                                  thumbnail=img if img else '')
         # for /live
         if sub['name'] == "live":
             socketio.emit('livethread',

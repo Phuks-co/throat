@@ -340,6 +340,7 @@ CREATE TABLE `pixel` (
   PRIMARY KEY (`xid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
 DROP TABLE IF EXISTS `mining_leaderboard`;
 
 CREATE TABLE `mining_leaderboard` (
@@ -347,4 +348,21 @@ CREATE TABLE `mining_leaderboard` (
   `username` VARCHAR(64) NULL,
   `score` INT(11) DEFAULT NULL,
   PRIMARY KEY (`xid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `user_uploads`;
+
+CREATE TABLE `user_uploads` (
+  `xid` INT(11) NOT NULL AUTO_INCREMENT,
+  `pid` INT(11) DEFAULT NULL,
+  `uid` varchar(40) DEFAULT NULL,
+  `fileid` varchar(64) DEFAULT NULL,
+  `thumbnail` varchar(64) DEFAULT NULL,
+  `status` INT(11) DEFAULT NULL,
+  PRIMARY KEY (`xid`),
+  KEY `pid` (`pid`),
+  KEY `uid` (`uid`),
+  CONSTRAINT `user_uploads_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `sub_post` (`pid`),
+  CONSTRAINT `user_uploads_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
