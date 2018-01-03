@@ -364,5 +364,5 @@ CREATE TABLE `user_uploads` (
   KEY `pid` (`pid`),
   KEY `uid` (`uid`),
   CONSTRAINT `user_uploads_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `sub_post` (`pid`),
-  CONSTRAINT `user_uploads_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`),
+  CONSTRAINT `user_uploads_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
