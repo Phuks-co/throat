@@ -154,7 +154,7 @@
             {% else %}
               <li><a class="savepost" data-pid="{{post.pid}}">save</a></li>
             {% endif %}
-            {% if (func.userCanFlair(func.getSub(post.sid)) and current_user.uid == post.uid) or current_user.is_mod(post.sid) or current_user.is_admin %}
+            {% if (func.userCanFlair(func.getSub(post.sid)) and current_user.uid == post.uid) or current_user.is_mod(post.sid) %}
               <li><a class="editflair">flair</a></li>
             {% endif %}
             {% if post.uid == current_user.uid %}
