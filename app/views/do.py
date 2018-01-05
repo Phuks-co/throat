@@ -186,7 +186,7 @@ def delete_post():
         sub = Sub.get(Sub.sid == post.sid)
         subI = misc.getSubData(post.sid)
 
-        if current_user.uid not in subI['mod2'] and not current_user.is_admin() and not post.uid == current_user.uid:
+        if current_user.uid not in subI['mod2'] and not current_user.is_admin() and not post.uid.uid == current_user.uid:
             return jsonify(status='error', error=['Not authorized'])
 
         if post.uid == current_user.uid:
