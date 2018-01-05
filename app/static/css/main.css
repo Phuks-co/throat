@@ -1356,6 +1356,7 @@ td.subsentry.blocked {
   width: 100px;
   height: 100px;
   margin: auto;
+  white-space: nowrap;
 }
 .uprofile-level-box {
   border: 4px solid #d94f00;
