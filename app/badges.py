@@ -11,7 +11,9 @@ badges = {  # "intname": {"name": "foo", "alt": "a badge for foo", "icon": "bar.
 
     "miner": {"name": "Grinder", "alt": "Mined a lot of Phuks", 'icon': 'shovel.svg', 'score': 300},
     "spotlight": {"name": "Spotlight", "alt": "Top post of the day", 'icon': 'bubbles.svg', 'score': 200},
-    "commando": {"name": "Keyboard commando", "alt": "Make a good post every day for a week", 'icon': 'coffee.svg', 'score': 300}
+    "commando": {"name": "Keyboard commando", "alt": "Make a good post every day for a week", 'icon': 'coffee.svg', 'score': 300},
+
+    "enthusiasm": {"name": "Enthusiasm", "alt": "Too hyped to wait!", 'icon': 'account-switch.svg', 'score': -100}
 }
 
 
