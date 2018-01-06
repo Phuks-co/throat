@@ -1529,7 +1529,7 @@ def upload_file():
             md = pyexiv2.ImageMetadata(os.path.join(config.STORAGE, f_name))
             md.read()
             for k in (md.exif_keys + md.iptc_keys + md.xmp_keys):
-                md[k] = ''
+                del md[k]
             md.write()
     return f_name
 
