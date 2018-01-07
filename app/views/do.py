@@ -76,6 +76,15 @@ def admin_users_search():
     return redirect(url_for('admin_users_search', term=term))
 
 
+@do.route("/do/admin_post_voting_search", methods=['POST'])
+def admin_post_voting_search():
+    """ Search endpoint """
+    form = SearchForm()
+    term = form.term.data
+    term = re.sub('[^A-Za-z0-9\-_]+', '', term)
+    return redirect(url_for('admin_post_voting', term=term))
+
+
 @do.route("/do/admin_subs_search", methods=['POST'])
 def admin_subs_search():
     """ Search endpoint """
