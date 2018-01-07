@@ -1580,3 +1580,29 @@ table td {
 .irc-bg13{background-color:#b037b0}
 .irc-bg14{background-color:#4c4c4c}
 .irc-bg15{background-color:#959595}
+
+
+/* user uploads page */
+.uploads.content {
+    max-width: 640px;
+}
+.uploaditem {
+    float: left;
+    width: 120px;
+    height: 140px;
+    border: 1px solid rgba(85, 85, 85, 0.25);
+    padding: 10px;
+    text-align: center;
+}
+.uploadlinks {
+    padding: 4px;
+}
+.uploadlink {
+    margin: 4px;
+}
+.uploadthumb {
+    width: 70px;
+    height: 70px;
+    margin: auto;
+    border-radius: 4px;
+}

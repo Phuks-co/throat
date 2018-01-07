@@ -50,7 +50,7 @@ var recaptchaCallback = function(){
               </div>
             </div>
             <div class="pure-control-group lncont pure-u-sm-20-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
-            {%if current_user.canupload %}You can either upload an image or post a link{%endif%}
+            {% if current_user.canupload %}You can either upload an image or post a link{% endif %}
             </div>
             <div class="pure-control-group lncont pure-u-sm-20-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
               <label for="link">Link</label>
@@ -59,12 +59,12 @@ var recaptchaCallback = function(){
             <div class="pure-control-group pure-u-sm-3-24 lncont" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
               <button id="graburl" class="pure-button">Grab title</button>
             </div>
-            {%if current_user.canupload %}
+            {% if current_user.canupload %}
             <div class="pure-control-group lncont pure-u-sm-20-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
               <label for="files">File</label>
               <input type="file" name="files" placeholder="Only images allowed" />
             </div>
-            {%endif %}
+            {% endif %}
 
 
           <div class="pure-control-group">
