@@ -1177,9 +1177,11 @@ def admin_post_voting(page, term):
             votes = db.query('SELECT * FROM `sub_post_vote` WHERE `uid`=%s '
                              'ORDER BY `xid` DESC LIMIT 50 OFFSET %s',
                              (user['uid'], ((page - 1) * 50))).fetchall()
-            #posts = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC '
-            #                 'LIMIT 50 OFFSET %s',
-            #                 (((page - 1) * 50),)).fetchall()
+            #pids = []
+            #for p in votes:
+            #    pids.append(p['pid'])
+            #posts = misc.getPostList(misc.postListQueryBase().where(SubPost.pid << pids),
+            #                         'new', page).dicts()
         else:
             votes = []
             msg = 'user not found'

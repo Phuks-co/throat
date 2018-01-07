@@ -29,6 +29,7 @@
               <tr>
                 <th>pid</th>
                 <th>vote</th>
+                <th>user</th>
                 <th>datetime</th>
               </tr>
             </thead>
@@ -37,6 +38,8 @@
               <tr>
                 <td><a href="{{url_for('admin_post_search', term=vote.pid)}}">{{vote.pid}}</a></td>
                 <td>{% if vote.positive == 1 %}up{% else %}down{% endif %}</td>
+                {% set post = db.get_post_from_pid(vote.pid) %}
+                <td>{{db.get_user_from_uid(post.uid).name}}</td>
                 <td>{{vote.datetime}}</td>
               </tr>
               {% endfor %}
