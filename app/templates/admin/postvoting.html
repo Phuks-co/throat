@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+{% block title %}{{config.LEMA}}{% endblock %}
+{% block head %}
+{{ super() }}
+<script src="{{url_for('static', filename='js/sorttable.js')}}"></script>
+{% endblock %}
+{% block navbar %}
+{{ super() }}
+<li><a href="{{url_for('admin_area')}}">Admin</a></li>
+{% endblock %}
+{% block sidebar %}
+{{ super() }}
+
+{% include 'admin/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+
+<div id="center-container">
+  <div class="content">
+    {% if not msg %}
+      <h2>Votes</h2>
+      <div class="admin section subs posts">
+        <div>
+          <div>Showing results for: {{term}}</div>
+          <table class="sortable pure-table">
+            <thead>
+              <tr>
+                <th>pid</th>
+                <th>vote</th>
+                <th>datetime</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for vote in votes %}
+              <tr>
+                <td><a href="{{url_for('admin_post_search', term=vote.pid)}}">{{vote.pid}}</a></td>
+                <td>{% if vote.positive == 1 %}up{% else %}down{% endif %}</td>
+                <td>{{vote.datetime}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <div class="adminpagenav">
+        {% if page > 1 %}
+          <a href="{{url_for(admin_route, term=term, page=(page-1))}}" class="pure-button">prev</a>
+        {% endif %}
+        {% if votes|length == 50 %}
+          <a href="{{url_for(admin_route, term=term, page=(page+1))}}" class="pure-button">next</a>
+        {% endif %}
+      </div>
+
+    {% else %}
+      <div>{{msg}}</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
