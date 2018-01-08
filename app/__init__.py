@@ -1168,12 +1168,11 @@ def admin_posts(page):
 @app.route("/admin/postvoting/<term>/<int:page>")
 @login_required
 def admin_post_voting(page, term):
-    """ WIP: View voting habits """
+    """ WIP: View post voting habits """
     if current_user.is_admin():
         user = db.get_user_from_name(term)
         if user:
             msg = []
-            user = db.get_user_from_name(term)
             votes = db.query('SELECT * FROM `sub_post_vote` WHERE `uid`=%s '
                              'ORDER BY `xid` DESC LIMIT 50 OFFSET %s',
                              (user['uid'], ((page - 1) * 50))).fetchall()
@@ -1187,6 +1186,28 @@ def admin_post_voting(page, term):
             msg = 'user not found'
         return render_template('admin/postvoting.html', page=page, msg=msg,
                                admin_route='admin_post_voting',
+                               votes=votes, term=term)
+    else:
+        abort(404)
+
+
+@app.route("/admin/commentvoting/<term>", defaults={'page': 1})
+@app.route("/admin/commentvoting/<term>/<int:page>")
+@login_required
+def admin_comment_voting(page, term):
+    """ WIP: View comment voting habits """
+    if current_user.is_admin():
+        user = db.get_user_from_name(term)
+        if user:
+            msg = []
+            votes = db.query('SELECT * FROM `sub_post_comment_vote` WHERE `uid`=%s '
+                             'ORDER BY `xid` DESC LIMIT 50 OFFSET %s',
+                             (user['uid'], ((page - 1) * 50))).fetchall()
+        else:
+            votes = []
+            msg = 'user not found'
+        return render_template('admin/commentvoting.html', page=page, msg=msg,
+                               admin_route='admin_comment_voting',
                                votes=votes, term=term)
     else:
         abort(404)

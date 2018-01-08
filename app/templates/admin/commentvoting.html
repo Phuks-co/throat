@@ -20,15 +20,15 @@
 <div id="center-container">
   <div class="content">
     {% if not msg %}
-      <h2>Post Votes</h2>
-      <div>Go to <a href="{{url_for('admin_comment_voting', term=term)}}">comments</a></div>
+      <h2>Comment Votes</h2>
+      <div>Go to <a href="{{url_for('admin_post_voting', term=term)}}">posts</a></div>
       <div class="admin section subs posts">
         <div>
           <div>Showing results for: {{term}}</div>
           <table class="sortable pure-table">
             <thead>
               <tr>
-                <th>pid</th>
+                <th>cid</th>
                 <th>vote</th>
                 <th>user</th>
                 <th>datetime</th>
@@ -37,10 +37,10 @@
             <tbody>
               {% for vote in votes %}
               <tr>
-                <td><a href="{{url_for('admin_post_search', term=vote.pid)}}">{{vote.pid}}</a></td>
+                <td>..link..</td>
                 <td>{% if vote.positive == 1 %}up{% else %}down{% endif %}</td>
-                {% set post = db.get_post_from_pid(vote.pid) %}
-                <td>{{db.get_user_from_uid(post.uid).name}}</td>
+                {% set comment = db.get_comment_from_cid(vote.cid) %}
+                <td>{{db.get_user_from_uid(comment.uid).name}}</td>
                 <td>{{vote.datetime}}</td>
               </tr>
               {% endfor %}
