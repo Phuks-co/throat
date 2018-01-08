@@ -1064,7 +1064,13 @@ def admin_area():
             invite = UseInviteCodeForm(invitecode=a)
         else:
             invite = UseInviteCodeForm()
-        ep = db.get_site_metadata('enable_posting')['value']
+        ep = db.query('SELECT * FROM `site_metadata` WHERE `key`=%s',
+                     ('enable_posting',)).fetchone()
+        if ep:
+            ep = ep['value']
+        else:
+            db.create_site_metadata('enable_posting', 'True')
+            ep = 'True'
         return render_template('admin/admin.html', badges=badges, subs=subs,
                                posts=posts, ups=ups, downs=downs, users=users,
                                createuserbadgeform=CreateUserBadgeForm(),
