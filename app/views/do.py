@@ -613,9 +613,11 @@ def create_post():
     if form.validate():
         # Put pre-posting checks here
         if not current_user.is_admin():
-            ep = db.get_site_metadata('enable_posting')['value']
-            if ep == 'False':
-                return render_template('createpost.html', txtpostform=form, error="Posting has been temporarily disabled")
+            ep = db.query('SELECT * FROM `site_metadata` WHERE `key`=%s',
+                         ('enable_posting',)).fetchone()
+            if ep:
+                if ep['value'] == 'False':
+                    return render_template('createpost.html', txtpostform=form, error="Posting has been temporarily disabled")
         sub = db.get_sub_from_name(form.sub.data)
         if not sub:
             return render_template('createpost.html', txtpostform=form, error="Sub does not exist")
