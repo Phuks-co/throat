@@ -88,6 +88,22 @@
         </div>
       </div>
     </div>
+    <hr>
+    <div class="admin section invitecode">
+      <div class="col-12"><h2>Emergency Mode</h2>
+      </div>
+      <div class="col-12 admin-page-form">
+        <div>
+          {% if enable_posting == 'True' %}
+          <div>Disable posting for non-admin users</div>
+          <a class="pure-button" href="{{url_for('do.enable_posting', value='False')}}">Disable Posting</a>
+          {% else %}
+          <div>Enable posting for non-admin users</div>
+          <a class="pure-button" href="{{url_for('do.enable_posting', value='True')}}">Enable Posting</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
 
   </div>
 </div>

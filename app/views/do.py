@@ -612,6 +612,10 @@ def create_post():
     form = CreateSubTextPost()
     if form.validate():
         # Put pre-posting checks here
+        if not current_user.is_admin():
+            ep = db.get_site_metadata('enable_posting')['value']
+            if ep == 'False':
+                return render_template('createpost.html', txtpostform=form, error="Posting has been temporarily disabled")
         sub = db.get_sub_from_name(form.sub.data)
         if not sub:
             return render_template('createpost.html', txtpostform=form, error="Sub does not exist")
@@ -1327,6 +1331,27 @@ def remove_banned_domain(domain):
                       ' removed domain from ban list: ' + domain)
 
     return json.dumps({'status': 'ok'})
+
+
+@do.route("/do/admin/enable_posting/<value>")
+def enable_posting(value):
+    """ Emergency Mode: disable posting """
+    if not current_user.is_admin():
+        abort(404)
+
+    c = db.query('SELECT * FROM `site_metadata` WHERE `key`=%s',
+                 ('enable_posting',)).fetchone()
+    if c:
+        db.update_site_metadata('enable_posting', value)
+    else:
+        db.create_site_metadata('enable_posting', value)
+    if value == 'True':
+        db.create_sitelog(5, current_user.get_username() + ' enabled posting ')
+    else:
+        db.create_sitelog(5, current_user.get_username() + ' disabled posting ')
+    caching.cache.delete_memoized(db.get_site_metadata, 'enable_posting')
+    cache.delete_memoized(db.get_site_metadata, 'enable_posting')
+    return redirect(url_for('admin_area'))
 
 
 @do.route("/do/save_post/<pid>", methods=['POST'])
