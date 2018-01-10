@@ -22,13 +22,13 @@ var socket = require('./Socket');
 
 function vote(obj, how, comment){
   console.log(how)
+  console.log(obj)
   if(comment){
     var kl = 'votecomment';
     var unid = obj.parentNode.parentNode.parentNode.getAttribute('data-cid');
     var count = obj.parentNode.parentNode.querySelector('.cscore');
   } else {
     var kl = 'vote';
-    var unid = obj.getAttribute('data-pid');
     var count = obj.parentNode.querySelector('.score');
   }
   u.post('/do/' + kl + '/'+ unid + '/' + how, {}, function(data){
