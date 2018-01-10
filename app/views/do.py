@@ -550,7 +550,7 @@ def unblock_sub(sid):
 def get_txtpost(pid):
     """ Sub text post expando get endpoint """
     try:
-        post = SubPost.select().where(SubPost.pid == pid).where(SubPost.deleted == 0)
+        post = SubPost.select().where(SubPost.pid == pid).where(SubPost.deleted == 0).get()
         return jsonify(status='ok', content=misc.our_markdown(post.content))
     except SubPost.DoesNotExist:
         return jsonify(status='error', error=['No longer available'])
