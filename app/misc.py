@@ -1116,7 +1116,7 @@ def getChangelog():
     td = datetime.utcnow() - timedelta(days=15)
     changepost = (SubPost.select(Sub.name.alias('sub'), SubPost.pid, SubPost.title, SubPost.posted)
                          .where(SubPost.posted > td).where(SubPost.sid == config.CHANGELOG_SUB)
-                         .join(Sub, JOIN.LEFT_OUTER).dicts())
+                         .join(Sub, JOIN.LEFT_OUTER).order_by(SubPost.pid.desc()).dicts())
 
     try:
         return changepost.get()
