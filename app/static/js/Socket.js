@@ -32,6 +32,11 @@ socket.on('uscore', function(d){
   document.getElementById('postscore').innerHTML = d.score;
 })
 
+socket.on('deletion', function(data){
+  var post = document.querySelector('div.post[pid="' + data.pid + '"]');
+  post.parentNode.removeChild(post);
+})
+
 socket.on('thread', function(data){
   socket.emit('subscribe', {target: data.pid})
   var ndata = document.createElement( "div" );

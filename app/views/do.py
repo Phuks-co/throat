@@ -209,6 +209,10 @@ def delete_post():
             db.create_sublog(sub.sid, 1, current_user.get_username() + ' deleted a post',
                              url_for('view_post', sub=sub.name, pid=post.pid))
 
+        if (datetime.datetime.utcnow() - post.posted).seconds < 86400:
+            socketio.emit('deletion', {'pid': post.pid},
+                          namespace='/snt', room='/all/new')
+
         post.deleted = deletion
         post.save()
 
