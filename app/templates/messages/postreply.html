@@ -16,17 +16,15 @@
     <div class="user-activity col-12">
       <h3><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> Post Replies</h3>
       {% for message in messages %}
-        <article class="pmessage post" data-replyto='{{message.username}}' data-sub='{{func.getCommentSub(message.mlink).name}}' data-post='{{db.get_comment_from_cid(message.mlink).pid}}' data-parent='{{message.mlink}}' data-replytitle='Re: {{message.subject}}'>
+        <article class="pmessage post" data-replyto='{{message.username}}' data-sub='{{func.getCommentSub(message.mlink).name}}' data-post='{{db.get_comment_from_cid(message.mlink).pid}}' data-parent='{{message.mlink}}' data-cid="{{message.mlink}}">
           <div class="main">
             <div class="pull left votecomment" style="margin-right: 10px;">
-              {# vote arrow div
-                <div title="Upvote" class="c-upvote{%if comment.positive == True %} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
-                <div title="Downvote" class="c-downvote{%if comment.positive == False %} downvoted{%endif%}" data-pid="{{post.pid}}" data-icon="downvote"></div>
-              #}
+              <div title="Upvote" class="c-upvote{#if comment.positive == True %} upvoted{%endif#}" data-icon="upvote"></div>
+              <div title="Downvote" class="c-downvote{#if comment.positive == False %} downvoted{%endif#}" data-icon="downvote"></div>
             </div>
             <p class="title"><a href="{{url_for('view_comment_inbox', cid=message.mlink)}}">{{message.subject}}</a></p>
             <p class="container">{{markdown(db.get_comment_from_cid(message.mlink).content)|safe}}</p>
-            <p class="author"><time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>
+            <p class="author"><b><span class="cscore">{{db.get_comment_from_cid(message.mlink).score}}</span></b> points, <time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>
             <p class="container">
               <a href="{{url_for('view_user', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
               {% if not message.read %}
