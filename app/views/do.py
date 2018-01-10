@@ -549,10 +549,10 @@ def unblock_sub(sid):
 @do.route("/do/get_txtpost/<pid>", methods=['GET'])
 def get_txtpost(pid):
     """ Sub text post expando get endpoint """
-    post = db.get_post_from_pid(pid)
-    if post:
-        return jsonify(status='ok', content=misc.our_markdown(post['content']))
-    else:
+    try:
+        post = SubPost.select().where(SubPost.pid == pid).where(SubPost.deleted == 0)
+        return jsonify(status='ok', content=misc.our_markdown(post.content))
+    except SubPost.DoesNotExist:
         return jsonify(status='error', error=['No longer available'])
 
 
