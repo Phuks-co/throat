@@ -1109,6 +1109,7 @@ def getSubOfTheDay():
             daysub = Sub.select(Sub.name, Sub.title).where(Sub.sid == daysub).get()
         except Sub.DoesNotExist:  # ???
             return False
+    return daysub
 
 
 def getChangelog():
