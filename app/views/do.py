@@ -26,7 +26,7 @@ from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm, LiveChat
 from ..misc import cache, sendMail, allowedNames, get_errors
-from ..models import SubPost, SubPostComment, Sub
+from ..models import SubPost, SubPostComment, Sub, Message
 
 do = Blueprint('do', __name__)
 
@@ -1698,6 +1698,9 @@ def delete_comment():
                               url_for('view_post_inbox', pid=comment['pid']))
         db.uquery('UPDATE `sub_post_comment` SET `status`=1 WHERE `cid`=%s',
                   (form.cid.data,))
+
+        q = Message.delete().where(Message.mlink == form.cid.data)
+        q.execute()
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
