@@ -614,7 +614,7 @@ def create_post():
         # Put pre-posting checks here
         if not current_user.is_admin():
             ep = db.query('SELECT * FROM `site_metadata` WHERE `key`=%s',
-                         ('enable_posting',)).fetchone()
+                          ('enable_posting',)).fetchone()
             if ep:
                 if ep['value'] == 'False':
                     return render_template('createpost.html', txtpostform=form, error="Posting has been temporarily disabled")
