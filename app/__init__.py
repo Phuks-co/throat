@@ -324,7 +324,7 @@ def view_user_uploads(page):
 def subs_search(page, term):
     """ The subs index page, with basic title search """
     term = re.sub('[^A-Za-z0-9\-_]+', '', term)
-    c = Sub.select().where(Sub.name ** '%' + term + '%')
+    c = Sub.select().where(Sub.name.contains(term))
     c = c.order_by(Sub.name.asc()).paginate(page, 50).dicts()
     return render_template('subs.html', page=page, subs=c)
 
