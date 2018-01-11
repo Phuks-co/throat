@@ -29,6 +29,7 @@ function vote(obj, how, comment){
     var count = obj.parentNode.parentNode.querySelector('.cscore');
   } else {
     var kl = 'vote';
+    var unid = obj.getAttribute('pid');
     var count = obj.parentNode.querySelector('.score');
   }
   u.post('/do/' + kl + '/'+ unid + '/' + how, {}, function(data){
