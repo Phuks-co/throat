@@ -360,6 +360,26 @@ def subs_subscriber_sort_d(page):
                            nav='subs_subscriber_sort_d')
 
 
+@app.route("/subs/postsasc", defaults={'page': 1})
+@app.route("/subs/postsasc/<int:page>")
+def subs_posts_sort_a(page):
+    """ The subs index page, sorted by post count asc """
+    c = Sub.select()
+    c = c.order_by(Sub.posts.asc()).paginate(page, 50).dicts()
+    return render_template('subs.html', page=page, subs=c,
+                           nav='subs_posts_sort_a')
+
+
+@app.route("/subs/postsdesc", defaults={'page': 1})
+@app.route("/subs/postsdesc/<int:page>")
+def subs_posts_sort_d(page):
+    """ The subs index page, sorted by post count desc """
+    c = Sub.select()
+    c = c.order_by(Sub.posts.desc()).paginate(page, 50).dicts()
+    return render_template('subs.html', page=page, subs=c,
+                           nav='subs_posts_sort_d')
+
+
 @app.route("/welcome")
 def welcome():
     """ Welcome page for new users """

@@ -100,6 +100,7 @@ CREATE TABLE `sub` (
   `sort` varchar(32) DEFAULT NULL,
   `creation` datetime DEFAULT NULL,
   `subscribers` int(11) DEFAULT NULL,
+  `posts` int(11) DEFAULT NULL,
   PRIMARY KEY (`sid`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

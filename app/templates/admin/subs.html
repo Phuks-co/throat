@@ -62,13 +62,14 @@
               <th>Created</th>
               <th>Owner</th>
               <th>Mods</th>
-              <th>Subscribers</th>
-              <th>Submissions</th>
-              <th>Comments</th>
+              <th>Subs</th>
+              <th>Posts</th>
+              <th>Comms</th>
             </tr>
           </thead>
           <tbody>
             {% for sub in subs %}
+            {% set subInfo = func.getSubData(sub.sid, simple=True) %}
             <tr>
               <td>
                 <div class="subname" title="{{sub.title}}"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>{% if sub.getNSFW %}[nsfw]{% endif %}</div>
@@ -76,8 +77,8 @@
               <td><time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago></td>
               <td><a href="{{url_for('view_user', user=func.getSubUsers(sub, 'mod1'))}}">{{func.getSubUsers(sub, 'mod1')}}</a></td>
               <td>{{func.getModCount(sub)}}</td>
-              <td>{{func.getSuscriberCount(sub)}}</td>
-              <td>{{func.getSubPostCount(sub)}}</td>
+              <td>{{subInfo.subs}}</td>
+              <td>{{subInfo.posts}}</td>
               <td>xx</td>
             </tr>
             {% endfor %}

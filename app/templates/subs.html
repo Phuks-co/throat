@@ -21,6 +21,8 @@
 <hr>
 <h3 class="center">Browse by</h3>
 <a href="{{url_for('view_subs')}}" class="sbm-post pure-button">Sub name</a>
+<a href="{{url_for('subs_posts_sort_a')}}" class="sbm-post pure-button">Post count (asc)</a>
+<a href="{{url_for('subs_posts_sort_d')}}" class="sbm-post pure-button">Post count (desc)</a>
 <a href="{{url_for('subs_subscriber_sort_a')}}" class="sbm-post pure-button">Subscriber count (asc)</a>
 <a href="{{url_for('subs_subscriber_sort_d')}}" class="sbm-post pure-button">Subscriber count (desc)</a>
 {{ super() }}
@@ -42,7 +44,7 @@
       </thead>
       <tbody>
         {% for sub in subs %}
-        {% set subInfo = func.getSubData(sub.sid) %}
+        {% set subInfo = func.getSubData(sub.sid, simple=True) %}
         <tr>
           <td  class="subsentry{% if current_user.has_subscribed(sub.name) %} subsubscribed{% endif %}{% if current_user.has_blocked(sub.sid) %} blocked{% endif %}" data-sid="{{sub.sid}}">
             <div class="subname" title="{{sub.title}}">
@@ -63,7 +65,7 @@
             <span style="margin-left: .3em;">{{subInfo.subs}}</span>
 
           </td>
-          <td>{{func.getSubPostCount(sub)}}</td>
+          <td>{{subInfo.posts}}</td>
         </tr>
         {% endfor %}
       </tbody>

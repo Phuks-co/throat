@@ -213,6 +213,9 @@ def delete_post():
             socketio.emit('deletion', {'pid': post.pid},
                           namespace='/snt', room='/all/new')
 
+        db.uquery('UPDATE `sub` SET posts = posts - 1 WHERE `sid`=%s',
+                  (sub.sid, ))
+
         post.deleted = deletion
         post.save()
 
@@ -668,6 +671,8 @@ def create_post():
                               ptype=ptype,
                               nsfw=form.nsfw.data,
                               thumbnail=img if ptype == 1 else '')
+        db.uquery('UPDATE `sub` SET posts = posts + 1 WHERE `sid`=%s',
+                  (sub['sid'], ))
         addr = url_for('view_post', sub=sub['name'], pid=post['pid'])
         posts = misc.getPostList(misc.postListQueryBase(nofilter=True).where(SubPost.pid == post['pid']), 'new', 1).dicts()
         socketio.emit('thread',

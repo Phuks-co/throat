@@ -104,6 +104,7 @@ class Sub(db.Model):
     sort = CharField(null=True, max_length=32)
     creation = DateTimeField()
     subscribers = IntegerField(null=True)
+    posts = IntegerField(null=True)
 
     class Meta:
         db_table = 'sub'

@@ -1559,6 +1559,13 @@ def getSubData(sid, simple=False):
         data['subs'] = SubSubscriber.select().where((SubSubscriber.sid == sid) & (SubSubscriber.status == 1)).count()
         q = Sub.update(subscribers=data['subs']).where(Sub.sid == sid)
         q.execute()
+
+    data['posts'] = Sub.get(Sub.sid == sid).posts
+    if data['posts'] is None:
+        data['posts'] = SubPost.select().where((SubPost.sid == sid) & (SubPost.deleted == 0)).count()
+        q = Sub.update(posts=data['posts']).where(Sub.sid == sid)
+        q.execute()
+
     if not simple:
         if data.get('mod2', []) != []:
             data['mods'] = User.select(User.uid, User.name).where(User.uid << data['mod2']).dicts()
