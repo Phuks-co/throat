@@ -319,6 +319,16 @@ def view_user_uploads(page):
     return render_template('uploads.html', page=page, uploads=c.fetchall())
 
 
+@app.route("/subs", defaults={'page': 1})
+@app.route("/subs/<int:page>")
+def view_subs(page):
+    """ Here we can view available subs """
+    c = Sub.select()
+    c = c.order_by(Sub.name.asc()).paginate(page, 50).dicts()
+    return render_template('subs.html', page=page, subs=c,
+                           nav='view_subs')
+
+
 @app.route("/subs/search/<term>", defaults={'page': 1})
 @app.route("/subs/search/<term>/<int:page>")
 def subs_search(page, term):
@@ -326,7 +336,28 @@ def subs_search(page, term):
     term = re.sub('[^A-Za-z0-9\-_]+', '', term)
     c = Sub.select().where(Sub.name.contains(term))
     c = c.order_by(Sub.name.asc()).paginate(page, 50).dicts()
-    return render_template('subs.html', page=page, subs=c)
+    return render_template('subs.html', page=page, subs=c,
+                           nav='subs_search')
+
+
+@app.route("/subs/subscribersasc", defaults={'page': 1})
+@app.route("/subs/subscribersasc/<int:page>")
+def subs_subscriber_sort_a(page):
+    """ The subs index page, sorted by subscriber count asc """
+    c = Sub.select()
+    c = c.order_by(Sub.subscribers.asc()).paginate(page, 50).dicts()
+    return render_template('subs.html', page=page, subs=c,
+                           nav='subs_subscriber_sort_a')
+
+
+@app.route("/subs/subscribersdesc", defaults={'page': 1})
+@app.route("/subs/subscribersdesc/<int:page>")
+def subs_subscriber_sort_d(page):
+    """ The subs index page, sorted by subscriber count desc """
+    c = Sub.select()
+    c = c.order_by(Sub.subscribers.desc()).paginate(page, 50).dicts()
+    return render_template('subs.html', page=page, subs=c,
+                           nav='subs_subscriber_sort_d')
 
 
 @app.route("/welcome")
@@ -357,15 +388,6 @@ def donate():
 def userguide():
     """ User Guide page """
     return render_template('userguide.html')
-
-
-@app.route("/subs", defaults={'page': 1})
-@app.route("/subs/<int:page>")
-def view_subs(page):
-    """ Here we can view available subs """
-    c = db.query('SELECT * FROM `sub` ORDER BY `name` ASC Limit 50 OFFSET %s',
-                 (((page - 1) * 50),))
-    return render_template('subs.html', page=page, subs=c.fetchall())
 
 
 @app.route("/mysubs")

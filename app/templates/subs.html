@@ -15,9 +15,15 @@
 <div>
   <form class="pure-g search" action="{{ url_for('do.subs_title_search') }}" method="post">
     <div class="icon" data-icon="search"> </div>
-    <input name="term" placeholder="Search sub..." type="search" class="pure-u-1">
+    <input name="term" placeholder="Search sub name..." type="search" class="pure-u-1">
   </form>
 </div>
+<hr>
+<h3 class="center">Sort by</h3>
+<a href="{{url_for('view_subs')}}" class="sbm-post pure-button">Sub name</a>
+<hr>
+<a href="{{url_for('subs_subscriber_sort_a')}}" class="sbm-post pure-button">Subscriber count (asc)</a>
+<a href="{{url_for('subs_subscriber_sort_d')}}" class="sbm-post pure-button">Subscriber count (desc)</a>
 {{ super() }}
 {% endblock %}
 
@@ -32,7 +38,7 @@
           <th>Sub Name</th>
           <th>Created</th>
           <th>Subscribe</th>
-          <th><span class="placeholder" title="Posts" data-icon="bulletlist"></span></th>
+          <th>Posts</th>
         </tr>
       </thead>
       <tbody>
@@ -67,10 +73,10 @@
 </div>
 <div class="col-12">
   {% if page > 1 %}
-  <a href="{{url_for('view_subs', page=(page-1))}}" class="pure-button">prev</a>
+  <a href="{{url_for(nav, page=(page-1))}}" class="pure-button">prev</a>
   {% endif %}
   {% if subs|length == 50 %}
-  <a href="{{url_for('view_subs', page=(page+1))}}" class="pure-button">next</a>
+  <a href="{{url_for(nav, page=(page+1))}}" class="pure-button">next</a>
   {% endif %}
 </div>
 {% endblock %}

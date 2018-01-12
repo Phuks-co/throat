@@ -617,9 +617,17 @@ def getSubCreation(sub):
 @cache.memoize(60)
 def getSuscriberCount(sub):
     """ Returns subscriber count """
-    x = db.query('SELECT COUNT(*) AS count FROM `sub_subscriber` '
-                 'WHERE `sid`=%s AND `status`=%s', (sub['sid'], 1))
-    return x.fetchone()['count']
+    c = db.query('SELECT `subscribers` FROM `sub` WHERE `sid`=%s',
+               (sub['sid'], )).fetchone()
+    if not c:
+        x = db.query('SELECT COUNT(*) AS count FROM `sub_subscriber` '
+                     'WHERE `sid`=%s AND `status`=%s',
+                     (sub['sid'], 1)).fetchone()['count']
+        y = db.uquery('UPDATE `sub` SET `subscribers`=%s WHERE `sid`=%s',
+                     (x, sub['sid'], ))
+        return x
+    else:
+        return c
 
 
 @cache.memoize(60)
@@ -1546,8 +1554,11 @@ def getSubData(sid, simple=False):
                 data[p.key] = [p.value]
         else:
             data[p.key] = p.value
-    data['subs'] = SubSubscriber.select().where((SubSubscriber.sid == sid) & (SubSubscriber.status == 1)).count()
-
+    data['subs'] = Sub.get(Sub.sid == sid).subscribers
+    if data['subs'] is None:
+        data['subs'] = SubSubscriber.select().where((SubSubscriber.sid == sid) & (SubSubscriber.status == 1)).count()
+        q = Sub.update(subscribers=data['subs']).where(Sub.sid == sid)
+        q.execute()
     if not simple:
         if data.get('mod2', []) != []:
             data['mods'] = User.select(User.uid, User.name).where(User.uid << data['mod2']).dicts()

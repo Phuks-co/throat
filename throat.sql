@@ -97,6 +97,9 @@ CREATE TABLE `sub` (
   `status` int(11) DEFAULT NULL,
   `sidebar` text,
   `nsfw` int(11) DEFAULT NULL,
+  `sort` varchar(32) DEFAULT NULL,
+  `creation` datetime DEFAULT NULL,
+  `subscribers` int(11) DEFAULT NULL,
   PRIMARY KEY (`sid`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
