@@ -19,9 +19,8 @@
   </form>
 </div>
 <hr>
-<h3 class="center">Sort by</h3>
+<h3 class="center">Browse by</h3>
 <a href="{{url_for('view_subs')}}" class="sbm-post pure-button">Sub name</a>
-<hr>
 <a href="{{url_for('subs_subscriber_sort_a')}}" class="sbm-post pure-button">Subscriber count (asc)</a>
 <a href="{{url_for('subs_subscriber_sort_d')}}" class="sbm-post pure-button">Subscriber count (desc)</a>
 {{ super() }}
@@ -71,12 +70,23 @@
     </table>
   </div>
 </div>
-<div class="col-12">
-  {% if page > 1 %}
-  <a href="{{url_for(nav, page=(page-1))}}" class="pure-button">prev</a>
-  {% endif %}
-  {% if subs|length == 50 %}
-  <a href="{{url_for(nav, page=(page+1))}}" class="pure-button">next</a>
-  {% endif %}
-</div>
+{%if nav=='subs_search'%}
+  <div class="col-12">
+    {% if page > 1 %}
+    <a href="{{url_for(nav, term=term, page=(page-1))}}" class="pure-button">prev</a>
+    {% endif %}
+    {% if subs|length == 50 %}
+    <a href="{{url_for(nav,term=term, page=(page+1))}}" class="pure-button">next</a>
+    {% endif %}
+  </div>
+{% else %}
+  <div class="col-12">
+    {% if page > 1 %}
+    <a href="{{url_for(nav, page=(page-1))}}" class="pure-button">prev</a>
+    {% endif %}
+    {% if subs|length == 50 %}
+    <a href="{{url_for(nav, page=(page+1))}}" class="pure-button">next</a>
+    {% endif %}
+  </div>
+{% endif %}
 {% endblock %}

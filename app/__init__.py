@@ -337,7 +337,7 @@ def subs_search(page, term):
     c = Sub.select().where(Sub.name.contains(term))
     c = c.order_by(Sub.name.asc()).paginate(page, 50).dicts()
     return render_template('subs.html', page=page, subs=c,
-                           nav='subs_search')
+                           nav='subs_search', term=term)
 
 
 @app.route("/subs/subscribersasc", defaults={'page': 1})
