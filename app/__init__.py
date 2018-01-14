@@ -1324,7 +1324,7 @@ def admin_mining():
 @login_required
 def admin_user_uploads(page):
     """ View user uploads """
-    c = db.query('SELECT * FROM `user_uploads` Limit 30 OFFSET %s',
+    c = db.query('SELECT * FROM `user_uploads` ORDER BY `pid` DESC Limit 30 OFFSET %s',
                  ((page - 1) * 30, )).fetchall()
     return render_template('admin/uploads.html', page=page, uploads=c)
 
