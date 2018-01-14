@@ -410,36 +410,6 @@ def userguide():
     return render_template('userguide.html')
 
 
-@app.route("/mysubs")
-def view_my_subs():
-    """ Here we can view subscribed subs """
-    if current_user.is_authenticated:
-        subs = db.get_user_subscriptions_subs(current_user.uid)
-        return render_template('mysubs.html', subs=subs)
-    else:
-        abort(403)
-
-
-@app.route("/modsubs")
-def view_mymodded_subs():
-    """ Here we can view subscribed subs """
-    if current_user.is_authenticated:
-        subs = db.get_user_modded_subs(current_user.uid)
-        return render_template('mysubs.html', subs=subs)
-    else:
-        abort(403)
-
-
-@app.route("/myblockedsubs")
-def view_myblocked_subs():
-    """ Here we can view subscribed subs """
-    if current_user.is_authenticated:
-        subs = db.get_user_blocked_subs(current_user.uid)
-        return render_template('mysubs.html', subs=subs)
-    else:
-        abort(403)
-
-
 @app.route("/mymultis")
 def view_my_multis():
     """ Here we can view user multis """
