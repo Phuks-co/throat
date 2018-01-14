@@ -1319,6 +1319,16 @@ def admin_mining():
         abort(404)
 
 
+@app.route("/admin/uploads", defaults={'page': 1})
+@app.route("/admin/uploads/<int:page>")
+@login_required
+def admin_user_uploads(page):
+    """ View user uploads """
+    c = db.query('SELECT * FROM `user_uploads` Limit 30 OFFSET %s',
+                 ((page - 1) * 30, )).fetchall()
+    return render_template('admin/uploads.html', page=page, uploads=c)
+
+
 @app.route("/sitelog", defaults={'page': 1})
 @app.route("/sitelog/<int:page>")
 @login_required
