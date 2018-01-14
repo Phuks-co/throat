@@ -170,6 +170,14 @@ def get_user_metadata(uid, key, _all=False):
             return False
 
 
+@cache.memoize(10)
+def get_users_metadata(key, value):
+    """ Gets all uids with a metadata key and value """
+    c = query('SELECT `uid` FROM `user_metadata`'
+              'WHERE `key`=%s AND `value`=%s', (key, value, ))
+    return c.fetchall()
+
+
 @cache.memoize(5)
 def get_site_metadata(key, _all=False):
     """ Gets sitewide metadata """

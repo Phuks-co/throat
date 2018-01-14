@@ -6,9 +6,9 @@
   {% include 'admin/sidebar.html' %}
   <hr>
   <h3 class="center">Allowed to upload</h3>
-  {% set users = db.get_site_metadata('canupload', _all=True) %}
+  {% set users = db.get_users_metadata('canupload', '1') %}
   {% for user in users %}
-    <div> • {{db.get_user_from_uid(user.value).name}}</div>
+    <div>• {{db.get_user_from_uid(user.uid).name}}</div>
   {% endfor %}
 {% endblock %}
 
