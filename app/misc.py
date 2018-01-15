@@ -1569,8 +1569,15 @@ def getSubData(sid, simple=False):
     if not simple:
         if data.get('mod2', []) != []:
             data['mods'] = User.select(User.uid, User.name).where(User.uid << data['mod2']).dicts()
-        data['owner'] = User.select(User.uid, User.name).where(User.uid == data['mod1']).dicts().get()
-        data['creator'] = User.select(User.uid, User.name).where(User.uid == data['mod']).dicts().get()
+        try:
+            data['owner'] = User.select(User.uid, User.name).where(User.uid == data['mod1']).dicts().get()
+        except KeyError:
+            data['owner'] = User.select(User.uid, User.name).where(User.name == 'Phuks').dicts().get()
+
+        try:
+            data['creator'] = User.select(User.uid, User.name).where(User.uid == data['mod']).dicts().get()
+        except KeyError:
+            data['creator'] = User.select(User.uid, User.name).where(User.name == 'Phuks').dicts().get()
 
         try:
             data['stylesheet'] = SubStylesheet.get(SubStylesheet.sid == sid).content
