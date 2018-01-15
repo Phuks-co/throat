@@ -1,6 +1,6 @@
 @extends("shared/layout.html")
 @import "shared/post.html" as ipost
-@require(sub, posts, page, sort_type, subInfo)
+@require(sub, posts, page, sort_type, subInfo, playlist)
 
 
 @def title():
@@ -8,6 +8,14 @@
 @end
 
 @def sidebar():
+
+@if subInfo['videomode'] == '1':
+  <div class="musicmodediv">
+    @include('videomodeplayer.html')
+  </div>
+<hr>
+@end
+
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
     <a href="@{url_for('view_sub_hot', sub=sub['name'])}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_hot' %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>

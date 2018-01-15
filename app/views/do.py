@@ -308,6 +308,8 @@ def edit_sub(sub):
             db.update_sub_metadata(sub['sid'], 'ucf', form.usercanflair.data)
             db.update_sub_metadata(sub['sid'], 'videomode',
                                    form.videomode.data)
+            cache.delete_memoized(db.get_sub_metadata, sub['sid'],
+                                  'videomode', _all=True)
             if form.showtimer.data == 0:
                 db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
                           'AND `sid`=%s', ('timer', sub['sid']))

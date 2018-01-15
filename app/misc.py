@@ -761,6 +761,12 @@ def sendMail(to, subject, content):
     sg.client.mail.send.post(request_body=mail.get())
 
 
+def enableVideoMode(sub):
+    """ Returns true if the sub has video/music player enabled """
+    x = db.get_sub_metadata(sub['sid'], 'videomode')
+    return False if not x or x['value'] == '0' else True
+
+
 def getYoutubeID(url):
     """ Returns youtube ID for a video. """
     url = urlparse(url)
@@ -1567,6 +1573,8 @@ def getSubData(sid, simple=False):
         q.execute()
 
     if not simple:
+        if not data['videomode']:
+            data['videomode'] = '0'
         if data.get('mod2', []) != []:
             data['mods'] = User.select(User.uid, User.name).where(User.uid << data['mod2']).dicts()
         try:

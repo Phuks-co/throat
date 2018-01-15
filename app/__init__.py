@@ -13,6 +13,7 @@ from flask import make_response, Markup, request, jsonify
 from flask_login import LoginManager, login_required, current_user, login_user
 from flask_webpack import Webpack
 from feedgen.feed import FeedGenerator
+from urllib.parse import urlparse, parse_qs
 
 from .forms import RegistrationForm, LoginForm, LogOutForm, EditSubFlair
 from .forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
@@ -689,7 +690,19 @@ def view_sub_new(sub, page):
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub['sid']),
                              'new', page).dicts()
 
-    return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']),
+    try:
+        vm = SubMetadata.select().where(SubMetadata.sid == sub['sid']).where(SubMetadata.key == 'videomode')
+    except KeyError:
+        vm = 0
+    playlist = []
+    if vm == '1':
+        for post in posts:
+            if post['link']:
+                yid = misc.getYoutubeID(post['link'])
+                if yid is not None:
+                    playlist.append(yid)
+
+    return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']), 'playlist': playlist,
                                                    'posts': posts, 'page': page, 'sort_type': 'view_sub_new'})
 
 
@@ -721,7 +734,19 @@ def view_sub_top(sub, page):
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub['sid']),
                              'top', page).dicts()
 
-    return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']),
+    try:
+        vm = SubMetadata.select().where(SubMetadata.sid == sub['sid']).where(SubMetadata.key == 'videomode')
+    except KeyError:
+        vm = 0
+    playlist = []
+    if vm == '1':
+        for post in posts:
+            if post['link']:
+                yid = misc.getYoutubeID(post['link'])
+                if yid is not None:
+                    playlist.append(yid)
+
+    return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']), 'playlist': playlist,
                                                    'posts': posts, 'page': page, 'sort_type': 'view_sub_top'})
 
 
@@ -738,8 +763,19 @@ def view_sub_hot(sub, page):
 
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub['sid']),
                              'hot', page).dicts()
+    try:
+        vm = SubMetadata.select().where(SubMetadata.sid == sub['sid']).where(SubMetadata.key == 'videomode')
+    except KeyError:
+        vm = 0
+    playlist = []
+    if vm == '1':
+        for post in posts:
+            if post['link']:
+                yid = misc.getYoutubeID(post['link'])
+                if yid is not None:
+                    playlist.append(yid)
 
-    return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']),
+    return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']), 'playlist': playlist,
                                                    'posts': posts, 'page': page, 'sort_type': 'view_sub_hot'})
 
 
