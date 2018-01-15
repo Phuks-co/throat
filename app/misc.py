@@ -1573,8 +1573,10 @@ def getSubData(sid, simple=False):
         q.execute()
 
     if not simple:
-        if not data['videomode']:
-            data['videomode'] = '0'
+        try:
+            data['videomode']:
+        except KeyError:
+            data['videomode'] = 0    
         if data.get('mod2', []) != []:
             data['mods'] = User.select(User.uid, User.name).where(User.uid << data['mod2']).dicts()
         try:
