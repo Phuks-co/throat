@@ -690,7 +690,7 @@ def view_sub_new(sub, page):
                              'new', page).dicts()
 
     return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']),
-                                                   'posts': posts, 'page': page, 'sort_type': 'view_sub_hot'})
+                                                   'posts': posts, 'page': page, 'sort_type': 'view_sub_new'})
 
 
 @app.route("/s/<sub>/bannedusers")
@@ -722,7 +722,7 @@ def view_sub_top(sub, page):
                              'top', page).dicts()
 
     return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']),
-                                                   'posts': posts, 'page': page, 'sort_type': 'view_sub_hot'})
+                                                   'posts': posts, 'page': page, 'sort_type': 'view_sub_top'})
 
 
 @app.route("/s/<sub>/hot", defaults={'page': 1})
