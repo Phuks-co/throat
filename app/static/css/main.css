@@ -1611,3 +1611,12 @@ table td {
 tr.deletedrow {
     background: hsla(0, 100%, 51%, 0.2);
 }
+
+a[href="#spoiler"]{
+  background-color: #000;
+  color: #000
+}
+
+a[href="#spoiler"]:hover, body.dark a[href="#spoiler"]:hover{
+  color:#fff
+}

@@ -376,7 +376,7 @@ RE_AMENTION = re.compile(r'(?:(\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\
 
 
 class PhuksDown(m.SaferHtmlRenderer):
-    _allowed_url_re = re.compile(r'^(https?:|\/)', re.I)
+    _allowed_url_re = re.compile(r'^(https?:|\/|\#)', re.I)
 
     def image(self, raw_url, title='', alt=''):
         return False
@@ -618,13 +618,13 @@ def getSubCreation(sub):
 def getSuscriberCount(sub):
     """ Returns subscriber count """
     c = db.query('SELECT `subscribers` FROM `sub` WHERE `sid`=%s',
-               (sub['sid'], )).fetchone()
+                 (sub['sid'], )).fetchone()
     if not c:
         x = db.query('SELECT COUNT(*) AS count FROM `sub_subscriber` '
                      'WHERE `sid`=%s AND `status`=%s',
                      (sub['sid'], 1)).fetchone()['count']
-        y = db.uquery('UPDATE `sub` SET `subscribers`=%s WHERE `sid`=%s',
-                     (x, sub['sid'], ))
+        db.uquery('UPDATE `sub` SET `subscribers`=%s WHERE `sid`=%s',
+                  (x, sub['sid'], ))
         return x
     else:
         return c

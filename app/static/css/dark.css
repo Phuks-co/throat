@@ -372,3 +372,8 @@ body.dark #chcont {
 body.dark #chsend {
     background-color: #0d0d0d;
 }
+
+body.dark a[href="#spoiler"]{
+  background-color: #050505;
+  color: #050505
+}
