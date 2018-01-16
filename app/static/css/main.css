@@ -1620,3 +1620,10 @@ a[href="#spoiler"]{
 a[href="#spoiler"]:hover, body.dark a[href="#spoiler"]:hover{
   color:#fff
 }
+
+a[href="#toodamncool"]{
+  animation: rb3 4s infinite;
+  font-weight: 900;
+}
+
+@keyframes rb3{20%{color: red;}40%{color: yellow;}60%{color: green;}80%{color: blue;}100%{color: orange;}}
