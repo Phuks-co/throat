@@ -356,7 +356,7 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function(e, qelem){
       qelem.removeAttribute('disabled');
     } else {
       qelem.innerHTML = 'Saved.';
-      document.location.reload();
+      document.location = data.addr;
     }
   }, function(){
     qelem.parentNode.querySelector('.error').style.display = 'block';

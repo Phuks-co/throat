@@ -212,7 +212,7 @@
    {%endif%}
 
    {%if current_user.is_authenticated and post.deleted == 0 %}
-     <form data-reset="true" data-reload='true' action="{{url_for('do.create_comment', sub=sub.name, pid=post.pid)}}" class="comment-form ajaxform static pure-form">
+     <form data-reset="true" data-redir="true" action="{{url_for('do.create_comment', pid=post.pid)}}" class="comment-form ajaxform static pure-form">
        {{commentform.csrf_token}}
        {{commentform.post(value=post.pid)}}
        {{commentform.parent(value='0')}}

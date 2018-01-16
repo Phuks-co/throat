@@ -813,46 +813,51 @@ def create_comment(pid):
     if form.validate():
         if pid == '0':
             pid = form.post.data
-        # 2 - Check if post exists.
-        post = db.get_post_from_pid(pid)
-        if not post:
-            return json.dumps({'status': 'error',
-                               'error': ['Post does not exist']})
-        if post['deleted']:
-            return json.dumps({'status': 'error',
-                               'error': ['Post was deleted']})
-        # 4 - All OK, post dem comment.
-        comment = db.create_comment(pid=pid,
-                                    uid=current_user.uid,
-                                    content=form.comment.data.encode(),
-                                    parentcid=form.parent.data)
-        db.uquery('UPDATE `sub_post` SET comments=comments+1 where pid=%s;', (pid,))
-        x = db.get_post_comment_count(pid)
+
+        try:
+            post = SubPost.get(SubPost.pid == pid)
+        except SubPost.DoesNotExist:
+            return jsonify(status='error', error=['Post does not exist'])
+        if post.deleted:
+            return jsonify(status='error', error=['Post was deleted'])
+
+        comment = SubPostComment.create(pid=pid, uid=current_user.uid,
+                                        content=form.comment.data.encode(),
+                                        parentcid=form.parent.data if form.parent.data != '0' else None,
+                                        time=datetime.datetime.utcnow(),
+                                        cid=uuid.uuid4(), score=0)
+        post.comments += 1
+        comment.save()
+        post.save()
+
         socketio.emit('threadcomments',
-                      {'pid': post['pid'],
-                       'comments': x},
+                      {'pid': post.pid,
+                       'comments': SubPost.comments},
                       namespace='/snt',
-                      room=post['pid'])
+                      room=post.pid)
 
         # 5 - send pm to parent
         if form.parent.data != "0":
-            to = misc.getCommentParentUID(comment['cid'])
-            subject = 'Comment reply: ' + post['title']
+            parent = SubPostComment.get(SubPostComment.cid == comment.cid)
+            to = parent.uid.uid
+            subject = 'Comment reply: ' + post.title
             mtype = 5
-            cache.delete_memoized(db.get_post_comments, post['pid'],
+            # XXX: LEGACY
+            cache.delete_memoized(db.get_post_comments, post.pid,
                                   form.parent.data)
         else:
-            to = post['uid']
-            subject = 'Post reply: ' + post['title']
+            to = post.uid.uid
+            subject = 'Post reply: ' + post.title
             mtype = 4
-            cache.delete_memoized(db.get_post_comments, post['pid'])
-            cache.delete_memoized(db.get_post_comments, post['pid'], None)
+            # XXX: LEGACY
+            cache.delete_memoized(db.get_post_comments, post.pid)
+            cache.delete_memoized(db.get_post_comments, post.pid, None)
         if to != current_user.uid:
             db.create_message(mfrom=current_user.uid,
                               to=to,
                               subject=subject,
                               content='',
-                              link=comment['cid'],
+                              link=comment.cid,
                               mtype=mtype)
             socketio.emit('notification',
                           {'count': db.user_mail_count(to)},
@@ -860,11 +865,11 @@ def create_comment(pid):
                           room='user' + to)
 
         # 6 - Process mentions
-        sub = db.get_sub_from_sid(post['sid'])
+        sub = db.get_sub_from_sid(post.sid)
         misc.workWithMentions(form.comment.data, to, post, sub)
 
-        return json.dumps({'status': 'ok', 'addr': url_for('view_post_inbox',
-                                                           pid=pid)})
+        return json.dumps({'status': 'ok', 'addr': url_for('view_perm', sub=post.sid.name,
+                                                           pid=pid, cid=comment.cid)})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
