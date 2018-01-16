@@ -39,23 +39,25 @@
         <table class="sortable pure-table">
           <thead>
             <tr>
-              <th>AdminID</th>
-              <th>Ups</th>
-              <th>Downs</th>
-              <th>Sub</th>
-              <th>User</th>
+              <th>ID</th>
+              <th>Up</th>
+              <th>Dn</th>
               <th>Title</th>
+              <th>User</th>
+              <th>Sub</th>
+              <th>Del</th>
             </tr>
           </thead>
           <tbody>
             {% for post in posts %}
-              <tr>
+              <tr class="{% if post.deleted != 0 %}deletedrow{% endif %}">
                 <td><a href="{{url_for('admin_post_search', term=post.pid)}}">{{post.pid}}</a></td>
                 <td>{{func.get_post_upcount(post.pid)}}</td>
                 <td>{{func.get_post_downcount(post.pid)}}</td>
-                <td><a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}">{{func.getSub(post.sid).name}}</a></td>
-                <td><a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}">{{func.getUser(post.uid).name}}</a></td>
                 <td><a href="{{url_for('view_post_inbox', pid=post.pid)}}">{{post.title}}</a></td>
+                <td><a href="{{url_for('view_user', user=post.user)}}">{{post.user}}</a></td>
+                <td><a href="{{url_for('view_sub', sub=post.sub)}}">{{post.sub}}</a></td>
+                <td>{% if post.deleted == 1 %}user{% elif post.deleted == 2 %}admin{% endif %}</td>
               </tr>
             {% endfor %}
           </tbody>

@@ -1209,11 +1209,9 @@ def admin_subs_search(term):
 def admin_posts(page):
     """ WIP: View posts. """
     if current_user.is_admin():
-        posts = db.query('SELECT * FROM `sub_post` ORDER BY `posted` DESC '
-                         'LIMIT 50 OFFSET %s', (((page - 1) * 50),))
+        posts = misc.getPostList(misc.postListQueryBase(adminDetail=True), 'new', page).paginate(page, 50).dicts()
         return render_template('admin/posts.html', page=page,
-                               admin_route='admin_posts',
-                               posts=posts.fetchall())
+                               admin_route='admin_posts', posts=posts)
     else:
         abort(404)
 

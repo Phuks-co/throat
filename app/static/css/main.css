@@ -1606,3 +1606,8 @@ table td {
     margin: auto;
     border-radius: 4px;
 }
+
+/* admin */
+tr.deletedrow {
+    background: hsla(0, 100%, 51%, 0.2);
+}
