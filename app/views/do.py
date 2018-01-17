@@ -832,7 +832,7 @@ def create_comment(pid):
 
         socketio.emit('threadcomments',
                       {'pid': post.pid,
-                       'comments': SubPost.comments},
+                       'comments': post.comments},
                       namespace='/snt',
                       room=post.pid)
 
