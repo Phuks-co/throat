@@ -4,6 +4,8 @@ from flask import request
 import redis
 import config
 import json
+from wheezy.html.utils import escape_html
+
 
 socketio = SocketIO()
 redis = redis.from_url(config.SOCKETIO_REDIS_URL)
@@ -13,7 +15,7 @@ redis = redis.from_url(config.SOCKETIO_REDIS_URL)
 @socketio.on('msg', namespace='/snt')
 def chat_message(g):
     if g.get('msg') and current_user.is_authenticated:
-        message = {'user': current_user.name, 'msg': g.get('msg')}
+        message = {'user': current_user.name, 'msg': escape_html(g.get('msg'))}
         redis.lpush('chathistory', json.dumps(message))
         redis.ltrim('chathistory', 0, 20)
         socketio.emit('msg', message, namespace='/snt', room='chat')
