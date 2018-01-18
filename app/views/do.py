@@ -838,7 +838,7 @@ def create_comment(pid):
 
         # 5 - send pm to parent
         if form.parent.data != "0":
-            parent = SubPostComment.get(SubPostComment.cid == comment.cid)
+            parent = SubPostComment.get(SubPostComment.cid == form.parent.data)
             to = parent.uid.uid
             subject = 'Comment reply: ' + post.title
             mtype = 5
