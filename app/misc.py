@@ -1074,7 +1074,7 @@ def get_thumbnail(form):
     filename = str(uuid.uuid5(THUMB_NAMESPACE, md5.hexdigest())) + '.jpg'
     im.seek(0)
     if not os.path.isfile(os.path.join(config.THUMBNAILS, filename)):
-        im.save(os.path.join(config.THUMBNAILS, filename), "JPEG")
+        im.save(os.path.join(config.THUMBNAILS, filename), "JPEG", optimize=True, quality=85)
     im.close()
 
     return filename
