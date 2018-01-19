@@ -86,7 +86,7 @@ body.dark .th-subbar ul li {
 }
 
 body.dark .th-subbar a {
-    color: #ab4409;
+    color: #D25309;
 }
 
 body.dark .th-subbar a:hover {
@@ -376,4 +376,8 @@ body.dark #chsend {
 body.dark a[href="#spoiler"]{
   background-color: #050505;
   color: #050505
+}
+
+body.dark .cw-items a{
+  color: #fff;
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     @def head():
     @end
@@ -100,7 +100,7 @@
         </div>
         <form method="POST" action="@{ url_for('do.logout') }" id="logout">
           @{ form.LogOutForm().csrf_token() }
-          <button type="submit" id="logout" class="pure-button button-secondary">Log out</button>
+          <button type="submit" class="pure-button button-secondary">Log out</button>
         </form>
         @end
       </div>

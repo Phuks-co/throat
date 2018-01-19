@@ -191,10 +191,6 @@ blockquote{
   background-color: rgb(57, 101, 164);
 }
 
-#menu a:not(.glyphbutton){
-  color: #ddd;
-}
-
 .glyphbutton{
   display: inline-block;
   position: relative;
@@ -585,7 +581,7 @@ iframe {
     width: 100%;
 }
 .post .domain a, .post .domain {
-    color: #8e8e8e;
+    color: #666;
     font-size: small;
 }
 
@@ -921,7 +917,7 @@ a.slink{
 /* /COLOR BUTTONS */
 
 /* USERBAR STYLES */
-button#logout{
+#logout button{
   margin-left: 1em;
   font-size: 14px;
 }
@@ -1513,7 +1509,7 @@ table td {
 }
 #chtitle{
   background: #d94f00;
-  color: #ccc;
+  color: #fff;
   font-size: smaller;
   height: 1.8em;
   padding-top: .2em;

@@ -13,7 +13,7 @@
         <a href="/s/@{post['sub']}/@{post['pid']!!s}" class="title">
           <div class="thumbnail">
             @if post['thumbnail'] != '' and post['link'] != None:
-              <img src="@{config.THUMBNAIL_HOST}@{post['thumbnail']}"/>
+              <img alt="Thumbnail" src="@{config.THUMBNAIL_HOST}@{post['thumbnail']}"/>
             @elif post['link'] != None:
               <span class="placeholder" data-icon="link"></span>
             @else:
