@@ -2,7 +2,7 @@
   {%if comment.cid != 0 %}
     <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="{% if comment.hl %}active{%endif%} text-post no-padding comment sub-{{loop.depth0}}">
       <div class="commentrow {%if comment.cid == highlight %}highlight{%endif%}" id="comment-{{comment.cid}}">
-        <div class="pull left votecomment" {% if comment.status == 1 %}hidden{%endif%}>
+        <div class="pull left votecomment" {% if comment.status == 1 %}style="display:none;"{%endif%}>
           {# vote arrow div #}
           {% if comment.userstatus != 10 %}
             <div title="Upvote" class="c-upvote{%if comment.positive == True %} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
@@ -33,7 +33,7 @@
               </span>
             {% endif %}
           </div>
-          <div class="content" id="content-{{comment.cid}}" {% if comment.status == 1 %}hidden{%endif%}>
+          <div class="content" id="content-{{comment.cid}}" {% if comment.status == 1 %}style="display:none;"{%endif%}>
             {% if comment.status == 1 %}[Deleted]{%else%}
               {{markdown(comment.content)|safe}}
             {%endif%}
@@ -41,7 +41,7 @@
           {%if not comment.status == 1 %}
             <div hidden id="sauce-{{comment.cid}}">{{comment.content|rnentity|e}}</div>
           {%endif%}
-          <ul class="bottombar links" {% if comment.status == 1 %}hidden{%endif%}>
+          <ul class="bottombar links" {% if comment.status == 1 %}style="display:none;"{%endif%}>
             <li><a href="{{url_for('view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></li>
             {%if current_user.is_authenticated and not post.deleted %}
               <li><a class="reply-comment" data-pid="{{comment.pid}}" data-to="{{comment.cid}}">reply</a></li>
@@ -57,7 +57,7 @@
       {% if comment['moresiblings'] %}
         <a href="#" class="loadsibling" data-page="{{siblingpage}}" data-cid="{{comment.parent}}">Load more ({{comment.moresiblings}} comments)</a>
       {% endif %}
-      <div id="child-{{comment.cid}}" class="pchild" {% if comment.status == 1 %}hidden{%endif%}>
+      <div id="child-{{comment.cid}}" class="pchild" {% if comment.status == 1 %}style="display:none;"{%endif%}>
         {% if comment['morechildren'] %}
         <a href="#" class="loadchildren" data-pid="{{post.pid}}" data-cid="{{comment.cid}}">Load more ({{comment.ccount}} comments)</a>
         {% elif comment['children'] %}
