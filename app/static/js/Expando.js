@@ -26,9 +26,9 @@ function gfycatID(url) {
 	}
 }
 function youtubeID(url) {
-  var match =  url.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-  if (match && match[2].length == 11) {
-    return match[2];
+  var match =  url.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|hooktube.com\/(watch\?v=)?)([^#\&\?]*).*/);
+  if (match && match[3].length == 11) {
+    return match[3];
   }
 }
 function imgurID(url) {
