@@ -22,7 +22,7 @@ Flask-SocketIO==2.8.2
 eventlet
 gunicorn
 cython
-peewee
+peewee==2.10.2
 Flask-Webpack==0.1.0
 wheezy.template
 wheezy.html
