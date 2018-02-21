@@ -86,6 +86,9 @@ class SiteUser(object):
         """ Returns the user name. Used on load_user """
         return self.name
 
+    def get_given(self):
+        return getUserGivenScore(self.uid)
+
     def is_mod(self, sid):
         """ Returns True if the current user is a mod of 'sub' """
         return isMod(sid, self.uid)
@@ -1596,3 +1599,12 @@ def getSubData(sid, simple=False):
         except SubStylesheet.DoesNotExist:
             data['stylesheet'] = ''
     return data
+
+
+def getUserGivenScore(uid):
+    pos = SubPostVote.select().where(SubPostVote.uid == uid).where(SubPostVote.positive == 1).count()
+    neg = SubPostVote.select().where(SubPostVote.uid == uid).where(SubPostVote.positive == 0).count()
+    cpos = SubPostCommentVote.select().where(SubPostCommentVote.uid == uid).where(SubPostCommentVote.positive == 1).count()
+    cneg = SubPostCommentVote.select().where(SubPostCommentVote.uid == uid).where(SubPostCommentVote.positive == 0).count()
+
+    return (pos + cpos, neg + cneg, (pos + cpos) - (neg + cneg))

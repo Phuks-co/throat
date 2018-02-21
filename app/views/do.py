@@ -735,8 +735,11 @@ def upvote(pid, value):
         voteValue = 1
     elif value == "down":
         voteValue = -1
+        if current_user.get_given()[2] < 0:
+            return jsonify(status='error', error=['Score balance is negative'])
     else:
         abort(403)
+
     post = db.get_post_from_pid(pid)
     if not post:
         return jsonify(status='error', error=['Post does not exist'])
@@ -1736,6 +1739,8 @@ def upvotecomment(cid, value):
         voteValue = 1
     elif value == "down":
         voteValue = -1
+        if current_user.get_given()[2] < 0:
+            return jsonify(status='error', error=['Score balance is negative'])
     else:
         abort(403)
     try:
@@ -1743,6 +1748,7 @@ def upvotecomment(cid, value):
     except SubPostComment.DoesNotExist:
         return json.dumps({'status': 'error',
                            'error': ['Comment does not exist']})
+
     user = comment.uid
     if user.uid == current_user.get_id():
         return json.dumps({'status': 'error',

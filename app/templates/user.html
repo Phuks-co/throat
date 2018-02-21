@@ -50,7 +50,7 @@
         </div>
         <div class="pblock">
           <div class="statdiv">
-            <abbr class="ucount" title="+{{db.get_user_post_voting(user.uid)[1]}}, -{{db.get_user_post_voting(user.uid)[2]}}">{{db.get_user_post_voting(user.uid)[0]}}</abbr>
+            <abbr class="ucount" title="+{{func.getUserGivenScore(user.uid)[0]}}, -{{func.getUserGivenScore(user.uid)[1]}}">{{func.getUserGivenScore(user.uid)[2]}}</abbr>
             <div>Phuks given</div>
           </div>
           <div class="statdiv">

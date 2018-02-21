@@ -13,7 +13,6 @@ from flask import make_response, Markup, request, jsonify
 from flask_login import LoginManager, login_required, current_user, login_user
 from flask_webpack import Webpack
 from feedgen.feed import FeedGenerator
-from urllib.parse import urlparse, parse_qs
 
 from .forms import RegistrationForm, LoginForm, LogOutForm, EditSubFlair
 from .forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
@@ -1112,8 +1111,7 @@ def admin_area():
             invite = UseInviteCodeForm(invitecode=a)
         else:
             invite = UseInviteCodeForm()
-        ep = db.query('SELECT * FROM `site_metadata` WHERE `key`=%s',
-                     ('enable_posting',)).fetchone()
+        ep = db.query('SELECT * FROM `site_metadata` WHERE `key`=%s', ('enable_posting',)).fetchone()
         if ep:
             ep = ep['value']
         else:
