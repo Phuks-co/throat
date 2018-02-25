@@ -201,14 +201,17 @@
     </div>
   {%endif %}
    {% if post.content %}
-   {% if post.deleted == 0 %}
-     <div id="postcontent">
-       {{markdown(post.content)|safe}}
-     </div>
-     <div id="post-source">{{post.content}}</div>
-   {%else%}
-    <div class="deleted">[deleted]</div>
-   {%endif%}
+     {% if post.deleted == 0 %}
+       <div id="postcontent">
+         {{markdown(post.content)|safe}}
+       </div>
+       <div id="post-source">{{post.content}}</div>
+     {%else%}
+      <div class="deleted">[deleted]</div>
+     {%endif%}
+   {% elif not post.link %}
+    <div id="postcontent"></div>
+    <div id="post-source"></div>
    {%endif%}
 
    {%if current_user.is_authenticated and post.deleted == 0 %}
