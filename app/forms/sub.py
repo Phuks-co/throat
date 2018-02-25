@@ -30,6 +30,7 @@ class EditSubCSSForm(FlaskForm):
 class DeleteCommentForm(FlaskForm):
     """ Removes a comment in a post """
     cid = HiddenField()  # comment id
+    reason = StringField()
 
 
 class EditCommentForm(FlaskForm):

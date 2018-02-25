@@ -246,7 +246,12 @@ u.addEventForChild(document, 'click', '.delete-comment', function(e, qelem){
   // confirmation
   var cid = qelem.getAttribute('data-cid'), tg=qelem;
   TextConfirm(qelem, function(){
-    u.post('/do/delete_comment', {cid: cid},
+    var reason = ''
+    if(qelem.getAttribute('selfdel') != "true"){
+      reason = prompt('Why are you deleting this?');
+      if(!reason){return false;}
+    }
+    u.post('/do/delete_comment', {cid: cid, 'reason': reason},
     function(data){
       if (data.status != "ok") {
         tg.parentNode.innerHTML = 'Error.';

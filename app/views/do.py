@@ -1713,6 +1713,7 @@ def delete_comment():
     form = forms.DeleteCommentForm()
     if form.validate():
         comment = db.get_comment_from_cid(form.cid.data)
+        post = SubPost.get(SubPost.pid == comment['pid'])
         if not comment:
             abort(404)
 
@@ -1720,9 +1721,13 @@ def delete_comment():
             abort(403)
 
         if comment['uid'] != current_user.uid and current_user.is_admin():
-            db.create_sitelog(4, current_user.get_username() +
-                              ' deleted a comment',
+            db.create_sitelog(4, '{0} deleted a comment with reason `{1}`'.format(current_user.get_username(), form.reason.data),
                               url_for('view_post_inbox', pid=comment['pid']))
+
+        if comment['uid'] != current_user.uid and (current_user.is_admin() or current_user.is_mod(post.sid)):
+            db.create_sublog(post.sid.sid, 1, '{0} deleted a comment with reason `{1}`'.format(current_user.get_username(), form.reason.data),
+                             url_for('view_post_inbox', pid=comment['pid']))
+
         db.uquery('UPDATE `sub_post_comment` SET `status`=1 WHERE `cid`=%s',
                   (form.cid.data,))
 
