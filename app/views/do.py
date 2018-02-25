@@ -977,44 +977,39 @@ def ban_user_sub(sub):
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    form = DummyForm()
+    if not (current_user.is_mod(sub['sid']) or current_user.is_admin()):
+        abort(403)
+    form = BanUserSubForm()
     if form.validate():
-        if current_user.is_mod(sub['sid']) or current_user.is_admin():
-            form = BanUserSubForm()
-            if form.validate():
-                user = db.get_user_from_name(form.user.data)
-                if not user:
-                    return json.dumps({'status': 'error',
-                                       'error': ['User does not exist.']})
-                if db.get_sub_metadata(sub['sid'], 'ban', value=user['uid']):
-                    return jsonify(status='error', error=['Already banned'])
-                db.create_sublog(sub['sid'], 2, current_user.get_username() + ' banned ' + form.user.data)
-                if not current_user.is_mod(sub['sid']) and current_user.is_admin():
-                    db.create_sitelog(4, current_user.get_username() +
-                                      ' banned ' + form.user.data + ' from /s/' + sub['name'],
-                                      url_for('view_sub', sub=sub['name']))
-                db.create_message(mfrom=current_user.uid,
-                                  to=user['uid'],
-                                  subject='You have been banned from /s/' +
-                                  sub['name'],
-                                  content='',
-                                  link=sub['name'],
-                                  mtype=7)
-                socketio.emit('notification',
-                              {'count': db.user_mail_count(user['uid'])},
-                              namespace='/snt',
-                              room='user' + user['uid'])
-                db.create_sub_metadata(sub['sid'], 'ban', user['uid'])
+        user = db.get_user_from_name(form.user.data)
+        if not user:
+            return json.dumps({'status': 'error',
+                               'error': ['User does not exist.']})
+        if db.get_sub_metadata(sub['sid'], 'ban', value=user['uid']):
+            return jsonify(status='error', error=['Already banned'])
+        db.create_sublog(sub['sid'], 2, current_user.get_username() + ' banned ' + form.user.data)
+        if not current_user.is_mod(sub['sid']) and current_user.is_admin():
+            db.create_sitelog(4, current_user.get_username() +
+                              ' banned ' + form.user.data + ' from /s/' + sub['name'],
+                              url_for('view_sub', sub=sub['name']))
+        db.create_message(mfrom=current_user.uid,
+                          to=user['uid'],
+                          subject='You have been banned from /s/' +
+                          sub['name'],
+                          content='Reason: ' + form.reason.data,
+                          link=sub['name'],
+                          mtype=7)
+        socketio.emit('notification',
+                      {'count': db.user_mail_count(user['uid'])},
+                      namespace='/snt',
+                      room='user' + user['uid'])
+        db.create_sub_metadata(sub['sid'], 'ban', user['uid'])
 
-                db.create_sublog(sub['sid'], 7, current_user.get_username() +
-                                 ' banned ' + user['name'],
-                                 url_for('view_sub_bans', sub=sub['name']))
-                caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'ban', _all=True)
-                return json.dumps({'status': 'ok',
-                                   'sentby': current_user.get_id()})
-            return json.dumps({'status': 'error', 'error': get_errors(form)})
-        else:
-            abort(403)
+        db.create_sublog(sub['sid'], 7, '{0} banned {1} with reason `{2}`'.format(current_user.get_username(), user['name'], form.reason.data),
+                         url_for('view_sub_bans', sub=sub['name']))
+        caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'ban', _all=True)
+        return json.dumps({'status': 'ok',
+                           'sentby': current_user.get_id()})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 

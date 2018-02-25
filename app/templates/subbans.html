@@ -33,6 +33,7 @@
       {{banuserform.csrf_token}}
       <p>
         <label>Ban user from posting: {{banuserform.user(placeholder=banuserform.user.label.text, required=True)}}</label>
+        {{banuserform.reason(placeholder=banuserform.reason.label.text, required=True)}}
         <button type="submit" class="pure-button pure-button-primary" id="banuser-btnsubmit">Banhammer</button>
       </p>
       <div class="alert div-error">
