@@ -671,7 +671,7 @@ def create_post():
                               content=form.content.data if ptype == 0 else '',
                               link=form.link.data if ptype == 1 else None,
                               ptype=ptype,
-                              nsfw=form.nsfw.data,
+                              nsfw=form.nsfw.data if not sub['nsfw'] else 1,
                               thumbnail=img if ptype == 1 else '')
         db.uquery('UPDATE `sub` SET posts = posts + 1 WHERE `sid`=%s',
                   (sub['sid'], ))

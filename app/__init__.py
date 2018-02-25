@@ -1415,7 +1415,14 @@ def submit(ptype, sub):
         txtpostform.title.data = request.args.get('title')
     if request.args.get('url'):
         txtpostform.link.data = request.args.get('url')
-    return render_template('createpost.html', txtpostform=txtpostform)
+    if sub:
+        try:
+            dsub = Sub.get(Sub.name == sub)
+            return render_template('createpost.html', txtpostform=txtpostform, sub=dsub)
+        except Sub.DoesNotExist:
+            abort(404)
+    else:
+        return render_template('createpost.html', txtpostform=txtpostform)
 
 
 @app.route("/recover")

@@ -65,12 +65,12 @@ var recaptchaCallback = function(){
               <input type="file" name="files" placeholder="Only images allowed" />
             </div>
             {% endif %}
-
-
-          <div class="pure-control-group">
-            <label>{{txtpostform.nsfw.label.text}}</label>
-            {{txtpostform.nsfw()}}
-          </div>
+          {% if not sub or (sub and not sub.nsfw) %}
+            <div class="pure-control-group">
+              <label>{{txtpostform.nsfw.label.text}}</label>
+              {{txtpostform.nsfw()}}
+            </div>
+          {% endif %}
           {% if func.get_user_level(current_user.uid)[0] <= 4 %}
             <div class="pure-control-group">
               <div id="gcaptcha" class="g-recaptcha"></div>
