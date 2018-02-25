@@ -207,7 +207,7 @@ blockquote{
 }
 
 a {
-  color: #4b6d9d;
+  color: #00419d;
   text-decoration: none;
 }
 
@@ -506,12 +506,6 @@ span#notification.fade {
 .post .title:hover {
 	color: #ff6d15;
 }
-
-.links a {
-    position:relative;
-    right:6px;
-}
-
 .misctainer {
   display: inline-block;
   float: left;
@@ -727,7 +721,9 @@ a.slink{
 .subinfo{text-align: center;}
 .subs{margin-bottom: .6em;}
 .links a{
-  color: #12619c;
+  position:relative;
+  right:6px;
+  color: #0f5387;
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
