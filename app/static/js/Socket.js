@@ -59,6 +59,21 @@ socket.on('threadcomments', function(data){
   console.log('article#' + data.pid + ' .ccount')
   document.querySelector('div[pid="' + data.pid + '"] .comments').innerHTML = 'comments (' + data.comments + ')';
 })
+
+socket.on('yourvote', function(data){
+  var th = document.querySelector('div.post[pid="' + data.pid + '"] .votebuttons')
+  if(th){
+    if(data.status == -1){
+      th.querySelector('.upvote').classList.remove('upvoted');
+      th.querySelector('.downvote').classList.add('downvoted');
+    }else{
+      th.querySelector('.upvote').classList.add('upvoted');
+      th.querySelector('.downvote').classList.remove('downvoted');
+    }
+    th.querySelector('.score').innerHTML = data.score;
+  }
+})
+
 u.ready(function(){
   socket.on('connect', function() {
     if(document.getElementById('chpop')){

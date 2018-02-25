@@ -782,6 +782,8 @@ def upvote(pid, value):
             db.uquery('UPDATE `user` SET `given`=`given`+%s WHERE '
                       '`uid`=%s', (voteValue, current_user.uid))
             cache.delete_memoized(db.get_post_from_pid, pid)
+            socketio.emit('yourvote', {'pid': post['pid'], 'status': voteValue, 'score': post['score'] + voteValue * 2}, namespace='/snt',
+                          room='user' + current_user.uid)
             return jsonify(status='ok', message='Vote flipped', score=post['score'] + voteValue * 2)
     else:
         positive = True if voteValue == 1 else False
@@ -796,6 +798,8 @@ def upvote(pid, value):
                    'score': post['score'] + voteValue},
                   namespace='/snt',
                   room=post['pid'])
+    socketio.emit('yourvote', {'pid': post['pid'], 'status': voteValue, 'score': post['score'] + voteValue}, namespace='/snt',
+                  room='user' + current_user.uid)
     cache.delete_memoized(db.get_post_from_pid, pid)
     if user['score'] is not None:
         db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
