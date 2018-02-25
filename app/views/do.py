@@ -685,10 +685,7 @@ def create_post():
                       namespace='/snt',
                       room='/all/new')
         if fileid:
-            uploadedimg = db.create_user_upload_post(pid=post['pid'],
-                                  uid=current_user.uid,
-                                  fileid=fileid,
-                                  thumbnail=img if img else '')
+            db.create_user_upload_post(pid=post['pid'], uid=current_user.uid, fileid=fileid, thumbnail=img if img else '')
         # for /live
         if sub['name'] == "live":
             socketio.emit('livethread',
@@ -749,6 +746,9 @@ def upvote(pid, value):
     if post['uid'] == current_user.get_id():
         return jsonify(status='error',
                        error=["You can't vote on your own posts"])
+
+    if (datetime.datetime.utcnow() - post['posted']) > datetime.timedelta(days=10):
+        return jsonify(status='error', error=["Post is archived"])
 
     qvote = db.query('SELECT * FROM `sub_post_vote` WHERE `pid`=%s AND '
                      '`uid`=%s', (pid, current_user.uid)).fetchone()
@@ -823,6 +823,9 @@ def create_comment(pid):
             return jsonify(status='error', error=['Post does not exist'])
         if post.deleted:
             return jsonify(status='error', error=['Post was deleted'])
+
+        if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=10):
+            return jsonify(status='error', error=["Post is archived"])
 
         comment = SubPostComment.create(pid=pid, uid=current_user.uid,
                                         content=form.comment.data.encode(),
@@ -1753,6 +1756,10 @@ def upvotecomment(cid, value):
     if user.uid == current_user.get_id():
         return json.dumps({'status': 'error',
                            'error': ['You can\'t vote on your own comments']})
+
+    post = SubPost.get(SubPost.pid == comment.pid)
+    if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=10):
+        return jsonify(status='error', error=["Post is archived"])
 
     qvote = db.query('SELECT * FROM `sub_post_comment_vote` WHERE `cid`=%s AND'
                      ' `uid`=%s', (cid, current_user.uid)).fetchone()

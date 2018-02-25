@@ -74,7 +74,7 @@ origstatic = app.view_functions['static']
 
 engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config,
                            'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,
-                           'form': forms, 'hostname': socket.gethostname(),
+                           'form': forms, 'hostname': socket.gethostname(), 'datetime': datetime,
                            'e': escape_html})
 
 
