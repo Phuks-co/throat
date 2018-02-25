@@ -1271,6 +1271,31 @@ def delete_pm(mid):
         abort(403)
 
 
+@do.route("/do/edit_title", methods=['POST'])
+@login_required
+def edit_title():
+    form = DeletePost()
+    if form.validate():
+        if not form.reason.data:
+            return jsonify(status="error", error="Missing title")
+
+        try:
+            post = SubPost.get(SubPost.pid == form.post.data)
+        except SubPost.DoesNotExist:
+            return jsonify(status="error", error="Post does not exist")
+
+        if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(seconds=300):
+            return jsonify(status="error", error="You cannot edit the post title anymore")
+
+        if post.uid.uid != current_user.uid:
+            return jsonify(status="error", error="You did not post this!")
+
+        post.title = form.reason.data
+        post.save()
+        return jsonify(status="ok")
+    return jsonify(status="error", error="Bork bork")
+
+
 @do.route("/do/save_pm/<mid>", methods=['POST'])
 @login_required
 def save_pm(mid):

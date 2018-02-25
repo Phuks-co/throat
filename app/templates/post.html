@@ -159,6 +159,9 @@
             {% endif %}
             {% if post.uid == current_user.uid %}
               <li><a class="edit-post" data-pid="{{post.pid}}">edit</a></li>
+              {% if (datetime.datetime.utcnow() - post.posted) < datetime.timedelta(seconds=300) %}
+                <li><a class="edit-title" data-pid="{{post.pid}}">edit title</a></li>
+              {% endif %}
             {% endif %}
             {% if post.uid == current_user.uid or current_user.is_admin() or current_user.is_mod(post.sid) %}
               <li><a {% if post.uid == current_user.uid %}selfdel="true"{%endif%} class="delete-post"> delete </a></li>

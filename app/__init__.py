@@ -172,7 +172,7 @@ def utility_processor():
             'csubform': CreateSubForm(), 'markdown': misc.our_markdown,
             'commentform': PostComment(), 'dummyform': DummyForm(),
             'delpostform': DeletePost(), 'hostname': socket.gethostname(),
-            'config': app.config, 'form': forms, 'db': db,
+            'config': app.config, 'form': forms, 'db': db, 'datetime': datetime,
             'getSuscriberCount': getSuscriberCount, 'func': misc, 'time': time}
 
 

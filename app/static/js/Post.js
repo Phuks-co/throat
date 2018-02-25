@@ -35,6 +35,20 @@ u.addEventForChild(document, 'click', '.delete-post', function(e, qelem){
   });
 });
 
+u.addEventForChild(document, 'click', '.edit-title', function(e, qelem){
+  var tg = e.currentTarget;
+  TextConfirm(qelem, function(){
+    var title = document.querySelector('.post-heading .title').innerHTML;
+    var reason = prompt('Pick a new title', title);
+    if(!reason){return false;}
+    u.post('/do/edit_title', {'reason': reason, 'post': qelem.getAttribute('data-pid')},
+    function(data){
+      if (data.status != "ok") {
+        tg.innerHTML = data.error;
+      } else {document.location.reload();}
+    });
+  });
+});
 
 // Stick post
 u.addEventForChild(document, 'click', '.stick-post', function(e, qelem){
