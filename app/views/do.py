@@ -640,6 +640,12 @@ def create_post():
         if misc.isRestricted(sub) and not current_user.is_mod(sub['sid']):
             return render_template('createpost.html', txtpostform=form, error="Only mods can post on this sub")
 
+        if misc.get_user_level(current_user.uid)[0] < 7:
+            today = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            lposts = SubPost.select().where(SubPost.sid == sub['sid']).where(SubPost.posted > today).count()
+            tposts = SubPost.select().where(SubPost.posted > today).count()
+            if lposts > 10 or tposts > 25:
+                return render_template('createpost.html', txtpostform=form, error="You have posted too much today")
         fileid = False
         if form.ptype.data == 'link':
             fupload = misc.upload_file()
