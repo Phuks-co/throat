@@ -17,6 +17,16 @@ u.sub('.readmsg', 'click', function(e){
   });
 });
 
+u.sub('.markall', 'click', function(e){
+  var bid = this.getAttribute('data-bid'),obj=this;
+  u.post('/do/readall_msgs/'+bid, {},
+  function(data){
+    if (data.status == "ok") {
+      document.location.reload();
+    }
+  });
+});
+
 // Saving/unsaving message.
 u.sub('.savemsg', 'click', function(e){
   var mid = this.getAttribute('data-mid'),obj=this;

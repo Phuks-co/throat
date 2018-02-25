@@ -1243,36 +1243,19 @@ def read_pm(mid):
         abort(403)
 
 
-@do.route("/do/readall_msgs/<user>/<boxid>", methods=['POST'])
+@do.route("/do/readall_msgs/<boxid>", methods=['POST'])
 @login_required
-def readall_msgs(user, boxid):
+def readall_msgs(boxid):
     """ Mark all messages in a box as read """
-    if current_user.name == user:
-        q = 'SELECT * FROM `message` WHERE `read` IS NULL AND `receivedby`=%s '
-        if boxid == '1':
-            q += 'AND `mtype` IN (1, 8) '
-        elif boxid == '2':
-            q += 'AND `mtype`=4 '
-        elif boxid == '3':
-            q += 'AND `mtype`=5 '
-        elif boxid == '4':
-            q += 'AND `mtype` IN (2, 7) '
-        else:
-            return jsonify(status='error', error=['wrong boxid bruh'])
-        x = db.query(q, (current_user.uid,))
-
-        now = datetime.datetime.utcnow()
-        for message in x:
-            db.uquery('UPDATE `message` SET `read`=%s WHERE `mid`=%s',
-                      (now, message['mid']))
-        cache.delete_memoized(db.user_mail_count, current_user.uid)
-        socketio.emit('notification',
-                      {'count': db.user_mail_count(current_user.uid)},
-                      namespace='/snt',
-                      room='user' + current_user.uid)
-        return json.dumps({'status': 'ok', 'message': 'All marked as read'})
-    else:
-        abort(403)
+    now = datetime.datetime.utcnow()
+    q = Message.update(read=now).where(Message.read.is_null()).where(Message.receivedby == current_user.uid)
+    q.where(Message.mtype == boxid).execute()
+    cache.delete_memoized(db.user_mail_count, current_user.uid)
+    socketio.emit('notification',
+                  {'count': db.user_mail_count(current_user.uid)},
+                  namespace='/snt',
+                  room='user' + current_user.uid)
+    return jsonify(status='ok')
 
 
 @do.route("/do/delete_pm/<mid>", methods=['POST'])

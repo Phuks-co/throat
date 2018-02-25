@@ -1,6 +1,6 @@
 
 <div class="row buttons inboxside">
-  <div class="">
+  <div>
     <a class="sbm-post pure-button{% if box_route=='view_messages' %} button-secondary{% endif %}" href="{{ url_for('view_messages') }}">
       Inbox
       {% if current_user.new_pm_count() > 0 %}
@@ -8,7 +8,7 @@
       {% endif %}
     </a>
   </div>
-  <div class="">
+  <div>
     <a class="sbm-post pure-button{% if box_route=='view_mentions' %} button-secondary{% endif %}" href="{{ url_for('view_mentions') }}">
       Mentions
       {% if current_user.new_mentions_count() > 0 %}
@@ -16,7 +16,7 @@
       {% endif %}
     </a>
   </div>
-  <div class="">
+  <div>
     <a class="sbm-post pure-button{% if box_route=='view_messages_postreplies' %} button-secondary{% endif %}" href="{{ url_for('view_messages_postreplies') }}">
       Post Replies
       {% if current_user.new_postreply_count() > 0 %}
@@ -24,7 +24,7 @@
       {% endif %}
     </a>
   </div>
-  <div class="">
+  <div>
     <a class="sbm-post pure-button{% if box_route=='view_messages_comreplies' %} button-secondary{% endif %}" href="{{ url_for('view_messages_comreplies') }}">
       Comment Replies
       {% if current_user.new_comreply_count() > 0 %}
@@ -33,7 +33,7 @@
     </a>
   </div>
 <hr>
-  <div class="">
+  <div>
     <a class="sbm-post pure-button{% if box_route=='view_messages_modmail' %} button-secondary{% endif %}" href="{{ url_for('view_messages_modmail') }}">
     Modmail
     {% if current_user.new_modmail_count() > 0 %}
@@ -42,10 +42,10 @@
     </a>
   </div>
 <hr>
-  <div class="">
+  <div>
     <a class="sbm-post pure-button{% if box_route=='view_messages_sent' %} button-secondary{% endif %}" href="{{ url_for('view_messages_sent') }}">Sent Messages</a>
   </div>
-  <div class="">
+  <div>
     <a class="sbm-post pure-button{% if box_route=='view_saved_messages' %} button-secondary{% endif %}"  href="{{ url_for('view_saved_messages') }}">Saved Messages</a>
   </div>
 </div>
