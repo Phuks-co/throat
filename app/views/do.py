@@ -201,12 +201,14 @@ def delete_post():
         if post.uid == current_user.uid:
             deletion = 1
         else:
+            if not form.reason.data:
+                return jsonify(status="error", error=["Cannot delete without reason"])
             deletion = 2
             if current_user.uid not in subI['mod2'] and current_user.is_admin():
-                db.create_sitelog(4, current_user.get_username() + ' deleted a post',
+                db.create_sitelog(4, '{0} deleted a post with reason `{1}`'.format(current_user.get_username(), form.reason.data),
                                   url_for('view_sub', sub=sub.name))
 
-            db.create_sublog(sub.sid, 1, current_user.get_username() + ' deleted a post',
+            db.create_sublog(sub.sid, 1, '{0} deleted a post with reason `{1}`'.format(current_user.get_username(), form.reason.data),
                              url_for('view_post', sub=sub.name, pid=post.pid))
 
         if (datetime.datetime.utcnow() - post.posted).seconds < 86400:

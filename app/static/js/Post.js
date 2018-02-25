@@ -15,9 +15,14 @@ u.sub('.removesavedpost', 'click', function(e){
   u.post('/do/remove_saved_post/' + tg.getAttribute('data-pid'), {}, function(data){tg.innerHTML = 'removed';});
 })
 
-u.sub('.delete-post', 'click', function(e){
+u.addEventForChild(document, 'click', '.delete-post', function(e, qelem){
   var tg = e.currentTarget;
-  TextConfirm(this, function(){
+  TextConfirm(qelem, function(){
+    if(qelem.getAttribute('selfdel') != "true"){
+      var reason = prompt('Why are you deleting this?');
+      if(!reason){return false;}
+      document.querySelector('#delete-post-form #reason').setAttribute('value', reason);
+    }
     u.rawpost('/do/delete_post', new FormData(document.getElementById('delete-post-form')),
     function(data){
       if (data.status != "ok") {
@@ -32,9 +37,9 @@ u.sub('.delete-post', 'click', function(e){
 
 
 // Stick post
-u.sub('.stick-post', 'click', function(e){
-  var pid = this.parentNode.parentNode.getAttribute('data-pid'), tg=e.currentTarget;
-  TextConfirm(this, function(){
+u.addEventForChild(document, 'click', '.stick-post', function(e, qelem){
+  var pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg=e.currentTarget;
+  TextConfirm(qelem, function(){
     u.rawpost('/do/stick/'+pid, new FormData(document.getElementById('delete-post-form')),
     function(data){
       if (data.status != "ok") {
@@ -47,9 +52,9 @@ u.sub('.stick-post', 'click', function(e){
   });
 });
 
-u.sub('.announce-post', 'click', function(e){
-  var pid = this.parentNode.parentNode.getAttribute('data-pid'), tg=e.currentTarget;
-  TextConfirm(this, function(){
+u.addEventForChild(document, 'click', '.announce-post', function(e, qelem){
+  var pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg=e.currentTarget;
+  TextConfirm(qelem, function(){
     u.post('/do/makeannouncement', {post: pid},
     function(data){
       if (data.status != "ok") {
@@ -83,9 +88,9 @@ u.sub('.selflair', 'click', function(e){
   )
 });
 
-u.sub('.nsfw-post', 'click', function(e){
-  var pid = this.parentNode.parentNode.getAttribute('data-pid'), tg=e.currentTarget;
-  TextConfirm(this, function(){
+u.addEventForChild(document, 'click', '.nsfw-post', function(e, qelem){
+  var pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg=e.currentTarget;
+  TextConfirm(qelem, function(){
     u.rawpost('/do/nsfw', new FormData(document.getElementById('delete-post-form')),
     function(data){
       if (data.status != "ok") {

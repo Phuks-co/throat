@@ -6,11 +6,7 @@ function TextConfirm(the_element, yesfunc, question){
   var yes = document.createElement( "a" );
   var no =  document.createElement( "a" );
   yes.innerHTML = "yes";
-  yes.onclick = yesfunc;
   no.innerHTML = "no";
-  no.onclick = function(){
-    elem.innerHTML = bk;
-  };
   var wrap = document.createElement('span');
   wrap.classList.add("red-confirm");
   if(!question){
@@ -23,6 +19,16 @@ function TextConfirm(the_element, yesfunc, question){
   var cNode = elem.cloneNode(false);
   cNode.appendChild(wrap)
   elem.parentNode.replaceChild(cNode,elem );
+  yes.onclick = function(){
+    if(yesfunc() == false){
+      cNode.innerHTML = bk;
+    }
+  }
+  no.onclick = function(){
+    cNode.innerHTML = bk;
+  };
+
+
 }
 
 export default TextConfirm;

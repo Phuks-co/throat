@@ -169,6 +169,7 @@ class EditPostFlair(FlaskForm):
 class DeletePost(FlaskForm):
     """ Post deletion form. """
     post = HiddenField()
+    reason = StringField()
 
 
 class VoteForm(FlaskForm):
