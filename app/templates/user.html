@@ -121,7 +121,7 @@
                 {{msgform.subject(placeholder=msgform.subject.label.text, required=True)}}
               </div>
               <div class="pure-control-group markdown-editor">
-                {{msgform.content(placeholder="Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}
+                {{msgform.content(placeholder="Styling with Markdown format is supported.", rows="10", id="cntnt", **{'data-provide' :"markdown"})}}
               </div>
               <div class="pure-controls">
                 {% if error %}
