@@ -1224,7 +1224,7 @@ def load_user(user_id):
                        User.given, User.score, User.name, User.uid, User.status,
                        fn.GROUP_CONCAT(Clause(SQL('Distinct'), UserMetadata.key)).alias('prefs'))
     user = user.join(UserMetadata, JOIN.LEFT_OUTER, on=((UserMetadata.uid == User.uid) & (UserMetadata.value == 1) & (UserMetadata.key << ['admin', 'canupload', 'exlinks', 'nostyles', 'labrat', 'nsfw', 'noscroll']))).switch(User)
-    user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & Message.read.is_null(True))).switch(User)
+    user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & (Message.mtype != 9) & Message.read.is_null(True))).switch(User)
     user = user.where(User.uid == user_id).dicts()
 
     try:
