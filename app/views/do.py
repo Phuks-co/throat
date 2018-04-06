@@ -387,7 +387,7 @@ def assign_post_flair(sub, pid, fl):
 
     form = DummyForm()
     if form.validate():
-        if current_user.is_mod(sub['sid']) or (post.uid == current_user.uid and misc.userCanFlair(sub)):
+        if current_user.is_mod(sub['sid']) or (post.uid.uid == current_user.uid and misc.userCanFlair(sub)):
             flair = db.query('SELECT * FROM `sub_flair` WHERE `xid`=%s AND '
                              '`sid`=%s', (fl, sub['sid'])).fetchone()
             if not flair:
