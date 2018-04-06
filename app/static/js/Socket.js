@@ -76,7 +76,7 @@ socket.on('yourvote', function(data){
 
 u.ready(function(){
   socket.on('connect', function() {
-    if(document.getElementById('chpop')){
+    if(document.getElementById('chpop') && window.chat == true){
       socket.emit('subscribe', {target: 'chat'});
     }
   });

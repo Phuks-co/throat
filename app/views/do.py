@@ -5,6 +5,7 @@ import re
 import time
 import datetime
 import uuid
+import bcrypt
 from urllib.parse import urlparse
 import requests
 from bs4 import BeautifulSoup
@@ -26,7 +27,7 @@ from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm, LiveChat
 from ..misc import cache, sendMail, allowedNames, get_errors
-from ..models import SubPost, SubPostComment, Sub, Message
+from ..models import SubPost, SubPostComment, Sub, Message, User
 
 do = Blueprint('do', __name__)
 
@@ -103,47 +104,40 @@ def admin_post_search():
     return redirect(url_for('admin_post_search', term=term))
 
 
-@do.route("/do/edit_user/<user>", methods=['POST'])
+@do.route("/do/edit_user", methods=['POST'])
 @login_required
-def edit_user(user):
+def edit_user():
     """ Edit user endpoint """
-    user = db.get_user_from_name(user)
-    if not user:
-        return json.dumps({'status': 'error',
-                           'error': ['User does not exist']})
-    if current_user.get_id() != user['uid'] and not current_user.is_admin():
-        abort(403)
-
     form = EditUserForm()
     if form.validate():
-        if not db.is_password_valid(user['uid'], form.oldpassword.data):
+        usr = User.get(User.uid == current_user.uid)
+        if not db.is_password_valid(current_user.uid, form.oldpassword.data):
             return json.dumps({'status': 'error', 'error': ['Wrong password']})
         print(form.delete_account.data)
         if form.delete_account.data:
-            db.uquery('UPDATE `user` SET `status`=10 WHERE `uid`=%s',
-                      (user['uid'],))
+            usr.status = 10
+            usr.save()
             if session.get('usid'):
                 socketio.emit('uinfo', {'loggedin': False}, namespace='/alt',
                               room=session['usid'])
             logout_user()
             return json.dumps({'status': 'ok',
                                'addr': '/'})
-        db.uquery('UPDATE `user` SET `email`=%s WHERE `uid`=%s',
-                  (form.email.data, user['uid']))
+        usr.email = form.email.data
         if form.password.data:
-            db.update_user_password(user['uid'], form.password.data)
+            password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
+            if isinstance(password, bytes):
+                password = password.decode('utf-8')
 
-        db.update_user_metadata(user['uid'], 'exlinks',
-                                form.external_links.data)
+            usr.password = password
 
-        db.update_user_metadata(user['uid'], 'labrat',
-                                form.experimental.data)
-
-        db.update_user_metadata(user['uid'], 'nostyles',
-                                form.disable_sub_style.data)
-
-        db.update_user_metadata(user['uid'], 'nsfw', form.show_nsfw.data)
-        db.update_user_metadata(user['uid'], 'noscroll', form.noscroll.data)
+        usr.save()
+        current_user.update_prefs('exlinks', form.external_links.data)
+        current_user.update_prefs('labrat', form.experimental.data)
+        current_user.update_prefs('nostyles', form.disable_sub_style.data)
+        current_user.update_prefs('nsfw', form.show_nsfw.data)
+        current_user.update_prefs('noscroll', form.noscroll.data)
+        current_user.update_prefs('nochat', form.nochat.data)
 
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})

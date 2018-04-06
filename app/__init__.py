@@ -933,39 +933,26 @@ def view_user_comments(user, page):
                            comments=comments)
 
 
-@app.route("/u/<user>/edit")
+@app.route("/settings")
 @login_required
-def edit_user(user):
+def edit_user():
     """ WIP: Edit user's profile, slogan, quote, etc """
-    user = db.get_user_from_name(user)
-    if not user or user['status'] == 10:
-        abort(404)
 
-    owns = db.get_user_positions(user['uid'], 'mod1')
-    mods = db.get_user_positions(user['uid'], 'mod2')
-    badges = db.get_user_badges(user['uid'])
-    pcount = db.query('SELECT COUNT(*) AS c FROM `sub_post` WHERE `uid`=%s',
-                      (user['uid'], )).fetchone()['c']
-    ccount = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE '
-                      '`uid`=%s', (user['uid'], )).fetchone()['c']
     exlink = 'exlinks' in current_user.prefs
     styles = 'nostyles' in current_user.prefs
     nsfw = 'nsfw' in current_user.prefs
     exp = 'labrat' in current_user.prefs
     noscroll = 'noscroll' in current_user.prefs
-    form = EditUserForm(external_links=bool(exlink), show_nsfw=bool(nsfw),
-                        disable_sub_style=bool(styles), experimental=bool(exp),
-                        noscroll=bool(noscroll))
-    adminbadges = []
-    if current_user.is_admin():
-        adminbadges = db.query('SELECT * FROM `user_badge`').fetchall()
-    if current_user.get_username() == user['name'] or current_user.is_admin():
-        return render_template('edituser.html', user=user, owns=owns,
-                               badges=badges, adminbadges=adminbadges,
-                               pcount=pcount, ccount=ccount, mods=mods,
-                               edituserform=form)
-    else:
-        abort(403)
+    nochat = 'nochat' in current_user.prefs
+    form = EditUserForm(external_links=exlink, show_nsfw=nsfw,
+                        disable_sub_style=styles, experimental=exp,
+                        noscroll=noscroll, nochat=nochat)
+    return engine.get_template('user/settings.html').render({'edituserform': form})
+
+    # return render_template('edituser.html', user=user, owns=owns,
+    #                        badges=badges, adminbadges=adminbadges,
+    #                        pcount=pcount, ccount=ccount, mods=mods,
+    #                        edituserform=form)
 
 
 @app.route("/messages")

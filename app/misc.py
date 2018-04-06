@@ -212,6 +212,14 @@ class SiteUser(object):
     def get_subscriptions(self):
         return self.subscriptions
 
+    def update_prefs(self, key, value):
+        try:
+            md = UserMetadata.get((UserMetadata.uid == self.uid) & (UserMetadata.key == key))
+            md.value = '1' if value else '0'
+            md.save()
+        except UserMetadata.DoesNotExist:
+            md = UserMetadata.create(uid=self.uid, key=key, value=value)
+
 
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
@@ -1221,7 +1229,7 @@ def getStickies(sid):
 
 def load_user(user_id):
     user = User.select(fn.Count(Clause(SQL('Distinct'), Message.mid)).alias('notifications'),
-                       User.given, User.score, User.name, User.uid, User.status)
+                       User.given, User.score, User.name, User.uid, User.status, User.email)
     user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & (Message.mtype != 9) & Message.read.is_null(True))).switch(User)
     user = user.where(User.uid == user_id).dicts()
 

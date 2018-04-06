@@ -139,7 +139,7 @@
       @end
 
   </div>
-  @if not current_user.is_anonymous:
+  @if not current_user.is_anonymous and 'nochat' not in current_user.prefs:
   <div id="chpop" style="height: 1.65em">
     <div id="chtitle" hid="true">Chat</div>
     <div id="chcont"></div>
@@ -148,6 +148,7 @@
   @end
   <script type="text/javascript">
     window.wsserver = '@{config.WEBSOCKET_SERVER!!s}';
+    window.chat = @{('nochat' not in current_user.prefs) and 'true' or 'false'};
   </script>
   <script type="text/javascript" src="@{ asset_url_for('main.js') }"></script>
   @def pagefoot():
