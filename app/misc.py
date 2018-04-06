@@ -1225,7 +1225,8 @@ def load_user(user_id):
     user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & (Message.mtype != 9) & Message.read.is_null(True))).switch(User)
     user = user.where(User.uid == user_id).dicts()
 
-    prefs = UserMetadata.select(UserMetadata.key, UserMetadata.value).where(UserMetadata.uid == user_id).dicts()
+    prefs = UserMetadata.select(UserMetadata.key, UserMetadata.value).where(UserMetadata.uid == user_id)
+    prefs = prefs.where(UserMetadata.value == '1').dicts()
 
     try:
         user = user.get()
