@@ -41,12 +41,12 @@ allowedNames = re.compile("^[a-zA-Z0-9_-]+$")
 class SiteUser(object):
     """ Representation of a site user. Used on the login manager. """
 
-    def __init__(self, userclass=None, subs=[]):
+    def __init__(self, userclass=None, subs=[], prefs={}):
         self.user = userclass
         self.notifications = self.user['notifications']
         self.name = self.user['name']
         self.uid = self.user['uid']
-        self.prefs = self.user['prefs'].split(',') if self.user['prefs'] else []
+        self.prefs = [x['key'] for x in prefs]
 
         self.subsid = []
         self.subscriptions = []
@@ -1221,16 +1221,16 @@ def getStickies(sid):
 
 def load_user(user_id):
     user = User.select(fn.Count(Clause(SQL('Distinct'), Message.mid)).alias('notifications'),
-                       User.given, User.score, User.name, User.uid, User.status,
-                       fn.GROUP_CONCAT(Clause(SQL('Distinct'), UserMetadata.key)).alias('prefs'))
-    user = user.join(UserMetadata, JOIN.LEFT_OUTER, on=((UserMetadata.uid == User.uid) & (UserMetadata.value == 1) & (UserMetadata.key << ['admin', 'canupload', 'exlinks', 'nostyles', 'labrat', 'nsfw', 'noscroll']))).switch(User)
+                       User.given, User.score, User.name, User.uid, User.status)
     user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & (Message.mtype != 9) & Message.read.is_null(True))).switch(User)
     user = user.where(User.uid == user_id).dicts()
+
+    prefs = UserMetadata.select(UserMetadata.key, UserMetadata.value).where(UserMetadata.uid == user_id).dicts()
 
     try:
         user = user.get()
         subs = SubSubscriber.select(SubSubscriber.sid, Sub.name, SubSubscriber.status).join(Sub, on=(Sub.sid == SubSubscriber.sid)).switch(SubSubscriber).where(SubSubscriber.uid == user_id).dicts()
-        return SiteUser(user, subs)
+        return SiteUser(user, subs, prefs)
     except User.DoesNotExist:
         return None
 
