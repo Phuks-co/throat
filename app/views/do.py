@@ -965,9 +965,9 @@ def create_sendmsg():
                           link=None,
                           mtype=1 if current_user.uid not in misc.get_ignores(user['uid']) else 41)
         socketio.emit('notification',
-                      {'count': db.user_mail_count(form.to.data)},
+                      {'count': db.user_mail_count(user['uid'])},
                       namespace='/snt',
-                      room='user' + form.to.data)
+                      room='user' + user['uid'])
         return json.dumps({'status': 'ok',
                            'sentby': current_user.get_id()})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
