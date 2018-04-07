@@ -879,7 +879,7 @@ def getSub(sid):
 
 def getUser(uid):
     """ Returns user from uid, db proxy now """
-    return User.select().where(User.uid == uid).dicts()
+    return User.select().where(User.uid == uid).dicts().get()
 
 
 def getDomain(link):
@@ -1430,7 +1430,7 @@ def getMessagesIndex(page):
 def getMentionsIndex(page):
     """ Returns user mentions inbox """
     try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
         msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby)).where(Message.mtype == 8).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except msg.DoesNotExist:
         return False
@@ -1470,7 +1470,7 @@ def getMessagesSaved(page):
 def getMsgCommReplies(page):
     """ Returns comment replies messages """
     try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
         msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 5).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except msg.DoesNotExist:
         return False
@@ -1480,7 +1480,7 @@ def getMsgCommReplies(page):
 def getMsgPostReplies(page):
     """ Returns post replies messages """
     try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
         msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 4).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except msg.DoesNotExist:
         return False

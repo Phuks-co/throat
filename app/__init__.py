@@ -1007,6 +1007,14 @@ def view_messages_sent(page):
                            page=page, box_route='view_messages_sent')
 
 
+@app.route("/messages/ignore")
+@login_required
+def view_ignores():
+    """ View user's messages sent """
+    igns = misc.get_ignores(current_user.uid)
+    return render_template('messages/ignores.html', igns=igns)
+
+
 @app.route("/messages/postreplies", defaults={'page': 1})
 @app.route("/messages/postreplies/<int:page>")
 @login_required
