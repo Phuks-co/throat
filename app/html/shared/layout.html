@@ -121,7 +121,7 @@
   </div>
 
   <div class="footer">
-
+    @def footer():
       &copy;@{config.COPY}
       <br>
       <a href="@{url_for('welcome')}">Welcome</a> |
@@ -137,7 +137,8 @@
       @if config.DEBUG or current_user.admin:
        | Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries
       @end
-
+    @end
+    @footer()
   </div>
   @if not current_user.is_anonymous and 'nochat' not in current_user.prefs:
   <div id="chpop" style="height: 1.65em">

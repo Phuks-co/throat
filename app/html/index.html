@@ -16,6 +16,24 @@
   </div>
 </div>
 @include('shared/sidebar/home.html')
+@if sort_type in ('all_new', 'view_sub_new') and current_user.likes_scroll():
+  <hr />
+  &copy;@{config.COPY}
+  <br>
+  <a href="@{url_for('welcome')}">Welcome</a> |
+  <a href="@{url_for('tos')}">ToS</a> |
+  <a href="@{url_for('privacy')}">Privacy</a> |
+  <a href="@{url_for('view_sub', sub='changelog')}">Changelog</a> |
+  <a href="@{url_for('view_api')}">API</a> |
+  <a href="@{url_for('canary')}">Canary</a> |
+  <a href="@{url_for('donate')}">Donate</a> |
+  <a href="@{url_for('miner')}">Miner</a>
+  <br>
+  Served by @{hostname} \
+  @if config.DEBUG or current_user.admin:
+   | Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries
+  @end
+@end
 @end
 
 @def main():
@@ -67,15 +85,21 @@
       @end
     @end
   </div>
-
-  @if page > 1:
-    <a href="@{url_for(sort_type, page=(page-1), **kw)}" class="pure-button">prev</a>
-  @end
-  @if len(posts) == 25:
-    <a href="@{url_for(sort_type, page=(page+1), **kw)}" class="pure-button">next</a>
+  @if sort_type not in ('all_new', 'view_sub_new') or not current_user.likes_scroll():
+    @if page > 1:
+      <a href="@{url_for(sort_type, page=(page-1), **kw)}" class="pure-button">prev</a>
+    @end
+    @if len(posts) == 25:
+      <a href="@{url_for(sort_type, page=(page+1), **kw)}" class="pure-button">next</a>
+    @end
   @end
 </div>
+  @if sort_type in ('all_new', 'view_sub_new'):
+    @def footer():
+    @end
+  @end
 @end
+
 @def pagefoot():
 
   @if "labrat" in current_user.prefs:

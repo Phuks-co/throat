@@ -179,6 +179,7 @@ class SiteUser(object):
 
     def likes_scroll(self):
         """ Returns true if user likes scroll """
+        print(self.prefs)
         return 'noscroll' not in self.prefs
 
     def block_styles(self):
