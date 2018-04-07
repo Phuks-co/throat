@@ -27,7 +27,7 @@ class User(db.Model):
     resets = IntegerField(default=0)
 
     class Meta:
-        db_table = 'user'
+        table_name = 'user'
 
 
 class Client(db.Model):
@@ -40,7 +40,7 @@ class Client(db.Model):
     user = ForeignKeyField(db_column='user_id', null=True, model=User, field='uid')
 
     class Meta:
-        db_table = 'client'
+        table_name = 'client'
 
 
 class Grant(db.Model):
@@ -53,7 +53,7 @@ class Grant(db.Model):
                            field='uid')
 
     class Meta:
-        db_table = 'grant'
+        table_name = 'grant'
 
 
 class Message(db.Model):
@@ -70,7 +70,7 @@ class Message(db.Model):
     subject = CharField(null=True)
 
     class Meta:
-        db_table = 'message'
+        table_name = 'message'
 
 
 class SiteLog(db.Model):
@@ -81,7 +81,7 @@ class SiteLog(db.Model):
     time = DateTimeField(null=True)
 
     class Meta:
-        db_table = 'site_log'
+        table_name = 'site_log'
 
 
 class SiteMetadata(db.Model):
@@ -90,7 +90,7 @@ class SiteMetadata(db.Model):
     xid = PrimaryKeyField()
 
     class Meta:
-        db_table = 'site_metadata'
+        table_name = 'site_metadata'
 
 
 class Sub(db.Model):
@@ -106,7 +106,7 @@ class Sub(db.Model):
     posts = IntegerField(null=True)
 
     class Meta:
-        db_table = 'sub'
+        table_name = 'sub'
 
 
 class SubFlair(db.Model):
@@ -116,7 +116,7 @@ class SubFlair(db.Model):
     xid = PrimaryKeyField()
 
     class Meta:
-        db_table = 'sub_flair'
+        table_name = 'sub_flair'
 
 
 class SubLog(db.Model):
@@ -129,7 +129,7 @@ class SubLog(db.Model):
     time = DateTimeField(null=True)
 
     class Meta:
-        db_table = 'sub_log'
+        table_name = 'sub_log'
 
 
 class SubMetadata(db.Model):
@@ -140,7 +140,7 @@ class SubMetadata(db.Model):
     xid = PrimaryKeyField()
 
     class Meta:
-        db_table = 'sub_metadata'
+        table_name = 'sub_metadata'
 
 
 class SubPost(db.Model):
@@ -162,7 +162,7 @@ class SubPost(db.Model):
     flair = CharField(null=True, max_length=25)
 
     class Meta:
-        db_table = 'sub_post'
+        table_name = 'sub_post'
 
 
 class SubPostComment(db.Model):
@@ -180,7 +180,7 @@ class SubPostComment(db.Model):
                           field='uid')
 
     class Meta:
-        db_table = 'sub_post_comment'
+        table_name = 'sub_post_comment'
 
 
 class SubPostCommentVote(db.Model):
@@ -192,7 +192,7 @@ class SubPostCommentVote(db.Model):
     xid = PrimaryKeyField()
 
     class Meta:
-        db_table = 'sub_post_comment_vote'
+        table_name = 'sub_post_comment_vote'
 
 
 class SubPostMetadata(db.Model):
@@ -203,7 +203,7 @@ class SubPostMetadata(db.Model):
     xid = PrimaryKeyField()
 
     class Meta:
-        db_table = 'sub_post_metadata'
+        table_name = 'sub_post_metadata'
 
 
 class SubPostVote(db.Model):
@@ -216,7 +216,7 @@ class SubPostVote(db.Model):
     xid = PrimaryKeyField()
 
     class Meta:
-        db_table = 'sub_post_vote'
+        table_name = 'sub_post_vote'
 
 
 class SubStylesheet(db.Model):
@@ -226,7 +226,7 @@ class SubStylesheet(db.Model):
     xid = PrimaryKeyField()
 
     class Meta:
-        db_table = 'sub_stylesheet'
+        table_name = 'sub_stylesheet'
 
 
 class SubSubscriber(db.Model):
@@ -240,7 +240,7 @@ class SubSubscriber(db.Model):
     xid = PrimaryKeyField()
 
     class Meta:
-        db_table = 'sub_subscriber'
+        table_name = 'sub_subscriber'
 
 
 class Token(db.Model):
@@ -255,7 +255,7 @@ class Token(db.Model):
                            field='uid')
 
     class Meta:
-        db_table = 'token'
+        table_name = 'token'
 
 
 class UserBadge(db.Model):
@@ -266,7 +266,7 @@ class UserBadge(db.Model):
     value = IntegerField(null=True)
 
     class Meta:
-        db_table = 'user_badge'
+        table_name = 'user_badge'
 
 
 class UserMetadata(db.Model):
@@ -277,7 +277,7 @@ class UserMetadata(db.Model):
     xid = PrimaryKeyField()
 
     class Meta:
-        db_table = 'user_metadata'
+        table_name = 'user_metadata'
 
 
 class UserSaved(db.Model):
@@ -286,7 +286,7 @@ class UserSaved(db.Model):
     xid = PrimaryKeyField()
 
     class Meta:
-        db_table = 'user_saved'
+        table_name = 'user_saved'
 
 
 class Pixel(db.Model):
@@ -299,7 +299,7 @@ class Pixel(db.Model):
                           field='uid')
 
     class Meta:
-        db_table = 'pixel'
+        table_name = 'pixel'
 
 
 class Shekels(db.Model):
@@ -309,7 +309,7 @@ class Shekels(db.Model):
                           field='uid')
 
     class Meta:
-        db_table = 'shekels'
+        table_name = 'shekels'
 
 
 class MiningLeaderboard(db.Model):
@@ -318,7 +318,7 @@ class MiningLeaderboard(db.Model):
     score = IntegerField()
 
     class Meta:
-        db_table = 'mining_leaderboard'
+        table_name = 'mining_leaderboard'
 
 
 class MiningSpeedLeaderboard(db.Model):
@@ -326,7 +326,7 @@ class MiningSpeedLeaderboard(db.Model):
     hashes = IntegerField()
 
     class Meta:
-        db_table = 'mining_speed_leaderboard'
+        table_name = 'mining_speed_leaderboard'
 
 
 class UserUploads(db.Model):
@@ -340,4 +340,11 @@ class UserUploads(db.Model):
     status = IntegerField()
 
     class Meta:
-        db_table = 'user_uploads'
+        table_name = 'user_uploads'
+
+
+class UserIgnores(db.Model):
+    uid = ForeignKeyField(db_column='uid', model=User,
+                          field='uid')
+    target = CharField(max_length=40)
+    date = DateTimeField(default=datetime.datetime.now)

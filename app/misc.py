@@ -26,7 +26,7 @@ from .badges import badges
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
 from .models import SubPostVote, MiningLeaderboard, SubPostComment, SubPostCommentVote
-from .models import MiningSpeedLeaderboard, SubMetadata, rconn, SubStylesheet
+from .models import MiningSpeedLeaderboard, SubMetadata, rconn, SubStylesheet, UserIgnores
 from peewee import JOIN, fn
 import requests
 
@@ -1618,3 +1618,10 @@ def getUserGivenScore(uid):
     cneg = SubPostCommentVote.select().where(SubPostCommentVote.uid == uid).where(SubPostCommentVote.positive == 0).count()
 
     return (pos + cpos, neg + cneg, (pos + cpos) - (neg + cneg))
+
+
+# Note for future self:
+#  We keep constantly switching from camelCase to snake_case for function names.
+#  For fucks sake make your mind.
+def get_ignores(uid):
+    return [x.target for x in UserIgnores.select().where(UserIgnores.uid == uid)]

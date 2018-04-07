@@ -101,3 +101,18 @@ u.addEventForChild(document, 'click', '.closepopmsg', function(e, qelem){
   e.preventDefault();
   this.parentNode.parentNode.style.display = 'none';
 });
+
+u.sub('.block', 'click', function(e){
+  var uid = this.getAttribute('data-uid'),obj=this;
+  u.post('/do/toggle_ignore/'+uid, {},
+  function(data){
+    if (data.status == "ok") {
+      if(obj.innerHTML == 'block'){
+        obj.innerHTML = 'unblock';
+      }else{
+        obj.innerHTML = 'block';
+      }
+    }
+  });
+
+});

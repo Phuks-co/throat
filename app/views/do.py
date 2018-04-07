@@ -27,7 +27,7 @@ from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm, LiveChat
 from ..misc import cache, sendMail, allowedNames, get_errors
-from ..models import SubPost, SubPostComment, Sub, Message, User
+from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores
 
 do = Blueprint('do', __name__)
 
@@ -864,7 +864,7 @@ def create_comment(pid):
             # XXX: LEGACY
             cache.delete_memoized(db.get_post_comments, post.pid)
             cache.delete_memoized(db.get_post_comments, post.pid, None)
-        if to != current_user.uid:
+        if to != current_user.uid and current_user.uid not in misc.get_ignores(to):
             db.create_message(mfrom=current_user.uid,
                               to=to,
                               subject=subject,
@@ -963,7 +963,7 @@ def create_sendmsg():
                           subject=form.subject.data,
                           content=form.content.data,
                           link=None,
-                          mtype=1)
+                          mtype=1 if current_user.uid not in misc.get_ignores(user['uid']) else 41)
         socketio.emit('notification',
                       {'count': db.user_mail_count(form.to.data)},
                       namespace='/snt',
@@ -1896,3 +1896,20 @@ def toggle_nsfw():
         post.save()
         return json.dumps({'status': 'ok', 'msg': 'NSFW set to {0}'.format(bool(post.nsfw))})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route('/do/toggle_ignore/<uid>', methods=['POST'])
+@login_required
+def ignore_user(uid):
+    try:
+        user = User.get(User.uid == uid)
+    except User.DoesNotExist:
+        return jsonify(status='error', error='User not found')
+
+    try:
+        uig = UserIgnores.get((UserIgnores.uid == current_user.uid) & (UserIgnores.target == uid))
+        uig.delete_instance()
+        return jsonify(status='ok', action='delete')
+    except UserIgnores.DoesNotExist:
+        uig = UserIgnores.create(uid=current_user.uid, target=user.uid)
+        return jsonify(status='ok', action='ignore')
