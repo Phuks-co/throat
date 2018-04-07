@@ -1441,7 +1441,7 @@ def getMessagesSent(page):
     """ Returns messages sent """
     try:
         msg = Message.select(Message.mid, Message.sentby, User.name.alias('username'), Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
-        msg = msg.join(User).where(Message.mtype == 1).where(Message.sentby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+        msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.receivedby)).where(Message.mtype == 1).where(Message.sentby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False
     return msg
