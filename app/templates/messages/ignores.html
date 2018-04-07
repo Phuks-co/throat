@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block title %}Blocked users | {{config.LEMA}}{% endblock %}
+
+{% block navbar %}
+{% endblock %}
+
+{% block sidebar %}
+{{ super() }}
+{% include 'messages/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<div id="container">
+  {% if igns %}
+
+    {% for ig in igns %}
+    <li><span class="postflair">{{func.getUser(ig).name}}</span>
+      <form  method="POST" data-reload="true" action="{{url_for('do.ignore_user', uid=ig)}}" class="ajaxform" style="display: inline-block; margin-left: 1em; margin-top: 5px;">
+      <button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="Deleting..." data-success="Deleted!">Delete</button></form>
+    {% endfor %}
+  {% else %}
+  <h4>You haven't blocked anybody</h4>
+  You can block users from the inbox.
+  {%endif%}
+</div>
+{% endblock %}
