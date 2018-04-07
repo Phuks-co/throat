@@ -1422,7 +1422,7 @@ def getMessagesIndex(page):
     try:
         msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
         msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby)).where(Message.mtype == 1).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
-    except msg.DoesNotExist:
+    except Message.DoesNotExist:
         return False
     return msg
 
@@ -1432,7 +1432,7 @@ def getMentionsIndex(page):
     try:
         msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
         msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby)).where(Message.mtype == 8).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
-    except msg.DoesNotExist:
+    except Message.DoesNotExist:
         return False
     return msg
 
@@ -1452,7 +1452,7 @@ def getMessagesModmail(page):
     try:
         msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
         msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype << [2, 7]).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
-    except msg.DoesNotExist:
+    except Message.DoesNotExist:
         return False
     return msg
 
@@ -1462,7 +1462,7 @@ def getMessagesSaved(page):
     try:
         msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
         msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 9).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
-    except msg.DoesNotExist:
+    except Message.DoesNotExist:
         return False
     return msg
 
@@ -1472,7 +1472,7 @@ def getMsgCommReplies(page):
     try:
         msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
         msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 5).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
-    except msg.DoesNotExist:
+    except Message.DoesNotExist:
         return False
     return msg
 
@@ -1482,7 +1482,7 @@ def getMsgPostReplies(page):
     try:
         msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
         msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 4).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
-    except msg.DoesNotExist:
+    except Message.DoesNotExist:
         return False
     return msg
 
