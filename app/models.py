@@ -14,7 +14,7 @@ db = FlaskDB()
 
 class User(db.Model):
     uid = CharField(primary_key=True, max_length=40)
-    crypto = IntegerField()
+    crypto = IntegerField()  # Password hash algo, 1 = bcrypt.
     email = CharField(null=True)
     joindate = DateTimeField(null=True)
     name = CharField(null=True, unique=True, max_length=64)
@@ -78,7 +78,7 @@ class SiteLog(db.Model):
     desc = CharField(null=True)
     lid = PrimaryKeyField()
     link = CharField(null=True)
-    time = DateTimeField(null=True)
+    time = DateTimeField(default=datetime.datetime.utcnow())
 
     class Meta:
         table_name = 'site_log'
@@ -95,15 +95,15 @@ class SiteMetadata(db.Model):
 
 class Sub(db.Model):
     name = CharField(null=True, unique=True, max_length=32)
-    nsfw = BooleanField(null=True)
+    nsfw = BooleanField(default=False)
     sid = CharField(primary_key=True, max_length=40)
-    sidebar = TextField(null=True)
+    sidebar = TextField(default='')
     status = IntegerField(null=True)
     title = CharField(null=True, max_length=50)
     sort = CharField(null=True, max_length=32)
     creation = DateTimeField()
-    subscribers = IntegerField(null=True)
-    posts = IntegerField(null=True)
+    subscribers = IntegerField(default=1)
+    posts = IntegerField(default=0)
 
     class Meta:
         table_name = 'sub'
@@ -126,7 +126,7 @@ class SubLog(db.Model):
     link = CharField(null=True)
     sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
                           field='sid')
-    time = DateTimeField(null=True)
+    time = DateTimeField(default=datetime.datetime.utcnow())
 
     class Meta:
         table_name = 'sub_log'
@@ -234,7 +234,7 @@ class SubSubscriber(db.Model):
     sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
                           field='sid')
     status = IntegerField(null=True)
-    time = DateTimeField(null=True)
+    time = DateTimeField(default=datetime.datetime.utcnow())
     uid = ForeignKeyField(db_column='uid', null=True, model=User,
                           field='uid')
     xid = PrimaryKeyField()

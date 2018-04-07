@@ -9,6 +9,7 @@ import os
 import hashlib
 import re
 import pyexiv2
+import bcrypt
 from datetime import datetime, timedelta
 from io import BytesIO
 from PIL import Image
@@ -796,9 +797,8 @@ def getYoutubeID(url):
 
 def moddedSubCount(uid):
     """ Returns the number of subs a user is modding """
-    sub = db.query('SELECT COUNT(*) AS c FROM `sub_metadata` WHERE `value`=%s '
-                   "AND `key` IN ('mod1', 'mod2')", (uid,))
-    return sub.fetchone()['c']
+    sub = SubMetadata.select().where(SubMetadata.value == uid).where(SubMetadata.key << ('mod1', 'mod2'))
+    return sub.count()
 
 
 @cache.memoize(120)
@@ -1015,8 +1015,8 @@ def get_user_post_score_counts(user):
 @cache.memoize(10)
 def get_user_level(uid):
     """ Returns the user's level and XP as a tuple (level, xp) """
-    user = db.get_user_from_uid(uid)
-    xp = get_user_post_score(user)
+    user = User.get(User.uid == uid)
+    xp = user.score
     # xp += db.get_user_post_voting(uid)/2
     badges = getUserBadges(uid)
     for badge in badges:
@@ -1625,3 +1625,13 @@ def getUserGivenScore(uid):
 #  For fucks sake make your mind.
 def get_ignores(uid):
     return [x.target for x in UserIgnores.select().where(UserIgnores.uid == uid)]
+
+
+def validate_password(usr, passwd):
+    """ Returns True if `passwd` is valid for `usr`. `usr` is a db object. """
+    if usr.crypto == 1:  # bcrypt
+        thash = bcrypt.hashpw(passwd.encode('utf-8'),
+                              usr.password.encode('utf-8'))
+        if thash == usr.password.encode('utf-8'):
+            return True
+    return False

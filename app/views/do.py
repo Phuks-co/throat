@@ -25,9 +25,10 @@ from ..forms import PostComment, CreateUserMessageForm, DeletePost, CaptchaForm
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
-from ..forms import UseInviteCodeForm, LiveChat
+from ..forms import UseInviteCodeForm
 from ..misc import cache, sendMail, allowedNames, get_errors
-from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores
+from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata
+from ..models import SubStylesheet, SubSubscriber
 
 do = Blueprint('do', __name__)
 
@@ -73,18 +74,15 @@ def edit_user():
     form = EditUserForm()
     if form.validate():
         usr = User.get(User.uid == current_user.uid)
-        if not db.is_password_valid(current_user.uid, form.oldpassword.data):
+        if not misc.validate_password(usr, form.oldpassword.data):
             return json.dumps({'status': 'error', 'error': ['Wrong password']})
-        print(form.delete_account.data)
         if form.delete_account.data:
             usr.status = 10
             usr.save()
             if session.get('usid'):
-                socketio.emit('uinfo', {'loggedin': False}, namespace='/alt',
-                              room=session['usid'])
+                socketio.emit('uinfo', {'loggedin': False}, namespace='/alt', room=session['usid'])
             logout_user()
-            return json.dumps({'status': 'ok',
-                               'addr': '/'})
+            return json.dumps({'status': 'ok', 'addr': '/'})
         usr.email = form.email.data
         if form.password.data:
             password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
@@ -92,6 +90,7 @@ def edit_user():
                 password = password.decode('utf-8')
 
             usr.password = password
+            usr.crypto = 1
 
         usr.save()
         current_user.update_prefs('exlinks', form.external_links.data)
@@ -103,34 +102,6 @@ def edit_user():
 
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
-
-
-@do.route("/do/create_livechat", methods=['POST'])
-@login_required
-def create_livechat():
-    """ Post deletion endpoint """
-    form = LiveChat()
-
-    if form.validate():
-        sub = db.get_sub_from_name('live')
-        if not db.get_sub_metadata(sub['sid'], 'sticky', _all=True):
-            return json.dumps({'status': 'error',
-                               'error': ['Chat no longer active.']})
-        if not session['user_id']:
-            return json.dumps({'status': 'error',
-                               'error': ['Login required.']})
-        chat = db.create_live_chat(username=current_user.name,
-                                   message=form.chatmsg.data)
-        socketio.emit('livechatthread',
-                      {'xid': chat['xid'],
-                       'username': current_user.name,
-                       'message': form.chatmsg.data,
-                       'html': render_template('sublivechats.html',
-                                               nocheck=True,
-                                               chats=[chat])},
-                      namespace='/snt',
-                      room='/live')
-        return json.dumps({'status': 'ok'})
 
 
 @do.route("/do/delete_post", methods=['POST'])
@@ -161,18 +132,18 @@ def delete_post():
                 return jsonify(status="error", error=["Cannot delete without reason"])
             deletion = 2
             if current_user.uid not in subI['mod2'] and current_user.is_admin():
-                db.create_sitelog(4, '{0} deleted a post with reason `{1}`'.format(current_user.get_username(), form.reason.data),
-                                  url_for('view_sub', sub=sub.name))
+                SiteLog.create(action=4, link=url_for('view_sub', sub=sub.name),
+                               desc='{0} deleted a post with reason `{1}`'.format(current_user.get_username(), form.reason.data))
 
-            db.create_sublog(sub.sid, 1, '{0} deleted a post with reason `{1}`'.format(current_user.get_username(), form.reason.data),
-                             url_for('view_post', sub=sub.name, pid=post.pid))
+            SubLog.create(sid=sub.sid, action=1, link=url_for('view_post', sub=sub.name, pid=post.pid),
+                          desc='{0} deleted a post with reason `{1}`'.format(current_user.get_username(), form.reason.data))
 
+        # time limited to prevent socket spam
         if (datetime.datetime.utcnow() - post.posted).seconds < 86400:
-            socketio.emit('deletion', {'pid': post.pid},
-                          namespace='/snt', room='/all/new')
+            socketio.emit('deletion', {'pid': post.pid}, namespace='/snt', room='/all/new')
 
-        db.uquery('UPDATE `sub` SET posts = posts - 1 WHERE `sid`=%s',
-                  (sub.sid, ))
+        sub.posts -= 1
+        sub.save()
 
         post.deleted = deletion
         post.save()
@@ -188,40 +159,39 @@ def create_sub():
     form = CreateSubForm()
     if form.validate():
         if not allowedNames.match(form.subname.data):
-            return json.dumps({'status': 'error',
-                               'error': ['Sub name has invalid characters']})
+            return jsonify(status='error', error=['Sub name has invalid characters'])
 
-        if form.subname.data.lower() in ('all', 'new', 'hot', 'top', 'admin'):
-            return json.dumps({'status': 'error',
-                               'error': ['Invalid sub name']})
+        if form.subname.data.lower() in ('all', 'new', 'hot', 'top', 'admin', 'home'):
+            return jsonify(status='error', error=['Invalid sub name'])
 
-        if db.get_sub_from_name(form.subname.data):
-            return json.dumps({'status': 'error',
-                               'error': ['Sub is already registered.']})
+        try:
+            Sub.get(Sub.name == form.subname.data)
+            return jsonify(status='error', error=['Sub is already registered'])
+        except Sub.DoesNotExist:
+            pass
 
-        if misc.moddedSubCount(current_user.get_id()) >= 15:
-            return json.dumps({'status': 'error',
-                               'error': ["You can't mod more than 15 subs."]})
+        if misc.moddedSubCount(current_user.uid) >= 15:
+            return jsonify(status='error', error=['You cannot mod more than 15 subs'])
 
         if not getattr(config, 'TESTING', False):
-            if misc.get_user_level(current_user.get_id())[0] <= 1:
-                return json.dumps({'status': 'error',
-                                   'error': ["You must be at least level 2."]})
+            if misc.get_user_level(current_user.uid)[0] <= 1:
+                return jsonify(status='error', error=['You must be at least level 2.'])
 
-        sub = db.create_sub(current_user.get_id(), form.subname.data,
-                            form.title.data)
+        sub = Sub.create(sid=uuid.uuid4(), name=form.subname.data, title=form.title.data)
+        SubMetadata.create(sid=sub.sid, key='mod', value=current_user.uid)
+        SubMetadata.create(sid=sub.sid, key='mod1', value=current_user.uid)
+        SubMetadata.create(sid=sub.sid, key='creation', value=datetime.datetime.utcnow())
+        SubStylesheet.create(sid=sub.sid, content='/* CSS here */')
 
         # admin/site log
-        db.create_sitelog(6,
-                          current_user.get_username() + ' created a new sub',
-                          url_for('view_sub', sub=sub['name']))
+        SiteLog.create(action=6, link=url_for('view_sub', sub=sub.name),
+                       desc='{0} created a new sub'.format(current_user.name))
 
-        db.create_subscription(current_user.get_id(), sub['sid'], 1)
+        SubSubscriber.create(uid=current_user.uid, sid=sub.sid, status=1)
 
-        return json.dumps({'status': 'ok',
-                           'addr': url_for('view_sub', sub=form.subname.data)})
+        return jsonify(status='ok', addr=url_for('view_sub', sub=form.subname.data))
 
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
+    return jsonify(status='error', error=get_errors(form))
 
 
 @do.route("/do/edit_sub_css/<sub>", methods=['POST'])
