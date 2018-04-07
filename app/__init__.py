@@ -690,8 +690,8 @@ def view_sub_new(sub, page):
                              'new', page).dicts()
 
     try:
-        vm = SubMetadata.select().where(SubMetadata.sid == sub['sid']).where(SubMetadata.key == 'videomode')
-    except KeyError:
+        vm = SubMetadata.select().where(SubMetadata.sid == sub['sid']).where(SubMetadata.key == 'videomode').get().value
+    except SubMetadata.DoesNotExist:
         vm = 0
     playlist = []
     if vm == '1':
@@ -734,8 +734,8 @@ def view_sub_top(sub, page):
                              'top', page).dicts()
 
     try:
-        vm = SubMetadata.select().where(SubMetadata.sid == sub['sid']).where(SubMetadata.key == 'videomode')
-    except KeyError:
+        vm = SubMetadata.select().where(SubMetadata.sid == sub['sid']).where(SubMetadata.key == 'videomode').get().value
+    except SubMetadata.DoesNotExist:
         vm = 0
     playlist = []
     if vm == '1':
@@ -763,8 +763,8 @@ def view_sub_hot(sub, page):
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub['sid']),
                              'hot', page).dicts()
     try:
-        vm = SubMetadata.select().where(SubMetadata.sid == sub['sid']).where(SubMetadata.key == 'videomode')
-    except KeyError:
+        vm = SubMetadata.select().where(SubMetadata.sid == sub['sid']).where(SubMetadata.key == 'videomode').get().value
+    except SubMetadata.DoesNotExist:
         vm = 0
     playlist = []
     if vm == '1':
