@@ -16,7 +16,7 @@
     <a href="{{url_for('view_sub_new', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
   </div>
 </div>
-<form class="pure-g search" action="{{ url_for('do.title_search') }}" method="post">
+<form class="pure-g search" action="{{ url_for('do.search') }}" method="post">
   <div class="icon" data-icon="search"> </div>
   <input name="term" placeholder="Title search..." type="search" class="pure-u-1">
 </form>

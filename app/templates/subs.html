@@ -13,7 +13,7 @@
 
 {% block sidebar %}
 <div>
-  <form class="pure-g search" action="{{ url_for('do.subs_title_search') }}" method="post">
+  <form class="pure-g search" action="{{ url_for('do.search', stype='subs') }}" method="post">
     <div class="icon" data-icon="search"> </div>
     <input name="term" placeholder="Search sub name..." type="search" class="pure-u-1">
   </form>

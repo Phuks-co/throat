@@ -50,58 +50,20 @@ def logout():
         return redirect(url_for('index'))
 
 
-@do.route("/do/title_search", methods=['POST'])
-def title_search():
+@do.route("/do/search", defaults={'stype': 'search'}, methods=['POST'])
+@do.route("/do/search/<stype>", methods=['POST'])
+def search(stype):
     """ Search endpoint """
+    if stype not in ('search', 'subs', 'admin_users', 'admin_post_voting', 'admin_subs', 'admin_post'):
+        abort(404)
+    if not stype.endswith('search'):
+        stype += '_search'
+
+    if not current_user.is_admin() and stype.startswith('admin'):
+        abort(403)
     form = SearchForm()
-    term = form.term.data
-    term = re.sub('[^A-Za-z0-9.,\-_\'" ]+', '', term)
-    return redirect(url_for('search', term=term))
-
-
-@do.route("/do/subs_title_search", methods=['POST'])
-def subs_title_search():
-    """ Search subs list endpoint """
-    form = SearchForm()
-    term = form.term.data
-    term = re.sub('[^A-Za-z0-9\-_]+', '', term)
-    return redirect(url_for('subs_search', term=term))
-
-
-@do.route("/do/admin_users_search", methods=['POST'])
-def admin_users_search():
-    """ Search endpoint """
-    form = SearchForm()
-    term = form.term.data
-    term = re.sub('[^A-Za-z0-9\-_]+', '', term)
-    return redirect(url_for('admin_users_search', term=term))
-
-
-@do.route("/do/admin_post_voting_search", methods=['POST'])
-def admin_post_voting_search():
-    """ Search endpoint """
-    form = SearchForm()
-    term = form.term.data
-    term = re.sub('[^A-Za-z0-9\-_]+', '', term)
-    return redirect(url_for('admin_post_voting', term=term))
-
-
-@do.route("/do/admin_subs_search", methods=['POST'])
-def admin_subs_search():
-    """ Search endpoint """
-    form = SearchForm()
-    term = form.term.data
-    term = re.sub('[^A-Za-z0-9\-_]+', '', term)
-    return redirect(url_for('admin_subs_search', term=term))
-
-
-@do.route("/do/admin_post_search", methods=['POST'])
-def admin_post_search():
-    """ Search endpoint """
-    form = SearchForm()
-    term = form.term.data
-    term = re.sub('[^A-Za-z0-9.,\-_\'" ]+', '', term)
-    return redirect(url_for('admin_post_search', term=term))
+    term = re.sub('[^A-Za-z0-9.,\-_\'" ]+', '', form.term.data)
+    return redirect(url_for(stype, term=term))
 
 
 @do.route("/do/edit_user", methods=['POST'])

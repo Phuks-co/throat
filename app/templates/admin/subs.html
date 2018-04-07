@@ -9,7 +9,7 @@
 {% block sidebar %}
 {{ super() }}
 <div class="col-12 admin section search">
-  <form action="{{ url_for('do.admin_subs_search') }}" method="post">
+  <form action="{{ url_for('do.search', stype='admin_subs') }}" method="post">
   <span class="search">
       <span><i class="fa fa-search"></i></span>
       <input id="term" name="term" type="search" placeholder="Search Subs...">
