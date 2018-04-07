@@ -27,7 +27,7 @@ from .badges import badges
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
 from .models import SubPostVote, MiningLeaderboard, SubPostComment, SubPostCommentVote
 from .models import MiningSpeedLeaderboard, SubMetadata, rconn, SubStylesheet
-from peewee import JOIN, fn, Clause, SQL
+from peewee import JOIN, fn
 import requests
 
 redis = Redis(host=config.CACHE_REDIS_HOST,
@@ -1229,7 +1229,7 @@ def getStickies(sid):
 
 
 def load_user(user_id):
-    user = User.select(fn.Count(Clause(SQL('Distinct'), Message.mid)).alias('notifications'),
+    user = User.select(fn.Count(Message.mid).alias('notifications'),
                        User.given, User.score, User.name, User.uid, User.status, User.email)
     user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & (Message.mtype != 9) & Message.read.is_null(True))).switch(User)
     user = user.where(User.uid == user_id).dicts()

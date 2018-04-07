@@ -37,8 +37,7 @@ class Client(db.Model):
     client_secret = CharField(unique=True, max_length=55)
     is_confidential = BooleanField(null=True)
     name = CharField(null=True, max_length=40)
-    user = ForeignKeyField(db_column='user_id', null=True, rel_model=User,
-                           to_field='uid')
+    user = ForeignKeyField(db_column='user_id', null=True, model=User, field='uid')
 
     class Meta:
         db_table = 'client'
@@ -46,13 +45,12 @@ class Client(db.Model):
 
 class Grant(db.Model):
     _scopes = TextField(null=True)
-    client = ForeignKeyField(db_column='client_id', rel_model=Client,
-                             to_field='client')
+    client = ForeignKeyField(db_column='client_id', model=Client, field='client')
     code = CharField(index=True)
     expires = DateTimeField(null=True)
     redirect_uri = CharField(null=True)
-    user = ForeignKeyField(db_column='user_id', null=True, rel_model=User,
-                           to_field='uid')
+    user = ForeignKeyField(db_column='user_id', null=True, model=User,
+                           field='uid')
 
     class Meta:
         db_table = 'grant'
@@ -66,9 +64,9 @@ class Message(db.Model):
     posted = DateTimeField(null=True)
     read = DateTimeField(null=True)
     receivedby = ForeignKeyField(db_column='receivedby', null=True,
-                                 rel_model=User, to_field='uid')
-    sentby = ForeignKeyField(db_column='sentby', null=True, rel_model=User,
-                             related_name='user_sentby_set', to_field='uid')
+                                 model=User, field='uid')
+    sentby = ForeignKeyField(db_column='sentby', null=True, model=User,
+                             backref='user_sentby_set', field='uid')
     subject = CharField(null=True)
 
     class Meta:
@@ -112,8 +110,8 @@ class Sub(db.Model):
 
 
 class SubFlair(db.Model):
-    sid = ForeignKeyField(db_column='sid', null=True, rel_model=Sub,
-                          to_field='sid')
+    sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
+                          field='sid')
     text = CharField(null=True)
     xid = PrimaryKeyField()
 
@@ -126,8 +124,8 @@ class SubLog(db.Model):
     desc = CharField(null=True)
     lid = PrimaryKeyField()
     link = CharField(null=True)
-    sid = ForeignKeyField(db_column='sid', null=True, rel_model=Sub,
-                          to_field='sid')
+    sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
+                          field='sid')
     time = DateTimeField(null=True)
 
     class Meta:
@@ -136,8 +134,8 @@ class SubLog(db.Model):
 
 class SubMetadata(db.Model):
     key = CharField(null=True)
-    sid = ForeignKeyField(db_column='sid', null=True, rel_model=Sub,
-                          to_field='sid')
+    sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
+                          field='sid')
     value = CharField(null=True)
     xid = PrimaryKeyField()
 
@@ -154,13 +152,13 @@ class SubPost(db.Model):
     posted = DateTimeField(null=True)
     ptype = IntegerField(null=True)
     score = IntegerField(null=True)
-    sid = ForeignKeyField(db_column='sid', null=True, rel_model=Sub,
-                          to_field='sid')
+    sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
+                          field='sid')
     thumbnail = CharField(null=True)
     title = CharField(null=True)
     comments = IntegerField()
-    uid = ForeignKeyField(db_column='uid', null=True, rel_model=User,
-                          to_field='uid')
+    uid = ForeignKeyField(db_column='uid', null=True, model=User,
+                          field='uid')
     flair = CharField(null=True, max_length=25)
 
     class Meta:
@@ -172,14 +170,14 @@ class SubPostComment(db.Model):
     content = TextField(null=True)
     lastedit = DateTimeField(null=True)
     parentcid = ForeignKeyField(db_column='parentcid', null=True,
-                                rel_model='self', to_field='cid')
-    pid = ForeignKeyField(db_column='pid', null=True, rel_model=SubPost,
-                          to_field='pid')
+                                model='self', field='cid')
+    pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
+                          field='pid')
     score = IntegerField(null=True)
     status = IntegerField(null=True)
     time = DateTimeField(null=True)
-    uid = ForeignKeyField(db_column='uid', null=True, rel_model=User,
-                          to_field='uid')
+    uid = ForeignKeyField(db_column='uid', null=True, model=User,
+                          field='uid')
 
     class Meta:
         db_table = 'sub_post_comment'
@@ -189,8 +187,8 @@ class SubPostCommentVote(db.Model):
     datetime = DateTimeField(null=True)
     cid = CharField(null=True)
     positive = IntegerField(null=True)
-    uid = ForeignKeyField(db_column='uid', null=True, rel_model=User,
-                          to_field='uid')
+    uid = ForeignKeyField(db_column='uid', null=True, model=User,
+                          field='uid')
     xid = PrimaryKeyField()
 
     class Meta:
@@ -199,8 +197,8 @@ class SubPostCommentVote(db.Model):
 
 class SubPostMetadata(db.Model):
     key = CharField(null=True)
-    pid = ForeignKeyField(db_column='pid', null=True, rel_model=SubPost,
-                          to_field='pid')
+    pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
+                          field='pid')
     value = CharField(null=True)
     xid = PrimaryKeyField()
 
@@ -210,11 +208,11 @@ class SubPostMetadata(db.Model):
 
 class SubPostVote(db.Model):
     datetime = DateTimeField(null=True)
-    pid = ForeignKeyField(db_column='pid', null=True, rel_model=SubPost,
-                          to_field='pid')
+    pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
+                          field='pid')
     positive = IntegerField(null=True)
-    uid = ForeignKeyField(db_column='uid', null=True, rel_model=User,
-                          to_field='uid')
+    uid = ForeignKeyField(db_column='uid', null=True, model=User,
+                          field='uid')
     xid = PrimaryKeyField()
 
     class Meta:
@@ -223,8 +221,8 @@ class SubPostVote(db.Model):
 
 class SubStylesheet(db.Model):
     content = TextField(null=True)
-    sid = ForeignKeyField(db_column='sid', null=True, rel_model=Sub,
-                          to_field='sid')
+    sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
+                          field='sid')
     xid = PrimaryKeyField()
 
     class Meta:
@@ -233,12 +231,12 @@ class SubStylesheet(db.Model):
 
 class SubSubscriber(db.Model):
     order = IntegerField(null=True)
-    sid = ForeignKeyField(db_column='sid', null=True, rel_model=Sub,
-                          to_field='sid')
+    sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
+                          field='sid')
     status = IntegerField(null=True)
     time = DateTimeField(null=True)
-    uid = ForeignKeyField(db_column='uid', null=True, rel_model=User,
-                          to_field='uid')
+    uid = ForeignKeyField(db_column='uid', null=True, model=User,
+                          field='uid')
     xid = PrimaryKeyField()
 
     class Meta:
@@ -248,13 +246,13 @@ class SubSubscriber(db.Model):
 class Token(db.Model):
     _scopes = TextField(null=True)
     access_token = CharField(null=True, unique=True, max_length=100)
-    client = ForeignKeyField(db_column='client_id', rel_model=Client,
-                             to_field='client')
+    client = ForeignKeyField(db_column='client_id', model=Client,
+                             field='client')
     expires = DateTimeField(null=True)
     refresh_token = CharField(null=True, unique=True, max_length=100)
     token_type = CharField(null=True, max_length=40)
-    user = ForeignKeyField(db_column='user_id', null=True, rel_model=User,
-                           to_field='uid')
+    user = ForeignKeyField(db_column='user_id', null=True, model=User,
+                           field='uid')
 
     class Meta:
         db_table = 'token'
@@ -273,8 +271,8 @@ class UserBadge(db.Model):
 
 class UserMetadata(db.Model):
     key = CharField(null=True)
-    uid = ForeignKeyField(db_column='uid', null=True, rel_model=User,
-                          to_field='uid')
+    uid = ForeignKeyField(db_column='uid', null=True, model=User,
+                          field='uid')
     value = CharField(null=True)
     xid = PrimaryKeyField()
 
@@ -297,8 +295,8 @@ class Pixel(db.Model):
     posy = IntegerField()
     value = IntegerField()
     color = IntegerField()
-    uid = ForeignKeyField(db_column='uid', null=True, rel_model=User,
-                          to_field='uid')
+    uid = ForeignKeyField(db_column='uid', null=True, model=User,
+                          field='uid')
 
     class Meta:
         db_table = 'pixel'
@@ -307,8 +305,8 @@ class Pixel(db.Model):
 class Shekels(db.Model):
     xid = PrimaryKeyField()
     shekels = IntegerField()
-    uid = ForeignKeyField(db_column='uid', null=True, rel_model=User,
-                          to_field='uid')
+    uid = ForeignKeyField(db_column='uid', null=True, model=User,
+                          field='uid')
 
     class Meta:
         db_table = 'shekels'
@@ -333,10 +331,10 @@ class MiningSpeedLeaderboard(db.Model):
 
 class UserUploads(db.Model):
     xid = PrimaryKeyField()
-    pid = ForeignKeyField(db_column='pid', null=True, rel_model=SubPost,
-                          to_field='pid')
-    uid = ForeignKeyField(db_column='uid', null=True, rel_model=User,
-                          to_field='uid')
+    pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
+                          field='pid')
+    uid = ForeignKeyField(db_column='uid', null=True, model=User,
+                          field='uid')
     fileid = CharField(null=True)
     thumbnail = CharField(null=True)
     status = IntegerField()
