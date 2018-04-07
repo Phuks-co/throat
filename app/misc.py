@@ -1442,7 +1442,7 @@ def getMessagesSent(page):
     try:
         msg = Message.select(Message.mid, Message.sentby, User.name.alias('username'), Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
         msg = msg.join(User).where(Message.mtype == 1).where(Message.sentby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
-    except msg.DoesNotExist:
+    except Message.DoesNotExist:
         return False
     return msg
 
