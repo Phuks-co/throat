@@ -192,7 +192,7 @@ def delete_post():
         if current_user.uid not in subI['mod2'] and not current_user.is_admin() and not post.uid.uid == current_user.uid:
             return jsonify(status='error', error=['Not authorized'])
 
-        if post.uid == current_user.uid:
+        if post.uid.uid == current_user.uid:
             deletion = 1
         else:
             if not form.reason.data:
