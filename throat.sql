@@ -231,6 +231,7 @@ CREATE TABLE `sub_stylesheet` (
   `xid` int(11) NOT NULL AUTO_INCREMENT,
   `sid` varchar(40) DEFAULT NULL,
   `content` text,
+  `source` text,
   PRIMARY KEY (`xid`),
   KEY `sid` (`sid`),
   CONSTRAINT `sub_stylesheet_ibfk_1` FOREIGN KEY (`sid`) REFERENCES `sub` (`sid`)
