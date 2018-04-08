@@ -5,11 +5,10 @@ import time
 import re
 import uuid
 import socket
-from wsgiref.handlers import format_date_time
 import datetime
 import bcrypt
 from flask import Flask, render_template, session, redirect, url_for, abort, g
-from flask import make_response, Markup, request, jsonify
+from flask import Markup, request, jsonify
 from flask_login import LoginManager, login_required, current_user, login_user
 from flask_webpack import Webpack
 from feedgen.feed import FeedGenerator
@@ -47,6 +46,7 @@ app.jinja_env.cache = {}
 
 app.register_blueprint(do)
 app.register_blueprint(api)
+
 app.config.from_object('config')
 app.config['WEBPACK_MANIFEST_PATH'] = 'manifest.json'
 if app.config['TESTING']:
@@ -61,29 +61,11 @@ caching.cache.init_app(app)
 
 login_manager = LoginManager(app)
 login_manager.anonymous_user = SiteAnon
-origstatic = app.view_functions['static']
 
 engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config,
                            'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,
                            'form': forms, 'hostname': socket.gethostname(), 'datetime': datetime,
                            'e': escape_html})
-
-
-def cache_static(*args, **kwargs):
-    """ We use this to make a far-expiry cache when we serve the assets
-    directly (like we do in Heroku). This makes the browser just use the cached
-    resources instead of checking if they changed and getting a 302
-    response. """
-    response = make_response(origstatic(*args, **kwargs))
-    expires_time = time.mktime((datetime.datetime.now() +
-                                datetime.timedelta(days=365)).timetuple())
-
-    response.headers['Cache-Control'] = 'public, max-age=31536000'
-    response.headers['Expires'] = format_date_time(expires_time)
-    return response
-
-
-app.view_functions['static'] = cache_static
 
 
 @app.template_filter('rnentity')
