@@ -1983,10 +1983,16 @@ def sub_upload_delete(sub, name):
         img = SubUploads.get((SubUploads.sid == sub.sid) & (SubUploads.name == name))
     except SubUploads.DoesNotExist:
         jsonify(status='error')
-
-    try:
-        UserUploads.get(UserUploads.fileid == img)
-    except UserUploads.DoesNotExist:
-        os.remove(os.path.join(config.THUMBNAILS, img.fileid))
+    fileid = img.fileid
     img.delete_instance()
+
+    # We won't delete the pic if somebody else is still using it..
+    try:
+        UserUploads.get(UserUploads.fileid == fileid)
+    except UserUploads.DoesNotExist:
+        try:
+            SubUploads.get(SubUploads.fileid == img.fileid)
+        except SubUploads.DoesNotExist:
+            os.remove(os.path.join(config.THUMBNAILS, img.fileid))
+
     return jsonify(status='ok')
