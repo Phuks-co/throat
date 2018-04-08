@@ -94,12 +94,6 @@ def do_magic_stuff():
     if 'usid' not in session:
         session['usid'] = 'us' + str(uuid.uuid4())
 
-# @app.before_first_request
-# def initialize_database():
-#     """ This is executed before any request is processed. We use this to
-#     create all the tables and database shit we need. """
-#     db.create_all()
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -126,6 +120,8 @@ def after_request(response):
 
     if not hasattr(g, 'qc'):
         g.qc = 0
+    if not hasattr(g, 'pqc'):
+        g.pqc = 0
     if response.response and isinstance(response.response, list):
         etime = str(diff).encode()
 
