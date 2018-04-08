@@ -4,10 +4,14 @@ import os
 LEMA = "Throat: Open discussion ;D"
 COPY = "2016 Throat. All Rights Reserved."
 
+# XXX: LEGACY - FIX EVERYTHING AND REMOVE THIS BLOCK
 DB_HOST = 'localhost'
 DB_USER = os.getenv('DB_USER') or 'root'
 DB_PASSWD = os.getenv('DB_PASSWD') or ''
 DB_NAME = os.getenv('DB_NAME') or 'phuks'
+
+# peewee
+DATABASE_URL = 'mysql://root:@localhost/phuks'
 
 # Method used to memoize stuff.
 CACHE_TYPE = 'simple'
@@ -36,14 +40,6 @@ THUMBNAIL_HOST = "https://foo.bar/"
 STORAGE = "./stor"
 STORAGE_HOST = "https://i.foo.bar/"
 
-# peewee
-DATABASE = {
-    'name': DB_NAME,
-    'engine': 'MySQLDatabase',
-    'user': DB_USER,
-    'password': DB_PASSWD,
-    'host': DB_HOST
-}
 
 # SID of changelog sub
 CHANGELOG_SUB = '9a79b49e-7bd3-4535-8ad6-ba11fc1d0ef5'
