@@ -451,36 +451,25 @@ def getVoteStatus(uid, pid):
 @cache.memoize(20)
 def get_post_upcount(pid):
     """ Returns the upvote count """
-    c = db.query('SELECT positive FROM `sub_post_vote` WHERE '
-                 '`pid`=%s', (pid, ))
-    score = 0
-    for i in c.fetchall():
-        if i['positive']:
-            score += 1
-    return score
+    score = SubPostVote.select().where(SubPostVote.pid == pid).where(SubPostVote.positive == 1).count()
+    return score + 1
 
 
 @cache.memoize(20)
 def get_post_downcount(pid):
     """ Returns the downvote count """
-    c = db.query('SELECT positive FROM `sub_post_vote` WHERE '
-                 '`pid`=%s', (pid, ))
-    score = 0
-    for i in c.fetchall():
-        if not i['positive']:
-            score += 1
+    score = SubPostVote.select().where(SubPostVote.pid == pid).where(SubPostVote.positive == 0).count()
     return score
 
 
 @cache.memoize(20)
 def get_comment_voting(cid):
     """ Returns a tuple with the up/downvote counts """
-    c = db.query('SELECT positive FROM `sub_post_comment_vote` WHERE '
-                 '`cid`=%s', (cid, ))
+    c = SubPostCommentVote.select().where(SubPostCommentVote.cid == cid)
     upvote = 0
     downvote = 0
-    for i in c.fetchall():
-        if i['positive']:
+    for i in c:
+        if i.positive:
             upvote += 1
         else:
             downvote += 1
