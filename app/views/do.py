@@ -186,7 +186,7 @@ def create_sub():
         SubMetadata.create(sid=sub.sid, key='mod', value=current_user.uid)
         SubMetadata.create(sid=sub.sid, key='mod1', value=current_user.uid)
         SubMetadata.create(sid=sub.sid, key='creation', value=datetime.datetime.utcnow())
-        SubStylesheet.create(sid=sub.sid, content='/* CSS here */')
+        SubStylesheet.create(sid=sub.sid, source='/* CSS here */')
 
         # admin/site log
         SiteLog.create(action=6, link=url_for('view_sub', sub=sub.name),
