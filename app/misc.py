@@ -10,6 +10,7 @@ import hashlib
 import re
 import pyexiv2
 import bcrypt
+import tinycss2
 from datetime import datetime, timedelta
 from io import BytesIO
 from PIL import Image
@@ -27,9 +28,20 @@ from .badges import badges
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
 from .models import SubPostVote, MiningLeaderboard, SubPostComment, SubPostCommentVote
-from .models import MiningSpeedLeaderboard, SubMetadata, rconn, SubStylesheet, UserIgnores
+from .models import MiningSpeedLeaderboard, SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads
 from peewee import JOIN, fn
 import requests
+
+
+from wheezy.template.engine import Engine
+from wheezy.template.ext.core import CoreExtension
+from wheezy.template.loader import FileLoader
+
+engine = Engine(
+    loader=FileLoader([os.path.split(__file__)[0] + '/html']),
+    extensions=[CoreExtension()]
+)
+
 
 redis = Redis(host=config.CACHE_REDIS_HOST,
               port=config.CACHE_REDIS_PORT,
@@ -1635,3 +1647,36 @@ def validate_password(usr, passwd):
         if thash == usr.password.encode('utf-8'):
             return True
     return False
+
+
+def iter_validate_css(obj, uris):
+    for x in obj:
+        if x.__class__.__name__ == "URLToken":
+            if x.value.startswith('%%') and x.value.endswith('%%'):
+                token = x.value.replace('%%', '').strip()
+                if uris.get(token):
+                    x.value = uris.get(token)
+            else:
+                return ("URLs not allowed, uploaded files only", x.source_column, x.source_line)
+        elif x.__class__.__name__ == "CurlyBracketsBlock":
+            return iter_validate_css(x.content)
+    return True
+
+
+def validate_css(css, sid):
+    """ Validates CSS. Returns parsed stylesheet or (errcode, col, line)"""
+    st = tinycss2.parse_stylesheet(css, skip_comments=True, skip_whitespace=True)
+    # create a map for uris.
+    uris = {}
+    for su in SubUploads.select().where(SubUploads.sid == sid):
+        uris[su.name] = config.STORAGE_HOST + su.fileid
+    for x in st:
+        if x.__class__.__name__ == "AtRule":
+            if x.at_keyword.lower() == "import":
+                return ("@import token not allowed", x.source_column, x.source_line)  # we do not allow @import
+        elif x.__class__.__name__ == "QualifiedRule":  # down the hole we go.
+            m = iter_validate_css(x.content, uris)
+            if m is not True:
+                return m
+
+    return (0, tinycss2.serialize(st))

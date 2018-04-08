@@ -221,6 +221,7 @@ class SubPostVote(db.Model):
 
 class SubStylesheet(db.Model):
     content = TextField(null=True)
+    source = TextField()
     sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
                           field='sid')
     xid = PrimaryKeyField()
@@ -341,6 +342,14 @@ class UserUploads(db.Model):
 
     class Meta:
         table_name = 'user_uploads'
+
+
+class SubUploads(db.Model):
+    sid = ForeignKeyField(db_column='sid', model=Sub, field='sid')
+    fileid = CharField()
+    thumbnail = CharField()
+    name = CharField()
+    size = IntegerField()
 
 
 class UserIgnores(db.Model):

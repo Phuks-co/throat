@@ -28,22 +28,13 @@ from .views.api import oauth
 from . import misc, forms, caching
 from .socketio import socketio
 from . import database as db
-from .misc import SiteAnon, getSuscriberCount, getDefaultSubs, allowedNames, get_errors
+from .misc import SiteAnon, getSuscriberCount, getDefaultSubs, allowedNames, get_errors, engine
 from .models import db as pdb
-from .models import Sub, SubPost, User, SubPostComment, SubMetadata
+from .models import Sub, SubPost, User, SubPostComment, SubMetadata, SubStylesheet, SubUploads
 
 # /!\ EXPERIMENTAL /!\
 import config
-from wheezy.template.engine import Engine
-from wheezy.template.ext.core import CoreExtension
-from wheezy.template.loader import FileLoader
 from wheezy.html.utils import escape_html
-
-import os
-engine = Engine(
-    loader=FileLoader([os.path.split(__file__)[0] + '/html']),
-    extensions=[CoreExtension()]
-)
 
 # from werkzeug.contrib.profiler import ProfilerMiddleware
 
@@ -499,19 +490,23 @@ def view_sub(sub):
 @login_required
 def edit_sub_css(sub):
     """ Here we can edit sub info and settings """
-    sub = db.get_sub_from_name(sub)
-    if not sub:
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
         abort(404)
 
-    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
+    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
         abort(403)
 
-    c = db.query('SELECT `content` FROM `sub_stylesheet` WHERE `sid`=%s',
-                 (sub['sid'], ))
-    c = c.fetchone()['content']
-    form = EditSubCSSForm(css=c)
+    c = SubStylesheet.get(SubStylesheet.sid == sub.sid)
 
-    return render_template('editsubcss.html', sub=sub, form=form)
+    form = EditSubCSSForm(css=c.source)
+    stor = 0
+    ufiles = SubUploads.select().where(SubUploads.sid == sub.sid)
+    for uf in ufiles:
+        stor += uf.size / 1024
+
+    return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'error': False, 'storage': int(stor), 'files': ufiles})
 
 
 @app.route("/s/<sub>/edit/flairs")

@@ -8,6 +8,11 @@ import uuid
 import bcrypt
 from urllib.parse import urlparse
 import requests
+import magic
+import hashlib
+import os
+import pyexiv2
+from PIL import Image
 from bs4 import BeautifulSoup
 from flask import Blueprint, redirect, url_for, session, abort, jsonify
 from flask import render_template, request
@@ -26,9 +31,9 @@ from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm
-from ..misc import cache, sendMail, allowedNames, get_errors
+from ..misc import cache, sendMail, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata
-from ..models import SubStylesheet, SubSubscriber
+from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads
 
 do = Blueprint('do', __name__)
 
@@ -198,22 +203,29 @@ def create_sub():
 @login_required
 def edit_sub_css(sub):
     """ Edit sub endpoint """
-    sub = db.get_sub_from_name(sub)
-    if not sub:
-        return json.dumps({'status': 'error',
-                           'error': ['Sub does not exist']})
-    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
-        abort(403)
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=["Sub does not exist"])
+
+    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+        return jsonify(status='error', error=["Not authorized"])
 
     form = EditSubCSSForm()
     if form.validate():
-        db.uquery('UPDATE `sub_stylesheet` SET `content`=%s WHERE `sid`=%s',
-                  (form.css.data, sub['sid']))
-        db.create_sublog(sub['sid'], 4,
-                         'CSS edited by ' + current_user.get_username())
+        styles = SubStylesheet.get(SubStylesheet.sid == sub.sid)
+        dcss = misc.validate_css(form.css.data, sub.sid)
+        if dcss[0] != 0:
+            return jsonify(status='error', error=['Error on {0}:{1}: {2}'.format(dcss[1], dcss[2], dcss[0])])
+
+        styles.content = dcss[1]
+        styles.source = form.css.data
+        styles.save()
+        SubLog.create(sid=sub.sid, action=4, link=url_for('view_sub', sub=sub.name),
+                      desc='{0} modified the sub\'s stylesheet'.format(current_user.name))
 
         return json.dumps({'status': 'ok',
-                           'addr': url_for('view_sub', sub=sub['name'])})
+                           'addr': url_for('view_sub', sub=sub.name)})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -1845,3 +1857,136 @@ def ignore_user(uid):
     except UserIgnores.DoesNotExist:
         uig = UserIgnores.create(uid=current_user.uid, target=user.uid)
         return jsonify(status='ok', action='ignore')
+
+
+@do.route('/do/upload/<sub>', methods=['POST'])
+@login_required
+def sub_upload(sub):
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
+        abort(404)
+
+    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+        abort(403)
+
+    c = SubStylesheet.get(SubStylesheet.sid == sub.sid)
+    form = EditSubCSSForm(css=c.source)
+    # get remaining space
+    remaining = 1024 * 1024  # 1M
+    ufiles = SubUploads.select().where(SubUploads.sid == sub.sid)
+    for uf in ufiles:
+        remaining -= uf.size
+
+    fname = request.form.get('name')
+    if len(fname) > 10:
+        return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
+                                                           'error': 'File name too long.', 'files': ufiles})
+
+    if len(fname) < 3:
+        return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
+                                                           'error': 'File name too short or missing.', 'files': ufiles})
+
+    if not allowedNames.match(fname):
+        return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
+                                                           'error': 'Invalid file name.', 'files': ufiles})
+
+    ufile = request.files.getlist('files')[0]
+    if ufile.filename == '':
+        return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
+                                                           'error': 'Please select a file to upload.', 'files': ufiles})
+
+    mtype = magic.from_buffer(ufile.read(1024), mime=True)
+
+    if mtype == 'image/jpeg':
+        extension = '.jpg'
+    elif mtype == 'image/png':
+        extension = '.png'
+    elif mtype == 'image/gif':
+        extension = '.gif'
+    else:
+        return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
+                                                           'error': 'Invalid file type. Only jpg, png and gif allowed.', 'files': ufiles})
+
+    ufile.seek(0)
+    md5 = hashlib.md5()
+    while True:
+        data = ufile.read(65536)
+        if not data:
+            break
+        md5.update(data)
+
+    f_name = str(uuid.uuid5(misc.FILE_NAMESPACE, md5.hexdigest())) + extension
+    ufile.seek(0)
+    lm = False
+    if not os.path.isfile(os.path.join(config.STORAGE, f_name)):
+        lm = True
+        ufile.save(os.path.join(config.STORAGE, f_name))
+        # remove metadata
+        if mtype != 'image/gif':  # Apparently we cannot write to gif images
+            md = pyexiv2.ImageMetadata(os.path.join(config.STORAGE, f_name))
+            md.read()
+            for k in (md.exif_keys + md.iptc_keys + md.xmp_keys):
+                del md[k]
+            md.write()
+    # sadly, we can only get file size accurately after saving it
+    fsize = os.stat(os.path.join(config.STORAGE, f_name)).st_size
+    if fsize > remaining:
+        if lm:
+            os.remove(os.path.join(config.STORAGE, f_name))
+        return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
+                                                           'error': 'Not enough available space to upload file.', 'files': ufiles})
+    # THUMBNAIL
+    ufile.seek(0)
+    im = Image.open(ufile).convert('RGB')
+    x, y = im.size
+    while y > x:
+        slice_height = min(y - x, 10)
+        bottom = im.crop((0, y - slice_height, x, y))
+        top = im.crop((0, 0, x, slice_height))
+
+        if misc._image_entropy(bottom) < misc._image_entropy(top):
+            im = im.crop((0, 0, x, y - slice_height))
+        else:
+            im = im.crop((0, slice_height, x, y))
+
+        x, y = im.size
+
+    im.thumbnail((70, 70), Image.ANTIALIAS)
+
+    im.seek(0)
+    md5 = hashlib.md5(im.tobytes())
+    filename = str(uuid.uuid5(misc.THUMB_NAMESPACE, md5.hexdigest())) + '.jpg'
+    im.seek(0)
+    if not os.path.isfile(os.path.join(config.THUMBNAILS, filename)):
+        im.save(os.path.join(config.THUMBNAILS, filename), "JPEG", optimize=True, quality=85)
+    im.close()
+
+    SubUploads.create(sid=sub.sid, fileid=f_name, thumbnail=filename, size=fsize, name=fname)
+    return redirect(url_for('edit_sub_css', sub=sub.name))
+
+
+@do.route('/do/upload/<sub>/delete/<name>', methods=['POST'])
+@login_required
+def sub_upload_delete(sub, name):
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
+        jsonify(status='error')  # descriptive errors where?
+    form = DummyForm()
+    if not form.validate():
+        return redirect(url_for('edit_sub_css', sub=sub.name))
+    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+        jsonify(status='error')
+
+    try:
+        img = SubUploads.get((SubUploads.sid == sub.sid) & (SubUploads.name == name))
+    except SubUploads.DoesNotExist:
+        jsonify(status='error')
+
+    try:
+        UserUploads.get(UserUploads.fileid == img)
+    except UserUploads.DoesNotExist:
+        os.remove(os.path.join(config.THUMBNAILS, img.fileid))
+    img.delete_instance()
+    return jsonify(status='ok')

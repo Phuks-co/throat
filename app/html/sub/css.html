@@ -1,0 +1,60 @@
+@extends("shared/layout.html")
+@require(error, sub, form, storage, files)
+@def main():
+
+<div id="container">
+  @if not current_user.is_mod(sub.sid) and current_user.is_admin():
+  <div class="important"><h3>Editing as Admin</h3></div>
+  @end
+
+  <h2>Editing <a href="@{url_for('view_sub', sub=sub.name)}">/s/@{sub.name}</a></h2>
+
+  <div class="content createpost">
+    <form  method="POST" class="ajaxform" action="@{url_for('do.edit_sub_css', sub=sub.name)}">
+      @{form.csrf_token()}
+      <div class="pure-control-group">
+        <div>
+          <label for="css">@{form.css.label.text}</label>
+          @{form.css(style="width:100%; font-family:monospace", rows=50)}
+        </div>
+      </div>
+      <div class="alert div-error"></div>
+      <div class="pure-controls">
+        <button id="editsub-btnsubmit" type="submit" class="pure-button pure-button-primary" data-success="Saved!">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <hr>
+  <h3>Upload files</h3>
+  Upload limit is 1 MiB. Space used: @{storage!!s} KiB
+  <form  method="POST" style="margin-top: 1em" action="@{url_for('do.sub_upload', sub=sub.name)}" class="pure-form pure-form-aligned" enctype="multipart/form-data">
+    @if error:
+      <div class="error">@{error}</div>
+    @end
+      <input type="text" name="name" pattern="^[a-zA-Z0-9_-]+$" placeholder="Name" required/>
+      <input type="file" name="files" placeholder="Only images allowed" />
+      <button type="submit" class="pure-button pure-button-primary">Upload</button>
+  </form>
+  <br/>
+  @if files.count() == 0:
+    No files were uploaded, yet.
+  @else:
+    @for f in files:
+      <div><img alt="Thumbnail" src="@{config.THUMBNAIL_HOST}@{f.thumbnail}"/>
+      Filename: @{f.name!!e}. Size: @{int(f.size/1024)!!s} KiB.
+      <form  method="POST" data-reload="true" action="@{url_for('do.sub_upload_delete', sub=sub.name, name=f.name)}" class="ajaxform" style="display: inline-block; margin-left: 1em; margin-top: 5px;">
+      @{form.csrf_token()}<button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="Deleting..." data-success="Deleted!">Delete</button></form>
+    </div>
+    @end
+  @end
+  <hr/>
+  <p>You can use uploaded images with <code>%%imagename%%</code>.</p>
+  <p>Example:
+    <pre>
+      body{
+        background: url(%%mybackground%%);
+      }</pre>
+  </p>
+</div>
+@end
