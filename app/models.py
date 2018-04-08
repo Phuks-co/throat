@@ -1,18 +1,38 @@
 import datetime
-from peewee import IntegerField, DateTimeField, BooleanField
+from flask import g
+from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model
 from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
-from playhouse.flask_utils import FlaskDB
+from playhouse.db_url import connect as db_url_connect
 import config
 import redis
 
 # Why not here? >_>
 rconn = redis.from_url(config.SOCKETIO_REDIS_URL)
 
+dbm = db_url_connect(config.DATABASE_URL)
+dex = dbm.execute
 
-db = FlaskDB()
+
+def peewee_count_queries(*args, **kwargs):
+    if not hasattr(g, 'pqc'):
+        g.pqc = 0
+    g.pqc += 1
+    return dex(*args, **kwargs)
 
 
-class User(db.Model):
+dbm.execute = peewee_count_queries
+
+
+db = Proxy()
+db.initialize(dbm)
+
+
+class TModel(Model):
+    class Meta:
+        database = db
+
+
+class User(TModel):
     uid = CharField(primary_key=True, max_length=40)
     crypto = IntegerField()  # Password hash algo, 1 = bcrypt.
     email = CharField(null=True)
@@ -30,7 +50,7 @@ class User(db.Model):
         table_name = 'user'
 
 
-class Client(db.Model):
+class Client(TModel):
     _default_scopes = TextField(null=True)
     _redirect_uris = TextField(null=True)
     client = CharField(db_column='client_id', primary_key=True, max_length=40)
@@ -43,7 +63,7 @@ class Client(db.Model):
         table_name = 'client'
 
 
-class Grant(db.Model):
+class Grant(TModel):
     _scopes = TextField(null=True)
     client = ForeignKeyField(db_column='client_id', model=Client, field='client')
     code = CharField(index=True)
@@ -56,7 +76,7 @@ class Grant(db.Model):
         table_name = 'grant'
 
 
-class Message(db.Model):
+class Message(TModel):
     content = TextField(null=True)
     mid = PrimaryKeyField()
     mlink = CharField(null=True)
@@ -73,7 +93,7 @@ class Message(db.Model):
         table_name = 'message'
 
 
-class SiteLog(db.Model):
+class SiteLog(TModel):
     action = IntegerField(null=True)
     desc = CharField(null=True)
     lid = PrimaryKeyField()
@@ -84,7 +104,7 @@ class SiteLog(db.Model):
         table_name = 'site_log'
 
 
-class SiteMetadata(db.Model):
+class SiteMetadata(TModel):
     key = CharField(null=True)
     value = CharField(null=True)
     xid = PrimaryKeyField()
@@ -93,7 +113,7 @@ class SiteMetadata(db.Model):
         table_name = 'site_metadata'
 
 
-class Sub(db.Model):
+class Sub(TModel):
     name = CharField(null=True, unique=True, max_length=32)
     nsfw = BooleanField(default=False)
     sid = CharField(primary_key=True, max_length=40)
@@ -109,7 +129,7 @@ class Sub(db.Model):
         table_name = 'sub'
 
 
-class SubFlair(db.Model):
+class SubFlair(TModel):
     sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
                           field='sid')
     text = CharField(null=True)
@@ -119,7 +139,7 @@ class SubFlair(db.Model):
         table_name = 'sub_flair'
 
 
-class SubLog(db.Model):
+class SubLog(TModel):
     action = IntegerField(null=True)
     desc = CharField(null=True)
     lid = PrimaryKeyField()
@@ -132,7 +152,7 @@ class SubLog(db.Model):
         table_name = 'sub_log'
 
 
-class SubMetadata(db.Model):
+class SubMetadata(TModel):
     key = CharField(null=True)
     sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
                           field='sid')
@@ -143,7 +163,7 @@ class SubMetadata(db.Model):
         table_name = 'sub_metadata'
 
 
-class SubPost(db.Model):
+class SubPost(TModel):
     content = TextField(null=True)
     deleted = IntegerField(null=True)
     link = CharField(null=True)
@@ -165,7 +185,7 @@ class SubPost(db.Model):
         table_name = 'sub_post'
 
 
-class SubPostComment(db.Model):
+class SubPostComment(TModel):
     cid = CharField(primary_key=True, max_length=40)
     content = TextField(null=True)
     lastedit = DateTimeField(null=True)
@@ -183,7 +203,7 @@ class SubPostComment(db.Model):
         table_name = 'sub_post_comment'
 
 
-class SubPostCommentVote(db.Model):
+class SubPostCommentVote(TModel):
     datetime = DateTimeField(null=True)
     cid = CharField(null=True)
     positive = IntegerField(null=True)
@@ -195,7 +215,7 @@ class SubPostCommentVote(db.Model):
         table_name = 'sub_post_comment_vote'
 
 
-class SubPostMetadata(db.Model):
+class SubPostMetadata(TModel):
     key = CharField(null=True)
     pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
                           field='pid')
@@ -206,7 +226,7 @@ class SubPostMetadata(db.Model):
         table_name = 'sub_post_metadata'
 
 
-class SubPostVote(db.Model):
+class SubPostVote(TModel):
     datetime = DateTimeField(null=True)
     pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
                           field='pid')
@@ -219,7 +239,7 @@ class SubPostVote(db.Model):
         table_name = 'sub_post_vote'
 
 
-class SubStylesheet(db.Model):
+class SubStylesheet(TModel):
     content = TextField(null=True)
     source = TextField()
     sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
@@ -230,7 +250,7 @@ class SubStylesheet(db.Model):
         table_name = 'sub_stylesheet'
 
 
-class SubSubscriber(db.Model):
+class SubSubscriber(TModel):
     order = IntegerField(null=True)
     sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
                           field='sid')
@@ -244,7 +264,7 @@ class SubSubscriber(db.Model):
         table_name = 'sub_subscriber'
 
 
-class Token(db.Model):
+class Token(TModel):
     _scopes = TextField(null=True)
     access_token = CharField(null=True, unique=True, max_length=100)
     client = ForeignKeyField(db_column='client_id', model=Client,
@@ -259,7 +279,7 @@ class Token(db.Model):
         table_name = 'token'
 
 
-class UserBadge(db.Model):
+class UserBadge(TModel):
     badge = CharField(null=True)
     bid = CharField(primary_key=True, max_length=40)
     name = CharField(null=True, max_length=40)
@@ -270,7 +290,7 @@ class UserBadge(db.Model):
         table_name = 'user_badge'
 
 
-class UserMetadata(db.Model):
+class UserMetadata(TModel):
     key = CharField(null=True)
     uid = ForeignKeyField(db_column='uid', null=True, model=User,
                           field='uid')
@@ -281,7 +301,7 @@ class UserMetadata(db.Model):
         table_name = 'user_metadata'
 
 
-class UserSaved(db.Model):
+class UserSaved(TModel):
     pid = IntegerField(null=True)
     uid = CharField(null=True)
     xid = PrimaryKeyField()
@@ -290,7 +310,7 @@ class UserSaved(db.Model):
         table_name = 'user_saved'
 
 
-class Pixel(db.Model):
+class Pixel(TModel):
     xid = PrimaryKeyField()
     posx = IntegerField()
     posy = IntegerField()
@@ -303,7 +323,7 @@ class Pixel(db.Model):
         table_name = 'pixel'
 
 
-class Shekels(db.Model):
+class Shekels(TModel):
     xid = PrimaryKeyField()
     shekels = IntegerField()
     uid = ForeignKeyField(db_column='uid', null=True, model=User,
@@ -313,7 +333,7 @@ class Shekels(db.Model):
         table_name = 'shekels'
 
 
-class MiningLeaderboard(db.Model):
+class MiningLeaderboard(TModel):
     xid = PrimaryKeyField()
     username = CharField()  # TODO: MAKE UNIQUE!!
     score = IntegerField()
@@ -322,7 +342,7 @@ class MiningLeaderboard(db.Model):
         table_name = 'mining_leaderboard'
 
 
-class MiningSpeedLeaderboard(db.Model):
+class MiningSpeedLeaderboard(TModel):
     username = CharField()  # TODO: MAKE UNIQUE!!
     hashes = IntegerField()
 
@@ -330,7 +350,7 @@ class MiningSpeedLeaderboard(db.Model):
         table_name = 'mining_speed_leaderboard'
 
 
-class UserUploads(db.Model):
+class UserUploads(TModel):
     xid = PrimaryKeyField()
     pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
                           field='pid')
@@ -344,7 +364,7 @@ class UserUploads(db.Model):
         table_name = 'user_uploads'
 
 
-class SubUploads(db.Model):
+class SubUploads(TModel):
     sid = ForeignKeyField(db_column='sid', model=Sub, field='sid')
     fileid = CharField()
     thumbnail = CharField()
@@ -352,7 +372,7 @@ class SubUploads(db.Model):
     size = IntegerField()
 
 
-class UserIgnores(db.Model):
+class UserIgnores(TModel):
     uid = ForeignKeyField(db_column='uid', model=User,
                           field='uid')
     target = CharField(max_length=40)

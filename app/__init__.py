@@ -41,7 +41,6 @@ app = Flask(__name__)
 webpack = Webpack()
 app.jinja_env.cache = {}
 
-# app.config['PROFILE'] = True
 # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 
 app.register_blueprint(do)
@@ -53,8 +52,8 @@ if app.config['TESTING']:
     import logging
     logging.basicConfig(level=logging.WARNING)
 
+
 webpack.init_app(app)
-pdb.init_app(app)
 oauth.init_app(app)
 socketio.init_app(app, message_queue=app.config['SOCKETIO_REDIS_URL'])
 caching.cache.init_app(app)
@@ -74,7 +73,7 @@ def rnentity(text):
     return Markup(text.replace('\r\n', '&#10;').replace('\n', '&#10;'))
 
 
-@app.teardown_appcontext
+@app.teardown_request
 def close_db(error):
     """Closes the database again at the end of the request."""
     if hasattr(g, 'dbmod'):
@@ -82,6 +81,9 @@ def close_db(error):
 
     if hasattr(g, 'db'):
         g.db.close()
+
+    if not pdb.is_closed():
+        pdb.close()
 
 
 @app.before_request
@@ -131,7 +133,7 @@ def after_request(response):
                                        .replace(b'__EXECUTION_TIME__', etime)
         response.response[0] = response.response[0] \
                                        .replace(b'__DB_QUERIES__',
-                                                str(g.qc).encode())
+                                                str(g.qc).encode() + b'/' + str(g.pqc).encode())
         response.headers["content-length"] = len(response.response[0])
     return response
 
