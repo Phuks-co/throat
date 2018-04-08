@@ -11,7 +11,7 @@ DB_PASSWD = os.getenv('DB_PASSWD') or ''
 DB_NAME = os.getenv('DB_NAME') or 'phuks'
 
 # peewee
-DATABASE_URL = 'mysql://{0}:{1}@localhost/{2}'.format(DB_HOST, DB_PASSWD, DB_NAME)
+DATABASE_URL = 'mysql://{0}:{1}@localhost/{2}'.format(DB_USER, DB_PASSWD, DB_NAME)
 
 # Method used to memoize stuff.
 CACHE_TYPE = 'simple'
