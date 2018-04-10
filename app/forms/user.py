@@ -89,7 +89,6 @@ class EditUserForm(FlaskForm):
     external_links = BooleanField('Open external links in a new window')
     disable_sub_style = BooleanField('Disable custom sub styles')
     show_nsfw = BooleanField('Show NSFW content')
-    recaptcha = RecaptchaField('Captcha')
     password = PasswordField('New password', [
         OptionalIfFieldIsEmpty('password'),
         EqualTo('confirm', message='Passwords must match'),
