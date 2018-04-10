@@ -63,12 +63,10 @@ u.sub('#ptoggle', 'click', function(e){
   if(val=='text'){
     document.getElementById('txcont').style.display = 'block';
     document.getElementById('link').removeAttribute('required');
-    document.getElementById('content').setAttribute('required', true);
     u.each('.lncont', function(e){e.style.display='none';});
   }else{
     document.getElementById('txcont').style.display = 'none';
     document.getElementById('link').setAttribute('required', true);
-    document.getElementById('content').removeAttribute('required');
     u.each('.lncont', function(e){e.style.display='inline-block';});
   }
 });
