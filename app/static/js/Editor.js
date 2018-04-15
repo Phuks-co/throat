@@ -16,21 +16,22 @@ function makeThingy(name, title, fn){
   return x;
 }
 
+
 function initializeEditor(element){
     var el =  document.createElement( "div" );
     var textarea = element.children[0];
     el.classList.add('editbtns');
 
-    el.appendChild(makeThingy('bold', 'Bold', function(e){addTags(textarea, '**', '**');}));
-    el.appendChild(makeThingy('italic', 'Italic', function(e){addTags(textarea, '*', '*');}));
-    el.appendChild(makeThingy('strikethrough', 'Strikethrough', function(e){addTags(textarea, '~~', '~~');}));
-    el.appendChild(makeThingy('title', 'Title', function(e){addTags(textarea, '# ', '');}));
+    el.appendChild(makeThingy('bold', 'Bold (ctrl-b)', function(e){addTags(textarea, '**', '**');}));
+    el.appendChild(makeThingy('italic', 'Italic (ctrl-i)', function(e){addTags(textarea, '*', '*');}));
+    el.appendChild(makeThingy('strikethrough', 'Strikethrough (ctrl-shift-s)', function(e){addTags(textarea, '~~', '~~');}));
+    el.appendChild(makeThingy('title', 'Title (ctrl-shift-h)', function(e){addTags(textarea, '# ', '');}));
 
     var x = document.createElement('span');
     x.className='separator';
     el.appendChild(x);
 
-    el.appendChild(makeThingy('link', 'Insert link', function(e){
+    var makeLink = function (e){
       var uri = prompt('Insert hyperlink');
       if(uri){
         if(getCursorSelection(textarea)[1] == ''){
@@ -39,7 +40,9 @@ function initializeEditor(element){
           addTags(textarea, '[', '](' + uri + ')');
         }
       }
-    }));
+    }
+
+    el.appendChild(makeThingy('link', 'Insert link (ctrl-shift-k)', makeLink));
 
     x = document.createElement('span');
     x.className='separator';
@@ -53,9 +56,25 @@ function initializeEditor(element){
     el.appendChild(x);
 
     el.appendChild(makeThingy('code', 'Code', function(e){addTags(textarea, '`', '`');}));
-    el.appendChild(makeThingy('quote', 'Quote', function(e){addTags(textarea, '> ', '');}));
+    el.appendChild(makeThingy('quote', 'Quote (ctrl-shift-.)', function(e){addTags(textarea, '> ', '');}));
 
     element.insertBefore(el, element.firstChild);
+
+    textarea.onkeyup = function(e){
+      if(e.ctrlKey == true && e.which == 66){
+        addTags(textarea, '**', '**');
+      }else if(e.ctrlKey == true  && e.which == 73){
+        addTags(textarea, '*', '*');
+      }else if(e.ctrlKey == true && e.shiftKey == true && e.which == 83){
+        addTags(textarea, '~~', '~~');
+      }else if(e.ctrlKey == true && e.shiftKey == true && e.which == 72){
+        addTags(textarea, '# ', '');
+      }else if(e.ctrlKey == true && e.shiftKey == true && e.which == 75){
+        makeLink(e);
+      }else if(e.ctrlKey == true && e.shiftKey == true && e.which == 190){
+        addTags(textarea, '> ', '');
+      }
+    }
 }
 
 
