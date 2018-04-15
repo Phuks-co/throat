@@ -1344,8 +1344,10 @@ def register():
         defaults = getDefaultSubs()
         for d in defaults:
             db.create_subscription(user['uid'], d['sid'], 1)
-
-        login_user(misc.load_user(user['uid']))
+        g.db.commit()
+        theuser = misc.load_user(user['uid'])
+        print(theuser)
+        login_user(theuser, remember=True)
         return redirect(url_for('welcome'))
 
     return render_template('register.html', error=get_errors(form))
