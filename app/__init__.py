@@ -1328,6 +1328,10 @@ def register():
         if x.fetchone() and form.email.data != '':
             return render_template('register.html', error="E-mail address is already in use.")
 
+        if getattr(config, 'ENABLE_SECURITY_QUESTIONS', False):
+            if form.securityanswer.data.lower() != session['sa'].lower():
+                return render_template('register.html', error="Incorrect answer for security question.")
+
         y = db.get_site_metadata('useinvitecode')
         y = y['value'] if y else False
         if y == '1':

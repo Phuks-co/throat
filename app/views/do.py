@@ -30,10 +30,10 @@ from ..forms import PostComment, CreateUserMessageForm, DeletePost, CaptchaForm
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
-from ..forms import UseInviteCodeForm
+from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..misc import cache, sendMail, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata
-from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads
+from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata
 
 do = Blueprint('do', __name__)
 
@@ -1995,4 +1995,35 @@ def sub_upload_delete(sub, name):
         except SubUploads.DoesNotExist:
             os.remove(os.path.join(config.THUMBNAILS, img.fileid))
 
+    return jsonify(status='ok')
+
+
+@do.route('/do/admin/create_question', methods=['POST'])
+@login_required
+def create_question():
+    if not current_user.is_admin():
+        abort(403)
+
+    form = SecurityQuestionForm()
+
+    if form.validate():
+        SiteMetadata.create(key='secquestion', value=form.question.data + '|' + form.answer.data)
+        return jsonify(status='ok')
+    return jsonify(status='error')
+
+
+@do.route('/do/admin/delete_question/<xid>', methods=['POST'])
+@login_required
+def delete_question(xid):
+    if not current_user.is_admin():
+        abort(403)
+
+    form = DummyForm()
+    if not form.validate():
+        return jsonify(status='error')
+    try:
+        th = SiteMetadata.get((SiteMetadata.key == 'secquestion') & (SiteMetadata.xid == xid))
+    except SiteMetadata.DoesNotExist:
+        return jsonify(status='error')
+    th.delete_instance()
     return jsonify(status='ok')

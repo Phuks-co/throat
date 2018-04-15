@@ -39,6 +39,13 @@ var recaptchaCallback = function(){
           <label for="email">{{regform.email.label.text}}</label>
           {{regform.email()}}
         </div>
+        {% if config.ENABLE_SECURITY_QUESTIONS %}
+          <div class="pure-control-group">
+            <label for="email">{{regform.securityanswer.label.text}}</label>
+            <div style="display: inline-block;"><b>{{func.pick_random_security_question()}}</b> <br/>
+            {{regform.securityanswer()}}</div>
+          </div>
+        {% endif %}
 
         <div class="pure-controls">
           <label for="accept_tos" class="pure-checkbox">

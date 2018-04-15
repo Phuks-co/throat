@@ -78,6 +78,7 @@ class RegistrationForm(FlaskForm):
     invitecode = TextField('Invite Code')
     accept_tos = BooleanField('I accept the TOS', [Required()])
     recaptcha = RecaptchaField('Captcha')
+    securityanswer = TextField('Security question')
 
 
 class EditUserForm(FlaskForm):

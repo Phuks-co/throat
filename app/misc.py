@@ -3,6 +3,7 @@ from urllib.parse import urlparse, parse_qs
 import json
 import math
 import uuid
+import random
 import time
 import magic
 import os
@@ -20,7 +21,7 @@ import misaka as m
 from redis import Redis
 import sendgrid
 import config
-from flask import url_for, request, g, jsonify
+from flask import url_for, request, g, jsonify, session
 from flask_login import AnonymousUserMixin, current_user
 from .caching import cache
 from . import database as db
@@ -1669,3 +1670,18 @@ def validate_css(css, sid):
                 return m
 
     return (0, tinycss2.serialize(st))
+
+
+@cache.memoize(3)
+def get_security_questions():
+    """ Returns a list of tuples containing security questions and answers """
+    qs = SiteMetadata.select().where(SiteMetadata.key == 'secquestion').dicts()
+
+    return [(str(x['xid']) + '|' + x['value']).split('|') for x in qs]  # hacky separator.
+
+
+def pick_random_security_question():
+    """ Picks a random security question and saves the answer on the session """
+    sc = random.choice(get_security_questions())
+    session['sa'] = sc[2]
+    return sc[1]

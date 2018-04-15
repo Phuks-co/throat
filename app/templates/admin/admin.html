@@ -104,7 +104,28 @@
         </div>
       </div>
     </div>
+    {% if config.ENABLE_SECURITY_QUESTIONS %}
+      <hr>
+      <h2>Security questions</h2>
+      <form  method="POST" style="margin-top: 1em" data-reload="true" action="{{url_for('do.create_question')}}" class="pure-form pure-form-aligned ajaxform">
+        {{form.SecurityQuestionForm().csrf_token()}}
+        Create new:
+        {{form.SecurityQuestionForm().question(pattern="^[a-zA-Z0-9_- ?]+$", placeholder="Question")}}
+        {{form.SecurityQuestionForm().answer(pattern="^[a-zA-Z0-9_- ?]+$", placeholder="Answer")}}
+          <button type="submit" class="pure-button pure-button-primary">Create</button>
+      </form><br/><br/>
 
+      {% if not func.get_security_questions() %}
+        No security questions.
+      {%else%}
+        {% for q in func.get_security_questions() %}
+          Question: <b>{{q[1]}}</b> | Answer: <b>{{q[2]}}</b>
+          <form  method="POST" data-reload="true" action="{{url_for('do.delete_question', xid=q[0])}}" class="ajaxform" style="display: inline-block; margin-left: 1em; margin-top: 5px;">
+          {{useinvitecodeform.csrf_token()}}<button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="Deleting..." data-success="Deleted!">Delete</button></form>
+          <br/>
+        {% endfor %}
+      {%endif%}
+    {%endif%}
   </div>
 </div>
 

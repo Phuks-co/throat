@@ -1,9 +1,15 @@
 """ admin-related forms """
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, BooleanField, HiddenField
-from wtforms import RadioField, IntegerField
-from wtforms.validators import DataRequired, Length, URL, Optional
+from wtforms import StringField, BooleanField, TextField
+from wtforms import IntegerField
+from wtforms.validators import DataRequired, Length
+
+
+class SecurityQuestionForm(FlaskForm):
+    """ Create security question """
+    question = TextField('Question', validators=[DataRequired()])
+    answer = TextField('Answer', validators=[DataRequired()])
 
 
 class EditModForm(FlaskForm):

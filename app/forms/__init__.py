@@ -12,6 +12,7 @@ from .sub import CreateSubFlair, DeleteSubFlair, VoteForm, DeleteCommentForm
 from .sub import LiveChat
 from .admin import CreateUserBadgeForm, EditModForm, UseBTCdonationForm
 from .admin import BanDomainForm, UseInviteCodeForm
+from .admin import SecurityQuestionForm
 
 
 class DummyForm(FlaskForm):
