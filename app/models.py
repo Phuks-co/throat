@@ -371,9 +371,15 @@ class SubUploads(TModel):
     name = CharField()
     size = IntegerField()
 
+    class Meta:
+        table_name = 'sub_uploads'
+
 
 class UserIgnores(TModel):
     uid = ForeignKeyField(db_column='uid', model=User,
                           field='uid')
     target = CharField(max_length=40)
     date = DateTimeField(default=datetime.datetime.now)
+
+    class Meta:
+        table_name = 'user_ignores'
