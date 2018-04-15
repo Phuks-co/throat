@@ -60,19 +60,20 @@ function initializeEditor(element){
 
     element.insertBefore(el, element.firstChild);
 
-    textarea.onkeyup = function(e){
+    window.onkeydown = function(e){
+      if(textarea !== document.activeElement){return;}
       if(e.ctrlKey == true && e.which == 66){
-        addTags(textarea, '**', '**');
-      }else if(e.ctrlKey == true  && e.which == 73){
-        addTags(textarea, '*', '*');
+        addTags(textarea, '**', '**'); e.preventDefault();
+      }else if(e.ctrlKey == true && e.shiftKey == true  && e.which == 73){
+        addTags(textarea, '*', '*'); e.preventDefault(); return false;
       }else if(e.ctrlKey == true && e.shiftKey == true && e.which == 83){
-        addTags(textarea, '~~', '~~');
+        addTags(textarea, '~~', '~~'); e.preventDefault();
       }else if(e.ctrlKey == true && e.shiftKey == true && e.which == 72){
-        addTags(textarea, '# ', '');
+        addTags(textarea, '# ', ''); e.preventDefault();
       }else if(e.ctrlKey == true && e.shiftKey == true && e.which == 75){
-        makeLink(e);
+        makeLink(e); e.preventDefault();
       }else if(e.ctrlKey == true && e.shiftKey == true && e.which == 190){
-        addTags(textarea, '> ', '');
+        addTags(textarea, '> ', ''); e.preventDefault();
       }
     }
 }

@@ -807,7 +807,7 @@ def getPostsFromSubs(subs, limit=False, orderby='pid', paging=False, inj=''):
     """ Returns all posts from a list or subs """
     if not subs:
         return []
-    qbody = "SELECT * FROM `sub_post` WHERE `sid` IN ("
+    qbody = 'SELECT * FROM `sub_post` WHERE `sid` IN ('
     qdata = []
     for sub in subs:
         qbody += "%s,"
