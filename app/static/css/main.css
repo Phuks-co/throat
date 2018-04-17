@@ -572,7 +572,7 @@ iframe {
 }
 
 .expandotxt img {
-    width: 100%;
+    max-width: 100%;
 }
 .post .domain a, .post .domain {
     color: #666;
