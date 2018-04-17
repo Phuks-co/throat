@@ -45,7 +45,7 @@
       {% for post in tp %}
         <li><a class="title" href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}">{{post.title}}</a>
           <div class="sidelocale">
-            <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('sub.view_sub', sub=post.sub)}}">/s/{{post.sub}}</a>
+            <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('sub.view_sub', sub=post.sub)}}">{{conf['SUB_PREFIX']}}/{{post.sub}}</a>
           </div></li>
       {% endfor %}
     </ul>
@@ -60,7 +60,7 @@
   <div class="sidebarlists">
     <h4 class="center">Sub of the day</h4>
     <ul>
-      <li><a href="{{url_for('sub.view_sub', sub=rs.name)}}">/s/{{rs.name}}</a>
+      <li><a href="{{url_for('sub.view_sub', sub=rs.name)}}">{{conf['SUB_PREFIX']}}/{{rs.name}}</a>
         <div class="sidelocale">{{rs.title}}</div></li>
     </ul>
   </div>
@@ -74,7 +74,7 @@
     <ul>
       <li><a class="title" href="{{url_for('sub.view_post', sub=cl.sub, pid=cl.pid)}}">{{cl.title}}</a><br>
       <span class="sidelocale">
-        <time-ago datetime="{{cl.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('sub.view_sub', sub=cl.sub)}}">/s/{{cl.sub}}</a></li>
+        <time-ago datetime="{{cl.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('sub.view_sub', sub=cl.sub)}}">{{conf['SUB_PREFIX']}}/{{cl.sub}}</a></li>
       </span>
     </ul>
   </div>

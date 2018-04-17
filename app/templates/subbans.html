@@ -2,7 +2,7 @@
 {% block title %}{{config.LEMA}}{% endblock %}
 {% block navbar %}
 <ul class="right">
-  <li class="large"><a href="{{url_for('sub.view_sub', sub=sub.name)}}">/s/{{sub.name}}</a></li>
+  <li class="large"><a href="{{url_for('sub.view_sub', sub=sub.name)}}">{{conf['SUB_PREFIX']}}/{{sub.name}}</a></li>
 </ul>
 {% endblock %}
 {% block content %}
@@ -12,7 +12,7 @@
 <center><h3>Editing as Admin</h3></center>
 {% endif %}
 
-<h3>Banned users for /s/{{sub.name}}</h3>
+<h3>Banned users for {{conf['SUB_PREFIX']}}/{{sub.name}}</h3>
 <div class="col-12">
   <p>Banned users: {% if banned|length < 1 %}none{% endif %}</p>
   <ul>

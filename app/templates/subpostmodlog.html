@@ -4,14 +4,14 @@
 <li><a href="{{url_for('sub.view_sub_hot', sub=sub.name)}}">Hot</a></li>
 <li><a href="{{url_for('sub.view_sub_top', sub=sub.name)}}">Top</a></li>
 <li><a href="{{url_for('sub.view_sub_new', sub=sub.name)}}">New</a></li>
-<li class="large right"><a href="{{url_for('sub.view_sub', sub=sub.name)}}" class="btn btn-white" style="width:100%;hight:50%;">/s/{{sub.name}}</a></li>
+<li class="large right"><a href="{{url_for('sub.view_sub', sub=sub.name)}}" class="btn btn-white" style="width:100%;hight:50%;">{{conf['SUB_PREFIX']}}/{{sub.name}}</a></li>
 {% endblock %}
 
 {% block sidebar %}
 {{ super() }}
 <p></p>
 <hr/>
-<h3>/s/{{sub.name}}</h3>
+<h3>{{conf['SUB_PREFIX']}}/{{sub.name}}</h3>
 {% if sub.isNSFW %} <p><span class="bgred" alt="Not safe for work">NSFW</span></p>{% endif %}
 {% endblock %}
 

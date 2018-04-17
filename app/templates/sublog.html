@@ -2,7 +2,7 @@
 {% block title %}{{config.LEMA}}{% endblock %}
 {% block navbar %}
 <ul class="right">
-  <li class="large"><a href="{{url_for('sub.view_sub', sub=sub.name)}}">/s/{{sub.name}}</a></li>
+  <li class="large"><a href="{{url_for('sub.view_sub', sub=sub.name)}}">{{conf['SUB_PREFIX']}}/{{sub.name}}</a></li>
 </ul>
 {% endblock %}
 {% block content %}

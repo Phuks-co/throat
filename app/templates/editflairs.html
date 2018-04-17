@@ -2,7 +2,7 @@
 {% block title %}{{config.LEMA}}{% endblock %}
 {% block navbar %}
 <ul class="right">
-  <li class="large"><a href="{{url_for('sub.view_sub', sub=sub.name)}}">/s/{{sub.name}}</a></li>
+  <li class="large"><a href="{{url_for('sub.view_sub', sub=sub.name)}}">{{conf['SUB_PREFIX']}}/{{sub.name}}</a></li>
 </ul>
 {% endblock %}
 {% block content %}
@@ -12,7 +12,7 @@
 <div class="important"><h3>Editing as Admin</h3></div>
 {% endif %}
 
-<h1>Editing /s/{{sub.name}}'s flairs</h1>
+<h1>Editing {{conf['SUB_PREFIX']}}/{{sub.name}}'s flairs</h1>
 <div class="col-12 admin-page-form">
   <form  method="POST" class="ajaxform pure-form" action="{{url_for('do.create_flair', sub=sub.name)}}" data-reload="true">
     <h4>Create new flair</h4>

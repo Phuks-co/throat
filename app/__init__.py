@@ -42,10 +42,11 @@ app.jinja_env.cache = {}
 
 # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 app.config.from_object('config')
+app.config['SUB_PREFIX'] = app.config.get('SUB_PREFIX', '/s')
 
 app.register_blueprint(do)
 app.register_blueprint(api)
-app.register_blueprint(sub, url_prefix=app.config.get('SUB_PREFIX', '/s'))
+app.register_blueprint(sub, url_prefix=app.config['SUB_PREFIX'])
 
 app.config['WEBPACK_MANIFEST_PATH'] = 'manifest.json'
 if app.config['TESTING']:
@@ -61,7 +62,7 @@ caching.cache.init_app(app)
 login_manager = LoginManager(app)
 login_manager.anonymous_user = SiteAnon
 
-engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config,
+engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config, 'conf': app.config,
                            'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,
                            'form': forms, 'hostname': socket.gethostname(), 'datetime': datetime,
                            'e': escape_html})
@@ -144,7 +145,8 @@ def utility_processor():
             'commentform': PostComment(), 'dummyform': DummyForm(),
             'delpostform': DeletePost(), 'hostname': socket.gethostname(),
             'config': app.config, 'form': forms, 'db': db, 'datetime': datetime,
-            'getSuscriberCount': getSuscriberCount, 'func': misc, 'time': time}
+            'getSuscriberCount': getSuscriberCount, 'func': misc, 'time': time,
+            'conf': app.config}
 
 
 @app.route("/")
@@ -446,11 +448,11 @@ def view_multisub_new(subs, page=1):
     names = subs.split('+')
     sids = []
     ksubs = []
-    for sub in names:
-        sub = db.get_sub_from_name(sub)
-        if sub:
-            sids.append(sub['sid'])
-            ksubs.append(sub)
+    for sb in names:
+        sb = db.get_sub_from_name(sb)
+        if sb:
+            sids.append(sb['sid'])
+            ksubs.append(sb)
 
     posts = db.query('SELECT * FROM `sub_post` WHERE `sid` IN %s '
                      'ORDER BY `posted` DESC LIMIT %s,25',
