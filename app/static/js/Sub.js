@@ -60,6 +60,7 @@ u.sub('#ptoggle', 'click', function(e){
   document.getElementById('ptypeval').value = (document.getElementById('ptypeval').value == 'text') ? 'link' : 'text' ;
   var val = document.getElementById('ptypeval').value;
   this.innerHTML = 'Change to ' + oval + ' post';
+  document.getElementById('ptype').innerHTML = val;
   if(val=='text'){
     document.getElementById('txcont').style.display = 'block';
     document.getElementById('link').removeAttribute('required');
