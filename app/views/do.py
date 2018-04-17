@@ -2027,3 +2027,25 @@ def delete_question(xid):
         return jsonify(status='error')
     th.delete_instance()
     return jsonify(status='ok')
+
+
+@do.route('/do/admin/ban_user/<username>', methods=['POST'])
+@login_required
+def ban_user(username):
+    if not current_user.is_admin():
+        abort(403)
+
+    form = DummyForm()
+    if not form.validate():
+        abort(403)
+
+    try:
+        user = User.get(User.name == username)
+    except User.DoesNotExist:
+        abort(404)
+
+    user.status = 5
+    user.save()
+    SiteLog.create(action=9, link=url_for('view_user', sub=user.name),
+                   desc='{0} banned {1}'.format(current_user.get_username(), user.name))
+    return redirect(url_for('view_user', user=username))

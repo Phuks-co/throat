@@ -5,7 +5,13 @@
 {{ super() }}
 <hr>
 {% if not user.status == 10 %}
-  {% if user.uid == session['user_id'] or current_user.is_admin() %}
+  {% if current_user.is_admin() and user.status == 0 %}
+  <form  method="POST" data-reload="true" id="banuser" action="{{url_for('do.ban_user', username=user.name)}}">
+    {{form.DummyForm().csrf_token()}}
+    <a href="javascript:{}" onclick="document.getElementById('banuser').submit();" class="sbm-post pure-button pure-button-primary">Ban user</a>
+  </form>
+  {% endif %}
+  {% if user.uid == session['user_id'] %}
     <a href="{{url_for('edit_user', user=user.name)}}" class="sbm-post pure-button">Edit user info</a>
     <hr>
   {% endif %}
@@ -28,7 +34,7 @@
 {{ super() }}
 <div id="center-container">
   <div class="content">
-    {% if user.status == 0 %}
+    {% if user.status != 10 %}
       <div class="uprofile-top">
         <h1 style="margin-right: 0px; margin-left:0px;" class="noshit">{{user.name}}</h1>
         <div class="pblock level">
