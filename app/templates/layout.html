@@ -42,7 +42,7 @@
       {% endif %}
       <li>|</li>
       {% for sub in current_user.get_subscriptions()[0:25] %}
-        <li class="subinthebar"><a href="{{url_for('view_sub', sub=sub)}}">{{sub}}</a></li>
+        <li class="subinthebar"><a href="{{url_for('sub.view_sub', sub=sub)}}">{{sub}}</a></li>
       {% endfor %}
     </ul>
   </div>
@@ -121,7 +121,7 @@
       <a href="{{url_for('welcome')}}">Welcome</a> |
       <a href="{{url_for('tos')}}">ToS</a> |
       <a href="{{url_for('privacy')}}">Privacy</a> |
-      <a href="{{url_for('view_sub', sub='changelog')}}">Changelog</a> |
+      <a href="{{url_for('sub.view_sub', sub='changelog')}}">Changelog</a> |
       <a href="{{url_for('view_api')}}">API</a> |
       <a href="{{url_for('canary')}}">Canary</a> |
       <a href="{{url_for('donate')}}">Donate</a> |

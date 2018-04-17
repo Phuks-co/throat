@@ -4,16 +4,16 @@
 {% block navbar %}
 {{ super() }}
 <li>
-  <a href="{{url_for('view_sub', sub=sub.name)}}" class="1">{{sub.name}}</a>
+  <a href="{{url_for('sub.view_sub', sub=sub.name)}}" class="1">{{sub.name}}</a>
 </li>
 {% endblock %}
 
 {% block sidebar %}
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
-    <a href="{{url_for('view_sub_hot', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_hot' %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
-    <a href="{{url_for('view_sub_top', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
-    <a href="{{url_for('view_sub_new', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'view_sub_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
+    <a href="{{url_for('sub.view_sub_hot', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'sub.view_sub_hot' %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
+    <a href="{{url_for('sub.view_sub_top', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'sub.view_sub_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
+    <a href="{{url_for('sub.view_sub_new', sub=sub.name)}}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'sub.view_sub_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
   </div>
 </div>
 <form class="pure-g search" action="{{ url_for('do.search') }}" method="post">
@@ -35,7 +35,7 @@
 {%endif%}
 
 <div class="subinfo">
-  <h3><a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a> {% if sub.nsfw %}<div class="nsfw" alt="Not safe for work">NSFW</div>{%endif%}</h3>
+  <h3><a href="{{url_for('sub.view_sub', sub=sub.name)}}">/s/{{sub.name}}</a> {% if sub.nsfw %}<div class="nsfw" alt="Not safe for work">NSFW</div>{%endif%}</h3>
 </div>
 <div class="subs">{{getSuscriberCount(sub)}} subscribers</div>
 
@@ -72,15 +72,15 @@
 </div>
 
 {% if current_user.is_mod(sub.sid) or current_user.is_admin() %}
-  <a href="{{url_for('edit_sub', sub=sub.name)}}" class="sbm-post pure-button">Edit Sub Info</a>
-  <a href="{{url_for('edit_sub_flairs', sub=sub.name)}}" class="sbm-post pure-button">Edit Sub Flairs</a>
-  <a href="{{url_for('edit_sub_css', sub=sub.name)}}" class="sbm-post pure-button">Edit Sub Stylesheet</a>
-  <a href="{{url_for('edit_sub_mods', sub=sub.name)}}" class="sbm-post pure-button">Moderators</a>
+  <a href="{{url_for('sub.edit_sub', sub=sub.name)}}" class="sbm-post pure-button">Edit Sub Info</a>
+  <a href="{{url_for('sub.edit_sub_flairs', sub=sub.name)}}" class="sbm-post pure-button">Edit Sub Flairs</a>
+  <a href="{{url_for('sub.edit_sub_css', sub=sub.name)}}" class="sbm-post pure-button">Edit Sub Stylesheet</a>
+  <a href="{{url_for('sub.edit_sub_mods', sub=sub.name)}}" class="sbm-post pure-button">Moderators</a>
 {% endif %}
 <hr>
 
-<a href="{{url_for('view_sublog', sub=sub.name)}}" class="sbm-post pure-button">Sub Log</a>
-<a href="{{url_for('view_sub_bans', sub=sub.name)}}" class="sbm-post pure-button">Banned Users</a>
+<a href="{{url_for('sub.view_sublog', sub=sub.name)}}" class="sbm-post pure-button">Sub Log</a>
+<a href="{{url_for('sub.view_sub_bans', sub=sub.name)}}" class="sbm-post pure-button">Banned Users</a>
 {% endblock %}
 
 {% block content %}

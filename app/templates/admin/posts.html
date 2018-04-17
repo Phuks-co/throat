@@ -54,7 +54,7 @@
                 <td>{{post.score}}</td>
                 <td><a href="{{url_for('view_post_inbox', pid=post.pid)}}">{{post.title|truncate(30, True)}}</a></td>
                 <td><a href="{{url_for('view_user', user=post.user)}}">{{post.user}}</a></td>
-                <td><a href="{{url_for('view_sub', sub=post.sub)}}">{{post.sub}}</a></td>
+                <td><a href="{{url_for('sub.view_sub', sub=post.sub)}}">{{post.sub}}</a></td>
                 <td>{% if post.deleted == 1 %}user{% elif post.deleted == 2 %}admin{% endif %}</td>
               </tr>
             {% endfor %}

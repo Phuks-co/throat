@@ -25,7 +25,7 @@
 <ul>
   <li>Default subs:
   {% for sub in func.getDefaultSubs() %}
-  <li><a href="{{url_for('view_sub', sub=func.getSub(sub.sid).name)}}">{{func.getSub(sub.sid).name}}</a></li>
+  <li><a href="{{url_for('sub.view_sub', sub=func.getSub(sub.sid).name)}}">{{func.getSub(sub.sid).name}}</a></li>
   {% endfor %}
 </ul>
 {% endblock %}
@@ -72,7 +72,7 @@
             {% set subInfo = func.getSubData(sub.sid, simple=True) %}
             <tr>
               <td>
-                <div class="subname" title="{{sub.title}}"><a href="{{url_for('view_sub', sub=sub.name)}}">{{sub.name}}</a>{% if sub.getNSFW %}[nsfw]{% endif %}</div>
+                <div class="subname" title="{{sub.title}}"><a href="{{url_for('sub.view_sub', sub=sub.name)}}">{{sub.name}}</a>{% if sub.getNSFW %}[nsfw]{% endif %}</div>
               </td>
               <td><time-ago datetime="{{func.getSubCreation(sub)}}Z"></time-ago></td>
               <td><a href="{{url_for('view_user', user=func.getSubUsers(sub, 'mod1'))}}">{{func.getSubUsers(sub, 'mod1')}}</a></td>

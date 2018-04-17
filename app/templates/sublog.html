@@ -2,7 +2,7 @@
 {% block title %}{{config.LEMA}}{% endblock %}
 {% block navbar %}
 <ul class="right">
-  <li class="large"><a href="{{url_for('view_sub', sub=sub.name)}}">/s/{{sub.name}}</a></li>
+  <li class="large"><a href="{{url_for('sub.view_sub', sub=sub.name)}}">/s/{{sub.name}}</a></li>
 </ul>
 {% endblock %}
 {% block content %}
@@ -28,9 +28,9 @@
   </tbody>
 </table>
 {% if page > 1 %}
-<a href="{{url_for('view_sublog', sub=sub.name, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
+<a href="{{url_for('sub.view_sublog', sub=sub.name, page=(page-1))}}" class="btn"><i class="fa fa-chevron-left" aria-hidden="true"></i> prev</a>
 {% endif %}
 {% if logs|length == 50 %}
-<a href="{{url_for('view_sublog', sub=sub.name, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+<a href="{{url_for('sub.view_sublog', sub=sub.name, page=(page+1))}}" class="btn">next <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
 {% endif %}
 {% endblock %}

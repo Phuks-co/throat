@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 {% block title %}{{sub.title}} | {{config.LEMA}}{% endblock %}
 {% block navbar %}
-<li><a href="{{url_for('view_sub_hot', sub=sub.name)}}">Hot</a></li>
-<li><a href="{{url_for('view_sub_top', sub=sub.name)}}">Top</a></li>
-<li><a href="{{url_for('view_sub_new', sub=sub.name)}}">New</a></li>
-<li class="large right"><a href="{{url_for('view_sub', sub=sub.name)}}" class="btn btn-white" style="width:100%;hight:50%;">/s/{{sub.name}}</a></li>
+<li><a href="{{url_for('sub.view_sub_hot', sub=sub.name)}}">Hot</a></li>
+<li><a href="{{url_for('sub.view_sub_top', sub=sub.name)}}">Top</a></li>
+<li><a href="{{url_for('sub.view_sub_new', sub=sub.name)}}">New</a></li>
+<li class="large right"><a href="{{url_for('sub.view_sub', sub=sub.name)}}" class="btn btn-white" style="width:100%;hight:50%;">/s/{{sub.name}}</a></li>
 {% endblock %}
 
 {% block sidebar %}
@@ -28,7 +28,7 @@
       {% cache 300, post.pid, 'subpost' %}
         <div class="image">
           {% if not post.link %}
-            <a href="{{url_for('view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
+            <a href="{{url_for('sub.view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
               <span class="fa-stack fa-3x" style="color: #616161;">
                 <i class="fa fa-square fa-stack-2x"></i>
                 <i class="fa fa-comments fa-stack-1x fa-inverse"></i>
@@ -55,7 +55,7 @@
         </div>
         <div class="main">
           {% if not post.link %}
-          <a class="title" href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}">{{post.title}}</a>
+          <a class="title" href="{{url_for('sub.view_post', sub=sub.name, pid=post.pid)}}">{{post.title}}</a>
           {% else %}
           {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
           <a class="title" href="{{post.link}}" rel="noreferrer noopener">{{post.title}}</a> ({{func.getDomain(post.link)}})
@@ -89,7 +89,7 @@
             </span>
           {% endif %}
             <span>[Deleted]</span>
-            <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.comments.count()}})</a>
+            <a href="{{url_for('sub.view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> Comments ({{post.comments.count()}})</a>
           </p>
         </div>
       {%endcache%}

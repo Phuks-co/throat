@@ -43,9 +43,9 @@
     <h4 class="center">Top posts in the last 24 hours</h4>
     <ul class="top5">
       {% for post in tp %}
-        <li><a class="title" href="{{url_for('view_post', sub=post.sub, pid=post.pid)}}">{{post.title}}</a>
+        <li><a class="title" href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}">{{post.title}}</a>
           <div class="sidelocale">
-            <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=post.sub)}}">/s/{{post.sub}}</a>
+            <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('sub.view_sub', sub=post.sub)}}">/s/{{post.sub}}</a>
           </div></li>
       {% endfor %}
     </ul>
@@ -60,7 +60,7 @@
   <div class="sidebarlists">
     <h4 class="center">Sub of the day</h4>
     <ul>
-      <li><a href="{{url_for('view_sub', sub=rs.name)}}">/s/{{rs.name}}</a>
+      <li><a href="{{url_for('sub.view_sub', sub=rs.name)}}">/s/{{rs.name}}</a>
         <div class="sidelocale">{{rs.title}}</div></li>
     </ul>
   </div>
@@ -72,9 +72,9 @@
   <hr>
   <div class="sidebarlists">
     <ul>
-      <li><a class="title" href="{{url_for('view_post', sub=cl.sub, pid=cl.pid)}}">{{cl.title}}</a><br>
+      <li><a class="title" href="{{url_for('sub.view_post', sub=cl.sub, pid=cl.pid)}}">{{cl.title}}</a><br>
       <span class="sidelocale">
-        <time-ago datetime="{{cl.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('view_sub', sub=cl.sub)}}">/s/{{cl.sub}}</a></li>
+        <time-ago datetime="{{cl.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('sub.view_sub', sub=cl.sub)}}">/s/{{cl.sub}}</a></li>
       </span>
     </ul>
   </div>
@@ -105,7 +105,7 @@
             <div title="Downvote" class="downvote " data-pid="{{announcement.pid}}" data-icon="downvote"></div>
           </div>
           <div class="thcontainer">
-            <a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">
+            <a href="{{url_for('sub.view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">
               <div class="thumbnail">
                   <span class="placeholder" data-icon="chat"></span>
               </div>
@@ -114,15 +114,15 @@
         </div>
         <div class="pure-u-16-24 pure-u-md-20-24 pbody">
           <div class="post-heading">
-            <span class="announcement">Announcement</span><a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">{{announcement.title}}</a>
+            <span class="announcement">Announcement</span><a href="{{url_for('sub.view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">{{announcement.title}}</a>
           </div>
           <div class="author">
             posted <time-ago datetime="{{announcement.posted.isoformat()}}Z"></time-ago> by
             <a href="{{url_for('view_user', user=announcement.user)}}">{{announcement.user}}</a> on
-            <a href="{{url_for('view_sub', sub=announcement.sub)}}">{{announcement.sub}}</a>
+            <a href="{{url_for('sub.view_sub', sub=announcement.sub)}}">{{announcement.sub}}</a>
           </div>
           <div class="links">
-            <a href="{{url_for('view_post', sub=announcement.sub, pid=announcement.pid)}}">comments {%if announcement.comments>0%}({{announcement.comments}}){%endif%}</a>
+            <a href="{{url_for('sub.view_post', sub=announcement.sub, pid=announcement.pid)}}">comments {%if announcement.comments>0%}({{announcement.comments}}){%endif%}</a>
           </div>
         </div>
       </div>
@@ -159,7 +159,7 @@
       {%endif%}
   </script>
 {%endif%}
-{% if sort_type in ('all_new', 'view_sub_new') and current_user.likes_scroll()%}
+{% if sort_type in ('all_new', 'sub.view_sub_new') and current_user.likes_scroll()%}
 <script>
 $(document).ready(function () {
     window.loading = false;

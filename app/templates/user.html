@@ -82,7 +82,7 @@
             <h3>Owns</h3>
             <ul>
               {% for own in owns %}
-              <li><a href="{{url_for('view_sub', sub=own.name)}}">{{own.name}}</a></li>
+              <li><a href="{{url_for('sub.view_sub', sub=own.name)}}">{{own.name}}</a></li>
               {%endfor%}
             </ul>
           </div>
@@ -92,7 +92,7 @@
             <h3>Mods</h3>
             <ul>
               {% for mod in mods %}
-              <li><a href="{{url_for('view_sub', sub=mod.name)}}">{{mod.name}}</a></li>
+              <li><a href="{{url_for('sub.view_sub', sub=mod.name)}}">{{mod.name}}</a></li>
               {% endfor %}
             </ul>
           </div>
@@ -103,7 +103,7 @@
           <h3>Posting habits</h3>
           <ul id="userHabit">
             {% for i in habit %}
-              <li class="habitentry"><a href="{{url_for('view_sub', sub=db.get_sub_from_sid(i[0]).name)}}">{{db.get_sub_from_sid(i[0]).name}}</a> - {{i[1]}}</li>
+              <li class="habitentry"><a href="{{url_for('sub.view_sub', sub=db.get_sub_from_sid(i[0]).name)}}">{{db.get_sub_from_sid(i[0]).name}}</a> - {{i[1]}}</li>
             {% endfor %}
           </ul>
         </div>

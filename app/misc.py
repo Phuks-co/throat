@@ -860,7 +860,7 @@ def workWithMentions(data, receivedby, post, sub):
                 continue
             if user['uid'] != current_user.uid and user['uid'] != receivedby:
                 # Checks done. Send our shit
-                link = url_for('view_post', pid=post['pid'], sub=sub['name'])
+                link = url_for('sub.view_post', pid=post['pid'], sub=sub['name'])
                 db.create_message(current_user.uid, user['uid'],
                                   subject="You've been tagged in a post",
                                   content="[{0}]({1}) tagged you in [{2}]({3})"

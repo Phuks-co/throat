@@ -7,7 +7,7 @@
   <div class="important"><h3>Editing as Admin</h3></div>
   @end
 
-  <h2>Editing <a href="@{url_for('view_sub', sub=sub.name)}">/s/@{sub.name}</a></h2>
+  <h2>Editing <a href="@{url_for('sub.view_sub', sub=sub.name)}">/s/@{sub.name}</a></h2>
 
   <div class="content createpost">
     <form  method="POST" class="ajaxform" action="@{url_for('do.edit_sub_css', sub=sub.name)}">

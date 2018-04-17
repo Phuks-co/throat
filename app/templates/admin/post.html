@@ -21,7 +21,7 @@
       <div>
         <div>NSFW: {% if db.is_post_nsfw(post) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% else %}no{% endif %}</div>
         <div>When: <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago></div>
-        <div>Sub: <a href="{{url_for('view_sub', sub=func.getSub(post.sid).name)}}">{{func.getSub(post.sid).name}}</a></div>
+        <div>Sub: <a href="{{url_for('sub.view_sub', sub=func.getSub(post.sid).name)}}">{{func.getSub(post.sid).name}}</a></div>
       </div>
     </div>
     <div class="col-12 admin section users">
@@ -76,7 +76,7 @@
                 {{db.get_user_from_uid(comment.uid).name}}</a>
               </td>
               <td>{{comment.content|rnentity|e}}</td>
-              <td><a href="{{url_for('view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></td>
+              <td><a href="{{url_for('sub.view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></td>
             </tr>
             {% endfor %}
           </tbody>
@@ -102,7 +102,7 @@
                 {{db.get_user_from_uid(comment.uid).name}}</a>
               </td>
               <td>{{comment.content|rnentity|e}}</td>
-              <td><a href="{{url_for('view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></td>
+              <td><a href="{{url_for('sub.view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></td>
             </tr>
             {% endfor %}
           </tbody>

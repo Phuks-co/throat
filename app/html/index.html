@@ -16,14 +16,14 @@
   </div>
 </div>
 @include('shared/sidebar/home.html')
-@if sort_type in ('all_new', 'view_sub_new') and current_user.likes_scroll():
+@if sort_type in ('all_new', 'sub.view_sub_new') and current_user.likes_scroll():
   <hr />
   &copy;@{config.COPY}
   <br>
   <a href="@{url_for('welcome')}">Welcome</a> |
   <a href="@{url_for('tos')}">ToS</a> |
   <a href="@{url_for('privacy')}">Privacy</a> |
-  <a href="@{url_for('view_sub', sub='changelog')}">Changelog</a> |
+  <a href="@{url_for('sub.view_sub', sub='changelog')}">Changelog</a> |
   <a href="@{url_for('view_api')}">API</a> |
   <a href="@{url_for('canary')}">Canary</a> |
   <a href="@{url_for('donate')}">Donate</a> |
@@ -49,7 +49,7 @@
               <div title="Downvote" class="downvote " data-pid="@{ann['pid']!!s}" data-icon="downvote"></div>
             </div>
             <div class="thcontainer">
-              <a href="@{url_for('view_post', sub=ann['sub'], pid=ann['pid'])}" class="title">
+              <a href="@{url_for('sub.view_post', sub=ann['sub'], pid=ann['pid'])}" class="title">
                 <div class="thumbnail">
                     <span class="placeholder" data-icon="chat"></span>
                 </div>
@@ -58,15 +58,15 @@
           </div>
           <div class="pure-u-16-24 pure-u-md-20-24 pbody">
             <div class="post-heading">
-              <span class="announcement">Announcement</span><a href="@{url_for('view_post', sub=ann['sub'], pid=ann['pid'])}" class="title">@{ann['title']}</a>
+              <span class="announcement">Announcement</span><a href="@{url_for('sub.view_post', sub=ann['sub'], pid=ann['pid'])}" class="title">@{ann['title']}</a>
             </div>
             <div class="author">
               posted <time-ago datetime="@{ann['posted'].isoformat()}Z"></time-ago> by
               <a href="@{url_for('view_user', user=ann['user'])}">@{ann['user']}</a> on
-              <a href="@{url_for('view_sub', sub=ann['sub'])}">@{ann['sub']}</a>
+              <a href="@{url_for('sub.view_sub', sub=ann['sub'])}">@{ann['sub']}</a>
             </div>
             <div class="links">
-              <a href="@{url_for('view_post', sub=ann['sub'], pid=ann['pid'])}">@{(ann['comments']>0) and 'comments (' + str(ann['comments']) +')' or 'comment'}</a>
+              <a href="@{url_for('sub.view_post', sub=ann['sub'], pid=ann['pid'])}">@{(ann['comments']>0) and 'comments (' + str(ann['comments']) +')' or 'comment'}</a>
             </div>
           </div>
         </div>
@@ -85,7 +85,7 @@
       @end
     @end
   </div>
-  @if sort_type not in ('all_new', 'view_sub_new') or not current_user.likes_scroll():
+  @if sort_type not in ('all_new', 'sub.view_sub_new') or not current_user.likes_scroll():
     @if page > 1:
       <a href="@{url_for(sort_type, page=(page-1), **kw)}" class="pure-button">prev</a>
     @end
@@ -94,7 +94,7 @@
     @end
   @end
 </div>
-  @if sort_type in ('all_new', 'view_sub_new'):
+  @if sort_type in ('all_new', 'sub.view_sub_new'):
     @def footer():
     @end
   @end
@@ -111,7 +111,7 @@
         @end
     </script>
   @end
-@if sort_type in ('all_new', 'view_sub_new') and current_user.likes_scroll():
+@if sort_type in ('all_new', 'sub.view_sub_new') and current_user.likes_scroll():
 <script>
   window.moreuri = '@{url_for(request.endpoint + '_more')}/';
 </script>

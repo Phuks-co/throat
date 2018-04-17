@@ -23,7 +23,7 @@
           {% if db.is_post_nsfw(post) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% endif %}
           {% if not post.link %}
           <i class="fa fa-comments"></i>
-          <a class="title" href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}">{{post.title}}</a>
+          <a class="title" href="{{url_for('sub.view_post', sub=sub.name, pid=post.pid)}}">{{post.title}}</a>
           {% else %}
           <i class="fa fa-link"></i>
           {% if post.link.startswith('http:') %}<span><i title="not https" class="fa fa-exclamation-circle orange"></i></span>{% endif %}
@@ -72,7 +72,7 @@
           {% endif %}
             <a href="{{url_for('view_user', user=func.getUser(post.uid).name)}}" class="btn small"><i class="fa fa-user" aria-hidden="true"></i> {{func.getUser(post.uid).name}}</a>
 
-            <a href="{{url_for('view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> {{db.get_post_comment_count(post.pid)}}</a>
+            <a href="{{url_for('sub.view_post', sub=sub.name, pid=post.pid)}}#comments" class="btn small"><i class="fa fa-comment" aria-hidden="true"></i> {{db.get_post_comment_count(post.pid)}}</a>
           </p>
         </div>
       {%endcache%}

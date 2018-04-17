@@ -33,7 +33,7 @@
                 <a class="read">read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
               {% endif %}
               <a href="#comment-form" class="replycom" data-replyto='{{message.username}}' data-sub='{{func.getCommentSub(message.mlink).name}}' data-post='{{db.get_comment_from_cid(message.mlink).pid}}' data-parentid='{{message.mlink}}' data-replytitle='{{message.subject}}' data-mid='{{message.mid}}'>reply</a>
-              <a href="{{ url_for('view_perm', sub=func.getCommentSub(message.mlink).name, pid=db.get_comment_from_cid(message.mlink).pid, cid=message.mlink) }}" class="btn small">permalink</a>
+              <a href="{{ url_for('sub.view_perm', sub=func.getCommentSub(message.mlink).name, pid=db.get_comment_from_cid(message.mlink).pid, cid=message.mlink) }}" class="btn small">permalink</a>
               <!--<a class="savemsg" data-mid="{{message.mid}}">save</a>-->
               <a class="deletemsg" data-mid="{{message.mid}}">delete</a>
               <a class="block" data-uid="{{message.sentby}}">{% if message.sentby not in func.get_ignores(current_user.uid) %}block{%else%}unblock{%endif%}</a>
