@@ -1619,3 +1619,7 @@ a[href="#toodamncool"]{
 }
 
 @keyframes rb3{20%{color: red;}40%{color: yellow;}60%{color: green;}80%{color: blue;}100%{color: orange;}}
+
+.expandotxt, #postcontent, .commblock .content{
+  word-wrap: break-word;
+}
