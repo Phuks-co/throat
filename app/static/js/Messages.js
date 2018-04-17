@@ -99,7 +99,7 @@ u.addEventForChild(document, 'click', '.closemsg', function(e, qelem){
 });
 u.addEventForChild(document, 'click', '.closepopmsg', function(e, qelem){
   e.preventDefault();
-  this.parentNode.parentNode.style.display = 'none';
+  qelem.parentNode.parentNode.style.display = 'none';
 });
 
 u.sub('.block', 'click', function(e){
