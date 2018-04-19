@@ -1624,6 +1624,6 @@ a[href="#toodamncool"]{
   word-wrap: break-word;
 }
 
-.postcontent img, .comments .content img{
+#postcontent img, .comments .content img{
   max-width: 100%;
 }
