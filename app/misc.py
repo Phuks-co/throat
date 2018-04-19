@@ -25,6 +25,7 @@ from flask import url_for, request, g, jsonify, session
 from flask_login import AnonymousUserMixin, current_user
 from .caching import cache
 from . import database as db
+from .socketio import socketio
 from .badges import badges
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
@@ -398,7 +399,7 @@ def safeRequest(url, recieve_timeout=10):
     return (r, f)
 
 
-RE_AMENTION = re.compile(r'(?:(\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/s\/)([A-Za-z0-9\-\_]+)))')
+RE_AMENTION = re.compile(r'(?:(\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|' + getattr(config, 'SUB_PREFIX', '/s') + r'\/)([A-Za-z0-9\-\_]+)))')
 
 
 class PhuksDown(m.SaferHtmlRenderer):
@@ -860,7 +861,7 @@ def workWithMentions(data, receivedby, post, sub):
                 continue
             if user['uid'] != current_user.uid and user['uid'] != receivedby:
                 # Checks done. Send our shit
-                link = url_for('sub.view_post', pid=post['pid'], sub=sub['name'])
+                link = url_for('sub.view_post', pid=post.pid, sub=sub['name'])
                 db.create_message(current_user.uid, user['uid'],
                                   subject="You've been tagged in a post",
                                   content="[{0}]({1}) tagged you in [{2}]({3})"
@@ -869,9 +870,13 @@ def workWithMentions(data, receivedby, post, sub):
                                       url_for(
                                           'view_user',
                                           user=current_user.name),
-                                      "Here: " + post['title'], link),
+                                      "Here: " + post.title, link),
                                   link=link,
                                   mtype=8)
+                socketio.emit('notification',
+                              {'count': db.user_mail_count(user['uid'])},
+                              namespace='/snt',
+                              room='user' + user['uid'])
 
 
 def getSub(sid):

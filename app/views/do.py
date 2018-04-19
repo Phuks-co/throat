@@ -610,33 +610,36 @@ def create_post():
 
             img = misc.get_thumbnail(form)
         ptype = 1 if form.ptype.data == 'link' else 0
-
-        post = db.create_post(sid=sub['sid'],
+        post = SubPost.create(sid=sub['sid'],
                               uid=current_user.uid,
                               title=form.title.data,
                               content=form.content.data if ptype == 0 else '',
                               link=form.link.data if ptype == 1 else None,
+                              posted=datetime.datetime.utcnow(),
+                              score=1,
+                              deleted=0,
+                              comments=0,
                               ptype=ptype,
                               nsfw=form.nsfw.data if not sub['nsfw'] else 1,
                               thumbnail=img if ptype == 1 else '')
         db.uquery('UPDATE `sub` SET posts = posts + 1 WHERE `sid`=%s',
                   (sub['sid'], ))
-        addr = url_for('sub.view_post', sub=sub['name'], pid=post['pid'])
-        posts = misc.getPostList(misc.postListQueryBase(nofilter=True).where(SubPost.pid == post['pid']), 'new', 1).dicts()
+        addr = url_for('sub.view_post', sub=sub['name'], pid=post.pid)
+        posts = misc.getPostList(misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), 'new', 1).dicts()
         socketio.emit('thread',
                       {'addr': addr, 'sub': sub['name'], 'type': form.ptype.data,
-                       'user': current_user.name, 'pid': post['pid'],
+                       'user': current_user.name, 'pid': post.pid,
                        'html': render_template('indexpost.html', nocheck=True,
                                                post=posts[0])},
                       namespace='/snt',
                       room='/all/new')
         if fileid:
-            db.create_user_upload_post(pid=post['pid'], uid=current_user.uid, fileid=fileid, thumbnail=img if img else '')
+            db.create_user_upload_post(pid=post.pid, uid=current_user.uid, fileid=fileid, thumbnail=img if img else '')
         # for /live
         if sub['name'] == "live":
             socketio.emit('livethread',
                           {'addr': addr, 'sub': sub['name'], 'type': form.ptype.data,
-                           'user': current_user.name, 'pid': post['pid'],
+                           'user': current_user.name, 'pid': post.pid,
                            'html': render_template('sublivepost.html',
                                                    nocheck=True,
                                                    posts=[post])},
@@ -821,7 +824,7 @@ def create_comment(pid):
                           room='user' + to)
 
         # 6 - Process mentions
-        sub = db.get_sub_from_sid(post.sid)
+        sub = db.get_sub_from_sid(post.sid.sid)
         misc.workWithMentions(form.comment.data, to, post, sub)
 
         return json.dumps({'status': 'ok', 'addr': url_for('sub.view_perm', sub=post.sid.name,
