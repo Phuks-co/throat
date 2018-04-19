@@ -1623,3 +1623,7 @@ a[href="#toodamncool"]{
 .expandotxt, #postcontent, .commblock .content{
   word-wrap: break-word;
 }
+
+.postcontent img, .comments .content img{
+  max-width: 100%;
+}
