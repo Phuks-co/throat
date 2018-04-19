@@ -25,7 +25,7 @@
       @for post in func.getTodaysTopPosts():
         <li><a class="title" href="@{url_for('sub.view_post', sub=post['sub'], pid=post['pid'])}">@{post['title']}</a>
           <div class="sidelocale">
-            <time-ago datetime="@{post['posted'].isoformat()}Z"></time-ago> in <a href="@{url_for('sub.view_sub', sub=post['sub'])}">/s/@{post['sub']}</a>
+            <time-ago datetime="@{post['posted'].isoformat()}Z"></time-ago> in <a href="@{url_for('sub.view_sub', sub=post['sub'])}">@{conf['SUB_PREFIX']}/@{post['sub']}</a>
           </div></li>
       @end
     </ul>
@@ -37,7 +37,7 @@
   <div class="sidebarlists">
     <h4 class="center">Sub of the day</h4>
     <ul>
-      <li><a href="@{url_for('sub.view_sub', sub=subOfTheDay.name)}">/s/@{subOfTheDay.name}</a>
+      <li><a href="@{url_for('sub.view_sub', sub=subOfTheDay.name)}">@{conf['SUB_PREFIX']}/@{subOfTheDay.name}</a>
         <div class="sidelocale">@{subOfTheDay.title}</div></li>
     </ul>
   </div>
@@ -48,7 +48,7 @@
     <ul>
       <li><a class="title" href="@{url_for('sub.view_post', sub=changeLog['sub'], pid=changeLog['pid'])}">@{changeLog['title']}</a><br>
       <span class="sidelocale">
-        <time-ago datetime="@{changeLog['posted'].isoformat()}Z"></time-ago> in <a href="@{url_for('sub.view_sub', sub=changeLog['sub'])}">/s/@{changeLog['sub']}</a></li>
+        <time-ago datetime="@{changeLog['posted'].isoformat()}Z"></time-ago> in <a href="@{url_for('sub.view_sub', sub=changeLog['sub'])}">@{conf['SUB_PREFIX']}/@{changeLog['sub']}</a></li>
       </span>
     </ul>
   </div>
