@@ -16,7 +16,6 @@ u.sub('.removesavedpost', 'click', function(e){
 })
 
 u.addEventForChild(document, 'click', '.delete-post', function(e, qelem){
-  var tg = e.currentTarget;
   TextConfirm(qelem, function(){
     if(qelem.getAttribute('selfdel') != "true"){
       var reason = prompt('Why are you deleting this?');
@@ -26,9 +25,9 @@ u.addEventForChild(document, 'click', '.delete-post', function(e, qelem){
     u.rawpost('/do/delete_post', new FormData(document.getElementById('delete-post-form')),
     function(data){
       if (data.status != "ok") {
-        tg.innerHTML = 'Error.';
+        qelem.parentNode.innerHTML = 'Error.';
       } else {
-        tg.innerHTML = 'removed';
+        qelem.parentNode.innerHTML = 'removed';
         document.location.reload();
       }
     })
