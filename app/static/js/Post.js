@@ -25,9 +25,9 @@ u.addEventForChild(document, 'click', '.delete-post', function(e, qelem){
     u.rawpost('/do/delete_post', new FormData(document.getElementById('delete-post-form')),
     function(data){
       if (data.status != "ok") {
-        qelem.parentNode.innerHTML = 'Error.';
+        document.getElementById('delpostli').innerHTML = 'Error.';
       } else {
-        qelem.parentNode.innerHTML = 'removed';
+        document.getElementById('delpostli').innerHTML = 'removed';
         document.location.reload();
       }
     })

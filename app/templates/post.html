@@ -164,7 +164,7 @@
               {% endif %}
             {% endif %}
             {% if post.uid == current_user.uid or current_user.is_admin() or current_user.is_mod(post.sid) %}
-              <li><a {% if post.uid == current_user.uid %}selfdel="true"{%endif%} class="delete-post"> delete </a></li>
+              <li id="delpostli"><a {% if post.uid == current_user.uid %}selfdel="true"{%endif%} class="delete-post"> delete </a></li>
             {%endif%}
             {% if not sub.nsfw and (post.uid == current_user.uid or current_user.is_admin() or current_user.is_mod(post.sid)) %}
              {% if not post.nsfw %}
