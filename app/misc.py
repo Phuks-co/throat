@@ -1276,7 +1276,7 @@ def getCurrentHashrate():
         hr['totalHashes'] = int(hr['totalHashes'])
         return hr
     except (ValueError, requests.RequestException, TypeError, OSError) as err:
-        return {'error': err}
+        return {'error': 'Pool is down'}
 
 
 @cache.memoize(60)
