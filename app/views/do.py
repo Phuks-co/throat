@@ -1788,7 +1788,6 @@ def get_children(pid, cid):
     cmxk = misc.build_comment_tree(comms, cid)
     post = SubPost.select(SubPost.pid, SubPost.sid).where(SubPost.pid == pid).get()
     sub = Sub.select(Sub.name).where(Sub.sid == post.sid).get()
-    print(cmxk)
     return render_template('postcomments.html', sub=sub, post=post, comments=misc.expand_comment_tree(cmxk))
 
 
