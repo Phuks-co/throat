@@ -163,8 +163,8 @@ if(document.getElementById('delete_account')){
 
 // admin - remove banned domain
 if(document.querySelector('button.removebanneddomain')){
-  document.querySelector('button.removebanneddomain').addEventListener('click', function(){
-    var domain=this.getAttribute('data-domain');
+  u.addEventForChild(document, 'click', 'button.removebanneddomain', function(e, qelem){
+    var domain=qelem.getAttribute('data-domain');
     u.post('/do/remove_banned_domain/' + domain, {}, function(data){
       if (data.status == "ok") {
         document.location.reload();
