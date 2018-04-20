@@ -266,7 +266,7 @@ def view_sub_hot(sub, page):
                                                    'posts': posts, 'page': page, 'sort_type': 'sub.view_sub_hot'})
 
 
-@sub.route("/<sub>/<pid>")
+@sub.route("/<sub>/<int:pid>")
 def view_post(sub, pid, comments=False, highlight=None):
     """ View post and comments (WIP) """
     try:
