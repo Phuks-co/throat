@@ -662,7 +662,7 @@ iframe {
 
 .expandotxt {
   background-color: #e1e1e1;
-  padding-left: 1em;
+  padding: 1em;
 }
 
 .thumbnail .placeholder svg path{
