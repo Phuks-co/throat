@@ -1065,10 +1065,10 @@ def get_thumbnail(form):
         try:
             img = og('meta', {'property': 'og:image'})[0].get('content')
             req = safeRequest(img)
+            im = Image.open(BytesIO(req[1])).convert('RGB')
         except (OSError, ValueError, IndexError):
             # no image
             return ''
-        im = Image.open(BytesIO(req[1])).convert('RGB')
     else:
         return ''
 
