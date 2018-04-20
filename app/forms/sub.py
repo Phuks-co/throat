@@ -1,6 +1,6 @@
 """ Sub-related forms """
 
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, TextAreaField, BooleanField, HiddenField
 from wtforms import RadioField
 from wtforms.validators import DataRequired, Length, URL
@@ -110,6 +110,10 @@ class CreateSubTextPost(FlaskForm):
             self.sub.data = kwargs['sub']
         except KeyError:
             pass
+
+
+class CreteSubPostCaptcha(CreateSubTextPost):
+    recaptcha = RecaptchaField('Captcha')
 
 
 class CreateSubLinkPost(FlaskForm):

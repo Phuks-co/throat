@@ -558,7 +558,7 @@ def post_over_limit(limit):
 def create_post():
     """ Sub link post creation endpoint """
     if misc.get_user_level(current_user.uid)[0] <= 4:
-        form = CaptchaForm()
+        form = forms.CreteSubPostCaptcha()
         if not form.validate():
             return render_template('createpost.html', txtpostform=form, error=get_errors(form)[0])
     form = CreateSubTextPost()
