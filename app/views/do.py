@@ -573,7 +573,7 @@ def create_post():
         sub = db.get_sub_from_name(form.sub.data)
         if not sub:
             return render_template('createpost.html', txtpostform=form, error="Sub does not exist")
-        if sub.name.lower() in ('all', 'new', 'hot', 'top', 'admin', 'home'):
+        if sub['name'].lower() in ('all', 'new', 'hot', 'top', 'admin', 'home'):
             return render_template('createpost.html', txtpostform=form, error="You cannot post in this sub.")
         if current_user.is_subban(sub):
             return render_template('createpost.html', txtpostform=form, error="You're banned from posting on this sub")
