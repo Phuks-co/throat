@@ -1117,6 +1117,10 @@ div.comments {
   border-left: 1px dotted #cecece;
 }
 
+.pchild-e {
+  margin-left: 15px;
+}
+
 .commentrow{
   margin-left: 7px;
 }
