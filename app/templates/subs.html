@@ -44,7 +44,6 @@
       </thead>
       <tbody>
         {% for sub in subs %}
-        {% set subInfo = func.getSubData(sub.sid, simple=True) %}
         <tr>
           <td  class="subsentry{% if current_user.has_subscribed(sub.name) %} subsubscribed{% endif %}{% if current_user.has_blocked(sub.sid) %} blocked{% endif %}" data-sid="{{sub.sid}}">
             <div class="subname" title="{{sub.title}}">
@@ -52,7 +51,7 @@
               <a href="{{url_for('sub.view_sub', sub=sub.name)}}">{{sub.name}}</a>
             </div>
           </td>
-          <td><time-ago datetime="{{subInfo['creation']}}Z"></time-ago></td>
+          <td><time-ago datetime="{{sub.creation}}Z"></time-ago></td>
           <td>
             <div role="group" class="pure-button-group" data-sid="{{sub.sid}}" style="display:inline-block;">
 
@@ -62,10 +61,10 @@
                 <button data-ac="subscribe" class="unsub pure-button button-xsmall" style="display:inline-block; width: 8em;"><span class="sbm-icon" data-icon="add"></span>Subscribe</button>
               {%endif%}
             </div>
-            <span style="margin-left: .3em;">{{subInfo.subs}}</span>
+            <span style="margin-left: .3em;">{{sub.subscribers}}</span>
 
           </td>
-          <td>{{subInfo.posts}}</td>
+          <td>{{sub.posts}}</td>
         </tr>
         {% endfor %}
       </tbody>

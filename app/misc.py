@@ -174,11 +174,7 @@ class SiteUser(object):
 
     def has_blocked(self, sid):
         """ Returns True if the current user has blocked sub """
-        try:
-            x = SubSubscriber.get((SubSubscriber.sid == sid) & (SubSubscriber.uid == self.uid) & (SubSubscriber.status == 2))
-            return True if x.status == 2 else False
-        except SubSubscriber.DoesNotExist:
-            return False
+        return sid in self.blocksid
 
     def new_count(self):
         """ Returns new message count """
@@ -1584,6 +1580,7 @@ def upload_file():
 
 def getSubData(sid, simple=False):
     sdata = SubMetadata.select().where(SubMetadata.sid == sid)
+    sub = Sub.get(Sub.sid == sid)
     data = {'mods': [], 'mod2': []}
     for p in sdata:
         if p.key in ['mod2', 'tag', 'ban']:
@@ -1593,13 +1590,13 @@ def getSubData(sid, simple=False):
                 data[p.key] = [p.value]
         else:
             data[p.key] = p.value
-    data['subs'] = Sub.get(Sub.sid == sid).subscribers
+    data['subs'] = sub.subscribers
     if data['subs'] is None:
         data['subs'] = SubSubscriber.select().where((SubSubscriber.sid == sid) & (SubSubscriber.status == 1)).count()
         q = Sub.update(subscribers=data['subs']).where(Sub.sid == sid)
         q.execute()
 
-    data['posts'] = Sub.get(Sub.sid == sid).posts
+    data['posts'] = sub.posts
     if data['posts'] is None:
         data['posts'] = SubPost.select().where((SubPost.sid == sid) & (SubPost.deleted == 0)).count()
         q = Sub.update(posts=data['posts']).where(Sub.sid == sid)

@@ -28,7 +28,7 @@ from .socketio import socketio
 from . import database as db
 from .misc import SiteAnon, getSuscriberCount, getDefaultSubs, allowedNames, get_errors, engine
 from .models import db as pdb
-from .models import Sub, SubPost, User
+from .models import Sub, SubPost, User, SubMetadata
 
 # /!\ EXPERIMENTAL /!\
 import config
@@ -51,7 +51,7 @@ app.register_blueprint(sub, url_prefix=app.config['SUB_PREFIX'])
 app.config['WEBPACK_MANIFEST_PATH'] = 'manifest.json'
 if app.config['TESTING']:
     import logging
-    logging.basicConfig(level=logging.WARNING)
+    logging.basicConfig(level=logging.DEBUG)
 
 
 webpack.init_app(app)
@@ -296,7 +296,9 @@ def view_user_uploads(page):
 @app.route("/subs/<int:page>")
 def view_subs(page):
     """ Here we can view available subs """
-    c = Sub.select()
+    c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
+    c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
+
     c = c.order_by(Sub.name.asc()).paginate(page, 50).dicts()
     return render_template('subs.html', page=page, subs=c,
                            nav='view_subs')
@@ -307,7 +309,10 @@ def view_subs(page):
 def subs_search(page, term):
     """ The subs index page, with basic title search """
     term = re.sub('[^A-Za-z0-9\-_]+', '', term)
-    c = Sub.select().where(Sub.name.contains(term))
+    c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
+    c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
+
+    c = c.where(Sub.name.contains(term))
     c = c.order_by(Sub.name.asc()).paginate(page, 50).dicts()
     return render_template('subs.html', page=page, subs=c,
                            nav='subs_search', term=term)
@@ -317,7 +322,8 @@ def subs_search(page, term):
 @app.route("/subs/subscribersasc/<int:page>")
 def subs_subscriber_sort_a(page):
     """ The subs index page, sorted by subscriber count asc """
-    c = Sub.select()
+    c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
+    c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
     c = c.order_by(Sub.subscribers.asc()).paginate(page, 50).dicts()
     return render_template('subs.html', page=page, subs=c,
                            nav='subs_subscriber_sort_a')
@@ -327,7 +333,8 @@ def subs_subscriber_sort_a(page):
 @app.route("/subs/subscribersdesc/<int:page>")
 def subs_subscriber_sort_d(page):
     """ The subs index page, sorted by subscriber count desc """
-    c = Sub.select()
+    c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
+    c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
     c = c.order_by(Sub.subscribers.desc()).paginate(page, 50).dicts()
     return render_template('subs.html', page=page, subs=c,
                            nav='subs_subscriber_sort_d')
@@ -337,7 +344,8 @@ def subs_subscriber_sort_d(page):
 @app.route("/subs/postsasc/<int:page>")
 def subs_posts_sort_a(page):
     """ The subs index page, sorted by post count asc """
-    c = Sub.select()
+    c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
+    c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
     c = c.order_by(Sub.posts.asc()).paginate(page, 50).dicts()
     return render_template('subs.html', page=page, subs=c,
                            nav='subs_posts_sort_a')
@@ -347,7 +355,8 @@ def subs_posts_sort_a(page):
 @app.route("/subs/postsdesc/<int:page>")
 def subs_posts_sort_d(page):
     """ The subs index page, sorted by post count desc """
-    c = Sub.select()
+    c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
+    c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
     c = c.order_by(Sub.posts.desc()).paginate(page, 50).dicts()
     return render_template('subs.html', page=page, subs=c,
                            nav='subs_posts_sort_d')
