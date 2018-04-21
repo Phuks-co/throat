@@ -68,6 +68,3 @@
   {% endif %}
 
 {%endfor%}
-{% if comments[-1]['cid'] == 0 %}
-  <a href="#" class="loadsibling" data-pid="{{post.pid}}" data-page="{{siblingpage}}" data-cid="">Load more ({{comments[-1].moresbling}} comments)</a>
-{% endif %}
