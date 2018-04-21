@@ -1877,7 +1877,7 @@ def sub_upload(sub):
     c = SubStylesheet.get(SubStylesheet.sid == sub.sid)
     form = EditSubCSSForm(css=c.source)
     # get remaining space
-    remaining = 1024 * 1024  # 1M
+    remaining = 1024 * 1024 * 2  # 2M
     ufiles = SubUploads.select().where(SubUploads.sid == sub.sid)
     for uf in ufiles:
         remaining -= uf.size

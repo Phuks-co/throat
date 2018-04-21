@@ -27,7 +27,7 @@
 
   <hr>
   <h3>Upload files</h3>
-  Upload limit is 1 MiB. Space used: @{storage!!s} KiB
+  Upload limit is 2 MiB. Space used: @{storage!!s} KiB
   <form  method="POST" style="margin-top: 1em" action="@{url_for('do.sub_upload', sub=sub.name)}" class="pure-form pure-form-aligned" enctype="multipart/form-data">
     @if error:
       <div class="error">@{error}</div>
