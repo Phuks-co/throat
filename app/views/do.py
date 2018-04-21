@@ -1791,7 +1791,7 @@ def get_children(pid, cid):
     return render_template('postcomments.html', sub=sub, post=post, comments=misc.expand_comment_tree(cmxk))
 
 
-@do.route('/do/get_sibling/<pid>/<cid>/<int:page>', methods=['POST', 'GET'])
+@do.route('/do/get_sibling/<int:pid>/<cid>/<int:page>', methods=['POST', 'GET'])
 def get_sibling(pid, cid, page):  # XXX: Really similar to get_children. Should merge them in the future
     """ Gets children comments for <cid> """
     if cid == '1':
@@ -1800,17 +1800,15 @@ def get_sibling(pid, cid, page):  # XXX: Really similar to get_children. Should 
     else:
         ppage = 5
 
-    tq = SubPostComment.select(SubPostComment.cid).where(SubPostComment.parentcid == cid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).limit(1000).offset(page * ppage).alias('jq')
     cmskel = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
-    cmskel = cmskel.join(tq, on=((tq.c.cid == SubPostComment.parentcid) | (tq.c.cid == SubPostComment.cid)))
-    cmskel = cmskel.group_by(SubPostComment.cid)
-    cmskel = cmskel.order_by(SubPostComment.score.desc()).dicts()
+    cmskel = cmskel.where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
     if cmskel.count() == 0:
         return jsonify(status='ok', posts=[])
-    cmxk = misc.build_comment_tree(cmskel, cid)
+    cmxk = misc.build_comment_tree(cmskel, cid, perpage=ppage, pageno=page + 1)
+    print(cmxk)
     post = SubPost.select(SubPost.pid, SubPost.sid).where(SubPost.pid == pid).get()
     sub = Sub.select(Sub.name).where(Sub.sid == post.sid).get()
-    return render_template('postcomments.html', sub=sub, post=post, comments=misc.expand_comment_tree(cmxk))
+    return render_template('postcomments.html', sub=sub, post=post, comments=misc.expand_comment_tree(cmxk), siblingpage=page + 1)
 
 
 @do.route('/do/preview', methods=['POST'])

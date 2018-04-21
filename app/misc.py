@@ -1321,53 +1321,52 @@ def getMiningLeaderboardJson():
     return {'users': f, 'speed': list(z)}
 
 
-def build_comment_tree(comments, root=None):
-    """ Creates the nested list structure for the comments """
-    # 1. Group by parent
-    parents = {}
-    for comment in comments:
-        try:
-            parents[comment['parentcid']].append(comment['cid'])
-        except KeyError:
-            parents[comment['parentcid']] = [comment['cid']]
+def build_tree(tuff, root=None):
+    """ Builds a comment tree """
+    str = []
+    for i in tuff[::]:
+        if i['parentcid'] == root:
+            tuff.remove(i)
+            i['children'] = build_tree(tuff, root=i['cid'])
+            str.append(i)
 
-    getstuff = []  # list of cids we must fully fetch on the next pass.
+    return str
 
-    def do_the_needful(com, depth=0):
-        # here we get all the child of com, iterate, etc
-        if depth > 5:  # hard stop.
-            return []
-        f = []
-        if parents.get(com, None) is not None:
-            for k in parents[com]:
-                if depth < 3:
-                    getstuff.append(k)
-                tmpnm = {'cid': k, 'children': do_the_needful(k, depth + 1)}
-                ccount = len(tmpnm['children'])
-                for k in tmpnm['children']:
-                    ccount += k['ccount']
-                tmpnm['ccount'] = ccount
-                if len(tmpnm['children']) > 5:
-                    tmpnm['moresiblings'] = len(tmpnm['children']) - 5
-                    tmpnm['children'] = tmpnm['children'][:5]
-                f.append(tmpnm)
-        return f
 
-    finct = []
-    if len(parents[root]) > 8:
-        tmpnm = {'cid': 0, 'moresiblings': len(parents[root]) - 8}
-        parents[root] = parents[root][:8]
-        finct.append(tmpnm)
-    for ct in parents[root]:
-        getstuff.append(ct)
-        tmpnm = {'cid': ct, 'children': do_the_needful(ct)}
-        if len(tmpnm['children']) > 5:
-            tmpnm['moresiblings'] = len(tmpnm['children']) - 10
-            tmpnm['children'] = tmpnm['children'][:5]
+def count_childs(tuff, depth=0):
+    """ Counts number of children in tree """
+    if depth > 7:
+        return 0
+    cnt = 0
+    for i in tuff:
+        if i.get('morechildren') is not None:
+            cnt += i['morechildren']
         else:
-            finct.append(tmpnm)
+            cnt += 1
+            cnt += count_childs(i['children'], depth=depth + 1)
+    return cnt
 
-    return (finct, getstuff)
+
+def trim_tree(tuff, depth=0, pageno=1):
+    """ Trims down the tree. """
+    k = 0
+    res = []
+    for i in tuff:
+        perpage = 8 if i['parentcid'] is None else 5
+        k += 1
+        if k < ((pageno - 1) * perpage) + 1:
+            continue
+        if k <= pageno * perpage:
+            if depth > 3:
+                i['morechildren'] = count_childs(i['children'])
+                i['children'] = []
+            else:
+                i['children'] = trim_tree(i['children'], depth=depth + 1, pageno=pageno)
+            res.append(i)
+        else:
+            res.append({'moresbling': count_childs(tuff[pageno * perpage:]), 'cid': 0, 'parent': i['parentcid']})
+            break
+    return res
 
 
 def expand_comment_tree(comsx):
@@ -1389,9 +1388,12 @@ def expand_comment_tree(comsx):
             return []
         ret = []
         for dom in xm:
+            if dom['cid'] == 0:
+                ret.append(dom)
+                continue
             fmt = {**dom, **lcomms[dom['cid']]}
             if depth == 1 and len(fmt['children']) != 0:
-                fmt['morechildren'] = True
+                fmt['imorechildren'] = True
             else:
                 fmt['children'] = i_like_recursion(fmt['children'], depth=depth + 1)
             ret.append(fmt)
@@ -1399,14 +1401,26 @@ def expand_comment_tree(comsx):
 
     dcom = []
     for com in coms:
-        if com['cid'] != 0:
+        if not com.get('moresbling'):
             fmt = {**com, **lcomms[com['cid']]}
             fmt['children'] = i_like_recursion(fmt['children'])
             dcom.append(fmt)
         else:
             dcom.append(com)
-
     return dcom
+
+
+def build_comment_tree(stuff, root=None, perpage=5, pageno=1):
+    cmxk = trim_tree(build_tree(list(stuff), root=root), pageno=pageno)
+
+    def get_cids(tree, c=[]):
+        for i in tree:
+            if i.get('cid'):
+                c.append(i['cid'])
+                get_cids(i['children'], c)
+        return c
+    cids = get_cids(cmxk)
+    return (cmxk, cids)
 
 
 def get_post_comments(pid):
@@ -1417,8 +1431,7 @@ def get_post_comments(pid):
     if cmskel.count() == 0:
         return []
 
-    cmxk = build_comment_tree(cmskel)
-    return expand_comment_tree(cmxk)
+    return expand_comment_tree(build_comment_tree(cmskel, perpage=8))
 
 
 # messages
