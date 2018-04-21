@@ -306,15 +306,19 @@ u.sub('#graburl', 'click', function(e){
 
 // Load children
 u.addEventForChild(document, 'click', '.loadchildren', function(e, qelem){
+  qelem.textContent = "Loading...";
   e.preventDefault();
   u.post('/do/get_children/' + qelem.getAttribute('data-pid') + '/' + qelem.getAttribute('data-cid'), {},
   function(data){
     qelem.parentNode.innerHTML = data;
     Icons.rendericons();
+  },function(){
+    qelem.textContent = "Error.";
   })
 });
 
 u.addEventForChild(document, 'click', '.loadsibling', function(e, qelem){
+  qelem.textContent = "Loading...";
   e.preventDefault();
   var page = (qelem.getAttribute('data-page') !== '') ? qelem.getAttribute('data-page') : 1;
   var parent = (qelem.getAttribute('data-cid') !== '') ? qelem.getAttribute('data-cid') : 1;
@@ -322,6 +326,8 @@ u.addEventForChild(document, 'click', '.loadsibling', function(e, qelem){
   function(data){
     qelem.outerHTML = data;
     Icons.rendericons();
+  },function(){
+    qelem.textContent = "Error.";
   })
 });
 
