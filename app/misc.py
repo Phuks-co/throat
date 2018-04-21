@@ -1357,7 +1357,7 @@ def trim_tree(tuff, depth=0, pageno=1):
         if k < ((pageno - 1) * perpage) + 1:
             continue
         if k <= pageno * perpage:
-            if depth > 3:
+            if depth > 1:
                 i['morechildren'] = count_childs(i['children'])
                 i['children'] = []
             else:
@@ -1384,7 +1384,7 @@ def expand_comment_tree(comsx):
         lcomms[k['cid']] = k
 
     def i_like_recursion(xm, depth=0):
-        if depth == 2:
+        if depth > 30:
             return []
         ret = []
         for dom in xm:
@@ -1415,7 +1415,7 @@ def build_comment_tree(stuff, root=None, perpage=5, pageno=1):
 
     def get_cids(tree, c=[]):
         for i in tree:
-            if i.get('cid'):
+            if i['cid'] != 0:
                 c.append(i['cid'])
                 get_cids(i['children'], c)
         return c
