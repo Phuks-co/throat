@@ -586,6 +586,8 @@ def create_post():
             tposts = SubPost.select().where(SubPost.uid == current_user.uid).where(SubPost.posted > today).count()
             if lposts > 10 or tposts > 25:
                 return render_template('createpost.html', txtpostform=form, error="You have posted too much today")
+        if len(form.title.data.strip(misc.WHITESPACE)) < 3:
+            return render_template('createpost.html', txtpostform=form, error="Title is too short and contains whitespace characters")
         fileid = False
         if form.ptype.data == 'link':
             fupload = misc.upload_file()
