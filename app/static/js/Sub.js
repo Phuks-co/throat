@@ -62,13 +62,13 @@ u.sub('#ptoggle', 'click', function(e){
   this.innerHTML = 'Change to ' + oval + ' post';
   document.getElementById('ptype').innerHTML = val;
   if(val=='text'){
-    document.getElementById('txcont').style.display = 'block';
     document.getElementById('link').removeAttribute('required');
     u.each('.lncont', function(e){e.style.display='none';});
+    u.each('.txcont', function(e){e.style.display='inline-block';});
   }else{
-    document.getElementById('txcont').style.display = 'none';
     document.getElementById('link').setAttribute('required', true);
     u.each('.lncont', function(e){e.style.display='inline-block';});
+    u.each('.txcont', function(e){e.style.display='none';});
   }
 });
 
