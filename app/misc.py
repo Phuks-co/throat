@@ -1392,7 +1392,7 @@ def expand_comment_tree(comsx):
                 ret.append(dom)
                 continue
             fmt = {**dom, **lcomms[dom['cid']]}
-            if depth == 1 and len(fmt['children']) != 0:
+            if depth == 2 and len(fmt['children']) != 0:
                 fmt['imorechildren'] = True
             else:
                 fmt['children'] = i_like_recursion(fmt['children'], depth=depth + 1)
