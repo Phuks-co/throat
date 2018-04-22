@@ -55,7 +55,6 @@ u.addEventForChild(document, 'click', '.expando-btn', function(e, ematch){
     var expando = document.createElement('div');
     expando.setAttribute('pid', pid);
     expando.classList.add('expando-master');
-    expando.classList.add('pure-g');
     expando.innerHTML = '<div class="expandotxt"></div>';
     if(link == 'None'){
       u.get('/do/get_txtpost/' + pid, function(data){
