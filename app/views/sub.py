@@ -148,9 +148,8 @@ def sub_new_rss(sub):
     fg.subtitle("All new posts for {} feed".format(sub['name']))
     fg.link(href=url_for('sub.view_sub_new', sub=sub['name'], _external=True))
     fg.generator("Phuks")
-    posts = db.query('SELECT * FROM `sub_post` WHERE sid=%s'
-                     ' ORDER BY `posted` DESC LIMIT 30', (sub['sid'], )) \
-              .fetchall()
+    posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub['sid']),
+                             'new', 1).dicts()
 
     for post in posts:
         fe = fg.add_entry()
@@ -159,6 +158,8 @@ def sub_new_rss(sub):
         fe.id(url)
         fe.link({'href': url, 'rel': 'self'})
         fe.title(post['title'])
+        fe.author({'name': post['user'], 'uri': url_for('view_user', user=post['user'], _external=True)})
+        fe.content("/u/" + post['user'] + " posted on " + url_for('sub.view_sub', sub=post['sub']) + ": " + post['title'])
 
     return fg.atom_str(pretty=True)
 
