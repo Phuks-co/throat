@@ -632,7 +632,7 @@ def create_post():
         posts = misc.getPostList(misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), 'new', 1).dicts()
         socketio.emit('thread',
                       {'addr': addr, 'sub': sub['name'], 'type': form.ptype.data,
-                       'user': current_user.name, 'pid': post.pid,
+                       'user': current_user.name, 'pid': post.pid, 'sid': sub['sid'],
                        'html': render_template('indexpost.html', nocheck=True,
                                                post=posts[0])},
                       namespace='/snt',

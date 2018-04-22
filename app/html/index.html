@@ -108,6 +108,7 @@
         @if sort_type in ('all_new'):
         // TODO: add for subs
         window.nposts = '/all/new';
+        window.blocked = @{current_user.blocksid!!s}
         @end
     </script>
   @end

@@ -39,6 +39,9 @@ socket.on('deletion', function(data){
 })
 
 socket.on('thread', function(data){
+  if(window.blocked){
+    if(window.blocked.indexOf(data.sid) >= 0){return;}
+  }
   socket.emit('subscribe', {target: data.pid})
   var ndata = document.createElement( "div" );
   ndata.innerHTML = data.html;
