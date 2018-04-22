@@ -159,7 +159,7 @@ def sub_new_rss(sub):
         fe.link({'href': url, 'rel': 'self'})
         fe.title(post['title'])
 
-    return fg.rss_str(pretty=True)
+    return fg.atom_str(pretty=True)
 
 
 @sub.route("/<sub>/new", defaults={'page': 1})

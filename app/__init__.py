@@ -206,7 +206,7 @@ def all_new_rss():
         fe.link({'href': url, 'rel': 'self'})
         fe.title(post['title'])
 
-    return fg.rss_str(pretty=True)
+    return fg.atom_str(pretty=True)
 
 
 @app.route("/all/new", defaults={'page': 1})
