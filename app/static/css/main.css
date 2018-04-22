@@ -1633,3 +1633,6 @@ a[href="#toodamncool"]{
 }
 
 .expando-master{display: block;}
+.replybox{
+  margin-bottom: 1em;
+}
