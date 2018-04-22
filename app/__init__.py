@@ -193,6 +193,7 @@ def all_new_rss():
     """ RSS feed for /all/new """
     fg = FeedGenerator()
     fg.title("/all/new")
+    fg.id("/all/new")
     fg.subtitle("All new posts feed")
     fg.link(href=url_for('all_new', _external=True))
     fg.generator("Phuks")

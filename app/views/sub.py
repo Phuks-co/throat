@@ -143,6 +143,7 @@ def sub_new_rss(sub):
         abort(404)
 
     fg = FeedGenerator()
+    fg.id("/{}".format(sub['name']))
     fg.title("/{}".format(sub['name']))
     fg.subtitle("All new posts for {} feed".format(sub['name']))
     fg.link(href=url_for('sub.view_sub_new', sub=sub['name'], _external=True))
