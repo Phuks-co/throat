@@ -21,8 +21,6 @@ var socket = require('./Socket');
 
 
 function vote(obj, how, comment){
-  console.log(how)
-  console.log(obj)
   if(comment){
     var kl = 'votecomment';
     var unid = obj.parentNode.parentNode.parentNode.getAttribute('data-cid');
@@ -33,12 +31,15 @@ function vote(obj, how, comment){
     var count = obj.parentNode.querySelector('.score');
   }
   u.post('/do/' + kl + '/'+ unid + '/' + how, {}, function(data){
-    console.log(data)
     if(data.status == "ok"){
-      console.log(obj);
-      obj.classList.add((how == 'up') ? 'upvoted' : 'downvoted');
-      if(obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted')){
-        obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted').classList.remove((how == 'up') ? 'downvoted' : 'upvoted')
+      console.log(obj.classList)
+      if(!data.rm){
+        obj.classList.add((how == 'up') ? 'upvoted' : 'downvoted');
+        if(obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted')){
+          obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted').classList.remove((how == 'up') ? 'downvoted' : 'upvoted')
+        }
+      }else{
+        obj.classList.remove((how == 'up') ? 'upvoted' : 'downvoted');
       }
       count.innerHTML = data.score;
     }
@@ -48,10 +49,11 @@ function vote(obj, how, comment){
 }
 
 // up/downvote buttons.
-u.addEventForChild(document, 'click', '.upvote,.downvote,.c-upvote,.c-downvote', function(e, target){
+u.addEventForChild(document, 'mousedown', '.upvote,.downvote,.c-upvote,.c-downvote', function(e, target){
   var upvote = (target.classList.contains('upvote') || target.classList.contains('c-upvote'))
   var comment = (target.classList.contains('c-upvote') || target.classList.contains('c-downvote'))
   vote(target, upvote ? 'up':'down', comment)
+  e.preventDefault();
 })
 
 

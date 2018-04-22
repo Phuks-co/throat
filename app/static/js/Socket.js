@@ -77,8 +77,11 @@ socket.on('yourvote', function(data){
     if(data.status == -1){
       th.querySelector('.upvote').classList.remove('upvoted');
       th.querySelector('.downvote').classList.add('downvoted');
-    }else{
+    }else if(data.status == 1){
       th.querySelector('.upvote').classList.add('upvoted');
+      th.querySelector('.downvote').classList.remove('downvoted');
+    }else{
+      th.querySelector('.upvote').classList.remove('upvoted');
       th.querySelector('.downvote').classList.remove('downvoted');
     }
     th.querySelector('.score').innerHTML = data.score;

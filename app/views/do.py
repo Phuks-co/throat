@@ -26,7 +26,7 @@ from ..forms import LogOutForm, CreateSubFlair, DummyForm
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
 from ..forms import CreateSubTextPost, EditSubTextPostForm
-from ..forms import PostComment, CreateUserMessageForm, DeletePost, CaptchaForm
+from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
@@ -34,6 +34,7 @@ from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..misc import cache, sendMail, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata
+from ..models import SubPostVote, SubPostCommentVote
 
 do = Blueprint('do', __name__)
 
@@ -690,52 +691,67 @@ def upvote(pid, value):
     else:
         abort(403)
 
-    post = db.get_post_from_pid(pid)
-    if not post:
+    try:
+        post = SubPost.get(SubPost.pid == pid)
+    except SubPost.DoesNotExist:
         return jsonify(status='error', error=['Post does not exist'])
-    if db.is_post_deleted(post):
+
+    if post.deleted:
         return jsonify(status='error',
                        error=["You can't vote on deleted posts"])
-    if post['uid'] == current_user.get_id():
+
+    if post.uid.uid == current_user.uid:
         return jsonify(status='error',
                        error=["You can't vote on your own posts"])
 
-    if (datetime.datetime.utcnow() - post['posted']) > datetime.timedelta(days=10):
+    if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=10):
         return jsonify(status='error', error=["Post is archived"])
-
-    qvote = db.query('SELECT * FROM `sub_post_vote` WHERE `pid`=%s AND '
-                     '`uid`=%s', (pid, current_user.uid)).fetchone()
-    user = db.get_user_from_uid(post['uid'])
-
+    try:
+        qvote = SubPostVote.select().where(SubPostVote.pid == pid).where(SubPostVote.uid == current_user.uid).get()
+    except SubPostVote.DoesNotExist:
+        qvote = False
+    user = User.get(User.uid == post.uid)
+    positive = True if voteValue == 1 else False
     if qvote:
-        if bool(qvote['positive']) == (True if voteValue == 1 else False):
-            # TODO: Taking back votes
-            return json.dumps({'status': 'error',
-                               'error': ['You already voted.']})
-        else:
-            positive = True if voteValue == 1 else False
-            db.uquery('UPDATE `sub_post_vote` SET `positive`=%s WHERE '
-                      '`xid`=%s', (positive, qvote['xid']))
-            db.uquery('UPDATE `sub_post` SET `score`=`score`+%s WHERE '
-                      '`pid`=%s', (voteValue * 2, post['pid']))
-            if user['score'] is not None:
-                db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
-                          '`uid`=%s', (voteValue * 2, post['uid']))
-                socketio.emit('uscore',
-                              {'score': user['score'] + voteValue * 2},
-                              namespace='/snt',
-                              room="user" + post['uid'])
+        if bool(qvote.positive) == (True if voteValue == 1 else False):
+            qvote.delete_instance()
+            SubPost.update(score=SubPost.score - voteValue).where(SubPost.pid == post.pid).execute()
+            User.update(score=User.score - voteValue).where(User.uid == post.uid).execute()
+            User.update(given=User.given - voteValue).where(User.uid == current_user.uid).execute()
+            socketio.emit('uscore',
+                          {'score': user.score - voteValue},
+                          namespace='/snt', room="user" + post.uid.uid)
+
             socketio.emit('threadscore',
-                          {'pid': post['pid'],
-                           'score': post['score'] + voteValue * 2},
+                          {'pid': post.pid, 'score': post.score - voteValue},
+                          namespace='/snt', room=post.pid)
+
+            socketio.emit('yourvote', {'pid': post.pid, 'status': 0, 'score': post.score - voteValue}, namespace='/snt',
+                          room='user' + current_user.uid)
+            return jsonify(status='ok', message='Vote removed', score=post.score - voteValue, rm=True)
+        else:
+            db.uquery('UPDATE `sub_post_vote` SET `positive`=%s WHERE '
+                      '`xid`=%s', (positive, qvote.xid))
+            db.uquery('UPDATE `sub_post` SET `score`=`score`+%s WHERE '
+                      '`pid`=%s', (voteValue * 2, post.pid))
+            if user.score is not None:
+                db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
+                          '`uid`=%s', (voteValue * 2, post.uid.uid))
+                socketio.emit('uscore',
+                              {'score': user.score + voteValue * 2},
+                              namespace='/snt',
+                              room="user" + post.uid.uid)
+            socketio.emit('threadscore',
+                          {'pid': post.pid,
+                           'score': post.score + voteValue * 2},
                           namespace='/snt',
-                          room=post['pid'])
+                          room=post.pid)
             db.uquery('UPDATE `user` SET `given`=`given`+%s WHERE '
                       '`uid`=%s', (voteValue, current_user.uid))
             cache.delete_memoized(db.get_post_from_pid, pid)
-            socketio.emit('yourvote', {'pid': post['pid'], 'status': voteValue, 'score': post['score'] + voteValue * 2}, namespace='/snt',
+            socketio.emit('yourvote', {'pid': post.pid, 'status': voteValue, 'score': post.score + voteValue * 2}, namespace='/snt',
                           room='user' + current_user.uid)
-            return jsonify(status='ok', message='Vote flipped', score=post['score'] + voteValue * 2)
+            return jsonify(status='ok', message='Vote flipped', score=post.score + voteValue * 2)
     else:
         positive = True if voteValue == 1 else False
         now = datetime.datetime.utcnow()
@@ -743,25 +759,25 @@ def upvote(pid, value):
                   '`datetime`) VALUES (%s, %s, %s, %s)',
                   (pid, current_user.uid, positive, now))
     db.uquery('UPDATE `sub_post` SET `score`=`score`+%s WHERE '
-              '`pid`=%s', (voteValue, post['pid']))
+              '`pid`=%s', (voteValue, post.pid))
     socketio.emit('threadscore',
-                  {'pid': post['pid'],
-                   'score': post['score'] + voteValue},
+                  {'pid': post.pid,
+                   'score': post.score + voteValue},
                   namespace='/snt',
-                  room=post['pid'])
-    socketio.emit('yourvote', {'pid': post['pid'], 'status': voteValue, 'score': post['score'] + voteValue}, namespace='/snt',
+                  room=post.pid)
+    socketio.emit('yourvote', {'pid': post.pid, 'status': voteValue, 'score': post.score + voteValue}, namespace='/snt',
                   room='user' + current_user.uid)
-    cache.delete_memoized(db.get_post_from_pid, pid)
-    if user['score'] is not None:
+
+    if user.score is not None:
         db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
-                  '`uid`=%s', (voteValue, post['uid']))
+                  '`uid`=%s', (voteValue, post.uid.uid))
         socketio.emit('uscore',
-                      {'score': user['score'] + voteValue},
+                      {'score': user.score + voteValue},
                       namespace='/snt',
-                      room="user" + post['uid'])
+                      room="user" + post.uid.uid)
     db.uquery('UPDATE `user` SET `given`=`given`+%s WHERE '
               '`uid`=%s', (voteValue, current_user.uid))
-    return jsonify(status='ok', score=post['score'] + voteValue)
+    return jsonify(status='ok', score=post.score + voteValue)
 
 
 @do.route('/do/sendcomment/<pid>', methods=['POST'])
@@ -1729,8 +1745,15 @@ def upvotecomment(cid, value):
 
     if qvote:
         if bool(qvote['positive']) == (True if voteValue == 1 else False):
-            return json.dumps({'status': 'error',
-                               'error': ['You already voted.']})
+            SubPostCommentVote.delete().where(SubPostCommentVote.xid == qvote['xid']).execute()
+            SubPostComment.update(score=SubPostComment.score - voteValue).where(SubPostComment.cid == cid).execute()
+            User.update(score=User.score - voteValue).where(User.uid == comment.uid).execute()
+            User.update(given=User.given - voteValue).where(User.uid == current_user.uid).execute()
+            socketio.emit('uscore',
+                          {'score': user.score - voteValue},
+                          namespace='/snt', room="user" + comment.uid.uid)
+
+            return jsonify(status='ok', message='Vote removed', score=comment.score - voteValue, rm=True)
         else:
             positive = True if voteValue == 1 else False
             db.uquery('UPDATE `sub_post_comment_vote` SET `positive`=%s WHERE '
