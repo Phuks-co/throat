@@ -206,6 +206,8 @@ def all_new_rss():
         fe.id(url)
         fe.link({'href': url, 'rel': 'self'})
         fe.title(post['title'])
+        fg.author({'name': post['user'], 'uri': url_for('view_user', user=post['user'], _external=True)})
+        fg.content(url)
 
     return fg.atom_str(pretty=True)
 
