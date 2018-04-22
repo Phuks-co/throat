@@ -858,19 +858,14 @@ def workWithMentions(data, receivedby, post, sub):
             if user['uid'] != current_user.uid and user['uid'] != receivedby:
                 # Checks done. Send our shit
                 link = url_for('sub.view_post', pid=post.pid, sub=sub['name'])
-                db.create_message(current_user.uid, user['uid'],
-                                  subject="You've been tagged in a post",
-                                  content="[{0}]({1}) tagged you in [{2}]({3})"
-                                  .format(
-                                      current_user.get_username(),
-                                      url_for(
-                                          'view_user',
-                                          user=current_user.name),
-                                      "Here: " + post.title, link),
-                                  link=link,
-                                  mtype=8)
+                create_message(current_user.uid, user['uid'],
+                               subject="You've been tagged in a post",
+                               content="[{0}]({1}) tagged you in [{2}]({3})"
+                               .format(current_user.get_username(),
+                                       url_for('view_user', user=current_user.name), "Here: " + post.title, link),
+                               link=link, mtype=8)
                 socketio.emit('notification',
-                              {'count': db.user_mail_count(user['uid'])},
+                              {'count': get_notification_count(user['uid'])},
                               namespace='/snt',
                               room='user' + user['uid'])
 
@@ -1246,6 +1241,10 @@ def load_user(user_id):
         return SiteUser(user, subs, prefs)
     except User.DoesNotExist:
         return None
+
+
+def get_notification_count(uid):
+    return Message.select().where((Message.receivedby == uid) & (Message.mtype != 6) & (Message.mtype != 9) & Message.read.is_null(True)).count()
 
 
 def get_errors(form):
@@ -1700,3 +1699,10 @@ def pick_random_security_question():
     sc = random.choice(get_security_questions())
     session['sa'] = sc[2]
     return sc[1]
+
+
+def create_message(mfrom, to, subject, content, link, mtype):
+    """ Creates a message. """
+    posted = datetime.utcnow()
+    m = Message.create(sentby=mfrom, receivedby=to, subject=subject, mlink=link, content=content, posted=posted, mtype=mtype)
+    return m

@@ -816,14 +816,14 @@ def create_comment(pid):
             cache.delete_memoized(db.get_post_comments, post.pid)
             cache.delete_memoized(db.get_post_comments, post.pid, None)
         if to != current_user.uid and current_user.uid not in misc.get_ignores(to):
-            db.create_message(mfrom=current_user.uid,
-                              to=to,
-                              subject=subject,
-                              content='',
-                              link=comment.cid,
-                              mtype=mtype)
+            misc.create_message(mfrom=current_user.uid,
+                                to=to,
+                                subject=subject,
+                                content='',
+                                link=comment.cid,
+                                mtype=mtype)
             socketio.emit('notification',
-                          {'count': db.user_mail_count(to)},
+                          {'count': misc.get_notification_count(to)},
                           namespace='/snt',
                           room='user' + to)
 
@@ -909,14 +909,14 @@ def create_sendmsg():
         if not user:
             return json.dumps({'status': 'error',
                                'error': ['User does not exist']})
-        db.create_message(mfrom=current_user.uid,
-                          to=user['uid'],
-                          subject=form.subject.data,
-                          content=form.content.data,
-                          link=None,
-                          mtype=1 if current_user.uid not in misc.get_ignores(user['uid']) else 41)
+        misc.create_message(mfrom=current_user.uid,
+                            to=user['uid'],
+                            subject=form.subject.data,
+                            content=form.content.data,
+                            link=None,
+                            mtype=1 if current_user.uid not in misc.get_ignores(user['uid']) else 41)
         socketio.emit('notification',
-                      {'count': db.user_mail_count(user['uid'])},
+                      {'count': misc.get_notification_count(user['uid'])},
                       namespace='/snt',
                       room='user' + user['uid'])
         return json.dumps({'status': 'ok',
@@ -947,15 +947,15 @@ def ban_user_sub(sub):
             db.create_sitelog(4, current_user.get_username() +
                               ' banned ' + form.user.data + ' from /s/' + sub['name'],
                               url_for('sub.view_sub', sub=sub['name']))
-        db.create_message(mfrom=current_user.uid,
-                          to=user['uid'],
-                          subject='You have been banned from /s/' +
-                          sub['name'],
-                          content='Reason: ' + form.reason.data,
-                          link=sub['name'],
-                          mtype=7)
+        misc.create_message(mfrom=current_user.uid,
+                            to=user['uid'],
+                            subject='You have been banned from /s/' +
+                            sub['name'],
+                            content='Reason: ' + form.reason.data,
+                            link=sub['name'],
+                            mtype=7)
         socketio.emit('notification',
-                      {'count': db.user_mail_count(user['uid'])},
+                      {'count': misc.get_notification_count(user['uid'])},
                       namespace='/snt',
                       room='user' + user['uid'])
         db.create_sub_metadata(sub['sid'], 'ban', user['uid'])
@@ -997,16 +997,16 @@ def inv_mod2(sub):
                                    'error': [
                                        "User can't mod more than 15 subs"
                                    ]})
-            db.create_message(mfrom=current_user.uid,
-                              to=user['uid'],
-                              subject='You have been invited to mod a sub.',
-                              content=current_user.get_username() +
-                              ' has invited you to help moderate ' +
-                              sub['name'],
-                              link=sub['name'],
-                              mtype=2)
+            misc.create_message(mfrom=current_user.uid,
+                                to=user['uid'],
+                                subject='You have been invited to mod a sub.',
+                                content=current_user.get_username() +
+                                ' has invited you to help moderate ' +
+                                sub['name'],
+                                link=sub['name'],
+                                mtype=2)
             socketio.emit('notification',
-                          {'count': db.user_mail_count(user['uid'])},
+                          {'count': misc.get_notification_count(user['uid'])},
                           namespace='/snt',
                           room='user' + user['uid'])
             db.create_sub_metadata(sub['sid'], 'mod2i', user['uid'])
@@ -1042,15 +1042,15 @@ def remove_sub_ban(sub, user):
                                   ' unbanned ' + user['name'] + ' from /s/' + sub['name'],
                                   url_for('sub.view_sub', sub=sub['name']))
 
-            db.create_message(mfrom=current_user.uid,
-                              to=user['uid'],
-                              subject='You have been unbanned from /s/' +
-                              sub['name'],
-                              content='',
-                              mtype=7,
-                              link=sub['name'])
+            misc.create_message(mfrom=current_user.uid,
+                                to=user['uid'],
+                                subject='You have been unbanned from /s/' +
+                                sub['name'],
+                                content='',
+                                mtype=7,
+                                link=sub['name'])
             socketio.emit('notification',
-                          {'count': db.user_mail_count(user['uid'])},
+                          {'count': misc.get_notification_count(user['uid'])},
                           namespace='/snt',
                           room='user' + user['uid'])
             db.create_sublog(sub['sid'], 7, current_user.get_username() +
@@ -1178,9 +1178,8 @@ def read_pm(mid):
             return json.dumps({'status': 'ok'})
         read = datetime.datetime.utcnow()
         db.uquery('UPDATE `message` SET `read`=%s WHERE `mid`=%s', (read, mid))
-        cache.delete_memoized(db.user_mail_count, current_user.uid)
         socketio.emit('notification',
-                      {'count': db.user_mail_count(current_user.uid)},
+                      {'count': current_user.notifications},
                       namespace='/snt',
                       room='user' + current_user.uid)
         return json.dumps({'status': 'ok', 'mid': mid})
@@ -1195,9 +1194,8 @@ def readall_msgs(boxid):
     now = datetime.datetime.utcnow()
     q = Message.update(read=now).where(Message.read.is_null()).where(Message.receivedby == current_user.uid)
     q.where(Message.mtype == boxid).execute()
-    cache.delete_memoized(db.user_mail_count, current_user.uid)
     socketio.emit('notification',
-                  {'count': db.user_mail_count(current_user.uid)},
+                  {'count': current_user.notifications},
                   namespace='/snt',
                   room='user' + current_user.uid)
     return jsonify(status='ok')

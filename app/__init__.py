@@ -692,9 +692,8 @@ def view_messages_postreplies(page):
     now = datetime.datetime.utcnow()
     db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
               '`receivedby`=%s AND `mtype`=4', (now, current_user.uid))
-    caching.cache.delete_memoized(db.user_mail_count, current_user.uid)
     socketio.emit('notification',
-                  {'count': db.user_mail_count(current_user.uid)},
+                  {'count': current_user.notifications},
                   namespace='/snt',
                   room='user' + current_user.uid)
     msgs = misc.getMsgPostReplies(page)
@@ -711,9 +710,8 @@ def view_messages_comreplies(page):
     now = datetime.datetime.utcnow()
     db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
               '`receivedby`=%s AND `mtype`=5', (now, current_user.uid))
-    caching.cache.delete_memoized(db.user_mail_count, current_user.uid)
     socketio.emit('notification',
-                  {'count': db.user_mail_count(current_user.uid)},
+                  {'count': current_user.notifications},
                   namespace='/snt',
                   room='user' + current_user.uid)
     msgs = misc.getMsgCommReplies(page)
