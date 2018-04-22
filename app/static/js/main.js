@@ -239,7 +239,13 @@ if(window.moreuri){
               ndata.innerHTML = data;
 
               while (ndata.firstChild) {
-                  document.querySelector('.alldaposts').appendChild(ndata.firstChild);
+                  var k = document.querySelector('.alldaposts').appendChild(ndata.firstChild);
+                  if(window.expandall && k.getElementsByClassName){
+                    var q = k.getElementsByClassName('expando-btn')[0]
+                    if(q && q.getAttribute('data-icon') == "image"){
+                      q.click()
+                    }
+                  }
               }
 
               window.loading = false;

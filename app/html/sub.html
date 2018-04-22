@@ -38,12 +38,13 @@
   @if not posts:
     <h1 class="noshit">There are no posts here, yet.</h1>
   @end
-  @for post in posts:
-    @if not post['pid'] in func.getStickyPid(sub['sid']):
-      @ipost.singlePost(post, sub)
+  <div class="alldaposts">
+    @for post in posts:
+      @if not post['pid'] in func.getStickyPid(sub['sid']):
+        @ipost.singlePost(post, sub)
+      @end
     @end
-  @end
-
+  </div>
   @if page > 1:
     <a href="@{url_for(sort_type, sub=sub['name'], page=(page-1))}" class="pure-button">prev</a>
   @end

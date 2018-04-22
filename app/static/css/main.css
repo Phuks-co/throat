@@ -1631,3 +1631,5 @@ a[href="#toodamncool"]{
 #postcontent img, .comments .content img{
   max-width: 100%;
 }
+
+.expando-master{display: block;}

@@ -45,7 +45,14 @@ socket.on('thread', function(data){
   var x =document.getElementsByClassName('alldaposts')[0];
 
   while (ndata.firstChild) {
-    x.insertBefore(ndata.firstChild ,x.children[0]);
+    var k = x.insertBefore(ndata.firstChild ,x.children[0]);
+    if(window.expandall && k.getElementsByClassName){
+      var q = k.getElementsByClassName('expando-btn')[0]
+      if(q && q.getAttribute('data-icon') == "image"){
+        q.click()
+      }
+    }
+
   }
 
   icon.rendericons();
