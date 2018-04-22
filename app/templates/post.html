@@ -237,10 +237,10 @@
    {%endif%}
 
    {% if comments|length == 0 %}
-    <div class="comments"><h3>No comments yet...</h3></div>
+    <div class="comments"><h3 id="cmnts">No comments yet...</h3></div>
    {%else%}
     <div class="comments">
-      <h2><a href="{{url_for('sub.view_post', sub=sub.name, pid=post.pid)}}">{{ncomments}} comments</a></h2>
+      <h2 id="cmnts"><a href="{{url_for('sub.view_post', sub=sub.name, pid=post.pid)}}">{{ncomments}} comments</a></h2>
       {% include "postcomments.html" %}
     </div>
    {%endif%}
