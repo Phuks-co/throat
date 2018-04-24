@@ -1534,7 +1534,7 @@ def ktime():
     print('partial load: ', int((time.time() - g.boolkk) * 1000))
 
 
-def upload_file():
+def upload_file(max_size=16580608):
     if not current_user.canupload:
         return False
 
@@ -1568,6 +1568,10 @@ def upload_file():
 
     if not os.path.isfile(os.path.join(config.STORAGE, f_name)):
         ufile.save(os.path.join(config.STORAGE, f_name))
+        fsize = os.stat(os.path.join(config.STORAGE, f_name)).st_size
+        if fsize > max_size:  # Max file size exceeded
+            os.remove(os.path.join(config.STORAGE, f_name))
+            return False
         # remove metadata
         if mtype != 'image/gif':  # Apparently we cannot write to gif images
             md = pyexiv2.ImageMetadata(os.path.join(config.STORAGE, f_name))
