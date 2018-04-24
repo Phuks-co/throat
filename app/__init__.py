@@ -252,7 +252,7 @@ def search(page, term):
     """ The index page, with basic title search """
     term = re.sub('[^A-Za-z0-9.,\-_\'" ]+', '', term)
     posts = misc.getPostList(misc.postListQueryBase().where(SubPost.title ** ('%' + term + '%')),
-                             'new', 1).dicts()
+                             'new', page).dicts()
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'search', 'page': page,
                                                      'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
