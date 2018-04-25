@@ -64,7 +64,7 @@
     </article>
   {%endif%}
   {% if comment['cid'] == 0 %}
-    <a href="#" class="loadsibling" data-pid="{{post.pid}}" data-page="{{siblingpage}}" data-cid="{{comment.parent}}">Load more ({{comment.moresbling}} comments)</a>
+    <a href="#" class="loadsibling" data-pid="{{post.pid}}" data-page="{{siblingpage}}" data-cid="{% if not comment.parent %}1{%else%}{{comment.parent}}{%endif%}">Load more ({{comment.moresbling}} comments)</a>
   {% endif %}
 
 {%endfor%}
