@@ -800,6 +800,10 @@ def create_comment(pid):
         if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=10):
             return jsonify(status='error', error=["Post is archived"])
 
+        sub = db.get_sub_from_sid(post.sid.sid)
+        if current_user.is_subban(sub):
+            return jsonify(status='error', error=['You are currently banned from commenting'])
+
         comment = SubPostComment.create(pid=pid, uid=current_user.uid,
                                         content=form.comment.data.encode(),
                                         parentcid=form.parent.data if form.parent.data != '0' else None,
@@ -844,7 +848,6 @@ def create_comment(pid):
                           room='user' + to)
 
         # 6 - Process mentions
-        sub = db.get_sub_from_sid(post.sid.sid)
         misc.workWithMentions(form.comment.data, to, post, sub)
 
         return json.dumps({'status': 'ok', 'addr': url_for('sub.view_perm', sub=post.sid.name,
