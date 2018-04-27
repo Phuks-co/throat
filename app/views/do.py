@@ -516,11 +516,16 @@ def edit_txtpost(pid):
     form = EditSubTextPostForm()
     if form.validate():
         post = db.get_post_from_pid(pid)
+        if not post:
+            return jsonify(status='error', error=['No such post'])
+
+        sub = Sub.get(Sub.sid == post['sid'])
+        if current_user.is_subban(sub):
+            return jsonify(status='error', error=['You are banned on this sub.'])
+
         if db.is_post_deleted(post):
             return jsonify(status='error',
                            error=["You can't edit a deleted post"])
-        if not post:
-            return jsonify(status='error', error=['No such post'])
         db.uquery('UPDATE `sub_post` SET `content`=%s WHERE '
                   '`pid`=%s', (form.content.data, pid))
         cache.delete_memoized(db.get_post_from_pid, pid)
@@ -665,6 +670,10 @@ def edit_linkpost(sub, pid):
         post = db.get_post_from_pid(pid)
         if not post:
             return jsonify(status='error', error=['No such post'])
+        sub = Sub.get(Sub.sid == post['sid'])
+        if current_user.is_subban(sub):
+            return jsonify(status='error', error=['You are banned on this sub.'])
+
         if db.is_post_deleted(post):
             return jsonify(status='error',
                            error=["You can't edit a deleted posts"])
@@ -703,6 +712,9 @@ def upvote(pid, value):
     if post.uid.uid == current_user.uid:
         return jsonify(status='error',
                        error=["You can't vote on your own posts"])
+
+    if current_user.is_subban(post.sid):
+        return jsonify(status='error', error=['You are banned on this sub.'])
 
     if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=10):
         return jsonify(status='error', error=["Post is archived"])
@@ -1245,6 +1257,9 @@ def edit_title():
             post = SubPost.get(SubPost.pid == form.post.data)
         except SubPost.DoesNotExist:
             return jsonify(status="error", error="Post does not exist")
+        sub = Sub.get(Sub.sid == post.sid)
+        if current_user.is_subban(sub):
+            return jsonify(status='error', error='You are banned on this sub.')
 
         if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(seconds=300):
             return jsonify(status="error", error="You cannot edit the post title anymore")
@@ -1671,6 +1686,11 @@ def edit_comment():
 
         if comment['uid'] != current_user.uid and not current_user.is_admin():
             abort(403)
+        post = SubPost.get(SubPost.pid == comment['pid'])
+        sub = Sub.get(Sub.sid == post.sid)
+        if current_user.is_subban(sub):
+            return jsonify(status='error', error=['You are banned on this sub.'])
+
         if comment['status'] == '1':
             return jsonify(status='error',
                            error="You can't edit a deleted comment")
@@ -1742,6 +1762,9 @@ def upvotecomment(cid, value):
     post = SubPost.get(SubPost.pid == comment.pid)
     if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=10):
         return jsonify(status='error', error=["Post is archived"])
+
+    if current_user.is_subban(post.sid):
+        return jsonify(status='error', error=['You are banned on this sub.'])
 
     qvote = db.query('SELECT * FROM `sub_post_comment_vote` WHERE `cid`=%s AND'
                      ' `uid`=%s', (cid, current_user.uid)).fetchone()

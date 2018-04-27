@@ -517,8 +517,16 @@ def isMod(sid, uid):
 @cache.memoize(30)
 def isSubBan(sub, user):
     """ Returns True if 'user' is banned 'sub' """
-    x = db.get_sub_metadata(sub['sid'], 'ban', value=user['uid'])
-    return x
+    if isinstance(sub, dict):
+        # XXX: LEGACY
+        x = db.get_sub_metadata(sub['sid'], 'ban', value=user['uid'])
+        return x
+    else:
+        try:
+            SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user['uid']))
+            return True
+        except SubMetadata.DoesNotExist:
+            return False
 
 
 @cache.memoize(30)
