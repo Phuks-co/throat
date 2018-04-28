@@ -80,7 +80,9 @@ u.rawpost = function(url, data, success, error){
 };
 
 u.post = function(url, data, success, error){
-  data['csrf_token'] = document.getElementById('csrf_token').value;
+  if(document.getElementById('csrf_token')){
+    data['csrf_token'] = document.getElementById('csrf_token').value;
+  }
   data = JSON.stringify(data);
   u.rawpost(url, data, success, error);
 };
