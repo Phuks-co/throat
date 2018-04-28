@@ -44,11 +44,11 @@
       </div>
       <div class="author">
         @if post['link']:
-          @if func.getDomain(post['link']) in ('hooktube.com', 'www.hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'vimeo.com', 'vine.co'):
+          @if func.getDomain(post['link'].lower()) in ('hooktube.com', 'www.hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'vimeo.com', 'vine.co'):
           <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="lnk" title="Embed video" data-link="@{post['link']!!e}" data-icon="play"></div></div>
-          @elif post['link'].endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
+          @elif post['link'].lower().endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
           <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="lnk" title="Show image" data-link="@{post['link']!!e}" data-icon="image"></div></div>
-          @elif post['link'].endswith(('.mp4', '.webm', '.gifv')):
+          @elif post['link'].lower().endswith(('.mp4', '.webm', '.gifv')):
           <div class="expando"><div data-pid="@{post['pid']!!s}" class="icon expando-btn" data-t="lnk" title="Play video" data-link="@{post['link']!!e}" data-icon="play"></div></div>
           @end
         @elif post['content'] != '':
