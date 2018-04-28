@@ -1253,6 +1253,9 @@ def edit_title():
         if not form.reason.data:
             return jsonify(status="error", error="Missing title")
 
+        if len(form.reason.data.strip(misc.WHITESPACE)) < 3:
+            return jsonify(status="error", error="Title too short.")
+
         try:
             post = SubPost.get(SubPost.pid == form.post.data)
         except SubPost.DoesNotExist:
