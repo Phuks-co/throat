@@ -1365,7 +1365,7 @@ def trim_tree(tuff, depth=0, pageno=1):
                 i['morechildren'] = count_childs(i['children'])
                 i['children'] = []
             else:
-                i['children'] = trim_tree(i['children'], depth=depth + 1, pageno=pageno)
+                i['children'] = trim_tree(i['children'], depth=depth + 1)
             res.append(i)
         else:
             res.append({'moresbling': count_childs(tuff[pageno * perpage:]), 'cid': 0, 'parent': i['parentcid']})
