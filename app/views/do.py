@@ -34,7 +34,7 @@ from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..misc import cache, sendMail, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata
-from ..models import SubPostVote, SubPostCommentVote
+from ..models import SubPostVote, SubPostCommentVote, UserMetadata
 
 do = Blueprint('do', __name__)
 
@@ -1600,48 +1600,46 @@ def recovery():
 
     form = forms.PasswordRecoveryForm()
     if form.validate():
-        user = db.query('SELECT * FROM `user` WHERE `email`=%s',
-                        (form.edmail.data)).fetchone()
-        if not user:
-            return json.dumps({'status': 'ok'})
+        try:
+            user = User.get(User.email == form.email.data)
+        except User.DoesNotExist:
+            return jsonify(status="ok")  # Silently fail every time.
 
         # User exists, check if they don't already have a key sent
-        key = db.get_user_metadata(user['uid'], 'recovery-key')
-        if key:
-            # Key exists, check if it has expired
-            keyExp = db.get_user_metadata(user['uid'], 'recovery-key-time')
-            expiration = float(keyExp)
+        try:
+            key = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key'))
+            keyExp = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key-time'))
+            expiration = float(keyExp.value)
             if (time.time() - expiration) > 86400:  # 1 day
                 # Key is old. remove it and proceed
-                db.uquery('DELETE FROM `user_metadata` WHERE `uid`=%s AND '
-                          '`key`=%s', (user['uid'], 'recovery-key'))
-                db.uquery('DELETE FROM `user_metadata` WHERE `uid`=%s AND '
-                          '`key`=%s', (user['uid'], 'recovery-key-time'))
+                key.delete_instance()
+                keyExp.delete_instance()
             else:
-                # silently fail >_>
-                return json.dumps({'status': 'ok'})
+                return jsonify(status="ok")
+        except UserMetadata.DoesNotExist:
+            pass
 
         # checks done, doing the stuff.
         rekey = uuid.uuid4()
-        db.create_user_metadata(user['uid'], 'recovery-key', rekey)
-        db.create_user_metadata(user['uid'], 'recovery-key-time', time.time())
+        UserMetadata.create(uid=user.uid, key='recovery-key', value=rekey)
+        UserMetadata.create(uid=user.uid, key='recovery-key-time', value=time.time())
 
         sendMail(
             subject='Password recovery',
-            to=user['email'],
+            to=user.email,
             content="""<h1><strong>{0}</strong></h1>
             <p>Somebody (most likely you) has requested a password reset for
             your account</p>
-            <p>To proceed, visit the following address</p>
+            <p>To proceed, visit the following address (valid for the next 24hs)</p>
             <a href="{1}">{1}</a>
             <hr>
             <p>If you didn't request a password recovery, please ignore this
             email</p>
             """.format(config.LEMA, url_for('password_reset', key=rekey,
-                                            uid=user['uid'], _external=True))
+                                            uid=user.uid, _external=True))
         )
 
-        return json.dumps({'status': 'ok'})
+        return jsonify(status="ok")
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 

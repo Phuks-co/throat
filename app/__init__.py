@@ -28,7 +28,7 @@ from .socketio import socketio
 from . import database as db
 from .misc import SiteAnon, getSuscriberCount, getDefaultSubs, allowedNames, get_errors, engine
 from .models import db as pdb
-from .models import Sub, SubPost, User, SubMetadata
+from .models import Sub, SubPost, User, SubMetadata, UserMetadata
 
 # /!\ EXPERIMENTAL /!\
 import config
@@ -1102,28 +1102,36 @@ def password_recovery():
     """ Endpoint for the registration form """
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    return render_template('password_recovery.html')
+    return engine.get_template('user/password_recovery.html').render({'lpform': forms.PasswordRecoveryForm()})
 
 
 @app.route('/reset/<uid>/<key>')
 def password_reset(uid, key):
     """ The page that actually resets the password """
-    user = db.get_user_from_uid(uid)
-    if not user:
-        abort(403)
-    key = db.get_user_metadata(user['uid'], 'recovery-key')
-    # keyExp = db.get_user_metadata(user['uid'], 'recovery-key-time')
-    if not key:
+    try:
+        user = User.get(User.uid == uid)
+    except User.DoesNotExist:
         abort(404)
+
+    try:
+        key = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key'))
+        keyExp = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key-time'))
+        expiration = float(keyExp.value)
+        if (time.time() - expiration) > 86400:  # 1 day
+            # Key is old. remove it and proceed
+            key.delete_instance()
+            keyExp.delete_instance()
+            abort(404)
+    except UserMetadata.DoesNotExist:
+        abort(404)
+
     if current_user.is_authenticated:
-        db.uquery('DELETE FROM `user_metadata` WHERE `uid`=%s AND `key`=%s',
-                  (user['uid'], 'recovery-key'))
-        db.uquery('DELETE FROM `user_metadata` WHERE `uid`=%s AND `key`=%s',
-                  (user['uid'], 'recovery-key-time'))
+        key.delete_instance()
+        keyExp.delete_instance()
         return redirect(url_for('index'))
 
-    form = forms.PasswordResetForm(key=key['value'], user=user['uid'])
-    return render_template('password_reset.html', resetpw=form)
+    form = forms.PasswordResetForm(key=key.value, user=user.uid)
+    return engine.get_template('user/password_reset.html').render({'lpform': form})
 
 
 @app.route('/edit/<pid>', methods=['GET', 'POST'])
