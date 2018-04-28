@@ -1052,22 +1052,26 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = db.get_user_from_name(form.username.data)
-        if not user or user['status'] == 10:
-            return render_template("login.html", error="Invalid username or password.")
+        try:
+            user = User.get(User.name == form.username.data)
+        except User.DoesNotExist:
+            return engine.get_template('user/login.html').render({'error': "Invalid username or password.", 'loginform': form})
 
-        if user['crypto'] == 1:  # bcrypt
+        if user.status == 10:
+            return engine.get_template('user/login.html').render({'error': "Invalid username or password.", 'loginform': form})
+
+        if user.crypto == 1:  # bcrypt
             thash = bcrypt.hashpw(form.password.data.encode('utf-8'),
-                                  user['password'].encode('utf-8'))
-            if thash == user['password'].encode('utf-8'):
-                theuser = misc.load_user(user['uid'])
+                                  user.password.encode('utf-8'))
+            if thash == user.password.encode('utf-8'):
+                theuser = misc.load_user(user.uid)
                 login_user(theuser, remember=form.remember.data)
                 return form.redirect('index')
             else:
-                return render_template("login.html", error="Invalid username or password")
+                return engine.get_template('user/login.html').render({'error': "Invalid username or password.", 'loginform': form})
         else:  # Unknown hash
-            return render_template("login.html", error="Something is really borked. Please file a bug report.")
-    return render_template("login.html", error=get_errors(form))
+            return engine.get_template('user/login.html').render({'error': "Something went really really wrong here.", 'loginform': form})
+    return engine.get_template('user/login.html').render({'error': '', 'loginform': form})
 
 
 @app.route("/submit/<ptype>", defaults={'sub': ''})
