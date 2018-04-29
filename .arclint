@@ -2,7 +2,11 @@
   "linters": {
     "sample": {
       "type": "pep8",
-      "include": "(\\.py$)"
+      "include": "(\\.py$)",
+      "exclude": "(node_modules/)",
+      "severity": {
+          "E501": "disabled"
+      }
     }
   }
 }
