@@ -182,7 +182,7 @@
                 <li><a class="stick-post">make sticky</a></li>
               {% endif %}
             {%endif%}
-            {% if post.sub == "announcements" and current_user.is_admin %}
+            {% if post.sub.lower() == "announcements" and current_user.is_admin %}
              {% if not func.getAnnouncement() or func.getAnnouncement().pid != post['pid'] %}
                <li><a class="announce-post">make announcement</a></li>
              {%endif%}
