@@ -138,7 +138,7 @@ def delete_post():
                 return jsonify(status="error", error=["Cannot delete without reason"])
             deletion = 2
             if current_user.uid not in subI['mod2'] and current_user.is_admin():
-                SiteLog.create(action=4, link=url_for('sub.view_sub', sub=sub.name),
+                SiteLog.create(action=4, link=url_for('sub.view_sub', sub=sub.name), time=datetime.datetime.utcnow(),
                                desc='{0} deleted a post with reason `{1}`'.format(current_user.get_username(), form.reason.data))
 
             SubLog.create(sid=sub.sid, action=1, link=url_for('sub.view_post', sub=sub.name, pid=post.pid),
@@ -191,7 +191,8 @@ def create_sub():
 
         # admin/site log
         SiteLog.create(action=6, link=url_for('sub.view_sub', sub=sub.name),
-                       desc='{0} created a new sub'.format(current_user.name))
+                       desc='{0} created a new sub'.format(current_user.name),
+                       time=datetime.datetime.utcnow())
 
         SubSubscriber.create(uid=current_user.uid, sid=sub.sid, status=1)
 
@@ -2099,5 +2100,6 @@ def ban_user(username):
     user.status = 5
     user.save()
     SiteLog.create(action=9, link=url_for('view_user', sub=user.name),
-                   desc='{0} banned {1}'.format(current_user.get_username(), user.name))
+                   desc='{0} banned {1}'.format(current_user.get_username(), user.name),
+                   time=datetime.datetime.utcnow())
     return redirect(url_for('view_user', user=username))
