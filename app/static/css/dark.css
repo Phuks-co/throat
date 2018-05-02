@@ -381,3 +381,7 @@ body.dark a[href="#spoiler"]{
 body.dark .cw-items a{
   color: #fff;
 }
+
+body.dark .motto{
+  color: #cdcdcd;
+}
