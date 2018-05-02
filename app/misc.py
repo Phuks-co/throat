@@ -1718,3 +1718,10 @@ def create_message(mfrom, to, subject, content, link, mtype):
     posted = datetime.utcnow()
     m = Message.create(sentby=mfrom, receivedby=to, subject=subject, mlink=link, content=content, posted=posted, mtype=mtype)
     return m
+
+
+MOTTOS = json.loads(open('phuks.txt').read())
+
+
+def get_motto():
+    return random.choice(MOTTOS)

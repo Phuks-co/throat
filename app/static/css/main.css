@@ -1636,3 +1636,16 @@ a[href="#toodamncool"]{
 .replybox{
   margin-bottom: 1em;
 }
+
+.motto{
+  z-index: 20;
+  bottom: 0;
+  position: absolute;
+  left: 4em;
+  color: white;
+}
+
+#logocont{
+  z-index: -1;
+  position: absolute;
+}
