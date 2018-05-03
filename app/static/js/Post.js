@@ -101,6 +101,22 @@ u.sub('.selflair', 'click', function(e){
   )
 });
 
+u.sub('#remove-flair', 'click', function(e){
+  var pid=this.getAttribute('data-pid');
+  var nsub=this.getAttribute('data-sub'), tg=this;
+  u.rawpost('/do/remove_post_flair/' + nsub + '/' + pid, new FormData(document.getElementById('delete-post-form')),
+    function(data) {
+      if (data.status != "ok") {
+        tg.innerHTML = 'Error. ' + data.error;
+      } else {
+        tg.innerHTML = 'Done!';
+        document.location.reload();
+      }
+    }
+  )
+});
+
+
 u.addEventForChild(document, 'click', '.nsfw-post', function(e, qelem){
   var pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg=e.currentTarget;
   TextConfirm(qelem, function(){

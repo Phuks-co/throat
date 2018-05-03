@@ -195,7 +195,7 @@
     <div style="display:none;" id="postflairs">
       <span class="closemsg">×</span>
       {% if func.getPostFlair(post) %}
-      <div>Current flair: <span class="postflair">{{func.getPostFlair(post)}}</span>. <a id="remove-flair">Remove</a>.</div>
+      <div>Current flair: <span class="postflair">{{func.getPostFlair(post)}}</span>. <a data-sub="{{post.sub}}" data-pid="{{post.pid}}" href="#" id="remove-flair">Remove</a>.</div>
       {%endif%}
       <h4>Select a new flair</h4>
       {% for ll in editpostflair.flair %}

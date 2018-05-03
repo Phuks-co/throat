@@ -350,6 +350,7 @@ def assign_post_flair(sub, pid, fl):
 @do.route("/do/remove_post_flair/<sub>/<pid>", methods=['POST'])
 def remove_post_flair(sub, pid):
     """ Deletes a post's flair """
+    # TODO: Redo.
     sub = db.get_sub_from_name(sub)
     if not sub:
         return json.dumps({'status': 'error',
@@ -359,7 +360,7 @@ def remove_post_flair(sub, pid):
     except SubPost.DoesNotExist:
         return jsonify(status='error', error=['Post does not exist'])
 
-    if current_user.is_mod(sub['sid']) or (post.uid == current_user.uid and misc.userCanFlair(sub)):
+    if current_user.is_mod(sub['sid']) or (post.uid.uid == current_user.uid and misc.userCanFlair(sub)):
         if not post.flair:
             return json.dumps({'status': 'error',
                                'error': ['Flair does not exist']})
