@@ -141,7 +141,7 @@ def delete_post():
                 SiteLog.create(action=4, link=url_for('sub.view_sub', sub=sub.name), time=datetime.datetime.utcnow(),
                                desc='{0} deleted a post with reason `{1}`'.format(current_user.get_username(), form.reason.data))
 
-            SubLog.create(sid=sub.sid, action=1, link=url_for('sub.view_post', sub=sub.name, pid=post.pid),
+            SubLog.create(sid=sub.sid, action=1, link=url_for('sub.view_post', sub=sub.name, pid=post.pid), time=datetime.datetime.utcnow(),
                           desc='{0} deleted a post with reason `{1}`'.format(current_user.get_username(), form.reason.data))
 
         # time limited to prevent socket spam
@@ -223,7 +223,7 @@ def edit_sub_css(sub):
         styles.content = dcss[1]
         styles.source = form.css.data
         styles.save()
-        SubLog.create(sid=sub.sid, action=4, link=url_for('sub.view_sub', sub=sub.name),
+        SubLog.create(sid=sub.sid, action=4, link=url_for('sub.view_sub', sub=sub.name), time=datetime.datetime.utcnow(),
                       desc='{0} modified the sub\'s stylesheet'.format(current_user.name))
 
         return json.dumps({'status': 'ok',
