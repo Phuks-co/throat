@@ -239,7 +239,7 @@ def all_domain_new(domain, page):
     """ The index page, all posts sorted as most recent posted first """
     domain = re.sub('[^A-Za-z0-9.\-_]+', '', domain)
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(SubPost.link % ('%://' + domain + '/%')),
-                             'new', 1).dicts()
+                             'new', page).dicts()
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_domain_new', 'page': page,
                                                      'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
