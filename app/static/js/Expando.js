@@ -41,10 +41,10 @@ function imgurID(url) {
 function close_expando( pid){
   var k = document.querySelector('div.expando-master[pid="'+pid+'"]')
   k.parentNode.removeChild(k);
-  document.querySelector('div.expando-btn[data-pid="'+pid+'"]').innerHTML = icon[document.querySelector('div.expando-btn[data-pid="'+pid+'"]').getAttribute('data-icon')];
+  document.querySelector('div.expando[data-pid="'+pid+'"] .expando-btn').innerHTML = icon[document.querySelector('div.expando[data-pid="'+pid+'"] .expando-btn').getAttribute('data-icon')];
 }
 
-u.addEventForChild(document, 'click', '.expando-btn', function(e, ematch){
+u.addEventForChild(document, 'click', '.expando', function(e, ematch){
     var th=ematch;
 
     var link=th.getAttribute('data-link');
@@ -100,6 +100,6 @@ u.addEventForChild(document, 'click', '.expando-btn', function(e, ematch){
       }
 
     }
-    th.innerHTML = icon.close;
+    th.querySelector('.expando-btn').innerHTML = icon.close;
     document.querySelector('div.post[pid="'+pid+'"]').appendChild(expando);
 })

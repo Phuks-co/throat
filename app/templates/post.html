@@ -140,11 +140,11 @@
       <ul class="links" data-pid="{{post.pid}}">
         {% if post.link %}
           {% if func.getDomain(post.link) in ('youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'vimeo.com', 'vine.co', 'hooktube.com', 'www.hooktube.com') %}
-          <li><div class="expando"><div data-pid="{{post.pid}}" class="icon expando-btn" data-t="lnk" data-link="{{post.link}}" data-icon="play"></div></div></li>
+          <li><div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="play"></div></div></li>
           {% elif func.isImage(post.link) %}
-          <li><div class="expando"><div data-pid="{{post.pid}}" class="icon expando-btn" data-t="lnk" data-link="{{post.link}}" data-icon="image"></div></div></li>
+          <li><div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="image"></div></div></li>
           {% elif func.isVideo(post.link) or func.isGifv(post.link) %}
-          <li><div class="expando"><div data-pid="{{post.pid}}" class="icon expando-btn" data-t="lnk" data-link="{{post.link}}" data-icon="play"></div></div></li>
+          <li><div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="play"></div></div></li>
           {% endif %}
         {% endif %}
           {% if current_user.is_authenticated and post.deleted == 0 %}
