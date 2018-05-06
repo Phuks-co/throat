@@ -1,5 +1,5 @@
 @require(posts, sub)
-@def singlePost(post, sub):
+@def singlePost(post, sub, announcement=False):
 <div pid="@{post['pid']!!s}" class="post">
     <div class="misctainer">
       <div class="votebuttons">
@@ -27,6 +27,9 @@
     </div>
     <div class="pbody">
       <div class="post-heading">
+        @if announcement:
+        <span class="announcement">Announcement</span>
+        @end
         @if post['nsfw']:
         <div class="nsfw" alt="Not safe for work">NSFW</div> \
         @end

@@ -147,6 +147,22 @@ u.sub('#chsend', 'keydown', function(e){
 
 var ircStylize = require("irc-style-parser");
 
+socket.on('rmannouncement', function(){
+  if(window.oindex){
+    document.getElementById('announcement-post').outerHTML = '';
+  }
+})
+
+socket.on('announcement', function(data){
+  if(window.oindex){
+    var elm = document.createElement('div');
+    elm.id = "announcement-post";
+    elm.innerHTML = data.cont;
+    document.getElementById('container').insertAdjacentElement('afterbegin', elm);
+    icon.rendericons();
+  }
+})
+
 socket.on('msg', function(data){
   var cont = document.getElementById('chcont')
   var uname = document.getElementById('unameb').innerHTML.toLowerCase();

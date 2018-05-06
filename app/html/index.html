@@ -40,38 +40,10 @@
 <div id="container">
   @if sort_type.startswith('home_') or sort_type.startswith('all_'):
     @if ann:
-      <div pid="@{ann['pid']!!s}" class="post">
-        <div class="pure-g">
-          <div class="misctainer">
-            <div class="votebuttons">
-              <div title="Upvote" class="upvote @{(ann.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{ann['pid']!!s}" data-icon="upvote"></div>
-              <div class="score">@{ann['score']!!s}</div>
-              <div title="Downvote" class="downvote @{(ann.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{ann['pid']!!s}" data-icon="downvote"></div>
-            </div>
-            <div class="thcontainer">
-              <a href="@{url_for('sub.view_post', sub=ann['sub'], pid=ann['pid'])}" class="title">
-                <div class="thumbnail">
-                    <span class="placeholder" data-icon="chat"></span>
-                </div>
-              </a>
-            </div>
-          </div>
-          <div class="pure-u-16-24 pure-u-md-20-24 pbody">
-            <div class="post-heading">
-              <span class="announcement">Announcement</span><a href="@{url_for('sub.view_post', sub=ann['sub'], pid=ann['pid'])}" class="title">@{ann['title']}</a>
-            </div>
-            <div class="author">
-              posted <time-ago datetime="@{ann['posted'].isoformat()}Z"></time-ago> by
-              <a href="@{url_for('view_user', user=ann['user'])}">@{ann['user']}</a> on
-              <a href="@{url_for('sub.view_sub', sub=ann['sub'])}">@{ann['sub']}</a>
-            </div>
-            <div class="links">
-              <a href="@{url_for('sub.view_post', sub=ann['sub'], pid=ann['pid'])}">@{(ann['comments']>0) and 'comments (' + str(ann['comments']) +')' or 'comment'}</a>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div id="announcement-post">
+      @ipost.singlePost(ann, False, announcement=True)
       <hr/>
+      </div>
     @end
   @end
 
@@ -102,19 +74,19 @@
 
 @def pagefoot():
 
-  @if "labrat" in current_user.prefs:
     <script type="text/javascript" charset="utf-8">
+      window.oindex = true;
+      @if "labrat" in current_user.prefs:
+
         window.labrat = true;
         @if sort_type in ('all_new'):
         // TODO: add for subs
         window.nposts = '/all/new';
         window.blocked = @{current_user.blocksid!!s}
         @end
+      @end
+      @if sort_type in ('all_new', 'sub.view_sub_new') and current_user.likes_scroll():
+        window.moreuri = '@{url_for(request.endpoint + '_more')}/';
+      @end
     </script>
-  @end
-@if sort_type in ('all_new', 'sub.view_sub_new') and current_user.likes_scroll():
-<script>
-  window.moreuri = '@{url_for(request.endpoint + '_more')}/';
-</script>
-@end
 @end

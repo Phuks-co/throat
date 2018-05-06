@@ -1310,6 +1310,7 @@ def deleteannouncement():
                    time=datetime.datetime.utcnow())
 
     cache.delete_memoized(misc.getAnnouncementPid)
+    socketio.emit('rmannouncement', {}, namespace='/snt')
     return redirect(url_for('admin_area'))
 
 
@@ -1339,6 +1340,9 @@ def make_announcement():
                        desc='{0} made an announcement.'.format(current_user.name),
                        time=datetime.datetime.utcnow())
         cache.delete_memoized(misc.getAnnouncementPid)
+        socketio.emit('announcement',
+                      {"cont": engine.get_template('shared/announcement.html').render({"ann": misc.getAnnouncement()})},
+                      namespace='/snt')
         return jsonify(status='ok')
     return jsonify(status='error', error=get_errors(form))
 
