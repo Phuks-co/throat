@@ -1210,10 +1210,14 @@ def getPostList(baseQuery, sort, page):
 
 
 @cache.memoize(600)
+def getAnnouncementPid():
+    return SiteMetadata.select().where(SiteMetadata.key == 'announcement').get()
+
+
 def getAnnouncement():
     """ Returns sitewide announcement post or False """
     try:
-        ann = SiteMetadata.select().where(SiteMetadata.key == 'announcement').get()
+        ann = getAnnouncementPid()
         if not ann.value:
             return False
         return postListQueryBase(nofilter=True).where(SubPost.pid == ann.value).dicts().get()
