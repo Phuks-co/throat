@@ -81,7 +81,7 @@
         <a href="@{url_for('login', next=request.path)}" class="pure-button pure-button-primary">Log in</a>
         <a href="@{url_for('register')}" class="pure-button button-secondary">Register</a>
         @else:
-        <a href="@{ url_for('view_user', user=current_user.name)}" class="smallcaps">@{current_user.name}</a>
+        <a href="@{ url_for('view_user', user=current_user.name)}" class="smallcaps" id="unameb">@{current_user.name}</a>
         <span class="separator"></span>
         <abbr title="Phuks taken" class="bold" id="postscore">@{current_user.score!!s}</abbr>
         <span class="separator"></span>

@@ -373,6 +373,13 @@ body.dark #chsend {
     background-color: #0d0d0d;
 }
 
+body.dark .msg-hl{
+  background-color: #111;
+}
+
+
+/* other stuff? */
+
 body.dark a[href="#spoiler"]{
   background-color: #050505;
   color: #050505

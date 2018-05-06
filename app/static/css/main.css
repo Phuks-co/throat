@@ -1538,6 +1538,9 @@ table td {
     background: rgb(16, 16, 16);
 }
 
+.msg-hl{
+  background-color: #d7d7d7;
+}
 /* chat text format */
 .irc-underline{text-decoration: underline;}
 .irc-underline{font-style: italic;}

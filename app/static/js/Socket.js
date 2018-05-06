@@ -3,6 +3,10 @@ import icon from './Icon'
 import u from './Util';
 import anchorme from "anchorme";
 
+RegExp.escape= function(s) {
+    return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+};
+
 const socket = io('//' + window.wsserver + '/snt', {transports: ['websocket'], upgrade: false});
 
 function updateNotifications(count){
@@ -145,7 +149,15 @@ var ircStylize = require("irc-style-parser");
 
 socket.on('msg', function(data){
   var cont = document.getElementById('chcont')
-  cont.innerHTML = cont.innerHTML + '<div class="msg"><span class="msguser">' + data.user + '&gt;</span><span class="damsg">' + anchorme(ircStylize(data.msg), {emails: false, files: false, attributes: [{name:"target",value:"blank"}]}) + '</span></div>';
+  var uname = document.getElementById('unameb').innerHTML.toLowerCase();
+  var reg = /(@|\/u\/)(.*?)(\s|\'|\.|,|$)/
+  var m = data.msg.match(reg);
+  var xc="";
+  if(m && m[2].toLowerCase() == uname && data.user.toLowerCase() != uname){
+    xc="msg-hl";
+    // TODO: Ping sounds here?
+  }
+  cont.innerHTML = cont.innerHTML + '<div class="msg ' + xc + '"><span class="msguser">' + data.user + '&gt;</span><span class="damsg">' + anchorme(ircStylize(data.msg), {emails: false, files: false, attributes: [{name:"target",value:"blank"}]}).replace(reg, "<a href='/u/$2'>$1$2</a>$3") + '</span></div>';
   var k = document.getElementsByClassName('msg')
   if(k.length > 3){
     if(isScrolledIntoView(k[k.length-2])){
