@@ -2067,7 +2067,7 @@ def sub_upload_delete(sub, name):
         try:
             SubUploads.get(SubUploads.fileid == img.fileid)
         except SubUploads.DoesNotExist:
-            os.remove(os.path.join(config.THUMBNAILS, img.fileid))
+            os.remove(os.path.join(config.STORAGE, img.fileid))
 
     return jsonify(status='ok')
 
