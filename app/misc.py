@@ -81,13 +81,10 @@ class SiteUser(object):
             self.is_active = False
         else:
             self.is_active = True
-        if self.user:
-            self.is_authenticated = True
-            self.is_anonymous = False
-            self.admin = 'admin' in self.prefs
-        else:
-            self.is_authenticated = False
-            self.is_anonymous = True
+        self.is_active = True if self.user['status'] == 0 else False
+        self.is_authenticated = True if self.user['status'] == 0 else False
+        self.is_anonymous = True if self.user['status'] != 0 else False
+        self.admin = 'admin' in self.prefs
 
         self.canupload = True if ('canupload' in self.prefs) or (self.admin) else False
 
