@@ -150,7 +150,7 @@ var ircStylize = require("irc-style-parser");
 socket.on('msg', function(data){
   var cont = document.getElementById('chcont')
   var uname = document.getElementById('unameb').innerHTML.toLowerCase();
-  var reg = /(@|\/u\/)(.*?)(\s|\'|\.|,|$)/
+  var reg = /(?:^|\s)(@|\/u\/)(.*?)(\s|\'|\.|,|$)/
   var m = data.msg.match(reg);
   var xc="";
   if(m && m[2].toLowerCase() == uname && data.user.toLowerCase() != uname){
