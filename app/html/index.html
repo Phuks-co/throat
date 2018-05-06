@@ -44,9 +44,9 @@
         <div class="pure-g">
           <div class="misctainer">
             <div class="votebuttons">
-              <div title="Upvote" class="upvote " data-pid="@{ann['pid']!!s}" data-icon="upvote"></div>
+              <div title="Upvote" class="upvote @{(ann.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{ann['pid']!!s}" data-icon="upvote"></div>
               <div class="score">@{ann['score']!!s}</div>
-              <div title="Downvote" class="downvote " data-pid="@{ann['pid']!!s}" data-icon="downvote"></div>
+              <div title="Downvote" class="downvote @{(ann.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{ann['pid']!!s}" data-icon="downvote"></div>
             </div>
             <div class="thcontainer">
               <a href="@{url_for('sub.view_post', sub=ann['sub'], pid=ann['pid'])}" class="title">
