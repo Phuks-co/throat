@@ -1152,7 +1152,7 @@ def accept_mod2inv(sub, user):
     sub = db.get_sub_from_name(sub)
     form = DummyForm()
     if form.validate():
-        if misc.isModInv(sub, user):
+        if misc.isModInv(sub['sid'], user):
             if misc.moddedSubCount(user['uid']) >= 15:
                 return json.dumps({'status': 'error',
                                    'error': ["You can't mod more than 15 subs"]})
@@ -1182,7 +1182,7 @@ def refuse_mod2inv(sub, user):
 
     form = DummyForm()
     if form.validate():
-        if misc.isModInv(sub, user):
+        if misc.isModInv(sub['sid'], user):
             db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s',
                       ('mod2i', user['uid']))
 
@@ -2120,7 +2120,7 @@ def ban_user(username):
 
     user.status = 5
     user.save()
-    SiteLog.create(action=9, link=url_for('view_user', sub=user.name),
+    SiteLog.create(action=9, link=url_for('view_user', user=user.name),
                    desc='{0} banned {1}'.format(current_user.get_username(), user.name),
                    time=datetime.datetime.utcnow())
     return redirect(url_for('view_user', user=username))

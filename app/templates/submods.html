@@ -23,15 +23,15 @@
 {% endif %}
 
 <div class="col-12">
-  <p>Owner: <i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=func.getSubUsers(sub, 'mod1'))}}">{{func.getSubUsers(sub, 'mod1')}}</a></p>
+  <p>Owner: <i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=subdata.owner.name)}}">{{subdata.owner.name}}</a></p>
 </div>
 <div class="col-12"><hr></div>
 <div class="col-12">
-  <p>Active moderators: {% if mods|length < 1 %}none{% endif %}</p>
+  <p>Active moderators: {% if subdata.mods|length < 1 %}none{% endif %}</p>
   <ul>
-  {% for mod in mods if mods|length > 0 %}
+  {% for mod in subdata.mods if subdata.mods|length > 0 %}
   <span class="editmodbtn col-4">
-    <li><a href="{{url_for('view_user', user=db.get_user_from_uid(mod.value).name)}}">{{db.get_user_from_uid(mod.value).name}}</a>
+    <li><a href="{{url_for('view_user', user=db.get_user_from_uid(mod.value).name)}}">{{mod.name}}</a>
       {% if current_user.is_admin() or current_user.is_topmod(sub) %}
       (<a data-sub="{{sub.name}}" data-user="{{db.get_user_from_uid(mod.value).name}}" class="slink revoke-mod2">remove</a>)
       {% endif %}

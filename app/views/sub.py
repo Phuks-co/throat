@@ -118,17 +118,17 @@ def view_sublog(sub, page):
 @login_required
 def edit_sub_mods(sub):
     """ Here we can edit moderators for a sub """
-    sub = db.get_sub_from_name(sub)
-    if not sub:
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
         abort(404)
 
-    if current_user.is_mod(sub['sid']) or current_user.is_modinv(sub) \
-       or current_user.is_admin():
-        xmods = db.get_sub_metadata(sub['sid'], 'xmod2', _all=True)
-        mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
-        modinvs = db.get_sub_metadata(sub['sid'], 'mod2i', _all=True)
-        return render_template('submods.html', sub=sub, mods=mods,
-                               modinvs=modinvs, xmods=xmods,
+    if current_user.is_mod(sub.sid) or current_user.is_modinv(sub.sid) or current_user.is_admin():
+        subdata = misc.getSubData(sub.sid)
+        xmods = db.get_sub_metadata(sub.sid, 'xmod2', _all=True)
+        modinvs = db.get_sub_metadata(sub.sid, 'mod2i', _all=True)
+        return render_template('submods.html', sub=sub,
+                               modinvs=modinvs, xmods=xmods, subdata=subdata,
                                editmod2form=EditMod2Form(),
                                banuserform=BanUserSubForm())
     else:

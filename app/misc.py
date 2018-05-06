@@ -549,9 +549,9 @@ def isTopMod(sub, user):
     return x
 
 
-def isModInv(sub, user):
+def isModInv(sid, user):
     """ Returns True if 'user' is a invited to mod of 'sub' """
-    x = db.get_sub_metadata(sub['sid'], 'mod2i', value=user['uid'])
+    x = db.get_sub_metadata(sid, 'mod2i', value=user['uid'])
     return x
 
 
@@ -1641,16 +1641,21 @@ def getSubData(sid, simple=False):
             data['videomode'] = 0
 
         if data.get('mod2', []) != []:
-            data['mods'] = User.select(User.uid, User.name).where(User.uid << data['mod2']).dicts()
+            try:
+                data['mods'] = User.select(User.uid, User.name).where((User.uid << data['mod2']) & (User.status == 0)).dicts()
+            except User.DoesNotExist:
+                data['mods'] = []
         try:
-            data['owner'] = User.select(User.uid, User.name).where(User.uid == data['mod1']).dicts().get()
-        except KeyError:
+            data['owner'] = User.select(User.uid, User.name).where((User.uid == data['mod1']) & (User.status == 0)).dicts().get()
+        except (KeyError, User.DoesNotExist):
             data['owner'] = User.select(User.uid, User.name).where(User.name == 'Phuks').dicts().get()
 
         try:
-            data['creator'] = User.select(User.uid, User.name).where(User.uid == data['mod']).dicts().get()
+            data['creator'] = User.select(User.uid, User.name).where((User.uid == data['mod']) & (User.status == 0)).dicts().get()
         except KeyError:
             data['creator'] = User.select(User.uid, User.name).where(User.name == 'Phuks').dicts().get()
+        except User.DoesNotExist:
+            data['creator'] = {'uid': '0', 'name': '[Deleted]'}
 
         try:
             data['stylesheet'] = SubStylesheet.get(SubStylesheet.sid == sid).content
@@ -1659,6 +1664,7 @@ def getSubData(sid, simple=False):
     return data
 
 
+@cache.memoize(5)
 def getUserGivenScore(uid):
     pos = SubPostVote.select().where(SubPostVote.uid == uid).where(SubPostVote.positive == 1).count()
     neg = SubPostVote.select().where(SubPostVote.uid == uid).where(SubPostVote.positive == 0).count()

@@ -28,7 +28,7 @@ from .socketio import socketio
 from . import database as db
 from .misc import SiteAnon, getSuscriberCount, getDefaultSubs, allowedNames, get_errors, engine
 from .models import db as pdb
-from .models import Sub, SubPost, User, SubMetadata, UserMetadata
+from .models import Sub, SubPost, User, SubMetadata, UserMetadata, SubPostComment
 
 # /!\ EXPERIMENTAL /!\
 import config
@@ -537,18 +537,20 @@ def view_comment_inbox(cid):
 @login_required
 def view_user(user):
     """ WIP: View user's profile, posts, comments, badges, etc """
-    user = db.get_user_from_name(user)
-    if not user:
+    try:
+        user = User.get(User.name == user)
+    except User.DoesNotExist:
         abort(404)
 
-    owns = db.get_user_positions(user['uid'], 'mod1')
-    mods = db.get_user_positions(user['uid'], 'mod2')
-    badges = misc.getUserBadges(user['uid'])
-    pcount = db.query('SELECT COUNT(*) AS c FROM `sub_post` WHERE `uid`=%s',
-                      (user['uid'], )).fetchone()['c']
-    ccount = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE '
-                      '`uid`=%s', (user['uid'], )).fetchone()['c']
-    habit = db.get_user_post_count_habit(user['uid'])
+    if user.status == 10:
+        abort(404)
+
+    owns = db.get_user_positions(user.uid, 'mod1')
+    mods = db.get_user_positions(user.uid, 'mod2')
+    badges = misc.getUserBadges(user.uid)
+    pcount = SubPost.select().where(SubPost.uid == user.uid).count()
+    ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()
+    habit = db.get_user_post_count_habit(user.uid)
     return render_template('user.html', user=user, badges=badges, habit=habit,
                            msgform=CreateUserMessageForm(), pcount=pcount,
                            ccount=ccount, owns=owns, mods=mods)
