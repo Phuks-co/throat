@@ -107,7 +107,20 @@ class SiteUser(object):
 
     def is_mod(self, sid):
         """ Returns True if the current user is a mod of 'sub' """
-        return isMod(sid, self.uid)
+        try:
+            SubMetadata.get((SubMetadata.sid == sid) & (SubMetadata.key << ('mod1', 'mod2')) & (SubMetadata.value == self.uid))
+            return True
+        except SubMetadata.DoesNotExist:
+            pass
+
+        if self.admin:
+            try:
+                SiteMetadata.get((SiteMetadata.key == 'default') & (SiteMetadata.value == sid))
+                return True
+            except SiteMetadata.DoesNotExist:
+                pass
+
+        return False
 
     def is_subban(self, sub):
         """ Returns True if the current user is banned from 'sub' """
