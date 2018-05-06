@@ -862,7 +862,7 @@ def create_comment(pid):
                           room='user' + to)
 
         # 6 - Process mentions
-        misc.workWithMentions(form.comment.data, to, post, sub)
+        misc.workWithMentions(form.comment.data, to, post, sub, cid=comment.cid)
 
         return json.dumps({'status': 'ok', 'addr': url_for('sub.view_perm', sub=post.sid.name,
                                                            pid=pid, cid=comment.cid)})

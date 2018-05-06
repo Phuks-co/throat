@@ -851,7 +851,7 @@ def getPostsFromPids(pids, limit=False, orderby='pid'):
     return c.fetchall()
 
 
-def workWithMentions(data, receivedby, post, sub):
+def workWithMentions(data, receivedby, post, sub, cid=None):
     """ Does all the job for mentions """
     mts = re.findall(RE_AMENTION, data)
     if mts:
@@ -865,7 +865,10 @@ def workWithMentions(data, receivedby, post, sub):
                 continue
             if user['uid'] != current_user.uid and user['uid'] != receivedby:
                 # Checks done. Send our shit
-                link = url_for('sub.view_post', pid=post.pid, sub=sub['name'])
+                if cid:
+                    link = url_for('sub.view_perm', pid=post.pid, sub=sub['name'], cid=cid)
+                else:
+                    link = url_for('sub.view_post', pid=post.pid, sub=sub['name'])
                 create_message(current_user.uid, user['uid'],
                                subject="You've been tagged in a post",
                                content="[{0}]({1}) tagged you in [{2}]({3})"
