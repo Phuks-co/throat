@@ -1292,15 +1292,24 @@ def save_pm(mid):
 
 
 @do.route("/do/admin/deleteannouncement")
+@login_required
 def deleteannouncement():
     """ Removes the current announcement """
     if not current_user.is_admin():
         abort(404)
 
-    db.uquery('DELETE FROM `site_metadata` WHERE `key`=%s', ('announcement',))
-    db.create_sitelog(3, current_user.get_username() +
-                      ' removed the announcement')
-    cache.delete_memoized(misc.getAnnouncement)
+    try:
+        ann = SiteMetadata.get(SiteMetadata.key == 'announcement')
+        post = SubPost.get(SubPost.pid == ann.value)
+    except SiteMetadata.DoesNotExist:
+        return redirect(url_for('admin_area'))
+
+    ann.delete_instance()
+    SiteLog.create(action=3, link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid),
+                   desc='{0} removed the announcement.'.format(current_user.name),
+                   time=datetime.datetime.utcnow())
+
+    cache.delete_memoized(misc.getAnnouncementPid)
     return redirect(url_for('admin_area'))
 
 
@@ -1313,11 +1322,23 @@ def make_announcement():
     form = DeletePost()
 
     if form.validate():
-        db.update_site_metadata('announcement', form.post.data)
-        db.create_sitelog(3, current_user.get_username() +
-                          ' made an announcement',
-                          url_for('view_post_inbox', pid=form.post.data))
-        cache.delete_memoized(misc.getAnnouncement)
+        try:
+            SiteMetadata.get(SiteMetadata.key == 'announcement')
+            deleteannouncement()
+        except SiteMetadata.DoesNotExist:
+            pass
+
+        try:
+            post = SubPost.get(SubPost.pid == form.post.data)
+        except SubPost.DoesNotExist:
+            return jsonify(status='error', error='Post does not exist')
+
+        SiteMetadata.create(key='announcement', value=post.pid)
+
+        SiteLog.create(action=3, link=url_for('view_post_inbox', pid=post.pid),
+                       desc='{0} made an announcement.'.format(current_user.name),
+                       time=datetime.datetime.utcnow())
+        cache.delete_memoized(misc.getAnnouncementPid)
         return jsonify(status='ok')
     return jsonify(status='error', error=get_errors(form))
 
