@@ -965,7 +965,7 @@ def ban_user_sub(sub):
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    if not (current_user.is_mod(sub['sid']) or current_user.is_admin()):
+    if not current_user.is_mod(sub['sid']):
         abort(403)
     form = BanUserSubForm()
     if form.validate():
@@ -975,11 +975,6 @@ def ban_user_sub(sub):
                                'error': ['User does not exist.']})
         if db.get_sub_metadata(sub['sid'], 'ban', value=user['uid']):
             return jsonify(status='error', error=['Already banned'])
-        db.create_sublog(sub['sid'], 2, current_user.get_username() + ' banned ' + form.user.data)
-        if not current_user.is_mod(sub['sid']) and current_user.is_admin():
-            db.create_sitelog(4, current_user.get_username() +
-                              ' banned ' + form.user.data + ' from /s/' + sub['name'],
-                              url_for('sub.view_sub', sub=sub['name']))
         misc.create_message(mfrom=current_user.uid,
                             to=user['uid'],
                             subject='You have been banned from /s/' +
