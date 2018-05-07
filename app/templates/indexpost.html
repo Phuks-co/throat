@@ -36,14 +36,14 @@
       <div class="author">
           {% if post.link %}
             {% if func.getDomain(post.link) in ('www.hooktube.com', 'hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'vimeo.com', 'vine.co') %}
-            <div class="expando"><div data-pid="{{post.pid}}" class="icon expando-btn" data-t="lnk" data-link="{{post.link}}" data-icon="play"></div></div>
+            <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="play"></div></div>
             {% elif func.isImage(post.link) %}
-            <div class="expando"><div data-pid="{{post.pid}}" class="icon expando-btn" data-t="lnk" data-link="{{post.link}}" data-icon="image"></div></div>
+            <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="image"></div></div>
             {% elif func.isVideo(post.link) or func.isGifv(post.link) %}
-            <div class="expando"><div data-pid="{{post.pid}}" class="icon expando-btn" data-t="lnk" data-link="{{post.link}}" data-icon="play"></div></div>
+            <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="play"></div></div>
             {% endif %}
           {% elif post.content != '' %}
-          <div class="expando"><div data-pid="{{post.pid}}" class="icon expando-btn" data-t="txt" data-link="{{post.link}}" data-icon="text"></div></div>
+          <div class="expando" data-pid="{{post.pid}}" data-t="txt" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="text"></div></div>
           {% endif %}
         posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> by
         <a class="authorlink" href="{{url_for('view_user', user=post.user)}}">{{post.user}}</a>
