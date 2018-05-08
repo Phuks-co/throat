@@ -32,7 +32,7 @@
   {% for mod in subdata.mods if subdata.mods|length > 0 %}
   <span class="editmodbtn col-4">
     <li><a href="{{url_for('view_user', user=db.get_user_from_uid(mod.value).name)}}">{{mod.name}}</a>
-      {% if current_user.is_admin() or current_user.is_topmod(sub) %}
+      {% if current_user.is_admin() or current_user.is_topmod(sub.sid) %}
       (<a data-sub="{{sub.name}}" data-user="{{db.get_user_from_uid(mod.value).name}}" class="slink revoke-mod2">remove</a>)
       {% endif %}
     </li>
@@ -47,7 +47,7 @@
   {% for modinv in modinvs if modinvs|length > 0 %}
   <span class="editmodbtn col-4">
     <li><a href="{{url_for('view_user', user=db.get_user_from_uid(modinv.value).name)}}">{{db.get_user_from_uid(modinv.value).name}}</a>
-      {% if current_user.is_admin() or current_user.is_topmod(sub) %}
+      {% if current_user.is_admin() or current_user.is_topmod(sub.sid) %}
       (<a data-sub="{{sub.name}}" data-user="{{db.get_user_from_uid(modinv.value).name}}" class="slink revoke-mod2inv">revoke</a>)
       {% endif %}
     </li>
@@ -55,7 +55,7 @@
     {% endfor %}
   </ul>
 
-  {% if current_user.is_admin() or current_user.is_topmod(sub) %}
+  {% if current_user.is_admin() or current_user.is_topmod(sub.sid) %}
   <div class="editmoderators col-12">
     <form data-reload="true" action="{{url_for('do.inv_mod2', sub=sub.name)}}" id="edit-mod2-form" data-sub="{{sub.name}}" class="pure-form ajaxform">
       {{editmod2form.csrf_token}}

@@ -136,9 +136,13 @@ class SiteUser(object):
         ib = db.get_user_blocked(self.uid)
         return [x['sid'] for x in ib]
 
-    def is_topmod(self, sub):
+    def is_topmod(self, sid):
         """ Returns True if the current user is a mod of 'sub' """
-        return isTopMod(sub, self.user)
+        try:
+            SubMetadata.get((SubMetadata.sid == sid) & (SubMetadata.key == 'mod1') & (SubMetadata.value == self.uid))
+            return True
+        except SubMetadata.DoesNotExist:
+            return False
 
     def has_mail(self):
         """ Returns True if the current user has unread messages """
@@ -537,13 +541,6 @@ def isSubBan(sub, user):
             return True
         except SubMetadata.DoesNotExist:
             return False
-
-
-@cache.memoize(30)
-def isTopMod(sub, user):
-    """ Returns True if 'user' is a topmod of 'sub' """
-    x = db.get_sub_metadata(sub['sid'], 'mod1', value=user['uid'])
-    return x
 
 
 def isModInv(sid, user):

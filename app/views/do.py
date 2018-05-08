@@ -1004,7 +1004,7 @@ def inv_mod2(sub):
     if not sub:
         return json.dumps({'status': 'error',
                            'error': ['Sub does not exist']})
-    if current_user.is_topmod(sub) or current_user.is_admin():
+    if current_user.is_topmod(sub['sid']) or current_user.is_admin():
         form = EditMod2Form()
         if form.validate():
             user = db.get_user_from_name(form.user.data)
@@ -1100,7 +1100,7 @@ def remove_mod2(sub, user):
     sub = db.get_sub_from_name(sub)
     form = DummyForm()
     if form.validate():
-        if current_user.is_topmod(sub) or current_user.is_admin():
+        if current_user.is_topmod(sub['sid']) or current_user.is_admin():
             x = db.get_sub_metadata(sub['sid'], 'mod2', value=user['uid'])
             if not x:
                 return jsonify(status='error', error=['User is not mod'])
@@ -1126,7 +1126,7 @@ def revoke_mod2inv(sub, user):
     sub = db.get_sub_from_name(sub)
     form = DummyForm()
     if form.validate():
-        if current_user.is_topmod(sub) or current_user.is_admin():
+        if current_user.is_topmod(sub['sid']) or current_user.is_admin():
             x = db.get_sub_metadata(sub['sid'], 'mod2i', value=user['uid'])
             if not x:
                 return jsonify(status='error', error=['User is not mod'])
