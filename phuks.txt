@@ -325,7 +325,7 @@
 "Phuks Feels Lucky. Do You, Punk?",
 "What A Bunch Of Useless Phuks",
 "Press Phuks to pay respects",
-"Browse Phuks for Victory,
+"Browse Phuks for Victory",
 "This is my Phuks. There are many like it, but this one is mine.",
 "See The Face You Phuks Light Up",
 "Lights! Camera! Phuks!",
