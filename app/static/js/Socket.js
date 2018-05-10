@@ -165,6 +165,7 @@ socket.on('announcement', function(data){
 
 socket.on('msg', function(data){
   var cont = document.getElementById('chcont')
+  if(!cont){return;}
   var uname = document.getElementById('unameb').innerHTML.toLowerCase();
   var reg = /(?:^|\s)(@|\/u\/)(.*?)(\s|\'|\.|,|$)/
   var m = data.msg.match(reg);
