@@ -13,7 +13,7 @@
 {% endif %}
 
 <h1>Moderators for {{conf['SUB_PREFIX']}}/{{sub.name}}</h1>
-{% if current_user.is_modinv(sub.sid)  %}
+{% if current_user.is_modinv(sub)  %}
 <div class="mod2-inv" >
   You currently have an invite for this sub pending.
   <a id="accept-mod2-inv" data-sub="{{sub.name}}" data-user="{{current_user.user.name}}" class="slink">Accept</a> /
@@ -31,9 +31,9 @@
   <ul>
   {% for mod in subdata.mods if subdata.mods|length > 0 %}
   <span class="editmodbtn col-4">
-    <li><a href="{{url_for('view_user', user=db.get_user_from_uid(mod.value).name)}}">{{mod.name}}</a>
+    <li><a href="{{url_for('view_user', user=mod.name)}}">{{mod.name}}</a>
       {% if current_user.is_admin() or current_user.is_topmod(sub.sid) %}
-      (<a data-sub="{{sub.name}}" data-user="{{db.get_user_from_uid(mod.value).name}}" class="slink revoke-mod2">remove</a>)
+      (<a data-sub="{{sub.name}}" data-user="{{mod.name}}" class="slink revoke-mod2">remove</a>)
       {% endif %}
     </li>
   </span>
