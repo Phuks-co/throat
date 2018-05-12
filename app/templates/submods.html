@@ -13,7 +13,7 @@
 {% endif %}
 
 <h1>Moderators for {{conf['SUB_PREFIX']}}/{{sub.name}}</h1>
-{% if current_user.is_modinv(sub)  %}
+{% if current_user.is_modinv(sub.sid)  %}
 <div class="mod2-inv" >
   You currently have an invite for this sub pending.
   <a id="accept-mod2-inv" data-sub="{{sub.name}}" data-user="{{current_user.user.name}}" class="slink">Accept</a> /
