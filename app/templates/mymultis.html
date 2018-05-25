@@ -4,15 +4,6 @@
 {{ super() }}
 <div class="row buttons">
   <div class="col-12">
-    <a href="{{url_for('view_mymodded_subs')}}" class="btn btn-orange" style="width:100%;">Modmulti subs</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('view_my_subs')}}" class="btn btn-orange" style="width:100%;">Subscribed subs</a>
-  </div>
-  <div class="col-12">
-    <a href="{{url_for('view_myblocked_subs')}}" class="btn btn-orange" style="width:100%;">Blocked subs</a>
-  </div>
-  <div class="col-12">
     <a href="{{url_for('view_my_multis')}}" class="btn btn-orange" style="width:100%;">My Multis</a>
   </div>
 </div>
@@ -40,15 +31,15 @@
   <form  method="POST" class="ajaxform nice-form" action="{{url_for('do.create_multi')}}" data-reload="true">
     <h4>Create new multi</h4>
     {{createmulti.csrf_token}}
-    <div class="col-2">
+    <span>
       {{createmulti.name(placeholder="Nickname")}}
-    </div>
-    <div class="col-8">
+    </span>
+    <span>
       {{createmulti.subs(placeholder="sub1+sub2+sub3+sub4")}}
-    </div>
-    <div class="col-2">
+    </span>
+    <span>
       <button type="submit" class="btn btn-blue" id="editsub-btnsubmit" data-prog="Saving..." data-success="Saved!">Add multi</button>
-    </div>
+    </span>
     <div class="alert div-error col-10">
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
       <p></p>
@@ -57,19 +48,20 @@
 </div>
 
 {% if multis %}
+<h4>Current multis</h4>
   <div class="col-12">
     {% for multi in multis %}
-    <span class="col-10" style="margin:6px 0">
+    <div style="margin:6px 0">
       <form  method="POST" action="{{url_for('do.edit_multi')}}" class="nice-form ajaxform">
         {{multi.csrf_token}}
         {{multi.multi}}
-        <div class="col-2">
+        <span>
           {{multi.name()}}
-        </div>
-        <div class="col-8">
+        </span>
+        <span>
           {{multi.subs()}}
-        </div>
-        <div class="col-1">
+        </span>
+        <div>
           <button type="submit" class="btn btn-blue" id="editmulti-btnsubmit" data-prog="Saving..." data-success="Saved!">Save</button>
         </div>
         <div class="alert div-error col-10">
@@ -77,11 +69,9 @@
           <p></p>
         </div>
       </form>
-    </span>
-    <span class="col-2"style="margin:6px 0">
       <form  method="POST" data-reload="true" action="{{url_for('do.delete_multi')}}" class="nice-form ajaxform">
         {{multi.csrf_token}}{{multi.multi}}
-        <div class="col-1">
+        <div>
           <button type="submit" class="btn btn-orange" id="editmulti-btnsubmit" data-prog="Deleting..." data-success="Deleted!">Delete</button>
         </div>
         <div class="alert div-error col-10">
@@ -89,7 +79,8 @@
           <p></p>
         </div>
       </form>
-    </span>
+    </div>
+    <div><hr></div>
     {% endfor %}
   </div>
 {% endif %}
