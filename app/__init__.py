@@ -499,13 +499,16 @@ def view_usermultisub_new(subs, page):
     multi = db.get_user_multi(subs)
     sids = str(multi['sids']).split('+')
     names = str(multi['subs']).split('+')
-
-    posts = db.query('SELECT * FROM `sub_post` WHERE `sid` IN %s '
-                     'ORDER BY `posted` DESC LIMIT %s,20',
-                     (sids, (page - 1) * 20, ))
+    ksubs = []
+    for sb in names:
+        sb = db.get_sub_from_name(sb)
+        if sb:
+            ksubs.append(sb)
+    posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid << sids),
+                             'new', page).dicts()
 
     return render_template('indexmulti.html', page=page, names=names,
-                           posts=posts.fetchall(), subs=subs,
+                           posts=posts, subs=ksubs,
                            sort_type='view_usermultisub_new',
                            kw={'subs': subs})
 
