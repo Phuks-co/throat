@@ -466,10 +466,8 @@ def view_multisub_new(subs, page=1):
             sids.append(sb['sid'])
             ksubs.append(sb)
 
-    posts = db.query('SELECT * FROM `sub_post` WHERE `sid` IN %s '
-                     'ORDER BY `posted` DESC LIMIT %s,25',
-                     (sids, (page - 1) * 20, )).fetchall()
-
+    posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid << sids),
+                             'new', page).dicts()
     return render_template('indexmulti.html', page=page,
                            posts=posts, subs=ksubs,
                            sort_type='view_multisub_new', kw={'subs': subs})
