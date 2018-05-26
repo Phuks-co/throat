@@ -72,7 +72,7 @@ u.sub('#ptoggle', 'click', function(e){
     if(window.rReq){
       document.getElementById('link').setAttribute('required', true);
     }
-    u.each('.lncont', function(e){e.style.display='block';});
+    u.each('.lncont', function(e){e.style.display=(e.type == "button") ? 'inline-block' : 'block';});
     u.each('.txcont', function(e){e.style.display='none';});
   }
 });
