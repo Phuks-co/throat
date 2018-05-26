@@ -718,7 +718,7 @@ def upvote(pid, value):
     if current_user.is_subban(post.sid):
         return jsonify(status='error', error=['You are banned on this sub.'])
 
-    if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=10):
+    if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=60):
         return jsonify(status='error', error=["Post is archived"])
     try:
         qvote = SubPostVote.select().where(SubPostVote.pid == pid).where(SubPostVote.uid == current_user.uid).get()
@@ -811,7 +811,7 @@ def create_comment(pid):
         if post.deleted:
             return jsonify(status='error', error=['Post was deleted'])
 
-        if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=10):
+        if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=60):
             return jsonify(status='error', error=["Post is archived"])
 
         sub = db.get_sub_from_sid(post.sid.sid)
@@ -1783,7 +1783,7 @@ def upvotecomment(cid, value):
                            'error': ['You can\'t vote on your own comments']})
 
     post = SubPost.get(SubPost.pid == comment.pid)
-    if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=10):
+    if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=60):
         return jsonify(status='error', error=["Post is archived"])
 
     if current_user.is_subban(post.sid):
