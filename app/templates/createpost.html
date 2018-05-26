@@ -82,7 +82,7 @@ var recaptchaCallback = function(){
               <div class="error">{{error}}</div>
             {% endif %}
             <button onclick="window.sending=true;" type="submit" class="pure-button pure-button-primary" style="display: inline-block">Submit post</button>
-            <button data-pvid="ncme" class="pure-button btn-preview txcont" data-txid="content" style="{% if txtpostform.ptype.data!="text" %} display:none{%else%}display: inline-block;{%endif%}">Preview</button>
+            <button type="button" data-pvid="ncme" class="pure-button btn-preview txcont" data-txid="content" style="{% if txtpostform.ptype.data!="text" %} display:none{%else%}display: inline-block;{%endif%}">Preview</button>
             <div class="cmpreview canclose" style="display:none;">
               <h4>Post preview</h4>
               <span class="closemsg">×</span>
