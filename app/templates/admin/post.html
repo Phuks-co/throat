@@ -75,7 +75,7 @@
                 <a href="{{ url_for('view_user', user=db.get_user_from_uid(comment.uid).name) }}" class="poster">
                 {{db.get_user_from_uid(comment.uid).name}}</a>
               </td>
-              <td>{{comment.content|rnentity|e}}</td>
+              <td>{{comment.content}}</td>
               <td><a href="{{url_for('sub.view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></td>
             </tr>
             {% endfor %}

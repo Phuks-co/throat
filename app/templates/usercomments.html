@@ -46,7 +46,7 @@
               <div class="content" id="content-{{comment.cid}}">
                 {{markdown(comment.content)|safe}}
               </div>
-                <div hidden id="sauce-{{comment.cid}}">{{comment.content|rnentity|e}}</div>
+                <div hidden id="sauce-{{comment.cid}}">{{comment.content}}</div>
               <ul class="bottombar links">
                 <!-- TODO needs peewee <li><a href="{# url_for('sub.view_perm', sub=sub.name, cid=comment.cid, pid=post.pid) #}">permalink</a></li>-->
                 <li><a href="{{url_for('sub.view_perm', sub=comment.sub, pid=comment.pid, cid=comment.cid)}}">permalink</a></li>

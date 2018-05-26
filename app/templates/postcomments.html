@@ -39,7 +39,7 @@
             {%endif%}
           </div>
           {%if not comment.status == 1 %}
-            <div hidden id="sauce-{{comment.cid}}">{{comment.content|rnentity}}</div>
+            <div hidden id="sauce-{{comment.cid}}">{{comment.content}}</div>
           {%endif%}
           <ul class="bottombar links" {% if comment.status == 1 %}style="display:none;"{%endif%}>
             <li><a href="{{url_for('sub.view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></li>

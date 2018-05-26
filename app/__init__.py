@@ -8,7 +8,7 @@ import socket
 import datetime
 import bcrypt
 from flask import Flask, render_template, session, redirect, url_for, abort, g
-from flask import Markup, request, jsonify
+from flask import request, jsonify
 from flask_login import LoginManager, login_required, current_user, login_user
 from flask_webpack import Webpack
 from feedgen.feed import FeedGenerator
@@ -66,12 +66,6 @@ engine.global_vars.update({'current_user': current_user, 'request': request, 'co
                            'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,
                            'form': forms, 'hostname': socket.gethostname(), 'datetime': datetime,
                            'e': escape_html})
-
-
-@app.template_filter('rnentity')
-def rnentity(text):
-    """ hacky fixes for escaping new lines on templates """
-    return Markup(text.replace('\r\n', '&#10;').replace('\n', '&#10;'))
 
 
 @app.teardown_request
