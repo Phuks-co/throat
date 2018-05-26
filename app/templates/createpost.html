@@ -13,7 +13,7 @@ var recaptchaCallback = function(){
 {% block sidebar %}
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
-    <button class="pure-button" id="ptoggle">Change to {%if txtpostform.ptype.data=="text"%}link{%else%}text post{%endif%}</button>
+    <button type="button" class="pure-button" id="ptoggle">Change to {%if txtpostform.ptype.data=="text"%}link{%else%}text post{%endif%}</button>
   </div>
 </div>
 {% endblock %}
