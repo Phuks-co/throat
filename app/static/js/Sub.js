@@ -67,12 +67,12 @@ u.sub('#ptoggle', 'click', function(e){
       document.getElementById('link').removeAttribute('required');
     }
     u.each('.lncont', function(e){e.style.display='none';});
-    u.each('.txcont', function(e){e.style.display='inline-block';});
+    u.each('.txcont', function(e){e.style.display='block';});
   }else{
     if(window.rReq){
       document.getElementById('link').setAttribute('required', true);
     }
-    u.each('.lncont', function(e){e.style.display='inline-block';});
+    u.each('.lncont', function(e){e.style.display='block';});
     u.each('.txcont', function(e){e.style.display='none';});
   }
 });
