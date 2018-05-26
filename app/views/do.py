@@ -818,6 +818,16 @@ def create_comment(pid):
         if current_user.is_subban(sub):
             return jsonify(status='error', error=['You are currently banned from commenting'])
 
+        if form.parent.data != '0':
+            try:
+                parent = SubPostComment.get(SubPostComment.cid == form.parent.data)
+            except SubPostComment.DoesNotExist:
+                return jsonify(status='error', error=["Parent comment does not exist"])
+
+            # XXX: We check both for None and 0 because I've found both on a Phuks snapshot...
+            if parent.status is not None and parent.status != 0 or parent.pid !== pid:
+                return jsonify(status='error', error=["Parent comment does not exist"])
+
         comment = SubPostComment.create(pid=pid, uid=current_user.uid,
                                         content=form.comment.data.encode(),
                                         parentcid=form.parent.data if form.parent.data != '0' else None,
