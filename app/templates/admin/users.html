@@ -21,18 +21,6 @@
 </div>
 <hr>
 {% include 'admin/sidebar.html' %}
-<hr>
-<div>
-  <form action="{{ url_for('do.search', stype='admin_post_voting') }}" method="post">
-  <span class="search">
-      <span><i class="fa fa-search"></i></span>
-      <input id="term" name="term" type="search" placeholder="User voting habits">
-      <span>
-        <button class="pure-button" type="submit">Submit</button>
-      </span>
-  </span>
-  </form>
-</div>
 {% endblock %}
 
 {% block content %}
