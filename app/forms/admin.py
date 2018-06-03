@@ -46,4 +46,8 @@ class BanDomainForm(FlaskForm):
 class UseInviteCodeForm(FlaskForm):
     """ Enable/Use an invite code to register """
     enableinvitecode = BooleanField('Enable invite code to register')
-    invitecode = StringField('Enter invite code')
+    invitecode = StringField('Enter invite code', validators=[DataRequired()])
+
+class TOTPForm(FlaskForm):
+    """ TOTP form for admin 2FA """
+    totp = StringField('Enter one-time password')

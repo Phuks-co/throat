@@ -29,7 +29,15 @@
     {% endblock %}
   </head>
 
-<body {%if request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous %}class="dark"{%elif request.cookies.get( "dayNight")=="dank" and not current_user.is_anonymous%}class="dark dank"{%endif%}>
+<body class="{%if conf.get('ENABLE_TOTP', False) and current_user.admin%}body_admin{%endif%}{%if request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous %}dark{%elif request.cookies.get( "dayNight")=="dank" and not current_user.is_anonymous%}dark dank{%endif%}">
+  {%if conf.get('ENABLE_TOTP', False) and current_user.admin %}
+  <div class="admin_alert">Admin mode is currently enabled.
+    <form method="POST" action="/admin/logout" id="adminlogout">
+      {{ logoutform.csrf_token }}
+      <button type="submit" class="btn_link">Disable</button>
+    </form></div>
+  {%endif%}
+
   <div class="th-subbar pure-u-1">
     <ul>
       <li><a href="/all">all</a></li>

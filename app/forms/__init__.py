@@ -12,7 +12,7 @@ from .sub import CreateSubFlair, DeleteSubFlair, VoteForm, DeleteCommentForm
 from .sub import LiveChat, CreteSubPostCaptcha
 from .admin import CreateUserBadgeForm, EditModForm, UseBTCdonationForm
 from .admin import BanDomainForm, UseInviteCodeForm
-from .admin import SecurityQuestionForm
+from .admin import SecurityQuestionForm, TOTPForm
 
 
 class DummyForm(FlaskForm):

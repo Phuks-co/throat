@@ -1653,3 +1653,34 @@ a[href="#toodamncool"]{
   z-index: -1;
   position: absolute;
 }
+
+.admin_alert{
+  background-color: red;
+  color: white;
+  top: 0px;
+  position: fixed;
+  width: 100%;
+  display: block;
+  height: 1.5em;
+  font-size: 1.1em;
+  text-align: center;
+  line-height: 1.5em;
+  z-index: 150;
+}
+
+.body_admin{
+  margin-top: 1.5em;
+}
+
+.admin_alert form{
+  display: inline-block;
+}
+
+.btn_link {
+    background: none;
+    border: none;
+    padding: 0px;
+    color: #00419d;
+    font: inherit;
+    text-decoration: underline;
+}

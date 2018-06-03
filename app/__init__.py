@@ -7,6 +7,7 @@ import uuid
 import socket
 import datetime
 import bcrypt
+from pyotp import TOTP
 from flask import Flask, render_template, session, redirect, url_for, abort, g
 from flask import request, jsonify
 from flask_login import LoginManager, login_required, current_user, login_user
@@ -737,52 +738,84 @@ def view_saved_messages(page):
                            page=page, box_route='view_saved_messages')
 
 
+@app.route('/admin/auth', methods=['GET', 'POST'])
+@login_required
+def admin_auth():
+    if not current_user.can_admin:
+        abort(404)
+    form = forms.TOTPForm()
+    try:
+        user_secret = UserMetadata.get((UserMetadata.uid == current_user.uid) & (UserMetadata.key == 'totp_secret'))
+    except UserMetadata.DoesNotExist:
+        return engine.get_template('admin/totp.html').render({'authform': form, 'error': 'No TOTP secret found.'})
+    if form.validate_on_submit():
+        totp = TOTP(user_secret.value)
+        if totp.verify(form.totp.data):
+            session['apriv'] = time.time()
+            return redirect(url_for('admin_area'))
+        else:
+            return engine.get_template('admin/totp.html').render({'authform': form, 'error': 'Invalid or expired password.'})
+    return engine.get_template('admin/totp.html').render({'authform': form, 'error': None})
+
+@app.route('/admin/logout', methods=['POST'])
+@login_required
+def admin_logout():
+    if not current_user.can_admin:
+        abort(404)
+    form = LogOutForm()
+    if form.validate():
+        del session['apriv']
+    return redirect(url_for('admin_area'))
+
 @app.route("/admin")
 @login_required
 def admin_area():
     """ WIP: View users. assign badges, etc """
-    if current_user.is_admin():
-        users = db.query('SELECT COUNT(*) AS c FROM `user`').fetchone()['c']
-        subs = db.query('SELECT COUNT(*) AS c FROM `sub`').fetchone()['c']
-        posts = db.query('SELECT COUNT(*) AS c FROM `sub_post`') \
-                  .fetchone()['c']
-        comms = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment`') \
-                  .fetchone()['c']
-        ups = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
-                       '`positive`=1').fetchone()['c']
-        ups += db.query('SELECT COUNT(*) AS c FROM `sub_post_comment_vote` '
-                        'WHERE `positive`=1').fetchone()['c']
-        downs = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
-                         '`positive`=0').fetchone()['c']
-        downs += db.query('SELECT COUNT(*) AS c FROM `sub_post_comment_vote` '
-                          'WHERE `positive`=0').fetchone()['c']
-        badges = db.query('SELECT * FROM `user_badge`').fetchall()
-        btc = db.get_site_metadata('usebtc')
-        if btc:
-            x = db.get_site_metadata('btcmsg')['value']
-            y = db.get_site_metadata('btcaddr')['value']
-            btc = UseBTCdonationForm(message=x, btcaddress=y)
-        else:
-            btc = UseBTCdonationForm()
-        invite = db.get_site_metadata('useinvitecode')
-        if invite and invite['value'] == '1':
-            a = db.get_site_metadata('invitecode')['value']
-            invite = UseInviteCodeForm(invitecode=a)
-        else:
-            invite = UseInviteCodeForm()
-        ep = db.query('SELECT * FROM `site_metadata` WHERE `key`=%s', ('enable_posting',)).fetchone()
-        if ep:
-            ep = ep['value']
-        else:
-            db.create_site_metadata('enable_posting', 'True')
-            ep = 'True'
-        return render_template('admin/admin.html', badges=badges, subs=subs,
-                               posts=posts, ups=ups, downs=downs, users=users,
-                               createuserbadgeform=CreateUserBadgeForm(),
-                               comms=comms, usebtcdonationform=btc,
-                               useinvitecodeform=invite, enable_posting=ep)
+    if not current_user.can_admin:
+         abort(404)
+
+    if not current_user.admin:
+        return redirect(url_for('admin_auth'))
+
+    users = db.query('SELECT COUNT(*) AS c FROM `user`').fetchone()['c']
+    subs = db.query('SELECT COUNT(*) AS c FROM `sub`').fetchone()['c']
+    posts = db.query('SELECT COUNT(*) AS c FROM `sub_post`') \
+              .fetchone()['c']
+    comms = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment`') \
+              .fetchone()['c']
+    ups = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
+                   '`positive`=1').fetchone()['c']
+    ups += db.query('SELECT COUNT(*) AS c FROM `sub_post_comment_vote` '
+                    'WHERE `positive`=1').fetchone()['c']
+    downs = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
+                     '`positive`=0').fetchone()['c']
+    downs += db.query('SELECT COUNT(*) AS c FROM `sub_post_comment_vote` '
+                      'WHERE `positive`=0').fetchone()['c']
+    badges = db.query('SELECT * FROM `user_badge`').fetchall()
+    btc = db.get_site_metadata('usebtc')
+    if btc:
+        x = db.get_site_metadata('btcmsg')['value']
+        y = db.get_site_metadata('btcaddr')['value']
+        btc = UseBTCdonationForm(message=x, btcaddress=y)
     else:
-        abort(404)
+        btc = UseBTCdonationForm()
+    invite = db.get_site_metadata('useinvitecode')
+    if invite and invite['value'] == '1':
+        a = db.get_site_metadata('invitecode')['value']
+        invite = UseInviteCodeForm(invitecode=a)
+    else:
+        invite = UseInviteCodeForm()
+    ep = db.query('SELECT * FROM `site_metadata` WHERE `key`=%s', ('enable_posting',)).fetchone()
+    if ep:
+        ep = ep['value']
+    else:
+        db.create_site_metadata('enable_posting', 'True')
+        ep = 'True'
+    return render_template('admin/admin.html', badges=badges, subs=subs,
+                           posts=posts, ups=ups, downs=downs, users=users,
+                           createuserbadgeform=CreateUserBadgeForm(),
+                           comms=comms, usebtcdonationform=btc,
+                           useinvitecodeform=invite, enable_posting=ep)
 
 
 @app.route("/admin/users", defaults={'page': 1})

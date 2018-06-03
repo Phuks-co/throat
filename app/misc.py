@@ -84,7 +84,12 @@ class SiteUser(object):
         self.is_active = True if self.user['status'] == 0 else False
         self.is_authenticated = True if self.user['status'] == 0 else False
         self.is_anonymous = True if self.user['status'] != 0 else False
-        self.admin = 'admin' in self.prefs
+        self.can_admin = 'admin' in self.prefs
+
+        if (time.time() - session.get('apriv', 0) < 7200) or not (getattr(config, 'ENABLE_TOTP', False)):
+            self.admin = 'admin' in self.prefs
+        else:
+            self.admin = False
 
         self.canupload = True if ('canupload' in self.prefs) or (self.admin) else False
 

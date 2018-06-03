@@ -392,3 +392,12 @@ body.dark .cw-items a{
 body.dark .motto{
   color: #cdcdcd;
 }
+
+body.dark .admin_alert{
+  background-color: #bd0101;
+  color: #dedede;
+}
+
+body.dark .admin_alert .btn_link{
+  color: #1b006f;
+}
