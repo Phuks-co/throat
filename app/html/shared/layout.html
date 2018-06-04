@@ -35,7 +35,13 @@
 
 <body class="@{(conf.get('ENABLE_TOTP', False) and current_user.admin) and 'body_admin' or ''} @{(request.cookies.get( "dayNight")=="dank" and not current_user.is_anonymous) and 'dark dank' or ''} @{(request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous) and 'dark' or ''}">
   @if conf.get('ENABLE_TOTP', False) and current_user.admin:
-  <div class="admin_alert">Admin mode is currently enabled. <a href="/admin/logout">Disable</a></div>
+  <div class="admin_alert">Admin mode is currently enabled.
+    <form method="POST" action="/admin/logout" id="adminlogout">
+      @{ form.LogOutForm().csrf_token() }
+      <button type="submit" class="btn_link">Disable</button>
+    </form>
+  </div>
+</div>
   @end
   <div class="th-subbar pure-u-1">
     <ul>
