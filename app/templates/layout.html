@@ -29,7 +29,7 @@
     {% endblock %}
   </head>
 
-<body class="{%if conf.get('ENABLE_TOTP', False) and current_user.admin%}body_admin{%endif%}{%if request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous %}dark{%elif request.cookies.get( "dayNight")=="dank" and not current_user.is_anonymous%}dark dank{%endif%}">
+<body class="{%if conf.get('ENABLE_TOTP', False) and current_user.admin%}body_admin {%endif%}{%if request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous %}dark{%elif request.cookies.get( "dayNight")=="dank" and not current_user.is_anonymous%}dark dank{%endif%}">
   {%if conf.get('ENABLE_TOTP', False) and current_user.admin %}
   <div class="admin_alert">Admin mode is currently enabled.
     <form method="POST" action="/admin/logout" id="adminlogout">
