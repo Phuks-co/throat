@@ -1745,10 +1745,10 @@ def delete_comment():
         if not comment:
             abort(404)
 
-        if comment['uid'] != current_user.uid and not current_user.is_admin():
+        if comment['uid'] != current_user.uid and not (current_user.is_admin() or current_user.is_mod(post.sid)):
             abort(403)
 
-        if comment['uid'] != current_user.uid and current_user.is_admin():
+        if comment['uid'] != current_user.uid and (current_user.is_admin() or current_user.is_mod(post.sid)):
             db.create_sitelog(4, '{0} deleted a comment with reason `{1}`'.format(current_user.get_username(), form.reason.data),
                               url_for('view_post_inbox', pid=comment['pid']))
 
