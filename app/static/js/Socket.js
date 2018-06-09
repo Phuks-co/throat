@@ -167,14 +167,14 @@ socket.on('msg', function(data){
   var cont = document.getElementById('chcont')
   if(!cont){return;}
   var uname = document.getElementById('unameb').innerHTML.toLowerCase();
-  var reg = /(?:^|\s)(@|\/u\/)(.*?)(\s|\'|\.|,|$)/
+  var reg = /(^|\s)(@|\/u\/)([a-zA-Z0-9_-]{3,})(\s|\'|\.|,|$)/
   var m = data.msg.match(reg);
   var xc="";
-  if(m && m[2].toLowerCase() == uname && data.user.toLowerCase() != uname){
+  if(m && m[3].toLowerCase() == uname && data.user.toLowerCase() != uname){
     xc="msg-hl";
     // TODO: Ping sounds here?
   }
-  cont.innerHTML = cont.innerHTML + '<div class="msg ' + xc + '"><span class="msguser">' + data.user + '&gt;</span><span class="damsg">' + anchorme(ircStylize(data.msg), {emails: false, files: false, attributes: [{name:"target",value:"blank"}]}).replace(reg, "<a href='/u/$2'>$1$2</a>$3") + '</span></div>';
+  cont.innerHTML = cont.innerHTML + '<div class="msg ' + xc + '"><span class="msguser">' + data.user + '&gt;</span><span class="damsg">' + anchorme(ircStylize(data.msg), {emails: false, files: false, attributes: [{name:"target",value:"blank"}]}).replace(reg, "$1<a href='/u/$3'>$2$3</a>$4") + '</span></div>';
   var k = document.getElementsByClassName('msg')
   if(k.length > 3){
     if(isScrolledIntoView(k[k.length-2])){
