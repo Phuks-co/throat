@@ -168,11 +168,18 @@ socket.on('msg', function(data){
   if(!cont){return;}
   var uname = document.getElementById('unameb').innerHTML.toLowerCase();
   var reg = /(^|\s)(@|\/u\/)([a-zA-Z0-9_-]{3,})(\s|\'|\.|,|$)/
+  var reg2 = /\u0001ACTION (.+)\u0001/
   var m = data.msg.match(reg);
+  var m2 = data.msg.match(reg2);
   var xc="";
   if(m && m[3].toLowerCase() == uname && data.user.toLowerCase() != uname){
     xc="msg-hl";
     // TODO: Ping sounds here?
+  }
+  if(m2){
+    data.msg = data.user + ' ' + m2[1];
+    data.user = "*";
+    xc=xc + " msg-ac";
   }
   cont.innerHTML = cont.innerHTML + '<div class="msg ' + xc + '"><span class="msguser">' + data.user + '&gt;</span><span class="damsg">' + anchorme(ircStylize(data.msg), {emails: false, files: false, attributes: [{name:"target",value:"blank"}]}).replace(reg, "$1<a href='/u/$3'>$2$3</a>$4") + '</span></div>';
   var k = document.getElementsByClassName('msg')

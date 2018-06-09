@@ -1541,6 +1541,10 @@ table td {
 .msg-hl{
   background-color: #d7d7d7;
 }
+
+.msg-ac{
+  font-style: italic;
+}
 /* chat text format */
 .irc-underline{text-decoration: underline;}
 .irc-underline{font-style: italic;}
