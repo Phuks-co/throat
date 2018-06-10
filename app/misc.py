@@ -449,7 +449,11 @@ def our_markdown(text):
             ln = '/u/' + match.group(4)
         else:
             ln = match.group(2)
-        return '[{0}]({1})'.format(match.group(2), ln)
+        text = match.group(2)
+        text = text.replace('_', '\_')
+        text = text.replace('*', '\*')
+        text = text.replace('~', '\~')
+        return '[{0}]({1})'.format(text, ln)
     text = RE_AMENTION.sub(repl, text)
     try:
         return md(text)
