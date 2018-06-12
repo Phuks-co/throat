@@ -463,7 +463,7 @@ def view_multisub_new(sublist, page=1):
     posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid << sids),
                              'new', page).dicts()
     return render_template('indexmulti.html', page=page,
-                           posts=posts, subs=ksubs,
+                           posts=posts, subs=ksubs, sublist=sublist,
                            sort_type='view_multisub_new', kw={'subs': sublist})
 
 
@@ -502,7 +502,7 @@ def view_usermultisub_new(sublist, page):
                              'new', page).dicts()
 
     return render_template('indexmulti.html', page=page, names=names,
-                           posts=posts, subs=ksubs,
+                           posts=posts, subs=ksubs, sublist=sublist,
                            sort_type='view_usermultisub_new',
                            kw={'subs': sublist})
 

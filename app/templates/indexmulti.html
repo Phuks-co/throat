@@ -27,10 +27,10 @@
   {% set kw = {} %}
 {%endif%}
 {% if page > 1 %}
-  <a href="{{url_for(sort_type, page=(page-1), **kw)}}" class="pure-button">prev</a>
+  <a href="{{url_for(sort_type, page=(page-1), sublist=sublist, **kw)}}" class="pure-button">prev</a>
 {% endif %}
 {% if posts|length == 25 %}
-  <a href="{{url_for(sort_type, page=(page+1), **kw)}}" class="pure-button">next</a>
+  <a href="{{url_for(sort_type, page=(page+1), sublist=sublist, **kw)}}" class="pure-button">next</a>
 {% endif %}
 {% endblock %}
 

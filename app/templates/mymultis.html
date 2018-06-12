@@ -20,7 +20,7 @@
     </tr>
     {% for multi in multilist %}
     <tr>
-      <td><a href="{{url_for('view_usermultisub_new', subs=multi.mid)}}">{{url_for('view_usermultisub_new', subs=multi.mid)}}</a><td>
+      <td><a href="{{url_for('view_usermultisub_new', sublist=multi.mid)}}">{{url_for('view_usermultisub_new', sublist=multi.mid)}}</a><td>
       <td class="submultilist">{{multi.subs}}<td>
     </tr>
     {% endfor %}
