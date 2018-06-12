@@ -420,7 +420,9 @@ def safeRequest(url, recieve_timeout=10):
     return (r, f)
 
 
-RE_AMENTION = re.compile(r'(?:(\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|' + getattr(config, 'SUB_PREFIX', '/s') + r'\/)([A-Za-z0-9\-\_]+)))')
+RE_AMENTION_PRE0 = r'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))(?:(?:@|\/u\/|' + getattr(config, 'SUB_PREFIX', '/s') + r'\/)(?:[A-Za-z0-9\-\_]+)))'
+RE_AMENTION_PRE1 = r'(?:(\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|' + getattr(config, 'SUB_PREFIX', '/s') + r'\/)([A-Za-z0-9\-\_]+)))'
+RE_AMENTION_ESCAPED = re.compile("```.*{0}.*```|`.*?{0}.*?`|({1})".format(RE_AMENTION_PRE0, RE_AMENTION_PRE1), flags=re.MULTILINE + re.DOTALL)
 
 
 class PhuksDown(m.SaferHtmlRenderer):
@@ -445,16 +447,16 @@ def our_markdown(text):
         if match.group(3) is None:
             return match.group(0)
 
-        if match.group(3) == '@':
-            ln = '/u/' + match.group(4)
+        if match.group(4) == '@':
+            ln = '/u/' + match.group(5)
         else:
-            ln = match.group(2)
-        text = match.group(2)
+            ln = match.group(3)
+        text = match.group(3)
         text = text.replace('_', '\_')
         text = text.replace('*', '\*')
         text = text.replace('~', '\~')
         return '[{0}]({1})'.format(text, ln)
-    text = RE_AMENTION.sub(repl, text)
+    text = RE_AMENTION_ESCAPED.sub(repl, text)
     try:
         return md(text)
     except RecursionError:
@@ -875,11 +877,12 @@ def getPostsFromPids(pids, limit=False, orderby='pid'):
 
 def workWithMentions(data, receivedby, post, sub, cid=None):
     """ Does all the job for mentions """
-    mts = re.findall(RE_AMENTION, data)
+    mts = re.findall(RE_AMENTION_ESCAPED, data)
     if mts:
         mts = list(set(mts))  # Removes dupes
         # Filter only users
-        mts = [x[3] for x in mts if x[2] == "/u/" or x[2] == "@"]
+        mts = [x[4] for x in mts if x[3] == "/u/" or x[3] == "@"]
+        
         for mtn in mts[:5]:
             # Send notifications.
             user = db.get_user_from_name(mtn)
