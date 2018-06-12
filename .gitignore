@@ -76,3 +76,9 @@ thumbs/*
 manifest.json
 node_modules/
 package-lock.json
+
+# vscode settings
+.vscode
+
+# pyenv configs
+.python-version
