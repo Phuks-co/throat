@@ -13,7 +13,9 @@ from flask import request, jsonify
 from flask_login import LoginManager, login_required, current_user, login_user
 from flask_webpack import Webpack
 from feedgen.feed import FeedGenerator
+from wheezy.html.utils import escape_html
 
+import config
 from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditUserForm
 from .forms import CreateSubTextPost, CreateSubLinkPost
@@ -22,7 +24,7 @@ from .forms import DeletePost, CreateUserBadgeForm, DummyForm
 from .forms import UseBTCdonationForm, BanDomainForm
 from .forms import CreateMulti, EditMulti
 from .forms import UseInviteCodeForm, LiveChat
-from .views import do, api, sub
+from .views import do, api, subs
 from .views.api import oauth
 from . import misc, forms, caching
 from .socketio import socketio
@@ -31,10 +33,7 @@ from .misc import SiteAnon, getSuscriberCount, getDefaultSubs, allowedNames, get
 from .models import db as pdb
 from .models import Sub, SubPost, User, SubMetadata, UserMetadata, SubPostComment
 
-# /!\ EXPERIMENTAL /!\
-import config
-from wheezy.html.utils import escape_html
-
+# /!\ FOR DEBUGGING ONLY /!\
 # from werkzeug.contrib.profiler import ProfilerMiddleware
 
 app = Flask(__name__)
@@ -47,7 +46,7 @@ app.config['SUB_PREFIX'] = app.config.get('SUB_PREFIX', '/s')
 
 app.register_blueprint(do)
 app.register_blueprint(api)
-app.register_blueprint(sub, url_prefix=app.config['SUB_PREFIX'])
+app.register_blueprint(subs, url_prefix=app.config['SUB_PREFIX'])
 
 app.config['WEBPACK_MANIFEST_PATH'] = 'manifest.json'
 if app.config['TESTING']:
@@ -156,7 +155,7 @@ def home_hot(page):
     """ /hot for subscriptions """
     posts = list(misc.getPostList(misc.postListQueryHome(), 'hot', page).dicts())
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home_hot', 'page': page,
-                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
                                                      'kw': {}})
 
@@ -167,7 +166,7 @@ def home_new(page):
     """ /new for subscriptions """
     posts = misc.getPostList(misc.postListQueryHome(), 'new', page).dicts()
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home_new', 'page': page,
-                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
                                                      'kw': {}})
 
@@ -178,7 +177,7 @@ def home_top(page):
     """ /top for subscriptions """
     posts = misc.getPostList(misc.postListQueryHome(), 'top', page).dicts()
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home_top', 'page': page,
-                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
                                                      'kw': {}})
 
@@ -213,7 +212,7 @@ def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = list(misc.getPostList(misc.postListQueryBase(), 'new', page).dicts())
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_new', 'page': page,
-                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
                                                      'kw': {}})
 
@@ -232,11 +231,11 @@ def all_new_more(pid=None):
 @app.route("/domain/<domain>/<int:page>")
 def all_domain_new(domain, page):
     """ The index page, all posts sorted as most recent posted first """
-    domain = re.sub('[^A-Za-z0-9.\-_]+', '', domain)
+    domain = re.sub(r'[^A-Za-z0-9.\-_]+', '', domain)
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(SubPost.link % ('%://' + domain + '/%')),
                              'new', page).dicts()
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_domain_new', 'page': page,
-                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
                                                      'kw': {'domain': domain}})
 
@@ -245,11 +244,11 @@ def all_domain_new(domain, page):
 @app.route("/search/<term>/<int:page>")
 def search(page, term):
     """ The index page, with basic title search """
-    term = re.sub('[^A-Za-z0-9.,\-_\'" ]+', '', term)
+    term = re.sub(r'[^A-Za-z0-9.,\-_\'" ]+', '', term)
     posts = misc.getPostList(misc.postListQueryBase().where(SubPost.title ** ('%' + term + '%')),
                              'new', page).dicts()
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'search', 'page': page,
-                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
                                                      'kw': {'term': term}})
 
@@ -260,7 +259,7 @@ def all_top(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = misc.getPostList(misc.postListQueryBase(), 'top', page).dicts()
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_top', 'page': page,
-                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
                                                      'kw': {}})
 
@@ -273,7 +272,7 @@ def all_hot(page):
     posts = misc.getPostList(misc.postListQueryBase(), 'hot', page).dicts()
 
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_hot', 'page': page,
-                                                     'subOfTheDay': misc.getSubOfTheDay(), 'posts': posts,
+                                                     'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
                                                      'kw': {}})
 
@@ -306,7 +305,7 @@ def view_subs(page):
 @app.route("/subs/search/<term>/<int:page>")
 def subs_search(page, term):
     """ The subs index page, with basic title search """
-    term = re.sub('[^A-Za-z0-9\-_]+', '', term)
+    term = re.sub(r'[^A-Za-z0-9\-_]+', '', term)
     c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
     c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
 
@@ -448,11 +447,11 @@ def create_sub():
         abort(403)
 
 
-@app.route("/m/<subs>", defaults={'page': 1})
-@app.route("/m/<subs>/<int:page>")
-def view_multisub_new(subs, page=1):
+@app.route("/m/<sublist>", defaults={'page': 1})
+@app.route("/m/<sublist>/<int:page>")
+def view_multisub_new(sublist, page=1):
     """ The multi index page, sorted as most recent posted first """
-    names = subs.split('+')
+    names = sublist.split('+')
     sids = []
     ksubs = []
     for sb in names:
@@ -465,7 +464,7 @@ def view_multisub_new(subs, page=1):
                              'new', page).dicts()
     return render_template('indexmulti.html', page=page,
                            posts=posts, subs=ksubs,
-                           sort_type='view_multisub_new', kw={'subs': subs})
+                           sort_type='view_multisub_new', kw={'subs': sublist})
 
 
 @app.route("/modmulti", defaults={'page': 1})
@@ -473,25 +472,25 @@ def view_multisub_new(subs, page=1):
 def view_modmulti_new(page):
     """ The multi page for subs the user mods, sorted as new first """
     if current_user.is_authenticated:
-        subs = db.get_user_modded_subs(current_user.uid)
+        sublist = db.get_user_modded_subs(current_user.uid)
         sids = []
-        for i in subs:
+        for i in sublist:
             sids.append(i['sid'])
 
         posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid << sids),
                                  'new', page).dicts()
         return render_template('indexmulti.html', page=page,
                                sort_type='view_modmulti_new',
-                               posts=posts, subs=subs)
+                               posts=posts, subs=sublist)
     else:
         abort(403)
 
 
-@app.route("/multi/<subs>", defaults={'page': 1})
-@app.route("/multi/<subs>/<int:page>")
-def view_usermultisub_new(subs, page):
+@app.route("/multi/<sublist>", defaults={'page': 1})
+@app.route("/multi/<sublist>/<int:page>")
+def view_usermultisub_new(sublist, page):
     """ The multi index page, sorted as most recent posted first """
-    multi = db.get_user_multi(subs)
+    multi = db.get_user_multi(sublist)
     sids = str(multi['sids']).split('+')
     names = str(multi['subs']).split('+')
     ksubs = []
@@ -505,7 +504,7 @@ def view_usermultisub_new(subs, page):
     return render_template('indexmulti.html', page=page, names=names,
                            posts=posts, subs=ksubs,
                            sort_type='view_usermultisub_new',
-                           kw={'subs': subs})
+                           kw={'subs': sublist})
 
 
 @app.route("/p/<pid>")
@@ -772,7 +771,7 @@ def admin_logout():
 def admin_area():
     """ WIP: View users. assign badges, etc """
     if not current_user.can_admin:
-         abort(404)
+        abort(404)
 
     if not current_user.admin:
         return redirect(url_for('admin_auth'))
@@ -854,7 +853,7 @@ def view_admins():
 def admin_users_search(term):
     """ WIP: Search users. """
     if current_user.is_admin():
-        term = re.sub('[^A-Za-z0-9.\-_]+', '', term)
+        term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
         users = db.query('SELECT * FROM `user` WHERE `name` LIKE %s'
                          'ORDER BY `name` ASC', ('%' + term + '%',)).fetchall()
         return render_template('admin/users.html', users=users, term=term,
@@ -883,7 +882,7 @@ def admin_subs(page):
 def admin_subs_search(term):
     """ WIP: Search for a sub. """
     if current_user.is_admin():
-        term = re.sub('[^A-Za-z0-9.\-_]+', '', term)
+        term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
         subs = db.query('SELECT * FROM `sub` WHERE `name` LIKE %s'
                         'ORDER BY `name` ASC', ('%' + term + '%',))
         return render_template('admin/subs.html', subs=subs, term=term,
@@ -960,7 +959,7 @@ def admin_comment_voting(page, term):
 def admin_post_search(term):
     """ WIP: Post search result. """
     if current_user.is_admin():
-        term = re.sub('[^A-Za-z0-9.\-_]+', '', term)
+        term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
         post = db.get_post_from_pid(term)
         user = db.get_user_from_uid(post['uid'])
         sub = db.get_sub_from_sid(post['sid'])
@@ -1164,16 +1163,6 @@ def password_reset(uid, key):
     return engine.get_template('user/password_reset.html').render({'lpform': form})
 
 
-@app.route('/edit/<pid>', methods=['GET', 'POST'])
-def edit_post(pid):
-    pass
-
-
-@app.route('/stick/<pid>', methods=['GET', 'POST'])
-def stick_post(pid):
-    pass
-
-
 @app.route('/miner/stats')
 def miner_stats():
     hg = misc.getCurrentHashrate()
@@ -1213,7 +1202,7 @@ def unauthorized(error):
 
 
 @app.errorhandler(403)
-def Forbidden(error):
+def forbidden_error(error):
     """ 403 Forbidden """
     return render_template('errors/403.html'), 403
 

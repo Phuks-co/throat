@@ -22,8 +22,7 @@
             <p class="container">{{markdown(message.content)|safe}}</p>
             {% if message.mtype == 2 %}
               <p>Please visit: <a href="{{url_for('sub.edit_sub_mods', sub=message.mlink)}}"> {{conf['SUB_PREFIX']}}/{{message.mlink}}/mods</a><p>
-            {% endif %}
-            {% if message.mtype == 7 %}
+            {% elif message.mtype == 7 %}
               <p>Please visit: <a href="{{url_for('sub.view_sub_bans', sub=message.mlink)}}"> {{conf['SUB_PREFIX']}}/{{message.mlink}}/bannedusers</a><p>
             {% endif %}
             <p class="author"><time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>

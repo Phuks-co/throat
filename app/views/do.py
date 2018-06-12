@@ -137,6 +137,12 @@ def delete_post():
             if not form.reason.data:
                 return jsonify(status="error", error=["Cannot delete without reason"])
             deletion = 2
+            # notify user.
+            misc.create_message(mfrom=current_user.uid, to=user.uid,
+                                subject='Your post on /s/' + sub.name + ' has been deleted.',
+                                content='Reason: ' + form.reason.data,
+                                link=sub['name'], mtype=11)
+
             if current_user.uid not in subI['mod2'] and current_user.is_admin():
                 SiteLog.create(action=4, link=url_for('sub.view_sub', sub=sub.name), time=datetime.datetime.utcnow(),
                                desc='{0} deleted a post with reason `{1}`'.format(current_user.get_username(), form.reason.data))

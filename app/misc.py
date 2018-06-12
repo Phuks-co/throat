@@ -170,7 +170,7 @@ class SiteUser(object):
     def new_modmail_count(self):
         """ Returns new modmail msg count """
         x = db.query('SELECT COUNT(*) AS c FROM `message` WHERE `read` IS NULL'
-                     ' AND `mtype` IN (2, 7) AND `receivedby`=%s',
+                     ' AND `mtype` IN (2, 7, 11) AND `receivedby`=%s',
                      (self.user['uid'],)).fetchone()['c']
         return x
 
@@ -1503,7 +1503,7 @@ def getMessagesModmail(page):
     """ Returns modmail """
     try:
         msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
-        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype << [2, 7]).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype << [2, 7, 11]).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False
     return msg
