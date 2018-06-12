@@ -136,8 +136,14 @@ u.addEventForChild(document, 'click', '.nsfw-post', function(e, qelem){
 // post source
 u.addEventForChild(document, 'click', '.post-source', function(e, qelem){
   var elem = document.getElementById('postcontent');
+  var testedit = qelem.parentNode.parentNode.querySelector('.postedit s');
+  if(testedit){
+    testedit.click();
+  }
+
   var oc = elem.innerHTML;
   var back =  document.createElement( "a" );
+  back.classList.add("postsource");
   back.innerHTML = "<s>source</s>";
   back.onclick = function(){
     elem.innerHTML = oc;
@@ -152,8 +158,13 @@ u.addEventForChild(document, 'click', '.post-source', function(e, qelem){
 // edit post
 u.addEventForChild(document, 'click', '.edit-post', function(e, qelem){
   var elem = document.getElementById('postcontent');
+    var testsource = qelem.parentNode.parentNode.querySelector('.postsource s');
+  if(testsource){
+    testsource.click();
+  }
   var oc = elem.innerHTML;
   var back =  document.createElement( "a" );
+  back.classList.add("postedit");
   back.innerHTML = "<s>edit</s>";
   back.onclick = function(){
     elem.innerHTML = oc;
@@ -173,6 +184,11 @@ u.addEventForChild(document, 'click', '.edit-post', function(e, qelem){
 u.addEventForChild(document, 'click', '.comment-source', function(e, qelem){
   var cid = qelem.getAttribute('data-cid');
   var elem = document.getElementById('content-' + cid);
+  
+  var testedit = qelem.parentNode.parentNode.querySelector('.edit-comment s');
+  if(testedit){
+    testedit.click();
+  }
   var oc = elem.innerHTML;
   var back =  document.createElement( "s" );
   back.innerHTML = "source";
@@ -191,6 +207,12 @@ u.addEventForChild(document, 'click', '.comment-source', function(e, qelem){
 u.addEventForChild(document, 'click', '.edit-comment', function(e, qelem){
   var cid = qelem.getAttribute('data-cid');
   var elem = document.getElementById('content-' + cid);
+
+  var testsource = qelem.parentNode.parentNode.querySelector('.comment-source s');
+  if(testsource){
+    testsource.click();
+  }
+
   var oc = elem.innerHTML;
   var back =  document.createElement( "s" );
   back.innerHTML = "edit";
