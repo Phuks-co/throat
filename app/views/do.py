@@ -69,7 +69,7 @@ def search(stype):
     if not current_user.is_admin() and stype.startswith('admin'):
         abort(403)
     form = SearchForm()
-    term = re.sub('[^A-Za-z0-9.,\-_\'" ]+', '', form.term.data)
+    term = re.sub(r'[^A-Za-z0-9.,\-_\'" ]+', '', form.term.data)
     return redirect(url_for(stype, term=term))
 
 
@@ -505,7 +505,7 @@ def unblock_sub(sid):
 
     form = DummyForm()
     if form.validate():
-        ss = SubSubscriber.get((SubSubscriber.uid == current_user.uid) & (SubSubscriber.sid == sid) & (SubSubscriber.status == 2))
+        ss = SubSubscriber.get((SubSubscriber.uid == current_user.uid) & (SubSubscriber.sid == sub.sid) & (SubSubscriber.status == 2))
         ss.delete_instance()
         return jsonify(status='ok')
     return jsonify(status='error', error=get_errors(form))
@@ -1794,8 +1794,10 @@ def upvotecomment(cid, value):
     try:
         comment = SubPostComment.get(SubPostComment.cid == cid)
     except SubPostComment.DoesNotExist:
-        return json.dumps({'status': 'error',
-                           'error': ['Comment does not exist']})
+        return jsonify(status="error", error=['Comment does not exist'])
+
+    if comment.status is not None and comment.status != 0:
+        return jsonify(status="error", error=['Comment does not exist'])
 
     user = comment.uid
     if user.uid == current_user.get_id():
