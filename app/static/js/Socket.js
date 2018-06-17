@@ -167,7 +167,7 @@ socket.on('msg', function(data){
   var cont = document.getElementById('chcont')
   if(!cont){return;}
   var uname = document.getElementById('unameb').innerHTML.toLowerCase();
-  var reg = /(^|\s)(@|\/u\/)([a-zA-Z0-9_-]{3,})(\s|\'|\.|,|$)/
+  var reg = /(^|\s)(@|\/u\/)([a-zA-Z0-9_-]{3,})(\s|\'|\.|,|$)/g
   var reg2 = /\u0001ACTION (.+)\u0001/
   var m = data.msg.match(reg);
   var m2 = data.msg.match(reg2);
@@ -181,7 +181,7 @@ socket.on('msg', function(data){
     data.user = "*";
     xc=xc + " msg-ac";
   }
-  cont.innerHTML = cont.innerHTML + '<div class="msg ' + xc + '"><span class="msguser">' + data.user + '&gt;</span><span class="damsg">' + anchorme(ircStylize(data.msg.replace(' ', '&nbsp;')), {emails: false, files: false, attributes: [{name:"target",value:"blank"}]}).replace(reg, "$1<a href='/u/$3'>$2$3</a>$4") + '</span></div>';
+  cont.innerHTML = cont.innerHTML + '<div class="msg ' + xc + '"><span class="msguser">' + data.user + '&gt;</span><span class="damsg">' + anchorme(ircStylize(data.msg.replace(/ /g, '&nbsp;')), {emails: false, files: false, attributes: [{name:"target",value:"blank"}]}).replace(reg, "$1<a href='/u/$3'>$2$3</a>$4") + '</span></div>';
   var k = document.getElementsByClassName('msg')
   if(k.length > 3){
     if(isScrolledIntoView(k[k.length-2])){
