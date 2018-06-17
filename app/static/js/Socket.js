@@ -181,7 +181,7 @@ socket.on('msg', function(data){
     data.user = "*";
     xc=xc + " msg-ac";
   }
-  cont.innerHTML = cont.innerHTML + '<div class="msg ' + xc + '"><span class="msguser">' + data.user + '&gt;</span><span class="damsg">' + anchorme(ircStylize(data.msg), {emails: false, files: false, attributes: [{name:"target",value:"blank"}]}).replace(reg, "$1<a href='/u/$3'>$2$3</a>$4") + '</span></div>';
+  cont.innerHTML = cont.innerHTML + '<div class="msg ' + xc + '"><span class="msguser">' + data.user + '&gt;</span><span class="damsg">' + anchorme(ircStylize(data.msg), {emails: false, files: false, attributes: [{name:"target",value:"blank"}]}).replace(reg, "$1<a href='/u/$3'>$2$3</a>$4").replace(' ', '&nbsp;') + '</span></div>';
   var k = document.getElementsByClassName('msg')
   if(k.length > 3){
     if(isScrolledIntoView(k[k.length-2])){
