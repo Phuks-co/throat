@@ -45,8 +45,10 @@
             <li><a href="{{url_for('sub.view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></li>
             {%if current_user.is_authenticated and not post.deleted %}
               <li><a class="reply-comment" data-pid="{{comment.pid}}" data-to="{{comment.cid}}">reply</a></li>
-              {% if (comment.uid == current_user.uid or current_user.is_admin() or current_user.is_mod(sub.sid)) and not comment.status == 1 %}
+              {% if comment.uid == current_user.uid and not comment.status == 1 %}
                 <li><a class="edit-comment" data-cid="{{comment.cid}}">edit</a></li>
+              {% endif %}
+              {% if (comment.uid == current_user.uid or current_user.is_admin() or current_user.is_mod(sub.sid)) and not comment.status == 1 %}
                 <li><a {% if comment.uid == current_user.uid %}selfdel="true"{%endif%} class="delete-comment" data-cid="{{comment.cid}}">delete</a></li>
               {% endif %}
             {%endif%}
