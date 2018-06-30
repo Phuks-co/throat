@@ -51,8 +51,8 @@
         <li><a href="{{url_for('view_user_uploads')}}">uploads</a></li>
       {% endif %}
       <li>|</li>
-      {% for sub in current_user.get_subscriptions()[0:25] %}
-        <li class="subinthebar"><a href="{{url_for('sub.view_sub', sub=sub)}}">{{sub}}</a></li>
+      {% for sub in current_user.get_top_bar() %}
+        <li class="subinthebar"><a href="{{url_for('sub.view_sub', sub=sub['name'])}}">{{sub['name']}}</a></li>
       {% endfor %}
     </ul>
   </div>

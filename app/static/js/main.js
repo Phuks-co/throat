@@ -7,7 +7,9 @@ import 'purecss/build/grids-responsive.css';
 import 'time-elements/time-elements.js';
 import u from './Util';
 import Konami from './ext/konami';
+import Sortable from 'sortablejs';
 
+window.Sortable = Sortable;
 require('../css/main.css');
 require('../css/dark.css');
 
@@ -58,6 +60,37 @@ u.addEventForChild(document, 'mousedown', '.upvote,.downvote,.c-upvote,.c-downvo
 
 
 u.ready(function() {
+  // for the top bar sorts
+  var list = document.getElementById("subsort");
+  if(list){
+    new window.Sortable(list, {
+      animation: 100,
+    }); 
+  }
+
+  u.sub('.save-top_bar', 'click', function(e){
+    var btn = this;
+    btn.setAttribute('disabled', true);
+    btn.innerHTML = "Saving...";
+    var subs = []
+    u.each('.subsort_item', function(e){
+      subs.push(e.getAttribute('sid'))
+    });
+    u.post('/do/edit_top_bar', {sids: subs}, function(d){
+      if (d.status == "ok") {
+        
+      }else{
+        alert('There was an error while saving your settings. Please try again in a few minutes.');
+      }
+      btn.removeAttribute('disabled');
+      btn.innerHTML = "Save";
+    }, function(){
+      alert('There was an error while saving your settings. Please try again in a few minutes.');
+      btn.removeAttribute('disabled');
+      btn.innerHTML = "Save";
+    })
+    console.log(subs);
+  })
   // shitless forms
   u.addEventForChild(document, 'submit', '.ajaxform', function(e, target){
     e.preventDefault();

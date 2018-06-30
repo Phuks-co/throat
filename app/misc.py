@@ -1,4 +1,5 @@
 """ Misc helper function and classes. """
+from collections import OrderedDict
 from urllib.parse import urlparse, parse_qs
 import json
 import math
@@ -67,12 +68,18 @@ class SiteUser(object):
         self.subsid = []
         self.subscriptions = []
         self.blocksid = []
+
+        self.top_bar = []
         for i in subs:
             if i['status'] == 1:
                 self.subscriptions.append(i['name'])
                 self.subsid.append(i['sid'])
             else:
                 self.blocksid.append(i['sid'])
+
+            if i['status'] in (1, 5):
+                if i not in self.top_bar:
+                    self.top_bar.append(i)
 
         self.score = self.user['score']
         self.given = self.user['given']
@@ -246,6 +253,9 @@ class SiteUser(object):
     def get_subscriptions(self):
         return self.subscriptions
 
+    def get_top_bar(self):
+        return self.top_bar
+
     def update_prefs(self, key, value):
         try:
             md = UserMetadata.get((UserMetadata.uid == self.uid) & (UserMetadata.key == key))
@@ -292,7 +302,12 @@ class SiteAnon(AnonymousUserMixin):
     def get_blocked(cls):
         return []
 
-    def get_subscriptions(self):
+    @classmethod
+    def get_subscriptions(cls):
+        return getDefaultSubs_list()
+
+    @classmethod
+    def get_top_bar(cls):
         return getDefaultSubs_list()
 
     @classmethod
@@ -1277,7 +1292,8 @@ def load_user(user_id):
 
     try:
         user = user.get()
-        subs = SubSubscriber.select(SubSubscriber.sid, Sub.name, SubSubscriber.status).join(Sub, on=(Sub.sid == SubSubscriber.sid)).switch(SubSubscriber).where(SubSubscriber.uid == user_id).dicts()
+        subs = SubSubscriber.select(SubSubscriber.sid, Sub.name, SubSubscriber.status).join(Sub, on=(Sub.sid == SubSubscriber.sid)).switch(SubSubscriber).where(SubSubscriber.uid == user_id)
+        subs = subs.order_by(SubSubscriber.order.asc()).dicts()
         return SiteUser(user, subs, prefs)
     except User.DoesNotExist:
         return None

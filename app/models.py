@@ -1,10 +1,11 @@
+""" Database and storage related functions and classes """
 import datetime
+import redis
 from flask import g
 from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model
 from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
 from playhouse.db_url import connect as db_url_connect
 import config
-import redis
 
 # Why not here? >_>
 rconn = redis.from_url(config.SOCKETIO_REDIS_URL)
@@ -14,6 +15,7 @@ dex = dbm.execute
 
 
 def peewee_count_queries(*args, **kwargs):
+    """ Used to count and display number of queries """
     if not hasattr(g, 'pqc'):
         g.pqc = 0
     g.pqc += 1
@@ -251,13 +253,13 @@ class SubStylesheet(TModel):
 
 
 class SubSubscriber(TModel):
+    """ Stores subscribed and blocked subs """
     order = IntegerField(null=True)
-    sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
-                          field='sid')
+    sid = ForeignKeyField(db_column='sid', null=True, model=Sub, field='sid')
+    # status is 1 for subscribed, 2 for blocked and 4 for saved (displayed in the top bar)
     status = IntegerField(null=True)
     time = DateTimeField(default=datetime.datetime.utcnow())
-    uid = ForeignKeyField(db_column='uid', null=True, model=User,
-                          field='uid')
+    uid = ForeignKeyField(db_column='uid', null=True, model=User, field='uid')
     xid = PrimaryKeyField()
 
     class Meta:

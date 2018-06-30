@@ -1688,3 +1688,15 @@ a[href="#toodamncool"]{
     font: inherit;
     text-decoration: underline;
 }
+
+/* topbar settings page */
+.subsort_item{
+  cursor: move;
+  padding: 10px 40px;
+  width: 32em;
+  background: rgba(0,0,0,.1)
+}
+
+#subsort{
+  list-style: none;
+}

@@ -599,6 +599,11 @@ def view_user_comments(user, page):
                            comments=comments)
 
 
+@app.route('/settings/subs')
+@login_required
+def edit_subs():
+    return engine.get_template('user/topbar.html').render({})
+
 @app.route("/settings")
 @login_required
 def edit_user():

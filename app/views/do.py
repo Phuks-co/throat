@@ -2152,3 +2152,34 @@ def ban_user(username):
                    desc='{0} banned {1}'.format(current_user.get_username(), user.name),
                    time=datetime.datetime.utcnow())
     return redirect(url_for('view_user', user=username))
+
+
+@do.route('/do/edit_top_bar', methods=['POST'])
+@login_required
+def edit_top_bar():
+    form = DummyForm()
+    if not form.validate():
+        return jsonify(status='error', error='no CSRF')
+    
+    data = request.get_json()
+    if not data.get('sids'):
+        return jsonify(status='error')
+
+    for i in data.get('sids'):
+        # Check if we're being fed good UUIDs
+        try:
+            val = uuid.UUID(i, version=4)
+        except ValueError:
+            return jsonify(status='error')
+        
+    # If all the sids are good, we do the thing.
+    i = 0
+    for k in data.get('sids'):
+        i += 1
+        try:
+            SubSubscriber.update(order=i).where((SubSubscriber.uid == current_user.uid) & (SubSubscriber.sid == k)).execute()
+        except SubSubscriber.DoesNotExist:
+            print('error')
+            pass  # TODO: Add these as status=4 SubSubscriber (after implementing some way to delete those)
+    
+    return jsonify(status='ok')
