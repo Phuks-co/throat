@@ -308,7 +308,7 @@ class SiteAnon(AnonymousUserMixin):
 
     @classmethod
     def get_top_bar(cls):
-        return getDefaultSubs_list()
+        return getDefaultSubs_list(True)
 
     @classmethod
     def has_subscribed(cls, sub):
@@ -741,14 +741,20 @@ def getDefaultSubs():
 
 
 @cache.memoize(600)
-def getDefaultSubs_list():
+def getDefaultSubs_list(ext=False):
     """ Returns a list of all the default subs """
     md = db.get_site_metadata('default', True)
     defaults = []
     for i in md:
         sub = db.get_sub_from_sid(i['value'])
-        defaults.append(sub['name'])
-    defaults = sorted(defaults, key=str.lower)
+        if not ext:
+            defaults.append(sub['name'])
+        else:
+            defaults.append({'name': sub['name'], 'sid': i['value']})
+    if not ext:
+        defaults = sorted(defaults, key=str.lower)
+    else:
+        defaults = sorted(defaults, key=lambda x: x['name'].lower())
     return defaults
 
 
