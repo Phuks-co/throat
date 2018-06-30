@@ -10,7 +10,7 @@ import config
 # Why not here? >_>
 rconn = redis.from_url(config.SOCKETIO_REDIS_URL)
 
-dbm = db_url_connect(config.DATABASE_URL)
+dbm = db_url_connect(config.DATABASE_URL, charset='utf8mb4')
 dex = dbm.execute
 
 
