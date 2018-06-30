@@ -401,3 +401,5 @@ body.dark .admin_alert{
 body.dark .admin_alert .btn_link{
   color: #1b006f;
 }
+
+body.dark .editbar path{fill: #d25309;}
