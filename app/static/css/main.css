@@ -393,11 +393,25 @@ span#notification.fade {
   left: 0;
 }
 
+.editbar path{fill: white;}
+
 .p-icon {
   margin-top: 5px;
   width: 16px;
   height: 16px;
   display:block;
+}
+
+.tx-icon {
+  display: inline-flex;
+  align-self: center;
+}
+
+.tx-icon svg{
+  height:1em;
+  width:1em;
+  top: .15em;
+  position: relative;
 }
 .inboxside .p-icon {
   margin-top: 0px;
@@ -955,12 +969,16 @@ span.hasmail {
 .th-subbar ul li{
   color: #fff;
   display: inline-block;
-  margin: 0 6px;
+  margin: 0 5px;
 }
 
 .th-subbar ul li a{
   color: #eee;
   font-size: .9em;
+}
+
+.th-subbar ul li.editbar{
+  margin: 0;
 }
 /* /SUB BAR STYLES */
 

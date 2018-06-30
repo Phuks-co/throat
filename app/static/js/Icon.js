@@ -56,6 +56,9 @@ var Icons = {
   coffee: require('../svg/coffee.svg'),
   donor: require('../svg/donor.svg'),
   copyright: require('../svg/copyright.svg'),
+
+  edit: require('../svg/edit.svg'),
+  
   rendericons: rendericons,
 };
 

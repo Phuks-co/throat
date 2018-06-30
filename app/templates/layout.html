@@ -51,6 +51,7 @@
         <li><a href="{{url_for('view_user_uploads')}}">uploads</a></li>
       {% endif %}
       <li>|</li>
+      <li class="editbar"><a href="/settings/subs" title="Customize this bar" class="tx-icon" data-icon="edit"></a></li>
       {% for sub in current_user.get_top_bar() %}
         <li class="subinthebar"><a href="{{url_for('sub.view_sub', sub=sub['name'])}}">{{sub['name']}}</a></li>
       {% endfor %}
