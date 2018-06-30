@@ -20,7 +20,7 @@
   "devDependencies": {
     "babel-core": "^6.25.0",
     "babel-loader": "^7.1.1",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "css-loader": "^0.26.2",
     "extract-text-webpack-plugin": "^2.1.2",
     "manifest-revision-webpack-plugin": "^0.4.0",
@@ -37,6 +37,7 @@
     "jquery": "^3.2.1",
     "purecss": "^1.0.0",
     "socket.io-client": "^2.0.4",
+    "sortablejs": "^1.7.0",
     "time-elements": "^0.6.1"
   }
 }
