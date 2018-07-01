@@ -188,12 +188,16 @@ def create_sub():
         except Sub.DoesNotExist:
             pass
 
-        if misc.moddedSubCount(current_user.uid) >= 15:
-            return jsonify(status='error', error=['You cannot mod more than 15 subs'])
-
+        level = misc.get_user_level(current_user.uid)[0]
         if not getattr(config, 'TESTING', False):
-            if misc.get_user_level(current_user.uid)[0] <= 1:
+            if level <= 1:
                 return jsonify(status='error', error=['You must be at least level 2.'])
+
+            if misc.moddedSubCount(current_user.uid) >= 20:
+                return jsonify(status='error', error=['You cannot mod more than 20 subs.'])
+                
+            if misc.moddedSubCount(current_user.uid) >= (level - 1):
+                return jsonify(status='error', error=['You cannot mod more than {0} subs. Try leveling up your account'.format(level - 1)])
 
         sub = Sub.create(sid=uuid.uuid4(), name=form.subname.data, title=form.title.data)
         SubMetadata.create(sid=sub.sid, key='mod', value=current_user.uid)
