@@ -252,7 +252,6 @@ u.ready(function(){
   // "More" dropdown
   u.sub('.dropdown-toggle.moremenu', 'click', function(e){
     var hsubs = document.getElementById('hiddensubs');
-    console.log('no2ned')
     if(hsubs.style.display != 'none' && hsubs.style.display){
       hsubs.style.display = 'none';
       console.log('noned')
@@ -268,13 +267,12 @@ u.ready(function(){
       }
      });
      document.getElementById('hiddensubs').innerHTML = x;
-     hsubs.style.display = 'block'
+     hsubs.style.display = 'inline-flex'
  });
  u.addEventForChild(document, 'click', '*', function(e, qelem){
    var hsubs = document.getElementById('hiddensubs');
    var hdrop = document.querySelector('.dropdown-toggle.moremenu');
   if(hsubs.style.display != 'none' && hsubs.style.display){
-    console.log('q')
     // i hate this.
     if(qelem != hsubs && qelem.parentNode != hsubs && qelem != hdrop && qelem != hdrop.parentNode && qelem.parentNode != hdrop && qelem.parentNode.parentNode != hdrop && qelem.parentNode.parentNode.parentNode != hdrop){
       console.log(qelem, hsubs)

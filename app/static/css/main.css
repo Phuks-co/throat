@@ -982,6 +982,12 @@ span.hasmail {
   box-shadow: 0 6px 12px rgba(0,0,0,0.175);
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
+
+
+  writing-mode: vertical-lr;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  max-height: 60%;
 }
 
 .dropdown-toggle.moremenu path{fill: white;}
@@ -995,6 +1001,7 @@ span.hasmail {
   padding: 0 5px;
   font-variant: small-caps;
   font-size: larger;
+  writing-mode: horizontal-tb;
 }
 
 #hiddensubs li a{
