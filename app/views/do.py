@@ -537,21 +537,23 @@ def edit_txtpost(pid):
     """ Sub text post creation endpoint """
     form = EditSubTextPostForm()
     if form.validate():
-        post = db.get_post_from_pid(pid)
-        if not post:
-            return jsonify(status='error', error=['No such post'])
+        try:
+            post = SubPost.get(SubPost.pid == pid)
+        except SubPost.DoesNotExist:
+            return jsonify(status='error', error=['Post not found'])
 
-        sub = Sub.get(Sub.sid == post['sid'])
-        if current_user.is_subban(sub):
+        if post.deleted != 0:
+            return jsonify(status='error', error=['Post was deleted'])
+
+        if current_user.is_subban(post.sid):
             return jsonify(status='error', error=['You are banned on this sub.'])
 
-        if db.is_post_deleted(post):
-            return jsonify(status='error',
-                           error=["You can't edit a deleted post"])
-        db.uquery('UPDATE `sub_post` SET `content`=%s WHERE '
-                  '`pid`=%s', (form.content.data, pid))
-        cache.delete_memoized(db.get_post_from_pid, pid)
-        return json.dumps({'status': 'ok'})
+        post.content = form.content.data
+        # Only save edited time if it was posted more than five minutes ago
+        if (datetime.datetime.utcnow() - post.posted).seconds > 300:
+            post.edited = datetime.datetime.utcnow()
+        post.save()
+        return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 

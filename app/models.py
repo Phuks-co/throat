@@ -172,15 +172,14 @@ class SubPost(TModel):
     nsfw = BooleanField(null=True)
     pid = PrimaryKeyField()
     posted = DateTimeField(null=True)
+    edited = DateTimeField(null=True)
     ptype = IntegerField(null=True)
     score = IntegerField(null=True)
-    sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
-                          field='sid')
+    sid = ForeignKeyField(db_column='sid', null=True, model=Sub, field='sid')
     thumbnail = CharField(null=True)
     title = CharField(null=True)
     comments = IntegerField()
-    uid = ForeignKeyField(db_column='uid', null=True, model=User,
-                          field='uid')
+    uid = ForeignKeyField(db_column='uid', null=True, model=User, field='uid')
     flair = CharField(null=True, max_length=25)
 
     class Meta:

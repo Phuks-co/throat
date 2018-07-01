@@ -35,6 +35,9 @@
     <span class="deleted">[deleted]</span>
   {%endif%}
   <br/>
+  {% if post.edited %}
+    edited <time-ago datetime="{{post.edited.isoformat()}}Z"></time-ago><br/>
+  {% endif %}
   Score: {{post.score}} <b>(+{{func.get_post_upcount(post.pid)}}|-{{func.get_post_downcount(post.pid)}})</b>
 </div>
 <hr/>
