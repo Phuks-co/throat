@@ -2071,6 +2071,8 @@ def sub_upload(sub):
     im.close()
 
     SubUploads.create(sid=sub.sid, fileid=f_name, thumbnail=filename, size=fsize, name=fname)
+    SubLog.create(sid=sub.sid, action=4, link=url_for('sub.view_sub', sub=sub.name), time=datetime.datetime.utcnow(),
+                      desc='{0} modified the sub\'s stylesheet (uploaded file)'.format(current_user.name))
     return redirect(url_for('sub.edit_sub_css', sub=sub.name))
 
 
@@ -2093,6 +2095,8 @@ def sub_upload_delete(sub, name):
         jsonify(status='error')
     fileid = img.fileid
     img.delete_instance()
+    SubLog.create(sid=sub.sid, action=4, link=url_for('sub.view_sub', sub=sub.name), time=datetime.datetime.utcnow(),
+                      desc='{0} modified the sub\'s stylesheet (removed upload)'.format(current_user.name))
 
     # We won't delete the pic if somebody else is still using it..
     try:
