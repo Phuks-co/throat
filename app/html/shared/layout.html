@@ -46,7 +46,7 @@
 </div>
   @end
   <div class="th-subbar pure-u-1">
-    <ul>
+    <ul id="topbar">
       <li><a href="/all">all</a></li>
       <li><a href="/all/new">new</a></li>
       @if not current_user.is_anonymous:
@@ -62,7 +62,14 @@
       @for sub in current_user.get_top_bar():
         <li class="subinthebar"><a href="@{url_for('sub.view_sub', sub=sub['name'])}">@{sub['name']}</a></li>
       @end
+
     </ul>
+    <div id="subsdropdown">
+      <div class="dropdown-toggle moremenu">
+        More <span class="tx-icon" data-icon="down"></span>
+      </div>
+      <ul id="hiddensubs"></ul>
+    </div>
   </div>
 
   <div id="menu" class="th-navbar pure-g">

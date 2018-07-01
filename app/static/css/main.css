@@ -953,6 +953,63 @@ span.hasmail {
 /* /USERBAR STYLES */
 
 /* SUB BAR STYLES */
+
+.dropdown-toggle.moremenu{
+  color: white;
+  text-align: center;
+  cursor: pointer;
+}
+
+#hiddensubs{
+  position: absolute;
+  top: 2em;
+  right: 0;
+  z-index: 1000;
+  display: none; 
+  float: right;
+  min-width: 160px;
+  width: auto;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  list-style: none;
+  font-size: 14px;
+  text-align: left;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 4px;
+  -webkit-box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+.dropdown-toggle.moremenu path{fill: white;}
+
+#hiddensubs li:hover{
+  background-color: #ddd;
+}
+
+#hiddensubs li{
+  display: block;
+  padding: 0 5px;
+  font-variant: small-caps;
+  font-size: larger;
+}
+
+#hiddensubs li a{
+  color: #d95204;
+  width: 100%;
+  display: block;
+}
+
+#subsdropdown{
+  width: 4em;
+  display: inline-block;
+  margin: .1em .1em .2em .1em;
+  vertical-align: super;
+}
+
 .th-subbar {
   background-color: #101010;
   border-bottom:1px solid #101010;
@@ -964,6 +1021,9 @@ span.hasmail {
   margin: .1em .1em .2em .1em;
   padding: 0;
   white-space: nowrap;
+  width: calc(100% - 5em);
+  overflow: hidden;
+  display: inline-block;
 }
 
 .th-subbar ul li{

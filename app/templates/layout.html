@@ -58,6 +58,12 @@
         <li class="subinthebar"><a href="{{url_for('sub.view_sub', sub=sub['name'])}}">{{sub['name']}}</a></li>
       {% endfor %}
     </ul>
+    <div id="subsdropdown">
+      <div class="dropdown-toggle moremenu">
+        More
+      </div>
+      <ul id="hiddensubs"></ul>
+    </div>
   </div>
 
   <div id="menu" class="th-navbar pure-g">

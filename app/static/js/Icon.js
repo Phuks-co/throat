@@ -58,7 +58,9 @@ var Icons = {
   copyright: require('../svg/copyright.svg'),
 
   edit: require('../svg/edit.svg'),
-  
+
+  down: require('../svg/caret-down.svg'),
+
   rendericons: rendericons,
 };
 

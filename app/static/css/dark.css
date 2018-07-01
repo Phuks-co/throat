@@ -402,4 +402,12 @@ body.dark .admin_alert .btn_link{
   color: #1b006f;
 }
 
-body.dark .editbar path{fill: #d25309;}
+body.dark .editbar path {fill: #d25309;}
+
+body.dark #hiddensubs{
+  background: #111;
+}
+
+body.dark #hiddensubs li:hover{
+  background-color: #2b2b2b;
+}

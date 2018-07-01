@@ -248,47 +248,77 @@ document.getElementById('toggle').addEventListener('click', function (e) {
 
 window.addEventListener(WINDOW_CHANGE_EVENT, closeMenu);
 
-/* infinite scroll */
 u.ready(function(){
+  // "More" dropdown
+  u.sub('.dropdown-toggle.moremenu', 'click', function(e){
+    var hsubs = document.getElementById('hiddensubs');
+    console.log('no2ned')
+    if(hsubs.style.display != 'none' && hsubs.style.display){
+      hsubs.style.display = 'none';
+      console.log('noned')
+      return
+    }
+    var w = document.querySelector('.th-subbar ul').clientWidth
+    var x = ''
+    u.each('#topbar li', function(e){
+      var p = {left: e.offsetLeft, top: e.offsetTop};
+      var pl = p.left + e.clientWidth;
+      if (pl < 0 - (e.clientWidth-30) || pl > w){
+        x = x + '<li>' + e.innerHTML + '</li>'
+      }
+     });
+     document.getElementById('hiddensubs').innerHTML = x;
+     hsubs.style.display = 'block'
+ });
+ u.addEventForChild(document, 'click', '*', function(e, qelem){
+   var hsubs = document.getElementById('hiddensubs');
+   var hdrop = document.querySelector('.dropdown-toggle.moremenu');
+  if(hsubs.style.display != 'none' && hsubs.style.display){
+    console.log('q')
+    // i hate this.
+    if(qelem != hsubs && qelem.parentNode != hsubs && qelem != hdrop && qelem != hdrop.parentNode && qelem.parentNode != hdrop && qelem.parentNode.parentNode != hdrop && qelem.parentNode.parentNode.parentNode != hdrop){
+      console.log(qelem, hsubs)
+      hsubs.style.display = 'none';
+    }
+  }
+ })
+  // chat
   if(document.getElementById('chpop')){
+    socket.emit('subscribe', {target: 'chat'});
     socket.emit('getchatbacklog');
   }
-  var mode = getCookie("dayNight");
-  //if(mode == 'dank'){
-    socket.emit('subscribe', {target: 'chat'});
-  //}
 
-if(window.moreuri){
-  window.loading = false;
-  window.addEventListener('scroll', function () {
-      if(window.loading){
-        return
-      }
+  /* infinite scroll */
+
+  if(window.moreuri){
+    window.loading = false;
+    window.addEventListener('scroll', function () {
+      if(window.loading){return;}
       if(window.scrollY + window.innerHeight >= (document.getElementsByTagName('body')[0].clientHeight/100)*75) {
-          var k = document.querySelectorAll('div.post')
-          var lastpid = k[k.length-1].getAttribute('pid')
-          window.loading = true;
-          u.get(window.moreuri + lastpid,
-            function(data) {
-              var ndata = document.createElement( "div" );
-              ndata.innerHTML = data;
+        var k = document.querySelectorAll('div.post')
+        var lastpid = k[k.length-1].getAttribute('pid')
+        window.loading = true;
+        u.get(window.moreuri + lastpid,
+        function(data) {
+          var ndata = document.createElement( "div" );
+          ndata.innerHTML = data;
 
-              while (ndata.firstChild) {
-                  var k = document.querySelector('.alldaposts').appendChild(ndata.firstChild);
-                  if(window.expandall && k.getElementsByClassName){
-                    var q = k.getElementsByClassName('expando-btn')[0]
-                    if(q && q.getAttribute('data-icon') == "image"){
-                      q.click()
-                    }
-                  }
+          while (ndata.firstChild) {
+            var k = document.querySelector('.alldaposts').appendChild(ndata.firstChild);
+            if(window.expandall && k.getElementsByClassName){
+              var q = k.getElementsByClassName('expando-btn')[0]
+              if(q && q.getAttribute('data-icon') == "image"){
+                q.click()
               }
+            }
+          }
 
-              window.loading = false;
-              icons.rendericons();
-            })
+          window.loading = false;
+          icons.rendericons();
+        })
       }
-  });
-}
+    });
+  }
 })
 
 new Konami(function() {
