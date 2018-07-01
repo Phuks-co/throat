@@ -152,6 +152,7 @@ CREATE TABLE `sub_post` (
   `link` varchar(256) DEFAULT NULL,
   `content` text,
   `posted` datetime DEFAULT NULL,
+  `edited` datetime DEFAULT NULL,
   `ptype` int(11) DEFAULT NULL,
   `score` int(11) DEFAULT NULL,
   `thumbnail` varchar(128) DEFAULT NULL,
