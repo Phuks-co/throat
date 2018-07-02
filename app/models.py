@@ -82,6 +82,10 @@ class Message(TModel):
     content = TextField(null=True)
     mid = PrimaryKeyField()
     mlink = CharField(null=True)
+    # mtype values: 
+    # 1: sent, 4: post replies, 5: comment replies, 8: mentions, 9: saved message
+    # 6: deleted, 41: ignored messages  => won't display anywhere
+    # 2 (mod invite), 7 (ban notification), 11 (deletion): modmail
     mtype = IntegerField(null=True)
     posted = DateTimeField(null=True)
     read = DateTimeField(null=True)
