@@ -984,7 +984,8 @@ span.hasmail {
   background-clip: padding-box;
 
 
-  writing-mode: vertical-lr;
+  /*writing-mode: vertical-lr;*/
+  flex-flow: column wrap;
   flex-wrap: wrap;
   align-content: flex-start;
   max-height: 60%;
@@ -1001,7 +1002,7 @@ span.hasmail {
   padding: 0 5px;
   font-variant: small-caps;
   font-size: larger;
-  writing-mode: horizontal-tb;
+  /*writing-mode: horizontal-tb;*/
 }
 
 #hiddensubs li a{

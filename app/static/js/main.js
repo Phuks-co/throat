@@ -267,7 +267,11 @@ u.ready(function(){
       }
      });
      document.getElementById('hiddensubs').innerHTML = x;
-     hsubs.style.display = 'inline-flex'
+     hsubs.style.display = 'inline-flex';
+
+     var lastChild = hsubs.children[hsubs.children.length-1];
+     var newWidth = lastChild.offsetLeft + lastChild.offsetWidth + 15;
+     hsubs.style.width = newWidth + 'px';
  });
  u.addEventForChild(document, 'click', '*', function(e, qelem){
    var hsubs = document.getElementById('hiddensubs');
