@@ -1306,7 +1306,7 @@ def load_user(user_id):
 
 
 def get_notification_count(uid):
-    return Message.select().where((Message.receivedby == uid) & (Message.mtype != 6) & (Message.mtype != 9) & Message.read.is_null(True)).count()
+    return Message.select().where((Message.receivedby == uid) & (Message.mtype != 6) & (Message.mtype != 9) & (Message.mtype != 41) & Message.read.is_null(True)).count()
 
 
 def get_errors(form):
