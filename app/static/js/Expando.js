@@ -31,6 +31,17 @@ function youtubeID(url) {
     return match[3];
   }
 }
+
+function getParameterByName(name, url) {
+  name = name.replace(/[\[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+      results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+
 function imgurID(url) {
   var match = url.match(/^http(?:s?):\/\/(i\.)?imgur\.com\/(.*?)(?:\/.gifv|$)/);
   if (match){
@@ -65,7 +76,22 @@ u.addEventForChild(document, 'click', '.expando', function(e, ematch){
     }else{
       var domain = get_hostname(link);
       if((domain == 'youtube.com') || (domain == 'www.youtube.com') || (domain == 'youtu.be')){
-        expando.querySelector('.expandotxt').innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://www.youtube.com/embed/' + youtubeID(link) +'" allowfullscreen=""></iframe></div>';
+        var extra = '?';
+        if(getParameterByName('list', link)){
+          extra += 'list=' + getParameterByName('list', link) + '&';
+        }
+        if(getParameterByName('t', link)){
+          var time_regex = /(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/;
+          var start = getParameterByName('t', link);
+          var m = null;
+          if ((m = time_regex.exec(start)) !== null) {
+            var time = parseInt(m[1]) * 3600 + parseInt(m[2]) * 60 + parseInt(m[3]);
+            extra += 'start=' + time; 
+          }else{
+            extra += 'start=' + start;
+          }
+        }
+        expando.querySelector('.expandotxt').innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://www.youtube.com/embed/' + youtubeID(link) + extra +'" allowfullscreen=""></iframe></div>';
       }else if((domain == 'hooktube.com') || (domain == 'www.hooktube.com')){
         expando.querySelector('.expandotxt').innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://hooktube.com/embed/' + youtubeID(link) +'" allowfullscreen=""></iframe></div>';
       }else if(domain == 'gfycat.com'){
