@@ -127,7 +127,7 @@ class Sub(TModel):
     status = IntegerField(null=True)
     title = CharField(null=True, max_length=50)
     sort = CharField(null=True, max_length=32)
-    creation = DateTimeField()
+    creation = DateTimeField(default=datetime.datetime.utcnow)
     subscribers = IntegerField(default=1)
     posts = IntegerField(default=0)
 
