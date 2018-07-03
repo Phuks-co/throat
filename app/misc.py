@@ -1780,7 +1780,10 @@ def create_message(mfrom, to, subject, content, link, mtype):
     return m
 
 
-MOTTOS = json.loads(open('phuks.txt').read())
+try:
+    MOTTOS = json.loads(open('phuks.txt').read())
+except FileNotFoundError:
+    MOTTOS = []
 
 
 def get_motto():
