@@ -1592,6 +1592,7 @@ table td {
   border-bottom: solid 1px #bbb;
   margin-left: 2px;
   height: calc(100% - 4.1em);
+  white-space: pre;
 }
 #chtitle{
   background: #d94f00;
