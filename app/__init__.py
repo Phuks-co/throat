@@ -1047,32 +1047,41 @@ def register():
         if not allowedNames.match(form.username.data):
             return render_template('register.html', error="Username has invalid characters.")
         # check if user or email are in use
-        if db.get_user_from_name(form.username.data):
+        try:
+            User.get(User.name == form.username.data)
             return render_template('register.html', error="Username is not available.")
-        x = db.query('SELECT `uid` FROM `user` WHERE `email`=%s',
-                     (form.email.data,))
-        if x.fetchone() and form.email.data != '':
-            return render_template('register.html', error="E-mail address is already in use.")
+        except User.DoesNotExist:
+            pass
+        
+        if form.email.data:
+            try:
+                User.get(User.email == form.email.data)
+                return render_template('register.html', error="E-mail address is already in use.")
+            except User.DoesNotExist:
+                pass
 
         if getattr(config, 'ENABLE_SECURITY_QUESTIONS', False):
             if form.securityanswer.data.lower() != session['sa'].lower():
                 return render_template('register.html', error="Incorrect answer for security question.")
 
+        # TODO: Rewrite invite code code
         y = db.get_site_metadata('useinvitecode')
         y = y['value'] if y else False
         if y == '1':
             z = db.get_site_metadata('invitecode')['value']
             if z != form.invitecode.data:
                 return render_template('register.html', error="Invalid invite code.")
-        user = db.create_user(form.username.data, form.email.data,
-                              form.password.data)
+
+        password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
+
+        user = User.create(uid=str(uuid.uuid4()), name=form.username.data, crypto=1, password=password,
+                           email=form.email.data, joindate=datetime.datetime.utcnow())
         # defaults
         defaults = getDefaultSubs()
         for d in defaults:
-            db.create_subscription(user['uid'], d['sid'], 1)
+            db.create_subscription(user.uid, d['sid'], 1)
         g.db.commit()
-        theuser = misc.load_user(user['uid'])
-        print(theuser)
+        theuser = misc.load_user(user.uid)
         login_user(theuser, remember=True)
         return redirect(url_for('welcome'))
 
