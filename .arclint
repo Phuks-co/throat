@@ -5,7 +5,8 @@
       "include": "(\\.py$)",
       "exclude": "(node_modules/)",
       "severity": {
-          "E501": "disabled"
+          "E501": "disabled",
+          "E402": "disabled"
       }
     }
   }
