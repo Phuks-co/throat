@@ -13,7 +13,7 @@ app.config['WTF_CSRF_ENABLED'] = False
 
 d = db.connect_db('')
 f = d.cursor()
-f.execute('DROP DATABASE IF EXISTS {0}'.format(app.config['DB_NAME']))
+f.execute('DROP DATABASE IF EXISTS {0}_test'.format(app.config['DB_NAME']))
 d.commit()
 f.execute('CREATE DATABASE {0}_test'.format(app.config['DB_NAME']))
 d.commit()
