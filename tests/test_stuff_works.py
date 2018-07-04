@@ -10,14 +10,14 @@ import app.database as db  # noqa
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + tempfile.mkstemp()[1]
 app.config['WTF_CSRF_ENABLED'] = False
-
+app.config['DB_NAME'] = app.config['DB_NAME'] + '_test'
 d = db.connect_db('')
 f = d.cursor()
-f.execute('DROP DATABASE IF EXISTS {0}_test'.format(app.config['DB_NAME']))
+f.execute('DROP DATABASE IF EXISTS {0}'.format(app.config['DB_NAME']))
 d.commit()
-f.execute('CREATE DATABASE {0}_test'.format(app.config['DB_NAME']))
+f.execute('CREATE DATABASE {0}'.format(app.config['DB_NAME']))
 d.commit()
-f.execute('USE {0}_test'.format(app.config['DB_NAME']))
+f.execute('USE {0}'.format(app.config['DB_NAME']))
 xx = open('throat.sql').read().split(';')
 for o in xx[:-1]:
     f.execute(o)
