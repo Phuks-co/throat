@@ -1649,7 +1649,7 @@ table td {
 }
 /* chat text format */
 .irc-underline{text-decoration: underline;}
-.irc-underline{font-style: italic;}
+.irc-italic{font-style: italic;}
 .irc-bold{font-weight: bold;}
 
 .irc-fg0 {color:#ccc}
