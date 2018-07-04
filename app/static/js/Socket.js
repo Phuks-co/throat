@@ -172,6 +172,7 @@ socket.on('msg', function(data){
   var m = data.msg.match(reg);
   var m2 = data.msg.match(reg2);
   var xc="";
+  if(m && !m[3]){m[3] = '';}
   if(m && m[3].toLowerCase() == uname && data.user.toLowerCase() != uname){
     xc="msg-hl";
     // TODO: Ping sounds here?
