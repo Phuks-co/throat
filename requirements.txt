@@ -30,3 +30,5 @@ python-magic
 py3exiv2
 tinycss2==0.6.1
 pyotp
+coverage
+pep8
