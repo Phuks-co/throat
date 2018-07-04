@@ -106,7 +106,7 @@
   <div class="postbar post" pid="{{post.pid}}">
     <div class="misctainer">
       <div class="votebuttons">
-        {% if post.userstatus != 10 %}
+        {% if post.userstatus != 10 and (datetime.datetime.utcnow() - post.posted) < datetime.timedelta(days=60) %}
         <div title="Upvote" class="upvote{%if post.positive == 1%} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
         <div class="score">{{post.score}}</div>
         <div title="Downvote" class="downvote{%if post.positive == 0%} downvoted{%endif%}" data-pid="{{post.pid}}" data-icon="downvote"></div>
