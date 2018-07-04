@@ -13,7 +13,7 @@ machine:
   environment:
     DB_USER: ubuntu
     DB_PASSWD: ~
-    DB_NAME: 'circle_test'
+    DB_NAME: 'circle'
 dependencies:
   pre:
     - sudo apt-get update; sudo apt-get install -y exiv2 libexiv2-dev libboost-python-dev
