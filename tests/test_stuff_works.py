@@ -2,7 +2,9 @@
 import sys
 import json
 import unittest
-
+import config
+config.DB_NAME = config.DB_NAME + '_test'
+config.DATABASE_URL = 'mysql://{0}:{1}@localhost/{2}_test'.format(config.DB_USER, config.DB_PASSWD, config.DB_NAME)
 sys.path.append('..')
 from app import app  # noqa
 import app.database as db  # noqa
@@ -10,7 +12,6 @@ import app.database as db  # noqa
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + tempfile.mkstemp()[1]
 app.config['WTF_CSRF_ENABLED'] = False
-app.config['DB_NAME'] = app.config['DB_NAME'] + '_test'
 d = db.connect_db('')
 f = d.cursor()
 f.execute('DROP DATABASE IF EXISTS {0}'.format(app.config['DB_NAME']))
