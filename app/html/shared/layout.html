@@ -128,7 +128,7 @@
       </div>
     </div>
   </div>
-
+  @def content():
   <div class="pure-g">
     <div class="pure-u-1 pure-u-md-18-24"> <!-- main -->
       @def main():
@@ -141,6 +141,8 @@
       @sidebar()
     </div>
   </div>
+  @end
+  @content()
 
   <div class="footer">
     @def footer():
@@ -163,13 +165,17 @@
     @end
     @footer()
   </div>
-  @if not current_user.is_anonymous and 'nochat' not in current_user.prefs:
-  <div id="chpop" style="height: 1.65em">
-    <div id="chtitle" hid="true">Chat</div>
-    <div id="chcont"></div>
-    <div id="chbott" style="display: none"><input type="text" id="chsend" maxlength="250" placeholder="Type here"/></div>
-  </div>
+  @def chat():
+    @#...
+    @if not current_user.is_anonymous and 'nochat' not in current_user.prefs:
+    <div id="chpop" style="height: 1.65em">
+      <div id="chtitle" hid="true"><a href="/chat">Chat</a></div>
+      <div id="chcont"></div>
+      <div id="chbott" style="display: none"><input type="text" id="chsend" maxlength="250" placeholder="Type here"/></div>
+    </div>
+    @end
   @end
+  @chat()
   <script type="text/javascript">
     window.wsserver = '@{config.WEBSOCKET_SERVER!!s}';
     window.chat = @{('nochat' not in current_user.prefs) and 'true' or 'false'};

@@ -351,6 +351,9 @@ body.dank .th-l-fill {animation: rb2 1s infinite; }
 @keyframes rb{20%{stroke: red;}40%{stroke: yellow;}60%{stroke: green;}80%{stroke: blue;}100%{stroke: orange;}}
 
 /* chat */
+body.dark #chbott-fixed #chsend{
+  border: 1px solid #333;
+}
 body.dark #chtitle:hover{
   color: #888;
   background: #000;

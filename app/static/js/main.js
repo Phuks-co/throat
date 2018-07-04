@@ -285,7 +285,7 @@ u.ready(function(){
   }
  })
   // chat
-  if(document.getElementById('chpop')){
+  if(document.getElementById('chcont')){
     socket.emit('subscribe', {target: 'chat'});
     socket.emit('getchatbacklog');
   }

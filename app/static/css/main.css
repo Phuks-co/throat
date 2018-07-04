@@ -1562,6 +1562,18 @@ table td {
 /* /TABLE STYLES */
 
 /* chat */
+.bigchat{height: 75vh;}
+
+#fixedchat{
+  height: 70vh;
+}
+
+#chbott-fixed{
+  margin-top: .3em;
+} 
+#chbott-fixed #chsend{
+  border: 1px solid;
+}
 #chpop{
   -webkit-box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.75);
   -moz-box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.75);
@@ -1595,13 +1607,17 @@ table td {
 }
 #chtitle{
   background: #d94f00;
-  color: #fff;
   font-size: smaller;
   height: 1.8em;
   padding-top: .2em;
   padding-left: .5em;
   cursor: pointer;
 }
+
+#chtitle a{
+  color: #fff;
+}
+
 #chtitle:hover{
   background: #b74500;
 }

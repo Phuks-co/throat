@@ -1140,6 +1140,12 @@ def submit(ptype, sub):
         return render_template('createpost.html', txtpostform=txtpostform)
 
 
+@app.route('/chat')
+@login_required
+def chat():
+    return engine.get_template('chat.html').render({'subOfTheDay': misc.getSubOfTheDay(), 'changeLog': misc.getChangelog()})
+
+
 @app.route("/recover")
 def password_recovery():
     """ Endpoint for the registration form """
