@@ -414,3 +414,7 @@ body.dark #hiddensubs{
 body.dark #hiddensubs li:hover{
   background-color: #2b2b2b;
 }
+
+body.dark thead a{
+  color: #231411
+}

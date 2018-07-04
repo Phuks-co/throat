@@ -289,74 +289,66 @@ def view_user_uploads(page):
     return render_template('uploads.html', page=page, uploads=c.fetchall())
 
 
-@app.route("/subs", defaults={'page': 1})
-@app.route("/subs/<int:page>")
-def view_subs(page):
+@app.route("/subs", defaults={'page': 1, 'sort': 'name_asc'})
+@app.route("/subs/<sort>", defaults={'page': 1})
+@app.route("/subs/<int:page>", defaults={'sort': 'name_asc'})
+@app.route("/subs/<int:page>/<sort>")
+def view_subs(page, sort):
     """ Here we can view available subs """
     c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
     c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
+    
+    # sorts...
+    if sort == 'name_desc':
+        c = c.order_by(Sub.name.desc())
+    elif sort == 'name_asc':
+        c = c.order_by(Sub.name.asc())
+    elif sort == 'posts_desc':
+        c = c.order_by(Sub.posts.desc())
+    elif sort == 'posts_asc':
+        c = c.order_by(Sub.posts.asc())
+    elif sort == 'subs_desc':
+        c = c.order_by(Sub.subscribers.desc())
+    elif sort == 'subs_asc':
+        c = c.order_by(Sub.subscribers.asc())
+    else:
+        return redirect(url_for('view_subs', page=page, sort='name_asc'))
 
-    c = c.order_by(Sub.name.asc()).paginate(page, 50).dicts()
-    return render_template('subs.html', page=page, subs=c,
-                           nav='view_subs')
+    c = c.paginate(page, 50).dicts()
+    cp_uri = '/subs/' + str(page)
+    return render_template('subs.html', page=page, subs=c, nav='view_subs', sort=sort, cp_uri=cp_uri)
 
 
-@app.route("/subs/search/<term>", defaults={'page': 1})
-@app.route("/subs/search/<term>/<int:page>")
-def subs_search(page, term):
+@app.route("/subs/search/<term>", defaults={'page': 1, 'sort': 'name_asc'})
+@app.route("/subs/search/<term>/<sort>", defaults={'page': 1})
+@app.route("/subs/search/<term>/<int:page>", defaults={'sort': 'name_asc'})
+@app.route("/subs/search/<term>/<int:page>/<sort>")
+def subs_search(page, term, sort):
     """ The subs index page, with basic title search """
     term = re.sub(r'[^A-Za-z0-9\-_]+', '', term)
     c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
     c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
 
     c = c.where(Sub.name.contains(term))
-    c = c.order_by(Sub.name.asc()).paginate(page, 50).dicts()
-    return render_template('subs.html', page=page, subs=c,
-                           nav='subs_search', term=term)
 
-
-@app.route("/subs/subscribersasc", defaults={'page': 1})
-@app.route("/subs/subscribersasc/<int:page>")
-def subs_subscriber_sort_a(page):
-    """ The subs index page, sorted by subscriber count asc """
-    c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
-    c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
-    c = c.order_by(Sub.subscribers.asc()).paginate(page, 50).dicts()
-    return render_template('subs.html', page=page, subs=c,
-                           nav='subs_subscriber_sort_a')
-
-
-@app.route("/subs/subscribersdesc", defaults={'page': 1})
-@app.route("/subs/subscribersdesc/<int:page>")
-def subs_subscriber_sort_d(page):
-    """ The subs index page, sorted by subscriber count desc """
-    c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
-    c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
-    c = c.order_by(Sub.subscribers.desc()).paginate(page, 50).dicts()
-    return render_template('subs.html', page=page, subs=c,
-                           nav='subs_subscriber_sort_d')
-
-
-@app.route("/subs/postsasc", defaults={'page': 1})
-@app.route("/subs/postsasc/<int:page>")
-def subs_posts_sort_a(page):
-    """ The subs index page, sorted by post count asc """
-    c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
-    c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
-    c = c.order_by(Sub.posts.asc()).paginate(page, 50).dicts()
-    return render_template('subs.html', page=page, subs=c,
-                           nav='subs_posts_sort_a')
-
-
-@app.route("/subs/postsdesc", defaults={'page': 1})
-@app.route("/subs/postsdesc/<int:page>")
-def subs_posts_sort_d(page):
-    """ The subs index page, sorted by post count desc """
-    c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
-    c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
-    c = c.order_by(Sub.posts.desc()).paginate(page, 50).dicts()
-    return render_template('subs.html', page=page, subs=c,
-                           nav='subs_posts_sort_d')
+    # sorts...
+    if sort == 'name_desc':
+        c = c.order_by(Sub.name.desc())
+    elif sort == 'name_asc':
+        c = c.order_by(Sub.name.asc())
+    elif sort == 'posts_desc':
+        c = c.order_by(Sub.posts.desc())
+    elif sort == 'posts_asc':
+        c = c.order_by(Sub.posts.asc())
+    elif sort == 'subs_desc':
+        c = c.order_by(Sub.subscribers.desc())
+    elif sort == 'subs_asc':
+        c = c.order_by(Sub.subscribers.asc())
+    else:
+        return redirect(url_for('view_subs', page=page, sort='name_asc'))
+    c = c.paginate(page, 50).dicts()
+    cp_uri = '/subs/search/' + term + '/' + str(page)
+    return render_template('subs.html', page=page, subs=c, nav='subs_search', term=term, sort=sort, cp_uri=cp_uri)
 
 
 @app.route("/welcome")

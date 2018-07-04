@@ -15,16 +15,10 @@
 <div>
   <form class="pure-g search" action="{{ url_for('do.search', stype='subs') }}" method="post">
     <div class="icon" data-icon="search"> </div>
-    <input name="term" placeholder="Search sub name..." type="search" class="pure-u-1">
+    <input name="term" placeholder="Search sub name..." type="search" class="pure-u-1" value="{{term}}">
   </form>
 </div>
 <hr>
-<h3 class="center">Browse by</h3>
-<a href="{{url_for('view_subs')}}" class="sbm-post pure-button">Sub name</a>
-<a href="{{url_for('subs_posts_sort_a')}}" class="sbm-post pure-button">Post count (asc)</a>
-<a href="{{url_for('subs_posts_sort_d')}}" class="sbm-post pure-button">Post count (desc)</a>
-<a href="{{url_for('subs_subscriber_sort_a')}}" class="sbm-post pure-button">Subscriber count (asc)</a>
-<a href="{{url_for('subs_subscriber_sort_d')}}" class="sbm-post pure-button">Subscriber count (desc)</a>
 {{ super() }}
 {% endblock %}
 
@@ -36,10 +30,34 @@
     <table class="sortable pure-table" >
       <thead>
         <tr>
-          <th>Sub Name</th>
+          <th>
+            {% if sort == 'name_asc' %}
+              <a href="{{cp_uri}}/name_desc">Sub Name <span class="tx-icon" data-icon="downvote"></span></a>
+            {%elif sort == 'name_desc' %}
+              <a href="{{cp_uri}}/name_asc">Sub Name <span class="tx-icon" data-icon="upvote"></span></a>
+            {%else%}
+              <a href="{{cp_uri}}/name_asc">Sub Name <span class="tx-icon" data-icon="updown"></span></a>
+            {%endif %}
+            </th>
           <th>Created</th>
-          <th>Subscribe</th>
-          <th>Posts</th>
+          <th>
+            {% if sort == 'subs_asc' %}
+              <a href="{{cp_uri}}/subs_desc">Subscribers <span class="tx-icon" data-icon="downvote"></span></a>
+            {%elif sort == 'subs_desc' %}
+              <a href="{{cp_uri}}/subs_asc">Subscribers <span class="tx-icon" data-icon="upvote"></span></a>
+            {%else%}
+            <a href="{{cp_uri}}/subs_desc">Subscribers <span class="i-icon" data-icon="updown"></span></a>
+            {%endif %}
+          </th>
+          <th>
+            {% if sort == 'posts_asc' %}
+              <a href="{{cp_uri}}/posts_desc">Posts <span class="tx-icon" data-icon="downvote"></span></a>
+            {%elif sort == 'posts_desc' %}
+              <a href="{{cp_uri}}/posts_asc">Posts <span class="tx-icon" data-icon="upvote"></span></a>
+            {%else%}
+              <a href="{{cp_uri}}/posts_desc">Posts <span class="i-icon" data-icon="updown"></span></a>
+            {%endif %}
+          </th>
         </tr>
       </thead>
       <tbody>

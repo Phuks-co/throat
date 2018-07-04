@@ -32,6 +32,7 @@ var Icons = {
 
   upvote: require('../svg/up.svg'),
   downvote: require('../svg/down.svg'),
+  updown: require('../svg/updown.svg'),
 
   search: require('../svg/search.svg'),
 
@@ -60,6 +61,7 @@ var Icons = {
   edit: require('../svg/edit.svg'),
 
   down: require('../svg/caret-down.svg'),
+  up: require('../svg/caret-up.svg'),
 
   rendericons: rendericons,
 };
