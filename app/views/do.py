@@ -34,7 +34,7 @@ from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..misc import cache, sendMail, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata
-from ..models import SubPostVote, SubPostCommentVote, UserMetadata
+from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair
 
 do = Blueprint('do', __name__)
 
@@ -1551,17 +1551,22 @@ def delete_flair(sub):
 @login_required
 def create_flair(sub):
     """ Creates a new flair (from edit flair page) """
-    sub = db.get_sub_from_name(sub)
-    if not sub:
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
         abort(404)
 
-    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
+    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
         abort(403)
+
     form = CreateSubFlair()
     if form.validate():
-        db.uquery('INSERT INTO `sub_flair` (`sid`, `text`) VALUES (%s, %s)',
-                  (sub['sid'], form.text.data))
-        return json.dumps({'status': 'ok'})
+        allowed_flairs = re.compile("^[a-zA-Z0-9_ -]+$")
+        if not allowed_flairs.match(form.text.data):
+            return jsonify(status='error', error=['Flair has invalid characters'])
+
+        SubFlair.create(sid=sub.sid, text=form.text.data)
+        return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 

@@ -44,14 +44,14 @@ class EditCommentForm(FlaskForm):
 class CreateSubFlair(FlaskForm):
     """ Creates a flair """
     text = StringField('Flair text', validators=[DataRequired(),
-                                                 Length(max=64)])
+                                                 Length(max=32)])
 
 
 class EditSubFlair(FlaskForm):
     """ Edits ONE flair from a sub """
     flair = HiddenField()
     text = StringField('Flair text', validators=[DataRequired(),
-                                                 Length(max=64)])
+                                                 Length(max=22)])
 
 
 class DeleteSubFlair(FlaskForm):
