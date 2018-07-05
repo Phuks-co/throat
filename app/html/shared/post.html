@@ -37,12 +37,12 @@
         <span class="postflair">@{post['flair']!!e}</span> \
         @end
         @if post['link'] == None:
-          <a @{('exlinks' in current_user.prefs) and 'target="_blank" ' or ''}href="@{conf['SUB_PREFIX']}/@{post['sub']}/@{post['pid']!!s}" class="title">@{post['title']!!e}</a> \
+          <a href="@{conf['SUB_PREFIX']}/@{post['sub']}/@{post['pid']!!s}" class="title">@{post['title']!!e}</a> \
         @else:
           @if post['link'].startswith('http:'):
             <span title="not https" class="p-icon" data-icon="exclaim"></span> \
           @end
-          <a href="@{post['link']!!e}" class="title">@{post['title']!!e}</a> <a href="/domain/@{func.getDomain(post['link'])!!e}" class="domain">(@{func.getDomain(post['link'])!!e})</a>
+          <a @{('exlinks' in current_user.prefs) and 'target="_blank" ' or ''}href="@{post['link']!!e}" class="title">@{post['title']!!e}</a> <a href="/domain/@{func.getDomain(post['link'])!!e}" class="domain">(@{func.getDomain(post['link'])!!e})</a>
         @end
       </div>
       <div class="author">
