@@ -12,7 +12,11 @@
         @end
       </div>
       <div class="thcontainer">
-        <a href="@{conf['SUB_PREFIX']}/@{post['sub']}/@{post['pid']!!s}" class="title">
+        @if post['link'] == None:
+          <a href="@{conf['SUB_PREFIX']}/@{post['sub']}/@{post['pid']!!s}" class="title">
+        @else:
+          <a @{('exlinks' in current_user.prefs) and 'target="_blank" ' or ''}href="@{post['link']!!e}" class="title">
+        @end
           <div class="thumbnail">
             @if post['thumbnail'] != '' and post['link'] != None:
               <img alt="Thumbnail" src="@{config.THUMBNAIL_HOST}@{post['thumbnail']}"/>
