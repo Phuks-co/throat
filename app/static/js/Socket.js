@@ -12,6 +12,8 @@ const socket = io('//' + window.wsserver + '/snt', {transports: ['websocket'], u
 function updateNotifications(count){
   var title = document.getElementsByTagName('title')[0].innerHTML.split('\n');
   title = title[title.length-1]
+  var doc = new DOMParser().parseFromString(title, "text/html");
+  title = doc.documentElement.textContent;
   if(count == 0){
     document.title = '\n' + title;
     document.getElementById('mailcount').innerHTML = '';
