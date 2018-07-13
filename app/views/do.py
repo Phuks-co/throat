@@ -195,7 +195,7 @@ def create_sub():
 
             if misc.moddedSubCount(current_user.uid) >= 20:
                 return jsonify(status='error', error=['You cannot mod more than 20 subs.'])
-                
+
             if misc.moddedSubCount(current_user.uid) >= (level - 1):
                 return jsonify(status='error', error=['You cannot mod more than {0} subs. Try leveling up your account'.format(level - 1)])
 
@@ -1561,7 +1561,7 @@ def create_flair(sub):
 
     form = CreateSubFlair()
     if form.validate():
-        allowed_flairs = re.compile("^[a-zA-Z0-9_ -]+$")
+        allowed_flairs = re.compile("^[a-zA-Z0-9._ -]+$")
         if not allowed_flairs.match(form.text.data):
             return jsonify(status='error', error=['Flair has invalid characters'])
 
@@ -2175,7 +2175,7 @@ def edit_top_bar():
     form = DummyForm()
     if not form.validate():
         return jsonify(status='error', error='no CSRF')
-    
+
     data = request.get_json()
     if not data.get('sids'):
         return jsonify(status='error')
@@ -2186,7 +2186,7 @@ def edit_top_bar():
             val = uuid.UUID(i, version=4)
         except ValueError:
             return jsonify(status='error')
-        
+
     # If all the sids are good, we do the thing.
     i = 0
     for k in data.get('sids'):
@@ -2196,5 +2196,5 @@ def edit_top_bar():
         except SubSubscriber.DoesNotExist:
             print('error')
             pass  # TODO: Add these as status=4 SubSubscriber (after implementing some way to delete those)
-    
+
     return jsonify(status='ok')
