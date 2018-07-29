@@ -2220,7 +2220,7 @@ def admin_undo_votes(uid):
     usr = {}
 
     for v in post_v:
-        post = SubPost.select(SubPost.uid, SubPost.score).where(SubPost.pid == v.pid_id).get()
+        post = SubPost.select(SubPost.pid, SubPost.uid, SubPost.score).where(SubPost.pid == v.pid_id).get()
         if not usr.get(post.uid_id):
             usr[post.uid_id] = User.select(User.uid, User.score).where(User.uid == post.uid_id).get()
         tgus = usr[post.uid_id]
@@ -2230,7 +2230,6 @@ def admin_undo_votes(uid):
         post.save()
         tgus.save()
         v.delete_instance()
-    
     for v in comm_v:
         comm = SubPostComment.select(SubPostComment.cid, SubPostComment.score, SubPostComment.uid).where(SubPostComment.cid == v.cid).get()
         if not usr.get(comm.uid_id):
