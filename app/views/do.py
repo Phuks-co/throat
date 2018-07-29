@@ -2221,9 +2221,9 @@ def admin_undo_votes(uid):
 
     for v in post_v:
         post = SubPost.select(SubPost.uid, SubPost.score).where(SubPost.pid == v.pid_id).get()
-        if not usr.get(v.uid_id):
-            usr[v.uid_id] = User.select(User.uid, User.score).where(User.uid == post.uid_id).get()
-        tgus = usr[v.uid_id]
+        if not usr.get(post.uid_id):
+            usr[post.uid_id] = User.select(User.uid, User.score).where(User.uid == post.uid_id).get()
+        tgus = usr[post.uid_id]
         post.score -= 1 if v.positive else -1
         tgus.score -= 1 if v.positive else -1
         user.given -= 1 if v.positive else -1
@@ -2233,9 +2233,9 @@ def admin_undo_votes(uid):
     
     for v in comm_v:
         comm = SubPostComment.select(SubPostComment.cid, SubPostComment.score, SubPostComment.uid).where(SubPostComment.cid == v.cid).get()
-        if not usr.get(v.uid_id):
-            usr[v.uid_id] = User.select(User.uid, User.score).where(User.uid == comm.uid_id).get()
-        tgus = usr[v.uid_id]
+        if not usr.get(comm.uid_id):
+            usr[comm.uid_id] = User.select(User.uid, User.score).where(User.uid == comm.uid_id).get()
+        tgus = usr[comm.uid_id]
         if not comm.score:
             comm.score = 0
         else:
