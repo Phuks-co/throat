@@ -3,13 +3,17 @@
 
 {% block sidebar %}
 {{ super() }}
-<hr>
 {% if not user.status == 10 %}
   {% if current_user.is_admin() and user.status == 0 and user.name != current_user.name %}
   <form  method="POST" data-reload="true" id="banuser" action="{{url_for('do.ban_user', username=user.name)}}">
     {{form.DummyForm().csrf_token()}}
     <a href="javascript:{}" onclick="document.getElementById('banuser').submit();" class="sbm-post pure-button pure-button-primary">Ban user</a>
   </form>
+  <form  method="POST" data-reload="true" id="wipevotes" action="{{url_for('do.admin_undo_votes', uid=user.uid)}}">
+    {{form.DummyForm().csrf_token()}}
+    <a href="javascript:{}" onclick="document.getElementById('wipevotes').submit();" class="sbm-post pure-button pure-button-primary">Remove votes</a>
+  </form>
+  <hr>
   {% endif %}
   {% if user.uid == session['user_id'] %}
     <a href="{{url_for('edit_user', user=user.name)}}" class="sbm-post pure-button">Edit user info</a>

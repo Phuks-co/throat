@@ -2198,3 +2198,52 @@ def edit_top_bar():
             pass  # TODO: Add these as status=4 SubSubscriber (after implementing some way to delete those)
 
     return jsonify(status='ok')
+
+
+@do.route('/do/admin/undo_votes/<uid>', methods=['POST'])
+@login_required
+def admin_undo_votes(uid):
+    if not current_user.admin:
+        abort(403)
+    
+    form = DummyForm()
+    if not form.validate():
+        return redirect(url_for('view_user', user=username))
+    
+    try:
+        user = User.get(User.uid == uid)
+    except User.DoesNotExist:
+        return jsonify(status='error', error='User does not exist')
+
+    post_v = SubPostVote.select().where(SubPostVote.uid == user.uid)
+    comm_v = SubPostCommentVote.select().where(SubPostCommentVote.uid == user.uid)
+    usr = {}
+
+    for v in post_v:
+        post = SubPost.select(SubPost.uid, SubPost.score).where(SubPost.pid == v.pid_id).get()
+        if not usr.get(v.uid_id):
+            usr[v.uid_id] = User.select(User.uid, User.score).where(User.uid == post.uid_id).get()
+        tgus = usr[v.uid_id]
+        post.score -= 1 if v.positive else -1
+        tgus.score -= 1 if v.positive else -1
+        user.given -= 1 if v.positive else -1
+        post.save()
+        tgus.save()
+        v.delete_instance()
+    
+    for v in comm_v:
+        comm = SubPostComment.select(SubPostComment.cid, SubPostComment.score, SubPostComment.uid).where(SubPostComment.cid == v.cid).get()
+        if not usr.get(v.uid_id):
+            usr[v.uid_id] = User.select(User.uid, User.score).where(User.uid == comm.uid_id).get()
+        tgus = usr[v.uid_id]
+        if not comm.score:
+            comm.score = 0
+        else:
+            comm.score -= 1 if v.positive else -1
+        tgus.score -= 1 if v.positive else -1
+        user.given -= 1 if v.positive else -1
+        comm.save()
+        tgus.save()
+        v.delete_instance()
+    user.save()
+    return redirect(url_for('view_user', user=user.name))
