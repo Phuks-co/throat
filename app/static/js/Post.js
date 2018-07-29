@@ -177,6 +177,7 @@ u.addEventForChild(document, 'click', '.edit-post', function(e, qelem){
   elem.innerHTML = '<div id="editpost" class="cwrap markdown-editor"><textarea style="height: ' + h + 'px">' + document.getElementById('post-source').innerHTML + '</textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-editpost" data-pid="' + qelem.getAttribute('data-pid') +'">Save changes</button> <button class="pure-button button-xsmall btn-preview" data-pvid="editpost" >Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span><div class="cpreview-content"></div></div>';
   qelem.replaceWith(back);
   initializeEditor(document.getElementById('editpost'));
+  document.querySelector('#editpost textarea').focus()
 });
 
 
@@ -227,6 +228,7 @@ u.addEventForChild(document, 'click', '.edit-comment', function(e, qelem){
   cNode.appendChild(back)
   qelem.parentNode.replaceChild(cNode,qelem );
   initializeEditor(document.getElementById('ecomm-'+cid));
+  document.querySelector('#ecomm-'+cid+' textarea').focus()
 });
 
 u.addEventForChild(document, 'click', '.btn-editpost', function(e, qelem){
@@ -414,6 +416,8 @@ u.addEventForChild(document, 'click', '.reply-comment', function(e, qelem){
   lm.innerHTML ='<div class="cwrap markdown-editor" id="rcomm-'+cid+'"><textarea class="exalert" style="height: 8em;"></textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-postcomment" data-pid="'+pid+'" data-cid="'+cid+'">Post comment</button> <button class="pure-button button-xsmall btn-preview" data-pvid="rcomm-'+cid+'">Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span><div class="cpreview-content"></div></div>';
   pN.parentNode.parentNode.appendChild(lm);
   initializeEditor(document.querySelector('#rcomm-' + cid));
+  document.querySelector('#rcomm-'+cid+' textarea').focus()
+
 
 });
 

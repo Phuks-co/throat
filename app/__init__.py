@@ -819,13 +819,13 @@ def admin_area():
 @login_required
 def admin_users(page):
     """ WIP: View users. """
-    if current_user.is_admin():
-        users = db.query('SELECT * FROM `user` ORDER BY `joindate` DESC '
-                         'LIMIT 50 OFFSET %s', (((page - 1) * 50),)).fetchall()
-        return render_template('admin/users.html', users=users, page=page,
-                               admin_route='admin_users')
-    else:
+    if not current_user.is_admin():
         abort(404)
+    users = db.query('SELECT * FROM `user` ORDER BY `joindate` DESC '
+                        'LIMIT 50 OFFSET %s', (((page - 1) * 50),)).fetchall()
+    return render_template('admin/users.html', users=users, page=page,
+                            admin_route='admin_users')
+    
 
 
 @app.route("/admin/admins")
