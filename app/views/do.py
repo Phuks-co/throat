@@ -193,7 +193,7 @@ def create_sub():
             if (level <= 1) and (not current_user.admin):
                 return jsonify(status='error', error=['You must be at least level 2.'])
 
-            if misc.moddedSubCount(current_user.uid) >= 20:
+            if misc.moddedSubCount(current_user.uid) >= 20 and (not current_user.admin):
                 return jsonify(status='error', error=['You cannot mod more than 20 subs.'])
 
             if misc.moddedSubCount(current_user.uid) >= (level - 1) and (not current_user.admin):
