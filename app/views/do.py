@@ -196,7 +196,7 @@ def create_sub():
             if misc.moddedSubCount(current_user.uid) >= 20:
                 return jsonify(status='error', error=['You cannot mod more than 20 subs.'])
 
-            if misc.moddedSubCount(current_user.uid) >= (level - 1):
+            if misc.moddedSubCount(current_user.uid) >= (level - 1) and (not current_user.admin):
                 return jsonify(status='error', error=['You cannot mod more than {0} subs. Try leveling up your account'.format(level - 1)])
 
         sub = Sub.create(sid=uuid.uuid4(), name=form.subname.data, title=form.title.data)
