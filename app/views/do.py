@@ -190,7 +190,7 @@ def create_sub():
 
         level = misc.get_user_level(current_user.uid)[0]
         if not getattr(config, 'TESTING', False):
-            if level <= 1:
+            if (level <= 1) and (not current_user.admin):
                 return jsonify(status='error', error=['You must be at least level 2.'])
 
             if misc.moddedSubCount(current_user.uid) >= 20:
