@@ -99,6 +99,8 @@ class SiteUser(object):
             self.admin = False
 
         self.canupload = True if ('canupload' in self.prefs) or (self.admin) else False
+        if getattr(config, 'ALLOW_UPLOADS', False):
+            self.canupload = True
 
     def __repr__(self):
         return "<SiteUser {0}>".format(self.uid)
