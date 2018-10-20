@@ -81,13 +81,23 @@ u.addEventForChild(document, 'click', '.expando', function(e, ematch){
           extra += 'list=' + getParameterByName('list', link) + '&';
         }
         if(getParameterByName('t', link)){
-          var time_regex = /(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/;
+          var time_regex = /(?:(\d+)d)?(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/;
           var start = getParameterByName('t', link);
           var m = null;
           if ((m = time_regex.exec(start)) !== null) {
-            var time = parseInt(m[1]) * 3600 + parseInt(m[2]) * 60 + parseInt(m[3]);
-            extra += 'start=' + time; 
-          }else{
+            if (!m[1] && !m[2] && !m[3] && !m[4]) {
+              start = start.replace(/\D/g,'');
+              extra += 'start=' + start;
+            }else{
+              var i;
+              for (i = 0; i < m.length; i++) {
+                m[i] = (m[i] === undefined) ? 0 : m[i];
+              }
+              var time = parseInt(m[1]) * 86400 + parseInt(m[2]) * 3600 + parseInt(m[3]) * 60 + parseInt(m[4]);
+              extra += 'start=' + time;
+            }
+          }else{ // not d h m s letters in t
+            start = start.replace(/\D/g,'');
             extra += 'start=' + start;
           }
         }
