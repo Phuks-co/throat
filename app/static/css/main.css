@@ -1714,7 +1714,7 @@ table td {
 
 /* admin */
 tr.deletedrow, .deletedpost {
-    background: hsla(0, 100%, 51%, 0.2);
+    background: hsla(0, 100%, 51%, 0.2)!important;
 }
 
 a[href="#spoiler"]{
