@@ -965,7 +965,7 @@ span.hasmail {
   top: 2em;
   right: 0;
   z-index: 1000;
-  display: none; 
+  display: none;
   float: right;
   min-width: 160px;
   width: auto;
@@ -1570,7 +1570,7 @@ table td {
 
 #chbott-fixed{
   margin-top: .3em;
-} 
+}
 #chbott-fixed #chsend{
   border: 1px solid;
 }
@@ -1713,7 +1713,7 @@ table td {
 }
 
 /* admin */
-tr.deletedrow {
+tr.deletedrow, .deletedpost {
     background: hsla(0, 100%, 51%, 0.2);
 }
 

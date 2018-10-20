@@ -1,4 +1,4 @@
-<div pid="{{post.pid}}" class="post">
+<div pid="{{post.pid}}" class="{% if post.deleted != 0 %}deletedpost {% endif %}post">
     <div class="misctainer">
       <div class="votebuttons">
         {% if post.userstatus != 10 and (datetime.datetime.utcnow() - post.posted) < datetime.timedelta(days=60) %}

@@ -297,7 +297,7 @@ def view_subs(page, sort):
     """ Here we can view available subs """
     c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
     c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
-    
+
     # sorts...
     if sort == 'name_desc':
         c = c.order_by(Sub.name.desc())
@@ -552,7 +552,11 @@ def view_user_posts(user, page):
     if not user or user['status'] == 10:
         abort(404)
 
-    posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(User.uid == user['uid']),
+    if current_user.is_admin():
+        posts = misc.getPostList(misc.postListQueryBase(adminDetail=True).where(User.uid == user['uid']),
+                             'new', page).dicts()
+    else:
+        posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(User.uid == user['uid']),
                              'new', page).dicts()
     return render_template('userposts.html', page=page, sort_type='view_user_posts',
                            posts=posts, user=user)
@@ -825,7 +829,7 @@ def admin_users(page):
                         'LIMIT 50 OFFSET %s', (((page - 1) * 50),)).fetchall()
     return render_template('admin/users.html', users=users, page=page,
                             admin_route='admin_users')
-    
+
 
 
 @app.route("/admin/admins")
@@ -1044,7 +1048,7 @@ def register():
             return render_template('register.html', error="Username is not available.")
         except User.DoesNotExist:
             pass
-        
+
         if form.email.data:
             try:
                 User.get(User.email == form.email.data)
