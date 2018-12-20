@@ -1617,6 +1617,8 @@ def upload_file(max_size=16580608):
         extension = '.png'
     elif mtype == 'image/gif':
         extension = '.gif'
+    elif mtype == 'video/mp4':
+        extension = '.mp4'
     else:
         return False
     ufile.seek(0)
@@ -1637,7 +1639,7 @@ def upload_file(max_size=16580608):
             os.remove(os.path.join(config.STORAGE, f_name))
             return False
         # remove metadata
-        if mtype != 'image/gif':  # Apparently we cannot write to gif images
+        if mtype not in ('image/gif', 'video/mp4'):  # Apparently we cannot write to gif images
             md = pyexiv2.ImageMetadata(os.path.join(config.STORAGE, f_name))
             md.read()
             for k in (md.exif_keys + md.iptc_keys + md.xmp_keys):
