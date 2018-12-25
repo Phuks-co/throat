@@ -50,7 +50,7 @@ function imgurID(url) {
 }
 
 function instaudioID(url) {
-    var match = url.match(/^http(?:s?):\/\/instaud\.io\/(\d+)/)
+    var match = url.match(/^http(?:s?):\/\/instaud\.io\/(.+)/)
     if (match){
         return match[1];
     }
