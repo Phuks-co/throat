@@ -127,7 +127,7 @@ u.addEventForChild(document, 'click', '.expando', function(e, ematch){
         vid.src = 'https://instaud.io/_/' + instaudioID(link) + '.mp3';
         vid.preload = 'auto';
         vid.autoplay = true;
-        vid.loop = true;
+        vid.loop = false;
         vid.controls = true;
         vid.innerHTML = document.createElement("source").src = 'https://instaud.io/_/' + instaudioID(link);
         expando.querySelector('.expandotxt').appendChild(vid);
