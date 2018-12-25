@@ -62,7 +62,7 @@ u.sub('#ptoggle', 'click', function(e){
   this.innerHTML = 'Change to ' + oval + ' post';
   document.getElementById('ptype').innerHTML = val;
   if(val=='text'){
-    if(document.getElementById('link').getAttribute('required')){
+    if(document.getElementById('link').getAttribute('required') === ''){
       window.rReq = true;
       document.getElementById('link').removeAttribute('required');
     }
