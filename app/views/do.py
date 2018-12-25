@@ -1143,6 +1143,9 @@ def remove_mod2(sub, user):
 
             db.create_sublog(sub['sid'], 6, current_user.get_username() +
                              ' removed ' + user['name'] + ' from the mod team')
+            if not current_user.is_topmod(sub['sid']) and current_user.is_admin():
+                # admin override. add to sitelog
+                db.create_sitelog(4, current_user.name + " removed " + user['name'] + " from /s/" + sub['name'] + "'s mod team.")
             caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2', _all=True)
             return json.dumps({'status': 'ok', 'msg': 'user demodded'})
         else:
