@@ -31,7 +31,11 @@
               {% if message.read %}
                 <a class="read">read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
               {% else %}
-                <a class="readmsg" data-mid="{{message.mid}}">mark as read</a>
+                {% if message.mtype == 8 %}
+                  <a class="" data-mid="{{message.mid}}">new</a>
+                {%else%}
+                  <a class="readmsg" data-mid="{{message.mid}}">mark as read</a>
+                {%endif%}
               {% endif %}
               {% if message.username %}
               <a href="#msg-form" data-mid="{{message.mid}}" data-replyto='{{message.username}}' data-replytitle='{{message.subject}}' class="replymsg">reply</a>

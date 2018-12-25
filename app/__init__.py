@@ -647,6 +647,8 @@ def view_messages(page):
 @login_required
 def view_mentions(page):
     """ View user name mentions """
+    db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
+              '`receivedby`=%s AND `mtype`=8', (datetime.datetime.utcnow(), current_user.uid))
     msgs = misc.getMentionsIndex(page)
     return render_template('messages/messages.html', page=page,
                            messages=msgs, box_name="Mentions", boxID="8",
