@@ -25,7 +25,7 @@ def connect_db(db=None):
                          db=db,
                          cursorclass=MySQLdb.cursors.DictCursor,
                          use_unicode=True,
-                         charset="utf8")
+                         charset="utf8mb4")
     return rv
 
 

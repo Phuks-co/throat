@@ -1808,6 +1808,7 @@ def upvotecomment(cid, value):
             return jsonify(status='error', error=['Score balance is negative'])
     else:
         abort(403)
+        
     try:
         comment = SubPostComment.get(SubPostComment.cid == cid)
     except SubPostComment.DoesNotExist:
