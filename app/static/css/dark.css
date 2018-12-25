@@ -1,10 +1,10 @@
 /* dark mode styles */
 body.dark .th-l-stroke[stroke="#fff"] {
-    stroke: #cdcdcd;
+    stroke: #ff6d15;
 }
 
 body.dark .th-l-fill[fill="#fff"] {
-    fill: #cdcdcd;
+    fill: #ff6d15;
 }
 
 body.dark code, body.dark pre{
@@ -20,12 +20,20 @@ body.dark .th-toggle .bar{
 }
 
 body.dark {
-  background-color: #0d0d0d;
+  background-color: #0a0a0a;
   color: #7d7d7d;
 }
 
 body.dark a {
-  color: #7b4a3f;
+  color: #526a7d;
+}
+
+body.dark div.author a {
+  color: #ab4409;
+}
+
+body.dark div.author a.authorlink{
+  color: #526a7d;
 }
 
 body.dark .content,
@@ -68,7 +76,7 @@ body.dark .post .domain {
 /* Header */
 
 body.dark .th-navbar {
-  background-color: #0a0a0a;
+  background-color: #000;
   -webkit-box-shadow: 0 3px 5px 0 rgba(0,0,0,0.75);
   -moz-box-shadow: 0 3px 5px 0 rgba(0,0,0,0.75);
   box-shadow: 0 3px 5px 0 rgba(0,0,0,0.75);
@@ -78,7 +86,7 @@ body.dark .th-navbar {
 
 body.dark .th-subbar{
   background-color: #000;
-  border-bottom: 1px solid rgba(171, 68, 9, 0.62);
+  border-bottom: 1px solid #aa4509;
 }
 
 body.dark .th-subbar ul li {
@@ -86,11 +94,11 @@ body.dark .th-subbar ul li {
 }
 
 body.dark .th-subbar a {
-    color: #D25309;
+    color: #ccc;
 }
 
 body.dark .th-subbar a:hover {
-    color: #d17262;
+    color: #ff6d15;
 }
 
 /* Posts */
@@ -191,6 +199,10 @@ body.dark input[type="password"] {
   border-color: #444;
 }
 
+body.dark textarea {
+  background-color: #000;
+}
+
 body.dark{
   color: #666;
 }
@@ -225,6 +237,7 @@ body.dark input#buyamount ~ b {
 /* Sidebar */
 body.dark .sidebar{
   background-color: #0d0d0d;
+  border-left: solid 1px #000;
 }
 
 body.dark .sidebar h4 {
@@ -274,7 +287,7 @@ body.dark .pmessage p.container a.savedmsg {
 }
 
 body.dark .pmessage.post:nth-child(2n) {
-    background-color: #101010;
+    background-color: #0d0d0d;
 }
 
 body.dark .modal-content,
@@ -363,7 +376,7 @@ body.dark #chtitle {
   color: #ccc;
 }
 body.dark #chpop {
-  background: #202020;
+  background: #000;
   border-top: 1px solid #d94f00;
   border-left: 1px solid #d94f00;
 }
@@ -393,7 +406,7 @@ body.dark .cw-items a{
 }
 
 body.dark .motto{
-  color: #cdcdcd;
+  color: #ccc;
 }
 
 body.dark .admin_alert{
@@ -408,11 +421,12 @@ body.dark .admin_alert .btn_link{
 body.dark .editbar path {fill: #d25309;}
 
 body.dark #hiddensubs{
-  background: #111;
+  background: #000;
+  filter: drop-shadow(-20px 20px 18px #000);
 }
 
 body.dark #hiddensubs li:hover{
-  background-color: #2b2b2b;
+  background-color: #0a0a0a;
 }
 
 body.dark thead a{

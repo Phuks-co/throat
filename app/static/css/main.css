@@ -615,7 +615,7 @@ iframe {
 }
 
 .upvoted path{
-  fill: green;
+  fill: #ff6d15;
 }
 
 .downvoted path{
@@ -634,6 +634,7 @@ iframe {
   padding: .15em .2em 0 .2em;
   display: inline-block;
   float: left;
+  margin-right: 8px;
 }
 
 .score{
@@ -716,6 +717,10 @@ a#prevp{
 
 #sortbuttons div {
   justify-content: center;
+}
+
+div#sortbuttons {
+  padding-bottom: 5px;
 }
 
 .links{
@@ -939,7 +944,7 @@ span.mailcount {
   line-height: 1em;
   min-width: 1em;
   border-radius: 1em;
-  background: rgba(106, 102, 93, 0.71);
+  background: #000;
   font-size: small;
   display: inline-block;
   text-align: center;
@@ -982,7 +987,7 @@ span.hasmail {
   box-shadow: 0 6px 12px rgba(0,0,0,0.175);
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
-
+  filter: drop-shadow(-20px 20px 18px #313131);
 
   /*writing-mode: vertical-lr;*/
   flex-flow: column wrap;
@@ -994,7 +999,7 @@ span.hasmail {
 .dropdown-toggle.moremenu path{fill: white;}
 
 #hiddensubs li:hover{
-  background-color: #ddd;
+  background-color: #000;
 }
 
 #hiddensubs li{
@@ -1048,12 +1053,15 @@ span.hasmail {
 .th-subbar ul li.editbar{
   margin: 0;
 }
+
+
 /* /SUB BAR STYLES */
 
 /* SIDEBAR STYLES */
 .sidebar{
   padding: 1em 5px 5px 5px;
   overflow-wrap: break-word;
+  border-left: solid 1px #ccc;
 }
 .sidebar h4{
   color: #1b1b1b;
@@ -1802,3 +1810,10 @@ a[href="#toodamncool"]{
 #subsort{
   list-style: none;
 }
+
+/* imported from PMYA's css */
+div.links a {
+  position: relative;
+  right: 17px;
+}
+
