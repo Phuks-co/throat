@@ -124,12 +124,16 @@ u.addEventForChild(document, 'click', '.expando', function(e, ematch){
         expando.querySelector('.expandotxt').appendChild(img);
       }else if (domain == 'instaud.io') {
         var vid = document.createElement( "audio" );
-        vid.src = 'https://instaud.io/_/' + instaudioID(link) + '.mp3';
+        //vid.src = 'https://instaud.io/_/' + instaudioID(link) + '.mp3';
         vid.preload = 'auto';
         vid.autoplay = true;
         vid.loop = false;
         vid.controls = true;
-        vid.innerHTML = document.createElement("source").src = 'https://instaud.io/_/' + instaudioID(link);
+        var s1 = document.createElement("source");
+        s1.src = 'https://instaud.io/_/' + instaudioID(link) + '.wav'
+        var s2 = document.createElement("source");
+        s2.src = 'https://instaud.io/_/' + instaudioID(link) + '.mp3'
+        vid.innerHTML = s1.outerHTML + s2.outerHTML;
         expando.querySelector('.expandotxt').appendChild(vid);
       }else if (/\.(mp4|webm)$/i.test(link)) {
         var vid = document.createElement( "video" );
