@@ -1225,12 +1225,12 @@ def getSinglePost(pid):
 def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False, adminDetail=False):
     if current_user.is_authenticated and not noDetail:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.deleted, SubPost.score,
-                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair,
+                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
                                SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'), *extra)
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(SubPost)
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.deleted, SubPost.score,
-                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair,
+                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
                                SubPost.comments, User.uid, User.status.alias('userstatus'), *extra)
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
     if not adminDetail:
@@ -1794,3 +1794,25 @@ except FileNotFoundError:
 
 def get_motto():
     return random.choice(MOTTOS)
+
+
+def populate_feed(feed, posts):
+    """ Populates an AtomFeed `feed` with posts """
+    for post in posts:
+        content = "<table><tr>"
+        url = url_for('sub.view_post', sub=post['sub'], pid=post['pid'], _external=True)
+
+        if post['thumbnail']:
+            content += '<td><a href=' + url + '"><img src="' + config.THUMBNAIL_HOST + post['thumbnail'] + '" alt="' + post['title'] + '"/></a></td>'
+        content +=  '<td>Submitted by <a href=/u/' + post['user'] + '>' + post['user'] + '</a><br/>' + our_markdown(post['content'])
+        if post['link']:
+            content += '<a href="' + post['link'] + '">[link]</a> '
+        content += '<a href="' + url + '">[comments]</a></td></tr></table>'
+        feed.add(post['title'], content,
+                 content_type='html',
+                 author=post['user'],
+                 url=url,
+                 updated=post['posted'] if not post['edited'] else post['edited'],
+                 published=post['posted'])
+
+    return feed

@@ -12,8 +12,8 @@ from flask import Flask, render_template, session, redirect, url_for, abort, g
 from flask import request, jsonify
 from flask_login import LoginManager, login_required, current_user, login_user
 from flask_webpack import Webpack
-from feedgen.feed import FeedGenerator
 from wheezy.html.utils import escape_html
+from werkzeug.contrib.atom import AtomFeed
 
 import config
 from .forms import RegistrationForm, LoginForm, LogOutForm
@@ -185,25 +185,14 @@ def home_top(page):
 @app.route("/all/new.rss")
 def all_new_rss():
     """ RSS feed for /all/new """
-    fg = FeedGenerator()
-    fg.title("/all/new")
-    fg.id("/all/new")
-    fg.subtitle("All new posts feed")
-    fg.link(href=url_for('all_new', _external=True))
-    fg.generator("Phuks")
+    feed = AtomFeed('All new posts',
+                    title_type='text',
+                    generator=('Throat', 'https://phuks.co', 1),
+                    feed_url=request.url,
+                    url=request.url_root)
     posts = misc.getPostList(misc.postListQueryBase(), 'new', 1).dicts()
-    for post in posts:
-        fe = fg.add_entry()
-        url = url_for('sub.view_post', sub=post['sub'],
-                      pid=post['pid'],
-                      _external=True)
-        fe.id(url)
-        fe.link({'href': url, 'rel': 'self'})
-        fe.title(post['title'])
-        fe.author({'name': post['user'], 'uri': url_for('view_user', user=post['user'], _external=True)})
-        fe.content("/u/" + post['user'] + " posted on " + url_for('sub.view_sub', sub=post['sub']) + ": " + post['title'])
-
-    return fg.atom_str(pretty=True)
+    
+    return misc.populate_feed(feed, posts).get_response()
 
 
 @app.route("/all/new", defaults={'page': 1})

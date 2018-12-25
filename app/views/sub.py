@@ -1,6 +1,6 @@
-from feedgen.feed import FeedGenerator
-from flask import Blueprint, redirect, url_for, abort, render_template
+from flask import Blueprint, redirect, url_for, abort, render_template, request
 from flask_login import login_required, current_user
+from werkzeug.contrib.atom import AtomFeed
 from ..misc import engine
 from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost
 from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditSubTextPostForm, EditMod2Form
@@ -142,26 +142,15 @@ def sub_new_rss(sub):
     if not sub:
         abort(404)
 
-    fg = FeedGenerator()
-    fg.id("/{}".format(sub['name']))
-    fg.title("/{}".format(sub['name']))
-    fg.subtitle("All new posts for {} feed".format(sub['name']))
-    fg.link(href=url_for('sub.view_sub_new', sub=sub['name'], _external=True))
-    fg.generator("Phuks")
+    feed = AtomFeed('New posts from ' + sub['name'],
+                    title_type='text',
+                    generator=('Throat', 'https://phuks.co', 1),
+                    feed_url=request.url,
+                    url=request.url_root)
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub['sid']),
                              'new', 1).dicts()
-
-    for post in posts:
-        fe = fg.add_entry()
-        url = url_for('sub.view_post', sub=sub['name'],
-                      pid=post['pid'], _external=True)
-        fe.id(url)
-        fe.link({'href': url, 'rel': 'self'})
-        fe.title(post['title'])
-        fe.author({'name': post['user'], 'uri': url_for('view_user', user=post['user'], _external=True)})
-        fe.content("/u/" + post['user'] + " posted on " + url_for('sub.view_sub', sub=post['sub']) + ": " + post['title'])
-
-    return fg.atom_str(pretty=True)
+    
+    return misc.populate_feed(feed, posts).get_response()
 
 
 @sub.route("/<sub>/new", defaults={'page': 1})
