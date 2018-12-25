@@ -107,7 +107,7 @@ body.dark .highlight{
   background-color: rgba(64, 64, 61, 0.35);
 }
 body.dark .post:nth-child(2n) {
-  background-color: #101010;
+  background-color: #0d0d0d;
     -webkit-box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.4);
     -moz-box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.4);
     box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.4);
