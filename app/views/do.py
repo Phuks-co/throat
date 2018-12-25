@@ -154,6 +154,14 @@ def delete_post():
         if (datetime.datetime.utcnow() - post.posted).seconds < 86400:
             socketio.emit('deletion', {'pid': post.pid}, namespace='/snt', room='/all/new')
 
+        # check if the post is an announcement. Unannounce if it is.
+        try:
+            ann = SiteMetadata.select().where(SiteMetadata.key == 'announcement').get()
+            ann.delete_instance()
+            cache.delete_memoized(misc.getAnnouncementPid)
+        except SiteMetadata.DoesNotExist:
+            pass
+
         sub.posts -= 1
         sub.save()
 
