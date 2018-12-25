@@ -19,8 +19,8 @@
         <article class="pmessage post" data-cid="{{message.mlink}}">
           <div class="main">
             <div class="pull left votecomment" style="margin-right: 10px;">
-                <div title="Upvote" class="c-upvote{#if db.get_comment_from_cid(message.mlink).positive == True %} upvoted{%endif#}" data-icon="upvote"></div>
-                <div title="Downvote" class="c-downvote{#if db.get_comment_from_cid(message.mlink).positive == False %} downvoted{%endif#}" data-icon="downvote"></div>
+                <div title="Upvote" class="c-upvote{%if message.positive == True %} upvoted{%endif%}" data-icon="upvote"></div>
+                <div title="Downvote" class="c-downvote{%if message.positive == False %} downvoted{%endif%}" data-icon="downvote"></div>
             </div>
             <p class="title"><a href="{{url_for('view_comment_inbox', cid=message.mlink)}}">{{message.subject}}</a></p>
             <p class="container">{{markdown(db.get_comment_from_cid(message.mlink).content)|safe}}</p>
