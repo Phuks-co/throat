@@ -49,6 +49,13 @@ function imgurID(url) {
 	}
 }
 
+function instaudioID(url) {
+    var match = url.match(/^http(?:s?):\/\/instaud\.io\/(\d+)/)
+    if (match){
+        return match[1];
+    }
+}
+
 function close_expando( pid){
   var k = document.querySelector('div.expando-master[pid="'+pid+'"]')
   k.parentNode.removeChild(k);
@@ -115,6 +122,15 @@ u.addEventForChild(document, 'click', '.expando', function(e, ematch){
         img.src = link;
         img.onclick = function(){close_expando(pid);};
         expando.querySelector('.expandotxt').appendChild(img);
+      }else if (domain == 'instaud.io') {
+        var vid = document.createElement( "audio" );
+        vid.src = 'https://instaud.io/_/' + instaudioID(link) + '.mp3';
+        vid.preload = 'auto';
+        vid.autoplay = true;
+        vid.loop = true;
+        vid.controls = true;
+        vid.innerHTML = document.createElement("source").src = 'https://instaud.io/_/' + instaudioID(link);
+        expando.querySelector('.expandotxt').appendChild(vid);
       }else if (/\.(mp4|webm)$/i.test(link)) {
         var vid = document.createElement( "video" );
         vid.src = link;
