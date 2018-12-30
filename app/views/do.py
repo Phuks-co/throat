@@ -156,7 +156,7 @@ def delete_post():
 
         # check if the post is an announcement. Unannounce if it is.
         try:
-            ann = SiteMetadata.select().where(SiteMetadata.key == 'announcement').get()
+            ann = SiteMetadata.select().where(SiteMetadata.key == 'announcement').where(SiteMetadata.value == post.pid).get()
             ann.delete_instance()
             cache.delete_memoized(misc.getAnnouncementPid)
         except SiteMetadata.DoesNotExist:
