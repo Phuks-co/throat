@@ -77,7 +77,7 @@ u.sub('#ptoggle', 'click', function(e){
   }
 });
 
-u.sub('button.blk,button.unblk,button.sub,button.unsub', 'click', function(e){
+u.sub('button.blk,button.unblk,button.sub,button.unsub,a.unblk', 'click', function(e){
   var sid=this.parentNode.getAttribute('data-sid');
   var act=this.getAttribute('data-ac')
   u.post('/do/' + act + '/' + sid, {},

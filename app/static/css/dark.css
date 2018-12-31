@@ -432,3 +432,11 @@ body.dark #hiddensubs li:hover{
 body.dark thead a{
   color: #231411
 }
+
+body.dark .alldaposts .links a.comments{
+  color: #526a7d;
+}
+
+body.dark .alldaposts .links a{
+  color: #797979;
+}

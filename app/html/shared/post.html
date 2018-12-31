@@ -74,8 +74,11 @@
         on <a href="@{conf['SUB_PREFIX']}/@{post['sub']}">@{post['sub']}</a>
         @end
       </div>
-      <div class="links">
+      <div class="links" data-sid="@{post['sid']!!s}">
         <a class="comments" href="@{conf['SUB_PREFIX']}/@{post['sub']}/@{post['pid']!!s}">@{(post['comments']>0) and 'comments (' + str(post['comments']) +')' or 'comment'}</a>
+        @if not sub:
+          <a data-ac="block" class="unblk">block sub</a>
+        @end
       </div>
     </div>
 </div>

@@ -741,15 +741,25 @@ a.slink{
 .subs{margin-bottom: .6em;}
 .links a{
   position:relative;
-  right:6px;
-  color: #0f5387;
+  right:12px;
   font-weight: 700;
   font-size: 13px;
+  color: #0f5387;
+  
   cursor: pointer;
   -ms-user-select:none;
   -moz-user-select:none;
   -webkit-user-select:none;
   user-select: none;
+  margin-left: 5px;
+}
+
+.alldaposts .links a{
+  color: #999;
+}
+
+.alldaposts .links a.comments{
+  color: #0f5387;
 }
 
 .links li{
@@ -1810,10 +1820,3 @@ a[href="#toodamncool"]{
 #subsort{
   list-style: none;
 }
-
-/* imported from PMYA's css */
-div.links a {
-  position: relative;
-  right: 17px;
-}
-
