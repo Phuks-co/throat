@@ -2218,14 +2218,15 @@ def admin_undo_votes(uid):
     if not current_user.admin:
         abort(403)
     
-    form = DummyForm()
-    if not form.validate():
-        return redirect(url_for('view_user', user=username))
-    
     try:
         user = User.get(User.uid == uid)
     except User.DoesNotExist:
-        return jsonify(status='error', error='User does not exist')
+        return abort(404)
+
+    form = DummyForm()
+    if not form.validate():
+        return redirect(url_for('view_user', user=user.name))
+    
 
     post_v = SubPostVote.select().where(SubPostVote.uid == user.uid)
     comm_v = SubPostCommentVote.select().where(SubPostCommentVote.uid == user.uid)
