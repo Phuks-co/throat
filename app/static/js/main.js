@@ -91,7 +91,8 @@ u.ready(function() {
     })
     console.log(subs);
   })
-  // shitless forms
+
+  // TODO: Get rid of this.
   u.addEventForChild(document, 'submit', '.ajaxform', function(e, target){
     e.preventDefault();
     var button = target.querySelector("[type=submit]");
