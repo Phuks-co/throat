@@ -671,8 +671,7 @@ def create_post():
         socketio.emit('thread',
                       {'addr': addr, 'sub': sub['name'], 'type': form.ptype.data,
                        'user': current_user.name, 'pid': post.pid, 'sid': sub['sid'],
-                       'html': render_template('indexpost.html', nocheck=True,
-                                               post=posts[0])},
+                       'html': engine.get_template('shared/post.html').render({'posts': posts, 'sub': False})},
                       namespace='/snt',
                       room='/all/new')
         if fileid:
