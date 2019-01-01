@@ -4,7 +4,7 @@ from werkzeug.contrib.atom import AtomFeed
 from peewee import fn, JOIN
 from ..misc import engine
 from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption
-from ..models import SubPostPollVote
+from ..models import SubPostPollVote, SubPostMetadata
 from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditSubTextPostForm, EditMod2Form
 from ..forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair, CreateSubFlair
 from .. import database as db
@@ -287,7 +287,7 @@ def view_post(sub, pid, comments=False, highlight=None):
     ksub = db.get_sub_from_sid(post['sid'])
     ncomments = SubPostComment.select().where(SubPostComment.pid == post['pid']).count()
 
-    options, total_votes, has_voted, voted_for = ([], 0, None, None)
+    options, total_votes, has_voted, voted_for, poll_open = ([], 0, None, None, None)
     if post['ptype'] == 3:
         # poll. grab options and votes.
         options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text, fn.Count(SubPostPollVote.id).alias('votecount'))
@@ -303,13 +303,29 @@ def view_post(sub, pid, comments=False, highlight=None):
                 voted_for = u_vote.vid_id
             except SubPostPollVote.DoesNotExist:
                 has_voted = False
+            
+            # Check if the poll is open
+            poll_open = True
+            try:
+                SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closed'))
+                poll_open = False
+            except SubPostMetadata.DoesNotExist:
+                pass
+
+            try:
+                ca = SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closes_time'))
+                if int(ca.value) < time.time():
+                    poll_open = False
+            except SubPostMetadata.DoesNotExist:
+                pass
 
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit, sub=ksub,
                            editlinkpostform=EditSubLinkPostForm(),
                            comments=comments, ncomments=ncomments,
                            editpostflair=editflair, highlight=highlight, 
-                           poll_options=options, votes=total_votes, has_voted=has_voted, voted_for=voted_for)
+                           poll_options=options, votes=total_votes, has_voted=has_voted, voted_for=voted_for,
+                           poll_open=poll_open)
 
 
 @sub.route("/<sub>/<pid>/<cid>")

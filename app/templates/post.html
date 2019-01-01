@@ -208,13 +208,16 @@
   {%endif %}
   {% if post.deleted == 0 and post.ptype == 3%}
     <div class="poll-space">
+      {% if not poll_open %}
+      <p>This poll is now <b>closed</b>.</p>
+      {%endif%}
       {%for opt in poll_options %}
         
         <div class="poll-option" data-oid="{{opt.id}}">
           {{opt.text}}
           <div class="poll-bar">
             <div class="poll-vote">
-              {% if not has_voted and current_user.is_authenticated %}
+              {% if not has_voted and current_user.is_authenticated and poll_open %}
               <form method="POST" action="{{url_for('do.cast_vote', pid=post.pid, oid=opt.id)}}">
                 {{delpostform.csrf_token}} {# Stolen csrf token >_> #}
                 <button type="submit" class="poll-vote-btn pure-button button-xsmall button-secondary" data-oid="{{opt.id}}">Vote</button>
@@ -230,7 +233,7 @@
           </div>
         </div>
       {% endfor %}
-      {% if has_voted and current_user.is_authenticated %}
+      {% if has_voted and current_user.is_authenticated and poll_open %}
         <form method="POST" action="{{url_for('do.remove_vote', pid=post.pid)}}">
           {{delpostform.csrf_token}}
           <button type="submit" class="poll-vote-btn pure-button button-secondary">Withdraw vote</button>
