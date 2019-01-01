@@ -52,7 +52,7 @@ var recaptchaCallback = function(){
                 {{txtpostform.content(class="exalert", placeholder="(Optional) Write your post content here. Styling with Markdown format is supported.", rows="10", style="width: 100%")}}
               </div>
             </div>
-            {# if txtpostform.ptype.data == "poll" %}
+            {% if txtpostform.ptype.data == "poll" %}
               <div class="pure-control-group pocont">
                 <label for="op1" style="vertical-align: top; margin-top: 1em;">Options</label>
                 <div id="sbm-poll-opts">
@@ -63,7 +63,7 @@ var recaptchaCallback = function(){
                   <button id="poll-addoption" type="button" class="pure-button" style="margin-top: 1em">Add option</button>
                 </div>
               </div>
-            {% endif #}
+            {% endif %}
             <div class="pure-control-group lncont pure-u-sm-20-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
             {% if current_user.canupload %}You can either upload an image or post a link{% endif %}
             </div>
@@ -80,7 +80,7 @@ var recaptchaCallback = function(){
               <input type="file" name="files" placeholder="Only images allowed" />
             </div>
             {% endif %}
-          {% if txtpostform.ptype.data == "poll" %}
+          {# if txtpostform.ptype.data == "poll" %}
             <div class="pure-control-group">
               <label for="multivote">Allow voting for multiple options</label>
               <input id="multivote" name="multivote" type="checkbox" value="y">
@@ -90,7 +90,7 @@ var recaptchaCallback = function(){
               <label for="displaynames">Display username of voters</label>
               <input id="displaynames" name="displaynames" type="checkbox" value="y">
             </div>
-          {%endif%}
+          {%endif#}
           {% if not sub or (sub and not sub.nsfw) %}
             <div class="pure-control-group">
               <label for="nsfw">{{txtpostform.nsfw.label.text}}</label>
