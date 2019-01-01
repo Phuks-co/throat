@@ -384,7 +384,7 @@ CREATE TABLE `sub_post_poll_option` (
   PRIMARY KEY (`id`),
   KEY `subpostpolloption_pid` (`pid`),
   CONSTRAINT `sub_post_poll_option_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `sub_post` (`pid`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `sub_post_poll_vote`;
 
