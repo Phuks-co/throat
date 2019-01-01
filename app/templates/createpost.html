@@ -13,7 +13,9 @@ var recaptchaCallback = function(){
 {% block sidebar %}
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
-    <button type="button" class="pure-button" id="ptoggle">Change to {%if txtpostform.ptype.data=="text"%}link{%else%}text post{%endif%}</button>
+    {% if txtpostform.ptype.data != "poll" %}
+      <button type="button" class="pure-button" id="ptoggle">Change to {%if txtpostform.ptype.data=="text"%}link{%else%}text post{%endif%}</button>
+    {%endif%}
   </div>
 </div>
 {% endblock %}
@@ -44,12 +46,24 @@ var recaptchaCallback = function(){
             {{txtpostform.title(placeholder=txtpostform.title.label.text, required=True)}}
           </div>
 
-            <div class="pure-control-group txcont" {% if txtpostform.ptype.data!="text" %}style="width: 100%; display:none"{%endif%}>
+            <div class="pure-control-group txcont" {% if txtpostform.ptype.data not in ("text", "poll") %}style="width: 100%; display:none"{%endif%}>
               <label for="content">Content</label>
               <div class="markdown-editor">
                 {{txtpostform.content(class="exalert", placeholder="(Optional) Write your post content here. Styling with Markdown format is supported.", rows="10", style="width: 100%")}}
               </div>
             </div>
+            {# if txtpostform.ptype.data == "poll" %}
+              <div class="pure-control-group pocont">
+                <label for="op1" style="vertical-align: top; margin-top: 1em;">Options</label>
+                <div id="sbm-poll-opts">
+                  <ol id="poll-opts">
+                    <li><input type="text" id="op1" name="op[]" required class="sbm-poll-opt fixed"></li>
+                    <li><input type="text" name="op[]" required class="sbm-poll-opt fixed"></li>
+                  </ol>
+                  <button id="poll-addoption" type="button" class="pure-button" style="margin-top: 1em">Add option</button>
+                </div>
+              </div>
+            {% endif #}
             <div class="pure-control-group lncont pure-u-sm-20-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
             {% if current_user.canupload %}You can either upload an image or post a link{% endif %}
             </div>
@@ -66,9 +80,20 @@ var recaptchaCallback = function(){
               <input type="file" name="files" placeholder="Only images allowed" />
             </div>
             {% endif %}
+          {% if txtpostform.ptype.data == "poll" %}
+            <div class="pure-control-group">
+              <label for="multivote">Allow voting for multiple options</label>
+              <input id="multivote" name="multivote" type="checkbox" value="y">
+            </div>
+
+            <div class="pure-control-group">
+              <label for="displaynames">Display username of voters</label>
+              <input id="displaynames" name="displaynames" type="checkbox" value="y">
+            </div>
+          {%endif%}
           {% if not sub or (sub and not sub.nsfw) %}
             <div class="pure-control-group">
-              <label>{{txtpostform.nsfw.label.text}}</label>
+              <label for="nsfw">{{txtpostform.nsfw.label.text}}</label>
               {{txtpostform.nsfw()}}
             </div>
           {% endif %}

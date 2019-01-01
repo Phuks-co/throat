@@ -372,3 +372,29 @@ CREATE TABLE `user_uploads` (
   CONSTRAINT `user_uploads_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `sub_post` (`pid`),
   CONSTRAINT `user_uploads_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `sub_post_poll_option`;
+
+
+CREATE TABLE `sub_post_poll_option` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pid` int(11) NOT NULL,
+  `text` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `subpostpolloption_pid` (`pid`),
+  CONSTRAINT `sub_post_poll_option_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `sub_post` (`pid`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+
+DROP TABLE IF EXISTS `sub_post_poll_vote`;
+
+CREATE TABLE `sub_post_poll_vote` (
+  `id` INTEGER AUTO_INCREMENT NOT NULL, 
+  `pid` INTEGER NOT NULL, 
+  `uid` VARCHAR(40) NOT NULL, 
+  `vid` INTEGER NOT NULL, 
+  PRIMARY KEY (`id`),
+  CONSTRAINT `sub_post_poll_vote_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `sub_post` (`pid`),
+  CONSTRAINT `sub_post_poll_vote_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`),
+  CONSTRAINT `sub_post_poll_vote_ibfk_3` FOREIGN KEY (`vid`) REFERENCES `sub_post_poll_option` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

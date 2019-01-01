@@ -100,7 +100,7 @@ class CreateSubTextPost(FlaskForm):
                        validators=[Length(min=10, max=256), Optional(),
                                    URL(require_tld=True)])
     ptype = RadioField('Post type',
-                       choices=[('text', 'Text post'), ('link', 'Link post')],
+                       choices=[('text', 'Text post'), ('link', 'Link post'), ('poll', 'Poll post')],
                        validators=[DataRequired()])
     nsfw = BooleanField('NSFW?')
 

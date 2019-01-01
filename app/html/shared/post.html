@@ -34,6 +34,9 @@
         @if announcement:
         <span class="announcement">Announcement</span>
         @end
+        @if post['ptype'] == 3:
+        <span class="pollflair">Poll</span> \
+        @end
         @if post['nsfw']:
         <div class="nsfw" alt="Not safe for work">NSFW</div> \
         @end

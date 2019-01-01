@@ -19,6 +19,7 @@ require('./Post');
 require('./Editor');
 require('./Messages');
 require('./Sub');
+require('./Poll');
 var socket = require('./Socket');
 
 

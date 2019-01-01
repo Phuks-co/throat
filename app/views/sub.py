@@ -1,8 +1,10 @@
 from flask import Blueprint, redirect, url_for, abort, render_template, request
 from flask_login import login_required, current_user
 from werkzeug.contrib.atom import AtomFeed
+from peewee import fn, JOIN
 from ..misc import engine
-from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost
+from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption
+from ..models import SubPostPollVote
 from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditSubTextPostForm, EditMod2Form
 from ..forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair, CreateSubFlair
 from .. import database as db
@@ -284,11 +286,30 @@ def view_post(sub, pid, comments=False, highlight=None):
 
     ksub = db.get_sub_from_sid(post['sid'])
     ncomments = SubPostComment.select().where(SubPostComment.pid == post['pid']).count()
+
+    options, total_votes, has_voted, voted_for = ([], 0, None, None)
+    if post['ptype'] == 3:
+        # poll. grab options and votes.
+        options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text, fn.Count(SubPostPollVote.id).alias('votecount'))
+        options = options.join(SubPostPollVote, JOIN.LEFT_OUTER, on=(SubPostPollVote.vid == SubPostPollOption.id))
+        options = options.where(SubPostPollOption.pid == pid).group_by(SubPostPollOption.id)
+        total_votes = SubPostPollVote.select().where(SubPostPollVote.pid == pid).count()
+
+        if current_user.is_authenticated:
+            # Check if user has already voted on this poll.
+            try:
+                u_vote = SubPostPollVote.get((SubPostPollVote.pid == pid) & (SubPostPollVote.uid == current_user.uid))
+                has_voted = True
+                voted_for = u_vote.vid_id
+            except SubPostPollVote.DoesNotExist:
+                has_voted = False
+
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit, sub=ksub,
                            editlinkpostform=EditSubLinkPostForm(),
                            comments=comments, ncomments=ncomments,
-                           editpostflair=editflair, highlight=highlight)
+                           editpostflair=editflair, highlight=highlight, 
+                           poll_options=options, votes=total_votes, has_voted=has_voted, voted_for=voted_for)
 
 
 @sub.route("/<sub>/<pid>/<cid>")

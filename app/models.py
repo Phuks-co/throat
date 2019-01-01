@@ -177,7 +177,7 @@ class SubPost(TModel):
     pid = PrimaryKeyField()
     posted = DateTimeField(null=True)
     edited = DateTimeField(null=True)
-    ptype = IntegerField(null=True)
+    ptype = IntegerField(null=True) # 1=text, 2=link, 3=poll
     score = IntegerField(null=True)
     sid = ForeignKeyField(db_column='sid', null=True, model=Sub, field='sid')
     thumbnail = CharField(null=True)
@@ -188,6 +188,25 @@ class SubPost(TModel):
 
     class Meta:
         table_name = 'sub_post'
+
+
+class SubPostPollOption(TModel):
+    """ List of options for a poll """
+    pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
+    text = CharField()
+
+    class Meta:
+        table_name = 'sub_post_poll_option'
+
+
+class SubPostPollVote(TModel):
+    """ List of options for a poll """ 
+    pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
+    uid = ForeignKeyField(db_column='uid', model=User)
+    vid = ForeignKeyField(db_column='vid', model=SubPostPollOption, backref='votes')
+
+    class Meta:
+        table_name = 'sub_post_poll_vote'
 
 
 class SubPostComment(TModel):

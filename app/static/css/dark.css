@@ -171,6 +171,11 @@ body.dark a#prevp:hover {
   color: #ffffff;
 }
 
+body.dark .pure-button.button-warning {
+  background: #ab1010;
+}
+
+
 /* Expandos */
 
 body.dark .expando {
@@ -207,7 +212,7 @@ body.dark{
   color: #666;
 }
 
-body.dark #postcontent{
+body.dark #postcontent, body.dark .poll-space{
   background: #111;
 }
 body.dark .editbtns{
@@ -439,4 +444,11 @@ body.dark .alldaposts .links a.comments{
 
 body.dark .alldaposts .links a{
   color: #797979;
+}
+
+
+/* poll */
+body.dark .poll-pbar {
+  background-color: #4a4a4a;
+  border-color: #656565;
 }

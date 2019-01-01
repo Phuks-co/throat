@@ -33,8 +33,8 @@ from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..misc import cache, sendMail, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata
-from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata
-from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair
+from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata
+from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote
 
 do = Blueprint('do', __name__)
 
@@ -651,7 +651,18 @@ def create_post():
                 return render_template('createpost.html', txtpostform=form, error="This domain is banned")
 
             img = misc.get_thumbnail(form)
-        ptype = 1 if form.ptype.data == 'link' else 0
+        if form.ptype.data == 'poll':
+            ptype = 3
+            # check if we got at least three options
+            options = request.form.getlist('op[]')
+            options = [x for x in options if len(x.strip(misc.WHITESPACE)) > 0]  # Remove empty strings
+            if len(options) < 2:
+                return render_template('createpost.html', txtpostform=form, error="Not enough poll options provided")
+        elif form.ptype.data == 'link':
+            ptype = 2
+        else:
+            ptype = 1
+
         post = SubPost.create(sid=sub['sid'],
                               uid=current_user.uid,
                               title=form.title.data,
@@ -664,6 +675,11 @@ def create_post():
                               ptype=ptype,
                               nsfw=form.nsfw.data if not sub['nsfw'] else 1,
                               thumbnail=img if ptype == 1 else '')
+        
+        if ptype == 3:
+            # Create SubPostPollOption objects...
+            poll_options = [{'pid': post.pid, 'text': x} for x in options]
+            SubPostPollOption.insert_many(poll_options).execute()
         db.uquery('UPDATE `sub` SET posts = posts + 1 WHERE `sid`=%s',
                   (sub['sid'], ))
         addr = url_for('sub.view_post', sub=sub['name'], pid=post.pid)
@@ -2258,3 +2274,83 @@ def admin_undo_votes(uid):
         v.delete_instance()
     user.save()
     return redirect(url_for('view_user', user=user.name))
+
+
+@do.route('/do/cast_vote/<pid>/<oid>', methods=['POST'])
+@login_required
+def cast_vote(pid, oid):
+    form = DummyForm()
+    if form.validate():
+        try:
+            post = misc.getSinglePost(pid)
+        except SubPost.DoesNotExist:
+            abort(404)
+        
+        if post['ptype'] != 3:
+            abort(404)
+
+        try:
+            option = SubPostPollOption.get((SubPostPollOption.id == oid) & (SubPostPollOption.pid == pid))
+        except SubPostPollOption.DoesNotExist:
+            abort(404)
+
+        # Check if user hasn't voted already.
+        try:
+            SubPostPollVote.get((SubPostPollVote.uid == current_user.uid) & (SubPostPollVote.pid == pid))
+            return redirect(url_for('sub.view_post', sub=post['sub'], pid=pid))
+        except SubPostPollVote.DoesNotExist:
+            pass
+        
+        # Check if poll is still open...
+        try:
+            SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closed'))
+            return redirect(url_for('sub.view_post', sub=post['sub'], pid=pid))
+        except SubPostMetadata.DoesNotExist:
+            pass
+
+        try:
+            ca = SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closes_time'))
+            if int(ca.value) < time.time():
+                return redirect(url_for('sub.view_post', sub=post['sub'], pid=pid))
+        except SubPostMetadata.DoesNotExist:
+            pass
+
+        # Everything OK. Issue vote.
+        vote = SubPostPollVote.create(uid=current_user.uid, pid=pid, vid=oid)
+    return redirect(url_for('sub.view_post', sub=post['sub'], pid=pid))
+
+
+@do.route('/do/remove_vote/<pid>', methods=['POST'])
+@login_required
+def remove_vote(pid):
+    form = DummyForm()
+    if form.validate():
+        try:
+            post = misc.getSinglePost(pid)
+        except SubPost.DoesNotExist:
+            abort(404)
+        
+        if post['ptype'] != 3:
+            abort(404)
+
+        # Check if poll is still open...
+        try:
+            SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closed'))
+            return redirect(url_for('sub.view_post', sub=post['sub'], pid=pid))
+        except SubPostMetadata.DoesNotExist:
+            pass
+
+        try:
+            ca = SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closes_time'))
+            if int(ca.value) < time.time():
+                return redirect(url_for('sub.view_post', sub=post['sub'], pid=pid))
+        except SubPostMetadata.DoesNotExist:
+            pass
+        
+        # Check if user hasn't voted already.
+        try:
+            vote = SubPostPollVote.get((SubPostPollVote.uid == current_user.uid) & (SubPostPollVote.pid == pid))
+            vote.delete_instance()
+        except SubPostPollVote.DoesNotExist:
+            pass
+    return redirect(url_for('sub.view_post', sub=post['sub'], pid=pid))

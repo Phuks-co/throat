@@ -1108,8 +1108,12 @@ def login():
 @app.route("/submit/<ptype>/<sub>")
 @login_required
 def submit(ptype, sub):
-    if ptype not in ['link', 'text']:
+    if ptype not in ['link', 'text', 'poll']:
         abort(404)
+
+    if ptype == 'poll' and not current_user.is_admin:
+        abort(403)  # TODO: Remove restriction.
+
     txtpostform = CreateSubTextPost()
     txtpostform.ptype.data = ptype
     txtpostform.sub.data = sub

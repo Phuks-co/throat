@@ -830,6 +830,15 @@ a.slink{
   white-space: nowrap;
 }
 
+.pollflair{
+  padding: 3px;
+  margin-right: .5em;
+  border-radius: 5px;
+  color: white;
+  background-color: #383838;
+}
+
+
 .selflair:hover {
   background-color: #d5d5d5;
 }
@@ -1175,6 +1184,16 @@ input[type=search] {
 .createpost textarea#content {
     width: calc(100% - 210px);
 }
+
+.createpost input.sbm-poll-opt {
+  margin-top: 0.5em;
+  width: 90%;
+}
+
+.createpost #sbm-poll-opts {
+  display: inline-block;
+  width: calc(100% - 210px);
+}
 /* / CREATE POST PAGE STYLES */
 
 /* POST PAGE STYLES */
@@ -1195,7 +1214,7 @@ input[type=search] {
   margin-top: .3em;
 }
 
-#postcontent {
+#postcontent, .poll-space {
   background-color: #f6f6f6;
   padding: 1px 1em; /* 1px margin on botton and top so it respects <p>'s margin */
   margin-top: .5em;
@@ -1704,6 +1723,36 @@ table td {
 .irc-bg14{background-color:#4c4c4c}
 .irc-bg15{background-color:#959595}
 
+/* Poll styles */ 
+
+.poll-pbar {
+  border: 1px solid #ccc; 
+  width: 70%; 
+  margin: 0 5px 2px 0; 
+  padding: 1px; 
+  vertical-align: middle;
+  display: inline-block;
+  height: 1.5em;
+  background: white;
+}
+
+.poll-space .poll-vote, .poll-space .poll-votes{
+  vertical-align: middle;
+  display: inline-block;
+}
+  
+.poll-pbar > div {
+  background-color: #526a7d; 
+  height: 1.25em;
+}
+
+.poll-pbar.poll-voted > div {
+  background-color: #fd5c00; 
+}
+
+.poll-pbar.poll-voted{
+  border-color: #ffa46f;
+}
 
 /* user uploads page */
 .uploads.content {

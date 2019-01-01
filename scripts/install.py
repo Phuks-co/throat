@@ -9,7 +9,7 @@ from app.models import User, Client, Grant, Message, SiteLog, SiteMetadata, Sub,
     SubPostCommentVote, SubPostMetadata, SubPostVote, SubStylesheet, \
     SubSubscriber, Token, UserBadge, UserMetadata, UserSaved, \
     Pixel, Shekels, MiningLeaderboard, MiningSpeedLeaderboard, UserUploads, UserIgnores, \
-    SubUploads
+    SubUploads, SubPostPollOption, SubPostPollVote
 
 with app.app_context():
     print('Throat quick install script.')
@@ -42,6 +42,9 @@ with app.app_context():
     UserUploads.create_table(True)
     UserIgnores.create_table(True)
     SubUploads.create_table(True)
+    SubPostPollOption.create_table(True)
+    SubPostPollVote.create_table(True)
+
     print('Tables created.')
 
     print('Populating database...')
