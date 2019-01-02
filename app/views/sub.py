@@ -287,7 +287,7 @@ def view_post(sub, pid, comments=False, highlight=None):
     ksub = db.get_sub_from_sid(post['sid'])
     ncomments = SubPostComment.select().where(SubPostComment.pid == post['pid']).count()
 
-    options, total_votes, has_voted, voted_for, poll_open = ([], 0, None, None, None)
+    options, total_votes, has_voted, voted_for, poll_open = ([], 0, None, None, True)
     if post['ptype'] == 3:
         # poll. grab options and votes.
         options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text, fn.Count(SubPostPollVote.id).alias('votecount'))
