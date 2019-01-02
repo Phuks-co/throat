@@ -659,9 +659,9 @@ def create_post():
             if len(options) < 2:
                 return render_template('createpost.html', txtpostform=form, error="Not enough poll options provided")
         elif form.ptype.data == 'link':
-            ptype = 2
-        else:
             ptype = 1
+        else:
+            ptype = 0
 
         post = SubPost.create(sid=sub['sid'],
                               uid=current_user.uid,
