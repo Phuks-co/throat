@@ -1945,7 +1945,6 @@ def get_sibling(pid, cid, page):  # XXX: Really similar to get_children. Should 
     if cmskel.count() == 0:
         return jsonify(status='ok', posts=[])
     cmxk = misc.build_comment_tree(cmskel, cid, perpage=ppage, pageno=page + 1)
-    print(cmxk)
     post = SubPost.select(SubPost.pid, SubPost.sid).where(SubPost.pid == pid).get()
     sub = Sub.select(Sub.name).where(Sub.sid == post.sid).get()
     return render_template('postcomments.html', sub=sub, post=post, comments=misc.expand_comment_tree(cmxk), siblingpage=page + 1)
@@ -2221,7 +2220,6 @@ def edit_top_bar():
         try:
             SubSubscriber.update(order=i).where((SubSubscriber.uid == current_user.uid) & (SubSubscriber.sid == k)).execute()
         except SubSubscriber.DoesNotExist:
-            print('error')
             pass  # TODO: Add these as status=4 SubSubscriber (after implementing some way to delete those)
 
     return jsonify(status='ok')
