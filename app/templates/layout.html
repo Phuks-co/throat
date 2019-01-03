@@ -31,7 +31,7 @@
     {% endblock %}
   </head>
 
-<body class="{%if conf.get('ENABLE_TOTP', False) and current_user.admin%}body_admin {%endif%}{%if request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous %}dark{%elif request.cookies.get( "dayNight")=="dank" and not current_user.is_anonymous%}dark dank{%endif%}">
+<body class="{%if conf.get('ENABLE_TOTP', False) and current_user.admin%}body_admin {%endif%}{%if request.cookies.get( "dayNight")=="dark" %}dark{%elif request.cookies.get( "dayNight")=="dank" %}dark dank{%endif%}">
   {%if conf.get('ENABLE_TOTP', False) and current_user.admin %}
   <div class="admin_alert">Admin mode is currently enabled.
     <form method="POST" action="/admin/logout" id="adminlogout">
@@ -91,6 +91,9 @@
     <div id="th-uinfo" class="pure-u-1 pure-u-md-12-24"> <!-- class="pure-u-1 pure-u-md-8-24" -->
       <div class="cw-items">
         {% if current_user.is_anonymous %}
+        <div id="toggledark" class="glyphbutton">
+          <span class="p-icon" data-icon="{%if request.cookies.get( "dayNight")=="dark" %}sun{%else%}moon{%endif%}"></span>
+        </div>
         <a href="{{url_for('login', next=request.path)}}" class="pure-button pure-button-primary">Log in</a>
         <a href="{{url_for('register')}}" class="pure-button button-secondary">Register</a>
         {%else%}

@@ -35,7 +35,7 @@
     <link rel="stylesheet" type="text/css" href="@{asset_url_for('main.css') }">
   </head>
 
-<body class="@{(conf.get('ENABLE_TOTP', False) and current_user.admin) and 'body_admin' or ''} @{(request.cookies.get( "dayNight")=="dank" and not current_user.is_anonymous) and 'dark dank' or ''} @{(request.cookies.get( "dayNight")=="dark" and not current_user.is_anonymous) and 'dark' or ''}">
+<body class="@{(conf.get('ENABLE_TOTP', False) and current_user.admin) and 'body_admin' or ''} @{(request.cookies.get( "dayNight")=="dank") and 'dark dank' or ''} @{(request.cookies.get( "dayNight")=="dark") and 'dark' or ''}">
   @if conf.get('ENABLE_TOTP', False) and current_user.admin:
   <div class="admin_alert">Admin mode is currently enabled.
     <form method="POST" action="/admin/logout" id="adminlogout">
@@ -99,6 +99,9 @@
     <div id="th-uinfo" class="pure-u-1 pure-u-md-12-24"> <!-- class="pure-u-1 pure-u-md-8-24" -->
       <div class="cw-items can-transform">
         @if current_user.is_anonymous:
+        <div id="toggledark" class="glyphbutton">
+          <span class="p-icon" data-icon="@{(request.cookies.get( "dayNight")=="dark") and 'sun' or 'moon'}"></span>
+        </div>
         <a href="@{url_for('login', next=request.path)}" class="pure-button pure-button-primary">Log in</a>
         <a href="@{url_for('register')}" class="pure-button button-secondary">Register</a>
         @else:
