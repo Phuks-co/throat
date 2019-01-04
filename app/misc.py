@@ -436,10 +436,12 @@ def safeRequest(url, recieve_timeout=10):
             raise ValueError('response too large')
     return (r, f)
 
+RE_AMENTION_BARE = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|' + getattr(config, 'SUB_PREFIX', '/s') + r'\/)([A-Za-z0-9\-\_]+))'
 
 RE_AMENTION_PRE0 = r'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))(?:(?:@|\/u\/|' + getattr(config, 'SUB_PREFIX', '/s') + r'\/)(?:[A-Za-z0-9\-\_]+)))'
-RE_AMENTION_PRE1 = r'(?:(\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|' + getattr(config, 'SUB_PREFIX', '/s') + r'\/)([A-Za-z0-9\-\_]+)))'
+RE_AMENTION_PRE1 = r'(?:(\[.+?\]\(.+?\))|' + RE_AMENTION_BARE + r')'
 RE_AMENTION_ESCAPED = re.compile("```.*{0}.*```|`.*?{0}.*?`|({1})".format(RE_AMENTION_PRE0, RE_AMENTION_PRE1), flags=re.MULTILINE + re.DOTALL)
+RE_AMENTION_LINKS = re.compile("\[.*?({2}).*?\]\(.*?\)|({1})".format(RE_AMENTION_PRE0, RE_AMENTION_PRE1, RE_AMENTION_BARE), flags=re.MULTILINE + re.DOTALL)
 
 
 class PhuksDown(m.SaferHtmlRenderer):
@@ -900,11 +902,17 @@ def getPostsFromPids(pids, limit=False, orderby='pid'):
 
 def workWithMentions(data, receivedby, post, sub, cid=None):
     """ Does all the job for mentions """
-    mts = re.findall(RE_AMENTION_ESCAPED, data)
+    mts = re.findall(RE_AMENTION_LINKS, data)
     if mts:
         mts = list(set(mts))  # Removes dupes
-        # Filter only users
-        mts = [x[4] for x in mts if x[3] == "/u/" or x[3] == "@"]
+        clean_mts = []
+        print(mts)
+        for m in mts:
+            t = [x for x in m if x != '']
+            if len(t) >= 3:
+                clean_mts.append(t)  
+        
+        mts = [x[-1] for x in clean_mts if x[-2] == "/u/" or x[-2] == "@"]
         
         for mtn in mts[:5]:
             # Send notifications.
