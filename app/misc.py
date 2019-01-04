@@ -919,9 +919,8 @@ def workWithMentions(data, receivedby, post, sub, cid=None):
                     link = url_for('sub.view_post', pid=post.pid, sub=sub['name'])
                 create_message(current_user.uid, user['uid'],
                                subject="You've been tagged in a post",
-                               content="[{0}]({1}) tagged you in [{2}]({3})"
-                               .format(current_user.get_username(),
-                                       url_for('view_user', user=current_user.name), "Here: " + post.title, link),
+                               content="@{0} tagged you in [{1}]({2})"
+                               .format(current_user.get_username(), "Here: " + post.title, link),
                                link=link, mtype=8)
                 socketio.emit('notification',
                               {'count': get_notification_count(user['uid'])},
