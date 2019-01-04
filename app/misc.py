@@ -906,7 +906,7 @@ def workWithMentions(data, receivedby, post, sub, cid=None):
     if mts:
         mts = list(set(mts))  # Removes dupes
         clean_mts = []
-        print(mts)
+
         for m in mts:
             t = [x for x in m if x != '']
             if len(t) >= 3:
