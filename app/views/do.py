@@ -356,7 +356,6 @@ def assign_post_flair(sub, pid, fl):
                              '`sid`=%s', (fl, sub['sid'])).fetchone()
             if not flair:
                 return jsonify(status='error', error='Flair does not exist')
-
             post.flair = flair['text']
             post.save()
 

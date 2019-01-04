@@ -44,7 +44,7 @@ class EditCommentForm(FlaskForm):
 class CreateSubFlair(FlaskForm):
     """ Creates a flair """
     text = StringField('Flair text', validators=[DataRequired(),
-                                                 Length(max=32)])
+                                                 Length(max=25)])
 
 
 class EditSubFlair(FlaskForm):
