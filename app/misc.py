@@ -1825,3 +1825,17 @@ def populate_feed(feed, posts):
                  published=post['posted'])
 
     return feed
+
+
+def metadata_to_dict(metadata):
+    """ Transforms metadata query objects into dicts """
+    res = {}
+    for m in metadata:
+        if m.key not in res:
+            res[m.key] = m.value
+        else:
+            if not isinstance(res[m.key], list):
+                res[m.key] = [res[m.key]]
+            res[m.key].append(m.value)
+    
+    return res

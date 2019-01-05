@@ -287,6 +287,8 @@ def view_post(sub, pid, comments=False, highlight=None):
     ksub = db.get_sub_from_sid(post['sid'])
     ncomments = SubPostComment.select().where(SubPostComment.pid == post['pid']).count()
 
+    postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
+
     options, total_votes, has_voted, voted_for, poll_open = ([], 0, None, None, True)
     if post['ptype'] == 3:
         # poll. grab options and votes.
@@ -306,18 +308,12 @@ def view_post(sub, pid, comments=False, highlight=None):
             
             # Check if the poll is open
             poll_open = True
-            try:
-                SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closed'))
+            if 'poll_closed' in postmeta:
                 poll_open = False
-            except SubPostMetadata.DoesNotExist:
-                pass
 
-            try:
-                ca = SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closes_time'))
-                if int(ca.value) < time.time():
+            if 'poll_closes_time' in postmeta:
+                if int(postmeta['poll_closes_time']) < time.time():
                     poll_open = False
-            except SubPostMetadata.DoesNotExist:
-                pass
 
     return render_template('post.html', post=post, mods=mods,
                            edittxtpostform=txtpedit, sub=ksub,
@@ -325,7 +321,7 @@ def view_post(sub, pid, comments=False, highlight=None):
                            comments=comments, ncomments=ncomments,
                            editpostflair=editflair, highlight=highlight, 
                            poll_options=options, votes=total_votes, has_voted=has_voted, voted_for=voted_for,
-                           poll_open=poll_open)
+                           poll_open=poll_open, postmeta=postmeta)
 
 
 @sub.route("/<sub>/<pid>/<cid>")
