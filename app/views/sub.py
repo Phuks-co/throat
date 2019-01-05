@@ -19,8 +19,7 @@ def view_sub(sub):
     """ Here we can view subs """
     if sub.lower() == "all":
         return redirect(url_for('all_hot', page=1))
-    if sub.lower() == "live":
-        return redirect(url_for('view_live_sub', page=1))
+
     try:
         sub = Sub.get(Sub.name == sub)
     except Sub.DoesNotExist:

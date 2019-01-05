@@ -446,21 +446,6 @@ def get_sub_stylesheet(sid, escape=True):
     return c
 
 
-def create_live_chat(username, message):
-    """ Creates live chat message """
-    l = uquery('INSERT INTO `live_chat` (`username`, `message`) '
-           'VALUES (%s, %s)', (username, message))
-    g.db.commit()  # insta-commit
-    return {'xid': l.lastrowid, 'username': username, 'message': message}
-
-@cache.memoize(4)
-def get_live_chat(xid):
-    """ Returns line on live chat """
-    c = query('SELECT * FROM `live_chat` WHERE `xid`=%s',
-              (xid, ))
-    return c.fetchone()
-
-
 @cache.memoize(4)
 def get_user_subscriptions(uid):
     """ Returns all the user's subscriptions from the uid """

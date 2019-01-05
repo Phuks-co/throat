@@ -1,3 +1,0 @@
-{% for chat in chats %}
-<tr class="livemessage" data-xid="{{chat.xid}}"><td style="text-align:right">{{chat.username}}</td><td> : </td><td>{{markdown(chat.message)|safe}}</td></tr>
-{% endfor %}

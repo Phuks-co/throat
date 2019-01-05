@@ -691,16 +691,7 @@ def create_post():
                       room='/all/new')
         if fileid:
             db.create_user_upload_post(pid=post.pid, uid=current_user.uid, fileid=fileid, thumbnail=img if img else '')
-        # for /live
-        if sub['name'] == "live":
-            socketio.emit('livethread',
-                          {'addr': addr, 'sub': sub['name'], 'type': form.ptype.data,
-                           'user': current_user.name, 'pid': post.pid,
-                           'html': render_template('sublivepost.html',
-                                                   nocheck=True,
-                                                   posts=[post])},
-                          namespace='/snt',
-                          room='/live')
+
         misc.workWithMentions(form.content.data, None, post, sub)
         misc.workWithMentions(form.title.data, None, post, sub)
         return redirect(addr)

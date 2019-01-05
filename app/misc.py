@@ -482,20 +482,6 @@ def our_markdown(text):
         return '> tfw tried to break the site'
 
 
-@cache.memoize(5)
-def getVoteStatus(uid, pid):
-    """ Returns if the user voted positively or negatively to a post """
-    if not uid:
-        return -1
-
-    c = db.query('SELECT positive FROM `sub_post_vote` WHERE `uid`=%s'
-                 ' AND `pid`=%s', (uid, pid, ))
-    vote = c.fetchone()
-    if not vote:
-        return -1
-    return int(vote['positive'])
-
-
 @cache.memoize(20)
 def get_post_upcount(pid):
     """ Returns the upvote count """
@@ -522,29 +508,6 @@ def get_comment_voting(cid):
         else:
             downvote += 1
     return (upvote, downvote)
-
-
-@cache.memoize(50)
-def hasVotedComment(uid, comment, up=True):
-    # TODO: blast this from orbit
-    """ Checks if the user up/downvoted a comment. """
-    if not uid:
-        return False
-    vote = db.query('SELECT `positive` FROM `sub_post_comment_vote` WHERE '
-                    '`uid`=%s AND `cid`=%s', (uid, comment['cid'])).fetchone()
-    if vote:
-        if vote['positive'] == up:
-            return True
-    else:
-        return False
-
-
-@cache.memoize(600)
-def getCommentParentUID(cid):
-    """ Returns the uid of a parent comment """
-    comm = db.get_comment_from_cid(cid)
-    parent = db.get_comment_from_cid(comm['parentcid'])
-    return parent['uid']
 
 
 def getCommentSub(cid):
@@ -593,80 +556,6 @@ def getSubUsers(sub, key):
         return db.get_user_from_uid(x['value'])['name']
 
 
-@cache.memoize(20)
-def getSubTimer(sub):
-    """ Returns the sub's timer time metadata """
-    x = db.get_sub_metadata(sub['sid'], 'timer')
-    if x:
-        return x['value']
-    else:
-        return False
-
-
-@cache.memoize(600)
-def getSubTimerMsg(sub):
-    """ Returns the sub's timer msg metadata """
-    x = db.get_sub_metadata(sub['sid'], 'timermsg')
-    if x:
-        return x['value']
-    else:
-        return False
-
-
-@cache.memoize(600)
-def getShowSubTimer(sub):
-    """ Returns true if show sub timer """
-    x = db.get_sub_metadata(sub['sid'], 'showtimer')
-    return False if not x or x == '0' else True
-
-
-@cache.memoize(6)
-def getSubTags(sub):
-    """ Returns sub tags for form """
-    x = db.uquery('Select `value` FROM `sub_metadata` WHERE `key`=%s '
-                  'AND `sid`=%s', ('tag', sub['sid']))
-    i = ''
-    for y in x:
-        i += str(y['value']) + '+'
-    return str(i)[:-1]
-
-
-@cache.memoize(60)
-def getSubTagsSearch(page, term):
-    """ Returns sub tags search for subs page """
-    c = db.query('SELECT * FROM `sub_metadata` WHERE `key`=%s AND `value` LIKE %s '
-                 ' LIMIT %s ,30',
-                 ('tag', term, (page - 1) * 30))
-    subs = []
-    for i in c.fetchall():
-        sub = db.get_sub_from_sid(i['sid'])
-        if sub not in subs:
-            subs.append(sub)
-    return subs
-
-
-@cache.memoize(60)
-def getSubTagsSidebar():
-    """ Returns sub tags subs page sidebar"""
-    c = db.query('SELECT * FROM `sub_metadata` WHERE `key`=%s ',
-                 ('tag', ))
-    tags = []
-    for i in c.fetchall():
-        if i['value'] not in tags:
-            tags.append(i['value'])
-    # tags = list(set(tags))  # random
-    tags = sorted(tags, key=str.lower)  # alphabetical
-    return tags
-
-
-@cache.memoize(6)
-def getSubTagsList(sub):
-    """ Returns sub tags for edit sub page """
-    x = db.uquery('Select `value` FROM `sub_metadata` WHERE `key`=%s '
-                  'AND `sid`=%s', ('tag', sub['sid']))
-    return x.fetchall()
-
-
 @cache.memoize(600)
 def getSubCreation(sub):
     """ Returns the sub's 'creation' metadata """
@@ -700,14 +589,6 @@ def getModCount(sub):
                  '`sid`=%s AND `key`=%s', (sub['sid'], 'mod2')).fetchone()
 
     return x['c']
-
-
-@cache.memoize(60)
-def getSubPostCount(sub):
-    """ Returns the sub's post count """
-    y = db.query('SELECT COUNT(*) AS c FROM `sub_post` WHERE `sid`=%s',
-                 (sub['sid'],)).fetchone()['c']
-    return y
 
 
 @cache.memoize(60)
@@ -762,24 +643,6 @@ def getDefaultSubs_list(ext=False):
     return defaults
 
 
-def getSubscriptions(uid):
-    """ Returns all the subs the current user is subscribed to """
-    if uid:
-        subs = db.get_user_subscriptions(uid)
-    else:
-        subs = getDefaultSubs()
-    return list(subs)
-
-
-def getSubscriptions_list(uid):
-    """ Returns all the subs the current user is subscribed to """
-    if uid:
-        subs = db.get_user_subscriptions_list(uid)
-    else:
-        subs = getDefaultSubs_list()
-    return list(subs)
-
-
 @cache.memoize(600)
 def enableBTCmod():
     """ Returns true if BTC donation module is enabled """
@@ -796,14 +659,6 @@ def enableInviteCode():
 def getInviteCode():
     """ Returns invite code """
     x = db.get_site_metadata('invitecode')
-    if x:
-        return x['value']
-
-
-@cache.memoize(600)
-def getBTCmsg():
-    """ Returns donation module text """
-    x = db.get_site_metadata('btcmsg')
     if x:
         return x['value']
 
@@ -855,49 +710,6 @@ def moddedSubCount(uid):
     """ Returns the number of subs a user is modding """
     sub = SubMetadata.select().where(SubMetadata.value == uid).where(SubMetadata.key << ('mod1', 'mod2'))
     return sub.count()
-
-
-@cache.memoize(120)
-def getPostsFromSubs(subs, limit=False, orderby='pid', paging=False, inj=''):
-    """ Returns all posts from a list or subs """
-    if not subs:
-        return []
-    qbody = 'SELECT * FROM `sub_post` WHERE `sid` IN ('
-    qdata = []
-    for sub in subs:
-        qbody += "%s,"
-        qdata.append(sub['sid'])
-    qbody = qbody[:-1] + ') '
-    qbody += inj  # whee
-    qbody += ' ORDER BY `' + orderby + '` DESC'
-    if limit is not False:
-        qbody += ' LIMIT %s'
-        qdata.append(limit)
-        if paging:
-            qbody += ',%s'
-            qdata.append(paging)
-    c = db.query(qbody, qdata)
-
-    return c.fetchall()
-
-
-@cache.memoize(120)
-def getPostsFromPids(pids, limit=False, orderby='pid'):
-    """ Returns all posts from a list of pids """
-    if not pids:
-        return []
-    qbody = "SELECT * FROM `sub_post` WHERE "
-    qdata = []
-    for post in pids:
-        qbody += "`pid`=%s OR "
-        qdata.append(post['pid'])
-    qbody = qbody[:-4] + ' ORDER BY %s'
-    qdata.append(orderby)
-    if limit:
-        qbody += ' LIMIT %s'
-        qdata.append(limit)
-    c = db.query(qbody, tuple(qdata))
-    return c.fetchall()
 
 
 def workWithMentions(data, receivedby, post, sub, cid=None):
