@@ -31,3 +31,11 @@ u.sub('#poll-addoption', 'click', function(e){
     node.appendChild(tbdel);
     opts.appendChild(node);
 });
+
+
+u.sub('#poll-show-results', 'click', function(e){
+    u.each('.poll-hid', function(e){
+        e.style.display = 'inline-block';
+    })
+    this.parentNode.removeChild(this);
+});

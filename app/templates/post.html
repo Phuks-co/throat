@@ -210,6 +210,8 @@
     <div class="poll-space">
       {% if not poll_open %}
       <p>This poll is now <b>closed</b>.</p>
+      {% elif not has_voted %}
+      <p><button id="poll-show-results" type="button" class="pure-button">Show results.</button></p>
       {%endif%}
       {%for opt in poll_options %}
         
@@ -224,10 +226,10 @@
               </form>
               {% endif %}
             </div>
-            <div class="poll-pbar {%if opt.id == voted_for %}poll-voted{%endif%}">
+            <div class="poll-hid poll-pbar {%if opt.id == voted_for %}poll-voted{%endif%}" style="{% if not has_voted and poll_open %}display:none;{%endif%}">
               <div style="width:{% if votes != 0 %}{{(opt.votecount/votes*100)|round}}{%else%}0{%endif%}%"></div>
             </div>
-            <div class="poll-votes">
+            <div class="poll-hid poll-votes"  style="{% if not has_voted and poll_open %}display:none;{%endif%}">
                 <span class="percentage-number">{% if votes != 0 %}{{(opt.votecount/votes*100)|round|int}}{%else%}0{%endif%}</span>% ({{opt.votecount}} votes)
             </div>
           </div>
