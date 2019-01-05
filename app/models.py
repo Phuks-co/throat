@@ -357,23 +357,6 @@ class Shekels(TModel):
         table_name = 'shekels'
 
 
-class MiningLeaderboard(TModel):
-    xid = PrimaryKeyField()
-    username = CharField()  # TODO: MAKE UNIQUE!!
-    score = IntegerField()
-
-    class Meta:
-        table_name = 'mining_leaderboard'
-
-
-class MiningSpeedLeaderboard(TModel):
-    username = CharField()  # TODO: MAKE UNIQUE!!
-    hashes = IntegerField()
-
-    class Meta:
-        table_name = 'mining_speed_leaderboard'
-
-
 class UserUploads(TModel):
     xid = PrimaryKeyField()
     pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,

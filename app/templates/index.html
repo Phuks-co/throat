@@ -32,11 +32,6 @@
 {% cache 300, 'toppost' %}
 {% set tp = func.getTodaysTopPosts()%}
 
-  <hr>
-  <div class="sidebarlists">
-      <a href="/miner">Mine some phuks</a>
-  </div>
-
 {% if tp %}
   <hr>
   <div class="sidebarlists">

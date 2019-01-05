@@ -10,7 +10,6 @@ const externalCSS = new ExtractTextPlugin('[name].[contenthash].css');
 module.exports = {
   entry: {
     main: ['./app/static/js/main.js'],
-    miner: './app/static/js/Miner.js',
   },
   output: {
     path: path.resolve(__dirname, 'app/static/gen'),

@@ -8,7 +8,7 @@ from app.models import User, Client, Grant, Message, SiteLog, SiteMetadata, Sub,
     SubFlair, SubLog, SubMetadata, SubPost, SubPostComment, \
     SubPostCommentVote, SubPostMetadata, SubPostVote, SubStylesheet, \
     SubSubscriber, Token, UserBadge, UserMetadata, UserSaved, \
-    Pixel, Shekels, MiningLeaderboard, MiningSpeedLeaderboard, UserUploads, UserIgnores, \
+    Pixel, Shekels, UserUploads, UserIgnores, \
     SubUploads, SubPostPollOption, SubPostPollVote
 
 with app.app_context():
@@ -37,8 +37,6 @@ with app.app_context():
     UserSaved.create_table(True)
     Pixel.create_table(True)
     Shekels.create_table(True)
-    MiningLeaderboard.create_table(True)
-    MiningSpeedLeaderboard.create_table(True)
     UserUploads.create_table(True)
     UserIgnores.create_table(True)
     SubUploads.create_table(True)

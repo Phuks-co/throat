@@ -352,12 +352,6 @@ def canary():
     return render_template('canary.html')
 
 
-@app.route("/miner")
-def miner():
-    """ miner """
-    return render_template('miner.html')
-
-
 @app.route("/donate")
 def donate():
     """ Donation page """
@@ -993,17 +987,6 @@ def admin_domains(page):
         abort(404)
 
 
-@app.route("/admin/mining")
-@login_required
-def admin_mining():
-    """ WIP: View Mining Leaderboard """
-    if current_user.is_admin():
-        return render_template('admin/mining.html',
-                               admin_route='admin_mining')
-    else:
-        abort(404)
-
-
 @app.route("/admin/uploads", defaults={'page': 1})
 @app.route("/admin/uploads/<int:page>")
 @login_required
@@ -1172,14 +1155,6 @@ def password_reset(uid, key):
 
     form = forms.PasswordResetForm(key=key.value, user=user.uid)
     return engine.get_template('user/password_reset.html').render({'lpform': form})
-
-
-@app.route('/miner/stats')
-def miner_stats():
-    hg = misc.getCurrentHashrate()
-    bg = misc.getCurrentUserStats(current_user.name) if current_user.is_authenticated else {}
-    lg = misc.getMiningLeaderboardJson()
-    return jsonify(**{**hg, **bg, **lg})
 
 
 @app.route("/api")

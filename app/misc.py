@@ -30,8 +30,8 @@ from .socketio import socketio
 from .badges import badges
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
-from .models import SubPostVote, MiningLeaderboard, SubPostComment, SubPostCommentVote
-from .models import MiningSpeedLeaderboard, SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads
+from .models import SubPostVote, SubPostComment, SubPostCommentVote
+from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads
 from peewee import JOIN, fn
 import requests
 
@@ -1329,63 +1329,6 @@ def get_errors(form):
                 getattr(form, field).label.text,
                 error))
     return ret
-
-
-@cache.memoize(60)
-def getCurrentHashrate():
-    try:
-        hr = safeRequest('https://supportxmr.com/api/miner/{0}/stats'.format(config.XMR_ADDRESS), 1)
-        hr = json.loads(hr[1].decode())
-        hr['amtDue'] = round(hr['amtDue'] / 1000000000000, 8)
-        hr['amtPaid'] = round(hr['amtPaid'] / 1000000000000, 8)
-        hr['hash'] = int(hr['hash'])
-        hr['totalHashes'] = int(hr['totalHashes'])
-        return hr
-    except (ValueError, requests.RequestException, TypeError, OSError) as err:
-        return {'error': 'Pool is down'}
-
-
-@cache.memoize(60)
-def getCurrentUserStats(username):
-    try:
-        x = MiningLeaderboard.select().where(MiningLeaderboard.username == username).get()
-        return {'balance': x.score}
-    except MiningLeaderboard.DoesNotExist:
-        return {'balance': 0}
-
-
-def getMiningLeaderboard():
-    """ Get mining leaderboard """
-    x = MiningLeaderboard.select().order_by(MiningLeaderboard.score.desc()).limit(10).dicts()
-    return x
-
-
-def getAdminMiningLeaderboard():
-    """ Get mining leaderboard for admin section """
-    x = MiningLeaderboard.select().order_by(MiningLeaderboard.score.desc()).dicts()
-    return x
-
-
-def getHPLeaderboard():
-    """ Get mining leaderboard """
-    x = MiningSpeedLeaderboard.select(MiningSpeedLeaderboard.username, MiningSpeedLeaderboard.hashes).order_by(MiningSpeedLeaderboard.hashes.desc()).limit(10).dicts()
-    return x
-
-
-@cache.memoize(60)
-def getMiningLeaderboardJson():
-    """ Get mining leaderboard """
-    x = getMiningLeaderboard()
-    z = getHPLeaderboard()
-    f = []
-    i = 1
-    for user in x:
-        user['rank'] = i
-        user['score'] = "{:,}".format(user['score'])
-        del user['xid']
-        f.append(user)
-        i += 1
-    return {'users': f, 'speed': list(z)}
 
 
 def build_tree(tuff, root=None):

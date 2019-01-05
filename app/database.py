@@ -756,17 +756,3 @@ def get_all_post_comments(pid, pa=None, depth=0, page=0):
             post['children'] = x
         f.append(post)
     return f
-
-
-# mining
-
-def update_mining_leaderboard(username, score):
-    """ Updates user mining score """
-    x = uquery('SELECT * FROM `mining_leaderboard` WHERE `username`=%s ',
-               (username, )).fetchone()
-    if x:
-        uquery('UPDATE `mining_leaderboard` SET `score`=%s WHERE `username`=%s',
-               (score, username))
-    else:
-        uquery('INSERT INTO `mining_leaderboard` (`username`, `score`) VALUES '
-               '(%s, %s)', (username, score))
