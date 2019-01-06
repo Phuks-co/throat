@@ -245,7 +245,7 @@ class SiteUser(object):
     @cache.memoize(300)
     def get_user_level(self):
         """ Returns the level and xp of a user. """
-        return get_user_level(self.uid)
+        return get_user_level(self.uid, self.score)
 
     @cache.memoize(120)
     def get_post_voting(self):
@@ -889,10 +889,13 @@ def get_user_post_score_counts(user):
 
 
 @cache.memoize(10)
-def get_user_level(uid):
+def get_user_level(uid, score=None):
     """ Returns the user's level and XP as a tuple (level, xp) """
-    user = User.get(User.uid == uid)
-    xp = user.score
+    if not score:
+        user = User.get(User.uid == uid)
+        xp = user.score
+    else:
+        xp = score
     # xp += db.get_user_post_voting(uid)/2
     badges = getUserBadges(uid)
     for badge in badges:
