@@ -726,7 +726,15 @@ def workWithMentions(data, receivedby, post, sub, cid=None):
         
         mts = [x[-1] for x in clean_mts if x[-2] == "/u/" or x[-2] == "@"]
         
-        for mtn in mts[:5]:
+        usr_level = current_user.get_user_level()[0]
+        if usr_level > 30:
+            mts = mts[:15]
+        elif usr_level > 20:
+            mts = mts[:10]
+        else:
+            mts = mts[:5]
+
+        for mtn in mts:
             # Send notifications.
             user = db.get_user_from_name(mtn)
             if not user:
