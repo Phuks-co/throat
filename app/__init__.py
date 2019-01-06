@@ -387,31 +387,6 @@ def random_sub():
     return redirect(url_for('sub.view_sub', sub=c.fetchone()['name']))
 
 
-@app.route("/live", defaults={'page': 1})
-@app.route("/live/<int:page>")
-def view_live_sub(page):
-    """ God knows what this does """
-    sub = db.get_sub_from_name('live')
-    if not sub:
-        abort(404)
-
-    posts = db.query('SELECT * FROM `sub_post` WHERE `sid`=%s '
-                     'ORDER BY `posted` DESC LIMIT %s,20',
-                     (sub['sid'], (page - 1) * 20, )).fetchall()
-    chats = db.query('SELECT * FROM `live_chat` '
-                     'ORDER BY `xid` DESC LIMIT %s',
-                     (20, )).fetchall()
-    mods = db.get_sub_metadata(sub['sid'], 'mod2', _all=True)
-    createtxtpost = CreateSubTextPost(sub='live')
-    createlinkpost = CreateSubLinkPost(sub='live')
-
-    return render_template('sublive.html', sub=sub, page=page,
-                           sort_type='view_live_sub',
-                           posts=posts, mods=mods, chats=chats,
-                           txtpostform=createtxtpost,
-                           lnkpostform=createlinkpost)
-
-
 @app.route("/createsub")
 def create_sub():
     """ Here we can view the create sub form """
