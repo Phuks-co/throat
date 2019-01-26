@@ -685,9 +685,16 @@ def sendMail(to, subject, content):
     sg.client.mail.send.post(request_body=mail.get())
 
 
+# TODO: Make all these functions one.
 def enableVideoMode(sub):
     """ Returns true if the sub has video/music player enabled """
     x = db.get_sub_metadata(sub['sid'], 'videomode')
+    return False if not x or x['value'] == '0' else True
+
+
+def enablePolling(sub):
+    """ Returns true if the sub has polling enabled """
+    x = db.get_sub_metadata(sub['sid'], 'allow_polls')
     return False if not x or x['value'] == '0' else True
 
 

@@ -68,15 +68,11 @@ class EditSubForm(FlaskForm):
     restricted = BooleanField('Only mods can post')
     usercanflair = BooleanField('Allow users to flair their own posts')
     videomode = BooleanField('Enable video player (youtube links only)')
+    polling = BooleanField('Enable polls')
     subsort = RadioField('Default sub page post sorting',
                          choices=[('v', 'Hot'), ('v_two', 'New'),
                                   ('v_three', 'Top')],
                          validators=[Optional()])
-    showtimer = BooleanField('Show Timer, uncheck to reset and remove the clock')
-    timermsg = StringField('Countdown clock message',
-                           validators=[Length(min=0, max=128)])
-    timer = StringField('Number of hours',
-                        validators=[Length(min=0, max=4)])
     subtags = StringField('Tags')
     sidebar = TextAreaField('Sidebar text',
                             validators=[Length(max=8000)])

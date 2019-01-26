@@ -269,53 +269,13 @@ def edit_sub(sub):
             db.uquery('UPDATE `sub` SET `title`=%s, `sidebar`=%s, `nsfw`=%s '
                       'WHERE `sid`=%s', (form.title.data, form.sidebar.data,
                                          form.nsfw.data, sub['sid']))
-            db.update_sub_metadata(sub['sid'], 'restricted',
-                                   form.restricted.data)
+            db.update_sub_metadata(sub['sid'], 'restricted', form.restricted.data)
             db.update_sub_metadata(sub['sid'], 'ucf', form.usercanflair.data)
-            db.update_sub_metadata(sub['sid'], 'videomode',
-                                   form.videomode.data)
-            cache.delete_memoized(db.get_sub_metadata, sub['sid'],
-                                  'videomode', _all=True)
-            if form.showtimer.data == 0:
-                db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
-                          'AND `sid`=%s', ('timer', sub['sid']))
-                db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
-                          'AND `sid`=%s', ('timermsg', sub['sid']))
-                db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s '
-                          'AND `sid`=%s', ('showtimer', sub['sid']))
-                cache.delete_memoized(db.get_sub_metadata, sub['sid'],
-                                      'timer', _all=True)
-                cache.delete_memoized(db.get_sub_metadata, sub['sid'],
-                                      'timermsg', _all=True)
-                cache.delete_memoized(db.get_sub_metadata, sub['sid'],
-                                      'showtimer', _all=True)
-            else:
-                now = datetime.datetime.utcnow()
-                timer = db.get_sub_metadata(sub['sid'], 'timer')
-                timermsg = db.get_sub_metadata(sub['sid'], 'timermsg')
-                showtimer = db.get_sub_metadata(sub['sid'], 'showtimer')
-                if form.timer.data:
-                    newtime = now + datetime.timedelta(hours=int(form.timer.data))
-                if timer:
-                    if form.timer.data:
-                        db.update_sub_metadata(sub['sid'], 'timer', newtime)
-                else:
-                    db.create_sub_metadata(sub['sid'], 'timer', newtime)
-                if timermsg:
-                    db.update_sub_metadata(sub['sid'], 'timermsg',
-                                           form.timermsg.data)
-                    cache.delete_memoized(db.get_sub_metadata, sub['sid'],
-                                          'timermsg', _all=True)
-                else:
-                    db.create_sub_metadata(sub['sid'], 'timermsg',
-                                           form.timermsg.data)
-                if showtimer:
-                    db.update_sub_metadata(sub['sid'], 'showtimer',
-                                           form.showtimer.data)
-                    cache.delete_memoized(db.get_sub_metadata, sub['sid'],
-                                          'showtimer', _all=True)
-                else:
-                    db.create_sub_metadata(sub['sid'], 'showtimer', 1)
+            db.update_sub_metadata(sub['sid'], 'videomode', form.videomode.data)
+
+            db.update_sub_metadata(sub['sid'], 'allow_polls', form.polling.data)
+            cache.delete_memoized(db.get_sub_metadata, sub['sid'],  'videomode', _all=True)
+            cache.delete_memoized(db.get_sub_metadata, sub['sid'],  'allow_polls')
 
             if form.subsort.data != "None":
                 db.update_sub_metadata(sub['sid'], 'sort',
@@ -652,6 +612,13 @@ def create_post():
             img = misc.get_thumbnail(form)
         if form.ptype.data == 'poll':
             ptype = 3
+            # Check if this sub allows polls...
+            try:
+                allows_polls = SubMetadata.get((SubMetadata.sid == sub['sid']) & (SubMetadata.key == "allow_polls"))
+                if allows_polls.value != '1':
+                    return render_template('createpost.html', txtpostform=form, error="This sub does not allow polling")
+            except SubMetadata.DoesNotExist:
+                return render_template('createpost.html', txtpostform=form, error="This sub does not allow polling")
             # check if we got at least three options
             options = request.form.getlist('op[]')
             options = [x for x in options if len(x.strip(misc.WHITESPACE)) > 0]  # Remove empty strings

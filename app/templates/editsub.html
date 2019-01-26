@@ -42,9 +42,16 @@
       </div>
 
       <div class="pure-control-group">
-        <label for="enableVideoMode" class="pure-checkbox">
+        <label for="videomode" class="pure-checkbox">
           {{editsubform.videomode(checked=func.enableVideoMode(sub))}}
           {{editsubform.videomode.label.text}}
+        </label>
+      </div>
+
+      <div class="pure-control-group">
+        <label for="polling" class="pure-checkbox">
+          {{editsubform.polling(checked=func.enablePolling(sub))}}
+          {{editsubform.polling.label.text}}
         </label>
       </div>
 
