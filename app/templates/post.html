@@ -47,7 +47,7 @@
       <a href="{{url_for('submit', ptype='text', sub=sub.name)}}" class="sbm-post pure-button">Submit a text post</a>
       <a href="{{url_for('submit', ptype='link', sub=sub.name)}}" class="sbm-post pure-button">Submit a link post</a>
       {%if subInfo.get('allow_polls', 0) == '1' %}
-        <a href="@{url_for('submit', ptype='poll', sub=sub['name'])}" class="sbm-post pure-button">Submit a poll</a>
+        <a href="{{url_for('submit', ptype='poll', sub=sub.name)}}" class="sbm-post pure-button">Submit a poll</a>
       {%endif%}
 
     {%endif%}
@@ -222,6 +222,10 @@
         <p><button id="poll-show-results" type="button" class="pure-button">Show results.</button></p>
         {%endif%}
       {%endif%}
+      {%if 'hide_results' in postmeta and poll_open %}
+        <p><i>Results will be hidden until the poll closes</i></p>
+      {%endif%}
+
       {%for opt in poll_options %}
         
         <div class="poll-option" data-oid="{{opt.id}}">

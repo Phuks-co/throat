@@ -646,6 +646,9 @@ def create_post():
             # Create SubPostPollOption objects...
             poll_options = [{'pid': post.pid, 'text': x} for x in options]
             SubPostPollOption.insert_many(poll_options).execute()
+            # apply all poll options..
+            if form.hideresults.data:
+                SubPostMetadata.create(pid=post.pid, key='hide_results', value=1)
         db.uquery('UPDATE `sub` SET posts = posts + 1 WHERE `sid`=%s',
                   (sub['sid'], ))
         addr = url_for('sub.view_post', sub=sub['name'], pid=post.pid)

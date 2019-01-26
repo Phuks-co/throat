@@ -80,17 +80,17 @@ var recaptchaCallback = function(){
               <input type="file" name="files" placeholder="Only images allowed" />
             </div>
             {% endif %}
-          {# if txtpostform.ptype.data == "poll" %}
+          {% if txtpostform.ptype.data == "poll" %}
             <div class="pure-control-group">
-              <label for="multivote">Allow voting for multiple options</label>
-              <input id="multivote" name="multivote" type="checkbox" value="y">
+              <label for="hideresults">Hide poll results until it closes</label>
+              <input id="hideresults" name="hideresults" type="checkbox" value="y">
             </div>
 
-            <div class="pure-control-group">
+            {#<div class="pure-control-group">
               <label for="displaynames">Display username of voters</label>
               <input id="displaynames" name="displaynames" type="checkbox" value="y">
-            </div>
-          {%endif#}
+            </div>#}
+          {%endif%}
           {% if not sub or (sub and not sub.nsfw) %}
             <div class="pure-control-group">
               <label for="nsfw">{{txtpostform.nsfw.label.text}}</label>
