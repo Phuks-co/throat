@@ -176,6 +176,9 @@
               <li><a class="nsfw-post"> remove nsfw </a></li>
              {% endif %}
             {%endif%}
+            {% if post.deleted == 0 and post.ptype == 3 and poll_open and (post.uid == current_user.uid or current_user.is_admin() or current_user.is_mod(post.sid)) %}
+              <li><a class="poll-close"> close poll </a></li>
+            {%endif%}
             <!-- Note from past self: DO NOT REMOVE THIS UNLESS YOU'VE FINISHED UNFUCKING THE JS -->
             <form id="delete-post-form" class="hide">{{delpostform.csrf_token}}{{delpostform.post(value=post.pid)}}{{delpostform.reason}}</form>
             {% if current_user.is_mod(post.sid) %}

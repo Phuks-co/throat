@@ -2342,3 +2342,35 @@ def remove_vote(pid):
         except SubPostPollVote.DoesNotExist:
             pass
     return redirect(url_for('sub.view_post', sub=post['sub'], pid=pid))
+
+
+@do.route('/do/close_poll', methods=['POST'])
+@login_required
+def close_poll():
+    """ Closes a poll. """
+    form = DeletePost()
+
+    if form.validate():
+        try:
+            post = SubPost.get(SubPost.pid == form.post.data)
+        except SubPost.DoesNotExist:
+            return json.dumps({'status': 'error', 'error': 'Post does not exist'})
+
+        if post.ptype != 3:
+            abort(404)
+        
+        if current_user.uid == post.uid or current_user.is_admin() or current_user.is_mod(post.sid):
+            # Check if poll's not closed already
+            postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == post.pid))
+            if 'poll_closed' in postmeta:
+                return json.dumps({'status': 'error', 'error': 'Poll already closed.'})
+
+            if 'poll_closes_time' in postmeta:
+                if int(postmeta['poll_closes_time']) < time.time():
+                    return json.dumps({'status': 'error', 'error': 'Poll already closed.'})
+            
+            SubPostMetadata.create(pid=post.pid, key='poll_closed', value='1')
+            return json.dumps({'status': 'ok'})
+        else:
+            abort(403)
+    return json.dumps({'status': 'error', 'error': get_errors(form)})

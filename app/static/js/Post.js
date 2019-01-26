@@ -132,6 +132,21 @@ u.addEventForChild(document, 'click', '.nsfw-post', function(e, qelem){
   });
 });
 
+u.addEventForChild(document, 'click', '.poll-close', function(e, qelem){
+  var tg=e.currentTarget;
+  TextConfirm(qelem, function(){
+    u.rawpost('/do/close_poll', new FormData(document.getElementById('delete-post-form')),
+    function(data){
+      if (data.status != "ok") {
+        tg.innerHTML = 'Error.';
+      } else {
+        tg.innerHTML = 'Done';
+        document.location.reload();
+      }
+    })
+  });
+});
+
 
 // post source
 u.addEventForChild(document, 'click', '.post-source', function(e, qelem){
