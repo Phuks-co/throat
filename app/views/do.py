@@ -665,7 +665,7 @@ def create_post():
         post = SubPost.create(sid=sub['sid'],
                               uid=current_user.uid,
                               title=form.title.data,
-                              content=form.content.data if ptype == 0 else '',
+                              content=form.content.data if ptype != 1 else '',
                               link=form.link.data if ptype == 1 else None,
                               posted=datetime.datetime.utcnow(),
                               score=1,
