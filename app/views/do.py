@@ -2394,7 +2394,7 @@ def report():
         except SubPost.DoesNotExist:
             return jsonify(status='error', error='Post does not exist')
         
-        if post.deleted != 0:
+        if post['deleted'] != 0:
             return jsonify(status='error', error='Post does not exist')
         
         # check if user already reported the post
