@@ -71,17 +71,16 @@ u.addEventForChild(document, 'click', '.poll-vote-btn', function(e, qelem){
         if(pb){
             pb.classList.add('poll-voted');
             // 3 - Update vote totals
-            var totalVotes = document.querySelector(".poll-space[data-pid='" + pid + "']").getAttribute('data-votes') + 1;
+            var totalVotes = parseInt(document.querySelector(".poll-space[data-pid='" + pid + "']").getAttribute('data-votes')) + 1;
             document.querySelector(".poll-space[data-pid='" + pid + "']").setAttribute('data-votes', totalVotes);
             u.each(".poll-space[data-pid='" + pid + "'] .poll-option", function(k){
-                var locoid=k.getAttribute('data-oid'), locvotes=k.getAttribute('data-votes');
+                var locoid=k.getAttribute('data-oid'), locvotes=parseInt(k.getAttribute('data-votes'));
                 if(locoid == oid){
                     locvotes++;
                     k.setAttribute('data-votes', locvotes);
                 }
                 var pbar = document.querySelector(".poll-option[data-oid='" + locoid + "'] .poll-pbar").children[0];
                 if(locvotes != 0){
-                    console.log(pbar);
                     pbar.style.width = Math.round(locvotes/totalVotes*100) + '%';
                 }
                 var pvot = document.querySelector(".poll-option[data-oid='" + locoid + "'] .poll-votes");
@@ -130,16 +129,15 @@ u.addEventForChild(document, 'click', '.poll-withdraw-btn', function(e, qelem){
                 var veoid = ve.parentNode.parentNode.getAttribute('data-oid');
                 document.querySelector(".poll-space[data-pid='" + pid + "'] .poll-pbar.poll-voted").classList.remove('poll-voted');
                 // 3 - Update vote counts
-                var totalVotes = document.querySelector(".poll-space[data-pid='" + pid + "']").getAttribute('data-votes') - 1;
+                var totalVotes = parseInt(document.querySelector(".poll-space[data-pid='" + pid + "']").getAttribute('data-votes')) - 1;
                 document.querySelector(".poll-space[data-pid='" + pid + "']").setAttribute('data-votes', totalVotes);
                 u.each(".poll-space[data-pid='" + pid + "'] .poll-option", function(k){
-                    var locoid=k.getAttribute('data-oid'), locvotes=k.getAttribute('data-votes');
+                    var locoid=k.getAttribute('data-oid'), locvotes=parseInt(k.getAttribute('data-votes'));
                     if(locoid == veoid){
                         locvotes--;
                         k.setAttribute('data-votes', locvotes)
                     }    
                     var pbar = document.querySelector(".poll-option[data-oid='" + locoid + "'] .poll-pbar").children[0];
-                    console.log(locvotes, totalVotes)
                     if(locvotes != 0){
                         var percent = Math.round(locvotes/totalVotes*100);
                     }else{
