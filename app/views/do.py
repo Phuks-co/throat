@@ -1965,9 +1965,12 @@ def toggle_nsfw():
         except SubPost.DoesNotExist:
             return json.dumps({'status': 'error', 'error': 'Post does not exist'})
 
-        post.nsfw = 1 if post.nsfw == 0 else 0
-        post.save()
-        return json.dumps({'status': 'ok', 'msg': 'NSFW set to {0}'.format(bool(post.nsfw))})
+        if current_user.uid == post.uid or current_user.is_admin() or current_user.is_mod(post.sid):
+            post.nsfw = 1 if post.nsfw == 0 else 0
+            post.save()
+            return json.dumps({'status': 'ok', 'msg': 'NSFW set to {0}'.format(bool(post.nsfw))})
+        else:
+            return json.dumps({'status': 'error', 'error': 'Not authorized'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
