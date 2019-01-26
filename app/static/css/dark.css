@@ -452,3 +452,8 @@ body.dark .poll-pbar {
   background-color: #4a4a4a;
   border-color: #656565;
 }
+
+/* modals */
+body.dark .tingle-modal-box{
+  background-color: #171717;
+}

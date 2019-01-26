@@ -33,7 +33,7 @@ from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..misc import cache, sendMail, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata
-from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata
+from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
 from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote
 from peewee import fn, JOIN
 
@@ -2381,4 +2381,37 @@ def close_poll():
             return json.dumps({'status': 'ok'})
         else:
             abort(403)
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route('/do/report', methods=['POST'])
+@login_required
+def report():
+    form = DeletePost()
+    if form.validate():
+        try:
+            post = SubPost.get(SubPost.pid == form.post.data)
+        except SubPost.DoesNotExist:
+            return jsonify(status='error', error='Post does not exist')
+        
+        if post.deleted != 0:
+            return jsonify(status='error', error='Post does not exist')
+        
+        # check if user already reported the post
+        try:
+            rep = SubPostReport.get((SubPostReport.pid == post.pid) & (SubPostReport.uid == current_user.uid))
+            return jsonify(status='error', error='You have already reported this post')
+        except SubPostReport.DoesNotExist:
+            pass
+        
+        if len(form.reason.data) < 2:
+            return jsonify(status='error', error='Report reason too short.')
+
+        # do the reporting.
+        SubPostReport.create(pid=post.pid, uid=current_user.uid, reason=form.reason.data)
+        # callbacks!
+        cb = getattr(config, 'ON_POST_REPORT', False)
+        if cb:
+            cb(post, current_user, form.reason.data)
+        return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})

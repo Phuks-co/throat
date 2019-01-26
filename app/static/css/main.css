@@ -742,7 +742,6 @@ a.slink{
 .links a{
   position:relative;
   right:12px;
-  font-weight: 700;
   font-size: 13px;
   color: #0f5387;
   
@@ -752,6 +751,10 @@ a.slink{
   -webkit-user-select:none;
   user-select: none;
   margin-left: 5px;
+}
+
+.links a.comments, .postinfo .links a{
+  font-weight: 700;
 }
 
 .alldaposts .links a{

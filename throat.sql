@@ -398,3 +398,13 @@ CREATE TABLE `sub_post_poll_vote` (
   CONSTRAINT `sub_post_poll_vote_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`),
   CONSTRAINT `sub_post_poll_vote_ibfk_3` FOREIGN KEY (`vid`) REFERENCES `sub_post_poll_option` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `sub_post_report` (
+  `id` INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+  `pid` int(11) NOT NULL, 
+  `uid` VARCHAR(40) NOT NULL, 
+  `datetime` DATETIME NOT NULL, 
+  `reason` VARCHAR(128) NOT NULL, 
+  CONSTRAINT `sub_post_report_vote_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `sub_post` (`pid`),
+  CONSTRAINT `sub_post_report_vote_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -382,6 +382,16 @@ class SubUploads(TModel):
         table_name = 'sub_uploads'
 
 
+class SubPostReport(TModel):
+    pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
+    uid = ForeignKeyField(db_column='uid', model=User, field='uid')
+    datetime = DateTimeField(default=datetime.datetime.now)
+    reason = CharField(max_length=128)
+
+    class Meta:
+        table_name = 'sub_post_report'
+
+
 class UserIgnores(TModel):
     uid = ForeignKeyField(db_column='uid', model=User,
                           field='uid')

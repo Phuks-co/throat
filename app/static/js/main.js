@@ -4,6 +4,7 @@ import 'purecss/build/forms.css';
 import 'purecss/build/buttons.css';
 import 'purecss/build/grids.css';
 import 'purecss/build/grids-responsive.css';
+import 'tingle.js/dist/tingle.css';
 import 'time-elements/time-elements.js';
 import u from './Util';
 import Konami from './ext/konami';
