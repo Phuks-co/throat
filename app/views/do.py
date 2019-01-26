@@ -35,6 +35,7 @@ from ..misc import cache, sendMail, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata
 from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote
+from peewee import fn, JOIN
 
 do = Blueprint('do', __name__)
 
@@ -492,8 +493,42 @@ def unblock_sub(sid):
 def get_txtpost(pid):
     """ Sub text post expando get endpoint """
     try:
-        post = SubPost.select().where(SubPost.pid == pid).where(SubPost.deleted == 0).get()
-        return jsonify(status='ok', content=misc.our_markdown(post.content))
+        try:
+            post = misc.getSinglePost(pid)
+        except SubPost.DoesNotExist:
+            abort(404)
+        cont = misc.our_markdown(post['content'])
+        if post['ptype'] == 3:
+            postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
+            options, total_votes, has_voted, voted_for, poll_open = ([], 0, None, None, True)
+            # poll. grab options and votes.
+            options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text, fn.Count(SubPostPollVote.id).alias('votecount'))
+            options = options.join(SubPostPollVote, JOIN.LEFT_OUTER, on=(SubPostPollVote.vid == SubPostPollOption.id))
+            options = options.where(SubPostPollOption.pid == pid).group_by(SubPostPollOption.id)
+            total_votes = SubPostPollVote.select().where(SubPostPollVote.pid == pid).count()
+
+            if current_user.is_authenticated:
+                # Check if user has already voted on this poll.
+                try:
+                    u_vote = SubPostPollVote.get((SubPostPollVote.pid == pid) & (SubPostPollVote.uid == current_user.uid))
+                    has_voted = True
+                    voted_for = u_vote.vid_id
+                except SubPostPollVote.DoesNotExist:
+                    has_voted = False
+                
+                # Check if the poll is open
+                poll_open = True
+                if 'poll_closed' in postmeta:
+                    poll_open = False
+
+                if 'poll_closes_time' in postmeta:
+                    if int(postmeta['poll_closes_time']) < time.time():
+                        poll_open = False
+
+                cont = render_template('postpoll.html', post=post, poll_options=options, votes=total_votes, has_voted=has_voted, voted_for=voted_for,
+                           poll_open=poll_open, postmeta=postmeta) + cont
+        
+        return jsonify(status='ok', content=cont)
     except SubPost.DoesNotExist:
         return jsonify(status='error', error=['No longer available'])
 
@@ -2245,40 +2280,40 @@ def cast_vote(pid, oid):
         try:
             post = misc.getSinglePost(pid)
         except SubPost.DoesNotExist:
-            abort(404)
+            return jsonify(status='error', error='Post does not exist')
         
         if post['ptype'] != 3:
-            abort(404)
+            return jsonify(status='error', error='Post is not a poll')
 
         try:
             option = SubPostPollOption.get((SubPostPollOption.id == oid) & (SubPostPollOption.pid == pid))
         except SubPostPollOption.DoesNotExist:
-            abort(404)
+            return jsonify(status='error', error='Poll option does not exist')
 
         # Check if user hasn't voted already.
         try:
             SubPostPollVote.get((SubPostPollVote.uid == current_user.uid) & (SubPostPollVote.pid == pid))
-            return redirect(url_for('sub.view_post', sub=post['sub'], pid=pid))
+            return jsonify(status='error', error='Already voted')
         except SubPostPollVote.DoesNotExist:
             pass
         
         # Check if poll is still open...
         try:
             SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closed'))
-            return redirect(url_for('sub.view_post', sub=post['sub'], pid=pid))
+            return jsonify(status='error', error='Poll is closed')
         except SubPostMetadata.DoesNotExist:
             pass
 
         try:
             ca = SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closes_time'))
             if int(ca.value) < time.time():
-                return redirect(url_for('sub.view_post', sub=post['sub'], pid=pid))
+                return jsonify(status='error', error='Poll is closed')
         except SubPostMetadata.DoesNotExist:
             pass
 
         # Everything OK. Issue vote.
         vote = SubPostPollVote.create(uid=current_user.uid, pid=pid, vid=oid)
-    return redirect(url_for('sub.view_post', sub=post['sub'], pid=pid))
+    return jsonify(status='ok')
 
 
 @do.route('/do/remove_vote/<pid>', methods=['POST'])
@@ -2289,22 +2324,22 @@ def remove_vote(pid):
         try:
             post = misc.getSinglePost(pid)
         except SubPost.DoesNotExist:
-            abort(404)
+            return jsonify(status='error', error='Post does not exist')
         
         if post['ptype'] != 3:
-            abort(404)
+            return jsonify(status='error', error='Post is not a poll')
 
         # Check if poll is still open...
         try:
             SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closed'))
-            return redirect(url_for('sub.view_post', sub=post['sub'], pid=pid))
+            return jsonify(status='error', error='Poll is closed')
         except SubPostMetadata.DoesNotExist:
             pass
 
         try:
             ca = SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closes_time'))
             if int(ca.value) < time.time():
-                return redirect(url_for('sub.view_post', sub=post['sub'], pid=pid))
+                return jsonify(status='error', error='Poll is closed')
         except SubPostMetadata.DoesNotExist:
             pass
         
@@ -2314,7 +2349,7 @@ def remove_vote(pid):
             vote.delete_instance()
         except SubPostPollVote.DoesNotExist:
             pass
-    return redirect(url_for('sub.view_post', sub=post['sub'], pid=pid))
+    return jsonify(status='ok')
 
 
 @do.route('/do/close_poll', methods=['POST'])

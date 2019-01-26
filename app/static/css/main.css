@@ -1216,8 +1216,7 @@ input[type=search] {
 
 #postcontent, .poll-space {
   background-color: #f6f6f6;
-  padding: 1px 1em; /* 1px margin on botton and top so it respects <p>'s margin */
-  margin-top: .5em;
+  padding: .4em 1em; /* 1px margin on botton and top so it respects <p>'s margin */
 }
 
 #postcontent textarea, .commblock textarea{

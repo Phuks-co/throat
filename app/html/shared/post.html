@@ -61,6 +61,8 @@
           @elif post['link'].lower().endswith(('.mp4', '.webm', '.gifv')):
           <div class="expando" data-pid="@{post['pid']!!s}"  data-t="lnk" title="Play video" data-link="@{post['link']!!e}"><div data-icon="play" class="icon expando-btn"></div></div>
           @end
+        @elif post['ptype'] == 3:
+          <div class="expando" data-pid="@{post['pid']!!s}" data-t="poll" title="Show poll" data-link="None"><div data-icon="text" class="icon expando-btn"></div></div>
         @elif post['content'] != '':
           <div class="expando" data-pid="@{post['pid']!!s}" data-t="txt" title="Show post content" data-link="None"><div data-icon="text" class="icon expando-btn"></div></div>
         @end
