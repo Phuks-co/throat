@@ -82,7 +82,7 @@
       <div class="links" data-sid="@{post['sid']!!s}">
         <a class="comments" href="@{conf['SUB_PREFIX']}/@{post['sub']}/@{post['pid']!!s}">@{(post['comments']>0) and 'comments (' + str(post['comments']) +')' or 'comment'}</a>
         @if not sub and not announcement:
-          <a data-ac="block" class="unblk">block sub</a>
+          <span><a data-ac="block" class="unblk">block sub</a></span>
         @end
         <a data-ac="report" class="report-post">report</a>
       </div>

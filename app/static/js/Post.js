@@ -541,3 +541,16 @@ u.addEventForChild(document, 'click', '#submit_report', function(e, qelem){
     qelem.removeAttribute('disabled');
   })
 });
+
+
+u.addEventForChild(document, 'click', 'a.unblk', function(e, qelem){
+  var sid=qelem.parentNode.parentNode.getAttribute('data-sid');
+  TextConfirm(qelem, function(){
+    u.post('/do/block/' + sid, {},
+    function(data){
+      if (data.status == "ok") {
+        document.location.reload();
+      }
+    });
+  });
+});
