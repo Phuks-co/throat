@@ -753,7 +753,7 @@ a.slink{
   margin-left: 5px;
 }
 
-.links a.comments, .postinfo .links a{
+.links a.comments, .postinfo .links a, .bottombar.links a{
   font-weight: 700;
 }
 
