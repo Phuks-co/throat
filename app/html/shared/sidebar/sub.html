@@ -6,7 +6,7 @@
 </form>
 
 @if current_user.is_authenticated:
-  @if subInfo.get('restricted', 0) == 1 and not current_user.uid in subInfo['mod2']:
+  @if subInfo.get('restricted', 0) == '1' and not (current_user.uid in subInfo['mod2'] or current_user.uid == subInfo['mod1']):
     <div>Only mods can post.</div>
   @else:
     @if current_user.uid in subInfo.get('ban', []):
@@ -14,6 +14,9 @@
     @else:
       <a href="@{url_for('submit', ptype='text', sub=sub['name'])}" class="sbm-post pure-button">Submit a text post</a>
       <a href="@{url_for('submit', ptype='link', sub=sub['name'])}" class="sbm-post pure-button">Submit a link post</a>
+      @if subInfo.get('allow_polls', 0) == '1':
+        <a href="@{url_for('submit', ptype='poll', sub=sub['name'])}" class="sbm-post pure-button">Submit a poll</a>
+      @end
     @endif
   @end
 @end

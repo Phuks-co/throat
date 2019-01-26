@@ -314,7 +314,7 @@ def view_post(sub, pid, comments=False, highlight=None):
                 if int(postmeta['poll_closes_time']) < time.time():
                     poll_open = False
 
-    return render_template('post.html', post=post, mods=mods,
+    return render_template('post.html', post=post, mods=mods, subInfo=misc.getSubData(post['sid']),
                            edittxtpostform=txtpedit, sub=ksub,
                            editlinkpostform=EditSubLinkPostForm(),
                            comments=comments, ncomments=ncomments,

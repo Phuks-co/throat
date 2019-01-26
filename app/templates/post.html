@@ -42,10 +42,14 @@
 </div>
 <hr/>
 {% if current_user.is_authenticated %}
-  {% if not (func.isRestricted(sub) and not current_user.is_mod(sub.sid)) %}
+  {% if not (subInfo.get('restricted', 0) == 1 and not current_user.is_mod(sub.sid)) %}
     {%if not current_user.is_subban(sub) %}
       <a href="{{url_for('submit', ptype='text', sub=sub.name)}}" class="sbm-post pure-button">Submit a text post</a>
       <a href="{{url_for('submit', ptype='link', sub=sub.name)}}" class="sbm-post pure-button">Submit a link post</a>
+      {%if subInfo.get('allow_polls', 0) == '1' %}
+        <a href="@{url_for('submit', ptype='poll', sub=sub['name'])}" class="sbm-post pure-button">Submit a poll</a>
+      {%endif%}
+
     {%endif%}
   {%endif%}
 {%endif%}
