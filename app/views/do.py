@@ -2390,7 +2390,7 @@ def report():
     form = DeletePost()
     if form.validate():
         try:
-            post = SubPost.get(SubPost.pid == form.post.data)
+            post = misc.getSinglePost(form.post.data)
         except SubPost.DoesNotExist:
             return jsonify(status='error', error='Post does not exist')
         
@@ -2399,7 +2399,7 @@ def report():
         
         # check if user already reported the post
         try:
-            rep = SubPostReport.get((SubPostReport.pid == post.pid) & (SubPostReport.uid == current_user.uid))
+            rep = SubPostReport.get((SubPostReport.pid == post['pid']) & (SubPostReport.uid == current_user.uid))
             return jsonify(status='error', error='You have already reported this post')
         except SubPostReport.DoesNotExist:
             pass
@@ -2408,7 +2408,7 @@ def report():
             return jsonify(status='error', error='Report reason too short.')
 
         # do the reporting.
-        SubPostReport.create(pid=post.pid, uid=current_user.uid, reason=form.reason.data)
+        SubPostReport.create(pid=post['pid'], uid=current_user.uid, reason=form.reason.data)
         # callbacks!
         cb = getattr(config, 'ON_POST_REPORT', False)
         if cb:
