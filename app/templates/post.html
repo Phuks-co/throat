@@ -132,7 +132,7 @@
       </div>
     </div>
 
-    <div class="postinfo">
+    <div class="postinfo" pid="{{post.pid}}">
       <div class="post-heading">
         {% if post.nsfw or sub.nsfw %}
         <div class="nsfw" alt="Not safe for work">NSFW</div>
@@ -197,6 +197,7 @@
                <li><a class="announce-post">make announcement</a></li>
              {%endif%}
             {% endif %}
+            <li><a data-ac="report" class="report-post">report</a></li>
           {%endif%}
         </ul>
     </div>
