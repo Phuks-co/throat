@@ -34,6 +34,7 @@ from .models import SubPostVote, SubPostComment, SubPostCommentVote
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads
 from peewee import JOIN, fn
 import requests
+import logging
 
 
 from wheezy.template.engine import Engine
@@ -949,7 +950,12 @@ def get_thumbnail(form):
         im = Image.open(BytesIO(req[1])).convert('RGB')
     elif ctype == 'text/html':
         # Not an image!! Let's try with OpenGraph
-        og = BeautifulSoup(req[1], 'lxml')
+        try:
+            og = BeautifulSoup(req[1], 'lxml')
+        except:
+            # If it errors here it's probably because lxml is not installed.
+            logging.warn('Thumbnail fetch failed. Is lxml installed?')
+            return ''
         try:
             img = og('meta', {'property': 'og:image'})[0].get('content')
             req = safeRequest(img)
