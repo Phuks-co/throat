@@ -971,11 +971,14 @@ def get_thumbnail(form):
     else:
         return ''
 
-    # This replaces all transparency with plain white.
-    # It prevents transparency glitching into green goo after resizing
-    n_im = Image.new("RGBA", im.size, "WHITE")
-    n_im.paste(im, (0, 0), im)
-    im = n_im.convert("RGB")
+    try:
+        # This replaces all transparency with plain white.
+        # It prevents transparency glitching into green goo after resizing
+        n_im = Image.new("RGBA", im.size, "WHITE")
+        n_im.paste(im, (0, 0), im)
+        im = n_im.convert("RGB")
+    except ValueError:
+        pass
 
 
     x, y = im.size
