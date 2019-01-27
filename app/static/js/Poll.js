@@ -1,7 +1,6 @@
 // Code for polls.
 
 import u from './Util';
-import Icons from './Icon';
 
 
 u.sub('#poll-addoption', 'click', function(e){
@@ -31,6 +30,21 @@ u.sub('#poll-addoption', 'click', function(e){
     node.appendChild(tbdel);
     opts.appendChild(node);
 });
+
+u.sub('#closetime', 'click', function(e){
+    if(this.checked){
+        document.getElementById('closetime_date').removeAttribute('disabled');
+    }else{
+        document.getElementById('closetime_date').setAttribute('disabled', true);
+        document.getElementById('closetime_date').value = '';
+    }
+});
+
+u.sub('#closetime_date', 'input', function(e){
+    var dtime = new Date(document.getElementById('closetime_date').value).getTime()/1000;
+    document.getElementById('closetime').value = dtime;
+});
+
 
 u.addEventForChild(document, 'click', '.poll-show-results', function(e, qelem){
     var pid=qelem.parentNode.parentNode.getAttribute('data-pid');

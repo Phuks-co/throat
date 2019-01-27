@@ -1,3 +1,5 @@
+import datetime
+import time
 from flask import Blueprint, redirect, url_for, abort, render_template, request
 from flask_login import login_required, current_user
 from werkzeug.contrib.atom import AtomFeed
@@ -288,7 +290,7 @@ def view_post(sub, pid, comments=False, highlight=None):
 
     postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
 
-    options, total_votes, has_voted, voted_for, poll_open = ([], 0, None, None, True)
+    options, total_votes, has_voted, voted_for, poll_open, poll_closes = ([], 0, None, None, True, None)
     if post['ptype'] == 3:
         # poll. grab options and votes.
         options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text, fn.Count(SubPostPollVote.id).alias('votecount'))
@@ -311,6 +313,7 @@ def view_post(sub, pid, comments=False, highlight=None):
                 poll_open = False
 
             if 'poll_closes_time' in postmeta:
+                poll_closes = datetime.datetime.utcfromtimestamp(int(postmeta['poll_closes_time'])).isoformat()
                 if int(postmeta['poll_closes_time']) < time.time():
                     poll_open = False
 
@@ -320,7 +323,7 @@ def view_post(sub, pid, comments=False, highlight=None):
                            comments=comments, ncomments=ncomments,
                            editpostflair=editflair, highlight=highlight, 
                            poll_options=options, votes=total_votes, has_voted=has_voted, voted_for=voted_for,
-                           poll_open=poll_open, postmeta=postmeta)
+                           poll_open=poll_open, postmeta=postmeta, poll_closes=poll_closes)
 
 
 @sub.route("/<sub>/<pid>/<cid>")

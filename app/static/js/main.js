@@ -6,9 +6,13 @@ import 'purecss/build/grids.css';
 import 'purecss/build/grids-responsive.css';
 import 'tingle.js/dist/tingle.css';
 import 'time-elements/time-elements.js';
+//import 'flatpickr/dist/flatpickr.css';
+import 'flatpickr/dist/themes/dark.css';
+
 import u from './Util';
 import Konami from './ext/konami';
 import Sortable from 'sortablejs';
+import flatpickr from "flatpickr";
 
 window.Sortable = Sortable;
 require('../css/main.css');
@@ -62,6 +66,8 @@ u.addEventForChild(document, 'mousedown', '.upvote,.downvote,.c-upvote,.c-downvo
 
 
 u.ready(function() {
+  // initialize all date pickers
+  flatpickr(".date-picker-future", {minDate: Date.now(), enableTime: true});
   // for the top bar sorts
   var list = document.getElementById("subsort");
   if(list){

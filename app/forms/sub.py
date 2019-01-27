@@ -101,6 +101,7 @@ class CreateSubTextPost(FlaskForm):
     nsfw = BooleanField('NSFW?')
     # for polls.
     hideresults = BooleanField('Hide poll results until it closes')
+    closetime = StringField('Poll closing')
 
     def __init__(self, *args, **kwargs):
         super(CreateSubTextPost, self).__init__(*args, **kwargs)

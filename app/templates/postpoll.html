@@ -6,8 +6,11 @@
             <p><button type="button" class="poll-show-results pure-button">Show results.</button></p>
         {%endif%}
     {%endif%}
-    {%if 'hide_results' in postmeta and poll_open %}
-        <p><i>Results will be hidden until the poll closes</i></p>
+    {%if poll_open %}
+        {%if poll_closes %}<p>This poll will close <time-until datetime="{{poll_closes}}Z"></time-until></p>{%endif%}
+        {%if 'hide_results' in postmeta %}
+            <p><i>Results will be hidden until the poll closes</i></p>
+        {%endif%}
     {%endif%}
     <div style="display: none;" class="error">Error</div>
     {%for opt in poll_options %}

@@ -193,7 +193,7 @@ body.dark .form label {
     color: #a63c00;
 }
 
-body.dark input[type="text"],
+body.dark input[type="text"]:not(.numInput),
 body.dark input[type="email"],
 body.dark input[type="url"],
 body.dark textarea,

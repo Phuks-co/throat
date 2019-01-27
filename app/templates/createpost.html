@@ -86,6 +86,12 @@ var recaptchaCallback = function(){
               <input id="hideresults" name="hideresults" type="checkbox" value="y">
             </div>
 
+            <div class="pure-control-group">
+              <label for="closetime">Close the poll at...</label>
+              <input id="closetime" name="closetime" type="checkbox" value="">
+              <input id="closetime_date" name="closetime_date" type="text" class="date-picker-future" disabled> <i>(local time)</i>
+            </div>
+
             {#<div class="pure-control-group">
               <label for="displaynames">Display username of voters</label>
               <input id="displaynames" name="displaynames" type="checkbox" value="y">
