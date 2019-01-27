@@ -426,6 +426,14 @@ u.addEventForChild(document, 'click', '.reply-comment', function(e, qelem){
   cNode.appendChild(back)
   pN.replaceChild(cNode,qelem );
 
+  var cs = window.getSelection().anchorNode;
+  var pp = "";
+  if(cs){
+    if(cs.parentNode.parentNode && cs.parentNode.parentNode.classList.contains('content')){
+      pp = '> ' + window.getSelection().getRangeAt(0).cloneContents().textContent + '\n';
+    }
+  }
+
   var lm = document.createElement('div');
   lm.id = 'rblock-' + cid;
   lm.classList.add('replybox');
@@ -433,7 +441,13 @@ u.addEventForChild(document, 'click', '.reply-comment', function(e, qelem){
   pN.parentNode.parentNode.appendChild(lm);
   initializeEditor(document.querySelector('#rcomm-' + cid));
   document.querySelector('#rcomm-'+cid+' textarea').focus()
-
+  // pre-populate textarea if there's a comment selected.
+  console.log('fuck', pp)
+  if(pp){
+    var ta = document.querySelector('#rcomm-'+cid+' textarea');
+    ta.value = pp;
+    ta.setSelectionRange(ta.value.length,ta.value.length);
+  }
 
 });
 
