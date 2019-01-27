@@ -15,7 +15,7 @@
   <tbody>
     {% for log in logs %}
       <tr>
-        <td><time-ago datetime="{{log.time}}Z">{{log.time}}</time-ago></td>
+        <td><time-ago datetime="{{log.time.isoformat()}}Z">{{log.time.isoformat()}}</time-ago></td>
         <td>{{log.desc}}</td>
         <td>{%if log.link%}<a href="{{log.link}}">Link</a>{%endif%}</td>
       </tr>
