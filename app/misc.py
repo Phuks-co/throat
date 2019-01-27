@@ -947,7 +947,7 @@ def get_thumbnail(form):
     if ctype in good_types:
         # yay, it's an image!!1
         # Resize
-        im = Image.open(BytesIO(req[1]))
+        im = Image.open(BytesIO(req[1])).convert('RGB')
     elif ctype == 'text/html':
         # Not an image!! Let's try with OpenGraph
         try:
@@ -959,27 +959,20 @@ def get_thumbnail(form):
         try:
             img = og('meta', {'property': 'og:image'})[0].get('content')
             req = safeRequest(img)
-            im = Image.open(BytesIO(req[1]))
+            im = Image.open(BytesIO(req[1])).convert('RGB')
         except (OSError, ValueError, IndexError):
             # no image, try fetching just the favicon then
             try:
                 img = og('link', {'rel': 'icon'})[0].get('href')
                 req = safeRequest(img)
                 im = Image.open(BytesIO(req[1]))
+                n_im = Image.new("RGBA", im.size, "WHITE")
+                n_im.paste(im, (0, 0), im)
+                im = n_im.convert("RGB")
             except (OSError, ValueError, IndexError):
                 return ''
     else:
         return ''
-
-    try:
-        # This replaces all transparency with plain white.
-        # It prevents transparency glitching into green goo after resizing
-        n_im = Image.new("RGBA", im.size, "WHITE")
-        n_im.paste(im, (0, 0), im)
-        im = n_im.convert("RGB")
-    except ValueError:
-        pass
-
 
     x, y = im.size
     while y > x:
