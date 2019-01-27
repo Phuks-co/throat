@@ -480,7 +480,7 @@ u.addEventForChild(document, 'click', '.report-post', function(e, qelem){
         </select>\
       </div> \
       <div class="pure-control-group" style="display:none" id="report_text_set"> \
-        <label for="report_text">Explain why you\'re reportin this post:</label>\
+        <label for="report_text">Explain why you\'re reporting this post:</label>\
         <input type="text" name="report_text" id="report_text" style="width:50%" /> \
       </div> \
       <div class="pure-controls"> \
