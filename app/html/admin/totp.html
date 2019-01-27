@@ -12,7 +12,7 @@
         <fieldset>
           <div class="pure-control-group">
             <label for="username">One-time password</label>
-            @{authform.totp(required=True)}
+            @{authform.totp(required=True, autofocus=True)}
           </div>
           <div class="pure-controls">
             @if error:
