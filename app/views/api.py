@@ -174,7 +174,7 @@ def authorize(*args, **kwargs):
 
 
 @api.route('/api/me')
-@oauth.require_oauth('email')
+@oauth.require_oauth('account_info')
 def me():
     """ Returns basic user info """
     user = request.oauth.user
