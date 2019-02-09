@@ -6,7 +6,8 @@ Some rules we should follow:
 """
 
 from datetime import datetime, timedelta
-from flask import Blueprint, jsonify, request, render_template, g
+from flask import Blueprint, jsonify, request, render_template, g, current_app
+from flask.sessions import SecureCookieSessionInterface
 from flask_login import login_required, current_user
 from flask_oauthlib.provider import OAuth2Provider
 from .. import misc
@@ -179,6 +180,16 @@ def me():
     """ Returns basic user info """
     user = request.oauth.user
     return jsonify(email=user['email'], username=user['name'], uid=user['uid'])
+
+
+@api.route('/api/getToken')
+@oauth.require_oauth('interact')
+def get_socket_session():
+    """ Returns basic user info """
+    user = request.oauth.user
+    session_serializer = SecureCookieSessionInterface().get_signing_serializer(current_app)
+
+    return jsonify(token=session_serializer.dumps({'uid': user['uid']}))
 
 
 @api.route('/oauth/token', methods=['GET', 'POST'])
