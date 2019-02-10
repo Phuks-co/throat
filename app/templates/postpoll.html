@@ -12,13 +12,18 @@
             <p><i>Results will be hidden until the poll closes</i></p>
         {%endif%}
     {%endif%}
+    {% if postmeta.poll_vote_after_level %}
+        <p>Only users above <b>level {{postmeta.poll_vote_after_level}}</b> can vote.</p>
+    {%endif%}
     <div style="display: none;" class="error">Error</div>
     {%for opt in poll_options %}
         <div class="poll-option" data-oid="{{opt.id}}" data-votes="{{opt.votecount}}">
             <span class="poll-option-text">{%if opt.id == voted_for %}<b>{{opt.text}} (voted)</b>{%else%}{{opt.text}}{%endif%}</span>
             <div class="poll-bar">
                 <div class="poll-vote">
-                    <button style="{%if has_voted or not current_user.is_authenticated or not poll_open%}display:none;{%endif%}" type="button" class="poll-vote-btn pure-button button-xsmall button-secondary" data-oid="{{opt.id}}">Vote</button>
+                    {% if current_user.is_authenticated and ((not postmeta.poll_vote_after_level) or (postmeta.poll_vote_after_level and current_user.get_user_level()[0] >= (postmeta.poll_vote_after_level|int))) %}
+                    <button style="{%if has_voted or not poll_open%}display:none;{%endif%}" type="button" class="poll-vote-btn pure-button button-xsmall button-secondary" data-oid="{{opt.id}}">Vote</button>
+                    {%endif%}
                 </div>
                 {% if ('hide_results' in postmeta and not poll_open) or ('hide_results' not in postmeta) %}
                     <div class="poll-hid poll-pbar {%if opt.id == voted_for %}poll-voted{%endif%}" style="{% if not has_voted and poll_open %}display:none;{%endif%}">

@@ -2324,6 +2324,13 @@ def cast_vote(pid, oid):
                 return jsonify(status='error', error='Poll is closed')
         except SubPostMetadata.DoesNotExist:
             pass
+        
+        try:
+            ca = SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_vote_after_level'))
+            if current_user.get_user_level()[0] < int(ca.value):
+                return jsonify(status='error', error='Insufficient user level')
+        except SubPostMetadata.DoesNotExist:
+            pass
 
         # Everything OK. Issue vote.
         vote = SubPostPollVote.create(uid=current_user.uid, pid=pid, vid=oid)
