@@ -11,8 +11,7 @@ from flask.sessions import SecureCookieSessionInterface
 from flask_login import login_required, current_user
 from flask_oauthlib.provider import OAuth2Provider
 from .. import misc
-from ..models import Sub
-from .. import database as db
+from ..models import Sub, User, Grant, Token, Client
 
 api = Blueprint('api', __name__)
 oauth = OAuth2Provider()
@@ -21,10 +20,10 @@ oauth = OAuth2Provider()
 class OAuthClient(object):
     """ Maps DB stuff to something that oauthlib can understand """
     def __init__(self, stuff):
-        self.is_confidential = bool(stuff['is_confidential'])
-        self._redirect_uris = stuff['_redirect_uris']
-        self._default_scopes = stuff['_default_scopes']
-        self.client_id = stuff['client_id']
+        self.is_confidential = bool(stuff.is_confidential)
+        self._redirect_uris = stuff._redirect_uris
+        self._default_scopes = stuff._default_scopes
+        self.client_id = stuff.client_id
 
     @property
     def client_type(self):
@@ -57,57 +56,61 @@ class OAuthGrant(object):
     """ Maps grants in DB to stuff oauthlib can use """
     def __init__(self, stuff):
         self.tuff = stuff
-        self.redirect_uri = stuff['redirect_uri']
+        self.redirect_uri = stuff.redirect_uri
 
     @property
     def user(self):
         """ Returns user info for this grant """
-        return db.get_user_from_uid(self.tuff['user_id'])
+        return User.get(self.tuff.user_id)
 
     @property
     def scopes(self):
         """ Returns grant's scopes """
         if self.tuff['_scopes']:
-            return self.tuff['_scopes'].split()
+            return self.tuff._scopes.split()
         return []
 
     def delete(self):
         """ Deletes this scope """
-        db.uquery('DELETE FROM `grant` WHERE `id`=%s', (self.tuff['id'],))
+        Grant.delete().where(Grant.id == self.tuff.id).execute()
 
 
 class OAuthToken(object):
     """ Maps DB oauth tokens to oauthlib stuff """
     def __init__(self, stuff):
         self.tuff = stuff
-        self.expires = stuff['expires']
-        self.scopes = stuff['_scopes'].split()
+        self.expires = stuff.expires
+        self.scopes = stuff._scopes.split()
 
     @property
     def user(self):
         """ Returns the user this token is attached to """
-        return db.get_user_from_uid(self.tuff['user_id'])
+        return User.get(self.tuff.user_id)
 
     def delete(self):
         """ Deletes this token """
-        db.uquery('DELETE FROM `token` WHERE `id`=%s', (self.tuff['id'],))
+        Token.delete().where(Token.id == self.tuff.id).execute()
 
 
 # OAuth stuff
 @oauth.clientgetter
 def load_client(client_id):
     """ Loads OAuth clients """
-    qr = db.query('SELECT * FROM `client` WHERE `client_id`=%s',
-                  (client_id,)).fetchone()
-    return OAuthClient(qr) if qr else None
+    try:
+        qr = Client.get(Client.id == client_id)
+        return OAuthClient(qr)
+    except Client.DoesNotExist:
+        return None
 
 
 @oauth.grantgetter
 def load_grant(client_id, code):
     """ Gets grants.. """
-    qr = db.query('SELECT * FROM `grant` WHERE `client_id`=%s AND `code`=%s',
-                  (client_id, code)).fetchone()
-    return OAuthGrant(qr) if qr else None
+    try:
+        qr = Grant.get((Grant.client_id == client_id) & (Grant.code == code))
+        return OAuthClient(qr)
+    except Grant.DoesNotExist:
+        return None
 
 
 @oauth.grantsetter
@@ -115,46 +118,36 @@ def save_grant(client_id, code, req, *args, **kwargs):
     """ Creates grants """
     # decide the expires time yourself
     expires = datetime.utcnow() + timedelta(seconds=100)
-    qr = db.uquery('INSERT INTO `grant` (`client_id`, `code`, `redirect_uri`, '
-                   '`_scopes`, `user_id`, `expires`) VALUES (%s, %s, %s, %s, '
-                   '%s, %s)', (client_id, code['code'], req.redirect_uri,
-                               ' '.join(req.scopes), current_user.uid,
-                               expires))
-
-    g.db.commit()
-    f = db.query('SELECT * FROM `grant` WHERE `id`=%s', (qr.lastrowid, ))
-    return f.fetchone()
+    qr = Grant.create(client_id=client_id, code=code, redirect_uri=req.redirect_uri,
+                      _scopes=' '.join(req.scopes), user_id=current_user.uid, expires=expires)
+    qr.save()
+    return qr
 
 
 @oauth.tokengetter
 def load_token(access_token=None, refresh_token=None):
     """ Loads oauth token """
-    if access_token:
-        qr = db.query('SELECT * FROM `token` WHERE `access_token`=%s',
-                      (access_token,)).fetchone()
-    elif refresh_token:
-        qr = db.query('SELECT * FROM `token` WHERE `refresh_token`=%s',
-                      (refresh_token,)).fetchone()
-    return OAuthToken(qr) if qr else None
+    try:
+        if access_token:
+            qr = Token.get(Token.access_token == access_token)
+        elif refresh_token:
+            qr = Token.get(Token.refresh_token == refresh_token)
+        return OAuthToken(qr)
+    except Token.DoesNotExist:
+        return None
 
 
 @oauth.tokensetter
 def save_token(token, req, *args, **kwargs):
     """ Creates oauth token """
-    db.uquery('DELETE FROM `token` WHERE `client_id`=%s AND `user_id`=%s',
-              (req.client.client_id, req.user['uid']))
+    Token.delete().where((Token.client_id == req.client.client_id) & (Token.user_id == req.user['uid'])).execute()
 
     expires_in = token.get('expires_in')
     expires = datetime.utcnow() + timedelta(seconds=expires_in)
-    qr = db.uquery('INSERT INTO `token` (`access_token`, `refresh_token`, '
-                   '`token_type`, `_scopes`, `expires`, `client_id`, `user_id`'
-                   ') VALUES (%s, %s, %s, %s, %s, %s, %s)',
-                   (token['access_token'], token['refresh_token'],
-                    token['token_type'], token['scope'], expires,
-                    req.client.client_id, req.user['uid']))
-    g.db.commit()
-    f = db.query('SELECT * FROM `token` WHERE `id`=%s', (qr.lastrowid, ))
-    return f.fetchone()
+    qr = Token.create(access_token=token['access_token'], refresh_token=token['refresh_token'], token_type=token['token_type'],
+                      _scopes=token['scope'], expires=expires, client_id=req.client.client_id, user_id=req.user['uid'])
+    qr.save()
+    return qr
 
 
 @api.route('/oauth/authorize', methods=['GET', 'POST'])
