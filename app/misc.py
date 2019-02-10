@@ -568,7 +568,7 @@ def getSubCreation(sub):
 
 
 @cache.memoize(60)
-def getSuscriberCount(sub):
+def getSuscriberCount(sub):  # DEPRECATED. PENDING DELETION
     """ Returns subscriber count """
     c = db.query('SELECT `subscribers` FROM `sub` WHERE `sid`=%s',
                  (sub['sid'], )).fetchone()
@@ -1445,12 +1445,12 @@ def upload_file(max_size=16580608):
     return f_name
 
 
-def getSubData(sid, simple=False):
+def getSubData(sid, simple=False, extra=False):
     sdata = SubMetadata.select().where(SubMetadata.sid == sid)
     sub = Sub.get(Sub.sid == sid)
-    data = {'mods': [], 'mod2': []}
+    data = {'mods': [], 'mod2': [], 'mod2i': [], 'xmod2': []}
     for p in sdata:
-        if p.key in ['mod2', 'tag', 'ban']:
+        if p.key in ['mod2', 'tag', 'ban', 'mod2i', 'xmod2']:
             if data.get(p.key):
                 data[p.key].append(p.value)
             else:
@@ -1480,6 +1480,19 @@ def getSubData(sid, simple=False):
                 data['mods'] = User.select(User.uid, User.name).where((User.uid << data['mod2']) & (User.status == 0)).dicts()
             except User.DoesNotExist:
                 data['mods'] = []
+        
+        if extra:
+            if data.get('xmod2', []) != []:
+                try:
+                    data['xmods'] = User.select(User.uid, User.name).where((User.uid << data['xmod2']) & (User.status == 0)).dicts()
+                except User.DoesNotExist:
+                    data['xmods'] = []
+            
+            if data.get('mod2i', []) != []:
+                try:
+                    data['modi'] = User.select(User.uid, User.name).where((User.uid << data['mod2i']) & (User.status == 0)).dicts()
+                except User.DoesNotExist:
+                    data['modi'] = []
         try:
             data['owner'] = User.select(User.uid, User.name).where((User.uid == data['mod1']) & (User.status == 0)).dicts().get()
         except (KeyError, User.DoesNotExist):

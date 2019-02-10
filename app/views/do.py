@@ -1054,7 +1054,9 @@ def ban_user_sub(sub):
                       {'count': misc.get_notification_count(user['uid'])},
                       namespace='/snt',
                       room='user' + user['uid'])
-        db.create_sub_metadata(sub['sid'], 'ban', user['uid'])
+        
+        SubMetadata.create(sid=sub['sid'], key='ban', value=user['uid']).save()
+        SubMetadata.delete().where((SubMetadata.sid==sub['sid']) & (SubMetadata.key == 'xban') & (SubMetadata.value == user['uid'])).execute()
 
         db.create_sublog(sub['sid'], 7, '{0} banned {1} with reason `{2}`'.format(current_user.get_username(), user['name'], form.reason.data),
                          url_for('sub.view_sub_bans', sub=sub['name']))
@@ -1172,10 +1174,9 @@ def remove_mod2(sub, user):
             x = db.get_sub_metadata(sub['sid'], 'mod2', value=user['uid'])
             if not x:
                 return jsonify(status='error', error=['User is not mod'])
-
-            db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s '
-                      'AND `sid`=%s',
-                      ('mod2', user['uid'], sub['sid']))
+            
+            SubMetadata.delete().where((SubMetadata.sid == sub['sid']) & (SubMetadata.key == 'mod2') & (SubMetadata.value == user['uid'])).execute()
+            SubMetadata.create(sid=sub['sid'], key='xmod2', value=user['uid']).save()
 
             db.create_sublog(sub['sid'], 6, current_user.get_username() +
                              ' removed ' + user['name'] + ' from the mod team')
@@ -1227,8 +1228,10 @@ def accept_mod2inv(sub, user):
             if misc.moddedSubCount(user['uid']) >= 15:
                 return json.dumps({'status': 'error',
                                    'error': ["You can't mod more than 15 subs"]})
-            db.uquery('UPDATE `sub_metadata` SET `key`=%s WHERE `key`=%s AND '
-                      '`value`=%s', ('mod2', 'mod2i', user['uid']))
+            
+            SubMetadata.update(key='mod2').where((SubMetadata.sid == sub['sid']) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == user['uid'])).execute()
+            SubMetadata.delete().where((SubMetadata.sid == sub['sid']) & (SubMetadata.key == 'xmod2') & (SubMetadata.value == user['uid'])).execute()
+
             db.create_sublog(sub['sid'], 6, user['name'] + ' accepted mod invite')
 
             if not current_user.has_subscribed(sub['name']):

@@ -42,13 +42,13 @@
 </div>
 <div class="col-12"><hr></div>
 <div class="col-12">
-  <p>Pending invites: {% if modinvs|length < 1 %}none{% endif %}</p>
+  <p>Pending invites: {% if subdata.modi|length < 1 %}none{% endif %}</p>
   <ul>
-  {% for modinv in modinvs if modinvs|length > 0 %}
+  {% for modinv in subdata.modi if subdata.modi|length > 0 %}
   <span class="editmodbtn col-4">
-    <li><a href="{{url_for('view_user', user=db.get_user_from_uid(modinv.value).name)}}">{{db.get_user_from_uid(modinv.value).name}}</a>
+    <li><a href="{{url_for('view_user', user=modinv.name)}}">{{modinv.name}}</a>
       {% if current_user.is_admin() or current_user.is_topmod(sub.sid) %}
-      (<a data-sub="{{sub.name}}" data-user="{{db.get_user_from_uid(modinv.value).name}}" class="slink revoke-mod2inv">revoke</a>)
+      (<a data-sub="{{sub.name}}" data-user="{{modinv.name}}" class="slink revoke-mod2inv">revoke</a>)
       {% endif %}
     </li>
     </span>
@@ -73,11 +73,11 @@
 </div>
 <div class="col-12"><hr></div>
 <div class="col-12">
-  <p>Past mods: {% if xmods|length < 1 %}none{% endif %}</p>
+  <p>Past mods: <b>{% if subdata.xmods|length < 1 %}none{%else%}{{subdata.xmods|length}}{% endif %}</b></p>
   <ul>
-  {% for xmod in xmods if xmods|length > 0 %}
+  {% for xmod in subdata.xmods if subdata.xmods|length > 0 %}
   <span class="col-4">
-    <li><i class="fa fa-remove"></i> <a href="{{url_for('view_user', user=db.get_user_from_uid(xmod.value).name)}}">{{db.get_user_from_uid(xmod.value).name}}</a></li>
+    <li><i class="fa fa-remove"></i> <a href="{{url_for('view_user', user=xmod.name)}}">{{xmod.name}}</a></li>
   </span>
   {% endfor %}
   </ul>

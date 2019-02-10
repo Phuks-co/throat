@@ -18,9 +18,9 @@
   <ul>
   {% for ban in banned if banned|length > 0 %}
   <span class="editbanbtn">
-    <li><i class="fa fa-remove"></i> <a href="{{url_for('view_user', user=db.get_user_from_uid(ban.value).name)}}">{{db.get_user_from_uid(ban.value).name}}</a>
+    <li><i class="fa fa-remove"></i> <a href="{{url_for('view_user', user=ban.name)}}">{{ban.name}}</a>
       {% if current_user.is_admin() or current_user.is_topmod(sub.sid) or current_user.is_mod(sub.sid) %}
-      (<a data-sub="{{sub.name}}" data-user="{{db.get_user_from_uid(ban.value).name}}" class="slink revoke-ban">unban</a>)
+      (<a data-sub="{{sub.name}}" data-user="{{ban.name}}" class="slink revoke-ban">unban</a>)
       {% endif %}
     </li>
     </span>
@@ -50,7 +50,7 @@
   <ul>
   {% for xban in xbans if xbans|length > 0 %}
   <span class="col-4">
-    <li><i class="fa fa-user"></i> <a href="{{url_for('view_user', user=db.get_user_from_uid(xban.value).name)}}">{{db.get_user_from_uid(xban.value).name}}</a></li>
+    <li><i class="fa fa-user"></i> <a href="{{url_for('view_user', user=xban.name)}}">{{xban.name}}</a></li>
   </span>
   {% endfor %}
   </ul>

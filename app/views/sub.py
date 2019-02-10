@@ -6,7 +6,7 @@ from werkzeug.contrib.atom import AtomFeed
 from peewee import fn, JOIN
 from ..misc import engine
 from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption
-from ..models import SubPostPollVote, SubPostMetadata
+from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User
 from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditSubTextPostForm, EditMod2Form
 from ..forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair, CreateSubFlair
 from .. import database as db
@@ -68,15 +68,15 @@ def edit_sub_css(sub):
 @login_required
 def edit_sub_flairs(sub):
     """ Here we manage the sub's flairs. """
-    sub = db.get_sub_from_name(sub)
-    if not sub:
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
         abort(404)
 
-    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
+    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
         abort(403)
 
-    c = db.query('SELECT * FROM `sub_flair` WHERE `sid`=%s', (sub['sid'], ))
-    flairs = c.fetchall()
+    flairs = SubFlair.select().where(SubFlair.sid == sub.sid).dicts()
     formflairs = []
     for flair in flairs:
         formflairs.append(EditSubFlair(flair=flair['xid'], text=flair['text']))
@@ -88,16 +88,20 @@ def edit_sub_flairs(sub):
 @login_required
 def edit_sub(sub):
     """ Here we can edit sub info and settings """
-    sub = db.get_sub_from_name(sub)
-    if not sub:
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
         abort(404)
 
-    if current_user.is_mod(sub['sid']) or current_user.is_admin():
+    if current_user.is_mod(sub.sid) or current_user.is_admin():
+        submeta = misc.metadata_to_dict(SubMetadata.select().where(SubMetadata.sid == sub.sid))
         form = EditSubForm()
-        pp = db.get_sub_metadata(sub['sid'], 'sort')
-        form.subsort.data = pp.get('value') if pp else ''
-        form.sidebar.data = sub['sidebar']
-        return render_template('editsub.html', sub=sub, editsubform=form)
+        # pre-populate the form.
+        form.subsort.data = submeta.get('sort')
+        form.sidebar.data = sub.sidebar
+        form.title.data = sub.title
+
+        return render_template('editsub.html', sub=sub, editsubform=form, metadata=submeta)
     else:
         abort(403)
 
@@ -106,15 +110,13 @@ def edit_sub(sub):
 @sub.route("/<sub>/sublog/<int:page>")
 def view_sublog(sub, page):
     """ Here we can see a log of mod/admin activity in the sub """
-    sub = db.get_sub_from_name(sub)
-    if not sub:
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
         abort(404)
 
-    logs = db.query('SELECT * FROM `sub_log` WHERE `sid`=%s ORDER BY `lid` '
-                    'DESC LIMIT 50 OFFSET %s ',
-                    (sub['sid'], ((page - 1) * 50)))
-    logs = logs.fetchall()
-    return render_template('sublog.html', sub=sub, logs=logs, page=page)
+    logs = SubLog.select().where(SubLog.sid == sub.sid).order_by(SubLog.lid.desc()).paginate(page, 50)
+    return render_template('sublog.html', sub=sub, logs=logs.dicts(), page=page)
 
 
 @sub.route("/<sub>/mods")
@@ -127,11 +129,8 @@ def edit_sub_mods(sub):
         abort(404)
 
     if current_user.is_mod(sub.sid) or current_user.is_modinv(sub.sid) or current_user.is_admin():
-        subdata = misc.getSubData(sub.sid)
-        xmods = db.get_sub_metadata(sub.sid, 'xmod2', _all=True)
-        modinvs = db.get_sub_metadata(sub.sid, 'mod2i', _all=True)
-        return render_template('submods.html', sub=sub,
-                               modinvs=modinvs, xmods=xmods, subdata=subdata,
+        subdata = misc.getSubData(sub.sid, extra=True)
+        return render_template('submods.html', sub=sub, subdata=subdata,
                                editmod2form=EditMod2Form(),
                                banuserform=BanUserSubForm())
     else:
@@ -141,16 +140,17 @@ def edit_sub_mods(sub):
 @sub.route("/<sub>/new.rss")
 def sub_new_rss(sub):
     """ RSS feed for /sub/new """
-    sub = db.get_sub_from_name(sub)
-    if not sub:
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
         abort(404)
 
-    feed = AtomFeed('New posts from ' + sub['name'],
+    feed = AtomFeed('New posts from ' + sub.name,
                     title_type='text',
                     generator=('Throat', 'https://phuks.co', 1),
                     feed_url=request.url,
                     url=request.url_root)
-    posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub['sid']),
+    posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub.sid),
                              'new', 1).dicts()
     
     return misc.populate_feed(feed, posts).get_response()
@@ -190,12 +190,17 @@ def view_sub_new(sub, page):
 @sub.route("/<sub>/bannedusers")
 def view_sub_bans(sub):
     """ See banned users for the sub """
-    sub = db.get_sub_from_name(sub)
-    if not sub:
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
         abort(404)
 
-    banned = db.get_sub_metadata(sub['sid'], 'ban', _all=True)
-    xbans = db.get_sub_metadata(sub['sid'], 'xban', _all=True)
+    banned = SubMetadata.select(SubMetadata.value, User.name).join(User, on=(SubMetadata.value == User.uid))
+    banned = banned.where(SubMetadata.sid == sub.sid).where(SubMetadata.key == 'ban').dicts()
+
+    xbans = SubMetadata.select(SubMetadata.value, User.name).join(User, on=(SubMetadata.value == User.uid))
+    xbans = xbans.where(SubMetadata.sid == sub.sid).where(SubMetadata.key == 'xban').dicts()
+
     return render_template('subbans.html', sub=sub, banned=banned,
                            xbans=xbans, banuserform=BanUserSubForm())
 
@@ -272,20 +277,17 @@ def view_post(sub, pid, comments=False, highlight=None):
     editflair = EditPostFlair()
 
     editflair.flair.choices = []
-    if post['uid'] == current_user.get_id() or current_user.is_mod(post['sid']) \
-       or current_user.is_admin():
-        flairs = db.query('SELECT `xid`, `text` FROM `sub_flair` '
-                          'WHERE `sid`=%s', (post['sid'], )).fetchall()
+    if post['uid'] == current_user.uid or current_user.is_mod(post['sid']) or current_user.is_admin():
+        flairs = SubFlair.select().where(SubFlair.sid == post['sid'])
         for flair in flairs:
-            editflair.flair.choices.append((flair['xid'], flair['text']))
+            editflair.flair.choices.append((flair.xid, flair.text))
 
-    mods = db.get_sub_metadata(post['sid'], 'mod2', _all=True)
     txtpedit = EditSubTextPostForm()
     txtpedit.content.data = post['content']
     if not comments:
         comments = misc.get_post_comments(post['pid'])
 
-    ksub = db.get_sub_from_sid(post['sid'])
+    ksub = Sub.get(Sub.sid == post['sid'])
     ncomments = SubPostComment.select().where(SubPostComment.pid == post['pid']).count()
 
     postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
@@ -317,7 +319,7 @@ def view_post(sub, pid, comments=False, highlight=None):
                 if int(postmeta['poll_closes_time']) < time.time():
                     poll_open = False
 
-    return render_template('post.html', post=post, mods=mods, subInfo=misc.getSubData(post['sid']),
+    return render_template('post.html', post=post, subInfo=misc.getSubData(post['sid']),
                            edittxtpostform=txtpedit, sub=ksub,
                            editlinkpostform=EditSubLinkPostForm(),
                            comments=comments, ncomments=ncomments,
@@ -330,8 +332,9 @@ def view_post(sub, pid, comments=False, highlight=None):
 def view_perm(sub, pid, cid):
     """ Permalink to comment """
     # We get the comment...
-    the_comment = db.get_comment_from_cid(cid)
-    if not the_comment:
+    try:
+        the_comment = SubPostComment.select().where(SubPostComment.cid == cid).dicts()[0]
+    except (SubPostComment.DoesNotExist, IndexError):
         abort(404)
     tc = cid if not the_comment['parentcid'] else the_comment['parentcid']
     tq = SubPostComment.select(SubPostComment.cid).where(SubPostComment.parentcid == cid).alias('jq')

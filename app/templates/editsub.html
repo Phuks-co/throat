@@ -17,40 +17,40 @@
     <fieldset>
       <div class="pure-control-group">
         <label for="title">{{editsubform.title.label.text}}</label>
-        {{editsubform.title(value=sub.title, required=True, class="pure-u-12-24")}}
+        {{editsubform.title(required=True, class="pure-u-12-24")}}
       </div>
 
       <div class="pure-control-group">
         <label for="nsfw" class="pure-checkbox">
-          {{editsubform.nsfw(checked=func.isNSFW(sub))}}
+          {{editsubform.nsfw(checked=True if sub.nsfw else False)}}
           {{editsubform.nsfw.label.text}}
         </label>
       </div>
 
       <div class="pure-control-group">
         <label for="restricted" class="pure-checkbox">
-          {{editsubform.restricted(checked=func.isRestricted(sub))}}
+          {{editsubform.restricted(checked=True if metadata.restricted else False)}}
           {{editsubform.restricted.label.text}}
         </label>
       </div>
 
       <div class="pure-control-group">
         <label for="usercanflair" class="pure-checkbox">
-          {{editsubform.usercanflair(checked=func.userCanFlair(sub))}}
+          {{editsubform.usercanflair(checked=True if metadata.ucf else False)}}
           {{editsubform.usercanflair.label.text}}
         </label>
       </div>
 
       <div class="pure-control-group">
         <label for="videomode" class="pure-checkbox">
-          {{editsubform.videomode(checked=func.enableVideoMode(sub))}}
+          {{editsubform.videomode(checked=True if metadata.videomode else False)}}
           {{editsubform.videomode.label.text}}
         </label>
       </div>
 
       <div class="pure-control-group">
         <label for="polling" class="pure-checkbox">
-          {{editsubform.polling(checked=func.enablePolling(sub))}}
+          {{editsubform.polling(checked=True if metadata.allow_polls else False)}}
           {{editsubform.polling.label.text}}
         </label>
       </div>
