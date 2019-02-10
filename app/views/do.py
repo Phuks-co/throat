@@ -497,6 +497,9 @@ def get_txtpost(pid):
             post = misc.getSinglePost(pid)
         except SubPost.DoesNotExist:
             abort(404)
+        
+        if post['deleted']:
+            abort(404)
         cont = misc.our_markdown(post['content'])
         if post['ptype'] == 3:
             postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
