@@ -1257,8 +1257,7 @@ def refuse_mod2inv(sub, user):
     form = DummyForm()
     if form.validate():
         if misc.isModInv(sub['sid'], user):
-            db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s',
-                      ('mod2i', user['uid']))
+            SubMetadata.delete.where((SubMetadata.sid == sub['sid']) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == user['uid'])).execute()
 
             db.create_sublog(sub['sid'], 6, user['name'] + ' rejected mod invite')
             caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', _all=True)
