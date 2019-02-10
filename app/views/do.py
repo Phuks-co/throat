@@ -682,7 +682,11 @@ def create_post():
         
         if ptype == 3:
             # Create SubPostPollOption objects...
-            poll_options = [{'pid': post.pid, 'text': x} for x in options]
+            poll_options = []
+            for p in options:
+                if len(p) > 128:
+                    return render_template('createpost.html', txtpostform=form, error="Poll option text is too long.")
+                poll_options.append({'pid': post.pid, 'text': p})
             SubPostPollOption.insert_many(poll_options).execute()
             # apply all poll options..
             if form.hideresults.data:
