@@ -500,11 +500,14 @@ def view_user(user):
 
     level, xp = misc.get_user_level(user.uid)
 
-    currlv = (level ** 2) * 10
-    nextlv = ((level + 1) ** 2) * 10
+    if xp > 0:
+        currlv = (level ** 2) * 10
+        nextlv = ((level + 1) ** 2) * 10
 
-    required_xp = nextlv - currlv
-    progress = ((nextlv - xp) / required_xp) * 100
+        required_xp = nextlv - currlv
+        progress = ((nextlv - xp) / required_xp) * 100
+    else:
+        progress = 0
 
     return render_template('user.html', user=user, badges=badges, habit=habit,
                            msgform=CreateUserMessageForm(), pcount=pcount,
