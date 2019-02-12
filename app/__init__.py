@@ -497,9 +497,18 @@ def view_user(user):
     pcount = SubPost.select().where(SubPost.uid == user.uid).count()
     ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()
     habit = db.get_user_post_count_habit(user.uid)
+
+    level, xp = misc.get_user_level(user.uid)
+
+    currlv = (level ** 2) * 10
+    nextlv = ((level + 1) ** 2) * 10
+
+    required_xp = nextlv - currlv
+    progress = ((nextlv - xp) / required_xp) * 100
+
     return render_template('user.html', user=user, badges=badges, habit=habit,
                            msgform=CreateUserMessageForm(), pcount=pcount,
-                           ccount=ccount, owns=owns, mods=mods)
+                           ccount=ccount, owns=owns, mods=mods, level=level, progress=progress)
 
 
 @app.route("/u/<user>/posts", defaults={'page': 1})
@@ -982,6 +991,7 @@ def view_sitelog(page):
     s2 = SubLog.select(SubLog.time, SubLog.action, SubLog.desc, SubLog.link, SubLog.uid, Sub.name.alias('sud'), SubLog.target)
     s2 = s2.join(Sub).where(SubLog.admin == True)
     logs = (s1 | s2)
+    # XXX: SQL() is a hack. Remove it when peewee updates (ref: peewee #1854)
     logs = logs.order_by(SQL('`time` DESC')).paginate(page, 50)
     
     return engine.get_template('site/log.html').render({'logs': logs, 'page': page})

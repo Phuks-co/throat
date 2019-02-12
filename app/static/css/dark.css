@@ -322,9 +322,14 @@ body.dark .sbm-icon svg {
 /* /SUBS PAGE */
 
 /* USER PAGE */
-body.dark .uprofile-level-box {
-    border: 4px solid #474747;
+body.dark .pblock.level .inset{
+  background-color: #0a0a0a;
 }
+
+body.dark .pblock.level{
+  background-color: #474747;
+}
+
 body.dark .uprofile.content {
     border: 2px solid #474747;
     background: rgba(0, 0, 0, 0.9);
