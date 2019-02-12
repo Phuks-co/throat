@@ -116,7 +116,7 @@ def view_sublog(sub, page):
         abort(404)
 
     logs = SubLog.select().where(SubLog.sid == sub.sid).order_by(SubLog.lid.desc()).paginate(page, 50)
-    return render_template('sublog.html', sub=sub, logs=logs.dicts(), page=page)
+    return engine.get_template('sub/log.html').render({'sub': sub, 'logs': logs, 'page': page})
 
 
 @sub.route("/<sub>/mods")

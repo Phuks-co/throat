@@ -7,6 +7,7 @@ import uuid
 import socket
 import datetime
 import bcrypt
+from peewee import SQL
 from pyotp import TOTP
 from flask import Flask, render_template, session, redirect, url_for, abort, g
 from flask import request, jsonify
@@ -32,6 +33,7 @@ from . import database as db
 from .misc import SiteAnon, getDefaultSubs, allowedNames, get_errors, engine
 from .models import db as pdb
 from .models import Sub, SubPost, User, SubMetadata, UserMetadata, SubPostComment
+from .models import SiteLog, SubLog
 
 # /!\ FOR DEBUGGING ONLY /!\
 # from werkzeug.contrib.profiler import ProfilerMiddleware
@@ -976,9 +978,13 @@ def admin_user_uploads(page):
 @login_required
 def view_sitelog(page):
     """ Here we can see a log of admin activity on the site """
-    logs = db.query('SELECT * FROM `site_log` ORDER BY `lid` DESC LIMIT 50 '
-                    'OFFSET %s ', (((page - 1) * 50),))
-    return render_template('sitelog.html', logs=logs.fetchall(), page=page)
+    s1 = SiteLog.select(SiteLog.time, SiteLog.action, SiteLog.desc, SiteLog.link, SiteLog.uid, SQL("'' as `sub`"), SiteLog.target)
+    s2 = SubLog.select(SubLog.time, SubLog.action, SubLog.desc, SubLog.link, SubLog.uid, Sub.name.alias('sud'), SubLog.target)
+    s2 = s2.join(Sub).where(SubLog.admin == True)
+    logs = (s1 | s2)
+    logs = logs.order_by(SQL('`time` DESC')).paginate(page, 50)
+    
+    return engine.get_template('site/log.html').render({'logs': logs, 'page': page})
 
 
 @app.route("/register", methods=['GET', 'POST'])

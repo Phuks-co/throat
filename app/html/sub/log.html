@@ -1,0 +1,67 @@
+@extends("shared/layout.html")
+@require(sub, logs, page)
+
+@def main():
+    <h1>Sub log for <a href="/s/@{sub.name}">/s/@{sub.name}</a></h1>
+    <table class="pure-table">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>User</th>
+                <th>Action</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for log in logs:
+            <tr>
+                <td><time-ago datetime="@{log.time.isoformat()}Z">@{log.time.isoformat()}Z</time-ago></td>
+                <td>@if log.uid:
+                        <a href="/u/@{log.uid.name}">@{log.uid.name}</a>\
+                    @end</td>
+                <td>
+                    @if log.action == 21:
+                        Changed sub settings
+                    @elif log.action == 22:
+                        Banned <a href="/u/@{log.target.name}">@{log.target.name}</a> with reason <code>@{log.desc!!e}</code>
+                    @elif log.action == 23:
+                        Unbanned <a href="/u/@{log.target.name}">@{log.target.name}</a>
+                    @elif log.action == 24:
+                        Sent mod invite to <a href="/u/@{log.target.name}">@{log.target.name}</a>
+                    @elif log.action == 25:
+                        Accepted mod invite
+                    @elif log.action == 26:
+                        Removed <a href="/u/@{log.target.name}">@{log.target.name}</a> from the mod team
+                    @elif log.action == 27:
+                        Revoked mod invite for <a href="/u/@{log.target.name}">@{log.target.name}</a>
+                    @elif log.action == 28:
+                        Mod invite declined by <a href="/u/@{log.target.name}">@{log.target.name}</a>
+                    @elif log.action == 30:
+                        Sub was transferred to @{log.desc!!e}
+                    @elif log.action == 50:
+                        Stickied a post
+                    @elif log.action == 51:
+                        Unstickied a post
+                    @elif log.action == 52:
+                        Deleted a post with reason <code>@{log.desc!!e}</code>
+                    @elif log.action == 53:
+                        Deleted a comment with reason <code>@{log.desc!!e}</code>
+                    @else:
+                        <i>[Type @{log.action!!s}]</i> @{log.desc!!e}
+                    @end
+                </td>
+                <td>@if log.link:
+                    <a href="@{log.link}">Link</a> \
+                @end</td>
+            </tr>
+            @end
+        </tbody>
+    </table>
+    @if page > 1:
+    <a href="@{url_for('sub.view_sublog', sub=sub.name, page=(page-1))}" class="btn">prev</a>
+    @end
+
+    @if len(logs) == 50:
+    <a href="@{url_for('sub.view_sublog', sub=sub.name, page=(page+1))}" class="btn">next</a>
+    @end
+@end

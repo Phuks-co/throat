@@ -1483,20 +1483,40 @@ def metadata_to_dict(metadata):
 
 
 def update_sub_metadata(sid, key, value):
+    # Pending remove (replaced by Sub.update_metadata)
     restr = SubMetadata.get_or_create(sid=sid, key=key)[0]
     if restr.value != value:
         restr.value = value
         restr.save()
 
 
+# Log types
 LOG_TYPE_USER = 10
-LOG_TYPE_SUB_SETTINGS = 11
-LOG_TYPE_SUB_CREATION = 12
-LOG_TYPE_ANNOUNCEMENT = 13
 
-def create_sitelog(action, content, link=''):
-    SiteLog.create(action=action, desc=content, link=link).save()
+LOG_TYPE_SUB_SETTINGS = 21
+LOG_TYPE_SUB_BAN = 22
+LOG_TYPE_SUB_UNBAN = 23
+LOG_TYPE_SUB_MOD_INVITE = 24
+LOG_TYPE_SUB_MOD_ACCEPT = 25
+LOG_TYPE_SUB_MOD_REMOVE = 26
+LOG_TYPE_SUB_MOD_INV_CANCEL = 27
+LOG_TYPE_SUB_MOD_INV_REJECT = 28
+LOG_TYPE_SUB_STICKY_ADD = 50
+LOG_TYPE_SUB_STICKY_DEL = 51
+LOG_TYPE_SUB_DELETE_POST = 52
+LOG_TYPE_SUB_DELETE_COMMENT = 53
+
+LOG_TYPE_SUB_TRANSFER = 30
+
+LOG_TYPE_SUB_CREATION = 40
+LOG_TYPE_ANNOUNCEMENT = 41
+LOG_TYPE_DOMAIN_BAN = 42
+LOG_TYPE_DOMAIN_UNBAN = 43
 
 
-def create_sublog(action, sid, content, link=''):
-    SubLog.create(action=action, sid=sid, desc=content, link=link).save()
+def create_sitelog(action, uid, comment='', link=''):
+    SiteLog.create(action=action, uid=uid, desc=comment, link=link).save()
+
+
+def create_sublog(action, uid, sid, comment='', link='', admin=False, target=None):
+    SubLog.create(action=action, uid=uid, sid=sid, desc=comment, link=link, admin=admin, target=target).save()

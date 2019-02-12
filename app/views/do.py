@@ -143,13 +143,12 @@ def delete_post():
                                 subject='Your post on /s/' + sub.name + ' has been deleted.',
                                 content='Reason: ' + form.reason.data,
                                 link=sub.name, mtype=11)
+            
+            misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_POST, current_user.uid, post.sid,
+                    comment=form.reason.data, link=url_for('view_post_inbox', pid=post.pid),
+                    admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
 
-            if current_user.uid not in subI['mod2'] and current_user.is_admin():
-                SiteLog.create(action=4, link=url_for('sub.view_sub', sub=sub.name), time=datetime.datetime.utcnow(),
-                               desc='{0} deleted a post with reason `{1}`'.format(current_user.get_username(), form.reason.data))
 
-            SubLog.create(sid=sub.sid, action=1, link=url_for('sub.view_post', sub=sub.name, pid=post.pid), time=datetime.datetime.utcnow(),
-                          desc='{0} deleted a post with reason `{1}`'.format(current_user.get_username(), form.reason.data))
 
         # time limited to prevent socket spam
         if (datetime.datetime.utcnow() - post.posted).seconds < 86400:
@@ -280,16 +279,15 @@ def edit_sub(sub):
             if form.subsort.data != "None":
                 misc.update_sub_metadata(sub.sid, 'sort', form.subsort.data)
 
-            misc.create_sublog(misc.LOG_TYPE_SUB_SETTINGS, sub.sid, 
-                               "Sub settings edited by {0}".format(current_user.name))
+            misc.create_sublog(misc.LOG_TYPE_SUB_SETTINGS, current_user.uid, sub.sid)
 
             if not current_user.is_mod(sub.sid) and current_user.is_admin():
-                misc.create_sitelog(misc.LOG_TYPE_SUB_SETTINGS, 
-                               "Sub settings edited by {0}".format(current_user.name),
-                               url_for('sub.view_sub', sub=sub.name))
+                misc.create_sitelog(misc.LOG_TYPE_SUB_SETTINGS, current_user.uid,
+                                    comment='/s/' + sub.name,
+                                    link=url_for('sub.view_sub', sub=sub.name))
 
             return jsonify(status="ok", addr=url_for('sub.view_sub', sub=sub.name))
-        return jsonify(status="ok", error=get_errors(form))
+        return jsonify(status="error", error=get_errors(form))
     else:
         abort(403)
 
@@ -298,9 +296,10 @@ def edit_sub(sub):
 @login_required
 def assign_post_flair(sub, pid, fl):
     """ Assign a post's flair """
-    sub = db.get_sub_from_name(sub)
-    if not sub:
-        return jsonify(status='error', error='Sub does not exist')
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=["Sub does not exist"])
 
     try:
         post = SubPost.get(SubPost.pid == pid)
@@ -309,23 +308,20 @@ def assign_post_flair(sub, pid, fl):
 
     form = DummyForm()
     if form.validate():
-        if current_user.is_mod(sub['sid']) or (post.uid.uid == current_user.uid and misc.userCanFlair(sub)):
-            flair = db.query('SELECT * FROM `sub_flair` WHERE `xid`=%s AND '
-                             '`sid`=%s', (fl, sub['sid'])).fetchone()
-            if not flair:
+        if current_user.is_mod(sub.sid) or (post.uid.uid == current_user.uid and sub.get_metadata('ucf')):
+            try:
+                flair = SubFlair.get((SubFlair.xid == fl) & (SubFlair.sid == sub.sid))
+            except SubFlair.DoesNotExist:
                 return jsonify(status='error', error='Flair does not exist')
-            post.flair = flair['text']
+
+            post.flair = flair.text
             post.save()
 
-            if current_user.is_mod(sub['sid']):
-                db.create_sublog(sub['sid'], 3, current_user.get_username() + ' assigned post flair',
-                                 url_for('sub.view_post', sub=sub['name'], pid=post.pid))
 
-            cache.delete_memoized(db.get_post_metadata, pid, 'flair')
             return jsonify(status='ok')
         else:
             return jsonify(status='error', error='Not authorized')
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
+    return jsonify(status="error", error=get_errors(form))
 
 
 @do.route("/do/remove_post_flair/<sub>/<pid>", methods=['POST'])
@@ -348,17 +344,8 @@ def remove_post_flair(sub, pid):
         else:
             post.flair = None
             post.save()
-            if current_user.is_mod(sub['sid']):
-                db.create_sublog(sub['sid'], 3, current_user.get_username() +
-                                 ' removed post flair',
-                                 url_for('sub.view_post', sub=sub['name'], pid=pid))
 
-            if not current_user.is_mod(sub['sid']) and current_user.is_admin():
-                db.create_sitelog(4, current_user.get_username() +
-                                  ' removed post flair',
-                                  url_for('sub.view_post', sub=sub['name'],
-                                          pid=pid))
-        return json.dumps({'status': 'ok'})
+        return jsonify(status='ok')
     else:
         abort(403)
 
@@ -366,31 +353,32 @@ def remove_post_flair(sub, pid):
 @do.route("/do/edit_mod", methods=['POST'])
 @login_required
 def edit_mod():
-    """ Edit sub mod endpoint """
+    """ Admin endpoint used for sub transfers. """
     if not current_user.is_admin():
         abort(403)
     form = EditModForm()
-    sub = db.get_sub_from_name(form.sub.data)
-    if not sub:
-        return json.dumps({'status': 'error',
-                           'error': ['Sub does not exist']})
-    user = db.get_user_from_name(form.user.data)
-    if not user:
-        return json.dumps({'status': 'error',
-                           'error': ['User does not exist']})
+
+    try:
+        sub = Sub.get(Sub.name == form.sub.data)
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=["Sub does not exist"])
+    
+    try:
+        user = User.get(User.name == form.user.data)
+    except User.DoesNotExist:
+        return jsonify(status='error', error=["User does not exist"])
+
     if form.validate():
-        db.update_sub_metadata(sub['sid'], 'mod1', user['uid'])
-        db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s '
-                  'AND `sid`=%s', ('mod2', user['uid'], sub['sid']))
-        db.create_sublog(sid=sub['sid'], action=4,
-                         description=current_user.get_username() +
-                         ' transferred sub ownership to ' + user['name'])
-        db.create_sitelog(action=4,
-                          description=current_user.get_username() +
-                          ' transferred sub ownership to ' + user['name'],
-                          link=url_for('sub.view_sub', sub=sub['name']))
-        return json.dumps({'status': 'ok'})
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
+        sub.update_metadata('mod1', user.uid)
+
+        qdel = SubMetadata.delete().where(SubMetadata.key == 'mod2').where(SubMetadata.value == user.uid).where(SubMetadata.sid == sub.sid)
+        qdel.execute()
+
+        misc.create_sublog(misc.LOG_TYPE_SUB_TRANSFER, current_user.uid, sub.sid,
+                           comment=user.name, admin=True)
+
+        return jsonify(status='ok')
+    return jsonify(status="error", error=get_errors(form))
 
 
 @do.route("/do/subscribe/<sid>", methods=['POST'])
@@ -992,8 +980,8 @@ def ban_user_sub(sub):
         SubMetadata.create(sid=sub['sid'], key='ban', value=user['uid']).save()
         SubMetadata.delete().where((SubMetadata.sid==sub['sid']) & (SubMetadata.key == 'xban') & (SubMetadata.value == user['uid'])).execute()
 
-        db.create_sublog(sub['sid'], 7, '{0} banned {1} with reason `{2}`'.format(current_user.get_username(), user['name'], form.reason.data),
-                         url_for('sub.view_sub_bans', sub=sub['name']))
+        misc.create_sublog(misc.LOG_TYPE_SUB_BAN, current_user.uid, sub['sid'], target=user['uid'], comment=form.reason.data)
+
         caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'ban', _all=True)
         return json.dumps({'status': 'ok',
                            'sentby': current_user.get_id()})
@@ -1043,8 +1031,9 @@ def inv_mod2(sub):
                           room='user' + user['uid'])
             db.create_sub_metadata(sub['sid'], 'mod2i', user['uid'])
 
-            db.create_sublog(sub['sid'], 6, current_user.get_username() +
-                             ' invited ' + user['name'] + ' to the mod team')
+            misc.create_sublog(misc.LOG_TYPE_SUB_MOD_INVITE, current_user.uid, sub['sid'], target=user['uid'],
+                               admin=True if (not current_user.is_topmod(sub['sid']) and current_user.is_admin()) else False)
+
             caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', value=user['uid'])
 
             return json.dumps({'status': 'ok',
@@ -1068,11 +1057,6 @@ def remove_sub_ban(sub, user):
 
             db.uquery('UPDATE `sub_metadata` SET `key`=%s WHERE `key`=%s AND '
                       '`value`=%s', ('xban', 'ban', user['uid']))
-            db.create_sublog(sub['sid'], 2, current_user.get_username() + ' unbanned ' + user['name'])
-            if not current_user.is_mod(sub['sid']) and current_user.is_admin():
-                db.create_sitelog(4, current_user.get_username() +
-                                  ' unbanned ' + user['name'] + ' from /s/' + sub['name'],
-                                  url_for('sub.view_sub', sub=sub['name']))
 
             misc.create_message(mfrom=current_user.uid,
                                 to=user['uid'],
@@ -1085,9 +1069,10 @@ def remove_sub_ban(sub, user):
                           {'count': misc.get_notification_count(user['uid'])},
                           namespace='/snt',
                           room='user' + user['uid'])
-            db.create_sublog(sub['sid'], 7, current_user.get_username() +
-                             ' removed ban on ' + user['name'],
-                             url_for('sub.view_sub_bans', sub=sub['name']))
+            
+            misc.create_sublog(misc.LOG_TYPE_SUB_UNBAN, current_user.uid, sub['sid'], target=user['uid'],
+                               admin=True if (not current_user.is_mod(sub['sid']) and current_user.is_admin()) else False)
+
             caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'ban', _all=True)
             caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'xban', _all=True)
             return json.dumps({'status': 'ok', 'msg': 'user ban removed'})
@@ -1112,11 +1097,9 @@ def remove_mod2(sub, user):
             SubMetadata.delete().where((SubMetadata.sid == sub['sid']) & (SubMetadata.key == 'mod2') & (SubMetadata.value == user['uid'])).execute()
             SubMetadata.create(sid=sub['sid'], key='xmod2', value=user['uid']).save()
 
-            db.create_sublog(sub['sid'], 6, current_user.get_username() +
-                             ' removed ' + user['name'] + ' from the mod team')
-            if not current_user.is_topmod(sub['sid']) and current_user.is_admin():
-                # admin override. add to sitelog
-                db.create_sitelog(4, current_user.name + " removed " + user['name'] + " from /s/" + sub['name'] + "'s mod team.")
+            misc.create_sublog(misc.LOG_TYPE_SUB_MOD_REMOVE, current_user.uid, sub['sid'], target=user['uid'],
+                               admin=True if (not current_user.is_topmod(sub['sid']) and current_user.is_admin()) else False)
+
             caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2', _all=True)
             return json.dumps({'status': 'ok', 'msg': 'user demodded'})
         else:
@@ -1139,8 +1122,9 @@ def revoke_mod2inv(sub, user):
             db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s',
                       ('mod2i', user['uid']))
 
-            db.create_sublog(sub['sid'], 6, current_user.get_username() +
-                             ' canceled ' + user['name'] + '\'s mod invite')
+            misc.create_sublog(misc.LOG_TYPE_SUB_MOD_INV_CANCEL, current_user.uid, sub['sid'], target=user['uid'],
+                               admin=True if (not current_user.is_topmod(sub['sid']) and current_user.is_admin()) else False)
+
             caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', _all=True)
             return json.dumps({'status': 'ok', 'msg': 'user invite revoked'})
         else:
@@ -1166,7 +1150,7 @@ def accept_mod2inv(sub, user):
             SubMetadata.update(key='mod2').where((SubMetadata.sid == sub['sid']) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == user['uid'])).execute()
             SubMetadata.delete().where((SubMetadata.sid == sub['sid']) & (SubMetadata.key == 'xmod2') & (SubMetadata.value == user['uid'])).execute()
 
-            db.create_sublog(sub['sid'], 6, user['name'] + ' accepted mod invite')
+            misc.create_sublog(misc.LOG_TYPE_SUB_MOD_ACCEPT, current_user.uid, sub['sid'], target=user['uid'])
 
             if not current_user.has_subscribed(sub['name']):
                 db.create_subscription(current_user.uid, sub['sid'], 1)
@@ -1191,9 +1175,10 @@ def refuse_mod2inv(sub, user):
     form = DummyForm()
     if form.validate():
         if misc.isModInv(sub['sid'], user):
-            SubMetadata.delete.where((SubMetadata.sid == sub['sid']) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == user['uid'])).execute()
+            SubMetadata.delete().where((SubMetadata.sid == sub['sid']) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == user['uid'])).execute()
 
-            db.create_sublog(sub['sid'], 6, user['name'] + ' rejected mod invite')
+            misc.create_sublog(misc.LOG_TYPE_SUB_MOD_INV_REJECT, current_user.uid, sub['sid'], target=user['uid'])
+
             caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', _all=True)
             caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', value=user['uid'])
             return json.dumps({'status': 'ok', 'msg': 'invite refused'})
@@ -1364,8 +1349,8 @@ def ban_domain():
             return json.dumps({'status': 'error', 'error': ['Already banned']})
 
         db.create_site_metadata('banned_domain', form.domain.data)
-        db.create_sitelog(5, current_user.get_username() +
-                          ' banned domain ' + form.domain.data)
+
+        misc.create_sitelog(misc.LOG_TYPE_DOMAIN_BAN, current_user.uid, comment=form.domain.data)
         return json.dumps({'status': 'ok'})
     return redirect(url_for('admin_domains'))
 
@@ -1378,8 +1363,7 @@ def remove_banned_domain(domain):
 
     db.uquery('DELETE FROM `site_metadata` WHERE `key`=%s AND `value`=%s',
               ('banned_domain', domain))
-    db.create_sitelog(5, current_user.get_username() +
-                      ' removed domain from ban list: ' + domain)
+    misc.create_sitelog(misc.LOG_TYPE_DOMAIN_UNBAN, current_user.uid, comment=domain)
 
     return json.dumps({'status': 'ok'})
 
@@ -1474,7 +1458,7 @@ def toggle_sticky(post):
     """ Toggles post stickyness - not api """
     post = db.get_post_from_pid(post)
     sub = db.get_sub_from_sid(post['sid'])
-    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
+    if not current_user.is_mod(sub['sid']):
         abort(403)
 
     form = DeletePost()
@@ -1483,13 +1467,14 @@ def toggle_sticky(post):
         x = db.get_sub_metadata(sub['sid'], 'sticky')
         if not x or int(x['value']) != post['pid']:
             db.update_sub_metadata(sub['sid'], 'sticky', post['pid'])
-            db.create_sublog(sub['sid'], 4, current_user.get_username() +
-                             ' touched sticky',
-                             url_for('sub.view_post', sub=sub['name'],
-                                     pid=post['pid']))
+            
+            misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_ADD, current_user.uid, sub['sid'],
+                               link=url_for('sub.view_post', sub=sub['name'], pid=post['pid']))
         else:
             db.uquery('DELETE FROM `sub_metadata` WHERE `value`=%s AND '
                       '`key`=%s', (post['pid'], 'sticky'))
+            misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_DEL, current_user.uid, sub['sid'],
+                               link=url_for('sub.view_post', sub=sub['name'], pid=post['pid']))
         cache.delete_memoized(misc.getStickyPid, post['sid'])
         cache.delete_memoized(db.get_sub_metadata, post['sid'], 'sticky',
                               _all=True)
@@ -1751,12 +1736,9 @@ def delete_comment():
             abort(403)
 
         if comment['uid'] != current_user.uid and (current_user.is_admin() or current_user.is_mod(post.sid)):
-            db.create_sitelog(4, '{0} deleted a comment with reason `{1}`'.format(current_user.get_username(), form.reason.data),
-                              url_for('view_post_inbox', pid=comment['pid']))
-
-        if comment['uid'] != current_user.uid and (current_user.is_admin() or current_user.is_mod(post.sid)):
-            db.create_sublog(post.sid.sid, 1, '{0} deleted a comment with reason `{1}`'.format(current_user.get_username(), form.reason.data),
-                             url_for('view_post_inbox', pid=comment['pid']))
+            misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_COMMENT, current_user.uid, post.sid,
+                               comment=form.reason.data, link=url_for('view_post_inbox', pid=comment['pid']),
+                               admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
 
         db.uquery('UPDATE `sub_post_comment` SET `status`=1 WHERE `cid`=%s',
                   (form.cid.data,))

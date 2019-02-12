@@ -105,6 +105,8 @@ class SiteLog(TModel):
     lid = PrimaryKeyField()
     link = CharField(null=True)
     time = DateTimeField(default=datetime.datetime.utcnow)
+    uid = ForeignKeyField(db_column='uid', null=True, model=User, field='uid')
+    target = ForeignKeyField(db_column='target_uid', null=True, model=User, field='uid')
 
     class Meta:
         table_name = 'site_log'
@@ -133,6 +135,21 @@ class Sub(TModel):
 
     class Meta:
         table_name = 'sub'
+    
+    def get_metadata(self, key):
+        """ Returns `key` for submetadata or `None` if it does not exist.
+        Only works for single keys """
+        try:
+            m = SubMetadata.get((SubMetadata.sid == self.sid) & (SubMetadata.key == key))
+            return m.value
+        except SubMetadata.DoesNotEXist:
+            return None
+
+    def update_metadata(self, key, value):
+        restr = SubMetadata.get_or_create(sid=self.sid, key=key)[0]
+        if restr.value != value:
+            restr.value = value
+            restr.save()
 
 
 class SubFlair(TModel):
@@ -150,9 +167,11 @@ class SubLog(TModel):
     desc = CharField(null=True)
     lid = PrimaryKeyField()
     link = CharField(null=True)
-    sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
-                          field='sid')
-    time = DateTimeField(default=datetime.datetime.utcnow())
+    sid = ForeignKeyField(db_column='sid', null=True, model=Sub, field='sid')
+    uid = ForeignKeyField(db_column='uid', null=True, model=User, field='uid')
+    target = ForeignKeyField(db_column='target_uid', null=True, model=User, field='uid')
+    admin = BooleanField(default=False)  # True if action was performed by an admin override.
+    time = DateTimeField(default=datetime.datetime.utcnow)
 
     class Meta:
         table_name = 'sub_log'
