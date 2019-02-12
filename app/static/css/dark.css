@@ -11,7 +11,7 @@ body.dark code, body.dark pre{
   background: #161616;
 }
 
-body.dark .profilebadge path {
+body.dark .profilebadge path:not(.nocolor) {
   fill: #686868;
 }
 
