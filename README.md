@@ -1,4 +1,4 @@
-BIG PHAT WARNING: Throat only works with Python 3.5+
+Note: Throat is developed and run on Python 3.7+. Previous versions are not supported
 
 #throat
 
