@@ -260,39 +260,36 @@ def edit_sub_css(sub):
 @login_required
 def edit_sub(sub):
     """ Edit sub endpoint """
-    sub = db.get_sub_from_name(sub)
-    if not sub:
-        return json.dumps({'status': 'error',
-                           'error': ['Sub does not exist']})
-    if current_user.is_mod(sub['sid']) or current_user.is_admin():
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=["Sub does not exist"])
+    if current_user.is_mod(sub.sid) or current_user.is_admin():
         form = EditSubForm()
         if form.validate():
-            db.uquery('UPDATE `sub` SET `title`=%s, `sidebar`=%s, `nsfw`=%s '
-                      'WHERE `sid`=%s', (form.title.data, form.sidebar.data,
-                                         form.nsfw.data, sub['sid']))
-            db.update_sub_metadata(sub['sid'], 'restricted', form.restricted.data)
-            db.update_sub_metadata(sub['sid'], 'ucf', form.usercanflair.data)
-            db.update_sub_metadata(sub['sid'], 'videomode', form.videomode.data)
-
-            db.update_sub_metadata(sub['sid'], 'allow_polls', form.polling.data)
-            cache.delete_memoized(db.get_sub_metadata, sub['sid'],  'videomode', _all=True)
-            cache.delete_memoized(db.get_sub_metadata, sub['sid'],  'allow_polls')
+            sub.title = form.title.data
+            sub.sidebar = form.sidebar.data
+            sub.nsfw = form.nsfw.data 
+            sub.save()
+            
+            misc.update_sub_metadata(sub.sid, 'restricted', form.restricted.data)
+            misc.update_sub_metadata(sub.sid, 'ucf', form.usercanflair.data)
+            misc.update_sub_metadata(sub.sid, 'videomode', form.videomode.data)
+            misc.update_sub_metadata(sub.sid, 'allow_polls', form.polling.data)
 
             if form.subsort.data != "None":
-                db.update_sub_metadata(sub['sid'], 'sort',
-                                       form.subsort.data)
+                misc.update_sub_metadata(sub.sid, 'sort', form.subsort.data)
 
-            db.create_sublog(sub['sid'], 4, 'Sub settings edited by ' +
-                             current_user.get_username())
+            misc.create_sublog(misc.LOG_TYPE_SUB_SETTINGS, sub.sid, 
+                               "Sub settings edited by {0}".format(current_user.name))
 
-            if not current_user.is_mod(sub['sid']) and current_user.is_admin():
-                db.create_sitelog(4, 'Sub settings edited by ' +
-                                  current_user.get_username(),
-                                  url_for('sub.view_sub', sub=sub['name']))
+            if not current_user.is_mod(sub.sid) and current_user.is_admin():
+                misc.create_sitelog(misc.LOG_TYPE_SUB_SETTINGS, 
+                               "Sub settings edited by {0}".format(current_user.name),
+                               url_for('sub.view_sub', sub=sub.name))
 
-            return json.dumps({'status': 'ok',
-                               'addr': url_for('sub.view_sub', sub=sub['name'])})
-        return json.dumps({'status': 'error', 'error': get_errors(form)})
+            return jsonify(status="ok", addr=url_for('sub.view_sub', sub=sub.name))
+        return jsonify(status="ok", error=get_errors(form))
     else:
         abort(403)
 
@@ -935,69 +932,6 @@ def create_comment(pid):
         return json.dumps({'status': 'ok', 'addr': url_for('sub.view_perm', sub=post.sid.name,
                                                            pid=pid, cid=comment.cid)})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
-
-
-@do.route("/do/create_user_badge", methods=['POST'])
-@login_required
-def create_user_badge():
-    """ User Badge creation endpoint """
-    if current_user.is_admin():
-        form = CreateUserBadgeForm()
-        if form.validate():
-            db.create_badge(form.badge.data, form.name.data, form.text.data,
-                            form.value.data)
-
-            db.create_sitelog(2, current_user.get_username() +
-                              ' created a new badge')
-            return json.dumps({'status': 'ok'})
-        return json.dumps({'status': 'error', 'error': get_errors(form)})
-
-
-@do.route("/do/assign_user_badge/<uid>/<bid>", methods=['POST'])
-@login_required
-def assign_user_badge(uid, bid):
-    """ Assign User Badge endpoint """
-    if current_user.is_admin():
-        bq = db.query('SELECT `xid` FROM `user_metadata` WHERE `key`=%s AND '
-                      '`uid`=%s AND `value`=%s', ('badge', uid, bid))
-
-        if bq.rowcount != 0:
-            return json.dumps({'status': 'error',
-                               'error': ['Badge is already assigned']})
-
-        db.uquery('INSERT INTO `user_metadata` (`uid`, `key`, `value`) VALUES '
-                  '(%s, %s, %s)', (uid, 'badge', bid))
-
-        user = db.get_user_from_uid(uid)
-        db.create_sitelog(2, current_user.get_username() +
-                          ' assigned a user badge to ' + user['name'],
-                          url_for('view_user', user=user['name']))
-        return json.dumps({'status': 'ok', 'bid': bid})
-    else:
-        abort(403)
-
-
-@do.route("/do/remove_user_badge/<uid>/<bid>", methods=['POST'])
-@login_required
-def remove_user_badge(uid, bid):
-    """ Remove User Badge endpoint """
-    if current_user.is_admin():
-        bq = db.query('SELECT `xid` FROM `user_metadata` WHERE `key`=%s AND '
-                      '`uid`=%s AND `value`=%s', ('badge', uid, bid))
-
-        if bq.rowcount == 0:
-            return json.dumps({'status': 'error',
-                               'error': ['Badge has already been removed']})
-
-        db.uquery('DELETE FROM `user_metadata` WHERE `xid`=%s', (bq['xid']))
-        user = db.get_user_from_uid(uid)
-        db.create_sitelog(2, current_user.get_username() +
-                          ' removed a user badge from ' + user['name'],
-                          url_for('view_user', user=user['name']))
-
-        return json.dumps({'status': 'ok', 'message': 'Badge deleted'})
-    else:
-        abort(403)
 
 
 @do.route("/do/sendmsg", methods=['POST'])

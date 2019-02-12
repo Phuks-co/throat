@@ -29,7 +29,7 @@ from .views.api import oauth
 from . import misc, forms, caching
 from .socketio import socketio
 from . import database as db
-from .misc import SiteAnon, getSuscriberCount, getDefaultSubs, allowedNames, get_errors, engine
+from .misc import SiteAnon, getDefaultSubs, allowedNames, get_errors, engine
 from .models import db as pdb
 from .models import Sub, SubPost, User, SubMetadata, UserMetadata, SubPostComment
 
@@ -139,8 +139,7 @@ def utility_processor():
             'commentform': PostComment(), 'dummyform': DummyForm(),
             'delpostform': DeletePost(), 'hostname': socket.gethostname(),
             'config': app.config, 'form': forms, 'db': db, 'datetime': datetime,
-            'getSuscriberCount': getSuscriberCount, 'func': misc, 'time': time,
-            'conf': app.config}
+            'func': misc, 'time': time, 'conf': app.config}
 
 
 @app.route("/")

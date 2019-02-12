@@ -28,7 +28,7 @@
       {% cache 300, post.pid, 'subpost' %}
         <div class="image">
           {% if not post.link %}
-            <a href="{{url_for('sub.view_post', sub=func.getSub(post.sid).name, pid=post.pid)}}">
+            <a href="{{url_for('sub.view_post_inbox', pid=post.pid)}}">
               <span class="fa-stack fa-3x" style="color: #616161;">
                 <i class="fa fa-square fa-stack-2x"></i>
                 <i class="fa fa-comments fa-stack-1x fa-inverse"></i>

@@ -30,7 +30,7 @@ from .socketio import socketio
 from .badges import badges
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
-from .models import SubPostVote, SubPostComment, SubPostCommentVote
+from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads
 from peewee import JOIN, fn
 import requests
@@ -146,11 +146,6 @@ class SiteUser(object):
         """ Returns true if the current user is a site admin. """
         return self.admin
 
-    @cache.memoize(5)
-    def get_blocked(self):
-        ib = db.get_user_blocked(self.uid)
-        return [x['sid'] for x in ib]
-
     def is_topmod(self, sid):
         """ Returns True if the current user is a mod of 'sub' """
         try:
@@ -213,14 +208,6 @@ class SiteUser(object):
         """ Returns new message count """
         return self.notifications
 
-    def has_exlinks(self):
-        """ Returns true if user selects to open links in a new window """
-        x = db.get_user_metadata(self.uid, 'exlinks')
-        if x:
-            return True if x == '1' else False
-        else:
-            return False
-
     def likes_scroll(self):
         """ Returns true if user likes scroll """
         return 'noscroll' not in self.prefs
@@ -234,24 +221,9 @@ class SiteUser(object):
         return 'nsfw' in self.prefs
 
     @cache.memoize(300)
-    def get_post_score(self):
-        """ Returns the post vote score of a user. """
-        return get_user_post_score(self.user)
-
-    @cache.memoize(300)
-    def get_post_score_counts(self):
-        """ Returns the post vote score of a user. """
-        return get_user_post_score_counts(self.user)
-
-    @cache.memoize(300)
     def get_user_level(self):
         """ Returns the level and xp of a user. """
         return get_user_level(self.uid, self.score)
-
-    @cache.memoize(120)
-    def get_post_voting(self):
-        """ Returns the post voting for a user. """
-        return db.get_user_post_voting(self.uid)
 
     def get_subscriptions(self):
         return self.subscriptions
@@ -302,10 +274,6 @@ class SiteAnon(AnonymousUserMixin):
         return True
 
     @classmethod
-    def get_blocked(cls):
-        return []
-
-    @classmethod
     def get_subscriptions(cls):
         return getDefaultSubs_list()
 
@@ -321,11 +289,6 @@ class SiteAnon(AnonymousUserMixin):
     @classmethod
     def has_blocked(cls, sub):
         """ Anons dont get blocked options. """
-        return False
-
-    @classmethod
-    def has_exlinks(cls):
-        """ Anons dont get usermetadata options. """
         return False
 
     @classmethod
@@ -568,22 +531,6 @@ def getSubCreation(sub):
 
 
 @cache.memoize(60)
-def getSuscriberCount(sub):  # DEPRECATED. PENDING DELETION
-    """ Returns subscriber count """
-    c = db.query('SELECT `subscribers` FROM `sub` WHERE `sid`=%s',
-                 (sub['sid'], )).fetchone()
-    if not c:
-        x = db.query('SELECT COUNT(*) AS count FROM `sub_subscriber` '
-                     'WHERE `sid`=%s AND `status`=%s',
-                     (sub['sid'], 1)).fetchone()['count']
-        db.uquery('UPDATE `sub` SET `subscribers`=%s WHERE `sid`=%s',
-                  (x, sub['sid'], ))
-        return x
-    else:
-        return c
-
-
-@cache.memoize(60)
 def getModCount(sub):
     """ Returns the sub's mod count metadata """
     x = db.query('SELECT COUNT(*) AS c FROM `sub_metadata` WHERE '
@@ -800,110 +747,6 @@ def isVideo(link):
     return link.lower().endswith(suffix)
 
 
-def get_user_post_score(user):
-    """ Returns the user's post score """
-    if user['score'] is None:
-        mposts = db.query('SELECT * FROM `sub_post` WHERE `uid`=%s',
-                          (user['uid'], )).fetchall()
-
-        q = "SELECT `positive` FROM `sub_post_vote` WHERE `pid` IN ("
-        lst = []
-        for post in mposts:
-            q += '%s, '
-            lst.append(post['pid'])
-        q = q[:-2] + ")"
-        count = 0
-
-        if lst:
-            votes = db.query(q, list(lst)).fetchall()
-
-            for vote in votes:
-                if vote['positive']:
-                    count += 1
-                else:
-                    count -= 1
-
-        mposts = db.query('SELECT * FROM `sub_post_comment` WHERE '
-                          '`uid`=%s', (user['uid'], )).fetchall()
-        q = "SELECT `positive` FROM `sub_post_comment_vote`"
-        q += " WHERE `cid` IN ("
-
-        lst = []
-        for post in mposts:
-            q += '%s, '
-            lst.append(post['cid'])
-        q = q[:-2] + ")"
-
-        if lst:
-            votes = db.query(q, list(lst)).fetchall()
-
-            for vote in votes:
-                if vote['positive']:
-                    count += 1
-                else:
-                    count -= 1
-
-        db.uquery('UPDATE `user` SET `score`=%s WHERE `uid`=%s',
-                  (count, user['uid']))
-        return count
-    return user['score']
-
-
-@cache.memoize(300)
-def get_user_post_score_counts(user):
-    """ Returns the user's post and comment scores """
-    count = 0
-    postpos = 0
-    postneg = 0
-    commpos = 0
-    commneg = 0
-    mposts = db.query('SELECT * FROM `sub_post` WHERE `uid`=%s',
-                      (user['uid'], )).fetchall()
-
-    q = "SELECT `positive` FROM `sub_post_vote` WHERE `pid` IN ("
-    lst = []
-    for post in mposts:
-        q += '%s, '
-        lst.append(post['pid'])
-    q = q[:-2] + ")"
-    if lst:
-        votes = db.query(q, list(lst)).fetchall()
-
-        for vote in votes:
-            if vote['positive']:
-                count += 1
-                postpos += 1
-            else:
-                count -= 1
-                postneg += 1
-
-    mposts = db.query('SELECT * FROM `sub_post_comment` WHERE '
-                      '`uid`=%s', (user['uid'], )).fetchall()
-    q = "SELECT `positive` FROM `sub_post_comment_vote`"
-    q += " WHERE `cid` IN ("
-
-    lst = []
-    for post in mposts:
-        q += '%s, '
-        lst.append(post['cid'])
-    q = q[:-2] + ")"
-    if lst:
-        votes = db.query(q, list(lst)).fetchall()
-
-        for vote in votes:
-            if vote['positive']:
-                count += 1
-                commpos += 1
-            else:
-                count -= 1
-                commneg += 1
-
-    db.uquery('UPDATE `user` SET `score`=%s WHERE `uid`=%s',
-              (count, user['uid']))
-    score = count
-    return (score, postpos, postneg, commpos, commneg)
-
-
 @cache.memoize(10)
 def get_user_level(uid, score=None):
     """ Returns the user's level and XP as a tuple (level, xp) """
@@ -912,7 +755,6 @@ def get_user_level(uid, score=None):
         xp = user.score
     else:
         xp = score
-    # xp += db.get_user_post_voting(uid)/2
     badges = getUserBadges(uid)
     for badge in badges:
         xp += badge['score']
@@ -1638,3 +1480,23 @@ def metadata_to_dict(metadata):
             res[m.key].append(m.value)
     
     return res
+
+
+def update_sub_metadata(sid, key, value):
+    restr = SubMetadata.get_or_create(sid=sid, key=key)[0]
+    if restr.value != value:
+        restr.value = value
+        restr.save()
+
+
+LOG_TYPE_USER = 10
+LOG_TYPE_SUB_SETTINGS = 11
+LOG_TYPE_SUB_CREATION = 12
+LOG_TYPE_ANNOUNCEMENT = 13
+
+def create_sitelog(action, content, link=''):
+    SiteLog.create(action=action, desc=content, link=link).save()
+
+
+def create_sublog(action, sid, content, link=''):
+    SubLog.create(action=action, sid=sid, desc=content, link=link).save()

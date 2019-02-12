@@ -104,7 +104,7 @@ class SiteLog(TModel):
     desc = CharField(null=True)
     lid = PrimaryKeyField()
     link = CharField(null=True)
-    time = DateTimeField(default=datetime.datetime.utcnow())
+    time = DateTimeField(default=datetime.datetime.utcnow)
 
     class Meta:
         table_name = 'site_log'
