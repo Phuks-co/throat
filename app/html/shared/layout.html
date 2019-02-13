@@ -151,13 +151,13 @@
     @def footer():
       &copy;@{config.COPY}
       <br>
-      <a href="@{url_for('welcome')}">Welcome</a> |
       <a href="@{url_for('tos')}">ToS</a> |
       <a href="@{url_for('privacy')}">Privacy</a> |
       <a href="@{url_for('sub.view_sub', sub='changelog')}">Changelog</a> |
       <a href="@{url_for('view_api')}">API</a> |
       <a href="@{url_for('canary')}">Canary</a> |
       <a href="@{url_for('donate')}">Donate</a> |
+      <a href="/license">License</a> |
       <a href="https://phab.phuks.co">Bugs</a>
       <br>
       Served by @{hostname} \

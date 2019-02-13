@@ -1150,6 +1150,14 @@ def password_reset(uid, key):
     return engine.get_template('user/password_reset.html').render({'lpform': form})
 
 
+th_license = open('LICENSE', 'r').read()
+
+@app.route("/license")
+def license():
+    """ View API help page """
+    return engine.get_template('site/license.html').render({'license': th_license})
+
+
 @app.route("/api")
 def view_api():
     """ View API help page """
