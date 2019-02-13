@@ -481,14 +481,11 @@ def getCommentSub(cid):
 
 def isMod(sid, uid):
     """ Returns True if 'user' is a mod of 'sub' """
-    x = db.get_sub_metadata(sid, 'mod1', value=uid)
-    if x:
+    try:
+        SubMetadata.get((SubMetadata.sid == sid) & (SubMetadata.key << ('mod1', 'mod2')) & (SubMetadata.value == uid))
         return True
-
-    x = db.get_sub_metadata(sid, 'mod2', value=uid)
-    if x:
-        return True
-    return False
+    except SubMetadata.DoesNotExist:
+        return False
 
 
 @cache.memoize(30)
@@ -543,18 +540,6 @@ def getModCount(sub):
 def isRestricted(sub):
     """ Returns true if the sub is marked as Restricted """
     x = db.get_sub_metadata(sub['sid'], 'restricted')
-    return False if not x or x['value'] == '0' else True
-
-
-def isNSFW(sub):
-    """ Returns true if the sub is marked as NSFW """
-    x = sub['nsfw']
-    return False if not x or x == '0' else True
-
-
-def userCanFlair(sub):
-    """ Returns true if the sub allows users to pick their own flair """
-    x = db.get_sub_metadata(sub['sid'], 'ucf')
     return False if not x or x['value'] == '0' else True
 
 
@@ -634,18 +619,6 @@ def sendMail(to, subject, content):
 
 
 # TODO: Make all these functions one.
-def enableVideoMode(sub):
-    """ Returns true if the sub has video/music player enabled """
-    x = db.get_sub_metadata(sub['sid'], 'videomode')
-    return False if not x or x['value'] == '0' else True
-
-
-def enablePolling(sub):
-    """ Returns true if the sub has polling enabled """
-    x = db.get_sub_metadata(sub['sid'], 'allow_polls')
-    return False if not x or x['value'] == '0' else True
-
-
 def getYoutubeID(url):
     """ Returns youtube ID for a video. """
     url = urlparse(url)

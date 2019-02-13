@@ -327,20 +327,19 @@ def assign_post_flair(sub, pid, fl):
 @do.route("/do/remove_post_flair/<sub>/<pid>", methods=['POST'])
 def remove_post_flair(sub, pid):
     """ Deletes a post's flair """
-    # TODO: Redo.
-    sub = db.get_sub_from_name(sub)
-    if not sub:
-        return json.dumps({'status': 'error',
-                           'error': ['Sub does not exist']})
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=["Sub does not exist"])
+
     try:
         post = SubPost.get(SubPost.pid == pid)
     except SubPost.DoesNotExist:
         return jsonify(status='error', error=['Post does not exist'])
 
-    if current_user.is_mod(sub['sid']) or (post.uid.uid == current_user.uid and misc.userCanFlair(sub)):
+    if current_user.is_mod(sub['sid']) or (post.uid.uid == current_user.uid and sub.get_metadata('ucf')):
         if not post.flair:
-            return json.dumps({'status': 'error',
-                               'error': ['Flair does not exist']})
+            return jsonify(status='error', error='Post has no flair')
         else:
             post.flair = None
             post.save()
@@ -704,28 +703,6 @@ def create_post():
         misc.workWithMentions(form.title.data, None, post, sub)
         return redirect(addr)
     return render_template('createpost.html', txtpostform=form, error=get_errors(form)[0])
-
-
-@do.route("/do/edit_linkpost/<sub>/<pid>", methods=['POST'])
-@login_required
-def edit_linkpost(sub, pid):
-    """ Sub text post creation endpoint """
-    form = EditSubLinkPostForm()
-    if form.validate():
-        post = db.get_post_from_pid(pid)
-        if not post:
-            return jsonify(status='error', error=['No such post'])
-        sub = Sub.get(Sub.sid == post['sid'])
-        if current_user.is_subban(sub):
-            return jsonify(status='error', error=['You are banned on this sub.'])
-
-        if db.is_post_deleted(post):
-            return jsonify(status='error',
-                           error=["You can't edit a deleted posts"])
-        db.uquery('UPDATE `sub_post` SET `nsfw`=%s WHERE `pid`=%s',
-                  (form.nsfw.data, pid))
-        return json.dumps({'status': 'ok', 'sub': sub, 'pid': pid})
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route('/do/vote/<pid>/<value>', methods=['POST'])
@@ -1225,13 +1202,16 @@ def readall_msgs(boxid):
 @login_required
 def delete_pm(mid):
     """ Delete PM """
-    message = db.query('SELECT * FROM `message` WHERE `mid`=%s', (mid,))
-    message = message.fetchone()
-    if session['user_id'] == message['receivedby']:
-        db.uquery('UPDATE `message` SET `mtype`=6 WHERE `mid`=%s', (mid, ))
-        return json.dumps({'status': 'ok', 'mid': mid})
-    else:
-        abort(403)
+    try:
+        message = Message.get(Message.mid == mid)
+        if message.receivedby != current_user.uid:
+            return jsonify(status='error', error="Message does not exist")
+        
+        message.mtype = 6
+        message.save()
+        return jsonify(status='ok')
+    except Message.DoesNotExist:
+        return jsonify(status='error', error="Message does not exist")
 
 
 @do.route("/do/edit_title", methods=['POST'])
@@ -1269,13 +1249,16 @@ def edit_title():
 @login_required
 def save_pm(mid):
     """ Save/Archive PM """
-    message = db.query('SELECT * FROM `message` WHERE `mid`=%s', (mid,))
-    message = message.fetchone()
-    if session['user_id'] == message['receivedby']:
-        db.uquery('UPDATE `message` SET `mtype`=9 WHERE `mid`=%s', (mid, ))
-        return json.dumps({'status': 'ok', 'mid': mid})
-    else:
-        abort(403)
+    try:
+        message = Message.get(Message.mid == mid)
+        if message.receivedby != current_user.uid:
+            return jsonify(status='error', error="Message does not exist")
+        
+        message.mtype = 9
+        message.save()
+        return jsonify(status='ok')
+    except Message.DoesNotExist:
+        return jsonify(status='error', error="Message does not exist")
 
 
 @do.route("/do/admin/deleteannouncement")
@@ -1283,7 +1266,7 @@ def save_pm(mid):
 def deleteannouncement():
     """ Removes the current announcement """
     if not current_user.is_admin():
-        abort(404)
+        abort(403)
 
     try:
         ann = SiteMetadata.get(SiteMetadata.key == 'announcement')
@@ -1305,7 +1288,7 @@ def deleteannouncement():
 def make_announcement():
     """ Flagging post as announcement - not api """
     if not current_user.is_admin():
-        abort(404)
+        abort(403)
 
     form = DeletePost()
 
@@ -1338,31 +1321,34 @@ def make_announcement():
 def ban_domain():
     """ Add domain to ban list """
     if not current_user.is_admin():
-        abort(404)
+        abort(403)
 
     form = BanDomainForm()
 
     if form.validate():
-        c = db.query('SELECT * FROM `site_metadata` WHERE `key`=%s '
-                     'AND `value`=%s', ('banned_domain', form.domain.data))
-        if c.fetchone():
-            return json.dumps({'status': 'error', 'error': ['Already banned']})
+        try:
+            sm = SiteMetadata.get((SiteMetadata.key == 'banned_domain') & (SiteMetadata.value == form.domain.data))
+            return jsonify(status='error', error='Domain is already banned')
+        except SiteMetadata.DoesNotExist:
+            sm = SiteMetadata.create(key='banned_domain', value=form.domain.data)
+            sm.save()
+            return jsonify(status='ok')
 
-        db.create_site_metadata('banned_domain', form.domain.data)
-
-        misc.create_sitelog(misc.LOG_TYPE_DOMAIN_BAN, current_user.uid, comment=form.domain.data)
-        return json.dumps({'status': 'ok'})
-    return redirect(url_for('admin_domains'))
+    return jsonify(status='error', error=get_errors(form))
 
 
 @do.route("/do/remove_banned_domain/<domain>", methods=['POST'])
 def remove_banned_domain(domain):
     """ Remove domain if ban list """
     if not current_user.is_admin():
-        abort(404)
+        abort(403)
 
-    db.uquery('DELETE FROM `site_metadata` WHERE `key`=%s AND `value`=%s',
-              ('banned_domain', domain))
+    try:
+        sm = SiteMetadata.get((SiteMetadata.key == 'banned_domain') & (SiteMetadata.value == domain))
+        sm.delete_instance()
+    except:
+        return jsonify(status='error', error='Domain is not banned')
+
     misc.create_sitelog(misc.LOG_TYPE_DOMAIN_UNBAN, current_user.uid, comment=domain)
 
     return json.dumps({'status': 'ok'})
@@ -1455,31 +1441,30 @@ def use_invite_code():
 
 @do.route("/do/stick/<int:post>", methods=['POST'])
 def toggle_sticky(post):
-    """ Toggles post stickyness - not api """
-    post = db.get_post_from_pid(post)
-    sub = db.get_sub_from_sid(post['sid'])
-    if not current_user.is_mod(sub['sid']):
+    """ Toggles post stickyness """
+    try:
+        post = SubPost.get(SubPost.pid == post)
+    except SubPost.DoesNotExist:
+        return jsonify(status='error', error='Post does not exist')
+    
+
+    if not current_user.is_mod(post.sid_id):
         abort(403)
 
     form = DeletePost()
 
     if form.validate():
-        x = db.get_sub_metadata(sub['sid'], 'sticky')
-        if not x or int(x['value']) != post['pid']:
-            db.update_sub_metadata(sub['sid'], 'sticky', post['pid'])
-            
-            misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_ADD, current_user.uid, sub['sid'],
-                               link=url_for('sub.view_post', sub=sub['name'], pid=post['pid']))
-        else:
-            db.uquery('DELETE FROM `sub_metadata` WHERE `value`=%s AND '
-                      '`key`=%s', (post['pid'], 'sticky'))
-            misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_DEL, current_user.uid, sub['sid'],
-                               link=url_for('sub.view_post', sub=sub['name'], pid=post['pid']))
-        cache.delete_memoized(misc.getStickyPid, post['sid'])
-        cache.delete_memoized(db.get_sub_metadata, post['sid'], 'sticky',
-                              _all=True)
-        ckey = make_template_fragment_key('sticky', vary_on=[post['sid']])
-        cache.delete(ckey)
+        try:
+            is_sticky = SubMetadata.get((SubMetadata.sid == post.sid_id) & (SubMetadata.key == 'sticky') & (SubMetadata.value == post.pid))
+            is_sticky.delete_instance()
+            misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_DEL, current_user.uid, post.sid,
+                               link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
+        except SubMetadata.DoesNotExist:
+            post.sid.update_metadata('sticky', post.pid)
+            misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_ADD, current_user.uid, post.sid,
+                    link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
+
+        cache.delete_memoized(misc.getStickyPid, post.sid_id)
     return jsonify(status='ok')
 
 

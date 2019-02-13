@@ -75,10 +75,8 @@
   </div>
 {% endif %}
 {% endcache %}
-{% if func.enableBTCmod() %}
 <hr>
 <a href="{{url_for('donate')}}" class="sbm-post pure-button">Gib phuks</a>
-{% endif %}
 {% if current_user.is_authenticated %}
 <hr>
 <a href="{{url_for('view_sitelog')}}" class="sbm-post pure-button">Site logs</a>
