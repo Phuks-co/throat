@@ -878,7 +878,7 @@ def getSubOfTheDay():
         today = datetime.utcnow()
         tomorrow = datetime(year=today.year, month=today.month, day=today.day) + timedelta(seconds=86400)
         timeuntiltomorrow = tomorrow - today
-        rconn.setex('daysub', daysub.sid, timeuntiltomorrow)
+        rconn.setex('daysub', value=daysub.sid, time=timeuntiltomorrow)
     else:
         try:
             daysub = Sub.select(Sub.name, Sub.title).where(Sub.sid == daysub).get()
