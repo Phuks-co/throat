@@ -271,13 +271,13 @@ def edit_sub(sub):
             sub.nsfw = form.nsfw.data 
             sub.save()
             
-            misc.update_sub_metadata(sub.sid, 'restricted', form.restricted.data)
-            misc.update_sub_metadata(sub.sid, 'ucf', form.usercanflair.data)
-            misc.update_sub_metadata(sub.sid, 'videomode', form.videomode.data)
-            misc.update_sub_metadata(sub.sid, 'allow_polls', form.polling.data)
+            sub.update_metadata('restricted', form.restricted.data)
+            sub.update_metadata('ucf', form.usercanflair.data)
+            sub.update_metadata('videomode', form.videomode.data)
+            sub.update_metadata('allow_polls', form.polling.data)
 
             if form.subsort.data != "None":
-                misc.update_sub_metadata(sub.sid, 'sort', form.subsort.data)
+                sub.update_metadata('sort', form.subsort.data)
 
             misc.create_sublog(misc.LOG_TYPE_SUB_SETTINGS, current_user.uid, sub.sid)
 

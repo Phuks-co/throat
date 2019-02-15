@@ -146,6 +146,10 @@ class Sub(TModel):
             return None
 
     def update_metadata(self, key, value):
+        if value == True:
+            value = '1'
+        elif value == False:
+            value = '0'
         restr = SubMetadata.get_or_create(sid=self.sid, key=key)[0]
         if restr.value != value:
             restr.value = value

@@ -1445,22 +1445,20 @@ def metadata_to_dict(metadata):
     """ Transforms metadata query objects into dicts """
     res = {}
     for m in metadata:
+        if m.value == '0':
+            val = False
+        elif m.value == '1':
+            val = True
+        else:
+            val = m.value 
         if m.key not in res:
-            res[m.key] = m.value
+            res[m.key] = val
         else:
             if not isinstance(res[m.key], list):
                 res[m.key] = [res[m.key]]
-            res[m.key].append(m.value)
+            res[m.key].append(val)
     
     return res
-
-
-def update_sub_metadata(sid, key, value):
-    # Pending remove (replaced by Sub.update_metadata)
-    restr = SubMetadata.get_or_create(sid=sid, key=key)[0]
-    if restr.value != value:
-        restr.value = value
-        restr.save()
 
 
 # Log types
