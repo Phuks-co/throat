@@ -20,7 +20,11 @@
                         <a href="/u/@{log.uid.name}">@{log.uid.name}</a>\
                     @end</td>
                 <td>
-                    @if log.action == 30:
+                    @if log.action == 19:
+                        Banned <a href="/u/@{log.desc!!e}">@{log.desc!!e}</a>
+                    @elif log.action == 20:
+                        Created a sub
+                    @elif log.action == 30:
                         Sub was transferred to @{log.desc}
                     @elif log.action == 24:
                         Sent mod invite to <a href="/u/@{log.target.name}">@{log.target.name}</a>
@@ -40,6 +44,8 @@
                         Banned domain <code>@{log.desc!!e}</code>
                     @elif log.action == 43:
                         Unbanned domain <code>@{log.desc!!e}</code>
+                    @elif log.action == 44:
+                        Removed an announcement
                     @else:
                         <i>[Type @{log.action!!s}]</i> @{log.desc}
                     @end

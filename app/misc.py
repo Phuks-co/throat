@@ -1463,7 +1463,9 @@ def metadata_to_dict(metadata):
 
 # Log types
 LOG_TYPE_USER = 10
+LOG_TYPE_USER_BAN = 19
 
+LOG_TYPE_SUB_CREATE = 20
 LOG_TYPE_SUB_SETTINGS = 21
 LOG_TYPE_SUB_BAN = 22
 LOG_TYPE_SUB_UNBAN = 23
@@ -1483,11 +1485,13 @@ LOG_TYPE_SUB_CREATION = 40
 LOG_TYPE_ANNOUNCEMENT = 41
 LOG_TYPE_DOMAIN_BAN = 42
 LOG_TYPE_DOMAIN_UNBAN = 43
+LOG_TYPE_UNANNOUNCE = 44
 
 
 def create_sitelog(action, uid, comment='', link=''):
     SiteLog.create(action=action, uid=uid, desc=comment, link=link).save()
 
 
+# Note: `admin` makes the entry appear on the sitelog. I should rename it
 def create_sublog(action, uid, sid, comment='', link='', admin=False, target=None):
     SubLog.create(action=action, uid=uid, sid=sid, desc=comment, link=link, admin=admin, target=target).save()

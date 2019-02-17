@@ -214,9 +214,7 @@ def create_sub():
         SubStylesheet.create(sid=sub.sid, content='', source='/* CSS here */')
 
         # admin/site log
-        SiteLog.create(action=6, link=url_for('sub.view_sub', sub=sub.name),
-                       desc='{0} created a new sub'.format(current_user.name),
-                       time=datetime.datetime.utcnow())
+        misc.create_sublog(misc.LOG_TYPE_SUB_CREATE, uid=current_user.uid, sid=sub.sid, admin=True)
 
         SubSubscriber.create(uid=current_user.uid, sid=sub.sid, status=1)
 
@@ -1297,9 +1295,7 @@ def deleteannouncement():
         return redirect(url_for('admin_area'))
 
     ann.delete_instance()
-    SiteLog.create(action=3, link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid),
-                   desc='{0} removed the announcement.'.format(current_user.name),
-                   time=datetime.datetime.utcnow())
+    misc.create_sitelog(misc.LOG_TYPE_UNANNOUNCE, uid=current_user.uid, link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
 
     cache.delete_memoized(misc.getAnnouncementPid)
     socketio.emit('rmannouncement', {}, namespace='/snt')
@@ -1316,7 +1312,9 @@ def make_announcement():
 
     if form.validate():
         try:
-            SiteMetadata.get(SiteMetadata.key == 'announcement')
+            curr_ann = SiteMetadata.get(SiteMetadata.key == 'announcement')
+            if curr_ann.value == form.post.data:
+                return jsonify(status='error', error='Post already announced')
             deleteannouncement()
         except SiteMetadata.DoesNotExist:
             pass
@@ -1328,9 +1326,8 @@ def make_announcement():
 
         SiteMetadata.create(key='announcement', value=post.pid)
 
-        SiteLog.create(action=3, link=url_for('view_post_inbox', pid=post.pid),
-                       desc='{0} made an announcement.'.format(current_user.name),
-                       time=datetime.datetime.utcnow())
+        misc.create_sitelog(misc.LOG_TYPE_ANNOUNCEMENT, uid=current_user.uid, link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
+
         cache.delete_memoized(misc.getAnnouncementPid)
         socketio.emit('announcement',
                       {"cont": engine.get_template('shared/announcement.html').render({"ann": misc.getAnnouncement()})},
@@ -2132,9 +2129,7 @@ def ban_user(username):
 
     user.status = 5
     user.save()
-    SiteLog.create(action=9, link=url_for('view_user', user=user.name),
-                   desc='{0} banned {1}'.format(current_user.get_username(), user.name),
-                   time=datetime.datetime.utcnow())
+    misc.create_sitelog(misc.LOG_TYPE_USER_BAN, uid=current_user.uid, comment=user.name)
     return redirect(url_for('view_user', user=username))
 
 

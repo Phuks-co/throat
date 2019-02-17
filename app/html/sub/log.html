@@ -20,7 +20,9 @@
                         <a href="/u/@{log.uid.name}">@{log.uid.name}</a>\
                     @end</td>
                 <td>
-                    @if log.action == 21:
+                    @if log.action == 20:
+                        Created the sub
+                    @elif log.action == 21:
                         Changed sub settings
                     @elif log.action == 22:
                         Banned <a href="/u/@{log.target.name}">@{log.target.name}</a> with reason <code>@{log.desc!!e}</code>
