@@ -97,7 +97,7 @@ class OAuthToken(object):
 def load_client(client_id):
     """ Loads OAuth clients """
     try:
-        qr = Client.get(Client.id == client_id)
+        qr = Client.get(Client.client_id == client_id)
         return OAuthClient(qr)
     except Client.DoesNotExist:
         return None
