@@ -55,7 +55,7 @@ class User(TModel):
 class Client(TModel):
     _default_scopes = TextField(null=True)
     _redirect_uris = TextField(null=True)
-    client_id = CharField(primary_key=True, max_length=40)
+    client = CharField(db_column='client_id', primary_key=True, max_length=40)
     client_secret = CharField(unique=True, max_length=55)
     is_confidential = BooleanField(null=True)
     name = CharField(null=True, max_length=40)
