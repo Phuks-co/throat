@@ -584,11 +584,13 @@ def create_post():
     if form.validate():
         # Put pre-posting checks here
         if not current_user.is_admin():
-            ep = db.query('SELECT * FROM `site_metadata` WHERE `key`=%s',
-                          ('enable_posting',)).fetchone()
-            if ep:
-                if ep['value'] == 'False':
+            try:
+                enable_posting = SiteMetadata.get(SiteMetadata.key == 'enable_posting')
+                if enable_posting.value in ('False', '0'):
                     return render_template('createpost.html', txtpostform=form, error="Posting has been temporarily disabled")
+            except SiteMetadata.DoesNotExist:
+                pass
+                    
         sub = db.get_sub_from_name(form.sub.data)
         if not sub:
             return render_template('createpost.html', txtpostform=form, error="Sub does not exist")
@@ -622,13 +624,15 @@ def create_post():
                           'MONTH)', (sub['sid'], form.link.data)).fetchone()
             if lx:
                 return render_template('createpost.html', txtpostform=form, error="This link was recently posted on this sub")
-            bans = db.uquery('SELECT `value` FROM `site_metadata` WHERE `key`=%s',
-                             ('banned_domain',)).fetchall()
-            ben = []
-            for i in bans:
-                ben.append(i['value'])
+            
+            bans = SiteMetadata.select().where(SiteMetadata.key == 'banned_domain')
+            banned_domains, banned_domains_b = ([], [])
+            for ban in bans:
+                banned_domains.append(ban.value)
+                banned_domains_b.append('.' + ban.value)
+            
             url = urlparse(form.link.data)
-            if url.netloc in ben:
+            if (url.netloc in banned_domains) or (url.netloc.endswith(tuple(banned_domains_b))):
                 return render_template('createpost.html', txtpostform=form, error="This domain is banned")
 
             img = misc.get_thumbnail(form)
