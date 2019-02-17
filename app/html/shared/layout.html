@@ -171,7 +171,7 @@
     @#...
     @if not current_user.is_anonymous and 'nochat' not in current_user.prefs:
     <div id="chpop" style="height: 1.65em">
-      <div id="chtitle" hid="true"><a href="/chat">Chat</a></div>
+      <div id="chtitle" hid="true"><span id="cht-text">Chat</span> <div class="glyphbutton"><a href="/chat"><span class="p-icon " data-icon="resize"></span></a></div></div>
       <div id="chcont"></div>
       <div id="chbott" style="display: none"><input type="text" id="chsend" maxlength="250" placeholder="Type here"/></div>
     </div>

@@ -1624,6 +1624,19 @@ table td {
 /* /TABLE STYLES */
 
 /* chat */
+#cht-text{
+  height: 1.8em;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1.8em;
+}
+
+#chtitle .glyphbutton{
+  top: 0px;
+  float: right;
+  margin-right: 1em;
+}
+
 .bigchat{height: 75vh;}
 
 #fixedchat{

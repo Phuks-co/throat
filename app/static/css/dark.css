@@ -389,6 +389,7 @@ body.dark #chpop {
   background: #000;
   border-top: 1px solid #d94f00;
   border-left: 1px solid #d94f00;
+  border-right: 1px solid #d94f00;
 }
 body.dark #chcont {
   border-bottom: none;

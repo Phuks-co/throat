@@ -63,6 +63,8 @@ var Icons = {
   down: require('../svg/caret-down.svg'),
   up: require('../svg/caret-up.svg'),
 
+  resize: require('../svg/resize.svg'),
+
   rendericons: rendericons,
 };
 
