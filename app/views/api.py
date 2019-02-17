@@ -24,6 +24,7 @@ class OAuthClient(object):
         self._redirect_uris = stuff._redirect_uris
         self._default_scopes = stuff._default_scopes
         self.client = stuff.client
+        self.client_id = self.client
 
     @property
     def client_type(self):
@@ -61,12 +62,12 @@ class OAuthGrant(object):
     @property
     def user(self):
         """ Returns user info for this grant """
-        return User.get(self.tuff.user_id)
+        return self.tuff.user
 
     @property
     def scopes(self):
         """ Returns grant's scopes """
-        if self.tuff['_scopes']:
+        if self.tuff._scopes:
             return self.tuff._scopes.split()
         return []
 
@@ -85,7 +86,7 @@ class OAuthToken(object):
     @property
     def user(self):
         """ Returns the user this token is attached to """
-        return User.get(self.tuff.user_id)
+        return self.tuff.user
 
     def delete(self):
         """ Deletes this token """
@@ -108,7 +109,7 @@ def load_grant(client_id, code):
     """ Gets grants.. """
     try:
         qr = Grant.get((Grant.client == client_id) & (Grant.code == code))
-        return OAuthClient(qr)
+        return OAuthGrant(qr)
     except Grant.DoesNotExist:
         return None
 
@@ -118,8 +119,8 @@ def save_grant(client_id, code, req, *args, **kwargs):
     """ Creates grants """
     # decide the expires time yourself
     expires = datetime.utcnow() + timedelta(seconds=100)
-    qr = Grant.create(client=client_id, code=code, redirect_uri=req.redirect_uri,
-                      _scopes=' '.join(req.scopes), user_id=current_user.uid, expires=expires)
+    qr = Grant.create(client=client_id, code=code['code'], redirect_uri=req.redirect_uri,
+                      _scopes=' '.join(req.scopes), user=current_user.uid, expires=expires)
     qr.save()
     return qr
 
@@ -140,12 +141,12 @@ def load_token(access_token=None, refresh_token=None):
 @oauth.tokensetter
 def save_token(token, req, *args, **kwargs):
     """ Creates oauth token """
-    Token.delete().where((Token.client == req.client.client) & (Token.user_id == req.user['uid'])).execute()
+    Token.delete().where((Token.client == req.client.client) & (Token.user == req.user.uid)).execute()
 
     expires_in = token.get('expires_in')
     expires = datetime.utcnow() + timedelta(seconds=expires_in)
     qr = Token.create(access_token=token['access_token'], refresh_token=token['refresh_token'], token_type=token['token_type'],
-                      _scopes=token['scope'], expires=expires, client_id=req.client.client, user_id=req.user['uid'])
+                      _scopes=token['scope'], expires=expires, client_id=req.client.client, user_id=req.user.uid)
     qr.save()
     return qr
 
@@ -172,7 +173,7 @@ def authorize(*args, **kwargs):
 def me():
     """ Returns basic user info """
     user = request.oauth.user
-    return jsonify(email=user['email'], username=user['name'], uid=user['uid'])
+    return jsonify(email=user.email, username=user.name, uid=user.uid)
 
 
 @api.route('/api/getToken')
@@ -182,7 +183,7 @@ def get_socket_session():
     user = request.oauth.user
     session_serializer = SecureCookieSessionInterface().get_signing_serializer(current_app)
 
-    return jsonify(token=session_serializer.dumps({'uid': user['uid']}))
+    return jsonify(token=session_serializer.dumps({'uid': user.uid}))
 
 
 @api.route('/oauth/token', methods=['GET', 'POST'])
