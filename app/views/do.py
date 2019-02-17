@@ -676,8 +676,6 @@ def create_post():
                               ptype=ptype,
                               nsfw=form.nsfw.data if not sub['nsfw'] else 1,
                               thumbnail=img if ptype == 1 else '')
-        auto_vote = SubPostVote.create(uid=current_user.uid, pid=post.pid, positive=True)
-        User.update(given=User.given + 1).where(User.uid == current_user.uid).execute()
         
         if ptype == 3:
             # Create SubPostPollOption objects...
@@ -700,6 +698,15 @@ def create_post():
                        'html': engine.get_template('shared/post.html').render({'posts': posts, 'sub': False})},
                       namespace='/snt',
                       room='/all/new')
+
+        # XXX: The auto-upvote is placed *after* broadcasting the post via socketio so that the upvote arrow
+        # does not appear highlighted to everybody.
+        SubPostVote.create(uid=current_user.uid, pid=post.pid, positive=True)
+        User.update(given=User.given + 1).where(User.uid == current_user.uid).execute()
+        # We send a yourvote message so that the upvote arrow *does* appear highlighted to the creator.
+        socketio.emit('yourvote', {'pid': post.pid, 'status': 1, 'score': post.score}, namespace='/snt',
+                      room='user' + current_user.uid)
+
         if fileid:
             db.create_user_upload_post(pid=post.pid, uid=current_user.uid, fileid=fileid, thumbnail=img if img else '')
 
