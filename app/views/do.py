@@ -661,7 +661,7 @@ def create_post():
                               content=form.content.data if ptype != 1 else '',
                               link=form.link.data if ptype == 1 else None,
                               posted=datetime.datetime.utcnow(),
-                              score=1,
+                              score=1, upvotes=1, downvotes=0,
                               deleted=0,
                               comments=0,
                               ptype=ptype,
