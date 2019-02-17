@@ -650,6 +650,15 @@ def create_post():
             for p in options:
                 if len(p) > 128:
                     return render_template('createpost.html', txtpostform=form, error="Poll option text is too long.")
+            
+            if form.closetime.data:
+                try:
+                    closetime = int(form.closetime.data)
+                except ValueError:
+                    return render_template('createpost.html', txtpostform=form, error="Invalid closing time.")
+                
+                if time.time() > closetime:
+                    return render_template('createpost.html', txtpostform=form, error="The closing time is in the past!")
         elif form.ptype.data == 'link':
             ptype = 1
         else:
@@ -679,13 +688,6 @@ def create_post():
                 SubPostMetadata.create(pid=post.pid, key='hide_results', value=1)
             
             if form.closetime.data:
-                try:
-                    closetime = int(form.closetime.data)
-                except ValueError:
-                    return render_template('createpost.html', txtpostform=form, error="Invalid closing time.")
-                
-                if time.time() > closetime:
-                    return render_template('createpost.html', txtpostform=form, error="The closing time is in the past!")
                 SubPostMetadata.create(pid=post.pid, key='poll_closes_time', value=closetime)
                 
         db.uquery('UPDATE `sub` SET posts = posts + 1 WHERE `sid`=%s',
