@@ -23,7 +23,7 @@ class OAuthClient(object):
         self.is_confidential = bool(stuff.is_confidential)
         self._redirect_uris = stuff._redirect_uris
         self._default_scopes = stuff._default_scopes
-        self.client_id = stuff.client_id
+        self.client = stuff.client
 
     @property
     def client_type(self):
@@ -107,7 +107,7 @@ def load_client(client_id):
 def load_grant(client_id, code):
     """ Gets grants.. """
     try:
-        qr = Grant.get((Grant.client_id == client_id) & (Grant.code == code))
+        qr = Grant.get((Grant.client == client_id) & (Grant.code == code))
         return OAuthClient(qr)
     except Grant.DoesNotExist:
         return None
@@ -118,7 +118,7 @@ def save_grant(client_id, code, req, *args, **kwargs):
     """ Creates grants """
     # decide the expires time yourself
     expires = datetime.utcnow() + timedelta(seconds=100)
-    qr = Grant.create(client_id=client_id, code=code, redirect_uri=req.redirect_uri,
+    qr = Grant.create(client=client_id, code=code, redirect_uri=req.redirect_uri,
                       _scopes=' '.join(req.scopes), user_id=current_user.uid, expires=expires)
     qr.save()
     return qr
@@ -140,12 +140,12 @@ def load_token(access_token=None, refresh_token=None):
 @oauth.tokensetter
 def save_token(token, req, *args, **kwargs):
     """ Creates oauth token """
-    Token.delete().where((Token.client_id == req.client.client_id) & (Token.user_id == req.user['uid'])).execute()
+    Token.delete().where((Token.client == req.client.client) & (Token.user_id == req.user['uid'])).execute()
 
     expires_in = token.get('expires_in')
     expires = datetime.utcnow() + timedelta(seconds=expires_in)
     qr = Token.create(access_token=token['access_token'], refresh_token=token['refresh_token'], token_type=token['token_type'],
-                      _scopes=token['scope'], expires=expires, client_id=req.client.client_id, user_id=req.user['uid'])
+                      _scopes=token['scope'], expires=expires, client_id=req.client.client, user_id=req.user['uid'])
     qr.save()
     return qr
 
