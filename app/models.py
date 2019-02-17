@@ -201,7 +201,11 @@ class SubPost(TModel):
     posted = DateTimeField(null=True)
     edited = DateTimeField(null=True)
     ptype = IntegerField(null=True) # 1=text, 2=link, 3=poll
-    score = IntegerField(null=True)
+    
+    score = IntegerField(null=True)  # XXX: Deprecated
+    upvotes = IntegerField(default=0)
+    downvotes = IntegerField(default=0)
+
     sid = ForeignKeyField(db_column='sid', null=True, model=Sub, field='sid')
     thumbnail = CharField(null=True)
     title = CharField(null=True)
@@ -251,7 +255,7 @@ class SubPostComment(TModel):
 
 
 class SubPostCommentVote(TModel):
-    datetime = DateTimeField(null=True)
+    datetime = DateTimeField(null=True, default=datetime.datetime.utcnow)
     cid = CharField(null=True)
     positive = IntegerField(null=True)
     uid = ForeignKeyField(db_column='uid', null=True, model=User,
@@ -274,7 +278,7 @@ class SubPostMetadata(TModel):
 
 
 class SubPostVote(TModel):
-    datetime = DateTimeField(null=True)
+    datetime = DateTimeField(null=True, default=datetime.datetime.utcnow)
     pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
                           field='pid')
     positive = IntegerField(null=True)

@@ -1150,7 +1150,10 @@ def password_reset(uid, key):
     return engine.get_template('user/password_reset.html').render({'lpform': form})
 
 
-th_license = open('LICENSE', 'r').read()
+try:
+    th_license = open('LICENSE', 'r').read()
+except FileNotFoundError:
+    th_license = 'License file was deleted :('
 
 @app.route("/license")
 def license():

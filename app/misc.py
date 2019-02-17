@@ -450,7 +450,7 @@ def our_markdown(text):
 def get_post_upcount(pid):
     """ Returns the upvote count """
     score = SubPostVote.select().where(SubPostVote.pid == pid).where(SubPostVote.positive == 1).count()
-    return score + 1
+    return score
 
 
 @cache.memoize(20)
