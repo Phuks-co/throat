@@ -656,6 +656,8 @@ def create_post():
             if form.closetime.data:
                 try:
                     closetime = int(form.closetime.data)
+                    if (closetime - time.time()) > 8000000:
+                        return render_template('createpost.html', txtpostform=form, error="Poll closing time is too far in the future.")
                 except ValueError:
                     return render_template('createpost.html', txtpostform=form, error="Invalid closing time.")
                 
