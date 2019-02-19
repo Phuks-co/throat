@@ -1351,9 +1351,8 @@ def ban_domain():
         except SiteMetadata.DoesNotExist:
             sm = SiteMetadata.create(key='banned_domain', value=form.domain.data)
             sm.save()
+            sc.create_sitelog(misc.LOG_TYPE_DOMAIN_BAN, current_user.uid, comment=domain)
             return jsonify(status='ok')
-
-    sc.create_sitelog(misc.LOG_TYPE_DOMAIN_BAN, current_user.uid, comment=domain)
 
     return jsonify(status='error', error=get_errors(form))
 
