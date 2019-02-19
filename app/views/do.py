@@ -1911,7 +1911,7 @@ def toggle_nsfw():
         except SubPost.DoesNotExist:
             return json.dumps({'status': 'error', 'error': 'Post does not exist'})
 
-        if current_user.uid == post.uid or current_user.is_admin() or current_user.is_mod(post.sid):
+        if current_user.uid == post.uid_id or current_user.is_admin() or current_user.is_mod(post.sid):
             post.nsfw = 1 if post.nsfw == 0 else 0
             post.save()
             return json.dumps({'status': 'ok', 'msg': 'NSFW set to {0}'.format(bool(post.nsfw))})
@@ -2313,7 +2313,7 @@ def close_poll():
         if post.ptype != 3:
             abort(404)
         
-        if current_user.uid == post.uid or current_user.is_admin() or current_user.is_mod(post.sid):
+        if current_user.uid == post.uid_id or current_user.is_admin() or current_user.is_mod(post.sid):
             # Check if poll's not closed already
             postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == post.pid))
             if 'poll_closed' in postmeta:
