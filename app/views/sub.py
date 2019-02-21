@@ -309,15 +309,15 @@ def view_post(sub, pid, comments=False, highlight=None):
             except SubPostPollVote.DoesNotExist:
                 has_voted = False
             
-            # Check if the poll is open
-            poll_open = True
-            if 'poll_closed' in postmeta:
-                poll_open = False
+        # Check if the poll is open
+        poll_open = True
+        if 'poll_closed' in postmeta:
+            poll_open = False
 
-            if 'poll_closes_time' in postmeta:
-                poll_closes = datetime.datetime.utcfromtimestamp(int(postmeta['poll_closes_time'])).isoformat()
-                if int(postmeta['poll_closes_time']) < time.time():
-                    poll_open = False
+        if 'poll_closes_time' in postmeta:
+            poll_closes = datetime.datetime.utcfromtimestamp(int(postmeta['poll_closes_time'])).isoformat()
+            if int(postmeta['poll_closes_time']) < time.time():
+                poll_open = False
 
     return render_template('post.html', post=post, subInfo=misc.getSubData(post['sid']),
                            edittxtpostform=txtpedit, sub=ksub,
