@@ -10,8 +10,9 @@ from flask import Blueprint, jsonify, request, render_template, g, current_app
 from flask.sessions import SecureCookieSessionInterface
 from flask_login import login_required, current_user
 from flask_oauthlib.provider import OAuth2Provider
+from peewee import JOIN
 from .. import misc
-from ..models import Sub, User, Grant, Token, Client
+from ..models import Sub, User, Grant, Token, Client, SubPost, Sub
 
 api = Blueprint('api', __name__)
 oauth = OAuth2Provider()
@@ -195,24 +196,34 @@ def token_thingy():
 
 # /api/v2
 
-@api.route('/api/v2/getPostList/<target>/<sort>', defaults={'page': 1}, methods=['GET'])
-@api.route('/api/v2/getPostList/<target>/<sort>/<int:page>', methods=['GET'])
+@api.route('/api/getPostList/<target>/<sort>', defaults={'page': 1}, methods=['GET'])
+@api.route('/api/getPostList/<target>/<sort>/<int:page>', methods=['GET'])
 def getPostList(target, sort, page):
     if sort not in ('hot', 'top', 'new'):
         return jsonify(status="error", error="Invalid sort")
     if page < 1:
         return jsonify(status="error", error="Invalid page number")
 
-    if target == 'home':
-        posts = misc.getPostList(misc.postListQueryHome(noDetail=True, nofilter=True), sort, page).dicts()
-    elif target == 'all':
-        posts = misc.getPostList(misc.postListQueryBase(noDetail=True, nofilter=True), sort, page).dicts()
+    base_query = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
+                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
+                                SubPost.comments, SubPost.ptype, User.status.alias('userstatus'), User.uid)
+    base_query = base_query.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
+
+    if target == 'all':
+        posts = misc.getPostList(base_query, sort, page).dicts()
     else:
         try:
             sub = Sub.get(Sub.name == target)
         except Sub.DoesNotExist:
             return jsonify(status="error", error="Target does not exist")
-        posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True, nofilter=True, noDetail=True).where(Sub.sid == sub.sid),
-                                 sort, page).dicts()
-                                 
-    return jsonify(status='ok', posts=list(posts))
+        posts = misc.getPostList(base_query.where(Sub.sid == sub.sid), sort, page).dicts()
+    
+    np = []
+    for p in posts:
+        if p['userstatus'] == 10:  # account deleted
+            p['user'] = '[Deleted]'
+            p['uid'] = None
+        del p['userstatus']
+        np.append(p)
+
+    return jsonify(status='ok', posts=np)
