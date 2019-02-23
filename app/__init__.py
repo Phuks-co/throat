@@ -505,7 +505,7 @@ def view_user(user):
         nextlv = ((level + 1) ** 2) * 10
 
         required_xp = nextlv - currlv
-        progress = ((currlv - xp) / required_xp) * 100
+        progress = ((xp - currlv) / required_xp) * 100
     else:
         progress = 0
 
