@@ -399,7 +399,7 @@ def createPost():
                           posted=datetime.utcnow(),
                           score=1, upvotes=1, downvotes=0, deleted=0, comments=0,
                           ptype=ptype,
-                          nsfw=post_data.get('nsfw', 0) if not subdata['nsfw'] else 1,
+                          nsfw=post_data.get('nsfw', 0) if not subdata.get('nsfw') == '1' else 1,
                           thumbnail=img if ptype == 1 else '')
 
     Sub.update(posts=Sub.posts + 1).where(Sub.sid == sub.sid).execute()
