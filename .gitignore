@@ -84,3 +84,6 @@ package-lock.json
 .python-version
 
 badges.py
+
+.pytest_cache
+stor
