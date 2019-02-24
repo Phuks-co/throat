@@ -292,7 +292,6 @@ def getPost(pid):
 
 @api.route("/api/getPostComments/<int:pid>", defaults={'page': 1}, methods=['GET'])
 @api.route("/api/getPostComments/<int:pid>/<int:page>", methods=['GET'])
-@token_required()
 def getComments(pid, page):
     try:
         post = SubPost.get(SubPost.pid == pid)
