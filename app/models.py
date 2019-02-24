@@ -420,10 +420,33 @@ class SubPostReport(TModel):
 
 
 class UserIgnores(TModel):
-    uid = ForeignKeyField(db_column='uid', model=User,
-                          field='uid')
+    uid = ForeignKeyField(db_column='uid', model=User, field='uid')
     target = CharField(max_length=40)
     date = DateTimeField(default=datetime.datetime.now)
 
     class Meta:
         table_name = 'user_ignores'
+
+
+class APIToken(TModel):
+    uid = ForeignKeyField(db_column='uid', model=User, field='uid')
+    token = CharField(unique=True)
+    can_post = BooleanField()
+    can_mod = BooleanField()
+    can_message = BooleanField()
+    can_upload = BooleanField()
+    is_active = BooleanField(default=True)
+    is_ip_restricted = BooleanField(default=False)
+
+    class Meta:
+        table_name = 'api_token'
+
+
+class APITokenSettings(TModel):
+    """ API Token settings. Mainly used for IP whitelisting """
+    token = ForeignKeyField(model=APIToken, field='id')
+    key = CharField()
+    value = CharField()
+
+    class Meta:
+        table_name = 'api_token_settings'

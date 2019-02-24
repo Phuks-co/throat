@@ -68,7 +68,12 @@
         @end
         posted <time-ago datetime="@{post['posted'].isoformat()}Z"></time-ago> by
         @if post['userstatus'] != 10:
-          <a class="authorlink" href="/u/@{post['user']}">@{post['user']}</a>
+          <a class="authorlink" href="/u/@{post['user']}"> \
+          @if post['userstatus'] == 100:
+            <span class="bot-tag">bot</span> \
+          @end
+          @{post['user']} \
+          </a> \
         @else:
           <a class="authorlink deleted">[Deleted]</a>
         @end

@@ -7,7 +7,7 @@ from flask_login import login_required, current_user
 from flask_oauthlib.provider import OAuth2Provider
 from peewee import JOIN
 from .. import misc
-from ..models import Sub, User, Grant, Token, Client, SubPost, Sub, SubPostComment
+from ..models import Sub, User, Grant, Token, Client, SubPost, Sub, SubPostComment, APIToken, APITokenSettings
 
 api = Blueprint('api', __name__)
 oauth = OAuth2Provider()
@@ -189,6 +189,40 @@ def token_thingy():
     return None
 
 
+def token_required(permission=None):
+    """ Checks authorization for token """
+    def decorator(f):
+        def check_token(*args, **kwargs):
+            token = request.values.get('token')
+            if not token:
+                rj = request.get_json()
+                if rj:
+                    token = rj.get('token')
+                if not token:
+                    return jsonify(status='error', error='No token received')
+            try:
+                tokdata = APIToken.get(APIToken.token == token)
+            except APIToken.DoesNotExist:
+                return jsonify(status='error', error='Invalid token')
+            
+            if permission and not getattr(tokdata, permission, False):
+                return jsonify(status='error', error='Not authorized')
+
+            if not tokdata.is_active:
+                return jsonify(status='error', error='Invalid token')
+            
+            if tokdata.is_ip_restricted:
+                try:
+                    APITokenSettings.get((APITokenSettings.token == tokdata) & (APITokenSettings.key == 'authorized_ip') & (APITokenSettings.value == misc.get_ip()))
+                except APITokenSettings.DoesNotExist:
+                    return jsonify(status='error', error='IP not authorized')
+            g.api_token = tokdata
+
+            return f(*args, **kwargs)
+        return check_token
+    return decorator
+
+
 # /api/v2
 
 @api.route('/api/getPostList/<target>/<sort>', defaults={'page': 1}, methods=['GET'])
@@ -258,6 +292,7 @@ def getPost(pid):
 
 @api.route("/api/getPostComments/<int:pid>", defaults={'page': 1}, methods=['GET'])
 @api.route("/api/getPostComments/<int:pid>/<int:page>", methods=['GET'])
+@token_required()
 def getComments(pid, page):
     try:
         post = SubPost.get(SubPost.pid == pid)

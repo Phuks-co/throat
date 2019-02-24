@@ -9,7 +9,7 @@ from app.models import User, Client, Grant, Message, SiteLog, SiteMetadata, Sub,
     SubPostCommentVote, SubPostMetadata, SubPostVote, SubStylesheet, \
     SubSubscriber, Token, UserBadge, UserMetadata, UserSaved, \
     Pixel, Shekels, UserUploads, UserIgnores, \
-    SubUploads, SubPostPollOption, SubPostPollVote, SubPostReport
+    SubUploads, SubPostPollOption, SubPostPollVote, SubPostReport, APIToken, APITokenSettings
 
 with app.app_context():
     print('Throat quick install script.')
@@ -43,6 +43,8 @@ with app.app_context():
     SubPostPollOption.create_table(True)
     SubPostPollVote.create_table(True)
     SubPostReport.create_table(True)
+    APIToken.create_table(True)
+    APITokenSettings.create_table(True)
 
     print('Tables created.')
 
