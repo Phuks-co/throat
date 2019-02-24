@@ -67,5 +67,21 @@
     is <code>true</code> if the post was deleted.</p>
   <b>Note:</b> If an user's account or the post is deleted, <code>user</code> will be <code>[Deleted]</code> and <code>uid</code> will be <code>null</code>.
 
+
+  <h3>/api/getPostComments/&lt;pid&gt;</h3>
+  <p>Returns all the comments for a post as a list. <code>pid</code> is the post ID (integer).</p>
+  <p>Fields returned for each comment:
+    <ul>
+      <li><code>cid</code>: unique comment id</li>
+      <li><code>content</code>: the content of the comment</li>
+      <li><code>deleted</code>: true only if the comment was deleted</li>
+      <li><code>lastedit</code>: date/time of the last time the comment was edited or null if it was not.</li>
+      <li><code>parentcid</code>: unique id for the parent comment or null if this is a comment directly on the post</li>
+      <li><code>posted</code>: date/time when the comment was posted</li>
+      <li><code>score</code>: comment's score</li>
+      <li><code>user</code>: name of the user that created the comment or <code>[Deleted]</code> if the user or comment were deleted</li>
+    </ul>
+  </p>
+  <p><b>Note</b>: This query is paginated and will only return up to 50 comments per page.</p>
 </article>
 {% endblock %}

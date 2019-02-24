@@ -7,7 +7,7 @@ from flask_login import login_required, current_user
 from flask_oauthlib.provider import OAuth2Provider
 from peewee import JOIN
 from .. import misc
-from ..models import Sub, User, Grant, Token, Client, SubPost, Sub
+from ..models import Sub, User, Grant, Token, Client, SubPost, Sub, SubPostComment
 
 api = Blueprint('api', __name__)
 oauth = OAuth2Provider()
@@ -254,3 +254,32 @@ def getPost(pid):
     del post['userstatus']
 
     return jsonify(status='ok', post=post)
+
+
+@api.route("/api/getPostComments/<int:pid>", defaults={'page': 1}, methods=['GET'])
+@api.route("/api/getPostComments/<int:pid>/<int:page>", methods=['GET'])
+def getComments(pid, page):
+    try:
+        post = SubPost.get(SubPost.pid == pid)
+    except SubPost.DoesNotExist:
+        return jsonify(status="error", error="Post does not exist")
+    
+    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid, SubPostComment.time.alias('posted'), SubPostComment.lastedit,
+                                       SubPostComment.content, SubPostComment.status, SubPostComment.status, User.name.alias('user'),
+                                       User.status.alias('userstatus'), SubPostComment.score)
+    comments = comments.join(User, JOIN.LEFT_OUTER).where(SubPostComment.pid == pid).paginate(page, 50).dicts()
+
+    for comm in comments:
+        if comm['userstatus'] == 10 or comm['status'] not in (0, None):
+            comm['user'] = '[Deleted]'
+        
+        if comm['status'] not in (0, None):
+            comm['deleted'] = True
+            comm['content'] = None
+        else:
+            comm['deleted'] = False
+
+        del comm['userstatus']
+        del comm['status']
+
+    return jsonify(status="ok", comments=list(comments))
