@@ -491,8 +491,8 @@ def view_user(user):
     if user.status == 10:
         abort(404)
 
-    owns = db.get_user_positions(user.uid, 'mod1')
-    mods = db.get_user_positions(user.uid, 'mod2')
+    owns = SubMetadata.select(Sub.name).join(Sub).switch(SubMetadata).where((SubMetadata.key == 'mod1') & (SubMetadata.value == user.uid)).dicts()
+    mods = SubMetadata.select(Sub.name).join(Sub).switch(SubMetadata).where((SubMetadata.key == 'mod2') & (SubMetadata.value == user.uid)).dicts()
     badges = misc.getUserBadges(user.uid)
     pcount = SubPost.select().where(SubPost.uid == user.uid).count()
     ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()

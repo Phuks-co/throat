@@ -84,6 +84,26 @@
   </p>
   <p><b>Note</b>: This query is paginated and will only return up to 50 comments per page.</p>
 
+  <h3>[GET] /api/getUser/&lt;username&gt;</h3>
+  <p>Returns profile information for <code>username</code></p>
+  <p>Fields returned:
+    <ul>
+      <li><code>bot</code>: <code>true</code> if the user is a bot</li>
+      <li><code>comment_count</code>: Number of comments submitted</li>
+      <li><code>created</code>: Account creation date/time</li>
+      <li><code>given</code>: upvotes-downvotes given</li>
+      <li><code>downvotes_given</code>: downvotes given</li>
+      <li><code>upvotes_given</code>: upvotes given</li>
+      <li><code>level</code>: User level</li>
+      <li><code>mods</code>: List of subs that the user mods</li>
+      <li><code>name</code>: User's name</li>
+      <li><code>owns</code>: List of subs that the user owns</li>
+      <li><code>post_count</code>: Number of posts submitted</li>
+      <li><code>score</code>: upvoted-downvotes taken</li>
+      <li><code>xp</code>: experience points (used to calculate level)</li>
+    </ul>
+  </p>
+
   <h3>[POST] /api/createPost</h3>
   <p>Creates a post. Requires an API token with the <code>can_post</code> permission.</p>
   <p>Fields to be sent via POST:

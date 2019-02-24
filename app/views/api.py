@@ -9,7 +9,7 @@ from peewee import JOIN
 from .. import misc
 from ..socketio import socketio
 from ..models import Sub, User, Grant, Token, Client, SubPost, Sub, SubPostComment, APIToken, APITokenSettings
-from ..models import SiteMetadata, SubPostVote
+from ..models import SiteMetadata, SubPostVote, SubMetadata
 
 api = Blueprint('api', __name__)
 oauth = OAuth2Provider()
@@ -290,6 +290,44 @@ def getPost(pid):
     del post['userstatus']
 
     return jsonify(status='ok', post=post)
+
+
+@api.route('/api/getUser/<username>', methods=['GET'])
+def getUser(username):
+    try:
+        user = User.get(User.name == username)
+    except User.DoesNotExist:
+        return jsonify(status="error", error="User does not exist")
+    
+    if user.status == 10:
+        return jsonify(status="error", error="User does not exist")
+    
+    level, xp = misc.get_user_level(user.uid)
+    pcount = SubPost.select().where(SubPost.uid == user.uid).count()
+    ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()
+    owns = SubMetadata.select(Sub.name).join(Sub).switch(SubMetadata).where((SubMetadata.key == 'mod1') & (SubMetadata.value == user.uid)).dicts()
+    mods = SubMetadata.select(Sub.name).join(Sub).switch(SubMetadata).where((SubMetadata.key == 'mod2') & (SubMetadata.value == user.uid)).dicts()
+    given = misc.getUserGivenScore(user.uid)
+
+
+    owns = [x['name'] for x in owns]
+    mods = [x['name'] for x in mods]
+
+    return jsonify(status="ok", user={
+        'name': user.name,
+        'created': user.joindate,
+        'score': user.score,
+        'given': user.given,
+        'upvotes_given': given[0],
+        'downvotes_given': given[1],
+        'level': level,
+        'xp': xp,
+        'bot': True if user.status == 100 else False,
+        'post_count': pcount,
+        'comment_count': ccount,
+        'owns': owns,
+        'mods': mods
+    })
 
 
 @api.route("/api/getPostComments/<int:pid>", defaults={'page': 1}, methods=['GET'])
