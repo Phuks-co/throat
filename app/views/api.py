@@ -1,13 +1,15 @@
 """ API endpoints. """
 
 from datetime import datetime, timedelta
-from flask import Blueprint, jsonify, request, render_template, g, current_app
+from flask import Blueprint, jsonify, request, render_template, g, current_app, url_for
 from flask.sessions import SecureCookieSessionInterface
 from flask_login import login_required, current_user
 from flask_oauthlib.provider import OAuth2Provider
 from peewee import JOIN
 from .. import misc
+from ..socketio import socketio
 from ..models import Sub, User, Grant, Token, Client, SubPost, Sub, SubPostComment, APIToken, APITokenSettings
+from ..models import SiteMetadata, SubPostVote
 
 api = Blueprint('api', __name__)
 oauth = OAuth2Provider()
@@ -317,3 +319,106 @@ def getComments(pid, page):
         del comm['status']
 
     return jsonify(status="ok", comments=list(comments))
+
+
+def get_post_data():
+    req_json = request.get_json()
+    if req_json:
+        return req_json
+    else:
+        return request.form
+
+def api_over_limit(limit):
+    return jsonify(status='error', error='Rate limited')
+
+
+@api.route("/api/createPost", methods=['POST'])
+@token_required('can_post')
+@misc.ratelimit(1, per=30, over_limit=api_over_limit)
+def createPost():
+    """ Creates a text post. Parameters taken:
+     - ptype: Post type, either "link" or "text"
+     - sub: Target sub name.
+     - title: Post title.
+     - link: post's link (optional)
+     - content: Post content (optional)
+     - nsfw: true if post is nsfw (optional)
+     """
+    post_data = get_post_data()
+    if not post_data.get('sub') or not post_data.get('title') or not post_data.get('ptype'):
+        return jsonify(status='error', error='Missing parameters')
+    ptype = post_data.get('ptype')
+    if ptype not in ('link', 'text'):
+        return jsonify(status='error', error='Invalid ptype')
+    # TODO: Unify all checks with do.create_post
+    try:
+        enable_posting = SiteMetadata.get(SiteMetadata.key == 'enable_posting')
+        if enable_posting.value in ('False', '0'):
+            return jsonify(status='error', error='Posting has ben temporarily disabled')
+    except SiteMetadata.DoesNotExist:
+        pass
+    
+    try:
+        sub = Sub.get(Sub.name == post_data['sub'])
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error='Sub does not exist')
+
+    subdata = misc.getSubData(sub.sid, simple=True)
+    if g.api_token.user.uid in subdata['ban']:
+        return jsonify(status='error', error='You\'re banned from this sub')
+    
+    if subdata['restricted'] == '1':
+        return jsonify(status='error', error='Restricted sub')
+    
+    if len(post_data['title'].strip(misc.WHITESPACE)) < 3:
+        return jsonify(status='error', error='Post title too short')
+    
+    if ptype == "link":
+        if not post_data.get('link'):
+            return jsonify(status='error', error='No link provided')
+        
+        if post_data.get('content'):
+            return jsonify(status='error', error='Link posts do not accept content')
+        
+        if misc.is_domain_banned(post_data.get('link')):
+            return jsonify(status='error', error='Domain is banned')
+        
+        img = misc.get_thumbnail(post_data.get('link'))
+        ptype = 1
+    elif ptype == 'text':
+        if post_data.get('link'):
+            return jsonify(status='error', error='Text posts do not accept link')
+
+        ptype = 0
+    
+    post = SubPost.create(sid=sub.sid,
+                          uid=g.api_token.uid,
+                          title=post_data['title'].strip(misc.WHITESPACE),
+                          content=post_data.get('content', ''),
+                          link=post_data['link'] if ptype == 1 else None,
+                          posted=datetime.utcnow(),
+                          score=1, upvotes=1, downvotes=0, deleted=0, comments=0,
+                          ptype=ptype,
+                          nsfw=post_data.get('nsfw', 0) if not subdata['nsfw'] else 1,
+                          thumbnail=img if ptype == 1 else '')
+
+    Sub.update(posts=Sub.posts + 1).where(Sub.sid == sub.sid).execute()
+    addr = url_for('sub.view_post', sub=sub.name, pid=post.pid)
+    posts = misc.getPostList(misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), 'new', 1).dicts()
+    socketio.emit('thread',
+                  {'addr': addr, 'sub': sub.name, 'type': ptype,
+                   'user': g.api_token.user.name, 'pid': post.pid, 'sid': sub.sid,
+                   'html': misc.engine.get_template('shared/post.html').render({'posts': posts, 'sub': False})},
+                   namespace='/snt', room='/all/new')
+
+    SubPostVote.create(uid=g.api_token.uid, pid=post.pid, positive=True)
+    User.update(given=User.given + 1).where(User.uid == g.api_token.uid).execute()
+
+    misc.workWithMentions(post_data.get('content', ''), None, post, sub)
+    misc.workWithMentions(post_data.get('title'), None, post, sub)
+
+    socketio.emit('yourvote', {'pid': post.pid, 'status': 1, 'score': post.score}, namespace='/snt',
+                  room='user' + g.api_token.user.name)
+
+
+    return jsonify(status='ok', pid=post.pid)

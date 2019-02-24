@@ -429,7 +429,7 @@ class UserIgnores(TModel):
 
 
 class APIToken(TModel):
-    uid = ForeignKeyField(db_column='uid', model=User, field='uid')
+    user = ForeignKeyField(db_column='uid', model=User, field='uid')
     token = CharField(unique=True)
     can_post = BooleanField()
     can_mod = BooleanField()

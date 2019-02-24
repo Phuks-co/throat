@@ -6,7 +6,7 @@
 
 <article class="post apidoc" class="col-12">
   <h1>API documentation.</h1>
-  <h3>/api/getPostList/&lt;source&gt;/&lt;sort&gt;[/page]</h3>
+  <h3>[GET] /api/getPostList/&lt;source&gt;/&lt;sort&gt;[/page]</h3>
   <p>
     Returns a post list. <code>source</code> can be <code>all</code>
     or a sub. <code>sort</code> must be one of <code>hot</code>, <code>top</code> or
@@ -61,14 +61,14 @@
     }
     </pre>
   
-  <h3>/api/getPost/&lt;pid&gt;</h3>
+  <h3>[GET] /api/getPost/&lt;pid&gt;</h3>
   <p>Returns information for a post. <code>pid</code> is the post ID (integer).</p>
   <p>Returns the same information as <code>getPostList</code> and a <code>deleted</code> field that 
     is <code>true</code> if the post was deleted.</p>
   <b>Note:</b> If an user's account or the post is deleted, <code>user</code> will be <code>[Deleted]</code> and <code>uid</code> will be <code>null</code>.
 
 
-  <h3>/api/getPostComments/&lt;pid&gt;</h3>
+  <h3>[GET] /api/getPostComments/&lt;pid&gt;[/page]</h3>
   <p>Returns all the comments for a post as a list. <code>pid</code> is the post ID (integer).</p>
   <p>Fields returned for each comment:
     <ul>
@@ -83,5 +83,20 @@
     </ul>
   </p>
   <p><b>Note</b>: This query is paginated and will only return up to 50 comments per page.</p>
+
+  <h3>[POST] /api/createPost</h3>
+  <p>Creates a post. Requires an API token with the <code>can_post</code> permission.</p>
+  <p>Fields to be sent via POST:
+    <ul>
+      <li><code>ptype</code>: Post type. Either <code>text</code> or <code>link</code></li>
+      <li><code>sub</code>: Sub name where the post will be created</li>
+      <li><code>title</code>: Post title</li>
+      <li><code>link</code>: (only if <code>ptype</code> is <code>link</code>) the post's link</li>
+      <li><code>content</code>: (optional, only if <code>ptype</code> is <code>text</code>) the post's content</li>
+      <li><code>nsfw</code>: set to 1 if the post is NSFW</li>
+      <li><code>token</code>: API Token</li>
+    </ul>
+  </p>
+  <p>Returns: The post's <code>pid</code> if successful.</p>
 </article>
 {% endblock %}

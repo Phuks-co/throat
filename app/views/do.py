@@ -6,7 +6,6 @@ import time
 import datetime
 import uuid
 import bcrypt
-from urllib.parse import urlparse
 import requests
 import magic
 import hashlib
@@ -606,7 +605,7 @@ def create_post():
             if lposts > 10 or tposts > 25:
                 return render_template('createpost.html', txtpostform=form, error="You have posted too much today")
         if len(form.title.data.strip(misc.WHITESPACE)) < 3:
-            return render_template('createpost.html', txtpostform=form, error="Title is too short and contains whitespace characters")
+            return render_template('createpost.html', txtpostform=form, error="Title is too short and/or contains whitespace characters")
         fileid = False
         if form.ptype.data == 'link':
             fupload = misc.upload_file()
@@ -623,17 +622,10 @@ def create_post():
             if lx:
                 return render_template('createpost.html', txtpostform=form, error="This link was recently posted on this sub")
             
-            bans = SiteMetadata.select().where(SiteMetadata.key == 'banned_domain')
-            banned_domains, banned_domains_b = ([], [])
-            for ban in bans:
-                banned_domains.append(ban.value)
-                banned_domains_b.append('.' + ban.value)
-            
-            url = urlparse(form.link.data)
-            if (url.netloc in banned_domains) or (url.netloc.endswith(tuple(banned_domains_b))):
+            if misc.is_domain_banned(form.link.data):
                 return render_template('createpost.html', txtpostform=form, error="This domain is banned")
 
-            img = misc.get_thumbnail(form)
+            img = misc.get_thumbnail(form.link.data)
         if form.ptype.data == 'poll':
             ptype = 3
             # Check if this sub allows polls...

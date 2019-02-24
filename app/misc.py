@@ -750,11 +750,11 @@ THUMB_NAMESPACE = uuid.UUID('f674f09a-4dcf-4e4e-a0b2-79153e27e387')
 FILE_NAMESPACE = uuid.UUID('acd2da84-91a2-4169-9fdb-054583b364c4')
 
 
-def get_thumbnail(form):
+def get_thumbnail(link):
     """ Tries to fetch a thumbnail """
     # 1 - Check if it's an image
     try:
-        req = safeRequest(form.link.data)
+        req = safeRequest(link)
     except (requests.exceptions.RequestException, ValueError):
         return ''
     ctype = req[0].headers.get('content-type', '').split(";")[0].lower()
@@ -1495,3 +1495,16 @@ def create_sitelog(action, uid, comment='', link=''):
 # Note: `admin` makes the entry appear on the sitelog. I should rename it
 def create_sublog(action, uid, sid, comment='', link='', admin=False, target=None):
     SubLog.create(action=action, uid=uid, sid=sid, desc=comment, link=link, admin=admin, target=target).save()
+
+
+def is_domain_banned(link):
+    bans = SiteMetadata.select().where(SiteMetadata.key == 'banned_domain')
+    banned_domains, banned_domains_b = ([], [])
+    for ban in bans:
+        banned_domains.append(ban.value)
+        banned_domains_b.append('.' + ban.value)
+
+    url = urlparse(link)
+    if (url.netloc in banned_domains) or (url.netloc.endswith(tuple(banned_domains_b))):
+        return True
+    return False
