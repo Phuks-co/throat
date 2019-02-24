@@ -414,8 +414,8 @@ def createPost():
     SubPostVote.create(uid=g.api_token.uid, pid=post.pid, positive=True)
     User.update(given=User.given + 1).where(User.uid == g.api_token.uid).execute()
 
-    misc.workWithMentions(post_data.get('content', ''), None, post, sub)
-    misc.workWithMentions(post_data.get('title'), None, post, sub)
+    misc.workWithMentions(post_data.get('content', ''), None, post, sub, c_user=g.api_token.user)
+    misc.workWithMentions(post_data.get('title'), None, post, sub, c_user=g.api_token.user)
 
     socketio.emit('yourvote', {'pid': post.pid, 'status': 1, 'score': post.score}, namespace='/snt',
                   room='user' + g.api_token.user.name)

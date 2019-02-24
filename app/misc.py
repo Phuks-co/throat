@@ -314,6 +314,10 @@ class SiteAnon(AnonymousUserMixin):
     def is_subban(cls, sub):
         """ Anons dont get banned by default. """
         return False
+    
+    @classmethod
+    def get_user_level(self):
+        return (0, 0)
 
 
 class RateLimit(object):
@@ -640,9 +644,13 @@ def moddedSubCount(uid):
     return sub.count()
 
 
-def workWithMentions(data, receivedby, post, sub, cid=None):
+def workWithMentions(data, receivedby, post, sub, cid=None, c_user=current_user):
     """ Does all the job for mentions """
     mts = re.findall(RE_AMENTION_LINKS, data)
+    if isinstance(sub, Sub):
+        subname = sub.name
+    else:
+        subname = sub['name']
     if mts:
         mts = list(set(mts))  # Removes dupes
         clean_mts = []
@@ -667,16 +675,16 @@ def workWithMentions(data, receivedby, post, sub, cid=None):
             user = db.get_user_from_name(mtn)
             if not user:
                 continue
-            if user['uid'] != current_user.uid and user['uid'] != receivedby:
+            if user['uid'] != c_user.uid and user['uid'] != receivedby:
                 # Checks done. Send our shit
                 if cid:
-                    link = url_for('sub.view_perm', pid=post.pid, sub=sub['name'], cid=cid)
+                    link = url_for('sub.view_perm', pid=post.pid, sub=subname, cid=cid)
                 else:
-                    link = url_for('sub.view_post', pid=post.pid, sub=sub['name'])
-                create_message(current_user.uid, user['uid'],
+                    link = url_for('sub.view_post', pid=post.pid, sub=subname)
+                create_message(c_user.uid, user['uid'],
                                subject="You've been tagged in a post",
                                content="@{0} tagged you in [{1}]({2})"
-                               .format(current_user.get_username(), "Here: " + post.title, link),
+                               .format(c_user.name, "Here: " + post.title, link),
                                link=link, mtype=8)
                 socketio.emit('notification',
                               {'count': get_notification_count(user['uid'])},
