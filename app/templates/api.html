@@ -60,6 +60,12 @@
       "status": "ok"
     }
     </pre>
+  
+  <h3>/api/getPost/&lt;pid&gt;</h3>
+  <p>Returns information for a post. <code>pid</code> is the post ID (integer).</p>
+  <p>Returns the same information as <code>getPostList</code> and a <code>deleted</code> field that 
+    is <code>true</code> if the post was deleted.</p>
+  <b>Note:</b> If an user's account or the post is deleted, <code>user</code> will be <code>[Deleted]</code> and <code>uid</code> will be <code>null</code>.
 
 </article>
 {% endblock %}
