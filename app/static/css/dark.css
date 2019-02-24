@@ -38,7 +38,7 @@ body.dark div.author a.authorlink{
 
 body.dark .content,
 body.dark #container2 {
-  color: #555555;
+  color: #777;
 }
 
 body.dark .hasmail i{
@@ -64,7 +64,7 @@ body.dark div#sortbuttons {
 }
 
 body.dark a:hover,
-body.dark #sortbuttons a:hover, {
+body.dark #sortbuttons a:hover{
   color: #d17262;
 }
 
@@ -462,4 +462,10 @@ body.dark .poll-pbar {
 /* modals */
 body.dark .tingle-modal-box{
   background-color: #171717;
+}
+
+body.dark .bot-tag{
+  border: 1px solid #2f2f2f;
+  background: #111;
+  color: #7d7d7d;
 }

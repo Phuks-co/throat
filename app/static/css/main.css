@@ -521,7 +521,6 @@ span#notification.fade {
 	color: #ff6d15;
 }
 .misctainer {
-  display: inline-block;
   float: left;
 }
 
@@ -632,7 +631,6 @@ iframe {
   min-width: 1em;
   max-height: 70px;
   padding: .15em .2em 0 .2em;
-  display: inline-block;
   float: left;
   margin-right: 8px;
 }
@@ -1906,4 +1904,13 @@ a[href="#toodamncool"]{
 
 #subsort{
   list-style: none;
+}
+
+
+.bot-tag{
+  border-radius: 2px;
+  border: 1px solid #afa8a8;
+  padding: 1px 3px;
+  background: #eee;
+  color: #5d5454;
 }
