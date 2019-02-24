@@ -364,10 +364,10 @@ def createPost():
         return jsonify(status='error', error='Sub does not exist')
 
     subdata = misc.getSubData(sub.sid, simple=True)
-    if g.api_token.user.uid in subdata['ban']:
+    if g.api_token.user.uid in subdata.get('ban', []):
         return jsonify(status='error', error='You\'re banned from this sub')
     
-    if subdata['restricted'] == '1':
+    if subdata.get('restricted', 0) == '1':
         return jsonify(status='error', error='Restricted sub')
     
     if len(post_data['title'].strip(misc.WHITESPACE)) < 3:
