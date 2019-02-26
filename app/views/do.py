@@ -874,7 +874,7 @@ def create_comment(pid):
 
         socketio.emit('threadcomments',
                       {'pid': post.pid,
-                       'comments': post.comments},
+                       'comments': post.comments + 1},
                       namespace='/snt',
                       room=post.pid)
 
