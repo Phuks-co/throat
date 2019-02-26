@@ -330,6 +330,34 @@ def getUser(username):
     })
 
 
+@api.route('/api/getSub/<name>', methods=['GET'])
+def getSub(name):
+    try:
+        sub = Sub.get(Sub.name == name)
+    except Sub.DoesNotExist:
+        return jsonify(status="error", error="Sub does not exist")
+    
+    subdata = misc.getSubData(sub.sid)
+    print(subdata)
+    return jsonify(status="ok", sub={
+        'name': sub.name,
+        'title': sub.title,
+        'sidebar': sub.sidebar,
+        'default_sort': sub.sort if sub.sort else 'hot',
+        'created': subdata.get('creation'),
+        'subscribers': sub.subscribers,
+        'posts': sub.posts,
+        'allow_polls': True if subdata.get('allow_polls') == '1' else False,
+        'restricted': True if subdata.get('restricted') == '1' else False,
+        'nsfw': True if subdata.get('nsfw') == '1' else False,
+        'user_can_flair': True if subdata.get('ucf') == '1' else False,
+        'video_mode': True if subdata.get('videomode') == '1' else False,
+        'creator': subdata['creator']['name'],
+        'owner': subdata['owner']['name'],
+        'mods': [x['name'] for x in subdata['mods']]
+    })
+
+
 @api.route("/api/getPostComments/<int:pid>", defaults={'page': 1}, methods=['GET'])
 @api.route("/api/getPostComments/<int:pid>/<int:page>", methods=['GET'])
 def getComments(pid, page):

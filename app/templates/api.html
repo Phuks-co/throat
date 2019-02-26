@@ -104,6 +104,29 @@
     </ul>
   </p>
 
+  <h3>[GET] /api/getSub/&lt;name&gt;</h3>
+  <p>Returns information for a sub. <code>name</code> is the sub's name.</p>
+  <p>Fields returned:
+    <ul>
+      <li><code>allow_polls</code>: <code>true</code> if the sub allows polls.</li>
+      <li><code>created</code>: date/time when the sub was created.</li>
+      <li><code>creator</code>: username of the sub's creator or <code>[Deleted]</code> if the account was deleted.</li>
+      <li><code>default_sort</code>: The sub's default sort. Either one of <code>hot</code>, <code>top</code> or <code>new</code>.</li>
+      <li><code>mods</code>: A list with all the sub's mods minus the owner.</li>
+      <li><code>name</code>: The sub's name</li>
+      <li><code>nsfw</code>: <code>true</code> if the sub is NSFW.</li>
+      <li><code>owner</code>: Name of the sub's current owner.</li>
+      <li><code>posts</code>: Number of posts created in the sub.</li>
+      <li><code>restricted</code>: <code>true</code> if only mods can post in the sub.</li>
+      <li><code>sidebar</code>: The sub's sidebar text</li>
+      <li><code>subscribers</code>: The number of users subscribed to the sub.</li>
+      <li><code>title</code>: The sub's title.</li>
+      <li><code>user_can_flair</code>: <code>true</code> if users can flair their own posts.</li>
+      <li><code>videomode</code>: <code>true</code> if video mode is enabled.</li>
+    </ul>
+  </p>
+
+
   <h3>[POST] /api/createPost</h3>
   <p>Creates a post. Requires an API token with the <code>can_post</code> permission.</p>
   <p>Fields to be sent via POST:
