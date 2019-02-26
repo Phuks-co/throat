@@ -141,5 +141,18 @@
     </ul>
   </p>
   <p>Returns: The post's <code>pid</code> if successful.</p>
+
+  <h3>[POST] /api/createComment</h3>
+  <p>Creates a comment. Requires an API token with the <code>can_post</code> permission.</p>
+  <p>Fields to be sent via POST:
+    <ul>
+      <li><code>pid</code>: Post id where the comment will be submitted to</li>
+      <li><code>parentcid</code>: (optional) id of the parent comment</li>
+      <li><code>content</code>: Comment content</li>
+      <li><code>token</code>: API Token</li>
+    </ul>
+  </p>
+  <p>Returns: The comment's <code>cid</code> if successful.</p>
+
 </article>
 {% endblock %}

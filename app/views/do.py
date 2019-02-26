@@ -867,7 +867,8 @@ def create_comment(pid):
                                         parentcid=form.parent.data if form.parent.data != '0' else None,
                                         time=datetime.datetime.utcnow(),
                                         cid=uuid.uuid4(), score=0)
-        post.comments += 1
+        
+        SubPost.update(comments=SubPost.comments + 1).where(SubPost.pid == post.pid).execute()
         comment.save()
         post.save()
 

@@ -1,5 +1,7 @@
 """ API endpoints. """
 
+import uuid
+from functools import update_wrapper
 from datetime import datetime, timedelta
 from flask import Blueprint, jsonify, request, render_template, g, current_app, url_for
 from flask.sessions import SecureCookieSessionInterface
@@ -221,7 +223,7 @@ def token_required(permission=None):
             g.api_token = tokdata
 
             return f(*args, **kwargs)
-        return check_token
+        return update_wrapper(check_token, f)
     return decorator
 
 
@@ -439,6 +441,9 @@ def createPost():
     if len(post_data['title'].strip(misc.WHITESPACE)) < 3:
         return jsonify(status='error', error='Post title too short')
     
+    if len(post_data['title']) > 350:
+        return jsonify(status='error', error='Post title too long')
+    
     if ptype == "link":
         if not post_data.get('link'):
             return jsonify(status='error', error='No link provided')
@@ -454,7 +459,8 @@ def createPost():
     elif ptype == 'text':
         if post_data.get('link'):
             return jsonify(status='error', error='Text posts do not accept link')
-
+        if len(post_data.get('content', '')) > 16384:
+            return jsonify(status='error', error='Post content is too long')
         ptype = 0
     
     post = SubPost.create(sid=sub.sid,
@@ -488,3 +494,83 @@ def createPost():
 
 
     return jsonify(status='ok', pid=post.pid)
+
+
+@api.route("/api/createComment", methods=['POST'])
+@token_required('can_post')
+@misc.ratelimit(1, per=30, over_limit=api_over_limit)
+def createComment():
+    """ Creates a comment. Required parameters:
+      - pid: post id.
+      - parentcid: (optional) parent comment
+      - content: comment's content.
+    """
+    post_data = get_post_data()
+    
+    if not post_data.get('pid') or not post_data.get('content'):
+        return jsonify(status='error', error='Missing parameters')
+    
+    try:
+        post = SubPost.get(SubPost.pid == post_data['pid'])
+    except SubPost.DoesNotExist:
+        return jsonify(status='error', error="Post does not exist")
+    
+    if post.deleted:
+        return jsonify(status='error', error="Post was deleted")
+    
+    if (datetime.utcnow() - post.posted) > timedelta(days=60):
+        return jsonify(status='error', error="Post is archived")
+    
+    subdata = misc.getSubData(post.sid, simple=True)
+    if g.api_token.user.uid in subdata.get('ban', []):
+        return jsonify(status='error', error='You\'re banned from this sub')
+
+    if post_data.get('parentcid'):
+        try:
+            parent = SubPostComment.get(SubPostComment.cid == post_data['parentcid'])
+        except SubPost.DoesNotExist:
+            return jsonify(status='error', error="Parent comment does not exist")
+
+        if parent.status != None or parent.pid_id != post.pid:
+            return jsonify(status='error', error="Parent comment does not exist")
+    
+    if len(post_data['content']) > 16384:
+        return jsonify(status='error', error='Comment content too long')
+    
+    if len(post_data['content']) < 1:
+        return jsonify(status='error', error='Comment content too short')
+
+    comment = SubPostComment.create(pid=post_data['pid'], uid=g.api_token.user.uid,
+                                    content=post_data['content'], parentcid=post_data.get('parentcid', None),
+                                    time=datetime.utcnow(), cid=uuid.uuid4(),
+                                    score=0)
+    
+    SubPost.update(comments=SubPost.comments + 1).where(SubPost.pid == post.pid).execute()
+
+    socketio.emit('threadcomments',
+                  {'pid': post.pid, 'comments': post.comments + 1},
+                  namespace='/snt', room=post.pid)
+    
+    if post_data.get('parentcid'):
+        parent = SubPostComment.get(SubPostComment.cid == post_data.get('parentcid'))
+        to = parent.uid.uid
+        subject = 'Comment reply: ' + post.title
+        mtype = 5
+    else:
+        to = post.uid.uid
+        subject = 'Post reply: ' + post.title
+        mtype = 4
+
+    if to != g.api_token.user.uid and g.api_token.user.uid not in misc.get_ignores(to):
+        misc.create_message(mfrom=g.api_token.user.uid,
+                            to=to, subject=subject,
+                            content='', link=comment.cid,
+                            mtype=mtype)
+        socketio.emit('notification',
+                        {'count': misc.get_notification_count(to)},
+                        namespace='/snt',
+                        room='user' + to)
+
+    misc.workWithMentions(post_data.get('content', ''), to, post, post.sid, cid=comment.cid, c_user=g.api_token.user)
+
+    return jsonify(status='ok', cid=comment.cid)
