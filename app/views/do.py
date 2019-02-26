@@ -870,7 +870,6 @@ def create_comment(pid):
         
         SubPost.update(comments=SubPost.comments + 1).where(SubPost.pid == post.pid).execute()
         comment.save()
-        post.save()
 
         socketio.emit('threadcomments',
                       {'pid': post.pid,
