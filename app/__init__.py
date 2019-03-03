@@ -7,6 +7,7 @@ import uuid
 import socket
 import datetime
 import bcrypt
+from urllib.parse import urlparse
 from peewee import SQL
 from pyotp import TOTP
 from flask import Flask, render_template, session, redirect, url_for, abort, g
@@ -33,7 +34,7 @@ from . import database as db
 from .misc import SiteAnon, getDefaultSubs, allowedNames, get_errors, engine
 from .models import db as pdb
 from .models import Sub, SubPost, User, SubMetadata, UserMetadata, SubPostComment
-from .models import SiteLog, SubLog
+from .models import SiteLog, SubLog, rconn
 
 # /!\ FOR DEBUGGING ONLY /!\
 # from werkzeug.contrib.profiler import ProfilerMiddleware
@@ -1051,9 +1052,45 @@ def register():
     return render_template('register.html', error=get_errors(form))
 
 
+def handle_cas_ok(uid):
+    # Create Session Ticket and store it in Redis
+    token = str(uuid.uuid4())
+    rconn.setex(name='cas-' + token, value=uid, time=30)
+    # 2 - Send the ticket over to `service` with the ticket parameter
+    return redirect(request.args.get('service') + '&ticket=' + token)
+
+
+@app.route("/proxyValidate", methods=['GET'])
+def sso_proxy_validate():
+    if not request.args.get('ticket') or not request.args.get('service'):
+        abort(400)
+    
+    red_c = rconn.get('cas-' + request.args.get('ticket'))
+
+    if red_c:
+        try:
+            user = User.get((User.uid == red_c.decode()) & (User.status << (0, 100)))
+        except User.DoesNotExist:
+            return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationFailure code=\"INVALID_TICKET\">User not found or invalid ticket</cas:authenticationFailure></cas:serviceResponse>",401
+
+        return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationSuccess><cas:user>{0}</cas:user></cas:authenticationSuccess></cas:serviceResponse>".format(user.name), 200
+    else:
+        return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationFailure code=\"INVALID_TICKET\">User not found or invalid ticket</cas:authenticationFailure></cas:serviceResponse>",401
+
+
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     """ Endpoint for the login form """
+    if request.args.get('service'):
+        # CAS login. Verify that we trust the initiator.
+        url = urlparse(request.args.get('service'))
+        if url.netloc not in getattr(config, 'CAS_AUTHORIZED_HOSTS', []):
+            abort(403)
+        
+        if current_user.is_authenticated:
+            # User is auth'd. Return ticket.
+            return handle_cas_ok(uid=current_user.uid)
+
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
@@ -1072,7 +1109,10 @@ def login():
             if thash == user.password.encode('utf-8'):
                 theuser = misc.load_user(user.uid)
                 login_user(theuser, remember=form.remember.data)
-                return form.redirect('index')
+                if request.args.get('service'):
+                    return handle_cas_ok(uid=user.uid)
+                else:
+                    return form.redirect('index')
             else:
                 return engine.get_template('user/login.html').render({'error': "Invalid username or password.", 'loginform': form})
         else:  # Unknown hash
