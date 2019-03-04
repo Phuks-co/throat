@@ -1052,12 +1052,16 @@ def register():
     return render_template('register.html', error=get_errors(form))
 
 
+def sanitize_serv(serv):
+    serv = serv.replace("%253A", "%3A")
+    return serv.replace("%252F", "%2F")
+
 def handle_cas_ok(uid):
     # Create Session Ticket and store it in Redis
     token = str(uuid.uuid4())
     rconn.setex(name='cas-' + token, value=uid, time=30)
     # 2 - Send the ticket over to `service` with the ticket parameter
-    return redirect(request.args.get('service') + '&ticket=' + token)
+    return redirect(sanitize_serv(request.args.get('service')) + '&ticket=' + token)
 
 
 @app.route("/proxyValidate", methods=['GET'])
@@ -1073,7 +1077,7 @@ def sso_proxy_validate():
         except User.DoesNotExist:
             return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationFailure code=\"INVALID_TICKET\">User not found or invalid ticket</cas:authenticationFailure></cas:serviceResponse>",401
 
-        return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationSuccess><cas:user>{0}</cas:user></cas:authenticationSuccess></cas:serviceResponse>".format(user.name), 200
+        return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationSuccess><cas:user>{0}</cas:user></cas:authenticationSuccess></cas:serviceResponse>".format(user.name.lower()), 200
     else:
         return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationFailure code=\"INVALID_TICKET\">User not found or invalid ticket</cas:authenticationFailure></cas:serviceResponse>",401
 
