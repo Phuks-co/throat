@@ -11,7 +11,7 @@ from peewee import JOIN
 from .. import misc
 from ..socketio import socketio
 from ..models import Sub, User, Grant, Token, Client, SubPost, Sub, SubPostComment, APIToken, APITokenSettings
-from ..models import SiteMetadata, SubPostVote, SubMetadata
+from ..models import SiteMetadata, SubPostVote, SubMetadata, SubPostCommentVote
 
 api = Blueprint('api', __name__)
 oauth = OAuth2Provider()
@@ -292,6 +292,37 @@ def getPost(pid):
     del post['userstatus']
 
     return jsonify(status='ok', post=post)
+
+
+@api.route('/api/getComment/<cid>', methods=['GET'])
+def getComment(cid):
+    expcomms = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
+                                     SubPostComment.score, SubPostComment.status, SubPostComment.time, SubPostComment.pid,
+                                     User.name.alias('user'), SubPostComment.uid,
+                                     User.status.alias('userstatus'))
+    expcomms = expcomms.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
+    expcomms = expcomms.where(SubPostComment.cid == cid).dicts()
+
+    if len(expcomms) == 0:
+        return jsonify(status="error", error="Comment does not exist")
+    
+    comment = expcomms[0]
+    
+    comment['deleted'] = True if comment['status'] != None else False
+    
+    if comment['deleted']:  # Clear data for deleted posts
+        comment['content'] = None
+        comment['lastedit'] = None
+        comment['user'] = '[Deleted]'
+    
+    if comment['userstatus'] == 10:
+        comment['user'] = '[Deleted]'
+        comment['uid'] = None
+
+    del comment['userstatus']
+    del comment['status']
+
+    return jsonify(status='ok', comment=comment)
 
 
 @api.route('/api/getUser/<username>', methods=['GET'])
