@@ -5,7 +5,7 @@ flask-assets
 webassets
 jsmin
 cssmin
-misaka
+misaka>=2.1.1
 Flask-Login==0.4.0
 flask-caching
 flask-cache
