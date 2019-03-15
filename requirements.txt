@@ -17,8 +17,6 @@ sendgrid
 bs4
 flask-oauthlib
 eventlet
-gunicorn
-cython
 wheezy.template
 wheezy.html
 python-magic
