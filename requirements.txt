@@ -24,3 +24,4 @@ py3exiv2
 pyotp
 coverage
 pep8
+lxml
