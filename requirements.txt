@@ -7,7 +7,7 @@ peewee>=3.9.2
 Flask-SocketIO>=3.3.2
 Flask-Webpack>=0.1.0
 tinycss2==0.6.1
-flask-caching
+flask-cache
 mysqlclient
 redis
 requests
