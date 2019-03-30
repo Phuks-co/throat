@@ -1050,7 +1050,7 @@ def expand_comment_tree(comsx):
     expcomms = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
                                      SubPostComment.score, SubPostComment.status, SubPostComment.time, SubPostComment.pid,
                                      User.name.alias('username'), SubPostCommentVote.positive, SubPostComment.uid,
-                                     User.status.alias('userstatus'))
+                                     User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)
     expcomms = expcomms.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
     expcomms = expcomms.join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == SubPostComment.cid)))
     expcomms = expcomms.where(SubPostComment.cid << comsx[1]).dicts()

@@ -1791,9 +1791,14 @@ def upvotecomment(cid, value):
     if qvote:
         if bool(qvote['positive']) == (True if voteValue == 1 else False):
             SubPostCommentVote.delete().where(SubPostCommentVote.xid == qvote['xid']).execute()
-            SubPostComment.update(score=SubPostComment.score - voteValue).where(SubPostComment.cid == cid).execute()
+            if voteValue == 1:
+                kw = {'upvotes': SubPostComment.upvotes - 1}
+            elif voteValue == -1:
+                kw = {'downvotes': SubPostComment.downvotes - 1}
+            SubPostComment.update(score=SubPostComment.score - voteValue, **kw).where(SubPostComment.cid == cid).execute()
             User.update(score=User.score - voteValue).where(User.uid == comment.uid).execute()
             User.update(given=User.given - voteValue).where(User.uid == current_user.uid).execute()
+
             socketio.emit('uscore',
                           {'score': user.score - voteValue},
                           namespace='/snt', room="user" + comment.uid.uid)
@@ -1803,7 +1808,13 @@ def upvotecomment(cid, value):
             positive = True if voteValue == 1 else False
             db.uquery('UPDATE `sub_post_comment_vote` SET `positive`=%s WHERE '
                       '`xid`=%s', (positive, qvote['xid']))
-            SubPostComment.update(score=SubPostComment.score + (voteValue * 2)).where(SubPostComment.cid == cid).execute()
+            
+            if positive:
+                kw = {'upvotes': SubPostComment.upvotes + 1, 'downvotes': SubPostComment.downvotes - 1}
+            else:
+                kw = {'upvotes': SubPostComment.upvotes - 1, 'downvotes': SubPostComment.downvotes + 1}
+
+            SubPostComment.update(score=SubPostComment.score + (voteValue * 2), **kw).where(SubPostComment.cid == cid).execute()
             if user.score is not None:
                 db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '
                           '`uid`=%s', (voteValue * 2, user.uid))
@@ -1819,7 +1830,11 @@ def upvotecomment(cid, value):
                   '`positive`, `datetime`) VALUES (%s, %s, %s, %s)',
                   (cid, current_user.uid, positive, now))
 
-    SubPostComment.update(score=SubPostComment.score + voteValue).where(SubPostComment.cid == cid).execute()
+    if voteValue == 1:
+        kw = {'upvotes': SubPostComment.upvotes + 1}
+    elif voteValue == -1:
+        kw = {'downvotes': SubPostComment.downvotes + 1}
+    SubPostComment.update(score=SubPostComment.score + voteValue, **kw).where(SubPostComment.cid == cid).execute()
 
     if user.score is not None:
         db.uquery('UPDATE `user` SET `score`=`score`+%s WHERE '

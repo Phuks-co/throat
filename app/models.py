@@ -245,6 +245,8 @@ class SubPostComment(TModel):
     pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
                           field='pid')
     score = IntegerField(null=True)
+    upvotes = IntegerField(default=0)
+    downvotes = IntegerField(default=0)
     status = IntegerField(null=True)
     time = DateTimeField(null=True)
     uid = ForeignKeyField(db_column='uid', null=True, model=User,

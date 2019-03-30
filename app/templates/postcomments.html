@@ -24,7 +24,7 @@
               {%else%}
                 <a class="poster deleted">[Deleted]</a>
               {%endif%}
-              <b><span class="cscore">{{comment.score}}</span> points</b> (+<b>{{func.get_comment_voting(comment.cid)[0]}}</b>|-<b>{{func.get_comment_voting(comment.cid)[1]}}</b>)
+              <b><span class="cscore">{{comment.score}}</span> points</b> (+<b>{{comment.upvotes}}</b>|-<b>{{comment.downvotes}}</b>)
               <span class="time ">
                  <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago>
               </span>
