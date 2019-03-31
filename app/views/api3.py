@@ -101,8 +101,9 @@ def get_comment_tree(comments, root=None, only_after=None):
         if depth > 3:
             return [{'cid': None, 'more': len(tree)}] if tree else []
         if (len(tree) > 5 and depth > 0) or (len(tree) > 10):
+            key = tree[6] if depth > 0 else tree[11]
             tree = tree[:6] if depth > 0 else tree[:11]
-            tree.append({'cid': None, 'key': tree[-2]['cid'], 'more': or_len - len(tree)})
+            tree.append({'cid': None, 'key': key['cid'], 'more': or_len - len(tree)})
 
         for i in tree:
             if not i['cid']:
