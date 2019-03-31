@@ -80,7 +80,8 @@ def get_comment_tree(comments, root=None, only_after=None):
                     return k
         comment_tree = select_branch(comment_tree, root)
         if comment_tree:
-            comment_tree = comment_tree['children']
+            # include the parent of the root for context.
+            comment_tree = [comment_tree]
         else:
             return []
     # 3 - Trim tree (remove all children of depth=3 comments, all siblings after #5
