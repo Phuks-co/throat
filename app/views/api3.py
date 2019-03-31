@@ -204,6 +204,8 @@ def get_post_comment_children(pid, cid, lim):
         post = SubPost.get(SubPost.pid == pid)
     except SubPost.DoesNotExist:
         return jsonify(status='error', error='Post does not exist')
+    if cid == 'null':
+        cid = '0'
     if cid != '0':
         try:
             root = SubPostComment.get(SubPostComment.cid == cid)
