@@ -117,13 +117,24 @@ def get_comment_tree(comments, root=None, only_after=None):
     # 4 - Populate the tree (get all the data and cram it into the tree)
     expcomms = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
                                      SubPostComment.score, SubPostComment.status, SubPostComment.time, SubPostComment.pid,
-                                     User.name.alias('username'), SubPostComment.uid, # SubPostCommentVote.positive
+                                     User.name.alias('user'), SubPostComment.uid, # SubPostCommentVote.positive
                                      User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)
     expcomms = expcomms.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
     #expcomms = expcomms.join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == SubPostComment.cid)))
     expcomms = expcomms.where(SubPostComment.cid << cid_list).dicts()
 
-    commdata = {x['cid']: x for x in expcomms}
+    commdata = {}
+    for x in expcomms:
+        if x['userstatus'] == 10 or x['status']:
+            x['user'] = '[Deleted]'
+            x['uid'] = None
+        
+        if x['status']:
+            x['content'] = ''
+            x['lastedit'] = None
+        del x['userstatus']
+        commdata[x['cid']] = x
+
 
     def recursive_populate(tree):
         """ Expands the tree with the data from `commdata` """
