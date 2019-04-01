@@ -3,7 +3,7 @@
 from flask import Blueprint, jsonify
 from peewee import JOIN
 from .. import misc
-from ..models import Sub, User, SubPost, SubPostComment
+from ..models import Sub, User, SubPost, SubPostComment, SubMetadata
 
 API = Blueprint('apiv3', __name__)
 
@@ -125,16 +125,16 @@ def get_comment_tree(comments, root=None, only_after=None):
     expcomms = expcomms.where(SubPostComment.cid << cid_list).dicts()
 
     commdata = {}
-    for x in expcomms:
-        if x['userstatus'] == 10 or x['status']:
-            x['user'] = '[Deleted]'
-            x['uid'] = None
-        
-        if x['status']:
-            x['content'] = ''
-            x['lastedit'] = None
-        del x['userstatus']
-        commdata[x['cid']] = x
+    for comm in expcomms:
+        if comm['userstatus'] == 10 or comm['status']:
+            comm['user'] = '[Deleted]'
+            comm['uid'] = None
+
+        if comm['status']:
+            comm['content'] = ''
+            comm['lastedit'] = None
+        del comm['userstatus']
+        commdata[comm['cid']] = comm
 
 
     def recursive_populate(tree):
@@ -228,3 +228,57 @@ def get_post_comment_children(pid, cid, lim):
     else:
         return jsonify(status='error', error='Illegal comment id')
     return jsonify(status='ok', comments=comment_tree)
+
+
+@API.route('/getPostList/<target>', defaults={'page': 1, 'sort': 'default'}, methods=['GET'])
+@API.route('/getPostList/<target>/<sort>', defaults={'page': 1}, methods=['GET'])
+@API.route('/getPostList/<target>/<sort>/<int:page>', methods=['GET'])
+def get_post_list(target, sort, page):
+    """ Same as v2, but `content` is returned as parsed markdown and the `sort` parameter is optional
+    when `target` is a sub """
+    if sort not in ('hot', 'top', 'new', 'default'):
+        return jsonify(status="error", error="Invalid sort")
+    if page < 1:
+        return jsonify(status="error", error="Invalid page number")
+
+    base_query = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
+                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
+                                SubPost.comments, SubPost.ptype, User.status.alias('userstatus'), User.uid, SubPost.upvotes, SubPost.downvotes)
+    base_query = base_query.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
+
+    if target == 'all':
+        if sort == 'default':
+            return jsonify(status="error", error="Invalid sort")
+        posts = misc.getPostList(base_query, sort, page).dicts()
+    else:
+        try:
+            sub = Sub.get(Sub.name == target)
+        except Sub.DoesNotExist:
+            return jsonify(status="error", error="Target does not exist")
+
+        if sort == 'default':
+            try:
+                sort = SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'sort'))
+                sort = sort.value
+            except SubMetadata.DoesNotExist:
+                sort = 'hot'
+
+            if sort == 'v':
+                sort = 'hot'
+            elif sort == 'v_two':
+                sort = 'new'
+            elif sort == 'v_three':
+                sort = 'top'
+
+        posts = misc.getPostList(base_query.where(Sub.sid == sub.sid), sort, page).dicts()
+
+    postlist = []
+    for post in posts:
+        if post['userstatus'] == 10:  # account deleted
+            post['user'] = '[Deleted]'
+            post['uid'] = None
+        del post['userstatus']
+        post['content'] = misc.our_markdown(post['content']) if post['ptype'] != 1 else ''
+        postlist.append(post)
+
+    return jsonify(status='ok', posts=postlist, sort=sort)
