@@ -248,7 +248,6 @@ def get_post_list(target, sort, page):
     if target == 'all':
         if sort == 'default':
             return jsonify(status="error", error="Invalid sort")
-        posts = misc.getPostList(base_query, sort, page).dicts()
     else:
         try:
             sub = Sub.get(Sub.name == target)
@@ -268,9 +267,11 @@ def get_post_list(target, sort, page):
                 sort = 'new'
             elif sort == 'v_three':
                 sort = 'top'
+        base_query = base_query.where(Sub.sid == sub.sid)
+    
+    posts = misc.getPostList(base_query, sort, page).dicts()
 
-        posts = misc.getPostList(base_query.where(Sub.sid == sub.sid), sort, page).dicts()
-
+    cnt = base_query.count() - page * 25
     postlist = []
     for post in posts:
         if post['userstatus'] == 10:  # account deleted
@@ -280,4 +281,4 @@ def get_post_list(target, sort, page):
         post['content'] = misc.our_markdown(post['content']) if post['ptype'] != 1 else ''
         postlist.append(post)
 
-    return jsonify(status='ok', posts=postlist, sort=sort)
+    return jsonify(status='ok', posts=postlist, sort=sort, continues=True if cnt > 0 else False)
