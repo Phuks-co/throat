@@ -1,12 +1,14 @@
 """ API endpoints. """
 
+import datetime
 import bcrypt
 from flask import Blueprint, jsonify, request
 from peewee import JOIN
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
-from flask_jwt_extended import jwt_refresh_token_required
+from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
 from .. import misc
-from ..models import Sub, User, SubPost, SubPostComment, SubMetadata
+from ..socketio import socketio
+from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote
 
 API = Blueprint('apiv3', __name__)
 
@@ -43,8 +45,8 @@ def login():
         return jsonify(msg="Bad user data"), 400
 
     # Identity can be any data that is json serializable
-    access_token = create_access_token(identity=username, fresh=True)
-    refresh_token = create_refresh_token(identity=username)
+    access_token = create_access_token(identity=user.uid, fresh=True)
+    refresh_token = create_refresh_token(identity=user.uid)
     return jsonify(status='ok', access_token=access_token, refresh_token=refresh_token), 200
 
 
@@ -80,13 +82,17 @@ def fresh_login():
 
 
 @API.route('/getPost/<int:pid>', methods=['get'])
+@jwt_optional
 def get_post(pid):
     """Returns information for a post """
     # Same as v2 API but `content` is HTML instead of markdown
-
+    uid = get_jwt_identity()
     base_query = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score, SubPost.deleted,
                                 SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
-                                SubPost.comments, SubPost.ptype, User.status.alias('userstatus'), User.uid, SubPost.upvotes, SubPost.downvotes)
+                                SubPost.comments, SubPost.ptype, User.status.alias('userstatus'), User.uid, SubPost.upvotes, *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes]))
+    
+    if uid:
+        base_query = base_query.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == uid))).switch(SubPost)
     base_query = base_query.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
 
     post = base_query.where(SubPost.pid == pid).dicts()
@@ -116,7 +122,7 @@ def get_post(pid):
     return jsonify(status='ok', post=post)
 
 
-def get_comment_tree(comments, root=None, only_after=None):
+def get_comment_tree(comments, root=None, only_after=None, uid=None):
     """ Returns a fully paginated and expanded comment tree.
 
     Parameters:
@@ -189,10 +195,11 @@ def get_comment_tree(comments, root=None, only_after=None):
     # 4 - Populate the tree (get all the data and cram it into the tree)
     expcomms = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
                                      SubPostComment.score, SubPostComment.status, SubPostComment.time, SubPostComment.pid,
-                                     User.name.alias('user'), SubPostComment.uid, # SubPostCommentVote.positive
+                                     User.name.alias('user'), *([SubPostCommentVote.positive, SubPostComment.uid] if uid else [SubPostComment.uid]), # silly hack
                                      User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)
     expcomms = expcomms.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
-    #expcomms = expcomms.join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == SubPostComment.cid)))
+    if uid:
+        expcomms = expcomms.join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == uid) & (SubPostCommentVote.cid == SubPostComment.cid)))
     expcomms = expcomms.where(SubPostComment.cid << cid_list).dicts()
 
     commdata = {}
@@ -226,6 +233,7 @@ def get_comment_tree(comments, root=None, only_after=None):
 
 
 @API.route('/getPost/<int:pid>/comments', methods=['get'])
+@jwt_optional
 def get_post_comments(pid):
     """ Returns comment tree
 
@@ -247,6 +255,7 @@ def get_post_comments(pid):
     cid of the parent comment or 0 if it is a root comment and lim equal to the key
     provided or absent if no key is provided
     """
+    current_user = get_jwt_identity()
     try:
         post = SubPost.get(SubPost.pid == pid)
     except SubPost.DoesNotExist:
@@ -257,7 +266,7 @@ def get_post_comments(pid):
     if not comments.count():
         return jsonify(status='ok', comments=[])
 
-    comment_tree = get_comment_tree(comments)
+    comment_tree = get_comment_tree(comments, uid=current_user)
     return jsonify(status='ok', comments=comment_tree)
 
 
@@ -303,6 +312,7 @@ def get_post_comment_children(pid, cid, lim):
 
 @API.route('/getPostList/<target>/<sort>', defaults={'page': 1}, methods=['GET'])
 @API.route('/getPostList/<target>/<sort>/<int:page>', methods=['GET'])
+@jwt_optional
 def get_post_list(target, sort, page):
     """ Same as v2, but `content` is returned as parsed markdown and the `sort` can be `default`
     when `target` is a sub """
@@ -311,9 +321,14 @@ def get_post_list(target, sort, page):
     if page < 1:
         return jsonify(status="error", error="Invalid page number")
 
+    uid = get_jwt_identity()
     base_query = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                 SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
-                                SubPost.comments, SubPost.ptype, User.status.alias('userstatus'), User.uid, SubPost.upvotes, SubPost.downvotes)
+                                SubPost.comments, SubPost.ptype, User.status.alias('userstatus'), User.uid, SubPost.upvotes, *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes]))
+    
+    if uid:
+        base_query = base_query.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == uid))).switch(SubPost)
+    
     base_query = base_query.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
 
     if target == 'all':
@@ -355,7 +370,117 @@ def get_post_list(target, sort, page):
     return jsonify(status='ok', posts=postlist, sort=sort, continues=True if cnt > 0 else False)
 
 
-@API.errorhandler(403)
-def error_403():
-    """ 403 error handler """
-    return jsonify(status='unauthorized', error='Token not authorized'), 403
+@API.route('/vote/post/<pid>/<value>', methods=['POST'])
+@jwt_required
+def upvote(pid, value):
+    """ Logs an upvote to a post. """
+    uid = get_jwt_identity()
+    try:
+        user = User.get(User.uid == uid)
+    except User.DoesNotExist:
+        return jsonify(msg="Unknown error. User disappeared"), 403
+
+    if value == "up":
+        voteValue = 1
+    elif value == "down":
+        voteValue = -1
+        if user.given < 0:
+            return jsonify(msg='Score balance is negative'), 403
+    else:
+        return jsonify(msg="Invalid vote value"), 400
+
+    try:
+        post = SubPost.get(SubPost.pid == pid)
+    except SubPost.DoesNotExist:
+        return jsonify(msg='Post does not exist'), 404
+
+    if post.deleted:
+        return jsonify(msg="You can't vote on deleted posts"), 400
+
+    try:
+        SubMetadata.get((SubMetadata.sid == post.sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user.uid))
+        return jsonify(msg='You are banned on this sub.'), 403
+    except SubMetadata.DoesNotExist:
+        pass
+
+    if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=60):
+        return jsonify(msg="Post is archived"), 400
+    try:
+        qvote = SubPostVote.select().where(SubPostVote.pid == pid).where(SubPostVote.uid == uid).get()
+    except SubPostVote.DoesNotExist:
+        qvote = False
+    user = User.get(User.uid == post.uid)
+
+    positive = True if voteValue == 1 else False
+    if qvote:
+        if bool(qvote.positive) == (True if voteValue == 1 else False):
+            qvote.delete_instance()
+
+            if positive:
+                SubPost.update(score=SubPost.score - voteValue, upvotes=SubPost.upvotes - 1).where(SubPost.pid == post.pid).execute()
+            else:
+                SubPost.update(score=SubPost.score - voteValue, downvotes=SubPost.downvotes - 1).where(SubPost.pid == post.pid).execute()
+
+            User.update(score=User.score - voteValue).where(User.uid == post.uid).execute()
+            User.update(given=User.given - voteValue).where(User.uid == uid).execute()
+            socketio.emit('uscore',
+                          {'score': user.score - voteValue},
+                          namespace='/snt', room="user" + post.uid.uid)
+
+            socketio.emit('threadscore',
+                          {'pid': post.pid, 'score': post.score - voteValue},
+                          namespace='/snt', room=post.pid)
+
+            socketio.emit('yourvote', {'pid': post.pid, 'status': 0, 'score': post.score - voteValue}, namespace='/snt',
+                          room='user' + uid)
+            
+
+            return jsonify(status='ok', message='Vote removed', score=post.score - voteValue, rm=True)
+        else:
+            qvote.positive = positive
+            qvote.save()
+
+            if positive:
+                SubPost.update(score=SubPost.score + (voteValue * 2), upvotes=SubPost.upvotes + 1, downvotes=SubPost.downvotes - 1).where(SubPost.pid == post.pid).execute()
+            else:
+                SubPost.update(score=SubPost.score + (voteValue * 2), upvotes=SubPost.upvotes - 1, downvotes=SubPost.downvotes + 1).where(SubPost.pid == post.pid).execute()
+
+            User.update(score=User.score + (voteValue * 2)).where(User.uid == post.uid).execute()
+            User.update(given=User.given + voteValue).where(User.uid == uid).execute()
+
+            socketio.emit('uscore',
+                            {'score': user.score + voteValue * 2},
+                            namespace='/snt',
+                            room="user" + post.uid.uid)
+
+            socketio.emit('threadscore',
+                          {'pid': post.pid,
+                           'score': post.score + voteValue * 2},
+                          namespace='/snt',
+                          room=post.pid)
+            
+            socketio.emit('yourvote', {'pid': post.pid, 'status': voteValue, 'score': post.score + voteValue * 2}, namespace='/snt',
+                          room='user' + uid)
+            return jsonify(status='ok', message='Vote flipped', score=post.score + voteValue * 2)
+    else: # First vote cast on post
+        now = datetime.datetime.utcnow()
+        sp_vote = SubPostVote.create(pid=pid, uid=uid, positive=positive, datetime=now)
+        sp_vote.save()
+
+        if positive:
+            SubPost.update(score=SubPost.score + voteValue, upvotes=SubPost.upvotes + 1).where(SubPost.pid == post.pid).execute()
+        else:
+            SubPost.update(score=SubPost.score + voteValue, downvotes=SubPost.downvotes + 1).where(SubPost.pid == post.pid).execute()
+
+        socketio.emit('threadscore', {'pid': post.pid, 'score': post.score + voteValue},
+                      namespace='/snt', room=post.pid)
+        socketio.emit('yourvote', {'pid': post.pid, 'status': voteValue, 'score': post.score + voteValue},
+                      namespace='/snt', room='user' + uid)
+
+        User.update(score=User.score + voteValue).where(User.uid == post.uid).execute()
+        User.update(given=User.given + voteValue).where(User.uid == uid).execute()
+
+        socketio.emit('uscore', {'score': user.score + voteValue},
+                      namespace='/snt', room="user" + post.uid.uid)
+        
+        return jsonify(status='ok', score=post.score + voteValue)
