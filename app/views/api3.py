@@ -20,27 +20,27 @@ def login():
     Returns: access token and refresh token
     """
     if not request.is_json:
-        return jsonify(status='error', error="Missing JSON in request"), 400
+        return jsonify(msg="Missing JSON in request"), 400
 
     username = request.json.get('username', None)
     password = request.json.get('password', None)
     if not username:
-        return jsonify(status='error', error="Missing username parameter"), 400
+        return jsonify(msg="Missing username parameter"), 400
     if not password:
-        return jsonify(status='error', error="Missing password parameter"), 400
+        return jsonify(msg="Missing password parameter"), 400
 
     try:
         user = User.get(User.name == username)
     except User.DoesNotExist:
-        return jsonify(status='error', error="Bad username or password"), 401
+        return jsonify(msg="Bad username or password"), 401
 
     if user.crypto == 1:  # bcrypt
         thash = bcrypt.hashpw(password.encode('utf-8'),
                               user.password.encode('utf-8'))
         if thash != user.password.encode('utf-8'):
-            return jsonify(status='error', error="Bad username or password"), 401
+            return jsonify(msg="Bad username or password"), 401
     else:
-        return jsonify(status='error', error="Bad user data"), 400
+        return jsonify(msg="Bad user data"), 400
 
     # Identity can be any data that is json serializable
     access_token = create_access_token(identity=username, fresh=True)
@@ -54,7 +54,7 @@ def refresh():
     """ Returns a new access token. Requires providing a refresh token """
     current_user = get_jwt_identity()
     new_token = create_access_token(identity=current_user, fresh=False)
-    return jsonify(status='ok', access_token=new_token)
+    return jsonify(status='ok', access_token=new_token), 200
 
 
 @API.route('/fresh-login', methods=['POST'])
@@ -65,15 +65,15 @@ def fresh_login():
     try:
         user = User.get(User.name == username)
     except User.DoesNotExist:
-        return jsonify(status='error', error="Bad username or password"), 401
+        return jsonify(msg="Bad username or password"), 401
 
     if user.crypto == 1:  # bcrypt
         thash = bcrypt.hashpw(password.encode('utf-8'),
                               user.password.encode('utf-8'))
         if thash != user.password.encode('utf-8'):
-            return jsonify(status='error', error="Bad username or password"), 401
+            return jsonify(msg="Bad username or password"), 401
     else:
-        return jsonify(status='error', error="Bad user data"), 400
+        return jsonify(msg="Bad user data"), 400
 
     new_token = create_access_token(identity=user.uid, fresh=True)
     return jsonify(status='ok', access_token=new_token)
