@@ -1239,6 +1239,8 @@ def forbidden_error(error):
 @app.errorhandler(404)
 def not_found(error):
     """ 404 Not found error """
+    if request.path.startswith('/api'):
+        return jsonify(status='error', error='Method not found or not implemented'), 404
     return render_template('errors/404.html'), 404
 
 

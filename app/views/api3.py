@@ -282,3 +282,8 @@ def get_post_list(target, sort, page):
         postlist.append(post)
 
     return jsonify(status='ok', posts=postlist, sort=sort, continues=True if cnt > 0 else False)
+
+
+@API.errorhandler(403)
+def error_403():
+    return jsonify(status='unauthorized', error='Token not authorized'), 403
