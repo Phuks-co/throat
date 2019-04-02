@@ -1,11 +1,82 @@
 """ API endpoints. """
 
-from flask import Blueprint, jsonify
+import bcrypt
+from flask import Blueprint, jsonify, request
 from peewee import JOIN
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
+from flask_jwt_extended import jwt_refresh_token_required
 from .. import misc
 from ..models import Sub, User, SubPost, SubPostComment, SubMetadata
 
 API = Blueprint('apiv3', __name__)
+
+JWT = JWTManager()
+
+
+@API.route('/login', methods=['POST'])
+def login():
+    """ Logs the user in.
+    Parameters (json): username and password
+    Returns: access token and refresh token
+    """
+    if not request.is_json:
+        return jsonify(status='error', error="Missing JSON in request"), 400
+
+    username = request.json.get('username', None)
+    password = request.json.get('password', None)
+    if not username:
+        return jsonify(status='error', error="Missing username parameter"), 400
+    if not password:
+        return jsonify(status='error', error="Missing password parameter"), 400
+
+    try:
+        user = User.get(User.name == username)
+    except User.DoesNotExist:
+        return jsonify(status='error', error="Bad username or password"), 401
+
+    if user.crypto == 1:  # bcrypt
+        thash = bcrypt.hashpw(password.encode('utf-8'),
+                              user.password.encode('utf-8'))
+        if thash != user.password.encode('utf-8'):
+            return jsonify(status='error', error="Bad username or password"), 401
+    else:
+        return jsonify(status='error', error="Bad user data"), 400
+
+    # Identity can be any data that is json serializable
+    access_token = create_access_token(identity=username, fresh=True)
+    refresh_token = create_refresh_token(identity=username)
+    return jsonify(status='ok', access_token=access_token, refresh_token=refresh_token), 200
+
+
+@API.route('/refresh', methods=['POST'])
+@jwt_refresh_token_required
+def refresh():
+    """ Returns a new access token. Requires providing a refresh token """
+    current_user = get_jwt_identity()
+    new_token = create_access_token(identity=current_user, fresh=False)
+    return jsonify(status='ok', access_token=new_token)
+
+
+@API.route('/fresh-login', methods=['POST'])
+def fresh_login():
+    """ Returns a fresh access token. Requires username and password """
+    username = request.json.get('username', None)
+    password = request.json.get('password', None)
+    try:
+        user = User.get(User.name == username)
+    except User.DoesNotExist:
+        return jsonify(status='error', error="Bad username or password"), 401
+
+    if user.crypto == 1:  # bcrypt
+        thash = bcrypt.hashpw(password.encode('utf-8'),
+                              user.password.encode('utf-8'))
+        if thash != user.password.encode('utf-8'):
+            return jsonify(status='error', error="Bad username or password"), 401
+    else:
+        return jsonify(status='error', error="Bad user data"), 400
+
+    new_token = create_access_token(identity=user.uid, fresh=True)
+    return jsonify(status='ok', access_token=new_token)
 
 
 @API.route('/getPost/<int:pid>', methods=['get'])
@@ -268,7 +339,7 @@ def get_post_list(target, sort, page):
             elif sort == 'v_three':
                 sort = 'top'
         base_query = base_query.where(Sub.sid == sub.sid)
-    
+
     posts = misc.getPostList(base_query, sort, page).dicts()
 
     cnt = base_query.count() - page * 25
@@ -286,4 +357,5 @@ def get_post_list(target, sort, page):
 
 @API.errorhandler(403)
 def error_403():
+    """ 403 error handler """
     return jsonify(status='unauthorized', error='Token not authorized'), 403

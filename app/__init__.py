@@ -26,7 +26,7 @@ from .forms import DeletePost, CreateUserBadgeForm, DummyForm
 from .forms import UseBTCdonationForm, BanDomainForm
 from .forms import CreateMulti, EditMulti
 from .forms import UseInviteCodeForm
-from .views import do, api, subs, api3
+from .views import do, api, subs, api3, jwt
 from .views.api import oauth
 from . import misc, forms, caching
 from .socketio import socketio
@@ -50,6 +50,7 @@ app.config['SUB_PREFIX'] = app.config.get('SUB_PREFIX', '/s')
 app.register_blueprint(do)
 app.register_blueprint(api)
 app.register_blueprint(api3, url_prefix='/api/v3')
+jwt.init_app(app)
 app.register_blueprint(subs, url_prefix=app.config['SUB_PREFIX'])
 
 app.config['WEBPACK_MANIFEST_PATH'] = 'manifest.json'
