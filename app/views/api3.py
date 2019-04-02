@@ -230,11 +230,10 @@ def get_post_comment_children(pid, cid, lim):
     return jsonify(status='ok', comments=comment_tree)
 
 
-@API.route('/getPostList/<target>', defaults={'page': 1, 'sort': 'default'}, methods=['GET'])
 @API.route('/getPostList/<target>/<sort>', defaults={'page': 1}, methods=['GET'])
 @API.route('/getPostList/<target>/<sort>/<int:page>', methods=['GET'])
 def get_post_list(target, sort, page):
-    """ Same as v2, but `content` is returned as parsed markdown and the `sort` parameter is optional
+    """ Same as v2, but `content` is returned as parsed markdown and the `sort` can be `default`
     when `target` is a sub """
     if sort not in ('hot', 'top', 'new', 'default'):
         return jsonify(status="error", error="Invalid sort")
