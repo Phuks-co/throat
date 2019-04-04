@@ -8,7 +8,8 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, cr
 from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
 from .. import misc
 from ..socketio import socketio
-from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote
+from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote, SubSubscriber
+from ..models import SiteMetadata
 
 API = Blueprint('apiv3', __name__)
 
@@ -328,12 +329,28 @@ def get_post_list(target, sort, page):
     
     if uid:
         base_query = base_query.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == uid))).switch(SubPost)
+        subs = SubSubscriber.select().where(SubSubscriber.uid == uid)
+        subs = subs.order_by(SubSubscriber.order.asc())
+        subscribed = [x.sid_id for x in subs if x.status == 1]
+        blocked = [x.sid_id for x in subs if x.status == 2]
     
     base_query = base_query.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
-
+    
     if target == 'all':
         if sort == 'default':
             return jsonify(status="error", error="Invalid sort")
+        if uid:
+            base_query = base_query.where(SubPost.sid.not_in(blocked))
+    elif target == 'home':
+        if sort == 'default':
+            return jsonify(status="error", error="Invalid sort")
+        
+        if not uid:
+            base_query = base_query.join(SiteMetadata, JOIN.LEFT_OUTER, on=(SiteMetadata.key == 'default')).where(SubPost.sid == SiteMetadata.value)
+        else:
+            base_query = base_query.where(SubPost.sid << subscribed)
+            base_query = base_query.where(SubPost.sid.not_in(blocked))
+
     else:
         try:
             sub = Sub.get(Sub.name == target)
