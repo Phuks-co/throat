@@ -1341,11 +1341,11 @@ def ban_domain():
     if form.validate():
         try:
             sm = SiteMetadata.get((SiteMetadata.key == 'banned_domain') & (SiteMetadata.value == form.domain.data))
-            return jsonify(status='error', error='Domain is already banned')
+            return jsonify(status='error', error=['Domain is already banned'])
         except SiteMetadata.DoesNotExist:
             sm = SiteMetadata.create(key='banned_domain', value=form.domain.data)
             sm.save()
-            sc.create_sitelog(misc.LOG_TYPE_DOMAIN_BAN, current_user.uid, comment=domain)
+            misc.create_sitelog(misc.LOG_TYPE_DOMAIN_BAN, current_user.uid, comment=form.domain.data)
             return jsonify(status='ok')
 
     return jsonify(status='error', error=get_errors(form))
