@@ -326,16 +326,16 @@ def get_post_list(target, sort, page):
     base_query = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                 SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
                                 SubPost.comments, SubPost.ptype, User.status.alias('userstatus'), User.uid, SubPost.upvotes, *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes]))
-    
+
     if uid:
         base_query = base_query.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == uid))).switch(SubPost)
         subs = SubSubscriber.select().where(SubSubscriber.uid == uid)
         subs = subs.order_by(SubSubscriber.order.asc())
         subscribed = [x.sid_id for x in subs if x.status == 1]
         blocked = [x.sid_id for x in subs if x.status == 2]
-    
+
     base_query = base_query.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
-    
+
     if target == 'all':
         if sort == 'default':
             return jsonify(status="error", error="Invalid sort")
@@ -344,7 +344,7 @@ def get_post_list(target, sort, page):
     elif target == 'home':
         if sort == 'default':
             return jsonify(status="error", error="Invalid sort")
-        
+
         if not uid:
             base_query = base_query.join(SiteMetadata, JOIN.LEFT_OUTER, on=(SiteMetadata.key == 'default')).where(SubPost.sid == SiteMetadata.value)
         else:

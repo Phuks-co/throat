@@ -165,7 +165,9 @@
               <li><a class="editflair">flair</a></li>
             {% endif %}
             {% if post.uid == current_user.uid %}
-              <li><a class="edit-post" data-pid="{{post.pid}}">edit</a></li>
+              {% if post.ptype != 1 %}
+                <li><a class="edit-post" data-pid="{{post.pid}}">edit</a></li>
+              {%endif%}
               {% if (datetime.datetime.utcnow() - post.posted) < datetime.timedelta(seconds=300) %}
                 <li><a class="edit-title" data-pid="{{post.pid}}">edit title</a></li>
               {% endif %}
