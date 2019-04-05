@@ -52,6 +52,7 @@
               {% if (comment.uid == current_user.uid or current_user.is_admin() or current_user.is_mod(sub.sid)) and not comment.status == 1 %}
                 <li><a {% if comment.uid == current_user.uid %}selfdel="true"{%endif%} class="delete-comment" data-cid="{{comment.cid}}">delete</a></li>
               {% endif %}
+              <a data-ac="report" cid="{{comment.cid}}" class="report-comment">report</a>
             {%endif%}
             {%if comment.status != 1 %}<li><a class="comment-source" data-cid="{{comment.cid}}">source</a></li>{%endif%}
           </ul>

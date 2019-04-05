@@ -33,7 +33,7 @@ from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..misc import cache, sendMail, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
-from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote
+from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport
 from peewee import fn, JOIN
 
 do = Blueprint('do', __name__)
@@ -2368,5 +2368,44 @@ def report():
         cb = getattr(config, 'ON_POST_REPORT', False)
         if cb:
             cb(post, current_user, form.reason.data)
+        return jsonify(status='ok')
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route('/do/report/comment', methods=['POST'])
+@login_required
+def report_comment():
+    form = DeletePost()
+    if form.validate():
+        try:
+            comm = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
+                                         SubPostComment.score, SubPostComment.status, SubPostComment.time, SubPostComment.pid,
+                                         User.name.alias('username'), SubPostComment.uid,
+                                         User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)
+            comm = comm.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
+            comm = comm.where(SubPostComment.cid == form.post.data)
+            comm = comm.get()
+        except SubPostComment.DoesNotExist:
+            return jsonify(status='error', error='Comment does not exist')
+        
+        if comm.status:
+            return jsonify(status='error', error='Comment does not exist')
+        
+        # check if user already reported the post
+        try:
+            rep = SubPostCommentReport.get((SubPostCommentReport.cid == comm.cid) & (SubPostCommentReport.uid == current_user.uid))
+            return jsonify(status='error', error='You have already reported this post')
+        except SubPostCommentReport.DoesNotExist:
+            pass
+        
+        if len(form.reason.data) < 2:
+            return jsonify(status='error', error='Report reason too short.')
+
+        # do the reporting.
+        SubPostCommentReport.create(cid=comm.cid, uid=current_user.uid, reason=form.reason.data)
+        # callbacks!
+        cb = getattr(config, 'ON_COMMENT_REPORT', False)
+        if cb:
+            cb(comm, current_user, form.reason.data)
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})

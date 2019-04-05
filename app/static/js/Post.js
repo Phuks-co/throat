@@ -509,6 +509,42 @@ u.addEventForChild(document, 'click', '.report-post', function(e, qelem){
   modal.open();
 
 })
+
+u.addEventForChild(document, 'click', '.report-comment', function(e, qelem){
+  var cid = qelem.getAttribute('cid');
+  var modal = new Tingle.modal({
+  });
+
+  // set content
+  modal.setContent('<h2>Report comment</h2>\
+    <p><i>This report will be forwarded to the site administration</i></p>\
+    <form class="pure-form pure-form-aligned"> \
+      <div class="pure-control-group"> \
+        <label for="report_reason">Select a reason to report this post:</label>\
+        <select name="report_reason" id="report_reason">\
+          <option value="" disabled selected>Select one..</option> \
+          <option value="spam">SPAM</option> \
+          <option value="tos">TOS violation</option> \
+          <option value="other">Other</option> \
+        </select>\
+      </div> \
+      <div class="pure-control-group" style="display:none" id="report_text_set"> \
+        <label for="report_text">Explain why you\'re reporting this post:</label>\
+        <input type="text" name="report_text" id="report_text" style="width:50%" /> \
+      </div> \
+      <div class="pure-controls"> \
+        <div style="display:none" class="error">{{error}}</div> \
+        <button type="button" class="pure-button" id="submit_report" disabled data-cid=' + cid + '>Submit</button>\ \
+      </div> \
+    </form>\
+      ');
+
+
+  // open modal
+  modal.open();
+
+})
+
 u.addEventForChild(document, 'change', '#report_reason', function(e, qelem){
   if(qelem.value != '' && qelem.value != 'other'){
     document.getElementById('submit_report').removeAttribute('disabled');
@@ -531,6 +567,7 @@ u.addEventForChild(document, 'keyup', '#report_text', function(e, qelem){
 
 u.addEventForChild(document, 'click', '#submit_report', function(e, qelem){
   var pid=qelem.getAttribute('data-pid');
+  
   var errorbox = qelem.parentNode.querySelector('.error');
 
   var reason = document.getElementById('report_reason').value;
@@ -539,8 +576,12 @@ u.addEventForChild(document, 'click', '#submit_report', function(e, qelem){
   }
 
   qelem.setAttribute('disabled', true);
-
-  u.post('/do/report', {post: pid, reason: reason},
+  var uri = '/do/report'
+  if(!pid){
+    pid = qelem.getAttribute('data-cid');
+    uri = '/do/report/comment'
+  }
+  u.post(uri, {post: pid, reason: reason},
   function(data){
     if (data.status != "ok") {
       errorbox.style.display = 'block';

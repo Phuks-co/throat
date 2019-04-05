@@ -421,6 +421,16 @@ class SubPostReport(TModel):
         table_name = 'sub_post_report'
 
 
+class SubPostCommentReport(TModel):
+    cid = ForeignKeyField(db_column='cid', model=SubPostComment, field='cid')
+    uid = ForeignKeyField(db_column='uid', model=User, field='uid')
+    datetime = DateTimeField(default=datetime.datetime.now)
+    reason = CharField(max_length=128)
+
+    class Meta:
+        table_name = 'sub_post_comment_report'
+
+
 class UserIgnores(TModel):
     uid = ForeignKeyField(db_column='uid', model=User, field='uid')
     target = CharField(max_length=40)
