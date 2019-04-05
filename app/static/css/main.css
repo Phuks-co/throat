@@ -641,6 +641,9 @@ iframe {
   text-align: center;
   letter-spacing: normal;
 }
+.score.archived{
+  padding-top: 20px;
+}
 .thcontainer {
   display: inline-block;
   position: relative;

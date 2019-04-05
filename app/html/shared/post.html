@@ -5,10 +5,10 @@
       <div class="votebuttons">
         @if post['userstatus'] != 10 and (datetime.datetime.utcnow() - post['posted']) < datetime.timedelta(days=60):
         <div title="Upvote" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="upvote"></div>
-        @end
         <div class="score">@{post['score']!!s}</div>
-        @if post['userstatus'] != 10 and (datetime.datetime.utcnow() - post['posted']) < datetime.timedelta(days=60):
         <div title="Downvote" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="downvote"></div>
+        @else:
+        <div class="score archived">@{post['score']!!s}</div>
         @end
       </div>
       <div class="thcontainer">
