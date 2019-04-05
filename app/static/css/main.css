@@ -622,8 +622,8 @@ iframe {
 }
 
 .misctainer{
-  padding-left: .8em;
-  padding-right: .6em;
+  padding-left: .6em;
+  padding-right: .4em;
 }
 
 .votebuttons {
@@ -633,6 +633,7 @@ iframe {
   padding: .15em .2em 0 .2em;
   float: left;
   margin-right: 8px;
+  max-width: 2.2em;
 }
 
 .score{
