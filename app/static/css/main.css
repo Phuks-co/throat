@@ -1918,3 +1918,7 @@ a[href="#toodamncool"]{
   background: #eee;
   color: #5d5454;
 }
+
+.toggledark {
+  cursor: pointer;
+}
