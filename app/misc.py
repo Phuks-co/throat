@@ -1,6 +1,6 @@
 """ Misc helper function and classes. """
 from collections import OrderedDict
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, urljoin
 import json
 import math
 import uuid
@@ -780,13 +780,13 @@ def get_thumbnail(link):
             logging.warn('Thumbnail fetch failed. Is lxml installed?')
             return ''
         try:
-            img = og('meta', {'property': 'og:image'})[0].get('content')
+            img = urljoin(link, og('meta', {'property': 'og:image'})[0].get('content'))
             req = safeRequest(img)
             im = Image.open(BytesIO(req[1])).convert('RGB')
         except (OSError, ValueError, IndexError):
             # no image, try fetching just the favicon then
             try:
-                img = og('link', {'rel': 'icon'})[0].get('href')
+                img = urljoin(link, og('link', {'rel': 'icon'})[0].get('href'))
                 req = safeRequest(img)
                 im = Image.open(BytesIO(req[1]))
                 n_im = Image.new("RGBA", im.size, "WHITE")
