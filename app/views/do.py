@@ -16,7 +16,6 @@ from bs4 import BeautifulSoup
 from flask import Blueprint, redirect, url_for, session, abort, jsonify
 from flask import render_template, request
 from flask_login import login_user, login_required, logout_user, current_user
-from flask_cache import make_template_fragment_key
 import config
 from .. import forms, misc, caching
 from ..socketio import socketio
