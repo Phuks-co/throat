@@ -409,7 +409,7 @@ RE_AMENTION_BARE = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|' + getattr(config, '
 RE_AMENTION_PRE0 = r'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))(?:(?:@|\/u\/|' + getattr(config, 'SUB_PREFIX', '/s') + r'\/)(?:[A-Za-z0-9\-\_]+)))'
 RE_AMENTION_PRE1 = r'(?:(\[.+?\]\(.+?\))|' + RE_AMENTION_BARE + r')'
 RE_AMENTION_ESCAPED = re.compile("```.*{0}.*```|`.*?{0}.*?`|({1})".format(RE_AMENTION_PRE0, RE_AMENTION_PRE1), flags=re.MULTILINE + re.DOTALL)
-RE_AMENTION_LINKS = re.compile("\[.*?({2}).*?\]\(.*?\)|({1})".format(RE_AMENTION_PRE0, RE_AMENTION_PRE1, RE_AMENTION_BARE), flags=re.MULTILINE + re.DOTALL)
+RE_AMENTION_LINKS = re.compile("\[.*?({1}).*?\]\(.*?\)|({0})".format(RE_AMENTION_PRE1, RE_AMENTION_BARE), flags=re.MULTILINE + re.DOTALL)
 
 
 class PhuksDown(m.SaferHtmlRenderer):

@@ -91,7 +91,7 @@ def get_post(pid):
     base_query = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score, SubPost.deleted,
                                 SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
                                 SubPost.comments, SubPost.ptype, User.status.alias('userstatus'), User.uid, SubPost.upvotes, *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes]))
-    
+
     if uid:
         base_query = base_query.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == uid))).switch(SubPost)
     base_query = base_query.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
@@ -387,9 +387,9 @@ def get_post_list(target, sort, page):
     return jsonify(status='ok', posts=postlist, sort=sort, continues=True if cnt > 0 else False)
 
 
-@API.route('/vote/post/<pid>/<value>', methods=['POST'])
+@API.route('/vote/<target_type>/<pcid>/<value>', methods=['POST'])
 @jwt_required
-def upvote(pid, value):
+def vote_post(target_type, pcid, value):
     """ Logs an upvote to a post. """
     uid = get_jwt_identity()
     try:
@@ -406,98 +406,104 @@ def upvote(pid, value):
     else:
         return jsonify(msg="Invalid vote value"), 400
 
-    try:
-        post = SubPost.get(SubPost.pid == pid)
-    except SubPost.DoesNotExist:
-        return jsonify(msg='Post does not exist'), 404
+    if target_type == "post":
+        target_model = SubPost
+        try:
+            target = SubPost.select(SubPost.uid, SubPost.score, SubPost.upvotes, SubPost.downvotes, SubPost.pid.alias('id'), SubPost.posted)
+            target = target.where(SubPost.pid == pcid).get()
+        except SubPost.DoesNotExist:
+            return jsonify(msg='Post does not exist'), 404
 
-    if post.deleted:
-        return jsonify(msg="You can't vote on deleted posts"), 400
+        if target.deleted:
+            return jsonify(msg="You can't vote on deleted posts"), 400
+
+        try:
+            qvote = SubPostVote.select().where(SubPostVote.pid == pcid).where(SubPostVote.uid == uid).get()
+        except SubPostVote.DoesNotExist:
+            qvote = False
+    elif target_type == "comment":
+        target_model = SubPostComment
+        try:
+            target = SubPostComment.select(SubPostComment.uid, SubPost.sid, SubPostComment.pid, SubPostComment.status, SubPostComment.score,
+                                           SubPostComment.upvotes, SubPostComment.downvotes, SubPostComment.cid.alias('id'), SubPostComment.time.alias('posted'))
+            target = target.join(SubPost).where(SubPostComment.cid == pcid).objects().get()
+        except SubPostComment.DoesNotExist:
+            return jsonify(msg='Comment does not exist'), 404
+
+        if target.status:
+            return jsonify(msg="You can't vote on deleted comments"), 400
+
+        try:
+            qvote = SubPostCommentVote.select().where(SubPostCommentVote.cid == pcid).where(SubPostCommentVote.uid == uid).get()
+        except SubPostCommentVote.DoesNotExist:
+            qvote = False
+    else:
+        return jsonify(msg="Invalid target"), 400
 
     try:
-        SubMetadata.get((SubMetadata.sid == post.sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user.uid))
+        SubMetadata.get((SubMetadata.sid == target.sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user.uid))
         return jsonify(msg='You are banned on this sub.'), 403
     except SubMetadata.DoesNotExist:
         pass
 
-    if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=60):
+    if (datetime.datetime.utcnow() - target.posted) > datetime.timedelta(days=60):
         return jsonify(msg="Post is archived"), 400
-    try:
-        qvote = SubPostVote.select().where(SubPostVote.pid == pid).where(SubPostVote.uid == uid).get()
-    except SubPostVote.DoesNotExist:
-        qvote = False
-    user = User.get(User.uid == post.uid)
+
+    user = User.get(User.uid == target.uid)
 
     positive = True if voteValue == 1 else False
+    undone = False
     if qvote:
         if bool(qvote.positive) == (True if voteValue == 1 else False):
             qvote.delete_instance()
 
             if positive:
-                SubPost.update(score=SubPost.score - voteValue, upvotes=SubPost.upvotes - 1).where(SubPost.pid == post.pid).execute()
+                upd_q = target_model.update(score=target_model.score - voteValue, upvotes=target_model.upvotes - 1)
             else:
-                SubPost.update(score=SubPost.score - voteValue, downvotes=SubPost.downvotes - 1).where(SubPost.pid == post.pid).execute()
-
-            User.update(score=User.score - voteValue).where(User.uid == post.uid).execute()
+                upd_q = target_model.update(score=target_model.score - voteValue, downvotes=target_model.downvotes - 1)
+            new_score = -voteValue
+            undone = True
+            User.update(score=User.score - voteValue).where(User.uid == target.uid).execute()
             User.update(given=User.given - voteValue).where(User.uid == uid).execute()
-            socketio.emit('uscore',
-                          {'score': user.score - voteValue},
-                          namespace='/snt', room="user" + post.uid.uid)
-
-            socketio.emit('threadscore',
-                          {'pid': post.pid, 'score': post.score - voteValue},
-                          namespace='/snt', room=post.pid)
-
-            socketio.emit('yourvote', {'pid': post.pid, 'status': 0, 'score': post.score - voteValue}, namespace='/snt',
-                          room='user' + uid)
-            
-
-            return jsonify(status='ok', message='Vote removed', score=post.score - voteValue, rm=True)
         else:
             qvote.positive = positive
             qvote.save()
 
             if positive:
-                SubPost.update(score=SubPost.score + (voteValue * 2), upvotes=SubPost.upvotes + 1, downvotes=SubPost.downvotes - 1).where(SubPost.pid == post.pid).execute()
+                upd_q = target_model.update(score=target_model.score + (voteValue * 2), upvotes=target_model.upvotes + 1, downvotes=target_model.downvotes - 1)
             else:
-                SubPost.update(score=SubPost.score + (voteValue * 2), upvotes=SubPost.upvotes - 1, downvotes=SubPost.downvotes + 1).where(SubPost.pid == post.pid).execute()
-
-            User.update(score=User.score + (voteValue * 2)).where(User.uid == post.uid).execute()
+                upd_q = target_model.update(score=target_model.score + (voteValue * 2), upvotes=target_model.upvotes - 1, downvotes=target_model.downvotes + 1)
+            new_score = (voteValue * 2)
+            User.update(score=User.score + (voteValue * 2)).where(User.uid == target.uid).execute()
             User.update(given=User.given + voteValue).where(User.uid == uid).execute()
-
-            socketio.emit('uscore',
-                            {'score': user.score + voteValue * 2},
-                            namespace='/snt',
-                            room="user" + post.uid.uid)
-
-            socketio.emit('threadscore',
-                          {'pid': post.pid,
-                           'score': post.score + voteValue * 2},
-                          namespace='/snt',
-                          room=post.pid)
-            
-            socketio.emit('yourvote', {'pid': post.pid, 'status': voteValue, 'score': post.score + voteValue * 2}, namespace='/snt',
-                          room='user' + uid)
-            return jsonify(status='ok', message='Vote flipped', score=post.score + voteValue * 2)
     else: # First vote cast on post
         now = datetime.datetime.utcnow()
-        sp_vote = SubPostVote.create(pid=pid, uid=uid, positive=positive, datetime=now)
+        if target_type == "post":
+            sp_vote = SubPostVote.create(pid=pcid, uid=uid, positive=positive, datetime=now)
+        else:
+            sp_vote = SubPostCommentVote.create(cid=pcid, uid=uid, positive=positive, datetime=now)
+
         sp_vote.save()
 
         if positive:
-            SubPost.update(score=SubPost.score + voteValue, upvotes=SubPost.upvotes + 1).where(SubPost.pid == post.pid).execute()
+            upd_q = target_model.update(score=target_model.score + voteValue, upvotes=target_model.upvotes + 1)
         else:
-            SubPost.update(score=SubPost.score + voteValue, downvotes=SubPost.downvotes + 1).where(SubPost.pid == post.pid).execute()
-
-        socketio.emit('threadscore', {'pid': post.pid, 'score': post.score + voteValue},
-                      namespace='/snt', room=post.pid)
-        socketio.emit('yourvote', {'pid': post.pid, 'status': voteValue, 'score': post.score + voteValue},
-                      namespace='/snt', room='user' + uid)
-
-        User.update(score=User.score + voteValue).where(User.uid == post.uid).execute()
+            upd_q = target_model.update(score=target_model.score + voteValue, downvotes=target_model.downvotes + 1)
+        new_score = voteValue
+        User.update(score=User.score + voteValue).where(User.uid == target.uid).execute()
         User.update(given=User.given + voteValue).where(User.uid == uid).execute()
 
-        socketio.emit('uscore', {'score': user.score + voteValue},
-                      namespace='/snt', room="user" + post.uid.uid)
-        
-        return jsonify(status='ok', score=post.score + voteValue)
+    if target_type == "post":
+        upd_q.where(SubPost.pid == target.id).execute()
+        socketio.emit('threadscore', {'pid': target.pid, 'score': target.score + new_score},
+                      namespace='/snt', room=target.pid)
+
+        socketio.emit('yourvote', {'pid': target.pid, 'status': 0, 'score': target.score + new_score}, namespace='/snt',
+                      room='user' + uid)
+    else:
+        upd_q.where(SubPostComment.cid == target.id).execute()
+
+    socketio.emit('uscore', {'score': target.score + new_score},
+                  namespace='/snt', room="user" + target.uid_id)
+
+    return jsonify(status='ok', score=target.score + new_score, rm=undone)
