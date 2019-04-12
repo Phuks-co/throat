@@ -1,6 +1,7 @@
 """ API endpoints. """
 
 import datetime
+import uuid
 import bcrypt
 from flask import Blueprint, jsonify, request
 from peewee import JOIN
@@ -14,6 +15,10 @@ from ..models import SiteMetadata
 API = Blueprint('apiv3', __name__)
 
 JWT = JWTManager()
+
+
+def api_over_limit(limit):
+    return jsonify(msg="Rate limited. Please try again ({0} every {1}s)".format(limit.limit, limit.per)), 429
 
 
 @API.route('/login', methods=['POST'])
@@ -507,3 +512,89 @@ def vote_post(target_type, pcid, value):
                   namespace='/snt', room="user" + target.uid_id)
 
     return jsonify(status='ok', score=target.score + new_score, rm=undone)
+
+
+@API.route('/create/comment', methods=['POST'])
+@jwt_required
+@misc.ratelimit(1, per=30, over_limit=api_over_limit)  # Once every 30 secs
+def create_comment():
+    uid = get_jwt_identity()
+    if not request.is_json:
+        return jsonify(msg="Missing JSON in request"), 400
+
+    pid = request.json.get('pid', None)
+    parentcid = request.json.get('parentcid', None)
+    content = request.json.get('content', None)
+
+    if not pid or not content:
+        return jsonify(msg='Missing required parameters'), 400
+
+    try:
+        user = User.get(User.uid == uid)
+    except User.DoesNotExist:
+        return jsonify(msg="Unknown error. User disappeared"), 403
+
+    try:
+        post = SubPost.get(SubPost.pid == pid)
+    except SubPost.DoesNotExist:
+        return jsonify(msg='Post does not exist'), 404
+    if post.deleted:
+        return jsonify(msg='Post was deleted'), 404
+
+    if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=60):
+        return jsonify(msg="Post is archived"), 403
+
+    try:
+        SubMetadata.get((SubMetadata.sid == post.sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user.uid))
+        return jsonify(msg='You are banned on this sub.'), 403
+    except SubMetadata.DoesNotExist:
+        pass
+
+    if parentcid:
+        try:
+            parent = SubPostComment.get(SubPostComment.cid == parentcid)
+        except SubPostComment.DoesNotExist:
+            return jsonify(msg="Parent comment does not exist"), 404
+
+        if parent.status is not None or parent.pid.pid != post.pid:
+            return jsonify(msg="Parent comment does not exist"), 404
+
+    comment = SubPostComment.create(pid=pid, uid=uid,
+                                    content=content,
+                                    parentcid=parentcid,
+                                    time=datetime.datetime.utcnow(),
+                                    cid=uuid.uuid4(), score=0, upvotes=0, downvotes=0)
+
+    SubPost.update(comments=SubPost.comments + 1).where(SubPost.pid == post.pid).execute()
+    comment.save()
+
+    socketio.emit('threadcomments', {'pid': post.pid, 'comments': post.comments + 1},
+                  namespace='/snt', room=post.pid)
+
+    # 5 - send pm to parent
+    if parentcid:
+        parent = SubPostComment.get(SubPostComment.cid == parentcid)
+        notif_to = parent.uid_id
+        subject = 'Comment reply: ' + post.title
+        mtype = 5
+    else:
+        notif_to = post.uid_id
+        subject = 'Post reply: ' + post.title
+        mtype = 4
+    if notif_to != uid and uid not in misc.get_ignores(notif_to):
+        misc.create_message(mfrom=uid,
+                            to=notif_to,
+                            subject=subject,
+                            content='',
+                            link=comment.cid,
+                            mtype=mtype)
+        socketio.emit('notification',
+                        {'count': misc.get_notification_count(notif_to)},
+                        namespace='/snt',
+                        room='user' + notif_to)
+
+    # 6 - Process mentions
+    sub = Sub.get_by_id(post.sid)
+    misc.workWithMentions(content, notif_to, post, sub, cid=comment.cid)
+
+    return jsonify(pid=pid, cid=comment.cid), 200
