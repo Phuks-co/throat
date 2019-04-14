@@ -17,7 +17,7 @@ class CreateSubForm(FlaskForm):
     subname = StringField('Sub name',
                           validators=[DataRequired(), Length(min=2, max=32)])
     title = StringField('Title',
-                        validators=[DataRequired(), Length(min=2, max=128)])
+                        validators=[DataRequired(), Length(min=2, max=50)])
 
     nsfw = BooleanField('Sub is NSFW?')
 
