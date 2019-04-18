@@ -164,7 +164,12 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None):
         comment_tree = select_branch(comment_tree, root)
         if comment_tree:
             # include the parent of the root for context.
-            comment_tree = [comment_tree]
+            if comment_tree['parentcid'] is None:
+                comment_tree = [comment_tree]
+            else:
+                orig_root = [x for x in list(comments) if x['cid'] == comment_tree['parentcid']]
+                orig_root[0]['children'] = [comment_tree]
+                comment_tree = orig_root
         else:
             return []
     # 3 - Trim tree (remove all children of depth=3 comments, all siblings after #5
@@ -195,6 +200,8 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None):
             i['children'] = recursive_check(i['children'], depth+1)
 
         return tree
+    import pprint
+    pprint.pprint(comment_tree)
 
     comment_tree = recursive_check(comment_tree, trimmed=trimmed)
 
