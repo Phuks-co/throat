@@ -53,7 +53,7 @@ def login():
     # Identity can be any data that is json serializable
     access_token = create_access_token(identity=user.uid, fresh=True)
     refresh_token = create_refresh_token(identity=user.uid)
-    return jsonify(status='ok', access_token=access_token, refresh_token=refresh_token), 200
+    return jsonify(access_token=access_token, refresh_token=refresh_token), 200
 
 
 @API.route('/refresh', methods=['POST'])
@@ -62,7 +62,7 @@ def refresh():
     """ Returns a new access token. Requires providing a refresh token """
     current_user = get_jwt_identity()
     new_token = create_access_token(identity=current_user, fresh=False)
-    return jsonify(status='ok', access_token=new_token), 200
+    return jsonify(access_token=new_token), 200
 
 
 @API.route('/fresh-login', methods=['POST'])
@@ -84,7 +84,7 @@ def fresh_login():
         return jsonify(msg="Bad user data"), 400
 
     new_token = create_access_token(identity=user.uid, fresh=True)
-    return jsonify(status='ok', access_token=new_token)
+    return jsonify(access_token=new_token)
 
 
 @API.route('/getPost/<int:pid>', methods=['get'])
@@ -104,7 +104,7 @@ def get_post(pid):
     post = base_query.where(SubPost.pid == pid).dicts()
 
     if not post.count():
-        return jsonify(status="error", error="Post does not exist")
+        return jsonify(msg="Post does not exist"), 404
 
     post = post[0]
     post['deleted'] = True if post['deleted'] != 0 else False
@@ -125,7 +125,7 @@ def get_post(pid):
         post['uid'] = None
     del post['userstatus']
 
-    return jsonify(status='ok', post=post)
+    return jsonify(post=post)
 
 
 def get_comment_tree(comments, root=None, only_after=None, uid=None):
@@ -272,15 +272,15 @@ def get_post_comments(pid):
     try:
         post = SubPost.get(SubPost.pid == pid)
     except SubPost.DoesNotExist:
-        return jsonify(status='error', error="Post does not exist")
+        return jsonify(msg="Post does not exist"), 404
 
     # 1 - Fetch all comments (only cid and parentcid)
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == post.pid).order_by(SubPostComment.score.desc()).dicts()
     if not comments.count():
-        return jsonify(status='ok', comments=[])
+        return jsonify(comments=[])
 
     comment_tree = get_comment_tree(comments, uid=current_user)
-    return jsonify(status='ok', comments=comment_tree)
+    return jsonify(comments=comment_tree)
 
 
 @API.route('/getPost/<int:pid>/comments/children/<cid>/<lim>', methods=['get'])
@@ -297,20 +297,20 @@ def get_post_comment_children(pid, cid, lim):
     try:
         post = SubPost.get(SubPost.pid == pid)
     except SubPost.DoesNotExist:
-        return jsonify(status='error', error='Post does not exist')
+        return jsonify(msg='Post does not exist'), 404
     if cid == 'null':
         cid = '0'
     if cid != '0':
         try:
             root = SubPostComment.get(SubPostComment.cid == cid)
             if root.pid_id != post.pid:
-                return jsonify(status='error', error='Comment does not belong to the given post')
+                return jsonify(msg='Comment does not belong to the given post'), 400
         except SubPostComment.DoesNotExist:
-            return jsonify(status='error', error='Post does not exist')
+            return jsonify(msg='Post does not exist'), 404
 
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
     if not comments.count():
-        return jsonify(status='ok', comments=[])
+        return jsonify(comments=[])
 
     if lim:
         if cid == '0':
@@ -319,8 +319,8 @@ def get_post_comment_children(pid, cid, lim):
     elif cid != '0':
         comment_tree = get_comment_tree(comments, cid)
     else:
-        return jsonify(status='error', error='Illegal comment id')
-    return jsonify(status='ok', comments=comment_tree)
+        return jsonify(msg='Illegal comment id'), 400
+    return jsonify(comments=comment_tree)
 
 
 @API.route('/getPostList/<target>/<sort>', defaults={'page': 1}, methods=['GET'])
@@ -330,9 +330,9 @@ def get_post_list(target, sort, page):
     """ Same as v2, but `content` is returned as parsed markdown and the `sort` can be `default`
     when `target` is a sub """
     if sort not in ('hot', 'top', 'new', 'default'):
-        return jsonify(status="error", error="Invalid sort")
+        return jsonify(msg="Invalid sort"), 400
     if page < 1:
-        return jsonify(status="error", error="Invalid page number")
+        return jsonify(msg="Invalid page number"), 400
 
     uid = get_jwt_identity()
     base_query = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
@@ -350,12 +350,12 @@ def get_post_list(target, sort, page):
 
     if target == 'all':
         if sort == 'default':
-            return jsonify(status="error", error="Invalid sort")
+            return jsonify(msg="Invalid sort"), 400
         if uid:
             base_query = base_query.where(SubPost.sid.not_in(blocked))
     elif target == 'home':
         if sort == 'default':
-            return jsonify(status="error", error="Invalid sort")
+            return jsonify(msg="Invalid sort"), 400
 
         if not uid:
             base_query = base_query.join(SiteMetadata, JOIN.LEFT_OUTER, on=(SiteMetadata.key == 'default')).where(SubPost.sid == SiteMetadata.value)
@@ -367,7 +367,7 @@ def get_post_list(target, sort, page):
         try:
             sub = Sub.get(Sub.name == target)
         except Sub.DoesNotExist:
-            return jsonify(status="error", error="Target does not exist")
+            return jsonify(msg="Target does not exist"), 404
 
         if sort == 'default':
             try:
@@ -396,7 +396,7 @@ def get_post_list(target, sort, page):
         post['content'] = misc.our_markdown(post['content']) if post['ptype'] != 1 else ''
         postlist.append(post)
 
-    return jsonify(status='ok', posts=postlist, sort=sort, continues=True if cnt > 0 else False)
+    return jsonify(posts=postlist, sort=sort, continues=True if cnt > 0 else False)
 
 
 @API.route('/vote/<target_type>/<pcid>/<value>', methods=['POST'])
@@ -518,7 +518,7 @@ def vote_post(target_type, pcid, value):
     socketio.emit('uscore', {'score': target.score + new_score},
                   namespace='/snt', room="user" + target.uid_id)
 
-    return jsonify(status='ok', score=target.score + new_score, rm=undone)
+    return jsonify(score=target.score + new_score, rm=undone)
 
 
 @API.route('/create/comment', methods=['POST'])
