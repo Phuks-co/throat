@@ -26,3 +26,4 @@ coverage
 pep8
 lxml
 flask-jwt-extended
+captcha

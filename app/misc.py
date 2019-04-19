@@ -3,6 +3,7 @@ from collections import OrderedDict
 from urllib.parse import urlparse, parse_qs, urljoin
 import json
 import math
+import base64
 import uuid
 import random
 import time
@@ -13,6 +14,7 @@ import re
 import pyexiv2
 import bcrypt
 import tinycss2
+from captcha.image import ImageCaptcha
 from datetime import datetime, timedelta
 from io import BytesIO
 from PIL import Image
@@ -1514,5 +1516,34 @@ def is_domain_banned(link):
 
     url = urlparse(link)
     if (url.netloc in banned_domains) or (url.netloc.endswith(tuple(banned_domains_b))):
+        return True
+    return False
+
+
+def create_captcha():
+    """ Generates a captcha image.
+    Returns a tuple with a token and the base64 encoded image """
+    token = str(uuid.uuid4())
+    captchagen = ImageCaptcha(width=250, height=70)
+    if random.randint(1, 50) == 1:
+        captcha = random.choice(['help me', 'sorry', 'hello', 'see me', 'observe', 'stop', 'nooooo', 'i can see', 'free me', 'behind you',
+                                 'murder', 'shhhh', 'reeeee', 'come here', 'people die', 'it hurts', 'go away', 'touch me', 'last words',
+                                 'closer', 'rethink', 'it is dark', 'it is cold', 'i am dying', 'quit staring', 'lock door'])
+    else:
+        captcha = ''.join(random.choice('abcdefghijklmnopqrstuvwxyz0123456789') for _ in range(random.randint(5, 7)))
+    
+    data = captchagen.generate(captcha.upper())
+    b64captcha = base64.b64encode(data.getvalue()).decode()
+    captcha = captcha.replace(' ', '')
+
+    rconn.setex('cap-' + token, value=captcha, time=300)  # captcha valid for 5 minutes.
+
+    return (token, b64captcha)
+
+
+def validate_captcha(token, response):
+    cap = rconn.get('cap-' + token)
+    if cap and cap.decode().lower() == response.replace(' ', '').lower():
+        rconn.delete('cap-' + token)
         return True
     return False

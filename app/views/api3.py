@@ -595,10 +595,8 @@ def create_comment():
                             content='',
                             link=comment.cid,
                             mtype=mtype)
-        socketio.emit('notification',
-                        {'count': misc.get_notification_count(notif_to)},
-                        namespace='/snt',
-                        room='user' + notif_to)
+        socketio.emit('notification', {'count': misc.get_notification_count(notif_to)},
+                      namespace='/snt', room='user' + notif_to)
 
     # 6 - Process mentions
     sub = Sub.get_by_id(post.sid)

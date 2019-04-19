@@ -1009,26 +1009,29 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = RegistrationForm()
+    form.cap_key, form.cap_b64 = misc.create_captcha()
     if form.validate():
+        if not misc.validate_captcha(form.ctok.data, form.captcha.data):
+            return render_template('register.html', rform=form, error="Invalid captcha.")
         if not allowedNames.match(form.username.data):
-            return render_template('register.html', error="Username has invalid characters.")
+            return render_template('register.html', rform=form, error="Username has invalid characters.")
         # check if user or email are in use
         try:
             User.get(User.name == form.username.data)
-            return render_template('register.html', error="Username is not available.")
+            return render_template('register.html', rform=form, error="Username is not available.")
         except User.DoesNotExist:
             pass
 
         if form.email.data:
             try:
                 User.get(User.email == form.email.data)
-                return render_template('register.html', error="E-mail address is already in use.")
+                return render_template('register.html', rform=form, error="E-mail address is already in use.")
             except User.DoesNotExist:
                 pass
 
         if getattr(config, 'ENABLE_SECURITY_QUESTIONS', False):
             if form.securityanswer.data.lower() != session['sa'].lower():
-                return render_template('register.html', error="Incorrect answer for security question.")
+                return render_template('register.html', rform=form, error="Incorrect answer for security question.")
 
         # TODO: Rewrite invite code code
         y = db.get_site_metadata('useinvitecode')
@@ -1036,7 +1039,7 @@ def register():
         if y == '1':
             z = db.get_site_metadata('invitecode')['value']
             if z != form.invitecode.data:
-                return render_template('register.html', error="Invalid invite code.")
+                return render_template('register.html', rform=form, error="Invalid invite code.")
 
         password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
 
@@ -1051,7 +1054,7 @@ def register():
         login_user(theuser, remember=True)
         return redirect(url_for('welcome'))
 
-    return render_template('register.html', error=get_errors(form))
+    return render_template('register.html', rform=form, error=get_errors(form))
 
 
 def sanitize_serv(serv):

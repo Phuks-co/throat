@@ -1,13 +1,4 @@
 {% extends "layout.html" %}
-{% block head %}
-{{ super() }}
-<script src="https://www.google.com/recaptcha/api.js?onload=recaptchaCallback&render=explicit" type="text/javascript"></script>
-<script>
-var recaptchaCallback = function(){
-  grecaptcha.render(document.getElementById('g-recaptcha'), {sitekey: "{{config.RECAPTCHA_PUBLIC_KEY}}"});
-}
-</script>
-{% endblock %}
 {% block content %}
 <div id="center-container">
   <div class="content">
@@ -50,13 +41,18 @@ var recaptchaCallback = function(){
             {{regform.securityanswer()}}</div>
           </div>
         {% endif %}
-
+        <input type="hidden" name="ctok" value="{{rform.cap_key}}" />
+        <div class="pure-controls">
+          <img src="data:image/png;base64,{{rform.cap_b64}}" />
+        </div>
+        <div class="pure-control-group">
+          <label for="confirm">{{regform.captcha.label.text}}</label>
+          {{regform.captcha(autocomplete="off", required=True)}}
+        </div>
         <div class="pure-controls">
           <label for="accept_tos" class="pure-checkbox">
             {{regform.accept_tos(required=True)}} {{regform.accept_tos.label.text}}
           </label>
-
-          <div id="g-recaptcha"></div>
           <button type="submit" class="pure-button pure-button-primary">Register</button>
         </div>
       </fieldset>

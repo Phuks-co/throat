@@ -586,7 +586,13 @@ iframe {
 
 .expandotxt img {
     max-width: 100%;
+    max-height: 90vh;
 }
+
+.expandotxt, .expandotxt video, .expandotxt iframe{
+  max-height: 90vh;
+}
+
 .post .domain a, .post .domain {
     color: #666;
     font-size: small;
