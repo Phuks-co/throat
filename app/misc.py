@@ -1543,7 +1543,8 @@ def create_captcha():
 
 def validate_captcha(token, response):
     cap = rconn.get('cap-' + token)
-    if cap and cap.decode().lower() == response.replace(' ', '').lower():
+    if cap:
         rconn.delete('cap-' + token)
-        return True
+        if cap.decode().lower() == response.replace(' ', '').lower():
+            return True
     return False
