@@ -1,15 +1,4 @@
 {% extends "layout.html" %}
-{% block head %}
-{{ super() }}
-{% if func.get_user_level(current_user.uid)[0] <= 4 %}
- <script src="https://www.google.com/recaptcha/api.js?onload=recaptchaCallback&render=explicit" type="text/javascript"></script>
-<script>
-var recaptchaCallback = function(){
-    grecaptcha.render(document.getElementById('gcaptcha'), {sitekey: "{{config.RECAPTCHA_PUBLIC_KEY}}"});
-}
-</script>
-{%endif%}
-{% endblock %}
 {% block sidebar %}
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
@@ -104,9 +93,14 @@ var recaptchaCallback = function(){
             </div>
           {% endif %}
           {% if func.get_user_level(current_user.uid)[0] <= 4 %}
+            {% set captcha = func.create_captcha() %}
+            <input type="hidden" name="ctok" value="{{captcha[0]}}" />
+            <div class="pure-controls">
+              <img src="data:image/png;base64,{{captcha[1]}}" />
+            </div>
             <div class="pure-control-group">
-              <label>Captcha</label>
-              <div id="gcaptcha" class="g-recaptcha" style="display: inline-block"></div>
+              <label for="captcha">Captcha</label>
+              {{regform.captcha(autocomplete="off", required=True)}}
             </div>
           {% endif %}
           <div class="pure-controls">

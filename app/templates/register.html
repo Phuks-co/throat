@@ -46,8 +46,8 @@
           <img src="data:image/png;base64,{{rform.cap_b64}}" />
         </div>
         <div class="pure-control-group">
-          <label for="confirm">{{regform.captcha.label.text}}</label>
-          {{regform.captcha(autocomplete="off", required=True)}}
+          <label for="captcha">{{regform.captcha.label.text}}</label>
+          <input autocomplete="off" id="captcha" name="captcha" required="" type="text" value="">
         </div>
         <div class="pure-controls">
           <label for="accept_tos" class="pure-checkbox">

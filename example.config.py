@@ -36,10 +36,6 @@ WTF_CSRF_SECRET_KEY = SECRET_KEY
 SENDGRID_API_KEY = "put it here"
 SENDGRID_DEFAULT_FROM = "noreply@shitposting.space"
 
-# Recaptcha credentials
-RECAPTCHA_PUBLIC_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
-
 # This is the path thumbnails will be stored on
 THUMBNAILS = "./thumbs"
 # This is the domain where the thumbnails are hosted on. Can be an absolute path too.

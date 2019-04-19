@@ -1,7 +1,7 @@
 """ User-related forms """
 from flask import request, redirect, url_for
 from urllib.parse import urlparse, urljoin
-from flask_wtf import FlaskForm, RecaptchaField
+from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextField, TextAreaField
 from wtforms import BooleanField, HiddenField
 from wtforms.validators import DataRequired, Length, Email, Required, EqualTo
@@ -126,7 +126,8 @@ class PasswordRecoveryForm(FlaskForm):
     """ the 'forgot your password?' form """
     email = EmailField('Email Address',
                        validators=[Email("Invalid email address.")])
-    recaptcha = RecaptchaField('Captcha')
+    captcha = TextField('Captcha')
+    ctok = HiddenField()
 
 
 class PasswordResetForm(FlaskForm):

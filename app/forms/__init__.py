@@ -1,5 +1,5 @@
 """ Uhh... Here we import stuff """
-from flask_wtf import FlaskForm, RecaptchaField
+from flask_wtf import FlaskForm
 
 from .user import RegistrationForm, LoginForm, LogOutForm, PasswordResetForm
 from .user import CreateUserMessageForm, EditUserForm, PasswordRecoveryForm
@@ -18,8 +18,3 @@ from .admin import SecurityQuestionForm, TOTPForm
 class DummyForm(FlaskForm):
     """ This is here only for the csrf token. """
     pass
-
-
-class CaptchaForm(FlaskForm):
-    """ Captcha form. """
-    recaptcha = RecaptchaField('Captcha')

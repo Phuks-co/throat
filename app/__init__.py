@@ -1167,7 +1167,9 @@ def password_recovery():
     """ Endpoint for the registration form """
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    return engine.get_template('user/password_recovery.html').render({'lpform': forms.PasswordRecoveryForm()})
+    form = forms.PasswordRecoveryForm()
+    form.cap_key, form.cap_b64 = misc.create_captcha()
+    return engine.get_template('user/password_recovery.html').render({'lpform': form})
 
 
 @app.route('/reset/<uid>/<key>')

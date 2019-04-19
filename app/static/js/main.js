@@ -126,9 +126,6 @@ u.ready(function() {
             target.querySelector('.div-error').style.display = 'block';
           }
           button.innerHTML = btnorm;
-          if (typeof grecaptcha != "undefined") {
-              grecaptcha.reset();
-          }
         } else { // success
           if(target.getAttribute('data-reset')){
             target.reset();

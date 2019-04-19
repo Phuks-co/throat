@@ -575,6 +575,8 @@ def create_post():
     if misc.get_user_level(current_user.uid)[0] <= 4:
         form = forms.CreteSubPostCaptcha()
         if not form.validate():
+            if not misc.validate_captcha(form.ctok.data, form.captcha.data):
+                return render_template('createpost.html', txtpostform=form, error="Invalid captcha.")
             return render_template('createpost.html', txtpostform=form, error=get_errors(form)[0])
     form = CreateSubTextPost()
     if form.validate():
@@ -1616,7 +1618,11 @@ def recovery():
         abort(403)
 
     form = forms.PasswordRecoveryForm()
+    form.cap_key, form.cap_b64 = misc.create_captcha()
     if form.validate():
+        if not misc.validate_captcha(form.ctok.data, form.captcha.data):
+            # XXX: Fix this
+            return jsonify(status='error', error=["Invalid captcha (refresh page.)"])
         try:
             user = User.get(User.email == form.email.data)
         except User.DoesNotExist:
