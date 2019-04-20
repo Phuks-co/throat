@@ -1530,11 +1530,11 @@ def create_captcha():
                                  'murder', 'shhhh', 'reeeee', 'come here', 'people die', 'it hurts', 'go away', 'touch me', 'last words',
                                  'closer', 'rethink', 'it is dark', 'it is cold', 'i am dying', 'quit staring', 'lock door'])
     else:
-        captcha = ''.join(random.choice('abcdefghijklmnopqrstuvwxyz0123456789') for _ in range(random.randint(5, 7)))
+        captcha = ''.join(random.choice('abcdefghijklmnopqrstuvwxyz0123456789') for _ in range(random.randint(4, 6)))
     
     data = captchagen.generate(captcha.upper())
     b64captcha = base64.b64encode(data.getvalue()).decode()
-    captcha = captcha.replace(' ', '')
+    captcha = captcha.replace(' ', '').replace('0', 'o')
 
     rconn.setex('cap-' + token, value=captcha, time=300)  # captcha valid for 5 minutes.
 
@@ -1544,7 +1544,8 @@ def create_captcha():
 def validate_captcha(token, response):
     cap = rconn.get('cap-' + token)
     if cap:
+        response = response.replace(' ', '').replace('0', 'o')
         rconn.delete('cap-' + token)
-        if cap.decode().lower() == response.replace(' ', '').lower():
+        if cap.decode().lower() == response.lower():
             return True
     return False
