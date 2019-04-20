@@ -3,7 +3,7 @@
 import datetime
 import uuid
 import bcrypt
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, url_for
 from peewee import JOIN
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
 from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
@@ -18,6 +18,7 @@ JWT = JWTManager()
 
 
 def api_over_limit(limit):
+    """ Called when triggering a rate-limit """
     return jsonify(msg="Rate limited. Please try again ({0} every {1}s)".format(limit.limit, limit.per)), 429
 
 
@@ -603,3 +604,166 @@ def create_comment():
     misc.workWithMentions(content, notif_to, post, sub, cid=comment.cid)
 
     return jsonify(pid=pid, cid=comment.cid), 200
+
+class ChallengeRequired(Exception):
+    """ Raised when a challenge is required. Catched by the error handlers below """
+    pass
+
+
+class ChallengeWrong(Exception):
+    """ Raised when a challenge's solution is wrong. Catcher by the error handlers below """
+    pass
+
+
+@API.errorhandler(ChallengeRequired)
+def chall_required(error):
+    return jsonify(msg="Challenge required"), 423
+
+
+@API.errorhandler(ChallengeWrong)
+def chall_wrong(error):
+    return jsonify(msg="Invalid response", failed=True), 423
+
+
+def check_challenge():
+    challenge_token = request.json.get('challenge_token')
+    challenge_response = request.json.get('challenge_response')
+
+    if not challenge_token or not challenge_response:
+        raise ChallengeRequired
+
+    if not misc.validate_captcha(challenge_token, challenge_response):
+        raise ChallengeWrong
+
+    return True
+
+
+@API.route('/challenge', methods=['GET'])
+@jwt_required
+def get_challenge():
+    challenge = misc.create_captcha()
+    return jsonify(challenge_token=challenge[0], challenge_blob=challenge[1])
+
+
+@API.route('/create/post', methods=['POST'])
+@jwt_required
+@misc.ratelimit(1, per=30, over_limit=api_over_limit)  # Once every 30 secs
+def create_post():
+    uid = get_jwt_identity()
+    if not request.is_json:
+        return jsonify(msg="Missing JSON in request"), 400
+
+    sub = request.json.get('sub', None)
+    ptype = request.json.get('ptype', None)
+    title = request.json.get('title', None)
+    link = request.json.get('link', None)
+    content = request.json.get('content', None)
+    nsfw = request.json.get('nsfw', False)
+
+    if not sub or ptype is None or not title:
+        return jsonify(msg='Missing required parameters'), 400
+
+    if ptype not in (0, 1, 3):
+        return jsonify(msg='Illegal value for ptype'), 400
+
+    if ptype == 3:
+        return jsonify(msg='This method does not support poll creation'), 400
+
+    try:
+        user = User.get(User.uid == uid)
+    except User.DoesNotExist:
+        return jsonify(msg="Unknown error. User disappeared"), 403
+
+    try:  # TODO: Exception for admins
+        enable_posting = SiteMetadata.get(SiteMetadata.key == 'enable_posting')
+        if enable_posting.value in ('False', '0'):
+            return jsonify(msg="Posting has been temporarily disabled"), 400
+    except SiteMetadata.DoesNotExist:
+        pass
+
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
+        return jsonify(msg="Sub does not exist"), 404
+
+    if sub in ('all', 'new', 'hot', 'top', 'admin', 'home'):  # TODO: Make this a blacklist setting in the config file?
+        return jsonify(msg="You can't post on this sub"), 403
+
+    subdata = misc.getSubData(sub.sid, simple=True)
+
+    if uid in subdata.get('ban', []):
+        return jsonify(msg="You're banned from this sub"), 403
+
+    if subdata.get('restricted', 0) == '1':
+        return jsonify(msg='Only moderators can post on this sub'), 403
+
+    if len(title.strip(misc.WHITESPACE)) < 3:
+        return jsonify(msg='Post title is too short'), 400
+
+    if len(title) > 350:
+        return jsonify(msg='Post title is too long'), 400
+
+    if misc.get_user_level(uid)[0] < 7:
+        today = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        lposts = SubPost.select().where(SubPost.uid == uid).where(SubPost.sid == sub.sid).where(SubPost.posted > today).count()
+        tposts = SubPost.select().where(SubPost.uid == uid).where(SubPost.posted > today).count()
+        if lposts > 10 or tposts > 25:
+            return jsonify(msg="You have posted too much today"), 403
+
+    if ptype == 1:
+        if not 'link':
+            return jsonify(msg='No link provided'), 400
+
+        if content:
+            return jsonify(msg='Link posts do not accept content'), 400
+
+        if misc.is_domain_banned(link):
+            return jsonify(msg="Link's domain is banned"), 400
+
+        recent = datetime.datetime.utcnow() - datetime.timedelta(days=5)
+        try:
+            wpost = SubPost.select().where(SubPost.sid == sub.sid).where(SubPost.link == link)
+            wpost = wpost.where(SubPost.deleted == 0).where(SubPost.posted > recent).get()
+            return jsonify(msg="This link has already been posted recently on this sub"), 403
+        except SubPost.DoesNotExist:
+            pass
+    elif ptype == 0:
+        if link:
+            return jsonify(msg='Text posts do not accept link'), 400
+        if len(content) > 16384:
+            return jsonify(msg='Post content is too long'), 400
+
+    if misc.get_user_level(user.uid)[0] <= 4:
+        check_challenge()
+
+    post = SubPost.create(sid=sub.sid,
+                          uid=uid,
+                          title=title.strip(misc.WHITESPACE),
+                          content=content,
+                          link=link if ptype == 1 else None,
+                          posted=datetime.datetime.utcnow(),
+                          score=1, upvotes=1, downvotes=0, deleted=0, comments=0,
+                          ptype=ptype,
+                          nsfw=nsfw if not subdata.get('nsfw') == '1' else 1,
+                          thumbnail=misc.get_thumbnail(link) if ptype == 1 else '')
+
+    Sub.update(posts=Sub.posts + 1).where(Sub.sid == sub.sid).execute()
+    addr = url_for('sub.view_post', sub=sub.name, pid=post.pid)
+    posts = misc.getPostList(misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), 'new', 1).dicts()
+    socketio.emit('thread',
+                  {'addr': addr, 'sub': sub.name, 'type': ptype,
+                   'user': user.name, 'pid': post.pid, 'sid': sub.sid,
+                   'html': misc.engine.get_template('shared/post.html').render({'posts': posts, 'sub': False})},
+                  namespace='/snt', room='/all/new')
+
+    SubPostVote.create(uid=uid, pid=post.pid, positive=True)
+    User.update(given=User.given + 1).where(User.uid == uid).execute()
+
+    misc.workWithMentions(content, None, post, sub, c_user=user)
+    misc.workWithMentions(title, None, post, sub, c_user=user)
+
+    socketio.emit('yourvote', {'pid': post.pid, 'status': 1, 'score': post.score}, namespace='/snt',
+                  room='user' + user.name)
+
+
+    return jsonify(status='ok', pid=post.pid, sub=sub.name)

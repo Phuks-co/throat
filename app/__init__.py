@@ -116,6 +116,9 @@ def after_request(response):
     diff = time.time() - g.start
     diff = int(diff * 1000)
     if app.debug:
+        response.headers["Access-Control-Allow-Methods"] = "GET, PUT, POST, DELETE, HEAD, OPTIONS"
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "*"
         print("Exec time: %s ms" % str(diff))
 
     if not hasattr(g, 'qc'):
