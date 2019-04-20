@@ -11,6 +11,7 @@ from .. import misc
 from ..socketio import socketio
 from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote, SubSubscriber
 from ..models import SiteMetadata
+from ..caching import cache
 
 API = Blueprint('apiv3', __name__)
 
@@ -767,3 +768,15 @@ def create_post():
 
 
     return jsonify(status='ok', pid=post.pid, sub=sub.name)
+
+
+@API.route('/search/sub/<query>', methods=['GET'])
+@cache.memoize(300)
+def search_sub(query):
+    if len(query) < 3 or not misc.allowedNames.match(query):
+        return jsonify(results=[])
+    
+    query = '%' + query + '%'
+    subs = Sub.select(Sub.name).where(Sub.name ** query).limit(10).dicts()
+
+    return jsonify(results=list(subs))
