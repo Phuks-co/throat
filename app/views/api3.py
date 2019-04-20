@@ -770,9 +770,9 @@ def create_post():
     return jsonify(status='ok', pid=post.pid, sub=sub.name)
 
 
-@API.route('/search/sub/<query>', methods=['GET'])
-@cache.memoize(300)
-def search_sub(query):
+@API.route('/search/sub', methods=['GET'])
+def search_sub():
+    query = request.args.get('query', '')
     if len(query) < 3 or not misc.allowedNames.match(query):
         return jsonify(results=[])
     
