@@ -1246,6 +1246,8 @@ def forbidden_error(error):
 def not_found(error):
     """ 404 Not found error """
     if request.path.startswith('/api'):
+        if request.path.startswith('/api/v3'):
+            return jsonify(msg="Method not found or not implemented"), 404
         return jsonify(status='error', error='Method not found or not implemented'), 404
     return render_template('errors/404.html'), 404
 
@@ -1253,4 +1255,9 @@ def not_found(error):
 @app.errorhandler(500)
 def server_error(error):
     """ 500 Internal server error """
+    if request.path.startswith('/api'):
+        if request.path.startswith('/api/v3'):
+            return jsonify(msg="Internal error"), 500
+        return jsonify(status='error', error='Internal error'), 500
+
     return render_template('errors/500.html'), 500
