@@ -605,7 +605,7 @@ def create_comment():
 
     # 6 - Process mentions
     sub = Sub.get_by_id(post.sid)
-    misc.workWithMentions(content, notif_to, post, sub, cid=comment.cid)
+    misc.workWithMentions(content, notif_to, post, sub, cid=comment.cid, c_user=user)
 
     return jsonify(pid=pid, cid=comment.cid), 200
 
