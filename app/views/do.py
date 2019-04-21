@@ -1718,6 +1718,10 @@ def edit_comment():
         if comment['status'] == '1':
             return jsonify(status='error',
                            error="You can't edit a deleted comment")
+        
+        if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=60):
+            return jsonify(status='error', error="Post is archived")
+            
         dt = datetime.datetime.utcnow()
         db.uquery('UPDATE `sub_post_comment` SET `content`=%s, `lastedit`=%s '
                   'WHERE `cid`=%s', (form.text.data, dt, form.cid.data))
