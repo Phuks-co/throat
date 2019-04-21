@@ -813,6 +813,7 @@ def edit_comment():
         return jsonify(msg="Content is too long"), 400
 
     comment.content = content
+    comment.lastedit = datetime.datetime.utcnow()
     comment.save()
 
     return jsonify()
