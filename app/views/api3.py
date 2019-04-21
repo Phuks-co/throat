@@ -559,6 +559,9 @@ def create_comment():
     except SubMetadata.DoesNotExist:
         pass
 
+    if len(content) > 16384:
+        return jsonify(msg="Content is too long"), 400
+
     if parentcid:
         try:
             parent = SubPostComment.get(SubPostComment.cid == parentcid)
@@ -780,3 +783,36 @@ def search_sub():
     subs = Sub.select(Sub.name).where(Sub.name ** query).limit(10).dicts()
 
     return jsonify(results=list(subs))
+
+
+@API.route('/edit/comment', methods=['POST'])
+@jwt_required
+def edit_comment():
+    uid = get_jwt_identity()
+    if not request.is_json:
+        return jsonify(msg="Missing JSON in request"), 400
+
+    cid = request.json.get('cid', None)
+    content = request.json.get('content', None)
+
+    if not cid or not content:
+        return jsonify(msg="Missing required parameters"), 400
+    
+    try:
+        comment = SubPostComment.select().where(SubPostComment.status.is_null(True)).where(SubPostComment.cid == cid).get()
+    except SubPostComment.DoesNotExist:
+        return jsonify(msg="Comment does not exist"), 400
+    
+    if comment.uid_id != uid:
+        return jsonify(msg="Unauthorized"), 403
+
+    if (datetime.datetime.utcnow() - comment.pid.posted) > datetime.timedelta(days=60):
+        return jsonify(msg="Post is archived"), 400
+
+    if len(content) > 16384:
+        return jsonify(msg="Content is too long"), 400
+
+    comment.content = content
+    comment.save()
+
+    return jsonify()
