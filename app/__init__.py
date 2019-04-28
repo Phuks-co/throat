@@ -1112,7 +1112,7 @@ def login():
         except User.DoesNotExist:
             return engine.get_template('user/login.html').render({'error': "Invalid username or password.", 'loginform': form})
 
-        if user.status == 10:
+        if user.status != 0:
             return engine.get_template('user/login.html').render({'error': "Invalid username or password.", 'loginform': form})
 
         if user.crypto == 1:  # bcrypt

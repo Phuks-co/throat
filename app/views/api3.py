@@ -43,6 +43,9 @@ def login():
         user = User.get(User.name == username)
     except User.DoesNotExist:
         return jsonify(msg="Bad username or password"), 401
+    
+    if user.status != 0:
+        return jsonify(msg="Forbidden"), 403
 
     if user.crypto == 1:  # bcrypt
         thash = bcrypt.hashpw(password.encode('utf-8'),
@@ -63,6 +66,14 @@ def login():
 def refresh():
     """ Returns a new access token. Requires providing a refresh token """
     current_user = get_jwt_identity()
+    try:
+        user = User.get_by_id(current_user)
+    except User.DoesNotExist:
+        return jsonify(msg="User does not exist"), 400
+
+    if user.status != 0:
+        return jsonify(msg="Forbidden"), 403
+
     new_token = create_access_token(identity=current_user, fresh=False)
     return jsonify(access_token=new_token), 200
 
