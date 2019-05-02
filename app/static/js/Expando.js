@@ -20,9 +20,10 @@ function vineID(url) {
 	}
 }
 function gfycatID(url) {
-  var match = url.match(/^https?:\/\/gfycat\.com\/(?:gifs\/detail\/?)?([a-zA-Z0-9]{1,60})$/);
+  var match = url.match(/^https?:\/\/gfycat\.com\/(?:gifs\/detail\/?)?([a-zA-Z0-9/-]{1,60})$/);
   if (match){
-    return match[1];
+    var gfy = match[1].split("-", 1);
+    return gfy;
 	}
 }
 function youtubeID(url) {
