@@ -486,7 +486,6 @@ def view_comment_inbox(cid):
 
 
 @app.route("/u/<user>")
-@login_required
 def view_user(user):
     """ WIP: View user's profile, posts, comments, badges, etc """
     try:
