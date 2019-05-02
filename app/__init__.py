@@ -521,7 +521,6 @@ def view_user(user):
 
 @app.route("/u/<user>/posts", defaults={'page': 1})
 @app.route("/u/<user>/posts/<int:page>")
-@login_required
 def view_user_posts(user, page):
     """ WIP: View user's recent posts """
     user = db.get_user_from_name(user)
@@ -559,7 +558,6 @@ def view_user_savedposts(user, page):
 
 @app.route("/u/<user>/comments", defaults={'page': 1})
 @app.route("/u/<user>/comments/<int:page>")
-@login_required
 def view_user_comments(user, page):
     """ WIP: View user's recent comments """
     user = db.get_user_from_name(user)
