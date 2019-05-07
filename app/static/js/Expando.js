@@ -26,6 +26,12 @@ function gfycatID(url) {
     return gfy;
 	}
 }
+function streamjaID(url) {
+  var match = url.match(/^https?:\/\/streamja\.com\/([a-zA-Z0-9]{1,20})$/);
+  if (match){
+    return match[1];
+	}
+}
 function youtubeID(url) {
   var match =  url.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|hooktube.com\/(watch\?v=)?)([^#\&\?]*).*/);
   if (match && match[3].length == 11) {
@@ -116,6 +122,8 @@ u.addEventForChild(document, 'click', '.expando', function(e, ematch){
         expando.querySelector('.expandotxt').innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://gfycat.com/ifr/' + gfycatID(link) +'"></iframe></div>';
       }else if(domain == 'vimeo.com'){
         expando.querySelector('.expandotxt').innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://player.vimeo.com/video/' + vimeoID(link) +'"></iframe></div>';
+      }else if(domain == 'streamja.com'){
+        expando.querySelector('.expandotxt').innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://streamja.com/embed/' + streamjaID(link) +'"></iframe></div>';
       }else if(domain == 'vine.co'){
         expando.querySelector('.expandotxt').innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://vine.co/v/' + vineID(link) +'/embed/simple"></iframe></div>';
       }else if(/\.(png|jpg|gif|tiff|svg|bmp|jpeg)$/i.test(link)) {
