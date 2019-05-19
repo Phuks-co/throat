@@ -466,7 +466,7 @@ def createPost():
     if g.api_token.user.uid in subdata.get('ban', []):
         return jsonify(status='error', error='You\'re banned from this sub')
     
-    if subdata.get('restricted', 0) == '1':
+    if subdata.get('restricted', 0) == '1' and (g.api_token.user.uid in subdata['mod2'] or g.api_token.user.uid == subdata['mod1'][0]):
         return jsonify(status='error', error='Restricted sub')
     
     if len(post_data['title'].strip(misc.WHITESPACE)) < 3:
