@@ -589,7 +589,7 @@ iframe {
     max-height: 90vh;
 }
 
-.expandotxt, .expandotxt video, .expandotxt iframe{
+.expandotxt video, .expandotxt iframe{
   max-height: 90vh;
 }
 
