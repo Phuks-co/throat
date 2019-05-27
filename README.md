@@ -1,4 +1,4 @@
-Note: Throat is developed and run on Python 3.7+. Previous versions are not supported
+Note: Throat is developed and run on Python 3.6+. Previous versions are not supported
 
 #throat
 
@@ -16,8 +16,8 @@ from ubuntu 16.04
 
  - $ apt-get update
  - $ apt-get install git python3-pip libssl-dev libffi-dev libpq-dev python3-dev libsqlite3-dev libexiv2-dev libboost-python-dev libmysqlclient-dev
- 
-Install the latest node and npm too. 
+
+Install the latest node and npm too.
 
 clone and install
 
