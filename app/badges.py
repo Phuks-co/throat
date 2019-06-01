@@ -18,7 +18,7 @@ badges = {  # "intname": {"nick": "intname", "name": "foo", "alt": "a badge for 
     "broccoli": {"nick": "broccoli", "name": "Broccoli supporter", "alt": "Once proud men, the Broccoli People now must remain in hiding after early on the Vegetable Wars against the Cabbages.", "icon": "broccoli.svg", "score": 100},
     "cabbage": {"nick": "cabbage", "name": "Cabbage supporter", "alt": "The Cabbage People are now the dominant force in the Vegetable Wars, being in the road to become an hegemon after defeating the Broccolis.", "icon": "cabbage.svg", "score": 100},
 
-    "shitposter2018": {"name": "Shitposter of the year", "alt": "Winner of the shitposter of the year 2018 contest", "icon": "shitposter18.svg", "score": 250}
+    "shitposter2018": {"nick": "2018shit", "name": "Shitposter of the year", "alt": "Winner of the shitposter of the year 2018 contest", "icon": "shitposter18.svg", "score": 250}
 
 }
 
