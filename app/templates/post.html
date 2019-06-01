@@ -53,7 +53,10 @@
     {%endif%}
   {%endif%}
 {%endif%}
-
+{% if func.getWikiPid(post['sid']) %}
+{% set wikiid = func.getWikiPid(post['sid'])[0] %}
+  <a href="{{url_for('view_post_inbox', pid=wikiid )}}" class="sbm-post pure-button">View wiki</a>
+{% endif %}
 
 <div class="subinfo">
   <h3><a href="{{url_for('sub.view_sub', sub=sub.name)}}">{{conf['SUB_PREFIX']}}/{{sub.name}}</a> {% if sub.nsfw %}<div class="nsfw" alt="Not safe for work">NSFW</div>{%endif%}</h3>
@@ -194,6 +197,11 @@
                 <li><a class="stick-post">unstick</a></li>
               {% else %}
                 <li><a class="stick-post">make sticky</a></li>
+              {% endif %}
+              {% if post.pid in func.getWikiPid(post['sid']) %}
+                <li><a class="wiki-post">remove wiki</a></li>
+              {% else %}
+                <li><a class="wiki-post">make wiki</a></li>
               {% endif %}
             {%endif%}
             {% if post.sub.lower() == "announcements" and current_user.is_admin() %}

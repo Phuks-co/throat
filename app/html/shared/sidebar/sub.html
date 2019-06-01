@@ -21,6 +21,10 @@
   @end
 @end
 
+@if subInfo['wiki'] != '':
+  <a href="@{url_for('view_post_inbox', pid=subInfo['wiki'] )}" class="sbm-post pure-button">View wiki</a>
+@endif
+
 <div class="subinfo">
   <h3><a href="@{url_for('sub.view_sub', sub=sub['name'])}">@{conf['SUB_PREFIX']}/@{sub['name']}</a> \
   @if sub['nsfw']:

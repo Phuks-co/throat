@@ -80,6 +80,9 @@
         @if sub and post['pid'] in func.getStickyPid(sub['sid']):
         - <span class="stick">sticky</span>
         @end
+        @if sub and post['pid'] in func.getWikiPid(sub['sid']):
+        - <span class="stick">wiki</span>
+        @end
         @if not sub:
         on <a href="@{conf['SUB_PREFIX']}/@{post['sub']}">@{post['sub']}</a>
         @end

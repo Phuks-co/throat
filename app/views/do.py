@@ -1515,6 +1515,37 @@ def toggle_sticky(post):
     return jsonify(status='ok')
 
 
+@do.route("/do/wikipost/<int:post>", methods=['POST'])
+def toggle_wikipost(post):
+    """ Toggles post to the sub wiki page """
+    try:
+        post = SubPost.get(SubPost.pid == post)
+    except SubPost.DoesNotExist:
+        return jsonify(status='error', error='Post does not exist')
+
+
+    if not current_user.is_mod(post.sid_id):
+        abort(403)
+
+    form = DeletePost()
+
+    if form.validate():
+        try:
+            is_wiki = SubMetadata.get((SubMetadata.sid == post.sid_id) & (SubMetadata.key == 'wiki') & (SubMetadata.value == post.pid))
+            is_wiki.delete_instance()
+            #  TODO Log it
+            #misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_DEL, current_user.uid, post.sid,
+            #                   link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
+        except SubMetadata.DoesNotExist:
+            post.sid.update_metadata('wiki', post.pid)
+            #  TODO Log it
+            #misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_ADD, current_user.uid, post.sid,
+            #        link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
+
+        cache.delete_memoized(misc.getWikiPid, post.sid_id)
+    return jsonify(status='ok')
+
+
 @do.route("/do/flair/<sub>/delete", methods=['POST'])
 @login_required
 def delete_flair(sub):

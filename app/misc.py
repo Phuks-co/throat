@@ -966,6 +966,13 @@ def getAnnouncement():
 
 
 @cache.memoize(5)
+def getWikiPid(sid):
+    """ Returns a list of wickied SubPosts """
+    x = SubMetadata.select(SubMetadata.value).where(SubMetadata.sid == sid).where(SubMetadata.key == 'wiki').dicts()
+    return [int(y['value']) for y in x]
+
+
+@cache.memoize(5)
 def getStickyPid(sid):
     """ Returns a list of stickied SubPosts """
     x = SubMetadata.select(SubMetadata.value).where(SubMetadata.sid == sid).where(SubMetadata.key == 'sticky').dicts()
@@ -1313,6 +1320,11 @@ def getSubData(sid, simple=False, extra=False):
             data['videomode']
         except KeyError:
             data['videomode'] = 0
+
+        try:
+            data['wiki']
+        except KeyError:
+            data['wiki'] = ''
 
         if data.get('mod2', []) != []:
             try:

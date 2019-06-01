@@ -66,6 +66,22 @@ u.addEventForChild(document, 'click', '.stick-post', function(e, qelem){
   });
 });
 
+// Wiki post
+u.addEventForChild(document, 'click', '.wiki-post', function(e, qelem){
+  var pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg=e.currentTarget;
+  TextConfirm(qelem, function(){
+    u.rawpost('/do/wikipost/'+pid, new FormData(document.getElementById('delete-post-form')),
+    function(data){
+      if (data.status != "ok") {
+        tg.innerHTML = 'Error.';
+      } else {
+        tg.innerHTML = 'Done';
+        document.location.reload();
+      }
+    })
+  });
+});
+
 u.addEventForChild(document, 'click', '.announce-post', function(e, qelem){
   var pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg=e.currentTarget;
   TextConfirm(qelem, function(){
@@ -201,7 +217,7 @@ u.addEventForChild(document, 'click', '.edit-post', function(e, qelem){
 u.addEventForChild(document, 'click', '.comment-source', function(e, qelem){
   var cid = qelem.getAttribute('data-cid');
   var elem = document.getElementById('content-' + cid);
-  
+
   var testedit = qelem.parentNode.parentNode.querySelector('.edit-comment s');
   if(testedit){
     testedit.click();
@@ -567,7 +583,7 @@ u.addEventForChild(document, 'keyup', '#report_text', function(e, qelem){
 
 u.addEventForChild(document, 'click', '#submit_report', function(e, qelem){
   var pid=qelem.getAttribute('data-pid');
-  
+
   var errorbox = qelem.parentNode.querySelector('.error');
 
   var reason = document.getElementById('report_reason').value;
