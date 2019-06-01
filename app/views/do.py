@@ -334,7 +334,7 @@ def remove_post_flair(sub, pid):
     except SubPost.DoesNotExist:
         return jsonify(status='error', error=['Post does not exist'])
 
-    if current_user.is_mod(sub['sid']) or (post.uid.uid == current_user.uid and sub.get_metadata('ucf')):
+    if current_user.is_mod(sub.sid) or (post.uid.uid == current_user.uid and sub.get_metadata('ucf')):
         if not post.flair:
             return jsonify(status='error', error='Post has no flair')
         else:
