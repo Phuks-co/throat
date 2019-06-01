@@ -23,12 +23,13 @@ from .. import database as db
 from ..forms import LogOutForm, CreateSubFlair, DummyForm
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
-from ..forms import CreateSubTextPost, EditSubTextPostForm
+from ..forms import CreateSubTextPost, EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
+from ..badges import badges
 from ..misc import cache, sendMail, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
@@ -371,6 +372,37 @@ def edit_mod():
 
         misc.create_sublog(misc.LOG_TYPE_SUB_TRANSFER, current_user.uid, sub.sid,
                            comment=user.name, admin=True)
+
+        return jsonify(status='ok')
+    return jsonify(status="error", error=get_errors(form))
+
+
+@do.route("/do/assign_userbadge", methods=['POST'])
+@login_required
+def assign_userbadge():
+    """ Admin endpoint used for assigning a user badge. """
+    if not current_user.is_admin():
+        abort(403)
+    form = AssignUserBadgeForm()
+
+    l = []
+    for bg in badges:
+        l.append(badges[bg]['nick'])
+
+    if form.badge.data not in l:
+        return jsonify(status='error', error=["Badge does not exist"])
+
+    try:
+        user = User.get(User.name == form.user.data)
+    except User.DoesNotExist:
+        return jsonify(status='error', error=["User does not exist"])
+
+    if form.validate():
+
+        UserMetadata.create(uid=user.uid, key='badge',
+                            value=form.badge.data)
+
+        # TODO log it, create new log type and save to sitelog ??
 
         return jsonify(status='ok')
     return jsonify(status="error", error=get_errors(form))

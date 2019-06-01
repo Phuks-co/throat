@@ -31,6 +31,14 @@ class CreateUserBadgeForm(FlaskForm):
     value = IntegerField('XP value')
 
 
+class AssignUserBadgeForm(FlaskForm):
+    """ Assign user badge to user (admin) """
+    badge = StringField('Badge nick',
+                      validators=[DataRequired(), Length(min=1, max=128)])
+    user = StringField('Username',
+                       validators=[DataRequired(), Length(min=1, max=128)])
+
+
 class UseBTCdonationForm(FlaskForm):
     """ Enable/Use bitcoin donation module """
     enablebtcmod = BooleanField('Enable Bitcoin donation module')

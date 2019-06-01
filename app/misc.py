@@ -823,6 +823,20 @@ def get_thumbnail(link):
 
     return filename
 
+# -------------
+# admin stuff
+# -------------
+
+def getAdminUserBadges():
+    um = UserMetadata.select().where(UserMetadata.key == 'badge').dicts()
+    ret = []
+    for bg in um:
+        if badges.get(bg['value']):
+            l = badges[bg['value']]
+            ret.append(l)
+    return ret
+
+
 # -----------------------------------
 # Stuff after this line was checked™
 # -----------------------------------

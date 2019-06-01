@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+{% block title %}Admin - {{config.LEMA}}{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block sidebar %}
+{{ super() }}
+{% include 'admin/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+
+<div id="center-container">
+  <div class="content">
+    <h2>User Badges: {{ ct }} assigned</h2>
+    <div class="admin section">
+      <hr>
+      <div class="col-12 admin-page-form">
+          <form  method="POST" class="ajaxform" id="assign-userbadge-form" data-reload="true" action="{{url_for('do.assign_userbadge')}}">
+            {{assignuserbadgeform.csrf_token}}
+            <h4>Assign badge to user</h4>
+            <div>{{assignuserbadgeform.badge(placeholder=assignuserbadgeform.badge.label.text, required=True)}}</div>
+            <div>{{assignuserbadgeform.user(placeholder=assignuserbadgeform.user.label.text, required=True)}}</div>
+            <div><button type="submit" class="pure-button" data-prog="Doing the magic...">Assign Badge</button></div>
+            <div class="alert div-error"></div>
+          </form>
+      </div>
+    <hr>
+
+      <div class="col-12">
+        {% if badges|length > 0 %}
+        <div class="userrow">
+          <h3>Badges</h3>
+          <table>
+            <tr>
+              <th>Nick</th>
+              <th>Icon</th>
+              <th>Name</th>
+              <th>Score</th>
+              <th>Alt</th>
+            </tr>
+            {% for badge in badges %}
+              {% for b in badge %}
+              <tr>
+                <td>
+                  {{b.nick}}
+                </td>
+                <td>
+                  <span class="profilebadge" title="{{b.name}}">{{b.icon|safe}}</span>
+                </td>
+                <td>
+                  {{b.name}}
+                </td>
+                <td>
+                  {{b.score}}
+                </td>
+                <td>
+                  {{b.alt}}
+                </td>
+              </tr>
+              {% endfor %}
+            {% endfor %}
+          </table>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

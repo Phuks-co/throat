@@ -11,7 +11,7 @@ from .sub import BanUserSubForm, EditPostFlair, EditSubCSSForm, EditMod2Form
 from .sub import CreateSubFlair, DeleteSubFlair, VoteForm, DeleteCommentForm
 from .sub import CreteSubPostCaptcha
 from .admin import CreateUserBadgeForm, EditModForm, UseBTCdonationForm
-from .admin import BanDomainForm, UseInviteCodeForm
+from .admin import BanDomainForm, UseInviteCodeForm, AssignUserBadgeForm
 from .admin import SecurityQuestionForm, TOTPForm
 
 

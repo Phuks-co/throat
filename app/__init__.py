@@ -19,7 +19,7 @@ from werkzeug.contrib.atom import AtomFeed
 
 import config
 from .forms import RegistrationForm, LoginForm, LogOutForm
-from .forms import CreateSubForm, EditUserForm
+from .forms import CreateSubForm, EditUserForm, AssignUserBadgeForm
 from .forms import CreateSubTextPost, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DeletePost, CreateUserBadgeForm, DummyForm
@@ -35,6 +35,7 @@ from .misc import SiteAnon, getDefaultSubs, allowedNames, get_errors, engine
 from .models import db as pdb
 from .models import Sub, SubPost, User, SubMetadata, UserMetadata, SubPostComment
 from .models import SiteLog, SubLog, rconn
+from .badges import badges
 
 # /!\ FOR DEBUGGING ONLY /!\
 # from werkzeug.contrib.profiler import ProfilerMiddleware
@@ -767,7 +768,7 @@ def admin_area():
                      '`positive`=0').fetchone()['c']
     downs += db.query('SELECT COUNT(*) AS c FROM `sub_post_comment_vote` '
                       'WHERE `positive`=0').fetchone()['c']
-    badges = db.query('SELECT * FROM `user_badge`').fetchall()
+    #badges = db.query('SELECT * FROM `user_badge`').fetchall()
     btc = db.get_site_metadata('usebtc')
     if btc:
         x = db.get_site_metadata('btcmsg')['value']
@@ -787,7 +788,7 @@ def admin_area():
     else:
         db.create_site_metadata('enable_posting', 'True')
         ep = 'True'
-    return render_template('admin/admin.html', badges=badges, subs=subs,
+    return render_template('admin/admin.html', subs=subs,
                            posts=posts, ups=ups, downs=downs, users=users,
                            createuserbadgeform=CreateUserBadgeForm(),
                            comms=comms, usebtcdonationform=btc,
@@ -806,6 +807,18 @@ def admin_users(page):
     return render_template('admin/users.html', users=users, page=page,
                             admin_route='admin_users')
 
+
+@app.route("/admin/userbadges")
+@login_required
+def admin_userbadges():
+    """ WIP: Assign user badges. """
+    if not current_user.is_admin():
+        abort(404)
+    ct = misc.getAdminUserBadges()
+
+    return render_template('admin/userbadges.html', badges=badges.items(),
+                            assignuserbadgeform=AssignUserBadgeForm(),
+                            ct=len(ct), admin_route='admin_userbadges')
 
 
 @app.route("/admin/admins")
