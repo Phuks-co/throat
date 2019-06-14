@@ -18,8 +18,11 @@
                 {% if comment.userstatus == 10 %}
                 <a class="poster deleted">[Deleted]</a>
                 {%else%}
-                <a href="{{ url_for('view_user', user=comment.username) }}" class="poster">{% if comment.userstatus == 100 %}<span class="bot-tag">bot</span>{%endif%} {{ comment.username }}</a>
-                
+                <a href="{{ url_for('view_user', user=comment.username) }}" class="poster">
+                  {% if comment.userstatus == 100 %}<span class="bot-tag">bot</span>{%endif%}
+                  {{ comment.username }}
+                  {% if post.user == comment.username %}<span class="OPtag">[OP]</span>{%endif%}
+                </a>
                 {%endif%}
               {%else%}
                 <a class="poster deleted">[Deleted]</a>
