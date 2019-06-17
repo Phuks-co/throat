@@ -620,20 +620,25 @@ def create_post():
                     return render_template('createpost.html', txtpostform=form, error="Posting has been temporarily disabled")
             except SiteMetadata.DoesNotExist:
                 pass
-                    
-        sub = db.get_sub_from_name(form.sub.data)
-        if not sub:
+        
+        try:
+            sub = Sub.get(Sub.name == form.sub.data)
+        except:
             return render_template('createpost.html', txtpostform=form, error="Sub does not exist")
-        if sub['name'].lower() in ('all', 'new', 'hot', 'top', 'admin', 'home'):
+        
+        subdata = misc.getSubData(sub.sid)
+
+        if sub.name.lower() in ('all', 'new', 'hot', 'top', 'admin', 'home'):
             return render_template('createpost.html', txtpostform=form, error="You cannot post in this sub.")
         if current_user.is_subban(sub):
             return render_template('createpost.html', txtpostform=form, error="You're banned from posting on this sub")
-        if misc.isRestricted(sub) and not current_user.is_mod(sub['sid']):
+        
+        if subdata.get('restricted', 0) and not (current_user.uid not in subdata.get('mod2', []) or current_user.uid != subdata['owner']):
             return render_template('createpost.html', txtpostform=form, error="Only mods can post on this sub")
 
         if misc.get_user_level(current_user.uid)[0] < 7:
             today = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-            lposts = SubPost.select().where(SubPost.uid == current_user.uid).where(SubPost.sid == sub['sid']).where(SubPost.posted > today).count()
+            lposts = SubPost.select().where(SubPost.uid == current_user.uid).where(SubPost.sid == sub.sid).where(SubPost.posted > today).count()
             tposts = SubPost.select().where(SubPost.uid == current_user.uid).where(SubPost.posted > today).count()
             if lposts > 10 or tposts > 25:
                 return render_template('createpost.html', txtpostform=form, error="You have posted too much today")
@@ -649,11 +654,15 @@ def create_post():
             if not form.link.data:
                 return render_template('createpost.html', txtpostform=form, error="No link provided")
 
-            lx = db.query('SELECT `pid` FROM `sub_post` WHERE `sid`=%s AND '
-                          '`link`=%s AND `deleted`=0 AND `posted` > DATE_SUB(NOW(), INTERVAL 1 '
-                          'MONTH)', (sub['sid'], form.link.data)).fetchone()
-            if lx:
+            try:
+                lx = SubPost.select(SubPost.pid).where(SubPost.sid == sub.sid)
+                lx = lx.where(SubPost.link == form.link.data).where(SubPost.deleted == 0)
+                monthago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
+                lx = lx.where(SubPost.posted > monthago).get()
                 return render_template('createpost.html', txtpostform=form, error="This link was recently posted on this sub")
+
+            except SubPost.DoesNotExist:
+                pass
             
             if misc.is_domain_banned(form.link.data):
                 return render_template('createpost.html', txtpostform=form, error="This domain is banned")
@@ -662,11 +671,7 @@ def create_post():
         if form.ptype.data == 'poll':
             ptype = 3
             # Check if this sub allows polls...
-            try:
-                allows_polls = SubMetadata.get((SubMetadata.sid == sub['sid']) & (SubMetadata.key == "allow_polls"))
-                if allows_polls.value != '1':
-                    return render_template('createpost.html', txtpostform=form, error="This sub does not allow polling")
-            except SubMetadata.DoesNotExist:
+            if not subdata.get('allow_polls', False):
                 return render_template('createpost.html', txtpostform=form, error="This sub does not allow polling")
             # check if we got at least three options
             options = request.form.getlist('op[]')
@@ -693,7 +698,7 @@ def create_post():
         else:
             ptype = 0
 
-        post = SubPost.create(sid=sub['sid'],
+        post = SubPost.create(sid=sub.sid,
                               uid=current_user.uid,
                               title=form.title.data,
                               content=form.content.data if ptype != 1 else '',
@@ -703,7 +708,7 @@ def create_post():
                               deleted=0,
                               comments=0,
                               ptype=ptype,
-                              nsfw=form.nsfw.data if not sub['nsfw'] else 1,
+                              nsfw=form.nsfw.data if not sub.nsfw else 1,
                               thumbnail=img if ptype == 1 else '')
         
         if ptype == 3:
@@ -716,14 +721,13 @@ def create_post():
             
             if form.closetime.data:
                 SubPostMetadata.create(pid=post.pid, key='poll_closes_time', value=closetime)
-                
-        db.uquery('UPDATE `sub` SET posts = posts + 1 WHERE `sid`=%s',
-                  (sub['sid'], ))
-        addr = url_for('sub.view_post', sub=sub['name'], pid=post.pid)
+        
+        Sub.update(posts=Sub.posts + 1).where(Sub.sid == sub.sid).execute()
+        addr = url_for('sub.view_post', sub=sub.name, pid=post.pid)
         posts = misc.getPostList(misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), 'new', 1).dicts()
         socketio.emit('thread',
-                      {'addr': addr, 'sub': sub['name'], 'type': form.ptype.data,
-                       'user': current_user.name, 'pid': post.pid, 'sid': sub['sid'],
+                      {'addr': addr, 'sub': sub.name, 'type': form.ptype.data,
+                       'user': current_user.name, 'pid': post.pid, 'sid': sub.sid,
                        'html': engine.get_template('shared/post.html').render({'posts': posts, 'sub': False})},
                       namespace='/snt',
                       room='/all/new')
@@ -737,7 +741,7 @@ def create_post():
                       room='user' + current_user.uid)
 
         if fileid:
-            db.create_user_upload_post(pid=post.pid, uid=current_user.uid, fileid=fileid, thumbnail=img if img else '')
+            UserUploads.create(pid=post.pid, uid=current_user.uid, fileid=fileid, thumbnail=img if img else '', status=0)
 
         misc.workWithMentions(form.content.data, None, post, sub)
         misc.workWithMentions(form.title.data, None, post, sub)
