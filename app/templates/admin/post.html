@@ -19,9 +19,9 @@
     <div class="col-12 admin section users">
       <h2><i class="fa fa-list"></i> Post: <a href="{{url_for('view_post_inbox', pid=post.pid)}}">{{post.title}}</a></h2>
       <div>
-        <div>NSFW: {% if db.is_post_nsfw(post) %}<span class="bgred" alt="Not safe for work">NSFW</span>{% else %}no{% endif %}</div>
+        <div>NSFW: {% if post.nsfw %}<span class="bgred" alt="Not safe for work">NSFW</span>{% else %}no{% endif %}</div>
         <div>When: <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago></div>
-        <div>Sub: <a href="{{url_for('sub.view_sub', sub=func.getSub(post.sid).name)}}">{{func.getSub(post.sid).name}}</a></div>
+        <div>Sub: <a href="{{url_for('sub.view_sub', sub=sub.name)}}">{{sub.name}}</a></div>
       </div>
     </div>
     <div class="col-12 admin section users">
@@ -46,7 +46,7 @@
             {% for vote in votes %}
             <tr>
               <td>{% if vote.positive %}<span class="upvoted">up</span>{% else %}<span class="downvoted">down</span>{% endif %}</td>
-              <td><a href="{{url_for('view_user', user=db.get_user_from_uid(vote.uid).name)}}">{{db.get_user_from_uid(vote.uid).name}}</a></td>
+              <td><a href="{{url_for('view_user', user=vote.name)}}">{{vote.name}}</a></td>
               <td>{{vote.datetime}}</td>
             </tr>
             {% endfor %}
@@ -56,7 +56,7 @@
     </div>
 
     <div class="col-12 admin section users">
-      <h2><i class="fa fa-comments"></i> Comments: {{db.get_post_comment_count(post.pid)}}</h2>
+      <h2><i class="fa fa-comments"></i> Comments: {{comms | length}}</h2>
       <div>
         <table class="pure-table sortable">
           <thead>
@@ -72,8 +72,7 @@
             <tr>
               <td>{{comment.score}}</td>
               <td>
-                <a href="{{ url_for('view_user', user=db.get_user_from_uid(comment.uid).name) }}" class="poster">
-                {{db.get_user_from_uid(comment.uid).name}}</a>
+                <a href="{{ url_for('view_user', user=comment.name) }}" class="poster">{{comment.name}}</a>
               </td>
               <td>{{comment.content}}</td>
               <td><a href="{{url_for('sub.view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></td>
@@ -98,8 +97,8 @@
             <tr>
               <td>{{comment.score}}</td>
               <td>
-                <a href="{{ url_for('view_user', user=db.get_user_from_uid(comment.uid).name) }}" class="poster">
-                {{db.get_user_from_uid(comment.uid).name}}</a>
+                <a href="{{ url_for('view_user', user=comment.name) }}" class="poster">
+                {{comment.name}}</a>
               </td>
               <td>{{comment.content}}</td>
               <td><a href="{{url_for('sub.view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></td>

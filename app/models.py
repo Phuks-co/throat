@@ -210,7 +210,7 @@ class SubPost(TModel):
     thumbnail = CharField(null=True)
     title = CharField(null=True)
     comments = IntegerField()
-    uid = ForeignKeyField(db_column='uid', null=True, model=User, field='uid')
+    uid = ForeignKeyField(db_column='uid', null=True, model=User, field='uid', backref='posts')
     flair = CharField(null=True, max_length=25)
 
     class Meta:
@@ -250,7 +250,7 @@ class SubPostComment(TModel):
     status = IntegerField(null=True)
     time = DateTimeField(null=True)
     uid = ForeignKeyField(db_column='uid', null=True, model=User,
-                          field='uid')
+                          field='uid', backref='comments')
 
     class Meta:
         table_name = 'sub_post_comment'
@@ -282,7 +282,7 @@ class SubPostMetadata(TModel):
 class SubPostVote(TModel):
     datetime = DateTimeField(null=True, default=datetime.datetime.utcnow)
     pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
-                          field='pid')
+                          field='pid', backref='votes')
     positive = IntegerField(null=True)
     uid = ForeignKeyField(db_column='uid', null=True, model=User,
                           field='uid')

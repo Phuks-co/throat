@@ -526,16 +526,6 @@ def getSubUsers(sub, key):
         return db.get_user_from_uid(x['value'])['name']
 
 
-@cache.memoize(600)
-def getSubCreation(sub):
-    """ Returns the sub's 'creation' metadata """
-    x = db.get_sub_metadata(sub['sid'], 'creation')
-    try:
-        return x['value'].replace(' ', 'T')  # Converts to ISO format
-    except TypeError:  # no sub creation!
-        return ''
-
-
 @cache.memoize(60)
 def getModCount(sub):
     """ Returns the sub's mod count metadata """

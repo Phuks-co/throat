@@ -8,7 +8,7 @@ import socket
 import datetime
 import bcrypt
 from urllib.parse import urlparse
-from peewee import SQL
+from peewee import SQL, fn, JOIN
 from pyotp import TOTP
 from flask import Flask, render_template, session, redirect, url_for, abort, g
 from flask import request, jsonify
@@ -34,7 +34,8 @@ from . import database as db
 from .misc import SiteAnon, getDefaultSubs, allowedNames, get_errors, engine
 from .models import db as pdb
 from .models import Sub, SubPost, User, SubMetadata, UserMetadata, SubPostComment
-from .models import SiteLog, SubLog, rconn
+from .models import SiteLog, SubLog, rconn, UserUploads, UserSaved, Message, SubPostVote
+from .models import SubPostCommentVote, SiteMetadata, SubSubscriber
 from .badges import badges
 
 # /!\ FOR DEBUGGING ONLY /!\
@@ -281,9 +282,8 @@ def all_hot(page):
 @login_required
 def view_user_uploads(page):
     """ View user uploads """
-    c = db.query('SELECT * FROM `user_uploads` WHERE `uid`=%s Limit 30 OFFSET %s',
-                 (current_user.uid, (page - 1) * 30))
-    return render_template('uploads.html', page=page, uploads=c.fetchall())
+    uploads = UserUploads.select().where(UserUploads.uid == current_user.uid).paginate(page, 30)
+    return render_template('uploads.html', page=page, uploads=uploads)
 
 
 @app.route("/subs", defaults={'page': 1, 'sort': 'name_asc'})
@@ -374,8 +374,8 @@ def userguide():
 @app.route("/random")
 def random_sub():
     """ Here we get a random sub """
-    c = db.query('SELECT `name` FROM `sub` ORDER BY RAND() LIMIT 1')
-    return redirect(url_for('sub.view_sub', sub=c.fetchone()['name']))
+    rsub = Sub.select(Sub.name).order_by(fn.Rand()).limit(1)
+    return redirect(url_for('sub.view_sub', sub=rsub.get().name))
 
 
 @app.route("/createsub")
@@ -394,17 +394,16 @@ def view_multisub_new(sublist, page=1):
     """ The multi index page, sorted as most recent posted first """
     names = sublist.split('+')
     sids = []
-    ksubs = []
-    for sb in names:
-        sb = db.get_sub_from_name(sb)
-        if sb:
-            sids.append(sb['sid'])
-            ksubs.append(sb)
+    if len(names) > 20:
+        names = names[20:]
+    
+    subs = Sub.select(Sub.sid, Sub.name, Sub.title).where(Sub.name << names)
+    sids = [x.sid for x in subs]
 
     posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid << sids),
                              'new', page).dicts()
     return render_template('indexmulti.html', page=page,
-                           posts=posts, subs=ksubs, sublist=sublist,
+                           posts=posts, subs=subs, sublist=sublist,
                            sort_type='view_multisub_new', kw={'subs': sublist})
 
 
@@ -413,60 +412,37 @@ def view_multisub_new(sublist, page=1):
 def view_modmulti_new(page):
     """ The multi page for subs the user mods, sorted as new first """
     if current_user.is_authenticated:
-        sublist = db.get_user_modded_subs(current_user.uid)
-        sids = []
-        for i in sublist:
-            sids.append(i['sid'])
+        modded = SubMetadata.select().where(SubMetadata.value == current_user.uid).where(SubMetadata.key << ('mod1', 'mod2'))
+        sids = [x.sid for x in modded]
+        subs = Sub.select(Sub.sid, Sub.name, Sub.title).where(Sub.sid << sids)
 
         posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid << sids),
                                  'new', page).dicts()
         return render_template('indexmulti.html', page=page,
                                sort_type='view_modmulti_new',
-                               posts=posts, subs=sublist)
+                               posts=posts, subs=list(subs), sids=sids)
     else:
         abort(403)
-
-
-@app.route("/multi/<sublist>", defaults={'page': 1})
-@app.route("/multi/<sublist>/<int:page>")
-def view_usermultisub_new(sublist, page):
-    """ The multi index page, sorted as most recent posted first """
-    multi = db.get_user_multi(sublist)
-    sids = str(multi['sids']).split('+')
-    names = str(multi['subs']).split('+')
-    ksubs = []
-    for sb in names:
-        sb = db.get_sub_from_name(sb)
-        if sb:
-            ksubs.append(sb)
-    posts = misc.getPostList(misc.postListQueryBase().where(Sub.sid << sids),
-                             'new', page).dicts()
-
-    return render_template('indexmulti.html', page=page, names=names,
-                           posts=posts, subs=ksubs, sublist=sublist,
-                           sort_type='view_usermultisub_new',
-                           kw={'subs': sublist})
 
 
 @app.route("/p/<pid>")
 def view_post_inbox(pid):
     """ Gets route to post from just pid """
-    post = db.get_post_from_pid(pid)
-    if not post:
+    try:
+        post = SubPost.get(SubPost.pid == pid)
+    except SubPost.DoesNotExist:
         abort(404)
-    sub = db.get_sub_from_sid(post['sid'])
-    return redirect(url_for('sub.view_post', sub=sub['name'], pid=post['pid']))
+    return redirect(url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
 
 
 @app.route("/c/<cid>")
 def view_comment_inbox(cid):
     """ Gets route to post from just cid """
-    comm = db.get_comment_from_cid(cid)
-    if not comm:
+    try:
+        comm = SubPostComment.get(SubPostComment.cid == cid)
+    except SubPost.DoesNotExist:
         abort(404)
-    post = db.get_post_from_pid(comm['pid'])
-    sub = db.get_sub_from_sid(post['sid'])
-    return redirect(url_for('sub.view_post', sub=sub['name'], pid=comm['pid']))
+    return redirect(url_for('sub.view_post', sub=comm.pid.sid.name, pid=comm.pid_id))
 
 
 @app.route("/u/<user>")
@@ -485,7 +461,9 @@ def view_user(user):
     badges = misc.getUserBadges(user.uid)
     pcount = SubPost.select().where(SubPost.uid == user.uid).count()
     ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()
-    habit = db.get_user_post_count_habit(user.uid)
+    
+    habit = Sub.select(Sub.name, fn.Count(SubPost.pid).alias('count')).join(SubPost, JOIN.LEFT_OUTER, on=(SubPost.sid == Sub.sid))
+    habit = habit.where(SubPost.uid == current_user.uid).group_by(SubPost.sid).order_by(fn.Count(SubPost.pid).desc()).limit(10)
 
     level, xp = misc.get_user_level(user.uid)
 
@@ -507,15 +485,18 @@ def view_user(user):
 @app.route("/u/<user>/posts/<int:page>")
 def view_user_posts(user, page):
     """ WIP: View user's recent posts """
-    user = db.get_user_from_name(user)
-    if not user or user['status'] == 10:
+    try:
+        user = User.get(User.name == user)
+    except User.DoesNotExist:
+        abort(404)
+    if user.status == 10:
         abort(404)
 
     if current_user.is_admin():
-        posts = misc.getPostList(misc.postListQueryBase(adminDetail=True).where(User.uid == user['uid']),
+        posts = misc.getPostList(misc.postListQueryBase(adminDetail=True).where(User.uid == user.uid),
                              'new', page).dicts()
     else:
-        posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(User.uid == user['uid']),
+        posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(User.uid == user.uid),
                              'new', page).dicts()
     return render_template('userposts.html', page=page, sort_type='view_user_posts',
                            posts=posts, user=user)
@@ -526,12 +507,8 @@ def view_user_posts(user, page):
 @login_required
 def view_user_savedposts(user, page):
     """ WIP: View user's saved posts """
-    user = db.get_user_from_name(user)
-    if not user or user['status'] == 10:
-        abort(404)
-    if current_user.uid == user['uid']:
-        pids = db.get_all_user_saved(current_user.uid)
-        posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(SubPost.pid << pids),
+    if current_user.name == user:
+        posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).join(UserSaved, on=(UserSaved.pid == SubPost.pid)).where(UserSaved.uid == current_user.uid),
                                  'new', page).dicts()
         return render_template('userposts.html', page=page,
                                sort_type='view_user_savedposts',
@@ -544,13 +521,15 @@ def view_user_savedposts(user, page):
 @app.route("/u/<user>/comments/<int:page>")
 def view_user_comments(user, page):
     """ WIP: View user's recent comments """
-    user = db.get_user_from_name(user)
-    if not user or user['status'] == 10:
+    try:
+        user = User.get(User.name == user)
+    except User.DoesNotExist:
+        abort(404)
+    if user.status == 10:
         abort(404)
 
-    comments = misc.getUserComments(user['uid'], page)
-    return render_template('usercomments.html', user=user, page=page,
-                           comments=comments)
+    comments = misc.getUserComments(user.uid, page)
+    return render_template('usercomments.html', user=user, page=page, comments=comments)
 
 
 @app.route('/settings/subs')
@@ -616,8 +595,8 @@ def view_messages(page):
 @login_required
 def view_mentions(page):
     """ View user name mentions """
-    db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
-              '`receivedby`=%s AND `mtype`=8', (datetime.datetime.utcnow(), current_user.uid))
+    Message.update(read=datetime.datetime.utcnow()).where((Message.read.is_null(True)) & (Message.mtype == 8) & (Message.receivedby == current_user.uid)).execute()
+
     msgs = misc.getMentionsIndex(page)
     return render_template('messages/messages.html', page=page,
                            messages=msgs, box_name="Mentions", boxID="8",
@@ -647,9 +626,8 @@ def view_ignores():
 @login_required
 def view_messages_postreplies(page):
     """ WIP: View user's post replies """
-    now = datetime.datetime.utcnow()
-    db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
-              '`receivedby`=%s AND `mtype`=4', (now, current_user.uid))
+    Message.update(read=datetime.datetime.utcnow()).where((Message.read.is_null(True)) & (Message.mtype == 4) & (Message.receivedby == current_user.uid)).execute()
+
     socketio.emit('notification',
                   {'count': current_user.notifications},
                   namespace='/snt',
@@ -665,9 +643,7 @@ def view_messages_postreplies(page):
 @login_required
 def view_messages_comreplies(page):
     """ WIP: View user's comments replies """
-    now = datetime.datetime.utcnow()
-    db.uquery('UPDATE `message` SET `read`=%s WHERE `read` IS NULL AND '
-              '`receivedby`=%s AND `mtype`=5', (now, current_user.uid))
+    Message.update(read=datetime.datetime.utcnow()).where((Message.read.is_null(True)) & (Message.mtype == 5) & (Message.receivedby == current_user.uid)).execute()
     socketio.emit('notification',
                   {'count': current_user.notifications},
                   namespace='/snt',
@@ -737,32 +713,30 @@ def admin_area():
     if not current_user.admin:
         return redirect(url_for('admin_auth'))
 
-    users = db.query('SELECT COUNT(*) AS c FROM `user`').fetchone()['c']
-    subs = db.query('SELECT COUNT(*) AS c FROM `sub`').fetchone()['c']
-    posts = db.query('SELECT COUNT(*) AS c FROM `sub_post`') \
-              .fetchone()['c']
-    comms = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment`') \
-              .fetchone()['c']
-    ups = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
-                   '`positive`=1').fetchone()['c']
-    ups += db.query('SELECT COUNT(*) AS c FROM `sub_post_comment_vote` '
-                    'WHERE `positive`=1').fetchone()['c']
-    downs = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
-                     '`positive`=0').fetchone()['c']
-    downs += db.query('SELECT COUNT(*) AS c FROM `sub_post_comment_vote` '
-                      'WHERE `positive`=0').fetchone()['c']
-    invite = db.get_site_metadata('useinvitecode')
-    if invite and invite['value'] == '1':
-        a = db.get_site_metadata('invitecode')['value']
-        invite = UseInviteCodeForm(invitecode=a)
-    else:
+    users = User.select().count()
+    subs = Sub.select().count()
+    posts = SubPost.select().count()
+    comms = SubPostComment.select().count()
+    ups = SubPostVote.select().where(SubPostVote.positive == 1).count()
+    downs = SubPostVote.select().where(SubPostVote.positive == 0).count()
+    ups += SubPostCommentVote.select().where(SubPostCommentVote.positive == 1).count()
+    downs += SubPostCommentVote.select().where(SubPostCommentVote.positive == 0).count()
+
+    try:
+        invite = SiteMetadata.get(SiteMetadata.key == 'useinvitecode')
+        if invite.value == '1':
+            code = SiteMetadata.get(SiteMetadata.key == 'invitecode')
+            invite = UseInviteCodeForm(invitecode=code.value)
+        else:
+            invite = UseInviteCodeForm()
+    except SiteMetadata.DoesNotExist:
         invite = UseInviteCodeForm()
-    ep = db.query('SELECT * FROM `site_metadata` WHERE `key`=%s', ('enable_posting',)).fetchone()
-    if ep:
-        ep = ep['value']
-    else:
-        db.create_site_metadata('enable_posting', 'True')
+
+    try:
+        ep = SiteMetadata.get(SiteMetadata.key == 'enable_posting').value
+    except SiteMetadata.DoesNotExist:
         ep = 'True'
+        
     return render_template('admin/admin.html', subs=subs,
                            posts=posts, ups=ups, downs=downs, users=users,
                            createuserbadgeform=CreateUserBadgeForm(),
@@ -777,8 +751,14 @@ def admin_users(page):
     """ WIP: View users. """
     if not current_user.is_admin():
         abort(404)
-    users = db.query('SELECT * FROM `user` ORDER BY `joindate` DESC '
-                        'LIMIT 50 OFFSET %s', (((page - 1) * 50),)).fetchall()
+
+    postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias('post_count')
+    commcount = SubPostComment.select(SubPostComment.uid, fn.Count(SubPostComment.cid).alias('comment_count')).group_by(SubPostComment.uid).alias('j2')
+    
+    users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count.alias('post_count'), commcount.c.comment_count)
+    users = users.join(postcount, on=User.uid == postcount.c.uid)
+    users = users.join(commcount, on=User.uid == commcount.c.uid)
+    users = users.order_by(User.joindate.desc()).paginate(page, 50).dicts()
     return render_template('admin/users.html', users=users, page=page,
                             admin_route='admin_users')
 
@@ -801,12 +781,16 @@ def admin_userbadges():
 def view_admins():
     """ WIP: View admins. """
     if current_user.is_admin():
-        uids = db.query('SELECT * FROM `user_metadata` WHERE `key`=%s',
-                        ('admin', )).fetchall()
-        users = []
-        for u in uids:
-            user = db.get_user_from_uid(u['uid'])
-            users.append(user)
+        admins = UserMetadata.select().where(UserMetadata.key == 'admin')
+
+        postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias('post_count')
+        commcount = SubPostComment.select(SubPostComment.uid, fn.Count(SubPostComment.cid).alias('comment_count')).group_by(SubPostComment.uid).alias('j2')
+        
+        users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count.alias('post_count'), commcount.c.comment_count)
+        users = users.join(postcount, on=User.uid == postcount.c.uid)
+        users = users.join(commcount, on=User.uid == commcount.c.uid)
+        users = users.where(User.uid << [x.uid for x in admins]).order_by(User.joindate.asc()).dicts()
+
         return render_template('admin/users.html', users=users,
                                admin_route='view_admins')
     else:
@@ -819,8 +803,15 @@ def admin_users_search(term):
     """ WIP: Search users. """
     if current_user.is_admin():
         term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
-        users = db.query('SELECT * FROM `user` WHERE `name` LIKE %s'
-                         'ORDER BY `name` ASC', ('%' + term + '%',)).fetchall()
+
+        postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias('post_count')
+        commcount = SubPostComment.select(SubPostComment.uid, fn.Count(SubPostComment.cid).alias('comment_count')).group_by(SubPostComment.uid).alias('j2')
+        
+        users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count.alias('post_count'), commcount.c.comment_count)
+        users = users.join(postcount, on=User.uid == postcount.c.uid)
+        users = users.join(commcount, on=User.uid == commcount.c.uid)
+        users = users.where(User.name.contains(term)).order_by(User.joindate.desc()).dicts()
+
         return render_template('admin/users.html', users=users, term=term,
                                admin_route='admin_users_search')
     else:
@@ -833,8 +824,7 @@ def admin_users_search(term):
 def admin_subs(page):
     """ WIP: View subs. Assign new owners """
     if current_user.is_admin():
-        subs = db.query('SELECT * FROM `sub` '
-                        'LIMIT 50 OFFSET %s', (((page - 1) * 50),)).fetchall()
+        subs = Sub.select().paginate(page, 50)
         return render_template('admin/subs.html', subs=subs, page=page,
                                admin_route='admin_subs',
                                editmodform=EditModForm())
@@ -848,8 +838,7 @@ def admin_subs_search(term):
     """ WIP: Search for a sub. """
     if current_user.is_admin():
         term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
-        subs = db.query('SELECT * FROM `sub` WHERE `name` LIKE %s'
-                        'ORDER BY `name` ASC', ('%' + term + '%',))
+        subs = Sub.select().where(Sub.name.contains(term))
         return render_template('admin/subs.html', subs=subs, term=term,
                                admin_route='admin_subs_search',
                                editmodform=EditModForm())
@@ -876,20 +865,17 @@ def admin_posts(page):
 def admin_post_voting(page, term):
     """ WIP: View post voting habits """
     if current_user.is_admin():
-        user = db.get_user_from_name(term)
-        if user:
+        try:
+            user = User.get(User.name == term)
             msg = []
-            votes = db.query('SELECT * FROM `sub_post_vote` WHERE `uid`=%s '
-                             'ORDER BY `xid` DESC LIMIT 50 OFFSET %s',
-                             (user['uid'], ((page - 1) * 50))).fetchall()
-            # pids = []
-            # for p in votes:
-            #     pids.append(p['pid'])
-            # posts = misc.getPostList(misc.postListQueryBase().where(SubPost.pid << pids),
-            #                          'new', page).dicts()
-        else:
+            votes = SubPostVote.select(SubPostVote.positive, SubPostVote.pid, User.name, SubPostVote.datetime, SubPostVote.pid)
+            votes = votes.join(SubPost, JOIN.LEFT_OUTER, on=SubPost.pid == SubPostVote.pid)
+            votes = votes.switch(SubPost).join(User, JOIN.LEFT_OUTER, on=SubPost.uid == User.uid)
+            votes = votes.where(SubPostVote.uid == user.uid).dicts()
+        except User.DoesNotExist:
             votes = []
             msg = 'user not found'
+            
         return render_template('admin/postvoting.html', page=page, msg=msg,
                                admin_route='admin_post_voting',
                                votes=votes, term=term)
@@ -903,15 +889,17 @@ def admin_post_voting(page, term):
 def admin_comment_voting(page, term):
     """ WIP: View comment voting habits """
     if current_user.is_admin():
-        user = db.get_user_from_name(term)
-        if user:
+        try:
+            user = User.get(User.name == term)
             msg = []
-            votes = db.query('SELECT * FROM `sub_post_comment_vote` WHERE `uid`=%s '
-                             'ORDER BY `xid` DESC LIMIT 50 OFFSET %s',
-                             (user['uid'], ((page - 1) * 50))).fetchall()
-        else:
+            votes = SubPostCommentVote.select(SubPostCommentVote.positive, SubPostCommentVote.cid, SubPostComment.uid, User.name, SubPostCommentVote.datetime, SubPost.pid, Sub.name.alias('sub'))
+            votes = votes.join(SubPostComment, JOIN.LEFT_OUTER, on=SubPostComment.cid == SubPostCommentVote.cid).join(SubPost).join(Sub)
+            votes = votes.switch(SubPostComment).join(User, JOIN.LEFT_OUTER, on=SubPostComment.uid == User.uid)
+            votes = votes.where(SubPostCommentVote.uid == user.uid).dicts()
+        except User.DoesNotExist:
             votes = []
             msg = 'user not found'
+            
         return render_template('admin/commentvoting.html', page=page, msg=msg,
                                admin_route='admin_comment_voting',
                                votes=votes, term=term)
@@ -925,29 +913,23 @@ def admin_post_search(term):
     """ WIP: Post search result. """
     if current_user.is_admin():
         term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
-        post = db.get_post_from_pid(term)
-        user = db.get_user_from_uid(post['uid'])
-        sub = db.get_sub_from_sid(post['sid'])
-        comms = db.query('SELECT * FROM `sub_post_comment` WHERE `pid`=%s',
-                         (post['pid'],)).fetchall()
-        votes = db.query('SELECT * FROM `sub_post_vote` WHERE `pid`=%s',
-                         (post['pid'],)).fetchall()
-        upcount = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
-                           '`pid`=%s AND `positive`=1', (post['pid'], )) \
-                    .fetchone()['c']
-        downcount = db.query('SELECT COUNT(*) AS c FROM `sub_post_vote` WHERE '
-                             '`pid`=%s AND `positive`=0', (post['pid'], )) \
-                      .fetchone()['c']
+        try:
+            post = SubPost.get(SubPost.pid == term)
+        except SubPost.DoesNotExist:
+            abort(404)
 
-        pcount = db.query('SELECT COUNT(*) AS c FROM `sub_post` WHERE '
-                          '`uid`=%s', (user['uid'],)).fetchone()['c']
-        ccount = db.query('SELECT COUNT(*) AS c FROM `sub_post_comment` WHERE '
-                          '`uid`=%s', (user['uid'],)).fetchone()['c']
+        votes = SubPostVote.select(SubPostVote.positive, SubPostVote.datetime, User.name).join(User).where(SubPostVote.pid == post.pid).dicts()
+        upcount = post.votes.where(SubPostVote.positive == '1').count()
+        downcount = post.votes.where(SubPostVote.positive == '0').count()
 
-        return render_template('admin/post.html', sub=sub, post=post,
+        pcount = post.uid.posts.count()
+        ccount = post.uid.comments.count()
+        comms = SubPostComment.select(SubPostComment.score, SubPostComment.content, SubPostComment.cid, User.name).join(User).where(SubPostComment.pid == post.pid).dicts()
+
+        return render_template('admin/post.html', sub=post.sid, post=post,
                                votes=votes, ccount=ccount, pcount=pcount,
                                upcount=upcount, downcount=downcount,
-                               comms=comms, user=user)
+                               comms=comms, user=post.uid)
     else:
         abort(404)
 
@@ -958,7 +940,7 @@ def admin_post_search(term):
 def admin_domains(page):
     """ WIP: View Banned Domains """
     if current_user.is_admin():
-        domains = db.get_site_metadata('banned_domain', _all=True)
+        domains = SiteMetadata.select().where(SiteMetadata.key == 'banned_domain')
         return render_template('admin/domains.html', domains=domains,
                                page=page, admin_route='admin_domains',
                                bandomainform=BanDomainForm())
@@ -971,9 +953,9 @@ def admin_domains(page):
 @login_required
 def admin_user_uploads(page):
     """ View user uploads """
-    c = db.query('SELECT * FROM `user_uploads` ORDER BY `pid` DESC Limit 30 OFFSET %s',
-                 ((page - 1) * 30, )).fetchall()
-    return render_template('admin/uploads.html', page=page, uploads=c)
+    uploads = UserUploads.select().order_by(UserUploads.pid.desc()).paginate(page, 30)
+    users = User.select(User.name).join(UserMetadata).where(UserMetadata.key == 'canupload')
+    return render_template('admin/uploads.html', page=page, uploads=uploads, users=users)
 
 
 @app.route("/sitelog", defaults={'page': 1})
@@ -1022,12 +1004,14 @@ def register():
                 return render_template('register.html', rform=form, error="Incorrect answer for security question.")
 
         # TODO: Rewrite invite code code
-        y = db.get_site_metadata('useinvitecode')
-        y = y['value'] if y else False
-        if y == '1':
-            z = db.get_site_metadata('invitecode')['value']
-            if z != form.invitecode.data:
-                return render_template('register.html', rform=form, error="Invalid invite code.")
+        try:
+            y = SiteMetadata.get(SiteMetadata.key == 'useinvitecode')
+            if y == '1':
+                z = SiteMetadata.get(SiteMetadata.key == 'invitecode').value
+                if z != form.invitecode.data:
+                    return render_template('register.html', rform=form, error="Invalid invite code.")
+        except SiteMetadata.DoesNotExist:
+            pass
 
         password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
 
@@ -1035,9 +1019,9 @@ def register():
                            email=form.email.data, joindate=datetime.datetime.utcnow())
         # defaults
         defaults = getDefaultSubs()
-        for d in defaults:
-            db.create_subscription(user.uid, d['sid'], 1)
-        g.db.commit()
+        now = datetime.datetime.utcnow()
+        subs = [{'uid': user.uid, 'sid': x['sid'], 'status': 1, 'time': now} for x in defaults]
+        SubSubscriber.insert_many(subs).execute()
         theuser = misc.load_user(user.uid)
         login_user(theuser, remember=True)
         return redirect(url_for('welcome'))

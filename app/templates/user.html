@@ -114,7 +114,7 @@
           <h3>Posting habits</h3>
           <ul id="userHabit">
             {% for i in habit %}
-              <li class="habitentry"><a href="{{url_for('sub.view_sub', sub=db.get_sub_from_sid(i[0]).name)}}">{{db.get_sub_from_sid(i[0]).name}}</a> - {{i[1]}}</li>
+              <li class="habitentry"><a href="{{url_for('sub.view_sub', sub=i.name)}}">{{i.name}}</a> - {{i.count}}</li>
             {% endfor %}
           </ul>
         </div>

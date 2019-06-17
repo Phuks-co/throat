@@ -53,8 +53,8 @@
                 <td>
                   <div class="username"><a href="{{url_for('view_user', user=user.name)}}">{{user.name}}</a></div>
                 </td>
-                <td><a href="{{url_for('view_user_posts', user=user.name)}}">{{db.get_user_post_count(user.uid)}}</a></td>
-                <td><a href="{{url_for('view_user_comments', user=user.name)}}">{{db.get_user_comment_count(user.uid)}}</a></td>
+                <td><a href="{{url_for('view_user_posts', user=user.name)}}">{{user.post_count}}</a></td>
+                <td><a href="{{url_for('view_user_comments', user=user.name)}}">{{user.comment_count}}</a></td>
                 <td><a href="{{url_for('admin_post_voting', term=user.name)}}">votes</a></td>
                 <td>{{func.get_user_level(user.uid)[0]}}</td>
                 <td>{{func.get_user_level(user.uid)[1]}}</td>

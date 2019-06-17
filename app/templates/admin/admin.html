@@ -42,7 +42,7 @@
           {%else%}
           <div class="post">
             <a href="{{url_for('do.deleteannouncement')}}" class="btn btn-red">Nuke!</a> |
-            <a href="{{url_for('view_post_inbox', pid=ann.pid)}}">{{ann.title}}</a> by {{db.get_user_from_uid(ann.uid).name}}, <relative-time datetime="{{ann.posted.isoformat()}}Z"></relative-time>
+            <a href="{{url_for('view_post_inbox', pid=ann.pid)}}">{{ann.title}}</a> by {{ann.user}}, <relative-time datetime="{{ann.posted.isoformat()}}Z"></relative-time>
           </div>
 
           {%endif%}
@@ -73,7 +73,7 @@
       </div>
       <div class="col-12 admin-page-form">
         <div>
-          {% if enable_posting == 'True' %}
+          {% if enable_posting == '1' %}
           <div>Disable posting for non-admin users</div>
           <a class="pure-button" href="{{url_for('do.enable_posting', value='False')}}">Disable Posting</a>
           {% else %}

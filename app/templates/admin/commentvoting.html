@@ -37,10 +37,9 @@
             <tbody>
               {% for vote in votes %}
               <tr>
-                <td>..link..</td>
+                <td><a href="{{url_for('sub.view_perm', sub=vote.sub, pid=vote.pid, cid=vote.cid)}}">link</a></td>
                 <td>{% if vote.positive == 1 %}up{% else %}down{% endif %}</td>
-                {% set comment = db.get_comment_from_cid(vote.cid) %}
-                <td>{{db.get_user_from_uid(comment.uid).name}}</td>
+                <td>{{vote.name}}</td>
                 <td>{{vote.datetime}}</td>
               </tr>
               {% endfor %}
