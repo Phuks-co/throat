@@ -8,9 +8,9 @@
     <p>Phuks is run and developed by volunteers. We do not have ads because we do not believe invading
       our user's privacy should be the solution to monetisation, but we do have many ways you can contribute:</p>
 
-    {% if func.enableBTCmod() %}
+    {% if config.BTC_ADDRESS %}
       <h3>Donate Bitcoin</h3>
-      <a href="https://blockchain.info/address/{{func.getBTCaddr()}}" target="_blank">{{func.getBTCaddr()}}</a>
+      <a href="https://blockchain.info/address/{{config.XMR_ADDRESS}}" target="_blank">{{config.XMR_ADDRESS}}</a>
     {%endif %}
 
     {% if config.XMR_ADDRESS %}

@@ -26,7 +26,7 @@ from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
 from ..forms import CreateSubTextPost, EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
-from ..forms import DeleteSubFlair, UseBTCdonationForm, BanDomainForm
+from ..forms import DeleteSubFlair, BanDomainForm
 from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
@@ -633,7 +633,7 @@ def create_post():
         if current_user.is_subban(sub):
             return render_template('createpost.html', txtpostform=form, error="You're banned from posting on this sub")
         
-        if subdata.get('restricted', 0) and not (current_user.uid not in subdata.get('mod2', []) or current_user.uid != subdata['owner']):
+        if subdata.get('restricted', 0) and not (current_user.uid not in subdata.get('mod2', []) or current_user.uid != subdata['owner']['uid']):
             return render_template('createpost.html', txtpostform=form, error="Only mods can post on this sub")
 
         if misc.get_user_level(current_user.uid)[0] < 7:
@@ -885,7 +885,10 @@ def create_comment(pid):
         if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=60):
             return jsonify(status='error', error=["Post is archived"])
 
-        sub = db.get_sub_from_sid(post.sid.sid)
+        try:
+            sub = Sub.get(Sub.sid == post.sid_id)
+        except:
+            return jsonify(status='error', error='Internal error')
         if current_user.is_subban(sub):
             return jsonify(status='error', error=['You are currently banned from commenting'])
 
@@ -920,16 +923,10 @@ def create_comment(pid):
             to = parent.uid.uid
             subject = 'Comment reply: ' + post.title
             mtype = 5
-            # XXX: LEGACY
-            cache.delete_memoized(db.get_post_comments, post.pid,
-                                  form.parent.data)
         else:
             to = post.uid.uid
             subject = 'Post reply: ' + post.title
             mtype = 4
-            # XXX: LEGACY
-            cache.delete_memoized(db.get_post_comments, post.pid)
-            cache.delete_memoized(db.get_post_comments, post.pid, None)
         if to != current_user.uid and current_user.uid not in misc.get_ignores(to):
             misc.create_message(mfrom=current_user.uid,
                                 to=to,
@@ -945,7 +942,7 @@ def create_comment(pid):
         # 6 - Process mentions
         misc.workWithMentions(form.comment.data, to, post, sub, cid=comment.cid)
 
-        return json.dumps({'status': 'ok', 'addr': url_for('sub.view_perm', sub=post.sid.name,
+        return json.dumps({'status': 'ok', 'addr': url_for('sub.view_perm', sub=sub.name,
                                                            pid=pid, cid=comment.cid)})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
@@ -956,20 +953,20 @@ def create_sendmsg():
     """ User PM message creation endpoint """
     form = CreateUserMessageForm()
     if form.validate():
-        user = db.get_user_from_name(form.to.data)
-        if not user:
-            return json.dumps({'status': 'error',
-                               'error': ['User does not exist']})
+        try:
+            user = User.get(User.name == form.to.data)
+        except:
+            return json.dumps({'status': 'error', 'error': ['User does not exist']})
         misc.create_message(mfrom=current_user.uid,
-                            to=user['uid'],
+                            to=user.uid,
                             subject=form.subject.data,
                             content=form.content.data,
                             link=None,
-                            mtype=1 if current_user.uid not in misc.get_ignores(user['uid']) else 41)
+                            mtype=1 if current_user.uid not in misc.get_ignores(user.uid) else 41)
         socketio.emit('notification',
-                      {'count': misc.get_notification_count(user['uid'])},
+                      {'count': misc.get_notification_count(user.uid)},
                       namespace='/snt',
-                      room='user' + user['uid'])
+                      room='user' + user.uid)
         return json.dumps({'status': 'ok',
                            'sentby': current_user.get_id()})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -979,40 +976,43 @@ def create_sendmsg():
 @login_required
 def ban_user_sub(sub):
     """ Ban user from sub endpoint """
-    sub = db.get_sub_from_name(sub)
-    if not sub:
-        return json.dumps({'status': 'error',
-                           'error': ['Sub does not exist']})
-    if not current_user.is_mod(sub['sid']):
-        abort(403)
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=['Sub does not exist'])
+        
+    if not current_user.is_mod(sub.sid):
+        return jsonify(status='error', error=['Not authorized'])
     form = BanUserSubForm()
     if form.validate():
-        user = db.get_user_from_name(form.user.data)
-        if not user:
-            return json.dumps({'status': 'error',
-                               'error': ['User does not exist.']})
-        if db.get_sub_metadata(sub['sid'], 'ban', value=user['uid']):
+        try:
+            user = User.get(User.name == form.user.data)
+        except User.DoesNotExist:
+            return jsonify(status='error', error=['User does not exist'])
+
+        try:
+            SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user.uid))
             return jsonify(status='error', error=['Already banned'])
+        except SubMetadata.DoesNotExist:
+            pass
+            
         misc.create_message(mfrom=current_user.uid,
-                            to=user['uid'],
-                            subject='You have been banned from /s/' +
-                            sub['name'],
+                            to=user.uid,
+                            subject='You have been banned from /s/' + sub.name,
                             content='Reason: ' + form.reason.data,
-                            link=sub['name'],
+                            link=sub.name,
                             mtype=7)
         socketio.emit('notification',
-                      {'count': misc.get_notification_count(user['uid'])},
+                      {'count': misc.get_notification_count(user.uid)},
                       namespace='/snt',
-                      room='user' + user['uid'])
+                      room='user' + user.uid)
         
-        SubMetadata.create(sid=sub['sid'], key='ban', value=user['uid']).save()
-        SubMetadata.delete().where((SubMetadata.sid==sub['sid']) & (SubMetadata.key == 'xban') & (SubMetadata.value == user['uid'])).execute()
+        SubMetadata.create(sid=sub.sid, key='ban', value=user.uid).save()
+        SubMetadata.delete().where((SubMetadata.sid==sub.sid) & (SubMetadata.key == 'xban') & (SubMetadata.value == user.uid)).execute()
 
-        misc.create_sublog(misc.LOG_TYPE_SUB_BAN, current_user.uid, sub['sid'], target=user['uid'], comment=form.reason.data)
+        misc.create_sublog(misc.LOG_TYPE_SUB_BAN, current_user.uid, sub.sid, target=user.uid, comment=form.reason.data)
 
-        caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'ban', _all=True)
-        return json.dumps({'status': 'ok',
-                           'sentby': current_user.get_id()})
+        return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -1020,52 +1020,45 @@ def ban_user_sub(sub):
 @login_required
 def inv_mod2(sub):
     """ User PM for Mod2 invite endpoint """
-    sub = db.get_sub_from_name(sub)
-    if not sub:
-        return json.dumps({'status': 'error',
-                           'error': ['Sub does not exist']})
-    if current_user.is_topmod(sub['sid']) or current_user.is_admin():
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=['Sub does not exist'])
+
+    subdata = misc.getSubData(sub.sid)
+    if current_user.uid == subdata['owner']['uid'] or current_user.is_admin():
         form = EditMod2Form()
         if form.validate():
-            user = db.get_user_from_name(form.user.data)
-            if not user:
-                return json.dumps({'status': 'error',
-                                   'error': ['User does not exist.']})
+            try:
+                user = User.get(User.name == form.user.data)
+            except User.DoesNotExist:
+                return jsonify(status='error', error=['User does not exist'])
 
-            if misc.isMod(sub['sid'], user['uid']):
-                return json.dumps({'status': 'error',
-                                   'error': ['User is already a mod.']})
+            if user.uid in subdata['mod2'] or user.uid == subdata['owner']['uid']:
+                return jsonify(status='error', error=['User is already a mod'])
 
-            if db.get_sub_metadata(sub['sid'], 'mod2i', value=user['uid']):
-                return json.dumps({'status': 'error',
-                                   'error': ['User has a pending invite.']})
+            if user.uid in subdata['mod2i']:
+                return jsonify(status='error', error=['User has a pending invite'])
 
-            if misc.moddedSubCount(user['uid']) >= 15:
-                return json.dumps({'status': 'error',
-                                   'error': [
-                                       "User can't mod more than 15 subs"
-                                   ]})
+            if misc.moddedSubCount(user.uid) >= 15:
+                # TODO: Adjust by level
+                return jsonify(status='error', error=["User can't mod more than 15 subs"])
             misc.create_message(mfrom=current_user.uid,
-                                to=user['uid'],
+                                to=user.uid,
                                 subject='You have been invited to mod a sub.',
-                                content=current_user.get_username() +
-                                ' has invited you to help moderate ' +
-                                sub['name'],
-                                link=sub['name'],
+                                content=current_user.name + ' has invited you to help moderate ' + sub.name,
+                                link=sub.name,
                                 mtype=2)
             socketio.emit('notification',
-                          {'count': misc.get_notification_count(user['uid'])},
+                          {'count': misc.get_notification_count(user.uid)},
                           namespace='/snt',
-                          room='user' + user['uid'])
-            db.create_sub_metadata(sub['sid'], 'mod2i', user['uid'])
+                          room='user' + user.uid)
+            SubMetadata.create(sid=sub.sid, key='mod2i', value=user.uid)
 
-            misc.create_sublog(misc.LOG_TYPE_SUB_MOD_INVITE, current_user.uid, sub['sid'], target=user['uid'],
-                               admin=True if (not current_user.is_topmod(sub['sid']) and current_user.is_admin()) else False)
+            misc.create_sublog(misc.LOG_TYPE_SUB_MOD_INVITE, current_user.uid, sub.sid, target=user.uid,
+                               admin=True if (not current_user.uid != subdata['owner']['uid'] and current_user.is_admin()) else False)
 
-            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', value=user['uid'])
-
-            return json.dumps({'status': 'ok',
-                               'sentby': current_user.get_id()})
+            return jsonify(status='ok')
         return json.dumps({'status': 'error', 'error': get_errors(form)})
     else:
         abort(403)
@@ -1074,35 +1067,38 @@ def inv_mod2(sub):
 @do.route("/do/remove_sub_ban/<sub>/<user>", methods=['POST'])
 @login_required
 def remove_sub_ban(sub, user):
-    """ Remove Mod2 """
-    user = db.get_user_from_name(user)
-    sub = db.get_sub_from_name(sub)
+    try:
+        user = User.get(User.name == user)
+    except User.DoesNotExist:
+        return jsonify(status='error', error=['User does not exist'])
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=['Sub does not exist'])
     form = DummyForm()
     if form.validate():
-        if current_user.is_mod(sub['sid']) or current_user.is_admin():
-            if not misc.isSubBan(sub, user):
-                return jsonify(status='error', error=['User was not banned'])
+        if current_user.is_mod(sub.sid) or current_user.is_admin():
+            try:
+                sb = SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user.uid))
+            except SubMetadata.DoesNotExist:
+                return jsonify(status='error', error=['User is not banned'])
 
-            db.uquery('UPDATE `sub_metadata` SET `key`=%s WHERE `key`=%s AND '
-                      '`value`=%s', ('xban', 'ban', user['uid']))
+            sb.key = 'xban'
+            sb.save()
 
             misc.create_message(mfrom=current_user.uid,
-                                to=user['uid'],
-                                subject='You have been unbanned from /s/' +
-                                sub['name'],
-                                content='',
-                                mtype=7,
-                                link=sub['name'])
+                                to=user.uid,
+                                subject='You have been unbanned from /s/' + sub.name,
+                                content='', mtype=7,
+                                link=sub.name)
             socketio.emit('notification',
-                          {'count': misc.get_notification_count(user['uid'])},
+                          {'count': misc.get_notification_count(user.uid)},
                           namespace='/snt',
-                          room='user' + user['uid'])
+                          room='user' + user.uid)
             
             misc.create_sublog(misc.LOG_TYPE_SUB_UNBAN, current_user.uid, sub['sid'], target=user['uid'],
                                admin=True if (not current_user.is_mod(sub['sid']) and current_user.is_admin()) else False)
 
-            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'ban', _all=True)
-            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'xban', _all=True)
             return json.dumps({'status': 'ok', 'msg': 'user ban removed'})
         else:
             abort(403)
@@ -1113,25 +1109,32 @@ def remove_sub_ban(sub, user):
 @login_required
 def remove_mod2(sub, user):
     """ Remove Mod2 """
-    user = db.get_user_from_name(user)
-    sub = db.get_sub_from_name(sub)
+    try:
+        user = User.get(User.name == user)
+    except User.DoesNotExist:
+        return jsonify(status='error', error=['User does not exist'])
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=['Sub does not exist'])
     form = DummyForm()
     if form.validate():
-        if current_user.is_topmod(sub['sid']) or current_user.is_admin():
-            x = db.get_sub_metadata(sub['sid'], 'mod2', value=user['uid'])
-            if not x:
+        isTopMod = current_user.is_topmod(sub.sid)
+        if isTopMod or current_user.is_admin():
+            try:
+                mod = SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'mod2') & (SubMetadata.value == user.uid))
+            except:
                 return jsonify(status='error', error=['User is not mod'])
             
-            SubMetadata.delete().where((SubMetadata.sid == sub['sid']) & (SubMetadata.key == 'mod2') & (SubMetadata.value == user['uid'])).execute()
-            SubMetadata.create(sid=sub['sid'], key='xmod2', value=user['uid']).save()
+            SubMetadata.delete().where((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'mod2') & (SubMetadata.value == user.uid)).execute()
+            SubMetadata.create(sid=sub.sid, key='xmod2', value=user.uid).save()
 
-            misc.create_sublog(misc.LOG_TYPE_SUB_MOD_REMOVE, current_user.uid, sub['sid'], target=user['uid'],
-                               admin=True if (not current_user.is_topmod(sub['sid']) and current_user.is_admin()) else False)
+            misc.create_sublog(misc.LOG_TYPE_SUB_MOD_REMOVE, current_user.uid, sub.sid, target=user.uid,
+                               admin=True if (not isTopMod and current_user.is_admin()) else False)
 
-            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2', _all=True)
-            return json.dumps({'status': 'ok', 'msg': 'user demodded'})
+            return jsonify(status='ok')
         else:
-            abort(403)
+            return jsonify(status='error', error=['Access denied'])
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -1139,24 +1142,30 @@ def remove_mod2(sub, user):
 @login_required
 def revoke_mod2inv(sub, user):
     """ revoke Mod2 inv """
-    user = db.get_user_from_name(user)
-    sub = db.get_sub_from_name(sub)
+    try:
+        user = User.get(User.name == user)
+    except User.DoesNotExist:
+        return jsonify(status='error', error=['User does not exist'])
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=['Sub does not exist'])
     form = DummyForm()
     if form.validate():
-        if current_user.is_topmod(sub['sid']) or current_user.is_admin():
-            x = db.get_sub_metadata(sub['sid'], 'mod2i', value=user['uid'])
-            if not x:
-                return jsonify(status='error', error=['User is not mod'])
-            db.uquery('DELETE FROM `sub_metadata` WHERE `key`=%s AND `value`=%s',
-                      ('mod2i', user['uid']))
+        isTopMod = current_user.is_topmod(sub['sid'])
+        if isTopMod or current_user.is_admin():
+            try:
+                x = SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == user.uid))
+            except SubMetadata.DoesNotExist:
+                return jsonify(status='error', error=['User has not been invited to moderate the sub'])
+            x.delete_instance()
 
-            misc.create_sublog(misc.LOG_TYPE_SUB_MOD_INV_CANCEL, current_user.uid, sub['sid'], target=user['uid'],
-                               admin=True if (not current_user.is_topmod(sub['sid']) and current_user.is_admin()) else False)
+            misc.create_sublog(misc.LOG_TYPE_SUB_MOD_INV_CANCEL, current_user.uid, sub.sid, target=user.uid,
+                               admin=True if (not isTopMod and current_user.is_admin()) else False)
 
-            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', _all=True)
-            return json.dumps({'status': 'ok', 'msg': 'user invite revoked'})
+            return jsonify(status='ok')
         else:
-            abort(403)
+            return jsonify(status='error', error=['Access denied'])
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -1164,54 +1173,54 @@ def revoke_mod2inv(sub, user):
 @login_required
 def accept_mod2inv(sub, user):
     """ Accept mod invite """
-    user = db.get_user_from_name(user)
-    if user['uid'] != current_user.get_id():
-        abort(403)
-    sub = db.get_sub_from_name(sub)
+    try:
+        user = User.get(User.name == user)
+    except User.DoesNotExist:
+        return jsonify(status='error', error=['User does not exist'])
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=['Sub does not exist'])
     form = DummyForm()
     if form.validate():
-        if misc.isModInv(sub['sid'], user):
-            if misc.moddedSubCount(user['uid']) >= 15:
-                return json.dumps({'status': 'error',
-                                   'error': ["You can't mod more than 15 subs"]})
-            
-            SubMetadata.update(key='mod2').where((SubMetadata.sid == sub['sid']) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == user['uid'])).execute()
-            SubMetadata.delete().where((SubMetadata.sid == sub['sid']) & (SubMetadata.key == 'xmod2') & (SubMetadata.value == user['uid'])).execute()
+        try:
+            modi = SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == user.uid))
+        except SubMetadata.DoesNotExist:
+            return jsonify(status='error', error='You have not been invited to mod this sub')
 
-            misc.create_sublog(misc.LOG_TYPE_SUB_MOD_ACCEPT, current_user.uid, sub['sid'], target=user['uid'])
+        if misc.moddedSubCount(user.uid) >= 15:
+            return jsonify(status='error', error=["You can't mod more than 15 subs"])
+        
+        SubMetadata.update(key='mod2').where((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == user.uid)).execute()
+        SubMetadata.delete().where((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'xmod2') & (SubMetadata.value == user.uid)).execute()
 
-            if not current_user.has_subscribed(sub['name']):
-                db.create_subscription(current_user.uid, sub['sid'], 1)
-            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2', _all=True)
-            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', _all=True)
-            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', value=user['uid'])
-            return json.dumps({'status': 'ok', 'msg': 'user modded'})
-        else:
-            abort(404)
+        misc.create_sublog(misc.LOG_TYPE_SUB_MOD_ACCEPT, current_user.uid, sub.sid, target=user.uid)
+
+        if not current_user.has_subscribed(sub.name):
+            SubSubscriber.create(uid=current_user.uid, sid=sub.sid, status=1)
+        return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
-@do.route("/do/refuse_mod2inv/<sub>/<user>", methods=['POST'])
+@do.route("/do/refuse_mod2inv/<sub>", methods=['POST'])
 @login_required
-def refuse_mod2inv(sub, user):
+def refuse_mod2inv(sub):
     """ refuse Mod2 """
-    user = db.get_user_from_name(user)
-    sub = db.get_sub_from_name(sub)
-    if user['uid'] != current_user.get_id():
-        abort(403)
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=['Sub does not exist'])
 
     form = DummyForm()
     if form.validate():
-        if misc.isModInv(sub['sid'], user):
-            SubMetadata.delete().where((SubMetadata.sid == sub['sid']) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == user['uid'])).execute()
+        try:
+            modi = SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == current_user.uid))
+        except SubMetadata.DoesNotExist:
+            return jsonify(status='error', error='You have not been invited to mod this sub')
 
-            misc.create_sublog(misc.LOG_TYPE_SUB_MOD_INV_REJECT, current_user.uid, sub['sid'], target=user['uid'])
-
-            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', _all=True)
-            caching.cache.delete_memoized(db.get_sub_metadata, sub['sid'], 'mod2i', value=user['uid'])
-            return json.dumps({'status': 'ok', 'msg': 'invite refused'})
-        else:
-            abort(404)
+        modi.delete_instance()
+        misc.create_sublog(misc.LOG_TYPE_SUB_MOD_INV_REJECT, current_user.uid, sub.sid, target=current_user.uid)
+        return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -1219,20 +1228,23 @@ def refuse_mod2inv(sub, user):
 @login_required
 def read_pm(mid):
     """ Mark PM as read """
-    message = db.query('SELECT * FROM `message` WHERE `mid`=%s', (mid,))
-    message = message.fetchone()
-    if session['user_id'] == message['receivedby']:
-        if message['read'] is not None:
-            return json.dumps({'status': 'ok'})
-        read = datetime.datetime.utcnow()
-        db.uquery('UPDATE `message` SET `read`=%s WHERE `mid`=%s', (read, mid))
+    try:
+        message = Message.get(Message.mid == mid)
+    except Message.DoesNotExist:
+        return jsonify(status='error', error=['Message not found'])
+
+    if current_user.uid == message.receivedby_id:
+        if message.read is not None:
+            return jsonify(status='ok')
+        message.read = datetime.datetime.utcnow()
+        message.save()
         socketio.emit('notification',
                       {'count': current_user.notifications},
                       namespace='/snt',
                       room='user' + current_user.uid)
-        return json.dumps({'status': 'ok', 'mid': mid})
+        return jsonify(status='ok', mid=mid)
     else:
-        abort(403)
+        return jsonify(status='error')
 
 
 @do.route("/do/readall_msgs/<boxid>", methods=['POST'])
@@ -1410,63 +1422,58 @@ def enable_posting(value):
     """ Emergency Mode: disable posting """
     if not current_user.is_admin():
         abort(404)
-
-    c = db.query('SELECT * FROM `site_metadata` WHERE `key`=%s',
-                 ('enable_posting',)).fetchone()
-    if c:
-        db.update_site_metadata('enable_posting', value)
-    else:
-        db.create_site_metadata('enable_posting', value)
+    
     if value == 'True':
-        db.create_sitelog(5, current_user.get_username() + ' enabled posting ')
+        state = '1'
+    elif value == 'False':
+        state = '0'
     else:
-        db.create_sitelog(5, current_user.get_username() + ' disabled posting ')
-    caching.cache.delete_memoized(db.get_site_metadata, 'enable_posting')
-    cache.delete_memoized(db.get_site_metadata, 'enable_posting')
+        abort(400)
+
+    try:
+        sm = SiteMetadata.get(SiteMetadata.key == 'enable_posting')
+        sm.value = state
+        sm.save()
+    except SiteMetadata.DoesNotExist:
+        SiteMetadata.create(key='enable_posting', value=state)
+
+    if value == 'True':
+        misc.create_sitelog(misc.LOG_TYPE_ENABLE_POSTING, current_user.uid)
+    else:
+        misc.create_sitelog(misc.LOG_TYPE_DISABLE_POSTING, current_user.uid)
+
     return redirect(url_for('admin_area'))
 
 
 @do.route("/do/save_post/<pid>", methods=['POST'])
 def save_post(pid):
     """ Save a post to your Saved Posts """
-    if db.get_user_saved(current_user.uid, pid):
-        return json.dumps({'status': 'error', 'error': ['Already saved']})
-
-    db.create_user_saved(current_user.uid, pid)
-    return json.dumps({'status': 'ok'})
+    try:
+        SubPost.get(SubPost.pid == pid)
+    except:
+        return jsonify(status='error', error=['Post does not exist'])
+    try:
+        UserSaved.get((UserSaved.uid == current_user.uid) & (UserSaved.pid == pid))
+        return jsonify(status='error', error=['Already saved'])
+    except UserSaved.DoesNotExist:
+        UserSaved.create(uid=current_user.uid, pid=pid)
+        return jsonify(status='ok')
 
 
 @do.route("/do/remove_saved_post/<pid>", methods=['POST'])
 def remove_saved_post(pid):
     """ Remove a saved post """
-    if not db.get_user_saved(current_user.uid, pid):
-        return json.dumps({'status': 'error', 'error': ['Already deleted']})
+    try:
+        SubPost.get(SubPost.pid == pid)
+    except:
+        return jsonify(status='error', error=['Post does not exist'])
 
-    db.uquery('DELETE FROM `user_saved` WHERE `uid`=%s AND `pid`=%s',
-              (current_user.uid, pid))
-    return json.dumps({'status': 'ok'})
-
-
-@do.route("/do/usebtcdonation", methods=['POST'])
-def use_btc_donation():
-    """ Enable bitcoin donation module """
-    if not current_user.is_admin():
-        abort(404)
-
-    form = UseBTCdonationForm()
-
-    if form.validate():
-        db.update_site_metadata('usebtc', form.enablebtcmod.data)
-        db.update_site_metadata('btcaddr', form.btcaddress.data)
-        db.update_site_metadata('btcmsg', form.message.data)
-
-        if form.enablebtcmod.data:
-            desc = current_user.get_username() + ' enabled btc donations: ' + form.btcaddress.data
-        else:
-            desc = current_user.get_username() + ' disabled btc donations'
-        db.create_sitelog(10, desc, '')
-        return json.dumps({'status': 'ok'})
-    return redirect(url_for('admin_area'))
+    try:
+        sp = UserSaved.get((UserSaved.uid == current_user.uid) & (UserSaved.pid == pid))
+        sp.delete_instance()
+        return jsonify(status='ok')
+    except UserSaved.DoesNotExist:
+        return jsonify(status='error', error=['Post was not saved'])
 
 
 @do.route("/do/useinvitecode", methods=['POST'])
@@ -1476,17 +1483,26 @@ def use_invite_code():
         abort(404)
 
     form = UseInviteCodeForm()
-
+    
     if form.validate():
-        db.update_site_metadata('useinvitecode', form.enableinvitecode.data)
-        db.update_site_metadata('invitecode', form.invitecode.data)
+        try:
+            sm = SiteMetadata.get(SiteMetadata.key == 'useinvitecode')
+            sm.value = '1' if form.enableinvitecode.data else '0'
+            sm.save()
+        except SiteMetadata.DoesNotExist:
+            SiteMetadata.create(key='useinvitecode', value='1' if form.enableinvitecode.data else '0')
+
+        try:
+            sm = SiteMetadata.get(SiteMetadata.key == 'invitecode')
+            sm.value = form.invitecode.data
+            sm.save()
+        except SiteMetadata.DoesNotExist:
+            SiteMetadata.create(key='invitecode', value=form.invitecode.data)
 
         if form.enableinvitecode.data:
-            desc = current_user.get_username() + ' enabled invite code requirement'
+            misc.create_sitelog(misc.LOG_TYPE_ENABLE_INVITE, current_user.uid)
         else:
-            desc = current_user.get_username() + ' disabled invite code requirement'
-        db.create_sitelog(7, desc, '')
-        # return json.dumps({'status': 'ok'})
+            misc.create_sitelog(misc.LOG_TYPE_DISABLE_INVITE, current_user.uid)
     return redirect(url_for('admin_area'))
 
 
@@ -1554,23 +1570,23 @@ def toggle_wikipost(post):
 @login_required
 def delete_flair(sub):
     """ Removes a flair (from edit flair page) """
-    sub = db.get_sub_from_name(sub)
-    if not sub:
-        abort(404)
+    try:
+        sub = Sub.get(Sub.name == sub)
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=['Sub does not exist'])
 
-    if not current_user.is_mod(sub['sid']) and not current_user.is_admin():
+    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
         abort(403)
 
     form = DeleteSubFlair()
     if form.validate():
-        flair = db.query('SELECT * FROM `sub_flair` WHERE `sid`=%s AND '
-                         '`xid`=%s', (sub['sid'], form.flair.data))
-        if not flair:
-            return json.dumps({'status': 'error',
-                               'error': ['Flair does not exist']})
-        db.uquery('DELETE FROM `sub_flair` WHERE `xid`=%s', (form.flair.data,))
-
-        return json.dumps({'status': 'ok'})
+        try:
+            flair = SubFlair.get((SubFlair.sid == sub.sid) & (SubFlair.xid == form.flair.data))
+        except SubFlair.DoesNotExist:
+            return jsonify(status='error', error=['Flair does not exist'])
+        
+        flair.delete_instance()
+        return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -1594,87 +1610,6 @@ def create_flair(sub):
 
         SubFlair.create(sid=sub.sid, text=form.text.data)
         return jsonify(status='ok')
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
-
-
-@do.route("/do/edit_multi", methods=['POST'])
-@login_required
-def edit_multi():
-    """ Edits multi """
-    form = EditMulti()
-    if form.validate():
-        mid = form.multi.data
-        multi = db.get_user_multi(mid)
-        if not multi:
-            return json.dumps({'status': 'error',
-                               'error': ['Multi does not exist']})
-        names = str(form.subs.data).split('+')
-        sids = ''
-        for sub in names:
-            sub = db.get_sub_from_name(sub)
-            if sub:
-                sids += str(sub['sid']) + '+'
-            else:
-                return json.dumps({'status': 'error',
-                                   'error': ['Invalid sub in list']})
-        db.uquery('UPDATE `user_multi` SET `name`=%s, `subs`=%s, `sids`=%s '
-                  'WHERE `mid`=%s ',
-                  (form.name.data, form.subs.data, sids[:-1],
-                   form.multi.data))
-
-        return json.dumps({'status': 'ok'})
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
-
-
-@do.route("/do/delete_multi", methods=['POST'])
-@login_required
-def delete_multi():
-    """ Removes a multi """
-    form = DeleteMulti()
-    if form.validate():
-        mid = form.multi.data
-        multi = db.get_user_multi(mid)
-        if not multi:
-            return json.dumps({'status': 'error',
-                               'error': ['Multi does not exist']})
-        db.uquery('DELETE FROM `user_multi` WHERE `mid`=%s ',
-                  (mid, ))
-
-        return json.dumps({'status': 'ok'})
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
-
-
-@do.route("/do/create_multi", methods=['POST'])
-@login_required
-def create_multi():
-    """ Creates a new multi """
-    form = CreateMulti()
-    if form.validate():
-        if db.get_usermulti_count(current_user.uid) >= 10:
-            return json.dumps({'status': 'error',
-                               'error': ['Only 10 allowed for now']})
-
-        multiname = db.query('SELECT * FROM `user_multi` WHERE `uid`=%s '
-                             'AND `name`=%s',
-                             (current_user.uid, form.name.data))
-        if multiname.fetchone():
-            return json.dumps({'status': 'error',
-                               'error': ['Name already in list']})
-        names = str(form.subs.data).split('+')
-        sids = ''
-        for sub in names:
-            sub = db.get_sub_from_name(sub)
-            if sub:
-                sids += str(sub['sid']) + '+'
-            else:
-                return json.dumps({'status': 'error',
-                                   'error': ['Invalid sub in list']})
-
-        db.uquery('INSERT INTO `user_multi` (`uid`, `name`, `subs`, `sids`) '
-                  'VALUES (%s, %s, %s, %s)',
-                  (current_user.uid, form.name.data, form.subs.data,
-                   sids[:-1]))
-        return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -1802,21 +1737,22 @@ def delete_comment():
     """ deletes a comment """
     form = forms.DeleteCommentForm()
     if form.validate():
-        comment = db.get_comment_from_cid(form.cid.data)
-        post = SubPost.get(SubPost.pid == comment['pid'])
-        if not comment:
-            abort(404)
+        try:
+            comment = SubPostComment.get(SubPostComment.cid == form.cid.data)
+        except SubPostComment.DoesNotExist:
+            return jsonify(status='error', error='Comment does not exist')
+        post = SubPost.get(SubPost.pid == comment.pid)
 
-        if comment['uid'] != current_user.uid and not (current_user.is_admin() or current_user.is_mod(post.sid)):
-            abort(403)
+        if comment.uid != current_user.uid and not (current_user.is_admin() or current_user.is_mod(post.sid)):
+            return jsonify(status='error', error='Not authorized')
 
-        if comment['uid'] != current_user.uid and (current_user.is_admin() or current_user.is_mod(post.sid)):
+        if comment.uid != current_user.uid and (current_user.is_admin() or current_user.is_mod(post.sid)):
             misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_COMMENT, current_user.uid, post.sid,
-                               comment=form.reason.data, link=url_for('view_post_inbox', pid=comment['pid']),
+                               comment=form.reason.data, link=url_for('view_post_inbox', pid=comment.pid),
                                admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
 
-        db.uquery('UPDATE `sub_post_comment` SET `status`=1 WHERE `cid`=%s',
-                  (form.cid.data,))
+        comment.status = 1
+        comment.save()
 
         q = Message.delete().where(Message.mlink == form.cid.data)
         q.execute()

@@ -50,6 +50,14 @@
                         Unbanned domain <code>@{log.desc!!e}</code>
                     @elif log.action == 44:
                         Removed an announcement
+                    @elif log.action == 45:
+                        Disabled post creation
+                    @elif log.action == 46:
+                        Re-enabled post creation
+                    @elif log.action == 47:
+                        Disabled registration without invite code
+                    @elif log.action == 48:
+                        Re-enabled registration
                     @else:
                         <i>[Type @{log.action!!s}]</i> @{log.desc}
                     @end

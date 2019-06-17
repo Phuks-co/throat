@@ -23,7 +23,7 @@ from .forms import CreateSubForm, EditUserForm, AssignUserBadgeForm
 from .forms import CreateSubTextPost, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DeletePost, CreateUserBadgeForm, DummyForm
-from .forms import UseBTCdonationForm, BanDomainForm
+from .forms import BanDomainForm
 from .forms import CreateMulti, EditMulti
 from .forms import UseInviteCodeForm
 from .views import do, api, subs, api3, jwt
@@ -370,23 +370,6 @@ def donate():
 def userguide():
     """ User Guide page """
     return render_template('userguide.html')
-
-
-@app.route("/mymultis")
-def view_my_multis():
-    """ Here we can view user multis """
-    if current_user.is_authenticated:
-        multis = db.get_user_multis(current_user.uid)
-        formmultis = []
-        for multi in multis:
-            formmultis.append(EditMulti(multi=multi['mid'], name=multi['name'],
-                                        subs=multi['subs']))
-        return render_template('mymultis.html', multis=formmultis,
-                               multilist=multis,
-                               createmulti=CreateMulti())
-    else:
-        abort(403)
-
 
 @app.route("/random")
 def random_sub():
@@ -768,14 +751,6 @@ def admin_area():
                      '`positive`=0').fetchone()['c']
     downs += db.query('SELECT COUNT(*) AS c FROM `sub_post_comment_vote` '
                       'WHERE `positive`=0').fetchone()['c']
-    #badges = db.query('SELECT * FROM `user_badge`').fetchall()
-    btc = db.get_site_metadata('usebtc')
-    if btc:
-        x = db.get_site_metadata('btcmsg')['value']
-        y = db.get_site_metadata('btcaddr')['value']
-        btc = UseBTCdonationForm(message=x, btcaddress=y)
-    else:
-        btc = UseBTCdonationForm()
     invite = db.get_site_metadata('useinvitecode')
     if invite and invite['value'] == '1':
         a = db.get_site_metadata('invitecode')['value']
@@ -791,7 +766,7 @@ def admin_area():
     return render_template('admin/admin.html', subs=subs,
                            posts=posts, ups=ups, downs=downs, users=users,
                            createuserbadgeform=CreateUserBadgeForm(),
-                           comms=comms, usebtcdonationform=btc,
+                           comms=comms,
                            useinvitecodeform=invite, enable_posting=ep)
 
 

@@ -142,7 +142,7 @@ class SiteUser(object):
 
     def is_modinv(self, sub):
         """ Returns True if the current user is invited to mod of 'sub' """
-        return isModInv(sub, self.user)
+        return isModInv(sub, self.uid)
 
     def is_admin(self):
         """ Returns true if the current user is a site admin. """
@@ -509,10 +509,13 @@ def isSubBan(sub, user):
             return False
 
 
-def isModInv(sid, user):
+def isModInv(sid, uid):
     """ Returns True if 'user' is a invited to mod of 'sub' """
-    x = db.get_sub_metadata(sid, 'mod2i', value=user['uid'])
-    return x
+    try:
+        SubMetadata.get((SubMetadata.sid == sid) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == uid))
+        return True
+    except SubMetadata.DoesNotExist:
+        return False
 
 
 @cache.memoize(600)
@@ -1522,6 +1525,10 @@ LOG_TYPE_ANNOUNCEMENT = 41
 LOG_TYPE_DOMAIN_BAN = 42
 LOG_TYPE_DOMAIN_UNBAN = 43
 LOG_TYPE_UNANNOUNCE = 44
+LOG_TYPE_DISABLE_POSTING = 45
+LOG_TYPE_ENABLE_POSTING = 46
+LOG_TYPE_ENABLE_INVITE = 47
+LOG_TYPE_DISABLE_INVITE = 48
 
 
 def create_sitelog(action, uid, comment='', link=''):
