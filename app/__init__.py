@@ -30,7 +30,6 @@ from .views import do, api, subs, api3, jwt
 from .views.api import oauth
 from . import misc, forms, caching
 from .socketio import socketio
-from . import database as db
 from .misc import SiteAnon, getDefaultSubs, allowedNames, get_errors, engine
 from .models import db as pdb
 from .models import Sub, SubPost, User, SubMetadata, UserMetadata, SubPostComment
@@ -73,19 +72,6 @@ engine.global_vars.update({'current_user': current_user, 'request': request, 'co
                            'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,
                            'form': forms, 'hostname': socket.gethostname(), 'datetime': datetime,
                            'e': escape_html})
-
-
-@app.teardown_request
-def close_db(error):
-    """Closes the database again at the end of the request."""
-    if hasattr(g, 'dbmod'):
-        g.db.commit()
-
-    if hasattr(g, 'db'):
-        g.db.close()
-
-    if not pdb.is_closed():
-        pdb.close()
 
 
 @app.before_request
@@ -148,7 +134,7 @@ def utility_processor():
             'csubform': CreateSubForm(), 'markdown': misc.our_markdown,
             'commentform': PostComment(), 'dummyform': DummyForm(),
             'delpostform': DeletePost(), 'hostname': socket.gethostname(),
-            'config': app.config, 'form': forms, 'db': db, 'datetime': datetime,
+            'config': app.config, 'form': forms, 'datetime': datetime,
             'func': misc, 'time': time, 'conf': app.config}
 
 

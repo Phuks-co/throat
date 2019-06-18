@@ -27,7 +27,6 @@ import config
 from flask import url_for, request, g, jsonify, session
 from flask_login import AnonymousUserMixin, current_user
 from .caching import cache
-from . import database as db
 from .socketio import socketio
 from .badges import badges
 
@@ -1615,3 +1614,129 @@ def get_messages(mtype, read=False, uid=None):
 @cache.memoize(1)
 def get_unread_count(mtype):
     return get_messages(mtype, True).count()
+
+
+def cast_vote(uid, target_type, pcid, value):
+    """ Casts a vote in a post.
+      `uid` is the id of the user casting the vote
+      `target_type` is either `post` or `comment`
+      `pcid` is either the pid or cid of the post/comment
+      `value` is either `up` or `down`
+      """
+    # XXX: This function returns api3 objects
+    try:
+        user = User.get(User.uid == uid)
+    except User.DoesNotExist:
+        return jsonify(msg="Unknown error. User disappeared"), 403
+
+    if value == "up":
+        voteValue = 1
+    elif value == "down":
+        voteValue = -1
+        if user.given < 0:
+            return jsonify(msg='Score balance is negative'), 403
+    else:
+        return jsonify(msg="Invalid vote value"), 400
+
+    if target_type == "post":
+        target_model = SubPost
+        try:
+            target = SubPost.select(SubPost.uid, SubPost.score, SubPost.upvotes, SubPost.downvotes, SubPost.pid.alias('id'), SubPost.posted)
+            target = target.where(SubPost.pid == pcid).get()
+        except SubPost.DoesNotExist:
+            return jsonify(msg='Post does not exist'), 404
+
+        if target.deleted:
+            return jsonify(msg="You can't vote on deleted posts"), 400
+
+        try:
+            qvote = SubPostVote.select().where(SubPostVote.pid == pcid).where(SubPostVote.uid == uid).get()
+        except SubPostVote.DoesNotExist:
+            qvote = False
+    elif target_type == "comment":
+        target_model = SubPostComment
+        try:
+            target = SubPostComment.select(SubPostComment.uid, SubPost.sid, SubPostComment.pid, SubPostComment.status, SubPostComment.score,
+                                           SubPostComment.upvotes, SubPostComment.downvotes, SubPostComment.cid.alias('id'), SubPostComment.time.alias('posted'))
+            target = target.join(SubPost).where(SubPostComment.cid == pcid).objects().get()
+        except SubPostComment.DoesNotExist:
+            return jsonify(msg='Comment does not exist'), 404
+        if target.uid_id == user.uid:
+            return jsonify(msg="You can't vote on your own comments"), 400
+        if target.status:
+            return jsonify(msg="You can't vote on deleted comments"), 400
+
+        try:
+            qvote = SubPostCommentVote.select().where(SubPostCommentVote.cid == pcid).where(SubPostCommentVote.uid == uid).get()
+        except SubPostCommentVote.DoesNotExist:
+            qvote = False
+    else:
+        return jsonify(msg="Invalid target"), 400
+
+    try:
+        SubMetadata.get((SubMetadata.sid == target.sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user.uid))
+        return jsonify(msg='You are banned on this sub.'), 403
+    except SubMetadata.DoesNotExist:
+        pass
+
+    if (datetime.utcnow() - target.posted) > timedelta(days=60):
+        return jsonify(msg="Post is archived"), 400
+
+    user = User.get(User.uid == target.uid)
+
+    positive = True if voteValue == 1 else False
+    undone = False
+    if qvote:
+        if bool(qvote.positive) == (True if voteValue == 1 else False):
+            qvote.delete_instance()
+
+            if positive:
+                upd_q = target_model.update(score=target_model.score - voteValue, upvotes=target_model.upvotes - 1)
+            else:
+                upd_q = target_model.update(score=target_model.score - voteValue, downvotes=target_model.downvotes - 1)
+            new_score = -voteValue
+            undone = True
+            User.update(score=User.score - voteValue).where(User.uid == target.uid).execute()
+            User.update(given=User.given - voteValue).where(User.uid == uid).execute()
+        else:
+            qvote.positive = positive
+            qvote.save()
+
+            if positive:
+                upd_q = target_model.update(score=target_model.score + (voteValue * 2), upvotes=target_model.upvotes + 1, downvotes=target_model.downvotes - 1)
+            else:
+                upd_q = target_model.update(score=target_model.score + (voteValue * 2), upvotes=target_model.upvotes - 1, downvotes=target_model.downvotes + 1)
+            new_score = (voteValue * 2)
+            User.update(score=User.score + (voteValue * 2)).where(User.uid == target.uid).execute()
+            User.update(given=User.given + voteValue).where(User.uid == uid).execute()
+    else: # First vote cast on post
+        now = datetime.utcnow()
+        if target_type == "post":
+            sp_vote = SubPostVote.create(pid=pcid, uid=uid, positive=positive, datetime=now)
+        else:
+            sp_vote = SubPostCommentVote.create(cid=pcid, uid=uid, positive=positive, datetime=now)
+
+        sp_vote.save()
+
+        if positive:
+            upd_q = target_model.update(score=target_model.score + voteValue, upvotes=target_model.upvotes + 1)
+        else:
+            upd_q = target_model.update(score=target_model.score + voteValue, downvotes=target_model.downvotes + 1)
+        new_score = voteValue
+        User.update(score=User.score + voteValue).where(User.uid == target.uid).execute()
+        User.update(given=User.given + voteValue).where(User.uid == uid).execute()
+
+    if target_type == "post":
+        upd_q.where(SubPost.pid == target.id).execute()
+        socketio.emit('threadscore', {'pid': target.pid, 'score': target.score + new_score},
+                      namespace='/snt', room=target.pid)
+
+        socketio.emit('yourvote', {'pid': target.pid, 'status': 0, 'score': target.score + new_score}, namespace='/snt',
+                      room='user' + uid)
+    else:
+        upd_q.where(SubPostComment.cid == target.id).execute()
+
+    socketio.emit('uscore', {'score': target.uid.score + new_score},
+                  namespace='/snt', room="user" + target.uid_id)
+
+    return jsonify(score=target.score + new_score, rm=undone)

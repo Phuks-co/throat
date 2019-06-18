@@ -9,7 +9,6 @@ from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment
 from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, UserSaved
 from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditSubTextPostForm, EditMod2Form
 from ..forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair, CreateSubFlair
-from .. import database as db
 from .. import misc
 
 sub = Blueprint('sub', __name__)

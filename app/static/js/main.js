@@ -39,18 +39,16 @@ function vote(obj, how, comment){
     var count = obj.parentNode.querySelector('.score');
   }
   u.post('/do/' + kl + '/'+ unid + '/' + how, {}, function(data){
-    if(data.status == "ok"){
-      console.log(obj.classList)
-      if(!data.rm){
-        obj.classList.add((how == 'up') ? 'upvoted' : 'downvoted');
-        if(obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted')){
-          obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted').classList.remove((how == 'up') ? 'downvoted' : 'upvoted')
-        }
-      }else{
-        obj.classList.remove((how == 'up') ? 'upvoted' : 'downvoted');
+    console.log(obj.classList)
+    if(!data.rm){
+      obj.classList.add((how == 'up') ? 'upvoted' : 'downvoted');
+      if(obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted')){
+        obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted').classList.remove((how == 'up') ? 'downvoted' : 'upvoted')
       }
-      count.innerHTML = data.score;
+    }else{
+      obj.classList.remove((how == 'up') ? 'upvoted' : 'downvoted');
     }
+    count.innerHTML = data.score;
   }, function(err){
     //TODO: show errors
   })
