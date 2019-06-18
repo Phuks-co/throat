@@ -289,7 +289,7 @@ def view_post(sub, pid, comments=False, highlight=None):
         if not comments.count():
             comments = []
         else:
-            comments = misc.get_comment_tree(comments, uid=current_user)
+            comments = misc.get_comment_tree(comments, uid=current_user.uid)
         print(comments)
 
     ksub = Sub.get(Sub.sid == post['sid'])
@@ -346,5 +346,5 @@ def view_perm(sub, pid, cid):
     if not comments.count():
         comments = []
     else:
-        comment_tree = misc.get_comment_tree(comments, cid)
+        comment_tree = misc.get_comment_tree(comments, cid, uid=current_user.uid)
     return view_post(sub, pid, comment_tree, cid)

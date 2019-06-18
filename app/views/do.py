@@ -1885,9 +1885,9 @@ def get_sibling(pid, cid, lim):
     if lim:
         if cid == '0':
             cid = None
-        comment_tree = misc.get_comment_tree(comments, cid, lim, provide_context=False)
+        comment_tree = misc.get_comment_tree(comments, cid, lim, provide_context=False, uid=current_user.uid)
     elif cid != '0':
-        comment_tree = misc.get_comment_tree(comments, cid, provide_context=False)
+        comment_tree = misc.get_comment_tree(comments, cid, provide_context=False, uid=current_user.uid)
     else:
         return render_template('postcomments.html', sub=post.sid, post=post, comments=[])
     
