@@ -442,7 +442,7 @@ def view_comment_inbox(cid):
         comm = SubPostComment.get(SubPostComment.cid == cid)
     except SubPost.DoesNotExist:
         abort(404)
-    return redirect(url_for('sub.view_post', sub=comm.pid.sid.name, pid=comm.pid_id))
+    return redirect(url_for('sub.view_perm', sub=comm.pid.sid.name, pid=comm.pid_id, cid=comm.cid))
 
 
 @app.route("/u/<user>")

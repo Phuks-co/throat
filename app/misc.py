@@ -227,9 +227,6 @@ class SiteUser(object):
         """ Returns the level and xp of a user. """
         return get_user_level(self.uid, self.score)
 
-    def get_subscriptions(self):
-        return self.subscriptions
-
     def get_top_bar(self):
         return self.top_bar
 
@@ -274,10 +271,6 @@ class SiteAnon(AnonymousUserMixin):
     def likes_scroll(cls):
         """ Anons like scroll. """
         return True
-
-    @classmethod
-    def get_subscriptions(cls):
-        return getDefaultSubs_list()
 
     @classmethod
     def get_top_bar(cls):
@@ -480,11 +473,6 @@ def get_comment_voting(cid):
     return (upvote, downvote)
 
 
-def getCommentSub(cid):
-    """ Returns the sub for a comment """
-    return db.get_sub_from_pid(db.get_comment_from_cid(cid)['pid'])
-
-
 def isMod(sid, uid):
     """ Returns True if 'user' is a mod of 'sub' """
     try:
@@ -498,15 +486,14 @@ def isMod(sid, uid):
 def isSubBan(sub, user):
     """ Returns True if 'user' is banned 'sub' """
     if isinstance(sub, dict):
-        # XXX: LEGACY
-        x = db.get_sub_metadata(sub['sid'], 'ban', value=user['uid'])
-        return x
+        sid = sub['sid']
     else:
-        try:
-            SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user['uid']))
-            return True
-        except SubMetadata.DoesNotExist:
-            return False
+        sid = sub.sid
+    try:
+        SubMetadata.get((SubMetadata.sid == sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user['uid']))
+        return True
+    except SubMetadata.DoesNotExist:
+        return False
 
 
 def isModInv(sid, uid):
@@ -518,56 +505,24 @@ def isModInv(sid, uid):
         return False
 
 
-@cache.memoize(600)
-def getSubUsers(sub, key):
-    """ Returns the names of the sub positions, founder, owner """
-    x = db.get_sub_metadata(sub['sid'], key)
-    if x:
-        return db.get_user_from_uid(x['value'])['name']
-
-
-@cache.memoize(60)
-def getModCount(sub):
-    """ Returns the sub's mod count metadata """
-    x = db.query('SELECT COUNT(*) AS c FROM `sub_metadata` WHERE '
-                 '`sid`=%s AND `key`=%s', (sub['sid'], 'mod2')).fetchone()
-
-    return x['c']
-
-
-@cache.memoize(60)
-def isRestricted(sub):
-    """ Returns true if the sub is marked as Restricted """
-    x = db.get_sub_metadata(sub['sid'], 'restricted')
-    return False if not x or x['value'] == '0' else True
-
-
 def getPostFlair(post):
     """ Returns true if the post has available flair """
+    # The mere existence of this function pains me.
     return post['flair']
 
 
 @cache.memoize(600)
 def getDefaultSubs():
     """ Returns a list of all the default subs """
-    md = db.get_site_metadata('default', True)
-    defaults = []
-    for sub in md:
-        defaults.append({'sid': sub['value']})
-    return defaults
+    defaults = [x.value for x in SiteMetadata.select().where(SiteMetadata.key == 'default')]
+    defaults = Sub.select(Sub.sid, Sub.name).where(Sub.sid << defaults)
+    return list(defaults.dicts())
 
 
 @cache.memoize(600)
 def getDefaultSubs_list(ext=False):
     """ Returns a list of all the default subs """
-    md = db.get_site_metadata('default', True)
-    defaults = []
-    for i in md:
-        sub = db.get_sub_from_sid(i['value'])
-        if not ext:
-            defaults.append(sub['name'])
-        else:
-            defaults.append({'name': sub['name'], 'sid': i['value']})
+    defaults = getDefaultSubs()
     if not ext:
         defaults = sorted(defaults, key=str.lower)
     else:
@@ -575,32 +530,13 @@ def getDefaultSubs_list(ext=False):
     return defaults
 
 
-@cache.memoize(600)
-def enableBTCmod():
-    """ Returns true if BTC donation module is enabled """
-    x = db.get_site_metadata('usebtc')
-    return False if not x or x['value'] == '0' else True
-
-
 def enableInviteCode():
     """ Returns true if invite code is required to register """
-    x = db.get_site_metadata('useinvitecode')
-    return False if not x or x['value'] == '0' else True
-
-
-def getInviteCode():
-    """ Returns invite code """
-    x = db.get_site_metadata('invitecode')
-    if x:
-        return x['value']
-
-
-@cache.memoize(600)
-def getBTCaddr():
-    """ Returns Bitcoin address """
-    x = db.get_site_metadata('btcaddr')
-    if x:
-        return x['value']
+    try:
+        xm = SiteMetadata.get(SiteMetadata.key == 'useinvitecode')
+        return False if x.value == '0' else True
+    except SiteMetadata.DoesNotExist:
+        return False
 
 
 def sendMail(to, subject, content):
@@ -667,29 +603,25 @@ def workWithMentions(data, receivedby, post, sub, cid=None, c_user=current_user)
 
         for mtn in mts:
             # Send notifications.
-            user = db.get_user_from_name(mtn)
-            if not user:
+            try:
+                user = User.get(User.name == mtn)
+            except User.DoesNotExist:
                 continue
-            if user['uid'] != c_user.uid and user['uid'] != receivedby:
+            if user.uid != c_user.uid and user.uid != receivedby:
                 # Checks done. Send our shit
                 if cid:
                     link = url_for('sub.view_perm', pid=post.pid, sub=subname, cid=cid)
                 else:
                     link = url_for('sub.view_post', pid=post.pid, sub=subname)
-                create_message(c_user.uid, user['uid'],
+                create_message(c_user.uid, user.uid,
                                subject="You've been tagged in a post",
                                content="@{0} tagged you in [{1}]({2})"
                                .format(c_user.name, "Here: " + post.title, link),
                                link=link, mtype=8)
                 socketio.emit('notification',
-                              {'count': get_notification_count(user['uid'])},
+                              {'count': get_notification_count(user.uid)},
                               namespace='/snt',
-                              room='user' + user['uid'])
-
-
-def getSub(sid):
-    """ Returns sub from sid, db proxy now """
-    return db.get_sub_from_sid(sid)
+                              room='user' + user.uid)
 
 
 def getUser(uid):
@@ -1181,8 +1113,10 @@ def getMessagesSaved(page):
 def getMsgCommReplies(page):
     """ Returns comment replies messages """
     try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink, SubPostCommentVote.positive)
-        msg = msg.join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == Message.mlink)))
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content,
+                             Message.posted, Message.read, Message.mtype, Message.mlink, SubPostComment.pid, SubPostComment.content,
+                             SubPostComment.score, SubPostCommentVote.positive)
+        msg = msg.join(SubPostComment, on=SubPostComment.cid == Message.mlink).join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == Message.mlink)))
         msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 5).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False
@@ -1192,8 +1126,10 @@ def getMsgCommReplies(page):
 def getMsgPostReplies(page):
     """ Returns post replies messages """
     try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink, SubPostCommentVote.positive)
-        msg = msg.join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == Message.mlink)))
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content,
+                             Message.posted, Message.read, Message.mtype, Message.mlink, SubPostCommentVote.positive, SubPostComment.pid,
+                             SubPostComment.score, SubPostComment.content)
+        msg = msg.join(SubPostComment, on=SubPostComment.pid == Message.mlink).join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == Message.mlink)))
         msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 4).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False
@@ -1572,3 +1508,10 @@ def validate_captcha(token, response):
         if cap.decode().lower() == response.lower():
             return True
     return False
+
+
+def get_all_subs():
+    """ Temporary function until we work out a better autocomplete
+    for createpost """
+    # TODO
+    return [x.name for x in Sub.select(Sub.name)]

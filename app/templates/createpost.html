@@ -13,7 +13,7 @@
 <div id="center-container">
   <div class="content createpost">
       <form  method="POST" id="post-form" action="{{url_for('do.create_post')}}" data-redir="true" class="pure-form pure-form-aligned" enctype="multipart/form-data">
-        {% set subs = db.get_all_sub_names()%}
+        {% set subs = func.get_all_subs()%}
         <input type="hidden" id="ptypeval" name="ptype" value="{{txtpostform.ptype.data}}">
         {{txtpostform.csrf_token}}
         <h1>Submit a <span id="ptype">{{txtpostform.ptype.data}}</span> post</h1>
