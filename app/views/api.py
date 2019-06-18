@@ -3,7 +3,7 @@
 import uuid
 from functools import update_wrapper
 from datetime import datetime, timedelta
-from flask import Blueprint, jsonify, request, render_template, g, current_app, url_for
+from flask import Blueprint, jsonify, request, render_template, g, current_app, url_for, redirect
 from flask.sessions import SecureCookieSessionInterface
 from flask_login import login_required, current_user
 from flask_oauthlib.provider import OAuth2Provider
@@ -152,10 +152,11 @@ def save_token(token, req, *args, **kwargs):
 
 
 @api.route('/oauth/authorize', methods=['GET', 'POST'])
-@login_required
 @oauth.authorize_handler
 def authorize(*args, **kwargs):
     """ The page that authorizes oauth stuff """
+    if not current_user.is_authenticated:
+        return redirect(url_for('login', next=request.url))
     if request.method == 'GET':
         client_id = kwargs.get('client_id')
         client = load_client(client_id)
