@@ -1676,27 +1676,36 @@ def reset():
 
     form = forms.PasswordResetForm()
     if form.validate():
-        user = db.get_user_from_uid(form.user.data)
-        if not user:
-            return json.dumps({'status': 'ok'})
+        try:
+            user = User.get(User.uid == form.user.data)
+        except User.DoesNotExist:
+            return jsonify(status='error')
 
         # User exists, check if they don't already have a key sent
-        key = db.get_user_metadata(user['uid'], 'recovery-key')
-        if not key:
-            abort(403)
+        try:
+            key = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key'))
+            keyExp = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key-time'))
+            expiration = float(keyExp.value)
+            if (time.time() - expiration) > 86400:  # 1 day
+                # key has expired. Remove
+                key.delete_instance()
+                keyExp.delete_instance()
+                return jsonify(status='error')
+        except UserMetadata.DoesNotExist:
+            return jsonify(status='error')
 
-        if key != form.key.data:
-            abort(403)
+        if key.value != form.key.data:
+            return jsonify(status='error')
 
-        db.uquery('DELETE FROM `user_metadata` WHERE `uid`=%s AND '
-                  '`key`=%s', (user['uid'], 'recovery-key'))
-        db.uquery('DELETE FROM `user_metadata` WHERE `uid`=%s AND '
-                  '`key`=%s', (user['uid'], 'recovery-key-time'))
+        key.delete_instance()
+        keyExp.delete_instance()
 
         # All good. Set da password.
-        db.update_user_password(user['uid'], form.password.data)
-        login_user(misc.load_user(user['uid']))
-        return json.dumps({'status': 'ok'})
+        password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
+        user.password = password
+        user.save()
+        login_user(misc.load_user(user.uid))
+        return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -1706,18 +1715,20 @@ def edit_comment():
     """ Edits a comment """
     form = forms.EditCommentForm()
     if form.validate():
-        comment = db.get_comment_from_cid(form.cid.data)
-        if not comment:
-            abort(404)
+        try:
+            comment = SubPostComment.get(SubPostComment.cid == form.cid.data)
+        except SubPostComment.DoesNotExist:
+            return jsonify(status='error', error=['Comment does not exist'])
 
-        if comment['uid'] != current_user.uid and not current_user.is_admin():
-            abort(403)
-        post = SubPost.get(SubPost.pid == comment['pid'])
+        if comment.uid != current_user.uid and not current_user.is_admin():
+            return jsonify(status='error', error=['Not authorized'])
+            
+        post = SubPost.get(SubPost.pid == comment.pid)
         sub = Sub.get(Sub.sid == post.sid)
         if current_user.is_subban(sub):
             return jsonify(status='error', error=['You are banned on this sub.'])
 
-        if comment['status'] == '1':
+        if comment.status == '1':
             return jsonify(status='error',
                            error="You can't edit a deleted comment")
         
@@ -1725,8 +1736,9 @@ def edit_comment():
             return jsonify(status='error', error="Post is archived")
             
         dt = datetime.datetime.utcnow()
-        db.uquery('UPDATE `sub_post_comment` SET `content`=%s, `lastedit`=%s '
-                  'WHERE `cid`=%s', (form.text.data, dt, form.cid.data))
+        comment.content = form.text.data
+        comment.lastedit = dt
+        comment.save()
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)[0]})
 

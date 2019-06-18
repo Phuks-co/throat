@@ -6,7 +6,7 @@ from werkzeug.contrib.atom import AtomFeed
 from peewee import fn, JOIN
 from ..misc import engine
 from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption
-from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User
+from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, UserSaved
 from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditSubTextPostForm, EditMod2Form
 from ..forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair, CreateSubFlair
 from .. import database as db
@@ -290,12 +290,17 @@ def view_post(sub, pid, comments=False, highlight=None):
             comments = []
         else:
             comments = misc.get_comment_tree(comments, uid=current_user.uid)
-        print(comments)
 
     ksub = Sub.get(Sub.sid == post['sid'])
+    subinfo = misc.getSubData(ksub.sid)
     ncomments = SubPostComment.select().where(SubPostComment.pid == post['pid']).count()
 
     postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
+    try:
+        UserSaved.get((UserSaved.uid == current_user.uid) & (UserSaved.pid == pid))
+        is_saved = True
+    except UserSaved.DoesNotExist:
+        is_saved = False
 
     options, total_votes, has_voted, voted_for, poll_open, poll_closes = ([], 0, None, None, True, None)
     if post['ptype'] == 3:
@@ -325,9 +330,9 @@ def view_post(sub, pid, comments=False, highlight=None):
                 poll_open = False
 
     return render_template('post.html', post=post, subInfo=misc.getSubData(post['sid']),
-                           edittxtpostform=txtpedit, sub=ksub,
+                           edittxtpostform=txtpedit, sub=ksub, subinfo=subinfo,
                            editlinkpostform=EditSubLinkPostForm(),
-                           comments=comments, ncomments=ncomments,
+                           comments=comments, ncomments=ncomments, is_saved=is_saved,
                            editpostflair=editflair, highlight=highlight, 
                            poll_options=options, votes=total_votes, has_voted=has_voted, voted_for=voted_for,
                            poll_open=poll_open, postmeta=postmeta, poll_closes=poll_closes)

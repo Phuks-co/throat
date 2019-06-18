@@ -411,7 +411,7 @@ def vote_post(target_type, pcid, value):
     else:
         upd_q.where(SubPostComment.cid == target.id).execute()
 
-    socketio.emit('uscore', {'score': target.score + new_score},
+    socketio.emit('uscore', {'score': target.uid.score + new_score},
                   namespace='/snt', room="user" + target.uid_id)
 
     return jsonify(score=target.score + new_score, rm=undone)

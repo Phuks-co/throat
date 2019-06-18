@@ -3,32 +3,32 @@
   <div>
     <a class="sbm-post pure-button{% if box_route=='view_messages' %} button-secondary{% endif %}" href="{{ url_for('view_messages') }}">
       Inbox
-      {% if current_user.new_pm_count() > 0 %}
-        <span class="newmsgcount" style="inline-block;"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{current_user.new_pm_count()}}</span>
+      {% if func.get_unread_count(func.MESSAGE_TYPE_PM) > 0 %}
+        <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_unread_count(func.MESSAGE_TYPE_PM)}}</span>
       {% endif %}
     </a>
   </div>
   <div>
     <a class="sbm-post pure-button{% if box_route=='view_mentions' %} button-secondary{% endif %}" href="{{ url_for('view_mentions') }}">
       Mentions
-      {% if current_user.new_mentions_count() > 0 %}
-        <span class="newmsgcount" style="inline-block;"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{current_user.new_mentions_count()}}</span>
+      {% if func.get_unread_count(func.MESSAGE_TYPE_MENTION) > 0 %}
+        <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_unread_count(func.MESSAGE_TYPE_MENTION)}}</span>
       {% endif %}
     </a>
   </div>
   <div>
     <a class="sbm-post pure-button{% if box_route=='view_messages_postreplies' %} button-secondary{% endif %}" href="{{ url_for('view_messages_postreplies') }}">
       Post Replies
-      {% if current_user.new_postreply_count() > 0 %}
-        <span class="newmsgcount" style="inline-block;"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{current_user.new_postreply_count()}}</span>
+      {% if func.get_unread_count(func.MESSAGE_TYPE_POSTREPLY) > 0 %}
+        <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_unread_count(func.MESSAGE_TYPE_POSTREPLY)}}</span>
       {% endif %}
     </a>
   </div>
   <div>
     <a class="sbm-post pure-button{% if box_route=='view_messages_comreplies' %} button-secondary{% endif %}" href="{{ url_for('view_messages_comreplies') }}">
       Comment Replies
-      {% if current_user.new_comreply_count() > 0 %}
-        <span class="newmsgcount" style="inline-block;"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{current_user.new_comreply_count()}}</span>
+      {% if func.get_unread_count(func.MESSAGE_TYPE_COMMREPLY) > 0 %}
+        <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_unread_count(func.MESSAGE_TYPE_COMMREPLY)}}</span>
       {% endif %}
     </a>
   </div>
@@ -36,8 +36,8 @@
   <div>
     <a class="sbm-post pure-button{% if box_route=='view_messages_modmail' %} button-secondary{% endif %}" href="{{ url_for('view_messages_modmail') }}">
     Modmail
-    {% if current_user.new_modmail_count() > 0 %}
-      <span class="newmsgcount" style="inline-block;"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{current_user.new_modmail_count()}}</span>
+    {% if func.get_unread_count(func.MESSAGE_TYPE_MODMAIL) > 0 %}
+      <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_unread_count(func.MESSAGE_TYPE_MODMAIL)}}</span>
     {% endif %}
     </a>
   </div>

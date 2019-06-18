@@ -164,7 +164,7 @@
         {% endif %}
           {% if current_user.is_authenticated and post.deleted == 0 %}
            <li><a class="post-source">source</a></li>
-            {% if db.get_user_saved(current_user.uid, post.pid) %}
+            {% if is_saved %}
               <li><a class="removesavedpost" data-pid="{{post.pid}}">unsave</a></li>
             {% else %}
               <li><a class="savepost" data-pid="{{post.pid}}">save</a></li>
@@ -278,6 +278,6 @@
 {% endblock %}
 {%block pagefoot%}
 {% if not current_user.block_styles() %}
-<style>{{db.get_sub_stylesheet(post.sid)|safe}}</style>
+<style>{{subinfo.stylesheet|safe}}</style>
 {% endif %}
 {%endblock%}

@@ -563,20 +563,16 @@ def edit_user():
 @login_required
 def inbox_sort():
     """ Go to inbox with the new message """
-    if current_user.new_pm_count() == 0 \
-       and current_user.new_mentions_count() > 0:
-        return redirect(url_for('view_mentions'))
-    if current_user.new_pm_count() == 0 \
-       and current_user.new_postreply_count() > 0:
-        return redirect(url_for('view_messages_postreplies'))
-    if current_user.new_pm_count() == 0 \
-       and current_user.new_comreply_count() > 0:
-        return redirect(url_for('view_messages_comreplies'))
-    if current_user.new_pm_count() == 0 \
-       and current_user.new_modmail_count() > 0:
-        return redirect(url_for('view_messages_modmail'))
-    else:
+    if misc.get_unread_count(misc.MESSAGE_TYPE_PM) > 0:
         return redirect(url_for('view_messages'))
+    elif misc.get_unread_count(misc.MESSAGE_TYPE_MENTION) > 0:
+        return redirect(url_for('view_mentions'))
+    elif misc.get_unread_count(misc.MESSAGE_TYPE_POSTREPLY) > 0:
+        return redirect(url_for('view_messages_postreplies'))
+    elif misc.get_unread_count(misc.MESSAGE_TYPE_COMMREPLY) > 0:
+        return redirect(url_for('view_messages_comreplies'))
+    elif misc.get_unread_count(misc.MESSAGE_TYPE_MODMAIL) > 0:
+        return redirect(url_for('view_messages_modmail'))
 
 
 @app.route("/messages/inbox", defaults={'page': 1})

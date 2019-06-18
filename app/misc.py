@@ -156,45 +156,6 @@ class SiteUser(object):
         except SubMetadata.DoesNotExist:
             return False
 
-    def has_mail(self):
-        """ Returns True if the current user has unread messages """
-        return (self.notifications > 0)
-
-    def new_pm_count(self):
-        """ Returns new message count """
-        x = db.query('SELECT COUNT(*) AS c FROM `message` WHERE `read` IS NULL'
-                     ' AND `mtype`=1 AND `receivedby`=%s',
-                     (self.user['uid'],)).fetchone()['c']
-        return x
-
-    def new_mentions_count(self):
-        """ Returns new user name mention count """
-        x = db.query('SELECT COUNT(*) AS c FROM `message` WHERE `read` IS NULL'
-                     ' AND `mtype`=8 AND `receivedby`=%s',
-                     (self.user['uid'],)).fetchone()['c']
-        return x
-
-    def new_modmail_count(self):
-        """ Returns new modmail msg count """
-        x = db.query('SELECT COUNT(*) AS c FROM `message` WHERE `read` IS NULL'
-                     ' AND `mtype` IN (2, 7, 11) AND `receivedby`=%s',
-                     (self.user['uid'],)).fetchone()['c']
-        return x
-
-    def new_postreply_count(self):
-        """ Returns new post reply count """
-        x = db.query('SELECT COUNT(*) AS c FROM `message` WHERE `read` IS NULL'
-                     ' AND `mtype`=4 AND `receivedby`=%s',
-                     (self.user['uid'],)).fetchone()['c']
-        return x
-
-    def new_comreply_count(self):
-        """ Returns new comment reply count """
-        x = db.query('SELECT COUNT(*) AS c FROM `message` WHERE `read` IS NULL'
-                     ' AND `mtype`=5 AND `receivedby`=%s',
-                     (self.user['uid'],)).fetchone()['c']
-        return x
-
     def has_subscribed(self, name):
         """ Returns True if the current user has subscribed to sub """
         if len(name) == 36:  # TODO: BAD NASTY HACK REMOVE THIS.
@@ -1633,3 +1594,24 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
 
     comment_tree = recursive_populate(comment_tree)
     return comment_tree
+
+
+# Message type
+MESSAGE_TYPE_PM = [1]
+MESSAGE_TYPE_MENTION = [8]
+MESSAGE_TYPE_MODMAIL = [2, 7, 11]
+MESSAGE_TYPE_POSTREPLY = [4]
+MESSAGE_TYPE_COMMREPLY = [5]
+
+def get_messages(mtype, read=False, uid=None):
+    """ Returns query for messages. If `read` is True it only queries for unread messages """
+    query = Message.select().where(Message.mtype << mtype)
+    query = query.where(Message.receivedby == current_user.uid if not uid else uid)
+    if read:
+        query = query.where(Message.read.is_null(True))
+    return query
+
+
+@cache.memoize(1)
+def get_unread_count(mtype):
+    return get_messages(mtype, True).count()
