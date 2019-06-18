@@ -141,123 +141,6 @@ def get_post(pid):
     return jsonify(post=post)
 
 
-def get_comment_tree(comments, root=None, only_after=None, uid=None):
-    """ Returns a fully paginated and expanded comment tree.
-
-    Parameters:
-        comments: bare list of comments (only cid and parentcid)
-        root: if present, the root comment to start building the tree on
-        only_after: removes all siblings of `root` after the cid on its value
-
-    TODO: Move to misc and implement globally
-    """
-    def build_tree(tuff, root=None):
-        """ Builds a comment tree """
-        res = []
-        for i in tuff[::]:
-            if i['parentcid'] == root:
-                tuff.remove(i)
-                i['children'] = build_tree(tuff, root=i['cid'])
-                res.append(i)
-        return res
-
-    # 2 - Build bare comment tree
-    comment_tree = build_tree(list(comments))
-
-    # 2.1 - get only a branch of the tree if necessary
-    if root:
-        def select_branch(comments, root):
-            """ Finds a branch with a certain root and returns a new tree """
-            for i in comments:
-                if i['cid'] == root:
-                    return i
-                k = select_branch(i['children'], root)
-                if k:
-                    return k
-        comment_tree = select_branch(comment_tree, root)
-        if comment_tree:
-            # include the parent of the root for context.
-            if comment_tree['parentcid'] is None:
-                comment_tree = [comment_tree]
-            else:
-                orig_root = [x for x in list(comments) if x['cid'] == comment_tree['parentcid']]
-                orig_root[0]['children'] = [comment_tree]
-                comment_tree = orig_root
-        else:
-            return []
-    # 3 - Trim tree (remove all children of depth=3 comments, all siblings after #5
-    cid_list = []
-    trimmed = False
-    def recursive_check(tree, depth=0, trimmed=None):
-        """ Recursively checks tree to apply pagination limits """
-        or_len = len(tree)
-        if only_after and not trimmed:
-            imf = list(filter(lambda i: i['cid'] == only_after, tree))
-            if imf:
-                try:
-                    tree = tree[tree.index(imf[0]) + 1:]
-                except IndexError:
-                    return []
-                or_len = len(tree)
-                trimmed = True
-        if depth > 3:
-            return [{'cid': None, 'more': len(tree)}] if tree else []
-        if (len(tree) > 5 and depth > 0) or (len(tree) > 10):
-            tree = tree[:6] if depth > 0 else tree[:11]
-            tree.append({'cid': None, 'key': tree[-1]['cid'], 'more': or_len - len(tree)})
-
-        for i in tree:
-            if not i['cid']:
-                continue
-            cid_list.append(i['cid'])
-            i['children'] = recursive_check(i['children'], depth+1)
-
-        return tree
-    import pprint
-    pprint.pprint(comment_tree)
-
-    comment_tree = recursive_check(comment_tree, trimmed=trimmed)
-
-    # 4 - Populate the tree (get all the data and cram it into the tree)
-    expcomms = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
-                                     SubPostComment.score, SubPostComment.status, SubPostComment.time, SubPostComment.pid,
-                                     User.name.alias('user'), *([SubPostCommentVote.positive, SubPostComment.uid] if uid else [SubPostComment.uid]), # silly hack
-                                     User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)
-    expcomms = expcomms.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
-    if uid:
-        expcomms = expcomms.join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == uid) & (SubPostCommentVote.cid == SubPostComment.cid)))
-    expcomms = expcomms.where(SubPostComment.cid << cid_list).dicts()
-
-    commdata = {}
-    for comm in expcomms:
-        if comm['userstatus'] == 10 or comm['status']:
-            comm['user'] = '[Deleted]'
-            comm['uid'] = None
-
-        if comm['status']:
-            comm['content'] = ''
-            comm['lastedit'] = None
-        del comm['userstatus']
-        commdata[comm['cid']] = comm
-
-
-    def recursive_populate(tree):
-        """ Expands the tree with the data from `commdata` """
-        populated_tree = []
-        for i in tree:
-            if not i['cid']:
-                populated_tree.append(i)
-                continue
-            comment = commdata[i['cid']]
-            comment['content'] = misc.our_markdown(comment['content'])
-            comment['children'] = recursive_populate(i['children'])
-            populated_tree.append(comment)
-        return populated_tree
-
-    comment_tree = recursive_populate(comment_tree)
-    return comment_tree
-
-
 @API.route('/getPost/<int:pid>/comments', methods=['get'])
 @jwt_optional
 def get_post_comments(pid):
@@ -292,7 +175,7 @@ def get_post_comments(pid):
     if not comments.count():
         return jsonify(comments=[])
 
-    comment_tree = get_comment_tree(comments, uid=current_user)
+    comment_tree = misc.get_comment_tree(comments, uid=current_user)
     return jsonify(comments=comment_tree)
 
 
@@ -328,9 +211,9 @@ def get_post_comment_children(pid, cid, lim):
     if lim:
         if cid == '0':
             cid = None
-        comment_tree = get_comment_tree(comments, cid, lim)
+        comment_tree = misc.get_comment_tree(comments, cid, lim)
     elif cid != '0':
-        comment_tree = get_comment_tree(comments, cid)
+        comment_tree = misc.get_comment_tree(comments, cid)
     else:
         return jsonify(msg='Illegal comment id'), 400
     return jsonify(comments=comment_tree)

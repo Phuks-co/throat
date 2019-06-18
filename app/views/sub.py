@@ -285,7 +285,12 @@ def view_post(sub, pid, comments=False, highlight=None):
     txtpedit = EditSubTextPostForm()
     txtpedit.content.data = post['content']
     if not comments:
-        comments = misc.get_post_comments(post['pid'])
+        comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == post['pid']).order_by(SubPostComment.score.desc()).dicts()
+        if not comments.count():
+            comments = []
+        else:
+            comments = misc.get_comment_tree(comments, uid=current_user)
+        print(comments)
 
     ksub = Sub.get(Sub.sid == post['sid'])
     ncomments = SubPostComment.select().where(SubPostComment.pid == post['pid']).count()
@@ -336,25 +341,10 @@ def view_perm(sub, pid, cid):
         the_comment = SubPostComment.select().where(SubPostComment.cid == cid).dicts()[0]
     except (SubPostComment.DoesNotExist, IndexError):
         abort(404)
-    tc = cid if not the_comment['parentcid'] else the_comment['parentcid']
-    tq = SubPostComment.select(SubPostComment.cid).where(SubPostComment.parentcid == cid).alias('jq')
-    cmskel = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
-    cmskel = cmskel.join(tq, on=((tq.c.cid == SubPostComment.parentcid) | (SubPostComment.parentcid == cid)))
-    cmskel = cmskel.group_by(SubPostComment.cid)
-    cmskel = cmskel.order_by(SubPostComment.score.desc()).dicts()
-
-    cmskel = list(cmskel)
-    cmskel.append({'cid': cid, 'parentcid': the_comment['parentcid']})
-    if the_comment['parentcid']:
-        cmskel.append({'cid': the_comment['parentcid'], 'parentcid': ''})
-    if len(cmskel) > 1:
-        cmxk = misc.build_comment_tree(cmskel, tc)
+    
+    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
+    if not comments.count():
+        comments = []
     else:
-        cmxk = ([{'cid': cid, 'children': []}], [cid])
-    if the_comment['parentcid']:
-        cmxk[1].append(the_comment['parentcid'])
-        cmxk = ([{'cid': the_comment['parentcid'], 'children': cmxk[0]}], cmxk[1])
-    elif len(cmskel) > 1:
-        cmxk[1].append(the_comment['cid'])
-        cmxk = ([{'cid': the_comment['cid'], 'children': cmxk[0]}], cmxk[1])
-    return view_post(sub, pid, misc.expand_comment_tree(cmxk), cid)
+        comment_tree = misc.get_comment_tree(comments, cid)
+    return view_post(sub, pid, comment_tree, cid)

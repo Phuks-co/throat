@@ -1,5 +1,6 @@
+{% set pcid = {'c': '0'} %}
 {% for comment in comments recursive %}
-  {%if comment.cid != 0 %}
+  {%if comment.cid != None %}
     <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="{% if comment.hl %}active{%endif%} text-post no-padding comment sub-{{loop.depth0}}">
       <div class="commentrow {%if comment.cid == highlight %}highlight{%endif%}" id="comment-{{comment.cid}}">
         <div class="pull left votecomment" {% if comment.status == 1 %}style="display:none;"{%endif%}>
@@ -18,10 +19,10 @@
                 {% if comment.userstatus == 10 %}
                 <a class="poster deleted">[Deleted]</a>
                 {%else%}
-                <a href="{{ url_for('view_user', user=comment.username) }}" class="poster">
+                <a href="{{ url_for('view_user', user=comment.user) }}" class="poster">
                   {% if comment.userstatus == 100 %}<span class="bot-tag">bot</span>{%endif%}
-                  {{ comment.username }}
-                  {% if post.user == comment.username %}<span class="OPtag">[OP]</span>{%endif%}
+                  {{ comment.user }}
+                  {% if post.user == comment.user %}<span class="OPtag">[OP]</span>{%endif%}
                 </a>
                 {%endif%}
               {%else%}
@@ -39,11 +40,11 @@
           </div>
           <div class="content" id="content-{{comment.cid}}" {% if comment.status == 1 %}style="display:none;"{%endif%}>
             {% if comment.status == 1 %}[Deleted]{%else%}
-              {{markdown(comment.content)|safe}}
+              {{comment.content|safe}}
             {%endif%}
           </div>
           {%if not comment.status == 1 %}
-            <div hidden id="sauce-{{comment.cid}}">{{comment.content}}</div>
+            <div hidden id="sauce-{{comment.cid}}">{{comment.source}}</div>
           {%endif%}
           <ul class="bottombar links" {% if comment.status == 1 %}style="display:none;"{%endif%}>
             <li><a href="{{url_for('sub.view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></li>
@@ -65,13 +66,14 @@
         {% if comment['morechildren'] %}
         <a href="#" class="loadchildren" data-pid="{{post.pid}}" data-cid="{{comment.cid}}">Load more ({{comment.morechildren}} comments)</a>
         {% elif comment['children'] %}
-          {{loop(comment['children'])}}
+          {%if pcid.update({'c': comment['cid']})%}{%endif%}
+          {{loop(comment['children'] )}}
         {% endif %}
       </div>
     </article>
   {%endif%}
-  {% if comment['cid'] == 0 %}
-    <a href="#" class="loadsibling" data-pid="{{post.pid}}" data-page="{{siblingpage}}" data-cid="{% if not comment.parent %}1{%else%}{{comment.parent}}{%endif%}">Load more ({{comment.moresbling}} comments)</a>
+  {% if comment['cid'] == None %}
+    <a href="#" class="loadsibling" data-pid="{{post.pid}}" data-parent="{{pcid.c}}" data-key="{{comment.key}}">Load more ({{comment.more}} comments)</a>
   {% endif %}
 
 {%endfor%}

@@ -392,9 +392,15 @@ u.addEventForChild(document, 'click', '.loadchildren', function(e, qelem){
 u.addEventForChild(document, 'click', '.loadsibling', function(e, qelem){
   qelem.textContent = "Loading...";
   e.preventDefault();
-  var page = (qelem.getAttribute('data-page') !== '') ? qelem.getAttribute('data-page') : 1;
-  var parent = (qelem.getAttribute('data-cid') !== '') ? qelem.getAttribute('data-cid') : 1;
-  u.post('/do/get_sibling/' + qelem.getAttribute('data-pid') + '/' + parent + '/' + page, {},
+  var pid = qelem.getAttribute('data-pid');
+  var key = qelem.getAttribute('data-key');
+  var parent = qelem.getAttribute('data-parent');
+  if(key === ''){
+    var uri = '/do/get_children/' + pid + '/' + parent;
+  }else{
+    var uri = '/do/get_children/' + pid + '/' + parent + '/' + key;
+  }
+  u.post(uri, {},
   function(data){
     qelem.outerHTML = data;
     Icons.rendericons();

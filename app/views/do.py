@@ -1859,52 +1859,42 @@ def upvotecomment(cid, value):
     return jsonify(status='ok', score=comment.score + voteValue)
 
 
-@do.route('/do/get_children/<pid>/<cid>', methods=['POST'])
-def get_children(pid, cid):
+@do.route('/do/get_children/<int:pid>/<cid>/<lim>', methods=['post'])
+@do.route('/do/get_children/<int:pid>/<cid>', methods=['post'], defaults={'lim': ''})
+def get_sibling(pid, cid, lim): 
     """ Gets children comments for <cid> """
-    # TODO: Remove this pile of crap.
-    # Note for future self: Wondering why I added this steaming pile of shit after the rewrite?
-    # It's the only way to make this work, unless you're in a pretty distant future
-    # where MySQL 8 or MariaDB 10.2 are already mainstream. If not, I wish you good luck. You're gonna need it.
-    cmskel = db.query("SELECT t1.cid AS lev1, t2.cid as lev2, t3.cid as lev3, t4.cid as lev4, t5.cid as lev5 FROM sub_post_comment AS t1 "
-                      "LEFT JOIN sub_post_comment AS t2 ON t2.parentcid = t1.cid LEFT JOIN sub_post_comment AS t3 ON t3.parentcid = t2.cid "
-                      "LEFT JOIN sub_post_comment AS t4 ON t4.parentcid = t3.cid LEFT JOIN sub_post_comment AS t5 ON t5.parentcid = t4.cid WHERE t1.cid =%s", (cid, ))
-    if cmskel.rowcount == 0:
+    try:
+        post = SubPost.get(SubPost.pid == pid)
+    except SubPost.DoesNotExist:
         return jsonify(status='ok', posts=[])
-    comms = []
-    for pp in cmskel.fetchall():
-        comms.append({'parentcid': pp['lev1'], 'cid': pp['lev2']})
-        if pp['lev3']:
-            comms.append({'parentcid': pp['lev2'], 'cid': pp['lev3']})
-            if pp['lev4']:
-                comms.append({'parentcid': pp['lev3'], 'cid': pp['lev4']})
-                if pp['lev5']:
-                    comms.append({'parentcid': pp['lev4'], 'cid': pp['lev5']})
-    comms = [dict(t) for t in set([tuple(d.items()) for d in comms])]
 
-    cmxk = misc.build_comment_tree(comms, cid)
-    post = SubPost.select(SubPost.pid, SubPost.sid).where(SubPost.pid == pid).get()
-    sub = Sub.select(Sub.name).where(Sub.sid == post.sid).get()
-    return render_template('postcomments.html', sub=sub, post=post, comments=misc.expand_comment_tree(cmxk))
+    if cid == 'null':
+        cid = '0'
+    if cid != '0':
+        try:
+            root = SubPostComment.get(SubPostComment.cid == cid)
+            if root.pid_id != post.pid:
+                return jsonify(status='ok', posts=[])
+        except SubPostComment.DoesNotExist:
+            return jsonify(status='ok', posts=[])
 
+    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
+    if not comments.count():
+        return render_template('postcomments.html', sub=post.sid, post=post, comments=[])
 
-@do.route('/do/get_sibling/<int:pid>/<cid>/<int:page>', methods=['POST', 'GET'])
-def get_sibling(pid, cid, page):  # XXX: Really similar to get_children. Should merge them in the future
-    """ Gets children comments for <cid> """
-    if cid == '1':
-        cid = None
-        ppage = 8  # We initially load 8 root comments ...
+    if lim:
+        if cid == '0':
+            cid = None
+        comment_tree = misc.get_comment_tree(comments, cid, lim, provide_context=False)
+    elif cid != '0':
+        comment_tree = misc.get_comment_tree(comments, cid, provide_context=False)
     else:
-        ppage = 5
+        return render_template('postcomments.html', sub=post.sid, post=post, comments=[])
+    
+    if len(comment_tree) > 0:
+        comment_tree = comment_tree[0].get('children', [])
 
-    cmskel = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
-    cmskel = cmskel.where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
-    if cmskel.count() == 0:
-        return jsonify(status='ok', posts=[])
-    cmxk = misc.build_comment_tree(cmskel, cid, perpage=ppage, pageno=page + 1)
-    post = SubPost.select(SubPost.pid, SubPost.sid).where(SubPost.pid == pid).get()
-    sub = Sub.select(Sub.name).where(Sub.sid == post.sid).get()
-    return render_template('postcomments.html', sub=sub, post=post, comments=misc.expand_comment_tree(cmxk), siblingpage=page + 1)
+    return render_template('postcomments.html', sub=post.sid, post=post, comments=comment_tree)
 
 
 @do.route('/do/preview', methods=['POST'])
