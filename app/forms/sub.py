@@ -89,7 +89,7 @@ class CreateSubTextPost(FlaskForm):
     sub = StringField('Sub', validators=[DataRequired(),
                                          Length(min=2, max=32)])
     title = StringField('Post title',
-                        validators=[DataRequired(), Length(min=4, max=350)])
+                        validators=[DataRequired(), Length(min=3, max=350)])
     content = TextAreaField('Post content',
                             validators=[Length(max=16384)])
     link = StringField('Post link',
