@@ -1857,7 +1857,10 @@ a[href="#toodamncool"]{
   max-width: 100%;
 }
 
-.expando-master{display: block;}
+.expando-master{
+  display: block;
+  margin-top: 0.7em;
+}
 .replybox{
   margin-bottom: 1em;
 }
