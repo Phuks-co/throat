@@ -1603,7 +1603,7 @@ def edit_comment():
         except SubPostComment.DoesNotExist:
             return jsonify(status='error', error=['Comment does not exist'])
 
-        if comment.uid != current_user.uid and not current_user.is_admin():
+        if comment.uid_id != current_user.uid and not current_user.is_admin():
             return jsonify(status='error', error=['Not authorized'])
             
         post = SubPost.get(SubPost.pid == comment.pid)
