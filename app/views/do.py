@@ -20,8 +20,8 @@ import config
 from .. import forms, misc, caching
 from ..socketio import socketio
 from ..forms import LogOutForm, CreateSubFlair, DummyForm
-from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
-from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm
+from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm, ChangePasswordForm
+from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm, DeleteAccountForm
 from ..forms import CreateSubTextPost, EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
@@ -72,6 +72,46 @@ def search(stype):
     return redirect(url_for(stype, term=term))
 
 
+@do.route("/do/edit_user/password", methods=['POST'])
+@login_required
+def edit_user_password():
+    form = ChangePasswordForm()
+    if form.validate():
+        usr = User.get(User.uid == current_user.uid)
+        if not misc.validate_password(usr, form.oldpassword.data):
+            return json.dumps({'status': 'error', 'error': ['Wrong password']})
+        
+        password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
+        if isinstance(password, bytes):
+            password = password.decode('utf-8')
+
+        usr.password = password
+        usr.crypto = 1
+        usr.save()
+        return jsonify(status='ok')
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/delete_account", methods=['POST'])
+@login_required
+def delete_user():
+    form = DeleteAccountForm()
+    if form.validate():
+        usr = User.get(User.uid == current_user.uid)
+        if not misc.validate_password(usr, form.password.data):
+            return jsonify(status='error', error=['Wrong password'])
+
+        if form.consent.data != 'YES':
+            return jsonify(status='error', error=['Type "YES" in the box'])
+        
+        usr.status = 10
+        usr.save()
+        logout_user()
+
+        return jsonify(status='ok')
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
 @do.route("/do/edit_user", methods=['POST'])
 @login_required
 def edit_user():
@@ -79,23 +119,12 @@ def edit_user():
     form = EditUserForm()
     if form.validate():
         usr = User.get(User.uid == current_user.uid)
-        if not misc.validate_password(usr, form.oldpassword.data):
-            return json.dumps({'status': 'error', 'error': ['Wrong password']})
-        if form.delete_account.data:
-            usr.status = 10
-            usr.save()
-            if session.get('usid'):
-                socketio.emit('uinfo', {'loggedin': False}, namespace='/alt', room=session['usid'])
-            logout_user()
-            return json.dumps({'status': 'ok', 'addr': '/'})
+        #if form.delete_account.data:
+        #    usr.status = 10
+        #    usr.save()
+        #    logout_user()
+        #    return json.dumps({'status': 'ok', 'addr': '/'})
         usr.email = form.email.data
-        if form.password.data:
-            password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
-            if isinstance(password, bytes):
-                password = password.decode('utf-8')
-
-            usr.password = password
-            usr.crypto = 1
 
         usr.save()
         current_user.update_prefs('exlinks', form.external_links.data)

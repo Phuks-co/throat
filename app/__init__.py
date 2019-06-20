@@ -23,7 +23,7 @@ from .forms import CreateSubForm, EditUserForm, AssignUserBadgeForm
 from .forms import CreateSubTextPost, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment, EditModForm
 from .forms import DeletePost, CreateUserBadgeForm, DummyForm
-from .forms import BanDomainForm
+from .forms import BanDomainForm, ChangePasswordForm, DeleteAccountForm
 from .forms import CreateMulti, EditMulti
 from .forms import UseInviteCodeForm
 from .views import do, api, subs, api3, jwt
@@ -526,8 +526,6 @@ def edit_subs():
 @app.route("/settings")
 @login_required
 def edit_user():
-    """ WIP: Edit user's profile, slogan, quote, etc """
-
     exlink = 'exlinks' in current_user.prefs
     styles = 'nostyles' in current_user.prefs
     nsfw = 'nsfw' in current_user.prefs
@@ -537,12 +535,19 @@ def edit_user():
     form = EditUserForm(external_links=exlink, show_nsfw=nsfw,
                         disable_sub_style=styles, experimental=exp,
                         noscroll=noscroll, nochat=nochat)
-    return engine.get_template('user/settings.html').render({'edituserform': form})
+    return engine.get_template('user/settings/preferences.html').render({'edituserform': form})
 
-    # return render_template('edituser.html', user=user, owns=owns,
-    #                        badges=badges, adminbadges=adminbadges,
-    #                        pcount=pcount, ccount=ccount, mods=mods,
-    #                        edituserform=form)
+
+@app.route("/settings/password")
+@login_required
+def edit_password():
+    return engine.get_template('user/settings/password.html').render({'form': ChangePasswordForm()})
+
+
+@app.route("/settings/delete")
+@login_required
+def delete_account():
+    return engine.get_template('user/settings/delete.html').render({'form': DeleteAccountForm()})
 
 
 @app.route("/messages")

@@ -2,6 +2,13 @@
 @require(edituserform)
 @def sidebar():
   <h3><a href="@{url_for('view_user', user=current_user.name)}" class="sbm-post">@{current_user.name}</a></h3>
+  <hr/>
+
+  <a href="/settings" class="sbm-post pure-button pure-button-primary">Preferences</a>
+  <a href="/settings/password" class="sbm-post pure-button">Change password</a>
+  <a href="/settings/delete" class="sbm-post pure-button">Delete account</a>
+
+  <hr/>
   <a href="@{url_for('view_user_posts', user=current_user.name)}" class="sbm-post pure-button">View posts</a>
   <a href="@{url_for('view_user_comments', user=current_user.name)}" class="sbm-post pure-button">View comments</a>
   <a href="@{url_for('view_user_savedposts', user=current_user.name)}" class="sbm-post pure-button">View saved posts</a>
@@ -9,13 +16,13 @@
 
 @def main():
 <div id="container">
-  <h1>Edit info for @{current_user.name}</h1>
+  <h1>@{current_user.name}'s preferences</h1>
   <form  method="POST" id="edit-user-form" data-refresh='true'  action="@{url_for('do.edit_user')}" class="ajaxform pure-form pure-form-aligned">
     @{edituserform.csrf_token()}
     <fieldset>
       <div class="pure-control-group">
         <label for="email">@{edituserform.email.label.text}</label>
-        @{edituserform.email(value=current_user.user['email'])}
+        @{edituserform.email(value=current_user.user['email'], autocomplete="off")}
       </div>
       <div class="pure-control-group">
         <label for="external_links" class="pure-checkbox">@{edituserform.external_links.label.text}</label>
@@ -43,28 +50,9 @@
         @{edituserform.nochat()}
       </div>
 
-      <hr style="border-color: red;">
-      <div class="pure-control-group" style="color: red; font-weight: 900;">
-        <label for="delete_account">@{edituserform.delete_account.label.text}</label>
-        @{edituserform.delete_account()}
-      </div>
-      <hr style="border-color: red;">
-      <h4>Change password</h4>
-      <div class="pure-control-group">
-        <label for="password">@{edituserform.password.label.text}</label>
-        @{edituserform.password(placeholder=edituserform.password.label.text, required=False, autocomplete="off")}
-      </div>
-      <div class="pure-control-group">
-        <label for="confirm">@{edituserform.confirm.label.text}</label>
-        @{edituserform.confirm(placeholder=edituserform.confirm.label.text, required=False, autocomplete="off")}
-      </div>
-      <hr>
-      <div class="pure-control-group">
-        <label for="oldpassword">@{edituserform.oldpassword.label.text}</label>
-        @{edituserform.oldpassword(placeholder=edituserform.oldpassword.label.text, required=True, autocomplete="off")}
-      </div>
       <div class="alert div-error"></div>
-      <button type="submit" class="pure-button pure-button-primary" id="edituser-btnsubmit" data-prog="Editing..." data-success="Saved!">Edit user</button>
+
+      <button type="submit" class="pure-button pure-button-primary" id="edituser-btnsubmit" data-prog="Editing..." data-success="Saved!">Save</button>
     </fieldset>
   </form>
 

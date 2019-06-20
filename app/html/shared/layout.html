@@ -110,7 +110,7 @@
         <abbr title="Phuks taken" class="bold" id="postscore">@{current_user.score!!s}</abbr>
         <span class="separator"></span>
         <div class="glyphbutton">
-          <a href="@{ url_for('edit_user', user=current_user.name) }"><span class="p-icon" data-icon="cog"></span></a>
+          <a href="/settings"><span class="p-icon" data-icon="cog"></span></a>
         </div>
         <div class="glyphbutton sep ">
           <a href="@{ url_for('inbox_sort') }">

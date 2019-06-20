@@ -82,6 +82,30 @@ class RegistrationForm(FlaskForm):
     securityanswer = TextField('Security question')
 
 
+class ChangePasswordForm(FlaskForm):
+    password = PasswordField('New password', [
+        Required(),
+        EqualTo('confirm', message='Passwords must match'),
+        Length(min=7, max=256),
+    ])
+    confirm = PasswordField('Repeat Password', [
+        Required()
+    ])
+
+    oldpassword = PasswordField('Your current password', [
+        Required(),
+        Length(min=7, max=256)
+    ])
+
+
+class DeleteAccountForm(FlaskForm):
+    password = PasswordField('Your password', [
+        Required(),
+        Length(min=7, max=256),
+    ])
+    consent = TextField("Type 'YES' here", [Required(), Length(max=10)])
+
+
 class EditUserForm(FlaskForm):
     """ Edit User info form. """
     # username = TextField('Username', [Length(min=2, max=32)])
@@ -91,21 +115,8 @@ class EditUserForm(FlaskForm):
     external_links = BooleanField('Open external links in a new window')
     disable_sub_style = BooleanField('Disable custom sub styles')
     show_nsfw = BooleanField('Show NSFW content')
-    password = PasswordField('New password', [
-        OptionalIfFieldIsEmpty('password'),
-        EqualTo('confirm', message='Passwords must match'),
-        Length(min=7, max=256),
-    ])
-    confirm = PasswordField('Repeat Password', [
-        OptionalIfFieldIsEmpty('password')
-    ])
 
-    oldpassword = PasswordField('Your current password', [
-        Required(),
-        Length(min=7, max=256)
-    ])
-
-    delete_account = BooleanField('DELETE THIS ACCOUNT')
+    #delete_account = BooleanField('DELETE THIS ACCOUNT')
     experimental = BooleanField('Enable experimental features')
     noscroll = BooleanField('Disable infinite scroll')
     nochat = BooleanField('Disable chat')
