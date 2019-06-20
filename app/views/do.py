@@ -1704,15 +1704,13 @@ def get_sibling(pid, cid, lim):
         return render_template('postcomments.html', sub=post.sid, post=post, comments=[])
 
     if lim:
-        if cid == '0':
-            cid = None
-        comment_tree = misc.get_comment_tree(comments, cid, lim, provide_context=False, uid=current_user.uid)
+        comment_tree = misc.get_comment_tree(comments, cid if cid != '0' else None, lim, provide_context=False, uid=current_user.uid)
     elif cid != '0':
         comment_tree = misc.get_comment_tree(comments, cid, provide_context=False, uid=current_user.uid)
     else:
         return render_template('postcomments.html', sub=post.sid, post=post, comments=[])
     
-    if len(comment_tree) > 0:
+    if len(comment_tree) > 0 and cid != '0':
         comment_tree = comment_tree[0].get('children', [])
 
     return render_template('postcomments.html', sub=post.sid, post=post, comments=comment_tree)
