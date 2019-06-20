@@ -62,15 +62,12 @@
         </div>
       </div>
       <div id="child-{{comment.cid}}" class="pchild{% if comment['morechildren'] %}-e{% endif %}" {% if comment.status == 1 %}style="display:none;"{%endif%}>
-        {% if comment['morechildren'] %}
-        <a href="#" class="loadchildren" data-pid="{{post.pid}}" data-cid="{{comment.cid}}">Load more ({{comment.morechildren}} comments)</a>
-        {% elif comment['children'] %}
+        {% if comment['children'] %}
           {{loop(comment['children'] )}}
         {% endif %}
       </div>
     </article>
-  {%endif%}
-  {% if comment['cid'] == None %}
+  {%elif comment['cid'] == None %}
     <a href="#" class="loadsibling" data-pid="{{post.pid}}" data-key="{{comment.key}}" data-pcid="{{comment.pcid}}">Load more ({{comment.more}} comment{%if comment.more > 1%}s{%endif%})</a>
   {% endif %}
 
