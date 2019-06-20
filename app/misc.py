@@ -67,6 +67,9 @@ class SiteUser(object):
         self.uid = self.user['uid']
         self.prefs = [x['key'] for x in prefs]
 
+        self.subtheme = [x['value'] for x in prefs if x['key'] == 'subtheme']
+        self.subtheme = self.subtheme[0] if self.subtheme else ''
+
         self.subsid = []
         self.subscriptions = []
         self.blocksid = []
@@ -190,13 +193,25 @@ class SiteUser(object):
     def get_top_bar(self):
         return self.top_bar
 
-    def update_prefs(self, key, value):
+    def update_prefs(self, key, value, boolean=True):
+        if boolean:
+            value = '1' if value else '0'
         try:
             md = UserMetadata.get((UserMetadata.uid == self.uid) & (UserMetadata.key == key))
-            md.value = '1' if value else '0'
+            md.value = value
             md.save()
         except UserMetadata.DoesNotExist:
             md = UserMetadata.create(uid=self.uid, key=key, value=value)
+    
+    @cache.memoize(10)
+    def get_global_stylesheet(self):
+        if self.subtheme:
+            try:
+                css = SubStylesheet.select().join(Sub).where(Sub.name == self.subtheme).get()
+            except SubStylesheet.DoesNotExist:
+                return ''
+            return css.content
+        return ''
 
 
 class SiteAnon(AnonymousUserMixin):
@@ -273,6 +288,10 @@ class SiteAnon(AnonymousUserMixin):
     @classmethod
     def get_user_level(self):
         return (0, 0)
+    
+    @classmethod
+    def get_global_stylesheet(self):
+        return ''
 
 
 class RateLimit(object):
@@ -877,7 +896,7 @@ def load_user(user_id):
     user = user.where(User.uid == user_id).dicts()
 
     prefs = UserMetadata.select(UserMetadata.key, UserMetadata.value).where(UserMetadata.uid == user_id)
-    prefs = prefs.where(UserMetadata.value == '1').dicts()
+    prefs = prefs.where((UserMetadata.value == '1') | (UserMetadata.key == 'subtheme')).dicts()
 
     try:
         user = user.get()

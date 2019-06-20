@@ -535,7 +535,7 @@ def edit_user():
     nochat = 'nochat' in current_user.prefs
     form = EditUserForm(external_links=exlink, show_nsfw=nsfw,
                         disable_sub_style=styles, experimental=exp,
-                        noscroll=noscroll, nochat=nochat)
+                        noscroll=noscroll, nochat=nochat, subtheme=current_user.subtheme)
     return engine.get_template('user/settings/preferences.html').render({'edituserform': form})
 
 

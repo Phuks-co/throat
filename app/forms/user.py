@@ -121,6 +121,8 @@ class EditUserForm(FlaskForm):
     noscroll = BooleanField('Disable infinite scroll')
     nochat = BooleanField('Disable chat')
 
+    subtheme = TextField("Global stylesheet (select a sub)")
+
 
 class CreateUserMessageForm(FlaskForm):
     """ CreateUserMessage form. """

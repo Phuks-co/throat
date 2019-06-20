@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "anchorme": "^1.1.2",
+    "autocompleter": "^4.0.2",
     "flatpickr": "^4.5.2",
     "irc-style-parser": "^0.2.5",
     "jquery": "^3.2.1",

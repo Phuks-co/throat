@@ -36,7 +36,6 @@
         <label for="show_nsfw" class="pure-checkbox">@{edituserform.show_nsfw.label.text}</label>
         @{edituserform.show_nsfw()}
       </div>
-      <hr>
       <div class="pure-control-group">
         <label for="experimental" class="pure-checkbox">@{edituserform.experimental.label.text}</label>
         @{edituserform.experimental()}
@@ -49,6 +48,12 @@
         <label for="nochat" class="pure-checkbox">@{edituserform.nochat.label.text}</label>
         @{edituserform.nochat()}
       </div>
+
+      <div class="pure-control-group">
+          <label for="nochat" class="pure-checkbox">@{edituserform.subtheme.label.text}</label>
+          @{edituserform.subtheme(class_="sub_autocomplete")}
+        </div>
+
 
       <div class="alert div-error"></div>
 

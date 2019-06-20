@@ -8,7 +8,10 @@ import 'tingle.js/dist/tingle.css';
 import 'time-elements/time-elements.js';
 //import 'flatpickr/dist/flatpickr.css';
 import 'flatpickr/dist/themes/dark.css';
+import 'autocompleter/autocomplete.css'
 
+
+import autocomplete from 'autocompleter';
 import u from './Util';
 import Konami from './ext/konami';
 import Sortable from 'sortablejs';
@@ -52,6 +55,34 @@ function vote(obj, how, comment){
   }, function(err){
     //TODO: show errors
   })
+}
+
+// sub autocomplete
+var sa = document.querySelector('.sub_autocomplete')
+if(sa){
+  autocomplete({
+    minLength: 3,
+    debounceWaitMs: 200,
+    input: sa,
+    fetch: function(text, update) {
+        text = text.toLowerCase();
+        // you can also use AJAX requests instead of preloaded data
+        u.get('/api/v3/search/sub?query=' + text, function(data){
+          console.log(data.results)
+          var suggestions = data.results
+          update(suggestions);
+        })
+    },
+    onSelect: function(item) {
+        sa.value = item.name;
+    },
+    render: function(item, currentValue) {
+      var div = document.createElement("div");
+      div.textContent = item.name;
+      return div;
+    },
+});
+
 }
 
 // up/downvote buttons.

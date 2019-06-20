@@ -158,6 +158,7 @@
     window.wsserver = '{{config.WEBSOCKET_SERVER}}';
   </script>
   <script type="text/javascript" src="{{ asset_url_for('main.js') }}"></script>
+  <style>{{current_user.get_global_stylesheet()}}</style>
   {%block pagefoot%}{%endblock%}
 </body>
 </html>

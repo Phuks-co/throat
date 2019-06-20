@@ -118,14 +118,14 @@ def edit_user():
     """ Edit user endpoint """
     form = EditUserForm()
     if form.validate():
-        usr = User.get(User.uid == current_user.uid)
-        #if form.delete_account.data:
-        #    usr.status = 10
-        #    usr.save()
-        #    logout_user()
-        #    return json.dumps({'status': 'ok', 'addr': '/'})
-        usr.email = form.email.data
+        if form.subtheme.data != '':
+            try:
+                sub = Sub.get(Sub.name == form.subtheme.data)
+            except Sub.DoesNotExist:
+                return jsonify(status='error', error=['Sub does not exist'])
 
+        usr = User.get(User.uid == current_user.uid)
+        usr.email = form.email.data
         usr.save()
         current_user.update_prefs('exlinks', form.external_links.data)
         current_user.update_prefs('labrat', form.experimental.data)
@@ -133,6 +133,7 @@ def edit_user():
         current_user.update_prefs('nsfw', form.show_nsfw.data)
         current_user.update_prefs('noscroll', form.noscroll.data)
         current_user.update_prefs('nochat', form.nochat.data)
+        current_user.update_prefs('subtheme', form.subtheme.data, False)
 
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
