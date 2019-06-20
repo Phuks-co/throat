@@ -153,10 +153,9 @@ def save_token(token, req, *args, **kwargs):
 
 @api.route('/oauth/authorize', methods=['GET', 'POST'])
 @oauth.authorize_handler
+@login_required
 def authorize(*args, **kwargs):
     """ The page that authorizes oauth stuff """
-    if not current_user.is_authenticated:
-        return redirect(url_for('login', next=request.url))
     if request.method == 'GET':
         client_id = kwargs.get('client_id')
         client = load_client(client_id)

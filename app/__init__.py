@@ -67,6 +67,7 @@ caching.cache.init_app(app)
 
 login_manager = LoginManager(app)
 login_manager.anonymous_user = SiteAnon
+login_manager.login_view = 'login'
 
 engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config, 'conf': app.config,
                            'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,
