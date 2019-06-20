@@ -1187,6 +1187,9 @@ def edit_title():
 
         post.title = form.reason.data
         post.save()
+        socketio.emit('threadtitle', {'pid': post.pid, 'title': form.reason.data},
+                      namespace='/snt', room=post.pid)
+
         return jsonify(status="ok")
     return jsonify(status="error", error="Bork bork")
 

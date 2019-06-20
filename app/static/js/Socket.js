@@ -77,6 +77,10 @@ socket.on('threadcomments', function(data){
   document.querySelector('div[pid="' + data.pid + '"] .comments').innerHTML = 'comments (' + data.comments + ')';
 })
 
+socket.on('threadtitle', function(data){
+  document.querySelector('div[pid="' + data.pid + '"] .title').innerHTML = data.title;
+});
+
 socket.on('yourvote', function(data){
   var th = document.querySelector('div.post[pid="' + data.pid + '"] .votebuttons')
   if(th){

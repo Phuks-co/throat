@@ -13,9 +13,9 @@
       </div>
       <div class="thcontainer">
         @if post['link'] == None:
-          <a href="@{conf['SUB_PREFIX']}/@{post['sub']}/@{post['pid']!!s}" class="title">
+          <a href="@{conf['SUB_PREFIX']}/@{post['sub']}/@{post['pid']!!s}">
         @else:
-          <a @{('exlinks' in current_user.prefs) and 'target="_blank" ' or ''}href="@{post['link']!!e}" class="title">
+          <a @{('exlinks' in current_user.prefs) and 'target="_blank" ' or ''}href="@{post['link']!!e}">
         @end
           <div class="thumbnail">
             @if post['thumbnail'] != '' and post['link'] != None:
