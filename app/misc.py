@@ -1537,7 +1537,7 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
                 or_len = len(tree)
                 trimmed = True
         if depth > 3:
-            return [{'cid': None, 'more': len(tree)}] if tree else []
+            return [{'cid': None, 'more': len(tree), 'pcid': pcid}] if tree else []
         if (len(tree) > 5 and depth > 0) or (len(tree) > 10):
             tree = tree[:6] if depth > 0 else tree[:11]
             if or_len - len(tree) > 0:

@@ -1,4 +1,3 @@
-{% set pcid = {'c': '0'} %}
 {% for comment in comments recursive %}
   {%if comment.cid != None %}
     <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="{% if comment.hl %}active{%endif%} text-post no-padding comment sub-{{loop.depth0}}">
@@ -66,14 +65,13 @@
         {% if comment['morechildren'] %}
         <a href="#" class="loadchildren" data-pid="{{post.pid}}" data-cid="{{comment.cid}}">Load more ({{comment.morechildren}} comments)</a>
         {% elif comment['children'] %}
-          {%if pcid.update({'c': comment['cid']})%}{%endif%}
           {{loop(comment['children'] )}}
         {% endif %}
       </div>
     </article>
   {%endif%}
   {% if comment['cid'] == None %}
-    <a href="#" class="loadsibling" data-pid="{{post.pid}}" data-parent="{{pcid.c}}" data-key="{{comment.key}}" data-pcid="{{comment.pcid}}">Load more ({{comment.more}} comment{%if comment.more > 1%}s{%endif%})</a>
+    <a href="#" class="loadsibling" data-pid="{{post.pid}}" data-key="{{comment.key}}" data-pcid="{{comment.pcid}}">Load more ({{comment.more}} comment{%if comment.more > 1%}s{%endif%})</a>
   {% endif %}
 
 {%endfor%}
