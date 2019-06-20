@@ -394,7 +394,10 @@ u.addEventForChild(document, 'click', '.loadsibling', function(e, qelem){
   e.preventDefault();
   var pid = qelem.getAttribute('data-pid');
   var key = qelem.getAttribute('data-key');
+  var pcid = qelem.getAttribute('data-pcid');
   var parent = qelem.getAttribute('data-parent');
+  if(pcid !== ''){parent = pcid;}
+
   if(key === ''){
     var uri = '/do/get_children/' + pid + '/' + parent;
   }else{

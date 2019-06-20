@@ -1524,7 +1524,7 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
     # 3 - Trim tree (remove all children of depth=3 comments, all siblings after #5
     cid_list = []
     trimmed = False
-    def recursive_check(tree, depth=0, trimmed=None):
+    def recursive_check(tree, depth=0, trimmed=None, pcid=''):
         """ Recursively checks tree to apply pagination limits """
         or_len = len(tree)
         if only_after and not trimmed:
@@ -1540,17 +1540,16 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
             return [{'cid': None, 'more': len(tree)}] if tree else []
         if (len(tree) > 5 and depth > 0) or (len(tree) > 10):
             tree = tree[:6] if depth > 0 else tree[:11]
-            tree.append({'cid': None, 'key': tree[-1]['cid'], 'more': or_len - len(tree)})
+            if or_len - len(tree) > 0:
+                tree.append({'cid': None, 'key': tree[-1]['cid'], 'more': or_len - len(tree), 'pcid': pcid})
 
         for i in tree:
             if not i['cid']:
                 continue
             cid_list.append(i['cid'])
-            i['children'] = recursive_check(i['children'], depth+1)
+            i['children'] = recursive_check(i['children'], depth+1, pcid=i['cid'])
 
         return tree
-    import pprint
-    pprint.pprint(comment_tree)
 
     comment_tree = recursive_check(comment_tree, trimmed=trimmed)
 

@@ -73,7 +73,7 @@
     </article>
   {%endif%}
   {% if comment['cid'] == None %}
-    <a href="#" class="loadsibling" data-pid="{{post.pid}}" data-parent="{{pcid.c}}" data-key="{{comment.key}}">Load more ({{comment.more}} comments)</a>
+    <a href="#" class="loadsibling" data-pid="{{post.pid}}" data-parent="{{pcid.c}}" data-key="{{comment.key}}" data-pcid="{{comment.pcid}}">Load more ({{comment.more}} comment{%if comment.more > 1%}s{%endif%})</a>
   {% endif %}
 
 {%endfor%}
