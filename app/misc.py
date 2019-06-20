@@ -1075,8 +1075,8 @@ def getMsgCommReplies(page):
     try:
         msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content,
                              Message.posted, Message.read, Message.mtype, Message.mlink, SubPostComment.pid, SubPostComment.content,
-                             SubPostComment.score, SubPostCommentVote.positive)
-        msg = msg.join(SubPostComment, on=SubPostComment.cid == Message.mlink).join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == Message.mlink)))
+                             SubPostComment.score, SubPostCommentVote.positive, Sub.name.alias('sub'))
+        msg = msg.join(SubPostComment, on=SubPostComment.cid == Message.mlink).join(SubPost).join(Sub).switch(SubPostComment).join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == Message.mlink)))
         msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 5).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False
@@ -1088,8 +1088,8 @@ def getMsgPostReplies(page):
     try:
         msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content,
                              Message.posted, Message.read, Message.mtype, Message.mlink, SubPostCommentVote.positive, SubPostComment.pid,
-                             SubPostComment.score, SubPostComment.content)
-        msg = msg.join(SubPostComment, on=SubPostComment.cid == Message.mlink).join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == Message.mlink)))
+                             SubPostComment.score, SubPostComment.content, Sub.name.alias('sub'))
+        msg = msg.join(SubPostComment, on=SubPostComment.cid == Message.mlink).join(SubPost).join(Sub).switch(SubPostComment).join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == Message.mlink)))
         msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 4).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False

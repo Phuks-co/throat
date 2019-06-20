@@ -32,7 +32,7 @@
               {% else %}
                 <a class="read">read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
               {% endif %}
-              <a href="#comment-form" class="replycom" data-replyto='{{message.username}}' data-post='{{message.pid}}' data-parentid='{{message.mlink}}' data-replytitle='{{message.subject}}' data-mid='{{message.mid}}'>reply</a>
+              <a href="#comment-form" class="replycom" data-sub="{{message.sub}}" data-replyto='{{message.username}}' data-post='{{message.pid}}' data-parentid='{{message.mlink}}' data-replytitle='{{message.subject}}' data-mid='{{message.mid}}'>reply</a>
               <a href="{{ url_for('view_comment_inbox', cid=message.mlink) }}" class="btn small">permalink</a>
               <!--<a class="savemsg" data-mid="{{message.mid}}">save</a>-->
               <a class="deletemsg" data-mid="{{message.mid}}">delete</a>
