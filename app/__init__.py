@@ -559,6 +559,7 @@ def inbox_sort():
         return redirect(url_for('view_messages_comreplies'))
     elif misc.get_unread_count(misc.MESSAGE_TYPE_MODMAIL) > 0:
         return redirect(url_for('view_messages_modmail'))
+    return redirect(url_for('view_messages'))
 
 
 @app.route("/messages/inbox", defaults={'page': 1})
