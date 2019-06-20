@@ -135,6 +135,8 @@ def edit_user():
         current_user.update_prefs('nochat', form.nochat.data)
         current_user.update_prefs('subtheme', form.subtheme.data, False)
 
+        cache.delete_memoized(current_user.get_global_stylesheet)
+
         return json.dumps({'status': 'ok'})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 

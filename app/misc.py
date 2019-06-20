@@ -203,7 +203,7 @@ class SiteUser(object):
         except UserMetadata.DoesNotExist:
             md = UserMetadata.create(uid=self.uid, key=key, value=value)
     
-    @cache.memoize(10)
+    @cache.memoize(30)
     def get_global_stylesheet(self):
         if self.subtheme:
             try:
