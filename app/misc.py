@@ -1327,7 +1327,10 @@ def validate_css(css, sid):
             if m is not True:
                 return m
 
-    return (0, tinycss2.serialize(st))
+    try:
+        return (0, tinycss2.serialize(st))
+    except TypeError:
+        return ("Invalid CSS", 0, 0)
 
 
 @cache.memoize(3)
