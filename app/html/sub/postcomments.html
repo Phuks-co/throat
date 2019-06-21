@@ -1,0 +1,86 @@
+@require(post, comments)
+@def renderComments(post, comments, highlight=''):
+  @#ignore
+  @for comment in comments:
+    @if comment['cid']:
+      <article id="@{comment['cid']}" data-cid="@{comment['cid']}" class="@{(comment.get('hl')) and 'active' or ''} text-post no-padding comment">
+        <div class="commentrow @{(comment['cid'] == highlight) and 'highlight' or ''}" id="comment-@{comment['cid']}">
+          <div class="pull left votecomment" @{(comment['status'] == 1) and 'style="display:none;"' or ''}>
+            @if comment['userstatus'] != 10:
+              <div title="Upvote" class="c-upvote @{(comment.get('positive') == True) and 'upvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="upvote"></div>
+              <div title="Downvote" class="c-downvote @{(comment.get('positive') == False) and 'downvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="downvote"></div>
+            @end
+          </div>
+          <div class="commblock">
+            <div class="commenthead">
+              <a class="togglecomment @{(comment['status'] == 1) and 'expand' or 'collapse'}" data-cid="@{comment['cid']}">
+                @{(comment['status'] == 1) and '[+]' or '[–]'} \
+              </a>
+              @if comment['status'] != 1:
+                @if comment['userstatus'] == 10:
+                  <a class="poster deleted">[Deleted]</a>
+                @else:
+                  <a href="/u/@{comment['user']}" class="poster">
+                    @{(comment['userstatus'] == 100) and '<span class="bot-tag">bot</span>' or ''}
+                    @{comment['user']}
+                    @{(comment['userstatus'] == 100) and '<span class="op-tag">[OP]</span>' or ''}
+                  </a>
+                @end
+              @else:
+                <a class="poster deleted">[Deleted]</a>
+              @end
+              <b><span class="cscore">@{comment['score']!!s}</span> points</b> (+<b>@{comment['upvotes']!!s}</b>|-<b>@{comment['downvotes']!!s}</b>)
+              <span class="time ">
+                  <time-ago datetime="@{comment['time'].isoformat()}Z"></time-ago>
+              </span>
+              @if comment['lastedit'] and comment['status'] != 1:
+                <span class="time edited">
+                  Edited <time-ago datetime="@{comment['lastedit'].isoformat()}Z"></time-ago>
+                </span>
+              @end
+            </div>
+
+            <div class="content" id="content-@{comment['cid']}" @{(comment['status'] == 1) and 'style="display:none;"' or ''}>
+              @if comment['status'] == 1:
+                [Deleted] \
+              @else:
+                @{comment['content']}
+              @end
+            </div>
+            
+            @if comment['status'] != 1:
+              <div hidden id="sauce-@{comment['cid']}">@{comment['source']}</div>
+            @end
+            <ul class="bottombar links" @{(comment['status'] == 1) and 'style="display:none;"' or ''}>
+              <li><a href="@{url_for('sub.view_perm', sub=post['sub'], cid=comment['cid'], pid=post['pid'])}">permalink</a></li>
+              @if current_user.is_authenticated and not post['deleted']:
+                <li><a class="reply-comment" data-pid="@{comment['pid']!!s}" data-to="@{comment['cid']}">reply</a></li>
+                @if comment['uid'] == current_user.uid and not comment['status'] == 1:
+                  <li><a class="edit-comment" data-cid="@{comment['cid']}">edit</a></li>
+                @end
+                @if (comment['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in (subInfo['mod2'] + [subInfo['mod1']])) and not comment['status'] == 1:
+                  <li><a @{(comment['uid'] == current_user.uid) and 'selfdel="true"' or ''} class="delete-comment" data-cid="@{comment['cid']}">delete</a></li>
+                @end
+                <a data-ac="report" cid="@{comment['cid']}" class="report-comment">report</a>
+              @end
+              @if comment['status'] != 1:
+                <li><a class="comment-source" data-cid="@{comment['cid']}">source</a></li>
+              @end
+            </ul>
+          </div>
+        </div>
+        <div id="child-@{comment['cid']}" class="pchild" @{(comment['status'] == 1) and 'style="display:none;"' or ''}>
+          @if comment['children']:
+            @renderComments(post, sub, comment['children'])
+          @end
+        </div>
+      </article>
+    @else:
+        <a href="#" class="loadsibling" data-pid="@{post['pid']!!s}" data-key="@{comment.get('key', '')}" data-pcid="@{comment['pcid']}">
+        Load more (@{comment['more']!!s} comment @{(comment['more']> 1) and 's' or ''})
+        </a>
+    @end 
+  @end
+@end
+
+@renderComments(post, comments)

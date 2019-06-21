@@ -216,7 +216,8 @@
           {%endif%}
         </ul>
     </div>
-  </div>
+  </div> <!-- wholepost -->
+
   {% if (subInfo.get('ucf', 0) == 1 and current_user.uid == post.uid) or current_user.is_mod(post.sid) %}
     <div style="display:none;" id="postflairs">
       <span class="closemsg">×</span>
@@ -232,6 +233,7 @@
   {% if post.deleted == 0 and post.ptype == 3%}
     {% include "postpoll.html" %}
   {%endif%}
+
    {% if post.content %}
      {% if post.deleted == 0 %}
        <div id="postcontent">
@@ -248,11 +250,11 @@
 
    {%if current_user.is_authenticated and post.deleted == 0 %}
      <form data-reset="true" data-redir="true" action="{{url_for('do.create_comment', pid=post.pid)}}" class="comment-form ajaxform static pure-form">
-       {{commentform.csrf_token}}
-       {{commentform.post(value=post.pid)}}
-       {{commentform.parent(value='0')}}
+       {{forms.PostComment.csrf_token}}
+       {{forms.PostComment.post(value=post.pid)}}
+       {{forms.PostComment.parent(value='0')}}
        <div class="markdown-editor" id="ncme">
-         {{commentform.comment(id="comment2", placeholder="Write your comment here. Styling with Markdown format is supported.", rows="6")}}
+         {{forms.PostComment.comment(id="comment2", placeholder="Write your comment here. Styling with Markdown format is supported.", rows="6")}}
        </div>
        <div class="div-error error alertbox"></div>
        <button type="submit" class="pure-button pure-button-primary">Submit comment</button>

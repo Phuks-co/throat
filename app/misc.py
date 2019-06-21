@@ -32,7 +32,7 @@ from .badges import badges
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog
-from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads
+from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair
 from peewee import JOIN, fn
 import requests
 import logging
@@ -62,7 +62,7 @@ class SiteUser(object):
 
     def __init__(self, userclass=None, subs=[], prefs={}):
         self.user = userclass
-        self.notifications = self.user['notifications']
+        self.notifications = self.user.get('notifications', 0)
         self.name = self.user['name']
         self.uid = self.user['uid']
         self.prefs = [x['key'] for x in prefs]
@@ -489,6 +489,9 @@ def getPostFlair(post):
     # The mere existence of this function pains me.
     return post['flair']
 
+def getSubFlairs(sid):
+    return SubFlair.select().where(SubFlair.sid == sid)
+
 
 @cache.memoize(600)
 def getDefaultSubs():
@@ -513,7 +516,7 @@ def enableInviteCode():
     """ Returns true if invite code is required to register """
     try:
         xm = SiteMetadata.get(SiteMetadata.key == 'useinvitecode')
-        return False if x.value == '0' else True
+        return False if xm.value == '0' else True
     except SiteMetadata.DoesNotExist:
         return False
 
@@ -608,6 +611,7 @@ def getUser(uid):
     return User.select().where(User.uid == uid).dicts().get()
 
 
+@cache.memoize(5)
 def getDomain(link):
     """ Gets Domain from url """
     x = urlparse(link)
@@ -803,12 +807,12 @@ def getChangelog():
 
 def getSinglePost(pid):
     if current_user.is_authenticated:
-        posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
+        posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score, SubPost.upvotes, SubPost.downvotes,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
                                SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'), SubPost.deleted, SubPost.ptype)
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(SubPost)
     else:
-        posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
+        posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score, SubPost.upvotes, SubPost.downvotes,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
                                SubPost.comments, User.uid, User.status.alias('userstatus'), SubPost.deleted, SubPost.ptype)
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER).where(SubPost.pid == pid).dicts().get()
@@ -890,21 +894,26 @@ def getStickies(sid):
 
 
 def load_user(user_id):
-    user = User.select(fn.Count(Message.mid).alias('notifications'),
-                       User.given, User.score, User.name, User.uid, User.status, User.email)
-    user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & (Message.mtype != 9) & (Message.mtype != 41) & Message.read.is_null(True))).switch(User)
-    user = user.where(User.uid == user_id).dicts()
+    if request.path == '/socket.io/':
+        user = User.select(User.given, User.score, User.name, User.uid, User.status, User.email)
+        user = user.where(User.uid == user_id).dicts()
+        return SiteUser(user.get(), [], [])
+    else:
+        user = User.select(fn.Count(Message.mid).alias('notifications'),
+                        User.given, User.score, User.name, User.uid, User.status, User.email)
+        user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & (Message.mtype != 9) & (Message.mtype != 41) & Message.read.is_null(True))).switch(User)
+        user = user.where(User.uid == user_id).dicts()
 
-    prefs = UserMetadata.select(UserMetadata.key, UserMetadata.value).where(UserMetadata.uid == user_id)
-    prefs = prefs.where((UserMetadata.value == '1') | (UserMetadata.key == 'subtheme')).dicts()
+        prefs = UserMetadata.select(UserMetadata.key, UserMetadata.value).where(UserMetadata.uid == user_id)
+        prefs = prefs.where((UserMetadata.value == '1') | (UserMetadata.key == 'subtheme')).dicts()
 
-    try:
-        user = user.get()
-        subs = SubSubscriber.select(SubSubscriber.sid, Sub.name, SubSubscriber.status).join(Sub, on=(Sub.sid == SubSubscriber.sid)).switch(SubSubscriber).where(SubSubscriber.uid == user_id)
-        subs = subs.order_by(SubSubscriber.order.asc()).dicts()
-        return SiteUser(user, subs, prefs)
-    except User.DoesNotExist:
-        return None
+        try:
+            user = user.get()
+            subs = SubSubscriber.select(SubSubscriber.sid, Sub.name, SubSubscriber.status).join(Sub, on=(Sub.sid == SubSubscriber.sid)).switch(SubSubscriber).where(SubSubscriber.uid == user_id)
+            subs = subs.order_by(SubSubscriber.order.asc()).dicts()
+            return SiteUser(user, subs, prefs)
+        except User.DoesNotExist:
+            return None
 
 
 def get_notification_count(uid):
@@ -1201,27 +1210,15 @@ def upload_file(max_size=16580608):
 
 def getSubData(sid, simple=False, extra=False):
     sdata = SubMetadata.select().where(SubMetadata.sid == sid)
-    sub = Sub.get(Sub.sid == sid)
-    data = {'mods': [], 'mod2': [], 'mod2i': [], 'xmod2': []}
+    data = {'mods': [], 'mod2': [], 'mod2i': [], 'xmod2': [], 'sticky': []}
     for p in sdata:
-        if p.key in ['mod2', 'tag', 'ban', 'mod2i', 'xmod2']:
+        if p.key in ['mod2', 'tag', 'ban', 'mod2i', 'xmod2', 'sticky']:
             if data.get(p.key):
                 data[p.key].append(p.value)
             else:
                 data[p.key] = [p.value]
         else:
             data[p.key] = p.value
-    data['subs'] = sub.subscribers
-    if data['subs'] is None:
-        data['subs'] = SubSubscriber.select().where((SubSubscriber.sid == sid) & (SubSubscriber.status == 1)).count()
-        q = Sub.update(subscribers=data['subs']).where(Sub.sid == sid)
-        q.execute()
-
-    data['posts'] = sub.posts
-    if data['posts'] is None:
-        data['posts'] = SubPost.select().where((SubPost.sid == sid) & (SubPost.deleted == 0)).count()
-        q = Sub.update(posts=data['posts']).where(Sub.sid == sid)
-        q.execute()
 
     if not simple:
         try:
@@ -1233,12 +1230,6 @@ def getSubData(sid, simple=False, extra=False):
             data['wiki']
         except KeyError:
             data['wiki'] = ''
-
-        if data.get('mod2', []) != []:
-            try:
-                data['mods'] = User.select(User.uid, User.name).where((User.uid << data['mod2']) & (User.status == 0)).dicts()
-            except User.DoesNotExist:
-                data['mods'] = []
         
         if extra:
             if data.get('xmod2', []) != []:
@@ -1246,23 +1237,31 @@ def getSubData(sid, simple=False, extra=False):
                     data['xmods'] = User.select(User.uid, User.name).where((User.uid << data['xmod2']) & (User.status == 0)).dicts()
                 except User.DoesNotExist:
                     data['xmods'] = []
-            
+
             if data.get('mod2i', []) != []:
                 try:
                     data['modi'] = User.select(User.uid, User.name).where((User.uid << data['mod2i']) & (User.status == 0)).dicts()
                 except User.DoesNotExist:
                     data['modi'] = []
-        try:
-            data['owner'] = User.select(User.uid, User.name).where((User.uid == data['mod1']) & (User.status == 0)).dicts().get()
-        except (KeyError, User.DoesNotExist):
-            data['owner'] = User.select(User.uid, User.name).where(User.name == 'Phuks').dicts().get()
 
-        try:
-            data['creator'] = User.select(User.uid, User.name).where((User.uid == data['mod']) & (User.status == 0)).dicts().get()
-        except KeyError:
-            data['creator'] = User.select(User.uid, User.name).where(User.name == 'Phuks').dicts().get()
-        except User.DoesNotExist:
-            data['creator'] = {'uid': '0', 'name': '[Deleted]'}
+        bmodquery = data['mod2'] + [data.get('mod1'), data.get('mod')]
+        bmodquery = set([x for x in bmodquery if x])
+        modquery = User.select(User.uid, User.name, User.status).where(User.uid << bmodquery).dicts()
+
+        data['mods'] = [x for x in modquery if x['uid'] in data.get('mod2', [])]
+        data['owner'] = [x for x in modquery if x['uid'] in data.get('mod1', [])]
+        data['creator'] = [x for x in modquery if x['uid'] == data.get('mod', '')]
+        if data['owner']:
+            data['owner'] = data['owner'][0] if data['owner'][0]['status'] == 0 else None
+
+        if not data['owner']:
+            data['owner'] = {'uid': 1, 'name': 'Phuks'}  # TODO: move name to config
+
+        if data['creator']:
+            data['creator'] = data['creator'][0] if data['creator'][0]['status'] == 0 else {'uid': '0', 'name': '[Deleted]'}
+
+        if not data['creator']:
+            data['creator'] = {'uid': '0', 'name': '[Nobody]'}  # TODO: move name to config
 
         try:
             data['stylesheet'] = SubStylesheet.get(SubStylesheet.sid == sid).content
@@ -1591,7 +1590,7 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
         if comm['status']:
             comm['content'] = ''
             comm['lastedit'] = None
-        del comm['userstatus']
+        #del comm['userstatus']
         commdata[comm['cid']] = comm
 
 

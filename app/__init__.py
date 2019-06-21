@@ -58,6 +58,9 @@ app.config['WEBPACK_MANIFEST_PATH'] = 'manifest.json'
 if app.config['TESTING']:
     import logging
     logging.basicConfig(level=logging.DEBUG)
+    logging.getLogger("engineio.server").setLevel(logging.WARNING)
+    logging.getLogger("socketio.server").setLevel(logging.WARNING)
+
 
 
 webpack.init_app(app)
@@ -72,7 +75,7 @@ login_manager.login_view = 'login'
 engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config, 'conf': app.config,
                            'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,
                            'form': forms, 'hostname': socket.gethostname(), 'datetime': datetime,
-                           'e': escape_html})
+                           'e': escape_html, 'markdown': misc.our_markdown})
 
 
 @app.before_request

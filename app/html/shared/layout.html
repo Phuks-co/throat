@@ -23,7 +23,7 @@
     <title>
 
       @if not current_user.is_anonymous:
-        @if current_user.notifications >0:
+        @if current_user.notifications > 0:
           (@{current_user.notifications!!s})
         @end
       @end

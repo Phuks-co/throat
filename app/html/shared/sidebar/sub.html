@@ -32,7 +32,7 @@
   @end
   </h3>
 </div>
-<div class="subs">@{subInfo['subs']!!s} subscribers</div>
+<div class="subs">@{sub['subscribers']!!s} subscribers</div>
 
 <div role="group" class="pure-button-group" data-sid="@{sub['sid']}">
   @if current_user.has_subscribed(sub['name']):

@@ -8,7 +8,7 @@ from ..misc import engine
 from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption
 from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, UserSaved
 from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditSubTextPostForm, EditMod2Form
-from ..forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair, CreateSubFlair
+from ..forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair, CreateSubFlair, PostComment
 from .. import misc
 
 sub = Blueprint('sub', __name__)
@@ -273,6 +273,56 @@ def view_post(sub, pid, comments=False, highlight=None):
         abort(403)
     if post['sub'].lower() != sub.lower():
         abort(404)
+    
+    sub = Sub.select().where(Sub.name == sub).dicts().get()
+    subInfo = misc.getSubData(sub['sid'])
+
+    try:
+        UserSaved.get((UserSaved.uid == current_user.uid) & (UserSaved.pid == pid))
+        is_saved = True
+    except UserSaved.DoesNotExist:
+        is_saved = False
+
+    if not comments:
+        comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == post['pid']).order_by(SubPostComment.score.desc()).dicts()
+        if not comments.count():
+            comments = []
+        else:
+            comments = misc.get_comment_tree(comments, uid=current_user.uid)
+
+    pollData = {'has_voted': False}
+    postmeta = {}
+    if post['ptype'] == 3:
+        postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
+        # poll. grab options and votes.
+        options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text, fn.Count(SubPostPollVote.id).alias('votecount'))
+        options = options.join(SubPostPollVote, JOIN.LEFT_OUTER, on=(SubPostPollVote.vid == SubPostPollOption.id))
+        options = options.where(SubPostPollOption.pid == pid).group_by(SubPostPollOption.id)
+        pollData['options'] = options
+        total_votes = SubPostPollVote.select().where(SubPostPollVote.pid == pid).count()
+        pollData['total_votes'] = total_votes
+        if current_user.is_authenticated:
+            # Check if user has already voted on this poll.
+            try:
+                u_vote = SubPostPollVote.get((SubPostPollVote.pid == pid) & (SubPostPollVote.uid == current_user.uid))
+                pollData['has_voted'] = True
+                pollData['voted_for'] = u_vote.vid_id
+            except SubPostPollVote.DoesNotExist:
+                pollData['has_voted'] = False
+            
+        # Check if the poll is open
+        pollData['poll_open'] = True
+        if 'poll_closed' in postmeta:
+            pollData['poll_open'] = False
+
+        if 'poll_closes_time' in postmeta:
+            pollData['poll_closes'] = datetime.datetime.utcfromtimestamp(int(postmeta['poll_closes_time'])).isoformat()
+            if int(postmeta['poll_closes_time']) < time.time():
+                pollData['poll_open'] = False
+
+    return engine.get_template('sub/post.html').render({'post': post, 'sub': sub, 'subInfo': subInfo,
+                                                        'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,
+                                                        'commentform': PostComment(), 'comments': comments})
     editflair = EditPostFlair()
 
     editflair.flair.choices = []
@@ -288,53 +338,27 @@ def view_post(sub, pid, comments=False, highlight=None):
         if not comments.count():
             comments = []
         else:
+            misc.ktime0()
             comments = misc.get_comment_tree(comments, uid=current_user.uid)
+            misc.ktime()
 
     ksub = Sub.get(Sub.sid == post['sid'])
     subinfo = misc.getSubData(ksub.sid)
     ncomments = SubPostComment.select().where(SubPostComment.pid == post['pid']).count()
 
-    postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
-    try:
-        UserSaved.get((UserSaved.uid == current_user.uid) & (UserSaved.pid == pid))
-        is_saved = True
-    except UserSaved.DoesNotExist:
-        is_saved = False
-
     options, total_votes, has_voted, voted_for, poll_open, poll_closes = ([], 0, None, None, True, None)
-    if post['ptype'] == 3:
-        # poll. grab options and votes.
-        options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text, fn.Count(SubPostPollVote.id).alias('votecount'))
-        options = options.join(SubPostPollVote, JOIN.LEFT_OUTER, on=(SubPostPollVote.vid == SubPostPollOption.id))
-        options = options.where(SubPostPollOption.pid == pid).group_by(SubPostPollOption.id)
-        total_votes = SubPostPollVote.select().where(SubPostPollVote.pid == pid).count()
 
-        if current_user.is_authenticated:
-            # Check if user has already voted on this poll.
-            try:
-                u_vote = SubPostPollVote.get((SubPostPollVote.pid == pid) & (SubPostPollVote.uid == current_user.uid))
-                has_voted = True
-                voted_for = u_vote.vid_id
-            except SubPostPollVote.DoesNotExist:
-                has_voted = False
-            
-        # Check if the poll is open
-        poll_open = True
-        if 'poll_closed' in postmeta:
-            poll_open = False
-
-        if 'poll_closes_time' in postmeta:
-            poll_closes = datetime.datetime.utcfromtimestamp(int(postmeta['poll_closes_time'])).isoformat()
-            if int(postmeta['poll_closes_time']) < time.time():
-                poll_open = False
-
-    return render_template('post.html', post=post, subInfo=misc.getSubData(post['sid']),
+    print("template")
+    misc.ktime0()
+    rc = render_template('post.html', post=post, subInfo=misc.getSubData(post['sid']),
                            edittxtpostform=txtpedit, sub=ksub, subinfo=subinfo,
                            editlinkpostform=EditSubLinkPostForm(),
                            comments=comments, ncomments=ncomments, is_saved=is_saved,
                            editpostflair=editflair, highlight=highlight, 
                            poll_options=options, votes=total_votes, has_voted=has_voted, voted_for=voted_for,
                            poll_open=poll_open, postmeta=postmeta, poll_closes=poll_closes)
+    misc.ktime()
+    return rc
 
 
 @sub.route("/<sub>/<pid>/<cid>")

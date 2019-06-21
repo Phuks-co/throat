@@ -545,35 +545,36 @@ def get_txtpost(pid):
             abort(404)
         cont = misc.our_markdown(post['content'])
         if post['ptype'] == 3:
+            pollData = {'has_voted': False}
             postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
-            options, total_votes, has_voted, voted_for, poll_open = ([], 0, None, None, True)
             # poll. grab options and votes.
             options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text, fn.Count(SubPostPollVote.id).alias('votecount'))
             options = options.join(SubPostPollVote, JOIN.LEFT_OUTER, on=(SubPostPollVote.vid == SubPostPollOption.id))
             options = options.where(SubPostPollOption.pid == pid).group_by(SubPostPollOption.id)
+            pollData['options'] = options
             total_votes = SubPostPollVote.select().where(SubPostPollVote.pid == pid).count()
-
+            pollData['total_votes'] = total_votes
             if current_user.is_authenticated:
                 # Check if user has already voted on this poll.
                 try:
                     u_vote = SubPostPollVote.get((SubPostPollVote.pid == pid) & (SubPostPollVote.uid == current_user.uid))
-                    has_voted = True
-                    voted_for = u_vote.vid_id
+                    pollData['has_voted'] = True
+                    pollData['voted_for'] = u_vote.vid_id
                 except SubPostPollVote.DoesNotExist:
-                    has_voted = False
+                    pollData['has_voted'] = False
                 
-                # Check if the poll is open
-                poll_open = True
-                if 'poll_closed' in postmeta:
-                    poll_open = False
+            # Check if the poll is open
+            pollData['poll_open'] = True
+            if 'poll_closed' in postmeta:
+                pollData['poll_open'] = False
 
-                if 'poll_closes_time' in postmeta:
-                    if int(postmeta['poll_closes_time']) < time.time():
-                        poll_open = False
+            if 'poll_closes_time' in postmeta:
+                pollData['poll_closes'] = datetime.datetime.utcfromtimestamp(int(postmeta['poll_closes_time'])).isoformat()
+                if int(postmeta['poll_closes_time']) < time.time():
+                    pollData['poll_open'] = False
 
-                cont = render_template('postpoll.html', post=post, poll_options=options, votes=total_votes, has_voted=has_voted, voted_for=voted_for,
-                           poll_open=poll_open, postmeta=postmeta) + cont
-        
+            cont = engine.get_template('sub/postpoll.html').render({'post': post, 'pollData': pollData, 'postmeta': postmeta})
+
         return jsonify(status='ok', content=cont)
     except SubPost.DoesNotExist:
         return jsonify(status='error', error=['No longer available'])
@@ -1720,7 +1721,7 @@ def upvotecomment(cid, value):
 def get_sibling(pid, cid, lim): 
     """ Gets children comments for <cid> """
     try:
-        post = SubPost.get(SubPost.pid == pid)
+        post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
         return jsonify(status='ok', posts=[])
 
@@ -1729,26 +1730,26 @@ def get_sibling(pid, cid, lim):
     if cid != '0':
         try:
             root = SubPostComment.get(SubPostComment.cid == cid)
-            if root.pid_id != post.pid:
+            if root.pid_id != post['pid']:
                 return jsonify(status='ok', posts=[])
         except SubPostComment.DoesNotExist:
             return jsonify(status='ok', posts=[])
 
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
     if not comments.count():
-        return render_template('postcomments.html', sub=post.sid, post=post, comments=[])
+        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': []})
 
     if lim:
         comment_tree = misc.get_comment_tree(comments, cid if cid != '0' else None, lim, provide_context=False, uid=current_user.uid)
     elif cid != '0':
         comment_tree = misc.get_comment_tree(comments, cid, provide_context=False, uid=current_user.uid)
     else:
-        return render_template('postcomments.html', sub=post.sid, post=post, comments=[])
+        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': []})
     
     if len(comment_tree) > 0 and cid != '0':
         comment_tree = comment_tree[0].get('children', [])
 
-    return render_template('postcomments.html', sub=post.sid, post=post, comments=comment_tree)
+    return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': comment_tree})
 
 
 @do.route('/do/preview', methods=['POST'])

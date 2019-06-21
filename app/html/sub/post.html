@@ -1,0 +1,218 @@
+@extends("shared/layout.html")
+@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta)
+@import "sub/postcomments.html" as pcomm
+@import "sub/postpoll.html" as polls
+
+
+@def title():
+  @{post['title']} |\
+@end
+
+@def sidebar():
+<hr>
+  <div class="author" style="padding:.5em;">
+    Posted <time-ago datetime="@{post['posted'].isoformat()}Z"></time-ago> by
+    @if post['deleted'] == 0:
+      @if post['userstatus'] != 10:
+        <a class="authorlink" href="@{url_for('view_user', user=post['user'])}">
+          @{(post['userstatus'] == 100) and '<span class="bot-tag">bot</span>' or ''}
+          @{post['user']}
+        </a>
+      @else:
+        <a class="authorlink deleted">[Deleted]</a>
+      @end
+    @else:
+      <span class="deleted">[deleted]</span>
+    @end
+    <br/>
+    @if post['edited']:
+      edited <time-ago datetime="@{post['edited'].isoformat()}Z"></time-ago><br/>
+    @end
+    Score: @{post['score']!!s} <b>(+@{post['upvotes']!!s}|-@{post['downvotes']!!s})</b>
+  </div>    
+<hr>
+  @include('shared/sidebar/sub.html')
+@end
+
+@def main():
+<div class="wholepost">
+  <div class="postbar post" pid="@{post['pid']!!s}">
+    <div class="misctainer">
+      <div class="votebuttons">
+        @if post['userstatus'] != 10 and (datetime.datetime.utcnow() - post['posted']) < datetime.timedelta(days=60):
+          <div title="Upvote" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="upvote"></div>
+          <div class="score">@{post['score']!!s}</div>
+          <div title="Downvote" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="downvote"></div>
+        @else:
+          <div class="score archived">@{post['score']!!s}</div>
+        @end
+      </div>
+      <div class="thcontainer">
+        <a class="title">
+          <div class="thumbnail">
+            @if post['thumbnail'] != '' and post['link'] != None:
+              <img src="@{config.THUMBNAIL_HOST}@{post.thumbnail}"/>
+            @elif post['link'] != None:
+              <span class="placeholder" data-icon="link"></span>
+            @else:
+              <span class="placeholder" data-icon="chat"></span>
+            @end
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="postinfo" id="postinfo" pid="@{post['pid']!!s}">
+      <div class="post-heading">
+        @if post['nsfw'] or sub['nsfw']:
+          <div class="nsfw" alt="Not safe for work">NSFW</div>
+        @end
+
+        @if post['flair']:
+          <span class="postflair">@{post['flair']!!e}</span>
+        @end
+
+        @if post['link'] == None:
+          <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}" class="title">@{post['title']!!e}</a>
+        @else:
+          <a href="@{(post['deleted'] == 0) and post['link'] or '#'}" class="title">@{post['title']!!e}</a>
+          @if post['deleted'] == 0:
+            <a href="/domain/@{func.getDomain(post['link'])!!e}" class="domain">(@{func.getDomain(post['link'])!!e})</a>
+          @end
+        @end
+      </div>
+      <ul class="links" data-pid="@{post['pid']!!s}">
+        @if post['link']:
+          @if func.getDomain(post['link']) in ('youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'streamja.com', 'vimeo.com', 'vine.co', 'hooktube.com', 'www.hooktube.com', 'instaud.io'):
+            <li><div class="expando" data-pid="@{post['pid']!!s}" data-t="lnk" data-link="@{post['link']!!e}"><div class="icon expando-btn" data-icon="play"></div></div></li>
+          @elif post['link'].lower().endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
+            <li><div class="expando" data-pid="@{post['pid']!!s}" data-t="lnk" data-link="@{post['link']!!e}"><div class="icon expando-btn" data-icon="image"></div></div></li>
+          @elif post['link'].lower().endswith(('.mp4', '.webm', '.gifv')):
+            <li><div class="expando" data-pid="@{post['pid']!!s}" data-t="lnk" data-link="@{post['link']!!e}"><div class="icon expando-btn" data-icon="play"></div></div></li>
+          @end
+        @end
+        @if current_user.is_authenticated and post['deleted'] == 0:
+          @if post['content']:
+            <li><a class="post-source">source</a></li>
+          @end
+
+          @if is_saved:
+            <li><a class="removesavedpost" data-pid="@{post['pid']!!s}">unsave</a></li>
+          @else:
+            <li><a class="savepost" data-pid="@{post['pid']!!s}">save</a></li>
+          @end
+          @if (subInfo.get('ucf', 0) == 1 and current_user.uid == post.uid) or current_user.uid in (subInfo['mod2'] + [subInfo['mod1']]):
+            <li><a class="editflair">flair</a></li>
+          @end
+          @if post['uid'] == current_user.uid:
+            @if post['ptype'] != 1:
+              <li><a class="edit-post" data-pid="@{post['pid']!!s}">edit</a></li>
+            @end
+            @if (datetime.datetime.utcnow() - post['posted']) < datetime.timedelta(seconds=300):
+              <li><a class="edit-title" data-pid="@{post['pid']!!s}">edit title</a></li>
+            @end
+          @end
+
+          @if post['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in (subInfo['mod2'] + [subInfo['mod1']]):
+            <li id="delpostli"><a @{(post['uid'] == current_user.uid) and 'selfdel="true"' or ''} class="delete-post"> delete </a></li>
+
+            @if not sub['nsfw']:
+              @if not post['nsfw']:
+                <li><a class="nsfw-post"> tag as nsfw </a></li>
+              @else:
+                <li><a class="nsfw-post"> remove nsfw </a></li>
+              @end
+            @end
+          @end
+
+          @if post['deleted'] == 0 and post['ptype'] == 3 and pollData['poll_open'] and (post['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in (subInfo['mod2'] + [subInfo['mod1']])):
+              <li><a class="poll-close"> close poll </a></li>
+          @end
+            
+          @if current_user.uid in (subInfo['mod2'] + [subInfo['mod1']]):
+            @if str(post['pid']) in subInfo['sticky']:
+              <li><a class="stick-post">unstick</a></li>
+            @else:
+              <li><a class="stick-post">make sticky</a></li>
+            @end
+            
+            @if str(post['pid']) == subInfo['wiki']:
+              <li><a class="wiki-post">remove wiki</a></li>
+            @else:
+              <li><a class="wiki-post">make wiki</a></li>
+            @end
+            @if post['sub'] == 'announcements' and current_user.is_admin():
+              @if not func.getAnnouncement() or func.getAnnouncement()['pid'] != post['pid']:
+                <li><a class="announce-post">make announcement</a></li>
+              @end
+            @end
+          @end
+          <li><a data-ac="report" class="report-post">report</a></li>
+        @end
+      </ul>
+    </div>
+  </div>
+
+  @if (subInfo.get('ucf', 0) == 1 and current_user.uid == post.uid) or current_user.uid in (subInfo['mod2'] + [subInfo['mod1']]):
+    <div style="display:none;" id="postflairs">
+      <span class="closemsg">×</span>
+      @if post['flair']:
+        <div>Current flair: <span class="postflair">@{post['flair']!!e}</span>. <a data-sub="@{post['sub']}" data-pid="@{post['pid']!!s}" href="#" id="remove-flair">Remove</a>.</div>
+      @end
+      <h4>Select a new flair</h4>
+      @for ll in func.getSubFlairs(post['sid']):
+        <span class="selflair" data-sub="@{post['sub']}" data-flair="@{ll.xid!!s}" data-pid="@{post['pid']!!s}">@{ll.text!!e}</span>
+      @end
+    </div>
+  @end
+
+  @if post['deleted'] == 0 and post['ptype'] == 3:
+    @polls.renderPoll(pollData, postmeta, post)
+  @end
+
+  @if post['content']:
+    @if post['deleted'] == 0:
+      <div id="postcontent">
+        @{markdown(post['content'])}
+      </div>
+      <div id="post-source">@{post['content']!!e}</div>
+    @else:
+      <div class="deleted">[deleted]</div>
+    @end
+  @elif not post['link']:
+    <div id="postcontent"></div>
+    <div id="post-source"></div>
+  @end
+
+
+  @if current_user.is_authenticated and post['deleted'] == 0:
+  <form data-reset="true" data-redir="true" action="@{url_for('do.create_comment', pid=post['pid'])}" class="comment-form ajaxform static pure-form">
+    @{commentform.csrf_token()}
+    @{commentform.post(value=post['pid'])}
+    @{commentform.parent(value='0')}
+    <div class="markdown-editor" id="ncme">
+      @{commentform.comment(id="comment2", placeholder="Write your comment here. Styling with Markdown format is supported.", rows="6")}
+    </div>
+    <div class="div-error error alertbox"></div>
+    <button type="submit" class="pure-button pure-button-primary">Submit comment</button>
+    <button data-pvid="ncme" class="pure-button btn-preview">Preview</button>
+    <div class="cmpreview canclose" style="display:none;">
+      <h4>Comment preview</h4>
+      <span class="closemsg">×</span>
+      <div class="cpreview-content"></div>
+    </div>
+  </form>
+  @end
+
+  @if len(comments) == 0:
+    <div class="comments"><h3 id="cmnts">No comments yet...</h3></div>
+  @else:
+    <div class="comments">
+      <h2 id="cmnts"><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{len(comments)!!s} comments</a></h2>
+      @pcomm.renderComments(post, comments)
+    </div>
+  @end
+
+
+</div>
+
+@end

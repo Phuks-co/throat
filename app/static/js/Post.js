@@ -23,7 +23,7 @@ u.addEventForChild(document, 'click', '.delete-post', function(e, qelem){
       if(!reason){return false;}
       document.querySelector('#delete-post-form #reason').setAttribute('value', reason);
     }
-    u.rawpost('/do/delete_post', new FormData(document.getElementById('delete-post-form')),
+    u.post('/do/delete_post', {post: document.getElementById('postinfo').getAttribute('pid')},
     function(data){
       if (data.status != "ok") {
         document.getElementById('delpostli').innerHTML = 'Error.';
@@ -54,7 +54,7 @@ u.addEventForChild(document, 'click', '.edit-title', function(e, qelem){
 u.addEventForChild(document, 'click', '.stick-post', function(e, qelem){
   var pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg=e.currentTarget;
   TextConfirm(qelem, function(){
-    u.rawpost('/do/stick/'+pid, new FormData(document.getElementById('delete-post-form')),
+    u.post('/do/stick/'+pid, {post: document.getElementById('postinfo').getAttribute('pid')},
     function(data){
       if (data.status != "ok") {
         tg.innerHTML = 'Error.';
@@ -70,7 +70,7 @@ u.addEventForChild(document, 'click', '.stick-post', function(e, qelem){
 u.addEventForChild(document, 'click', '.wiki-post', function(e, qelem){
   var pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg=e.currentTarget;
   TextConfirm(qelem, function(){
-    u.rawpost('/do/wikipost/'+pid, new FormData(document.getElementById('delete-post-form')),
+    u.post('/do/wikipost/'+pid, {post: document.getElementById('postinfo').getAttribute('pid')},
     function(data){
       if (data.status != "ok") {
         tg.innerHTML = 'Error.';
@@ -106,7 +106,7 @@ u.sub('.selflair', 'click', function(e){
   var pid=this.getAttribute('data-pid');
   var flair=this.getAttribute('data-flair');
   var nsub=this.getAttribute('data-sub'), tg=this;
-  u.rawpost('/do/flair/' + nsub + '/' + pid + '/' + flair, new FormData(document.getElementById('delete-post-form')),
+  u.post('/do/flair/' + nsub + '/' + pid + '/' + flair, {post: document.getElementById('postinfo').getAttribute('pid')},
     function(data) {
       if (data.status != "ok") {
         tg.parentNode.innerHTML = 'Error. ' + data.error;
@@ -121,7 +121,7 @@ u.sub('.selflair', 'click', function(e){
 u.sub('#remove-flair', 'click', function(e){
   var pid=this.getAttribute('data-pid');
   var nsub=this.getAttribute('data-sub'), tg=this;
-  u.rawpost('/do/remove_post_flair/' + nsub + '/' + pid, new FormData(document.getElementById('delete-post-form')),
+  u.post('/do/remove_post_flair/' + nsub + '/' + pid, {post: document.getElementById('postinfo').getAttribute('pid')},
     function(data) {
       if (data.status != "ok") {
         tg.innerHTML = 'Error. ' + data.error;
@@ -137,7 +137,7 @@ u.sub('#remove-flair', 'click', function(e){
 u.addEventForChild(document, 'click', '.nsfw-post', function(e, qelem){
   var pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg=e.currentTarget;
   TextConfirm(qelem, function(){
-    u.rawpost('/do/nsfw', new FormData(document.getElementById('delete-post-form')),
+    u.post('/do/nsfw', {post: document.getElementById('postinfo').getAttribute('pid')},
     function(data){
       if (data.status != "ok") {
         tg.innerHTML = 'Error.';
@@ -152,7 +152,7 @@ u.addEventForChild(document, 'click', '.nsfw-post', function(e, qelem){
 u.addEventForChild(document, 'click', '.poll-close', function(e, qelem){
   var tg=e.currentTarget;
   TextConfirm(qelem, function(){
-    u.rawpost('/do/close_poll', new FormData(document.getElementById('delete-post-form')),
+    u.post('/do/close_poll', {post: document.getElementById('postinfo').getAttribute('pid')},
     function(data){
       if (data.status != "ok") {
         tg.innerHTML = 'Error.';
