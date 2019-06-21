@@ -159,10 +159,10 @@ def delete_post():
         sub = Sub.get(Sub.sid == post.sid)
         subI = misc.getSubData(post.sid)
 
-        if not current_user.is_mod(sub.sid) and not current_user.is_admin() and not post.uid.uid == current_user.uid:
+        if not current_user.is_mod(sub.sid) and not current_user.is_admin() and not post.uid_id == current_user.uid:
             return jsonify(status='error', error=['Not authorized'])
 
-        if post.uid.uid == current_user.uid:
+        if post.uid_id == current_user.uid:
             deletion = 1
         else:
             if not form.reason.data:
@@ -336,7 +336,7 @@ def assign_post_flair(sub, pid, fl):
 
     form = DummyForm()
     if form.validate():
-        if current_user.is_mod(sub.sid) or (post.uid.uid == current_user.uid and sub.get_metadata('ucf')):
+        if current_user.is_mod(sub.sid) or (post.uid_id == current_user.uid and sub.get_metadata('ucf')):
             try:
                 flair = SubFlair.get((SubFlair.xid == fl) & (SubFlair.sid == sub.sid))
             except SubFlair.DoesNotExist:
@@ -365,7 +365,7 @@ def remove_post_flair(sub, pid):
     except SubPost.DoesNotExist:
         return jsonify(status='error', error=['Post does not exist'])
 
-    if current_user.is_mod(sub.sid) or (post.uid.uid == current_user.uid and sub.get_metadata('ucf')):
+    if current_user.is_mod(sub.sid) or (post.uid_id == current_user.uid and sub.get_metadata('ucf')):
         if not post.flair:
             return jsonify(status='error', error='Post has no flair')
         else:
@@ -1674,10 +1674,10 @@ def delete_comment():
             return jsonify(status='error', error='Comment does not exist')
         post = SubPost.get(SubPost.pid == comment.pid)
 
-        if comment.uid != current_user.uid and not (current_user.is_admin() or current_user.is_mod(post.sid)):
+        if comment.uid_id != current_user.uid and not (current_user.is_admin() or current_user.is_mod(post.sid)):
             return jsonify(status='error', error='Not authorized')
 
-        if comment.uid != current_user.uid and (current_user.is_admin() or current_user.is_mod(post.sid)):
+        if comment.uid_id != current_user.uid and (current_user.is_admin() or current_user.is_mod(post.sid)):
             misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_COMMENT, current_user.uid, post.sid,
                                comment=form.reason.data, link=url_for('view_post_inbox', pid=comment.pid),
                                admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
