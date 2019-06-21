@@ -894,21 +894,18 @@ def getStickies(sid):
 
 
 def load_user(user_id):
+    user = User.select(fn.Count(Message.mid).alias('notifications'),
+                    User.given, User.score, User.name, User.uid, User.status, User.email)
+    user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & (Message.mtype != 9) & (Message.mtype != 41) & Message.read.is_null(True))).switch(User)
+    user = user.where(User.uid == user_id).dicts().get()
+    
     if request.path == '/socket.io/':
-        user = User.select(User.given, User.score, User.name, User.uid, User.status, User.email)
-        user = user.where(User.uid == user_id).dicts()
-        return SiteUser(user.get(), [], [])
+        return SiteUser(user, [], [])
     else:
-        user = User.select(fn.Count(Message.mid).alias('notifications'),
-                        User.given, User.score, User.name, User.uid, User.status, User.email)
-        user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & (Message.mtype != 9) & (Message.mtype != 41) & Message.read.is_null(True))).switch(User)
-        user = user.where(User.uid == user_id).dicts()
-
         prefs = UserMetadata.select(UserMetadata.key, UserMetadata.value).where(UserMetadata.uid == user_id)
         prefs = prefs.where((UserMetadata.value == '1') | (UserMetadata.key == 'subtheme')).dicts()
 
         try:
-            user = user.get()
             subs = SubSubscriber.select(SubSubscriber.sid, Sub.name, SubSubscriber.status).join(Sub, on=(Sub.sid == SubSubscriber.sid)).switch(SubSubscriber).where(SubSubscriber.uid == user_id)
             subs = subs.order_by(SubSubscriber.order.asc()).dicts()
             return SiteUser(user, subs, prefs)
@@ -1681,6 +1678,7 @@ def cast_vote(uid, target_type, pcid, value):
             target = target.join(SubPost).where(SubPostComment.cid == pcid).objects().get()
         except SubPostComment.DoesNotExist:
             return jsonify(msg='Comment does not exist'), 404
+        
         if target.uid_id == user.uid:
             return jsonify(msg="You can't vote on your own comments"), 400
         if target.status:
@@ -1706,6 +1704,7 @@ def cast_vote(uid, target_type, pcid, value):
 
     positive = True if voteValue == 1 else False
     undone = False
+
     if qvote:
         if bool(qvote.positive) == (True if voteValue == 1 else False):
             qvote.delete_instance()
@@ -1748,10 +1747,10 @@ def cast_vote(uid, target_type, pcid, value):
 
     if target_type == "post":
         upd_q.where(SubPost.pid == target.id).execute()
-        socketio.emit('threadscore', {'pid': target.pid, 'score': target.score + new_score},
-                      namespace='/snt', room=target.pid)
+        socketio.emit('threadscore', {'pid': target.id, 'score': target.score + new_score},
+                      namespace='/snt', room=target.id)
 
-        socketio.emit('yourvote', {'pid': target.pid, 'status': 0, 'score': target.score + new_score}, namespace='/snt',
+        socketio.emit('yourvote', {'pid': target.id, 'status': 0, 'score': target.score + new_score}, namespace='/snt',
                       room='user' + uid)
     else:
         upd_q.where(SubPostComment.cid == target.id).execute()
