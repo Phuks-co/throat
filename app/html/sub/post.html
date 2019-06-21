@@ -207,7 +207,7 @@
     <div class="comments"><h3 id="cmnts">No comments yet...</h3></div>
   @else:
     <div class="comments">
-      <h2 id="cmnts"><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{len(comments)!!s} comments</a></h2>
+      <h2 id="cmnts"><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{post['comments']!!s} comments</a></h2>
       @pcomm.renderComments(post, subInfo, comments)
     </div>
   @end
