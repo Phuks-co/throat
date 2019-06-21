@@ -49,7 +49,7 @@
             </div>
             
             @if comment['status'] != 1:
-              <div hidden id="sauce-@{comment['cid']}">@{comment['source']}</div>
+              <div hidden id="sauce-@{comment['cid']}">@{comment['source']!!e}</div>
             @end
             <ul class="bottombar links" @{(comment['status'] == 1) and 'style="display:none;"' or ''}>
               <li><a href="@{url_for('sub.view_perm', sub=post['sub'], cid=comment['cid'], pid=post['pid'])}">permalink</a></li>
