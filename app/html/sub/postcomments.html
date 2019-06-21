@@ -71,7 +71,7 @@
         </div>
         <div id="child-@{comment['cid']}" class="pchild" @{(comment['status'] == 1) and 'style="display:none;"' or ''}>
           @if comment['children']:
-            @renderComments(post, comment['children'])
+            @renderComments(post, subInfo, comment['children'])
           @end
         </div>
       </article>
