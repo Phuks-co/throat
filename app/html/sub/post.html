@@ -51,7 +51,7 @@
         <a class="title">
           <div class="thumbnail">
             @if post['thumbnail'] != '' and post['link'] != None:
-              <img src="@{config.THUMBNAIL_HOST}@{post.thumbnail}"/>
+              <img src="@{config.THUMBNAIL_HOST}@{post['thumbnail']}"/>
             @elif post['link'] != None:
               <span class="placeholder" data-icon="link"></span>
             @else:
