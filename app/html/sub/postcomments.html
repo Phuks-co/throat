@@ -1,5 +1,5 @@
-@require(post, comments)
-@def renderComments(post, comments, highlight=''):
+@require(post, comments, subInfo)
+@def renderComments(post, subInfo, comments, highlight=''):
   @#ignore
   @for comment in comments:
     @if comment['cid']:
@@ -83,4 +83,4 @@
   @end
 @end
 
-@renderComments(post, comments)
+@renderComments(post, subInfo, comments)
