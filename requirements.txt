@@ -27,3 +27,4 @@ pep8
 lxml
 flask-jwt-extended
 captcha
+peewee_migrate
