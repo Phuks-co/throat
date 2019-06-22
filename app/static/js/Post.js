@@ -18,12 +18,12 @@ u.sub('.removesavedpost', 'click', function(e){
 
 u.addEventForChild(document, 'click', '.delete-post', function(e, qelem){
   TextConfirm(qelem, function(){
+    var reason = ""
     if(qelem.getAttribute('selfdel') != "true"){
-      var reason = prompt('Why are you deleting this?');
+      reason = prompt('Why are you deleting this?');
       if(!reason){return false;}
-      document.querySelector('#delete-post-form #reason').setAttribute('value', reason);
     }
-    u.post('/do/delete_post', {post: document.getElementById('postinfo').getAttribute('pid')},
+    u.post('/do/delete_post', {post: document.getElementById('postinfo').getAttribute('pid'), reason: reason},
     function(data){
       if (data.status != "ok") {
         document.getElementById('delpostli').innerHTML = 'Error.';
