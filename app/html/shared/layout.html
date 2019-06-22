@@ -179,7 +179,6 @@
   @end
   @chat()
   <script type="text/javascript">
-    window.wsserver = '@{config.WEBSOCKET_SERVER!!s}';
     window.chat = @{('nochat' not in current_user.prefs) and 'true' or 'false'};
   </script>
   <script type="text/javascript" src="@{ asset_url_for('main.js') }"></script>

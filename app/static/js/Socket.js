@@ -7,7 +7,7 @@ RegExp.escape= function(s) {
     return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 };
 
-const socket = io('//' + window.wsserver + '/snt', {transports: ['websocket'], upgrade: false});
+const socket = io('///snt', {transports: ['websocket'], upgrade: false});
 
 function updateNotifications(count){
   var title = document.getElementsByTagName('title')[0].innerHTML.split('\n');
