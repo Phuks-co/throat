@@ -216,3 +216,10 @@
 </div>
 
 @end
+
+@def pagefoot():
+
+  @if not current_user.block_styles():
+    <style>@{subInfo['stylesheet']}</style>
+  @end
+@end
