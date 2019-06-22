@@ -794,6 +794,8 @@ def getSubOfTheDay():
 
 def getChangelog():
     """ Returns most recent changelog post """
+    if not config.CHANGELOG_SUB:
+        return None
     td = datetime.utcnow() - timedelta(days=15)
     changepost = (SubPost.select(Sub.name.alias('sub'), SubPost.pid, SubPost.title, SubPost.posted)
                          .where(SubPost.posted > td).where(SubPost.sid == config.CHANGELOG_SUB)
