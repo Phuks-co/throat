@@ -61,6 +61,11 @@ function initializeEditor(element){
     element.insertBefore(el, element.firstChild);
 
     window.onkeydown = function(e){
+      if(e.shiftKey && e.altKey && e.which == 67){
+        var te = document.getElementById('title');
+        if(!te || te.value.length == 0){return;}
+        te.value = te.value.charAt(0).toUpperCase() + te.value.slice(1).toLowerCase();
+      }
       if(textarea !== document.activeElement){return;}
       if(e.ctrlKey == true && e.which == 66){
         addTags(textarea, '**', '**'); e.preventDefault();

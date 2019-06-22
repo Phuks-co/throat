@@ -81,8 +81,7 @@ if(sa){
       div.textContent = item.name;
       return div;
     },
-});
-
+  });
 }
 
 // up/downvote buttons.
