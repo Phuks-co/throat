@@ -623,7 +623,10 @@ def grab_title():
         title = og('title')[0].text
     except (OSError, ValueError, IndexError):
         return jsonify(status='error', error=['Couldn\'t get title'])
-    return jsonify(status='ok', title=title.strip(misc.WHITESPACE))
+    
+    title = title.strip(misc.WHITESPACE)
+    title = re.sub(' - Youtube$', '', title)
+    return jsonify(status='ok', title=title)
 
 
 def post_over_limit(limit):
