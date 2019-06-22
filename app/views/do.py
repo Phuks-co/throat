@@ -2053,18 +2053,36 @@ def admin_undo_votes(uid):
     usr = {}
 
     for v in post_v:
-        post = SubPost.select(SubPost.pid, SubPost.uid, SubPost.score).where(SubPost.pid == v.pid_id).get()
+        try:
+            post = SubPost.select(SubPost.pid, SubPost.uid, SubPost.score).where(SubPost.pid == v.pid_id).get()
+        except SubPost.DoesNotExist:
+            # Edge case. An orphan vote.
+            v.delete_instance()
+            continue
+        # Not removing self-votes
+        if post.uid_id == user.uid:
+            continue
         if not usr.get(post.uid_id):
             usr[post.uid_id] = User.select(User.uid, User.score).where(User.uid == post.uid_id).get()
         tgus = usr[post.uid_id]
         post.score -= 1 if v.positive else -1
         tgus.score -= 1 if v.positive else -1
         user.given -= 1 if v.positive else -1
+        if post.upvotes is not None and post.downvotes is not None:
+            if v.positive:
+                post.upvotes -= 1
+            else:
+                post.downvotes -= 1
         post.save()
         tgus.save()
         v.delete_instance()
     for v in comm_v:
-        comm = SubPostComment.select(SubPostComment.cid, SubPostComment.score, SubPostComment.uid).where(SubPostComment.cid == v.cid).get()
+        try:
+            comm = SubPostComment.select(SubPostComment.cid, SubPostComment.score, SubPostComment.uid).where(SubPostComment.cid == v.cid).get()
+        except SubPostComment.DoesNotExist:
+            # Edge case. An orphan vote.
+            v.delete_instance()
+            continue
         if not usr.get(comm.uid_id):
             usr[comm.uid_id] = User.select(User.uid, User.score).where(User.uid == comm.uid_id).get()
         tgus = usr[comm.uid_id]
@@ -2074,6 +2092,11 @@ def admin_undo_votes(uid):
             comm.score -= 1 if v.positive else -1
         tgus.score -= 1 if v.positive else -1
         user.given -= 1 if v.positive else -1
+        if comm.upvotes is not None and comm.downvotes is not None:
+            if v.positive:
+                comm.upvotes -= 1
+            else:
+                comm.downvotes -= 1
         comm.save()
         tgus.save()
         v.delete_instance()
