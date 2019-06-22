@@ -1,5 +1,3 @@
-Note: Throat is developed and run on Python 3.6+. Previous versions are not supported
-
 #throat
 
 https://phuks.co/
@@ -8,30 +6,34 @@ A phoxy link and discussion aggregator with snek (python3)
 
 ##Dependencies:
 
-Check `requirements.txt`
+ - MySQL/MariaDB or any compatible server.
+ - Redis
+ - Python >= 3.5 (3.7 not supported yet)
+ - A recent node/npm
 
-##Run local:
+### On Ubuntu/Debian
+ - apt-get install redis-server python3 python3-pip libmagic-dev mysql-server mysql-client libmysqlclient-dev libexiv2-dev libssl1.0-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev libffi-dev libboost-python-dev
 
-from ubuntu 16.04
+## Setup:
 
- - $ apt-get update
- - $ apt-get install git python3-pip libssl-dev libffi-dev libpq-dev python3-dev libsqlite3-dev libexiv2-dev libboost-python-dev libmysqlclient-dev
-
-Install the latest node and npm too.
-
-clone and install
-
- - $ git clone <repo url>
- - $ cd throat
- - $ pip3 install -r requirements.txt
+Jet the javascript dependencies and build the bundles with
  - $ npm install
  - $ npm run build
 
-run
+Install the Python requirements
+ - $ pip3 install -r requirements.txt
 
- - $ ./wsgi.py
+Copy example.config.py and edit it
+
+Set up the database
+ - $ ./scripts/migrate.py
 
 ---
 
-Note for future self: Ensure the mysql uses fucking utf8
-Note from past self: Boo.
+You can manage default subs by using 
+
+ - $ ./scripts/defaults.py
+
+To add/remove administrators use
+
+ - $ ./scripts/admins.py
