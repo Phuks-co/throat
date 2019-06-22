@@ -2054,7 +2054,7 @@ def admin_undo_votes(uid):
 
     for v in post_v:
         try:
-            post = SubPost.select(SubPost.pid, SubPost.uid, SubPost.score).where(SubPost.pid == v.pid_id).get()
+            post = SubPost.select(SubPost.pid, SubPost.upvotes, SubPost.downvotes, SubPost.uid, SubPost.score).where(SubPost.pid == v.pid_id).get()
         except SubPost.DoesNotExist:
             # Edge case. An orphan vote.
             v.delete_instance()
@@ -2078,7 +2078,7 @@ def admin_undo_votes(uid):
         v.delete_instance()
     for v in comm_v:
         try:
-            comm = SubPostComment.select(SubPostComment.cid, SubPostComment.score, SubPostComment.uid).where(SubPostComment.cid == v.cid).get()
+            comm = SubPostComment.select(SubPostComment.cid, SubPostComment.upvotes, SubPostComment.downvotes, SubPostComment.score, SubPostComment.uid).where(SubPostComment.cid == v.cid).get()
         except SubPostComment.DoesNotExist:
             # Edge case. An orphan vote.
             v.delete_instance()
