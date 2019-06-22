@@ -6,16 +6,10 @@ LEMA = "Throat: Open discussion ;D"
 # Copyright notice, used in the footer
 COPY = "2016 Throat. All Rights Reserved."
 
-# XXX: LEGACY - FIX EVERYTHING AND REMOVE THIS BLOCK
-DB_HOST = 'localhost'
-DB_USER = os.getenv('DB_USER') or 'root'
-DB_PASSWD = os.getenv('DB_PASSWD') or ''
-DB_NAME = os.getenv('DB_NAME') or 'phuks'
+# Database connection information
+DATABASE_URL = 'mysql://USER:PASSWD@localhost/throat'
 
-# peewee
-DATABASE_URL = 'mysql://{0}:{1}@localhost/{2}'.format(DB_USER, DB_PASSWD, DB_NAME)
-
-# Method used to memoize stuff.
+# Method used to memoize stuff. Change to 'redis' if you use Redis
 CACHE_TYPE = 'simple'
 # Only used if CACHE_TYPE is 'redis'.
 CACHE_REDIS_HOST = '127.0.0.1'
@@ -46,17 +40,13 @@ THUMBNAIL_HOST = "https://foo.bar/"
 STORAGE = "./stor"
 STORAGE_HOST = "https://i.foo.bar/"
 
-
 # SID of changelog sub (used to display last changelog entry on the sidebar)
-CHANGELOG_SUB = '9a79b49e-7bd3-4535-8ad6-ba11fc1d0ef5'
+# Leave empty to disable changelogs
+CHANGELOG_SUB = ''
 
-# Only for debugging and testing:
+# Only for debugging and testing. Disable both in production
 DEBUG = True
 TESTING = True  # This makes all the captchas valid
-
-# Address of the socketio server. If it's left empty socketio will attempt to connect
-# to /socket.io.
-WEBSOCKET_SERVER = '127.0.0.1:5000'
 
 # Max content-length accepted by the server
 MAX_CONTENT_LENGTH = (1024 * 1024) * 10  # 10MB limit
