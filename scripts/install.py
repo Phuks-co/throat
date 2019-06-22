@@ -7,8 +7,8 @@ from app import app
 from app.models import User, Client, Grant, Message, SiteLog, SiteMetadata, Sub, \
     SubFlair, SubLog, SubMetadata, SubPost, SubPostComment, \
     SubPostCommentVote, SubPostMetadata, SubPostVote, SubStylesheet, \
-    SubSubscriber, Token, UserBadge, UserMetadata, UserSaved, \
-    Pixel, Shekels, UserUploads, UserIgnores, \
+    SubSubscriber, Token, UserMetadata, UserSaved, \
+    UserUploads, UserIgnores, \
     SubUploads, SubPostPollOption, SubPostPollVote, SubPostReport, APIToken, APITokenSettings
 
 with app.app_context():
@@ -32,11 +32,8 @@ with app.app_context():
     SubStylesheet.create_table(True)
     SubSubscriber.create_table(True)
     Token.create_table(True)
-    UserBadge.create_table(True)
     UserMetadata.create_table(True)
     UserSaved.create_table(True)
-    Pixel.create_table(True)
-    Shekels.create_table(True)
     UserUploads.create_table(True)
     UserIgnores.create_table(True)
     SubUploads.create_table(True)

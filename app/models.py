@@ -332,17 +332,6 @@ class Token(TModel):
         table_name = 'token'
 
 
-class UserBadge(TModel):
-    badge = CharField(null=True)
-    bid = CharField(primary_key=True, max_length=40)
-    name = CharField(null=True, max_length=40)
-    text = CharField(null=True)
-    value = IntegerField(null=True)
-
-    class Meta:
-        table_name = 'user_badge'
-
-
 class UserMetadata(TModel):
     key = CharField(null=True)
     uid = ForeignKeyField(db_column='uid', null=True, model=User,
@@ -356,31 +345,9 @@ class UserMetadata(TModel):
 
 class UserSaved(TModel):
     pid = IntegerField(null=True)
-    uid = CharField(null=True)
-    xid = PrimaryKeyField()
-
-    class Meta:
-        table_name = 'user_saved'
-
-
-class Pixel(TModel):
-    xid = PrimaryKeyField()
-    posx = IntegerField()
-    posy = IntegerField()
-    value = IntegerField()
-    color = IntegerField()
     uid = ForeignKeyField(db_column='uid', null=True, model=User,
                           field='uid')
-
-    class Meta:
-        table_name = 'pixel'
-
-
-class Shekels(TModel):
     xid = PrimaryKeyField()
-    shekels = IntegerField()
-    uid = ForeignKeyField(db_column='uid', null=True, model=User,
-                          field='uid')
 
     class Meta:
         table_name = 'shekels'
