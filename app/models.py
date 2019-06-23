@@ -350,7 +350,7 @@ class UserSaved(BaseModel):
     xid = PrimaryKeyField()
 
     class Meta:
-        table_name = 'shekels'
+        table_name = 'user_saved'
 
 
 class UserUploads(BaseModel):
