@@ -29,12 +29,12 @@ db = Proxy()
 db.initialize(dbm)
 
 
-class TModel(Model):
+class BaseModel(Model):
     class Meta:
         database = db
 
 
-class User(TModel):
+class User(BaseModel):
     uid = CharField(primary_key=True, max_length=40)
     crypto = IntegerField()  # Password hash algo, 1 = bcrypt.
     email = CharField(null=True)
@@ -52,7 +52,7 @@ class User(TModel):
         table_name = 'user'
 
 
-class Client(TModel):
+class Client(BaseModel):
     _default_scopes = TextField(null=True)
     _redirect_uris = TextField(null=True)
     client = CharField(db_column='client_id', primary_key=True, max_length=40)
@@ -65,7 +65,7 @@ class Client(TModel):
         table_name = 'client'
 
 
-class Grant(TModel):
+class Grant(BaseModel):
     _scopes = TextField(null=True)
     client = ForeignKeyField(db_column='client_id', model=Client, field='client')
     code = CharField(index=True)
@@ -78,7 +78,7 @@ class Grant(TModel):
         table_name = 'grant'
 
 
-class Message(TModel):
+class Message(BaseModel):
     content = TextField(null=True)
     mid = PrimaryKeyField()
     mlink = CharField(null=True)
@@ -99,7 +99,7 @@ class Message(TModel):
         table_name = 'message'
 
 
-class SiteLog(TModel):
+class SiteLog(BaseModel):
     action = IntegerField(null=True)
     desc = CharField(null=True)
     lid = PrimaryKeyField()
@@ -112,7 +112,7 @@ class SiteLog(TModel):
         table_name = 'site_log'
 
 
-class SiteMetadata(TModel):
+class SiteMetadata(BaseModel):
     key = CharField(null=True)
     value = CharField(null=True)
     xid = PrimaryKeyField()
@@ -121,7 +121,7 @@ class SiteMetadata(TModel):
         table_name = 'site_metadata'
 
 
-class Sub(TModel):
+class Sub(BaseModel):
     name = CharField(null=True, unique=True, max_length=32)
     nsfw = BooleanField(default=False)
     sid = CharField(primary_key=True, max_length=40)
@@ -156,7 +156,7 @@ class Sub(TModel):
             restr.save()
 
 
-class SubFlair(TModel):
+class SubFlair(BaseModel):
     sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
                           field='sid')
     text = CharField(null=True)
@@ -166,7 +166,7 @@ class SubFlair(TModel):
         table_name = 'sub_flair'
 
 
-class SubLog(TModel):
+class SubLog(BaseModel):
     action = IntegerField(null=True)
     desc = CharField(null=True)
     lid = PrimaryKeyField()
@@ -181,7 +181,7 @@ class SubLog(TModel):
         table_name = 'sub_log'
 
 
-class SubMetadata(TModel):
+class SubMetadata(BaseModel):
     key = CharField(null=True)
     sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
                           field='sid')
@@ -192,7 +192,7 @@ class SubMetadata(TModel):
         table_name = 'sub_metadata'
 
 
-class SubPost(TModel):
+class SubPost(BaseModel):
     content = TextField(null=True)
     deleted = IntegerField(null=True)
     link = CharField(null=True)
@@ -217,7 +217,7 @@ class SubPost(TModel):
         table_name = 'sub_post'
 
 
-class SubPostPollOption(TModel):
+class SubPostPollOption(BaseModel):
     """ List of options for a poll """
     pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
     text = CharField()
@@ -226,7 +226,7 @@ class SubPostPollOption(TModel):
         table_name = 'sub_post_poll_option'
 
 
-class SubPostPollVote(TModel):
+class SubPostPollVote(BaseModel):
     """ List of options for a poll """ 
     pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
     uid = ForeignKeyField(db_column='uid', model=User)
@@ -236,7 +236,7 @@ class SubPostPollVote(TModel):
         table_name = 'sub_post_poll_vote'
 
 
-class SubPostComment(TModel):
+class SubPostComment(BaseModel):
     cid = CharField(primary_key=True, max_length=40)
     content = TextField(null=True)
     lastedit = DateTimeField(null=True)
@@ -256,7 +256,7 @@ class SubPostComment(TModel):
         table_name = 'sub_post_comment'
 
 
-class SubPostCommentVote(TModel):
+class SubPostCommentVote(BaseModel):
     datetime = DateTimeField(null=True, default=datetime.datetime.utcnow)
     cid = CharField(null=True)
     positive = IntegerField(null=True)
@@ -268,7 +268,7 @@ class SubPostCommentVote(TModel):
         table_name = 'sub_post_comment_vote'
 
 
-class SubPostMetadata(TModel):
+class SubPostMetadata(BaseModel):
     key = CharField(null=True)
     pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
                           field='pid')
@@ -279,7 +279,7 @@ class SubPostMetadata(TModel):
         table_name = 'sub_post_metadata'
 
 
-class SubPostVote(TModel):
+class SubPostVote(BaseModel):
     datetime = DateTimeField(null=True, default=datetime.datetime.utcnow)
     pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
                           field='pid', backref='votes')
@@ -292,7 +292,7 @@ class SubPostVote(TModel):
         table_name = 'sub_post_vote'
 
 
-class SubStylesheet(TModel):
+class SubStylesheet(BaseModel):
     content = TextField(null=True)
     source = TextField()
     sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
@@ -303,13 +303,13 @@ class SubStylesheet(TModel):
         table_name = 'sub_stylesheet'
 
 
-class SubSubscriber(TModel):
+class SubSubscriber(BaseModel):
     """ Stores subscribed and blocked subs """
     order = IntegerField(null=True)
     sid = ForeignKeyField(db_column='sid', null=True, model=Sub, field='sid')
     # status is 1 for subscribed, 2 for blocked and 4 for saved (displayed in the top bar)
     status = IntegerField(null=True)
-    time = DateTimeField(default=datetime.datetime.utcnow())
+    time = DateTimeField(default=datetime.datetime.utcnow)
     uid = ForeignKeyField(db_column='uid', null=True, model=User, field='uid')
     xid = PrimaryKeyField()
 
@@ -317,7 +317,7 @@ class SubSubscriber(TModel):
         table_name = 'sub_subscriber'
 
 
-class Token(TModel):
+class Token(BaseModel):
     _scopes = TextField(null=True)
     access_token = CharField(null=True, unique=True, max_length=100)
     client = ForeignKeyField(db_column='client_id', model=Client,
@@ -332,7 +332,7 @@ class Token(TModel):
         table_name = 'token'
 
 
-class UserMetadata(TModel):
+class UserMetadata(BaseModel):
     key = CharField(null=True)
     uid = ForeignKeyField(db_column='uid', null=True, model=User,
                           field='uid')
@@ -343,7 +343,7 @@ class UserMetadata(TModel):
         table_name = 'user_metadata'
 
 
-class UserSaved(TModel):
+class UserSaved(BaseModel):
     pid = IntegerField(null=True)
     uid = ForeignKeyField(db_column='uid', null=True, model=User,
                           field='uid')
@@ -353,7 +353,7 @@ class UserSaved(TModel):
         table_name = 'shekels'
 
 
-class UserUploads(TModel):
+class UserUploads(BaseModel):
     xid = PrimaryKeyField()
     pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
                           field='pid')
@@ -367,7 +367,7 @@ class UserUploads(TModel):
         table_name = 'user_uploads'
 
 
-class SubUploads(TModel):
+class SubUploads(BaseModel):
     sid = ForeignKeyField(db_column='sid', model=Sub, field='sid')
     fileid = CharField()
     thumbnail = CharField()
@@ -378,7 +378,7 @@ class SubUploads(TModel):
         table_name = 'sub_uploads'
 
 
-class SubPostReport(TModel):
+class SubPostReport(BaseModel):
     pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
     uid = ForeignKeyField(db_column='uid', model=User, field='uid')
     datetime = DateTimeField(default=datetime.datetime.now)
@@ -388,7 +388,7 @@ class SubPostReport(TModel):
         table_name = 'sub_post_report'
 
 
-class SubPostCommentReport(TModel):
+class SubPostCommentReport(BaseModel):
     cid = ForeignKeyField(db_column='cid', model=SubPostComment, field='cid')
     uid = ForeignKeyField(db_column='uid', model=User, field='uid')
     datetime = DateTimeField(default=datetime.datetime.now)
@@ -398,7 +398,7 @@ class SubPostCommentReport(TModel):
         table_name = 'sub_post_comment_report'
 
 
-class UserIgnores(TModel):
+class UserIgnores(BaseModel):
     uid = ForeignKeyField(db_column='uid', model=User, field='uid')
     target = CharField(max_length=40)
     date = DateTimeField(default=datetime.datetime.now)
@@ -407,7 +407,7 @@ class UserIgnores(TModel):
         table_name = 'user_ignores'
 
 
-class APIToken(TModel):
+class APIToken(BaseModel):
     user = ForeignKeyField(db_column='uid', model=User, field='uid')
     token = CharField(unique=True)
     can_post = BooleanField()
@@ -421,7 +421,7 @@ class APIToken(TModel):
         table_name = 'api_token'
 
 
-class APITokenSettings(TModel):
+class APITokenSettings(BaseModel):
     """ API Token settings. Mainly used for IP whitelisting """
     token = ForeignKeyField(model=APIToken, field='id')
     key = CharField()
