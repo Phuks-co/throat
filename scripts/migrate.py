@@ -8,7 +8,7 @@ import argparse
 
 config.TESTING = False
 database = connect(config.DATABASE_URL)
-router = Router(database, migrate_dir='../app/migrations' if os.getcwd().endswith('scripts') else 'app/migrations')
+router = Router(database, migrate_dir='../migrations' if os.getcwd().endswith('scripts') else 'migrations')
 
 parser = argparse.ArgumentParser(description='Apply or manage database migrations.')
 parser.add_argument('-c', '--create', metavar='NAME', help='Creates a new migration')
