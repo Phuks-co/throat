@@ -353,7 +353,7 @@ def migrate(migrator, database, fake=False, **kwargs):
         uid = pw.ForeignKeyField(backref='usersaved_set', column_name='uid', field='uid', model=migrator.orm['user'], null=True)
 
         class Meta:
-            table_name = "shekels"
+            table_name = "user_saved"
 
     @migrator.create_model
     class UserUploads(pw.Model):
