@@ -1091,7 +1091,7 @@ def getMessagesSaved(page):
 def getMsgCommReplies(page):
     """ Returns comment replies messages """
     try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content,
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject,
                              Message.posted, Message.read, Message.mtype, Message.mlink, SubPostComment.pid, SubPostComment.content,
                              SubPostComment.score, SubPostCommentVote.positive, Sub.name.alias('sub'))
         msg = msg.join(SubPostComment, on=SubPostComment.cid == Message.mlink).join(SubPost).join(Sub).switch(SubPostComment).join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == Message.mlink)))
@@ -1104,7 +1104,7 @@ def getMsgCommReplies(page):
 def getMsgPostReplies(page):
     """ Returns post replies messages """
     try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content,
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject,
                              Message.posted, Message.read, Message.mtype, Message.mlink, SubPostCommentVote.positive, SubPostComment.pid,
                              SubPostComment.score, SubPostComment.content, Sub.name.alias('sub'))
         msg = msg.join(SubPostComment, on=SubPostComment.cid == Message.mlink).join(SubPost).join(Sub).switch(SubPostComment).join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == Message.mlink)))
