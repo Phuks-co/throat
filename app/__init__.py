@@ -953,12 +953,11 @@ def admin_user_uploads(page):
 @login_required
 def view_sitelog(page):
     """ Here we can see a log of admin activity on the site """
-    s1 = SiteLog.select(SiteLog.time, SiteLog.action, SiteLog.desc, SiteLog.link, SiteLog.uid, SQL("'' as `sub`"), SiteLog.target)
-    s2 = SubLog.select(SubLog.time, SubLog.action, SubLog.desc, SubLog.link, SubLog.uid, Sub.name.alias('sud'), SubLog.target)
+    s1 = SiteLog.select(SiteLog.time, SiteLog.action, SiteLog.desc, SiteLog.link, SiteLog.uid, SQL("'' as sub"), SiteLog.target)
+    s2 = SubLog.select(SubLog.time, SubLog.action, SubLog.desc, SubLog.link, SubLog.uid, Sub.name.alias('sub'), SubLog.target)
     s2 = s2.join(Sub).where(SubLog.admin == True)
     logs = (s1 | s2)
-    # XXX: SQL() is a hack. Remove it when peewee updates (ref: peewee #1854)
-    logs = logs.order_by(SQL('`time` DESC')).paginate(page, 50)
+    logs = logs.order_by(logs.c.time.desc()).paginate(page, 50)
     
     return engine.get_template('site/log.html').render({'logs': logs, 'page': page})
 
