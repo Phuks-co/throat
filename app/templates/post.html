@@ -96,7 +96,7 @@
 
 <div class="createdby">
   Created by {{subInfo.creator.name}}
-  <time-ago datetime="{{subInfo.creation}}Z"></time-ago>
+  <time-ago datetime="{{sub.creation}}Z"></time-ago>
 </div>
 
 {% if current_user.is_mod(post.sid) or current_user.is_admin() %}

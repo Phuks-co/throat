@@ -63,7 +63,7 @@
 </div>
 <div class="createdby">
   Created by <a href="/u/@{subInfo['creator']['name']}">@{subInfo['creator']['name']}</a>
-  <time-ago datetime="@{subInfo['creation']}Z"></time-ago>
+  <time-ago datetime="@{sub['creation'].isoformat()}Z"></time-ago>
 </div>
 @if current_user.uid:
   @if current_user.uid in subInfo['mod2'] or current_user.uid in subInfo['owner']['uid'] or current_user.is_admin():

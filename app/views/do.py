@@ -240,7 +240,6 @@ def create_sub():
         sub = Sub.create(sid=uuid.uuid4(), name=form.subname.data, title=form.title.data)
         SubMetadata.create(sid=sub.sid, key='mod', value=current_user.uid)
         SubMetadata.create(sid=sub.sid, key='mod1', value=current_user.uid)
-        SubMetadata.create(sid=sub.sid, key='creation', value=datetime.datetime.utcnow())
         SubStylesheet.create(sid=sub.sid, content='', source='/* CSS here */')
 
         # admin/site log

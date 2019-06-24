@@ -282,8 +282,7 @@ def view_user_uploads(page):
 @app.route("/subs/<int:page>/<sort>")
 def view_subs(page, sort):
     """ Here we can view available subs """
-    c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
-    c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
+    c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, Sub.creation, Sub.subscribers, Sub.posts)
 
     # sorts...
     if sort == 'name_desc':
@@ -313,8 +312,7 @@ def view_subs(page, sort):
 def subs_search(page, term, sort):
     """ The subs index page, with basic title search """
     term = re.sub(r'[^A-Za-z0-9\-_]+', '', term)
-    c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, SubMetadata.value.alias('creation'), Sub.subscribers, Sub.posts)
-    c = c.join(SubMetadata, on=((SubMetadata.sid == Sub.sid) & (SubMetadata.key == 'creation'))).switch(Sub)
+    c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, Sub.creation, Sub.subscribers, Sub.posts)
 
     c = c.where(Sub.name.contains(term))
 

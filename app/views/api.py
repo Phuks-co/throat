@@ -377,7 +377,7 @@ def getSub(name):
         'title': sub.title,
         'sidebar': sub.sidebar,
         'default_sort': sub.sort if sub.sort else 'hot',
-        'created': subdata.get('creation'),
+        'created': sub.creation,
         'subscribers': sub.subscribers,
         'posts': sub.posts,
         'allow_polls': True if subdata.get('allow_polls') == '1' else False,

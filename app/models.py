@@ -429,3 +429,13 @@ class APITokenSettings(BaseModel):
 
     class Meta:
         table_name = 'api_token_settings'
+
+
+class SubMod(BaseModel):
+    uid = ForeignKeyField(db_column='uid', model=User, field='uid')
+    sid = ForeignKeyField(db_column='sid', model=Sub, field='sid')
+    # Power level: 0=owner, 1=mod, 2=janitor
+    power_level = IntegerField()
+
+    class Meta:
+        table_name = "sub_mod"

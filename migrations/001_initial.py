@@ -193,7 +193,7 @@ def migrate(migrator, database, fake=False, **kwargs):
         cid = pw.CharField(max_length=40, primary_key=True)
         content = pw.TextField(null=True)
         lastedit = pw.DateTimeField(null=True)
-        parentcid = pw.ForeignKeyField(backref='subpostcomment_set', column_name='parentcid', field='cid', model=migrator.orm['sub_post_comment'], null=True)
+        parentcid = pw.ForeignKeyField(backref='subpostcomment_set', column_name='parentcid', field='cid', model='self', null=True)
         pid = pw.ForeignKeyField(backref='subpostcomment_set', column_name='pid', field='pid', model=migrator.orm['sub_post'], null=True)
         score = pw.IntegerField(null=True)
         upvotes = pw.IntegerField(constraints=[SQL("DEFAULT 0")])
