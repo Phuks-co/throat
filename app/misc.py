@@ -763,15 +763,6 @@ def getTodaysTopPosts():
     return top_posts
 
 
-def getRandomSub():
-    """ Returns a random sub for index sidebar """
-    try:
-        sub = Sub.select(Sub.sid, Sub.name, Sub.title).order_by(fn.Rand()).dicts().get()
-    except Sub.DoesNotExist:
-        return False
-    return sub
-
-
 @cache.memoize(10)
 def getSubOfTheDay():
     daysub = rconn.get('daysub')
@@ -899,7 +890,7 @@ def load_user(user_id):
     user = User.select(fn.Count(Message.mid).alias('notifications'),
                     User.given, User.score, User.name, User.uid, User.status, User.email)
     user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & (Message.mtype != 9) & (Message.mtype != 41) & Message.read.is_null(True))).switch(User)
-    user = user.where(User.uid == user_id).dicts().get()
+    user = user.group_by(User.uid).where(User.uid == user_id).dicts().get()
     
     if request.path == '/socket.io/':
         return SiteUser(user, [], [])

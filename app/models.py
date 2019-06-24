@@ -1,16 +1,51 @@
 """ Database and storage related functions and classes """
 import datetime
+import sys
 import redis
 from flask import g
-from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model
+from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model, Database
 from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
 from playhouse.db_url import connect as db_url_connect
+from playhouse.flask_utils import FlaskDB
 import config
 
 # Why not here? >_>
 rconn = redis.from_url(config.SOCKETIO_REDIS_URL)
 
-dbm = db_url_connect(config.DATABASE_URL, charset='utf8mb4')
+dbconnect = getattr(config, 'DATABASE', False)
+if not dbconnect:
+    dbconnect = config.DATABASE_URL
+
+if isinstance(dbconnect, dict):
+    # Taken from peewee's flask_utils
+    try:
+        name = dbconnect.pop('name')
+        engine = dbconnect.pop('engine')
+    except KeyError:
+        raise RuntimeError('DATABASE configuration must specify a '
+                            '`name` and `engine`.')
+
+    if '.' in engine:
+        path, class_name = engine.rsplit('.', 1)
+    else:
+        path, class_name = 'peewee', engine
+
+    try:
+        __import__(path)
+        module = sys.modules[path]
+        database_class = getattr(module, class_name)
+        assert issubclass(database_class, Database)
+    except ImportError:
+        raise RuntimeError('Unable to import %s' % engine)
+    except AttributeError:
+        raise RuntimeError('Database engine not found %s' % engine)
+    except AssertionError:
+        raise RuntimeError('Database engine not a subclass of '
+                            'peewee.Database: %s' % engine)
+    
+    dbm = database_class(name, **dbconnect)
+else:
+    dbm = db_url_connect(dbconnect)
 dex = dbm.execute
 
 
