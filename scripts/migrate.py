@@ -5,9 +5,9 @@ from playhouse.db_url import connect
 import config
 import os
 import argparse
-
 config.TESTING = False
-database = connect(config.DATABASE_URL)
+from app.models import dbm as database
+
 router = Router(database, migrate_dir='../migrations' if os.getcwd().endswith('scripts') else 'migrations',
                 ignore=['basemodel'])
 

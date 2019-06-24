@@ -12,48 +12,54 @@ import config
 # Why not here? >_>
 rconn = redis.from_url(config.SOCKETIO_REDIS_URL)
 
-dbconnect = getattr(config, 'DATABASE', False)
-if not dbconnect:
-    dbconnect = config.DATABASE_URL
+def db_connect():
+    dbconnect = getattr(config, 'DATABASE', False)
+    if not dbconnect:
+        dbconnect = config.DATABASE_URL
 
-if isinstance(dbconnect, dict):
-    # Taken from peewee's flask_utils
-    try:
-        name = dbconnect.pop('name')
-        engine = dbconnect.pop('engine')
-    except KeyError:
-        raise RuntimeError('DATABASE configuration must specify a '
-                            '`name` and `engine`.')
+    if isinstance(dbconnect, dict):
+        # Taken from peewee's flask_utils
+        try:
+            name = dbconnect.pop('name')
+            engine = dbconnect.pop('engine')
+        except KeyError:
+            raise RuntimeError('DATABASE configuration must specify a '
+                                '`name` and `engine`.')
 
-    if '.' in engine:
-        path, class_name = engine.rsplit('.', 1)
+        if '.' in engine:
+            path, class_name = engine.rsplit('.', 1)
+        else:
+            path, class_name = 'peewee', engine
+
+        try:
+            __import__(path)
+            module = sys.modules[path]
+            database_class = getattr(module, class_name)
+            assert issubclass(database_class, Database)
+        except ImportError:
+            raise RuntimeError('Unable to import %s' % engine)
+        except AttributeError:
+            raise RuntimeError('Database engine not found %s' % engine)
+        except AssertionError:
+            raise RuntimeError('Database engine not a subclass of '
+                                'peewee.Database: %s' % engine)
+        
+        return database_class(name, **dbconnect)
     else:
-        path, class_name = 'peewee', engine
+        return db_url_connect(dbconnect)
 
-    try:
-        __import__(path)
-        module = sys.modules[path]
-        database_class = getattr(module, class_name)
-        assert issubclass(database_class, Database)
-    except ImportError:
-        raise RuntimeError('Unable to import %s' % engine)
-    except AttributeError:
-        raise RuntimeError('Database engine not found %s' % engine)
-    except AssertionError:
-        raise RuntimeError('Database engine not a subclass of '
-                            'peewee.Database: %s' % engine)
-    
-    dbm = database_class(name, **dbconnect)
-else:
-    dbm = db_url_connect(dbconnect)
+dbm = db_connect()
 dex = dbm.execute
 
 
 def peewee_count_queries(*args, **kwargs):
     """ Used to count and display number of queries """
-    if not hasattr(g, 'pqc'):
-        g.pqc = 0
-    g.pqc += 1
+    try:
+        if not hasattr(g, 'pqc'):
+            g.pqc = 0
+        g.pqc += 1
+    except RuntimeError:
+        pass
     return dex(*args, **kwargs)
 
 
