@@ -1743,7 +1743,7 @@ def cast_vote(uid, target_type, pcid, value):
         socketio.emit('threadscore', {'pid': target.id, 'score': target.score + new_score},
                       namespace='/snt', room=target.id)
 
-        socketio.emit('yourvote', {'pid': target.id, 'status': 0, 'score': target.score + new_score}, namespace='/snt',
+        socketio.emit('yourvote', {'pid': target.id, 'status': voteValue if not undone else 0, 'score': target.score + new_score}, namespace='/snt',
                       room='user' + uid)
     else:
         upd_q.where(SubPostComment.cid == target.id).execute()
