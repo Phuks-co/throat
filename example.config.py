@@ -11,6 +11,7 @@ DATABASE_URL = 'mysql://USER:PASSWD@localhost/throat'
 
 # Method used to memoize stuff. Change to 'redis' if you use Redis
 CACHE_TYPE = 'simple'
+
 # Only used if CACHE_TYPE is 'redis'.
 CACHE_REDIS_HOST = '127.0.0.1'
 CACHE_REDIS_PORT = 6379
