@@ -451,7 +451,7 @@ def view_user(user):
     ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()
     
     habit = Sub.select(Sub.name, fn.Count(SubPost.pid).alias('count')).join(SubPost, JOIN.LEFT_OUTER, on=(SubPost.sid == Sub.sid))
-    habit = habit.where(SubPost.uid == user.uid).group_by(SubPost.sid).order_by(fn.Count(SubPost.pid).desc()).limit(10)
+    habit = habit.group_by(Sub).where(SubPost.uid == user.uid).group_by(SubPost.sid).order_by(fn.Count(SubPost.pid).desc()).limit(10)
 
     level, xp = misc.get_user_level(user.uid)
 
