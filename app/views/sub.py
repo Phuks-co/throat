@@ -348,8 +348,6 @@ def view_post(sub, pid, comments=False, highlight=None):
 
     options, total_votes, has_voted, voted_for, poll_open, poll_closes = ([], 0, None, None, True, None)
 
-    print("template")
-    misc.ktime0()
     rc = render_template('post.html', post=post, subInfo=misc.getSubData(post['sid']),
                            edittxtpostform=txtpedit, sub=ksub, subinfo=subinfo,
                            editlinkpostform=EditSubLinkPostForm(),
@@ -357,7 +355,6 @@ def view_post(sub, pid, comments=False, highlight=None):
                            editpostflair=editflair, highlight=highlight, 
                            poll_options=options, votes=total_votes, has_voted=has_voted, voted_for=voted_for,
                            poll_open=poll_open, postmeta=postmeta, poll_closes=poll_closes)
-    misc.ktime()
     return rc
 
 
