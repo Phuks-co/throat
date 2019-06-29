@@ -33,7 +33,7 @@ from .badges import badges
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair
-from peewee import JOIN, fn
+from peewee import JOIN, fn, SQL, NodeList
 import requests
 import logging
 
@@ -842,7 +842,11 @@ def postListQueryHome(noDetail=False, nofilter=False):
 
 def getPostList(baseQuery, sort, page):
     if sort == "hot":
-        posts = baseQuery.order_by((SubPost.score * 20 + (SubPost.posted - 1134028003) / 5000).desc()).limit(100).paginate(page, 25)
+        if "Postgres" in getattr(config, 'DATABASE', {}).get('engine', ''):
+            hot = SubPost.score * 20 + (fn.EXTRACT(NodeList((SQL('EPOCH FROM'), SubPost.posted))) - 1134028003 ) / 1500
+            posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, 25)
+        else:
+            posts = baseQuery.order_by((SubPost.score * 20 + (fn.Unix_Timestamp(SubPost.posted) - 1134028003) / 1500).desc()).limit(100).paginate(page, 25)
     elif sort == "top":
         posts = baseQuery.order_by(SubPost.score.desc()).paginate(page, 25)
     elif sort == "new":

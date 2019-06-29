@@ -31,11 +31,11 @@
               @end
               <b><span class="cscore">@{comment['score']!!s}</span> points</b> (+<b>@{comment['upvotes']!!s}</b>|-<b>@{comment['downvotes']!!s}</b>)
               <span class="time ">
-                  <time-ago datetime="@{comment['time'].isoformat()}Z"></time-ago>
+                  <time-ago datetime="@{comment['time'].isoformat()}"></time-ago>
               </span>
               @if comment['lastedit'] and comment['status'] != 1:
                 <span class="time edited">
-                  Edited <time-ago datetime="@{comment['lastedit'].isoformat()}Z"></time-ago>
+                  Edited <time-ago datetime="@{comment['lastedit'].isoformat()}"></time-ago>
                 </span>
               @end
             </div>

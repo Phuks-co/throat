@@ -437,7 +437,7 @@ def view_comment_inbox(cid):
 def view_user(user):
     """ WIP: View user's profile, posts, comments, badges, etc """
     try:
-        user = User.get(User.name == user)
+        user = User.get(fn.lower(User.name) == user.lower())
     except User.DoesNotExist:
         abort(404)
 
@@ -451,7 +451,7 @@ def view_user(user):
     ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()
     
     habit = Sub.select(Sub.name, fn.Count(SubPost.pid).alias('count')).join(SubPost, JOIN.LEFT_OUTER, on=(SubPost.sid == Sub.sid))
-    habit = habit.group_by(Sub).where(SubPost.uid == user.uid).group_by(SubPost.sid).order_by(fn.Count(SubPost.pid).desc()).limit(10)
+    habit = habit.where(SubPost.uid == user.uid).group_by(Sub.sid).order_by(fn.Count(SubPost.pid).desc()).limit(10)
 
     level, xp = misc.get_user_level(user.uid)
 
@@ -1066,7 +1066,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         try:
-            user = User.get(User.name == form.username.data)
+            user = User.get(fn.Lower(User.name) == form.username.data.lower())
         except User.DoesNotExist:
             return engine.get_template('user/login.html').render({'error': "Invalid username or password.", 'loginform': form})
 

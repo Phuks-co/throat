@@ -2,6 +2,7 @@
 import datetime
 import sys
 import redis
+import copy
 from flask import g
 from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model, Database
 from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
@@ -13,7 +14,7 @@ import config
 rconn = redis.from_url(config.SOCKETIO_REDIS_URL)
 
 def db_connect():
-    dbconnect = getattr(config, 'DATABASE', False)
+    dbconnect = copy.copy(getattr(config, 'DATABASE', False))
     if not dbconnect:
         dbconnect = config.DATABASE_URL
 

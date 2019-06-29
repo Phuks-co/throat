@@ -22,7 +22,7 @@ def view_sub(sub):
         return redirect(url_for('all_hot', page=1))
 
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
 
@@ -45,7 +45,7 @@ def view_sub(sub):
 def edit_sub_css(sub):
     """ Here we can edit sub info and settings """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
 
@@ -68,7 +68,7 @@ def edit_sub_css(sub):
 def edit_sub_flairs(sub):
     """ Here we manage the sub's flairs. """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
 
@@ -88,7 +88,7 @@ def edit_sub_flairs(sub):
 def edit_sub(sub):
     """ Here we can edit sub info and settings """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
 
@@ -110,7 +110,7 @@ def edit_sub(sub):
 def view_sublog(sub, page):
     """ Here we can see a log of mod/admin activity in the sub """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
 
@@ -123,7 +123,7 @@ def view_sublog(sub, page):
 def edit_sub_mods(sub):
     """ Here we can edit moderators for a sub """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
 
@@ -140,7 +140,7 @@ def edit_sub_mods(sub):
 def sub_new_rss(sub):
     """ RSS feed for /sub/new """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
 
@@ -163,7 +163,7 @@ def view_sub_new(sub, page):
         return redirect(url_for('all_new', page=1))
 
     try:
-        sub = Sub.select().where(Sub.name == sub).dicts().get()
+        sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     except Sub.DoesNotExist:
         abort(404)
 
@@ -190,7 +190,7 @@ def view_sub_new(sub, page):
 def view_sub_bans(sub):
     """ See banned users for the sub """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
 
@@ -212,7 +212,7 @@ def view_sub_top(sub, page):
         return redirect(url_for('all_top', page=1))
 
     try:
-        sub = Sub.select().where(Sub.name == sub).dicts().get()
+        sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     except Sub.DoesNotExist:
         abort(404)
 
@@ -242,7 +242,7 @@ def view_sub_hot(sub, page):
     if sub.lower() == "all":
         return redirect(url_for('all_hot', page=1))
     try:
-        sub = Sub.select().where(Sub.name == sub).dicts().get()
+        sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     except Sub.DoesNotExist:
         abort(404)
 
@@ -274,7 +274,7 @@ def view_post(sub, pid, comments=False, highlight=None):
     if post['sub'].lower() != sub.lower():
         abort(404)
     
-    sub = Sub.select().where(Sub.name == sub).dicts().get()
+    sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     subInfo = misc.getSubData(sub['sid'])
 
     try:
