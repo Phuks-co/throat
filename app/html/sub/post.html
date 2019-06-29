@@ -39,7 +39,7 @@
   <div class="postbar post" pid="@{post['pid']!!s}">
     <div class="misctainer">
       <div class="votebuttons">
-        @if post['userstatus'] != 10 and (datetime.datetime.utcnow() - post['posted']) < datetime.timedelta(days=60):
+        @if post['userstatus'] != 10 and (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(days=60):
           <div title="Upvote" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="upvote"></div>
           <div class="score">@{post['score']!!s}</div>
           <div title="Downvote" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="downvote"></div>
@@ -107,7 +107,7 @@
             @if post['ptype'] != 1:
               <li><a class="edit-post" data-pid="@{post['pid']!!s}">edit</a></li>
             @end
-            @if (datetime.datetime.utcnow() - post['posted']) < datetime.timedelta(seconds=300):
+            @if (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(seconds=300):
               <li><a class="edit-title" data-pid="@{post['pid']!!s}">edit title</a></li>
             @end
           @end
