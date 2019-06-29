@@ -362,7 +362,7 @@ def userguide():
 @app.route("/random")
 def random_sub():
     """ Here we get a random sub """
-    rsub = Sub.select(Sub.name).order_by(fn.Rand()).limit(1)
+    rsub = Sub.select(Sub.name).order_by(pdb.random()).limit(1)
     return redirect(url_for('sub.view_sub', sub=rsub.get().name))
 
 

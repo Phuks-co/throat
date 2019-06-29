@@ -31,7 +31,7 @@ from .socketio import socketio
 from .badges import badges
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
-from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog
+from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair
 from peewee import JOIN, fn, SQL, NodeList
 import requests
@@ -768,7 +768,7 @@ def getSubOfTheDay():
     daysub = rconn.get('daysub')
     if not daysub:
         try:
-            daysub = Sub.select(Sub.sid, Sub.name, Sub.title).order_by(fn.Rand()).get()
+            daysub = Sub.select(Sub.sid, Sub.name, Sub.title).order_by(db.random()).get()
         except Sub.DoesNotExist:  # No subs
             return False
         today = datetime.utcnow()
