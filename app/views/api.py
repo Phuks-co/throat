@@ -549,7 +549,7 @@ def createComment():
     if post.deleted:
         return jsonify(status='error', error="Post was deleted")
     
-    if (datetime.utcnow() - post.posted) > timedelta(days=60):
+    if (datetime.utcnow() - post.posted.replace(tzinfo=None)) > timedelta(days=60):
         return jsonify(status='error', error="Post is archived")
     
     subdata = misc.getSubData(post.sid, simple=True)

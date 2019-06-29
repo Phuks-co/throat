@@ -181,7 +181,7 @@ def delete_post():
 
 
         # time limited to prevent socket spam
-        if (datetime.datetime.utcnow() - post.posted).seconds < 86400:
+        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)).seconds < 86400:
             socketio.emit('deletion', {'pid': post.pid}, namespace='/snt', room='/all/new')
 
         # check if the post is an announcement. Unannounce if it is.
@@ -598,7 +598,7 @@ def edit_txtpost(pid):
 
         post.content = form.content.data
         # Only save edited time if it was posted more than five minutes ago
-        if (datetime.datetime.utcnow() - post.posted).seconds > 300:
+        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)).seconds > 300:
             post.edited = datetime.datetime.utcnow()
         post.save()
         return jsonify(status='ok')
@@ -800,7 +800,7 @@ def create_comment(pid):
         if post.deleted:
             return jsonify(status='error', error=['Post was deleted'])
 
-        if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=60):
+        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
             return jsonify(status='error', error=["Post is archived"])
 
         try:
@@ -1214,7 +1214,7 @@ def edit_title():
         if current_user.is_subban(sub):
             return jsonify(status='error', error='You are banned on this sub.')
 
-        if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(seconds=300):
+        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(seconds=300):
             return jsonify(status="error", error="You cannot edit the post title anymore")
 
         if post.uid.uid != current_user.uid:
@@ -1653,7 +1653,7 @@ def edit_comment():
             return jsonify(status='error',
                            error="You can't edit a deleted comment")
         
-        if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=60):
+        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
             return jsonify(status='error', error="Post is archived")
             
         dt = datetime.datetime.utcnow()

@@ -330,7 +330,7 @@ def create_comment():
     if post.deleted:
         return jsonify(msg='Post was deleted'), 404
 
-    if (datetime.datetime.utcnow() - post.posted) > datetime.timedelta(days=60):
+    if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
         return jsonify(msg="Post is archived"), 403
 
     try:
@@ -586,7 +586,7 @@ def edit_comment():
     if comment.uid_id != uid:
         return jsonify(msg="Unauthorized"), 403
 
-    if (datetime.datetime.utcnow() - comment.pid.posted) > datetime.timedelta(days=60):
+    if (datetime.datetime.utcnow() - comment.pid.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
         return jsonify(msg="Post is archived"), 400
 
     if len(content) > 16384:
