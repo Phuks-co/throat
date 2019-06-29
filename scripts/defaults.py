@@ -23,7 +23,7 @@ args = parser.parse_args()
 def getSid(subname):
     with app.app_context():
         try:
-            sub = Sub.get(Sub.name == subname)
+            sub = Sub.get(fn.Lower(Sub.name) == subname.lower())
             return True, sub.sid
         except Sub.DoesNotExist:
             return False, ''

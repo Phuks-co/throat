@@ -246,7 +246,7 @@ def getPostList(target, sort, page):
         posts = misc.getPostList(base_query, sort, page).dicts()
     else:
         try:
-            sub = Sub.get(Sub.name == target)
+            sub = Sub.get(fn.Lower(Sub.name) == target.lower())
         except Sub.DoesNotExist:
             return jsonify(status="error", error="Target does not exist")
         posts = misc.getPostList(base_query.where(Sub.sid == sub.sid), sort, page).dicts()
@@ -366,7 +366,7 @@ def getUser(username):
 @api.route('/api/getSub/<name>', methods=['GET'])
 def getSub(name):
     try:
-        sub = Sub.get(Sub.name == name)
+        sub = Sub.get(fn.Lower(Sub.name) == name.lower())
     except Sub.DoesNotExist:
         return jsonify(status="error", error="Sub does not exist")
     
@@ -458,7 +458,7 @@ def createPost():
         pass
     
     try:
-        sub = Sub.get(Sub.name == post_data['sub'])
+        sub = Sub.get(fn.Lower(Sub.name) == post_data['sub'].lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error='Sub does not exist')
 

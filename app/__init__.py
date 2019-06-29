@@ -1109,7 +1109,7 @@ def submit(ptype, sub):
         txtpostform.link.data = request.args.get('url')
     if sub:
         try:
-            dsub = Sub.get(Sub.name == sub)
+            dsub = Sub.get(fn.Lower(Sub.name) == sub.lower())
             return render_template('createpost.html', txtpostform=txtpostform, sub=dsub)
         except Sub.DoesNotExist:
             abort(404)

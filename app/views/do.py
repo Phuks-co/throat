@@ -120,7 +120,7 @@ def edit_user():
     if form.validate():
         if form.subtheme.data != '':
             try:
-                sub = Sub.get(Sub.name == form.subtheme.data)
+                sub = Sub.get(fn.Lower(Sub.name) == form.subtheme.data.lower())
             except Sub.DoesNotExist:
                 return jsonify(status='error', error=['Sub does not exist'])
 
@@ -221,7 +221,7 @@ def create_sub():
             return jsonify(status='error', error=['Invalid sub name'])
 
         try:
-            Sub.get(Sub.name == form.subname.data)
+            Sub.get(fn.Lower(Sub.name) == form.subname.data.lower())
             return jsonify(status='error', error=['Sub is already registered'])
         except Sub.DoesNotExist:
             pass
@@ -257,7 +257,7 @@ def create_sub():
 def edit_sub_css(sub):
     """ Edit sub endpoint """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error=["Sub does not exist"])
 
@@ -287,7 +287,7 @@ def edit_sub_css(sub):
 def edit_sub(sub):
     """ Edit sub endpoint """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error=["Sub does not exist"])
     if current_user.is_mod(sub.sid) or current_user.is_admin():
@@ -324,7 +324,7 @@ def edit_sub(sub):
 def assign_post_flair(sub, pid, fl):
     """ Assign a post's flair """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error=["Sub does not exist"])
 
@@ -355,7 +355,7 @@ def assign_post_flair(sub, pid, fl):
 def remove_post_flair(sub, pid):
     """ Deletes a post's flair """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error=["Sub does not exist"])
 
@@ -385,7 +385,7 @@ def edit_mod():
     form = EditModForm()
 
     try:
-        sub = Sub.get(Sub.name == form.sub.data)
+        sub = Sub.get(fn.Lower(Sub.name) == form.sub.data.lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error=["Sub does not exist"])
     
@@ -656,7 +656,7 @@ def create_post():
                 pass
         
         try:
-            sub = Sub.get(Sub.name == form.sub.data)
+            sub = Sub.get(fn.Lower(Sub.name) == form.sub.data.lower())
         except:
             return render_template('createpost.html', txtpostform=form, error="Sub does not exist")
         
@@ -895,7 +895,7 @@ def create_sendmsg():
 def ban_user_sub(sub):
     """ Ban user from sub endpoint """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error=['Sub does not exist'])
         
@@ -939,7 +939,7 @@ def ban_user_sub(sub):
 def inv_mod2(sub):
     """ User PM for Mod2 invite endpoint """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error=['Sub does not exist'])
 
@@ -990,7 +990,7 @@ def remove_sub_ban(sub, user):
     except User.DoesNotExist:
         return jsonify(status='error', error=['User does not exist'])
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error=['Sub does not exist'])
     form = DummyForm()
@@ -1032,7 +1032,7 @@ def remove_mod2(sub, user):
     except User.DoesNotExist:
         return jsonify(status='error', error=['User does not exist'])
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error=['Sub does not exist'])
     form = DummyForm()
@@ -1065,7 +1065,7 @@ def revoke_mod2inv(sub, user):
     except User.DoesNotExist:
         return jsonify(status='error', error=['User does not exist'])
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error=['Sub does not exist'])
     form = DummyForm()
@@ -1096,7 +1096,7 @@ def accept_mod2inv(sub, user):
     except User.DoesNotExist:
         return jsonify(status='error', error=['User does not exist'])
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error=['Sub does not exist'])
     form = DummyForm()
@@ -1125,7 +1125,7 @@ def accept_mod2inv(sub, user):
 def refuse_mod2inv(sub):
     """ refuse Mod2 """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error=['Sub does not exist'])
 
@@ -1492,7 +1492,7 @@ def toggle_wikipost(post):
 def delete_flair(sub):
     """ Removes a flair (from edit flair page) """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error=['Sub does not exist'])
 
@@ -1516,7 +1516,7 @@ def delete_flair(sub):
 def create_flair(sub):
     """ Creates a new flair (from edit flair page) """
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
 
@@ -1810,7 +1810,7 @@ def ignore_user(uid):
 @login_required
 def sub_upload(sub):
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         abort(404)
 
@@ -1919,7 +1919,7 @@ def sub_upload(sub):
 @login_required
 def sub_upload_delete(sub, name):
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         jsonify(status='error')  # descriptive errors where?
     form = DummyForm()

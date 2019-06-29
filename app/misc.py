@@ -207,7 +207,7 @@ class SiteUser(object):
     def get_global_stylesheet(self):
         if self.subtheme:
             try:
-                css = SubStylesheet.select().join(Sub).where(Sub.name == self.subtheme).get()
+                css = SubStylesheet.select().join(Sub).where(fn.Lower(Sub.name) == self.subtheme.lower()).get()
             except SubStylesheet.DoesNotExist:
                 return ''
             return css.content

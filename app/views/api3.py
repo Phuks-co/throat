@@ -261,7 +261,7 @@ def get_post_list(target, sort, page):
 
     else:
         try:
-            sub = Sub.get(Sub.name == target)
+            sub = Sub.get(fn.Lower(Sub.name) == target.lower())
         except Sub.DoesNotExist:
             return jsonify(msg="Target does not exist"), 404
 
@@ -466,7 +466,7 @@ def create_post():
         pass
 
     try:
-        sub = Sub.get(Sub.name == sub)
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(msg="Sub does not exist"), 404
 
