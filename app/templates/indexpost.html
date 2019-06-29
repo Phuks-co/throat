@@ -1,7 +1,7 @@
 <div pid="{{post.pid}}" class="{% if post.deleted != 0 %}deletedpost {% endif %}post">
     <div class="misctainer">
       <div class="votebuttons">
-        {% if post.userstatus != 10 and (datetime.datetime.utcnow() - post.posted) < datetime.timedelta(days=60) %}
+        {% if post.userstatus != 10 and (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) < datetime.timedelta(days=60) %}
         <div title="Upvote" class="upvote{%if post.positive == 1%} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
         <div class="score">{{post.score}}</div>
         <div title="Downvote" class="downvote{%if post.positive == 0%} downvoted{%endif%}" data-pid="{{post.pid}}" data-icon="downvote"></div>
@@ -47,7 +47,7 @@
           {% elif post.content != '' %}
           <div class="expando" data-pid="{{post.pid}}" data-t="txt" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="text"></div></div>
           {% endif %}
-        posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> by
+        posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago> by
         {% if post.userstatus != 10 %}
           <a class="authorlink" href="{{url_for('view_user', user=post.user)}}">{{post.user}}</a>
         {% endif %}
