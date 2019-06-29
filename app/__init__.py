@@ -746,8 +746,8 @@ def admin_users(page):
     commcount = SubPostComment.select(SubPostComment.uid, fn.Count(SubPostComment.cid).alias('comment_count')).group_by(SubPostComment.uid).alias('j2')
     
     users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count.alias('post_count'), commcount.c.comment_count)
-    users = users.join(postcount, on=User.uid == postcount.c.uid)
-    users = users.join(commcount, on=User.uid == commcount.c.uid)
+    users = users.join(postcount, JOIN.LEFT_OUTER, on=User.uid == postcount.c.uid)
+    users = users.join(commcount, JOIN.LEFT_OUTER, on=User.uid == commcount.c.uid)
     users = users.order_by(User.joindate.desc()).paginate(page, 50).dicts()
     return render_template('admin/users.html', users=users, page=page,
                             admin_route='admin_users')
@@ -777,8 +777,8 @@ def view_admins():
         commcount = SubPostComment.select(SubPostComment.uid, fn.Count(SubPostComment.cid).alias('comment_count')).group_by(SubPostComment.uid).alias('j2')
         
         users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count.alias('post_count'), commcount.c.comment_count)
-        users = users.join(postcount, on=User.uid == postcount.c.uid)
-        users = users.join(commcount, on=User.uid == commcount.c.uid)
+        users = users.join(postcount, JOIN.LEFT_OUTER, on=User.uid == postcount.c.uid)
+        users = users.join(commcount, JOIN.LEFT_OUTER, on=User.uid == commcount.c.uid)
         users = users.where(User.uid << [x.uid for x in admins]).order_by(User.joindate.asc()).dicts()
 
         return render_template('admin/users.html', users=users,
@@ -797,9 +797,9 @@ def admin_users_search(term):
         postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias('post_count')
         commcount = SubPostComment.select(SubPostComment.uid, fn.Count(SubPostComment.cid).alias('comment_count')).group_by(SubPostComment.uid).alias('j2')
         
-        users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count.alias('post_count'), commcount.c.comment_count)
-        users = users.join(postcount, on=User.uid == postcount.c.uid)
-        users = users.join(commcount, on=User.uid == commcount.c.uid)
+        users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count, commcount.c.comment_count)
+        users = users.join(postcount, JOIN.LEFT_OUTER, on=User.uid == postcount.c.uid)
+        users = users.join(commcount, JOIN.LEFT_OUTER, on=User.uid == commcount.c.uid)
         users = users.where(User.name.contains(term)).order_by(User.joindate.desc()).dicts()
 
         return render_template('admin/users.html', users=users, term=term,
