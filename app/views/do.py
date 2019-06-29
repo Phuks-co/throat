@@ -390,7 +390,7 @@ def edit_mod():
         return jsonify(status='error', error=["Sub does not exist"])
     
     try:
-        user = User.get(User.name == form.user.data)
+        user = User.get(fn.Lower(User.name) == form.user.data.lower())
     except User.DoesNotExist:
         return jsonify(status='error', error=["User does not exist"])
 
@@ -423,7 +423,7 @@ def assign_userbadge():
         return jsonify(status='error', error=["Badge does not exist"])
 
     try:
-        user = User.get(User.name == form.user.data)
+        user = User.get(fn.Lower(User.name) == form.user.data.lower())
     except User.DoesNotExist:
         return jsonify(status='error', error=["User does not exist"])
 
@@ -872,7 +872,7 @@ def create_sendmsg():
     form = CreateUserMessageForm()
     if form.validate():
         try:
-            user = User.get(User.name == form.to.data)
+            user = User.get(fn.Lower(User.name) == form.to.data.lower())
         except:
             return json.dumps({'status': 'error', 'error': ['User does not exist']})
         misc.create_message(mfrom=current_user.uid,
@@ -904,7 +904,7 @@ def ban_user_sub(sub):
     form = BanUserSubForm()
     if form.validate():
         try:
-            user = User.get(User.name == form.user.data)
+            user = User.get(fn.Lower(User.name) == form.user.data.lower())
         except User.DoesNotExist:
             return jsonify(status='error', error=['User does not exist'])
 
@@ -948,7 +948,7 @@ def inv_mod2(sub):
         form = EditMod2Form()
         if form.validate():
             try:
-                user = User.get(User.name == form.user.data)
+                user = User.get(fn.Lower(User.name) == form.user.data.lower())
             except User.DoesNotExist:
                 return jsonify(status='error', error=['User does not exist'])
 
@@ -986,7 +986,7 @@ def inv_mod2(sub):
 @login_required
 def remove_sub_ban(sub, user):
     try:
-        user = User.get(User.name == user)
+        user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
         return jsonify(status='error', error=['User does not exist'])
     try:
@@ -1028,7 +1028,7 @@ def remove_sub_ban(sub, user):
 def remove_mod2(sub, user):
     """ Remove Mod2 """
     try:
-        user = User.get(User.name == user)
+        user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
         return jsonify(status='error', error=['User does not exist'])
     try:
@@ -1061,7 +1061,7 @@ def remove_mod2(sub, user):
 def revoke_mod2inv(sub, user):
     """ revoke Mod2 inv """
     try:
-        user = User.get(User.name == user)
+        user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
         return jsonify(status='error', error=['User does not exist'])
     try:
@@ -1092,7 +1092,7 @@ def revoke_mod2inv(sub, user):
 def accept_mod2inv(sub, user):
     """ Accept mod invite """
     try:
-        user = User.get(User.name == user)
+        user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
         return jsonify(status='error', error=['User does not exist'])
     try:
@@ -1991,7 +1991,7 @@ def ban_user(username):
         abort(403)
 
     try:
-        user = User.get(User.name == username)
+        user = User.get(fn.Lower(User.name) == username.lower())
     except User.DoesNotExist:
         abort(404)
 

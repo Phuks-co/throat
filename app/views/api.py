@@ -328,7 +328,7 @@ def getComment(cid):
 @api.route('/api/getUser/<username>', methods=['GET'])
 def getUser(username):
     try:
-        user = User.get(User.name == username)
+        user = User.get(fn.Lower(User.name) == username.lower())
     except User.DoesNotExist:
         return jsonify(status="error", error="User does not exist")
     

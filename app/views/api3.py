@@ -40,7 +40,7 @@ def login():
         return jsonify(msg="Missing password parameter"), 400
 
     try:
-        user = User.get(User.name == username)
+        user = User.get(fn.Lower(User.name) == username.lower())
     except User.DoesNotExist:
         return jsonify(msg="Bad username or password"), 401
     
@@ -84,7 +84,7 @@ def fresh_login():
     username = request.json.get('username', None)
     password = request.json.get('password', None)
     try:
-        user = User.get(User.name == username)
+        user = User.get(fn.Lower(User.name) == username.lower())
     except User.DoesNotExist:
         return jsonify(msg="Bad username or password"), 401
 

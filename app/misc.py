@@ -586,7 +586,7 @@ def workWithMentions(data, receivedby, post, sub, cid=None, c_user=current_user)
         for mtn in mts:
             # Send notifications.
             try:
-                user = User.get(User.name == mtn)
+                user = User.get(fn.Lower(User.name) == mtn.lower())
             except User.DoesNotExist:
                 continue
             if user.uid != c_user.uid and user.uid != receivedby:

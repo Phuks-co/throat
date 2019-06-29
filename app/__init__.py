@@ -474,7 +474,7 @@ def view_user(user):
 def view_user_posts(user, page):
     """ WIP: View user's recent posts """
     try:
-        user = User.get(User.name == user)
+        user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
         abort(404)
     if user.status == 10:
@@ -495,7 +495,7 @@ def view_user_posts(user, page):
 @login_required
 def view_user_savedposts(user, page):
     """ WIP: View user's saved posts """
-    if current_user.name == user:
+    if current_user.name.lower() == user.lower():
         posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).join(UserSaved, on=(UserSaved.pid == SubPost.pid)).where(UserSaved.uid == current_user.uid),
                                  'new', page).dicts()
         return render_template('userposts.html', page=page,
@@ -510,7 +510,7 @@ def view_user_savedposts(user, page):
 def view_user_comments(user, page):
     """ WIP: View user's recent comments """
     try:
-        user = User.get(User.name == user)
+        user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
         abort(404)
     if user.status == 10:
@@ -856,7 +856,7 @@ def admin_post_voting(page, term):
     """ WIP: View post voting habits """
     if current_user.is_admin():
         try:
-            user = User.get(User.name == term)
+            user = User.get(fn.Lower(User.name) == user.lower())
             msg = []
             votes = SubPostVote.select(SubPostVote.positive, SubPostVote.pid, User.name, SubPostVote.datetime, SubPostVote.pid)
             votes = votes.join(SubPost, JOIN.LEFT_OUTER, on=SubPost.pid == SubPostVote.pid)
@@ -880,7 +880,7 @@ def admin_comment_voting(page, term):
     """ WIP: View comment voting habits """
     if current_user.is_admin():
         try:
-            user = User.get(User.name == term)
+            user = User.get(fn.Lower(User.name) == term.lower())
             msg = []
             votes = SubPostCommentVote.select(SubPostCommentVote.positive, SubPostCommentVote.cid, SubPostComment.uid, User.name, SubPostCommentVote.datetime, SubPost.pid, Sub.name.alias('sub'))
             votes = votes.join(SubPostComment, JOIN.LEFT_OUTER, on=SubPostComment.cid == SubPostCommentVote.cid).join(SubPost).join(Sub)
@@ -976,7 +976,7 @@ def register():
             return render_template('register.html', rform=form, error="Username has invalid characters.")
         # check if user or email are in use
         try:
-            User.get(User.name == form.username.data)
+            User.get(fn.Lower(User.name) == form.username.data.lower())
             return render_template('register.html', rform=form, error="Username is not available.")
         except User.DoesNotExist:
             pass

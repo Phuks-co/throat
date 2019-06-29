@@ -24,7 +24,7 @@ args = parser.parse_args()
 with app.app_context():
     if args.add:
         try:
-            user = User.get(User.name == args.add)
+            user = User.get(fn.Lower(User.name) == args.add.lower())
         except User.DoesNotExist:
             print("Error: User does not exist")
             sys.exit(1)
@@ -32,7 +32,7 @@ with app.app_context():
         print("Done.")
     elif args.remove:
         try:
-            user = User.get(User.name == args.remove)
+            user = User.get(fn.Lower(User.name) == args.remove.lower())
         except User.DoesNotExist:
             print("Error: User does not exist.")
             sys.exit(1)
