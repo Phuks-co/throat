@@ -20,7 +20,7 @@
       <h2><i class="fa fa-list"></i> Post: <a href="{{url_for('view_post_inbox', pid=post.pid)}}">{{post.title}}</a></h2>
       <div>
         <div>NSFW: {% if post.nsfw %}<span class="bgred" alt="Not safe for work">NSFW</span>{% else %}no{% endif %}</div>
-        <div>When: <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago></div>
+        <div>When: <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago></div>
         <div>Sub: <a href="{{url_for('sub.view_sub', sub=sub.name)}}">{{sub.name}}</a></div>
       </div>
     </div>

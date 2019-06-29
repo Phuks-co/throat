@@ -24,7 +24,7 @@
 
 <hr/>
 <div class="author" style="padding:.5em;">
-  Posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> by
+  Posted <time-ago datetime="{{post.posted.isoformat()}}"></time-ago> by
   {% if post.deleted == 0 %}
     {% if post.userstatus != 10 %}
     <a class="authorlink" namedata="{{post.user}}" href="{{url_for('view_user', user=post.user)}}">
@@ -39,7 +39,7 @@
   {%endif%}
   <br/>
   {% if post.edited %}
-    edited <time-ago datetime="{{post.edited.isoformat()}}Z"></time-ago><br/>
+    edited <time-ago datetime="{{post.edited.isoformat()}}"></time-ago><br/>
   {% endif %}
   Score: {{post.score}} <b>(+{{func.get_post_upcount(post.pid)}}|-{{func.get_post_downcount(post.pid)}})</b>
 </div>
@@ -96,7 +96,7 @@
 
 <div class="createdby">
   Created by {{subInfo.creator.name}}
-  <time-ago datetime="{{sub.creation}}Z"></time-ago>
+  <time-ago datetime="{{sub.creation}}"></time-ago>
 </div>
 
 {% if current_user.is_mod(post.sid) or current_user.is_admin() %}

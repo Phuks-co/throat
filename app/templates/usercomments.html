@@ -35,11 +35,11 @@
                   <a href="{{ url_for('view_user', user=user.name) }}" class="poster">{{user.name}}</a> -
                   <b><span class="cscore">{{comment.score}}</span> points</b>
                   <span class="time">
-                     <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago>
+                     <time-ago datetime="{{comment.time.isoformat()}}"></time-ago>
                   </span>
                 {% if comment.lastedit %}
                   <span class="time edited">
-                    *(Edited <time-ago datetime="{{comment.lastedit.isoformat()}}Z"></time-ago>)
+                    *(Edited <time-ago datetime="{{comment.lastedit.isoformat()}}"></time-ago>)
                   </span>
                 {% endif %}
               </div>

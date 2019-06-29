@@ -40,7 +40,7 @@
       {% for post in tp %}
         <li><a class="title" href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}">{{post.title}}</a>
           <div class="sidelocale">
-            <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('sub.view_sub', sub=post.sub)}}">{{conf['SUB_PREFIX']}}/{{post.sub}}</a>
+            <time-ago datetime="{{post.posted.isoformat()}}"></time-ago> in <a href="{{url_for('sub.view_sub', sub=post.sub)}}">{{conf['SUB_PREFIX']}}/{{post.sub}}</a>
           </div></li>
       {% endfor %}
     </ul>
@@ -69,7 +69,7 @@
     <ul>
       <li><a class="title" href="{{url_for('sub.view_post', sub=cl.sub, pid=cl.pid)}}">{{cl.title}}</a><br>
       <span class="sidelocale">
-        <time-ago datetime="{{cl.posted.isoformat()}}Z"></time-ago> in <a href="{{url_for('sub.view_sub', sub=cl.sub)}}">{{conf['SUB_PREFIX']}}/{{cl.sub}}</a></li>
+        <time-ago datetime="{{cl.posted.isoformat()}}"></time-ago> in <a href="{{url_for('sub.view_sub', sub=cl.sub)}}">{{conf['SUB_PREFIX']}}/{{cl.sub}}</a></li>
       </span>
     </ul>
   </div>
@@ -110,7 +110,7 @@
             <span class="announcement">Announcement</span><a href="{{url_for('sub.view_post', sub=announcement.sub, pid=announcement.pid)}}" class="title">{{announcement.title}}</a>
           </div>
           <div class="author">
-            posted <time-ago datetime="{{announcement.posted.isoformat()}}Z"></time-ago> by
+            posted <time-ago datetime="{{announcement.posted.isoformat()}}"></time-ago> by
             <a href="{{url_for('view_user', user=announcement.user)}}">{{announcement.user}}</a> on
             <a href="{{url_for('sub.view_sub', sub=announcement.sub)}}">{{announcement.sub}}</a>
           </div>

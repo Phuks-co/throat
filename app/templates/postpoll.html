@@ -7,7 +7,7 @@
         {%endif%}
     {%endif%}
     {%if poll_open %}
-        {%if poll_closes %}<p>This poll will close <time-until datetime="{{poll_closes}}Z"></time-until></p>{%endif%}
+        {%if poll_closes %}<p>This poll will close <time-until datetime="{{poll_closes}}"></time-until></p>{%endif%}
         {%if 'hide_results' in postmeta %}
             <p><i>Results will be hidden until the poll closes</i></p>
         {%endif%}

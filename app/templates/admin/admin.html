@@ -42,7 +42,7 @@
           {%else%}
           <div class="post">
             <a href="{{url_for('do.deleteannouncement')}}" class="btn btn-red">Nuke!</a> |
-            <a href="{{url_for('view_post_inbox', pid=ann.pid)}}">{{ann.title}}</a> by {{ann.user}}, <relative-time datetime="{{ann.posted.isoformat()}}Z"></relative-time>
+            <a href="{{url_for('view_post_inbox', pid=ann.pid)}}">{{ann.title}}</a> by {{ann.user}}, <relative-time datetime="{{ann.posted.isoformat()}}"></relative-time>
           </div>
 
           {%endif%}
