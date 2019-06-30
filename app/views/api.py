@@ -7,7 +7,7 @@ from flask import Blueprint, jsonify, request, render_template, g, current_app, 
 from flask.sessions import SecureCookieSessionInterface
 from flask_login import login_required, current_user
 from flask_oauthlib.provider import OAuth2Provider
-from peewee import JOIN
+from peewee import JOIN, fn
 from .. import misc
 from ..socketio import socketio
 from ..models import Sub, User, Grant, Token, Client, SubPost, Sub, SubPostComment, APIToken, APITokenSettings

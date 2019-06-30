@@ -4,7 +4,7 @@ import datetime
 import uuid
 import bcrypt
 from flask import Blueprint, jsonify, request, url_for
-from peewee import JOIN
+from peewee import JOIN, fn
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
 from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
 from .. import misc
