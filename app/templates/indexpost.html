@@ -23,11 +23,11 @@
       </div>
     </div>
     <div class="pbody">
-      <div class="post-heading">
+      <div classub.htmlsub.htmls="post-heading">
         {% if post.nsfw %}
         <div class="nsfw" alt="Not safe for work">NSFW</div>
         {%endif%}
-        {% if func.getPostFlair(post) %}<span class="postflair">{{func.getPostFlair(post)}}</span>{% endif %}
+        {% if post.flair %}<span class="postflair">{{post.flair}}</span>{% endif %}
         {% if post.link == None %}
           <a href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}" class="title">{{post.title}}</a>
         {% else %}

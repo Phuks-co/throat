@@ -114,13 +114,6 @@ class SiteUser(object):
         """ Returns the unique user id. Used on load_user """
         return self.uid
 
-    def get_username(self):
-        """ Returns the user name. Used on load_user """
-        return self.name
-
-    def get_given(self):
-        return getUserGivenScore(self.uid)
-
     def is_mod(self, sid):
         """ Returns True if the current user is a mod of 'sub' """
         try:
@@ -169,10 +162,6 @@ class SiteUser(object):
         """ Returns True if the current user has blocked sub """
         return sid in self.blocksid
 
-    def new_count(self):
-        """ Returns new message count """
-        return self.notifications
-
     def likes_scroll(self):
         """ Returns true if user likes scroll """
         return 'noscroll' not in self.prefs
@@ -180,10 +169,6 @@ class SiteUser(object):
     def block_styles(self):
         """ Returns true if user selects to block sub styles """
         return 'nostyles' in self.prefs
-
-    def show_nsfw(self):
-        """ Returns true if user selects show nsfw posts """
-        return 'nsfw' in self.prefs
 
     @cache.memoize(300)
     def get_user_level(self):
@@ -262,16 +247,7 @@ class SiteAnon(AnonymousUserMixin):
         return False
 
     @classmethod
-    def is_labrat(cls):
-        return False
-
-    @classmethod
     def block_styles(cls):
-        """ Anons dont get usermetadata options. """
-        return False
-
-    @classmethod
-    def show_nsfw(cls):
         """ Anons dont get usermetadata options. """
         return False
 
@@ -424,34 +400,6 @@ def our_markdown(text):
         return '> tfw tried to break the site'
 
 
-@cache.memoize(20)
-def get_post_upcount(pid):
-    """ Returns the upvote count """
-    score = SubPostVote.select().where(SubPostVote.pid == pid).where(SubPostVote.positive == 1).count()
-    return score
-
-
-@cache.memoize(20)
-def get_post_downcount(pid):
-    """ Returns the downvote count """
-    score = SubPostVote.select().where(SubPostVote.pid == pid).where(SubPostVote.positive == 0).count()
-    return score
-
-
-@cache.memoize(20)
-def get_comment_voting(cid):
-    """ Returns a tuple with the up/downvote counts """
-    c = SubPostCommentVote.select().where(SubPostCommentVote.cid == cid)
-    upvote = 0
-    downvote = 0
-    for i in c:
-        if i.positive:
-            upvote += 1
-        else:
-            downvote += 1
-    return (upvote, downvote)
-
-
 def isMod(sid, uid):
     """ Returns True if 'user' is a mod of 'sub' """
     try:
@@ -482,12 +430,6 @@ def isModInv(sid, uid):
         return True
     except SubMetadata.DoesNotExist:
         return False
-
-
-def getPostFlair(post):
-    """ Returns true if the post has available flair """
-    # The mere existence of this function pains me.
-    return post['flair']
 
 def getSubFlairs(sid):
     return SubFlair.select().where(SubFlair.sid == sid)
@@ -925,120 +867,6 @@ def get_errors(form):
                 getattr(form, field).label.text,
                 error))
     return ret
-
-
-def build_tree(tuff, root=None):
-    """ Builds a comment tree """
-    str = []
-    for i in tuff[::]:
-        if i['parentcid'] == root:
-            tuff.remove(i)
-            i['children'] = build_tree(tuff, root=i['cid'])
-            str.append(i)
-
-    return str
-
-
-def count_childs(tuff, depth=0):
-    """ Counts number of children in tree """
-    if depth > 7:
-        return 0
-    cnt = 0
-    for i in tuff:
-        if i.get('morechildren') is not None:
-            cnt += i['morechildren']
-        else:
-            cnt += 1
-            cnt += count_childs(i['children'], depth=depth + 1)
-    return cnt
-
-
-def trim_tree(tuff, depth=0, pageno=1):
-    """ Trims down the tree. """
-    k = 0
-    res = []
-    for i in tuff:
-        perpage = 8 if i['parentcid'] is None else 5
-        k += 1
-        if k < ((pageno - 1) * perpage) + 1:
-            continue
-        if k <= pageno * perpage:
-            if depth > 1:
-                i['morechildren'] = count_childs(i['children'])
-                i['children'] = []
-            else:
-                i['children'] = trim_tree(i['children'], depth=depth + 1)
-            res.append(i)
-        else:
-            res.append({'moresbling': count_childs(tuff[pageno * perpage:]), 'cid': 0, 'parent': i['parentcid']})
-            break
-    return res
-
-
-def expand_comment_tree(comsx):
-    coms = comsx[0]
-    expcomms = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
-                                     SubPostComment.score, SubPostComment.status, SubPostComment.time, SubPostComment.pid,
-                                     User.name.alias('username'), SubPostCommentVote.positive, SubPostComment.uid,
-                                     User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)
-    expcomms = expcomms.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
-    expcomms = expcomms.join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == SubPostComment.cid)))
-    expcomms = expcomms.where(SubPostComment.cid << comsx[1]).dicts()
-    lcomms = {}
-
-    for k in expcomms:
-        lcomms[k['cid']] = k
-
-    def i_like_recursion(xm, depth=0):
-        if depth > 30:
-            return []
-        ret = []
-        for dom in xm:
-            if dom['cid'] == 0:
-                ret.append(dom)
-                continue
-            fmt = {**dom, **lcomms[dom['cid']]}
-            if depth == 2 and len(fmt['children']) != 0:
-                fmt['imorechildren'] = True
-            else:
-                fmt['children'] = i_like_recursion(fmt['children'], depth=depth + 1)
-            ret.append(fmt)
-        return ret
-
-    dcom = []
-    for com in coms:
-        if not com.get('moresbling'):
-            fmt = {**com, **lcomms[com['cid']]}
-            fmt['children'] = i_like_recursion(fmt['children'])
-            dcom.append(fmt)
-        else:
-            dcom.append(com)
-    return dcom
-
-
-def build_comment_tree(stuff, root=None, perpage=5, pageno=1):
-    cmxk = trim_tree(build_tree(list(stuff), root=root), pageno=pageno)
-
-    def get_cids(tree, c=[]):
-        for i in tree:
-            if i['cid'] != 0:
-                c.append(i['cid'])
-                get_cids(i['children'], c)
-        return c
-    cids = get_cids(cmxk)
-    return (cmxk, cids)
-
-
-def get_post_comments(pid):
-    """ Returns the comments for a post `pid`"""
-    cmskel = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
-    cmskel = cmskel.where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
-
-    if cmskel.count() == 0:
-        return []
-
-    return expand_comment_tree(build_comment_tree(cmskel, perpage=8))
-
 
 # messages
 

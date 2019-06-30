@@ -26,7 +26,7 @@ def handle_message():
     if current_user.get_id():
         join_room('user' + current_user.uid)
         socketio.emit('uinfo', {'taken': current_user.score,
-                                'ntf': current_user.new_count()},
+                                'ntf': current_user.notifications},
                       namespace='/snt',
                       room='user' + current_user.uid)
 
