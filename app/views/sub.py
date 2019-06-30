@@ -323,39 +323,6 @@ def view_post(sub, pid, comments=False, highlight=None):
     return engine.get_template('sub/post.html').render({'post': post, 'sub': sub, 'subInfo': subInfo,
                                                         'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,
                                                         'commentform': PostComment(), 'comments': comments})
-    editflair = EditPostFlair()
-
-    editflair.flair.choices = []
-    if post['uid'] == current_user.uid or current_user.is_mod(post['sid']) or current_user.is_admin():
-        flairs = SubFlair.select().where(SubFlair.sid == post['sid'])
-        for flair in flairs:
-            editflair.flair.choices.append((flair.xid, flair.text))
-
-    txtpedit = EditSubTextPostForm()
-    txtpedit.content.data = post['content']
-    if not comments:
-        comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == post['pid']).order_by(SubPostComment.score.desc()).dicts()
-        if not comments.count():
-            comments = []
-        else:
-            misc.ktime0()
-            comments = misc.get_comment_tree(comments, uid=current_user.uid)
-            misc.ktime()
-
-    ksub = Sub.get(Sub.sid == post['sid'])
-    subinfo = misc.getSubData(ksub.sid)
-    ncomments = SubPostComment.select().where(SubPostComment.pid == post['pid']).count()
-
-    options, total_votes, has_voted, voted_for, poll_open, poll_closes = ([], 0, None, None, True, None)
-
-    rc = render_template('post.html', post=post, subInfo=misc.getSubData(post['sid']),
-                           edittxtpostform=txtpedit, sub=ksub, subinfo=subinfo,
-                           editlinkpostform=EditSubLinkPostForm(),
-                           comments=comments, ncomments=ncomments, is_saved=is_saved,
-                           editpostflair=editflair, highlight=highlight, 
-                           poll_options=options, votes=total_votes, has_voted=has_voted, voted_for=voted_for,
-                           poll_open=poll_open, postmeta=postmeta, poll_closes=poll_closes)
-    return rc
 
 
 @sub.route("/<sub>/<pid>/<cid>")
