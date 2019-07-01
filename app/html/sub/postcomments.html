@@ -77,7 +77,7 @@
       </article>
     @else:
         <a href="#" class="loadsibling" data-pid="@{post['pid']!!s}" data-key="@{comment.get('key', '')}" data-pcid="@{comment['pcid']}">
-        Load more (@{comment['more']!!s} comment @{(comment['more']> 1) and 's' or ''})
+        Load more (@{comment['more']!!s} comment@{(comment['more']> 1) and 's' or ''})
         </a>
     @end 
   @end
