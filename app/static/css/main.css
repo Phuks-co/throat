@@ -871,6 +871,7 @@ a.slink{
   position: initial;
   margin-right: 7px;
   margin-left: 2px;
+  cursor: pointer;
 }
 #post-source{
   display: none;

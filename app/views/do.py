@@ -1063,10 +1063,10 @@ def remove_mod2(sub, user):
     form = DummyForm()
     if form.validate():
         isTopMod = current_user.is_mod(sub.sid, 0)
-        if isTopMod or current_user.is_admin():
+        if isTopMod or current_user.is_admin() or (current_user.uid == user.uid and current_user.is_mod(sub.sid)):
             try:
-                mod = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.power_level != 1) & (SubMod.invite == False))
-            except:
+                mod = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.power_level != 0) & (SubMod.invite == False))
+            except SubMod.DoesNotExist:
                 return jsonify(status='error', error=['User is not mod'])
             
             mod.delete_instance()
@@ -1075,7 +1075,7 @@ def remove_mod2(sub, user):
             misc.create_sublog(misc.LOG_TYPE_SUB_MOD_REMOVE, current_user.uid, sub.sid, target=user.uid,
                                admin=True if (not isTopMod and current_user.is_admin()) else False)
 
-            return jsonify(status='ok')
+            return jsonify(status='ok', resign=True if current_user.uid == user.uid else False)
         else:
             return jsonify(status='error', error=['Access denied'])
     return json.dumps({'status': 'error', 'error': get_errors(form)})

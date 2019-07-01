@@ -42,7 +42,9 @@
   <span class="editmodbtn col-4">
     <li><a href="{{url_for('view_user', user=subMods.mods[mod])}}">{{subMods.mods[mod]}}</a>
       {% if current_user.is_admin() or current_user.is_mod(sub.sid, 0) %}
-      (<a data-sub="{{sub.name}}" data-user="{{subMods.mods[mod]}}" class="slink revoke-mod2">remove</a>)
+      <span>(<a data-sub="{{sub.name}}" data-user="{{subMods.mods[mod]}}" class="slink revoke-mod2">remove</a>)</span>
+      {%elif current_user.uid == mod %}
+      <span>(<a data-sub="{{sub.name}}" data-user="{{subMods.mods[mod]}}" class="slink revoke-mod2">resign</a>)</span>
       {% endif %}
     </li>
   </span>
@@ -57,7 +59,9 @@
     <span class="editmodbtn col-4">
       <li><a href="{{url_for('view_user', user=subMods.janitors[mod])}}">{{subMods.janitors[mod]}}</a>
         {% if current_user.is_admin() or current_user.is_mod(sub.sid, 0) %}
-        (<a data-sub="{{sub.name}}" data-user="{{subMods.janitors[mod]}}" class="slink revoke-mod2">remove</a>)
+        <span>(<a data-sub="{{sub.name}}" data-user="{{subMods.janitors[mod]}}" class="slink revoke-mod2">remove</a>)</span>
+        {%elif current_user.uid == mod %}
+        <span>(<a data-sub="{{sub.name}}" data-user="{{subMods.janitors[mod]}}" class="slink revoke-mod2">resign</a>)</span>
         {% endif %}
       </li>
     </span>

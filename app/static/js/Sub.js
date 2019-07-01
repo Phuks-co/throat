@@ -1,4 +1,5 @@
 import u from './Util';
+import TextConfirm from  './utils/TextConfirm';
 
 u.sub('.revoke-mod2inv', 'click', function(e){
   var user=this.getAttribute('data-user');
@@ -36,11 +37,17 @@ u.sub('#refuse-mod2-inv', 'click', function(e){
 u.sub('.revoke-mod2', 'click', function(e){
   var user=this.getAttribute('data-user');
   var nsub=this.getAttribute('data-sub');
-  u.post('/do/remove_mod2/'+nsub+'/'+user, {},
-  function(data){
-    if (data.status == "ok") {
-      document.location.reload();
-    }
+  TextConfirm(this, function(){
+    u.post('/do/remove_mod2/'+nsub+'/'+user, {},
+    function(data){
+      if (data.status == "ok") {
+        if(!data.resign){
+          document.location.reload();
+        }else{
+          document.location = '/s/' + nsub;
+        }
+      }
+    });
   });
 });
 
