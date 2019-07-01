@@ -8,7 +8,7 @@
 {% block content %}
 {{ super() }}
 
-{% if not current_user.is_mod(sub.sid) and current_user.is_admin() %}
+{% if not current_user.is_mod(sub.sid, 1) and current_user.is_admin() %}
 <div class="important"><h3>Editing as Admin</h3></div>
 {% endif %}
 

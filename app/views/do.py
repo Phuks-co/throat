@@ -31,6 +31,7 @@ from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
 from ..misc import cache, sendMail, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata, UserSaved
+from ..models import SubMod
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
 from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport
 from peewee import fn, JOIN
@@ -231,15 +232,17 @@ def create_sub():
             if (level <= 1) and (not current_user.admin):
                 return jsonify(status='error', error=['You must be at least level 2.'])
 
-            if misc.moddedSubCount(current_user.uid) >= 20 and (not current_user.admin):
-                return jsonify(status='error', error=['You cannot mod more than 20 subs.'])
+            owned = SubMod.select().where(SubMod.uid == current_user.uid).where((SubMod.power_level == 0) & (SubMod.invite == False)).count()
 
-            if misc.moddedSubCount(current_user.uid) >= (level - 1) and (not current_user.admin):
-                return jsonify(status='error', error=['You cannot mod more than {0} subs. Try leveling up your account'.format(level - 1)])
+            if owned >= 20 and (not current_user.admin):
+                return jsonify(status='error', error=['You cannot own more than 20 subs.'])
+
+            if owned >= (level - 1) and (not current_user.admin):
+                return jsonify(status='error', error=['You cannot own more than {0} subs. Try leveling up your account'.format(level - 1)])
 
         sub = Sub.create(sid=uuid.uuid4(), name=form.subname.data, title=form.title.data)
         SubMetadata.create(sid=sub.sid, key='mod', value=current_user.uid)
-        SubMetadata.create(sid=sub.sid, key='mod1', value=current_user.uid)
+        SubMod.create(sid=sub.sid, uid=current_user.uid, power_level=0)
         SubStylesheet.create(sid=sub.sid, content='', source='/* CSS here */')
 
         # admin/site log
@@ -261,7 +264,7 @@ def edit_sub_css(sub):
     except Sub.DoesNotExist:
         return jsonify(status='error', error=["Sub does not exist"])
 
-    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
         return jsonify(status='error', error=["Not authorized"])
 
     form = EditSubCSSForm()
@@ -290,7 +293,7 @@ def edit_sub(sub):
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error=["Sub does not exist"])
-    if current_user.is_mod(sub.sid) or current_user.is_admin():
+    if current_user.is_mod(sub.sid, 1) or current_user.is_admin():
         form = EditSubForm()
         if form.validate():
             sub.title = form.title.data
@@ -308,7 +311,7 @@ def edit_sub(sub):
 
             misc.create_sublog(misc.LOG_TYPE_SUB_SETTINGS, current_user.uid, sub.sid)
 
-            if not current_user.is_mod(sub.sid) and current_user.is_admin():
+            if not current_user.is_mod(sub.sid, 1) and current_user.is_admin():
                 misc.create_sitelog(misc.LOG_TYPE_SUB_SETTINGS, current_user.uid,
                                     comment='/s/' + sub.name,
                                     link=url_for('sub.view_sub', sub=sub.name))
@@ -395,10 +398,13 @@ def edit_mod():
         return jsonify(status='error', error=["User does not exist"])
 
     if form.validate():
-        sub.update_metadata('mod1', user.uid)
-
-        qdel = SubMetadata.delete().where(SubMetadata.key == 'mod2').where(SubMetadata.value == user.uid).where(SubMetadata.sid == sub.sid)
-        qdel.execute()
+        try:
+            sm = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid))
+            sm.power_level = 0
+            sm.invite = False
+            sm.save()
+        except SubMod.DoesNotExist:
+            SubMod.create(sid=sub.sid, uid=user.uid, power_level=0)
 
         misc.create_sublog(misc.LOG_TYPE_SUB_TRANSFER, current_user.uid, sub.sid,
                            comment=user.name, admin=True)
@@ -667,7 +673,8 @@ def create_post():
         if current_user.is_subban(sub):
             return render_template('createpost.html', txtpostform=form, error="You're banned from posting on this sub")
         
-        if subdata.get('restricted', 0) and not (current_user.uid not in subdata.get('mod2', []) or current_user.uid != subdata['owner']['uid']):
+        submods = misc.getSubMods(sub.sid)
+        if subdata.get('restricted', 0) and not (current_user.uid not in submods['all']):
             return render_template('createpost.html', txtpostform=form, error="Only mods can post on this sub")
 
         if misc.get_user_level(current_user.uid)[0] < 7:
@@ -899,7 +906,7 @@ def ban_user_sub(sub):
     except Sub.DoesNotExist:
         return jsonify(status='error', error=['Sub does not exist'])
         
-    if not current_user.is_mod(sub.sid):
+    if not current_user.is_mod(sub.sid, 1):
         return jsonify(status='error', error=['Not authorized'])
     form = BanUserSubForm()
     if form.validate():
@@ -934,17 +941,22 @@ def ban_user_sub(sub):
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
-@do.route("/do/inv_mod2/<sub>", methods=['POST'])
+@do.route("/do/inv_mod/<sub>", methods=['POST'])
 @login_required
-def inv_mod2(sub):
+def inv_mod(sub):
     """ User PM for Mod2 invite endpoint """
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status='error', error=['Sub does not exist'])
 
-    subdata = misc.getSubData(sub.sid)
-    if current_user.uid == subdata['owner']['uid'] or current_user.is_admin():
+    try:
+        SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == current_user.uid) & (SubMod.power_level == 0) & (SubMod.invite == False))
+        is_owner = False
+    except SubMod.DoesNotExist:
+        is_owner = True
+
+    if is_owner or current_user.is_admin():
         form = EditMod2Form()
         if form.validate():
             try:
@@ -952,29 +964,42 @@ def inv_mod2(sub):
             except User.DoesNotExist:
                 return jsonify(status='error', error=['User does not exist'])
 
-            if user.uid in subdata['mod2'] or user.uid == subdata['owner']['uid']:
+            try:
+                SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.invite == False))
                 return jsonify(status='error', error=['User is already a mod'])
+            except SubMod.DoesNotExist:
+                pass
 
-            if user.uid in subdata['mod2i']:
+            try:
+                SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.invite == True))
                 return jsonify(status='error', error=['User has a pending invite'])
+            except SubMod.DoesNotExist:
+                pass
+            
+            if form.level.data in ('1', '2'):
+                power_level = int(form.level.data)
+            else:
+                return jsonify(status='error', error=['Invalid power level'])
 
-            if misc.moddedSubCount(user.uid) >= 15:
+            moddedCount = SubMod.select().where((SubMod.uid == user.uid) & (1 <= SubMod.power_level <= 2) & (SubMod.invite == False)).count()
+            if moddedCount >= 15:
                 # TODO: Adjust by level
                 return jsonify(status='error', error=["User can't mod more than 15 subs"])
             misc.create_message(mfrom=current_user.uid,
                                 to=user.uid,
                                 subject='You have been invited to mod a sub.',
-                                content=current_user.name + ' has invited you to help moderate ' + sub.name,
+                                content=current_user.name + ' has invited you to be a ' + ('moderator' if power_level == 1 else 'janitor') + ' in ' + sub.name,
                                 link=sub.name,
                                 mtype=2)
             socketio.emit('notification',
                           {'count': misc.get_notification_count(user.uid)},
                           namespace='/snt',
                           room='user' + user.uid)
-            SubMetadata.create(sid=sub.sid, key='mod2i', value=user.uid)
+            
+            SubMod.create(sid=sub.sid, user=user.uid, power_level=power_level, invite=True)
 
             misc.create_sublog(misc.LOG_TYPE_SUB_MOD_INVITE, current_user.uid, sub.sid, target=user.uid,
-                               admin=True if (not current_user.uid != subdata['owner']['uid'] and current_user.is_admin()) else False)
+                               admin=True if (not is_owner and current_user.is_admin()) else False)
 
             return jsonify(status='ok')
         return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -995,7 +1020,7 @@ def remove_sub_ban(sub, user):
         return jsonify(status='error', error=['Sub does not exist'])
     form = DummyForm()
     if form.validate():
-        if current_user.is_mod(sub.sid) or current_user.is_admin():
+        if current_user.is_mod(sub.sid, 1) or current_user.is_admin():
             try:
                 sb = SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user.uid))
             except SubMetadata.DoesNotExist:
@@ -1015,7 +1040,7 @@ def remove_sub_ban(sub, user):
                           room='user' + user.uid)
             
             misc.create_sublog(misc.LOG_TYPE_SUB_UNBAN, current_user.uid, sub['sid'], target=user['uid'],
-                               admin=True if (not current_user.is_mod(sub['sid']) and current_user.is_admin()) else False)
+                               admin=True if (not current_user.is_mod(sub['sid'], 1) and current_user.is_admin()) else False)
 
             return json.dumps({'status': 'ok', 'msg': 'user ban removed'})
         else:
@@ -1037,14 +1062,14 @@ def remove_mod2(sub, user):
         return jsonify(status='error', error=['Sub does not exist'])
     form = DummyForm()
     if form.validate():
-        isTopMod = current_user.is_topmod(sub.sid)
+        isTopMod = current_user.is_mod(sub.sid, 0)
         if isTopMod or current_user.is_admin():
             try:
-                mod = SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'mod2') & (SubMetadata.value == user.uid))
+                mod = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.power_level != 1) & (SubMod.invite == False))
             except:
                 return jsonify(status='error', error=['User is not mod'])
             
-            SubMetadata.delete().where((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'mod2') & (SubMetadata.value == user.uid)).execute()
+            mod.delete_instance()
             SubMetadata.create(sid=sub.sid, key='xmod2', value=user.uid).save()
 
             misc.create_sublog(misc.LOG_TYPE_SUB_MOD_REMOVE, current_user.uid, sub.sid, target=user.uid,
@@ -1070,10 +1095,10 @@ def revoke_mod2inv(sub, user):
         return jsonify(status='error', error=['Sub does not exist'])
     form = DummyForm()
     if form.validate():
-        isTopMod = current_user.is_topmod(sub['sid'])
+        isTopMod = current_user.is_mod(sub.sid, 0)
         if isTopMod or current_user.is_admin():
             try:
-                x = SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == user.uid))
+                x = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.invite == True))
             except SubMetadata.DoesNotExist:
                 return jsonify(status='error', error=['User has not been invited to moderate the sub'])
             x.delete_instance()
@@ -1087,9 +1112,9 @@ def revoke_mod2inv(sub, user):
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
-@do.route("/do/accept_mod2inv/<sub>/<user>", methods=['POST'])
+@do.route("/do/accept_modinv/<sub>/<user>", methods=['POST'])
 @login_required
-def accept_mod2inv(sub, user):
+def accept_modinv(sub, user):
     """ Accept mod invite """
     try:
         user = User.get(fn.Lower(User.name) == user.lower())
@@ -1102,14 +1127,16 @@ def accept_mod2inv(sub, user):
     form = DummyForm()
     if form.validate():
         try:
-            modi = SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == user.uid))
-        except SubMetadata.DoesNotExist:
+            modi = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.invite == True))
+        except SubMod.DoesNotExist:
             return jsonify(status='error', error='You have not been invited to mod this sub')
 
-        if misc.moddedSubCount(user.uid) >= 15:
+        moddedCount = SubMod.select().where((SubMod.uid == user.uid) & (1 <= SubMod.power_level <= 2) & (SubMod.invite == False)).count()
+        if moddedCount >= 15:
             return jsonify(status='error', error=["You can't mod more than 15 subs"])
         
-        SubMetadata.update(key='mod2').where((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == user.uid)).execute()
+        modi.invite = False
+        modi.save()
         SubMetadata.delete().where((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'xmod2') & (SubMetadata.value == user.uid)).execute()
 
         misc.create_sublog(misc.LOG_TYPE_SUB_MOD_ACCEPT, current_user.uid, sub.sid, target=user.uid)
@@ -1132,7 +1159,7 @@ def refuse_mod2inv(sub):
     form = DummyForm()
     if form.validate():
         try:
-            modi = SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == current_user.uid))
+            modi = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == current_user.uid) & (SubMod.invite == True))
         except SubMetadata.DoesNotExist:
             return jsonify(status='error', error='You have not been invited to mod this sub')
 
@@ -1496,7 +1523,7 @@ def delete_flair(sub):
     except Sub.DoesNotExist:
         return jsonify(status='error', error=['Sub does not exist'])
 
-    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
         abort(403)
 
     form = DeleteSubFlair()
@@ -1520,7 +1547,7 @@ def create_flair(sub):
     except Sub.DoesNotExist:
         abort(404)
 
-    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
         abort(403)
 
     form = CreateSubFlair()
@@ -1814,7 +1841,7 @@ def sub_upload(sub):
     except Sub.DoesNotExist:
         abort(404)
 
-    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
         abort(403)
 
     c = SubStylesheet.get(SubStylesheet.sid == sub.sid)
@@ -1925,7 +1952,7 @@ def sub_upload_delete(sub, name):
     form = DummyForm()
     if not form.validate():
         return redirect(url_for('sub.edit_sub_css', sub=sub.name))
-    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
         jsonify(status='error')
 
     try:

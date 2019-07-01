@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta)
+@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods)
 @import "sub/postcomments.html" as pcomm
 @import "sub/postpoll.html" as polls
 
@@ -100,7 +100,7 @@
           @else:
             <li><a class="savepost" data-pid="@{post['pid']!!s}">save</a></li>
           @end
-          @if (subInfo.get('ucf', 0) == 1 and current_user.uid == post.uid) or current_user.uid in (subInfo['mod2'] + [subInfo['mod1']]):
+          @if (subInfo.get('ucf', 0) == 1 and current_user.uid == post.uid) or current_user.uid in subMods['all']:
             <li><a class="editflair">flair</a></li>
           @end
           @if post['uid'] == current_user.uid:
@@ -112,7 +112,7 @@
             @end
           @end
 
-          @if post['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in (subInfo['mod2'] + [subInfo['mod1']]):
+          @if post['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in subMods['all']:
             <li id="delpostli"><a @{(post['uid'] == current_user.uid) and 'selfdel="true"' or ''} class="delete-post"> delete </a></li>
 
             @if not sub['nsfw']:
@@ -124,11 +124,11 @@
             @end
           @end
 
-          @if post['deleted'] == 0 and post['ptype'] == 3 and pollData['poll_open'] and (post['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in (subInfo['mod2'] + [subInfo['mod1']])):
+          @if post['deleted'] == 0 and post['ptype'] == 3 and pollData['poll_open'] and (post['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in subMods['all']):
               <li><a class="poll-close"> close poll </a></li>
           @end
             
-          @if current_user.uid in (subInfo['mod2'] + [subInfo['mod1']]):
+          @if current_user.uid in subMods['all']:
             @if str(post['pid']) in subInfo['sticky']:
               <li><a class="stick-post">unstick</a></li>
             @else:
@@ -152,7 +152,7 @@
     </div>
   </div>
 
-  @if (subInfo.get('ucf', 0) == 1 and current_user.uid == post.uid) or current_user.uid in (subInfo['mod2'] + [subInfo['mod1']]):
+  @if (subInfo.get('ucf', 0) == 1 and current_user.uid == post.uid) or current_user.uid in subMods['all']:
     <div style="display:none;" id="postflairs">
       <span class="closemsg">×</span>
       @if post['flair']:
@@ -208,7 +208,7 @@
   @else:
     <div class="comments">
       <h2 id="cmnts"><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{post['comments']!!s} comments</a></h2>
-      @pcomm.renderComments(post, subInfo, comments)
+      @pcomm.renderComments(post, subInfo, subMods, comments)
     </div>
   @end
 

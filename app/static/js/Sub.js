@@ -14,7 +14,7 @@ u.sub('.revoke-mod2inv', 'click', function(e){
 u.sub('#accept-mod2-inv', 'click', function(e){
   var user=this.getAttribute('data-user');
   var nsub=this.getAttribute('data-sub');
-  u.post('/do/accept_mod2inv/'+nsub+'/'+user, {},
+  u.post('/do/accept_modinv/'+nsub+'/'+user, {},
   function(data){
     if (data.status == "ok") {
       document.location.reload();

@@ -6,7 +6,7 @@ from werkzeug.contrib.atom import AtomFeed
 from peewee import fn, JOIN
 from ..misc import engine
 from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption
-from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, UserSaved
+from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, UserSaved, SubMod
 from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditSubTextPostForm, EditMod2Form
 from ..forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair, CreateSubFlair, PostComment
 from .. import misc
@@ -49,7 +49,7 @@ def edit_sub_css(sub):
     except Sub.DoesNotExist:
         abort(404)
 
-    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
         abort(403)
 
     c = SubStylesheet.get(SubStylesheet.sid == sub.sid)
@@ -72,7 +72,7 @@ def edit_sub_flairs(sub):
     except Sub.DoesNotExist:
         abort(404)
 
-    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
         abort(403)
 
     flairs = SubFlair.select().where(SubFlair.sid == sub.sid).dicts()
@@ -92,7 +92,7 @@ def edit_sub(sub):
     except Sub.DoesNotExist:
         abort(404)
 
-    if current_user.is_mod(sub.sid) or current_user.is_admin():
+    if current_user.is_mod(sub.sid, 1) or current_user.is_admin():
         submeta = misc.metadata_to_dict(SubMetadata.select().where(SubMetadata.sid == sub.sid))
         form = EditSubForm()
         # pre-populate the form.
@@ -127,10 +127,12 @@ def edit_sub_mods(sub):
     except Sub.DoesNotExist:
         abort(404)
 
-    if current_user.is_mod(sub.sid) or current_user.is_modinv(sub.sid) or current_user.is_admin():
+    if current_user.is_mod(sub.sid, 2) or current_user.is_modinv(sub.sid) or current_user.is_admin():
         subdata = misc.getSubData(sub.sid, extra=True)
+        subMods = misc.getSubMods(sub.sid)
+        modInvites = SubMod.select(User.name, SubMod.power_level).join(User).where((SubMod.sid == sub.sid) & (SubMod.invite == True))
         return render_template('submods.html', sub=sub, subdata=subdata,
-                               editmod2form=EditMod2Form(),
+                               editmod2form=EditMod2Form(), subMods=subMods, subModInvites=modInvites,
                                banuserform=BanUserSubForm())
     else:
         abort(403)
@@ -183,7 +185,8 @@ def view_sub_new(sub, page):
                     playlist.append(yid)
 
     return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']), 'playlist': playlist,
-                                                   'posts': posts, 'page': page, 'sort_type': 'sub.view_sub_new'})
+                                                   'posts': posts, 'page': page, 'sort_type': 'sub.view_sub_new',
+                                                   'subMods': misc.getSubMods(sub['sid'])})
 
 
 @sub.route("/<sub>/bannedusers")
@@ -232,7 +235,8 @@ def view_sub_top(sub, page):
                     playlist.append(yid)
 
     return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']), 'playlist': playlist,
-                                                   'posts': posts, 'page': page, 'sort_type': 'sub.view_sub_top'})
+                                                   'posts': posts, 'page': page, 'sort_type': 'sub.view_sub_top',
+                                                   'subMods': misc.getSubMods(sub['sid'])})
 
 
 @sub.route("/<sub>/hot", defaults={'page': 1})
@@ -261,7 +265,8 @@ def view_sub_hot(sub, page):
                     playlist.append(yid)
 
     return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']), 'playlist': playlist,
-                                                   'posts': posts, 'page': page, 'sort_type': 'sub.view_sub_hot'})
+                                                   'posts': posts, 'page': page, 'sort_type': 'sub.view_sub_hot',
+                                                   'subMods': misc.getSubMods(sub['sid'])})
 
 
 @sub.route("/<sub>/<int:pid>")
@@ -322,7 +327,8 @@ def view_post(sub, pid, comments=False, highlight=None):
 
     return engine.get_template('sub/post.html').render({'post': post, 'sub': sub, 'subInfo': subInfo,
                                                         'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,
-                                                        'commentform': PostComment(), 'comments': comments})
+                                                        'commentform': PostComment(), 'comments': comments,
+                                                        'subMods': misc.getSubMods(sub['sid'])})
 
 
 @sub.route("/<sub>/<pid>/<cid>")

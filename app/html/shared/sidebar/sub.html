@@ -1,4 +1,4 @@
-@require(sub, subInfo)
+@require(sub, subInfo, subMods)
 
 <form class="pure-g search" action="@{ url_for('do.search') }" method="post">
   <div class="icon" data-icon="search"> </div>
@@ -6,7 +6,7 @@
 </form>
 
 @if current_user.is_authenticated:
-  @if subInfo.get('restricted', 0) == '1' and not (current_user.uid in subInfo['mod2'] or current_user.uid == subInfo['mod1']):
+  @if subInfo.get('restricted', 0) == '1' and not (current_user.uid in (subMods['all'])):
     <div>Only mods can post.</div>
   @else:
     @if current_user.uid in subInfo.get('ban', []):
@@ -55,9 +55,14 @@
 <div class="moderators">
   Moderators
   <ul>
-  <li><span title="Owner" class="i-icon" data-icon="owner"></span> <a href="@{url_for('view_user', user=subInfo['owner']['name'])}">@{subInfo['owner']['name']}</a></li>
-  @for mod in subInfo['mods']:
-  <li><a href="@{url_for('view_user', user=mod['name'])}">@{mod['name']}</a></li>
+  @for owner in subMods['owners']:
+    <li><span title="Owner" class="i-icon" data-icon="owner"></span> <a href="@{url_for('view_user', user=subMods['owners'][owner])}">@{subMods['owners'][owner]}</a></li>
+  @end
+  @for mod in subMods['mods']:
+    <li><a href="@{url_for('view_user', user=subMods['mods'][mod])}">@{subMods['mods'][mod]}</a></li>
+  @end
+  @for janitor in subMods['janitors']:
+    <li><a href="@{url_for('view_user', user=subMods['mods'][mod])}">@{subMods['janitors'][janitor]}</a></li>
   @end
   </ul>
 </div>
@@ -66,7 +71,7 @@
   <time-ago datetime="@{sub['creation'].isoformat()}"></time-ago>
 </div>
 @if current_user.uid:
-  @if current_user.uid in subInfo['mod2'] or current_user.uid == subInfo['owner']['uid'] or current_user.is_admin():
+  @if current_user.uid in (list(subMods['owners']) + list(subMods['mods'])) or current_user.is_admin():
     <a href="@{url_for('sub.edit_sub', sub=sub['name'])}" class="sbm-post pure-button">Edit Sub Info</a>
     <a href="@{url_for('sub.edit_sub_flairs', sub=sub['name'])}" class="sbm-post pure-button">Edit Sub Flairs</a>
     <a href="@{url_for('sub.edit_sub_css', sub=sub['name'])}" class="sbm-post pure-button">Edit Sub Stylesheet</a>

@@ -338,13 +338,10 @@ def getUser(username):
     level, xp = misc.get_user_level(user.uid)
     pcount = SubPost.select().where(SubPost.uid == user.uid).count()
     ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()
-    owns = SubMetadata.select(Sub.name).join(Sub).switch(SubMetadata).where((SubMetadata.key == 'mod1') & (SubMetadata.value == user.uid)).dicts()
-    mods = SubMetadata.select(Sub.name).join(Sub).switch(SubMetadata).where((SubMetadata.key == 'mod2') & (SubMetadata.value == user.uid)).dicts()
+    modsquery = SubMod.select(Sub.name, SubMod.power_level).join(Sub).where((SubMod.uid == user.uid) & (SubMod.invite == False))
+    owns = [x.sub.name for x in modsquery if x.power_level == 0]
+    mods = [x.sub.name for x in modsquery if 1 <= x.power_level <= 2]
     given = misc.getUserGivenScore(user.uid)
-
-
-    owns = [x['name'] for x in owns]
-    mods = [x['name'] for x in mods]
 
     return jsonify(status="ok", user={
         'name': user.name,
@@ -466,7 +463,8 @@ def createPost():
     if g.api_token.user.uid in subdata.get('ban', []):
         return jsonify(status='error', error='You\'re banned from this sub')
     
-    if subdata.get('restricted', 0) == '1' and (g.api_token.user.uid in subdata['mod2'] or g.api_token.user.uid == subdata['mod1'][0]):
+    submods = misc.getSubMods(sub.sid)
+    if subdata.get('restricted', 0) == '1' and (g.api_token.user.uid in subMods['all']):
         return jsonify(status='error', error='Restricted sub')
     
     if len(post_data['title'].strip(misc.WHITESPACE)) < 3:

@@ -93,7 +93,7 @@
             <h3>Owns</h3>
             <ul>
               {% for own in owns %}
-              <li><a href="{{url_for('sub.view_sub', sub=own.name)}}">{{own.name}}</a></li>
+              <li><a href="{{url_for('sub.view_sub', sub=own.name)}}">{{own}}</a></li>
               {%endfor%}
             </ul>
           </div>
@@ -103,7 +103,7 @@
             <h3>Mods</h3>
             <ul>
               {% for mod in mods %}
-              <li><a href="{{url_for('sub.view_sub', sub=mod.name)}}">{{mod.name}}</a></li>
+              <li><a href="{{url_for('sub.view_sub', sub=mod.name)}}">{{mod}}</a></li>
               {% endfor %}
             </ul>
           </div>

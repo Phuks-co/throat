@@ -8,7 +8,7 @@
 {% block content %}
 {{ super() }}
 
-{% if not current_user.is_mod(sub.sid) and current_user.is_admin() %}
+{% if not current_user.is_mod(sub.sid, 1) and current_user.is_admin() %}
 <div class="important"><h3>Editing as Admin</h3></div>
 {% endif %}
 
@@ -23,44 +23,73 @@
 {% endif %}
 
 <div class="col-12">
-  <p>Owner: <i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=subdata.owner.name)}}">{{subdata.owner.name}}</a></p>
+  {% if subMods['owners']|length == 1 %}
+    <p>Owner: <i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=(subMods['owners'].values()|list)[0] )}}">{{ (subMods['owners'].values()|list)[0] }}</a></p>
+  {%else%}
+    Owners:
+    <ul>
+    {% for owner in subMods.owners %}
+      <li><i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=owner.name)}}">{{owner.name}}</a></li>
+    {%endfor%}
+    </ul>
+  {%endif%}
 </div>
 <div class="col-12"><hr></div>
 <div class="col-12">
-  <p>Active moderators: {% if subdata.mods|length < 1 %}none{% endif %}</p>
+  <p>Active moderators: {% if subMods.mods|length < 1 %}none{% endif %}</p>
   <ul>
-  {% for mod in subdata.mods if subdata.mods|length > 0 %}
+  {% for mod in subMods.mods %}
   <span class="editmodbtn col-4">
-    <li><a href="{{url_for('view_user', user=mod.name)}}">{{mod.name}}</a>
-      {% if current_user.is_admin() or current_user.is_topmod(sub.sid) %}
-      (<a data-sub="{{sub.name}}" data-user="{{mod.name}}" class="slink revoke-mod2">remove</a>)
+    <li><a href="{{url_for('view_user', user=subMods.mods[mod])}}">{{subMods.mods[mod]}}</a>
+      {% if current_user.is_admin() or current_user.is_mod(sub.sid, 0) %}
+      (<a data-sub="{{sub.name}}" data-user="{{subMods.mods[mod]}}" class="slink revoke-mod2">remove</a>)
       {% endif %}
     </li>
   </span>
   {% endfor %}
   </ul>
 </div>
+<div class="col-12">
+  {% if subMods.janitors|length > 0 %}
+    <p>Janitors: </p>
+    <ul>
+    {% for mod in subMods.janitors %}
+    <span class="editmodbtn col-4">
+      <li><a href="{{url_for('view_user', user=subMods.janitors[mod])}}">{{subMods.janitors[mod]}}</a>
+        {% if current_user.is_admin() or current_user.is_mod(sub.sid, 0) %}
+        (<a data-sub="{{sub.name}}" data-user="{{subMods.janitors[mod]}}" class="slink revoke-mod2">remove</a>)
+        {% endif %}
+      </li>
+    </span>
+    {% endfor %}
+    </ul>
+  {%endif%}
+
+</div>
 <div class="col-12"><hr></div>
 <div class="col-12">
-  <p>Pending invites: {% if subdata.modi|length < 1 %}none{% endif %}</p>
+  <p>Pending invites: {% if subModInvites.count() < 1 %}none{% endif %}</p>
   <ul>
-  {% for modinv in subdata.modi if subdata.modi|length > 0 %}
+  {% for modinv in subModInvites %}
   <span class="editmodbtn col-4">
-    <li><a href="{{url_for('view_user', user=modinv.name)}}">{{modinv.name}}</a>
-      {% if current_user.is_admin() or current_user.is_topmod(sub.sid) %}
-      (<a data-sub="{{sub.name}}" data-user="{{modinv.name}}" class="slink revoke-mod2inv">revoke</a>)
+    <li>[{%if modinv.power_level == 1%}Mod{%elif modinv.power_level == 2%}Janitor{%endif%}]
+      <a href="{{url_for('view_user', user=modinv.user.name)}}">{{modinv.user.name}}</a>
+      {% if current_user.is_admin() or current_user.is_mod(sub.sid, 0) %}
+      (<a data-sub="{{sub.name}}" data-user="{{modinv.user.name}}" class="slink revoke-mod2inv">revoke</a>)
       {% endif %}
     </li>
     </span>
     {% endfor %}
   </ul>
 
-  {% if current_user.is_admin() or current_user.is_topmod(sub.sid) %}
+  {% if current_user.is_admin() or current_user.is_mod(sub.sid, 0) %}
   <div class="editmoderators col-12">
-    <form data-reload="true" action="{{url_for('do.inv_mod2', sub=sub.name)}}" id="edit-mod2-form" data-sub="{{sub.name}}" class="pure-form ajaxform">
+    <form data-reload="true" action="{{url_for('do.inv_mod', sub=sub.name)}}" id="edit-mod2-form" data-sub="{{sub.name}}" class="pure-form ajaxform">
       {{editmod2form.csrf_token}}
       <p>
-        <label>Invite new mod: {{editmod2form.user(placeholder=editmod2form.user.label.text, required=True)}}</label>
+        <label>Invite new mod:</label>
+        {{editmod2form.user(placeholder=editmod2form.user.label.text, required=True)}}
+        {{editmod2form.level(placeholder=editmod2form.level.label.text, required=True)}}
         <button type="submit" class="pure-button pure-button-primary" id="editmod2-btnsubmit">Invite mod</button>
       </p>
       <div class="alert div-error">

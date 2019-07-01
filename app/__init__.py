@@ -34,7 +34,7 @@ from .misc import SiteAnon, getDefaultSubs, allowedNames, get_errors, engine
 from .models import db as pdb
 from .models import Sub, SubPost, User, SubMetadata, UserMetadata, SubPostComment
 from .models import SiteLog, SubLog, rconn, UserUploads, UserSaved, Message, SubPostVote
-from .models import SubPostCommentVote, SiteMetadata, SubSubscriber
+from .models import SubPostCommentVote, SiteMetadata, SubSubscriber, SubMod
 from .badges import badges
 
 # /!\ FOR DEBUGGING ONLY /!\
@@ -400,7 +400,7 @@ def view_multisub_new(sublist, page=1):
 def view_modmulti_new(page):
     """ The multi page for subs the user mods, sorted as new first """
     if current_user.is_authenticated:
-        modded = SubMetadata.select().where(SubMetadata.value == current_user.uid).where(SubMetadata.key << ('mod1', 'mod2'))
+        modded = SubMod.select().where((SubMod.uid == current_user.uid) & (SubMod.invite == False))
         sids = [x.sid for x in modded]
         subs = Sub.select(Sub.sid, Sub.name, Sub.title).where(Sub.sid << sids)
 
@@ -444,8 +444,9 @@ def view_user(user):
     if user.status == 10:
         abort(404)
 
-    owns = SubMetadata.select(Sub.name).join(Sub).switch(SubMetadata).where((SubMetadata.key == 'mod1') & (SubMetadata.value == user.uid)).dicts()
-    mods = SubMetadata.select(Sub.name).join(Sub).switch(SubMetadata).where((SubMetadata.key == 'mod2') & (SubMetadata.value == user.uid)).dicts()
+    modsquery = SubMod.select(Sub.name, SubMod.power_level).join(Sub).where((SubMod.uid == user.uid) & (SubMod.invite == False))
+    owns = [x.sub.name for x in modsquery if x.power_level == 0]
+    mods = [x.sub.name for x in modsquery if 1 <= x.power_level <= 2]
     badges = misc.getUserBadges(user.uid)
     pcount = SubPost.select().where(SubPost.uid == user.uid).count()
     ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()

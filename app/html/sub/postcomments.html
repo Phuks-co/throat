@@ -1,5 +1,5 @@
-@require(post, comments, subInfo)
-@def renderComments(post, subInfo, comments, highlight=''):
+@require(post, comments, subInfo, subMods)
+@def renderComments(post, subInfo, subMods, comments, highlight=''):
   @#ignore
   @for comment in comments:
     @if comment['cid']:
@@ -58,7 +58,7 @@
                 @if comment['uid'] == current_user.uid and not comment['status'] == 1:
                   <li><a class="edit-comment" data-cid="@{comment['cid']}">edit</a></li>
                 @end
-                @if (comment['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in (subInfo['mod2'] + [subInfo['mod1']])) and not comment['status'] == 1:
+                @if (comment['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in subMods['all']) and not comment['status'] == 1:
                   <li><a @{(comment['uid'] == current_user.uid) and 'selfdel="true"' or ''} class="delete-comment" data-cid="@{comment['cid']}">delete</a></li>
                 @end
                 <a data-ac="report" cid="@{comment['cid']}" class="report-comment">report</a>
@@ -83,4 +83,4 @@
   @end
 @end
 
-@renderComments(post, subInfo, comments)
+@renderComments(post, subInfo, subMods, comments)

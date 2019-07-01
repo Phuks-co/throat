@@ -2,7 +2,7 @@
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, BooleanField, HiddenField
-from wtforms import RadioField, TextField
+from wtforms import RadioField, TextField, SelectField
 from wtforms.validators import DataRequired, Length, URL
 from wtforms.validators import Optional
 
@@ -82,6 +82,7 @@ class EditMod2Form(FlaskForm):
     """ Edit mod2 of sub (admin/owner) """
     user = StringField('New mod username',
                        validators=[DataRequired(), Length(min=1, max=128)])
+    level = SelectField('Mod level', choices=[('1', 'Moderator'), ('2', 'Janitor')], validators=[DataRequired()])
 
 
 class CreateSubTextPost(FlaskForm):

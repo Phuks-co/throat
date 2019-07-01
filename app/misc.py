@@ -33,6 +33,7 @@ from .badges import badges
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair
+from .models import SubMod
 from peewee import JOIN, fn, SQL, NodeList
 import requests
 import logging
@@ -114,15 +115,15 @@ class SiteUser(object):
         """ Returns the unique user id. Used on load_user """
         return self.uid
 
-    def is_mod(self, sid):
+    def is_mod(self, sid, power_level=2):
         """ Returns True if the current user is a mod of 'sub' """
         try:
-            SubMetadata.get((SubMetadata.sid == sid) & (SubMetadata.key << ('mod1', 'mod2')) & (SubMetadata.value == self.uid))
+            SubMod.get((SubMod.sid == sid) & (SubMod.uid == self.uid) & (SubMod.power_level <= power_level) & (SubMod.invite == False))
             return True
-        except SubMetadata.DoesNotExist:
+        except SubMod.DoesNotExist:
             pass
 
-        if self.admin:
+        if self.can_admin:  # Admins mod all defaults
             try:
                 SiteMetadata.get((SiteMetadata.key == 'default') & (SiteMetadata.value == sid))
                 return True
@@ -137,19 +138,15 @@ class SiteUser(object):
 
     def is_modinv(self, sub):
         """ Returns True if the current user is invited to mod of 'sub' """
-        return isModInv(sub, self.uid)
+        try:
+            SubMod.get((SubMod.sid == sub) & (SubMod.uid == self.uid) & (SubMod.invite == True))
+            return True
+        except SubMod.DoesNotExist:
+            return False
 
     def is_admin(self):
         """ Returns true if the current user is a site admin. """
         return self.admin
-
-    def is_topmod(self, sid):
-        """ Returns True if the current user is a mod of 'sub' """
-        try:
-            SubMetadata.get((SubMetadata.sid == sid) & (SubMetadata.key == 'mod1') & (SubMetadata.value == self.uid))
-            return True
-        except SubMetadata.DoesNotExist:
-            return False
 
     def has_subscribed(self, name):
         """ Returns True if the current user has subscribed to sub """
@@ -220,11 +217,6 @@ class SiteAnon(AnonymousUserMixin):
     @classmethod
     def is_admin(cls):
         """ Anons are not admins. """
-        return False
-
-    @classmethod
-    def is_topmod(cls, sub):
-        """ Anons are not owners. """
         return False
 
     @classmethod
@@ -400,15 +392,6 @@ def our_markdown(text):
         return '> tfw tried to break the site'
 
 
-def isMod(sid, uid):
-    """ Returns True if 'user' is a mod of 'sub' """
-    try:
-        SubMetadata.get((SubMetadata.sid == sid) & (SubMetadata.key << ('mod1', 'mod2')) & (SubMetadata.value == uid))
-        return True
-    except SubMetadata.DoesNotExist:
-        return False
-
-
 @cache.memoize(30)
 def isSubBan(sub, user):
     """ Returns True if 'user' is banned 'sub' """
@@ -423,13 +406,6 @@ def isSubBan(sub, user):
         return False
 
 
-def isModInv(sid, uid):
-    """ Returns True if 'user' is a invited to mod of 'sub' """
-    try:
-        SubMetadata.get((SubMetadata.sid == sid) & (SubMetadata.key == 'mod2i') & (SubMetadata.value == uid))
-        return True
-    except SubMetadata.DoesNotExist:
-        return False
 
 def getSubFlairs(sid):
     return SubFlair.select().where(SubFlair.sid == sid)
@@ -491,12 +467,6 @@ def getYoutubeID(url):
             return url.path.split('/')[2]
     # fail?
     return None
-
-
-def moddedSubCount(uid):
-    """ Returns the number of subs a user is modding """
-    sub = SubMetadata.select().where(SubMetadata.value == uid).where(SubMetadata.key << ('mod1', 'mod2'))
-    return sub.count()
 
 
 def workWithMentions(data, receivedby, post, sub, cid=None, c_user=current_user):
@@ -1030,11 +1000,31 @@ def upload_file(max_size=16580608):
     return f_name
 
 
+def getSubMods(sid):
+    modsquery = SubMod.select(User.uid, User.name, SubMod.power_level).join(User, on=(User.uid == SubMod.uid)).where(SubMod.sid == sid)
+    modsquery = modsquery.where((User.status == 0) & (SubMod.invite == False))
+
+    owner, mods, janitors, owner_uids, janitor_uids, mod_uids = ({}, {}, {}, [], [], [])
+    for i in modsquery:
+        if i.power_level == 0:
+            owner[i.uid] = i.user.name
+            owner_uids.append(i.uid)
+        elif i.power_level == 1:
+            mods[i.uid] = i.user.name
+            mod_uids.append(i.uid)
+        elif i.power_level == 2:
+            janitors[i.uid] = i.user.name
+            janitor_uids.append(i.uid)
+
+    if not owner:
+        owner['0'] = getattr(config, 'PLACEHOLDER_ACCOUNT', 'System')
+    return {'owners': owner, 'mods': mods, 'janitors': janitors, 'all': owner_uids + janitor_uids + mod_uids}
+
 def getSubData(sid, simple=False, extra=False):
     sdata = SubMetadata.select().where(SubMetadata.sid == sid)
-    data = {'mods': [], 'mod2': [], 'mod2i': [], 'xmod2': [], 'sticky': []}
+    data = {'xmod2': [], 'sticky': []}
     for p in sdata:
-        if p.key in ['mod2', 'tag', 'ban', 'mod2i', 'xmod2', 'sticky']:
+        if p.key in ['tag', 'ban', 'mod2i', 'xmod2', 'sticky']:
             if data.get(p.key):
                 data[p.key].append(p.value)
             else:
@@ -1060,30 +1050,11 @@ def getSubData(sid, simple=False, extra=False):
                 except User.DoesNotExist:
                     data['xmods'] = []
 
-            if data.get('mod2i', []) != []:
-                try:
-                    data['modi'] = User.select(User.uid, User.name).where((User.uid << data['mod2i']) & (User.status == 0)).dicts()
-                except User.DoesNotExist:
-                    data['modi'] = []
-
-        bmodquery = data['mod2'] + [data.get('mod1'), data.get('mod')]
-        bmodquery = set([x for x in bmodquery if x])
-        modquery = User.select(User.uid, User.name, User.status).where(User.uid << bmodquery).dicts()
-
-        data['mods'] = [x for x in modquery if x['uid'] in data.get('mod2', [])]
-        data['owner'] = [x for x in modquery if x['uid'] in data.get('mod1', [])]
-        data['creator'] = [x for x in modquery if x['uid'] == data.get('mod', '')]
-        if data['owner']:
-            data['owner'] = data['owner'][0] if data['owner'][0]['status'] == 0 else None
-
-        if not data['owner']:
-            data['owner'] = {'uid': 1, 'name': 'Phuks'}  # TODO: move name to config
-
-        if data['creator']:
-            data['creator'] = data['creator'][0] if data['creator'][0]['status'] == 0 else {'uid': '0', 'name': '[Deleted]'}
-
-        if not data['creator']:
-            data['creator'] = {'uid': '0', 'name': '[Nobody]'}  # TODO: move name to config
+        try:
+            creator = User.select(User.uid, User.name, User.status).where(User.uid == data.get('mod')).dicts().get()
+        except User.DoesNotExist:
+            creator = {'uid': '0', 'name': 'Nobody'}
+        data['creator'] = creator if creator.get('status', None) == 0 else {'uid': '0', 'name': '[Deleted]'}
 
         try:
             data['stylesheet'] = SubStylesheet.get(SubStylesheet.sid == sid).content

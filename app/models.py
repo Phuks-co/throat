@@ -474,10 +474,12 @@ class APITokenSettings(BaseModel):
 
 
 class SubMod(BaseModel):
-    uid = ForeignKeyField(db_column='uid', model=User, field='uid')
-    sid = ForeignKeyField(db_column='sid', model=Sub, field='sid')
+    user = ForeignKeyField(db_column='uid', model=User, field='uid')
+    sub = ForeignKeyField(db_column='sid', model=Sub, field='sid')
     # Power level: 0=owner, 1=mod, 2=janitor
     power_level = IntegerField()
+
+    invite = BooleanField(default=False)  # if True, mod is invited and not effective
 
     class Meta:
         table_name = "sub_mod"

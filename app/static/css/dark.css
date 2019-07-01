@@ -197,7 +197,8 @@ body.dark input[type="text"]:not(.numInput),
 body.dark input[type="email"],
 body.dark input[type="url"],
 body.dark textarea,
-body.dark input[type="password"] {
+body.dark input[type="password"],
+body.dark select {
   color: #ffffff;
   background-color: #252525;
   box-shadow: inset 0 1px 3px #303030;
