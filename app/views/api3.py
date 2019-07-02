@@ -470,12 +470,12 @@ def create_post():
     except Sub.DoesNotExist:
         return jsonify(msg="Sub does not exist"), 404
 
-    if sub in ('all', 'new', 'hot', 'top', 'admin', 'home'):  # TODO: Make this a blacklist setting in the config file?
+    if sub.name.lower() in ('all', 'new', 'hot', 'top', 'admin', 'home'):  # TODO: Make this a blacklist setting in the config file?
         return jsonify(msg="You can't post on this sub"), 403
 
     subdata = misc.getSubData(sub.sid, simple=True)
 
-    if uid in subdata.get('ban', []):
+    if misc.is_sub_banned(sub, uid=uid):
         return jsonify(msg="You're banned from this sub"), 403
 
     if subdata.get('restricted', 0) == '1':

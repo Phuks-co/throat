@@ -33,7 +33,7 @@ from .badges import badges
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair
-from .models import SubMod
+from .models import SubMod, SubBan
 from peewee import JOIN, fn, SQL, NodeList
 import requests
 import logging
@@ -115,6 +115,7 @@ class SiteUser(object):
         """ Returns the unique user id. Used on load_user """
         return self.uid
 
+    @cache.memoize(1)
     def is_mod(self, sid, power_level=2):
         """ Returns True if the current user is a mod of 'sub' """
         try:
@@ -134,7 +135,7 @@ class SiteUser(object):
 
     def is_subban(self, sub):
         """ Returns True if the current user is banned from 'sub' """
-        return isSubBan(sub, self.user)
+        return is_sub_banned(sub, self.user)
 
     def is_modinv(self, sub):
         """ Returns True if the current user is invited to mod of 'sub' """
@@ -392,19 +393,22 @@ def our_markdown(text):
         return '> tfw tried to break the site'
 
 
-@cache.memoize(30)
-def isSubBan(sub, user):
+@cache.memoize(5)
+def is_sub_banned(sub, user=None, uid=None):
     """ Returns True if 'user' is banned 'sub' """
     if isinstance(sub, dict):
         sid = sub['sid']
     else:
         sid = sub.sid
+    if not uid:
+        uid = user['uid']
     try:
-        SubMetadata.get((SubMetadata.sid == sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user['uid']))
+        SubBan.get((SubBan.sid == sid) & 
+            (SubBan.uid == uid) & 
+            ((SubBan.effective == True) & ((SubBan.expires.is_null(True)) | (SubBan.expires > datetime.utcnow()) )))
         return True
-    except SubMetadata.DoesNotExist:
+    except SubBan.DoesNotExist:
         return False
-
 
 
 def getSubFlairs(sid):
@@ -1024,7 +1028,7 @@ def getSubData(sid, simple=False, extra=False):
     sdata = SubMetadata.select().where(SubMetadata.sid == sid)
     data = {'xmod2': [], 'sticky': []}
     for p in sdata:
-        if p.key in ['tag', 'ban', 'mod2i', 'xmod2', 'sticky']:
+        if p.key in ['tag', 'mod2i', 'xmod2', 'sticky']:
             if data.get(p.key):
                 data[p.key].append(p.value)
             else:

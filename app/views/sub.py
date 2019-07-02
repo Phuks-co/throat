@@ -6,7 +6,7 @@ from werkzeug.contrib.atom import AtomFeed
 from peewee import fn, JOIN
 from ..misc import engine
 from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption
-from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, UserSaved, SubMod
+from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, UserSaved, SubMod, SubBan
 from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditSubTextPostForm, EditMod2Form
 from ..forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair, CreateSubFlair, PostComment
 from .. import misc
@@ -197,14 +197,22 @@ def view_sub_bans(sub):
     except Sub.DoesNotExist:
         abort(404)
 
-    banned = SubMetadata.select(SubMetadata.value, User.name).join(User, on=(SubMetadata.value == User.uid))
-    banned = banned.where(SubMetadata.sid == sub.sid).where(SubMetadata.key == 'ban').dicts()
+    user = User.alias()
+    created_by = User.alias()
+    banned = SubBan.select(user, created_by, SubBan.created, SubBan.reason, SubBan.expires)
+    banned = banned.join(user, on=SubBan.uid).switch(SubBan).join(created_by, JOIN.LEFT_OUTER, on=SubBan.created_by_id)
+    banned = banned.where((SubBan.sid == sub.sid) & ((SubBan.effective == True) & ((SubBan.expires.is_null(True)) | (SubBan.expires > datetime.datetime.utcnow()) )))
+    banned = banned.order_by(SubBan.created.is_null(True), SubBan.created.desc())
 
-    xbans = SubMetadata.select(SubMetadata.value, User.name).join(User, on=(SubMetadata.value == User.uid))
-    xbans = xbans.where(SubMetadata.sid == sub.sid).where(SubMetadata.key == 'xban').dicts()
+    xbans = SubBan.select(user, created_by, SubBan.created, SubBan.reason, SubBan.expires)
+    xbans = xbans.join(user, on=SubBan.uid).switch(SubBan).join(created_by, JOIN.LEFT_OUTER, on=SubBan.created_by_id)
+    
+    xbans = xbans.where(SubBan.sid == sub.sid)
+    xbans = xbans.where((SubBan.effective == False) | ((SubBan.expires.is_null(True)) | (SubBan.expires < datetime.datetime.utcnow()) ))
+    xbans = xbans.order_by(SubBan.created.is_null(True), SubBan.created.desc(), SubBan.expires.asc())
 
-    return render_template('subbans.html', sub=sub, banned=banned,
-                           xbans=xbans, banuserform=BanUserSubForm())
+    return engine.get_template('sub/bans.html').render({'sub': sub, 'banned': banned, 'xbans': xbans,
+                                                        'banuserform': BanUserSubForm()})
 
 
 @sub.route("/<sub>/top", defaults={'page': 1})

@@ -460,7 +460,7 @@ def createPost():
         return jsonify(status='error', error='Sub does not exist')
 
     subdata = misc.getSubData(sub.sid, simple=True)
-    if g.api_token.user.uid in subdata.get('ban', []):
+    if misc.is_sub_banned(sub, uid=g.api_token.user.uid):
         return jsonify(status='error', error='You\'re banned from this sub')
     
     submods = misc.getSubMods(sub.sid)
@@ -551,7 +551,7 @@ def createComment():
         return jsonify(status='error', error="Post is archived")
     
     subdata = misc.getSubData(post.sid, simple=True)
-    if g.api_token.user.uid in subdata.get('ban', []):
+    if misc.is_sub_banned(sub, uid=g.api_token.user.uid):
         return jsonify(status='error', error='You\'re banned from this sub')
 
     if post_data.get('parentcid'):

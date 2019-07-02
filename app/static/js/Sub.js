@@ -108,3 +108,20 @@ window.onkeydown = function(e){
     });
   }
 }
+
+
+u.sub('#ban_expires', 'input', function(e){
+  var dtime = new Date(new Date(document.getElementById('ban_expires').value).toUTCString().substr(0, 25)).getTime()/1000;
+  document.getElementById('ban_expires_data').value = dtime;
+});
+
+u.sub('#ban_timepick', 'change', function(e){
+  document.getElementById('ban_expires').value = '';
+  document.getElementById('ban_expires_data').value = '';
+  if(this.value == 'ban_temp'){
+    document.getElementById('ban_expires').style.display = 'inline-block';
+  }else{
+    document.getElementById('ban_expires').style.display = 'none';
+  }
+  console.log('timepick chnage', this.value)
+});

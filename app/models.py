@@ -483,3 +483,18 @@ class SubMod(BaseModel):
 
     class Meta:
         table_name = "sub_mod"
+
+
+class SubBan(BaseModel):
+    user = ForeignKeyField(db_column='uid', model=User, field='uid')
+    sub = ForeignKeyField(db_column='sid', model=Sub, field='sid')
+
+    created = DateTimeField(default=datetime.datetime.utcnow)
+    reason = CharField(max_length=64)
+    expires = DateTimeField(null=True)
+    effective = BooleanField(default=True)
+
+    created_by = ForeignKeyField(db_column='created_by_id', model=User, field='uid')
+
+    class Meta:
+        table_name = "sub_ban"

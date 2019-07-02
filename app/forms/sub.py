@@ -163,6 +163,7 @@ class BanUserSubForm(FlaskForm):
     user = StringField('username to ban',
                        validators=[DataRequired(), Length(min=1, max=128)])
     reason = StringField('reason for the ban', validators=[DataRequired(), Length(min=1, max=128)])
+    expires = StringField('ban expires')
 
 
 class EditPostFlair(FlaskForm):

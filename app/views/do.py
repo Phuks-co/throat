@@ -31,7 +31,7 @@ from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
 from ..misc import cache, sendMail, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata, UserSaved
-from ..models import SubMod
+from ..models import SubMod, SubBan
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
 from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport
 from peewee import fn, JOIN
@@ -916,10 +916,26 @@ def ban_user_sub(sub):
             return jsonify(status='error', error=['User does not exist'])
 
         try:
-            SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user.uid))
-            return jsonify(status='error', error=['Already banned'])
-        except SubMetadata.DoesNotExist:
+            SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid))
+            return jsonify(status='error', error=['User is a moderator'])
+        except SubMod.DoesNotExist:
             pass
+        
+        expires = None
+        if form.expires.data:
+            try:
+                expires = int(form.expires.data)
+                if (expires - time.time()) > 63072000: # bout 2 years
+                    return jsonify(status='error', error=['Expiration time too far into the future'])
+                expires = datetime.datetime.fromtimestamp(expires)
+            except ValueError:
+                return jsonify(status='error', error=['Invalid expiration time'])
+            
+            if datetime.datetime.utcnow() > expires:
+                return jsonify(status='error', error=['Expiration date is in the past'])
+
+        if misc.is_sub_banned(sub, uid=user.uid):
+            return jsonify(status='error', error=['Already banned'])
             
         misc.create_message(mfrom=current_user.uid,
                             to=user.uid,
@@ -932,8 +948,7 @@ def ban_user_sub(sub):
                       namespace='/snt',
                       room='user' + user.uid)
         
-        SubMetadata.create(sid=sub.sid, key='ban', value=user.uid).save()
-        SubMetadata.delete().where((SubMetadata.sid==sub.sid) & (SubMetadata.key == 'xban') & (SubMetadata.value == user.uid)).execute()
+        SubBan.create(sid=sub.sid, uid=user.uid, reason=form.reason.data, created_by=current_user.uid, expires=expires)
 
         misc.create_sublog(misc.LOG_TYPE_SUB_BAN, current_user.uid, sub.sid, target=user.uid, comment=form.reason.data)
 
@@ -1022,11 +1037,14 @@ def remove_sub_ban(sub, user):
     if form.validate():
         if current_user.is_mod(sub.sid, 1) or current_user.is_admin():
             try:
-                sb = SubMetadata.get((SubMetadata.sid == sub.sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user.uid))
-            except SubMetadata.DoesNotExist:
+                sb = SubBan.get((SubBan.sid == sub.sid) & 
+                                (SubBan.uid == user.uid) & 
+                                ((SubBan.effective == True) & ((SubBan.expires.is_null(True)) | (SubBan.expires < datetime.datetime.utcnow()) )))
+            except SubBan.DoesNotExist:
                 return jsonify(status='error', error=['User is not banned'])
 
-            sb.key = 'xban'
+            sb.effective = False
+            sb.expires = datetime.datetime.utcnow()
             sb.save()
 
             misc.create_message(mfrom=current_user.uid,
@@ -1039,10 +1057,10 @@ def remove_sub_ban(sub, user):
                           namespace='/snt',
                           room='user' + user.uid)
             
-            misc.create_sublog(misc.LOG_TYPE_SUB_UNBAN, current_user.uid, sub['sid'], target=user['uid'],
-                               admin=True if (not current_user.is_mod(sub['sid'], 1) and current_user.is_admin()) else False)
+            misc.create_sublog(misc.LOG_TYPE_SUB_UNBAN, current_user.uid, sub.sid, target=user.uid,
+                               admin=True if (not current_user.is_mod(sub.sid, 1) and current_user.is_admin()) else False)
 
-            return json.dumps({'status': 'ok', 'msg': 'user ban removed'})
+            return jsonify(status='ok', msg='Ban removed')
         else:
             abort(403)
     return json.dumps({'status': 'error', 'error': get_errors(form)})
