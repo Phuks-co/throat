@@ -66,7 +66,7 @@
         @elif post['content'] != '':
           <div class="expando" data-pid="@{post['pid']!!s}" data-t="txt" title="Show post content" data-link="None"><div data-icon="text" class="icon expando-btn"></div></div>
         @end
-        posted <time-ago datetime="@{post['posted'].isoformat()}Z"></time-ago> by
+        posted <time-ago datetime="@{post['posted'].isoformat()}"></time-ago> by
         @if post['userstatus'] != 10:
           <a class="authorlink" href="/u/@{post['user']}"> \
           @if post['userstatus'] == 100:
