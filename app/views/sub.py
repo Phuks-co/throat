@@ -212,7 +212,7 @@ def view_sub_bans(sub):
     xbans = xbans.order_by(SubBan.created.is_null(True), SubBan.created.desc(), SubBan.expires.asc())
 
     return engine.get_template('sub/bans.html').render({'sub': sub, 'banned': banned, 'xbans': xbans,
-                                                        'banuserform': BanUserSubForm()})
+                                                        'banuserform': BanUserSubForm(), 'submods': misc.getSubMods(sub.sid)})
 
 
 @sub.route("/<sub>/top", defaults={'page': 1})

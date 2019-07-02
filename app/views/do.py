@@ -906,7 +906,7 @@ def ban_user_sub(sub):
     except Sub.DoesNotExist:
         return jsonify(status='error', error=['Sub does not exist'])
         
-    if not current_user.is_mod(sub.sid, 1):
+    if not current_user.is_mod(sub.sid, 2):
         return jsonify(status='error', error=['Not authorized'])
     form = BanUserSubForm()
     if form.validate():
@@ -933,6 +933,10 @@ def ban_user_sub(sub):
             
             if datetime.datetime.utcnow() > expires:
                 return jsonify(status='error', error=['Expiration date is in the past'])
+
+        if expires is None:
+            if not current_user.is_mod(sub.sid, 1):
+                return jsonify(status='error', error=['Janitors may only create temporary bans'])
 
         if misc.is_sub_banned(sub, uid=user.uid):
             return jsonify(status='error', error=['Already banned'])
@@ -1035,13 +1039,16 @@ def remove_sub_ban(sub, user):
         return jsonify(status='error', error=['Sub does not exist'])
     form = DummyForm()
     if form.validate():
-        if current_user.is_mod(sub.sid, 1) or current_user.is_admin():
+        if current_user.is_mod(sub.sid, 2) or current_user.is_admin():
             try:
                 sb = SubBan.get((SubBan.sid == sub.sid) & 
                                 (SubBan.uid == user.uid) & 
-                                ((SubBan.effective == True) & ((SubBan.expires.is_null(True)) | (SubBan.expires < datetime.datetime.utcnow()) )))
+                                ((SubBan.effective == True) & ((SubBan.expires.is_null(True)) | (SubBan.expires > datetime.datetime.utcnow()) )) )
             except SubBan.DoesNotExist:
                 return jsonify(status='error', error=['User is not banned'])
+            
+            if not current_user.is_mod(sub.sid, 1) and sb.created_by_id != current_user.uid:
+                return jsonify(status='error', error=['Janitors may only remove bans placed by themselves'])
 
             sb.effective = False
             sb.expires = datetime.datetime.utcnow()

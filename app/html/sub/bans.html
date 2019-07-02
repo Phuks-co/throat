@@ -1,14 +1,14 @@
 @extends("shared/layout.html")
-@require(sub, banned, xbans, banuserform)
+@require(sub, banned, xbans, banuserform, submods)
 @def main():
 <div id="container">
 
-@if not current_user.is_mod(sub.sid, 1) and current_user.is_admin():
+@if not current_user.is_mod(sub.sid, 2) and current_user.is_admin():
 <h3>Editing as Admin</h3>
 @end
 
 <h2>Banned users for <a href="@{url_for('sub.view_sub', sub=sub.name)}">@{conf['SUB_PREFIX']}/@{sub.name}</a></h2>
-@if current_user.is_admin() or current_user.is_mod(sub.sid, 1):
+@if current_user.is_admin() or current_user.is_mod(sub.sid, 2):
 <h3>Ban user</h3>
 <div class="editmoderators">
   <form id="ban-user-form" data-reload="true" data-sub="@{sub.name}" class="ajaxform pure-form" action="@{url_for('do.ban_user_sub', sub=sub.name)}">
@@ -16,11 +16,15 @@
     <p>
       <label>@{banuserform.user(placeholder=banuserform.user.label.text, required=True)}</label>
       @{banuserform.reason(placeholder=banuserform.reason.label.text, required=True)}
+      @if current_user.uid in submods['janitors']:
+       Until...\
+      @else:
       <select id="ban_timepick">
         <option value="ban_perm">Forever</option>
         <option value="ban_temp">Until...</option>
       </select>
-      <input id="ban_expires" name="ban_expires" type="text" class="date-picker-future" style="display: none;" placeholder="Pick date">
+      @end
+      <input id="ban_expires" name="ban_expires" type="text" class="date-picker-future" @{(current_user.uid in submods['janitors']) and 'style="display: inline-block;"' or 'style="display: none;"'} placeholder="Pick date">
       <input type="hidden" id="ban_expires_data" name="expires" value=""/>
       <button type="submit" class="pure-button pure-button-primary" id="banuser-btnsubmit">Banhammer</button>
     </p>
@@ -46,7 +50,7 @@
           <th>User</th>
           <th>Reason</th>
           <th>Expires</th>
-          @if current_user.is_admin() or current_user.is_mod(sub.sid, 1):
+          @if current_user.is_admin() or current_user.is_mod(sub.sid, 2):
           <th>Actions</th>\
           @end
         </tr>
@@ -77,8 +81,12 @@
             Never\
             @end
           </td>
-          @if current_user.is_admin() or current_user.is_mod(sub.sid, 1):
-          <td><a data-sub="@{sub.name}" data-user="@{ban.user.name}" class="slink revoke-ban">unban</a></td>
+          @if (current_user.is_admin() or current_user.is_mod(sub.sid, 2)):
+          <td>
+            @if (current_user.uid in submods['janitors'] and ban.created_by.uid == current_user.uid) or current_user.is_mod(sub.sid, 1):
+              <a data-sub="@{sub.name}" data-user="@{ban.user.name}" class="slink revoke-ban">unban</a>
+            @end
+          </td>
           @end
         </tr>
         @end
