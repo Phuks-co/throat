@@ -674,7 +674,7 @@ def create_post():
             return render_template('createpost.html', txtpostform=form, error="You're banned from posting on this sub")
         
         submods = misc.getSubMods(sub.sid)
-        if subdata.get('restricted', 0) and (current_user.uid not in submods['all']):
+        if subdata.get('restricted', 0) == '1' and not (current_user.uid in submods['all']):
             return render_template('createpost.html', txtpostform=form, error="Only mods can post on this sub")
 
         if misc.get_user_level(current_user.uid)[0] < 7:
