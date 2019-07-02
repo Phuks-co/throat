@@ -925,7 +925,7 @@ def ban_user_sub(sub):
         if form.expires.data:
             try:
                 expires = int(form.expires.data)
-                if (expires - time.time()) > 63072000: # bout 2 years
+                if (expires - time.time()) > 31536000: # bout 1 years
                     return jsonify(status='error', error=['Expiration time too far into the future'])
                 expires = datetime.datetime.fromtimestamp(expires)
             except ValueError:
