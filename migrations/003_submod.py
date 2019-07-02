@@ -41,7 +41,7 @@ def migrate(migrator, database, fake=False, **kwargs):
         sid = pw.ForeignKeyField(backref='submod_set', column_name='sid', field='sid', model=migrator.orm['sub'])
         power_level = pw.IntegerField()
 
-        invited = pw.BooleanField(default=False)
+        invite = pw.BooleanField(default=False)
 
         class Meta:
             table_name = "sub_mod"
