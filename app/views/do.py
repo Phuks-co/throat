@@ -971,9 +971,9 @@ def inv_mod(sub):
 
     try:
         SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == current_user.uid) & (SubMod.power_level == 0) & (SubMod.invite == False))
-        is_owner = False
-    except SubMod.DoesNotExist:
         is_owner = True
+    except SubMod.DoesNotExist:
+        is_owner = False
 
     if is_owner or current_user.is_admin():
         form = EditMod2Form()
