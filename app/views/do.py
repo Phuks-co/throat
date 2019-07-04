@@ -915,11 +915,12 @@ def ban_user_sub(sub):
         except User.DoesNotExist:
             return jsonify(status='error', error=['User does not exist'])
 
-        try:
-            SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid))
-            return jsonify(status='error', error=['User is a moderator'])
-        except SubMod.DoesNotExist:
-            pass
+        # XXX: This is all SDBH does so it stays commented out for now
+        #try:
+        #    SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid))
+        #    return jsonify(status='error', error=['User is a moderator'])
+        #except SubMod.DoesNotExist:
+        #    pass
         
         expires = None
         if form.expires.data:
