@@ -111,7 +111,7 @@ window.onkeydown = function(e){
 
 
 u.sub('#ban_expires', 'input', function(e){
-  var dtime = new Date(new Date(document.getElementById('ban_expires').value).toUTCString().substr(0, 25)).getTime()/1000;
+  var dtime = new Date(document.getElementById('ban_expires').value).getTime()/1000;
   document.getElementById('ban_expires_data').value = dtime;
 });
 
