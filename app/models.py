@@ -490,7 +490,7 @@ class SubBan(BaseModel):
     sub = ForeignKeyField(db_column='sid', model=Sub, field='sid')
 
     created = DateTimeField(default=datetime.datetime.utcnow)
-    reason = CharField(max_length=64)
+    reason = CharField(max_length=128)
     expires = DateTimeField(null=True)
     effective = BooleanField(default=True)
 
