@@ -24,13 +24,13 @@
           </div>
             <p class="title"><a href="{{url_for('view_comment_inbox', cid=message.mlink)}}">{{message.subject}}</a></p>
             <p class="container">{{markdown(message.content)|safe}}</p>
-            <p class="author"><b><span class="cscore">{{message.score}}</span></b> points, <time-ago datetime="{{message.posted.isoformat()}}"></time-ago></p>
+            <p class="author"><b><span class="cscore">{{message.score}}</span></b> points, <time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>
             <p class="container">
               <a href="{{url_for('view_user', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
               {% if not message.read %}
                 <a class="" data-mid="{{message.mid}}">new</a>
               {% else %}
-                <a class="read">read <time-ago datetime="{{message.read.isoformat()}}"></time-ago></a>
+                <a class="read">read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
               {% endif %}
               <a href="#comment-form" class="replycom" data-sub="{{message.sub}}" data-replyto='{{message.username}}' data-post='{{message.pid}}' data-parentid='{{message.mlink}}' data-replytitle='{{message.subject}}' data-mid='{{message.mid}}'>reply</a>
               <a href="{{ url_for('view_comment_inbox', cid=message.mlink) }}" class="btn small">permalink</a>

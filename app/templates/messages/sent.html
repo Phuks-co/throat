@@ -22,7 +22,7 @@
             <p class="container">{{markdown(message.content)|safe}}</p>
             <p class="author">&#10148;
               <a href="{{url_for('view_user', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
-              <time-ago datetime="{{message.posted.isoformat()}}"></time-ago>
+              <time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago>
             </p>
           </div>
         </article>

@@ -74,7 +74,7 @@
               <td>
                 <div class="subname" title="{{sub.title}}"><a href="{{url_for('sub.view_sub', sub=sub.name)}}">{{sub.name}}</a>{% if sub.getNSFW %}[nsfw]{% endif %}</div>
               </td>
-              <td><time-ago datetime="{{sub.creation.isoformat()}}"></time-ago></td>
+              <td><time-ago datetime="{{sub.creation.isoformat()}}Z"></time-ago></td>
               <td><a href="{{url_for('view_user', user=subInfo.owner)}}">{{subInfo.owner.name}}</a></td>
               <td>{{subInfo.mod2|count}}</td>
               <td>{{subInfo.subs}}</td>

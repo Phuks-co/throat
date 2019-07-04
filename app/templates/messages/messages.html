@@ -21,7 +21,7 @@
           <div class="main">
             <p class="title">{{message.subject}}</p>
             <p class="container">{{markdown(message.content)|safe}}</p>
-            <p class="author"><time-ago datetime="{{message.posted.isoformat()}}"></time-ago></p>
+            <p class="author"><time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>
             <p class="container">
               {% if message.username %}
               <a href="{{url_for('view_user', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
@@ -29,7 +29,7 @@
               <a href="#" class="btn small">Phuks</a>
               {%endif%}
               {% if message.read %}
-                <a class="read">read <time-ago datetime="{{message.read.isoformat()}}"></time-ago></a>
+                <a class="read">read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
               {% else %}
                 {% if message.mtype == 8 %}
                   <a class="" data-mid="{{message.mid}}">new</a>

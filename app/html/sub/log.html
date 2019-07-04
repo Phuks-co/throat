@@ -15,7 +15,7 @@
         <tbody>
             @for log in logs:
             <tr>
-                <td><time-ago datetime="@{log.time.isoformat()}">@{log.time.isoformat()}</time-ago></td>
+                <td><time-ago datetime="@{log.time.isoformat()}Z">@{log.time.isoformat()}</time-ago></td>
                 <td>@if log.uid:
                         @if log.uid.status != 10:
                             <a href="/u/@{log.uid.name}">@{log.uid.name}</a>\

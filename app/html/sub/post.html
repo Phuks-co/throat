@@ -11,7 +11,7 @@
 @def sidebar():
 <hr>
   <div class="author" style="padding:.5em;">
-    Posted <time-ago datetime="@{post['posted'].isoformat()}"></time-ago> by
+    Posted <time-ago datetime="@{post['posted'].isoformat()}Z"></time-ago> by
     @if post['deleted'] == 0:
       @if post['userstatus'] != 10:
         <a class="authorlink" href="@{url_for('view_user', user=post['user'])}">
@@ -26,7 +26,7 @@
     @end
     <br/>
     @if post['edited']:
-      edited <time-ago datetime="@{post['edited'].isoformat()}"></time-ago><br/>
+      edited <time-ago datetime="@{post['edited'].isoformat()}Z"></time-ago><br/>
     @end
     Score: @{post['score']!!s} <b>(+@{post['upvotes']!!s}|-@{post['downvotes']!!s})</b>
   </div>    
