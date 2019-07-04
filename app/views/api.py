@@ -11,7 +11,7 @@ from peewee import JOIN, fn
 from .. import misc
 from ..socketio import socketio
 from ..models import Sub, User, Grant, Token, Client, SubPost, Sub, SubPostComment, APIToken, APITokenSettings
-from ..models import SiteMetadata, SubPostVote, SubMetadata, SubPostCommentVote
+from ..models import SiteMetadata, SubPostVote, SubMetadata, SubPostCommentVote, SubMod
 
 api = Blueprint('api', __name__)
 oauth = OAuth2Provider()
