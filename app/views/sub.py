@@ -208,7 +208,7 @@ def view_sub_bans(sub):
     xbans = xbans.join(user, on=SubBan.uid).switch(SubBan).join(created_by, JOIN.LEFT_OUTER, on=SubBan.created_by_id)
     
     xbans = xbans.where(SubBan.sid == sub.sid)
-    xbans = xbans.where((SubBan.effective == False) | ((SubBan.expires.is_null(True)) | (SubBan.expires < datetime.datetime.utcnow()) ))
+    xbans = xbans.where((SubBan.effective == False) | ((SubBan.expires.is_null(False)) & (SubBan.expires < datetime.datetime.utcnow()) ))
     xbans = xbans.order_by(SubBan.created.is_null(True), SubBan.created.desc(), SubBan.expires.asc())
 
     return engine.get_template('sub/bans.html').render({'sub': sub, 'banned': banned, 'xbans': xbans,
