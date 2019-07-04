@@ -1803,8 +1803,9 @@ def get_sibling(pid, cid, lim):
     if len(comment_tree) > 0 and cid != '0':
         comment_tree = comment_tree[0].get('children', [])
     subInfo = misc.getSubData(post['sid'])
+    subMods = misc.getSubMods(post['sid'])
 
-    return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': comment_tree, 'subInfo': subInfo})
+    return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': comment_tree, 'subInfo': subInfo, 'subMods': subMods})
 
 
 @do.route('/do/preview', methods=['POST'])
