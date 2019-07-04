@@ -211,7 +211,7 @@ class SiteAnon(AnonymousUserMixin):
         return False
 
     @classmethod
-    def is_mod(cls, sub):
+    def is_mod(cls, sub, power_level):
         """ Anons are not mods. """
         return False
 
