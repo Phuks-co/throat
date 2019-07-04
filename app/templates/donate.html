@@ -8,15 +8,19 @@
     <p>Phuks is run and developed by volunteers. We do not have ads because we do not believe invading
       our user's privacy should be the solution to monetisation, but we do have many ways you can contribute:</p>
 
-    <h3>Donate Bitcoin</h3>
-    <p><a href="https://blockchain.info/address/1GibPhUKj93FmucGrNqGnohN5fG71chJs5" target="_blank">1GibPhUKj93FmucGrNqGnohN5fG71chJs5</a></p>
+    {% if config.BTC_ADDRESS %}
+      <h3>Donate Bitcoin</h3>
+      <a href="https://blockchain.info/address/{{config.BTC_ADDRESS}}" target="_blank">{{config.BTC_ADDRESS}}</a>
+    {%endif %}
 
-    <h3>Donate Monero</h3>
-    <p>42YCpmKbgpHfxu1kCt13eD8VZPD6UcmH58bGK8ZhNmVVQgoQNcqsxRXjPh6741DiSy5J5v827HBM9hfhAjQF1H9sUVLwwps</p>
+    {% if config.XMR_ADDRESS %}
+      <h3>Donate Monero</h3>
+      {{config.XMR_ADDRESS}}
 
+    {% endif %}
     <h3>Donate Dash</h3>
     <p>XkTU6W3rm7Lrbsv5Vji5EgihUmegKJrc2q</p>
-
+    
     <h3>Donate via PayPal</h3>
     <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
       <input type="hidden" name="cmd" value="_s-xclick">
