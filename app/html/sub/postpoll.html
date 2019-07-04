@@ -37,7 +37,7 @@
               @end
           </div>
             
-          @if ('hide_results' in postmeta and not poll_open) or ('hide_results' not in postmeta):
+          @if ('hide_results' in postmeta and not pollData['poll_open']) or ('hide_results' not in postmeta):
             <div class="poll-hid poll-pbar @{(opt.id == pollData.get('voted_for')) and 'poll-voted' or ''}" style="@{(not pollData['has_voted'] and pollData['poll_open']) and 'display: none' or ''}">
               <div style="width:@{(pollData['total_votes'] != 0) and int(round(opt.votecount/pollData['total_votes']*100)) or 0!!s}%"></div>
             </div>
