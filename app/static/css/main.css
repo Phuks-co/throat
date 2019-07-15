@@ -1935,3 +1935,7 @@ a[href="#toodamncool"]{
 .toggledark {
   cursor: pointer;
 }
+
+#ban-user-form .date-picker-future.input{
+  display: none;
+}

@@ -109,19 +109,11 @@ window.onkeydown = function(e){
   }
 }
 
-
-u.sub('#ban_expires', 'input', function(e){
-  var dtime = new Date(document.getElementById('ban_expires').value).getTime()/1000;
-  document.getElementById('ban_expires_data').value = dtime;
-});
-
 u.sub('#ban_timepick', 'change', function(e){
-  document.getElementById('ban_expires').value = '';
-  document.getElementById('ban_expires_data').value = '';
+  document.querySelector('.date-picker-future.input').value = '';
   if(this.value == 'ban_temp'){
-    document.getElementById('ban_expires').style.display = 'inline-block';
+    document.querySelector('.date-picker-future.input').style.display = 'inline-block';
   }else{
-    document.getElementById('ban_expires').style.display = 'none';
+    document.querySelector('.date-picker-future.input').style.display = 'none';
   }
-  console.log('timepick chnage', this.value)
 });

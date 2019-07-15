@@ -726,13 +726,13 @@ def create_post():
             
             if form.closetime.data:
                 try:
-                    closetime = int(form.closetime.data)
-                    if (closetime - time.time()) > 8000000:
+                    closetime = datetime.datetime.strptime(form.closetime.data, "%Y-%m-%dT%H:%M:%S.%fZ")
+                    if (closetime - datetime.datetime.utcnow()) > datetime.timedelta(days=60):
                         return render_template('createpost.html', txtpostform=form, error="Poll closing time is too far in the future.")
                 except ValueError:
                     return render_template('createpost.html', txtpostform=form, error="Invalid closing time.")
                 
-                if time.time() > closetime:
+                if datetime.datetime.utcnow() > closetime:
                     return render_template('createpost.html', txtpostform=form, error="The closing time is in the past!")
         elif form.ptype.data == 'link':
             ptype = 1
@@ -761,7 +761,7 @@ def create_post():
                 SubPostMetadata.create(pid=post.pid, key='hide_results', value=1)
             
             if form.closetime.data:
-                SubPostMetadata.create(pid=post.pid, key='poll_closes_time', value=closetime)
+                SubPostMetadata.create(pid=post.pid, key='poll_closes_time', value=int(closetime.replace(tzinfo=datetime.timezone.utc).timestamp()))
         
         Sub.update(posts=Sub.posts + 1).where(Sub.sid == sub.sid).execute()
         addr = url_for('sub.view_post', sub=sub.name, pid=post.pid)
@@ -925,10 +925,9 @@ def ban_user_sub(sub):
         expires = None
         if form.expires.data:
             try:
-                expires = int(form.expires.data)
-                if (expires - time.time()) > 31536000: # bout 1 years
+                expires = datetime.datetime.strptime(form.expires.data, "%Y-%m-%dT%H:%M:%S.%fZ")
+                if (expires - datetime.datetime.utcnow()) > datetime.timedelta(days=365):
                     return jsonify(status='error', error=['Expiration time too far into the future'])
-                expires = datetime.datetime.fromtimestamp(expires)
             except ValueError:
                 return jsonify(status='error', error=['Invalid expiration time'])
             

@@ -11,7 +11,7 @@
     @end
     @if pollData['poll_open']:
       @if pollData.get('poll_closes'):
-        <p>This poll will close <time-until datetime="@{pollData['poll_closes']}"></time-until></p>
+        <p>This poll will close <time-until datetime="@{pollData['poll_closes']}Z"></time-until></p>
       @end
       @if 'hide_results' in postmeta:
         <p><i>Results will be hidden until the poll closes</i></p>

@@ -95,7 +95,13 @@ u.addEventForChild(document, 'mousedown', '.upvote,.downvote,.c-upvote,.c-downvo
 
 u.ready(function() {
   // initialize all date pickers
-  flatpickr(".date-picker-future", {minDate: Date.now(), enableTime: true});
+  flatpickr(".date-picker-future", {
+    enableTime: true,
+    dateFormat: 'Z',
+    altInput: true,
+    altFormat: 'Y-m-d H:i',
+    time_24hr: true,
+  });
   // for the top bar sorts
   var list = document.getElementById("subsort");
   if(list){
