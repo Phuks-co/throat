@@ -278,6 +278,12 @@ class RateLimit(object):
         p.expireat(self.key, self.reset + self.expiration_window)
         self.current = min(p.execute()[0], limit)
 
+    def decr(self):
+        p = redis.pipeline()
+        p.decr(self.key)
+        p.expireat(self.key, self.reset + self.expiration_window)
+        self.current = min(p.execute()[0], self.limit)
+
     remaining = property(lambda x: x.limit - x.current)
     over_limit = property(lambda x: x.current >= x.limit)
 
@@ -316,7 +322,10 @@ def ratelimit(limit, per=300, send_x_headers=True,
             if over_limit is not None and rlimit.over_limit:
                 if not g.appconfig.get('TESTING'):
                     return over_limit(rlimit)
-            return f(*args, **kwargs)
+            reslt =  f(*args, **kwargs)
+            if isinstance(reslt, tuple) and reslt[1] != 200:
+                rlimit.decr()
+            return reslt
         return update_wrapper(rate_limited, f)
     return decorator
 

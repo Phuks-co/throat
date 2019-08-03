@@ -648,7 +648,7 @@ def create_post():
         form = forms.CreteSubPostCaptcha()
         if not form.validate():
             if not misc.validate_captcha(form.ctok.data, form.captcha.data):
-                return render_template('createpost.html', txtpostform=form, error="Invalid captcha.")
+                return render_template('createpost.html', txtpostform=form, error="Invalid captcha."), 400
             return render_template('createpost.html', txtpostform=form, error=get_errors(form)[0])
     form = CreateSubTextPost()
     if form.validate():
@@ -657,34 +657,34 @@ def create_post():
             try:
                 enable_posting = SiteMetadata.get(SiteMetadata.key == 'enable_posting')
                 if enable_posting.value in ('False', '0'):
-                    return render_template('createpost.html', txtpostform=form, error="Posting has been temporarily disabled")
+                    return render_template('createpost.html', txtpostform=form, error="Posting has been temporarily disabled"), 400
             except SiteMetadata.DoesNotExist:
                 pass
         
         try:
             sub = Sub.get(fn.Lower(Sub.name) == form.sub.data.lower())
         except:
-            return render_template('createpost.html', txtpostform=form, error="Sub does not exist")
+            return render_template('createpost.html', txtpostform=form, error="Sub does not exist"), 400
         
         subdata = misc.getSubData(sub.sid)
 
         if sub.name.lower() in ('all', 'new', 'hot', 'top', 'admin', 'home'):
-            return render_template('createpost.html', txtpostform=form, error="You cannot post in this sub.")
+            return render_template('createpost.html', txtpostform=form, error="You cannot post in this sub."), 400
         if current_user.is_subban(sub):
-            return render_template('createpost.html', txtpostform=form, error="You're banned from posting on this sub")
+            return render_template('createpost.html', txtpostform=form, error="You're banned from posting on this sub"), 400
         
         submods = misc.getSubMods(sub.sid)
         if subdata.get('restricted', 0) == '1' and not (current_user.uid in submods['all']):
-            return render_template('createpost.html', txtpostform=form, error="Only mods can post on this sub")
+            return render_template('createpost.html', txtpostform=form, error="Only mods can post on this sub"), 400
 
         if misc.get_user_level(current_user.uid)[0] < 7:
             today = datetime.datetime.utcnow() - datetime.timedelta(days=1)
             lposts = SubPost.select().where(SubPost.uid == current_user.uid).where(SubPost.sid == sub.sid).where(SubPost.posted > today).count()
             tposts = SubPost.select().where(SubPost.uid == current_user.uid).where(SubPost.posted > today).count()
             if lposts > 10 or tposts > 25:
-                return render_template('createpost.html', txtpostform=form, error="You have posted too much today")
+                return render_template('createpost.html', txtpostform=form, error="You have posted too much today"), 400
         if len(form.title.data.strip(misc.WHITESPACE)) < 3:
-            return render_template('createpost.html', txtpostform=form, error="Title is too short and/or contains whitespace characters")
+            return render_template('createpost.html', txtpostform=form, error="Title is too short and/or contains whitespace characters"), 400
         fileid = False
         if form.ptype.data == 'link':
             fupload = misc.upload_file()
@@ -693,47 +693,47 @@ def create_post():
                 fileid = fupload
 
             if not form.link.data:
-                return render_template('createpost.html', txtpostform=form, error="No link provided")
+                return render_template('createpost.html', txtpostform=form, error="No link provided"), 400
 
             try:
                 lx = SubPost.select(SubPost.pid).where(SubPost.sid == sub.sid)
                 lx = lx.where(SubPost.link == form.link.data).where(SubPost.deleted == 0)
                 monthago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
                 lx = lx.where(SubPost.posted > monthago).get()
-                return render_template('createpost.html', txtpostform=form, error="This link was recently posted on this sub")
+                return render_template('createpost.html', txtpostform=form, error="This link was recently posted on this sub"), 400
 
             except SubPost.DoesNotExist:
                 pass
             
             if misc.is_domain_banned(form.link.data):
-                return render_template('createpost.html', txtpostform=form, error="This domain is banned")
+                return render_template('createpost.html', txtpostform=form, error="This domain is banned"), 400
 
             img = misc.get_thumbnail(form.link.data)
         if form.ptype.data == 'poll':
             ptype = 3
             # Check if this sub allows polls...
             if not subdata.get('allow_polls', False):
-                return render_template('createpost.html', txtpostform=form, error="This sub does not allow polling")
+                return render_template('createpost.html', txtpostform=form, error="This sub does not allow polling"), 400
             # check if we got at least three options
             options = request.form.getlist('op[]')
             options = [x for x in options if len(x.strip(misc.WHITESPACE)) > 0]  # Remove empty strings
             if len(options) < 2:
-                return render_template('createpost.html', txtpostform=form, error="Not enough poll options provided")
+                return render_template('createpost.html', txtpostform=form, error="Not enough poll options provided"), 400
             
             for p in options:
                 if len(p) > 128:
-                    return render_template('createpost.html', txtpostform=form, error="Poll option text is too long.")
+                    return render_template('createpost.html', txtpostform=form, error="Poll option text is too long."), 400
             
             if form.closetime.data:
                 try:
                     closetime = datetime.datetime.strptime(form.closetime.data, "%Y-%m-%dT%H:%M:%S.%fZ")
                     if (closetime - datetime.datetime.utcnow()) > datetime.timedelta(days=60):
-                        return render_template('createpost.html', txtpostform=form, error="Poll closing time is too far in the future.")
+                        return render_template('createpost.html', txtpostform=form, error="Poll closing time is too far in the future."), 400
                 except ValueError:
-                    return render_template('createpost.html', txtpostform=form, error="Invalid closing time.")
+                    return render_template('createpost.html', txtpostform=form, error="Invalid closing time."), 400
                 
                 if datetime.datetime.utcnow() > closetime:
-                    return render_template('createpost.html', txtpostform=form, error="The closing time is in the past!")
+                    return render_template('createpost.html', txtpostform=form, error="The closing time is in the past!"), 400
         elif form.ptype.data == 'link':
             ptype = 1
         else:
@@ -787,7 +787,7 @@ def create_post():
         misc.workWithMentions(form.content.data, None, post, sub)
         misc.workWithMentions(form.title.data, None, post, sub)
         return redirect(addr)
-    return render_template('createpost.html', txtpostform=form, error=get_errors(form)[0])
+    return render_template('createpost.html', txtpostform=form, error=get_errors(form)[0]), 400
 
 
 @do.route('/do/sendcomment/<pid>', methods=['POST'])
@@ -803,29 +803,29 @@ def create_comment(pid):
         try:
             post = SubPost.get(SubPost.pid == pid)
         except SubPost.DoesNotExist:
-            return jsonify(status='error', error=['Post does not exist'])
+            return jsonify(status='error', error=['Post does not exist']), 400
         if post.deleted:
-            return jsonify(status='error', error=['Post was deleted'])
+            return jsonify(status='error', error=['Post was deleted']), 400
 
         if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
-            return jsonify(status='error', error=["Post is archived"])
+            return jsonify(status='error', error=["Post is archived"]), 400
 
         try:
             sub = Sub.get(Sub.sid == post.sid_id)
         except:
-            return jsonify(status='error', error='Internal error')
+            return jsonify(status='error', error='Internal error'), 400
         if current_user.is_subban(sub):
-            return jsonify(status='error', error=['You are currently banned from commenting'])
+            return jsonify(status='error', error=['You are currently banned from commenting']), 400
 
         if form.parent.data != '0':
             try:
                 parent = SubPostComment.get(SubPostComment.cid == form.parent.data)
             except SubPostComment.DoesNotExist:
-                return jsonify(status='error', error=["Parent comment does not exist"])
+                return jsonify(status='error', error=["Parent comment does not exist"]), 400
 
             # XXX: We check both for None and 0 because I've found both on a Phuks snapshot...
             if (parent.status is not None and parent.status != 0) or parent.pid.pid != post.pid:
-                return jsonify(status='error', error=["Parent comment does not exist"])
+                return jsonify(status='error', error=["Parent comment does not exist"]), 400
 
         comment = SubPostComment.create(pid=pid, uid=current_user.uid,
                                         content=form.comment.data.encode(),
@@ -869,7 +869,7 @@ def create_comment(pid):
 
         return json.dumps({'status': 'ok', 'addr': url_for('sub.view_perm', sub=sub.name,
                                                            pid=pid, cid=comment.cid)})
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
+    return json.dumps({'status': 'error', 'error': get_errors(form)}), 400
 
 
 @do.route("/do/sendmsg", methods=['POST'])
