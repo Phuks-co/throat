@@ -501,7 +501,7 @@ def view_user_savedposts(user, page):
                                  'new', page).dicts()
         return render_template('userposts.html', page=page,
                                sort_type='view_user_savedposts',
-                               posts=posts, user=user)
+                               posts=posts, user=current_user)
     else:
         abort(403)
 
