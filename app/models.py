@@ -440,6 +440,14 @@ class SubPostCommentReport(BaseModel):
         table_name = 'sub_post_comment_report'
 
 
+class SubPostCommentHistory(BaseModel):
+    cid = ForeignKeyField(db_column='cid', model=SubPostComment, field='cid')
+    datetime = DateTimeField(default=datetime.datetime.now)
+    content = TextField(null=True)
+    class Meta:
+        table_name = "sub_post_comment_history"
+
+
 class UserIgnores(BaseModel):
     uid = ForeignKeyField(db_column='uid', model=User, field='uid')
     target = CharField(max_length=40)

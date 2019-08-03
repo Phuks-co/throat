@@ -31,7 +31,7 @@ from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
 from ..misc import cache, sendMail, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata, UserSaved
-from ..models import SubMod, SubBan
+from ..models import SubMod, SubBan, SubPostCommentHistory
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
 from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport
 from peewee import fn, JOIN
@@ -1707,8 +1707,10 @@ def edit_comment():
         
         if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
             return jsonify(status='error', error="Post is archived")
-            
+        
         dt = datetime.datetime.utcnow()
+        spm = SubPostCommentHistory.create(cid=comment.cid, content=comment.content, datetime=dt if not comment.lastedit else comment.lastedit)
+        spm.save()
         comment.content = form.text.data
         comment.lastedit = dt
         comment.save()
