@@ -857,7 +857,7 @@ def admin_post_voting(page, term):
     """ WIP: View post voting habits """
     if current_user.is_admin():
         try:
-            user = User.get(fn.Lower(User.name) == user.lower())
+            user = User.get(fn.Lower(User.name) == term.lower())
             msg = []
             votes = SubPostVote.select(SubPostVote.positive, SubPostVote.pid, User.name, SubPostVote.datetime, SubPostVote.pid)
             votes = votes.join(SubPost, JOIN.LEFT_OUTER, on=SubPost.pid == SubPostVote.pid)
