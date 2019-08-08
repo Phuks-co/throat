@@ -54,7 +54,7 @@
       </div>
       <div class="author">
         @if post['link']:
-          @if func.getDomain(post['link'].lower()) in ('hooktube.com', 'www.hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'streamja.com', 'vimeo.com', 'vine.co', 'instaud.io'):
+          @if func.getDomain(post['link'].lower()) in ('hooktube.com', 'www.hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'streamja.com', 'streamable.com', 'vimeo.com', 'vine.co', 'instaud.io'):
           <div class="expando" data-pid="@{post['pid']!!s}" data-t="lnk" title="Embed video" data-link="@{post['link']!!e}"><div data-icon="play" class="icon expando-btn"></div></div>
           @elif post['link'].lower().endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
           <div class="expando" data-pid="@{post['pid']!!s}"  data-t="lnk" title="Show image" data-link="@{post['link']!!e}"><div data-icon="image" class="icon expando-btn"></div></div>
