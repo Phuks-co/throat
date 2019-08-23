@@ -23,7 +23,7 @@
                   <a href="/u/@{comment['user']}" class="poster">
                     @{(comment['userstatus'] == 100) and '<span class="bot-tag">bot</span>' or ''}
                     @{comment['user']}
-                    @{(comment['userstatus'] == 100) and '<span class="op-tag">[OP]</span>' or ''}
+                    @{(comment['user'] == post['user']) and '<span class="op-tag">[OP]</span>' or ''}
                   </a>
                 @end
               @else:
