@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}{{config.LEMA}}{% endblock %}
+{% block title %}{{config.site.lema}}{% endblock %}
 {% block head %}
 {{ super() }}
 <script src="{{url_for('static', filename='js/sorttable.js')}}"></script>

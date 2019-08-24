@@ -4,9 +4,6 @@ import __fix
 import logging
 import argparse
 
-import config
-config.TESTING = False
-
 from peewee import fn
 from app import app
 from app.models import Sub, SiteMetadata

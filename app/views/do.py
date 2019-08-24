@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 from flask import Blueprint, redirect, url_for, session, abort, jsonify
 from flask import render_template, request
 from flask_login import login_user, login_required, logout_user, current_user
-import config
+from ..config import config
 from .. import forms, misc, caching
 from ..socketio import socketio
 from ..forms import LogOutForm, CreateSubFlair, DummyForm
@@ -228,7 +228,7 @@ def create_sub():
             pass
 
         level = misc.get_user_level(current_user.uid)[0]
-        if not getattr(config, 'TESTING', False):
+        if not config.app.testing:
             if (level <= 1) and (not current_user.admin):
                 return jsonify(status='error', error=['You must be at least level 2.'])
 
@@ -689,7 +689,7 @@ def create_post():
         if form.ptype.data == 'link':
             fupload = misc.upload_file()
             if fupload:
-                form.link.data = config.STORAGE_HOST + fupload
+                form.link.data = config.storage.uploads.url + fupload
                 fileid = fupload
 
             if not form.link.data:
@@ -1633,7 +1633,7 @@ def recovery():
             <hr>
             <p>If you didn't request a password recovery, please ignore this
             email</p>
-            """.format(config.LEMA, url_for('password_reset', key=rekey,
+            """.format(config.site.lema, url_for('password_reset', key=rekey,
                                             uid=user.uid, _external=True))
         )
 
@@ -1921,21 +1921,21 @@ def sub_upload(sub):
     f_name = str(uuid.uuid5(misc.FILE_NAMESPACE, md5.hexdigest())) + extension
     ufile.seek(0)
     lm = False
-    if not os.path.isfile(os.path.join(config.STORAGE, f_name)):
+    if not os.path.isfile(os.path.join(config.storage.uploads.path, f_name)):
         lm = True
-        ufile.save(os.path.join(config.STORAGE, f_name))
+        ufile.save(os.path.join(config.storage.uploads.path, f_name))
         # remove metadata
         if mtype != 'image/gif':  # Apparently we cannot write to gif images
-            md = pyexiv2.ImageMetadata(os.path.join(config.STORAGE, f_name))
+            md = pyexiv2.ImageMetadata(os.path.join(config.storage.uploads.path, f_name))
             md.read()
             for k in (md.exif_keys + md.iptc_keys + md.xmp_keys):
                 del md[k]
             md.write()
     # sadly, we can only get file size accurately after saving it
-    fsize = os.stat(os.path.join(config.STORAGE, f_name)).st_size
+    fsize = os.stat(os.path.join(config.storage.uploads.path, f_name)).st_size
     if fsize > remaining:
         if lm:
-            os.remove(os.path.join(config.STORAGE, f_name))
+            os.remove(os.path.join(config.storage.uploads.path, f_name))
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
                                                            'error': 'Not enough available space to upload file.', 'files': ufiles})
     # THUMBNAIL
@@ -1960,8 +1960,8 @@ def sub_upload(sub):
     md5 = hashlib.md5(im.tobytes())
     filename = str(uuid.uuid5(misc.THUMB_NAMESPACE, md5.hexdigest())) + '.jpg'
     im.seek(0)
-    if not os.path.isfile(os.path.join(config.THUMBNAILS, filename)):
-        im.save(os.path.join(config.THUMBNAILS, filename), "JPEG", optimize=True, quality=85)
+    if not os.path.isfile(os.path.join(config.storage.thumbnails.path, filename)):
+        im.save(os.path.join(config.storage.thumbnails.path, filename), "JPEG", optimize=True, quality=85)
     im.close()
 
     SubUploads.create(sid=sub.sid, fileid=f_name, thumbnail=filename, size=fsize, name=fname)
@@ -1999,7 +1999,7 @@ def sub_upload_delete(sub, name):
         try:
             SubUploads.get(SubUploads.fileid == img.fileid)
         except SubUploads.DoesNotExist:
-            os.remove(os.path.join(config.STORAGE, img.fileid))
+            os.remove(os.path.join(config.storage.uploads.path, img.fileid))
 
     return jsonify(status='ok')
 

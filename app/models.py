@@ -8,46 +8,40 @@ from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model, Data
 from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
 from playhouse.db_url import connect as db_url_connect
 from playhouse.flask_utils import FlaskDB
-import config
+from .config import config
 
 # Why not here? >_>
-rconn = redis.from_url(config.SOCKETIO_REDIS_URL)
+rconn = redis.from_url(config.app.redis_url)
 
 def db_connect():
-    dbconnect = copy.copy(getattr(config, 'DATABASE', False))
-    if not dbconnect:
-        dbconnect = config.DATABASE_URL
+    dbconnect = config.database
+    # Taken from peewee's flask_utils
+    try:
+        name = dbconnect.pop('name')
+        engine = dbconnect.pop('engine')
+    except KeyError:
+        raise RuntimeError('DATABASE configuration must specify a '
+                            '`name` and `engine`.')
 
-    if isinstance(dbconnect, dict):
-        # Taken from peewee's flask_utils
-        try:
-            name = dbconnect.pop('name')
-            engine = dbconnect.pop('engine')
-        except KeyError:
-            raise RuntimeError('DATABASE configuration must specify a '
-                                '`name` and `engine`.')
-
-        if '.' in engine:
-            path, class_name = engine.rsplit('.', 1)
-        else:
-            path, class_name = 'peewee', engine
-
-        try:
-            __import__(path)
-            module = sys.modules[path]
-            database_class = getattr(module, class_name)
-            assert issubclass(database_class, Database)
-        except ImportError:
-            raise RuntimeError('Unable to import %s' % engine)
-        except AttributeError:
-            raise RuntimeError('Database engine not found %s' % engine)
-        except AssertionError:
-            raise RuntimeError('Database engine not a subclass of '
-                                'peewee.Database: %s' % engine)
-        
-        return database_class(name, **dbconnect)
+    if '.' in engine:
+        path, class_name = engine.rsplit('.', 1)
     else:
-        return db_url_connect(dbconnect)
+        path, class_name = 'peewee', engine
+
+    try:
+        __import__(path)
+        module = sys.modules[path]
+        database_class = getattr(module, class_name)
+        assert issubclass(database_class, Database)
+    except ImportError:
+        raise RuntimeError('Unable to import %s' % engine)
+    except AttributeError:
+        raise RuntimeError('Database engine not found %s' % engine)
+    except AssertionError:
+        raise RuntimeError('Database engine not a subclass of '
+                            'peewee.Database: %s' % engine)
+    
+    return database_class(name, **dbconnect)
 
 dbm = db_connect()
 dex = dbm.execute

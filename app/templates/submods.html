@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
-{% block title %}{{config.LEMA}}{% endblock %}
+{% block title %}{{config.site.lema}}{% endblock %}
 {% block navbar %}
 <ul class="right">
-  <li class="large"><a href="{{url_for('sub.view_sub', sub=sub.name)}}">{{conf['SUB_PREFIX']}}/{{sub.name}}</a></li>
+  <li class="large"><a href="{{url_for('sub.view_sub', sub=sub.name)}}">/{{config.site.sub_prefix}}/{{sub.name}}</a></li>
 </ul>
 {% endblock %}
 {% block content %}
@@ -12,7 +12,7 @@
 <div class="important"><h3>Editing as Admin</h3></div>
 {% endif %}
 
-<h1>Moderators for {{conf['SUB_PREFIX']}}/{{sub.name}}</h1>
+<h1>Moderators for /{{config.site.sub_prefix}}/{{sub.name}}</h1>
 {% if current_user.is_modinv(sub.sid)  %}
 <div class="mod2-inv" >
   You currently have an invite for this sub pending.

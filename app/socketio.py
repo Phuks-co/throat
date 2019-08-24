@@ -2,13 +2,13 @@ from flask_socketio import SocketIO, join_room
 from flask_login import current_user
 from flask import request
 import redis
-import config
+from .config import config
 import json
 from wheezy.html.utils import escape_html
 
 
 socketio = SocketIO()
-redis = redis.from_url(config.SOCKETIO_REDIS_URL)
+redis = redis.from_url(config.app.redis_url)
 #  The new stuff
 
 

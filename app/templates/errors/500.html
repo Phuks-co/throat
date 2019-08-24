@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}Internal server errror | {{config.LEMA}}{% endblock %}
+{% block title %}Internal server errror | {{config.site.lema}}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/errors.css') }}">

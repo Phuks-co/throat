@@ -68,6 +68,7 @@ target/
 app/static/gen
 app/static/.webassets-cache
 config.py
+config.yaml
 
 # thumbs
 thumbs/*

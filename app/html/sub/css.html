@@ -7,7 +7,7 @@
   <div class="important"><h3>Editing as Admin</h3></div>
   @end
 
-  <h2>Editing <a href="@{url_for('sub.view_sub', sub=sub.name)}">@{conf['SUB_PREFIX']}/@{sub.name}</a></h2>
+  <h2>Editing <a href="@{url_for('sub.view_sub', sub=sub.name)}">/@{config.site.sub_prefix}/@{sub.name}</a></h2>
 
   <div class="content createpost">
     <form  method="POST" class="ajaxform" action="@{url_for('do.edit_sub_css', sub=sub.name)}">
@@ -41,7 +41,7 @@
     No files were uploaded, yet.
   @else:
     @for f in files:
-      <div><img alt="Thumbnail" src="@{config.THUMBNAIL_HOST}@{f.thumbnail}"/>
+      <div><img alt="Thumbnail" src="@{config.storage.thumbnails.url}@{f.thumbnail}"/>
       Filename: @{f.name!!e}. Size: @{int(f.size/1024)!!s} KiB.
       <form  method="POST" data-reload="true" action="@{url_for('do.sub_upload_delete', sub=sub.name, name=f.name)}" class="ajaxform" style="display: inline-block; margin-left: 1em; margin-top: 5px;">
       @{form.csrf_token()}<button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="Deleting..." data-success="Deleted!">Delete</button></form>

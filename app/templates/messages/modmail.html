@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}My messages | {{config.LEMA}}{% endblock %}
+{% block title %}My messages | {{config.site.lema}}{% endblock %}
 
 {% block navbar %}
 {% endblock %}
@@ -21,9 +21,9 @@
             <p class="title">{{message.subject}}</p>
             <p class="container">{{markdown(message.content)|safe}}</p>
             {% if message.mtype == 2 %}
-              <p>Please visit: <a href="{{url_for('sub.edit_sub_mods', sub=message.mlink)}}"> {{conf['SUB_PREFIX']}}/{{message.mlink}}/mods</a><p>
+              <p>Please visit: <a href="{{url_for('sub.edit_sub_mods', sub=message.mlink)}}"> /{{config.site.sub_prefix}}/{{message.mlink}}/mods</a><p>
             {% elif message.mtype == 7 %}
-              <p>Please visit: <a href="{{url_for('sub.view_sub_bans', sub=message.mlink)}}"> {{conf['SUB_PREFIX']}}/{{message.mlink}}/bannedusers</a><p>
+              <p>Please visit: <a href="{{url_for('sub.view_sub_bans', sub=message.mlink)}}"> /{{config.site.sub_prefix}}/{{message.mlink}}/bannedusers</a><p>
             {% endif %}
             <p class="author"><time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>
             <p class="container">
