@@ -2276,6 +2276,11 @@ def close_poll():
             abort(403)
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
+try:
+    import callbacks
+    callbacks_enabled = True
+except ModuleNotFoundError:
+    callbacks_enabled = False
 
 @do.route('/do/report', methods=['POST'])
 @login_required
@@ -2302,10 +2307,11 @@ def report():
 
         # do the reporting.
         SubPostReport.create(pid=post['pid'], uid=current_user.uid, reason=form.reason.data)
-        # callbacks!
-        cb = getattr(config, 'ON_POST_REPORT', False)
-        if cb:
-            cb(post, current_user, form.reason.data)
+        if callbacks_enabled:
+            # callbacks!
+            cb = getattr(callbacks, 'ON_POST_REPORT', False)
+            if cb:
+                cb(post, current_user, form.reason.data)
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
@@ -2342,8 +2348,9 @@ def report_comment():
         # do the reporting.
         SubPostCommentReport.create(cid=comm.cid, uid=current_user.uid, reason=form.reason.data)
         # callbacks!
-        cb = getattr(config, 'ON_COMMENT_REPORT', False)
-        if cb:
-            cb(comm, current_user, form.reason.data)
+        if callbacks_enabled:
+            cb = getattr(callbacks, 'ON_COMMENT_REPORT', False)
+            if cb:
+                cb(comm, current_user, form.reason.data)
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
