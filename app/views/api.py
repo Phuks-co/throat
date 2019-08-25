@@ -382,9 +382,9 @@ def getSub(name):
         'nsfw': True if subdata.get('nsfw') == '1' else False,
         'user_can_flair': True if subdata.get('ucf') == '1' else False,
         'video_mode': True if subdata.get('videomode') == '1' else False,
-        'creator': subdata['creator']['name'],
-        'owner': subdata['owner']['name'],
-        'mods': [x['name'] for x in subdata['mods']]
+        'creator': subdata['creator']['name']
+        #'owner': subdata['owners']['owner'],
+        #'mods': [x['name'] for x in subdata['mods']]
     })
 
 
