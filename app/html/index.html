@@ -18,7 +18,7 @@
 @include('shared/sidebar/home.html')
 @if sort_type in ('all_new', 'sub.view_sub_new') and current_user.likes_scroll():
   <hr />
-  &copy;@{config.COPY}
+  &copy;@{config.site.copyright}
   <br>
   <a href="@{url_for('welcome')}">Welcome</a> |
   <a href="@{url_for('tos')}">ToS</a> |
@@ -29,7 +29,7 @@
   <a href="@{url_for('donate')}">Donate</a>
   <br>
   Served by @{hostname} \
-  @if config.DEBUG or current_user.admin:
+  @if config.app.debug or current_user.admin:
    | Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries
   @end
 @end

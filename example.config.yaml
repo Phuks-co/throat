@@ -1,0 +1,89 @@
+site:
+  name: 'Throat'
+  # Lema shown in the page's title
+  lema: 'Throat: Open discussion ;D'
+  # Copyright line shown in the footer
+  copyright: 'Umbrella Corp'
+  # Name shown when a sub is owned by a deleted account or abandoned
+  placeholder_account: 'Site'
+
+  # Allow everybody to upload files
+  allow_uploads: False
+
+  # Prefix for subs (by default it's 's').
+  # It can be anything EXCEPT 'u', 'c' or 'p'
+  sub_prefix: 's'
+
+  # Allow everybody to upload files
+  # (by default it's only admins and users authorized through a metadata key)
+  allow_uploads: False
+
+app:
+  # URL to a working redis server.
+  # Used for websockets and caching (if enabled)
+  redis_url: 'redis://127.0.0.1:6379'
+
+  # Secret key used to encrypt session cookies.
+  # You can generate one by using `os.urandom(24)`
+  # ///// YOU MUST CHANGE THIS VALUE \\\\\
+  secret_key: 'PUT SOMETHING HERE'
+
+  # Enables debug mode. Always set to False in a production environment
+  debug: True
+
+  # This will make all captchas valid, disable caching and rate limits
+  # Always set to False in a production environment
+  testing: True
+
+
+cache:
+  # Caching strategy to use.
+  # Recommended values:
+  # - 'null' (no caching)
+  # - 'redis' (recommended)
+  # - 'simple' (only for testing)
+  type: 'redis'
+
+sendgrid:
+  # At the moment this is only used to send password recovery
+  # emails.
+  # SendGrid API key
+  api_key: '...'
+  # Sender address
+  default_from: 'noreply@example.com'
+
+storage:
+  thumbnails:
+    # Path where thumbnails will be stored (app MUST have write access)
+    path: './thumbs'
+    # URL or relative path where thumbnails are served (must end with forward slash)
+    url: 'https://thumbs.example.com/'
+  
+  uploads:
+    # Same rules as thumbnails
+    path: './stor'
+    url: 'https://usercontent.example.com/'
+
+database:
+  # Database engine. Possible values:
+  # - MySQLDatbase
+  # - PostgresqlDatabase
+  # - SqliteDatabase (untested)
+  engine: 'PICK ONE'
+  
+  # Parameters for both MySQL and postgres
+  #host: 'localhost'
+  #port: 3306
+  #user: 'polsaker'
+  #password: 'throat'
+  # Database name
+  #name: 'phuks'
+
+  # For sqlite:
+  #database: '/path/to/sqlite.db'
+  
+  # Uncomment if using Postgres:
+  #autocommit: True
+
+  # Uncomment if using MySQL
+  #charset: 'utf8mb4'

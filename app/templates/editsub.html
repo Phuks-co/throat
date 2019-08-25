@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}{{config.LEMA}}{% endblock %}
+{% block title %}{{config.site.lema}}{% endblock %}
 
 {% block head %}
   {{ super() }}
@@ -11,7 +11,7 @@
     <div class="important"><h3>Editing as Admin</h3></div>
   {% endif %}
 <div class="content">
-  <h1>Editing settings of {{conf['SUB_PREFIX']}}/{{sub.name}}</h1>
+  <h1>Editing settings of /{{config.site.sub_prefix}}/{{sub.name}}</h1>
   <form data-redir="true"  method="POST" id="edit-sub-form" action="{{url_for('do.edit_sub', sub=sub.name)}}" class="pure-form ajaxform">
     {{editsubform.csrf_token}}
     <fieldset>

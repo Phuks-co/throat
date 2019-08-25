@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}Error 418 - I'm a teapot | {{config.LEMA}}{% endblock %}
+{% block title %}Error 418 - I'm a teapot | {{config.site.lema}}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/errors.css') }}">

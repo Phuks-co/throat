@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}My messages | {{config.LEMA}}{% endblock %}
+{% block title %}My messages | {{config.site.lema}}{% endblock %}
 
 {% block navbar %}
 {% endblock %}
@@ -56,7 +56,7 @@
       {{commentform.csrf_token}}
       {{commentform.post()}}
       {{commentform.parent(value='0')}}
-      <h3>Reply to comment from <span id="from"></span> in {{conf['SUB_PREFIX']}}/<span id="sub"></span></h3>
+      <h3>Reply to comment from <span id="from"></span> in /{{config.site.sub_prefix}}/<span id="sub"></span></h3>
       <fieldset>
         <div class="pure-control-group markdown-editor">
           {{commentform.comment(placeholder="Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}

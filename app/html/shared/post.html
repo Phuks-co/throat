@@ -13,13 +13,13 @@
       </div>
       <div class="thcontainer">
         @if post['link'] == None:
-          <a href="@{conf['SUB_PREFIX']}/@{post['sub']}/@{post['pid']!!s}">
+          <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']!!s}">
         @else:
           <a @{('exlinks' in current_user.prefs) and 'target="_blank" ' or ''}href="@{post['link']!!e}">
         @end
           <div class="thumbnail">
             @if post['thumbnail'] != '' and post['link'] != None:
-              <img alt="Thumbnail" src="@{config.THUMBNAIL_HOST}@{post['thumbnail']}"/>
+              <img alt="Thumbnail" src="@{config.storage.thumbnails.url}@{post['thumbnail']}"/>
             @elif post['link'] != None:
               <span class="placeholder" data-icon="link"></span>
             @else:
@@ -44,7 +44,7 @@
         <span class="postflair">@{post['flair']!!e}</span> \
         @end
         @if post['link'] == None:
-          <a href="@{conf['SUB_PREFIX']}/@{post['sub']}/@{post['pid']!!s}" class="title">@{post['title']!!e}</a> \
+          <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']!!s}" class="title">@{post['title']!!e}</a> \
         @else:
           @if post['link'].startswith('http:'):
             <span title="not https" class="p-icon" data-icon="exclaim"></span> \
@@ -84,11 +84,11 @@
         - <span class="stick">wiki</span>
         @end
         @if not sub:
-        on <a href="@{conf['SUB_PREFIX']}/@{post['sub']}">@{post['sub']}</a>
+        on <a href="/@{config.site.sub_prefix}/@{post['sub']}">@{post['sub']}</a>
         @end
       </div>
       <div class="links" data-sid="@{post['sid']!!s}">
-        <a class="comments" href="@{conf['SUB_PREFIX']}/@{post['sub']}/@{post['pid']!!s}">@{(post['comments']>0) and 'comments (' + str(post['comments']) +')' or 'comment'}</a>
+        <a class="comments" href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']!!s}">@{(post['comments']>0) and 'comments (' + str(post['comments']) +')' or 'comment'}</a>
         @if not sub and not announcement:
           <span><a data-ac="block" class="unblk">block sub</a></span>
         @end

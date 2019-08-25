@@ -21,9 +21,10 @@ from PIL import Image
 from bs4 import BeautifulSoup
 from functools import update_wrapper
 import misaka as m
-from redis import Redis
+import redis
 import sendgrid
-import config
+
+from .config import config
 from flask import url_for, request, g, jsonify, session
 from flask_login import AnonymousUserMixin, current_user
 from .caching import cache
@@ -49,9 +50,7 @@ engine = Engine(
 )
 
 
-redis = Redis(host=config.CACHE_REDIS_HOST,
-              port=config.CACHE_REDIS_PORT,
-              db=config.CACHE_REDIS_DB)
+redis = redis.from_url(config.app.redis_url)
 
 # Regex that matches VALID user and sub names
 allowedNames = re.compile("^[a-zA-Z0-9_-]+$")
@@ -99,13 +98,13 @@ class SiteUser(object):
         self.is_anonymous = True if self.user['status'] != 0 else False
         self.can_admin = 'admin' in self.prefs
 
-        if (time.time() - session.get('apriv', 0) < 7200) or not (getattr(config, 'ENABLE_TOTP', False)):
+        if (time.time() - session.get('apriv', 0) < 7200) or not config.site.enable_totp:
             self.admin = 'admin' in self.prefs
         else:
             self.admin = False
 
         self.canupload = True if ('canupload' in self.prefs) or (self.admin) else False
-        if getattr(config, 'ALLOW_UPLOADS', False):
+        if config.site.allow_uploads:
             self.canupload = True
 
     def __repr__(self):
@@ -356,9 +355,9 @@ def safeRequest(url, recieve_timeout=10):
             raise ValueError('response too large')
     return (r, f)
 
-RE_AMENTION_BARE = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|' + getattr(config, 'SUB_PREFIX', '/s') + r'\/)([A-Za-z0-9\-\_]+))'
+RE_AMENTION_BARE = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/' + config.site.sub_prefix + r'\/)([A-Za-z0-9\-\_]+))'
 
-RE_AMENTION_PRE0 = r'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))(?:(?:@|\/u\/|' + getattr(config, 'SUB_PREFIX', '/s') + r'\/)(?:[A-Za-z0-9\-\_]+)))'
+RE_AMENTION_PRE0 = r'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))(?:(?:@|\/u\/|\/' + config.site.sub_prefix + r'\/)(?:[A-Za-z0-9\-\_]+)))'
 RE_AMENTION_PRE1 = r'(?:(\[.+?\]\(.+?\))|' + RE_AMENTION_BARE + r')'
 RE_AMENTION_ESCAPED = re.compile("```.*{0}.*```|`.*?{0}.*?`|({1})".format(RE_AMENTION_PRE0, RE_AMENTION_PRE1), flags=re.MULTILINE + re.DOTALL)
 RE_AMENTION_LINKS = re.compile("\[.*?({1}).*?\]\(.*?\)|({0})".format(RE_AMENTION_PRE1, RE_AMENTION_BARE), flags=re.MULTILINE + re.DOTALL)
@@ -454,9 +453,9 @@ def enableInviteCode():
 
 def sendMail(to, subject, content):
     """ Sends a mail through sendgrid """
-    sg = sendgrid.SendGridAPIClient(api_key=config.SENDGRID_API_KEY)
+    sg = sendgrid.SendGridAPIClient(api_key=config.sendgrid.api_key)
 
-    from_email = sendgrid.Email(config.SENDGRID_DEFAULT_FROM)
+    from_email = sendgrid.Email(config.sendgrid.default_from)
     to_email = sendgrid.Email(to)
     content = sendgrid.helpers.mail.Content('text/html', content)
 
@@ -650,8 +649,8 @@ def get_thumbnail(link):
     md5 = hashlib.md5(im.tobytes())
     filename = str(uuid.uuid5(THUMB_NAMESPACE, md5.hexdigest())) + '.jpg'
     im.seek(0)
-    if not os.path.isfile(os.path.join(config.THUMBNAILS, filename)):
-        im.save(os.path.join(config.THUMBNAILS, filename), "JPEG", optimize=True, quality=85)
+    if not os.path.isfile(os.path.join(config.storage.thumbnails.path, filename)):
+        im.save(os.path.join(config.storage.thumbnails.path, filename), "JPEG", optimize=True, quality=85)
     im.close()
 
     return filename
@@ -710,11 +709,11 @@ def getSubOfTheDay():
 
 def getChangelog():
     """ Returns most recent changelog post """
-    if not config.CHANGELOG_SUB:
+    if not config.site.changelog_sub:
         return None
     td = datetime.utcnow() - timedelta(days=15)
     changepost = (SubPost.select(Sub.name.alias('sub'), SubPost.pid, SubPost.title, SubPost.posted)
-                         .where(SubPost.posted > td).where(SubPost.sid == config.CHANGELOG_SUB)
+                         .where(SubPost.posted > td).where(SubPost.sid == config.site.changelog_sub)
                          .join(Sub, JOIN.LEFT_OUTER).order_by(SubPost.pid.desc()).dicts())
 
     try:
@@ -767,7 +766,7 @@ def postListQueryHome(noDetail=False, nofilter=False):
 
 def getPostList(baseQuery, sort, page):
     if sort == "hot":
-        if "Postgres" in getattr(config, 'DATABASE', {}).get('engine', ''):
+        if config.database.engine == "PostgresqlDatabase":
             hot = SubPost.score * 20 + (fn.EXTRACT(NodeList((SQL('EPOCH FROM'), SubPost.posted))) - 1134028003 ) / 1500
             posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, 25)
         else:
@@ -996,16 +995,16 @@ def upload_file(max_size=16580608):
 
     f_name = str(uuid.uuid5(FILE_NAMESPACE, md5.hexdigest())) + extension
     ufile.seek(0)
-
-    if not os.path.isfile(os.path.join(config.STORAGE, f_name)):
-        ufile.save(os.path.join(config.STORAGE, f_name))
-        fsize = os.stat(os.path.join(config.STORAGE, f_name)).st_size
+    fpath = os.path.join(config.storage.path, f_name)
+    if not os.path.isfile(fpath):
+        ufile.save(fpath)
+        fsize = os.stat(fpath).st_size
         if fsize > max_size:  # Max file size exceeded
-            os.remove(os.path.join(config.STORAGE, f_name))
+            os.remove(fpath)
             return False
         # remove metadata
         if mtype not in ('image/gif', 'video/mp4', 'video/webm'):  # Apparently we cannot write to gif images
-            md = pyexiv2.ImageMetadata(os.path.join(config.STORAGE, f_name))
+            md = pyexiv2.ImageMetadata(fpath)
             md.read()
             for k in (md.exif_keys + md.iptc_keys + md.xmp_keys):
                 del md[k]
@@ -1030,7 +1029,7 @@ def getSubMods(sid):
             janitor_uids.append(i.uid)
 
     if not owner:
-        owner['0'] = getattr(config, 'PLACEHOLDER_ACCOUNT', 'System')
+        owner['0'] = config.site.placeholder_account
     return {'owners': owner, 'mods': mods, 'janitors': janitors, 'all': owner_uids + janitor_uids + mod_uids}
 
 def getSubData(sid, simple=False, extra=False):
@@ -1123,7 +1122,7 @@ def validate_css(css, sid):
     # create a map for uris.
     uris = {}
     for su in SubUploads.select().where(SubUploads.sid == sid):
-        uris[su.name] = config.STORAGE_HOST + su.fileid
+        uris[su.name] = config.storage.uploads.url + su.fileid
     for x in st:
         if x.__class__.__name__ == "AtRule":
             if x.at_keyword.lower() == "import":
@@ -1178,7 +1177,7 @@ def populate_feed(feed, posts):
         url = url_for('sub.view_post', sub=post['sub'], pid=post['pid'], _external=True)
 
         if post['thumbnail']:
-            content += '<td><a href=' + url + '"><img src="' + config.THUMBNAIL_HOST + post['thumbnail'] + '" alt="' + post['title'] + '"/></a></td>'
+            content += '<td><a href=' + url + '"><img src="' + config.storage.thumbnails.url + post['thumbnail'] + '" alt="' + post['title'] + '"/></a></td>'
         content +=  '<td>Submitted by <a href=/u/' + post['user'] + '>' + post['user'] + '</a><br/>' + our_markdown(post['content'])
         if post['link']:
             content += '<a href="' + post['link'] + '">[link]</a> '

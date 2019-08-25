@@ -17,7 +17,7 @@ from flask_webpack import Webpack
 from wheezy.html.utils import escape_html
 from werkzeug.contrib.atom import AtomFeed
 
-import config
+from .config import config
 from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditUserForm, AssignUserBadgeForm
 from .forms import CreateSubTextPost, CreateSubLinkPost
@@ -45,14 +45,13 @@ webpack = Webpack()
 app.jinja_env.cache = {}
 
 # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
-app.config.from_object('config')
-app.config['SUB_PREFIX'] = app.config.get('SUB_PREFIX', '/s')
+app.config.update(config.get_flask_dict())
 
 app.register_blueprint(do)
 app.register_blueprint(api)
 app.register_blueprint(api3, url_prefix='/api/v3')
 jwt.init_app(app)
-app.register_blueprint(subs, url_prefix=app.config['SUB_PREFIX'])
+app.register_blueprint(subs, url_prefix='/{}'.format(config.site.sub_prefix))
 
 app.config['WEBPACK_MANIFEST_PATH'] = 'manifest.json'
 if app.config['TESTING']:
@@ -61,11 +60,9 @@ if app.config['TESTING']:
     logging.getLogger("engineio.server").setLevel(logging.WARNING)
     logging.getLogger("socketio.server").setLevel(logging.WARNING)
 
-
-
 webpack.init_app(app)
 oauth.init_app(app)
-socketio.init_app(app, message_queue=app.config['SOCKETIO_REDIS_URL'])
+socketio.init_app(app, message_queue=config.app.redis_url)
 caching.cache.init_app(app)
 
 login_manager = LoginManager(app)
@@ -138,7 +135,7 @@ def utility_processor():
             'csubform': CreateSubForm(), 'markdown': misc.our_markdown,
             'commentform': PostComment(), 'dummyform': DummyForm(),
             'delpostform': DeletePost(), 'hostname': socket.gethostname(),
-            'config': app.config, 'form': forms, 'datetime': datetime,
+            'config': config, 'form': forms, 'datetime': datetime,
             'func': misc, 'time': time, 'conf': app.config}
 
 
@@ -989,7 +986,7 @@ def register():
             except User.DoesNotExist:
                 pass
 
-        if getattr(config, 'ENABLE_SECURITY_QUESTIONS', False):
+        if config.site.enable_security_question:
             if form.securityanswer.data.lower() != session['sa'].lower():
                 return render_template('register.html', rform=form, error="Incorrect answer for security question.")
 
@@ -1055,7 +1052,7 @@ def login():
     if request.args.get('service'):
         # CAS login. Verify that we trust the initiator.
         url = urlparse(request.args.get('service'))
-        if url.netloc not in getattr(config, 'CAS_AUTHORIZED_HOSTS', []):
+        if url.netloc not in config.site.cas_authorized_hosts:
             abort(403)
         
         if current_user.is_authenticated:

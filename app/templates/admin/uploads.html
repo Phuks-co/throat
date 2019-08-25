@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}Uploads | {{config.LEMA}}{% endblock %}
+{% block title %}Uploads | {{config.site.lema}}{% endblock %}
 
 {% block sidebar %}
 {{ super() }}
@@ -20,7 +20,7 @@
         <div class="uploaditem">
           {% if item.thumbnail != '' %}
             <div class="uploadthumb">
-              <img src="{{config.THUMBNAIL_HOST}}{{item.thumbnail}}"/>
+              <img src="{{config.storage.thumbnails.url}}{{item.thumbnail}}"/>
             </div>
           {% else %}
             <div class="uploadthumb">
@@ -29,7 +29,7 @@
           {% endif %}
           <div class="uploadlinks">
             <div class="uploadlink"><a href="{{url_for('view_post_inbox', pid=item.pid)}}">View Post</a></div>
-            <div class="uploadlink"><a href="{{config.STORAGE_HOST}}{{item.fileid}}">Direct Link</a></div>
+            <div class="uploadlink"><a href="{{config.storage.uploads.url}}{{item.fileid}}">Direct Link</a></div>
           </div>
         </div>
       {% endfor %}

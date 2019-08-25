@@ -2,9 +2,9 @@
 import __fix
 import argparse
 import sys
-import config
-config.TESTING = False
+
 from app import app
+from peewee import fn
 from app.models import User, Client, Grant, Message, SiteLog, SiteMetadata, Sub, \
     SubFlair, SubLog, SubMetadata, SubPost, SubPostComment, \
     SubPostCommentVote, SubPostMetadata, SubPostVote, SubStylesheet, \
