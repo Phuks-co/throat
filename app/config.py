@@ -17,6 +17,8 @@ cfg_defaults = { # key => default value
             "changelog_sub": None,
             "btc_address": None,
             "xmr_address": None,
+
+            "title_edit_timeout": 300
         },
         "cache": {
             "type": "null"

@@ -107,7 +107,7 @@
             @if post['ptype'] != 1:
               <li><a class="edit-post" data-pid="@{post['pid']!!s}">edit</a></li>
             @end
-            @if (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(seconds=300):
+            @if (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(seconds=config.site.title_edit_timeout):
               <li><a class="edit-title" data-pid="@{post['pid']!!s}">edit title</a></li>
             @end
           @end

@@ -1266,7 +1266,7 @@ def edit_title():
         if current_user.is_subban(sub):
             return jsonify(status='error', error='You are banned on this sub.')
 
-        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(seconds=300):
+        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(seconds=config.site.title_edit_timeout):
             return jsonify(status="error", error="You cannot edit the post title anymore")
 
         if post.uid.uid != current_user.uid:

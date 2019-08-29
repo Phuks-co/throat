@@ -18,6 +18,10 @@ site:
   # (by default it's only admins and users authorized through a metadata key)
   allow_uploads: False
 
+  # Amount of time in seconds the post author can edit a post's title after the post
+  # was created. Set to zero to disable title editing (default is 5 minutes)
+  title_edit_timeout: 300
+
 app:
   # URL to a working redis server.
   # Used for websockets and caching (if enabled)
