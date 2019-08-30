@@ -368,7 +368,8 @@ def getSub(name):
         return jsonify(status="error", error="Sub does not exist")
     
     subdata = misc.getSubData(sub.sid)
-    print(subdata)
+    submods = misc.getSubMods(sub.sid)
+    
     return jsonify(status="ok", sub={
         'name': sub.name,
         'title': sub.title,
@@ -382,9 +383,10 @@ def getSub(name):
         'nsfw': True if subdata.get('nsfw') == '1' else False,
         'user_can_flair': True if subdata.get('ucf') == '1' else False,
         'video_mode': True if subdata.get('videomode') == '1' else False,
-        'creator': subdata['creator']['name']
-        #'owner': subdata['owners']['owner'],
-        #'mods': [x['name'] for x in subdata['mods']]
+        'creator': subdata['creator']['name'],
+        'owners': [submods['owners'][x] for x in submods['owners']],
+        'mods': [submods['mods'][x] for x in submods['mods']],
+        'janitors': [submods['janitors'][x] for x in submods['janitors']]
     })
 
 
