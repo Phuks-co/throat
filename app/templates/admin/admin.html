@@ -83,7 +83,7 @@
         </div>
       </div>
     </div>
-    {% if config.site.enable_security_questions %}
+    {% if config.site.enable_security_question %}
       <hr>
       <h2>Security questions</h2>
       <form  method="POST" style="margin-top: 1em" data-reload="true" action="{{url_for('do.create_question')}}" class="pure-form pure-form-aligned ajaxform">
