@@ -35,8 +35,8 @@
     <link rel="stylesheet" type="text/css" href="@{asset_url_for('main.css') }">
   </head>
 
-<body class="@{(conf.get('ENABLE_TOTP', False) and current_user.admin) and 'body_admin' or ''} @{(request.cookies.get( "dayNight")=="dank") and 'dark dank' or ''} @{(request.cookies.get( "dayNight")=="dark") and 'dark' or ''}">
-  @if conf.get('ENABLE_TOTP', False) and current_user.admin:
+<body class="@{(config.site.enable_totp and current_user.admin) and 'body_admin' or ''} @{(request.cookies.get( "dayNight")=="dank") and 'dark dank' or ''} @{(request.cookies.get( "dayNight")=="dark") and 'dark' or ''}">
+  @if config.site.enable_totp and current_user.admin:
   <div class="admin_alert">Admin mode is currently enabled.
     <form method="POST" action="/admin/logout" id="adminlogout">
       @{ form.LogOutForm().csrf_token() }
