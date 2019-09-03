@@ -995,7 +995,7 @@ def upload_file(max_size=16580608):
 
     f_name = str(uuid.uuid5(FILE_NAMESPACE, md5.hexdigest())) + extension
     ufile.seek(0)
-    fpath = os.path.join(config.storage.path, f_name)
+    fpath = os.path.join(config.storage.uploads.path, f_name)
     if not os.path.isfile(fpath):
         ufile.save(fpath)
         fsize = os.stat(fpath).st_size
