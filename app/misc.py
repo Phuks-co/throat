@@ -455,14 +455,13 @@ def sendMail(to, subject, content):
     """ Sends a mail through sendgrid """
     sg = sendgrid.SendGridAPIClient(api_key=config.sendgrid.api_key)
 
-    from_email = sendgrid.Email(config.sendgrid.default_from)
-    to_email = sendgrid.Email(to)
-    content = sendgrid.helpers.mail.Content('text/html', content)
+    mail = sendgrid.helpers.mail.Mail(
+        from_email=config.sendgrid.default_from,
+        to_emails=to,
+        subject=subject,
+        html_content=content)
 
-    mail = sendgrid.helpers.mail.Mail(from_email, subject, to_email,
-                                      content)
-
-    sg.client.mail.send.post(request_body=mail.get())
+    sg.send(mail)
 
 
 # TODO: Make all these functions one.
