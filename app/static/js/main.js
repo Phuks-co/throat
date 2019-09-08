@@ -16,6 +16,7 @@ import u from './Util';
 import Konami from './ext/konami';
 import Sortable from 'sortablejs';
 import flatpickr from "flatpickr";
+import Tingle from 'tingle.js';
 
 window.Sortable = Sortable;
 require('../css/main.css');
@@ -32,6 +33,52 @@ var socket = require('./Socket');
 
 
 function vote(obj, how, comment){
+  // Check if we're logged in first
+  if(!document.getElementById('logout')){
+    // Show popover
+    var modal = new Tingle.modal({
+    });
+  
+    // set content
+    modal.setContent('<h1>Log in or register to continue</h1>\
+    <div class="pure-g"> \
+      <div class="pure-u-1-2">\
+        <h3> Log in </h3> \
+        <form method="POST" action="/login?next="' + encodeURI(window.location.pathname) + ' class="pure-form pure-form-aligned">\
+          <input type="hidden" name="csrf_token" value="' + document.getElementById('csrf_token').value + '"/> \
+          <fieldset> \
+            <div class="pure-control-group"> \
+              <label for="username">Username</label> \
+              <input id="username" name="username" pattern="[a-zA-Z0-9_-]+" placeholder="Username" required="" title="Alphanumeric characters plus \'-\' and \'_\'" type="text"> \
+            </div> \
+            <div class="pure-control-group"> \
+              <label for="password">Password</label>\
+              <input id="password" name="password" placeholder="Password" required type="password"> \
+            </div> \
+            <a href="/recover">Forgot your password?</a>\
+            <div class="pure-controls">\
+              <label for="remember" class="pure-checkbox">\
+              <input id="remember" name="remember" type="checkbox" value="y"> Remember me \
+              </label> \
+              <button type="submit" class="pure-button pure-button-primary">Log in</button> \
+            </div> \
+          </fieldset> \
+        </form> \
+      </div> \
+      <div class="pure-u-1-2"> \
+      <h3>Register</h3> \
+      <p>Don\'t have an account?</p> \
+      <a class="pure-button" href="/register">Register now!</a>\
+      </div> \
+    </div> \
+    ');
+  
+  
+    // open modal
+    modal.open();
+  
+    return;
+  }
   if(comment){
     var kl = 'votecomment';
     var unid = obj.parentNode.parentNode.parentNode.getAttribute('data-cid');
