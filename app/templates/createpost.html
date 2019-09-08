@@ -66,7 +66,7 @@
             {% if current_user.canupload %}
             <div class="pure-control-group lncont pure-u-sm-20-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
               <label for="files">File</label>
-              <input type="file" name="files" placeholder="Only images allowed" />
+              <input type="file" name="files" data-max="{{config.app.max_content_length}}" placeholder="Only images allowed" />
             </div>
             {% endif %}
           {% if txtpostform.ptype.data == "poll" %}

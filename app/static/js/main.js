@@ -94,6 +94,24 @@ u.addEventForChild(document, 'mousedown', '.upvote,.downvote,.c-upvote,.c-downvo
 
 
 u.ready(function() {
+  u.addEventForChild(document, 'change', 'input[type="file"]', function(e, target){
+    if (!window.FileReader) return;
+
+    var input = target
+    if (!input.files) {
+        return;
+    }
+    else if (!input.files[0]) {
+        return;
+    }else {
+        var file = input.files[0];
+        var max = target.getAttribute('data-max');
+        if( max && file.size > max){
+          alert("File size exceeds maximum allowed (" + max / 1024 / 1024 + "MB)")
+          target.value = '';
+        }
+    }
+  })
   // initialize all date pickers
   flatpickr(".date-picker-future", {
     enableTime: true,

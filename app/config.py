@@ -42,7 +42,8 @@ cfg_defaults = { # key => default value
             "secret_key": 'yS\x1c\x88\xd7\xb5\xb0\xdc\t:kO\r\xf0D{"Y\x1f\xbc^\xad',
             "debug": True,
             "testing": True,
-            "wtf_csrf_time_limit": None
+            "wtf_csrf_time_limit": None,
+            "max_content_length": 10485760 # 10mb
         }
 
     }
