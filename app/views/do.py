@@ -128,7 +128,6 @@ def edit_user():
         usr = User.get(User.uid == current_user.uid)
         usr.email = form.email.data
         usr.save()
-        current_user.update_prefs('exlinks', form.external_links.data)
         current_user.update_prefs('labrat', form.experimental.data)
         current_user.update_prefs('nostyles', form.disable_sub_style.data)
         current_user.update_prefs('nsfw', form.show_nsfw.data)

@@ -526,13 +526,12 @@ def edit_subs():
 @app.route("/settings")
 @login_required
 def edit_user():
-    exlink = 'exlinks' in current_user.prefs
     styles = 'nostyles' in current_user.prefs
     nsfw = 'nsfw' in current_user.prefs
     exp = 'labrat' in current_user.prefs
     noscroll = 'noscroll' in current_user.prefs
     nochat = 'nochat' in current_user.prefs
-    form = EditUserForm(external_links=exlink, show_nsfw=nsfw,
+    form = EditUserForm(show_nsfw=nsfw,
                         disable_sub_style=styles, experimental=exp,
                         noscroll=noscroll, nochat=nochat, subtheme=current_user.subtheme)
     return engine.get_template('user/settings/preferences.html').render({'edituserform': form})

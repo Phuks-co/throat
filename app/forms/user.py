@@ -112,7 +112,6 @@ class EditUserForm(FlaskForm):
     email = EmailField('Email Address (optional)',
                        validators=[OptionalIfFieldIsEmpty('email'),
                                    Email("Invalid email address.")])
-    external_links = BooleanField('Open external links in a new window')
     disable_sub_style = BooleanField('Disable custom sub styles')
     show_nsfw = BooleanField('Show NSFW content')
 
