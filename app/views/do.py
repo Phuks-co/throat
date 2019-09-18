@@ -1286,7 +1286,7 @@ def save_pm(mid):
     """ Save/Archive PM """
     try:
         message = Message.get(Message.mid == mid)
-        if message.receivedby != current_user.uid:
+        if message.receivedby_id != current_user.uid:
             return jsonify(status='error', error="Message does not exist")
         
         message.mtype = 9
