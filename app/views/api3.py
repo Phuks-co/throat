@@ -10,7 +10,7 @@ from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
 from .. import misc
 from ..socketio import socketio
 from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote, SubSubscriber
-from ..models import SiteMetadata
+from ..models import SiteMetadata, UserMetadata
 from ..caching import cache
 
 API = Blueprint('apiv3', __name__)
@@ -596,4 +596,55 @@ def edit_comment():
     comment.lastedit = datetime.datetime.utcnow()
     comment.save()
 
+    return jsonify()
+
+
+@API.route('/user/settings', methods=['GET'])
+@jwt_required
+def get_settings():
+    """ Returns account settings """
+    uid = get_jwt_identity()
+    prefs = UserMetadata.select().where(UserMetadata.uid == uid)
+    prefs = prefs.where(UserMetadata.key << ('labrat', 'nostyles', 'nsfw', 'nochat'))
+    prefs = {x.key: x.value for x in prefs}
+    return jsonify(settings={
+        "labrat": True if prefs.get('labrat', False) == '1' else False,
+        "nostyles": True if prefs.get('nostyles', False) == '1' else False,
+        "nsfw": True if prefs.get('nsfw', False) == '1' else False,
+        "nochat": True if prefs.get('nochat', False) == '1' else False,
+    })
+
+
+@API.route('/user/settings', methods=['POST'])
+@jwt_required
+def set_settings():
+    """ Changes accounts settings (excl. password/email)
+    Required post parameters: settings (dict of setting options and values).
+    Accepted settings options:
+    labrat (bool), nostyles (bool), shownsfw (bool), nochat (bools)
+    """
+    uid = get_jwt_identity()
+    if not request.is_json:
+        return jsonify(msg="Missing JSON in request"), 400
+
+    settings = request.json.get('settings', None)
+    if not settings:
+        return jsonify(msg="Missing parameters"), 400
+     
+    if [x for x in settings.keys() if x not in ['labrat', 'nostyles', 'nsfw', 'nochat']]:
+        return jsonify(msg="Invalid setting options sent"), 400
+    
+    # Apply settings
+    qrys = []
+    for sett in settings:
+        value = settings[sett]
+        if sett in ['labrat', 'nostyles', 'nsfw', 'nochat']:
+            if not isinstance(settings[sett], bool):
+                return jsonify(msg="Invalid type for setting"), 400
+            value = '1' if value else '0'
+        
+        
+        qrys.append(UserMetadata.update(value=value).where((UserMetadata.key == sett) & (UserMetadata.uid == uid)))
+
+    [x.execute() for x in qrys]
     return jsonify()
