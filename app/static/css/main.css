@@ -1385,7 +1385,7 @@ form#msg-form {
   cursor: pointer;
 }
 
-.highlight{
+.comments article.comment.highlight{
   background-color: rgba(244, 194, 10, 0.35);
 }
 

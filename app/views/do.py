@@ -865,9 +865,16 @@ def create_comment(pid):
 
         # 6 - Process mentions
         misc.workWithMentions(form.comment.data, to, post, sub, cid=comment.cid)
+        renderedComment = engine.get_template('sub/postcomments.html').render({
+            'post': misc.getSinglePost(post.pid),
+            'comments': misc.get_comment_tree([{'cid': str(comment.cid), 'parentcid': None}], uid=current_user.uid),
+            'subInfo': misc.getSubData(sub.sid),
+            'subMods': misc.getSubMods(sub.sid),
+            'highlight': str(comment.cid)
+        })
 
-        return json.dumps({'status': 'ok', 'addr': url_for('sub.view_perm', sub=sub.name,
-                                                           pid=pid, cid=comment.cid)})
+        return json.dumps({'status': 'ok', 'addr': url_for('sub.view_perm', sub=sub.name, pid=pid, cid=comment.cid),
+                           'comment': renderedComment, 'cid': str(comment.cid)})
     return json.dumps({'status': 'error', 'error': get_errors(form)}), 400
 
 

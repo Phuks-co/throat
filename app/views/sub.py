@@ -336,7 +336,7 @@ def view_post(sub, pid, comments=False, highlight=None):
     return engine.get_template('sub/post.html').render({'post': post, 'sub': sub, 'subInfo': subInfo,
                                                         'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,
                                                         'commentform': PostComment(), 'comments': comments,
-                                                        'subMods': misc.getSubMods(sub['sid'])})
+                                                        'subMods': misc.getSubMods(sub['sid']), 'highlight': highlight})
 
 
 @sub.route("/<sub>/<pid>/<cid>")

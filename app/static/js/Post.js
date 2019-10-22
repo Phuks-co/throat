@@ -477,6 +477,7 @@ u.addEventForChild(document, 'click', '.reply-comment', function(e, qelem){
 });
 
 u.addEventForChild(document, 'click', '.btn-postcomment', function(e, qelem){
+  e.preventDefault();
   var cid = qelem.getAttribute('data-cid');
   var pid = qelem.getAttribute('data-pid');
   var content = document.querySelector('#rcomm-' + cid + ' textarea').value;
@@ -490,7 +491,30 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function(e, qelem){
       qelem.removeAttribute('disabled');
     } else {
       qelem.innerHTML = 'Saved.';
-      document.location = data.addr;
+      var cmtcount = document.getElementById('cmnts');
+      window.sending = false;
+      if(cmtcount.getElementsByTagName('a').length === 0){
+        d.remove(); // TODO: Just create the <a> tag
+      }else{
+        var va = cmtcount.getElementsByTagName('a')[0];
+        va.innerText = (parseInt(va.innerText.split(' ')[0]) + 1) + " comments";
+        if(va.pathname != window.location.pathname && cid == '0'){
+          document.location = data.addr;
+        }
+      }
+      
+      var div = document.createElement('div');
+      div.innerHTML = data.comment.trim();
+
+      if(cid == '0'){
+        qelem.removeAttribute('disabled');
+        document.querySelector('#rcomm-' + cid + ' textarea').value = '';
+        cmtcount.parentNode.insertBefore(div.firstChild, cmtcount.nextSibling);
+        //document.getElementById(data.cid).scrollIntoView();
+      }else{
+        document.querySelector('.reply-comment[data-to="' + cid + '"] s').click();
+        document.getElementById('child-' + cid).prepend(div.firstChild)
+      }
     }
   }, function(){
     qelem.parentNode.querySelector('.error').style.display = 'block';

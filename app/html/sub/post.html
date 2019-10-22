@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods)
+@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods, highlight)
 @import "sub/postcomments.html" as pcomm
 @import "sub/postpoll.html" as polls
 
@@ -185,7 +185,7 @@
 
 
   @if current_user.is_authenticated and post['deleted'] == 0:
-  <form data-reset="true" data-redir="true" action="@{url_for('do.create_comment', pid=post['pid'])}" class="comment-form ajaxform static pure-form">
+  <form data-reset="true" data-redir="true" action="@{url_for('do.create_comment', pid=post['pid'])}" id="rcomm-0" class="comment-form ajaxform static pure-form">
     @{commentform.csrf_token()}
     @{commentform.post(value=post['pid'])}
     @{commentform.parent(value='0')}
@@ -193,7 +193,7 @@
       @{commentform.comment(id="comment2", placeholder="Write your comment here. Styling with Markdown format is supported.", rows="6")}
     </div>
     <div class="div-error error alertbox"></div>
-    <button type="submit" class="pure-button pure-button-primary">Submit comment</button>
+    <button type="submit" class="pure-button pure-button-primary btn-postcomment" data-cid="0" data-pid="@{post['pid']!!s}">Submit comment</button>
     <button data-pvid="ncme" class="pure-button btn-preview">Preview</button>
     <div class="cmpreview canclose" style="display:none;">
       <h4>Comment preview</h4>
@@ -208,7 +208,7 @@
   @else:
     <div class="comments">
       <h2 id="cmnts"><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{post['comments']!!s} comments</a></h2>
-      @pcomm.renderComments(post, subInfo, subMods, comments)
+      @pcomm.renderComments(post, subInfo, subMods, comments, highlight)
     </div>
   @end
 

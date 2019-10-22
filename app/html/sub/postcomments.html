@@ -1,10 +1,10 @@
-@require(post, comments, subInfo, subMods)
+@require(post, comments, subInfo, subMods, highlight)
 @def renderComments(post, subInfo, subMods, comments, highlight=''):
   @#ignore
   @for comment in comments:
     @if comment['cid']:
-      <article id="@{comment['cid']}" data-cid="@{comment['cid']}" class="@{(comment.get('hl')) and 'active' or ''} text-post no-padding comment">
-        <div class="commentrow @{(comment['cid'] == highlight) and 'highlight' or ''}" id="comment-@{comment['cid']}">
+      <article id="@{comment['cid']}" data-cid="@{comment['cid']}" class="commentrow @{(comment['cid'] == highlight) and 'highlight ' or ''}@{(comment.get('hl')) and 'active' or ''} text-post no-padding comment">
+        <div id="comment-@{comment['cid']}">
           <div class="pull left votecomment" @{(comment['status'] == 1) and 'style="display:none;"' or ''}>
             @if comment['userstatus'] != 10:
               <div title="Upvote" class="c-upvote @{(comment.get('positive') == True) and 'upvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="upvote"></div>
@@ -83,4 +83,4 @@
   @end
 @end
 
-@renderComments(post, subInfo, subMods, comments)
+@renderComments(post, subInfo, subMods, comments, highlight)
