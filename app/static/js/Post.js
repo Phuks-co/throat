@@ -494,7 +494,13 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function(e, qelem){
       var cmtcount = document.getElementById('cmnts');
       window.sending = false;
       if(cmtcount.getElementsByTagName('a').length === 0){
-        d.remove(); // TODO: Just create the <a> tag
+        var a = document.createElement('a')
+        a.href = '/p/' + pid;
+        a.innerText = "1 comments";
+        a.id = 'cmnts';
+        cmtcount.innerText = '';
+        cmtcount.appendChild(a);
+        
       }else{
         var va = cmtcount.getElementsByTagName('a')[0];
         va.innerText = (parseInt(va.innerText.split(' ')[0]) + 1) + " comments";
