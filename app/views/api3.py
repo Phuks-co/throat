@@ -234,7 +234,6 @@ def get_post_list(target, sort, page):
     base_query = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                 SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
                                 SubPost.comments, SubPost.ptype, User.status.alias('userstatus'), User.uid, SubPost.upvotes, *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes]))
-
     if uid:
         base_query = base_query.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == uid))).switch(SubPost)
         subs = SubSubscriber.select().where(SubSubscriber.uid == uid)
@@ -280,6 +279,7 @@ def get_post_list(target, sort, page):
                 sort = 'top'
         base_query = base_query.where(Sub.sid == sub.sid)
 
+    base_query = base_query.where(SubPost.deleted == 0)
     posts = misc.getPostList(base_query, sort, page).dicts()
 
     cnt = base_query.count() - page * 25
