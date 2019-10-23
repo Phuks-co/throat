@@ -1799,21 +1799,21 @@ def get_sibling(pid, cid, lim):
 
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
     if not comments.count():
-        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}})
+        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'hightlight': ''})
 
     if lim:
         comment_tree = misc.get_comment_tree(comments, cid if cid != '0' else None, lim, provide_context=False, uid=current_user.uid)
     elif cid != '0':
         comment_tree = misc.get_comment_tree(comments, cid, provide_context=False, uid=current_user.uid)
     else:
-        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}})
-    
+        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'hightlight': ''})
+
     if len(comment_tree) > 0 and cid != '0':
         comment_tree = comment_tree[0].get('children', [])
     subInfo = misc.getSubData(post['sid'])
     subMods = misc.getSubMods(post['sid'])
 
-    return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': comment_tree, 'subInfo': subInfo, 'subMods': subMods})
+    return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': comment_tree, 'subInfo': subInfo, 'subMods': subMods, 'hightlight': ''})
 
 
 @do.route('/do/preview', methods=['POST'])
