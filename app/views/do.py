@@ -1007,9 +1007,9 @@ def inv_mod(sub):
                 return jsonify(status='error', error=['Invalid power level'])
 
             moddedCount = SubMod.select().where((SubMod.uid == user.uid) & (1 <= SubMod.power_level <= 2) & (SubMod.invite == False)).count()
-            if moddedCount >= 15:
+            if moddedCount >= 20:
                 # TODO: Adjust by level
-                return jsonify(status='error', error=["User can't mod more than 15 subs"])
+                return jsonify(status='error', error=["User can't mod more than 20 subs"])
             misc.create_message(mfrom=current_user.uid,
                                 to=user.uid,
                                 subject='You have been invited to mod a sub.',
@@ -1163,9 +1163,9 @@ def accept_modinv(sub, user):
             return jsonify(status='error', error='You have not been invited to mod this sub')
 
         moddedCount = SubMod.select().where((SubMod.uid == user.uid) & (1 <= SubMod.power_level <= 2) & (SubMod.invite == False)).count()
-        if moddedCount >= 15:
-            return jsonify(status='error', error=["You can't mod more than 15 subs"])
-        
+        if moddedCount >= 20:
+            return jsonify(status='error', error=["You can't mod more than 20 subs"])
+
         modi.invite = False
         modi.save()
         SubMetadata.delete().where((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'xmod2') & (SubMetadata.value == user.uid)).execute()
