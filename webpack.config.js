@@ -1,13 +1,13 @@
 var path = require('path');
 
 var webpack = require('webpack');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 var ManifestRevisionPlugin = require('manifest-revision-webpack-plugin');
 //var BundleAnalyzerPlugin = 	require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const externalCSS = new ExtractTextPlugin('[name].[contenthash].css');
 
 module.exports = {
+  mode: 'production',
   entry: {
     main: ['./app/static/js/main.js'],
   },
@@ -31,7 +31,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        loader: externalCSS.extract({ fallback: 'style-loader', use: 'css-loader' })
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
         test: /\.svg$/,
@@ -44,8 +44,7 @@ module.exports = {
   },
   plugins: [
 //    new BundleAnalyzerPlugin(),
-    new webpack.optimize.CommonsChunkPlugin("main"),
-    externalCSS,
+    new MiniCssExtractPlugin(),
     new ManifestRevisionPlugin('./app/manifest.json', {
       rootAssetPath: './app/static/gen',
       ignorePaths: ['/static']
