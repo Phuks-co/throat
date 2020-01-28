@@ -704,7 +704,7 @@ def create_post():
             except SubPost.DoesNotExist:
                 pass
             
-            if misc.is_domain_banned(form.link.data):
+            if misc.is_domain_banned(form.link.data.lower()):
                 return render_template('createpost.html', txtpostform=form, error="This domain is banned"), 400
 
             img = misc.get_thumbnail(form.link.data)
