@@ -622,7 +622,7 @@ def grab_title():
     except (requests.exceptions.RequestException, ValueError):
         return jsonify(status='error', error=['Couldn\'t get title'])
 
-    og = BeautifulSoup(req[1], 'lxml')
+    og = BeautifulSoup(req[1], 'lxml', from_encoding='utf-8')
     try:
         title = og('title')[0].text
     except (OSError, ValueError, IndexError):
