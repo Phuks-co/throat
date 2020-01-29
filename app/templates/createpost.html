@@ -89,7 +89,7 @@
           {% if not sub or (sub and not sub.nsfw) %}
             <div class="pure-control-group">
               <label for="nsfw">{{txtpostform.nsfw.label.text}}</label>
-              {{txtpostform.nsfw()}}
+              {{txtpostform.nsfw(class="skipconf")}}
             </div>
           {% endif %}
           {% if func.get_user_level(current_user.uid)[0] <= 4 %}

@@ -442,11 +442,13 @@ new Konami(function() {
 
 window.onbeforeunload = function (e) {
   var flag = false;
+  
   u.each('.exalert', function(e){
     if(e.value !== ''){
       flag = true;
     }
   })
+  if(e.target.activeElement.tagName == 'INPUT') flag = false;
   if(flag && !window.sending){
     return 'Sure?';
   }
