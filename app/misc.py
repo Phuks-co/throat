@@ -406,6 +406,8 @@ def is_sub_banned(sub, user=None, uid=None):
     """ Returns True if 'user' is banned 'sub' """
     if isinstance(sub, dict):
         sid = sub['sid']
+    elif isinstance(sub, str) or isinstance(sub, int):
+        sid = sub
     else:
         sid = sub.sid
     if not uid:

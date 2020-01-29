@@ -54,7 +54,9 @@
             <ul class="bottombar links" @{(comment['status'] == 1) and 'style="display:none;"' or ''}>
               <li><a href="@{url_for('sub.view_perm', sub=post['sub'], cid=comment['cid'], pid=post['pid'])}">permalink</a></li>
               @if current_user.is_authenticated and not post['deleted']:
-                <li><a class="reply-comment" data-pid="@{comment['pid']!!s}" data-to="@{comment['cid']}">reply</a></li>
+                @if not current_user.is_subban(post['sid']):
+                  <li><a class="reply-comment" data-pid="@{comment['pid']!!s}" data-to="@{comment['cid']}">reply</a></li>
+                @end
                 @if comment['uid'] == current_user.uid and not comment['status'] == 1:
                   <li><a class="edit-comment" data-cid="@{comment['cid']}">edit</a></li>
                 @end

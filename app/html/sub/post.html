@@ -184,7 +184,7 @@
   @end
 
 
-  @if current_user.is_authenticated and post['deleted'] == 0:
+  @if current_user.is_authenticated and post['deleted'] == 0 and not current_user.is_subban(sub):
   <form data-reset="true" data-redir="true" action="@{url_for('do.create_comment', pid=post['pid'])}" id="rcomm-0" class="comment-form ajaxform static pure-form">
     @{commentform.csrf_token()}
     @{commentform.post(value=post['pid'])}
