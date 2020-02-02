@@ -745,7 +745,7 @@ def admin_area():
                            posts=posts, ups=ups, downs=downs, users=users,
                            createuserbadgeform=CreateUserBadgeForm(),
                            comms=comms,
-                           useinvitecodeform=invite, enable_posting=ep)
+                           useinvitecodeform=invite, enable_posting=(ep == 'True'))
 
 
 @app.route("/admin/users", defaults={'page': 1})
