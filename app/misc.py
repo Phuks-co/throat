@@ -444,6 +444,7 @@ def getDefaultSubs_list(ext=False):
     return defaults
 
 
+@cache.memoize(600)
 def enableInviteCode():
     """ Returns true if invite code is required to register """
     try:
@@ -451,6 +452,23 @@ def enableInviteCode():
         return False if xm.value == '0' else True
     except SiteMetadata.DoesNotExist:
         return False
+
+@cache.memoize(30)
+def getMaxCodes(uid):
+    """ Returns how many invite codes a user can create """
+    try:
+        amt = UserMetadata.get((UserMetadata.key == 'invite_max') & (UserMetadata.uid == uid))
+        return amt.value
+    except UserMetadata.DoesNotExist:
+        try:
+            # If there's no setting for the user, use the global setting, but checkk the user's level first
+            minlevel = SiteMetadata.get(SiteMetadata.key == 'invite_level')
+            if get_user_level(uid)[0] >= int(minlevel.value):
+                amt = SiteMetadata.get(SiteMetadata.key == 'invite_max')
+                return amt.value
+        except SiteMetadata.DoesNotExist:
+            return 0
+    return 0
 
 
 def sendMail(to, subject, content):
@@ -1288,6 +1306,8 @@ def create_captcha():
 
 
 def validate_captcha(token, response):
+    if config.app.testing:
+        return True
     cap = rconn.get('cap-' + token)
     if cap:
         response = response.replace(' ', '').replace('0', 'o')

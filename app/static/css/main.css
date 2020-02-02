@@ -1939,3 +1939,8 @@ a[href="#toodamncool"]{
 #ban-user-form .date-picker-future.input{
   display: none;
 }
+
+.invitecodes .expired{
+  color: gray;
+  text-decoration: line-through;
+}

@@ -50,19 +50,25 @@
     </div>
     <hr>
     <div class="admin section invitecode">
-      <div class="col-12"><h2>Invite Code to register: {% if func.enableInviteCode() %}Enabled{% else %}Disabled{% endif %}</h2>
-      </div>
       <div class="col-12 admin-page-form">
         <div>
-          <form id="useinvitecode" class="nice-form" method="POST" action="{{url_for('do.use_invite_code')}}" data-redir="true" class="ajaxform">
+          <form id="useinvitecode" class="ajaxform nice-form pure-form pure-form-aligned" method="POST" action="{{url_for('do.use_invite_code')}}" data-reload="true">
             {{useinvitecodeform.csrf_token}}
-            <div class="col-12"><label>{{useinvitecodeform.enableinvitecode(checked=func.enableInviteCode())}} {{useinvitecodeform.enableinvitecode.label.text}}</label></div>
-            <div class="col-12">{{useinvitecodeform.invitecode(placeholder=useinvitecodeform.invitecode.label.text)}}</div>
-            <div><button type="submit" class="btn btn-blue" id="useinvitecodeform-btnsubmit">Save</button></div>
-            <div class="alert div-error">
-              <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-              <p></p>
-            </div>
+            <h2>Invite Code to register: {% if func.enableInviteCode() %}Enabled{% else %}Disabled{% endif %}</h2>
+            <fieldset>
+                <label for="enableinvitecode" class="pure-checkbox">
+                  {{useinvitecodeform.enableinvitecode(checked=func.enableInviteCode())}} {{useinvitecodeform.enableinvitecode.label.text}}
+                </label>
+                <div class="pure-control-group">
+                    <label for="confirm">{{useinvitecodeform.minlevel.label.text}}</label>
+                    {{useinvitecodeform.minlevel(autocomplete="off", required=True)}}
+                </div>
+                <div class="pure-control-group">
+                    <label for="confirm">{{useinvitecodeform.maxcodes.label.text}}</label>
+                    {{useinvitecodeform.maxcodes(autocomplete="off", required=True)}}
+                </div>
+                  <button type="submit" class="pure-button pure-button-primary">Save</button>
+            </fieldset>
           </form>
         </div>
       </div>

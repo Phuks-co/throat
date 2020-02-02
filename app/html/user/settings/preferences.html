@@ -12,6 +12,10 @@
   <a href="@{url_for('view_user_posts', user=current_user.name)}" class="sbm-post pure-button">View posts</a>
   <a href="@{url_for('view_user_comments', user=current_user.name)}" class="sbm-post pure-button">View comments</a>
   <a href="@{url_for('view_user_savedposts', user=current_user.name)}" class="sbm-post pure-button">View saved posts</a>
+  @if func.enableInviteCode():
+    <hr/>
+    <a href="/settings/invite" class="sbm-post pure-button">Invite codes</a>
+  @end
 @end
 
 @def main():

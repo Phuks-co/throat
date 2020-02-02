@@ -10,6 +10,7 @@ import requests
 import magic
 import hashlib
 import os
+import random
 import pyexiv2
 from PIL import Image
 from bs4 import BeautifulSoup
@@ -31,7 +32,7 @@ from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
 from ..misc import cache, sendMail, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata, UserSaved
-from ..models import SubMod, SubBan, SubPostCommentHistory
+from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
 from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport
 from peewee import fn, JOIN
@@ -1472,18 +1473,42 @@ def use_invite_code():
             SiteMetadata.create(key='useinvitecode', value='1' if form.enableinvitecode.data else '0')
 
         try:
-            sm = SiteMetadata.get(SiteMetadata.key == 'invitecode')
-            sm.value = form.invitecode.data
+            sm = SiteMetadata.get(SiteMetadata.key == 'invite_level')
+            sm.value = form.minlevel.data
             sm.save()
         except SiteMetadata.DoesNotExist:
-            SiteMetadata.create(key='invitecode', value=form.invitecode.data)
+            SiteMetadata.create(key='invite_level', value=form.minlevel.data)
+        
+        try:
+            sm = SiteMetadata.get(SiteMetadata.key == 'invite_max')
+            sm.value = form.maxcodes.data
+            sm.save()
+        except SiteMetadata.DoesNotExist:
+            SiteMetadata.create(key='invite_max', value=form.maxcodes.data)
+        
+        cache.delete_memoized(misc.enableInviteCode)
 
         if form.enableinvitecode.data:
             misc.create_sitelog(misc.LOG_TYPE_ENABLE_INVITE, current_user.uid)
         else:
             misc.create_sitelog(misc.LOG_TYPE_DISABLE_INVITE, current_user.uid)
-    return redirect(url_for('admin_area'))
+    return jsonify(status="ok")
 
+
+@do.route("/do/create_invite")
+@login_required
+def invite_codes():
+    if not misc.enableInviteCode():
+        return redirect('/settings')
+    
+    created = InviteCode.select().where(InviteCode.user == current_user.uid).count()
+    maxcodes = int(misc.getMaxCodes(current_user.uid))
+    if (maxcodes - created) <= 0:
+        return redirect('/settings/invite')
+    
+    code = ''.join(random.choice('abcdefghijklmnopqrstuvwxyz0123456789') for _ in range(32))
+    InviteCode.create(user=current_user.uid, code=code, expires=None, max_uses=1)
+    return redirect('/settings/invite')
 
 @do.route("/do/stick/<int:post>", methods=['POST'])
 def toggle_sticky(post):

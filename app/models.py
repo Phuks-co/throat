@@ -500,3 +500,17 @@ class SubBan(BaseModel):
 
     class Meta:
         table_name = "sub_ban"
+
+
+class InviteCode(BaseModel):
+    user = ForeignKeyField(db_column='uid', model=User, field='uid')
+
+    code = CharField(max_length=64)
+
+    created = DateTimeField(default=datetime.datetime.utcnow)
+    expires = DateTimeField(null=True)
+    uses = IntegerField(default=0)
+    max_uses = IntegerField()
+
+    class Meta:
+        table_name = "invite_code"

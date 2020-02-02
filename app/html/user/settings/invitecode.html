@@ -1,0 +1,69 @@
+@extends("shared/layout.html")
+@require(codes, avail)
+@def sidebar():
+  <h3><a href="@{url_for('view_user', user=current_user.name)}" class="sbm-post">@{current_user.name}</a></h3>
+  <hr/>
+
+  <a href="/settings" class="sbm-post pure-button">Preferences</a>
+  <a href="/settings/password" class="sbm-post pure-button">Change password</a>
+  <a href="/settings/delete" class="sbm-post pure-button">Delete account</a>
+
+  <hr/>
+  <a href="@{url_for('view_user_posts', user=current_user.name)}" class="sbm-post pure-button">View posts</a>
+  <a href="@{url_for('view_user_comments', user=current_user.name)}" class="sbm-post pure-button">View comments</a>
+  <a href="@{url_for('view_user_savedposts', user=current_user.name)}" class="sbm-post pure-button">View saved posts</a>
+  <hr/>
+  <a href="/settings/invite" class="sbm-post pure-button pure-button-primary">Invite codes</a>
+@end
+
+@def main():
+<div id="container">
+  <h1>Invite codes</h1>
+  @if avail > 0:
+    You can create <b>@{avail!!s}</b> invite codes.
+    <a href="/do/create_invite" class="pure-button pure-button-primary">Create new</a>
+  @else:
+    You cannot create invite codes.
+  @end
+  <hr/>
+  <h2>Your invite codes</h2>
+  <table class="invitecodes">
+    <thead>
+      <tr>
+        <th>Created</th>
+        <th>Code</th>
+        <th>Expires</th>
+        <th>Uses</th>
+        <th>Max uses</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for code in codes:
+      <tr class="@{(code.uses >= code.max_uses or (code.expires is None or code.expires < datetime.datetime.utcnow())) and 'expired' or ''}">
+        <td>
+          <time-ago datetime="@{code.created.isoformat()}Z">@{code.created.isoformat()}</time-ago>
+        </td>
+        <td>
+          @{code.code!!e}
+        </td>
+        <td>
+          @if code.expires:
+            <time-until datetime="@{code.expires.isoformat()}Z">@{code.expires.isoformat()}</time-until>\
+          @else:
+            N/A
+          @end
+         
+        </td>
+        <td>
+          @{code.uses!!s}
+        </td>
+        <td>
+          @{code.max_uses!!s}
+        </td>
+      </tr>
+      @end
+    </tbody>
+  </table>
+
+</div>
+@end

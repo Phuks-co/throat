@@ -34,7 +34,7 @@ from .misc import SiteAnon, getDefaultSubs, allowedNames, get_errors, engine
 from .models import db as pdb
 from .models import Sub, SubPost, User, SubMetadata, UserMetadata, SubPostComment
 from .models import SiteLog, SubLog, rconn, UserUploads, UserSaved, Message, SubPostVote
-from .models import SubPostCommentVote, SiteMetadata, SubSubscriber, SubMod
+from .models import SubPostCommentVote, SiteMetadata, SubSubscriber, SubMod, InviteCode
 from .badges import badges
 
 # /!\ FOR DEBUGGING ONLY /!\
@@ -518,6 +518,24 @@ def view_user_comments(user, page):
     return render_template('usercomments.html', user=user, page=page, comments=comments)
 
 
+@app.route("/settings/invite")
+@login_required
+def invite_codes():
+    if not misc.enableInviteCode():
+        return redirect('/settings')
+    
+    codes = InviteCode.select().where(InviteCode.user == current_user.uid)
+    maxcodes = int(misc.getMaxCodes(current_user.uid))
+    created = codes.count()
+    avail = 0
+    if (maxcodes - created) >= 0:
+        avail = maxcodes - created
+    return engine.get_template('user/settings/invitecode.html').render({'codes': codes,
+                                                                        'created': created,
+                                                                        'max': maxcodes,
+                                                                        'avail': avail})
+
+
 @app.route('/settings/subs')
 @login_required
 def edit_subs():
@@ -712,8 +730,9 @@ def admin_area():
     try:
         invite = SiteMetadata.get(SiteMetadata.key == 'useinvitecode')
         if invite.value == '1':
-            code = SiteMetadata.get(SiteMetadata.key == 'invitecode')
-            invite = UseInviteCodeForm(invitecode=code.value)
+            level = SiteMetadata.get(SiteMetadata.key == 'invite_level')
+            maxcodes = SiteMetadata.get(SiteMetadata.key == 'invite_max')
+            invite = UseInviteCodeForm(minlevel=level.value, maxcodes=maxcodes.value)
         else:
             invite = UseInviteCodeForm()
     except SiteMetadata.DoesNotExist:
@@ -990,19 +1009,27 @@ def register():
                 return render_template('register.html', rform=form, error="Incorrect answer for security question.")
 
         # TODO: Rewrite invite code code
-        try:
-            y = SiteMetadata.get(SiteMetadata.key == 'useinvitecode')
-            if y == '1':
-                z = SiteMetadata.get(SiteMetadata.key == 'invitecode').value
-                if z != form.invitecode.data:
+        if misc.enableInviteCode():
+            if not form.invitecode.data:
+                return render_template('register.html', rform=form, error="Invalid invite code.0")
+            # Check if there's a valid invite code in the database
+            try:
+                invcode = InviteCode.get((InviteCode.code == form.invitecode.data) & 
+                                         (InviteCode.expires.is_null() | (InviteCode.expires > datetime.datetime.utcnow())))
+                if invcode.uses >= invcode.max_uses:
                     return render_template('register.html', rform=form, error="Invalid invite code.")
-        except SiteMetadata.DoesNotExist:
-            pass
+            except InviteCode.DoesNotExist:
+                return render_template('register.html', rform=form, error="Invalid invite code.")
+            
+            invcode.uses += 1
+            invcode.save()
 
         password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
 
         user = User.create(uid=str(uuid.uuid4()), name=form.username.data, crypto=1, password=password,
                            email=form.email.data, joindate=datetime.datetime.utcnow())
+        if misc.enableInviteCode():
+            UserMetadata.create(uid=user.uid, key='invitecode', value=form.invitecode.data)
         # defaults
         defaults = getDefaultSubs()
         now = datetime.datetime.utcnow()

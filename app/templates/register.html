@@ -17,7 +17,7 @@
         {% if func.enableInviteCode() %}
         <div class="pure-control-group">
           <label for="invitecode">{{regform.invitecode.label.text}}</label>
-          {{regform.invitecode(autocomplete="off", title="A code is required for new registrations")}}
+          {{regform.invitecode(autocomplete="off", required=True)}}
         </div>
         {%endif%}
         <div class="pure-control-group">
