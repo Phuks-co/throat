@@ -727,16 +727,14 @@ def admin_area():
     ups += SubPostCommentVote.select().where(SubPostCommentVote.positive == 1).count()
     downs += SubPostCommentVote.select().where(SubPostCommentVote.positive == 0).count()
 
+    invite = UseInviteCodeForm()
     try:
-        invite = SiteMetadata.get(SiteMetadata.key == 'useinvitecode')
-        if invite.value == '1':
-            level = SiteMetadata.get(SiteMetadata.key == 'invite_level')
-            maxcodes = SiteMetadata.get(SiteMetadata.key == 'invite_max')
-            invite = UseInviteCodeForm(minlevel=level.value, maxcodes=maxcodes.value)
-        else:
-            invite = UseInviteCodeForm()
+        level = SiteMetadata.get(SiteMetadata.key == 'invite_level')
+        maxcodes = SiteMetadata.get(SiteMetadata.key == 'invite_max')
+        invite.minlevel.data = level.value
+        invite.maxcodes.data = maxcodes.value
     except SiteMetadata.DoesNotExist:
-        invite = UseInviteCodeForm()
+        pass
 
     try:
         ep = SiteMetadata.get(SiteMetadata.key == 'enable_posting').value
