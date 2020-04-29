@@ -29,3 +29,7 @@ flask-jwt-extended
 captcha
 peewee_migrate
 pyyaml
+psycopg2
+email_validator
+Werkzeug==0.16.0
+
