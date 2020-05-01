@@ -24,7 +24,7 @@ We recommend using a virtualenv or Pyenv
 
 ## Chat
 
-If you have any questions, you can reach us on (#throat:phuks.co)[https://chat.phoxy.win/#/login] on Matrix
+If you have any questions, you can reach us on #throat:phuks.co on [Matrix](https://chat.phoxy.win/#/login)
 
 ---
 
