@@ -27,7 +27,6 @@ from .forms import BanDomainForm, ChangePasswordForm, DeleteAccountForm
 from .forms import CreateMulti, EditMulti
 from .forms import UseInviteCodeForm
 from .views import do, api, subs, api3, jwt
-from .views.api import oauth
 from . import misc, forms, caching
 from .socketio import socketio
 from .misc import SiteAnon, getDefaultSubs, allowedNames, get_errors, engine
@@ -61,7 +60,6 @@ if app.config['TESTING']:
     logging.getLogger("socketio.server").setLevel(logging.WARNING)
 
 webpack.init_app(app)
-oauth.init_app(app)
 socketio.init_app(app, message_queue=config.app.redis_url)
 caching.cache.init_app(app)
 

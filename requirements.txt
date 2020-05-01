@@ -8,7 +8,6 @@ peewee>=3.10.0
 Flask-SocketIO>=3.3.2
 Flask-Webpack>=0.1.0
 tinycss2==0.6.1
-werkzeug==0.16.1
 flask-caching
 redis
 requests
@@ -16,8 +15,6 @@ pillow
 pytest
 sendgrid
 bs4
-requests-oauthlib==1.1.0
-flask-oauthlib
 eventlet
 wheezy.template
 wheezy.html
