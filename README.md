@@ -1,6 +1,6 @@
-#throat
+#cekni.to
 
-https://phuks.co/
+https://cekni.to/
 
 A phoxy link and discussion aggregator with snek (python3)
 
