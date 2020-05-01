@@ -1,8 +1,8 @@
 import datetime
 import time
-from flask import Blueprint, redirect, url_for, abort, render_template, request
+from flask import Blueprint, redirect, url_for, abort, render_template, request, Response
 from flask_login import login_required, current_user
-from werkzeug.contrib.atom import AtomFeed
+from feedgen.feed import FeedGenerator
 from peewee import fn, JOIN
 from ..misc import engine
 from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption
@@ -146,15 +146,16 @@ def sub_new_rss(sub):
     except Sub.DoesNotExist:
         abort(404)
 
-    feed = AtomFeed('New posts from ' + sub.name,
-                    title_type='text',
-                    generator=('Throat', 'https://phuks.co', 1),
-                    feed_url=request.url,
-                    url=request.url_root)
-    posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub.sid),
-                             'new', 1).dicts()
+    fg = FeedGenerator()
+    fg.id(request.url)
+    fg.title('New posts from ' + sub.name)
+    fg.link(href=request.url_root, rel='alternate')
+    fg.link(href=request.url, rel='self')
     
-    return misc.populate_feed(feed, posts).get_response()
+    posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub.sid),
+                            'new', 1).dicts()
+
+    return Response(misc.populate_feed(fg, posts).atom_str(pretty=True), mimetype='application/atom+xml')
 
 
 @sub.route("/<sub>/new", defaults={'page': 1})

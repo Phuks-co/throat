@@ -15,7 +15,7 @@ import pyexiv2
 import bcrypt
 import tinycss2
 from captcha.image import ImageCaptcha
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from io import BytesIO
 from PIL import Image
 from bs4 import BeautifulSoup
@@ -1201,12 +1201,14 @@ def populate_feed(feed, posts):
         if post['link']:
             content += '<a href="' + post['link'] + '">[link]</a> '
         content += '<a href="' + url + '">[comments]</a></td></tr></table>'
-        feed.add(post['title'], content,
-                 content_type='html',
-                 author=post['user'],
-                 url=url,
-                 updated=post['posted'] if not post['edited'] else post['edited'],
-                 published=post['posted'])
+        fe = feed.add_entry()
+        fe.id(url)
+        fe.link(href=url)
+        fe.title(post['title'])
+        fe.author({'name': post['user']})
+        fe.content(content, type="html")
+        posted = post['posted'] if not post['edited'] else post['edited']
+        fe.updated(posted.replace(tzinfo=timezone.utc))
 
     return feed
 

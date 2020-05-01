@@ -58,7 +58,7 @@ def login():
     # Identity can be any data that is json serializable
     access_token = create_access_token(identity=user.uid, fresh=True)
     refresh_token = create_refresh_token(identity=user.uid)
-    return jsonify(access_token=access_token, refresh_token=refresh_token), 200
+    return jsonify(access_token=access_token, refresh_token=refresh_token, username=user.name), 200
 
 
 @API.route('/refresh', methods=['POST'])

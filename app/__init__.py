@@ -11,11 +11,11 @@ from urllib.parse import urlparse
 from peewee import SQL, fn, JOIN
 from pyotp import TOTP
 from flask import Flask, render_template, session, redirect, url_for, abort, g
-from flask import request, jsonify
+from flask import request, jsonify, Response
 from flask_login import LoginManager, login_required, current_user, login_user
 from flask_webpack import Webpack
 from wheezy.html.utils import escape_html
-from werkzeug.contrib.atom import AtomFeed
+from feedgen.feed import FeedGenerator
 
 from .config import config
 from .forms import RegistrationForm, LoginForm, LogOutForm
@@ -181,14 +181,14 @@ def home_top(page):
 @app.route("/all/new.rss")
 def all_new_rss():
     """ RSS feed for /all/new """
-    feed = AtomFeed('All new posts',
-                    title_type='text',
-                    generator=('Throat', 'https://phuks.co', 1),
-                    feed_url=request.url,
-                    url=request.url_root)
     posts = misc.getPostList(misc.postListQueryBase(), 'new', 1).dicts()
+    fg = FeedGenerator()
+    fg.id(request.url)
+    fg.title('All new posts')
+    fg.link(href=request.url_root, rel='alternate')
+    fg.link(href=request.url, rel='self')
     
-    return misc.populate_feed(feed, posts).get_response()
+    return Response(misc.populate_feed(fg, posts).atom_str(pretty=True), mimetype='application/atom+xml')
 
 
 @app.route("/all/new", defaults={'page': 1})
