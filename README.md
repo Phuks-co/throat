@@ -1,32 +1,30 @@
-#throat
+# Throat
 
 https://phuks.co/
 
 A phoxy link and discussion aggregator with snek (python3)
 
-##Dependencies:
+## Dependencies:
 
- - MySQL/MariaDB or any compatible server.
+ - A database server, MySQL, MariaDB and Postres have been tested. Sqlite should work for messing locally
  - Redis
- - Python >= 3.5 (3.7 not supported yet)
+ - Python >= 3.5
  - A recent node/npm
-
-### On Ubuntu/Debian
- - apt-get install redis-server python3 python3-pip libmagic-dev mysql-server mysql-client libmysqlclient-dev libexiv2-dev libssl1.0-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev libffi-dev libboost-python-dev
+ - libmagic and libexiv2
 
 ## Setup:
 
-Jet the javascript dependencies and build the bundles with
- - $ npm install
- - $ npm run build
+We recommend using a virtualenv or Pyenv
 
-Install the Python requirements
- - $ pip3 install -r requirements.txt
+1. Install Python dependencies with `pip install -r requirements.txt`
+2. Install Node dependencies with `npm install`
+3. Build the bundles with `npm run build`
+4. Copy `example.config.yml` to `config.yml` and edit it
+5. Set up the database by executing `./scripts/migrate.py`
 
-Copy example.config.py and edit it
+## Chat
 
-Set up the database
- - $ ./scripts/migrate.py
+If you have any questions, you can reach us on (#throat:phuks.co)[https://chat.phoxy.win/#/login] on Matrix
 
 ---
 
