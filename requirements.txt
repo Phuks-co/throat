@@ -30,3 +30,5 @@ peewee_migrate
 pyyaml
 email_validator
 feedgen
+psycopg2
+gunicorn
