@@ -694,7 +694,7 @@ iframe {
 
 .pure-menu a svg {
     height: 4em;
-    margin: 4px 0;
+    margin: 0px 0px 4px 0px;
 }
 
 .thumbnail .placeholder {
@@ -1870,7 +1870,7 @@ a[href="#toodamncool"]{
   z-index: 20;
   bottom: 0;
   position: absolute;
-  left: 4em;
+  left: 56px;
   color: white;
   font-size: smaller;
 }
