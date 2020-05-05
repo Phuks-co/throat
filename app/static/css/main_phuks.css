@@ -228,7 +228,7 @@ a:hover {
 /* Header */
 
 .th-navbar {
-  background-color: #800000;
+  background-color: #d94f00;
   margin-bottom: 0;
   -webkit-font-smoothing: antialiased;
   padding: .4em 0 .4em .3em;
@@ -445,7 +445,7 @@ span#notification.fade {
 }
 
 .content .hasmail path {
-  fill: #800000;
+  fill: #d94f00;
 }
 
 .sidebar .pure-button-primary {
@@ -458,12 +458,12 @@ span#notification.fade {
 }
 
 .pure-button-primary, a.pure-button-primary {
-    background-color: #800000;
+    background-color: #d94f00;
     color: #fff;
 }
 
 .pure-button-primary:hover {
-      background-color:#A50105;
+      background-color:#ff6d15;
     color: #fff;
 }
 
@@ -514,11 +514,11 @@ span#notification.fade {
 }
 
 .post .title:visited {
-	color: #7A0105;
+	color: #d95204;
 }
 
 .post .title:hover {
-	color: #A50105;
+	color: #ff6d15;
 }
 .misctainer {
   float: left;
@@ -543,7 +543,7 @@ span#notification.fade {
 }
 
 .p-icon[data-icon="exclaim"] path {
-    fill: #800000;
+    fill: #d94f00;
 }
 
 .expando{
@@ -620,11 +620,11 @@ iframe {
 }
 
 .upvoted path{
-  fill: #7A0105;
+  fill: #ff6d15;
 }
 
 .downvoted path{
-  fill: black;
+  fill: red;
 }
 
 .misctainer{
@@ -694,7 +694,7 @@ iframe {
 
 .pure-menu a svg {
     height: 4em;
-    margin: 4px 0;
+    margin: 0px 0px 4px 0px;
 }
 
 .thumbnail .placeholder {
@@ -1507,7 +1507,7 @@ td.subsentry.blocked {
 
 .pblock.level .uprofile-level-box .fill{
   clip: rect(0px, 60px, 120px, 0px);
-  background-color: #800000;
+  background-color: #d94f00;
 }
 
 .pblock.level .inset{
@@ -1585,7 +1585,7 @@ li.habitentry {
 
 body::-webkit-scrollbar {
    width: 4px;
-   background: #800000;
+   background: #d94f00;
    z-index: -1;
 }
 
@@ -1693,7 +1693,7 @@ table td {
   height: calc(100% - 4.1em);
 }
 #chtitle{
-  background: #800000;
+  background: #d94f00;
   font-size: smaller;
   height: 1.8em;
   padding-top: .2em;
@@ -1706,7 +1706,7 @@ table td {
 }
 
 #chtitle:hover{
-  background: #A50105;
+  background: #b74500;
 }
 #chcont{
   color: #111;
@@ -1870,7 +1870,7 @@ a[href="#toodamncool"]{
   z-index: 20;
   bottom: 0;
   position: absolute;
-  left: 4em;
+  left: 56px;
   color: white;
   font-size: smaller;
 }

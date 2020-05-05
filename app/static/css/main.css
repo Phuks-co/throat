@@ -228,7 +228,7 @@ a:hover {
 /* Header */
 
 .th-navbar {
-  background-color: #d94f00;
+  background-color: #800000;
   margin-bottom: 0;
   -webkit-font-smoothing: antialiased;
   padding: .4em 0 .4em .3em;
@@ -445,7 +445,7 @@ span#notification.fade {
 }
 
 .content .hasmail path {
-  fill: #d94f00;
+  fill: #800000;
 }
 
 .sidebar .pure-button-primary {
@@ -458,12 +458,12 @@ span#notification.fade {
 }
 
 .pure-button-primary, a.pure-button-primary {
-    background-color: #d94f00;
+    background-color: #800000;
     color: #fff;
 }
 
 .pure-button-primary:hover {
-      background-color:#ff6d15;
+      background-color:#A50105;
     color: #fff;
 }
 
@@ -514,11 +514,11 @@ span#notification.fade {
 }
 
 .post .title:visited {
-	color: #d95204;
+	color: #7A0105;
 }
 
 .post .title:hover {
-	color: #ff6d15;
+	color: #A50105;
 }
 .misctainer {
   float: left;
@@ -543,7 +543,7 @@ span#notification.fade {
 }
 
 .p-icon[data-icon="exclaim"] path {
-    fill: #d94f00;
+    fill: #800000;
 }
 
 .expando{
@@ -620,11 +620,11 @@ iframe {
 }
 
 .upvoted path{
-  fill: #ff6d15;
+  fill: #7A0105;
 }
 
 .downvoted path{
-  fill: red;
+  fill: black;
 }
 
 .misctainer{
@@ -1507,7 +1507,7 @@ td.subsentry.blocked {
 
 .pblock.level .uprofile-level-box .fill{
   clip: rect(0px, 60px, 120px, 0px);
-  background-color: #d94f00;
+  background-color: #800000;
 }
 
 .pblock.level .inset{
@@ -1585,7 +1585,7 @@ li.habitentry {
 
 body::-webkit-scrollbar {
    width: 4px;
-   background: #d94f00;
+   background: #800000;
    z-index: -1;
 }
 
@@ -1693,7 +1693,7 @@ table td {
   height: calc(100% - 4.1em);
 }
 #chtitle{
-  background: #d94f00;
+  background: #800000;
   font-size: smaller;
   height: 1.8em;
   padding-top: .2em;
@@ -1706,7 +1706,7 @@ table td {
 }
 
 #chtitle:hover{
-  background: #b74500;
+  background: #A50105;
 }
 #chcont{
   color: #111;
