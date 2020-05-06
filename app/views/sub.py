@@ -32,12 +32,12 @@ def view_sub(sub):
         x = x.value
     except SubMetadata.DoesNotExist:
         x = 'v'
-    if x == 'v':
-        return redirect(url_for('sub.view_sub_hot', sub=sub.name))
-    elif x == 'v_two':
+    if x == 'v_two':
         return redirect(url_for('sub.view_sub_new', sub=sub.name))
     elif x == 'v_three':
         return redirect(url_for('sub.view_sub_top', sub=sub.name))
+    else:
+        return redirect(url_for('sub.view_sub_hot', sub=sub.name))
 
 
 @sub.route("/<sub>/edit/css")
