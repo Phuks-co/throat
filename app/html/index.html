@@ -20,13 +20,11 @@
   <hr />
   &copy;@{config.site.copyright}
   <br>
-  <a href="@{url_for('welcome')}">Welcome</a> |
-  <a href="@{url_for('tos')}">ToS</a> |
-  <a href="@{url_for('privacy')}">Privacy</a> |
+  <a href="@{url_for('welcome')}">Vitajte</a> |
+  <a href="@{url_for('tos')}">Podmienky používania</a> |
+  <a href="@{url_for('privacy')}">Ochrana osobných údajov</a> |
   <a href="@{url_for('sub.view_sub', sub='changelog')}">Changelog</a> |
-  <a href="@{url_for('view_api')}">API</a> |
-  <a href="@{url_for('canary')}">Canary</a> |
-  <a href="@{url_for('donate')}">Donate</a>
+  <a href="@{url_for('donate')}">Podporiť</a>
   <br>
   Served by @{hostname} \
   @if config.app.debug or current_user.admin:
@@ -47,7 +45,7 @@
   @end
 
   @if not posts:
-    <h1 class="noshit">There are no posts here, yet.</h1>
+    <h1 class="noshit">Zatiaľ žiadne posty.</h1>
   @end
   <div class="alldaposts">
     @for post in posts:

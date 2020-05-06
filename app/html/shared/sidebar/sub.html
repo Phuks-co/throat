@@ -2,27 +2,27 @@
 
 <form class="pure-g search" action="@{ url_for('do.search') }" method="post">
   <div class="icon" data-icon="search"> </div>
-  <input aria-label="Search" name="term" placeholder="Title search..." type="search" class="pure-u-1">
+  <input aria-label="Search" name="term" placeholder="Hľadať v príspevkoch..." type="search" class="pure-u-1">
 </form>
 
 @if current_user.is_authenticated:
   @if subInfo.get('restricted', 0) == '1' and not (current_user.uid in (subMods['all'])):
-    <div>Only mods can post.</div>
+    <div>Prispievať môžu iba moderátori.</div>
   @else:
     @if current_user.is_subban(sub):
-      <div>You are currently banned from posting.</div>
+      <div>Momentálne máš ban na príspevky.</div>
     @else:
-      <a href="@{url_for('submit', ptype='text', sub=sub['name'])}" class="sbm-post pure-button">Submit a text post</a>
-      <a href="@{url_for('submit', ptype='link', sub=sub['name'])}" class="sbm-post pure-button">Submit a link post</a>
+      <a href="@{url_for('submit', ptype='text', sub=sub['name'])}" class="sbm-post pure-button">Pridaj tému</a>
+      <a href="@{url_for('submit', ptype='link', sub=sub['name'])}" class="sbm-post pure-button">Pridaj link</a>
       @if subInfo.get('allow_polls', 0) == '1':
-        <a href="@{url_for('submit', ptype='poll', sub=sub['name'])}" class="sbm-post pure-button">Submit a poll</a>
+        <a href="@{url_for('submit', ptype='poll', sub=sub['name'])}" class="sbm-post pure-button">Pridaj hlasovanie</a>
       @end
     @endif
   @end
 @end
 
 @if subInfo['wiki'] != '':
-  <a href="@{url_for('view_post_inbox', pid=subInfo['wiki'] )}" class="sbm-post pure-button">View wiki</a>
+  <a href="@{url_for('view_post_inbox', pid=subInfo['wiki'] )}" class="sbm-post pure-button">Pozri wiki</a>
 @endif
 
 <div class="subinfo">
@@ -32,18 +32,18 @@
   @end
   </h3>
 </div>
-<div class="subs">@{sub['subscribers']!!s} subscribers</div>
+<div class="subs">@{sub['subscribers']!!s} odberateľov</div>
 
 <div role="group" class="pure-button-group" data-sid="@{sub['sid']}">
   @if current_user.has_subscribed(sub['name']):
-    <button data-ac="unsubscribe" class="sub button-secondary pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>Subscribed</button>
+    <button data-ac="unsubscribe" class="sub button-secondary pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>Odoberám</button>
   @else:
-    <button data-ac="subscribe" class="unsub button-secondary pure-button button-xsmall"><span class="sbm-icon" data-icon="add"></span>Subscribe</button>
+    <button data-ac="subscribe" class="unsub button-secondary pure-button button-xsmall"><span class="sbm-icon" data-icon="add"></span>Odoberať</button>
   @end
   @if current_user.has_blocked(sub['sid']):
-    <button data-ac="unblock" class="blk button-warning pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>Blocked</button>
+    <button data-ac="unblock" class="blk button-warning pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>Blokujem</button>
   @else:
-    <button data-ac="block" class="unblk button-warning pure-button button-xsmall"><span class="sbm-icon" data-icon="close"></span>Block</button>
+    <button data-ac="block" class="unblk button-warning pure-button button-xsmall"><span class="sbm-icon" data-icon="close"></span>Blokuj</button>
   @end
 </div>
 <hr>
@@ -53,7 +53,7 @@
 @end
 
 <div class="moderators">
-  Moderators
+  Moderátori
   <ul>
   @for owner in subMods['owners']:
     <li><span title="Owner" class="i-icon" data-icon="owner"></span> <a href="@{url_for('view_user', user=subMods['owners'][owner])}">@{subMods['owners'][owner]}</a></li>
@@ -67,20 +67,20 @@
   </ul>
 </div>
 <div class="createdby">
-  Created by <a href="/u/@{subInfo['creator']['name']}">@{subInfo['creator']['name']}</a>
+  Vytvoril(a) <a href="/u/@{subInfo['creator']['name']}">@{subInfo['creator']['name']}</a>
   <time-ago datetime="@{sub['creation'].isoformat()}Z"></time-ago>
 </div>
 @if current_user.uid:
   @if current_user.uid in (list(subMods['owners']) + list(subMods['mods'])) or current_user.is_admin():
-    <a href="@{url_for('sub.edit_sub', sub=sub['name'])}" class="sbm-post pure-button">Edit Sub Info</a>
-    <a href="@{url_for('sub.edit_sub_flairs', sub=sub['name'])}" class="sbm-post pure-button">Edit Sub Flairs</a>
-    <a href="@{url_for('sub.edit_sub_css', sub=sub['name'])}" class="sbm-post pure-button">Edit Sub Stylesheet</a>
+    <a href="@{url_for('sub.edit_sub', sub=sub['name'])}" class="sbm-post pure-button">Nastavenia skupiny</a>
+    <a href="@{url_for('sub.edit_sub_flairs', sub=sub['name'])}" class="sbm-post pure-button">Nastav tagy v skupine</a>
+    <a href="@{url_for('sub.edit_sub_css', sub=sub['name'])}" class="sbm-post pure-button">Nastav vzľad skupiny</a>
   @end
   @if current_user.uid in subMods['all'] or current_user.is_admin():
-    <a href="@{url_for('sub.edit_sub_mods', sub=sub['name'])}" class="sbm-post pure-button">Moderators</a>
+    <a href="@{url_for('sub.edit_sub_mods', sub=sub['name'])}" class="sbm-post pure-button">Moderátori</a>
   @end
 @end
 <hr>
 
-<a href="@{url_for('sub.view_sublog', sub=sub['name'])}" class="sbm-post pure-button">Sub Log</a>
-<a href="@{url_for('sub.view_sub_bans', sub=sub['name'])}" class="sbm-post pure-button">Banned Users</a>
+<a href="@{url_for('sub.view_sublog', sub=sub['name'])}" class="sbm-post pure-button">Záznamy skupiny</a>
+<a href="@{url_for('sub.view_sub_bans', sub=sub['name'])}" class="sbm-post pure-button">Zabanovaní členovia</a>

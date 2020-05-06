@@ -3,7 +3,7 @@
   <head>
     {% block head %}
     <meta charset="utf-8">
-    <meta name="keywords" content="forum, vote, comment, submit, throat, phuks, phuks.co">
+    <meta name="keywords" content="forum, diskusie, slovensko, cekni, cekni.to">
     <meta name="referrer" content="always">
     
     <meta name="description" content="{{config.site.lema}}">
@@ -27,6 +27,7 @@
       {% block title %}{{config.site.lema}}{% endblock %}</title>
 
     <link rel="stylesheet" type="text/css" href="{{ asset_url_for('main.css') }}">
+	
 
     {% endblock %}
   </head>
@@ -34,6 +35,8 @@
 <body class="{%if config.site.enable_totp and current_user.admin%}body_admin {%endif%}{%if request.cookies.get( "dayNight")=="dark" %}dark{%elif request.cookies.get( "dayNight")=="dank" %}dark dank{%endif%}">
   {%if config.site.enable_totp and current_user.admin %}
   <div class="admin_alert">Admin mode is currently enabled.
+  
+  
     <form method="POST" action="/admin/logout" id="adminlogout">
       {{ logoutform.csrf_token }}
       <button type="submit" class="btn_link">Disable</button>
@@ -44,24 +47,22 @@
     <ul id="topbar">
       <li><a href="/all">all</a></li>
       <li><a href="/all/new">new</a></li>
-      {% if not current_user.is_anonymous %}
-        <li><a href="{{url_for('view_modmulti_new')}}">modmulti</a></li>
-      {% endif %}
+		{% if not current_user.is_anonymous %}
+       <li><a href="{{url_for('view_modmulti_new')}}">moderujem</a></li> 
+      {% endif %} 
       {% if current_user.canupload %}
         <li><a href="{{url_for('view_user_uploads')}}">uploads</a></li>
       {% endif %}
       <li>|</li>
       {% if not current_user.is_anonymous %}
-      <li class="editbar"><a href="/settings/subs" title="Customize this bar" class="tx-icon" data-icon="edit"></a></li>
+      <li class="editbar"><a href="/settings/subs" title="Prispôsobiť" class="tx-icon" data-icon="edit"></a></li>
       {% endif %}
       {% for sub in current_user.get_top_bar() %}
         <li class="subinthebar"><a href="{{url_for('sub.view_sub', sub=sub['name'])}}">{{sub['name']}}</a></li>
       {% endfor %}
     </ul>
     <div id="subsdropdown">
-      <div class="dropdown-toggle moremenu">
-        More
-      </div>
+      <div class="dropdown-toggle moremenu">ďalšie</div>
       <ul id="hiddensubs"></ul>
     </div>
   </div>
@@ -97,8 +98,8 @@
         <div id="toggledark" class="glyphbutton">
           <span class="p-icon" data-icon="{%if request.cookies.get( "dayNight")=="dark" %}sun{%else%}moon{%endif%}"></span>
         </div>
-        <a href="{{url_for('login', next=request.path)}}" class="pure-button pure-button-primary">Log in</a>
-        <a href="{{url_for('register')}}" class="pure-button button-secondary">Register</a>
+        <a href="{{url_for('login', next=request.path)}}" class="pure-button pure-button-primary">Prihlásiť</a>
+        <a href="{{url_for('register')}}" class="pure-button button-secondary">Registrovať</a>
         {%else%}
         <a href="{{ url_for('view_user', user=current_user.name) }}" class="smallcaps">{{current_user.name}}</a>
         <span class="separator"></span>
@@ -120,7 +121,7 @@
         </div>
         <form method="POST" action="{{ url_for('do.logout') }}" id="logout">
           {{ logoutform.csrf_token }}
-          <button type="submit" class="pure-button button-secondary">Log out</button>
+          <button type="submit" class="pure-button button-secondary">Odhlásiť</button>
         </form>
         {%endif%}
         {{ logoutform.csrf_token }}
@@ -145,14 +146,12 @@
     {% block footer %}
       &copy;{{config.site.copyright}}
       <br>
-      <a href="{{url_for('tos')}}">ToS</a> |
-      <a href="{{url_for('privacy')}}">Privacy</a> |
+      <a href="{{url_for('tos')}}">Podmienky používania</a> |
+      <a href="{{url_for('privacy')}}">Ochrana osobných údajov</a> |
       <a href="{{url_for('sub.view_sub', sub='changelog')}}">Changelog</a> |
-      <a href="{{url_for('view_api')}}">API</a> |
-      <a href="{{url_for('canary')}}">Canary</a> |
-      <a href="{{url_for('donate')}}">Donate</a> |
-      <a href="/license">License</a> |
-      <a href="https://phab.phuks.co">Bugs</a>
+	  <a href="/license">Licencia</a> |
+      <a href="{{url_for('donate')}}">Podporiť</a> |
+      <a href="https://discord.gg/KznGHbv">Discord</a>
       <br>
       Served by {{hostname}}
       {%if config.app.debug or current_user.admin%} | Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries{%endif%}
@@ -161,12 +160,6 @@
   <script type="text/javascript" src="{{ asset_url_for('main.js') }}"></script>
   <style>{{current_user.get_global_stylesheet()|safe}}</style>
   {%block pagefoot%}{%endblock%}
-  <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
-  <script> const cc = new CC({
-  //...options,
-  type   : "categories"
-})
-</script>
   
 </body>
 </html>
