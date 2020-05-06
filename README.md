@@ -1,8 +1,8 @@
-# Throat
+# Web
 
-https://phuks.co/
+https://cekni.to/
 
-A phoxy link and discussion aggregator with snek (python3)
+A link and discussion aggregator with snek (python3)
 
 ## Dependencies:
 
@@ -22,16 +22,3 @@ We recommend using a virtualenv or Pyenv
 4. Copy `example.config.yml` to `config.yml` and edit it
 5. Set up the database by executing `./scripts/migrate.py`
 
-## Chat
-
-If you have any questions, you can reach us on #throat:phuks.co on [Matrix](https://chat.phoxy.win/#/login)
-
----
-
-You can manage default subs by using 
-
- - $ ./scripts/defaults.py
-
-To add/remove administrators use
-
- - $ ./scripts/admins.py
