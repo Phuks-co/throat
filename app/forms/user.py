@@ -7,6 +7,7 @@ from wtforms import BooleanField, HiddenField, SelectField
 from wtforms.validators import DataRequired, Length, Email, Required, EqualTo
 from wtforms.validators import Optional, Regexp
 from wtforms.fields.html5 import EmailField
+from flask_babel import lazy_gettext as _l
 
 
 def is_safe_url(target):
@@ -40,11 +41,11 @@ class RedirectForm(FlaskForm):
 
 class LoginForm(RedirectForm):
     """ Login form. """
-    username = StringField('Username',
+    username = StringField(_l('Username'),
                            validators=[DataRequired(), Length(max=32)])
-    password = PasswordField('Password', validators=[DataRequired(),
+    password = PasswordField(_l('Password'), validators=[DataRequired(),
                                                      Length(min=7, max=256)])
-    remember = BooleanField('Remember me')
+    remember = BooleanField(_l('Remember me'))
 
 
 class OptionalIfFieldIsEmpty(Optional):
@@ -64,83 +65,77 @@ class OptionalIfFieldIsEmpty(Optional):
 
 class RegistrationForm(FlaskForm):
     """ Registration form. """
-    username = TextField('Username', [Length(min=2, max=32),
-                                      Regexp(r'[a-zA-Z0-9_-]+')])
-    email = EmailField('Email Address (optional)',
-                       validators=[OptionalIfFieldIsEmpty('email'),
-                                   Email("Invalid email address.")])
-    password = PasswordField('Password', [
+    username = TextField(_l('Username'), [Length(min=2, max=32), Regexp(r'[a-zA-Z0-9_-]+')])
+    email = EmailField(_l('Email Address (optional)'), validators=[OptionalIfFieldIsEmpty('email'), Email(_l("Invalid email address."))])
+    password = PasswordField(_l('Password'), [
         Required(),
-        EqualTo('confirm', message='Passwords must match'),
+        EqualTo('confirm', message=_l('Passwords must match')),
         Length(min=7, max=256)
     ])
-    confirm = PasswordField('Repeat Password')
-    invitecode = TextField('Invite Code')
-    accept_tos = BooleanField('I accept the TOS', [Required()])
-    captcha = TextField('Captcha')
+    confirm = PasswordField(_l('Repeat Password'))
+    invitecode = TextField(_l('Invite Code'))
+    accept_tos = BooleanField(_l('I accept the TOS'), [Required()])
+    captcha = TextField(_l('Captcha'))
     ctok = HiddenField()
-    securityanswer = TextField('Security question')
+    securityanswer = TextField(_l('Security question'))
 
 
 class ChangePasswordForm(FlaskForm):
-    password = PasswordField('New password', [
+    password = PasswordField(_l('New password'), [
         Required(),
-        EqualTo('confirm', message='Passwords must match'),
+        EqualTo('confirm', message=_l('Passwords must match')),
         Length(min=7, max=256),
     ])
-    confirm = PasswordField('Repeat Password', [
-        Required()
-    ])
+    confirm = PasswordField(_l('Repeat Password'), [Required()])
 
-    oldpassword = PasswordField('Your current password', [
+    oldpassword = PasswordField(_l('Your current password'), [
         Required(),
         Length(min=7, max=256)
     ])
 
 
 class DeleteAccountForm(FlaskForm):
-    password = PasswordField('Your password', [
+    password = PasswordField(_l('Your password'), [
         Required(),
         Length(min=7, max=256),
     ])
-    consent = TextField("Type 'YES' here", [Required(), Length(max=10)])
+    consent = TextField(_l("Type 'YES' here"), [Required(), Length(max=10)])
 
 
 class EditUserForm(FlaskForm):
     """ Edit User info form. """
     # username = TextField('Username', [Length(min=2, max=32)])
-    email = EmailField('Email Address (optional)',
+    email = EmailField(_l('Email Address (optional)'),
                        validators=[OptionalIfFieldIsEmpty('email'),
-                                   Email("Invalid email address.")])
-    disable_sub_style = BooleanField('Disable custom sub styles')
-    show_nsfw = BooleanField('Show NSFW content')
+                                   Email(_l("Invalid email address."))])
+    disable_sub_style = BooleanField(_l('Disable custom sub styles'))
+    show_nsfw = BooleanField(_l('Show NSFW content'))
 
-    #delete_account = BooleanField('DELETE THIS ACCOUNT')
-    experimental = BooleanField('Enable experimental features')
-    noscroll = BooleanField('Disable infinite scroll')
-    nochat = BooleanField('Disable chat')
+    experimental = BooleanField(_l('Enable experimental features'))
+    noscroll = BooleanField(_l('Disable infinite scroll'))
+    nochat = BooleanField(_l('Disable chat'))
 
-    subtheme = TextField("Global stylesheet (select a sub)")
+    subtheme = TextField(_l("Global stylesheet (select a sub)"))
 
-    language = SelectField('Language', validate_choice=False)
+    language = SelectField(_l('Language'), validate_choice=False)
 
 
 class CreateUserMessageForm(FlaskForm):
     """ CreateUserMessage form. """
-    to = TextField('to', [Length(min=2, max=32), Regexp(r'[a-zA-Z0-9_-]+')])
-    subject = StringField('subject',
+    to = TextField(_l('to'), [Length(min=2, max=32), Regexp(r'[a-zA-Z0-9_-]+')])
+    subject = StringField(_l('subject'),
                           validators=[DataRequired(), Length(min=1, max=400)])
 
-    content = TextAreaField('message',
+    content = TextAreaField(_l('message'),
                             validators=[DataRequired(),
                                         Length(min=1, max=16384)])
 
 
 class PasswordRecoveryForm(FlaskForm):
     """ the 'forgot your password?' form """
-    email = EmailField('Email Address',
-                       validators=[Email("Invalid email address.")])
-    captcha = TextField('Captcha')
+    email = EmailField(_l('Email Address'),
+                       validators=[Email(_l("Invalid email address."))])
+    captcha = TextField(_l('Captcha'))
     ctok = HiddenField()
 
 
@@ -148,31 +143,12 @@ class PasswordResetForm(FlaskForm):
     """ the 'forgot your password?' form """
     user = HiddenField()
     key = HiddenField()
-    password = PasswordField('Password', [
+    password = PasswordField(_l('Password'), [
         Required(),
-        EqualTo('confirm', message='Passwords must match'),
+        EqualTo('confirm', message=_l('Passwords must match')),
         Length(min=7, max=256)
     ])
-    confirm = PasswordField('Repeat Password')
-
-
-class CreateMulti(FlaskForm):
-    """ Creates a Multi """
-    name = StringField('Nickname', validators=[DataRequired(), Length(max=40)])
-    subs = StringField('sub1+sub2+sub3+sub4', validators=[DataRequired(), Length(max=255)])
-
-
-class EditMulti(FlaskForm):
-    """ Edits ONE Multi """
-    multi = HiddenField()
-    name = StringField('Nickname', validators=[DataRequired(), Length(max=40)])
-    subs = StringField('sub1+sub2+sub3+sub4', validators=[DataRequired(), Length(max=255)])
-
-
-class DeleteMulti(FlaskForm):
-    """ Used to delete Multis """
-    multi = HiddenField()
-
+    confirm = PasswordField(_l('Repeat Password'))
 
 class LogOutForm(FlaskForm):
     """ Logout form. This form has no fields.

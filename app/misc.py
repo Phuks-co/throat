@@ -297,8 +297,7 @@ def get_view_rate_limit():
 
 def on_over_limit(limit):
     """ This is called when the rate limit is reached """
-    return jsonify(status='error', error=['Whoa, calm down and wait a '
-                                          'bit before posting again.'])
+    return jsonify(status='error', error=[_('Whoa, calm down and wait a bit before posting again.')])
 
 
 def get_ip():
@@ -867,9 +866,7 @@ def get_errors(form):
     ret = []
     for field, errors in form.errors.items():
         for error in errors:
-            ret.append(u"Error in the '%s' field - %s" % (
-                getattr(form, field).label.text,
-                error))
+            ret.append(_(u"Error in the '%s' field - %s", getattr(form, field).label.text, error))
     return ret
 
 # messages
@@ -1088,7 +1085,7 @@ def getSubData(sid, simple=False, extra=False):
             creator = User.select(User.uid, User.name, User.status).where(User.uid == data.get('mod')).dicts().get()
         except User.DoesNotExist:
             creator = {'uid': '0', 'name': 'Nobody'}
-        data['creator'] = creator if creator.get('status', None) == 0 else {'uid': '0', 'name': '[Deleted]'}
+        data['creator'] = creator if creator.get('status', None) == 0 else {'uid': '0', 'name': _('[Deleted]')}
 
         try:
             data['stylesheet'] = SubStylesheet.get(SubStylesheet.sid == sid).content
@@ -1132,7 +1129,7 @@ def iter_validate_css(obj, uris):
                 if uris.get(token):
                     x.value = uris.get(token)
             else:
-                return ("URLs not allowed, uploaded files only", x.source_column, x.source_line)
+                return (_("URLs not allowed, uploaded files only"), x.source_column, x.source_line)
         elif x.__class__.__name__ == "CurlyBracketsBlock":
             return iter_validate_css(x.content)
     return True
@@ -1148,7 +1145,7 @@ def validate_css(css, sid):
     for x in st:
         if x.__class__.__name__ == "AtRule":
             if x.at_keyword.lower() == "import":
-                return ("@import token not allowed", x.source_column, x.source_line)  # we do not allow @import
+                return (_("@import token not allowed"), x.source_column, x.source_line)  # we do not allow @import
         elif x.__class__.__name__ == "QualifiedRule":  # down the hole we go.
             m = iter_validate_css(x.content, uris)
             if m is not True:
@@ -1157,7 +1154,7 @@ def validate_css(css, sid):
     try:
         return (0, tinycss2.serialize(st))
     except TypeError:
-        return ("Invalid CSS", 0, 0)
+        return (_("Invalid CSS"), 0, 0)
 
 
 @cache.memoize(3)
@@ -1249,6 +1246,7 @@ LOG_TYPE_SUB_MOD_ACCEPT = 25
 LOG_TYPE_SUB_MOD_REMOVE = 26
 LOG_TYPE_SUB_MOD_INV_CANCEL = 27
 LOG_TYPE_SUB_MOD_INV_REJECT = 28
+LOG_TYPE_SUB_CSS_CHANGE = 29
 LOG_TYPE_SUB_STICKY_ADD = 50
 LOG_TYPE_SUB_STICKY_DEL = 51
 LOG_TYPE_SUB_DELETE_POST = 52
@@ -1478,16 +1476,16 @@ def cast_vote(uid, target_type, pcid, value):
     try:
         user = User.get(User.uid == uid)
     except User.DoesNotExist:
-        return jsonify(msg="Unknown error. User disappeared"), 403
+        return jsonify(msg=_("Unknown error. User disappeared")), 403
 
     if value == "up":
         voteValue = 1
     elif value == "down":
         voteValue = -1
         if user.given < 0:
-            return jsonify(msg='Score balance is negative'), 403
+            return jsonify(msg=_('Score balance is negative')), 403
     else:
-        return jsonify(msg="Invalid vote value"), 400
+        return jsonify(msg=_("Invalid vote value")), 400
 
     if target_type == "post":
         target_model = SubPost
@@ -1495,10 +1493,10 @@ def cast_vote(uid, target_type, pcid, value):
             target = SubPost.select(SubPost.uid, SubPost.score, SubPost.upvotes, SubPost.downvotes, SubPost.pid.alias('id'), SubPost.posted)
             target = target.where(SubPost.pid == pcid).get()
         except SubPost.DoesNotExist:
-            return jsonify(msg='Post does not exist'), 404
+            return jsonify(msg=_('Post does not exist')), 404
 
         if target.deleted:
-            return jsonify(msg="You can't vote on deleted posts"), 400
+            return jsonify(msg=_("You can't vote on deleted posts")), 400
 
         try:
             qvote = SubPostVote.select().where(SubPostVote.pid == pcid).where(SubPostVote.uid == uid).get()
@@ -1511,28 +1509,28 @@ def cast_vote(uid, target_type, pcid, value):
                                            SubPostComment.upvotes, SubPostComment.downvotes, SubPostComment.cid.alias('id'), SubPostComment.time.alias('posted'))
             target = target.join(SubPost).where(SubPostComment.cid == pcid).objects().get()
         except SubPostComment.DoesNotExist:
-            return jsonify(msg='Comment does not exist'), 404
+            return jsonify(msg=_('Comment does not exist')), 404
         
         if target.uid_id == user.uid:
-            return jsonify(msg="You can't vote on your own comments"), 400
+            return jsonify(msg=_("You can't vote on your own comments")), 400
         if target.status:
-            return jsonify(msg="You can't vote on deleted comments"), 400
+            return jsonify(msg=_("You can't vote on deleted comments")), 400
 
         try:
             qvote = SubPostCommentVote.select().where(SubPostCommentVote.cid == pcid).where(SubPostCommentVote.uid == uid).get()
         except SubPostCommentVote.DoesNotExist:
             qvote = False
     else:
-        return jsonify(msg="Invalid target"), 400
+        return jsonify(msg=_("Invalid target")), 400
 
     try:
         SubMetadata.get((SubMetadata.sid == target.sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user.uid))
-        return jsonify(msg='You are banned on this sub.'), 403
+        return jsonify(msg=_('You are banned on this sub.')), 403
     except SubMetadata.DoesNotExist:
         pass
 
     if (datetime.utcnow() - target.posted.replace(tzinfo=None)) > timedelta(days=60):
-        return jsonify(msg="Post is archived"), 400
+        return jsonify(msg=_("Post is archived")), 400
 
     user = User.get(User.uid == target.uid)
 

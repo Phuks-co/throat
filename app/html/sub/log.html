@@ -42,6 +42,8 @@
                         @{_('Revoked mod invite for <a href="/u/%(username)s">%(username)s</a>', username=log.target.name)}
                     @elif log.action == 28:
                         @{_('Mod invite declined by <a href="/u/%(username)s">%(username)s</a>', username=log.target.name)}
+                    @elif log.action == 29:
+                        @{_('Edited the sub\'s stylesheet')}
                     @elif log.action == 30:
                         @{_('Sub was transferred to <a href="/u/%(username)s">%(username)s</a>', username=e(log.desc))}
                     @elif log.action == 50:

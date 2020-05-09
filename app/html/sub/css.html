@@ -14,7 +14,7 @@
       @{form.csrf_token()}
       <div class="pure-control-group">
         <div>
-          <label for="css">@{form.css.label.text}</label>
+          <label for="css">@{form.css.label.text!!s}</label>
           @{form.css(style="width:100%; font-family:monospace", rows=50)}
         </div>
       </div>

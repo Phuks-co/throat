@@ -17,17 +17,17 @@ from bs4 import BeautifulSoup
 from flask import Blueprint, redirect, url_for, session, abort, jsonify
 from flask import render_template, request
 from flask_login import login_user, login_required, logout_user, current_user
+from flask_babel import _
 from ..config import config
 from .. import forms, misc, caching
 from ..socketio import socketio
 from ..forms import LogOutForm, CreateSubFlair, DummyForm
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm, ChangePasswordForm
-from ..forms import CreateUserBadgeForm, EditModForm, BanUserSubForm, DeleteAccountForm
+from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm
 from ..forms import CreateSubTextPost, EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, BanDomainForm
-from ..forms import CreateMulti, EditMulti, DeleteMulti
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
 from ..misc import cache, sendMail, allowedNames, get_errors, engine
@@ -81,7 +81,7 @@ def edit_user_password():
     if form.validate():
         usr = User.get(User.uid == current_user.uid)
         if not misc.validate_password(usr, form.oldpassword.data):
-            return json.dumps({'status': 'error', 'error': ['Wrong password']})
+            return json.dumps({'status': 'error', 'error': [_('Wrong password')]})
         
         password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
         if isinstance(password, bytes):
@@ -101,10 +101,10 @@ def delete_user():
     if form.validate():
         usr = User.get(User.uid == current_user.uid)
         if not misc.validate_password(usr, form.password.data):
-            return jsonify(status='error', error=['Wrong password'])
+            return jsonify(status='error', error=[_('Wrong password')])
 
-        if form.consent.data != 'YES':
-            return jsonify(status='error', error=['Type "YES" in the box'])
+        if form.consent.data != _('YES'):
+            return jsonify(status='error', error=[_('Type "YES" in the box')])
         
         usr.status = 10
         usr.save()
@@ -124,7 +124,7 @@ def edit_user():
             try:
                 sub = Sub.get(fn.Lower(Sub.name) == form.subtheme.data.lower())
             except Sub.DoesNotExist:
-                return jsonify(status='error', error=['Sub does not exist'])
+                return jsonify(status='error', error=[_('Sub does not exist')])
 
         usr = User.get(User.uid == current_user.uid)
         usr.email = form.email.data
@@ -153,24 +153,25 @@ def delete_post():
         try:
             post = SubPost.get(SubPost.pid == form.post.data)
         except SubPost.DoesNotExist:
-            return jsonify(status='error', error=['Post does not exist'])
+            return jsonify(status='error', error=[_('Post does not exist')])
 
         if post.deleted != 0:
-            return jsonify(status='error', error=['Post was already deleted'])
+            return jsonify(status='error', error=[_('Post was already deleted')])
 
         sub = Sub.get(Sub.sid == post.sid)
         subI = misc.getSubData(post.sid)
 
         if not current_user.is_mod(sub.sid) and not current_user.is_admin() and not post.uid_id == current_user.uid:
-            return jsonify(status='error', error=['Not authorized'])
+            return jsonify(status='error', error=[_('Not authorized')])
 
         if post.uid_id == current_user.uid:
             deletion = 1
         else:
             if not form.reason.data:
-                return jsonify(status="error", error=["Cannot delete without reason"])
+                return jsonify(status="error", error=[_("Cannot delete without reason")])
             deletion = 2
             # notify user.
+            # TODO: Make this a translatable notification
             misc.create_message(mfrom=current_user.uid, to=post.uid.uid,
                                 subject='Your post on /s/' + sub.name + ' has been deleted.',
                                 content='Reason: ' + form.reason.data,
@@ -211,35 +212,35 @@ def create_sub():
     form = CreateSubForm()
     if form.validate():
         if not allowedNames.match(form.subname.data):
-            return jsonify(status='error', error=['Sub name has invalid characters'])
+            return jsonify(status='error', error=[_('Sub name has invalid characters')])
 
         if len(form.subname.data) < 2:
-            return jsonify(status='error', error=['Sub name too short'])
+            return jsonify(status='error', error=[_('Sub name too short')])
 
         if len(form.subname.data) > 32:
-            return jsonify(status='error', error=['Sub name too long'])
+            return jsonify(status='error', error=[_('Sub name too long')])
 
         if form.subname.data.lower() in ('all', 'new', 'hot', 'top', 'admin', 'home'):
-            return jsonify(status='error', error=['Invalid sub name'])
+            return jsonify(status='error', error=[_('Invalid sub name')])
 
         try:
             Sub.get(fn.Lower(Sub.name) == form.subname.data.lower())
-            return jsonify(status='error', error=['Sub is already registered'])
+            return jsonify(status='error', error=[_('Sub is already registered')])
         except Sub.DoesNotExist:
             pass
 
         level = misc.get_user_level(current_user.uid)[0]
         if not config.app.testing:
             if (level <= 1) and (not current_user.admin):
-                return jsonify(status='error', error=['You must be at least level 2.'])
+                return jsonify(status='error', error=[_('You must be at least level 2.')])
 
             owned = SubMod.select().where(SubMod.uid == current_user.uid).where((SubMod.power_level == 0) & (SubMod.invite == False)).count()
 
             if owned >= 20 and (not current_user.admin):
-                return jsonify(status='error', error=['You cannot own more than 20 subs.'])
+                return jsonify(status='error', error=[_('You cannot own more than 20 subs.')])
 
             if owned >= (level - 1) and (not current_user.admin):
-                return jsonify(status='error', error=['You cannot own more than {0} subs. Try leveling up your account'.format(level - 1)])
+                return jsonify(status='error', error=[_('You cannot own more than %i subs. Try leveling up your account', level - 1)])
 
         sub = Sub.create(sid=uuid.uuid4(), name=form.subname.data, title=form.title.data)
         SubMetadata.create(sid=sub.sid, key='mod', value=current_user.uid)
@@ -263,10 +264,10 @@ def edit_sub_css(sub):
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
-        return jsonify(status='error', error=["Sub does not exist"])
+        return jsonify(status='error', error=[_("Sub does not exist")])
 
     if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
-        return jsonify(status='error', error=["Not authorized"])
+        return jsonify(status='error', error=[_("Not authorized")])
 
     form = EditSubCSSForm()
     if form.validate():
@@ -278,8 +279,7 @@ def edit_sub_css(sub):
         styles.content = dcss[1]
         styles.source = form.css.data
         styles.save()
-        SubLog.create(sid=sub.sid, action=4, link=url_for('sub.view_sub', sub=sub.name), time=datetime.datetime.utcnow(),
-                      desc='{0} modified the sub\'s stylesheet'.format(current_user.name))
+        misc.create_sublog(misc.LOG_TYPE_SUB_CSS_CHANGE, current_user.uid, sub.sid)
 
         return json.dumps({'status': 'ok',
                            'addr': url_for('sub.view_sub', sub=sub.name)})
@@ -293,7 +293,7 @@ def edit_sub(sub):
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
-        return jsonify(status='error', error=["Sub does not exist"])
+        return jsonify(status='error', error=[_("Sub does not exist")])
     if current_user.is_mod(sub.sid, 1) or current_user.is_admin():
         form = EditSubForm()
         if form.validate():
@@ -330,12 +330,12 @@ def assign_post_flair(sub, pid, fl):
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
-        return jsonify(status='error', error=["Sub does not exist"])
+        return jsonify(status='error', error=[_("Sub does not exist")])
 
     try:
         post = SubPost.get(SubPost.pid == pid)
     except SubPost.DoesNotExist:
-        return jsonify(status='error', error=['Post does not exist'])
+        return jsonify(status='error', error=[_('Post does not exist')])
 
     form = DummyForm()
     if form.validate():
@@ -343,7 +343,7 @@ def assign_post_flair(sub, pid, fl):
             try:
                 flair = SubFlair.get((SubFlair.xid == fl) & (SubFlair.sid == sub.sid))
             except SubFlair.DoesNotExist:
-                return jsonify(status='error', error='Flair does not exist')
+                return jsonify(status='error', error=_('Flair does not exist'))
 
             post.flair = flair.text
             post.save()
@@ -351,7 +351,7 @@ def assign_post_flair(sub, pid, fl):
 
             return jsonify(status='ok')
         else:
-            return jsonify(status='error', error='Not authorized')
+            return jsonify(status='error', error=_('Not authorized'))
     return jsonify(status="error", error=get_errors(form))
 
 
@@ -361,16 +361,16 @@ def remove_post_flair(sub, pid):
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
-        return jsonify(status='error', error=["Sub does not exist"])
+        return jsonify(status='error', error=[_("Sub does not exist")])
 
     try:
         post = SubPost.get(SubPost.pid == pid)
     except SubPost.DoesNotExist:
-        return jsonify(status='error', error=['Post does not exist'])
+        return jsonify(status='error', error=[_('Post does not exist')])
 
     if current_user.is_mod(sub.sid) or (post.uid_id == current_user.uid and sub.get_metadata('ucf')):
         if not post.flair:
-            return jsonify(status='error', error='Post has no flair')
+            return jsonify(status='error', error=_('Post has no flair'))
         else:
             post.flair = None
             post.save()
@@ -391,12 +391,12 @@ def edit_mod():
     try:
         sub = Sub.get(fn.Lower(Sub.name) == form.sub.data.lower())
     except Sub.DoesNotExist:
-        return jsonify(status='error', error=["Sub does not exist"])
+        return jsonify(status='error', error=[_("Sub does not exist")])
     
     try:
         user = User.get(fn.Lower(User.name) == form.user.data.lower())
     except User.DoesNotExist:
-        return jsonify(status='error', error=["User does not exist"])
+        return jsonify(status='error', error=[_("User does not exist")])
 
     if form.validate():
         try:
@@ -427,12 +427,12 @@ def assign_userbadge():
         l.append(badges[bg]['nick'])
 
     if form.badge.data not in l:
-        return jsonify(status='error', error=["Badge does not exist"])
+        return jsonify(status='error', error=[_("Badge does not exist")])
 
     try:
         user = User.get(fn.Lower(User.name) == form.user.data.lower())
     except User.DoesNotExist:
-        return jsonify(status='error', error=["User does not exist"])
+        return jsonify(status='error', error=[_("User does not exist")])
 
     if form.validate():
 
@@ -452,10 +452,10 @@ def subscribe_to_sub(sid):
     try:
         sub = Sub.get(Sub.sid == sid)
     except Sub.DoesNotExist:
-        return jsonify(status='error', error='sub not found')
+        return jsonify(status='error', error=_('sub not found'))
 
     if current_user.has_subscribed(sid):
-        return jsonify(status='ok', message='already subscribed')
+        return jsonify(status='ok', message=_('already subscribed'))
 
     form = DummyForm()
     if form.validate():
@@ -477,10 +477,10 @@ def unsubscribe_from_sub(sid):
     try:
         sub = Sub.get(Sub.sid == sid)
     except Sub.DoesNotExist:
-        return jsonify(status='error', error='sub not found')
+        return jsonify(status='error', error=_('sub not found'))
 
     if not current_user.has_subscribed(sid):
-        return jsonify(status='ok', message='not subscribed')
+        return jsonify(status='ok', message=_('not subscribed'))
 
     form = DummyForm()
     if form.validate():
@@ -500,10 +500,10 @@ def block_sub(sid):
     try:
         sub = Sub.get(Sub.sid == sid)
     except Sub.DoesNotExist:
-        return jsonify(status='error', error='sub not found')
+        return jsonify(status='error', error=_('sub not found'))
 
     if current_user.has_blocked(sid):
-        return jsonify(status='ok', message='already blocked')
+        return jsonify(status='ok', message=_('already blocked'))
 
     form = DummyForm()
     if form.validate():
@@ -525,10 +525,10 @@ def unblock_sub(sid):
     try:
         sub = Sub.get(Sub.sid == sid)
     except Sub.DoesNotExist:
-        return jsonify(status='error', error='sub not found')
+        return jsonify(status='error', error=_('sub not found'))
 
     if not current_user.has_blocked(sid):
-        return jsonify(status='ok', message='sub not blocked')
+        return jsonify(status='ok', message=_('sub not blocked'))
 
     form = DummyForm()
     if form.validate():
@@ -542,48 +542,45 @@ def unblock_sub(sid):
 def get_txtpost(pid):
     """ Sub text post expando get endpoint """
     try:
-        try:
-            post = misc.getSinglePost(pid)
-        except SubPost.DoesNotExist:
-            abort(404)
-        
-        if post['deleted']:
-            abort(404)
-        cont = misc.our_markdown(post['content'])
-        if post['ptype'] == 3:
-            pollData = {'has_voted': False}
-            postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
-            # poll. grab options and votes.
-            options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text, fn.Count(SubPostPollVote.id).alias('votecount'))
-            options = options.join(SubPostPollVote, JOIN.LEFT_OUTER, on=(SubPostPollVote.vid == SubPostPollOption.id))
-            options = options.where(SubPostPollOption.pid == pid).group_by(SubPostPollOption.id)
-            pollData['options'] = options
-            total_votes = SubPostPollVote.select().where(SubPostPollVote.pid == pid).count()
-            pollData['total_votes'] = total_votes
-            if current_user.is_authenticated:
-                # Check if user has already voted on this poll.
-                try:
-                    u_vote = SubPostPollVote.get((SubPostPollVote.pid == pid) & (SubPostPollVote.uid == current_user.uid))
-                    pollData['has_voted'] = True
-                    pollData['voted_for'] = u_vote.vid_id
-                except SubPostPollVote.DoesNotExist:
-                    pollData['has_voted'] = False
-                
-            # Check if the poll is open
-            pollData['poll_open'] = True
-            if 'poll_closed' in postmeta:
+        post = misc.getSinglePost(pid)
+    except SubPost.DoesNotExist:
+        abort(404)
+    
+    if post['deleted']:
+        abort(404)
+    cont = misc.our_markdown(post['content'])
+    if post['ptype'] == 3:
+        pollData = {'has_voted': False}
+        postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
+        # poll. grab options and votes.
+        options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text, fn.Count(SubPostPollVote.id).alias('votecount'))
+        options = options.join(SubPostPollVote, JOIN.LEFT_OUTER, on=(SubPostPollVote.vid == SubPostPollOption.id))
+        options = options.where(SubPostPollOption.pid == pid).group_by(SubPostPollOption.id)
+        pollData['options'] = options
+        total_votes = SubPostPollVote.select().where(SubPostPollVote.pid == pid).count()
+        pollData['total_votes'] = total_votes
+        if current_user.is_authenticated:
+            # Check if user has already voted on this poll.
+            try:
+                u_vote = SubPostPollVote.get((SubPostPollVote.pid == pid) & (SubPostPollVote.uid == current_user.uid))
+                pollData['has_voted'] = True
+                pollData['voted_for'] = u_vote.vid_id
+            except SubPostPollVote.DoesNotExist:
+                pollData['has_voted'] = False
+            
+        # Check if the poll is open
+        pollData['poll_open'] = True
+        if 'poll_closed' in postmeta:
+            pollData['poll_open'] = False
+
+        if 'poll_closes_time' in postmeta:
+            pollData['poll_closes'] = datetime.datetime.utcfromtimestamp(int(postmeta['poll_closes_time'])).isoformat()
+            if int(postmeta['poll_closes_time']) < time.time():
                 pollData['poll_open'] = False
 
-            if 'poll_closes_time' in postmeta:
-                pollData['poll_closes'] = datetime.datetime.utcfromtimestamp(int(postmeta['poll_closes_time'])).isoformat()
-                if int(postmeta['poll_closes_time']) < time.time():
-                    pollData['poll_open'] = False
+        cont = engine.get_template('sub/postpoll.html').render({'post': post, 'pollData': pollData, 'postmeta': postmeta})
 
-            cont = engine.get_template('sub/postpoll.html').render({'post': post, 'pollData': pollData, 'postmeta': postmeta})
-
-        return jsonify(status='ok', content=cont)
-    except SubPost.DoesNotExist:
-        return jsonify(status='error', error=['No longer available'])
+    return jsonify(status='ok', content=cont)
 
 
 @do.route("/do/edit_txtpost/<pid>", methods=['POST'])
@@ -595,13 +592,13 @@ def edit_txtpost(pid):
         try:
             post = SubPost.get(SubPost.pid == pid)
         except SubPost.DoesNotExist:
-            return jsonify(status='error', error=['Post not found'])
+            return jsonify(status='error', error=[_('Post not found')])
 
         if post.deleted != 0:
-            return jsonify(status='error', error=['Post was deleted'])
+            return jsonify(status='error', error=[_('Post was deleted')])
 
         if current_user.is_subban(post.sid):
-            return jsonify(status='error', error=['You are banned on this sub.'])
+            return jsonify(status='error', error=[_('You are banned on this sub.')])
 
         post.content = form.content.data
         # Only save edited time if it was posted more than five minutes ago
@@ -622,13 +619,13 @@ def grab_title():
     try:
         req = misc.safeRequest(url)
     except (requests.exceptions.RequestException, ValueError):
-        return jsonify(status='error', error=['Couldn\'t get title'])
+        return jsonify(status='error', error=[_('Couldn\'t get title')])
 
     og = BeautifulSoup(req[1], 'lxml', from_encoding='utf-8')
     try:
         title = og('title')[0].text
     except (OSError, ValueError, IndexError):
-        return jsonify(status='error', error=['Couldn\'t get title'])
+        return jsonify(status='error', error=[_('Couldn\'t get title')])
     
     title = title.strip(misc.WHITESPACE)
     title = re.sub(' - Youtube$', '', title)
@@ -637,7 +634,7 @@ def grab_title():
 
 def post_over_limit(limit):
     form = CreateSubTextPost()
-    return render_template('createpost.html', txtpostform=form, error='Wait a bit before posting.')
+    return render_template('createpost.html', txtpostform=form, error=_('Wait a bit before posting.'))
 
 
 @do.route("/do/post", methods=['POST'])
@@ -649,7 +646,7 @@ def create_post():
         form = forms.CreteSubPostCaptcha()
         if not form.validate():
             if not misc.validate_captcha(form.ctok.data, form.captcha.data):
-                return render_template('createpost.html', txtpostform=form, error="Invalid captcha."), 400
+                return render_template('createpost.html', txtpostform=form, error=_("Invalid captcha.")), 400
             return render_template('createpost.html', txtpostform=form, error=get_errors(form)[0])
     form = CreateSubTextPost()
     if form.validate():
@@ -658,34 +655,34 @@ def create_post():
             try:
                 enable_posting = SiteMetadata.get(SiteMetadata.key == 'enable_posting')
                 if enable_posting.value in ('False', '0'):
-                    return render_template('createpost.html', txtpostform=form, error="Posting has been temporarily disabled"), 400
+                    return render_template('createpost.html', txtpostform=form, error=_("Posting has been temporarily disabled")), 400
             except SiteMetadata.DoesNotExist:
                 pass
         
         try:
             sub = Sub.get(fn.Lower(Sub.name) == form.sub.data.lower())
         except:
-            return render_template('createpost.html', txtpostform=form, error="Sub does not exist"), 400
+            return render_template('createpost.html', txtpostform=form, error=_("Sub does not exist")), 400
         
         subdata = misc.getSubData(sub.sid)
 
         if sub.name.lower() in ('all', 'new', 'hot', 'top', 'admin', 'home'):
-            return render_template('createpost.html', txtpostform=form, error="You cannot post in this sub."), 400
+            return render_template('createpost.html', txtpostform=form, error=_("You cannot post in this sub.")), 400
         if current_user.is_subban(sub):
-            return render_template('createpost.html', txtpostform=form, error="You're banned from posting on this sub"), 400
+            return render_template('createpost.html', txtpostform=form, error=_("You're banned from posting on this sub")), 400
         
         submods = misc.getSubMods(sub.sid)
         if subdata.get('restricted', 0) == '1' and not (current_user.uid in submods['all']):
-            return render_template('createpost.html', txtpostform=form, error="Only mods can post on this sub"), 400
+            return render_template('createpost.html', txtpostform=form, error=_("Only mods can post on this sub")), 400
 
         if misc.get_user_level(current_user.uid)[0] < 7:
             today = datetime.datetime.utcnow() - datetime.timedelta(days=1)
             lposts = SubPost.select().where(SubPost.uid == current_user.uid).where(SubPost.sid == sub.sid).where(SubPost.posted > today).count()
             tposts = SubPost.select().where(SubPost.uid == current_user.uid).where(SubPost.posted > today).count()
             if lposts > 10 or tposts > 25:
-                return render_template('createpost.html', txtpostform=form, error="You have posted too much today"), 400
+                return render_template('createpost.html', txtpostform=form, error=_("You have posted too much today")), 400
         if len(form.title.data.strip(misc.WHITESPACE)) < 3:
-            return render_template('createpost.html', txtpostform=form, error="Title is too short and/or contains whitespace characters"), 400
+            return render_template('createpost.html', txtpostform=form, error=_("Title is too short and/or contains whitespace characters")), 400
         fileid = False
         if form.ptype.data == 'link':
             fupload = misc.upload_file()
@@ -694,47 +691,47 @@ def create_post():
                 fileid = fupload
 
             if not form.link.data:
-                return render_template('createpost.html', txtpostform=form, error="No link provided"), 400
+                return render_template('createpost.html', txtpostform=form, error=_("No link provided")), 400
 
             try:
                 lx = SubPost.select(SubPost.pid).where(SubPost.sid == sub.sid)
                 lx = lx.where(SubPost.link == form.link.data).where(SubPost.deleted == 0)
                 monthago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
                 lx = lx.where(SubPost.posted > monthago).get()
-                return render_template('createpost.html', txtpostform=form, error="This link was recently posted on this sub"), 400
+                return render_template('createpost.html', txtpostform=form, error=_("This link was recently posted on this sub")), 400
 
             except SubPost.DoesNotExist:
                 pass
             
             if misc.is_domain_banned(form.link.data.lower()):
-                return render_template('createpost.html', txtpostform=form, error="This domain is banned"), 400
+                return render_template('createpost.html', txtpostform=form, error=_("This domain is banned")), 400
 
             img = misc.get_thumbnail(form.link.data)
         if form.ptype.data == 'poll':
             ptype = 3
             # Check if this sub allows polls...
             if not subdata.get('allow_polls', False):
-                return render_template('createpost.html', txtpostform=form, error="This sub does not allow polling"), 400
+                return render_template('createpost.html', txtpostform=form, error=_("This sub does not allow polling")), 400
             # check if we got at least three options
             options = request.form.getlist('op[]')
             options = [x for x in options if len(x.strip(misc.WHITESPACE)) > 0]  # Remove empty strings
             if len(options) < 2:
-                return render_template('createpost.html', txtpostform=form, error="Not enough poll options provided"), 400
+                return render_template('createpost.html', txtpostform=form, error=_("Not enough poll options provided")), 400
             
             for p in options:
                 if len(p) > 128:
-                    return render_template('createpost.html', txtpostform=form, error="Poll option text is too long."), 400
+                    return render_template('createpost.html', txtpostform=form, error=_("Poll option text is too long.")), 400
             
             if form.closetime.data:
                 try:
                     closetime = datetime.datetime.strptime(form.closetime.data, "%Y-%m-%dT%H:%M:%S.%fZ")
                     if (closetime - datetime.datetime.utcnow()) > datetime.timedelta(days=60):
-                        return render_template('createpost.html', txtpostform=form, error="Poll closing time is too far in the future."), 400
+                        return render_template('createpost.html', txtpostform=form, error=_("Poll closing time is too far in the future.")), 400
                 except ValueError:
-                    return render_template('createpost.html', txtpostform=form, error="Invalid closing time."), 400
+                    return render_template('createpost.html', txtpostform=form, error=_("Invalid closing time.")), 400
                 
                 if datetime.datetime.utcnow() > closetime:
-                    return render_template('createpost.html', txtpostform=form, error="The closing time is in the past!"), 400
+                    return render_template('createpost.html', txtpostform=form, error=_("The closing time is in the past!")), 400
         elif form.ptype.data == 'link':
             ptype = 1
         else:
@@ -804,29 +801,29 @@ def create_comment(pid):
         try:
             post = SubPost.get(SubPost.pid == pid)
         except SubPost.DoesNotExist:
-            return jsonify(status='error', error=['Post does not exist']), 400
+            return jsonify(status='error', error=[_('Post does not exist')]), 400
         if post.deleted:
-            return jsonify(status='error', error=['Post was deleted']), 400
+            return jsonify(status='error', error=[_('Post was deleted')]), 400
 
         if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
-            return jsonify(status='error', error=["Post is archived"]), 400
+            return jsonify(status='error', error=[_("Post is archived")]), 400
 
         try:
             sub = Sub.get(Sub.sid == post.sid_id)
         except:
-            return jsonify(status='error', error='Internal error'), 400
+            return jsonify(status='error', error=_('Internal error')), 400
         if current_user.is_subban(sub):
-            return jsonify(status='error', error=['You are currently banned from commenting']), 400
+            return jsonify(status='error', error=[_('You are currently banned from commenting')]), 400
 
         if form.parent.data != '0':
             try:
                 parent = SubPostComment.get(SubPostComment.cid == form.parent.data)
             except SubPostComment.DoesNotExist:
-                return jsonify(status='error', error=["Parent comment does not exist"]), 400
+                return jsonify(status='error', error=[_("Parent comment does not exist")]), 400
 
             # XXX: We check both for None and 0 because I've found both on a Phuks snapshot...
             if (parent.status is not None and parent.status != 0) or parent.pid.pid != post.pid:
-                return jsonify(status='error', error=["Parent comment does not exist"]), 400
+                return jsonify(status='error', error=[_("Parent comment does not exist")]), 400
 
         comment = SubPostComment.create(pid=pid, uid=current_user.uid,
                                         content=form.comment.data.encode(),
@@ -844,6 +841,7 @@ def create_comment(pid):
                       room=post.pid)
 
         # 5 - send pm to parent
+        # TODO: Make this a translatable notification
         if form.parent.data != "0":
             parent = SubPostComment.get(SubPostComment.cid == form.parent.data)
             to = parent.uid.uid
@@ -889,7 +887,7 @@ def create_sendmsg():
         try:
             user = User.get(fn.Lower(User.name) == form.to.data.lower())
         except:
-            return json.dumps({'status': 'error', 'error': ['User does not exist']})
+            return json.dumps({'status': 'error', 'error': [_('User does not exist')]})
         misc.create_message(mfrom=current_user.uid,
                             to=user.uid,
                             subject=form.subject.data,
@@ -912,16 +910,16 @@ def ban_user_sub(sub):
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
-        return jsonify(status='error', error=['Sub does not exist'])
+        return jsonify(status='error', error=[_('Sub does not exist')])
         
     if not current_user.is_mod(sub.sid, 2):
-        return jsonify(status='error', error=['Not authorized'])
+        return jsonify(status='error', error=[_('Not authorized')])
     form = BanUserSubForm()
     if form.validate():
         try:
             user = User.get(fn.Lower(User.name) == form.user.data.lower())
         except User.DoesNotExist:
-            return jsonify(status='error', error=['User does not exist'])
+            return jsonify(status='error', error=[_('User does not exist')])
 
         # XXX: This is all SDBH does so it stays commented out for now
         #try:
@@ -935,20 +933,21 @@ def ban_user_sub(sub):
             try:
                 expires = datetime.datetime.strptime(form.expires.data, "%Y-%m-%dT%H:%M:%S.%fZ")
                 if (expires - datetime.datetime.utcnow()) > datetime.timedelta(days=365):
-                    return jsonify(status='error', error=['Expiration time too far into the future'])
+                    return jsonify(status='error', error=[_('Expiration time too far into the future')])
             except ValueError:
-                return jsonify(status='error', error=['Invalid expiration time'])
+                return jsonify(status='error', error=[_('Invalid expiration time')])
             
             if datetime.datetime.utcnow() > expires:
-                return jsonify(status='error', error=['Expiration date is in the past'])
+                return jsonify(status='error', error=[_('Expiration date is in the past')])
 
         if expires is None:
             if not current_user.is_mod(sub.sid, 1):
-                return jsonify(status='error', error=['Janitors may only create temporary bans'])
+                return jsonify(status='error', error=[_('Janitors may only create temporary bans')])
 
         if misc.is_sub_banned(sub, uid=user.uid):
-            return jsonify(status='error', error=['Already banned'])
+            return jsonify(status='error', error=[_('Already banned')])
             
+        # TODO: Transform into a translatable notification
         misc.create_message(mfrom=current_user.uid,
                             to=user.uid,
                             subject='You have been banned from /s/' + sub.name,
@@ -975,7 +974,7 @@ def inv_mod(sub):
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
-        return jsonify(status='error', error=['Sub does not exist'])
+        return jsonify(status='error', error=[_('Sub does not exist')])
 
     try:
         SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == current_user.uid) & (SubMod.power_level == 0) & (SubMod.invite == False))
@@ -989,29 +988,31 @@ def inv_mod(sub):
             try:
                 user = User.get(fn.Lower(User.name) == form.user.data.lower())
             except User.DoesNotExist:
-                return jsonify(status='error', error=['User does not exist'])
+                return jsonify(status='error', error=[_('User does not exist')])
 
             try:
                 SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.invite == False))
-                return jsonify(status='error', error=['User is already a mod'])
+                return jsonify(status='error', error=[_('User is already a mod')])
             except SubMod.DoesNotExist:
                 pass
 
             try:
                 SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.invite == True))
-                return jsonify(status='error', error=['User has a pending invite'])
+                return jsonify(status='error', error=[_('User has a pending invite')])
             except SubMod.DoesNotExist:
                 pass
             
             if form.level.data in ('1', '2'):
                 power_level = int(form.level.data)
             else:
-                return jsonify(status='error', error=['Invalid power level'])
+                return jsonify(status='error', error=[_('Invalid power level')])
 
             moddedCount = SubMod.select().where((SubMod.uid == user.uid) & (1 <= SubMod.power_level <= 2) & (SubMod.invite == False)).count()
             if moddedCount >= 20:
                 # TODO: Adjust by level
-                return jsonify(status='error', error=["User can't mod more than 20 subs"])
+                return jsonify(status='error', error=[_("User can't mod more than 20 subs")])
+            
+            # TODO: Transform into a translatable notification
             misc.create_message(mfrom=current_user.uid,
                                 to=user.uid,
                                 subject='You have been invited to mod a sub.',
@@ -1040,11 +1041,11 @@ def remove_sub_ban(sub, user):
     try:
         user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
-        return jsonify(status='error', error=['User does not exist'])
+        return jsonify(status='error', error=[_('User does not exist')])
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
-        return jsonify(status='error', error=['Sub does not exist'])
+        return jsonify(status='error', error=[_('Sub does not exist')])
     form = DummyForm()
     if form.validate():
         if current_user.is_mod(sub.sid, 2) or current_user.is_admin():
@@ -1053,10 +1054,10 @@ def remove_sub_ban(sub, user):
                                 (SubBan.uid == user.uid) & 
                                 ((SubBan.effective == True) & ((SubBan.expires.is_null(True)) | (SubBan.expires > datetime.datetime.utcnow()) )) )
             except SubBan.DoesNotExist:
-                return jsonify(status='error', error=['User is not banned'])
+                return jsonify(status='error', error=[_('User is not banned')])
             
             if not current_user.is_mod(sub.sid, 1) and sb.created_by_id != current_user.uid:
-                return jsonify(status='error', error=['Janitors may only remove bans placed by themselves'])
+                return jsonify(status='error', error=[_('Janitors may only remove bans placed by themselves')])
 
             sb.effective = False
             sb.expires = datetime.datetime.utcnow()
@@ -1075,7 +1076,7 @@ def remove_sub_ban(sub, user):
             misc.create_sublog(misc.LOG_TYPE_SUB_UNBAN, current_user.uid, sub.sid, target=user.uid,
                                admin=True if (not current_user.is_mod(sub.sid, 1) and current_user.is_admin()) else False)
             cache.delete_memoized(misc.is_sub_banned, sub, uid=user.uid)
-            return jsonify(status='ok', msg='Ban removed')
+            return jsonify(status='ok', msg=_('Ban removed'))
         else:
             abort(403)
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -1088,11 +1089,11 @@ def remove_mod2(sub, user):
     try:
         user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
-        return jsonify(status='error', error=['User does not exist'])
+        return jsonify(status='error', error=[_('User does not exist')])
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
-        return jsonify(status='error', error=['Sub does not exist'])
+        return jsonify(status='error', error=[_('Sub does not exist')])
     form = DummyForm()
     if form.validate():
         isTopMod = current_user.is_mod(sub.sid, 0)
@@ -1100,7 +1101,7 @@ def remove_mod2(sub, user):
             try:
                 mod = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.power_level != 0) & (SubMod.invite == False))
             except SubMod.DoesNotExist:
-                return jsonify(status='error', error=['User is not mod'])
+                return jsonify(status='error', error=[_('User is not mod')])
             
             mod.delete_instance()
             SubMetadata.create(sid=sub.sid, key='xmod2', value=user.uid).save()
@@ -1110,7 +1111,7 @@ def remove_mod2(sub, user):
 
             return jsonify(status='ok', resign=True if current_user.uid == user.uid else False)
         else:
-            return jsonify(status='error', error=['Access denied'])
+            return jsonify(status='error', error=[_('Access denied')])
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -1121,11 +1122,11 @@ def revoke_mod2inv(sub, user):
     try:
         user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
-        return jsonify(status='error', error=['User does not exist'])
+        return jsonify(status='error', error=[_('User does not exist')])
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
-        return jsonify(status='error', error=['Sub does not exist'])
+        return jsonify(status='error', error=[_('Sub does not exist')])
     form = DummyForm()
     if form.validate():
         isTopMod = current_user.is_mod(sub.sid, 0)
@@ -1133,7 +1134,7 @@ def revoke_mod2inv(sub, user):
             try:
                 x = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.invite == True))
             except SubMetadata.DoesNotExist:
-                return jsonify(status='error', error=['User has not been invited to moderate the sub'])
+                return jsonify(status='error', error=[_('User has not been invited to moderate the sub')])
             x.delete_instance()
 
             misc.create_sublog(misc.LOG_TYPE_SUB_MOD_INV_CANCEL, current_user.uid, sub.sid, target=user.uid,
@@ -1141,7 +1142,7 @@ def revoke_mod2inv(sub, user):
 
             return jsonify(status='ok')
         else:
-            return jsonify(status='error', error=['Access denied'])
+            return jsonify(status='error', error=[_('Access denied')])
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -1152,21 +1153,21 @@ def accept_modinv(sub, user):
     try:
         user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
-        return jsonify(status='error', error=['User does not exist'])
+        return jsonify(status='error', error=[_('User does not exist')])
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
-        return jsonify(status='error', error=['Sub does not exist'])
+        return jsonify(status='error', error=[_('Sub does not exist')])
     form = DummyForm()
     if form.validate():
         try:
             modi = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.invite == True))
         except SubMod.DoesNotExist:
-            return jsonify(status='error', error='You have not been invited to mod this sub')
+            return jsonify(status='error', error=_('You have not been invited to mod this sub'))
 
         moddedCount = SubMod.select().where((SubMod.uid == user.uid) & (1 <= SubMod.power_level <= 2) & (SubMod.invite == False)).count()
         if moddedCount >= 20:
-            return jsonify(status='error', error=["You can't mod more than 20 subs"])
+            return jsonify(status='error', error=[_("You can't mod more than 20 subs")])
 
         modi.invite = False
         modi.save()
@@ -1187,14 +1188,14 @@ def refuse_mod2inv(sub):
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
-        return jsonify(status='error', error=['Sub does not exist'])
+        return jsonify(status='error', error=[_('Sub does not exist')])
 
     form = DummyForm()
     if form.validate():
         try:
             modi = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == current_user.uid) & (SubMod.invite == True))
         except SubMetadata.DoesNotExist:
-            return jsonify(status='error', error='You have not been invited to mod this sub')
+            return jsonify(status='error', error=_('You have not been invited to mod this sub'))
 
         modi.delete_instance()
         misc.create_sublog(misc.LOG_TYPE_SUB_MOD_INV_REJECT, current_user.uid, sub.sid, target=current_user.uid)
@@ -1209,7 +1210,7 @@ def read_pm(mid):
     try:
         message = Message.get(Message.mid == mid)
     except Message.DoesNotExist:
-        return jsonify(status='error', error=['Message not found'])
+        return jsonify(status='error', error=[_('Message not found')])
 
     if current_user.uid == message.receivedby_id:
         if message.read is not None:
@@ -1246,13 +1247,13 @@ def delete_pm(mid):
     try:
         message = Message.get(Message.mid == mid)
         if message.receivedby_id != current_user.uid:
-            return jsonify(status='error', error="Message does not exist")
+            return jsonify(status='error', error=_("Message does not exist"))
         
         message.mtype = 6
         message.save()
         return jsonify(status='ok')
     except Message.DoesNotExist:
-        return jsonify(status='error', error="Message does not exist")
+        return jsonify(status='error', error=_("Message does not exist"))
 
 
 @do.route("/do/edit_title", methods=['POST'])
@@ -1261,24 +1262,24 @@ def edit_title():
     form = DeletePost()
     if form.validate():
         if not form.reason.data:
-            return jsonify(status="error", error="Missing title")
+            return jsonify(status="error", error=_("Missing title"))
 
         if len(form.reason.data.strip(misc.WHITESPACE)) < 3:
-            return jsonify(status="error", error="Title too short.")
+            return jsonify(status="error", error=_("Title too short."))
 
         try:
             post = SubPost.get(SubPost.pid == form.post.data)
         except SubPost.DoesNotExist:
-            return jsonify(status="error", error="Post does not exist")
+            return jsonify(status="error", error=_("Post does not exist"))
         sub = Sub.get(Sub.sid == post.sid)
         if current_user.is_subban(sub):
-            return jsonify(status='error', error='You are banned on this sub.')
+            return jsonify(status='error', error=_('You are banned on this sub.'))
 
         if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(seconds=config.site.title_edit_timeout):
-            return jsonify(status="error", error="You cannot edit the post title anymore")
+            return jsonify(status="error", error=_("You cannot edit the post title anymore"))
 
         if post.uid.uid != current_user.uid:
-            return jsonify(status="error", error="You did not post this!")
+            return jsonify(status="error", error=_("You did not post this!"))
 
         post.title = form.reason.data
         post.save()
@@ -1286,7 +1287,7 @@ def edit_title():
                       namespace='/snt', room=post.pid)
 
         return jsonify(status="ok")
-    return jsonify(status="error", error="Bork bork")
+    return jsonify(status="error", error=_("Bork bork"))
 
 
 @do.route("/do/save_pm/<mid>", methods=['POST'])
@@ -1296,13 +1297,13 @@ def save_pm(mid):
     try:
         message = Message.get(Message.mid == mid)
         if message.receivedby_id != current_user.uid:
-            return jsonify(status='error', error="Message does not exist")
+            return jsonify(status='error', error=_("Message does not exist"))
         
         message.mtype = 9
         message.save()
         return jsonify(status='ok')
     except Message.DoesNotExist:
-        return jsonify(status='error', error="Message does not exist")
+        return jsonify(status='error', error=_("Message does not exist"))
 
 
 @do.route("/do/admin/deleteannouncement")
@@ -1338,7 +1339,7 @@ def make_announcement():
         try:
             curr_ann = SiteMetadata.get(SiteMetadata.key == 'announcement')
             if curr_ann.value == form.post.data:
-                return jsonify(status='error', error='Post already announced')
+                return jsonify(status='error', error=_('Post already announced'))
             deleteannouncement()
         except SiteMetadata.DoesNotExist:
             pass
@@ -1346,7 +1347,7 @@ def make_announcement():
         try:
             post = SubPost.get(SubPost.pid == form.post.data)
         except SubPost.DoesNotExist:
-            return jsonify(status='error', error='Post does not exist')
+            return jsonify(status='error', error=_('Post does not exist'))
 
         SiteMetadata.create(key='announcement', value=post.pid)
 
@@ -1371,7 +1372,7 @@ def ban_domain():
     if form.validate():
         try:
             sm = SiteMetadata.get((SiteMetadata.key == 'banned_domain') & (SiteMetadata.value == form.domain.data))
-            return jsonify(status='error', error=['Domain is already banned'])
+            return jsonify(status='error', error=[_('Domain is already banned')])
         except SiteMetadata.DoesNotExist:
             sm = SiteMetadata.create(key='banned_domain', value=form.domain.data)
             sm.save()
@@ -1391,7 +1392,7 @@ def remove_banned_domain(domain):
         sm = SiteMetadata.get((SiteMetadata.key == 'banned_domain') & (SiteMetadata.value == domain))
         sm.delete_instance()
     except:
-        return jsonify(status='error', error='Domain is not banned')
+        return jsonify(status='error', error=_('Domain is not banned'))
 
     misc.create_sitelog(misc.LOG_TYPE_DOMAIN_UNBAN, current_user.uid, comment=domain)
 
@@ -1432,10 +1433,10 @@ def save_post(pid):
     try:
         SubPost.get(SubPost.pid == pid)
     except:
-        return jsonify(status='error', error=['Post does not exist'])
+        return jsonify(status='error', error=[_('Post does not exist')])
     try:
         UserSaved.get((UserSaved.uid == current_user.uid) & (UserSaved.pid == pid))
-        return jsonify(status='error', error=['Already saved'])
+        return jsonify(status='error', error=[_('Already saved')])
     except UserSaved.DoesNotExist:
         UserSaved.create(uid=current_user.uid, pid=pid)
         return jsonify(status='ok')
@@ -1447,14 +1448,14 @@ def remove_saved_post(pid):
     try:
         SubPost.get(SubPost.pid == pid)
     except:
-        return jsonify(status='error', error=['Post does not exist'])
+        return jsonify(status='error', error=[_('Post does not exist')])
 
     try:
         sp = UserSaved.get((UserSaved.uid == current_user.uid) & (UserSaved.pid == pid))
         sp.delete_instance()
         return jsonify(status='ok')
     except UserSaved.DoesNotExist:
-        return jsonify(status='error', error=['Post was not saved'])
+        return jsonify(status='error', error=[_('Post was not saved')])
 
 
 @do.route("/do/useinvitecode", methods=['POST'])
@@ -1517,7 +1518,7 @@ def toggle_sticky(post):
     try:
         post = SubPost.get(SubPost.pid == post)
     except SubPost.DoesNotExist:
-        return jsonify(status='error', error='Post does not exist')
+        return jsonify(status='error', error=_('Post does not exist'))
     
 
     if not current_user.is_mod(post.sid_id):
@@ -1546,7 +1547,7 @@ def toggle_wikipost(post):
     try:
         post = SubPost.get(SubPost.pid == post)
     except SubPost.DoesNotExist:
-        return jsonify(status='error', error='Post does not exist')
+        return jsonify(status='error', error=_('Post does not exist'))
 
 
     if not current_user.is_mod(post.sid_id):
@@ -1578,7 +1579,7 @@ def delete_flair(sub):
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
-        return jsonify(status='error', error=['Sub does not exist'])
+        return jsonify(status='error', error=[_('Sub does not exist')])
 
     if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
         abort(403)
@@ -1588,7 +1589,7 @@ def delete_flair(sub):
         try:
             flair = SubFlair.get((SubFlair.sid == sub.sid) & (SubFlair.xid == form.flair.data))
         except SubFlair.DoesNotExist:
-            return jsonify(status='error', error=['Flair does not exist'])
+            return jsonify(status='error', error=[_('Flair does not exist')])
         
         flair.delete_instance()
         return jsonify(status='ok')
@@ -1611,7 +1612,7 @@ def create_flair(sub):
     if form.validate():
         allowed_flairs = re.compile("^[a-zA-Z0-9._ -]+$")
         if not allowed_flairs.match(form.text.data):
-            return jsonify(status='error', error=['Flair has invalid characters'])
+            return jsonify(status='error', error=[_('Flair has invalid characters')])
 
         SubFlair.create(sid=sub.sid, text=form.text.data)
         return jsonify(status='ok')
@@ -1629,7 +1630,7 @@ def recovery():
     if form.validate():
         if not misc.validate_captcha(form.ctok.data, form.captcha.data):
             # XXX: Fix this
-            return jsonify(status='error', error=["Invalid captcha (refresh page.)"])
+            return jsonify(status='error', error=[_("Invalid captcha (refresh page.)")])
         try:
             user = User.get(User.email == form.email.data)
         except User.DoesNotExist:
@@ -1657,15 +1658,15 @@ def recovery():
         sendMail(
             subject='Password recovery',
             to=user.email,
-            content="""<h1><strong>{0}</strong></h1>
+            content=_("""<h1><strong>%(lema)s</strong></h1>
             <p>Somebody (most likely you) has requested a password reset for
             your account</p>
             <p>To proceed, visit the following address (valid for the next 24hs)</p>
-            <a href="{1}">{1}</a>
+            <a href="%(url)s">%(url)s</a>
             <hr>
             <p>If you didn't request a password recovery, please ignore this
             email</p>
-            """.format(config.site.lema, url_for('password_reset', key=rekey,
+            """, lema=config.site.lema, url=url_for('password_reset', key=rekey,
                                             uid=user.uid, _external=True))
         )
 
@@ -1723,22 +1724,22 @@ def edit_comment():
         try:
             comment = SubPostComment.get(SubPostComment.cid == form.cid.data)
         except SubPostComment.DoesNotExist:
-            return jsonify(status='error', error=['Comment does not exist'])
+            return jsonify(status='error', error=[_('Comment does not exist')])
 
         if comment.uid_id != current_user.uid and not current_user.is_admin():
-            return jsonify(status='error', error=['Not authorized'])
+            return jsonify(status='error', error=[_('Not authorized')])
             
         post = SubPost.get(SubPost.pid == comment.pid)
         sub = Sub.get(Sub.sid == post.sid)
         if current_user.is_subban(sub):
-            return jsonify(status='error', error=['You are banned on this sub.'])
+            return jsonify(status='error', error=[_('You are banned on this sub.')])
 
         if comment.status == '1':
             return jsonify(status='error',
-                           error="You can't edit a deleted comment")
+                           error=_("You can't edit a deleted comment"))
         
         if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
-            return jsonify(status='error', error="Post is archived")
+            return jsonify(status='error', error=_("Post is archived"))
         
         dt = datetime.datetime.utcnow()
         spm = SubPostCommentHistory.create(cid=comment.cid, content=comment.content, datetime=dt if not comment.lastedit else comment.lastedit)
@@ -1759,11 +1760,11 @@ def delete_comment():
         try:
             comment = SubPostComment.get(SubPostComment.cid == form.cid.data)
         except SubPostComment.DoesNotExist:
-            return jsonify(status='error', error='Comment does not exist')
+            return jsonify(status='error', error=_('Comment does not exist'))
         post = SubPost.get(SubPost.pid == comment.pid)
 
         if comment.uid_id != current_user.uid and not (current_user.is_admin() or current_user.is_mod(post.sid)):
-            return jsonify(status='error', error='Not authorized')
+            return jsonify(status='error', error=_('Not authorized'))
 
         if comment.uid_id != current_user.uid and (current_user.is_admin() or current_user.is_mod(post.sid)):
             misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_COMMENT, current_user.uid, post.sid,
@@ -1786,7 +1787,7 @@ def upvote(pid, value):
     if not form.validate():
         return json.dumps({'status': 'error', 'error': get_errors(form)}), 400
     if not current_user.is_authenticated:
-        return jsonify(msg='Not authenticated'), 403
+        return jsonify(msg=_('Not authenticated')), 403
 
     return misc.cast_vote(current_user.uid, "post", pid, value)
 
@@ -1799,7 +1800,7 @@ def upvotecomment(cid, value):
         return json.dumps({'status': 'error', 'error': get_errors(form)})
     
     if not current_user.is_authenticated:
-        return jsonify(msg='Not authenticated'), 403
+        return jsonify(msg=_('Not authenticated')), 403
 
     return misc.cast_vote(current_user.uid, "comment", cid, value)
 
@@ -1851,7 +1852,7 @@ def preview():
         if request.json.get('text'):
             return jsonify(status='ok', text=misc.our_markdown(request.json.get('text')))
         else:
-            return jsonify(status='error', error='Missing text')
+            return jsonify(status='error', error=_('Missing text'))
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -1865,14 +1866,14 @@ def toggle_nsfw():
         try:
             post = SubPost.get(SubPost.pid == form.post.data)
         except SubPost.DoesNotExist:
-            return json.dumps({'status': 'error', 'error': 'Post does not exist'})
+            return json.dumps({'status': 'error', 'error': _('Post does not exist')})
 
         if current_user.uid == post.uid_id or current_user.is_admin() or current_user.is_mod(post.sid):
             post.nsfw = 1 if post.nsfw == 0 else 0
             post.save()
-            return json.dumps({'status': 'ok', 'msg': 'NSFW set to {0}'.format(bool(post.nsfw))})
+            return json.dumps({'status': 'ok'})
         else:
-            return json.dumps({'status': 'error', 'error': 'Not authorized'})
+            return json.dumps({'status': 'error', 'error': _('Not authorized')})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
@@ -1882,7 +1883,7 @@ def ignore_user(uid):
     try:
         user = User.get(User.uid == uid)
     except User.DoesNotExist:
-        return jsonify(status='error', error='User not found')
+        return jsonify(status='error', error=_('User not found'))
 
     try:
         uig = UserIgnores.get((UserIgnores.uid == current_user.uid) & (UserIgnores.target == uid))
@@ -1915,20 +1916,20 @@ def sub_upload(sub):
     fname = request.form.get('name')
     if len(fname) > 10:
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
-                                                           'error': 'File name too long.', 'files': ufiles})
+                                                           'error': _('File name too long.'), 'files': ufiles})
 
     if len(fname) < 3:
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
-                                                           'error': 'File name too short or missing.', 'files': ufiles})
+                                                           'error': _('File name too short or missing.'), 'files': ufiles})
 
     if not allowedNames.match(fname):
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
-                                                           'error': 'Invalid file name.', 'files': ufiles})
+                                                           'error': _('Invalid file name.'), 'files': ufiles})
 
     ufile = request.files.getlist('files')[0]
     if ufile.filename == '':
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
-                                                           'error': 'Please select a file to upload.', 'files': ufiles})
+                                                           'error': _('Please select a file to upload.'), 'files': ufiles})
 
     mtype = magic.from_buffer(ufile.read(1024), mime=True)
 
@@ -1940,7 +1941,7 @@ def sub_upload(sub):
         extension = '.gif'
     else:
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
-                                                           'error': 'Invalid file type. Only jpg, png and gif allowed.', 'files': ufiles})
+                                                           'error': _('Invalid file type. Only jpg, png and gif allowed.'), 'files': ufiles})
 
     ufile.seek(0)
     md5 = hashlib.md5()
@@ -1969,7 +1970,7 @@ def sub_upload(sub):
         if lm:
             os.remove(os.path.join(config.storage.uploads.path, f_name))
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
-                                                           'error': 'Not enough available space to upload file.', 'files': ufiles})
+                                                           'error': _('Not enough available space to upload file.'), 'files': ufiles})
     # THUMBNAIL
     ufile.seek(0)
     im = Image.open(ufile).convert('RGB')
@@ -1997,8 +1998,7 @@ def sub_upload(sub):
     im.close()
 
     SubUploads.create(sid=sub.sid, fileid=f_name, thumbnail=filename, size=fsize, name=fname)
-    SubLog.create(sid=sub.sid, action=4, link=url_for('sub.view_sub', sub=sub.name), time=datetime.datetime.utcnow(),
-                      desc='{0} modified the sub\'s stylesheet (uploaded file)'.format(current_user.name))
+    misc.create_sublog(misc.LOG_TYPE_SUB_CSS_CHANGE, current_user.uid, sub.sid)
     return redirect(url_for('sub.edit_sub_css', sub=sub.name))
 
 
@@ -2021,8 +2021,7 @@ def sub_upload_delete(sub, name):
         jsonify(status='error')
     fileid = img.fileid
     img.delete_instance()
-    SubLog.create(sid=sub.sid, action=4, link=url_for('sub.view_sub', sub=sub.name), time=datetime.datetime.utcnow(),
-                      desc='{0} modified the sub\'s stylesheet (removed upload)'.format(current_user.name))
+    misc.create_sublog(misc.LOG_TYPE_SUB_CSS_CHANGE, current_user.uid, sub.sid)
 
     # We won't delete the pic if somebody else is still using it..
     try:
@@ -2198,41 +2197,41 @@ def cast_vote(pid, oid):
         try:
             post = misc.getSinglePost(pid)
         except SubPost.DoesNotExist:
-            return jsonify(status='error', error='Post does not exist')
+            return jsonify(status='error', error=_('Post does not exist'))
         
         if post['ptype'] != 3:
-            return jsonify(status='error', error='Post is not a poll')
+            return jsonify(status='error', error=_('Post is not a poll'))
 
         try:
             option = SubPostPollOption.get((SubPostPollOption.id == oid) & (SubPostPollOption.pid == pid))
         except SubPostPollOption.DoesNotExist:
-            return jsonify(status='error', error='Poll option does not exist')
+            return jsonify(status='error', error=_('Poll option does not exist'))
 
         # Check if user hasn't voted already.
         try:
             SubPostPollVote.get((SubPostPollVote.uid == current_user.uid) & (SubPostPollVote.pid == pid))
-            return jsonify(status='error', error='Already voted')
+            return jsonify(status='error', error=_('Already voted'))
         except SubPostPollVote.DoesNotExist:
             pass
         
         # Check if poll is still open...
         try:
             SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closed'))
-            return jsonify(status='error', error='Poll is closed')
+            return jsonify(status='error', error=_('Poll is closed'))
         except SubPostMetadata.DoesNotExist:
             pass
 
         try:
             ca = SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closes_time'))
             if int(ca.value) < time.time():
-                return jsonify(status='error', error='Poll is closed')
+                return jsonify(status='error', error=_('Poll is closed'))
         except SubPostMetadata.DoesNotExist:
             pass
         
         try:
             ca = SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_vote_after_level'))
             if current_user.get_user_level()[0] < int(ca.value):
-                return jsonify(status='error', error='Insufficient user level')
+                return jsonify(status='error', error=_('Insufficient user level'))
         except SubPostMetadata.DoesNotExist:
             pass
 
@@ -2249,22 +2248,22 @@ def remove_vote(pid):
         try:
             post = misc.getSinglePost(pid)
         except SubPost.DoesNotExist:
-            return jsonify(status='error', error='Post does not exist')
+            return jsonify(status='error', error=_('Post does not exist'))
         
         if post['ptype'] != 3:
-            return jsonify(status='error', error='Post is not a poll')
+            return jsonify(status='error', error=_('Post is not a poll'))
 
         # Check if poll is still open...
         try:
             SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closed'))
-            return jsonify(status='error', error='Poll is closed')
+            return jsonify(status='error', error=_('Poll is closed'))
         except SubPostMetadata.DoesNotExist:
             pass
 
         try:
             ca = SubPostMetadata.get((SubPostMetadata.pid == pid) & (SubPostMetadata.key == 'poll_closes_time'))
             if int(ca.value) < time.time():
-                return jsonify(status='error', error='Poll is closed')
+                return jsonify(status='error', error=_('Poll is closed'))
         except SubPostMetadata.DoesNotExist:
             pass
         
@@ -2287,7 +2286,7 @@ def close_poll():
         try:
             post = SubPost.get(SubPost.pid == form.post.data)
         except SubPost.DoesNotExist:
-            return json.dumps({'status': 'error', 'error': 'Post does not exist'})
+            return json.dumps({'status': 'error', 'error': _('Post does not exist')})
 
         if post.ptype != 3:
             abort(404)
@@ -2296,11 +2295,11 @@ def close_poll():
             # Check if poll's not closed already
             postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == post.pid))
             if 'poll_closed' in postmeta:
-                return json.dumps({'status': 'error', 'error': 'Poll already closed.'})
+                return json.dumps({'status': 'error', 'error': _('Poll already closed.')})
 
             if 'poll_closes_time' in postmeta:
                 if int(postmeta['poll_closes_time']) < time.time():
-                    return json.dumps({'status': 'error', 'error': 'Poll already closed.'})
+                    return json.dumps({'status': 'error', 'error': _('Poll already closed.')})
             
             SubPostMetadata.create(pid=post.pid, key='poll_closed', value='1')
             return json.dumps({'status': 'ok'})
@@ -2322,20 +2321,20 @@ def report():
         try:
             post = misc.getSinglePost(form.post.data)
         except SubPost.DoesNotExist:
-            return jsonify(status='error', error='Post does not exist')
+            return jsonify(status='error', error=_('Post does not exist'))
         
         if post['deleted'] != 0:
-            return jsonify(status='error', error='Post does not exist')
+            return jsonify(status='error', error=_('Post does not exist'))
         
         # check if user already reported the post
         try:
             rep = SubPostReport.get((SubPostReport.pid == post['pid']) & (SubPostReport.uid == current_user.uid))
-            return jsonify(status='error', error='You have already reported this post')
+            return jsonify(status='error', error=_('You have already reported this post'))
         except SubPostReport.DoesNotExist:
             pass
         
         if len(form.reason.data) < 2:
-            return jsonify(status='error', error='Report reason too short.')
+            return jsonify(status='error', error=_('Report reason too short.'))
 
         # do the reporting.
         SubPostReport.create(pid=post['pid'], uid=current_user.uid, reason=form.reason.data)
@@ -2362,20 +2361,20 @@ def report_comment():
             comm = comm.where(SubPostComment.cid == form.post.data)
             comm = comm.get()
         except SubPostComment.DoesNotExist:
-            return jsonify(status='error', error='Comment does not exist')
+            return jsonify(status='error', error=_('Comment does not exist'))
         
         if comm.status:
-            return jsonify(status='error', error='Comment does not exist')
+            return jsonify(status='error', error=_('Comment does not exist'))
         
         # check if user already reported the post
         try:
             rep = SubPostCommentReport.get((SubPostCommentReport.cid == comm.cid) & (SubPostCommentReport.uid == current_user.uid))
-            return jsonify(status='error', error='You have already reported this post')
+            return jsonify(status='error', error=_('You have already reported this post'))
         except SubPostCommentReport.DoesNotExist:
             pass
         
         if len(form.reason.data) < 2:
-            return jsonify(status='error', error='Report reason too short.')
+            return jsonify(status='error', error=_('Report reason too short.'))
 
         # do the reporting.
         SubPostCommentReport.create(cid=comm.cid, uid=current_user.uid, reason=form.reason.data)

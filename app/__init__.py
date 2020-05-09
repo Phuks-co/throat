@@ -15,6 +15,7 @@ from flask import request, jsonify, Response
 from flask_login import LoginManager, login_required, current_user, login_user
 from flask_webpack import Webpack
 from flask_babel import Babel, _, Locale
+from flask_babel import lazy_gettext as _l
 from wheezy.html.utils import escape_html
 from feedgen.feed import FeedGenerator
 
@@ -23,11 +24,10 @@ from .forms import RegistrationForm, LoginForm, LogOutForm
 from .forms import CreateSubForm, EditUserForm, AssignUserBadgeForm
 from .forms import CreateSubTextPost, CreateSubLinkPost
 from .forms import CreateUserMessageForm, PostComment, EditModForm
-from .forms import DeletePost, CreateUserBadgeForm, DummyForm
+from .forms import DeletePost, DummyForm
 from .forms import BanDomainForm, ChangePasswordForm, DeleteAccountForm
-from .forms import CreateMulti, EditMulti
 from .forms import UseInviteCodeForm
-from .views import do, api, subs, api3, jwt
+from .views import do, subs, api3, jwt
 from . import misc, forms, caching
 from .socketio import socketio
 from .misc import SiteAnon, getDefaultSubs, allowedNames, get_errors, engine
@@ -49,7 +49,6 @@ app.config.update(config.get_flask_dict())
 babel = Babel(app)
 
 app.register_blueprint(do)
-app.register_blueprint(api)
 app.register_blueprint(api3, url_prefix='/api/v3')
 jwt.init_app(app)
 app.register_blueprint(subs, url_prefix='/{}'.format(config.site.sub_prefix))
@@ -615,7 +614,7 @@ def view_mentions(page):
 
     msgs = misc.getMentionsIndex(page)
     return render_template('messages/messages.html', page=page,
-                           messages=msgs, box_name="Mentions", boxID="8",
+                           messages=msgs, box_name=_("Mentions"), boxID="8",
                            box_route='view_mentions')
 
 
@@ -650,7 +649,7 @@ def view_messages_postreplies(page):
                   room='user' + current_user.uid)
     msgs = misc.getMsgPostReplies(page)
     return render_template('messages/postreply.html', messages=msgs,
-                           page=page, box_name="Replies", boxID="2",
+                           page=page, box_name=_("Replies"), boxID="2",
                            box_route='view_messages_postreplies')
 
 
@@ -666,7 +665,7 @@ def view_messages_comreplies(page):
                   room='user' + current_user.uid)
     msgs = misc.getMsgCommReplies(page)
     return render_template('messages/commreply.html',
-                           page=page, box_name="Replies", messages=msgs,
+                           page=page, box_name=_("Replies"), messages=msgs,
                            box_route='view_messages_comreplies')
 
 
@@ -699,14 +698,14 @@ def admin_auth():
     try:
         user_secret = UserMetadata.get((UserMetadata.uid == current_user.uid) & (UserMetadata.key == 'totp_secret'))
     except UserMetadata.DoesNotExist:
-        return engine.get_template('admin/totp.html').render({'authform': form, 'error': 'No TOTP secret found.'})
+        return engine.get_template('admin/totp.html').render({'authform': form, 'error': _('No TOTP secret found.')})
     if form.validate_on_submit():
         totp = TOTP(user_secret.value)
         if totp.verify(form.totp.data):
             session['apriv'] = time.time()
             return redirect(url_for('admin_area'))
         else:
-            return engine.get_template('admin/totp.html').render({'authform': form, 'error': 'Invalid or expired password.'})
+            return engine.get_template('admin/totp.html').render({'authform': form, 'error': _('Invalid or expired token.')})
     return engine.get_template('admin/totp.html').render({'authform': form, 'error': None})
 
 @app.route('/admin/logout', methods=['POST'])
@@ -754,7 +753,6 @@ def admin_area():
         
     return render_template('admin/admin.html', subs=subs,
                            posts=posts, ups=ups, downs=downs, users=users,
-                           createuserbadgeform=CreateUserBadgeForm(),
                            comms=comms,
                            useinvitecodeform=invite, enable_posting=(ep == 'True'))
 
@@ -996,39 +994,39 @@ def register():
     form.cap_key, form.cap_b64 = misc.create_captcha()
     if form.validate():
         if not misc.validate_captcha(form.ctok.data, form.captcha.data):
-            return render_template('register.html', rform=form, error="Invalid captcha.")
+            return render_template('register.html', rform=form, error=_("Invalid captcha."))
         if not allowedNames.match(form.username.data):
-            return render_template('register.html', rform=form, error="Username has invalid characters.")
+            return render_template('register.html', rform=form, error=_("Username has invalid characters."))
         # check if user or email are in use
         try:
             User.get(fn.Lower(User.name) == form.username.data.lower())
-            return render_template('register.html', rform=form, error="Username is not available.")
+            return render_template('register.html', rform=form, error=_("Username is not available."))
         except User.DoesNotExist:
             pass
 
         if form.email.data:
             try:
                 User.get(User.email == form.email.data)
-                return render_template('register.html', rform=form, error="E-mail address is already in use.")
+                return render_template('register.html', rform=form, error=_("E-mail address is already in use."))
             except User.DoesNotExist:
                 pass
 
         if config.site.enable_security_question:
             if form.securityanswer.data.lower() != session['sa'].lower():
-                return render_template('register.html', rform=form, error="Incorrect answer for security question.")
+                return render_template('register.html', rform=form, error=_("Incorrect answer for security question."))
 
         # TODO: Rewrite invite code code
         if misc.enableInviteCode():
             if not form.invitecode.data:
-                return render_template('register.html', rform=form, error="Invalid invite code.0")
+                return render_template('register.html', rform=form, error=_("Invalid invite code."))
             # Check if there's a valid invite code in the database
             try:
                 invcode = InviteCode.get((InviteCode.code == form.invitecode.data) & 
                                          (InviteCode.expires.is_null() | (InviteCode.expires > datetime.datetime.utcnow())))
                 if invcode.uses >= invcode.max_uses:
-                    return render_template('register.html', rform=form, error="Invalid invite code.")
+                    return render_template('register.html', rform=form, error=_("Invalid invite code."))
             except InviteCode.DoesNotExist:
-                return render_template('register.html', rform=form, error="Invalid invite code.")
+                return render_template('register.html', rform=form, error=_("Invalid invite code."))
             
             invcode.uses += 1
             invcode.save()
@@ -1074,11 +1072,11 @@ def sso_proxy_validate():
         try:
             user = User.get((User.uid == red_c.decode()) & (User.status << (0, 100)))
         except User.DoesNotExist:
-            return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationFailure code=\"INVALID_TICKET\">User not found or invalid ticket</cas:authenticationFailure></cas:serviceResponse>",401
+            return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationFailure code=\"INVALID_TICKET\">" + _('User not found or invalid ticket') + "</cas:authenticationFailure></cas:serviceResponse>",401
 
         return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationSuccess><cas:user>{0}</cas:user></cas:authenticationSuccess></cas:serviceResponse>".format(user.name.lower()), 200
     else:
-        return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationFailure code=\"INVALID_TICKET\">User not found or invalid ticket</cas:authenticationFailure></cas:serviceResponse>",401
+        return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationFailure code=\"INVALID_TICKET\">" + _('User not found or invalid ticket') + "</cas:authenticationFailure></cas:serviceResponse>",401
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -1101,10 +1099,10 @@ def login():
         try:
             user = User.get(fn.Lower(User.name) == form.username.data.lower())
         except User.DoesNotExist:
-            return engine.get_template('user/login.html').render({'error': "Invalid username or password.", 'loginform': form})
+            return engine.get_template('user/login.html').render({'error': _("Invalid username or password."), 'loginform': form})
 
         if user.status != 0:
-            return engine.get_template('user/login.html').render({'error': "Invalid username or password.", 'loginform': form})
+            return engine.get_template('user/login.html').render({'error': _("Invalid username or password."), 'loginform': form})
 
         if user.crypto == 1:  # bcrypt
             thash = bcrypt.hashpw(form.password.data.encode('utf-8'),
@@ -1117,9 +1115,9 @@ def login():
                 else:
                     return form.redirect('index')
             else:
-                return engine.get_template('user/login.html').render({'error': "Invalid username or password.", 'loginform': form})
+                return engine.get_template('user/login.html').render({'error': _("Invalid username or password."), 'loginform': form})
         else:  # Unknown hash
-            return engine.get_template('user/login.html').render({'error': "Something went really really wrong here.", 'loginform': form})
+            return engine.get_template('user/login.html').render({'error': _("Something went really really wrong here."), 'loginform': form})
     return engine.get_template('user/login.html').render({'error': '', 'loginform': form})
 
 
@@ -1198,7 +1196,7 @@ def password_reset(uid, key):
 try:
     th_license = open('LICENSE', 'r').read()
 except FileNotFoundError:
-    th_license = 'License file was deleted :('
+    th_license = _l('License file was deleted :(')
 
 @app.route("/license")
 def license():
