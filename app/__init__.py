@@ -356,11 +356,6 @@ def donate():
     return render_template('donate.html')
 
 
-@app.route("/userguide")
-def userguide():
-    """ User Guide page """
-    return render_template('userguide.html')
-
 @app.route("/random")
 def random_sub():
     """ Here we get a random sub """
