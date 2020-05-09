@@ -1,5 +1,6 @@
 wheel
 Flask>=1.0.2 
+wtforms>=2.3.0
 Flask-WTF
 Flask-Babel
 Flask-Login>=0.4.1
