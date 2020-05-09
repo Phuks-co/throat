@@ -20,6 +20,10 @@ site:
   # was created. Set to zero to disable title editing (default is 5 minutes)
   title_edit_timeout: 300
 
+  # If True, enables setting security questions on the admin page. 
+  # Users will be asked to answer one of these security questions before registering
+  enable_security_question: False
+
 app:
   # URL to a working redis server.
   # Used for websockets and caching (if enabled)
