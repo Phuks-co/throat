@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Throat 1.0\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-05-09 17:58-0300\n"
+"POT-Creation-Date: 2020-05-09 20:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,63 +17,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
-#: app/__init__.py:557
+#: app/__init__.py:565
 msgid "Auto detect"
 msgstr ""
 
-#: app/__init__.py:612
+#: app/__init__.py:621
 msgid "Mentions"
 msgstr ""
 
-#: app/__init__.py:647 app/__init__.py:663
+#: app/__init__.py:657 app/__init__.py:674
 msgid "Replies"
 msgstr ""
 
-#: app/__init__.py:696
+#: app/__init__.py:707
 msgid "No TOTP secret found."
 msgstr ""
 
-#: app/__init__.py:703
+#: app/__init__.py:715
 msgid "Invalid or expired token."
 msgstr ""
 
-#: app/__init__.py:992 app/views/do.py:649
+#: app/__init__.py:1025 app/views/do.py:649
 msgid "Invalid captcha."
 msgstr ""
 
-#: app/__init__.py:994
+#: app/__init__.py:1027
 msgid "Username has invalid characters."
 msgstr ""
 
-#: app/__init__.py:998
+#: app/__init__.py:1031
 msgid "Username is not available."
 msgstr ""
 
-#: app/__init__.py:1005
+#: app/__init__.py:1038
 msgid "E-mail address is already in use."
 msgstr ""
 
-#: app/__init__.py:1011
+#: app/__init__.py:1044
 msgid "Incorrect answer for security question."
 msgstr ""
 
-#: app/__init__.py:1016 app/__init__.py:1022 app/__init__.py:1024
+#: app/__init__.py:1049 app/__init__.py:1056 app/__init__.py:1058
 msgid "Invalid invite code."
 msgstr ""
 
-#: app/__init__.py:1070 app/__init__.py:1074
+#: app/__init__.py:1105 app/__init__.py:1111
 msgid "User not found or invalid ticket"
 msgstr ""
 
-#: app/__init__.py:1097 app/__init__.py:1100 app/__init__.py:1113
+#: app/__init__.py:1136 app/__init__.py:1140 app/__init__.py:1154
 msgid "Invalid username or password."
 msgstr ""
 
-#: app/__init__.py:1115
+#: app/__init__.py:1157
 msgid "Something went really really wrong here."
 msgstr ""
 
-#: app/__init__.py:1194
+#: app/__init__.py:1237
 msgid "License file was deleted :("
 msgstr ""
 
@@ -125,46 +125,46 @@ msgstr ""
 msgid "Winner of the shitposter of the year 2018 contest"
 msgstr ""
 
-#: app/misc.py:300
+#: app/misc.py:299
 msgid "Whoa, calm down and wait a bit before posting again."
 msgstr ""
 
-#: app/misc.py:869
+#: app/misc.py:895
 #, python-format
-msgid "Error in the '%s' field - %s"
+msgid "Error in the '%(field)s' field - %(error)s"
 msgstr ""
 
 #: app/html/shared/post.html:71 app/html/shared/post.html:73
 #: app/html/site/log.html:23 app/html/sub/log.html:23 app/html/sub/post.html:14
-#: app/html/sub/postcomments.html:46 app/misc.py:1088
+#: app/html/sub/postcomments.html:46 app/misc.py:1135
 msgid "[Deleted]"
 msgstr ""
 
-#: app/misc.py:1132
+#: app/misc.py:1181
 msgid "URLs not allowed, uploaded files only"
 msgstr ""
 
-#: app/misc.py:1148
+#: app/misc.py:1197
 msgid "@import token not allowed"
 msgstr ""
 
-#: app/misc.py:1157
+#: app/misc.py:1206
 msgid "Invalid CSS"
 msgstr ""
 
-#: app/misc.py:1479
+#: app/misc.py:1537
 msgid "Unknown error. User disappeared"
 msgstr ""
 
-#: app/misc.py:1486
+#: app/misc.py:1544
 msgid "Score balance is negative"
 msgstr ""
 
-#: app/misc.py:1488
+#: app/misc.py:1546
 msgid "Invalid vote value"
 msgstr ""
 
-#: app/misc.py:1496 app/views/do.py:156 app/views/do.py:338 app/views/do.py:369
+#: app/misc.py:1555 app/views/do.py:156 app/views/do.py:338 app/views/do.py:369
 #: app/views/do.py:804 app/views/do.py:1273 app/views/do.py:1350
 #: app/views/do.py:1436 app/views/do.py:1451 app/views/do.py:1521
 #: app/views/do.py:1550 app/views/do.py:1869 app/views/do.py:2200
@@ -173,33 +173,33 @@ msgstr ""
 msgid "Post does not exist"
 msgstr ""
 
-#: app/misc.py:1499
+#: app/misc.py:1558
 msgid "You can't vote on deleted posts"
 msgstr ""
 
-#: app/misc.py:1512 app/views/do.py:1727 app/views/do.py:1763
+#: app/misc.py:1573 app/views/do.py:1727 app/views/do.py:1763
 #: app/views/do.py:2364 app/views/do.py:2367
 msgid "Comment does not exist"
 msgstr ""
 
-#: app/misc.py:1515
+#: app/misc.py:1576
 msgid "You can't vote on your own comments"
 msgstr ""
 
-#: app/misc.py:1517
+#: app/misc.py:1578
 msgid "You can't vote on deleted comments"
 msgstr ""
 
-#: app/misc.py:1524
+#: app/misc.py:1586
 msgid "Invalid target"
 msgstr ""
 
-#: app/misc.py:1528 app/views/do.py:601 app/views/do.py:1276
+#: app/misc.py:1590 app/views/do.py:601 app/views/do.py:1276
 #: app/views/do.py:1735
 msgid "You are banned on this sub."
 msgstr ""
 
-#: app/misc.py:1533 app/views/do.py:809 app/views/do.py:1742
+#: app/misc.py:1595 app/views/do.py:809 app/views/do.py:1742
 msgid "Post is archived"
 msgstr ""
 
@@ -604,11 +604,7 @@ msgstr ""
 msgid "The resource you were looking for does not exist."
 msgstr ""
 
-#: app/html/errors/418.html:4
-msgid "Error 418 - I"
-msgstr ""
-
-#: app/html/errors/418.html:10
+#: app/html/errors/418.html:4 app/html/errors/418.html:10
 msgid "Error 418 - I'm a teapot"
 msgstr ""
 
@@ -803,6 +799,10 @@ msgstr ""
 msgid "Site logs"
 msgstr ""
 
+#: app/html/shared/sidebar/sub.html:5
+msgid "Title search..."
+msgstr ""
+
 #: app/html/shared/sidebar/sub.html:18
 msgid "Submit a poll"
 msgstr ""
@@ -958,12 +958,12 @@ msgid "Editing stylesheet for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
 msgstr ""
 
 #: app/html/sub/css.html:23 app/html/user/settings/password.html:37
-#: app/html/user/settings/preferences.html:65
+#: app/html/user/settings/preferences.html:60
 msgid "Saved!"
 msgstr ""
 
 #: app/html/sub/css.html:23 app/html/user/settings/password.html:37
-#: app/html/user/settings/preferences.html:65 app/html/user/topbar.html:7
+#: app/html/user/settings/preferences.html:60 app/html/user/topbar.html:7
 #: app/static/js/main.js:194 app/static/js/main.js:198
 msgid "Save"
 msgstr ""
@@ -991,7 +991,7 @@ msgstr ""
 
 #: app/html/sub/css.html:46
 #, python-format
-msgid "Filename: %(filename). Size: %(filesize)i KiB."
+msgid "Filename: %(filename)s. Size: %(filesize)i KiB."
 msgstr ""
 
 #: app/html/sub/css.html:48 app/html/user/settings/delete.html:36
@@ -1436,7 +1436,7 @@ msgid "Max uses"
 msgstr ""
 
 #: app/html/user/settings/password.html:37
-#: app/html/user/settings/preferences.html:65
+#: app/html/user/settings/preferences.html:60
 msgid "Editing..."
 msgstr ""
 
@@ -1450,7 +1450,7 @@ msgid "Bold (ctrl-b)"
 msgstr ""
 
 #: app/static/js/Editor.js:27
-msgid "Italic (ctrl-i"
+msgid "Italic (ctrl-i)"
 msgstr ""
 
 #: app/static/js/Editor.js:28

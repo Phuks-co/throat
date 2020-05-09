@@ -7,75 +7,74 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Throat 1.0\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-05-09 17:35-0300\n"
-"PO-Revision-Date: 2020-05-09 18:09-0300\n"
+"POT-Creation-Date: 2020-05-09 20:27-0300\n"
+"PO-Revision-Date: 2020-05-09 20:27-0300\n"
+"Last-Translator: \n"
 "Language: es\n"
 "Language-Team: es <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
-"Last-Translator: \n"
-"X-Generator: Poedit 2.3\n"
 
-#: app/__init__.py:562
+#: app/__init__.py:565
 msgid "Auto detect"
 msgstr "Auto detectar"
 
-#: app/__init__.py:617
+#: app/__init__.py:621
 msgid "Mentions"
 msgstr "Menciones"
 
-#: app/__init__.py:652 app/__init__.py:668
+#: app/__init__.py:657 app/__init__.py:674
 msgid "Replies"
 msgstr "Respuestas"
 
-#: app/__init__.py:701
+#: app/__init__.py:707
 msgid "No TOTP secret found."
 msgstr "Clave privada TOTP no encontrada."
 
-#: app/__init__.py:708
+#: app/__init__.py:715
 msgid "Invalid or expired token."
 msgstr "Token inválido o expirado."
 
-#: app/__init__.py:997 app/views/do.py:649
+#: app/__init__.py:1025 app/views/do.py:649
 msgid "Invalid captcha."
 msgstr "Captcha inválido."
 
-#: app/__init__.py:999
+#: app/__init__.py:1027
 msgid "Username has invalid characters."
 msgstr "El usuario tiene caracteres inválidos."
 
-#: app/__init__.py:1003
+#: app/__init__.py:1031
 msgid "Username is not available."
 msgstr "Usuario no disponible."
 
-#: app/__init__.py:1010
+#: app/__init__.py:1038
 msgid "E-mail address is already in use."
 msgstr "La dirección de e-mail ya está en uso."
 
-#: app/__init__.py:1016
+#: app/__init__.py:1044
 msgid "Incorrect answer for security question."
 msgstr "Respuesta incorrecta para la pregunta de seguridad."
 
-#: app/__init__.py:1021 app/__init__.py:1027 app/__init__.py:1029
+#: app/__init__.py:1049 app/__init__.py:1056 app/__init__.py:1058
 msgid "Invalid invite code."
 msgstr "Código de invitación inválido."
 
-#: app/__init__.py:1075 app/__init__.py:1079
+#: app/__init__.py:1105 app/__init__.py:1111
 msgid "User not found or invalid ticket"
 msgstr "Usuario no encontrado o ticket inválido"
 
-#: app/__init__.py:1102 app/__init__.py:1105 app/__init__.py:1118
+#: app/__init__.py:1136 app/__init__.py:1140 app/__init__.py:1154
 msgid "Invalid username or password."
 msgstr "Usuario o contraseña inválidos."
 
-#: app/__init__.py:1120
+#: app/__init__.py:1157
 msgid "Something went really really wrong here."
 msgstr "Algo se rompio bien feo aquí."
 
-#: app/__init__.py:1199
+#: app/__init__.py:1237
 msgid "License file was deleted :("
 msgstr "El archivo de licencia ha sido borrado :("
 
@@ -113,62 +112,62 @@ msgstr ""
 
 #: app/badges.py:18
 msgid ""
-"Once proud men, the Broccoli People now must remain in hiding after early on "
-"the Vegetable Wars against the Cabbages."
+"Once proud men, the Broccoli People now must remain in hiding after early"
+" on the Vegetable Wars against the Cabbages."
 msgstr ""
 
 #: app/badges.py:19
 msgid ""
-"The Cabbage People are now the dominant force in the Vegetable Wars, being in "
-"the road to become an hegemon after defeating the Broccolis."
+"The Cabbage People are now the dominant force in the Vegetable Wars, "
+"being in the road to become an hegemon after defeating the Broccolis."
 msgstr ""
 
 #: app/badges.py:21
 msgid "Winner of the shitposter of the year 2018 contest"
 msgstr "Ganador del torneo del shitposter del año 2018"
 
-#: app/misc.py:300
+#: app/misc.py:299
 msgid "Whoa, calm down and wait a bit before posting again."
 msgstr ""
-"Tómate un segundo, respira bien hondo y espera un poco antes de postear de "
-"nuevo."
+"Tómate un segundo, respira bien hondo y espera un poco antes de postear "
+"de nuevo."
 
-#: app/misc.py:869
+#: app/misc.py:895
 #, python-format
-msgid "Error in the '%s' field - %s"
-msgstr "Error en el campo '%s' - %s"
+msgid "Error in the '%(field)s' field - %(error)s"
+msgstr ""
 
 #: app/html/shared/post.html:71 app/html/shared/post.html:73
 #: app/html/site/log.html:23 app/html/sub/log.html:23 app/html/sub/post.html:14
-#: app/html/sub/postcomments.html:46 app/misc.py:1088
+#: app/html/sub/postcomments.html:46 app/misc.py:1135
 msgid "[Deleted]"
 msgstr "[Borrado]"
 
-#: app/misc.py:1132
+#: app/misc.py:1181
 msgid "URLs not allowed, uploaded files only"
 msgstr "No se permiten URLs, solo archivos subidos"
 
-#: app/misc.py:1148
+#: app/misc.py:1197
 msgid "@import token not allowed"
 msgstr "token @import no permitido"
 
-#: app/misc.py:1157
+#: app/misc.py:1206
 msgid "Invalid CSS"
 msgstr "CSS inválido"
 
-#: app/misc.py:1479
+#: app/misc.py:1537
 msgid "Unknown error. User disappeared"
 msgstr "Error desconocido. El usuario desapareció"
 
-#: app/misc.py:1486
+#: app/misc.py:1544
 msgid "Score balance is negative"
 msgstr "Balance de puntaje negativo"
 
-#: app/misc.py:1488
+#: app/misc.py:1546
 msgid "Invalid vote value"
 msgstr "Valor inválido para el voto"
 
-#: app/misc.py:1496 app/views/do.py:156 app/views/do.py:338 app/views/do.py:369
+#: app/misc.py:1555 app/views/do.py:156 app/views/do.py:338 app/views/do.py:369
 #: app/views/do.py:804 app/views/do.py:1273 app/views/do.py:1350
 #: app/views/do.py:1436 app/views/do.py:1451 app/views/do.py:1521
 #: app/views/do.py:1550 app/views/do.py:1869 app/views/do.py:2200
@@ -177,32 +176,33 @@ msgstr "Valor inválido para el voto"
 msgid "Post does not exist"
 msgstr "El post no existe"
 
-#: app/misc.py:1499
+#: app/misc.py:1558
 msgid "You can't vote on deleted posts"
 msgstr "No puedes votar en posts borrados"
 
-#: app/misc.py:1512 app/views/do.py:1727 app/views/do.py:1763 app/views/do.py:2364
-#: app/views/do.py:2367
+#: app/misc.py:1573 app/views/do.py:1727 app/views/do.py:1763
+#: app/views/do.py:2364 app/views/do.py:2367
 msgid "Comment does not exist"
 msgstr "El comentario no existe"
 
-#: app/misc.py:1515
+#: app/misc.py:1576
 msgid "You can't vote on your own comments"
 msgstr "No puedes votar en tus propios comentarios"
 
-#: app/misc.py:1517
+#: app/misc.py:1578
 msgid "You can't vote on deleted comments"
 msgstr "No puedes votar en comentarios borrados"
 
-#: app/misc.py:1524
+#: app/misc.py:1586
 msgid "Invalid target"
 msgstr "Target inválido"
 
-#: app/misc.py:1528 app/views/do.py:601 app/views/do.py:1276 app/views/do.py:1735
+#: app/misc.py:1590 app/views/do.py:601 app/views/do.py:1276
+#: app/views/do.py:1735
 msgid "You are banned on this sub."
 msgstr "Estás baneado en este sub."
 
-#: app/misc.py:1533 app/views/do.py:809 app/views/do.py:1742
+#: app/misc.py:1595 app/views/do.py:809 app/views/do.py:1742
 msgid "Post is archived"
 msgstr "El post está archivado"
 
@@ -507,7 +507,7 @@ msgstr "Bienvenido"
 
 #: app/html/index.html:24 app/html/shared/layout.html:152
 msgid "ToS"
-msgstr "TdU"
+msgstr "Términos de uso"
 
 #: app/html/index.html:25 app/html/shared/layout.html:153
 msgid "Privacy"
@@ -515,7 +515,7 @@ msgstr "Política de privacidad"
 
 #: app/html/index.html:26 app/html/shared/layout.html:154
 msgid "Changelog"
-msgstr "Log de cambio"
+msgstr "Log de cambios"
 
 #: app/html/index.html:27 app/html/shared/layout.html:155
 msgid "API"
@@ -528,7 +528,7 @@ msgstr "Canary"
 #: app/html/index.html:29 app/html/shared/layout.html:157
 #: app/html/shared/sidebar/home.html:52
 msgid "Donate"
-msgstr "Dona"
+msgstr "Donar"
 
 #: app/html/index.html:31
 #, python-format
@@ -608,8 +608,8 @@ msgid "The resource you were looking for does not exist."
 msgstr "La página que estabas buscando no existe."
 
 #: app/html/errors/418.html:4 app/html/errors/418.html:10
-msgid "Error 418 - I"
-msgstr ""
+msgid "Error 418 - I'm a teapot"
+msgstr "Error 418 - Soy una tetera"
 
 #: app/html/errors/418.html:12
 msgid "The requested entity body is short and stout."
@@ -621,11 +621,11 @@ msgstr "Error interno"
 
 #: app/html/errors/500.html:12
 msgid ""
-"We're experiencing technical difficulties, please try again later. If the error "
-"persists, report it to the administration."
+"We're experiencing technical difficulties, please try again later. If the"
+" error persists, report it to the administration."
 msgstr ""
-"Estamos experimentando dificultades técnicas, por favor intenta de nuevo mas "
-"tarde. Si el error persiste, repórtalo a la administración."
+"Estamos experimentando dificultades técnicas, por favor intenta de nuevo "
+"mas tarde. Si el error persiste, repórtalo a la administración."
 
 #: app/html/shared/layout.html:40
 msgid "Admin mode is currently enabled."
@@ -645,7 +645,7 @@ msgstr "nuevo"
 
 #: app/html/shared/layout.html:53
 msgid "uploads"
-msgstr ""
+msgstr "archivos"
 
 #: app/html/shared/layout.html:57
 msgid "Customize this bar"
@@ -678,7 +678,7 @@ msgstr "Bugs"
 #: app/html/shared/layout.html:161
 #, python-format
 msgid "Served by %(hostname)s"
-msgstr ""
+msgstr "Servido por %(hostname)s"
 
 #: app/html/shared/layout.html:172
 msgid "Chat"
@@ -714,7 +714,7 @@ msgstr ""
 
 #: app/html/shared/post.html:50
 msgid "not https"
-msgstr ""
+msgstr "no es https"
 
 #: app/html/shared/post.html:58
 msgid "Embed video"
@@ -804,6 +804,10 @@ msgstr "Sub del día"
 msgid "Site logs"
 msgstr "Logs del sitio"
 
+#: app/html/shared/sidebar/sub.html:5
+msgid "Title search..."
+msgstr ""
+
 #: app/html/shared/sidebar/sub.html:18
 msgid "Submit a poll"
 msgstr "Envía una encuesta"
@@ -868,8 +872,8 @@ msgstr "Usuarios baneados"
 
 #: app/html/site/license.html:8
 msgid ""
-"This website is powered by <a href=\"https://github.com/Phuks-co/throat"
-"\">Throat</a>, released under the MIT license."
+"This website is powered by <a href=\"https://github.com/Phuks-"
+"co/throat\">Throat</a>, released under the MIT license."
 msgstr ""
 
 #: app/html/sub/bans.html:7 app/html/sub/css.html:7
@@ -914,7 +918,8 @@ msgstr "Por"
 msgid "Created"
 msgstr "Creación"
 
-#: app/html/sub/bans.html:49 app/html/sub/bans.html:107 app/html/sub/log.html:10
+#: app/html/sub/bans.html:49 app/html/sub/bans.html:107
+#: app/html/sub/log.html:10
 msgid "User"
 msgstr "Usuario"
 
@@ -930,9 +935,9 @@ msgstr "Expira"
 msgid "Actions"
 msgstr "Acciones"
 
-#: app/html/sub/bans.html:64 app/html/sub/bans.html:71 app/html/sub/bans.html:119
-#: app/html/sub/bans.html:126 app/html/sub/bans.html:135
-#: app/html/user/settings/invitecode.html:53
+#: app/html/sub/bans.html:64 app/html/sub/bans.html:71
+#: app/html/sub/bans.html:119 app/html/sub/bans.html:126
+#: app/html/sub/bans.html:135 app/html/user/settings/invitecode.html:53
 msgid "N/A"
 msgstr "N/á"
 
@@ -958,32 +963,32 @@ msgid "Editing stylesheet for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
 msgstr ""
 
 #: app/html/sub/css.html:23 app/html/user/settings/password.html:37
-#: app/html/user/settings/preferences.html:65
+#: app/html/user/settings/preferences.html:60
 msgid "Saved!"
-msgstr ""
+msgstr "Guardado!"
 
 #: app/html/sub/css.html:23 app/html/user/settings/password.html:37
-#: app/html/user/settings/preferences.html:65 app/html/user/topbar.html:7
+#: app/html/user/settings/preferences.html:60 app/html/user/topbar.html:7
 #: app/static/js/main.js:194 app/static/js/main.js:198
 msgid "Save"
-msgstr ""
+msgstr "Guardar"
 
 #: app/html/sub/css.html:30
 msgid "Upload files"
-msgstr ""
+msgstr "Subir archivos"
 
 #: app/html/sub/css.html:31
 #, python-format
 msgid "Upload limit is 2 MiB. Space used: %(storage)i KiB"
-msgstr ""
+msgstr "El límite de subida es de 2 MiB. Espacio usado: %(storage)i KiB"
 
 #: app/html/sub/css.html:37
 msgid "Only images allowed"
-msgstr ""
+msgstr "Solo se permiten imágenes"
 
 #: app/html/sub/css.html:38
 msgid "Upload"
-msgstr ""
+msgstr "Subir"
 
 #: app/html/sub/css.html:42
 msgid "No files were uploaded, yet."
@@ -991,20 +996,20 @@ msgstr ""
 
 #: app/html/sub/css.html:46
 #, python-format
-msgid "Filename: %(filename). Size: %(filesize)i KiB."
+msgid "Filename: %(filename)s. Size: %(filesize)i KiB."
 msgstr ""
 
 #: app/html/sub/css.html:48 app/html/user/settings/delete.html:36
 msgid "Deleting..."
-msgstr ""
+msgstr "Borrando..."
 
 #: app/html/sub/css.html:48
 msgid "Deleted!"
-msgstr ""
+msgstr "Borrado!"
 
 #: app/html/sub/css.html:48
 msgid "Delete"
-msgstr ""
+msgstr "Borrar"
 
 #: app/html/sub/css.html:53
 #, python-format
@@ -1044,8 +1049,8 @@ msgstr ""
 #: app/html/sub/log.html:32
 #, python-format
 msgid ""
-"Banned <a href=\"/u/%(username)s\">%(username)s</a> with reason <code>"
-"%(reason)s</code>"
+"Banned <a href=\"/u/%(username)s\">%(username)s</a> with reason "
+"<code>%(reason)s</code>"
 msgstr ""
 
 #: app/html/sub/log.html:34
@@ -1111,7 +1116,7 @@ msgstr ""
 
 #: app/html/sub/log.html:62
 msgid "Link"
-msgstr ""
+msgstr "Enlace"
 
 #: app/html/sub/post.html:14
 #, python-format
@@ -1192,7 +1197,7 @@ msgstr ""
 
 #: app/html/sub/post.html:147
 msgid "Remove"
-msgstr ""
+msgstr "Eliminar"
 
 #: app/html/sub/post.html:149
 msgid "Select a new flair"
@@ -1200,18 +1205,20 @@ msgstr ""
 
 #: app/html/sub/post.html:167
 msgid "[deleted]"
-msgstr ""
+msgstr "[borrado]"
 
 #: app/html/sub/post.html:184
 msgid "Submit comment"
 msgstr "Enviar comentario"
 
-#: app/html/sub/post.html:185 app/static/js/Post.js:213 app/static/js/Post.js:266
-#: app/static/js/Post.js:339 app/static/js/Post.js:479
+#: app/html/sub/post.html:185 app/static/js/Post.js:213
+#: app/static/js/Post.js:266 app/static/js/Post.js:339
+#: app/static/js/Post.js:479
 msgid "Preview"
 msgstr "Vista previa"
 
-#: app/html/sub/post.html:187 app/static/js/Post.js:214 app/static/js/Post.js:267
+#: app/html/sub/post.html:187 app/static/js/Post.js:214
+#: app/static/js/Post.js:267
 msgid "Comment preview"
 msgstr "Vista previa del comentario"
 
@@ -1231,11 +1238,11 @@ msgstr ""
 #: app/html/sub/postcomments.html:33
 #, python-format
 msgid ""
-"<span class=\"cscore\">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>"
-"%(downvotes)i</b>)"
+"<span class=\"cscore\">%(score)i</span> points</b> "
+"(+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
 msgstr ""
-"<span class=\"cscore\">%(score)i</span> puntos</b> (+<b>%(upvotes)i</b>|-<b>"
-"%(downvotes)i</b>)"
+"<span class=\"cscore\">%(score)i</span> puntos</b> "
+"(+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
 
 #: app/html/sub/postcomments.html:39
 #, python-format
@@ -1331,14 +1338,15 @@ msgstr ""
 
 #: app/html/user/password_reset.html:20
 msgid "Password (again)"
-msgstr ""
+msgstr "Contraseña (de nuevo)"
 
 #: app/html/user/password_reset.html:24 app/html/user/settings/delete.html:8
-#: app/html/user/settings/invitecode.html:8 app/html/user/settings/password.html:8
+#: app/html/user/settings/invitecode.html:8
+#: app/html/user/settings/password.html:8
 #: app/html/user/settings/password.html:19
 #: app/html/user/settings/preferences.html:8
 msgid "Change password"
-msgstr ""
+msgstr "Cambiar contraseña"
 
 #: app/html/user/topbar.html:5
 msgid "Customize your sub bar"
@@ -1348,57 +1356,62 @@ msgstr ""
 msgid "Drag to sort"
 msgstr ""
 
-#: app/html/user/settings/delete.html:7 app/html/user/settings/invitecode.html:7
+#: app/html/user/settings/delete.html:7
+#: app/html/user/settings/invitecode.html:7
 #: app/html/user/settings/password.html:7
 #: app/html/user/settings/preferences.html:7
 msgid "Preferences"
-msgstr ""
+msgstr "Preferencias"
 
-#: app/html/user/settings/delete.html:9 app/html/user/settings/invitecode.html:9
+#: app/html/user/settings/delete.html:9
+#: app/html/user/settings/invitecode.html:9
 #: app/html/user/settings/password.html:9
 #: app/html/user/settings/preferences.html:9
 msgid "Delete account"
-msgstr ""
+msgstr "Borrar cuenta"
 
-#: app/html/user/settings/delete.html:12 app/html/user/settings/invitecode.html:12
+#: app/html/user/settings/delete.html:12
+#: app/html/user/settings/invitecode.html:12
 #: app/html/user/settings/password.html:12
 #: app/html/user/settings/preferences.html:12
 msgid "View posts"
-msgstr ""
+msgstr "Ver posts"
 
-#: app/html/user/settings/delete.html:13 app/html/user/settings/invitecode.html:13
+#: app/html/user/settings/delete.html:13
+#: app/html/user/settings/invitecode.html:13
 #: app/html/user/settings/password.html:13
 #: app/html/user/settings/preferences.html:13
 msgid "View comments"
-msgstr ""
+msgstr "Ver comentarios"
 
-#: app/html/user/settings/delete.html:14 app/html/user/settings/invitecode.html:14
+#: app/html/user/settings/delete.html:14
+#: app/html/user/settings/invitecode.html:14
 #: app/html/user/settings/password.html:14
 #: app/html/user/settings/preferences.html:14
 msgid "View saved posts"
-msgstr ""
+msgstr "Ver posts guardados"
 
 #: app/html/user/settings/delete.html:19
 msgid "Account deletion"
-msgstr ""
+msgstr "Borrado de cuenta"
 
 #: app/html/user/settings/delete.html:25
 msgid "THIS ACTION CANNOT BE UNDONE"
-msgstr ""
+msgstr "ESTA ACCIÓN NO PUEDE SER DESHECHA"
 
 #: app/html/user/settings/delete.html:36
 msgid "Deleted."
-msgstr ""
+msgstr "Borrado."
 
 #: app/html/user/settings/delete.html:36
 msgid "Delete my account"
-msgstr ""
+msgstr "Borrar mi cuenta"
 
 #: app/html/user/settings/invitecode.html:16
 #: app/html/user/settings/invitecode.html:21
 #: app/html/user/settings/preferences.html:17
 msgid "Invite codes"
-msgstr ""
+msgstr "Códigos de invitación"
 
 #: app/html/user/settings/invitecode.html:23
 #, python-format
@@ -1430,22 +1443,22 @@ msgid "Max uses"
 msgstr ""
 
 #: app/html/user/settings/password.html:37
-#: app/html/user/settings/preferences.html:65
+#: app/html/user/settings/preferences.html:60
 msgid "Editing..."
-msgstr ""
+msgstr "Editando..."
 
 #: app/html/user/settings/preferences.html:23
 #, python-format
 msgid "%(user)s's preferences"
-msgstr ""
+msgstr "Preferencias de %(user)s"
 
 #: app/static/js/Editor.js:26
 msgid "Bold (ctrl-b)"
 msgstr "Negrita (ctrl-b)"
 
 #: app/static/js/Editor.js:27
-msgid "Italic (ctrl-i"
-msgstr ""
+msgid "Italic (ctrl-i)"
+msgstr "Itálicas (ctrl-i)"
 
 #: app/static/js/Editor.js:28
 msgid "Strikethrough (ctrl-shift-s)"
@@ -1496,14 +1509,15 @@ msgid "Voting..."
 msgstr "Votando..."
 
 #: app/static/js/Poll.js:71 app/static/js/Poll.js:123 app/static/js/Post.js:113
-#: app/static/js/Post.js:128 app/static/js/Post.js:144 app/static/js/Post.js:159
-#: app/static/js/Post.js:335 app/static/js/Post.js:360
+#: app/static/js/Post.js:128 app/static/js/Post.js:144
+#: app/static/js/Post.js:159 app/static/js/Post.js:335
+#: app/static/js/Post.js:360
 msgid "Error: %1"
 msgstr "Error: %1"
 
 #: app/static/js/Poll.js:116
 msgid "Working..."
-msgstr ""
+msgstr "Trabajando..."
 
 #: app/static/js/Post.js:17 app/static/js/Post.js:32
 msgid "removed"
@@ -1511,7 +1525,7 @@ msgstr "eliminado"
 
 #: app/static/js/Post.js:24
 msgid "Why are you deleting this?"
-msgstr ""
+msgstr "¿Por qué borras esto?"
 
 #: app/static/js/Post.js:30 app/static/js/Post.js:61 app/static/js/Post.js:77
 #: app/static/js/Post.js:92 app/static/js/Post.js:399 app/static/js/Post.js:422
@@ -1520,14 +1534,14 @@ msgstr "Error."
 
 #: app/static/js/Post.js:43
 msgid "New title"
-msgstr ""
+msgstr "Nuevo título"
 
 #: app/static/js/Post.js:63 app/static/js/Post.js:79 app/static/js/Post.js:94
 msgid "Done"
 msgstr "Listo"
 
-#: app/static/js/Post.js:115 app/static/js/Post.js:130 app/static/js/Post.js:146
-#: app/static/js/Post.js:161
+#: app/static/js/Post.js:115 app/static/js/Post.js:130
+#: app/static/js/Post.js:146 app/static/js/Post.js:161
 msgid "Done!"
 msgstr "Listo!"
 
@@ -1535,12 +1549,14 @@ msgstr "Listo!"
 msgid "Save changes"
 msgstr "Guardar cambios"
 
-#: app/static/js/Post.js:284 app/static/js/Post.js:305 app/static/js/Post.js:503
+#: app/static/js/Post.js:284 app/static/js/Post.js:305
+#: app/static/js/Post.js:503
 msgid "There was an error while editing: %1"
 msgstr ""
 
-#: app/static/js/Post.js:292 app/static/js/Post.js:313 app/static/js/Post.js:342
-#: app/static/js/Post.js:540 app/static/js/Post.js:642
+#: app/static/js/Post.js:292 app/static/js/Post.js:313
+#: app/static/js/Post.js:342 app/static/js/Post.js:540
+#: app/static/js/Post.js:642
 msgid "Could not contact the server"
 msgstr ""
 
@@ -1678,11 +1694,11 @@ msgstr "SI"
 msgid "Type \"YES\" in the box"
 msgstr ""
 
-#: app/views/do.py:127 app/views/do.py:267 app/views/do.py:296 app/views/do.py:333
-#: app/views/do.py:364 app/views/do.py:394 app/views/do.py:665 app/views/do.py:913
-#: app/views/do.py:977 app/views/do.py:1048 app/views/do.py:1096
-#: app/views/do.py:1129 app/views/do.py:1160 app/views/do.py:1191
-#: app/views/do.py:1582
+#: app/views/do.py:127 app/views/do.py:267 app/views/do.py:296
+#: app/views/do.py:333 app/views/do.py:364 app/views/do.py:394
+#: app/views/do.py:665 app/views/do.py:913 app/views/do.py:977
+#: app/views/do.py:1048 app/views/do.py:1096 app/views/do.py:1129
+#: app/views/do.py:1160 app/views/do.py:1191 app/views/do.py:1582
 msgid "Sub does not exist"
 msgstr ""
 
@@ -1690,8 +1706,9 @@ msgstr ""
 msgid "Post was already deleted"
 msgstr ""
 
-#: app/views/do.py:165 app/views/do.py:270 app/views/do.py:354 app/views/do.py:916
-#: app/views/do.py:1730 app/views/do.py:1767 app/views/do.py:1876
+#: app/views/do.py:165 app/views/do.py:270 app/views/do.py:354
+#: app/views/do.py:916 app/views/do.py:1730 app/views/do.py:1767
+#: app/views/do.py:1876
 msgid "Not authorized"
 msgstr ""
 
@@ -1740,9 +1757,9 @@ msgstr ""
 msgid "Post has no flair"
 msgstr ""
 
-#: app/views/do.py:399 app/views/do.py:435 app/views/do.py:890 app/views/do.py:922
-#: app/views/do.py:991 app/views/do.py:1044 app/views/do.py:1092
-#: app/views/do.py:1125 app/views/do.py:1156
+#: app/views/do.py:399 app/views/do.py:435 app/views/do.py:890
+#: app/views/do.py:922 app/views/do.py:991 app/views/do.py:1044
+#: app/views/do.py:1092 app/views/do.py:1125 app/views/do.py:1156
 msgid "User does not exist"
 msgstr ""
 
@@ -1750,7 +1767,8 @@ msgstr ""
 msgid "Badge does not exist"
 msgstr ""
 
-#: app/views/do.py:455 app/views/do.py:480 app/views/do.py:503 app/views/do.py:528
+#: app/views/do.py:455 app/views/do.py:480 app/views/do.py:503
+#: app/views/do.py:528
 msgid "sub not found"
 msgstr ""
 
@@ -1937,7 +1955,7 @@ msgstr ""
 
 #: app/views/do.py:1268
 msgid "Title too short."
-msgstr ""
+msgstr "El título es muy corto."
 
 #: app/views/do.py:1279
 msgid "You cannot edit the post title anymore"
@@ -1983,13 +2001,15 @@ msgstr ""
 #, python-format
 msgid ""
 "<h1><strong>%(lema)s</strong></h1>\n"
-"            <p>Somebody (most likely you) has requested a password reset for\n"
+"            <p>Somebody (most likely you) has requested a password reset "
+"for\n"
 "            your account</p>\n"
-"            <p>To proceed, visit the following address (valid for the next "
-"24hs)</p>\n"
+"            <p>To proceed, visit the following address (valid for the "
+"next 24hs)</p>\n"
 "            <a href=\"%(url)s\">%(url)s</a>\n"
 "            <hr>\n"
-"            <p>If you didn't request a password recovery, please ignore this\n"
+"            <p>If you didn't request a password recovery, please ignore "
+"this\n"
 "            email</p>\n"
 "            "
 msgstr ""
@@ -2000,7 +2020,7 @@ msgstr ""
 
 #: app/views/do.py:1790 app/views/do.py:1803
 msgid "Not authenticated"
-msgstr ""
+msgstr "No autenticado"
 
 #: app/views/do.py:1855
 msgid "Missing text"
@@ -2066,3 +2086,10 @@ msgstr ""
 #: app/views/do.py:2337 app/views/do.py:2377
 msgid "Report reason too short."
 msgstr ""
+
+#~ msgid "Error in the '%s' field - %s"
+#~ msgstr "Error en el campo '%s' - %s"
+
+#~ msgid "Filename: %(filename). Size: %(filesize)i KiB."
+#~ msgstr "Archivo: %(filename)s. Tamaño: %(filesize)i KiB."
+
