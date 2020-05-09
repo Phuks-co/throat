@@ -1233,7 +1233,7 @@ def unauthorized(error):
 @app.errorhandler(403)
 def forbidden_error(error):
     """ 403 Forbidden """
-    return render_template('errors/403.html'), 403
+    return engine.get_template('errors/403.html').render({'loginform': LoginForm()}), 403
 
 
 @app.errorhandler(404)
@@ -1243,8 +1243,13 @@ def not_found(error):
         if request.path.startswith('/api/v3'):
             return jsonify(msg="Method not found or not implemented"), 404
         return jsonify(status='error', error='Method not found or not implemented'), 404
-    return render_template('errors/404.html'), 404
+    return engine.get_template('errors/404.html').render({}), 404
 
+
+@app.errorhandler(417)
+def forbidden_error(error):
+    """ 418 I'm a teapot """
+    return engine.get_template('errors/417.html').render({}), 418
 
 @app.errorhandler(500)
 def server_error(error):
@@ -1254,4 +1259,4 @@ def server_error(error):
             return jsonify(msg="Internal error"), 500
         return jsonify(status='error', error='Internal error'), 500
 
-    return render_template('errors/500.html'), 500
+    return engine.get_template('errors/500.html').render({}), 500

@@ -1,0 +1,39 @@
+@extends("shared/layout.html")
+@require(loginform)
+@def title():
+  @{_('Error 403 - Forbidden')} |\
+@end
+
+@def content():
+  <div id="center-container">
+    <div class="content">
+      <h1>@{_('Error 403 - Authorized personnel only')}</h1>
+      <p>
+        @{_('It seems that you\'re trying to get to the depths of the throat.')}
+      </p>
+      @if current_user.is_anonymous:
+        <hr/>
+        <form method="POST" class="pure-form pure-form-aligned">
+          <h2>@{_('Login')}</h2> @{ loginform.csrf_token() }
+          <fieldset>
+            <div class="pure-control-group">
+              <label for="username">@{_('Username')}</label>
+              @{loginform.username(placeholder=loginform.username.label.text, required=True, pattern="[a-zA-Z0-9_-]+", title=_('Alphanumeric characters plus \'-\' and \'_\''))}
+            </div>
+            <div class="pure-control-group">
+              <label for="password">@{_('Password')}</label>
+              @{loginform.password(placeholder=loginform.password.label.text, required=True)}
+            </div>
+            <a href="/recover">@{_('Forgot your password?')}</a>
+            <div class="pure-controls">
+              <label for="remember" class="pure-checkbox">
+                @{loginform.remember()} @{_('Remember me')}
+              </label>
+              <button type="submit" class="pure-button pure-button-primary">@{_('Log in')}</button>
+            </div>
+          </fieldset>
+        </form>
+      @end
+    </div>
+  </div>
+@end
