@@ -56,6 +56,7 @@ app.register_blueprint(subs, url_prefix='/{}'.format(config.site.sub_prefix))
 app.config['WEBPACK_MANIFEST_PATH'] = 'manifest.json'
 if app.config['TESTING']:
     import logging
+
     logging.basicConfig(level=logging.DEBUG)
     logging.getLogger("engineio.server").setLevel(logging.WARNING)
     logging.getLogger("socketio.server").setLevel(logging.WARNING)
@@ -68,6 +69,7 @@ login_manager = LoginManager(app)
 login_manager.anonymous_user = SiteAnon
 login_manager.login_view = 'login'
 
+
 @babel.localeselector
 def get_locale():
     if current_user.language:
@@ -79,6 +81,7 @@ engine.global_vars.update({'current_user': current_user, 'request': request, 'co
                            'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,
                            'form': forms, 'hostname': socket.gethostname(), 'datetime': datetime,
                            'e': escape_html, 'markdown': misc.our_markdown, '_': _, 'get_locale': get_locale})
+
 
 @app.before_request
 def do_magic_stuff():
@@ -123,10 +126,10 @@ def after_request(response):
         etime = str(diff).encode()
 
         response.response[0] = response.response[0] \
-                                       .replace(b'__EXECUTION_TIME__', etime)
+            .replace(b'__EXECUTION_TIME__', etime)
         response.response[0] = response.response[0] \
-                                       .replace(b'__DB_QUERIES__',
-                                                str(g.qc).encode() + b'/' + str(g.pqc).encode())
+            .replace(b'__DB_QUERIES__',
+                     str(g.qc).encode() + b'/' + str(g.pqc).encode())
         response.headers["content-length"] = len(response.response[0])
     return response
 
@@ -192,7 +195,7 @@ def all_new_rss():
     fg.title('All new posts')
     fg.link(href=request.url_root, rel='alternate')
     fg.link(href=request.url, rel='self')
-    
+
     return Response(misc.populate_feed(fg, posts).atom_str(pretty=True), mimetype='application/atom+xml')
 
 
@@ -381,7 +384,7 @@ def view_multisub_new(sublist, page=1):
     sids = []
     if len(names) > 20:
         names = names[20:]
-    
+
     subs = Sub.select(Sub.sid, Sub.name, Sub.title).where(Sub.name << names)
     sids = [x.sid for x in subs]
 
@@ -416,7 +419,7 @@ def view_post_inbox(pid):
     try:
         post = SubPost.get(SubPost.pid == pid)
     except SubPost.DoesNotExist:
-        abort(404)
+        return abort(404)
     return redirect(url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
 
 
@@ -426,7 +429,7 @@ def view_comment_inbox(cid):
     try:
         comm = SubPostComment.get(SubPostComment.cid == cid)
     except SubPost.DoesNotExist:
-        abort(404)
+        return abort(404)
     return redirect(url_for('sub.view_perm', sub=comm.pid.sid.name, pid=comm.pid_id, cid=comm.cid))
 
 
@@ -441,14 +444,16 @@ def view_user(user):
     if user.status == 10:
         abort(404)
 
-    modsquery = SubMod.select(Sub.name, SubMod.power_level).join(Sub).where((SubMod.uid == user.uid) & (SubMod.invite == False))
+    modsquery = SubMod.select(Sub.name, SubMod.power_level).join(Sub).where(
+        (SubMod.uid == user.uid) & (SubMod.invite == False))
     owns = [x.sub.name for x in modsquery if x.power_level == 0]
     mods = [x.sub.name for x in modsquery if 1 <= x.power_level <= 2]
     badges = misc.getUserBadges(user.uid)
     pcount = SubPost.select().where(SubPost.uid == user.uid).count()
     ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()
-    
-    habit = Sub.select(Sub.name, fn.Count(SubPost.pid).alias('count')).join(SubPost, JOIN.LEFT_OUTER, on=(SubPost.sid == Sub.sid))
+
+    habit = Sub.select(Sub.name, fn.Count(SubPost.pid).alias('count')).join(SubPost, JOIN.LEFT_OUTER,
+                                                                            on=(SubPost.sid == Sub.sid))
     habit = habit.where(SubPost.uid == user.uid).group_by(Sub.sid).order_by(fn.Count(SubPost.pid).desc()).limit(10)
 
     level, xp = misc.get_user_level(user.uid)
@@ -480,10 +485,10 @@ def view_user_posts(user, page):
 
     if current_user.is_admin():
         posts = misc.getPostList(misc.postListQueryBase(adminDetail=True).where(User.uid == user.uid),
-                             'new', page).dicts()
+                                 'new', page).dicts()
     else:
         posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(User.uid == user.uid),
-                             'new', page).dicts()
+                                 'new', page).dicts()
     return render_template('userposts.html', page=page, sort_type='view_user_posts',
                            posts=posts, user=user)
 
@@ -494,8 +499,10 @@ def view_user_posts(user, page):
 def view_user_savedposts(user, page):
     """ WIP: View user's saved posts """
     if current_user.name.lower() == user.lower():
-        posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).join(UserSaved, on=(UserSaved.pid == SubPost.pid)).where(UserSaved.uid == current_user.uid),
-                                 'new', page).dicts()
+        posts = misc.getPostList(
+            misc.postListQueryBase(noAllFilter=True).join(UserSaved, on=(UserSaved.pid == SubPost.pid)).where(
+                UserSaved.uid == current_user.uid),
+            'new', page).dicts()
         return render_template('userposts.html', page=page,
                                sort_type='view_user_savedposts',
                                posts=posts, user=current_user)
@@ -523,7 +530,7 @@ def view_user_comments(user, page):
 def invite_codes():
     if not misc.enableInviteCode():
         return redirect('/settings')
-    
+
     codes = InviteCode.select().where(InviteCode.user == current_user.uid)
     maxcodes = int(misc.getMaxCodes(current_user.uid))
     created = codes.count()
@@ -541,6 +548,7 @@ def invite_codes():
 def edit_subs():
     return engine.get_template('user/topbar.html').render({})
 
+
 @app.route("/settings")
 @login_required
 def edit_user():
@@ -556,7 +564,7 @@ def edit_user():
     languages = app.config['LANGUAGES']
     form.language.choices = [('', _('Auto detect'))]
     for i in languages:
-        form.language.choices.append((i, Locale(*i.split("_")).display_name.capitalize() ))
+        form.language.choices.append((i, Locale(*i.split("_")).display_name.capitalize()))
     return engine.get_template('user/settings/preferences.html').render({'edituserform': form})
 
 
@@ -605,7 +613,8 @@ def view_messages(page):
 @login_required
 def view_mentions(page):
     """ View user name mentions """
-    Message.update(read=datetime.datetime.utcnow()).where((Message.read.is_null(True)) & (Message.mtype == 8) & (Message.receivedby == current_user.uid)).execute()
+    Message.update(read=datetime.datetime.utcnow()).where(
+        (Message.read.is_null(True)) & (Message.mtype == 8) & (Message.receivedby == current_user.uid)).execute()
 
     msgs = misc.getMentionsIndex(page)
     return render_template('messages/messages.html', page=page,
@@ -636,7 +645,8 @@ def view_ignores():
 @login_required
 def view_messages_postreplies(page):
     """ WIP: View user's post replies """
-    Message.update(read=datetime.datetime.utcnow()).where((Message.read.is_null(True)) & (Message.mtype == 4) & (Message.receivedby == current_user.uid)).execute()
+    Message.update(read=datetime.datetime.utcnow()).where(
+        (Message.read.is_null(True)) & (Message.mtype == 4) & (Message.receivedby == current_user.uid)).execute()
 
     socketio.emit('notification',
                   {'count': current_user.notifications},
@@ -653,7 +663,8 @@ def view_messages_postreplies(page):
 @login_required
 def view_messages_comreplies(page):
     """ WIP: View user's comments replies """
-    Message.update(read=datetime.datetime.utcnow()).where((Message.read.is_null(True)) & (Message.mtype == 5) & (Message.receivedby == current_user.uid)).execute()
+    Message.update(read=datetime.datetime.utcnow()).where(
+        (Message.read.is_null(True)) & (Message.mtype == 5) & (Message.receivedby == current_user.uid)).execute()
     socketio.emit('notification',
                   {'count': current_user.notifications},
                   namespace='/snt',
@@ -700,8 +711,10 @@ def admin_auth():
             session['apriv'] = time.time()
             return redirect(url_for('admin_area'))
         else:
-            return engine.get_template('admin/totp.html').render({'authform': form, 'error': _('Invalid or expired token.')})
+            return engine.get_template('admin/totp.html').render(
+                {'authform': form, 'error': _('Invalid or expired token.')})
     return engine.get_template('admin/totp.html').render({'authform': form, 'error': None})
+
 
 @app.route('/admin/logout', methods=['POST'])
 @login_required
@@ -712,6 +725,7 @@ def admin_logout():
     if form.validate():
         del session['apriv']
     return redirect(url_for('admin_area'))
+
 
 @app.route("/admin")
 @login_required
@@ -745,7 +759,7 @@ def admin_area():
         ep = SiteMetadata.get(SiteMetadata.key == 'enable_posting').value
     except SiteMetadata.DoesNotExist:
         ep = 'True'
-        
+
     return render_template('admin/admin.html', subs=subs,
                            posts=posts, ups=ups, downs=downs, users=users,
                            comms=comms,
@@ -760,15 +774,18 @@ def admin_users(page):
     if not current_user.is_admin():
         abort(404)
 
-    postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias('post_count')
-    commcount = SubPostComment.select(SubPostComment.uid, fn.Count(SubPostComment.cid).alias('comment_count')).group_by(SubPostComment.uid).alias('j2')
-    
-    users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count.alias('post_count'), commcount.c.comment_count)
+    postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias(
+        'post_count')
+    commcount = SubPostComment.select(SubPostComment.uid, fn.Count(SubPostComment.cid).alias('comment_count')).group_by(
+        SubPostComment.uid).alias('j2')
+
+    users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count.alias('post_count'),
+                        commcount.c.comment_count)
     users = users.join(postcount, JOIN.LEFT_OUTER, on=User.uid == postcount.c.uid)
     users = users.join(commcount, JOIN.LEFT_OUTER, on=User.uid == commcount.c.uid)
     users = users.order_by(User.joindate.desc()).paginate(page, 50).dicts()
     return render_template('admin/users.html', users=users, page=page,
-                            admin_route='admin_users')
+                           admin_route='admin_users')
 
 
 @app.route("/admin/userbadges")
@@ -780,8 +797,8 @@ def admin_userbadges():
     ct = misc.getAdminUserBadges()
 
     return render_template('admin/userbadges.html', badges=badges.items(),
-                            assignuserbadgeform=AssignUserBadgeForm(),
-                            ct=len(ct), admin_route='admin_userbadges')
+                           assignuserbadgeform=AssignUserBadgeForm(),
+                           ct=len(ct), admin_route='admin_userbadges')
 
 
 @app.route("/admin/admins")
@@ -791,10 +808,14 @@ def view_admins():
     if current_user.is_admin():
         admins = UserMetadata.select().where(UserMetadata.key == 'admin')
 
-        postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias('post_count')
-        commcount = SubPostComment.select(SubPostComment.uid, fn.Count(SubPostComment.cid).alias('comment_count')).group_by(SubPostComment.uid).alias('j2')
-        
-        users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count.alias('post_count'), commcount.c.comment_count)
+        postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias(
+            'post_count')
+        commcount = SubPostComment.select(SubPostComment.uid,
+                                          fn.Count(SubPostComment.cid).alias('comment_count')).group_by(
+            SubPostComment.uid).alias('j2')
+
+        users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count.alias('post_count'),
+                            commcount.c.comment_count)
         users = users.join(postcount, JOIN.LEFT_OUTER, on=User.uid == postcount.c.uid)
         users = users.join(commcount, JOIN.LEFT_OUTER, on=User.uid == commcount.c.uid)
         users = users.where(User.uid << [x.uid for x in admins]).order_by(User.joindate.asc()).dicts()
@@ -812,10 +833,14 @@ def admin_users_search(term):
     if current_user.is_admin():
         term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
 
-        postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias('post_count')
-        commcount = SubPostComment.select(SubPostComment.uid, fn.Count(SubPostComment.cid).alias('comment_count')).group_by(SubPostComment.uid).alias('j2')
-        
-        users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count, commcount.c.comment_count)
+        postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias(
+            'post_count')
+        commcount = SubPostComment.select(SubPostComment.uid,
+                                          fn.Count(SubPostComment.cid).alias('comment_count')).group_by(
+            SubPostComment.uid).alias('j2')
+
+        users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count,
+                            commcount.c.comment_count)
         users = users.join(postcount, JOIN.LEFT_OUTER, on=User.uid == postcount.c.uid)
         users = users.join(commcount, JOIN.LEFT_OUTER, on=User.uid == commcount.c.uid)
         users = users.where(User.name.contains(term)).order_by(User.joindate.desc()).dicts()
@@ -876,14 +901,15 @@ def admin_post_voting(page, term):
         try:
             user = User.get(fn.Lower(User.name) == term.lower())
             msg = []
-            votes = SubPostVote.select(SubPostVote.positive, SubPostVote.pid, User.name, SubPostVote.datetime, SubPostVote.pid)
+            votes = SubPostVote.select(SubPostVote.positive, SubPostVote.pid, User.name, SubPostVote.datetime,
+                                       SubPostVote.pid)
             votes = votes.join(SubPost, JOIN.LEFT_OUTER, on=SubPost.pid == SubPostVote.pid)
             votes = votes.switch(SubPost).join(User, JOIN.LEFT_OUTER, on=SubPost.uid == User.uid)
             votes = votes.where(SubPostVote.uid == user.uid).dicts()
         except User.DoesNotExist:
             votes = []
             msg = 'user not found'
-            
+
         return render_template('admin/postvoting.html', page=page, msg=msg,
                                admin_route='admin_post_voting',
                                votes=votes, term=term)
@@ -900,14 +926,17 @@ def admin_comment_voting(page, term):
         try:
             user = User.get(fn.Lower(User.name) == term.lower())
             msg = []
-            votes = SubPostCommentVote.select(SubPostCommentVote.positive, SubPostCommentVote.cid, SubPostComment.uid, User.name, SubPostCommentVote.datetime, SubPost.pid, Sub.name.alias('sub'))
-            votes = votes.join(SubPostComment, JOIN.LEFT_OUTER, on=SubPostComment.cid == SubPostCommentVote.cid).join(SubPost).join(Sub)
+            votes = SubPostCommentVote.select(SubPostCommentVote.positive, SubPostCommentVote.cid, SubPostComment.uid,
+                                              User.name, SubPostCommentVote.datetime, SubPost.pid,
+                                              Sub.name.alias('sub'))
+            votes = votes.join(SubPostComment, JOIN.LEFT_OUTER, on=SubPostComment.cid == SubPostCommentVote.cid).join(
+                SubPost).join(Sub)
             votes = votes.switch(SubPostComment).join(User, JOIN.LEFT_OUTER, on=SubPostComment.uid == User.uid)
             votes = votes.where(SubPostCommentVote.uid == user.uid).dicts()
         except User.DoesNotExist:
             votes = []
             msg = 'user not found'
-            
+
         return render_template('admin/commentvoting.html', page=page, msg=msg,
                                admin_route='admin_comment_voting',
                                votes=votes, term=term)
@@ -924,15 +953,17 @@ def admin_post_search(term):
         try:
             post = SubPost.get(SubPost.pid == term)
         except SubPost.DoesNotExist:
-            abort(404)
+            return abort(404)
 
-        votes = SubPostVote.select(SubPostVote.positive, SubPostVote.datetime, User.name).join(User).where(SubPostVote.pid == post.pid).dicts()
+        votes = SubPostVote.select(SubPostVote.positive, SubPostVote.datetime, User.name).join(User).where(
+            SubPostVote.pid == post.pid).dicts()
         upcount = post.votes.where(SubPostVote.positive == '1').count()
         downcount = post.votes.where(SubPostVote.positive == '0').count()
 
         pcount = post.uid.posts.count()
         ccount = post.uid.comments.count()
-        comms = SubPostComment.select(SubPostComment.score, SubPostComment.content, SubPostComment.cid, User.name).join(User).where(SubPostComment.pid == post.pid).dicts()
+        comms = SubPostComment.select(SubPostComment.score, SubPostComment.content, SubPostComment.cid, User.name).join(
+            User).where(SubPostComment.pid == post.pid).dicts()
 
         return render_template('admin/post.html', sub=post.sid, post=post,
                                votes=votes, ccount=ccount, pcount=pcount,
@@ -971,12 +1002,14 @@ def admin_user_uploads(page):
 @login_required
 def view_sitelog(page):
     """ Here we can see a log of admin activity on the site """
-    s1 = SiteLog.select(SiteLog.time, SiteLog.action, SiteLog.desc, SiteLog.link, SiteLog.uid, SQL("'' as sub"), SiteLog.target)
-    s2 = SubLog.select(SubLog.time, SubLog.action, SubLog.desc, SubLog.link, SubLog.uid, Sub.name.alias('sub'), SubLog.target)
+    s1 = SiteLog.select(SiteLog.time, SiteLog.action, SiteLog.desc, SiteLog.link, SiteLog.uid, SQL("'' as sub"),
+                        SiteLog.target)
+    s2 = SubLog.select(SubLog.time, SubLog.action, SubLog.desc, SubLog.link, SubLog.uid, Sub.name.alias('sub'),
+                       SubLog.target)
     s2 = s2.join(Sub).where(SubLog.admin == True)
     logs = (s1 | s2)
     logs = logs.order_by(logs.c.time.desc()).paginate(page, 50)
-    
+
     return engine.get_template('site/log.html').render({'logs': logs, 'page': page})
 
 
@@ -1016,13 +1049,14 @@ def register():
                 return render_template('register.html', rform=form, error=_("Invalid invite code."))
             # Check if there's a valid invite code in the database
             try:
-                invcode = InviteCode.get((InviteCode.code == form.invitecode.data) & 
-                                         (InviteCode.expires.is_null() | (InviteCode.expires > datetime.datetime.utcnow())))
+                invcode = InviteCode.get((InviteCode.code == form.invitecode.data) &
+                                         (InviteCode.expires.is_null() | (
+                                                     InviteCode.expires > datetime.datetime.utcnow())))
                 if invcode.uses >= invcode.max_uses:
                     return render_template('register.html', rform=form, error=_("Invalid invite code."))
             except InviteCode.DoesNotExist:
                 return render_template('register.html', rform=form, error=_("Invalid invite code."))
-            
+
             invcode.uses += 1
             invcode.save()
 
@@ -1048,6 +1082,7 @@ def sanitize_serv(serv):
     serv = serv.replace("%253A", "%3A")
     return serv.replace("%252F", "%2F")
 
+
 def handle_cas_ok(uid):
     # Create Session Ticket and store it in Redis
     token = str(uuid.uuid4())
@@ -1060,18 +1095,21 @@ def handle_cas_ok(uid):
 def sso_proxy_validate():
     if not request.args.get('ticket') or not request.args.get('service'):
         abort(400)
-    
+
     red_c = rconn.get('cas-' + request.args.get('ticket'))
 
     if red_c:
         try:
             user = User.get((User.uid == red_c.decode()) & (User.status << (0, 100)))
         except User.DoesNotExist:
-            return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationFailure code=\"INVALID_TICKET\">" + _('User not found or invalid ticket') + "</cas:authenticationFailure></cas:serviceResponse>",401
+            return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationFailure code=\"INVALID_TICKET\">" + _(
+                'User not found or invalid ticket') + "</cas:authenticationFailure></cas:serviceResponse>", 401
 
-        return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationSuccess><cas:user>{0}</cas:user></cas:authenticationSuccess></cas:serviceResponse>".format(user.name.lower()), 200
+        return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationSuccess><cas:user>{0}</cas:user></cas:authenticationSuccess></cas:serviceResponse>".format(
+            user.name.lower()), 200
     else:
-        return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationFailure code=\"INVALID_TICKET\">" + _('User not found or invalid ticket') + "</cas:authenticationFailure></cas:serviceResponse>",401
+        return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationFailure code=\"INVALID_TICKET\">" + _(
+            'User not found or invalid ticket') + "</cas:authenticationFailure></cas:serviceResponse>", 401
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -1082,7 +1120,7 @@ def login():
         url = urlparse(request.args.get('service'))
         if url.netloc not in config.site.cas_authorized_hosts:
             abort(403)
-        
+
         if current_user.is_authenticated:
             # User is auth'd. Return ticket.
             return handle_cas_ok(uid=current_user.uid)
@@ -1094,10 +1132,12 @@ def login():
         try:
             user = User.get(fn.Lower(User.name) == form.username.data.lower())
         except User.DoesNotExist:
-            return engine.get_template('user/login.html').render({'error': _("Invalid username or password."), 'loginform': form})
+            return engine.get_template('user/login.html').render(
+                {'error': _("Invalid username or password."), 'loginform': form})
 
         if user.status != 0:
-            return engine.get_template('user/login.html').render({'error': _("Invalid username or password."), 'loginform': form})
+            return engine.get_template('user/login.html').render(
+                {'error': _("Invalid username or password."), 'loginform': form})
 
         if user.crypto == 1:  # bcrypt
             thash = bcrypt.hashpw(form.password.data.encode('utf-8'),
@@ -1110,9 +1150,11 @@ def login():
                 else:
                     return form.redirect('index')
             else:
-                return engine.get_template('user/login.html').render({'error': _("Invalid username or password."), 'loginform': form})
+                return engine.get_template('user/login.html').render(
+                    {'error': _("Invalid username or password."), 'loginform': form})
         else:  # Unknown hash
-            return engine.get_template('user/login.html').render({'error': _("Something went really really wrong here."), 'loginform': form})
+            return engine.get_template('user/login.html').render(
+                {'error': _("Something went really really wrong here."), 'loginform': form})
     return engine.get_template('user/login.html').render({'error': '', 'loginform': form})
 
 
@@ -1146,7 +1188,8 @@ def submit(ptype, sub):
 @app.route('/chat')
 @login_required
 def chat():
-    return engine.get_template('chat.html').render({'subOfTheDay': misc.getSubOfTheDay(), 'changeLog': misc.getChangelog()})
+    return engine.get_template('chat.html').render(
+        {'subOfTheDay': misc.getSubOfTheDay(), 'changeLog': misc.getChangelog()})
 
 
 @app.route("/recover")
@@ -1165,7 +1208,7 @@ def password_reset(uid, key):
     try:
         user = User.get(User.uid == uid)
     except User.DoesNotExist:
-        abort(404)
+        return abort(404)
 
     try:
         key = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key'))
@@ -1177,7 +1220,7 @@ def password_reset(uid, key):
             keyExp.delete_instance()
             abort(404)
     except UserMetadata.DoesNotExist:
-        abort(404)
+        return abort(404)
 
     if current_user.is_authenticated:
         key.delete_instance()
@@ -1192,6 +1235,7 @@ try:
     th_license = open('LICENSE', 'r').read()
 except FileNotFoundError:
     th_license = _l('License file was deleted :(')
+
 
 @app.route("/license")
 def license():
@@ -1243,6 +1287,7 @@ def not_found(error):
 def forbidden_error(error):
     """ 418 I'm a teapot """
     return engine.get_template('errors/417.html').render({}), 418
+
 
 @app.errorhandler(500)
 def server_error(error):

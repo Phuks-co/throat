@@ -1,5 +1,4 @@
 """ Misc helper function and classes. """
-from collections import OrderedDict
 from urllib.parse import urlparse, parse_qs, urljoin
 import json
 import math
@@ -27,6 +26,7 @@ import sendgrid
 from .config import config
 from flask import url_for, request, g, jsonify, session
 from flask_login import AnonymousUserMixin, current_user
+from flask_babel import _
 from .caching import cache
 from .socketio import socketio
 from .badges import badges
@@ -39,7 +39,6 @@ from peewee import JOIN, fn, SQL, NodeList
 import requests
 import logging
 
-
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
 from wheezy.template.loader import FileLoader
@@ -49,18 +48,18 @@ engine = Engine(
     extensions=[CoreExtension()]
 )
 
-
 redis = redis.from_url(config.app.redis_url)
 
 # Regex that matches VALID user and sub names
 allowedNames = re.compile("^[a-zA-Z0-9_-]+$")
-WHITESPACE = "\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2029\u202f\u205f\u3000\u180e\u200b\u200c\u200d\u2060\ufeff\u00AD\ufffc"
+WHITESPACE = "\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007" \
+             "\u2008\u2009\u200a\u200b\u2029\u202f\u205f\u3000\u180e\u200b\u200c\u200d\u2060\ufeff\u00AD\ufffc "
 
 
 class SiteUser(object):
     """ Representation of a site user. Used on the login manager. """
 
-    def __init__(self, userclass=None, subs=[], prefs={}):
+    def __init__(self, userclass=None, subs=(), prefs=()):
         self.user = userclass
         self.notifications = self.user.get('notifications', 0)
         self.name = self.user['name']
@@ -105,7 +104,7 @@ class SiteUser(object):
         else:
             self.admin = False
 
-        self.canupload = True if ('canupload' in self.prefs) or (self.admin) else False
+        self.canupload = True if ('canupload' in self.prefs) or self.admin else False
         if config.site.allow_uploads:
             self.canupload = True
 
@@ -120,7 +119,8 @@ class SiteUser(object):
     def is_mod(self, sid, power_level=2):
         """ Returns True if the current user is a mod of 'sub' """
         try:
-            SubMod.get((SubMod.sid == sid) & (SubMod.uid == self.uid) & (SubMod.power_level <= power_level) & (SubMod.invite == False))
+            SubMod.get((SubMod.sid == sid) & (SubMod.uid == self.uid) & (SubMod.power_level <= power_level) & (
+                    SubMod.invite == False))
             return True
         except SubMod.DoesNotExist:
             pass
@@ -181,12 +181,12 @@ class SiteUser(object):
         if boolean:
             value = '1' if value else '0'
         try:
-            md = UserMetadata.get((UserMetadata.uid == self.uid) & (UserMetadata.key == key))
-            md.value = value
-            md.save()
+            umd = UserMetadata.get((UserMetadata.uid == self.uid) & (UserMetadata.key == key))
+            umd.value = value
+            umd.save()
         except UserMetadata.DoesNotExist:
-            md = UserMetadata.create(uid=self.uid, key=key, value=value)
-    
+            UserMetadata.create(uid=self.uid, key=key, value=value)
+
     @cache.memoize(30)
     def get_global_stylesheet(self):
         if self.subtheme:
@@ -214,7 +214,6 @@ class SiteAnon(AnonymousUserMixin):
 
     @classmethod
     def is_mod(cls, sub, power_level):
-        """ Anons are not mods. """
         return False
 
     @classmethod
@@ -255,13 +254,13 @@ class SiteAnon(AnonymousUserMixin):
     def is_subban(cls, sub):
         """ Anons dont get banned by default. """
         return False
-    
+
     @classmethod
-    def get_user_level(self):
-        return (0, 0)
-    
+    def get_user_level(cls):
+        return 0, 0
+
     @classmethod
-    def get_global_stylesheet(self):
+    def get_global_stylesheet(cls):
         return ''
 
 
@@ -286,8 +285,8 @@ class RateLimit(object):
         p.expireat(self.key, self.reset + self.expiration_window)
         self.current = min(p.execute()[0], self.limit)
 
-    remaining = property(lambda x: x.limit - x.current)
-    over_limit = property(lambda x: x.current >= x.limit)
+    remaining = property(lambda self: self.limit - self.current)
+    over_limit = property(lambda self: self.current >= self.limit)
 
 
 def get_view_rate_limit():
@@ -295,7 +294,7 @@ def get_view_rate_limit():
     return getattr(g, '_view_rate_limit', None)
 
 
-def on_over_limit(limit):
+def on_over_limit():
     """ This is called when the rate limit is reached """
     return jsonify(status='error', error=[_('Whoa, calm down and wait a bit before posting again.')])
 
@@ -313,8 +312,10 @@ def ratelimit(limit, per=300, send_x_headers=True,
               scope_func=lambda: get_ip(),
               key_func=lambda: request.endpoint):
     """ This is a decorator. It does the rate-limit magic. """
+
     def decorator(f):
         """ Function inside function! """
+
         def rate_limited(*args, **kwargs):
             """ FUNCTIONCEPTION """
             key = 'rate-limit/%s/%s/' % (key_func(), scope_func())
@@ -322,12 +323,14 @@ def ratelimit(limit, per=300, send_x_headers=True,
             g._view_rate_limit = rlimit
             if over_limit is not None and rlimit.over_limit:
                 if not g.appconfig.get('TESTING'):
-                    return over_limit(rlimit)
-            reslt =  f(*args, **kwargs)
+                    return over_limit()
+            reslt = f(*args, **kwargs)
             if isinstance(reslt, tuple) and reslt[1] != 200:
                 rlimit.decr()
             return reslt
+
         return update_wrapper(rate_limited, f)
+
     return decorator
 
 
@@ -355,18 +358,21 @@ def safeRequest(url, recieve_timeout=10):
         f += chunk
         if size > max_size:
             raise ValueError('response too large')
-    return (r, f)
+    return r, f
+
 
 RE_AMENTION_BARE = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/' + config.site.sub_prefix + r'\/)([A-Za-z0-9\-\_]+))'
 
 RE_AMENTION_PRE0 = r'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))(?:(?:@|\/u\/|\/' + config.site.sub_prefix + r'\/)(?:[A-Za-z0-9\-\_]+)))'
 RE_AMENTION_PRE1 = r'(?:(\[.+?\]\(.+?\))|' + RE_AMENTION_BARE + r')'
-RE_AMENTION_ESCAPED = re.compile("```.*{0}.*```|`.*?{0}.*?`|({1})".format(RE_AMENTION_PRE0, RE_AMENTION_PRE1), flags=re.MULTILINE + re.DOTALL)
-RE_AMENTION_LINKS = re.compile("\[.*?({1}).*?\]\(.*?\)|({0})".format(RE_AMENTION_PRE1, RE_AMENTION_BARE), flags=re.MULTILINE + re.DOTALL)
+RE_AMENTION_ESCAPED = re.compile(r"```.*{0}.*```|`.*?{0}.*?`|({1})".format(RE_AMENTION_PRE0, RE_AMENTION_PRE1),
+                                 flags=re.MULTILINE + re.DOTALL)
+RE_AMENTION_LINKS = re.compile(r"\[.*?({1}).*?\]\(.*?\)|({0})".format(RE_AMENTION_PRE1, RE_AMENTION_BARE),
+                               flags=re.MULTILINE + re.DOTALL)
 
 
 class PhuksDown(m.SaferHtmlRenderer):
-    _allowed_url_re = re.compile(r'^(https?:|\/|\#)', re.I)
+    _allowed_url_re = re.compile(r'^(https?:|/|#)', re.I)
 
     def image(self, raw_url, title='', alt=''):
         return False
@@ -383,6 +389,7 @@ md = m.Markdown(PhuksDown(sanitization_mode='escape'),
 def our_markdown(text):
     """ Here we create a custom markdown function where we load all the
     extensions we need. """
+
     def repl(match):
         if match.group(3) is None:
             return match.group(0)
@@ -391,11 +398,12 @@ def our_markdown(text):
             ln = '/u/' + match.group(5)
         else:
             ln = match.group(3)
-        text = match.group(3)
-        text = text.replace('_', '\_')
-        text = text.replace('*', '\*')
-        text = text.replace('~', '\~')
-        return '[{0}]({1})'.format(text, ln)
+        txt = match.group(3)
+        txt = txt.replace('_', '\\_')
+        txt = txt.replace('*', '\\*')
+        txt = txt.replace('~', '\\~')
+        return '[{0}]({1})'.format(txt, ln)
+
     text = RE_AMENTION_ESCAPED.sub(repl, text)
     try:
         return md(text)
@@ -415,9 +423,10 @@ def is_sub_banned(sub, user=None, uid=None):
     if not uid:
         uid = user['uid']
     try:
-        SubBan.get((SubBan.sid == sid) & 
-            (SubBan.uid == uid) & 
-            ((SubBan.effective == True) & ((SubBan.expires.is_null(True)) | (SubBan.expires > datetime.utcnow()) )))
+        SubBan.get((SubBan.sid == sid) &
+                   (SubBan.uid == uid) &
+                   ((SubBan.effective == True) & (
+                           (SubBan.expires.is_null(True)) | (SubBan.expires > datetime.utcnow()))))
         return True
     except SubBan.DoesNotExist:
         return False
@@ -454,6 +463,7 @@ def enableInviteCode():
         return False if xm.value == '0' else True
     except SiteMetadata.DoesNotExist:
         return False
+
 
 @cache.memoize(30)
 def getMaxCodes(uid):
@@ -516,10 +526,10 @@ def workWithMentions(data, receivedby, post, sub, cid=None, c_user=current_user)
         for m in mts:
             t = [x for x in m if x != '']
             if len(t) >= 3:
-                clean_mts.append(t)  
-        
+                clean_mts.append(t)
+
         mts = [x[-1] for x in clean_mts if x[-2] == "/u/" or x[-2] == "@"]
-        
+
         usr_level = current_user.get_user_level()[0]
         if usr_level > 30:
             mts = mts[:15]
@@ -591,13 +601,13 @@ def get_user_level(uid, score=None):
         xp = user.score
     else:
         xp = score
-    badges = getUserBadges(uid)
-    for badge in badges:
+    userbadges = getUserBadges(uid)
+    for badge in userbadges:
         xp += badge['score']
     if xp <= 0:  # We don't want to do the sqrt of a negative number
-        return (0, xp)
+        return 0, xp
     level = math.sqrt(xp / 10)
-    return (int(level), xp)
+    return int(level), xp
 
 
 def _image_entropy(img):
@@ -632,7 +642,7 @@ def get_thumbnail(link):
             og = BeautifulSoup(req[1], 'lxml')
         except:
             # If it errors here it's probably because lxml is not installed.
-            logging.warn('Thumbnail fetch failed. Is lxml installed?')
+            logging.warning('Thumbnail fetch failed. Is lxml installed?')
             return ''
         try:
             img = urljoin(link, og('meta', {'property': 'og:image'})[0].get('content'))
@@ -676,23 +686,14 @@ def get_thumbnail(link):
 
     return filename
 
-# -------------
-# admin stuff
-# -------------
 
 def getAdminUserBadges():
     um = UserMetadata.select().where(UserMetadata.key == 'badge').dicts()
     ret = []
     for bg in um:
         if badges.get(bg['value']):
-            l = badges[bg['value']]
-            ret.append(l)
+            ret.append(badges[bg['value']])
     return ret
-
-
-# -----------------------------------
-# Stuff after this line was checked™
-# -----------------------------------
 
 
 @cache.memoize(300)
@@ -700,8 +701,8 @@ def getTodaysTopPosts():
     """ Returns top posts in the last 24 hours """
     td = datetime.utcnow() - timedelta(days=1)
     posts = (SubPost.select(SubPost.pid, Sub.name.alias('sub'), SubPost.title, SubPost.posted, SubPost.score)
-                    .where(SubPost.posted > td).order_by(SubPost.score.desc()).limit(5)
-                    .join(Sub, JOIN.LEFT_OUTER).dicts())
+             .where(SubPost.posted > td).order_by(SubPost.score.desc()).limit(5)
+             .join(Sub, JOIN.LEFT_OUTER).dicts())
     top_posts = []
     for p in posts:
         top_posts.append(p)
@@ -734,8 +735,8 @@ def getChangelog():
         return None
     td = datetime.utcnow() - timedelta(days=15)
     changepost = (SubPost.select(Sub.name.alias('sub'), SubPost.pid, SubPost.title, SubPost.posted)
-                         .where(SubPost.posted > td).where(SubPost.sid == config.site.changelog_sub)
-                         .join(Sub, JOIN.LEFT_OUTER).order_by(SubPost.pid.desc()).dicts())
+                  .where(SubPost.posted > td).where(SubPost.sid == config.site.changelog_sub)
+                  .join(Sub, JOIN.LEFT_OUTER).order_by(SubPost.pid.desc()).dicts())
 
     try:
         return changepost.get()
@@ -745,27 +746,43 @@ def getChangelog():
 
 def getSinglePost(pid):
     if current_user.is_authenticated:
-        posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score, SubPost.upvotes, SubPost.downvotes,
-                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
-                               SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'), SubPost.deleted, SubPost.ptype)
-        posts = posts.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(SubPost)
+        posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
+                               SubPost.score, SubPost.upvotes, SubPost.downvotes,
+                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
+                               SubPost.flair, SubPost.edited,
+                               SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'),
+                               SubPost.deleted, SubPost.ptype)
+        posts = posts.join(SubPostVote, JOIN.LEFT_OUTER,
+                           on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(
+            SubPost)
     else:
-        posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score, SubPost.upvotes, SubPost.downvotes,
-                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
-                               SubPost.comments, User.uid, User.status.alias('userstatus'), SubPost.deleted, SubPost.ptype)
-    posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER).where(SubPost.pid == pid).dicts().get()
+        posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
+                               SubPost.score, SubPost.upvotes, SubPost.downvotes,
+                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
+                               SubPost.flair, SubPost.edited,
+                               SubPost.comments, User.uid, User.status.alias('userstatus'), SubPost.deleted,
+                               SubPost.ptype)
+    posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER).where(
+        SubPost.pid == pid).dicts().get()
     return posts
 
 
 def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False, adminDetail=False):
     if current_user.is_authenticated and not noDetail:
-        posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.deleted, SubPost.score, SubPost.ptype,
-                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited, Sub.sid,
-                               SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'), *extra)
-        posts = posts.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(SubPost)
+        posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
+                               SubPost.deleted, SubPost.score, SubPost.ptype,
+                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
+                               SubPost.flair, SubPost.edited, Sub.sid,
+                               SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'),
+                               *extra)
+        posts = posts.join(SubPostVote, JOIN.LEFT_OUTER,
+                           on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(
+            SubPost)
     else:
-        posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.deleted, SubPost.score, SubPost.ptype,
-                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited, Sub.sid,
+        posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
+                               SubPost.deleted, SubPost.score, SubPost.ptype,
+                               SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
+                               SubPost.flair, SubPost.edited, Sub.sid,
                                SubPost.comments, User.uid, User.status.alias('userstatus'), *extra)
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
     if not adminDetail:
@@ -780,22 +797,26 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False,
 
 def postListQueryHome(noDetail=False, nofilter=False):
     if current_user.is_authenticated:
-        return (postListQueryBase(noDetail=noDetail, nofilter=nofilter).where(SubPost.sid << current_user.subsid))
+        return postListQueryBase(noDetail=noDetail, nofilter=nofilter).where(SubPost.sid << current_user.subsid)
     else:
-        return postListQueryBase(noDetail=noDetail, nofilter=nofilter).join(SiteMetadata, JOIN.LEFT_OUTER, on=(SiteMetadata.key == 'default')).where(SubPost.sid == SiteMetadata.value)
+        return postListQueryBase(noDetail=noDetail, nofilter=nofilter).join(SiteMetadata, JOIN.LEFT_OUTER,
+                                                                            on=(SiteMetadata.key == 'default')).where(
+            SubPost.sid == SiteMetadata.value)
 
 
 def getPostList(baseQuery, sort, page):
-    if sort == "hot":
-        if config.database.engine == "PostgresqlDatabase":
-            hot = SubPost.score * 20 + (fn.EXTRACT(NodeList((SQL('EPOCH FROM'), SubPost.posted))) - 1134028003 ) / 1500
-            posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, 25)
-        else:
-            posts = baseQuery.order_by((SubPost.score * 20 + (fn.Unix_Timestamp(SubPost.posted) - 1134028003) / 1500).desc()).limit(100).paginate(page, 25)
-    elif sort == "top":
+    if sort == "top":
         posts = baseQuery.order_by(SubPost.score.desc()).paginate(page, 25)
     elif sort == "new":
         posts = baseQuery.order_by(SubPost.pid.desc()).paginate(page, 25)
+    else:
+        if config.database.engine == "PostgresqlDatabase":
+            hot = SubPost.score * 20 + (fn.EXTRACT(NodeList((SQL('EPOCH FROM'), SubPost.posted))) - 1134028003) / 1500
+            posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, 25)
+        else:
+            posts = baseQuery.order_by(
+                (SubPost.score * 20 + (fn.Unix_Timestamp(SubPost.posted) - 1134028003) / 1500).desc()).limit(
+                100).paginate(page, 25)
     return posts
 
 
@@ -837,10 +858,12 @@ def getStickies(sid):
 
 def load_user(user_id):
     user = User.select(fn.Count(Message.mid).alias('notifications'),
-                    User.given, User.score, User.name, User.uid, User.status, User.email, User.language)
-    user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & (Message.mtype != 9) & (Message.mtype != 41) & Message.read.is_null(True))).switch(User)
+                       User.given, User.score, User.name, User.uid, User.status, User.email, User.language)
+    user = user.join(Message, JOIN.LEFT_OUTER, on=(
+            (Message.receivedby == User.uid) & (Message.mtype != 6) & (Message.mtype != 9) &
+            (Message.mtype != 41) & Message.read.is_null(True))).switch(User)
     user = user.group_by(User.uid).where(User.uid == user_id).dicts().get()
-    
+
     if request.path == '/socket.io/':
         return SiteUser(user, [], [])
     else:
@@ -848,7 +871,8 @@ def load_user(user_id):
         prefs = prefs.where((UserMetadata.value == '1') | (UserMetadata.key == 'subtheme')).dicts()
 
         try:
-            subs = SubSubscriber.select(SubSubscriber.sid, Sub.name, SubSubscriber.status).join(Sub, on=(Sub.sid == SubSubscriber.sid)).switch(SubSubscriber).where(SubSubscriber.uid == user_id)
+            subs = SubSubscriber.select(SubSubscriber.sid, Sub.name, SubSubscriber.status).join(Sub, on=(
+                    Sub.sid == SubSubscriber.sid)).switch(SubSubscriber).where(SubSubscriber.uid == user_id)
             subs = subs.order_by(SubSubscriber.order.asc()).dicts()
             return SiteUser(user, subs, prefs)
         except User.DoesNotExist:
@@ -856,7 +880,8 @@ def load_user(user_id):
 
 
 def get_notification_count(uid):
-    return Message.select().where((Message.receivedby == uid) & (Message.mtype != 6) & (Message.mtype != 9) & (Message.mtype != 41) & Message.read.is_null(True)).count()
+    return Message.select().where((Message.receivedby == uid) & (Message.mtype != 6) & (Message.mtype != 9) & (
+            Message.mtype != 41) & Message.read.is_null(True)).count()
 
 
 def get_errors(form):
@@ -866,16 +891,21 @@ def get_errors(form):
     ret = []
     for field, errors in form.errors.items():
         for error in errors:
-            ret.append(_(u"Error in the '%s' field - %s", getattr(form, field).label.text, error))
+            ret.append(
+                _(u"Error in the '%(field)s' field - %(error)s", field=getattr(form, field).label.text, error=error))
     return ret
+
 
 # messages
 
 def getMessagesIndex(page):
     """ Returns messages inbox """
     try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
-        msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby)).where(Message.mtype == 1).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby,
+                             Message.subject, Message.content, Message.posted, Message.read, Message.mtype,
+                             Message.mlink)
+        msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby)).where(Message.mtype == 1).where(
+            Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False
     return msg
@@ -884,8 +914,11 @@ def getMessagesIndex(page):
 def getMentionsIndex(page):
     """ Returns user mentions inbox """
     try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
-        msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby)).where(Message.mtype == 8).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby,
+                             Message.subject, Message.content, Message.posted, Message.read, Message.mtype,
+                             Message.mlink)
+        msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby)).where(Message.mtype == 8).where(
+            Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False
     return msg
@@ -894,8 +927,10 @@ def getMentionsIndex(page):
 def getMessagesSent(page):
     """ Returns messages sent """
     try:
-        msg = Message.select(Message.mid, Message.sentby, User.name.alias('username'), Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
-        msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.receivedby)).where(Message.mtype == 1).where(Message.sentby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+        msg = Message.select(Message.mid, Message.sentby, User.name.alias('username'), Message.subject, Message.content,
+                             Message.posted, Message.read, Message.mtype, Message.mlink)
+        msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.receivedby)).where(Message.mtype == 1).where(
+            Message.sentby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False
     return msg
@@ -904,8 +939,10 @@ def getMessagesSent(page):
 def getMessagesModmail(page):
     """ Returns modmail """
     try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
-        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype << [2, 7, 11]).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject,
+                             Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
+        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype << [2, 7, 11]).where(
+            Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False
     return msg
@@ -914,8 +951,10 @@ def getMessagesModmail(page):
 def getMessagesSaved(page):
     """ Returns saved messages """
     try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject, Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
-        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 9).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.receivedby, Message.subject,
+                             Message.content, Message.posted, Message.read, Message.mtype, Message.mlink)
+        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 9).where(
+            Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False
     return msg
@@ -924,11 +963,16 @@ def getMessagesSaved(page):
 def getMsgCommReplies(page):
     """ Returns comment replies messages """
     try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject,
-                             Message.posted, Message.read, Message.mtype, Message.mlink, SubPostComment.pid, SubPostComment.content,
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby,
+                             Message.subject,
+                             Message.posted, Message.read, Message.mtype, Message.mlink, SubPostComment.pid,
+                             SubPostComment.content,
                              SubPostComment.score, SubPostCommentVote.positive, Sub.name.alias('sub'))
-        msg = msg.join(SubPostComment, on=SubPostComment.cid == Message.mlink).join(SubPost).join(Sub).switch(SubPostComment).join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == Message.mlink)))
-        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 5).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+        msg = msg.join(SubPostComment, on=SubPostComment.cid == Message.mlink).join(SubPost).join(Sub).switch(
+            SubPostComment).join(SubPostCommentVote, JOIN.LEFT_OUTER, on=(
+                (SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == Message.mlink)))
+        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 5).where(
+            Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False
     return msg
@@ -937,11 +981,16 @@ def getMsgCommReplies(page):
 def getMsgPostReplies(page):
     """ Returns post replies messages """
     try:
-        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby, Message.subject,
-                             Message.posted, Message.read, Message.mtype, Message.mlink, SubPostCommentVote.positive, SubPostComment.pid,
+        msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby,
+                             Message.subject,
+                             Message.posted, Message.read, Message.mtype, Message.mlink, SubPostCommentVote.positive,
+                             SubPostComment.pid,
                              SubPostComment.score, SubPostComment.content, Sub.name.alias('sub'))
-        msg = msg.join(SubPostComment, on=SubPostComment.cid == Message.mlink).join(SubPost).join(Sub).switch(SubPostComment).join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == Message.mlink)))
-        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 4).where(Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+        msg = msg.join(SubPostComment, on=SubPostComment.cid == Message.mlink).join(SubPost).join(Sub).switch(
+            SubPostComment).join(SubPostCommentVote, JOIN.LEFT_OUTER, on=(
+                (SubPostCommentVote.uid == current_user.get_id()) & (SubPostCommentVote.cid == Message.mlink)))
+        msg = msg.join(User, on=(User.uid == Message.sentby)).where(Message.mtype == 4).where(
+            Message.receivedby == current_user.get_id()).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False
     return msg
@@ -953,10 +1002,14 @@ def getMsgPostReplies(page):
 def getUserComments(uid, page):
     """ Returns comments for a user """
     try:
-        com = SubPostComment.select(Sub.name.alias('sub'), SubPost.title, SubPostComment.cid, SubPostComment.pid, SubPostComment.uid, SubPostComment.time, SubPostComment.lastedit, SubPostComment.content, SubPostComment.status, SubPostComment.score, SubPostComment.parentcid)
+        com = SubPostComment.select(Sub.name.alias('sub'), SubPost.title, SubPostComment.cid, SubPostComment.pid,
+                                    SubPostComment.uid, SubPostComment.time, SubPostComment.lastedit,
+                                    SubPostComment.content, SubPostComment.status, SubPostComment.score,
+                                    SubPostComment.parentcid)
         com = com.join(SubPost).switch(SubPostComment).join(Sub, on=(Sub.sid == SubPost.sid))
-        com = com.where(SubPostComment.uid == uid).where(SubPostComment.status.is_null()).order_by(SubPostComment.time.desc()).paginate(page, 20).dicts()
-    except com.DoesNotExist:
+        com = com.where(SubPostComment.uid == uid).where(SubPostComment.status.is_null()).order_by(
+            SubPostComment.time.desc()).paginate(page, 20).dicts()
+    except SubPostComment.DoesNotExist:
         return False
     return com
 
@@ -968,15 +1021,6 @@ def getUserBadges(uid):
         if badges.get(bg['value']):
             ret.append(badges[bg['value']])
     return ret
-
-
-def ktime0():
-    print('bvo')
-    g.boolkk = time.time()
-
-
-def ktime():
-    print('partial load: ', int((time.time() - g.boolkk) * 1000))
 
 
 def upload_file(max_size=16580608):
@@ -1023,16 +1067,17 @@ def upload_file(max_size=16580608):
             return False
         # remove metadata
         if mtype not in ('image/gif', 'video/mp4', 'video/webm'):  # Apparently we cannot write to gif images
-            md = pyexiv2.ImageMetadata(fpath)
-            md.read()
-            for k in (md.exif_keys + md.iptc_keys + md.xmp_keys):
-                del md[k]
-            md.write()
+            metadata = pyexiv2.ImageMetadata(fpath)
+            metadata.read()
+            for k in (metadata.exif_keys + metadata.iptc_keys + metadata.xmp_keys):
+                del metadata[k]
+            metadata.write()
     return f_name
 
 
 def getSubMods(sid):
-    modsquery = SubMod.select(User.uid, User.name, SubMod.power_level).join(User, on=(User.uid == SubMod.uid)).where(SubMod.sid == sid)
+    modsquery = SubMod.select(User.uid, User.name, SubMod.power_level).join(User, on=(User.uid == SubMod.uid)).where(
+        SubMod.sid == sid)
     modsquery = modsquery.where((User.status == 0) & (SubMod.invite == False))
 
     owner, mods, janitors, owner_uids, janitor_uids, mod_uids = ({}, {}, {}, [], [], [])
@@ -1050,6 +1095,7 @@ def getSubMods(sid):
     if not owner:
         owner['0'] = config.site.placeholder_account
     return {'owners': owner, 'mods': mods, 'janitors': janitors, 'all': owner_uids + janitor_uids + mod_uids}
+
 
 def getSubData(sid, simple=False, extra=False):
     sdata = SubMetadata.select().where(SubMetadata.sid == sid)
@@ -1073,11 +1119,12 @@ def getSubData(sid, simple=False, extra=False):
             data['wiki']
         except KeyError:
             data['wiki'] = ''
-        
+
         if extra:
-            if data.get('xmod2', []) != []:
+            if data.get('xmod2'):
                 try:
-                    data['xmods'] = User.select(User.uid, User.name).where((User.uid << data['xmod2']) & (User.status == 0)).dicts()
+                    data['xmods'] = User.select(User.uid, User.name).where(
+                        (User.uid << data['xmod2']) & (User.status == 0)).dicts()
                 except User.DoesNotExist:
                     data['xmods'] = []
 
@@ -1098,10 +1145,12 @@ def getSubData(sid, simple=False, extra=False):
 def getUserGivenScore(uid):
     pos = SubPostVote.select().where(SubPostVote.uid == uid).where(SubPostVote.positive == 1).count()
     neg = SubPostVote.select().where(SubPostVote.uid == uid).where(SubPostVote.positive == 0).count()
-    cpos = SubPostCommentVote.select().where(SubPostCommentVote.uid == uid).where(SubPostCommentVote.positive == 1).count()
-    cneg = SubPostCommentVote.select().where(SubPostCommentVote.uid == uid).where(SubPostCommentVote.positive == 0).count()
+    cpos = SubPostCommentVote.select().where(SubPostCommentVote.uid == uid).where(
+        SubPostCommentVote.positive == 1).count()
+    cneg = SubPostCommentVote.select().where(SubPostCommentVote.uid == uid).where(
+        SubPostCommentVote.positive == 0).count()
 
-    return (pos + cpos, neg + cneg, (pos + cpos) - (neg + cneg))
+    return pos + cpos, neg + cneg, (pos + cpos) - (neg + cneg)
 
 
 # Note for future self:
@@ -1129,9 +1178,9 @@ def iter_validate_css(obj, uris):
                 if uris.get(token):
                     x.value = uris.get(token)
             else:
-                return (_("URLs not allowed, uploaded files only"), x.source_column, x.source_line)
+                return _("URLs not allowed, uploaded files only"), x.source_column, x.source_line
         elif x.__class__.__name__ == "CurlyBracketsBlock":
-            return iter_validate_css(x.content)
+            return iter_validate_css(x.content, {})
     return True
 
 
@@ -1145,16 +1194,16 @@ def validate_css(css, sid):
     for x in st:
         if x.__class__.__name__ == "AtRule":
             if x.at_keyword.lower() == "import":
-                return (_("@import token not allowed"), x.source_column, x.source_line)  # we do not allow @import
+                return _("@import token not allowed"), x.source_column, x.source_line  # we do not allow @import
         elif x.__class__.__name__ == "QualifiedRule":  # down the hole we go.
-            m = iter_validate_css(x.content, uris)
-            if m is not True:
-                return m
+            validation = iter_validate_css(x.content, uris)
+            if validation is not True:
+                return validation
 
     try:
-        return (0, tinycss2.serialize(st))
+        return 0, tinycss2.serialize(st)
     except TypeError:
-        return (_("Invalid CSS"), 0, 0)
+        return _("Invalid CSS"), 0, 0
 
 
 @cache.memoize(3)
@@ -1175,8 +1224,8 @@ def pick_random_security_question():
 def create_message(mfrom, to, subject, content, link, mtype):
     """ Creates a message. """
     posted = datetime.utcnow()
-    m = Message.create(sentby=mfrom, receivedby=to, subject=subject, mlink=link, content=content, posted=posted, mtype=mtype)
-    return m
+    return Message.create(sentby=mfrom, receivedby=to, subject=subject, mlink=link, content=content, posted=posted,
+                          mtype=mtype)
 
 
 try:
@@ -1196,8 +1245,10 @@ def populate_feed(feed, posts):
         url = url_for('sub.view_post', sub=post['sub'], pid=post['pid'], _external=True)
 
         if post['thumbnail']:
-            content += '<td><a href=' + url + '"><img src="' + config.storage.thumbnails.url + post['thumbnail'] + '" alt="' + post['title'] + '"/></a></td>'
-        content +=  '<td>Submitted by <a href=/u/' + post['user'] + '>' + post['user'] + '</a><br/>' + our_markdown(post['content'])
+            content += '<td><a href=' + url + '"><img src="' + config.storage.thumbnails.url + post[
+                'thumbnail'] + '" alt="' + post['title'] + '"/></a></td>'
+        content += '<td>Submitted by <a href=/u/' + post['user'] + '>' + post['user'] + '</a><br/>' + our_markdown(
+            post['content'])
         if post['link']:
             content += '<a href="' + post['link'] + '">[link]</a> '
         content += '<a href="' + url + '">[comments]</a></td></tr></table>'
@@ -1216,20 +1267,20 @@ def populate_feed(feed, posts):
 def metadata_to_dict(metadata):
     """ Transforms metadata query objects into dicts """
     res = {}
-    for m in metadata:
-        if m.value == '0':
+    for mdata in metadata:
+        if mdata.value == '0':
             val = False
-        elif m.value == '1':
+        elif mdata.value == '1':
             val = True
         else:
-            val = m.value 
-        if m.key not in res:
-            res[m.key] = val
+            val = mdata.value
+        if mdata.key not in res:
+            res[mdata.key] = val
         else:
-            if not isinstance(res[m.key], list):
-                res[m.key] = [res[m.key]]
-            res[m.key].append(val)
-    
+            if not isinstance(res[mdata.key], list):
+                res[mdata.key] = [res[mdata.key]]
+            res[mdata.key].append(val)
+
     return res
 
 
@@ -1293,19 +1344,20 @@ def create_captcha():
     token = str(uuid.uuid4())
     captchagen = ImageCaptcha(width=250, height=70)
     if random.randint(1, 50) == 1:
-        captcha = random.choice(['help me', 'sorry', 'hello', 'see me', 'observe', 'stop', 'nooooo', 'i can see', 'free me', 'behind you',
-                                 'murder', 'shhhh', 'reeeee', 'come here', 'people die', 'it hurts', 'go away', 'touch me', 'last words',
-                                 'closer', 'rethink', 'it is dark', 'it is cold', 'i am dying', 'quit staring', 'lock door'])
+        captcha = random.choice(
+            ['help me', 'sorry', 'hello', 'see me', 'observe', 'stop', 'nooooo', 'i can see', 'free me', 'behind you',
+             'murder', 'shhhh', 'reeeee', 'come here', 'people die', 'it hurts', 'go away', 'touch me', 'last words',
+             'closer', 'rethink', 'it is dark', 'it is cold', 'i am dying', 'quit staring', 'lock door'])
     else:
         captcha = ''.join(random.choice('abcdefghijklmnopqrstuvwxyz0123456789') for _ in range(random.randint(4, 6)))
-    
+
     data = captchagen.generate(captcha.upper())
     b64captcha = base64.b64encode(data.getvalue()).decode()
     captcha = captcha.replace(' ', '').replace('0', 'o')
 
     rconn.setex('cap-' + token, value=captcha, time=300)  # captcha valid for 5 minutes.
 
-    return (token, b64captcha)
+    return token, b64captcha
 
 
 def validate_captcha(token, response):
@@ -1330,20 +1382,21 @@ def get_all_subs():
 def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_context=True):
     """ Returns a fully paginated and expanded comment tree.
 
-    Parameters:
-        comments: bare list of comments (only cid and parentcid)
-        root: if present, the root comment to start building the tree on
-        only_after: removes all siblings of `root` after the cid on its value
-
     TODO: Move to misc and implement globally
+    @param comments: bare list of comments (only cid and parentcid)
+    @param root: if present, the root comment to start building the tree on
+    @param only_after: removes all siblings of `root` after the cid on its value
+    @param uid:
+    @param provide_context:
     """
-    def build_tree(tuff, root=None):
+
+    def build_tree(tuff, rootcid=None):
         """ Builds a comment tree """
         res = []
         for i in tuff[::]:
-            if i['parentcid'] == root:
+            if i['parentcid'] == rootcid:
                 tuff.remove(i)
-                i['children'] = build_tree(tuff, root=i['cid'])
+                i['children'] = build_tree(tuff, rootcid=i['cid'])
                 res.append(i)
         return res
 
@@ -1352,14 +1405,15 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
 
     # 2.1 - get only a branch of the tree if necessary
     if root:
-        def select_branch(comments, root):
+        def select_branch(commentslst, rootcid):
             """ Finds a branch with a certain root and returns a new tree """
-            for i in comments:
-                if i['cid'] == root:
+            for i in commentslst:
+                if i['cid'] == rootcid:
                     return i
-                k = select_branch(i['children'], root)
+                k = select_branch(i['children'], rootcid)
                 if k:
                     return k
+
         comment_tree = select_branch(comment_tree, root)
         if comment_tree:
             # include the parent of the root for context.
@@ -1374,18 +1428,19 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
     # 3 - Trim tree (remove all children of depth=3 comments, all siblings after #5
     cid_list = []
     trimmed = False
-    def recursive_check(tree, depth=0, trimmed=None, pcid=''):
+
+    def recursive_check(tree, depth=0, trimmedtree=None, pcid=''):
         """ Recursively checks tree to apply pagination limits """
         or_len = len(tree)
-        if only_after and not trimmed:
-            imf = list(filter(lambda i: i['cid'] == only_after, tree))
+        if only_after and not trimmedtree:
+            imf = list(filter(lambda x: x['cid'] == only_after, tree))
             if imf:
                 try:
                     tree = tree[tree.index(imf[0]) + 1:]
                 except IndexError:
                     return []
                 or_len = len(tree)
-                trimmed = True
+                trimmedtree = True
         if depth > 3:
             return [{'cid': None, 'more': len(tree), 'pcid': pcid}] if tree else []
         if (len(tree) > 5 and depth > 0) or (len(tree) > 10):
@@ -1397,20 +1452,23 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
             if not i['cid']:
                 continue
             cid_list.append(i['cid'])
-            i['children'] = recursive_check(i['children'], depth+1, pcid=i['cid'])
+            i['children'] = recursive_check(i['children'], depth + 1, pcid=i['cid'], trimmedtree=trimmedtree)
 
         return tree
 
-    comment_tree = recursive_check(comment_tree, trimmed=trimmed)
+    comment_tree = recursive_check(comment_tree, trimmedtree=trimmed)
 
     # 4 - Populate the tree (get all the data and cram it into the tree)
     expcomms = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
-                                     SubPostComment.score, SubPostComment.status, SubPostComment.time, SubPostComment.pid,
-                                     User.name.alias('user'), *([SubPostCommentVote.positive, SubPostComment.uid] if uid else [SubPostComment.uid]), # silly hack
+                                     SubPostComment.score, SubPostComment.status, SubPostComment.time,
+                                     SubPostComment.pid,
+                                     User.name.alias('user'), *(
+                                        [SubPostCommentVote.positive, SubPostComment.uid] if uid else [SubPostComment.uid]),  # silly hack
                                      User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)
     expcomms = expcomms.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
     if uid:
-        expcomms = expcomms.join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == uid) & (SubPostCommentVote.cid == SubPostComment.cid)))
+        expcomms = expcomms.join(SubPostCommentVote, JOIN.LEFT_OUTER,
+                                 on=((SubPostCommentVote.uid == uid) & (SubPostCommentVote.cid == SubPostComment.cid)))
     expcomms = expcomms.where(SubPostComment.cid << cid_list).dicts()
 
     commdata = {}
@@ -1422,9 +1480,8 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
         if comm['status']:
             comm['content'] = ''
             comm['lastedit'] = None
-        #del comm['userstatus']
+        # del comm['userstatus']
         commdata[comm['cid']] = comm
-
 
     def recursive_populate(tree):
         """ Expands the tree with the data from `commdata` """
@@ -1450,6 +1507,7 @@ MESSAGE_TYPE_MENTION = [8]
 MESSAGE_TYPE_MODMAIL = [2, 7, 11]
 MESSAGE_TYPE_POSTREPLY = [4]
 MESSAGE_TYPE_COMMREPLY = [5]
+
 
 def get_messages(mtype, read=False, uid=None):
     """ Returns query for messages. If `read` is True it only queries for unread messages """
@@ -1490,7 +1548,8 @@ def cast_vote(uid, target_type, pcid, value):
     if target_type == "post":
         target_model = SubPost
         try:
-            target = SubPost.select(SubPost.uid, SubPost.score, SubPost.upvotes, SubPost.downvotes, SubPost.pid.alias('id'), SubPost.posted)
+            target = SubPost.select(SubPost.uid, SubPost.score, SubPost.upvotes, SubPost.downvotes,
+                                    SubPost.pid.alias('id'), SubPost.posted)
             target = target.where(SubPost.pid == pcid).get()
         except SubPost.DoesNotExist:
             return jsonify(msg=_('Post does not exist')), 404
@@ -1505,19 +1564,22 @@ def cast_vote(uid, target_type, pcid, value):
     elif target_type == "comment":
         target_model = SubPostComment
         try:
-            target = SubPostComment.select(SubPostComment.uid, SubPost.sid, SubPostComment.pid, SubPostComment.status, SubPostComment.score,
-                                           SubPostComment.upvotes, SubPostComment.downvotes, SubPostComment.cid.alias('id'), SubPostComment.time.alias('posted'))
+            target = SubPostComment.select(SubPostComment.uid, SubPost.sid, SubPostComment.pid, SubPostComment.status,
+                                           SubPostComment.score,
+                                           SubPostComment.upvotes, SubPostComment.downvotes,
+                                           SubPostComment.cid.alias('id'), SubPostComment.time.alias('posted'))
             target = target.join(SubPost).where(SubPostComment.cid == pcid).objects().get()
         except SubPostComment.DoesNotExist:
             return jsonify(msg=_('Comment does not exist')), 404
-        
+
         if target.uid_id == user.uid:
             return jsonify(msg=_("You can't vote on your own comments")), 400
         if target.status:
             return jsonify(msg=_("You can't vote on deleted comments")), 400
 
         try:
-            qvote = SubPostCommentVote.select().where(SubPostCommentVote.cid == pcid).where(SubPostCommentVote.uid == uid).get()
+            qvote = SubPostCommentVote.select().where(SubPostCommentVote.cid == pcid).where(
+                SubPostCommentVote.uid == uid).get()
         except SubPostCommentVote.DoesNotExist:
             qvote = False
     else:
@@ -1531,8 +1593,6 @@ def cast_vote(uid, target_type, pcid, value):
 
     if (datetime.utcnow() - target.posted.replace(tzinfo=None)) > timedelta(days=60):
         return jsonify(msg=_("Post is archived")), 400
-
-    user = User.get(User.uid == target.uid)
 
     positive = True if voteValue == 1 else False
     undone = False
@@ -1554,13 +1614,15 @@ def cast_vote(uid, target_type, pcid, value):
             qvote.save()
 
             if positive:
-                upd_q = target_model.update(score=target_model.score + (voteValue * 2), upvotes=target_model.upvotes + 1, downvotes=target_model.downvotes - 1)
+                upd_q = target_model.update(score=target_model.score + (voteValue * 2),
+                                            upvotes=target_model.upvotes + 1, downvotes=target_model.downvotes - 1)
             else:
-                upd_q = target_model.update(score=target_model.score + (voteValue * 2), upvotes=target_model.upvotes - 1, downvotes=target_model.downvotes + 1)
+                upd_q = target_model.update(score=target_model.score + (voteValue * 2),
+                                            upvotes=target_model.upvotes - 1, downvotes=target_model.downvotes + 1)
             new_score = (voteValue * 2)
             User.update(score=User.score + (voteValue * 2)).where(User.uid == target.uid).execute()
             User.update(given=User.given + voteValue).where(User.uid == uid).execute()
-    else: # First vote cast on post
+    else:  # First vote cast on post
         now = datetime.utcnow()
         if target_type == "post":
             sp_vote = SubPostVote.create(pid=pcid, uid=uid, positive=positive, datetime=now)
@@ -1582,7 +1644,9 @@ def cast_vote(uid, target_type, pcid, value):
         socketio.emit('threadscore', {'pid': target.id, 'score': target.score + new_score},
                       namespace='/snt', room=target.id)
 
-        socketio.emit('yourvote', {'pid': target.id, 'status': voteValue if not undone else 0, 'score': target.score + new_score}, namespace='/snt',
+        socketio.emit('yourvote',
+                      {'pid': target.id, 'status': voteValue if not undone else 0, 'score': target.score + new_score},
+                      namespace='/snt',
                       room='user' + uid)
     else:
         upd_q.where(SubPostComment.cid == target.id).execute()
