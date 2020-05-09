@@ -2,6 +2,7 @@ import io from 'socket.io-client';
 import icon from './Icon'
 import u from './Util';
 import anchorme from "anchorme";
+import _ from './utils/I18n';
 
 RegExp.escape= function(s) {
     return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -74,7 +75,7 @@ socket.on('threadscore', function(data){
 
 socket.on('threadcomments', function(data){
   console.log('article#' + data.pid + ' .ccount')
-  document.querySelector('div[pid="' + data.pid + '"] .comments').innerHTML = 'comments (' + data.comments + ')';
+  document.querySelector('div[pid="' + data.pid + '"] .comments').innerHTML = _('comments (%1)', data.comments);
 })
 
 socket.on('threadtitle', function(data){

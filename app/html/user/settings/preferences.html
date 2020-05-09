@@ -4,23 +4,23 @@
   <h3><a href="@{url_for('view_user', user=current_user.name)}" class="sbm-post">@{current_user.name}</a></h3>
   <hr/>
 
-  <a href="/settings" class="sbm-post pure-button pure-button-primary">Preferences</a>
-  <a href="/settings/password" class="sbm-post pure-button">Change password</a>
-  <a href="/settings/delete" class="sbm-post pure-button">Delete account</a>
+  <a href="/settings" class="sbm-post pure-button pure-button-primary">@{_('Preferences')}</a>
+  <a href="/settings/password" class="sbm-post pure-button">@{_('Change password')}</a>
+  <a href="/settings/delete" class="sbm-post pure-button">@{_('Delete account')}</a>
 
   <hr/>
-  <a href="@{url_for('view_user_posts', user=current_user.name)}" class="sbm-post pure-button">View posts</a>
-  <a href="@{url_for('view_user_comments', user=current_user.name)}" class="sbm-post pure-button">View comments</a>
-  <a href="@{url_for('view_user_savedposts', user=current_user.name)}" class="sbm-post pure-button">View saved posts</a>
+  <a href="@{url_for('view_user_posts', user=current_user.name)}" class="sbm-post pure-button">@{_('View posts')}</a>
+  <a href="@{url_for('view_user_comments', user=current_user.name)}" class="sbm-post pure-button">@{_('View comments')}</a>
+  <a href="@{url_for('view_user_savedposts', user=current_user.name)}" class="sbm-post pure-button">@{_('View saved posts')}</a>
   @if func.enableInviteCode():
     <hr/>
-    <a href="/settings/invite" class="sbm-post pure-button">Invite codes</a>
+    <a href="/settings/invite" class="sbm-post pure-button">@{_('Invite codes')}</a>
   @end
 @end
 
 @def main():
 <div id="container">
-  <h1>@{current_user.name}'s preferences</h1>
+  <h1>@{_('%(user)s\'s preferences', user=current_user.name)}</h1>
   <form  method="POST" id="edit-user-form" data-refresh='true'  action="@{url_for('do.edit_user')}" class="ajaxform pure-form pure-form-aligned">
     @{edituserform.csrf_token()}
     <fieldset>
@@ -50,14 +50,19 @@
       </div>
 
       <div class="pure-control-group">
-          <label for="nochat" class="pure-checkbox">@{edituserform.subtheme.label.text}</label>
-          @{edituserform.subtheme(class_="sub_autocomplete", autocomplete="off")}
-        </div>
+        <label for="nochat" class="pure-checkbox">@{edituserform.nochat.label.text}</label>
+        @{edituserform.nochat()}
+      </div>
+
+      <div class="pure-control-group">
+        <label for="nochat" class="pure-checkbox">@{edituserform.language.label.text}</label>
+        @{edituserform.language(autocomplete="off")}
+      </div>
 
 
       <div class="alert div-error"></div>
 
-      <button type="submit" class="pure-button pure-button-primary" id="edituser-btnsubmit" data-prog="Editing..." data-success="Saved!">Save</button>
+      <button type="submit" class="pure-button pure-button-primary" id="edituser-btnsubmit" data-prog="@{_('Editing...')}" data-success="@{_('Saved!')}">@{_('Save')}</button>
     </fieldset>
   </form>
 

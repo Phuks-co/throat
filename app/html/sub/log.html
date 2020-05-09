@@ -2,13 +2,13 @@
 @require(sub, logs, page)
 
 @def main():
-    <h1>Sub log for <a href="/s/@{sub.name}">/s/@{sub.name}</a></h1>
+<h2>@{_('Sub log for <a href="%(url)s">/%(prefix)s/%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), prefix=config.site.sub_prefix, sub=sub.name)}</h2>
     <table class="pure-table">
         <thead>
             <tr>
-                <th>Time</th>
-                <th>User</th>
-                <th>Action</th>
+                <th>@{_('Time')}</th>
+                <th>@{_('User')}</th>
+                <th>@{_('Action')}</th>
                 <th></th>
             </tr>
         </thead>
@@ -20,54 +20,54 @@
                         @if log.uid.status != 10:
                             <a href="/u/@{log.uid.name}">@{log.uid.name}</a>\
                         @else:
-                            [Deleted]
+                            @{_('[Deleted]')}
                         @end
                     @end</td>
                 <td>
                     @if log.action == 20:
-                        Created the sub
+                        @{_('Created the sub')}
                     @elif log.action == 21:
-                        Changed sub settings
+                        @{_('Changed sub settings')}
                     @elif log.action == 22:
-                        Banned <a href="/u/@{log.target.name}">@{log.target.name}</a> with reason <code>@{log.desc!!e}</code>
+                        @{_('Banned <a href="/u/%(username)s">%(username)s</a> with reason <code>%(reason)s</code>', username=log.target.name, reason=e(log.desc))}
                     @elif log.action == 23:
-                        Unbanned <a href="/u/@{log.target.name}">@{log.target.name}</a>
+                        @{_('Unbanned <a href="/u/%(username)s">%(username)s</a>', username=log.target.name)}
                     @elif log.action == 24:
-                        Sent mod invite to <a href="/u/@{log.target.name}">@{log.target.name}</a>
+                        @{_('Sent mod invite to <a href="/u/%(username)s">%(username)s</a>', username=log.target.name)}
                     @elif log.action == 25:
-                        Accepted mod invite
+                        @{_('Accepted mod invite')}
                     @elif log.action == 26:
-                        Removed <a href="/u/@{log.target.name}">@{log.target.name}</a> from the mod team
+                        @{_('Removed <a href="/u/%(username)s">%(username)s</a> from the mod team', username=log.target.name)}
                     @elif log.action == 27:
-                        Revoked mod invite for <a href="/u/@{log.target.name}">@{log.target.name}</a>
+                        @{_('Revoked mod invite for <a href="/u/%(username)s">%(username)s</a>', username=log.target.name)}
                     @elif log.action == 28:
-                        Mod invite declined by <a href="/u/@{log.target.name}">@{log.target.name}</a>
+                        @{_('Mod invite declined by <a href="/u/%(username)s">%(username)s</a>', username=log.target.name)}
                     @elif log.action == 30:
-                        Sub was transferred to @{log.desc!!e}
+                        @{_('Sub was transferred to <a href="/u/%(username)s">%(username)s</a>', username=e(log.desc))}
                     @elif log.action == 50:
-                        Stickied a post
+                        @{_('Stickied a post')}
                     @elif log.action == 51:
-                        Unstickied a post
+                        @{_('Unstickied a post')}
                     @elif log.action == 52:
-                        Deleted a post with reason <code>@{log.desc!!e}</code>
+                        @{_('Deleted a post with reason <code>%(desc)s</code>', desc=e(log.desc))}
                     @elif log.action == 53:
-                        Deleted a comment with reason <code>@{log.desc!!e}</code>
+                        @{_('Deleted a comment with reason <code>%(desc)s</code>', desc=e(log.desc))}
                     @else:
-                        <i>[Type @{log.action!!s}]</i> @{log.desc!!e}
+                        <i>@{_('[Type %(type)i]', type=log.action)}</i> @{log.desc!!e}
                     @end
                 </td>
                 <td>@if log.link:
-                    <a href="@{log.link}">Link</a> \
+                    <a href="@{log.link}">@{_('Link')}</a> \
                 @end</td>
             </tr>
             @end
         </tbody>
     </table>
     @if page > 1:
-    <a href="@{url_for('sub.view_sublog', sub=sub.name, page=(page-1))}" class="btn">prev</a>
+    <a href="@{url_for('sub.view_sublog', sub=sub.name, page=(page-1))}" class="btn">@{_('Previous page')}</a>
     @end
 
     @if len(logs) == 50:
-    <a href="@{url_for('sub.view_sublog', sub=sub.name, page=(page+1))}" class="btn">next</a>
+    <a href="@{url_for('sub.view_sublog', sub=sub.name, page=(page+1))}" class="btn">@{_('Next page')}</a>
     @end
 @end

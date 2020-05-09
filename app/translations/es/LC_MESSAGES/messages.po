@@ -1,0 +1,945 @@
+# Spanish translations for Throat.
+# Copyright (C) 2020 Phuks LLC
+# This file is distributed under the same license as the Throat project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Throat 1.0\n"
+"Report-Msgid-Bugs-To: polsaker@phuks.co\n"
+"POT-Creation-Date: 2020-05-08 19:56-0300\n"
+"PO-Revision-Date: 2020-05-08 20:21-0300\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+"Last-Translator: \n"
+"X-Generator: Poedit 2.3\n"
+
+#: app/html/chat.html:12
+msgid "Type here"
+msgstr "Escribe aquí"
+
+#: app/html/index.html:8 app/html/index.html:12 app/html/sub.html:21
+msgid "Hot"
+msgstr ""
+
+#: app/html/index.html:9 app/html/index.html:13 app/html/sub.html:22
+msgid "Top"
+msgstr ""
+
+#: app/html/index.html:10 app/html/index.html:14 app/html/sub.html:23
+msgid "New"
+msgstr "Nuevo"
+
+#: app/html/index.html:23
+msgid "Welcome"
+msgstr ""
+
+#: app/html/index.html:24 app/html/shared/layout.html:152
+msgid "ToS"
+msgstr ""
+
+#: app/html/index.html:25 app/html/shared/layout.html:153
+msgid "Privacy"
+msgstr ""
+
+#: app/html/index.html:26 app/html/shared/layout.html:154
+msgid "Changelog"
+msgstr "Log de cambios"
+
+#: app/html/index.html:27 app/html/shared/layout.html:155
+msgid "API"
+msgstr ""
+
+#: app/html/index.html:28 app/html/shared/layout.html:156
+msgid "Canary"
+msgstr ""
+
+#: app/html/index.html:29 app/html/shared/layout.html:157
+#: app/html/shared/sidebar/home.html:52
+msgid "Donate"
+msgstr "Donar"
+
+#: app/html/index.html:31
+#, python-format
+msgid "Served by %(host)s"
+msgstr ""
+
+#: app/html/index.html:33 app/html/shared/layout.html:163
+msgid "Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries"
+msgstr ""
+
+#: app/html/index.html:50 app/html/sub.html:39
+msgid "There are no posts here, yet."
+msgstr ""
+
+#: app/html/index.html:61 app/html/sub.html:49 app/html/sub/log.html:67
+msgid "Previous page"
+msgstr ""
+
+#: app/html/index.html:64 app/html/sub.html:52 app/html/sub/log.html:71
+msgid "Next page"
+msgstr ""
+
+#: app/html/videomodeplayer.html:7
+msgid "Previous"
+msgstr ""
+
+#: app/html/videomodeplayer.html:10
+msgid "Next"
+msgstr ""
+
+#: app/html/admin/totp.html:11
+msgid "Further authentication required"
+msgstr ""
+
+#: app/html/admin/totp.html:14
+msgid "One-time password"
+msgstr ""
+
+#: app/html/admin/totp.html:21 app/html/shared/layout.html:102
+#: app/html/user/login.html:5 app/html/user/login.html:30
+msgid "Log in"
+msgstr ""
+
+#: app/html/shared/layout.html:40
+msgid "Admin mode is currently enabled."
+msgstr ""
+
+#: app/html/shared/layout.html:43
+msgid "Disable"
+msgstr ""
+
+#: app/html/shared/layout.html:50
+msgid "all"
+msgstr ""
+
+#: app/html/shared/layout.html:51
+msgid "new"
+msgstr ""
+
+#: app/html/shared/layout.html:53
+msgid "uploads"
+msgstr ""
+
+#: app/html/shared/layout.html:57
+msgid "Customize this bar"
+msgstr ""
+
+#: app/html/shared/layout.html:66
+msgid "More"
+msgstr ""
+
+#: app/html/shared/layout.html:103
+msgid "Register"
+msgstr ""
+
+#: app/html/shared/layout.html:107
+msgid "Score"
+msgstr ""
+
+#: app/html/shared/layout.html:125
+msgid "Log out"
+msgstr ""
+
+#: app/html/shared/layout.html:158
+msgid "License"
+msgstr ""
+
+#: app/html/shared/layout.html:159
+msgid "Bugs"
+msgstr ""
+
+#: app/html/shared/layout.html:161
+#, python-format
+msgid "Served by %(hostname)s"
+msgstr ""
+
+#: app/html/shared/post.html:7 app/html/sub/post.html:31
+#: app/html/sub/postcomments.html:10
+msgid "Upvote"
+msgstr ""
+
+#: app/html/shared/post.html:9 app/html/sub/post.html:33
+#: app/html/sub/postcomments.html:11
+msgid "Downvote"
+msgstr ""
+
+#: app/html/shared/post.html:22 app/html/sub/css.html:45
+msgid "Thumbnail"
+msgstr ""
+
+#: app/html/shared/post.html:35
+msgid "Announcement"
+msgstr ""
+
+#: app/html/shared/post.html:38
+msgid "Poll"
+msgstr ""
+
+#: app/html/shared/post.html:41 app/html/shared/sidebar/sub.html:31
+#: app/html/sub/post.html:55
+msgid "Not safe for work"
+msgstr ""
+
+#: app/html/shared/post.html:41 app/html/shared/sidebar/sub.html:31
+#: app/html/sub/post.html:55
+msgid "NSFW"
+msgstr ""
+
+#: app/html/shared/post.html:50
+msgid "not https"
+msgstr ""
+
+#: app/html/shared/post.html:58
+msgid "Embed video"
+msgstr ""
+
+#: app/html/shared/post.html:60
+msgid "Show image"
+msgstr ""
+
+#: app/html/shared/post.html:62
+msgid "Play video"
+msgstr ""
+
+#: app/html/shared/post.html:65
+msgid "Show poll"
+msgstr ""
+
+#: app/html/shared/post.html:67
+msgid "Show post content"
+msgstr ""
+
+#: app/html/shared/post.html:71
+#, python-format
+msgid "posted %(timeago)s by %(user)s on %(sub)s"
+msgstr ""
+
+#: app/html/shared/post.html:73
+#, python-format
+msgid "posted %(timeago)s by %(user)s"
+msgstr ""
+
+#: app/html/shared/post.html:77
+msgid "sticky"
+msgstr ""
+
+#: app/html/shared/post.html:80
+msgid "wiki"
+msgstr ""
+
+#: app/html/shared/post.html:86
+#, python-format
+msgid "comments (%(comments)i)"
+msgstr ""
+
+#: app/html/shared/post.html:88
+msgid "comment"
+msgstr ""
+
+#: app/html/shared/post.html:92
+msgid "block sub"
+msgstr ""
+
+#: app/html/shared/post.html:94 app/html/sub/post.html:137
+#: app/html/sub/postcomments.html:67
+msgid "report"
+msgstr ""
+
+#: app/html/shared/sidebar/home.html:8 app/html/shared/sidebar/sub.html:15
+msgid "Submit a text post"
+msgstr ""
+
+#: app/html/shared/sidebar/home.html:9 app/html/shared/sidebar/sub.html:16
+msgid "Submit a link post"
+msgstr ""
+
+#: app/html/shared/sidebar/home.html:11
+msgid "View all subs"
+msgstr ""
+
+#: app/html/shared/sidebar/home.html:12
+msgid "Go to random sub"
+msgstr ""
+
+#: app/html/shared/sidebar/home.html:13
+msgid "Create a sub"
+msgstr ""
+
+#: app/html/shared/sidebar/home.html:18
+msgid "Top posts in the last 24 hours"
+msgstr ""
+
+#: app/html/shared/sidebar/home.html:33
+msgid "Sub of the day"
+msgstr ""
+
+#: app/html/shared/sidebar/home.html:55
+msgid "Site logs"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:18
+msgid "Submit a poll"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:25
+msgid "View wiki"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:35
+#, python-format
+msgid "%(subs)i subscribers"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:39
+msgid "Subscribed"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:41
+msgid "Subscribe"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:44
+msgid "Blocked"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:46
+msgid "Block"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:56 app/html/shared/sidebar/sub.html:80
+msgid "Moderators"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:59
+msgid "Owner"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:70
+#, python-format
+msgid "Created by <a href=\"/u/%(name)s\">%(name)s</a>"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:75
+msgid "Settings"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:76
+msgid "Edit flairs"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:77
+msgid "Edit stylesheet"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:85
+msgid "Sub Log"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:86
+msgid "Banned Users"
+msgstr ""
+
+#: app/html/site/license.html:8
+msgid ""
+"This website is powered by <a href=\"https://github.com/Phuks-co/throat"
+"\">Throat</a>, released under the MIT license."
+msgstr ""
+
+#: app/html/site/log.html:23 app/html/sub/log.html:23
+#: app/html/sub/postcomments.html:46
+msgid "[Deleted]"
+msgstr ""
+
+#: app/html/sub/bans.html:7 app/html/sub/css.html:7
+msgid "Editing as Admin"
+msgstr ""
+
+#: app/html/sub/bans.html:10
+#, python-format
+msgid "Banned users on <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgstr ""
+
+#: app/html/sub/bans.html:12
+msgid "Ban user"
+msgstr ""
+
+#: app/html/sub/bans.html:20 app/html/sub/bans.html:24
+msgid "Until..."
+msgstr ""
+
+#: app/html/sub/bans.html:23
+msgid "Forever"
+msgstr ""
+
+#: app/html/sub/bans.html:28
+msgid "Ban"
+msgstr ""
+
+#: app/html/sub/bans.html:40
+msgid "Banned users"
+msgstr ""
+
+#: app/html/sub/bans.html:42
+msgid "none"
+msgstr ""
+
+#: app/html/sub/bans.html:47 app/html/sub/bans.html:105
+msgid "By"
+msgstr ""
+
+#: app/html/sub/bans.html:48 app/html/sub/bans.html:106
+#: app/html/user/settings/invitecode.html:33
+msgid "Created"
+msgstr ""
+
+#: app/html/sub/bans.html:49 app/html/sub/bans.html:107
+#: app/html/sub/log.html:10
+msgid "User"
+msgstr ""
+
+#: app/html/sub/bans.html:50 app/html/sub/bans.html:108
+msgid "Reason"
+msgstr ""
+
+#: app/html/sub/bans.html:51 app/html/user/settings/invitecode.html:35
+msgid "Expires"
+msgstr ""
+
+#: app/html/sub/bans.html:53
+msgid "Actions"
+msgstr ""
+
+#: app/html/sub/bans.html:64 app/html/sub/bans.html:71
+#: app/html/sub/bans.html:119 app/html/sub/bans.html:126
+#: app/html/sub/bans.html:135 app/html/user/settings/invitecode.html:53
+msgid "N/A"
+msgstr ""
+
+#: app/html/sub/bans.html:80
+msgid "Never"
+msgstr ""
+
+#: app/html/sub/bans.html:86
+msgid "unban"
+msgstr ""
+
+#: app/html/sub/bans.html:98
+msgid "Past bans"
+msgstr ""
+
+#: app/html/sub/bans.html:109
+msgid "Removed"
+msgstr ""
+
+#: app/html/sub/css.html:10
+#, python-format
+msgid "Editing stylesheet for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgstr ""
+
+#: app/html/sub/css.html:23 app/html/user/settings/password.html:37
+msgid "Saved!"
+msgstr ""
+
+#: app/html/sub/css.html:23 app/html/user/settings/password.html:37
+#: app/html/user/settings/preferences.html:60 app/html/user/topbar.html:7
+msgid "Save"
+msgstr ""
+
+#: app/html/sub/css.html:30
+msgid "Upload files"
+msgstr ""
+
+#: app/html/sub/css.html:31
+#, python-format
+msgid "Upload limit is 2 MiB. Space used: %(storage)i KiB"
+msgstr ""
+
+#: app/html/sub/css.html:37
+msgid "Only images allowed"
+msgstr ""
+
+#: app/html/sub/css.html:38
+msgid "Upload"
+msgstr ""
+
+#: app/html/sub/css.html:42
+msgid "No files were uploaded, yet."
+msgstr ""
+
+#: app/html/sub/css.html:46
+#, python-format
+msgid "Filename: %(filename). Size: %(filesize)i KiB."
+msgstr ""
+
+#: app/html/sub/css.html:48 app/html/user/settings/delete.html:36
+msgid "Deleting..."
+msgstr ""
+
+#: app/html/sub/css.html:48
+msgid "Deleted!"
+msgstr ""
+
+#: app/html/sub/css.html:48
+msgid "Delete"
+msgstr ""
+
+#: app/html/sub/css.html:53
+#, python-format
+msgid "You can use uploaded images with <code>%%imagename%%</code>."
+msgstr ""
+
+#: app/html/sub/css.html:54
+msgid "Example:"
+msgstr ""
+
+#: app/html/sub/css.html:57
+#, python-format
+msgid "%%mybackground%%"
+msgstr ""
+
+#: app/html/sub/log.html:5
+#, python-format
+msgid "Sub log for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgstr ""
+
+#: app/html/sub/log.html:9
+msgid "Time"
+msgstr ""
+
+#: app/html/sub/log.html:11
+msgid "Action"
+msgstr ""
+
+#: app/html/sub/log.html:28
+msgid "Created the sub"
+msgstr ""
+
+#: app/html/sub/log.html:30
+msgid "Changed sub settings"
+msgstr ""
+
+#: app/html/sub/log.html:32
+#, python-format
+msgid ""
+"Banned <a href=\"/u/%(username)s\">%(username)s</a> with reason <code>"
+"%(reason)s</code>"
+msgstr ""
+
+#: app/html/sub/log.html:34
+#, python-format
+msgid "Unbanned <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
+
+#: app/html/sub/log.html:36
+#, python-format
+msgid "Sent mod invite to <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
+
+#: app/html/sub/log.html:38
+msgid "Accepted mod invite"
+msgstr ""
+
+#: app/html/sub/log.html:40
+#, python-format
+msgid "Removed <a href=\"/u/%(username)s\">%(username)s</a> from the mod team"
+msgstr ""
+
+#: app/html/sub/log.html:42
+#, python-format
+msgid "Revoked mod invite for <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
+
+#: app/html/sub/log.html:44
+#, python-format
+msgid "Mod invite declined by <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
+
+#: app/html/sub/log.html:46
+#, python-format
+msgid "Sub was transferred to <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
+
+#: app/html/sub/log.html:48
+msgid "Stickied a post"
+msgstr ""
+
+#: app/html/sub/log.html:50
+msgid "Unstickied a post"
+msgstr ""
+
+#: app/html/sub/log.html:52
+#, python-format
+msgid "Deleted a post with reason <code>%(desc)s</code>"
+msgstr ""
+
+#: app/html/sub/log.html:54
+#, python-format
+msgid "Deleted a comment with reason <code>%(desc)s</code>"
+msgstr ""
+
+#: app/html/sub/log.html:56
+#, python-format
+msgid "[Type %(type)i]"
+msgstr ""
+
+#: app/html/sub/log.html:60
+msgid "Link"
+msgstr ""
+
+#: app/html/sub/post.html:14
+#, python-format
+msgid "Posted %(timeago)s by %(user)s"
+msgstr ""
+
+#: app/html/sub/post.html:17
+#, python-format
+msgid "edited %(timeago)s"
+msgstr ""
+
+#: app/html/sub/post.html:19
+#, python-format
+msgid "Score: %(score)i <b>(+%(upvotes)i|-%(downvotes)i)</b>"
+msgstr ""
+
+#: app/html/sub/post.html:87
+msgid "unsave"
+msgstr ""
+
+#: app/html/sub/post.html:89
+msgid "save"
+msgstr ""
+
+#: app/html/sub/post.html:92
+msgid "flair"
+msgstr ""
+
+#: app/html/sub/post.html:96 app/html/sub/postcomments.html:62
+msgid "edit"
+msgstr ""
+
+#: app/html/sub/post.html:99
+msgid "edit title"
+msgstr ""
+
+#: app/html/sub/post.html:104 app/html/sub/postcomments.html:65
+msgid "delete"
+msgstr ""
+
+#: app/html/sub/post.html:108
+msgid "tag as nsfw"
+msgstr ""
+
+#: app/html/sub/post.html:110
+msgid "remove nsfw"
+msgstr ""
+
+#: app/html/sub/post.html:116
+msgid "close poll"
+msgstr ""
+
+#: app/html/sub/post.html:121
+msgid "unstick"
+msgstr ""
+
+#: app/html/sub/post.html:123
+msgid "make sticky"
+msgstr ""
+
+#: app/html/sub/post.html:127
+msgid "remove wiki"
+msgstr ""
+
+#: app/html/sub/post.html:129
+msgid "make wiki"
+msgstr ""
+
+#: app/html/sub/post.html:133
+msgid "make announcement"
+msgstr ""
+
+#: app/html/sub/post.html:147
+#, python-format
+msgid "Current flair: <span class=\"postflair\">%(flair)s</span>."
+msgstr ""
+
+#: app/html/sub/post.html:147
+msgid "Remove"
+msgstr ""
+
+#: app/html/sub/post.html:149
+msgid "Select a new flair"
+msgstr ""
+
+#: app/html/sub/post.html:167
+msgid "[deleted]"
+msgstr ""
+
+#: app/html/sub/post.html:184
+msgid "Submit comment"
+msgstr ""
+
+#: app/html/sub/post.html:185
+msgid "Preview"
+msgstr ""
+
+#: app/html/sub/post.html:187
+msgid "Comment preview"
+msgstr ""
+
+#: app/html/sub/post.html:195
+msgid "No comments, yet..."
+msgstr ""
+
+#: app/html/sub/post.html:198
+#, python-format
+msgid "%(comments)i comments"
+msgstr ""
+
+#: app/html/sub/postcomments.html:26
+msgid "[OP]"
+msgstr ""
+
+#: app/html/sub/postcomments.html:33
+#, python-format
+msgid ""
+"<span class=\"cscore\">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>"
+"%(downvotes)i</b>)"
+msgstr ""
+
+#: app/html/sub/postcomments.html:39
+#, python-format
+msgid "Edited %(timeago)s"
+msgstr ""
+
+#: app/html/sub/postcomments.html:56
+msgid "permalink"
+msgstr ""
+
+#: app/html/sub/postcomments.html:59
+msgid "reply"
+msgstr ""
+
+#: app/html/sub/postcomments.html:70
+msgid "source"
+msgstr ""
+
+#: app/html/sub/postcomments.html:84
+#, python-format
+msgid "Load more (%(amt)i comments)"
+msgstr ""
+
+#: app/html/sub/postcomments.html:86
+msgid "Load more (1 comment)"
+msgstr ""
+
+#: app/html/sub/postpoll.html:6
+msgid "This poll is now <b>closed</b>."
+msgstr ""
+
+#: app/html/sub/postpoll.html:9
+msgid "Show results."
+msgstr ""
+
+#: app/html/sub/postpoll.html:14
+#, python-format
+msgid "This poll will close %(timeuntil)s"
+msgstr ""
+
+#: app/html/sub/postpoll.html:17
+msgid "Results will be hidden until the poll closes"
+msgstr ""
+
+#: app/html/sub/postpoll.html:21
+#, python-format
+msgid "Only users above <b>level %(level)s</b> can vote."
+msgstr ""
+
+#: app/html/sub/postpoll.html:28
+msgid "(voted)"
+msgstr ""
+
+#: app/html/sub/postpoll.html:36
+msgid "Vote"
+msgstr ""
+
+#: app/html/sub/postpoll.html:51
+#, python-format
+msgid "(<span class=\"poll-opt-votecount\">%(votes)i</span> votes)"
+msgstr ""
+
+#: app/html/sub/postpoll.html:59
+msgid "Withdraw vote"
+msgstr ""
+
+#: app/html/user/login.html:12
+msgid "Login"
+msgstr ""
+
+#: app/html/user/login.html:15
+msgid "Username"
+msgstr ""
+
+#: app/html/user/login.html:19 app/html/user/password_reset.html:16
+msgid "Password"
+msgstr ""
+
+#: app/html/user/login.html:22
+msgid "Forgot your password?"
+msgstr ""
+
+#: app/html/user/login.html:25
+msgid "Remember me"
+msgstr ""
+
+#: app/html/user/password_recovery.html:11
+msgid "Password recovery"
+msgstr ""
+
+#: app/html/user/password_recovery.html:15
+msgid "E-mail address"
+msgstr ""
+
+#: app/html/user/password_recovery.html:23
+msgid "Captcha"
+msgstr ""
+
+#: app/html/user/password_recovery.html:27
+msgid "mail sent!"
+msgstr ""
+
+#: app/html/user/password_recovery.html:27 app/html/user/password_reset.html:24
+msgid "Processing..."
+msgstr ""
+
+#: app/html/user/password_recovery.html:27
+msgid "Send recovery email"
+msgstr ""
+
+#: app/html/user/password_reset.html:11
+msgid "Password reset"
+msgstr ""
+
+#: app/html/user/password_reset.html:20
+msgid "Password (again)"
+msgstr ""
+
+#: app/html/user/password_reset.html:24 app/html/user/settings/delete.html:8
+#: app/html/user/settings/invitecode.html:8
+#: app/html/user/settings/password.html:8
+#: app/html/user/settings/password.html:19
+#: app/html/user/settings/preferences.html:8
+msgid "Change password"
+msgstr ""
+
+#: app/html/user/topbar.html:5
+msgid "Customize your sub bar"
+msgstr ""
+
+#: app/html/user/topbar.html:6
+msgid "Drag to sort"
+msgstr ""
+
+#: app/html/user/settings/delete.html:7
+#: app/html/user/settings/invitecode.html:7
+#: app/html/user/settings/password.html:7
+#: app/html/user/settings/preferences.html:7
+msgid "Preferences"
+msgstr ""
+
+#: app/html/user/settings/delete.html:9
+#: app/html/user/settings/invitecode.html:9
+#: app/html/user/settings/password.html:9
+#: app/html/user/settings/preferences.html:9
+msgid "Delete account"
+msgstr ""
+
+#: app/html/user/settings/delete.html:12
+#: app/html/user/settings/invitecode.html:12
+#: app/html/user/settings/password.html:12
+#: app/html/user/settings/preferences.html:12
+msgid "View posts"
+msgstr ""
+
+#: app/html/user/settings/delete.html:13
+#: app/html/user/settings/invitecode.html:13
+#: app/html/user/settings/password.html:13
+#: app/html/user/settings/preferences.html:13
+msgid "View comments"
+msgstr ""
+
+#: app/html/user/settings/delete.html:14
+#: app/html/user/settings/invitecode.html:14
+#: app/html/user/settings/password.html:14
+#: app/html/user/settings/preferences.html:14
+msgid "View saved posts"
+msgstr ""
+
+#: app/html/user/settings/delete.html:19
+msgid "Account deletion"
+msgstr ""
+
+#: app/html/user/settings/delete.html:25
+msgid "THIS ACTION CANNOT BE UNDONE"
+msgstr ""
+
+#: app/html/user/settings/delete.html:36
+msgid "Deleted."
+msgstr ""
+
+#: app/html/user/settings/delete.html:36
+msgid "Delete my account"
+msgstr ""
+
+#: app/html/user/settings/invitecode.html:16
+#: app/html/user/settings/invitecode.html:21
+#: app/html/user/settings/preferences.html:17
+msgid "Invite codes"
+msgstr ""
+
+#: app/html/user/settings/invitecode.html:23
+#, python-format
+msgid "You can create <b>%(num)i</b> invite codes."
+msgstr ""
+
+#: app/html/user/settings/invitecode.html:24
+msgid "Create new"
+msgstr ""
+
+#: app/html/user/settings/invitecode.html:26
+msgid "You cannot create invite codes."
+msgstr ""
+
+#: app/html/user/settings/invitecode.html:29
+msgid "Your invite codes"
+msgstr ""
+
+#: app/html/user/settings/invitecode.html:34
+msgid "Code"
+msgstr ""
+
+#: app/html/user/settings/invitecode.html:36
+msgid "Uses"
+msgstr ""
+
+#: app/html/user/settings/invitecode.html:37
+msgid "Max uses"
+msgstr ""
+
+#: app/html/user/settings/password.html:37
+msgid "Editing..."
+msgstr ""
+
+#: app/html/user/settings/preferences.html:23
+#, python-format
+msgid "%(user)s"
+msgstr ""
+
+#: test
+msgid "Bold (ctrl-b) %1"
+msgstr "%1 Negrita (ctrl-b)"

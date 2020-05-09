@@ -17,6 +17,7 @@ import Konami from './ext/konami';
 import Sortable from 'sortablejs';
 import flatpickr from "flatpickr";
 import Tingle from 'tingle.js';
+import _ from './utils/I18n';
 
 window.Sortable = Sortable;
 require('../css/main.css');
@@ -40,7 +41,7 @@ function vote(obj, how, comment){
     });
   
     // set content
-    modal.setContent('<h1>Log in or register to continue</h1>\
+    modal.setContent('<h1>' + _('Log in or register to continue') + '</h1>\
     <div class="pure-g"> \
       <div class="pure-u-1-2">\
         <h3> Log in </h3> \
@@ -48,27 +49,27 @@ function vote(obj, how, comment){
           <input type="hidden" name="csrf_token" value="' + document.getElementById('csrf_token').value + '"/> \
           <fieldset> \
             <div class="pure-control-group"> \
-              <label for="username">Username</label> \
-              <input id="username" name="username" pattern="[a-zA-Z0-9_-]+" placeholder="Username" required="" title="Alphanumeric characters plus \'-\' and \'_\'" type="text"> \
+              <label for="username">' + _('Username') + '</label> \
+              <input id="username" name="username" pattern="[a-zA-Z0-9_-]+" placeholder="' + _('Username') + '" required="" title="' + _('Alphanumeric characters plus \'-\' and \'_\'') + '" type="text"> \
             </div> \
             <div class="pure-control-group"> \
-              <label for="password">Password</label>\
-              <input id="password" name="password" placeholder="Password" required type="password"> \
+              <label for="password">' + _('Password') + '</label>\
+              <input id="password" name="password" placeholder="' + _('Password') + '" required type="password"> \
             </div> \
-            <a href="/recover">Forgot your password?</a>\
+            <a href="/recover">' + _('Forgot your password?') + '</a>\
             <div class="pure-controls">\
               <label for="remember" class="pure-checkbox">\
-              <input id="remember" name="remember" type="checkbox" value="y"> Remember me \
+              <input id="remember" name="remember" type="checkbox" value="y"> ' + _('Remember me') + ' \
               </label> \
-              <button type="submit" class="pure-button pure-button-primary">Log in</button> \
+              <button type="submit" class="pure-button pure-button-primary">' + _('Log in') + '</button> \
             </div> \
           </fieldset> \
         </form> \
       </div> \
       <div class="pure-u-1-2"> \
       <h3>Register</h3> \
-      <p>Don\'t have an account?</p> \
-      <a class="pure-button" href="/register">Register now!</a>\
+      <p>' + _('Don\'t have an account?') + '</p> \
+      <a class="pure-button" href="/register">' + _('Register now!') + '</a>\
       </div> \
     </div> \
     ');
@@ -154,7 +155,7 @@ u.ready(function() {
         var file = input.files[0];
         var max = target.getAttribute('data-max');
         if( max && file.size > max){
-          alert("File size exceeds maximum allowed (" + max / 1024 / 1024 + "MB)")
+          alert(_("File size exceeds maximum allowed (%1 MB)", max / 1024 / 1024))
           target.value = '';
         }
     }
@@ -178,7 +179,7 @@ u.ready(function() {
   u.sub('.save-top_bar', 'click', function(e){
     var btn = this;
     btn.setAttribute('disabled', true);
-    btn.innerHTML = "Saving...";
+    btn.innerHTML = _("Saving...");
     var subs = []
     u.each('.subsort_item', function(e){
       subs.push(e.getAttribute('sid'))
@@ -187,16 +188,15 @@ u.ready(function() {
       if (d.status == "ok") {
         
       }else{
-        alert('There was an error while saving your settings. Please try again in a few minutes.');
+        alert(_('There was an error while saving your settings. Please try again in a few minutes.'));
       }
       btn.removeAttribute('disabled');
-      btn.innerHTML = "Save";
+      btn.innerHTML = _("Save");
     }, function(){
-      alert('There was an error while saving your settings. Please try again in a few minutes.');
+      alert(_('There was an error while saving your settings. Please try again in a few minutes.'));
       btn.removeAttribute('disabled');
-      btn.innerHTML = "Save";
+      btn.innerHTML = _("Save");
     })
-    console.log(subs);
   })
 
   // TODO: Get rid of this.
@@ -246,7 +246,7 @@ u.ready(function() {
           }
         }
       }, function() { //error
-        target.querySelector('.div-error').innerHTML = '<span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> <p><ul><li>Error while contacting the server</li></ul></p>';
+        target.querySelector('.div-error').innerHTML = '<span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> <p><ul><li>' + _('Error while contacting the server') + '</li></ul></p>';
         target.querySelector('.div-error').style.display = 'block';
         button.removeAttribute('disabled');
         button.innerHTML = btnorm;
@@ -292,7 +292,7 @@ function getCookie(cname) {
 if(document.getElementById('delete_account')){
   document.getElementById('delete_account').addEventListener('click', function(e){
     if(document.getElementById('delete_account').checked){
-      if(!confirm('Are you sure you want to PERMANENTLY delete your account?')){
+      if(!confirm(_('Are you sure you want to PERMANENTLY delete your account?'))){
         e.preventDefault()
         return false;
       }

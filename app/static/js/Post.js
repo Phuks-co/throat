@@ -4,31 +4,32 @@ import Icons from './Icon';
 import u from './Util';
 import initializeEditor from './Editor';
 import Tingle from 'tingle.js';
+import _ from './utils/I18n';
 
 // Saving/unsaving posts.
 u.sub('.savepost', 'click', function(e){
   var tg = e.currentTarget;
-  u.post('/do/save_post/' + tg.getAttribute('data-pid'), {}, function(data){tg.innerHTML = 'saved';});
+  u.post('/do/save_post/' + tg.getAttribute('data-pid'), {}, function(data){tg.innerHTML = _('saved');});
 });
 
 u.sub('.removesavedpost', 'click', function(e){
   var tg = e.currentTarget;
-  u.post('/do/remove_saved_post/' + tg.getAttribute('data-pid'), {}, function(data){tg.innerHTML = 'removed';});
+  u.post('/do/remove_saved_post/' + tg.getAttribute('data-pid'), {}, function(data){tg.innerHTML = _('removed');});
 })
 
 u.addEventForChild(document, 'click', '.delete-post', function(e, qelem){
   TextConfirm(qelem, function(){
     var reason = ""
     if(qelem.getAttribute('selfdel') != "true"){
-      reason = prompt('Why are you deleting this?');
+      reason = prompt(_('Why are you deleting this?'));
       if(!reason){return false;}
     }
     u.post('/do/delete_post', {post: document.getElementById('postinfo').getAttribute('pid'), reason: reason},
     function(data){
       if (data.status != "ok") {
-        document.getElementById('delpostli').innerHTML = 'Error.';
+        document.getElementById('delpostli').innerHTML = _('Error.');
       } else {
-        document.getElementById('delpostli').innerHTML = 'removed';
+        document.getElementById('delpostli').innerHTML = _('removed');
         document.location.reload();
       }
     })
@@ -39,7 +40,7 @@ u.addEventForChild(document, 'click', '.edit-title', function(e, qelem){
   var tg = e.currentTarget;
   TextConfirm(qelem, function(){
     var title = document.querySelector('.post-heading .title').innerHTML;
-    var reason = prompt('Pick a new title', title);
+    var reason = prompt(_('New title'), title);
     if(!reason){return false;}
     u.post('/do/edit_title', {'reason': reason, 'post': qelem.getAttribute('data-pid')},
     function(data){
@@ -57,9 +58,9 @@ u.addEventForChild(document, 'click', '.stick-post', function(e, qelem){
     u.post('/do/stick/'+pid, {post: document.getElementById('postinfo').getAttribute('pid')},
     function(data){
       if (data.status != "ok") {
-        tg.innerHTML = 'Error.';
+        tg.innerHTML = _('Error.');
       } else {
-        tg.innerHTML = 'Done';
+        tg.innerHTML = _('Done');
         document.location.reload();
       }
     })
@@ -73,9 +74,9 @@ u.addEventForChild(document, 'click', '.wiki-post', function(e, qelem){
     u.post('/do/wikipost/'+pid, {post: document.getElementById('postinfo').getAttribute('pid')},
     function(data){
       if (data.status != "ok") {
-        tg.innerHTML = 'Error.';
+        tg.innerHTML = _('Error.');
       } else {
-        tg.innerHTML = 'Done';
+        tg.innerHTML = _('Done');
         document.location.reload();
       }
     })
@@ -88,9 +89,9 @@ u.addEventForChild(document, 'click', '.announce-post', function(e, qelem){
     u.post('/do/makeannouncement', {post: pid},
     function(data){
       if (data.status != "ok") {
-        tg.innerHTML = 'Error.';
+        tg.innerHTML = _('Error.');
       } else {
-        tg.innerHTML = 'Done';
+        tg.innerHTML = _('Done');
         document.location.reload();
       }
     })
@@ -109,9 +110,9 @@ u.sub('.selflair', 'click', function(e){
   u.post('/do/flair/' + nsub + '/' + pid + '/' + flair, {post: document.getElementById('postinfo').getAttribute('pid')},
     function(data) {
       if (data.status != "ok") {
-        tg.parentNode.innerHTML = 'Error. ' + data.error;
+        tg.parentNode.innerHTML = _('Error: %1', data.error);
       } else {
-        tg.parentNode.innerHTML = 'Done!';
+        tg.parentNode.innerHTML = _('Done!');
         document.location.reload();
       }
     }
@@ -124,9 +125,9 @@ u.sub('#remove-flair', 'click', function(e){
   u.post('/do/remove_post_flair/' + nsub + '/' + pid, {post: document.getElementById('postinfo').getAttribute('pid')},
     function(data) {
       if (data.status != "ok") {
-        tg.innerHTML = 'Error. ' + data.error;
+        tg.innerHTML = _('Error: %1', data.error);
       } else {
-        tg.innerHTML = 'Done!';
+        tg.innerHTML = _('Done!');
         document.location.reload();
       }
     }
@@ -140,9 +141,9 @@ u.addEventForChild(document, 'click', '.nsfw-post', function(e, qelem){
     u.post('/do/nsfw', {post: document.getElementById('postinfo').getAttribute('pid')},
     function(data){
       if (data.status != "ok") {
-        tg.innerHTML = 'Error.';
+        tg.innerHTML = _('Error: %1', data.error);
       } else {
-        tg.innerHTML = 'Done';
+        tg.innerHTML = _('Done!');
         document.location.reload();
       }
     })
@@ -155,9 +156,9 @@ u.addEventForChild(document, 'click', '.poll-close', function(e, qelem){
     u.post('/do/close_poll', {post: document.getElementById('postinfo').getAttribute('pid')},
     function(data){
       if (data.status != "ok") {
-        tg.innerHTML = 'Error.';
+        tg.innerHTML = _('Error: %1', data.error);
       } else {
-        tg.innerHTML = 'Done';
+        tg.innerHTML = _('Done!');
         document.location.reload();
       }
     })
@@ -176,10 +177,10 @@ u.addEventForChild(document, 'click', '.post-source', function(e, qelem){
   var oc = elem.innerHTML;
   var back =  document.createElement( "a" );
   back.classList.add("postsource");
-  back.innerHTML = "<s>source</s>";
+  back.innerHTML = "<s>" + _('source') + "</s>";
   back.onclick = function(){
     elem.innerHTML = oc;
-    this.parentNode.innerHTML = '<a class="post-source">source</a>';
+    this.parentNode.innerHTML = '<a class="post-source">' + _('source') + '</a>';
   };
   var h = elem.clientHeight-6;
   elem.innerHTML = '<textarea style="height: ' + h + 'px">' + document.getElementById('post-source').innerHTML + '</textarea>';
@@ -197,16 +198,21 @@ u.addEventForChild(document, 'click', '.edit-post', function(e, qelem){
   var oc = elem.innerHTML;
   var back =  document.createElement( "a" );
   back.classList.add("postedit");
-  back.innerHTML = "<s>edit</s>";
+  back.innerHTML = "<s>" + _('edit') + "</s>";
   back.onclick = function(){
     elem.innerHTML = oc;
-    this.parentNode.innerHTML = '<a class="edit-post">edit</a>';
+    this.parentNode.innerHTML = '<a class="edit-post">' + _('edit') + '</a>';
   };
   var h = elem.clientHeight-6;
   if(h<100){
     h = 100;
   }
-  elem.innerHTML = '<div id="editpost" class="cwrap markdown-editor"><textarea style="height: ' + h + 'px">' + document.getElementById('post-source').innerHTML + '</textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-editpost" data-pid="' + qelem.getAttribute('data-pid') +'">Save changes</button> <button class="pure-button button-xsmall btn-preview" data-pvid="editpost" >Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span><div class="cpreview-content"></div></div>';
+  elem.innerHTML = '<div id="editpost" class="cwrap markdown-editor"><textarea style="height: ' + h + 'px">' +
+    document.getElementById('post-source').innerHTML + '</textarea></div><div style="display:none" class="error">' +
+    '</div><button class="pure-button pure-button-primary button-xsmall btn-editpost" data-pid="' + qelem.getAttribute('data-pid') +'">'
+    + _('Save changes') + '</button> <button class="pure-button button-xsmall btn-preview" data-pvid="editpost" >'+ _('Preview') + '</button>' + 
+    '<div class="cmpreview canclose" style="display:none;"><h4>'+ _('Comment preview') + '</h4><span class="closemsg">&times;</span><div class="cpreview-content">' +
+    '</div></div>';
   qelem.replaceWith(back);
   initializeEditor(document.getElementById('editpost'));
   document.querySelector('#editpost textarea').focus()
@@ -254,7 +260,12 @@ u.addEventForChild(document, 'click', '.edit-comment', function(e, qelem){
     this.parentNode.innerHTML = 'edit';
   };
   var h = elem.clientHeight + 28;
-  elem.innerHTML = '<div class="cwrap markdown-editor" id="ecomm-'+cid+'"><textarea style="height: ' + h + 'px">' + document.getElementById('sauce-' + cid).innerHTML + '</textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-editcomment" data-cid="'+cid+'">Save changes</button> <button class="pure-button button-xsmall btn-preview" data-pvid="ecomm-'+cid+'">Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span><div class="cpreview-content"></div></div>';
+  elem.innerHTML = '<div class="cwrap markdown-editor" id="ecomm-'+cid+'"><textarea style="height: ' + h + 'px">' + 
+    document.getElementById('sauce-' + cid).innerHTML + '</textarea></div><div style="display:none" class="error"></div>' +
+    '<button class="pure-button pure-button-primary button-xsmall btn-editcomment" data-cid="'+cid+'">'+ _('Save changes') + '</button> ' +
+    '<button class="pure-button button-xsmall btn-preview" data-pvid="ecomm-'+cid+'">'+ _('Preview') + '</button>' +
+    '<div class="cmpreview canclose" style="display:none;"><h4>'+ _('Comment preview') + '</h4><span class="closemsg">&times;</span>' +
+    '<div class="cpreview-content"></div></div>';
 
   var cNode = qelem.cloneNode(false);
   cNode.appendChild(back)
@@ -270,7 +281,7 @@ u.addEventForChild(document, 'click', '.btn-editpost', function(e, qelem){
   function(data){
     if (data.status != "ok") {
       qelem.parentNode.querySelector('.error').style.display = 'block';
-      qelem.parentNode.querySelector('.error').innerHTML = 'There was an error while editing: ' + data.error;
+      qelem.parentNode.querySelector('.error').innerHTML = _('There was an error while editing: %1', data.error);
       qelem.removeAttribute('disabled');
     } else {
       qelem.innerHTML = 'Saved.';
@@ -278,7 +289,7 @@ u.addEventForChild(document, 'click', '.btn-editpost', function(e, qelem){
     }
   }, function(){
     qelem.parentNode.querySelector('.error').style.display = 'block';
-    qelem.parentNode.querySelector('.error').innerHTML = 'Could not contact the server';
+    qelem.parentNode.querySelector('.error').innerHTML = _('Could not contact the server');
     qelem.removeAttribute('disabled');
   })
 });
@@ -291,7 +302,7 @@ u.addEventForChild(document, 'click', '.btn-editcomment', function(e, qelem){
   function(data){
     if (data.status != "ok") {
       qelem.parentNode.querySelector('.error').style.display = 'block';
-      qelem.parentNode.querySelector('.error').innerHTML = 'There was an error while editing: ' + data.error;
+      qelem.parentNode.querySelector('.error').innerHTML = _('There was an error while editing: %1', data.error);
       qelem.removeAttribute('disabled');
     } else {
       qelem.innerHTML = 'Saved.';
@@ -299,7 +310,7 @@ u.addEventForChild(document, 'click', '.btn-editcomment', function(e, qelem){
     }
   }, function(){
     qelem.parentNode.querySelector('.error').style.display = 'block';
-    qelem.parentNode.querySelector('.error').innerHTML = 'Could not contact the server';
+    qelem.parentNode.querySelector('.error').innerHTML = _('Could not contact the server');;
     qelem.removeAttribute('disabled');
   })
 });
@@ -321,14 +332,14 @@ u.addEventForChild(document, 'click', '.btn-preview', function(e, qelem){
       qelem.parentNode.querySelector('.cmpreview').style.display = 'block';
     } else {
       qelem.parentNode.querySelector('.error').style.display = 'block';
-      qelem.parentNode.querySelector('.error').innerHTML = 'Could not contact server ';
+      qelem.parentNode.querySelector('.error').innerHTML = _('Error: %1', data.error);
       qelem.removeAttribute('disabled');
     }
     qelem.removeAttribute('disabled');
-    qelem.innerHTML = 'Preview';
+    qelem.innerHTML = _('Preview');
   }, function(){
     qelem.parentNode.querySelector('.error').style.display = 'block';
-    qelem.parentNode.querySelector('.error').innerHTML = 'Could not contact the server';
+    qelem.parentNode.querySelector('.error').innerHTML = _('Could not contact the server');
     qelem.removeAttribute('disabled');
   })
 });
@@ -346,9 +357,9 @@ u.addEventForChild(document, 'click', '.delete-comment', function(e, qelem){
     u.post('/do/delete_comment', {cid: cid, 'reason': reason},
     function(data){
       if (data.status != "ok") {
-        tg.parentNode.innerHTML = 'Error.';
+        tg.parentNode.innerHTML = _('Error: %1', data.error);
       } else {
-        tg.parentNode.innerHTML = 'comment removed';
+        tg.parentNode.innerHTML = _('comment removed');
         document.location.reload();
       }
     })
@@ -365,32 +376,32 @@ u.sub('#graburl', 'click', function(e){
   u.post('/do/grabtitle', {u: uri},
   function(data){
     if(data.status == 'error'){
-      document.getElementById('title').value = 'Error fetching title';
+      alert(_('Error fetching title'))
       document.getElementById('graburl').removeAttribute('disabled');
-      document.getElementById('graburl').innerHTML = 'Grab title';
+      document.getElementById('graburl').innerHTML = _('Grab title');
     }else{
       document.getElementById('title').value = data.title;
       document.getElementById('graburl').removeAttribute('disabled');
-      document.getElementById('graburl').innerHTML = 'Grab again';
+      document.getElementById('graburl').innerHTML = _('Grab again');
     }
   })
 })
 
 // Load children
 u.addEventForChild(document, 'click', '.loadchildren', function(e, qelem){
-  qelem.textContent = "Loading...";
+  qelem.textContent = _("Loading...");
   e.preventDefault();
   u.post('/do/get_children/' + qelem.getAttribute('data-pid') + '/' + qelem.getAttribute('data-cid'), {},
   function(data){
     qelem.parentNode.innerHTML = data;
     Icons.rendericons();
   },function(){
-    qelem.textContent = "Error.";
+    qelem.textContent = _("Error.");
   })
 });
 
 u.addEventForChild(document, 'click', '.loadsibling', function(e, qelem){
-  qelem.textContent = "Loading...";
+  qelem.textContent = _("Loading...");
   e.preventDefault();
   var pid = qelem.getAttribute('data-pid');
   var key = qelem.getAttribute('data-key');
@@ -408,7 +419,7 @@ u.addEventForChild(document, 'click', '.loadsibling', function(e, qelem){
     qelem.outerHTML = data;
     Icons.rendericons();
   },function(){
-    qelem.textContent = "Error.";
+    qelem.textContent = _("Error.");
   })
 });
 
@@ -440,11 +451,11 @@ u.addEventForChild(document, 'click', '.reply-comment', function(e, qelem){
   var cid = qelem.getAttribute('data-to');
   var pid = qelem.getAttribute('data-pid');
   var back =  document.createElement( "s" );
-  back.innerHTML = "reply";
+  back.innerHTML = _('reply');
   back.onclick = function(){
     console.log('ob')
     document.querySelector('#rblock-' + cid).outerHTML = ''
-    this.parentNode.innerHTML = 'reply'
+    this.parentNode.innerHTML = _('reply')
   };
   var pN = qelem.parentNode;
   var cNode = qelem.cloneNode(false);
@@ -462,18 +473,20 @@ u.addEventForChild(document, 'click', '.reply-comment', function(e, qelem){
   var lm = document.createElement('div');
   lm.id = 'rblock-' + cid;
   lm.classList.add('replybox');
-  lm.innerHTML ='<div class="cwrap markdown-editor" id="rcomm-'+cid+'"><textarea class="exalert" style="height: 8em;"></textarea></div><div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-postcomment" data-pid="'+pid+'" data-cid="'+cid+'">Post comment</button> <button class="pure-button button-xsmall btn-preview" data-pvid="rcomm-'+cid+'">Preview</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span><div class="cpreview-content"></div></div>';
+  lm.innerHTML ='<div class="cwrap markdown-editor" id="rcomm-'+cid+'"><textarea class="exalert" style="height: 8em;"></textarea></div>' +
+    '<div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-postcomment" ' + 
+    'data-pid="'+pid+'" data-cid="'+cid+'">' + _('Post comment') + '</button> <button class="pure-button button-xsmall btn-preview" data-pvid="rcomm-'+
+    cid+'">' + _('Preview') + '</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span>' +
+    '<div class="cpreview-content"></div></div>';
   pN.parentNode.parentNode.appendChild(lm);
   initializeEditor(document.querySelector('#rcomm-' + cid));
   document.querySelector('#rcomm-'+cid+' textarea').focus()
   // pre-populate textarea if there's a comment selected.
-  console.log('fuck', pp)
   if(pp){
     var ta = document.querySelector('#rcomm-'+cid+' textarea');
     ta.value = pp;
     ta.setSelectionRange(ta.value.length,ta.value.length);
   }
-
 });
 
 u.addEventForChild(document, 'click', '.btn-postcomment', function(e, qelem){
@@ -487,23 +500,23 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function(e, qelem){
   function(data){
     if (data.status != "ok") {
       qelem.parentNode.querySelector('.error').style.display = 'block';
-      qelem.parentNode.querySelector('.error').innerHTML = 'There was an error while editing: ' + data.error;
+      qelem.parentNode.querySelector('.error').innerHTML = _('There was an error while editing: %1', data.error);
       qelem.removeAttribute('disabled');
     } else {
-      qelem.innerHTML = 'Saved.';
+      qelem.innerHTML = _('Saved.');
       var cmtcount = document.getElementById('cmnts');
       window.sending = false;
       if(cmtcount.getElementsByTagName('a').length === 0){
         var a = document.createElement('a')
         a.href = '/p/' + pid;
-        a.innerText = "1 comments";
+        a.innerText = _("1 comments");
         a.id = 'cmnts';
         cmtcount.innerText = '';
         cmtcount.appendChild(a);
         
       }else{
         var va = cmtcount.getElementsByTagName('a')[0];
-        va.innerText = (parseInt(va.innerText.split(' ')[0]) + 1) + " comments";
+        va.innerText = _("%1 comments", parseInt(va.innerText.split(' ')[0]) + 1);
         if(va.pathname != window.location.pathname && cid == '0'){
           document.location = data.addr;
         }
@@ -524,11 +537,33 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function(e, qelem){
     }
   }, function(){
     qelem.parentNode.querySelector('.error').style.display = 'block';
-    qelem.parentNode.querySelector('.error').innerHTML = 'Could not contact the server';
+    qelem.parentNode.querySelector('.error').innerHTML = _('Could not contact the server');
     qelem.removeAttribute('disabled');
   })
 });
 
+let reportHtml = (data) => '<h2>' + _('Report post') + '</h2>\
+<p><i>' + _('This report will be forwarded to the site administration') + '</i></p>\
+<form class="pure-form pure-form-aligned"> \
+  <div class="pure-control-group"> \
+    <label for="report_reason">' + _('Select a reason to report this post:') + '</label>\
+    <select name="report_reason" id="report_reason">\
+      <option value="" disabled selected>Select one..</option> \
+      <option value="spam">' + _('SPAM') + '</option> \
+      <option value="tos">' + _('TOS violation') + '</option> \
+      <option value="other">' + _('Other') + '</option> \
+    </select>\
+  </div> \
+  <div class="pure-control-group" style="display:none" id="report_text_set"> \
+    <label for="report_text">' + _('Explain why you\'re reporting this post:') + '</label>\
+    <input type="text" name="report_text" id="report_text" style="width:50%" /> \
+  </div> \
+  <div class="pure-controls"> \
+    <div style="display:none" class="error">{{error}}</div> \
+    <button type="button" class="pure-button" id="submit_report" disabled '+data+'>' + _('Submit') + '</button>\ \
+  </div> \
+</form>\
+  ';
 
 u.addEventForChild(document, 'click', '.report-post', function(e, qelem){
   var pid = qelem.parentNode.parentNode.parentNode.getAttribute('pid');
@@ -536,28 +571,7 @@ u.addEventForChild(document, 'click', '.report-post', function(e, qelem){
   });
 
   // set content
-  modal.setContent('<h2>Report post</h2>\
-    <p><i>This report will be forwarded to the site administration</i></p>\
-    <form class="pure-form pure-form-aligned"> \
-      <div class="pure-control-group"> \
-        <label for="report_reason">Select a reason to report this post:</label>\
-        <select name="report_reason" id="report_reason">\
-          <option value="" disabled selected>Select one..</option> \
-          <option value="spam">SPAM</option> \
-          <option value="tos">TOS violation</option> \
-          <option value="other">Other</option> \
-        </select>\
-      </div> \
-      <div class="pure-control-group" style="display:none" id="report_text_set"> \
-        <label for="report_text">Explain why you\'re reporting this post:</label>\
-        <input type="text" name="report_text" id="report_text" style="width:50%" /> \
-      </div> \
-      <div class="pure-controls"> \
-        <div style="display:none" class="error">{{error}}</div> \
-        <button type="button" class="pure-button" id="submit_report" disabled data-pid=' + pid + '>Submit</button>\ \
-      </div> \
-    </form>\
-      ');
+  modal.setContent(reportHtml('data-pid=' + pid));
 
 
   // open modal
@@ -571,29 +585,7 @@ u.addEventForChild(document, 'click', '.report-comment', function(e, qelem){
   });
 
   // set content
-  modal.setContent('<h2>Report comment</h2>\
-    <p><i>This report will be forwarded to the site administration</i></p>\
-    <form class="pure-form pure-form-aligned"> \
-      <div class="pure-control-group"> \
-        <label for="report_reason">Select a reason to report this post:</label>\
-        <select name="report_reason" id="report_reason">\
-          <option value="" disabled selected>Select one..</option> \
-          <option value="spam">SPAM</option> \
-          <option value="tos">TOS violation</option> \
-          <option value="other">Other</option> \
-        </select>\
-      </div> \
-      <div class="pure-control-group" style="display:none" id="report_text_set"> \
-        <label for="report_text">Explain why you\'re reporting this post:</label>\
-        <input type="text" name="report_text" id="report_text" style="width:50%" /> \
-      </div> \
-      <div class="pure-controls"> \
-        <div style="display:none" class="error">{{error}}</div> \
-        <button type="button" class="pure-button" id="submit_report" disabled data-cid=' + cid + '>Submit</button>\ \
-      </div> \
-    </form>\
-      ');
-
+  modal.setContent(reportHtml('data-cid=' + cid));
 
   // open modal
   modal.open();
@@ -643,11 +635,11 @@ u.addEventForChild(document, 'click', '#submit_report', function(e, qelem){
       errorbox.innerHTML = 'Error: ' + data.error;
       qelem.removeAttribute('disabled');
     } else {
-      qelem.parentNode.parentNode.parentNode.innerHTML = 'Your report has been sent and will be reviewed by the site administrators.'
+      qelem.parentNode.parentNode.parentNode.innerHTML = _('Your report has been sent and will be reviewed by the site administrators.')
     }
   }, function(){
     errorbox.style.display = 'block';
-    errorbox.innerHTML = 'Could not contact the server';
+    errorbox.innerHTML = _('Could not contact the server');
     qelem.removeAttribute('disabled');
   })
 });

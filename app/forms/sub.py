@@ -153,7 +153,7 @@ class PostComment(FlaskForm):
     post = HiddenField()
     parent = HiddenField()
 
-    comment = TextAreaField('Your comment',
+    comment = TextAreaField('Write your comment here. Styling with Markdown format is supported.',
                             validators=[DataRequired(),
                                         Length(min=1, max=16384)])
 

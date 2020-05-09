@@ -70,6 +70,8 @@ class SiteUser(object):
         self.subtheme = [x['value'] for x in prefs if x['key'] == 'subtheme']
         self.subtheme = self.subtheme[0] if self.subtheme else ''
 
+        self.language = self.user['language']
+
         self.subsid = []
         self.subscriptions = []
         self.blocksid = []
@@ -205,6 +207,7 @@ class SiteAnon(AnonymousUserMixin):
     prefs = []
     admin = False
     canupload = False
+    language = None
 
     def get_id(self):
         return False
@@ -835,7 +838,7 @@ def getStickies(sid):
 
 def load_user(user_id):
     user = User.select(fn.Count(Message.mid).alias('notifications'),
-                    User.given, User.score, User.name, User.uid, User.status, User.email)
+                    User.given, User.score, User.name, User.uid, User.status, User.email, User.language)
     user = user.join(Message, JOIN.LEFT_OUTER, on=((Message.receivedby == User.uid) & (Message.mtype != 6) & (Message.mtype != 9) & (Message.mtype != 41) & Message.read.is_null(True))).switch(User)
     user = user.group_by(User.uid).where(User.uid == user_id).dicts().get()
     

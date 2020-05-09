@@ -4,25 +4,25 @@
   <h3><a href="@{url_for('view_user', user=current_user.name)}" class="sbm-post">@{current_user.name}</a></h3>
   <hr/>
 
-  <a href="/settings" class="sbm-post pure-button">Preferences</a>
-  <a href="/settings/password" class="sbm-post pure-button">Change password</a>
-  <a href="/settings/delete" class="sbm-post pure-button pure-button-primary">Delete account</a>
+  <a href="/settings" class="sbm-post pure-button">@{_('Preferences')}</a>
+  <a href="/settings/password" class="sbm-post pure-button">@{_('Change password')}</a>
+  <a href="/settings/delete" class="sbm-post pure-button pure-button-primary">@{_('Delete account')}</a>
 
   <hr/>
-  <a href="@{url_for('view_user_posts', user=current_user.name)}" class="sbm-post pure-button">View posts</a>
-  <a href="@{url_for('view_user_comments', user=current_user.name)}" class="sbm-post pure-button">View comments</a>
-  <a href="@{url_for('view_user_savedposts', user=current_user.name)}" class="sbm-post pure-button">View saved posts</a>
+  <a href="@{url_for('view_user_posts', user=current_user.name)}" class="sbm-post pure-button">@{_('View posts')}</a>
+  <a href="@{url_for('view_user_comments', user=current_user.name)}" class="sbm-post pure-button">@{_('View comments')}</a>
+  <a href="@{url_for('view_user_savedposts', user=current_user.name)}" class="sbm-post pure-button">@{_('View saved posts')}</a>
 @end
 
 @def main():
 <div id="container">
-  <h1>Account deletion</h1>
+  <h1>@{_('Account deletion')}</h1>
   <form  method="POST" id="edit-user-form" data-redir='/' action="@{url_for('do.delete_user')}" class="ajaxform pure-form pure-form-aligned">
     @{form.csrf_token()}
     <fieldset>
       
       <hr style="border-color: red;">
-        <h2>THIS ACTION CANNOT BE UNDONE</h2>
+        <h2>@{_('THIS ACTION CANNOT BE UNDONE')}</h2>
         <div class="pure-control-group" style="color: red; font-weight: 900;">
           <label for="consent">@{form.consent.label.text}</label>
           @{form.consent()}
@@ -33,7 +33,7 @@
             @{form.password(placeholder=form.password.label.text, required=True, autocomplete="off")}
         </div>
     
-        <button type="submit" class="pure-button pure-button-primary" id="edituser-btnsubmit" data-prog="Editing..." data-success="Saved!">Delete my account</button>
+        <button type="submit" class="pure-button pure-button-primary" id="edituser-btnsubmit" data-prog="@{_('Deleting...')}" data-success="@{_('Deleted.')}">@{_('Delete my account')}</button>
       <hr style="border-color: red;">
       <div class="alert div-error"></div>
     </fieldset>

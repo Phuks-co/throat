@@ -14,6 +14,7 @@ from flask import Flask, render_template, session, redirect, url_for, abort, g
 from flask import request, jsonify, Response
 from flask_login import LoginManager, login_required, current_user, login_user
 from flask_webpack import Webpack
+from flask_babel import Babel, _, Locale
 from wheezy.html.utils import escape_html
 from feedgen.feed import FeedGenerator
 
@@ -45,6 +46,7 @@ app.jinja_env.cache = {}
 
 # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 app.config.update(config.get_flask_dict())
+babel = Babel(app)
 
 app.register_blueprint(do)
 app.register_blueprint(api)
@@ -67,11 +69,17 @@ login_manager = LoginManager(app)
 login_manager.anonymous_user = SiteAnon
 login_manager.login_view = 'login'
 
+@babel.localeselector
+def get_locale():
+    if current_user.language:
+        return current_user.language
+    return request.accept_languages.best_match(app.config['LANGUAGES'])
+
+
 engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config, 'conf': app.config,
                            'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,
                            'form': forms, 'hostname': socket.gethostname(), 'datetime': datetime,
-                           'e': escape_html, 'markdown': misc.our_markdown})
-
+                           'e': escape_html, 'markdown': misc.our_markdown, '_': _, 'get_locale': get_locale})
 
 @app.before_request
 def do_magic_stuff():
@@ -134,7 +142,7 @@ def utility_processor():
             'commentform': PostComment(), 'dummyform': DummyForm(),
             'delpostform': DeletePost(), 'hostname': socket.gethostname(),
             'config': config, 'form': forms, 'datetime': datetime,
-            'func': misc, 'time': time, 'conf': app.config}
+            'func': misc, 'time': time, 'conf': app.config, '_': _, 'locale': get_locale}
 
 
 @app.route("/")
@@ -549,7 +557,12 @@ def edit_user():
     nochat = 'nochat' in current_user.prefs
     form = EditUserForm(show_nsfw=nsfw,
                         disable_sub_style=styles, experimental=exp,
-                        noscroll=noscroll, nochat=nochat, subtheme=current_user.subtheme)
+                        noscroll=noscroll, nochat=nochat, subtheme=current_user.subtheme,
+                        language=current_user.language)
+    languages = app.config['LANGUAGES']
+    form.language.choices = [('', _('Auto detect'))]
+    for i in languages:
+        form.language.choices.append((i, Locale(*i.split("_")).display_name.capitalize() ))
     return engine.get_template('user/settings/preferences.html').render({'edituserform': form})
 
 

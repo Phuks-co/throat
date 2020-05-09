@@ -1,4 +1,5 @@
 import u from './Util';
+import _ from './utils/I18n';
 var icon = require('./Icon');
 
 u.ready(function(){
@@ -22,41 +23,41 @@ function initializeEditor(element){
     var textarea = element.children[0];
     el.classList.add('editbtns');
 
-    el.appendChild(makeThingy('bold', 'Bold (ctrl-b)', function(e){addTags(textarea, '**', '**');}));
-    el.appendChild(makeThingy('italic', 'Italic (ctrl-i)', function(e){addTags(textarea, '*', '*');}));
-    el.appendChild(makeThingy('strikethrough', 'Strikethrough (ctrl-shift-s)', function(e){addTags(textarea, '~~', '~~');}));
-    el.appendChild(makeThingy('title', 'Title (ctrl-shift-h)', function(e){addTags(textarea, '# ', '');}));
+    el.appendChild(makeThingy('bold', _('Bold (ctrl-b)'), function(e){addTags(textarea, '**', '**');}));
+    el.appendChild(makeThingy('italic', _('Italic (ctrl-i'), function(e){addTags(textarea, '*', '*');}));
+    el.appendChild(makeThingy('strikethrough',  _('Strikethrough (ctrl-shift-s)'), function(e){addTags(textarea, '~~', '~~');}));
+    el.appendChild(makeThingy('title',  _('Title (ctrl-shift-h)'), function(e){addTags(textarea, '# ', '');}));
 
     var x = document.createElement('span');
     x.className='separator';
     el.appendChild(x);
 
     var makeLink = function (e){
-      var uri = prompt('Insert hyperlink');
+      var uri = prompt(_('Insert hyperlink'));
       if(uri){
         if(getCursorSelection(textarea)[1] == ''){
-          addTags(textarea, '[', 'Link Title', '](' + uri + ')');
+          addTags(textarea, '[', _('Link Title'), '](' + uri + ')');
         }else{
           addTags(textarea, '[', '](' + uri + ')');
         }
       }
     }
 
-    el.appendChild(makeThingy('link', 'Insert link (ctrl-shift-k)', makeLink));
+    el.appendChild(makeThingy('link', _('Insert link (ctrl-shift-k)'), makeLink));
 
     x = document.createElement('span');
     x.className='separator';
     el.appendChild(x);
 
-    el.appendChild(makeThingy('bulletlist', 'Bullet list', function(e){addTags(textarea, '- ', '');}));
-    el.appendChild(makeThingy('numberlist', 'Number list', function(e){addTags(textarea, '1. ', '');}));
+    el.appendChild(makeThingy('bulletlist', _('Bullet list'), function(e){addTags(textarea, '- ', '');}));
+    el.appendChild(makeThingy('numberlist', _('Number list'), function(e){addTags(textarea, '1. ', '');}));
 
     x = document.createElement('span');
     x.className='separator';
     el.appendChild(x);
 
-    el.appendChild(makeThingy('code', 'Code', function(e){addTags(textarea, '`', '`');}));
-    el.appendChild(makeThingy('quote', 'Quote (ctrl-shift-.)', function(e){addTags(textarea, '> ', '');}));
+    el.appendChild(makeThingy('code', _('Code'), function(e){addTags(textarea, '`', '`');}));
+    el.appendChild(makeThingy('quote', _('Quote (ctrl-shift-.)'), function(e){addTags(textarea, '> ', '');}));
 
     element.insertBefore(el, element.firstChild);
 

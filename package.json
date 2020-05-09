@@ -40,6 +40,8 @@
     "flatpickr": "^4.5.2",
     "irc-style-parser": "^0.2.5",
     "jquery": "^3.2.1",
+    "messageformat": "^2.3.0",
+    "messageformat-po-loader": "^0.3.0",
     "purecss": "^1.0.0",
     "socket.io-client": "^2.0.4",
     "sortablejs": "^1.7.0",

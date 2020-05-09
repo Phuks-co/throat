@@ -4,12 +4,12 @@
 <div id="container">
 
 @if not current_user.is_mod(sub.sid, 2) and current_user.is_admin():
-<h3>Editing as Admin</h3>
+<h3>@{_('Editing as Admin')}</h3>
 @end
 
-<h2>Banned users for <a href="@{url_for('sub.view_sub', sub=sub.name)}">/@{config.site.sub_prefix}/@{sub.name}</a></h2>
+<h2>@{_('Banned users on <a href="%(url)s">/%(prefix)s/%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), prefix=config.site.sub_prefix, sub=sub.name)}</h2>
 @if current_user.is_admin() or current_user.is_mod(sub.sid, 2):
-<h3>Ban user</h3>
+<h3>@{_('Ban user')}</h3>
 <div class="editmoderators">
   <form id="ban-user-form" data-reload="true" data-sub="@{sub.name}" class="ajaxform pure-form" action="@{url_for('do.ban_user_sub', sub=sub.name)}">
     @{banuserform.csrf_token()}
@@ -17,15 +17,15 @@
       <label>@{banuserform.user(placeholder=banuserform.user.label.text, required=True)}</label>
       @{banuserform.reason(placeholder=banuserform.reason.label.text, required=True)}
       @if current_user.uid in submods['janitors']:
-       Until...\
+        @{_('Until...')}\
       @else:
       <select id="ban_timepick">
-        <option value="ban_perm">Forever</option>
-        <option value="ban_temp">Until...</option>
+        <option value="ban_perm">@{_('Forever')}</option>
+        <option value="ban_temp">@{_('Until...')}</option>
       </select>
       @end
       <input id="ban_expires" name="expires" type="text" class="date-picker-future" @{(current_user.uid in submods['janitors']) and 'style="display: inline-block;"' or 'style="display: none;"'} placeholder="Pick date">
-      <button type="submit" class="pure-button pure-button-primary" id="banuser-btnsubmit">Banhammer</button>
+      <button type="submit" class="pure-button pure-button-primary" id="banuser-btnsubmit">@{_('Ban')}</button>
     </p>
     <div class="alert div-error">
       <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
@@ -37,20 +37,20 @@
 @end
 
 <div class="col-12">
-  <h3>Banned users</h3>
+  <h3>@{_('Banned users')}</h3>
   @if banned.count() < 1:
-    none
+    @{_('none')}
   @else:
     <table>
       <thead>
         <tr>
-          <th>By</th>
-          <th>Created</th>
-          <th>User</th>
-          <th>Reason</th>
-          <th>Expires</th>
+          <th>@{_('By')}</th>
+          <th>@{_('Created')}</th>
+          <th>@{_('User')}</th>
+          <th>@{_('Reason')}</th>
+          <th>@{_('Expires')}</th>
           @if current_user.is_admin() or current_user.is_mod(sub.sid, 2):
-          <th>Actions</th>\
+          <th>@{_('Actions')}</th>\
           @end
         </tr>
       </thead>
@@ -61,14 +61,14 @@
             @if ban.created_by_id:
             <a href="@{url_for('view_user', user=ban.created_by.name)}">@{ban.created_by.name}</a> \
             @else:
-              N/A \
+              @{_('N/A')} \
             @end
           </td>
           <td>
           @if ban.created:
             <time-ago datetime="@{ban.created.isoformat()}Z">@{ban.created.isoformat()}</time-ago>\
           @else:
-            N/A\
+            @{_('N/A')}\
           @end
           </td>
           <td><a href="@{url_for('view_user', user=ban.user.name)}">@{ban.user.name}</a></td>
@@ -77,13 +77,13 @@
             @if ban.expires:
               <time-until datetime="@{ban.expires.isoformat()}Z">@{ban.expires.isoformat()}</time-until>\
             @else:
-            Never\
+            @{_('Never')}\
             @end
           </td>
           @if (current_user.is_admin() or current_user.is_mod(sub.sid, 2)):
           <td>
             @if (current_user.uid in submods['janitors'] and ban.created_by.uid == current_user.uid) or current_user.is_mod(sub.sid, 1):
-              <a data-sub="@{sub.name}" data-user="@{ban.user.name}" class="slink revoke-ban">unban</a>
+              <a data-sub="@{sub.name}" data-user="@{ban.user.name}" class="slink revoke-ban">@{_('unban')}</a>
             @end
           </td>
           @end
@@ -95,18 +95,18 @@
 </div>
 <hr>
 <div class="col-12">
-  <h3>Past bans</h3>
+  <h3>@{_('Past bans')}</h3>
   @if xbans.count() < 1:
     none\
   @else:
   <table>
     <thead>
       <tr>
-        <th>By</th>
-        <th>Created</th>
-        <th>User</th>
-        <th>Reason</th>
-        <th>Removed</th>
+        <th>@{_('By')}</th>
+        <th>@{_('Created')}</th>
+        <th>@{_('User')}</th>
+        <th>@{_('Reason')}</th>
+        <th>@{_('Removed')}</th>
       </tr>
     </thead>
     <tbody>
@@ -116,14 +116,14 @@
         @if ban.created_by_id:
           <a href="@{url_for('view_user', user=ban.created_by.name)}">@{ban.created_by.name}</a>
         @else:
-          N/A \
+          @{_('N/A')} \
         @end
         </td>
         <td>
         @if ban.created:
           <time-ago datetime="@{ban.created.isoformat()}Z">@{ban.created.isoformat()}</time-ago>\
         @else:
-          N/A\
+          @{_('N/A')}\
         @end
         </td>
         <td><a href="@{url_for('view_user', user=ban.user.name)}">@{ban.user.name}</a></td>
@@ -132,7 +132,7 @@
         @if ban.expires:
           <time-ago datetime="@{ban.expires.isoformat()}Z">@{ban.expires.isoformat()}</time-ago> \
         @else:
-          N/A \
+          @{_('N/A')} \
         @end
         </td>
       </tr>

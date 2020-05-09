@@ -2,9 +2,9 @@
 
 @def main():
 <div id="container">
-  <h1>Customize your sub bar</h1>
-    Drag to sort <br/>
-    <button class="pure-button pure-button-primary save-top_bar">Save</button>
+  <h1>@{_('Customize your sub bar')}</h1>
+    @{_('Drag to sort')} <br/>
+    <button class="pure-button pure-button-primary save-top_bar">@{_('Save')}</button>
     <ul id="subsort">
       @for sub in current_user.get_top_bar():
         <li sid="@{sub['sid']}" class="subsort_item"><a href="@{url_for('sub.view_sub', sub=sub['name'])}">@{sub['name']}</a></li>

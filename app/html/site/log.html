@@ -20,7 +20,7 @@
                         @if log.uid.status != 10:
                             <a href="/u/@{log.uid.name}">@{log.uid.name}</a>\
                         @else:
-                            [Deleted]
+                            @{_('[Deleted]')}
                         @end
                     @end</td>
                 <td>

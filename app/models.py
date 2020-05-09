@@ -84,6 +84,8 @@ class User(BaseModel):
     status = IntegerField(default=0)
     resets = IntegerField(default=0)
 
+    language = CharField(default=None, max_length=11)
+
     class Meta:
         table_name = 'user'
 

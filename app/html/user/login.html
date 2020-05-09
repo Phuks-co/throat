@@ -2,32 +2,32 @@
 @require(error, loginform)
 
 @def title():
-  Log in |\
+  @{_('Log in')} |\
 @end
 
 @def main():
 <div id="center-container">
   <div class="content">
       <form method="POST" class="pure-form pure-form-aligned">
-        <h1>Login</h1> @{ loginform.csrf_token() }
+        <h1>@{_('Login')}</h1> @{ loginform.csrf_token() }
         <fieldset>
           <div class="pure-control-group">
-            <label for="username">Username</label>
+            <label for="username">@{_('Username')}</label>
             @{loginform.username(placeholder=loginform.username.label.text, required=True, pattern="[a-zA-Z0-9_-]+", title="Alphanumeric characters plus '-' and '_'")}
           </div>
           <div class="pure-control-group">
-            <label for="password">Password</label>
+            <label for="password">@{_('Password')}</label>
             @{loginform.password(placeholder=loginform.password.label.text, required=True)}
           </div>
-          <a href="/recover">Forgot your password?</a>
+          <a href="/recover">@{_('Forgot your password?')}</a>
           <div class="pure-controls">
             <label for="remember" class="pure-checkbox">
-              @{loginform.remember()} Remember me
+              @{loginform.remember()} @{_('Remember me')}
             </label>
             @if error:
               <div class="error">@{error}</div>
             @end
-            <button type="submit" class="pure-button pure-button-primary">Log in</button>
+            <button type="submit" class="pure-button pure-button-primary">@{_('Log in')}</button>
           </div>
         </fieldset>
       </form>

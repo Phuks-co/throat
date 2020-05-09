@@ -34,6 +34,18 @@ module.exports = {
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
+        test: [/\.pot?$/, /\.mo$/],
+        loader: require.resolve('messageformat-po-loader'),
+        options: {
+          biDiSupport: false,
+          defaultCharset: null,
+          defaultLocale: 'en',
+          forceContext: false,
+          pluralFunction: null,
+          verbose: false
+        }
+      },
+      {
         test: /\.svg$/,
         exclude: [/sprite\.svg/],
         loader: 'svg-inline-loader'

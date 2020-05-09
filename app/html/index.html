@@ -5,13 +5,13 @@
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
       @if sort_type.startswith('all'):
-        <a href="@{url_for('all_hot')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_hot') and 'pure-button-primary' or ''} pure-u-md-7-24">Hot</a>
-        <a href="@{url_for('all_top')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_top') and 'pure-button-primary' or ''} pure-u-md-7-24">Top</a>
-        <a href="@{url_for('all_new')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_new') and 'pure-button-primary' or ''} pure-u-md-7-24">New</a>
+        <a href="@{url_for('all_hot')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_hot') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Hot')}</a>
+        <a href="@{url_for('all_top')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_top') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Top')}</a>
+        <a href="@{url_for('all_new')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_new') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('New')}</a>
       @elif sort_type.startswith('home'):
-        <a href="@{url_for('home_hot')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home_hot') and 'pure-button-primary' or ''} pure-u-md-7-24">Hot</a>
-        <a href="@{url_for('home_top')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home_top') and 'pure-button-primary' or ''} pure-u-md-7-24">Top</a>
-        <a href="@{url_for('home_new')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home_new') and 'pure-button-primary' or ''} pure-u-md-7-24">New</a>
+        <a href="@{url_for('home_hot')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home_hot') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Hot')}</a>
+        <a href="@{url_for('home_top')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home_top') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Top')}</a>
+        <a href="@{url_for('home_new')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home_new') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('New')}</a>
       @end
   </div>
 </div>
@@ -20,17 +20,17 @@
   <hr />
   &copy;@{config.site.copyright}
   <br>
-  <a href="@{url_for('welcome')}">Welcome</a> |
-  <a href="@{url_for('tos')}">ToS</a> |
-  <a href="@{url_for('privacy')}">Privacy</a> |
-  <a href="@{url_for('sub.view_sub', sub='changelog')}">Changelog</a> |
-  <a href="@{url_for('view_api')}">API</a> |
-  <a href="@{url_for('canary')}">Canary</a> |
-  <a href="@{url_for('donate')}">Donate</a>
+  <a href="@{url_for('welcome')}">@{_('Welcome')}</a> |
+  <a href="@{url_for('tos')}">@{_('ToS')}</a> |
+  <a href="@{url_for('privacy')}">@{_('Privacy')}</a> |
+  <a href="@{url_for('sub.view_sub', sub='changelog')}">@{_('Changelog')}</a> |
+  <a href="@{url_for('view_api')}">@{_('API')}</a> |
+  <a href="@{url_for('canary')}">@{_('Canary')}</a> |
+  <a href="@{url_for('donate')}">@{_('Donate')}</a>
   <br>
-  Served by @{hostname} \
+  @{_('Served by %(host)s', host=hostname)} \
   @if config.app.debug or current_user.admin:
-   | Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries
+   | @{_('Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries')}
   @end
 @end
 @end
@@ -47,7 +47,7 @@
   @end
 
   @if not posts:
-    <h1 class="noshit">There are no posts here, yet.</h1>
+    <h1 class="noshit">@{_('There are no posts here, yet.')}</h1>
   @end
   <div class="alldaposts">
     @for post in posts:
@@ -58,10 +58,10 @@
   </div>
   @if sort_type not in ('all_new', 'sub.view_sub_new') or not current_user.likes_scroll():
     @if page > 1:
-      <a href="@{url_for(sort_type, page=(page-1), **kw)}" class="pure-button">prev</a>
+      <a href="@{url_for(sort_type, page=(page-1), **kw)}" class="pure-button">@{_('Previous page')}</a>
     @end
     @if len(posts) == 25:
-      <a href="@{url_for(sort_type, page=(page+1), **kw)}" class="pure-button">next</a>
+      <a href="@{url_for(sort_type, page=(page+1), **kw)}" class="pure-button">@{_('Next page')}</a>
     @end
   @end
 </div>

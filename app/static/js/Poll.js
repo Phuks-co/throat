@@ -1,6 +1,7 @@
 // Code for polls.
 
 import u from './Util';
+import _ from './utils/I18n';
 
 
 u.sub('#poll-addoption', 'click', function(e){
@@ -57,7 +58,7 @@ u.addEventForChild(document, 'click', '.poll-vote-btn', function(e, qelem){
     u.each(".poll-space[data-pid='" + pid + "'] .poll-vote-btn", function(k){
         k.setAttribute('disabled', true);
     })
-    qelem.innerHTML = "Voting...";
+    qelem.innerHTML = _("Voting...");
 
     u.post('/do/cast_vote/' + pid + '/' + oid, {},
     function(data){
@@ -67,7 +68,7 @@ u.addEventForChild(document, 'click', '.poll-vote-btn', function(e, qelem){
       tg.innerHTML = "Vote";
       if (data.status != "ok") {
         var errorbox = document.querySelector(".poll-space[data-pid='" + pid + "'] .error")
-        errorbox.innerHTML = "Error: " + data.error;
+        errorbox.innerHTML = _("Error: %1", data.error);
         errorbox.style.display = "block";
       } else {
         // 1 - Remove all vote buttons.
@@ -76,7 +77,7 @@ u.addEventForChild(document, 'click', '.poll-vote-btn', function(e, qelem){
         })
         // 2 - Highlight voted option
         var pot = document.querySelector(".poll-option[data-oid='" + oid + "'] .poll-option-text");
-        pot.innerHTML = pot.innerHTML + ' (voted)'
+        pot.innerHTML = pot.innerHTML + ' ' + _('(voted)')
         pot.style.fontWeight = 'bold';
         var pb = document.querySelector(".poll-option[data-oid='" + oid + "'] .poll-pbar");
         if(pb){
@@ -112,14 +113,14 @@ u.addEventForChild(document, 'click', '.poll-vote-btn', function(e, qelem){
 u.addEventForChild(document, 'click', '.poll-withdraw-btn', function(e, qelem){
     var pid=qelem.parentNode.parentNode.getAttribute('data-pid'), te=qelem;
     qelem.setAttribute('disabled', true);
-    qelem.innerHTML = 'Working...';
+    qelem.innerHTML = _('Working...');
     u.post('/do/remove_vote/' + pid, {},
     function(data){
         te.removeAttribute('disabled');
-        te.innerHTML = 'Withdraw vote';
+        te.innerHTML = _('Withdraw vote');
         if (data.status != "ok") {
             var errorbox = document.querySelector(".poll-space[data-pid='" + pid + "'] .error")
-            errorbox.innerHTML = "Error: " + data.error;
+            errorbox.innerHTML = _("Error: %1", data.error);
             errorbox.style.display = "block";
         }else{
             // 1 - Display vote buttons again
@@ -128,7 +129,7 @@ u.addEventForChild(document, 'click', '.poll-withdraw-btn', function(e, qelem){
             })
             // 2 - remove all highlighting
             u.each(".poll-space[data-pid='" + pid + "'] .poll-option .poll-option-text", function(k){
-                k.innerHTML = k.innerHTML.replace('(voted)', '');
+                k.innerHTML = k.innerHTML.replace(_('(voted)'), '');
                 k.style.fontWeight = 'normal';
                 if(k.children[0]){
                     k.children[0].style.fontWeight = 'normal';

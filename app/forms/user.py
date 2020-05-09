@@ -3,7 +3,7 @@ from flask import request, redirect, url_for
 from urllib.parse import urlparse, urljoin
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextField, TextAreaField
-from wtforms import BooleanField, HiddenField
+from wtforms import BooleanField, HiddenField, SelectField
 from wtforms.validators import DataRequired, Length, Email, Required, EqualTo
 from wtforms.validators import Optional, Regexp
 from wtforms.fields.html5 import EmailField
@@ -121,6 +121,8 @@ class EditUserForm(FlaskForm):
     nochat = BooleanField('Disable chat')
 
     subtheme = TextField("Global stylesheet (select a sub)")
+
+    language = SelectField('Language', validate_choice=False)
 
 
 class CreateUserMessageForm(FlaskForm):

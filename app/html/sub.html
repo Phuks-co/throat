@@ -18,9 +18,9 @@
 
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
-    <a href="@{url_for('sub.view_sub_hot', sub=sub['name'])}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'sub.view_sub_hot' %}pure-button-primary{%endif%} pure-u-md-7-24">Hot</a>
-    <a href="@{url_for('sub.view_sub_top', sub=sub['name'])}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'sub.view_sub_top' %}pure-button-primary{%endif%} pure-u-md-7-24">Top</a>
-    <a href="@{url_for('sub.view_sub_new', sub=sub['name'])}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'sub.view_sub_new' %}pure-button-primary{%endif%} pure-u-md-7-24">New</a>
+    <a href="@{url_for('sub.view_sub_hot', sub=sub['name'])}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'sub.view_sub_hot' %}pure-button-primary{%endif%} pure-u-md-7-24">@{_('Hot')}</a>
+    <a href="@{url_for('sub.view_sub_top', sub=sub['name'])}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'sub.view_sub_top' %}pure-button-primary{%endif%} pure-u-md-7-24">@{_('Top')}</a>
+    <a href="@{url_for('sub.view_sub_new', sub=sub['name'])}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'sub.view_sub_new' %}pure-button-primary{%endif%} pure-u-md-7-24">@{_('New')}</a>
   </div>
 </div>
 @include('shared/sidebar/sub.html')
@@ -36,7 +36,7 @@
     </div>
   @end
   @if not posts:
-    <h1 class="noshit">There are no posts here, yet.</h1>
+    <h1 class="noshit">@{_('There are no posts here, yet.')}</h1>
   @end
   <div class="alldaposts">
     @for post in posts:
@@ -46,10 +46,10 @@
     @end
   </div>
   @if page > 1:
-    <a href="@{url_for(sort_type, sub=sub['name'], page=(page-1))}" class="pure-button">prev</a>
+    <a href="@{url_for(sort_type, sub=sub['name'], page=(page-1))}" class="pure-button">@{_('Previous page')}</a>
   @end
   @if len(posts) == 25:
-  <a href="@{url_for(sort_type, sub=sub['name'], page=(page+1))}" class="pure-button">next</a>
+  <a href="@{url_for(sort_type, sub=sub['name'], page=(page+1))}" class="pure-button">@{_('Next page')}</a>
   @end
 
 @end

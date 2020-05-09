@@ -1,5 +1,6 @@
 import u from './Util';
 import TextConfirm from  './utils/TextConfirm';
+import _ from './utils/I18n';
 
 u.sub('.revoke-mod2inv', 'click', function(e){
   var user=this.getAttribute('data-user');
@@ -65,8 +66,12 @@ u.sub('.revoke-ban', 'click', function(e){
 u.sub('#ptoggle', 'click', function(e){
   var oval = document.getElementById('ptypeval').value;
   document.getElementById('ptypeval').value = (document.getElementById('ptypeval').value == 'text') ? 'link' : 'text' ;
+  if(document.getElementById('ptypeval').value == 'text'){
+    this.innerHTML = _('Change to link post');
+  }else{
+    this.innerHTML = _('Change to text post');
+  }
   var val = document.getElementById('ptypeval').value;
-  this.innerHTML = 'Change to ' + oval + ' post';
   document.getElementById('ptype').innerHTML = val;
   if(val=='text'){
     if(document.getElementById('link').getAttribute('required') === ''){

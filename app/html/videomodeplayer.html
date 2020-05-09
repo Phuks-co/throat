@@ -4,10 +4,10 @@
     <div id="youtube" style="width: 100%;height: 100%"></div>
     <div class="controls" style="text-align: center;margin: 0 auto;">
         <button class="pure-button btn-videoplayer"
-                onclick="YouTubePlayer.playPrevious()">Prev
+                onclick="YouTubePlayer.playPrevious()">@{_('Previous')}
         </button>
         <button class="pure-button btn-videoplayer"
-                onclick="YouTubePlayer.playNext()">Next
+                onclick="YouTubePlayer.playNext()">@{_('Next')}
         </button>
     </div>
 </div>
@@ -52,7 +52,7 @@
             var a = document.createElement('script');
             a.type = 'text/javascript';
             a.id = 'www-widgetapi-script';
-            a.src = 'https://phuks.co/static/js/widgetapi.js';
+            a.src = 'https://phuks.co/static/js/widgetapi.js'; // TODO: *do NOT* leave this URL hardcoded here
             a.async = true;
             var b = document.getElementsByTagName('script')[0];
             b.parentNode.insertBefore(a, b);

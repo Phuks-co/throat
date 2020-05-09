@@ -2,6 +2,7 @@
 // import TextConfirm from  './utils/TextConfirm';
 // import Icons from './Icon';
 import u from './Util';
+import _ from './utils/I18n';
 
 // Mark message as read.
 u.sub('.readmsg', 'click', function(e){
@@ -9,7 +10,7 @@ u.sub('.readmsg', 'click', function(e){
   u.post('/do/read_pm/'+mid, {},
   function(data){
     if (data.status == "ok") {
-      obj.innerHTML = 'read';
+      obj.innerHTML = _('read');
       obj.classList.remove('readmsg');
       obj.classList.add('read');
       obj.parentNode.parentNode.parentNode.classList.remove('newmsg');
@@ -33,7 +34,7 @@ u.sub('.savemsg', 'click', function(e){
   u.post('/do/save_pm/'+mid, {},
   function(data){
     if (data.status == "ok") {
-      obj.innerHTML = 'saved';
+      obj.innerHTML = _('saved');
       obj.classList.remove('savemsg');
       obj.classList.add('savedmsg');
     }
@@ -46,7 +47,7 @@ u.sub('.deletemsg', 'click', function(e){
   u.post('/do/delete_pm/'+mid, {},
   function(data){
     if (data.status == "ok") {
-      obj.innerHTML = 'deleted';
+      obj.innerHTML = _('deleted');
       obj.classList.remove('deletemsg');
       obj.classList.add('deletedmsg');
     }

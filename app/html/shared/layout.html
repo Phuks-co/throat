@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@{get_locale()}">
   <head>
     @def head():
     @end
@@ -37,27 +37,24 @@
 
 <body class="@{(config.site.enable_totp and current_user.admin) and 'body_admin' or ''} @{(request.cookies.get( "dayNight")=="dank") and 'dark dank' or ''} @{(request.cookies.get( "dayNight")=="dark") and 'dark' or ''}">
   @if config.site.enable_totp and current_user.admin:
-  <div class="admin_alert">Admin mode is currently enabled.
+  <div class="admin_alert">@{_('Admin mode is currently enabled.')}
     <form method="POST" action="/admin/logout" id="adminlogout">
       @{ form.LogOutForm().csrf_token() }
-      <button type="submit" class="btn_link">Disable</button>
+      <button type="submit" class="btn_link">@{_('Disable')}</button>
     </form>
   </div>
 </div>
   @end
   <div class="th-subbar pure-u-1">
     <ul id="topbar">
-      <li><a href="/all">all</a></li>
-      <li><a href="/all/new">new</a></li>
-      @if not current_user.is_anonymous:
-        <li><a href="@{url_for('view_modmulti_new')}">modmulti</a></li>
-      @end
+      <li><a href="/all">@{_('all')}</a></li>
+      <li><a href="/all/new">@{_('new')}</a></li>
       @if current_user.canupload:
-        <li><a href="@{url_for('view_user_uploads')}">uploads</a></li>
+        <li><a href="@{url_for('view_user_uploads')}">@{_('uploads')}</a></li>
       @end
       <li>|</li>
       @if not current_user.is_anonymous:
-      <li class="editbar"><a href="/settings/subs" title="Customize this bar" class="tx-icon" data-icon="edit"></a></li>
+      <li class="editbar"><a href="/settings/subs" title="@{_('Customize this bar')}" class="tx-icon" data-icon="edit"></a></li>
       @end
       @for sub in current_user.get_top_bar():
         <li class="subinthebar"><a href="@{url_for('sub.view_sub', sub=sub['name'])}">@{sub['name']}</a></li>
@@ -66,7 +63,7 @@
     </ul>
     <div id="subsdropdown">
       <div class="dropdown-toggle moremenu">
-        More <span class="tx-icon" data-icon="down"></span>
+        @{_('More')} <span class="tx-icon" data-icon="down"></span>
       </div>
       <ul id="hiddensubs"></ul>
     </div>
@@ -102,12 +99,12 @@
         <div id="toggledark" class="glyphbutton">
           <span class="p-icon" data-icon="@{(request.cookies.get( "dayNight")=="dark") and 'sun' or 'moon'}"></span>
         </div>
-        <a href="@{url_for('login', next=request.path)}" class="pure-button pure-button-primary">Log in</a>
-        <a href="@{url_for('register')}" class="pure-button button-secondary">Register</a>
+        <a href="@{url_for('login', next=request.path)}" class="pure-button pure-button-primary">@{_('Log in')}</a>
+        <a href="@{url_for('register')}" class="pure-button button-secondary">@{_('Register')}</a>
         @else:
         <a href="@{ url_for('view_user', user=current_user.name)}" class="smallcaps" id="unameb">@{current_user.name}</a>
         <span class="separator"></span>
-        <abbr title="Phuks taken" class="bold" id="postscore">@{current_user.score!!s}</abbr>
+        <abbr title="@{_('Score')}" class="bold" id="postscore">@{current_user.score!!s}</abbr>
         <span class="separator"></span>
         <div class="glyphbutton">
           <a href="/settings"><span class="p-icon" data-icon="cog"></span></a>
@@ -125,7 +122,7 @@
         </div>
         <form method="POST" action="@{ url_for('do.logout') }" id="logout">
           @{ form.LogOutForm().csrf_token() }
-          <button type="submit" class="pure-button button-secondary">Log out</button>
+          <button type="submit" class="pure-button button-secondary">@{_('Log out')}</button>
         </form>
         @end
         @{ form.LogOutForm().csrf_token() }
@@ -152,18 +149,18 @@
     @def footer():
       &copy;@{config.site.copyright}
       <br>
-      <a href="@{url_for('tos')}">ToS</a> |
-      <a href="@{url_for('privacy')}">Privacy</a> |
-      <a href="@{url_for('sub.view_sub', sub='changelog')}">Changelog</a> |
-      <a href="@{url_for('view_api')}">API</a> |
-      <a href="@{url_for('canary')}">Canary</a> |
-      <a href="@{url_for('donate')}">Donate</a> |
-      <a href="/license">License</a> |
-      <a href="https://phab.phuks.co">Bugs</a>
+      <a href="@{url_for('tos')}">@{_('ToS')}</a> |
+      <a href="@{url_for('privacy')}">@{_('Privacy')}</a> |
+      <a href="@{url_for('sub.view_sub', sub='changelog')}">@{_('Changelog')}</a> |
+      <a href="@{url_for('view_api')}">@{_('API')}</a> |
+      <a href="@{url_for('canary')}">@{_('Canary')}</a> |
+      <a href="@{url_for('donate')}">@{_('Donate')}</a> |
+      <a href="/license">@{_('License')}</a> |
+      <a href="https://phab.phuks.co">@{_('Bugs')}</a>
       <br>
-      Served by @{hostname} \
+      @{_('Served by %(hostname)s', hostname=hostname)} \
       @if config.app.debug or current_user.admin:
-       | Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries
+       | @{_('Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries')}
       @end
     @end
     @footer()
@@ -172,9 +169,9 @@
     @#...
     @if not current_user.is_anonymous and 'nochat' not in current_user.prefs:
     <div id="chpop" style="height: 1.65em">
-      <div id="chtitle" hid="true"><span id="cht-text">Chat</span> <div class="glyphbutton"><a href="/chat"><span class="p-icon " data-icon="resize"></span></a></div></div>
+      <div id="chtitle" hid="true"><span id="cht-text">@{_('Chat')}</span> <div class="glyphbutton"><a href="/chat"><span class="p-icon " data-icon="resize"></span></a></div></div>
       <div id="chcont"></div>
-      <div id="chbott" style="display: none"><input type="text" id="chsend" maxlength="250" placeholder="Type here"/></div>
+      <div id="chbott" style="display: none"><input type="text" id="chsend" maxlength="250" placeholder="@{_('Type here')}"/></div>
     </div>
     @end
   @end

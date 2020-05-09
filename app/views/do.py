@@ -128,6 +128,7 @@ def edit_user():
 
         usr = User.get(User.uid == current_user.uid)
         usr.email = form.email.data
+        usr.language = form.language.data
         usr.save()
         current_user.update_prefs('labrat', form.experimental.data)
         current_user.update_prefs('nostyles', form.disable_sub_style.data)

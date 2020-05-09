@@ -1,4 +1,5 @@
 // Simple, inline yes/no confirmation prompt.
+import _ from './I18n';
 
 function TextConfirm(the_element, yesfunc, question){
   var elem = the_element.parentNode;
@@ -10,7 +11,7 @@ function TextConfirm(the_element, yesfunc, question){
   var wrap = document.createElement('span');
   wrap.classList.add("red-confirm");
   if(!question){
-    question = 'Are you sure?';
+    question = _('Are you sure?');
   }
   wrap.innerHTML = question + ' ';
   wrap.append(yes);

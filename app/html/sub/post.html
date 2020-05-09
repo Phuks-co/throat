@@ -11,24 +11,12 @@
 @def sidebar():
 <hr>
   <div class="author" style="padding:.5em;">
-    Posted <time-ago datetime="@{post['posted'].isoformat()}Z"></time-ago> by
-    @if post['deleted'] == 0:
-      @if post['userstatus'] != 10:
-        <a class="authorlink" href="@{url_for('view_user', user=post['user'])}">
-          @{(post['userstatus'] == 100) and '<span class="bot-tag">bot</span>' or ''}
-          @{post['user']}
-        </a>
-      @else:
-        <a class="authorlink deleted">[Deleted]</a>
-      @end
-    @else:
-      <span class="deleted">[deleted]</span>
-    @end
+    @{_('Posted %(timeago)s by %(user)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user='<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + '</a>' if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>')}
     <br/>
     @if post['edited']:
-      edited <time-ago datetime="@{post['edited'].isoformat()}Z"></time-ago><br/>
+      @{_('edited %(timeago)s', timeago='<time-ago datetime="' + post['edited'].isoformat() + 'Z"></time-ago>')}<br/>
     @end
-    Score: @{post['score']!!s} <b>(+@{post['upvotes']!!s}|-@{post['downvotes']!!s})</b>
+    @{_('Score: %(score)i <b>(+%(upvotes)i|-%(downvotes)i)</b>', score=post['score'], upvotes=post['upvotes'], downvotes=post['downvotes'])}
   </div>    
 <hr>
   @include('shared/sidebar/sub.html')
@@ -40,9 +28,9 @@
     <div class="misctainer">
       <div class="votebuttons">
         @if post['userstatus'] != 10 and (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(days=60):
-          <div title="Upvote" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="upvote"></div>
+          <div title="@{_('Upvote')}" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="upvote"></div>
           <div class="score">@{post['score']!!s}</div>
-          <div title="Downvote" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="downvote"></div>
+          <div title="@{_('Downvote')}" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="downvote"></div>
         @else:
           <div class="score archived">@{post['score']!!s}</div>
         @end
@@ -64,7 +52,7 @@
     <div class="postinfo" id="postinfo" pid="@{post['pid']!!s}">
       <div class="post-heading">
         @if post['nsfw'] or sub['nsfw']:
-          <div class="nsfw" alt="Not safe for work">NSFW</div>
+          <div class="nsfw" alt="@{_('Not safe for work')}">@{_('NSFW')}</div>
         @end
 
         @if post['flair']:
@@ -96,57 +84,57 @@
           @end
 
           @if is_saved:
-            <li><a class="removesavedpost" data-pid="@{post['pid']!!s}">unsave</a></li>
+            <li><a class="removesavedpost" data-pid="@{post['pid']!!s}">@{_('unsave')}</a></li>
           @else:
-            <li><a class="savepost" data-pid="@{post['pid']!!s}">save</a></li>
+            <li><a class="savepost" data-pid="@{post['pid']!!s}">@{_('save')}</a></li>
           @end
           @if (subInfo.get('ucf', 0) == 1 and current_user.uid == post.uid) or current_user.uid in subMods['all']:
-            <li><a class="editflair">flair</a></li>
+            <li><a class="editflair">@{_('flair')}</a></li>
           @end
           @if post['uid'] == current_user.uid:
             @if post['ptype'] != 1:
-              <li><a class="edit-post" data-pid="@{post['pid']!!s}">edit</a></li>
+              <li><a class="edit-post" data-pid="@{post['pid']!!s}">@{_('edit')}</a></li>
             @end
             @if (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(seconds=config.site.title_edit_timeout):
-              <li><a class="edit-title" data-pid="@{post['pid']!!s}">edit title</a></li>
+              <li><a class="edit-title" data-pid="@{post['pid']!!s}">@{_('edit title')}</a></li>
             @end
           @end
 
           @if post['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in subMods['all']:
-            <li id="delpostli"><a @{(post['uid'] == current_user.uid) and 'selfdel="true"' or ''} class="delete-post"> delete </a></li>
+            <li id="delpostli"><a @{(post['uid'] == current_user.uid) and 'selfdel="true"' or ''} class="delete-post"> @{_('delete')} </a></li>
 
             @if not sub['nsfw']:
               @if not post['nsfw']:
-                <li><a class="nsfw-post"> tag as nsfw </a></li>
+                <li><a class="nsfw-post"> @{_('tag as nsfw')} </a></li>
               @else:
-                <li><a class="nsfw-post"> remove nsfw </a></li>
+                <li><a class="nsfw-post"> @{_('remove nsfw')} </a></li>
               @end
             @end
           @end
 
           @if post['deleted'] == 0 and post['ptype'] == 3 and pollData['poll_open'] and (post['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in subMods['all']):
-              <li><a class="poll-close"> close poll </a></li>
+              <li><a class="poll-close"> @{_('close poll')} </a></li>
           @end
             
           @if current_user.uid in subMods['all']:
             @if str(post['pid']) in subInfo['sticky']:
-              <li><a class="stick-post">unstick</a></li>
+              <li><a class="stick-post">@{_('unstick')}</a></li>
             @else:
-              <li><a class="stick-post">make sticky</a></li>
+              <li><a class="stick-post">@{_('make sticky')}</a></li>
             @end
             
             @if str(post['pid']) == subInfo['wiki']:
-              <li><a class="wiki-post">remove wiki</a></li>
+              <li><a class="wiki-post">@{_('remove wiki')}</a></li>
             @else:
-              <li><a class="wiki-post">make wiki</a></li>
+              <li><a class="wiki-post">@{_('make wiki')}</a></li>
             @end
             @if post['sub'] == 'announcements' and current_user.is_admin():
               @if not func.getAnnouncement() or func.getAnnouncement()['pid'] != post['pid']:
-                <li><a class="announce-post">make announcement</a></li>
+                <li><a class="announce-post">@{_('make announcement')}</a></li>
               @end
             @end
           @end
-          <li><a data-ac="report" class="report-post">report</a></li>
+          <li><a data-ac="report" class="report-post">@{_('report')}</a></li>
         @end
       </ul>
     </div>
@@ -156,9 +144,9 @@
     <div style="display:none;" id="postflairs">
       <span class="closemsg">×</span>
       @if post['flair']:
-        <div>Current flair: <span class="postflair">@{post['flair']!!e}</span>. <a data-sub="@{post['sub']}" data-pid="@{post['pid']!!s}" href="#" id="remove-flair">Remove</a>.</div>
+        <div>@{_('Current flair: <span class="postflair">%(flair)s</span>.', flair=e(post['flair']))} <a data-sub="@{post['sub']}" data-pid="@{post['pid']!!s}" href="#" id="remove-flair">@{_('Remove')}</a>.</div>
       @end
-      <h4>Select a new flair</h4>
+      <h4>@{_('Select a new flair')}</h4>
       @for ll in func.getSubFlairs(post['sid']):
         <span class="selflair" data-sub="@{post['sub']}" data-flair="@{ll.xid!!s}" data-pid="@{post['pid']!!s}">@{ll.text!!e}</span>
       @end
@@ -176,7 +164,7 @@
       </div>
       <div id="post-source">@{post['content']!!e}</div>
     @else:
-      <div class="deleted">[deleted]</div>
+      <div class="deleted">@{_('[deleted]')}</div>
     @end
   @elif not post['link']:
     <div id="postcontent"></div>
@@ -190,13 +178,13 @@
     @{commentform.post(value=post['pid'])}
     @{commentform.parent(value='0')}
     <div class="markdown-editor" id="ncme">
-      @{commentform.comment(id="comment2", placeholder="Write your comment here. Styling with Markdown format is supported.", rows="6")}
+      @{commentform.comment(id="comment2", placeholder=commentform.comment.label.text, rows="6")}
     </div>
     <div class="div-error error alertbox"></div>
-    <button type="submit" class="pure-button pure-button-primary btn-postcomment" data-cid="0" data-pid="@{post['pid']!!s}">Submit comment</button>
-    <button data-pvid="ncme" class="pure-button btn-preview">Preview</button>
+    <button type="submit" class="pure-button pure-button-primary btn-postcomment" data-cid="0" data-pid="@{post['pid']!!s}">@{_('Submit comment')}</button>
+    <button data-pvid="ncme" class="pure-button btn-preview">@{_('Preview')}</button>
     <div class="cmpreview canclose" style="display:none;">
-      <h4>Comment preview</h4>
+      <h4>@{_('Comment preview')}</h4>
       <span class="closemsg">×</span>
       <div class="cpreview-content"></div>
     </div>
@@ -204,10 +192,10 @@
   @end
 
   @if len(comments) == 0:
-    <div class="comments"><h3 id="cmnts">No comments yet...</h3></div>
+    <div class="comments"><h3 id="cmnts">@{_('No comments, yet...')}</h3></div>
   @else:
     <div class="comments">
-      <h2 id="cmnts"><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{post['comments']!!s} comments</a></h2>
+      <h2 id="cmnts"><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{_('%(comments)i comments', comments=post['comments'])}</a></h2>
       @pcomm.renderComments(post, subInfo, subMods, comments, highlight)
     </div>
   @end

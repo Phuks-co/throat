@@ -4,6 +4,7 @@ site:
   lema: 'Throat: Open discussion ;D'
   # Copyright line shown in the footer
   copyright: 'Umbrella Corp'
+
   # Name shown when a sub is owned by a deleted account or abandoned
   placeholder_account: 'Site'
 
@@ -35,6 +36,12 @@ app:
   # This will make all captchas valid, disable caching and rate limits
   # Always set to False in a production environment
   testing: True
+
+  # Available languages for users to select. This will also be used when trying to guess
+  # the user's language.
+  languages:
+    - en
+    - es
 
 
 cache:
