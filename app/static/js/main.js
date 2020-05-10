@@ -5,7 +5,7 @@ import 'purecss/build/buttons.css';
 import 'purecss/build/grids.css';
 import 'purecss/build/grids-responsive.css';
 import 'tingle.js/dist/tingle.css';
-import 'time-elements/time-elements.js';
+import 'time-elements';
 //import 'flatpickr/dist/flatpickr.css';
 import 'flatpickr/dist/themes/dark.css';
 import 'autocompleter/autocomplete.css'
@@ -31,7 +31,6 @@ require('./Messages');
 require('./Sub');
 require('./Poll');
 var socket = require('./Socket');
-
 
 function vote(obj, how, comment){
   // Check if we're logged in first
