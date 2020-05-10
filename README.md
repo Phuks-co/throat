@@ -8,9 +8,9 @@ A phoxy link and discussion aggregator with snek (python3)
 
  - A database server, MySQL, MariaDB and Postres have been tested. Sqlite should work for messing locally
  - Redis
- - Python >= 3.5
+ - Python >= 3.7
  - A recent node/npm
- - libmagic and libexiv2
+ - libmagic and gobject
 
 ## Setup:
 
@@ -21,6 +21,8 @@ We recommend using a virtualenv or Pyenv
 3. Build the bundles with `npm run build`
 4. Copy `example.config.yml` to `config.yml` and edit it
 5. Set up the database by executing `./scripts/migrate.py`
+
+And you're done! You can run a test server by executing `./throat.py`. For production instances we recommend setting up `gunicorn`
 
 ## Chat
 
