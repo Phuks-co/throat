@@ -207,12 +207,13 @@ blockquote{
 }
 
 a {
-  color: #00419d;
+  color: #0f5387;
   text-decoration: none;
 }
 
 a:hover {
-  color: #64a6ca;
+  color: #0f5387;
+  text-decoration: underline;
 }
 
 .footer {
@@ -228,7 +229,7 @@ a:hover {
 /* Header */
 
 .th-navbar {
-  background-color: #d94f00;
+  background-color: #800000;
   margin-bottom: 0;
   -webkit-font-smoothing: antialiased;
   padding: .4em 0 .4em .3em;
@@ -445,7 +446,7 @@ span#notification.fade {
 }
 
 .content .hasmail path {
-  fill: #d94f00;
+  fill: #800000;
 }
 
 .sidebar .pure-button-primary {
@@ -458,12 +459,12 @@ span#notification.fade {
 }
 
 .pure-button-primary, a.pure-button-primary {
-    background-color: #d94f00;
+    background-color: #800000;
     color: #fff;
 }
 
 .pure-button-primary:hover {
-      background-color:#ff6d15;
+      background-color:#A50105;
     color: #fff;
 }
 
@@ -514,11 +515,11 @@ span#notification.fade {
 }
 
 .post .title:visited {
-	color: #d95204;
+	color: #7A0105;
 }
 
 .post .title:hover {
-	color: #ff6d15;
+	color: #A50105;
 }
 .misctainer {
   float: left;
@@ -543,7 +544,7 @@ span#notification.fade {
 }
 
 .p-icon[data-icon="exclaim"] path {
-    fill: #d94f00;
+    fill: #800000;
 }
 
 .expando{
@@ -620,11 +621,11 @@ iframe {
 }
 
 .upvoted path{
-  fill: #ff6d15;
+  fill: #7A0105;
 }
 
 .downvoted path{
-  fill: red;
+  fill: black;
 }
 
 .misctainer{
@@ -694,7 +695,7 @@ iframe {
 
 .pure-menu a svg {
     height: 4em;
-    margin: 4px 0;
+    margin: 0px 0px 4px 0px;
 }
 
 .thumbnail .placeholder {
@@ -751,7 +752,7 @@ a.slink{
   position:relative;
   right:12px;
   font-size: 13px;
-  color: #0f5387;
+  color: #888;
   
   cursor: pointer;
   -ms-user-select:none;
@@ -951,7 +952,7 @@ a.slink{
 }
 
 .button-warning {
-  background: rgb(223, 117, 20); /* this is an orange */
+  background: rgb(200, 5, 17); /* this is red */
 }
 
 .button-secondary {
@@ -1507,7 +1508,7 @@ td.subsentry.blocked {
 
 .pblock.level .uprofile-level-box .fill{
   clip: rect(0px, 60px, 120px, 0px);
-  background-color: #d94f00;
+  background-color: #800000;
 }
 
 .pblock.level .inset{
@@ -1558,10 +1559,11 @@ article.comment {
     margin: 4px 0;
 }
 article.comment:nth-child(2n) {
-    background-color: #f7f7f7;
-    -webkit-box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
+    background-color: #fefefe;
+/*    -webkit-box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
     -moz-box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
     box-shadow: -3px 2px 4px 0 rgba(0,0,0,.1);
+*/
 }
 .commtitle {
     margin: .3em;
@@ -1585,7 +1587,7 @@ li.habitentry {
 
 body::-webkit-scrollbar {
    width: 4px;
-   background: #d94f00;
+   background: #800000;
    z-index: -1;
 }
 
@@ -1693,7 +1695,7 @@ table td {
   height: calc(100% - 4.1em);
 }
 #chtitle{
-  background: #d94f00;
+  background: #800000;
   font-size: smaller;
   height: 1.8em;
   padding-top: .2em;
@@ -1706,7 +1708,7 @@ table td {
 }
 
 #chtitle:hover{
-  background: #b74500;
+  background: #A50105;
 }
 #chcont{
   color: #111;
@@ -1870,7 +1872,7 @@ a[href="#toodamncool"]{
   z-index: 20;
   bottom: 0;
   position: absolute;
-  left: 4em;
+  left: 56px;
   color: white;
   font-size: smaller;
 }

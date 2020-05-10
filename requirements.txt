@@ -33,3 +33,5 @@ pyyaml
 email_validator
 feedgen
 pyOpenSSL
+psycopg2
+gunicorn
