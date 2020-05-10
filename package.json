@@ -45,7 +45,7 @@
     "purecss": "^1.0.0",
     "socket.io-client": "^2.0.4",
     "sortablejs": "^1.7.0",
-    "time-elements": "^0.6.1",
+    "time-elements": "^3.0.0",
     "tingle.js": "^0.14.0",
     "url-loader": "^1.1.2"
   }
