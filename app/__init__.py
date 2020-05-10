@@ -62,7 +62,7 @@ if app.config['TESTING']:
     logging.getLogger("socketio.server").setLevel(logging.WARNING)
 
 webpack.init_app(app)
-socketio.init_app(app, message_queue=config.app.redis_url)
+socketio.init_app(app, message_queue=config.app.redis_url, cors_allowed_origins="*")
 caching.cache.init_app(app)
 
 login_manager = LoginManager(app)
