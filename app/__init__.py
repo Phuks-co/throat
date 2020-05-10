@@ -74,7 +74,7 @@ login_manager.login_view = 'login'
 def get_locale():
     if current_user.language:
         return current_user.language
-    return request.accept_languages.best_match(app.config['LANGUAGES'])
+    return request.accept_languages.best_match(app.config['LANGUAGES'], app.config.get('FALLBACK_LANGUAGE', 'en'))
 
 
 engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config, 'conf': app.config,
