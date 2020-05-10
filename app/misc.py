@@ -675,7 +675,7 @@ def get_thumbnail(link):
 
         x, y = im.size
 
-    im.thumbnail((70, 70), Image.ANTIALIAS)
+    im.thumbnail((140, 140), Image.ANTIALIAS)
     im.seek(0)
     md5 = hashlib.md5(im.tobytes())
     filename = str(uuid.uuid5(THUMB_NAMESPACE, md5.hexdigest())) + '.jpg'
