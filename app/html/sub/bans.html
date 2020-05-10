@@ -59,7 +59,7 @@
         <tr>
           <td>
             @if ban.created_by_id:
-            <a href="@{url_for('view_user', user=ban.created_by.name)}">@{ban.created_by.name}</a> \
+            <a href="@{url_for('user.view', user=ban.created_by.name)}">@{ban.created_by.name}</a> \
             @else:
               @{_('N/A')} \
             @end
@@ -71,7 +71,7 @@
             @{_('N/A')}\
           @end
           </td>
-          <td><a href="@{url_for('view_user', user=ban.user.name)}">@{ban.user.name}</a></td>
+          <td><a href="@{url_for('user.view', user=ban.user.name)}">@{ban.user.name}</a></td>
           <td>@{ban.reason!!e}</td>
           <td>
             @if ban.expires:
@@ -114,7 +114,7 @@
       <tr>
         <td>
         @if ban.created_by_id:
-          <a href="@{url_for('view_user', user=ban.created_by.name)}">@{ban.created_by.name}</a>
+          <a href="@{url_for('user.view', user=ban.created_by.name)}">@{ban.created_by.name}</a>
         @else:
           @{_('N/A')} \
         @end
@@ -126,7 +126,7 @@
           @{_('N/A')}\
         @end
         </td>
-        <td><a href="@{url_for('view_user', user=ban.user.name)}">@{ban.user.name}</a></td>
+        <td><a href="@{url_for('user.view', user=ban.user.name)}">@{ban.user.name}</a></td>
         <td>@{ban.reason!!e}</td>
         <td>
         @if ban.expires:

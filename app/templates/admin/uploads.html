@@ -28,7 +28,7 @@
             </div>
           {% endif %}
           <div class="uploadlinks">
-            <div class="uploadlink"><a href="{{url_for('view_post_inbox', pid=item.pid)}}">View Post</a></div>
+            <div class="uploadlink"><a href="{{url_for('site.view_post_inbox', pid=item.pid)}}">View Post</a></div>
             <div class="uploadlink"><a href="{{config.storage.uploads.url}}{{item.fileid}}">Direct Link</a></div>
           </div>
         </div>
@@ -37,10 +37,10 @@
 </div>
 <div class="col-12">
   {% if page > 1 %}
-  <a href="{{url_for('admin_user_uploads', page=(page-1))}}" class="pure-button">prev</a>
+  <a href="{{url_for('admin.user_uploads', page=(page-1))}}" class="pure-button">prev</a>
   {% endif %}
   {% if subs|length == 30 %}
-  <a href="{{url_for('admin_user_uploads', page=(page+1))}}" class="pure-button">next</a>
+  <a href="{{url_for('admin.user_uploads', page=(page+1))}}" class="pure-button">next</a>
   {% endif %}
 </div>
 {% endblock %}

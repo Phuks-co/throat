@@ -5,12 +5,12 @@
 </form>
 
 @if current_user.is_authenticated:
-<a href="@{url_for('submit', ptype='text', sub='')}" class="sbm-post pure-button">@{_('Submit a text post')}</a>
-<a href="@{url_for('submit', ptype='link', sub='')}" class="sbm-post pure-button">@{_('Submit a link post')}</a>
+<a href="@{url_for('subs.submit', ptype='text', sub='')}" class="sbm-post pure-button">@{_('Submit a text post')}</a>
+<a href="@{url_for('subs.submit', ptype='link', sub='')}" class="sbm-post pure-button">@{_('Submit a link post')}</a>
 <hr>
-<a href="@{url_for('view_subs')}" class="sbm-post pure-button">@{_('View all subs')}</a>
-<a href="@{url_for('random_sub')}" class="sbm-post pure-button">@{_('Go to random sub')}</a>
-<a href="@{url_for('create_sub')}" class="sbm-post pure-button">@{_('Create a sub')}</a>
+<a href="@{url_for('home.view_subs')}" class="sbm-post pure-button">@{_('View all subs')}</a>
+<a href="@{url_for('subs.random_sub')}" class="sbm-post pure-button">@{_('Go to random sub')}</a>
+<a href="@{url_for('subs.create_sub')}" class="sbm-post pure-button">@{_('Create a sub')}</a>
 @end
   @if func.getTodaysTopPosts():
   <hr>
@@ -49,8 +49,8 @@
   </div>
 @end
 <hr>
-<a href="@{url_for('donate')}" class="sbm-post pure-button">@{_('Donate')}</a>
+<a href="@{url_for('wiki.donate')}" class="sbm-post pure-button">@{_('Donate')}</a>
 @if current_user.is_authenticated:
 <hr>
-<a href="@{url_for('view_sitelog')}" class="sbm-post pure-button">@{_('Site logs')}</a>
+<a href="@{url_for('site.view_sitelog')}" class="sbm-post pure-button">@{_('Site logs')}</a>
 @end

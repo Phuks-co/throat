@@ -21,7 +21,6 @@ eventlet
 wheezy.template
 wheezy.html
 python-magic
-py3exiv2
 pyotp
 coverage
 pep8
@@ -33,3 +32,4 @@ pyyaml
 email_validator
 feedgen
 pyOpenSSL
+pygobject

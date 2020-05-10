@@ -9,7 +9,7 @@
 {% block sidebar %}
 {{ super() }}
 <div class="col-12 admin section search">
-  <form action="{{ url_for('do.search', stype='admin_users') }}" method="post">
+  <form action="{{ url_for('do.search', stype='admin.users') }}" method="post">
   <span class="search">
       <span><i class="fa fa-search"></i></span>
       <input id="term" name="term" type="search" placeholder="Search Users...">
@@ -28,10 +28,10 @@
 <div id="center-container">
   <div class="content">
 
-    <h2>{% if admin_route == 'view_admins' %}Admins{% else %}Users{% endif %}</h2>
+    <h2>{% if admin_route == 'admin.view' %}Admins{% else %}Users{% endif %}</h2>
     <div class="admin section users">
       <div class="col-12">
-        {% if admin_route == 'admin_users_search' %}
+        {% if admin_route == 'admin.users_search' %}
           <div>Showing results for: {{term}}</div>
         {% endif %}
         <table class="sortable pure-table">
@@ -51,11 +51,11 @@
             {% for user in users %}
               <tr>
                 <td>
-                  <div class="username"><a href="{{url_for('view_user', user=user.name)}}">{{user.name}}</a></div>
+                  <div class="username"><a href="{{url_for('user.view', user=user.name)}}">{{user.name}}</a></div>
                 </td>
-                <td><a href="{{url_for('view_user_posts', user=user.name)}}">{%if user.post_count%}{{user.post_count}}{%else%}0{%endif%}</a></td>
-                <td><a href="{{url_for('view_user_comments', user=user.name)}}">{%if user.comment_count%}{{user.comment_count}}{%else%}0{%endif%}</a></td>
-                <td><a href="{{url_for('admin_post_voting', term=user.name)}}">votes</a></td>
+                <td><a href="{{url_for('user.view_user_posts', user=user.name)}}">{%if user.post_count%}{{user.post_count}}{%else%}0{%endif%}</a></td>
+                <td><a href="{{url_for('user.view_user_comments', user=user.name)}}">{%if user.comment_count%}{{user.comment_count}}{%else%}0{%endif%}</a></td>
+                <td><a href="{{url_for('admin.post_voting', term=user.name)}}">votes</a></td>
                 <td>{{func.get_user_level(user.uid)[0]}}</td>
                 <td>{{func.get_user_level(user.uid)[1]}}</td>
                 <td>{{user.status}}</td>
@@ -67,7 +67,7 @@
       </div>
     </div>
 
-{% if admin_route == 'admin_users'  %}
+{% if admin_route == 'admin.users'  %}
   {% set items = users %}
   {% include 'admin/nav.html' %}
 {% endif %}

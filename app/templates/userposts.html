@@ -3,11 +3,11 @@
 
 {% block sidebar %}
 {{ super() }}
-<a href="{{url_for('view_user', user=user.name)}}" class="sbm-post pure-button">{{user.name}}</a>
-<a href="{{url_for('view_user_posts', user=user.name)}}" class="sbm-post pure-button">View posts</a>
-<a href="{{url_for('view_user_comments', user=user.name)}}" class="sbm-post pure-button">View comments</a>
+<a href="{{url_for('user.view', user=user.name)}}" class="sbm-post pure-button">{{user.name}}</a>
+<a href="{{url_for('user.view_user_posts', user=user.name)}}" class="sbm-post pure-button">View posts</a>
+<a href="{{url_for('user.view_user_comments', user=user.name)}}" class="sbm-post pure-button">View comments</a>
 {% if user.uid == current_user.uid %}
-  <a href="{{url_for('view_user_savedposts', user=user.name)}}" class="sbm-post pure-button">View saved posts</a>
+  <a href="{{url_for('user.view_user_savedposts', user=user.name)}}" class="sbm-post pure-button">View saved posts</a>
 {% endif %}
 {% endblock %}
 

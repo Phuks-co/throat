@@ -17,7 +17,7 @@
   <div class="content">
 
     <div class="col-12 admin section users">
-      <h2><i class="fa fa-list"></i> Post: <a href="{{url_for('view_post_inbox', pid=post.pid)}}">{{post.title}}</a></h2>
+      <h2><i class="fa fa-list"></i> Post: <a href="{{url_for('site.view_post_inbox', pid=post.pid)}}">{{post.title}}</a></h2>
       <div>
         <div>NSFW: {% if post.nsfw %}<span class="bgred" alt="Not safe for work">NSFW</span>{% else %}no{% endif %}</div>
         <div>When: <i class="fa fa-clock-o" aria-hidden="true"></i> Posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago></div>
@@ -25,7 +25,7 @@
       </div>
     </div>
     <div class="col-12 admin section users">
-      <h2>User: <a href="{{url_for('view_user', user=user.name)}}">{{user.name}}</a></h2>
+      <h2>User: <a href="{{url_for('user.view', user=user.name)}}">{{user.name}}</a></h2>
       <div class="col-11">Posts: {{pcount}}</div>
       <div class="col-11">Comments: {{ccount}}</div>
       <div class="col-11">Registered: {{user.joindate}}</div>
@@ -46,7 +46,7 @@
             {% for vote in votes %}
             <tr>
               <td>{% if vote.positive %}<span class="upvoted">up</span>{% else %}<span class="downvoted">down</span>{% endif %}</td>
-              <td><a href="{{url_for('view_user', user=vote.name)}}">{{vote.name}}</a></td>
+              <td><a href="{{url_for('user.view', user=vote.name)}}">{{vote.name}}</a></td>
               <td>{{vote.datetime}}</td>
             </tr>
             {% endfor %}
@@ -72,7 +72,7 @@
             <tr>
               <td>{{comment.score}}</td>
               <td>
-                <a href="{{ url_for('view_user', user=comment.name) }}" class="poster">{{comment.name}}</a>
+                <a href="{{ url_for('user.view', user=comment.name) }}" class="poster">{{comment.name}}</a>
               </td>
               <td>{{comment.content}}</td>
               <td><a href="{{url_for('sub.view_perm', sub=sub.name, cid=comment.cid, pid=post.pid)}}">permalink</a></td>
@@ -97,7 +97,7 @@
             <tr>
               <td>{{comment.score}}</td>
               <td>
-                <a href="{{ url_for('view_user', user=comment.name) }}" class="poster">
+                <a href="{{ url_for('user.view', user=comment.name) }}" class="poster">
                 {{comment.name}}</a>
               </td>
               <td>{{comment.content}}</td>

@@ -4,11 +4,11 @@
 
 {% block sidebar %}
 {{ super() }}
-<a href="{{url_for('view_user', user=user.name)}}" class="sbm-post pure-button">{{user.name}}</a>
-<a href="{{url_for('view_user_posts', user=user.name)}}" class="sbm-post pure-button">View posts</a>
-<a href="{{url_for('view_user_comments', user=user.name)}}" class="sbm-post pure-button">View comments</a>
+<a href="{{url_for('user.view', user=user.name)}}" class="sbm-post pure-button">{{user.name}}</a>
+<a href="{{url_for('user.view_user_posts', user=user.name)}}" class="sbm-post pure-button">View posts</a>
+<a href="{{url_for('user.view_user_comments', user=user.name)}}" class="sbm-post pure-button">View comments</a>
 {% if user.uid == session['user_id'] %}
-  <a href="{{url_for('view_user_savedposts', user=user.name)}}" class="sbm-post pure-button">View saved posts</a>
+  <a href="{{url_for('user.view_user_savedposts', user=user.name)}}" class="sbm-post pure-button">View saved posts</a>
 {% endif %}
 {% endblock %}
 
@@ -32,7 +32,7 @@
           <div class="commentrow {%if comment.cid == highlight %}highlight{%endif%}" id="comment-{{comment.cid}}">
             <div class="commblock">
               <div class="commenthead">
-                  <a href="{{ url_for('view_user', user=user.name) }}" class="poster">{{user.name}}</a> -
+                  <a href="{{ url_for('user.view', user=user.name) }}" class="poster">{{user.name}}</a> -
                   <b><span class="cscore">{{comment.score}}</span> points</b>
                   <span class="time">
                      <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago>
@@ -67,10 +67,10 @@
     </div>
 
     {% if page > 1 %}
-    <a href="{{url_for('view_user_comments', user=user.name, page=(page-1))}}" class="pure-button">prev</a>
+    <a href="{{url_for('user.view_user_comments', user=user.name, page=(page-1))}}" class="pure-button">prev</a>
     {% endif %}
     {% if comments|length == 20 %}
-    <a href="{{url_for('view_user_comments', user=user.name, page=(page+1))}}" class="pure-button">next</a>
+    <a href="{{url_for('user.view_user_comments', user=user.name, page=(page+1))}}" class="pure-button">next</a>
     {% endif %}
 
   </div>
