@@ -32,3 +32,4 @@ peewee_migrate
 pyyaml
 email_validator
 feedgen
+pyOpenSSL
