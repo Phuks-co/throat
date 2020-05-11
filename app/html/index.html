@@ -16,7 +16,7 @@
   </div>
 </div>
 @include('shared/sidebar/home.html')
-@if sort_type in ('all_new', 'sub.view_sub_new') and current_user.likes_scroll():
+@if sort_type in ('home.all_new', 'sub.view_sub_new') and current_user.likes_scroll():
   <hr />
   &copy;@{config.site.copyright}
   <br>
@@ -37,7 +37,7 @@
 
 @def main():
 <div id="container">
-  @if sort_type.startswith('home_') or sort_type.startswith('all_'):
+  @if sort_type.startswith('home.') or sort_type.startswith('home.all_'):
     @if ann:
       <div id="announcement-post">
       @ipost.singlePost(ann, False, announcement=True)

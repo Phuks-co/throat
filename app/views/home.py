@@ -67,7 +67,7 @@ def all_new_rss():
 def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = list(misc.getPostList(misc.postListQueryBase(), 'new', page).dicts())
-    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_new', 'page': page,
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home.all_new', 'page': page,
                                                      'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
                                                      'kw': {}})
@@ -90,7 +90,7 @@ def all_domain_new(domain, page):
     domain = re.sub(r'[^A-Za-z0-9.\-_]+', '', domain)
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(SubPost.link % ('%://' + domain + '/%')),
                              'new', page).dicts()
-    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_domain_new', 'page': page,
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home.all_domain_new', 'page': page,
                                                      'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
                                                      'kw': {'domain': domain}})
@@ -114,7 +114,7 @@ def search(page, term):
 def all_top(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = misc.getPostList(misc.postListQueryBase(), 'top', page).dicts()
-    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_top', 'page': page,
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home.all_top', 'page': page,
                                                      'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
                                                      'kw': {}})
@@ -127,7 +127,7 @@ def all_hot(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = misc.getPostList(misc.postListQueryBase(), 'hot', page).dicts()
 
-    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'all_hot', 'page': page,
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home.all_hot', 'page': page,
                                                      'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
                                                      'kw': {}})
