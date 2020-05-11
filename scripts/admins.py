@@ -3,7 +3,6 @@ import __fix
 import argparse
 import sys
 
-from app import app
 from peewee import fn
 from app.models import User, Client, Grant, Message, SiteLog, SiteMetadata, Sub, \
     SubFlair, SubLog, SubMetadata, SubPost, SubPostComment, \
@@ -21,30 +20,29 @@ addremove.add_argument('-l', '--list', action='store_true', help='List administr
 args = parser.parse_args()
 
 
-with app.app_context():
-    if args.add:
-        try:
-            user = User.get(fn.Lower(User.name) == args.add.lower())
-        except User.DoesNotExist:
-            print("Error: User does not exist")
-            sys.exit(1)
-        UserMetadata.create(uid=user.uid, key='admin', value='1')
+if args.add:
+    try:
+        user = User.get(fn.Lower(User.name) == args.add.lower())
+    except User.DoesNotExist:
+        print("Error: User does not exist")
+        sys.exit(1)
+    UserMetadata.create(uid=user.uid, key='admin', value='1')
+    print("Done.")
+elif args.remove:
+    try:
+        user = User.get(fn.Lower(User.name) == args.remove.lower())
+    except User.DoesNotExist:
+        print("Error: User does not exist.")
+        sys.exit(1)
+
+    try:
+        umeta = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'admin'))
+        umeta.delete_instance()
         print("Done.")
-    elif args.remove:
-        try:
-            user = User.get(fn.Lower(User.name) == args.remove.lower())
-        except User.DoesNotExist:
-            print("Error: User does not exist.")
-            sys.exit(1)
-        
-        try:
-            umeta = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'admin'))
-            umeta.delete_instance()
-            print("Done.")
-        except UserMetadata.DoesNotExist:
-            print("Error: User is not an administrator.")
-    elif args.list:
-        users = User.select(User.name).join(UserMetadata).where((UserMetadata.key == 'admin') & (UserMetadata.value == '1'))
-        print("Administrators: ")
-        for i in users:
-            print("  ", i.name)
+    except UserMetadata.DoesNotExist:
+        print("Error: User is not an administrator.")
+elif args.list:
+    users = User.select(User.name).join(UserMetadata).where((UserMetadata.key == 'admin') & (UserMetadata.value == '1'))
+    print("Administrators: ")
+    for i in users:
+        print("  ", i.name)
