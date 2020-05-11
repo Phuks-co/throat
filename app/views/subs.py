@@ -2,8 +2,9 @@
 from peewee import fn
 from flask import Blueprint, abort, request, render_template, redirect, url_for
 from flask_login import login_required, current_user
+from .. import misc
 from ..models import Sub, db as pdb
-from ..forms import CreateSubTextPost, CreateSubForm
+from ..forms import CreateSubTextPost, CreateSubForm, CreteSubPostCaptcha
 bp = Blueprint('subs', __name__)
 
 
@@ -14,7 +15,10 @@ def submit(ptype, sub):
     if ptype not in ['link', 'text', 'poll']:
         abort(404)
 
-    txtpostform = CreateSubTextPost()
+    if misc.get_user_level(current_user.uid)[0] <= 4:
+        txtpostform = CreteSubPostCaptcha()
+    else:
+        txtpostform = CreateSubTextPost()
     txtpostform.ptype.data = ptype
     txtpostform.sub.data = sub
     if request.args.get('title'):
