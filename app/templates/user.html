@@ -16,14 +16,14 @@
   <hr>
   {% endif %}
   {% if user.uid == session['user_id'] %}
-    <a href="{{url_for('edit_user', user=user.name)}}" class="sbm-post pure-button">Edit user info</a>
+    <a href="{{url_for('user.edit_user', user=user.name)}}" class="sbm-post pure-button">Edit user info</a>
     <hr>
   {% endif %}
-  <a href="{{url_for('view_user', user=user.name)}}" class="sbm-post pure-button">{{user.name}}</a>
-  <a href="{{url_for('view_user_posts', user=user.name)}}" class="sbm-post pure-button">View posts</a>
-  <a href="{{url_for('view_user_comments', user=user.name)}}" class="sbm-post pure-button">View comments</a>
+  <a href="{{url_for('user.view', user=user.name)}}" class="sbm-post pure-button">{{user.name}}</a>
+  <a href="{{url_for('user.view_user_posts', user=user.name)}}" class="sbm-post pure-button">View posts</a>
+  <a href="{{url_for('user.view_user_comments', user=user.name)}}" class="sbm-post pure-button">View comments</a>
   {% if user.uid == session['user_id'] %}
-    <a href="{{url_for('view_user_savedposts', user=user.name)}}" class="sbm-post pure-button">View saved posts</a>
+    <a href="{{url_for('user.view_user_savedposts', user=user.name)}}" class="sbm-post pure-button">View saved posts</a>
   {% endif %}
   {% if current_user.is_authenticated %}
   <hr>
@@ -57,11 +57,11 @@
         </div>
         <div class="pblock">
           <div class="statdiv">
-            <div class="ucount"><a href="{{url_for('view_user_posts', user=user.name)}}">{{pcount}}</a></div>
+            <div class="ucount"><a href="{{url_for('user.view_user_posts', user=user.name)}}">{{pcount}}</a></div>
             <div>posts</div>
           </div>
           <div class="statdiv">
-            <div class="ucount"><a href="{{url_for('view_user_comments', user=user.name)}}">{{ccount}}</a></div>
+            <div class="ucount"><a href="{{url_for('user.view_user_comments', user=user.name)}}">{{ccount}}</a></div>
             <div>comments</div>
           </div>
         </div>
@@ -124,7 +124,7 @@
       <div id="formpop" style="display:none;">
         <div class="modal-content">
           <span class="closepopmsg">&times;</span>
-          <form data-reset="true" id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="pure-form pure-form-aligned ajaxform">
+          <form data-reset="true" id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('messages.inbox_sort')}}" class="pure-form pure-form-aligned ajaxform">
             {% set msgform = form.CreateUserMessageForm()%}
             {{msgform.csrf_token}}
             <h3>Send user message</h3>

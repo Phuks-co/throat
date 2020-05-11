@@ -9,7 +9,7 @@
 {% block sidebar %}
 {{ super() }}
 <div class="col-12 admin section search">
-  <form action="{{ url_for('do.search', stype='admin_subs') }}" method="post">
+  <form action="{{ url_for('do.search', stype='admin.subs') }}" method="post">
   <span class="search">
       <span><i class="fa fa-search"></i></span>
       <input id="term" name="term" type="search" placeholder="Search Subs...">
@@ -52,7 +52,7 @@
     <hr>
     <div class="admin section subs">
       <div>
-        {% if admin_route == 'admin_subs_search' %}
+        {% if admin_route == 'admin.subs_search' %}
           <div>Showing results for: {{term}}</div>
         {% endif %}
         <table class="sortable pure-table">
@@ -78,7 +78,7 @@
               <td><time-ago datetime="{{sub.creation.isoformat()}}Z"></time-ago></td>
               <td>
                 {% for owner in subMods.owners %}
-                <a href="{{url_for('view_user', user=subMods.owners[owner])}}">{{subMods.owners[owner]}}</a>
+                <a href="{{url_for('user.view', user=subMods.owners[owner])}}">{{subMods.owners[owner]}}</a>
                 {% endfor %}
               </td>
               <td>{{subMods.mods|count}}</td>
@@ -92,7 +92,7 @@
       </div>
     </div>
 
-{% if admin_route == 'admin_subs' %}
+{% if admin_route == 'admin.subs' %}
   {% set items = subs %}
   {% include 'admin/nav.html' %}
 {% endif %}

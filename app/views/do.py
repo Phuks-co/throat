@@ -11,7 +11,6 @@ import magic
 import hashlib
 import os
 import random
-import pyexiv2
 from PIL import Image
 from bs4 import BeautifulSoup
 from flask import Blueprint, redirect, url_for, session, abort, jsonify
@@ -48,21 +47,16 @@ def logout():
     """ Logout endpoint """
     form = LogOutForm()
     if form.validate():
-        if session.get('usid'):
-            socketio.emit('uinfo', {'loggedin': False}, namespace='/alt',
-                          room=session['usid'])
         logout_user()
-    if request.get_json() and request.get_json().get('j'):
-        return jsonify(status='ok')
-    else:
-        return redirect(url_for('index'))
+
+    return redirect(url_for('home.index'))
 
 
 @do.route("/do/search", defaults={'stype': 'search'}, methods=['POST'])
 @do.route("/do/search/<stype>", methods=['POST'])
 def search(stype):
     """ Search endpoint """
-    if stype not in ('search', 'subs', 'admin_users', 'admin_post_voting', 'admin_subs', 'admin_post'):
+    if stype not in ('search', 'subs', 'admin.users', 'admin.post_voting', 'admin.subs', 'admin.post'):
         abort(404)
     if not stype.endswith('search'):
         stype += '_search'
@@ -178,7 +172,7 @@ def delete_post():
                                 link=sub.name, mtype=11)
             
             misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_POST, current_user.uid, post.sid,
-                    comment=form.reason.data, link=url_for('view_post_inbox', pid=post.pid),
+                    comment=form.reason.data, link=url_for('site.view_post_inbox', pid=post.pid),
                     admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
 
 
@@ -1317,14 +1311,14 @@ def deleteannouncement():
         ann = SiteMetadata.get(SiteMetadata.key == 'announcement')
         post = SubPost.get(SubPost.pid == ann.value)
     except SiteMetadata.DoesNotExist:
-        return redirect(url_for('admin_area'))
+        return redirect(url_for('admin.index'))
 
     ann.delete_instance()
     misc.create_sitelog(misc.LOG_TYPE_UNANNOUNCE, uid=current_user.uid, link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
 
     cache.delete_memoized(misc.getAnnouncementPid)
     socketio.emit('rmannouncement', {}, namespace='/snt')
-    return redirect(url_for('admin_area'))
+    return redirect(url_for('admin.index'))
 
 
 @do.route("/do/makeannouncement", methods=['POST'])
@@ -1424,7 +1418,7 @@ def enable_posting(value):
     else:
         misc.create_sitelog(misc.LOG_TYPE_DISABLE_POSTING, current_user.uid)
 
-    return redirect(url_for('admin_area'))
+    return redirect(url_for('admin.index'))
 
 
 @do.route("/do/save_post/<pid>", methods=['POST'])
@@ -1666,7 +1660,7 @@ def recovery():
             <hr>
             <p>If you didn't request a password recovery, please ignore this
             email</p>
-            """, lema=config.site.lema, url=url_for('password_reset', key=rekey,
+            """, lema=config.site.lema, url=url_for('user.password_reset', key=rekey,
                                             uid=user.uid, _external=True))
         )
 
@@ -1768,7 +1762,7 @@ def delete_comment():
 
         if comment.uid_id != current_user.uid and (current_user.is_admin() or current_user.is_mod(post.sid)):
             misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_COMMENT, current_user.uid, post.sid,
-                               comment=form.reason.data, link=url_for('view_post_inbox', pid=comment.pid),
+                               comment=form.reason.data, link=url_for('site.view_post_inbox', pid=comment.pid),
                                admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
 
         comment.status = 1
@@ -1959,11 +1953,7 @@ def sub_upload(sub):
         ufile.save(os.path.join(config.storage.uploads.path, f_name))
         # remove metadata
         if mtype != 'image/gif':  # Apparently we cannot write to gif images
-            md = pyexiv2.ImageMetadata(os.path.join(config.storage.uploads.path, f_name))
-            md.read()
-            for k in (md.exif_keys + md.iptc_keys + md.xmp_keys):
-                del md[k]
-            md.write()
+            clear_metadata(os.path.join(config.storage.uploads.path, f_name))
     # sadly, we can only get file size accurately after saving it
     fsize = os.stat(os.path.join(config.storage.uploads.path, f_name)).st_size
     if fsize > remaining:
@@ -2084,7 +2074,7 @@ def ban_user(username):
     user.status = 5
     user.save()
     misc.create_sitelog(misc.LOG_TYPE_USER_BAN, uid=current_user.uid, comment=user.name)
-    return redirect(url_for('view_user', user=username))
+    return redirect(url_for('user.view', user=username))
 
 
 @do.route('/do/edit_top_bar', methods=['POST'])
@@ -2130,7 +2120,7 @@ def admin_undo_votes(uid):
 
     form = DummyForm()
     if not form.validate():
-        return redirect(url_for('view_user', user=user.name))
+        return redirect(url_for('user.view', user=user.name))
     
 
     post_v = SubPostVote.select().where(SubPostVote.uid == user.uid)
@@ -2186,7 +2176,7 @@ def admin_undo_votes(uid):
         tgus.save()
         v.delete_instance()
     user.save()
-    return redirect(url_for('view_user', user=user.name))
+    return redirect(url_for('user.view', user=user.name))
 
 
 @do.route('/do/cast_vote/<pid>/<oid>', methods=['POST'])

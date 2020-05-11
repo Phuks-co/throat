@@ -12,17 +12,17 @@
     @if current_user.is_subban(sub):
       <div>You are currently banned from posting.</div>
     @else:
-      <a href="@{url_for('submit', ptype='text', sub=sub['name'])}" class="sbm-post pure-button">@{_('Submit a text post')}</a>
-      <a href="@{url_for('submit', ptype='link', sub=sub['name'])}" class="sbm-post pure-button">@{_('Submit a link post')}</a>
+      <a href="@{url_for('subs.submit', ptype='text', sub=sub['name'])}" class="sbm-post pure-button">@{_('Submit a text post')}</a>
+      <a href="@{url_for('subs.submit', ptype='link', sub=sub['name'])}" class="sbm-post pure-button">@{_('Submit a link post')}</a>
       @if subInfo.get('allow_polls', 0) == '1':
-        <a href="@{url_for('submit', ptype='poll', sub=sub['name'])}" class="sbm-post pure-button">@{_('Submit a poll')}</a>
+        <a href="@{url_for('subs.submit', ptype='poll', sub=sub['name'])}" class="sbm-post pure-button">@{_('Submit a poll')}</a>
       @end
     @endif
   @end
 @end
 
 @if subInfo['wiki'] != '':
-  <a href="@{url_for('view_post_inbox', pid=subInfo['wiki'] )}" class="sbm-post pure-button">@{_('View wiki')}</a>
+  <a href="@{url_for('site.view_post_inbox', pid=subInfo['wiki'] )}" class="sbm-post pure-button">@{_('View wiki')}</a>
 @endif
 
 <div class="subinfo">
@@ -56,13 +56,13 @@
   @{_('Moderators')}
   <ul>
   @for owner in subMods['owners']:
-    <li><span title="@{_('Owner')}" class="i-icon" data-icon="owner"></span> <a href="@{url_for('view_user', user=subMods['owners'][owner])}">@{subMods['owners'][owner]}</a></li>
+    <li><span title="@{_('Owner')}" class="i-icon" data-icon="owner"></span> <a href="@{url_for('user.view', user=subMods['owners'][owner])}">@{subMods['owners'][owner]}</a></li>
   @end
   @for mod in subMods['mods']:
-    <li><a href="@{url_for('view_user', user=subMods['mods'][mod])}">@{subMods['mods'][mod]}</a></li>
+    <li><a href="@{url_for('user.view', user=subMods['mods'][mod])}">@{subMods['mods'][mod]}</a></li>
   @end
   @for janitor in subMods['janitors']:
-    <li><a href="@{url_for('view_user', user=subMods['janitors'][janitor])}">@{subMods['janitors'][janitor]}</a></li>
+    <li><a href="@{url_for('user.view', user=subMods['janitors'][janitor])}">@{subMods['janitors'][janitor]}</a></li>
   @end
   </ul>
 </div>

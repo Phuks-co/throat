@@ -10,7 +10,9 @@ import magic
 import os
 import hashlib
 import re
-import pyexiv2
+import gi
+gi.require_version('GExiv2', '0.10') # noqa
+from gi.repository import GExiv2
 import bcrypt
 import tinycss2
 from captcha.image import ImageCaptcha
@@ -884,7 +886,7 @@ def get_notification_count(uid):
             Message.mtype != 41) & Message.read.is_null(True)).count()
 
 
-def get_errors(form):
+def get_errors(form, first=False):
     """ A simple function that returns a list with all the form errors. """
     if request.method == 'GET':
         return []
@@ -893,6 +895,11 @@ def get_errors(form):
         for error in errors:
             ret.append(
                 _(u"Error in the '%(field)s' field - %(error)s", field=getattr(form, field).label.text, error=error))
+    if first:
+        if len(ret) > 0:
+            return ret[0]
+        else:
+            return ""
     return ret
 
 
@@ -1023,6 +1030,13 @@ def getUserBadges(uid):
     return ret
 
 
+def clear_metadata(path: str):
+    exif = GExiv2.Metadata(path)
+    exif.clear_exif()
+    exif.clear_xmp()
+    exif.save_file()
+
+
 def upload_file(max_size=16580608):
     if not current_user.canupload:
         return False
@@ -1067,11 +1081,7 @@ def upload_file(max_size=16580608):
             return False
         # remove metadata
         if mtype not in ('image/gif', 'video/mp4', 'video/webm'):  # Apparently we cannot write to gif images
-            metadata = pyexiv2.ImageMetadata(fpath)
-            metadata.read()
-            for k in (metadata.exif_keys + metadata.iptc_keys + metadata.xmp_keys):
-                del metadata[k]
-            metadata.write()
+            clear_metadata(fpath)
     return f_name
 
 
@@ -1463,7 +1473,7 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
                                      SubPostComment.score, SubPostComment.status, SubPostComment.time,
                                      SubPostComment.pid,
                                      User.name.alias('user'), *(
-                                        [SubPostCommentVote.positive, SubPostComment.uid] if uid else [SubPostComment.uid]),  # silly hack
+            [SubPostCommentVote.positive, SubPostComment.uid] if uid else [SubPostComment.uid]),  # silly hack
                                      User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)
     expcomms = expcomms.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
     if uid:

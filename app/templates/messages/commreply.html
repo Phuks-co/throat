@@ -22,19 +22,19 @@
                 <div title="Upvote" class="c-upvote{%if message.positive == True %} upvoted{%endif%}" data-icon="upvote"></div>
                 <div title="Downvote" class="c-downvote{%if message.positive == False %} downvoted{%endif%}" data-icon="downvote"></div>
             </div>
-            <p class="title"><a href="{{url_for('view_comment_inbox', cid=message.mlink)}}">{{message.subject}}</a></p>
+            <p class="title"><a href="{{url_for('site.view_comment_inbox', cid=message.mlink)}}">{{message.subject}}</a></p>
             <p class="container">{{markdown(message.content)|safe}}</p>
             <p class="author"><b><span class="cscore">{{message.score}}</span></b> points, <time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>
             <p class="container">
 
-              <a href="{{url_for('view_user', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
+              <a href="{{url_for('user.view', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
               {% if not message.read %}
                 <a class="newmsg" data-mid="{{message.mid}}">new</a>
               {% else %}
                 <a data-mid="{{message.mid}}">read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
               {% endif %}
               <a href="#comment-form" class="replycom" data-sub="{{message.sub}}" data-replyto='{{message.username}}' data-post='{{message.pid}}' data-parentid='{{message.mlink}}' data-replytitle='{{message.subject}}' data-mid='{{message.mid}}'>reply</a>
-              <a href="{{ url_for('view_comment_inbox', cid=message.mlink) }}" class="btn small">permalink</a>
+              <a href="{{ url_for('site.view_comment_inbox', cid=message.mlink) }}" class="btn small">permalink</a>
               <!--<a class="savemsg" data-mid="{{message.mid}}">save</a>-->
               <a class="deletemsg" data-mid="{{message.mid}}">delete</a>
               <a class="block" data-uid="{{message.sentby}}">{% if message.sentby not in func.get_ignores(current_user.uid) %}block{%else%}unblock{%endif%}</a>

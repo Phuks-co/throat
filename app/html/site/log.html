@@ -77,10 +77,10 @@
         </tbody>
     </table>
     @if page > 1:
-    <a href="@{url_for('view_sitelog', page=(page-1))}" class="btn">prev</a>
+    <a href="@{url_for('site.view_sitelog', page=(page-1))}" class="btn">prev</a>
     @end
 
     @if len(logs) == 50:
-    <a href="@{url_for('view_sitelog', page=(page+1))}" class="btn">next</a>
+    <a href="@{url_for('site.view_sitelog', page=(page+1))}" class="btn">next</a>
     @end
 @end

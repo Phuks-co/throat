@@ -43,10 +43,12 @@ cfg_defaults = { # key => default value
             "debug": True,
             "testing": True,
             "wtf_csrf_time_limit": None,
-            "max_content_length": 10485760 # 10mb
+            "max_content_length": 10485760,  # 10mb
+            "fallback_language": "en"
         }
 
     }
+
 
 class Map(dict):
     def __init__(self, sdict, defaults):

@@ -6,7 +6,7 @@
 {% endblock %}
 {% block navbar %}
 {{ super() }}
-<li><a href="{{url_for('admin_area')}}">Admin</a></li>
+<li><a href="{{url_for('admin.index')}}">Admin</a></li>
 {% endblock %}
 {% block sidebar %}
 {{ super() }}
@@ -21,7 +21,7 @@
   <div class="content">
     {% if not msg %}
       <h2>Comment Votes</h2>
-      <div>Go to <a href="{{url_for('admin_post_voting', term=term)}}">posts</a></div>
+      <div>Go to <a href="{{url_for('admin.post_voting', term=term)}}">posts</a></div>
       <div class="admin section subs posts">
         <div>
           <div>Showing results for: {{term}}</div>

@@ -24,7 +24,7 @@
       </li>
     </ul>
     <hr>
-    <p>This site is composed of <a href="{{url_for('view_subs')}}">subs</a>. You are automatically subscribed to about a dozen defaults.
+    <p>This site is composed of <a href="{{url_for('home.view_subs')}}">subs</a>. You are automatically subscribed to about a dozen defaults.
       You can subscribe or block a sub from your feed from either the subs page or the sidebar of the sub. Each sub has its own
     theme, rules, moderators, and custom settings:</p>
     <ul>
@@ -45,10 +45,9 @@
     <ul>
       <li>/s/subname goes to the sub</li>
       <li>/u/username goes to the user's profile</li>
-      <li><a href="{{url_for('all_new')}}">/all/new</a> shows a live view of new posts, the votes and comment counts auto update</li>
+      <li><a href="{{url_for('home.all_new')}}">/all/new</a> shows a live view of new posts, the votes and comment counts auto update</li>
       <li><a href="/m/news+sports+music">/m/news+sports+music</a> shows all posts, sorted by new, from those subs</li>
-      <li><a href="{{url_for('chat')}}">/chat</a> goes to a full page chat window for all users</li>
-      <li><a href="{{url_for('view_modmulti_new')}}">/modmulti</a> shows a feed of all the subs you own or mod</li>
+      <li><a href="{{url_for('site.chat')}}">/chat</a> goes to a full page chat window for all users</li>
       <li><span class="tx-icon hasmail" data-icon="edit"></span> allows you to change the order of the top bar subscription list</li>
     </ul>
     <!--
@@ -58,8 +57,8 @@
     If you find any bug, glitch or any other nasty thing, you should open a task in <a href="https://phab.phuks.co">here</a> and
     we'll take care of it.
 
-    <p><a href="{{url_for('privacy')}}">Privacy Policy Information</a></p>
+    <p><a href="{{url_for('wiki.privacy')}}">Privacy Policy Information</a></p>
 
-    <p><a href="{{url_for('tos')}}">Terms of Service</a></p>
+    <p><a href="{{url_for('wiki.tos')}}">Terms of Service</a></p>
   </div>
 {%endblock%}

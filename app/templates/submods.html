@@ -24,12 +24,12 @@
 
 <div class="col-12">
   {% if subMods['owners']|length == 1 %}
-    <p>Owner: <i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=(subMods['owners'].values()|list)[0] )}}">{{ (subMods['owners'].values()|list)[0] }}</a></p>
+    <p>Owner: <i class="fa fa-star" title="Owner"></i> <a href="{{url_for('user.view', user=(subMods['owners'].values()|list)[0] )}}">{{ (subMods['owners'].values()|list)[0] }}</a></p>
   {%else%}
     Owners:
     <ul>
     {% for owner in subMods.owners %}
-      <li><i class="fa fa-star" title="Owner"></i> <a href="{{url_for('view_user', user=owner.name)}}">{{owner.name}}</a></li>
+      <li><i class="fa fa-star" title="Owner"></i> <a href="{{url_for('user.view', user=owner.name)}}">{{owner.name}}</a></li>
     {%endfor%}
     </ul>
   {%endif%}
@@ -40,7 +40,7 @@
   <ul>
   {% for mod in subMods.mods %}
   <span class="editmodbtn col-4">
-    <li><a href="{{url_for('view_user', user=subMods.mods[mod])}}">{{subMods.mods[mod]}}</a>
+    <li><a href="{{url_for('user.view', user=subMods.mods[mod])}}">{{subMods.mods[mod]}}</a>
       {% if current_user.is_admin() or current_user.is_mod(sub.sid, 0) %}
       <span>(<a data-sub="{{sub.name}}" data-user="{{subMods.mods[mod]}}" class="slink revoke-mod2">remove</a>)</span>
       {%elif current_user.uid == mod %}
@@ -57,7 +57,7 @@
     <ul>
     {% for mod in subMods.janitors %}
     <span class="editmodbtn col-4">
-      <li><a href="{{url_for('view_user', user=subMods.janitors[mod])}}">{{subMods.janitors[mod]}}</a>
+      <li><a href="{{url_for('user.view', user=subMods.janitors[mod])}}">{{subMods.janitors[mod]}}</a>
         {% if current_user.is_admin() or current_user.is_mod(sub.sid, 0) %}
         <span>(<a data-sub="{{sub.name}}" data-user="{{subMods.janitors[mod]}}" class="slink revoke-mod2">remove</a>)</span>
         {%elif current_user.uid == mod %}
@@ -77,7 +77,7 @@
   {% for modinv in subModInvites %}
   <span class="editmodbtn col-4">
     <li>[{%if modinv.power_level == 1%}Mod{%elif modinv.power_level == 2%}Janitor{%endif%}]
-      <a href="{{url_for('view_user', user=modinv.user.name)}}">{{modinv.user.name}}</a>
+      <a href="{{url_for('user.view', user=modinv.user.name)}}">{{modinv.user.name}}</a>
       {% if current_user.is_admin() or current_user.is_mod(sub.sid, 0) %}
       (<a data-sub="{{sub.name}}" data-user="{{modinv.user.name}}" class="slink revoke-mod2inv">revoke</a>)
       {% endif %}
@@ -110,7 +110,7 @@
   <ul>
   {% for xmod in subdata.xmods if subdata.xmods|length > 0 %}
   <span class="col-4">
-    <li><i class="fa fa-remove"></i> <a href="{{url_for('view_user', user=xmod.name)}}">{{xmod.name}}</a></li>
+    <li><i class="fa fa-remove"></i> <a href="{{url_for('user.view', user=xmod.name)}}">{{xmod.name}}</a></li>
   </span>
   {% endfor %}
   </ul>

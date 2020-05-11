@@ -50,7 +50,7 @@
       <li><a href="/all">@{_('all')}</a></li>
       <li><a href="/all/new">@{_('new')}</a></li>
       @if current_user.canupload:
-        <li><a href="@{url_for('view_user_uploads')}">@{_('uploads')}</a></li>
+        <li><a href="@{url_for('home.view_user_uploads')}">@{_('uploads')}</a></li>
       @end
       <li>|</li>
       @if not current_user.is_anonymous:
@@ -98,10 +98,10 @@
         <div id="toggledark" class="glyphbutton">
           <span class="p-icon" data-icon="@{(request.cookies.get( "dayNight")=="dark") and 'sun' or 'moon'}"></span>
         </div>
-        <a href="@{url_for('login', next=request.path)}" class="pure-button pure-button-primary">@{_('Log in')}</a>
-        <a href="@{url_for('register')}" class="pure-button button-secondary">@{_('Register')}</a>
+        <a href="@{url_for('auth.login', next=request.path)}" class="pure-button pure-button-primary">@{_('Log in')}</a>
+        <a href="@{url_for('auth.register')}" class="pure-button button-secondary">@{_('Register')}</a>
         @else:
-        <a href="@{ url_for('view_user', user=current_user.name)}" class="smallcaps" id="unameb">@{current_user.name}</a>
+        <a href="@{ url_for('user.view', user=current_user.name)}" class="smallcaps" id="unameb">@{current_user.name}</a>
         <span class="separator"></span>
         <abbr title="@{_('Score')}" class="bold" id="postscore">@{current_user.score!!s}</abbr>
         <span class="separator"></span>
@@ -109,7 +109,7 @@
           <a href="/settings"><span class="p-icon" data-icon="cog"></span></a>
         </div>
         <div class="glyphbutton sep ">
-          <a href="@{ url_for('inbox_sort') }">
+          <a href="@{ url_for('messages.inbox_sort') }">
             <span class="hasmail">
               <span class="p-icon @{(current_user.notifications != 0) and 'hasmail' or ''}" data-icon="mail"></span>
               <span id="mailcount" class="mailcount" @{(current_user.notifications == 0) and 'style="display:none;"' or ''}>@{current_user.notifications!!s}</span>
@@ -148,12 +148,12 @@
     @def footer():
       &copy;@{config.site.copyright}
       <br>
-      <a href="@{url_for('tos')}">@{_('ToS')}</a> |
-      <a href="@{url_for('privacy')}">@{_('Privacy')}</a> |
+      <a href="@{url_for('wiki.tos')}">@{_('ToS')}</a> |
+      <a href="@{url_for('wiki.privacy')}">@{_('Privacy')}</a> |
       <a href="@{url_for('sub.view_sub', sub='changelog')}">@{_('Changelog')}</a> |
-      <a href="@{url_for('view_api')}">@{_('API')}</a> |
-      <a href="@{url_for('canary')}">@{_('Canary')}</a> |
-      <a href="@{url_for('donate')}">@{_('Donate')}</a> |
+      <a href="@{url_for('wiki.view_api')}">@{_('API')}</a> |
+      <a href="@{url_for('wiki.canary')}">@{_('Canary')}</a> |
+      <a href="@{url_for('wiki.donate')}">@{_('Donate')}</a> |
       <a href="/license">@{_('License')}</a> |
       <a href="https://phab.phuks.co">@{_('Bugs')}</a>
       <br>

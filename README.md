@@ -8,9 +8,9 @@ A link and discussion aggregator with snek (python3)
 
  - A database server, MySQL, MariaDB and Postgres have been tested. Sqlite should work for messing locally
  - Redis
- - Python >= 3.5
+ - Python >= 3.7
  - A recent node/npm
- - libmagic and libexiv2
+ - libmagic and gobject
 
 ## Setup:
 

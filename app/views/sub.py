@@ -1,3 +1,4 @@
+""" All endpoints related to stuff done inside of a particular sub """
 import datetime
 import time
 from flask import Blueprint, redirect, url_for, abort, render_template, request, Response
@@ -19,7 +20,7 @@ sub = Blueprint('sub', __name__)
 def view_sub(sub):
     """ Here we can view subs """
     if sub.lower() == "all":
-        return redirect(url_for('all_hot', page=1))
+        return redirect(url_for('home.all_hot', page=1))
 
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
@@ -163,7 +164,7 @@ def sub_new_rss(sub):
 def view_sub_new(sub, page):
     """ The index page, all posts sorted as most recent posted first """
     if sub.lower() == "all":
-        return redirect(url_for('all_new', page=1))
+        return redirect(url_for('home.all_new', page=1))
 
     try:
         sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
@@ -221,7 +222,7 @@ def view_sub_bans(sub):
 def view_sub_top(sub, page):
     """ The index page, /top sorting """
     if sub.lower() == "all":
-        return redirect(url_for('all_top', page=1))
+        return redirect(url_for('home.all_top', page=1))
 
     try:
         sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
@@ -253,7 +254,7 @@ def view_sub_top(sub, page):
 def view_sub_hot(sub, page):
     """ The index page, /hot sorting """
     if sub.lower() == "all":
-        return redirect(url_for('all_hot', page=1))
+        return redirect(url_for('home.all_hot', page=1))
     try:
         sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     except Sub.DoesNotExist:

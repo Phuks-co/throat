@@ -3,7 +3,7 @@
 {% block navbar %}
 
 {% if ptype == 'tagmatch' %}
-  <li><a href="{{ url_for('view_multisub_new', subs=sublist) }}">View multi of these subs</a></li>
+  <li><a href="{{ url_for('site.view_multisub_new', subs=sublist) }}">View multi of these subs</a></li>
 {% endif %}
 
 <ul class="right">

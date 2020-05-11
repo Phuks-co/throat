@@ -44,11 +44,8 @@
     <ul id="topbar">
       <li><a href="/all">all</a></li>
       <li><a href="/all/new">new</a></li>
-      {% if not current_user.is_anonymous %}
-        <li><a href="{{url_for('view_modmulti_new')}}">modmulti</a></li>
-      {% endif %}
       {% if current_user.canupload %}
-        <li><a href="{{url_for('view_user_uploads')}}">uploads</a></li>
+        <li><a href="{{url_for('home.view_user_uploads')}}">uploads</a></li>
       {% endif %}
       <li>|</li>
       {% if not current_user.is_anonymous %}
@@ -94,18 +91,18 @@
         <div id="toggledark" class="glyphbutton">
           <span class="p-icon" data-icon="{%if request.cookies.get( "dayNight")=="dark" %}sun{%else%}moon{%endif%}"></span>
         </div>
-        <a href="{{url_for('login', next=request.path)}}" class="pure-button pure-button-primary">Log in</a>
-        <a href="{{url_for('register')}}" class="pure-button button-secondary">Register</a>
+        <a href="{{url_for('auth.login', next=request.path)}}" class="pure-button pure-button-primary">Log in</a>
+        <a href="{{url_for('auth.register')}}" class="pure-button button-secondary">Register</a>
         {%else%}
-        <a href="{{ url_for('view_user', user=current_user.name) }}" class="smallcaps">{{current_user.name}}</a>
+        <a href="{{ url_for('user.view', user=current_user.name) }}" class="smallcaps">{{current_user.name}}</a>
         <span class="separator"></span>
         <abbr title="Phuks taken" class="bold" id="postscore">{{current_user.score}}</abbr>
         <span class="separator"></span>
         <div class="glyphbutton">
-          <a href="{{ url_for('edit_user', user=current_user.name) }}"><span class="p-icon" data-icon="cog"></span></a>
+          <a href="{{ url_for('user.edit_user', user=current_user.name) }}"><span class="p-icon" data-icon="cog"></span></a>
         </div>
         <div class="glyphbutton sep ">
-          <a href="{{ url_for('inbox_sort') }}">
+          <a href="{{ url_for('messages.inbox_sort') }}">
             <span class="hasmail">
               <span class="p-icon{% if current_user.notifications != 0 %} hasmail{%endif%}" data-icon="mail"></span>
               <span id="mailcount" class="mailcount" {% if current_user.notifications == 0 %}style="display:none;"{%endif%}>{{current_user.notifications}}</span>
@@ -142,12 +139,12 @@
     {% block footer %}
       &copy;{{config.site.copyright}}
       <br>
-      <a href="{{url_for('tos')}}">ToS</a> |
-      <a href="{{url_for('privacy')}}">Privacy</a> |
+      <a href="{{url_for('wiki.tos')}}">ToS</a> |
+      <a href="{{url_for('wiki.privacy')}}">Privacy</a> |
       <a href="{{url_for('sub.view_sub', sub='changelog')}}">Changelog</a> |
-      <a href="{{url_for('view_api')}}">API</a> |
-      <a href="{{url_for('canary')}}">Canary</a> |
-      <a href="{{url_for('donate')}}">Donate</a> |
+      <a href="{{url_for('wiki.view_api')}}">API</a> |
+      <a href="{{url_for('wiki.canary')}}">Canary</a> |
+      <a href="{{url_for('wiki.donate')}}">Donate</a> |
       <a href="/license">License</a> |
       <a href="https://phab.phuks.co">Bugs</a>
       <br>

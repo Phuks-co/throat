@@ -5,13 +5,13 @@
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
       @if sort_type.startswith('all'):
-        <a href="@{url_for('all_hot')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_hot') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Hot')}</a>
-        <a href="@{url_for('all_top')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_top') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Top')}</a>
-        <a href="@{url_for('all_new')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'all_new') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('New')}</a>
+        <a href="@{url_for('home.all_hot')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home.all_hot') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Hot')}</a>
+        <a href="@{url_for('home.all_top')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home.all_top') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Top')}</a>
+        <a href="@{url_for('home.all_new')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home.all_new') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('New')}</a>
       @elif sort_type.startswith('home'):
-        <a href="@{url_for('home_hot')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home_hot') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Hot')}</a>
-        <a href="@{url_for('home_top')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home_top') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Top')}</a>
-        <a href="@{url_for('home_new')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home_new') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('New')}</a>
+        <a href="@{url_for('home.hot')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home.hot') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Hot')}</a>
+        <a href="@{url_for('home.top')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home.top') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Top')}</a>
+        <a href="@{url_for('home.new')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home.new') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('New')}</a>
       @end
   </div>
 </div>
@@ -20,13 +20,13 @@
   <hr />
   &copy;@{config.site.copyright}
   <br>
-  <a href="@{url_for('welcome')}">@{_('Welcome')}</a> |
-  <a href="@{url_for('tos')}">@{_('ToS')}</a> |
-  <a href="@{url_for('privacy')}">@{_('Privacy')}</a> |
+  <a href="@{url_for('wiki.welcome')}">@{_('Welcome')}</a> |
+  <a href="@{url_for('wiki.tos')}">@{_('ToS')}</a> |
+  <a href="@{url_for('wiki.privacy')}">@{_('Privacy')}</a> |
   <a href="@{url_for('sub.view_sub', sub='changelog')}">@{_('Changelog')}</a> |
-  <a href="@{url_for('view_api')}">@{_('API')}</a> |
-  <a href="@{url_for('canary')}">@{_('Canary')}</a> |
-  <a href="@{url_for('donate')}">@{_('Donate')}</a>
+  <a href="@{url_for('wiki.view_api')}">@{_('API')}</a> |
+  <a href="@{url_for('wiki.canary')}">@{_('Canary')}</a> |
+  <a href="@{url_for('wiki.donate')}">@{_('Donate')}</a>
   <br>
   @{_('Served by %(host)s', host=hostname)} \
   @if config.app.debug or current_user.admin:
@@ -56,7 +56,7 @@
       @end
     @end
   </div>
-  @if sort_type not in ('all_new', 'sub.view_sub_new') or not current_user.likes_scroll():
+  @if sort_type not in ('home.all_new', 'sub.view_sub_new') or not current_user.likes_scroll():
     @if page > 1:
       <a href="@{url_for(sort_type, page=(page-1), **kw)}" class="pure-button">@{_('Previous page')}</a>
     @end
@@ -65,7 +65,7 @@
     @end
   @end
 </div>
-  @if sort_type in ('all_new', 'sub.view_sub_new') and current_user.likes_scroll():
+  @if sort_type in ('home.all_new', 'sub.view_sub_new') and current_user.likes_scroll():
     @def footer():
     @end
   @end
@@ -78,13 +78,13 @@
       @if "labrat" in current_user.prefs:
 
         window.labrat = true;
-        @if sort_type in ('all_new'):
+        @if sort_type in ('home.all_new'):
         // TODO: add for subs
         window.nposts = '/all/new';
         window.blocked = @{current_user.blocksid!!s}
         @end
       @end
-      @if sort_type in ('all_new', 'sub.view_sub_new') and current_user.likes_scroll():
+      @if sort_type in ('home.all_new', 'sub.view_sub_new') and current_user.likes_scroll():
         window.moreuri = '@{url_for(request.endpoint + '_more')}/';
       @end
     </script>

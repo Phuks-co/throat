@@ -22,7 +22,7 @@
             <p class="container">{{markdown(message.content)|safe}}</p>
             <p class="author"><time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>
             <p class="container">
-              <a href="{{url_for('view_user', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
+              <a href="{{url_for('user.view', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
               {% if message.read %}
                 <a class="read">read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
               {% else %}
@@ -45,7 +45,7 @@
 <div id="msgpop" style="display:none;">
   <span class="closemsg">&times;</span>
   <div class="modal-content">
-    <form data-reset="true" id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('inbox_sort')}}" class="pure-form pure-form-aligned ajaxform">
+    <form data-reset="true" id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('messages.inbox_sort')}}" class="pure-form pure-form-aligned ajaxform">
       {% set msgform = form.CreateUserMessageForm()%}
       {{msgform.csrf_token}}
       <h3>Send user message</h3>
