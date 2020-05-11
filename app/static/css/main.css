@@ -1098,6 +1098,7 @@ span.hasmail {
   padding: 1em 5px 5px 5px;
   overflow-wrap: break-word;
   border-left: solid 1px #ccc;
+  border-right: dotted 1px #ccc;
 }
 .sidebar h4{
   color: #1b1b1b;
@@ -1946,4 +1947,10 @@ a[href="#toodamncool"]{
 .invitecodes .expired{
   color: gray;
   text-decoration: line-through;
+}
+
+.new-g {
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
 }
