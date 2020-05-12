@@ -40,7 +40,7 @@ function vote(obj, how, comment){
     });
   
     // set content
-    modal.setContent('<h1>' + _('Log in or register to continue') + '</h1>\
+    modal.setContent('<h2>' + _('Log in or register to continue') + '</h2>\
     <div class="pure-g"> \
       <div class="pure-u-1-2">\
         <h3> Log in </h3> \

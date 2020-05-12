@@ -1652,7 +1652,7 @@ def recovery():
         sendMail(
             subject='Password recovery',
             to=user.email,
-            content=_("""<h1><strong>%(lema)s</strong></h1>
+            content=_("""<h2><strong>%(lema)s</strong></h2>
             <p>Somebody (most likely you) has requested a password reset for
             your account</p>
             <p>To proceed, visit the following address (valid for the next 24hs)</p>

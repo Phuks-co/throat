@@ -18,7 +18,7 @@
 
 @def main():
 <div id="container">
-  <h1>@{_('Invite codes')}</h1>
+  <h2>@{_('Invite codes')}</h2>
   @if avail > 0:
     @{_('You can create <b>%(num)i</b> invite codes.', num=avail)}
     <a href="/do/create_invite" class="pure-button pure-button-primary">@{_('Create new')}</a>

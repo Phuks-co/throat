@@ -12,7 +12,7 @@
 <div class="important"><h3>Editing as Admin</h3></div>
 {% endif %}
 
-<h1>Editing /{{config.site.sub_prefix}}/{{sub.name}}'s flairs</h1>
+<h2>Editing /{{config.site.sub_prefix}}/{{sub.name}}'s flairs</h2>
 <div class="col-12 admin-page-form">
   <form  method="POST" class="ajaxform pure-form" action="{{url_for('do.create_flair', sub=sub.name)}}" data-reload="true">
     <h4>Create new flair</h4>

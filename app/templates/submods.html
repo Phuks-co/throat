@@ -12,7 +12,7 @@
 <div class="important"><h3>Editing as Admin</h3></div>
 {% endif %}
 
-<h1>Moderators for /{{config.site.sub_prefix}}/{{sub.name}}</h1>
+<h2>Moderators for /{{config.site.sub_prefix}}/{{sub.name}}</h2>
 {% if current_user.is_modinv(sub.sid)  %}
 <div class="mod2-inv" >
   You currently have an invite for this sub pending.

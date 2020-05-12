@@ -2,7 +2,7 @@
 
 @def main():
 <div id="container">
-  <h1>@{_('Customize your sub bar')}</h1>
+  <h2>@{_('Customize your sub bar')}</h2>
     @{_('Drag to sort')} <br/>
     <button class="pure-button pure-button-primary save-top_bar">@{_('Save')}</button>
     <ul id="subsort">
@@ -10,6 +10,6 @@
         <li sid="@{sub['sid']}" class="subsort_item"><a href="@{url_for('sub.view_sub', sub=sub['name'])}">@{sub['name']}</a></li>
       @end
     </ul>
-    <button class="pure-button pure-button-primary save-top_bar">Save</button>
+    <button class="pure-button pure-button-primary save-top_bar">Uložiť</button>
 </div>
 @end

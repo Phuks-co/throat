@@ -1989,7 +1989,7 @@ msgstr "Captcha inválido (refresque la página)"
 #: app/views/do.py:1663
 #, python-format
 msgid ""
-"<h1><strong>%(lema)s</strong></h1>\n"
+"<h2><strong>%(lema)s</strong></h2>\n"
 "            <p>Somebody (most likely you) has requested a password reset "
 "for\n"
 "            your account</p>\n"

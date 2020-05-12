@@ -16,7 +16,7 @@
 
 @def main():
 <div id="container">
-  <h1>@{_('Account deletion')}</h1>
+  <h2>@{_('Account deletion')}</h2>
   <form  method="POST" id="edit-user-form" data-redir='/' action="@{url_for('do.delete_user')}" class="ajaxform pure-form pure-form-aligned">
     @{form.csrf_token()}
     <fieldset>

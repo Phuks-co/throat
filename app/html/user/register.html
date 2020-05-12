@@ -10,7 +10,7 @@
     <div class="content">
         <form method="POST" class="pure-form pure-form-aligned">
             @{ regform.csrf_token() }
-            <h1>@{_('Register')}</h1>
+            <h2>@{_('Register')}</h2>
             <fieldset>
                 @if error:
                 <div class="error" style="margin-top: 2em;">{{ error }}</div>

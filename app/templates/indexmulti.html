@@ -17,7 +17,7 @@
 
 {% block content %}
 {{ super() }}
-{% if not posts %}<h1 class="noshit">There are no posts here, yet.</h1>{% endif %}
+{% if not posts %}<h1 class="noshit">There are no posts here, yet.</h2>{% endif %}
 <div class="alldaposts">
 {% for post in posts if post.pid != func.getAnnouncement().pid %}
   {% include "indexpost.html" %}
