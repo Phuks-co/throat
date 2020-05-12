@@ -21,7 +21,7 @@
   {% endif %}
   <a href="{{url_for('user.view', user=user.name)}}" class="sbm-post pure-button">{{user.name}}</a>
   <a href="{{url_for('user.view_user_posts', user=user.name)}}" class="sbm-post pure-button">Príspevky používateľa</a>
-  <a href="{{url_for('user.view_user_comments', user=user.name)}}" class="sbm-post pure-button">Komentára používateľa</a>
+  <a href="{{url_for('user.view_user_comments', user=user.name)}}" class="sbm-post pure-button">Komentáre používateľa</a>
   {% if user.uid == session['user_id'] %}
     <a href="{{url_for('user.view_user_savedposts', user=user.name)}}" class="sbm-post pure-button">Uložené príspevky</a>
   {% endif %}
@@ -68,11 +68,11 @@
         <div class="pblock">
           <div class="statdiv">
             <abbr class="ucount" title="+{{func.getUserGivenScore(user.uid)[0]}}, -{{func.getUserGivenScore(user.uid)[1]}}">{{func.getUserGivenScore(user.uid)[2]}}</abbr>
-            <div>Rozdaných hlasov</div>
+            <div>čekov</div>
           </div>
           <div class="statdiv">
             <div class="ucount">{{user.score}}</div>
-            <div>Celkový kredit</div>
+            <div>kredit</div>
           </div>
         </div>
       </div>
