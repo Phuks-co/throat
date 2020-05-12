@@ -103,7 +103,7 @@ class CreateSubTextPost(FlaskForm):
 
 
 class CreteSubPostCaptcha(CreateSubTextPost):
-    captcha = TextField(_l('Captcha'))
+    captcha = StringField(_l('Captcha'))
     ctok = HiddenField()
 
 

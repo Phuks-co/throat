@@ -1,28 +1,34 @@
 @extends("shared/layout.html")
 @require(sub, logs, page)
 
-@def main():
-<h2>@{_('Sub log for <a href="%(url)s">/%(prefix)s/%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), prefix=config.site.sub_prefix, sub=sub.name)}</h2>
-    <table class="pure-table">
-        <thead>
+@def content():
+<div id="center-container">
+    <div class="content">
+        <h2>@{_('Sub log for <a href="%(url)s">/%(prefix)s/%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), prefix=config.site.sub_prefix, sub=sub.name)}</h2>
+        <table class="pure-table">
+            <thead>
             <tr>
                 <th>@{_('Time')}</th>
                 <th>@{_('User')}</th>
                 <th>@{_('Action')}</th>
                 <th></th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             @for log in logs:
             <tr>
-                <td><time-ago datetime="@{log.time.isoformat()}Z">@{log.time.isoformat()}</time-ago></td>
-                <td>@if log.uid:
+                <td>
+                    <time-ago datetime="@{log.time.isoformat()}Z">@{log.time.isoformat()}</time-ago>
+                </td>
+                <td>
+                    @if log.uid:
                         @if log.uid.status != 10:
                             <a href="/u/@{log.uid.name}">@{log.uid.name}</a>\
                         @else:
                             @{_('[Deleted]')}
                         @end
-                    @end</td>
+                    @end
+                </td>
                 <td>
                     @if log.action == 20:
                         @{_('Created the sub')}
@@ -58,18 +64,22 @@
                         <i>@{_('[Type %(type)i]', type=log.action)}</i> @{log.desc!!e}
                     @end
                 </td>
-                <td>@if log.link:
-                    <a href="@{log.link}">@{_('Link')}</a> \
-                @end</td>
+                <td>
+                    @if log.link:
+                        <a href="@{log.link}">@{_('Link')}</a> \
+                    @end
+                </td>
             </tr>
             @end
-        </tbody>
-    </table>
-    @if page > 1:
-    <a href="@{url_for('sub.view_sublog', sub=sub.name, page=(page-1))}" class="btn">@{_('Previous page')}</a>
-    @end
+            </tbody>
+        </table>
+        @if page > 1:
+        <a href="@{url_for('sub.view_sublog', sub=sub.name, page=(page-1))}" class="btn">@{_('Previous page')}</a>
+        @end
 
-    @if len(logs) == 50:
-    <a href="@{url_for('sub.view_sublog', sub=sub.name, page=(page+1))}" class="btn">@{_('Next page')}</a>
-    @end
+        @if len(logs) == 50:
+        <a href="@{url_for('sub.view_sublog', sub=sub.name, page=(page+1))}" class="btn">@{_('Next page')}</a>
+        @end
+    </div>
+</div>
 @end
