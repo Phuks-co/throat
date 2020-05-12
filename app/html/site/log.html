@@ -31,39 +31,39 @@
                 </td>
                 <td>
                     @if log.action == 19:
-                        Banned <a href="/u/@{log.desc!!e}">@{log.desc!!e}</a>
+                        Zabanoval(a) používateľa <a href="/u/@{log.desc!!e}">@{log.desc!!e}</a>
                     @elif log.action == 20:
-                        Created a sub
+                        Vytvoril(a) skupinu
                     @elif log.action == 30:
-                        Sub was transferred to @{log.desc}
+                        Skupina bola presunutá na @{log.desc}
                     @elif log.action == 24:
-                        Sent mod invite to <a href="/u/@{log.target.name}">@{log.target.name}</a>
+                        Pozval(a) moderovať používateľa <a href="/u/@{log.target.name}">@{log.target.name}</a>
                     @elif log.action == 26:
-                        Removed <a href="/u/@{log.target.name}">@{log.target.name}</a> from the mod team
+                        Odstránil(a) používateľa<a href="/u/@{log.target.name}">@{log.target.name}</a> from the mod team
                     @elif log.action == 27:
-                        Revoked mod invite for <a href="/u/@{log.target.name}">@{log.target.name}</a>
+                        Stiahol(la) pozvanie moderovať pre <a href="/u/@{log.target.name}">@{log.target.name}</a>
                     @elif log.action == 52:
-                        Deleted a post with reason <code>@{log.desc!!e}</code>
+                        Vymazal(a) príspevok z dôvodu <code>@{log.desc!!e}</code>
                     @elif log.action == 53:
-                        Deleted a comment with reason <code>@{log.desc!!e}</code>
+                        Vymazal(a) komentár z dôvodu <code>@{log.desc!!e}</code>
                     @elif log.action == 40:
-                        Created a sub
+                        Vytvoril(a) skupinu
                     @elif log.action == 41:
-                        Created an announcement
+                        Vytvoril(a) oznam
                     @elif log.action == 42:
-                        Banned domain <code>@{log.desc!!e}</code>
+                        Zabanoval(a) doménu <code>@{log.desc!!e}</code>
                     @elif log.action == 43:
-                        Unbanned domain <code>@{log.desc!!e}</code>
+                        Odbanoval(a) doménu <code>@{log.desc!!e}</code>
                     @elif log.action == 44:
-                        Removed an announcement
+                        Odstránil(a) oznam
                     @elif log.action == 45:
-                        Disabled post creation
+                        Zakázal(a) prispievanie
                     @elif log.action == 46:
-                        Re-enabled post creation
+                        Povolil(a) prispievanie
                     @elif log.action == 47:
-                        Disabled registration without invite code
+                        Zakázal(a) registrácie bez pozvánok
                     @elif log.action == 48:
-                        Re-enabled registration
+                        Povolil(a) registrácie bez pozvánok
                     @else:
                         <i>[Type @{log.action!!s}]</i> @{log.desc}
                     @end

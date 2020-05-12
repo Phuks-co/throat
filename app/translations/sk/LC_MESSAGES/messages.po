@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-09 20:27-0300\n"
-"PO-Revision-Date: 2020-05-12 19:43+0200\n"
+"PO-Revision-Date: 2020-05-12 20:52+0200\n"
 "Language: sk\n"
 "Language-Team: sk <info@cekni.to>\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
@@ -1334,7 +1334,7 @@ msgstr "Email"
 
 #: app/html/user/password_recovery.html:27
 msgid "mail sent!"
-msgstr "Email odoslaný!"
+msgstr "Email odoslaný"
 
 #: app/html/user/password_recovery.html:27 app/html/user/password_reset.html:24
 msgid "Processing..."

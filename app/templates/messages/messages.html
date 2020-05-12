@@ -26,7 +26,7 @@
               {% if message.username %}
               <a href="{{url_for('user.view', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
               {%else%}
-              <a href="#" class="btn small">Phuks</a>
+              <a href="#" class="btn small">čekni.to</a>
               {%endif%}
               {% if message.read %}
                 <a class="read">read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>

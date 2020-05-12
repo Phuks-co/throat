@@ -20,16 +20,16 @@
     <hr>
   {% endif %}
   <a href="{{url_for('user.view', user=user.name)}}" class="sbm-post pure-button">{{user.name}}</a>
-  <a href="{{url_for('user.view_user_posts', user=user.name)}}" class="sbm-post pure-button">View posts</a>
-  <a href="{{url_for('user.view_user_comments', user=user.name)}}" class="sbm-post pure-button">View comments</a>
+  <a href="{{url_for('user.view_user_posts', user=user.name)}}" class="sbm-post pure-button">Príspevky používateľa</a>
+  <a href="{{url_for('user.view_user_comments', user=user.name)}}" class="sbm-post pure-button">Komentára používateľa</a>
   {% if user.uid == session['user_id'] %}
-    <a href="{{url_for('user.view_user_savedposts', user=user.name)}}" class="sbm-post pure-button">View saved posts</a>
+    <a href="{{url_for('user.view_user_savedposts', user=user.name)}}" class="sbm-post pure-button">Uložené príspevky</a>
   {% endif %}
   {% if current_user.is_authenticated %}
   <hr>
   <div class="pmessage">
     <a href="#msg-form" data-replyto='{{user.name}}' data-replytitle='' class="formpopmsg sbm-post pure-button">
-      Send a message to user</a>
+      Poslať správu</a>
   </div>
   {% endif %}
 {% endif %}
@@ -58,21 +58,21 @@
         <div class="pblock">
           <div class="statdiv">
             <div class="ucount"><a href="{{url_for('user.view_user_posts', user=user.name)}}">{{pcount}}</a></div>
-            <div>posts</div>
+            <div>príspevkov</div>
           </div>
           <div class="statdiv">
             <div class="ucount"><a href="{{url_for('user.view_user_comments', user=user.name)}}">{{ccount}}</a></div>
-            <div>comments</div>
+            <div>komentárov</div>
           </div>
         </div>
         <div class="pblock">
           <div class="statdiv">
             <abbr class="ucount" title="+{{func.getUserGivenScore(user.uid)[0]}}, -{{func.getUserGivenScore(user.uid)[1]}}">{{func.getUserGivenScore(user.uid)[2]}}</abbr>
-            <div>Phuks given</div>
+            <div>Rozdaných hlasov</div>
           </div>
           <div class="statdiv">
             <div class="ucount">{{user.score}}</div>
-            <div>Total score</div>
+            <div>Celkový kredit</div>
           </div>
         </div>
       </div>
