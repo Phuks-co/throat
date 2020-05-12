@@ -1,12 +1,12 @@
 site:
-  name: 'Throat'
+  name: 'čekni.to'
   # Lema shown in the page's title
-  lema: 'Throat: Open discussion ;D'
+  lema: 'čekni.to: homepage tvojho internetu'
   # Copyright line shown in the footer
-  copyright: 'Umbrella Corp'
+  copyright: 'LenOn Productions'
 
   # Name shown when a sub is owned by a deleted account or abandoned
-  placeholder_account: 'Site'
+  placeholder_account: '[checkedout]'
 
   # Prefix for subs (by default it's 's').
   # It can be anything EXCEPT 'u', 'c' or 'p'
@@ -46,6 +46,7 @@ app:
   languages:
     - en
     - es
+    - sk
 
   # Fallback language when there is no accept-language header sent by the browser
   fallback_language: 'en'
@@ -65,30 +66,30 @@ sendgrid:
   # SendGrid API key
   api_key: '...'
   # Sender address
-  default_from: 'noreply@example.com'
+  default_from: 'noreply@cekni.to'
 
 storage:
   thumbnails:
     # Path where thumbnails will be stored (app MUST have write access)
-    path: './thumbs'
-    # URL or relative path where thumbnails are served (must end with forward slash)
-    url: 'https://thumbs.example.com/'
+    path: './app/static/thumbs'
+    # URL or relative path where thumbnails are served (must end with forward slash). If hosting on the same domain, URL should also have 'static' in it, e.g.  'http://192.168.0.82/static/thumbs/'
+    url: 'https://uploads.itworks.sk/thumbs/'
   
   uploads:
     # Same rules as thumbnails
-    path: './stor'
-    url: 'https://usercontent.example.com/'
+    path: './app/static/ups'
+    url: 'https://uploads.itworks.sk/ups/'
 
 database:
   # Database engine. Possible values:
   # - MySQLDatabase
   # - PostgresqlDatabase
   # - SqliteDatabase (untested)
-  engine: 'PICK ONE'
+  engine: 'PostgresqlDatabase'
   
   # Parameters for both MySQL and postgres
-  #host: 'localhost'
-  #port: 3306
+  host: 'localhost'
+  port: 5432
   #user: 'polsaker'
   #password: 'throat'
   # Database name
@@ -98,7 +99,7 @@ database:
   #database: '/path/to/sqlite.db'
   
   # Uncomment if using Postgres:
-  #autocommit: True
+  autocommit: True
 
   # Uncomment if using MySQL
   #charset: 'utf8mb4'
