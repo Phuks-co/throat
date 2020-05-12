@@ -240,10 +240,10 @@ u.addEventForChild(document, 'click', '.comment-source', function (e, qelem) {
     }
     const oc = elem.innerHTML;
     const back = document.createElement("s");
-    back.innerHTML = "source";
+    back.innerHTML = _("source");
     back.onclick = function () {
         elem.innerHTML = oc;
-        this.parentNode.innerHTML = 'source';
+        this.parentNode.innerHTML = _('source');
     };
     const h = elem.clientHeight + 28;
     elem.innerHTML = '<div class="cwrap"><textarea style="height: ' + h + 'px">' + document.getElementById('sauce-' + cid).innerHTML + '</textarea></div>';
@@ -264,10 +264,10 @@ u.addEventForChild(document, 'click', '.edit-comment', function (e, qelem) {
 
     const oc = elem.innerHTML;
     const back = document.createElement("s");
-    back.innerHTML = "edit";
+    back.innerHTML = _("edit");
     back.onclick = function () {
         elem.innerHTML = oc;
-        this.parentNode.innerHTML = 'edit';
+        this.parentNode.innerHTML = _('edit');
     };
     const h = elem.clientHeight + 28;
     elem.innerHTML = '<div class="cwrap markdown-editor" id="ecomm-' + cid + '"><textarea style="height: ' + h + 'px">' +
@@ -294,7 +294,7 @@ u.addEventForChild(document, 'click', '.btn-editpost', function (e, qelem) {
                 qelem.parentNode.querySelector('.error').innerHTML = _('There was an error while editing: %1', data.error);
                 qelem.removeAttribute('disabled');
             } else {
-                qelem.innerHTML = 'Saved.';
+                qelem.innerHTML = _('Saved.');
                 document.location.reload();
             }
         }, function () {
@@ -315,7 +315,7 @@ u.addEventForChild(document, 'click', '.btn-editcomment', function (e, qelem) {
                 qelem.parentNode.querySelector('.error').innerHTML = _('There was an error while editing: %1', data.error);
                 qelem.removeAttribute('disabled');
             } else {
-                qelem.innerHTML = 'Saved.';
+                qelem.innerHTML = _('Saved.');
                 document.location.reload();
             }
         }, function () {
@@ -337,7 +337,7 @@ u.addEventForChild(document, 'click', '.btn-preview', function (e, qelem) {
         return;
     }
     qelem.setAttribute('disabled', true);
-    qelem.innerHTML = 'Loading...';
+    qelem.innerHTML = _('Loading...');
     u.post('/do/preview', {text: content},
         function (data) {
             if (data.status == "ok") {
@@ -364,7 +364,7 @@ u.addEventForChild(document, 'click', '.delete-comment', function (e, qelem) {
     TextConfirm(qelem, function () {
         let reason = '';
         if (qelem.getAttribute('selfdel') != "true") {
-            reason = prompt('Why are you deleting this?');
+            reason = prompt(_('Why are you deleting this?'));
             if (!reason) {
                 return false;
             }
@@ -389,7 +389,7 @@ u.sub('#graburl', 'click', function (e) {
         return;
     }
     this.setAttribute('disabled', true);
-    this.innerHTML = 'Grabbing...';
+    this.innerHTML = _('Grabbing...');
     u.post('/do/grabtitle', {u: uri},
         function (data) {
             if (data.status == 'error') {
@@ -640,7 +640,7 @@ u.addEventForChild(document, 'click', '#submit_report', function (e, qelem) {
         function (data) {
             if (data.status != "ok") {
                 errorbox.style.display = 'block';
-                errorbox.innerHTML = 'Error: ' + data.error;
+                errorbox.innerHTML = _('Error: %s', data.error);
                 qelem.removeAttribute('disabled');
             } else {
                 qelem.parentNode.parentNode.parentNode.innerHTML = _('Your report has been sent and will be reviewed by the site administrators.');
