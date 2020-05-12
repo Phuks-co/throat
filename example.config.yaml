@@ -44,7 +44,7 @@ app:
   # Available languages for users to select. This will also be used when trying to guess
   # the user's language.
   languages:
-  # - en
+    - en
     - sk
 
   # Fallback language when there is no accept-language header sent by the browser
