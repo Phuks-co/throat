@@ -10,7 +10,7 @@
     <div class="content">
         <form method="POST" class="pure-form pure-form-aligned">
             @{ regform.csrf_token() }
-            <h2>@{_('Register')}</h2>
+    <!--    <h2>@{_('Register')}</h2>   -->
             <fieldset>
                 @if error:
                 <div class="error" style="margin-top: 2em;">{{ error }}</div>
@@ -59,7 +59,7 @@
                 </div>
                 <div class="pure-controls">
                     <label for="accept_tos" class="pure-checkbox">
-                        @{ regform.accept_tos(required=True) } @{_('I accept the Terms of Use</a>')}
+                        @{ regform.accept_tos(required=True) } @{_('I accept the TOS')}
                     </label>
                     <button type="submit" class="pure-button pure-button-primary">@{_('Register')}</button>
                 </div>
