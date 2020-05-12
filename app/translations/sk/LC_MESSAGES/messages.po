@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-09 20:27-0300\n"
-"PO-Revision-Date: 2020-05-12 20:52+0200\n"
+"PO-Revision-Date: 2020-05-12 22:29+0200\n"
 "Language: sk\n"
 "Language-Team: sk <info@cekni.to>\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
@@ -164,7 +164,7 @@ msgstr "Neznáma chyba. Používateľ sa stratil"
 
 #: app/misc.py:1544
 msgid "Score balance is negative"
-msgstr "Negatívne skóre"
+msgstr "Negatívny kredit"
 
 #: app/misc.py:1546
 msgid "Invalid vote value"
@@ -663,7 +663,7 @@ msgstr "Registrácia"
 
 #: app/html/shared/layout.html:107
 msgid "Score"
-msgstr "Skóre"
+msgstr "Kredit"
 
 #: app/html/shared/layout.html:125
 msgid "Log out"
