@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-09 20:27-0300\n"
-"PO-Revision-Date: 2020-05-12 12:03+0200\n"
+"PO-Revision-Date: 2020-05-12 13:38+0200\n"
 "Language: sk\n"
 "Language-Team: sk <info@cekni.to>\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
@@ -101,7 +101,7 @@ msgstr "Mined a lot of Phuks"
 
 #: app/badges.py:13
 msgid "Top post of the day"
-msgstr "Top post of the day"
+msgstr "Skupina dňa"
 
 #: app/badges.py:14
 msgid "Make a good post every day for a week"
@@ -497,7 +497,7 @@ msgstr "Teraz"
 
 #: app/html/index.html:9 app/html/index.html:13 app/html/sub.html:22
 msgid "Top"
-msgstr "Top"
+msgstr "Naj"
 
 #: app/html/index.html:10 app/html/index.html:14 app/html/sub.html:23
 msgid "New"
@@ -741,7 +741,7 @@ msgstr "Zobraziť obsah príspevku"
 #: app/html/shared/post.html:71
 #, python-format
 msgid "posted %(timeago)s by %(user)s on %(sub)s"
-msgstr "%(timeago)s pridal(a) %(user)s v skupine %(sub)s"
+msgstr "%(timeago)s pridal(a) %(user)s v skupine /s/%(sub)s"
 
 #: app/html/shared/post.html:73
 #, python-format

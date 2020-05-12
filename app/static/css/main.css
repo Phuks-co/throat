@@ -998,6 +998,7 @@ span.hasmail {
 .dropdown-toggle.moremenu{
   color: white;
   text-align: center;
+  font-size: smaller;
   cursor: pointer;
 }
 

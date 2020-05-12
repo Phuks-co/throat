@@ -44,12 +44,11 @@ app:
   # Available languages for users to select. This will also be used when trying to guess
   # the user's language.
   languages:
-    - en
-    - es
+  # - en
     - sk
 
   # Fallback language when there is no accept-language header sent by the browser
-  fallback_language: 'en'
+  fallback_language: 'sk'
 
 
 cache:
