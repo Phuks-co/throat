@@ -17,7 +17,7 @@
           </div>
           <div class="pure-control-group">
             <label for="password">@{_('Password')}</label>
-            @{loginform.password(placeholder=loginform.password.label.text, required=True)}
+            @{loginform.password(placeholder=loginform.password.label.text, required=True, title=_('Password')}
           </div>
           <div class="pure-control-group">
           <a href="/recover">@{_('Forgot your password?')}</a>

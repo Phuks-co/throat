@@ -3,7 +3,7 @@ site:
   # Lema shown in the page's title
   lema: 'čekni.to: homepage tvojho internetu'
   # Copyright line shown in the footer
-  copyright: 'LenOn Productions'
+  copyright: '2020 LenOn Productions'
 
   # Name shown when a sub is owned by a deleted account or abandoned
   placeholder_account: '[checkedout]'

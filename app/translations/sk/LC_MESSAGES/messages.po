@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-09 20:27-0300\n"
-"PO-Revision-Date: 2020-05-12 17:22+0200\n"
+"PO-Revision-Date: 2020-05-12 17:27+0200\n"
 "Language: sk\n"
 "Language-Team: sk <info@cekni.to>\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
@@ -228,7 +228,7 @@ msgstr "Prezývka odznaku"
 #: app/html/errors/403.html:20 app/html/user/login.html:15
 #: app/static/js/main.js:52 app/static/js/main.js:53
 msgid "Username"
-msgstr "Používateľské meno"
+msgstr "Meno"
 
 #: app/forms/admin.py:34
 msgid "Enter Domain"
