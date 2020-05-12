@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-09 20:27-0300\n"
-"PO-Revision-Date: 2020-05-12 17:27+0200\n"
+"PO-Revision-Date: 2020-05-12 18:28+0200\n"
 "Language: sk\n"
 "Language-Team: sk <info@cekni.to>\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
@@ -530,7 +530,7 @@ msgstr "Canary"
 #: app/html/index.html:29 app/html/shared/layout.html:157
 #: app/html/shared/sidebar/home.html:52
 msgid "Donate"
-msgstr "Pomôžte nám"
+msgstr "Podpor nás"
 
 #: app/html/index.html:31
 #, python-format

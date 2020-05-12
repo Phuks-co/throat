@@ -9,7 +9,7 @@
 <div id="center-container">
   <div class="content">
       <form method="POST" class="pure-form pure-form-aligned">
-        <h2>@{_('Login')}</h2> @{ loginform.csrf_token() }
+<!--    <h2>@{_('Login')}</h2> --> @{ loginform.csrf_token() }
         <fieldset>
           <div class="pure-control-group">
             <label for="username">@{_('Username')}</label>
@@ -17,9 +17,9 @@
           </div>
           <div class="pure-control-group">
             <label for="password">@{_('Password')}</label>
-            @{loginform.password(placeholder=loginform.password.label.text, required=True, title=_('Password')}
+            @{loginform.password(placeholder=loginform.password.label.text, required=True, title=_('Password'))}
           </div>
-          <div class="pure-control-group">
+          <div class="pure-controls">
           <a href="/recover">@{_('Forgot your password?')}</a>
           </div>
           <div class="pure-controls">

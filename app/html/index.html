@@ -24,9 +24,8 @@
   <a href="@{url_for('wiki.tos')}">@{_('ToS')}</a> |
   <a href="@{url_for('wiki.privacy')}">@{_('Privacy')}</a> |
   <a href="@{url_for('sub.view_sub', sub='changelog')}">@{_('Changelog')}</a> |
-  <a href="@{url_for('wiki.view_api')}">@{_('API')}</a> |
-  <a href="@{url_for('wiki.canary')}">@{_('Canary')}</a> |
-  <a href="@{url_for('wiki.donate')}">@{_('Donate')}</a>
+  <a href="@{url_for('wiki.donate')}">@{_('Donate')}</a> |
+  <a href="https://discord.gg/WVbVeT">Discord</a>
   <br>
   @{_('Served by %(host)s', host=hostname)} \
   @if config.app.debug or current_user.admin:
