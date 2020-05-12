@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Throat 1.0\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-05-11 20:49-0300\n"
+"POT-Creation-Date: 2020-05-12 17:19-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1082,7 +1082,8 @@ msgid "flair"
 msgstr ""
 
 #: app/html/sub/post.html:96 app/html/sub/postcomments.html:62
-#: app/static/js/Post.js:201 app/static/js/Post.js:204
+#: app/static/js/Post.js:211 app/static/js/Post.js:214
+#: app/static/js/Post.js:267 app/static/js/Post.js:270
 msgid "edit"
 msgstr ""
 
@@ -1147,14 +1148,14 @@ msgstr ""
 msgid "Submit comment"
 msgstr ""
 
-#: app/html/sub/post.html:185 app/static/js/Post.js:213
-#: app/static/js/Post.js:266 app/static/js/Post.js:339
-#: app/static/js/Post.js:479
+#: app/html/sub/post.html:185 app/static/js/Post.js:223
+#: app/static/js/Post.js:276 app/static/js/Post.js:352
+#: app/static/js/Post.js:497
 msgid "Preview"
 msgstr ""
 
-#: app/html/sub/post.html:187 app/static/js/Post.js:214
-#: app/static/js/Post.js:267
+#: app/html/sub/post.html:187 app/static/js/Post.js:224
+#: app/static/js/Post.js:277
 msgid "Comment preview"
 msgstr ""
 
@@ -1187,13 +1188,14 @@ msgstr ""
 msgid "permalink"
 msgstr ""
 
-#: app/html/sub/postcomments.html:59 app/static/js/Post.js:454
-#: app/static/js/Post.js:458
+#: app/html/sub/postcomments.html:59 app/static/js/Post.js:473
+#: app/static/js/Post.js:476
 msgid "reply"
 msgstr ""
 
-#: app/html/sub/postcomments.html:70 app/static/js/Post.js:180
-#: app/static/js/Post.js:183
+#: app/html/sub/postcomments.html:70 app/static/js/Post.js:190
+#: app/static/js/Post.js:193 app/static/js/Post.js:243
+#: app/static/js/Post.js:246
 msgid "source"
 msgstr ""
 
@@ -1434,7 +1436,7 @@ msgstr ""
 msgid "read"
 msgstr ""
 
-#: app/static/js/Messages.js:37 app/static/js/Post.js:12
+#: app/static/js/Messages.js:37 app/static/js/Post.js:13
 msgid "saved"
 msgstr ""
 
@@ -1446,10 +1448,10 @@ msgstr ""
 msgid "Voting..."
 msgstr ""
 
-#: app/static/js/Poll.js:71 app/static/js/Poll.js:123 app/static/js/Post.js:113
-#: app/static/js/Post.js:128 app/static/js/Post.js:144
-#: app/static/js/Post.js:159 app/static/js/Post.js:335
-#: app/static/js/Post.js:360
+#: app/static/js/Poll.js:71 app/static/js/Poll.js:123 app/static/js/Post.js:123
+#: app/static/js/Post.js:138 app/static/js/Post.js:154
+#: app/static/js/Post.js:169 app/static/js/Post.js:348
+#: app/static/js/Post.js:375
 msgid "Error: %1"
 msgstr ""
 
@@ -1457,116 +1459,128 @@ msgstr ""
 msgid "Working..."
 msgstr ""
 
-#: app/static/js/Post.js:17 app/static/js/Post.js:32
+#: app/static/js/Post.js:20 app/static/js/Post.js:38
 msgid "removed"
 msgstr ""
 
-#: app/static/js/Post.js:24
+#: app/static/js/Post.js:28 app/static/js/Post.js:367
 msgid "Why are you deleting this?"
 msgstr ""
 
-#: app/static/js/Post.js:30 app/static/js/Post.js:61 app/static/js/Post.js:77
-#: app/static/js/Post.js:92 app/static/js/Post.js:399 app/static/js/Post.js:422
+#: app/static/js/Post.js:36 app/static/js/Post.js:71 app/static/js/Post.js:87
+#: app/static/js/Post.js:102 app/static/js/Post.js:416
+#: app/static/js/Post.js:440
 msgid "Error."
 msgstr ""
 
-#: app/static/js/Post.js:43
+#: app/static/js/Post.js:49
 msgid "New title"
 msgstr ""
 
-#: app/static/js/Post.js:63 app/static/js/Post.js:79 app/static/js/Post.js:94
+#: app/static/js/Post.js:73 app/static/js/Post.js:89 app/static/js/Post.js:104
 msgid "Done"
 msgstr ""
 
-#: app/static/js/Post.js:115 app/static/js/Post.js:130
-#: app/static/js/Post.js:146 app/static/js/Post.js:161
+#: app/static/js/Post.js:125 app/static/js/Post.js:140
+#: app/static/js/Post.js:156 app/static/js/Post.js:171
 msgid "Done!"
 msgstr ""
 
-#: app/static/js/Post.js:213 app/static/js/Post.js:265
+#: app/static/js/Post.js:223 app/static/js/Post.js:275
 msgid "Save changes"
 msgstr ""
 
-#: app/static/js/Post.js:284 app/static/js/Post.js:305
-#: app/static/js/Post.js:503
+#: app/static/js/Post.js:294 app/static/js/Post.js:315
+#: app/static/js/Post.js:521
 msgid "There was an error while editing: %1"
 msgstr ""
 
-#: app/static/js/Post.js:292 app/static/js/Post.js:313
-#: app/static/js/Post.js:342 app/static/js/Post.js:540
-#: app/static/js/Post.js:642
-msgid "Could not contact the server"
-msgstr ""
-
-#: app/static/js/Post.js:362
-msgid "comment removed"
-msgstr ""
-
-#: app/static/js/Post.js:379
-msgid "Error fetching title"
-msgstr ""
-
-#: app/static/js/Post.js:381
-msgid "Grab title"
-msgstr ""
-
-#: app/static/js/Post.js:385
-msgid "Grab again"
-msgstr ""
-
-#: app/static/js/Post.js:392 app/static/js/Post.js:404
-msgid "Loading..."
-msgstr ""
-
-#: app/static/js/Post.js:478
-msgid "Post comment"
-msgstr ""
-
-#: app/static/js/Post.js:506
+#: app/static/js/Post.js:297 app/static/js/Post.js:318
+#: app/static/js/Post.js:524
 msgid "Saved."
 msgstr ""
 
-#: app/static/js/Post.js:512
+#: app/static/js/Post.js:302 app/static/js/Post.js:323
+#: app/static/js/Post.js:355 app/static/js/Post.js:558
+#: app/static/js/Post.js:650
+msgid "Could not contact the server"
+msgstr ""
+
+#: app/static/js/Post.js:340 app/static/js/Post.js:409
+#: app/static/js/Post.js:422
+msgid "Loading..."
+msgstr ""
+
+#: app/static/js/Post.js:377
+msgid "comment removed"
+msgstr ""
+
+#: app/static/js/Post.js:392
+msgid "Grabbing..."
+msgstr ""
+
+#: app/static/js/Post.js:396
+msgid "Error fetching title"
+msgstr ""
+
+#: app/static/js/Post.js:398
+msgid "Grab title"
+msgstr ""
+
+#: app/static/js/Post.js:402
+msgid "Grab again"
+msgstr ""
+
+#: app/static/js/Post.js:496
+msgid "Post comment"
+msgstr ""
+
+#: app/static/js/Post.js:530
 msgid "1 comments"
 msgstr ""
 
-#: app/static/js/Post.js:519
+#: app/static/js/Post.js:537
 msgid "%1 comments"
 msgstr ""
 
-#: app/static/js/Post.js:545
+#: app/static/js/Post.js:563
 msgid "Report post"
 msgstr ""
 
-#: app/static/js/Post.js:546
+#: app/static/js/Post.js:564
 msgid "This report will be forwarded to the site administration"
 msgstr ""
 
-#: app/static/js/Post.js:549
+#: app/static/js/Post.js:567
 msgid "Select a reason to report this post:"
 msgstr ""
 
-#: app/static/js/Post.js:552
+#: app/static/js/Post.js:570
 msgid "SPAM"
 msgstr ""
 
-#: app/static/js/Post.js:553
+#: app/static/js/Post.js:571
 msgid "TOS violation"
 msgstr ""
 
-#: app/static/js/Post.js:554
+#: app/static/js/Post.js:572
 msgid "Other"
 msgstr ""
 
-#: app/static/js/Post.js:558
+#: app/static/js/Post.js:576
 msgid "Explain why you're reporting this post:"
 msgstr ""
 
-#: app/static/js/Post.js:563
+#: app/static/js/Post.js:581
 msgid "Submit"
 msgstr ""
 
-#: app/static/js/Post.js:638
+#: app/static/js/Post.js:643
+#, python-format
+msgid "Error: %s"
+msgstr ""
+
+#: app/static/js/Post.js:646
 msgid "Your report has been sent and will be reviewed by the site administrators."
 msgstr ""
 
