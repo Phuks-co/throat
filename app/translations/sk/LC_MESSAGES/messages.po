@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-09 20:27-0300\n"
-"PO-Revision-Date: 2020-05-12 16:01+0200\n"
+"PO-Revision-Date: 2020-05-12 16:06+0200\n"
 "Language: sk\n"
 "Language-Team: sk <info@cekni.to>\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
@@ -421,7 +421,7 @@ msgstr "Kód z pozvánky"
 
 #: app/forms/user.py:77
 msgid "I accept the TOS"
-msgstr "Súhlasím s <a href=\"/tos\">podmienkami používania</a>"
+msgstr "Súhlasím s <a href=\"/tos\" target=\"_blank\">podmienkami používania</a>"
 
 #: app/forms/user.py:80
 msgid "Security question"
