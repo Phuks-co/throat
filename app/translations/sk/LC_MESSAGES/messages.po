@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-09 20:27-0300\n"
-"PO-Revision-Date: 2020-05-12 18:28+0200\n"
+"PO-Revision-Date: 2020-05-12 18:46+0200\n"
 "Language: sk\n"
 "Language-Team: sk <info@cekni.to>\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
@@ -365,7 +365,7 @@ msgstr "Hlasovanie končí"
 #: app/forms/sub.py:106 app/forms/user.py:78 app/forms/user.py:138
 #: app/html/user/password_recovery.html:23
 msgid "Captcha"
-msgstr "Captcha (zadaj hocičo)"
+msgstr "Captcha (whatever)"
 
 #: app/forms/sub.py:140
 msgid "Write your comment here. Styling with Markdown format is supported."
@@ -530,7 +530,7 @@ msgstr "Canary"
 #: app/html/index.html:29 app/html/shared/layout.html:157
 #: app/html/shared/sidebar/home.html:52
 msgid "Donate"
-msgstr "Podpor nás"
+msgstr "Podporf nás"
 
 #: app/html/index.html:31
 #, python-format
@@ -1334,7 +1334,7 @@ msgstr "Email"
 
 #: app/html/user/password_recovery.html:27
 msgid "mail sent!"
-msgstr "email odoslaný!"
+msgstr "Email odoslaný!"
 
 #: app/html/user/password_recovery.html:27 app/html/user/password_reset.html:24
 msgid "Processing..."

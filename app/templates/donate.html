@@ -1,12 +1,13 @@
 {% extends "layout.html" %}
-{% block title %}Donate - {{config.site.lema}}{% endblock %}
+{% block title %}Prispieť - {{config.site.lema}}{% endblock %}
 
 {% block content %}
 {{ super() }}
   <div class="content">
-    <h2>Donate to Phuks</h2>
-    <p>Phuks is run and developed by volunteers. We do not have ads because we do not believe invading
-      our user's privacy should be the solution to monetisation, but we do have many ways you can contribute:</p>
+    <h1>Prispejte na projekt čekni.to</h1>
+    <p>Projekt čekni.to pre Vás vytvárajú dobrovoľníci. Na našom webe nepodporujeme žiadne reklamy, keďže sme presvedčení o tom, že
+		súkromie našich používateľov je nadradené akejkoľvek monetizácii tohto projektu.</p>
+	<p>Ak by ste nám chceli pomôcť, môžete nám poslať finančný príspevok.</p>
 
     {% if config.site.btc_address %}
       <h3>Donate Bitcoin</h3>
@@ -18,15 +19,12 @@
       {{config.site.xmr_address}}
     {% endif %}
     
-    <h3>Donate via PayPal</h3>
+    <h3>Prispieť cez PayPal</h3>
     <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-      <input type="hidden" name="cmd" value="_s-xclick">
-      <input type="hidden" name="hosted_button_id" value="USR35RXUAX5AW">
-      <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-      <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-    </form>
-    <h3>Donate something else</h3>
-    <p>Phuks is open source! You can contribute with code. <a href="https://phab.phuks.co">Here is our bug tracker</a></p>
-    <p>Anything else? Just <a href="mailto:admin@phuks.co">contact us</a>.</p>
+	<input type="hidden" name="cmd" value="_s-xclick" />
+	<input type="hidden" name="hosted_button_id" value="FEH4XC38ZJ9ME" />
+	<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+	<img alt="" border="0" src="https://www.paypal.com/en_SK/i/scr/pixel.gif" width="1" height="1" />
+	</form>
   </div>
 {% endblock %}

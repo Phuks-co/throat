@@ -9,7 +9,7 @@
 <div id="center-container">
   <div class="content">
       <form method="POST" class="pure-form pure-form-aligned">
-<!--    <h2>@{_('Login')}</h2> --> @{ loginform.csrf_token() }
+        <h3>@{_('Login')}</h3> @{ loginform.csrf_token() }
         <fieldset>
           <div class="pure-control-group">
             <label for="username">@{_('Username')}</label>
