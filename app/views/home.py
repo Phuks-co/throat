@@ -170,7 +170,7 @@ def view_subs(page, sort):
 
     c = c.paginate(page, 50).dicts()
     cp_uri = '/subs/' + str(page)
-    return render_template('subs.html', page=page, subs=c, nav='view_subs', sort=sort, cp_uri=cp_uri)
+    return render_template('subs.html', page=page, subs=c, nav='home.view_subs', sort=sort, cp_uri=cp_uri)
 
 
 @bp.route("/subs/search/<term>", defaults={'page': 1, 'sort': 'name_asc'})
