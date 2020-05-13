@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-12 17:19-0300\n"
-"PO-Revision-Date: 2020-05-13 22:14+0200\n"
+"PO-Revision-Date: 2020-05-13 22:22+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -1306,7 +1306,7 @@ msgstr "Heslo (opakovať)"
 #: app/html/user/settings/password.html:19
 #: app/html/user/settings/preferences.html:8
 msgid "Change password"
-msgstr "Zmeniť heslo"
+msgstr "Zmena hesla"
 
 #: app/html/user/register.html:62
 msgid "I accept the <a href=\"/tos\">Terms of Use</a>"
@@ -1332,7 +1332,7 @@ msgstr "Moje nastavenia"
 #: app/html/user/settings/password.html:9
 #: app/html/user/settings/preferences.html:9
 msgid "Delete account"
-msgstr "Vymazať účet"
+msgstr "Vymazanie účtu"
 
 #: app/html/user/settings/delete.html:12
 #: app/html/user/settings/invitecode.html:12
