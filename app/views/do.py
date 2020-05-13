@@ -1650,7 +1650,7 @@ def recovery():
         UserMetadata.create(uid=user.uid, key='recovery-key-time', value=time.time())
 
         sendMail(
-            subject='Password recovery',
+            subject='Reset hesla na cekni.to',
             to=user.email,
             content=_("""<h2><strong>%(lema)s</strong></h2>
             <p>Somebody (most likely you) has requested a password reset for

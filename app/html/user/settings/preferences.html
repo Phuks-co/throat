@@ -25,50 +25,47 @@
           class="ajaxform pure-form pure-form-aligned">
         @{edituserform.csrf_token()}
         <fieldset>
-            <div class="pure-control-group">
-                <label for="email">@{edituserform.email.label.text!!s}</label>
-                @{edituserform.email(value=current_user.user['email'], autocomplete="off")}
-            </div>
-            <div class="pure-control-group">
-                <label for="disable_sub_style"
-                       class="pure-checkbox">@{edituserform.disable_sub_style.label.text!!s}</label>
-                @{edituserform.disable_sub_style()}
-            </div>
-            <div class="pure-control-group">
-                <label for="show_nsfw" class="pure-checkbox">@{edituserform.show_nsfw.label.text!!s}</label>
+            <div>
+                <label for="show_nsfw" class="new-form-one">@{edituserform.show_nsfw.label.text!!s}</label>
                 @{edituserform.show_nsfw()}
             </div>
-            <div class="pure-control-group">
-                <label for="experimental" class="pure-checkbox">@{edituserform.experimental.label.text!!s}</label>
+            <div>
+                <label for="experimental" class="new-form-one">@{edituserform.experimental.label.text!!s}</label>
                 @{edituserform.experimental()}
             </div>
-            <div class="pure-control-group">
-                <label for="noscroll" class="pure-checkbox">@{edituserform.noscroll.label.text!!s}</label>
+            <div>
+                <label for="noscroll" class="new-form-one">@{edituserform.noscroll.label.text!!s}</label>
                 @{edituserform.noscroll()}
             </div>
-            <div class="pure-control-group">
-                <label for="nochat" class="pure-checkbox">@{edituserform.nochat.label.text!!s}</label>
+            <div>
+                <label for="nochat" class="new-form-one">@{edituserform.nochat.label.text!!s}</label>
                 @{edituserform.nochat()}
             </div>
-
-            <div class="pure-control-group">
-                <label for="nochat" class="pure-checkbox">@{edituserform.subtheme.label.text!!s}</label>
+            <div>
+                <label for="disable_sub_style" class="new-form-one">@{edituserform.disable_sub_style.label.text!!s}</label>
+                @{edituserform.disable_sub_style()}
+            </div>
+            <div>
+                <label for="nochat" class="new-form-one">@{edituserform.subtheme.label.text!!s}</label>
                 @{edituserform.subtheme(class_="sub_autocomplete")}
             </div>
-
-            <div class="pure-control-group">
-                <label for="nochat" class="pure-checkbox">@{edituserform.language.label.text!!s}</label>
+            <div>
+                <label for="nochat" class="new-form-one">@{edituserform.language.label.text!!s}</label>
                 @{edituserform.language(autocomplete="off")}
             </div>
-
+			<div>
+                <label for="email" class="new-form-one">@{edituserform.email.label.text!!s}</label>
+                @{edituserform.email(value=current_user.user['email'], autocomplete="off")}
+            </div>
 
             <div class="alert div-error"></div>
 
-            <button type="submit" class="pure-button pure-button-primary" id="edituser-btnsubmit"
+			<div>
+            <button type="submit" class="pure-button pure-button-primary new-form-one" id="edituser-btnsubmit"
                     data-prog="@{_('Editing...')}" data-success="@{_('Saved!')}">@{_('Save')}
             </button>
+			</div>
         </fieldset>
     </form>
-
 </div>
 @end

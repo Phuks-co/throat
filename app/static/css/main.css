@@ -1950,8 +1950,25 @@ a[href="#toodamncool"]{
   text-decoration: line-through;
 }
 
+/* narrower all posts and post layout */
 .new-g {
   max-width: 1400px;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* Preferences page form */
+.new-form-one {
+  width: auto;
+}
+
+label.new-form-one {
+  display: inline-block;
+  width: 15em;
+  text-align: right;
+}
+
+button.new-form-one {
+  margin-top:1em;
+  margin-left:15em;
 }

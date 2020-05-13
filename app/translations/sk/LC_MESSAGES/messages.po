@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-12 17:19-0300\n"
-"PO-Revision-Date: 2020-05-13 10:12+0200\n"
+"PO-Revision-Date: 2020-05-13 16:29+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -78,7 +78,7 @@ msgstr "Počkať! Trochu sa krotiť s tým prispievaním."
 #: app/misc.py:897
 #, python-format
 msgid "Error in the '%(field)s' field - %(error)s"
-msgstr "Error in the '%(field)s' field - %(error)s"
+msgstr "Došlo k chybe v poli '%(field)s' - %(error)s"
 
 #: app/html/shared/post.html:71 app/html/shared/post.html:73
 #: app/html/site/log.html:28 app/html/sub/log.html:28 app/html/sub/post.html:14
@@ -2052,7 +2052,7 @@ msgid ""
 msgstr ""
 "<h2><strong>%(lema)s</strong></h2>\n"
 "            <p>Niekto (zrejme ty) si vyžiadal reset tvojho hesla na našom "
-"webe\n"
+"webe.\n"
 "            </p>\n"
 "            <p>Ak chceš heslo resetovať, klikni na tento link (platný "
 "najbližších 24 hodín):</p>\n"
