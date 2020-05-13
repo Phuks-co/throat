@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-12 17:19-0300\n"
-"PO-Revision-Date: 2020-05-13 16:29+0200\n"
+"PO-Revision-Date: 2020-05-13 22:14+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -797,7 +797,7 @@ msgstr "Vytvoril(a) <a href=\"/u/%(name)s\">%(name)s</a>"
 
 #: app/html/shared/sidebar/sub.html:75
 msgid "Settings"
-msgstr "Nastavenia"
+msgstr "Nastavenia skupiny"
 
 #: app/html/shared/sidebar/sub.html:76
 msgid "Edit flairs"
@@ -805,7 +805,7 @@ msgstr "Upraviť tagy"
 
 #: app/html/shared/sidebar/sub.html:77
 msgid "Edit stylesheet"
-msgstr "Nastav vzhľad skupiny"
+msgstr "Vzhľad skupiny"
 
 #: app/html/shared/sidebar/sub.html:85
 msgid "Sub Log"
@@ -813,7 +813,7 @@ msgstr "Záznamy skupiny"
 
 #: app/html/shared/sidebar/sub.html:86
 msgid "Banned Users"
-msgstr "Zabanovaní používatelia"
+msgstr "Bany"
 
 #: app/html/site/license.html:8
 msgid ""
@@ -976,7 +976,7 @@ msgstr "%%mybackground%%"
 #: app/html/sub/log.html:7
 #, python-format
 msgid "Sub log for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
-msgstr "Záznamy skupinu <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgstr "Záznamy skupiny <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
 
 #: app/html/sub/log.html:11
 msgid "Time"
