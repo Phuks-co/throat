@@ -103,7 +103,7 @@ def search(page, term):
     term = re.sub(r'[^A-Za-z0-9.,\-_\'" ]+', '', term)
     posts = misc.getPostList(misc.postListQueryBase().where(SubPost.title ** ('%' + term + '%')),
                              'new', page).dicts()
-    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'search', 'page': page,
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home.search', 'page': page,
                                                      'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
                                                      'kw': {'term': term}})
