@@ -17,7 +17,8 @@ pillow
 pytest
 sendgrid
 bs4
-eventlet
+gevent
+gevent-websocket
 wheezy.template
 wheezy.html
 python-magic
