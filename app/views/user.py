@@ -69,7 +69,7 @@ def view_user_posts(user, page):
     else:
         posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(User.uid == user.uid),
                                  'new', page).dicts()
-    return render_template('userposts.html', page=page, sort_type='view_user_posts',
+    return render_template('userposts.html', page=page, sort_type='user.view_user_posts',
                            posts=posts, user=user)
 
 
@@ -84,7 +84,7 @@ def view_user_savedposts(user, page):
                 UserSaved.uid == current_user.uid),
             'new', page).dicts()
         return render_template('userposts.html', page=page,
-                               sort_type='view_user_savedposts',
+                               sort_type='user.view_user_savedposts',
                                posts=posts, user=current_user)
     else:
         abort(403)

@@ -67,4 +67,4 @@ def view_multisub_new(sublist, page=1):
                              'new', page).dicts()
     return render_template('indexmulti.html', page=page,
                            posts=posts, subs=subs, sublist=sublist,
-                           sort_type='view_multisub_new', kw={'subs': sublist})
+                           sort_type='site.view_multisub_new', kw={'subs': sublist})
