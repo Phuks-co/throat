@@ -201,4 +201,4 @@ def subs_search(page, term, sort):
         return redirect(url_for('home.view_subs', page=page, sort='name_asc'))
     c = c.paginate(page, 50).dicts()
     cp_uri = '/subs/search/' + term + '/' + str(page)
-    return render_template('subs.html', page=page, subs=c, nav='subs_search', term=term, sort=sort, cp_uri=cp_uri)
+    return render_template('subs.html', page=page, subs=c, nav='home.subs_search', term=term, sort=sort, cp_uri=cp_uri)
