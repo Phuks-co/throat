@@ -1035,7 +1035,7 @@ def clear_metadata(path: str):
     exif.open_path(path)
     exif.clear_exif()
     exif.clear_xmp()
-    exif.save_file()
+    exif.save_file(path)
 
 
 def upload_file(max_size=16580608):
