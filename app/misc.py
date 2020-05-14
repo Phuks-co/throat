@@ -1031,7 +1031,8 @@ def getUserBadges(uid):
 
 
 def clear_metadata(path: str):
-    exif = GExiv2.Metadata(path)
+    exif = GExiv2.Metadata()
+    exif.open_path(path)
     exif.clear_exif()
     exif.clear_xmp()
     exif.save_file()
