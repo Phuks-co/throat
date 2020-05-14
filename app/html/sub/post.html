@@ -79,10 +79,11 @@
           @end
         @end
         @if current_user.is_authenticated and post['deleted'] == 0:
+        <!--
           @if post['content']:
             <li><a class="post-source">source</a></li>
-          @end
-
+          @end  
+          -->
           @if is_saved:
             <li><a class="removesavedpost" data-pid="@{post['pid']!!s}">@{_('unsave')}</a></li>
           @else:

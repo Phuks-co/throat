@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-12 17:19-0300\n"
-"PO-Revision-Date: 2020-05-13 22:22+0200\n"
+"PO-Revision-Date: 2020-05-14 11:37+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -177,7 +177,7 @@ msgstr "Zadaj doménu"
 
 #: app/forms/admin.py:39
 msgid "Enable invite code to register"
-msgstr "Povoliť registrácie cez pozvánky"
+msgstr "Zapnúť registrácie cez pozvánky"
 
 #: app/forms/admin.py:40
 msgid "Minimum level to create invite codes"
@@ -549,7 +549,7 @@ msgstr "Error 404 - Not found"
 
 #: app/html/errors/404.html:12
 msgid "The resource you were looking for does not exist."
-msgstr "Hľadaný zdroj neexsituje."
+msgstr "Hľadaná stránka neexistuje."
 
 #: app/html/errors/418.html:4 app/html/errors/418.html:10
 msgid "Error 418 - I'm a teapot"
@@ -706,7 +706,7 @@ msgstr "komentáre (%(comments)i)"
 
 #: app/html/shared/post.html:88
 msgid "comment"
-msgstr "komentár"
+msgstr "komentuj"
 
 #: app/html/shared/post.html:92
 msgid "block sub"
@@ -1188,7 +1188,7 @@ msgstr "Zatiaľ bez komentára..."
 #: app/html/sub/post.html:198
 #, python-format
 msgid "%(comments)i comments"
-msgstr "komentárov %(comments)i"
+msgstr "komentáre %(comments)i"
 
 #: app/html/sub/postcomments.html:26
 msgid "[OP]"
@@ -1215,7 +1215,7 @@ msgstr "permalink"
 #: app/html/sub/postcomments.html:59 app/static/js/Post.js:473
 #: app/static/js/Post.js:476
 msgid "reply"
-msgstr "reaguj"
+msgstr "reagovať"
 
 #: app/html/sub/postcomments.html:70 app/static/js/Post.js:190
 #: app/static/js/Post.js:193 app/static/js/Post.js:243
