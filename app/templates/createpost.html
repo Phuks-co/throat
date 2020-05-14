@@ -16,7 +16,7 @@
         {% set subs = func.get_all_subs()%}
         <input type="hidden" id="ptypeval" name="ptype" value="{{txtpostform.ptype.data}}">
         {{txtpostform.csrf_token}}
-        <h2>Tvoj príspevok <!-- <span id="ptype">{{txtpostform.ptype.data}}</span> --></h2>
+        <h2>Pridaj <span id="ptype">{{txtpostform.ptype.data}}</span></h2>
         <input type="submit" style="display:none" />
         <fieldset>
           <div class="pure-control-group">
