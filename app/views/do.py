@@ -199,58 +199,6 @@ def delete_post():
     return jsonify(status='ok', error=get_errors(form))
 
 
-@do.route("/do/create_sub", methods=['POST'])
-@login_required
-def create_sub():
-    """ Sub creation endpoint """
-    form = CreateSubForm()
-    if form.validate():
-        if not allowedNames.match(form.subname.data):
-            return jsonify(status='error', error=[_('Sub name has invalid characters')])
-
-        if len(form.subname.data) < 2:
-            return jsonify(status='error', error=[_('Sub name too short')])
-
-        if len(form.subname.data) > 32:
-            return jsonify(status='error', error=[_('Sub name too long')])
-
-        if form.subname.data.lower() in ('all', 'new', 'hot', 'top', 'admin', 'home'):
-            return jsonify(status='error', error=[_('Invalid sub name')])
-
-        try:
-            Sub.get(fn.Lower(Sub.name) == form.subname.data.lower())
-            return jsonify(status='error', error=[_('Sub is already registered')])
-        except Sub.DoesNotExist:
-            pass
-
-        level = misc.get_user_level(current_user.uid)[0]
-        if not config.app.testing:
-            if (level <= 1) and (not current_user.admin):
-                return jsonify(status='error', error=[_('You must be at least level 2.')])
-
-            owned = SubMod.select().where(SubMod.uid == current_user.uid).where((SubMod.power_level == 0) & (SubMod.invite == False)).count()
-
-            if owned >= 20 and (not current_user.admin):
-                return jsonify(status='error', error=[_('You cannot own more than 20 subs.')])
-
-            if owned >= (level - 1) and (not current_user.admin):
-                return jsonify(status='error', error=[_('You cannot own more than %i subs. Try leveling up your account', level - 1)])
-
-        sub = Sub.create(sid=uuid.uuid4(), name=form.subname.data, title=form.title.data)
-        SubMetadata.create(sid=sub.sid, key='mod', value=current_user.uid)
-        SubMod.create(sid=sub.sid, uid=current_user.uid, power_level=0)
-        SubStylesheet.create(sid=sub.sid, content='', source='/* CSS here */')
-
-        # admin/site log
-        misc.create_sublog(misc.LOG_TYPE_SUB_CREATE, uid=current_user.uid, sid=sub.sid, admin=True)
-
-        SubSubscriber.create(uid=current_user.uid, sid=sub.sid, status=1)
-
-        return jsonify(status='ok', addr=url_for('sub.view_sub', sub=form.subname.data))
-
-    return jsonify(status='error', error=get_errors(form))
-
-
 @do.route("/do/edit_sub_css/<sub>", methods=['POST'])
 @login_required
 def edit_sub_css(sub):
