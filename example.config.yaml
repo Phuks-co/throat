@@ -89,10 +89,10 @@ database:
   # Parameters for both MySQL and postgres
   host: 'localhost'
   port: 5432
-  #user: 'polsaker'
-  #password: 'throat'
+  #user: ''
+  #password: ''
   # Database name
-  #name: 'phuks'
+  #name: ''
 
   # For sqlite:
   #database: '/path/to/sqlite.db'
