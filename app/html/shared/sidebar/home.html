@@ -1,7 +1,7 @@
 @require(subOfTheDay, changeLog)
 <form class="pure-g search" action="@{ url_for('do.search') }" method="post">
   <div class="icon" data-icon="search"> </div>
-  <input aria-label="Search" name="term" placeholder="Title search..." type="search" class="pure-u-1">
+  <input aria-label="Search" name="term" placeholder="Hľadať v príspevkoch..." type="search" class="pure-u-1">
 </form>
 
 @if current_user.is_authenticated:

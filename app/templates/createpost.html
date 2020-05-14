@@ -3,7 +3,7 @@
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
     {% if txtpostform.ptype.data != "poll" %}
-      <button type="button" class="pure-button" id="ptoggle">Change to {%if txtpostform.ptype.data=="text"%}link{%else%}text post{%endif%}</button>
+      <button type="button" class="pure-button" id="ptoggle">Zmeniť na {%if txtpostform.ptype.data=="text"%}link{%else%}tému{%endif%}</button>
     {%endif%}
   </div>
 </div>
@@ -16,12 +16,12 @@
         {% set subs = func.get_all_subs()%}
         <input type="hidden" id="ptypeval" name="ptype" value="{{txtpostform.ptype.data}}">
         {{txtpostform.csrf_token}}
-        <h2>Submit a <span id="ptype">{{txtpostform.ptype.data}}</span> post</h2>
+        <h2>Pridaj <span id="ptype">{{txtpostform.ptype.data}}</span></h2>
         <input type="submit" style="display:none" />
         <fieldset>
           <div class="pure-control-group">
             <span class="sub">
-              <label for="sub">Sub</label>
+              <label for="sub">V skupine</label>
               {{txtpostform.sub(list="subdatalist", required=True)}}
               <datalist id="subdatalist">
                 {% for subname in subs %}
@@ -31,58 +31,58 @@
             </span>
           </div>
           <div class="pure-control-group">
-            <label for="title">Title</label>
+            <label for="title">Názov</label>
             {{txtpostform.title(placeholder=txtpostform.title.label.text, required=True)}}
           </div>
 
             <div class="pure-control-group txcont" {% if txtpostform.ptype.data not in ("text", "poll") %}style="width: 100%; display:none"{%endif%}>
-              <label for="content">Content</label>
+              <label for="content">Text</label>
               <div class="markdown-editor">
-                {{txtpostform.content(class="exalert", placeholder="(Optional) Write your post content here. Styling with Markdown format is supported.", rows="10", style="width: 100%")}}
+                {{txtpostform.content(class="exalert", placeholder="(Nepovinné) Text príspevku napíš sem. Formátovanie textu povolené.", rows="10", style="width: 100%")}}
               </div>
             </div>
             {% if txtpostform.ptype.data == "poll" %}
               <div class="pure-control-group pocont">
-                <label for="op1" style="vertical-align: top; margin-top: 1em;">Options</label>
+                <label for="op1" style="vertical-align: top; margin-top: 1em;">Možnosti</label>
                 <div id="sbm-poll-opts">
                   <ol id="poll-opts">
                     <li><input type="text" id="op1" name="op[]" required class="sbm-poll-opt fixed"></li>
                     <li><input type="text" name="op[]" required class="sbm-poll-opt fixed"></li>
                   </ol>
-                  <button id="poll-addoption" type="button" class="pure-button" style="margin-top: 1em">Add option</button>
+                  <button id="poll-addoption" type="button" class="pure-button" style="margin-top: 1em">Pridať možnosť</button>
                 </div>
               </div>
             {% endif %}
             <div class="pure-control-group lncont pure-u-sm-20-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
-            {% if current_user.canupload %}You can either upload an image or post a link{% endif %}
+            {% if current_user.canupload %}Môžeš buď nahrať obrázok, alebo pridať link{% endif %}
             </div>
             <div class="pure-control-group lncont pure-u-sm-20-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
               <label for="link">Link</label>
               {{txtpostform.link(type="url", pattern="https?://.+", required=True if txtpostform.ptype.data=="link" and not current_user.canupload else False, placeholder="URL")}}
             </div>
             <div class="pure-control-group pure-u-sm-3-24 lncont" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
-              <button id="graburl" class="pure-button">Grab title</button>
+              <button id="graburl" class="pure-button">Prevziať názov</button>
             </div>
             {% if current_user.canupload %}
             <div class="pure-control-group lncont pure-u-sm-20-24" {% if txtpostform.ptype.data!="link" %}style="display:none"{%endif%}>
-              <label for="files">File</label>
-              <input type="file" name="files" data-max="{{config.app.max_content_length}}" placeholder="Only images allowed" />
+              <label for="files">Súbor</label>
+              <input type="file" name="files" data-max="{{config.app.max_content_length}}" placeholder="Povolené iba obrázky" />
             </div>
             {% endif %}
           {% if txtpostform.ptype.data == "poll" %}
             <div class="pure-control-group">
-              <label for="hideresults">Hide poll results until it closes</label>
+              <label for="hideresults">Skyť výsledky až do ukončenia hlasovania</label>
               <input id="hideresults" name="hideresults" type="checkbox" value="y">
             </div>
 
             <div class="pure-control-group">
-              <label for="closetime">Close the poll at...</label>
+              <label for="closetime">Hlasovanie ukončiť...</label>
               <input id="closetime" name="closetime_chk" type="checkbox" value="">
-              <input id="closetime_date" name="closetime" type="text" class="date-picker-future" disabled> <i>(local time)</i>
+              <input id="closetime_date" name="closetime" type="text" class="date-picker-future" disabled> <i>(miestneho času)</i>
             </div>
 
             {#<div class="pure-control-group">
-              <label for="displaynames">Display username of voters</label>
+              <label for="displaynames">Zobraziť mená hlasujúcich</label>
               <input id="displaynames" name="displaynames" type="checkbox" value="y">
             </div>#}
           {%endif%}
@@ -105,10 +105,10 @@
           {% endif %}
           <div class="pure-controls">
             {% if error %}
-              <div class="error">{{error}}</div>
+              <div class="error">{{chyba}}</div>
             {% endif %}
-            <button onclick="window.sending=true;" type="submit" class="pure-button pure-button-primary" style="display: inline-block">Submit post</button>
-            <button type="button" data-pvid="ncme" class="pure-button btn-preview txcont" data-txid="content" style="{% if txtpostform.ptype.data!="text" %} display:none{%else%}display: inline-block;{%endif%}">Preview</button>
+            <button onclick="window.sending=true;" type="submit" class="pure-button pure-button-primary" style="display: inline-block">Ososlať</button>
+            <button type="button" data-pvid="ncme" class="pure-button btn-preview txcont" data-txid="content" style="{% if txtpostform.ptype.data!="text" %} display:none{%else%}display: inline-block;{%endif%}">Náhľad</button>
             <div class="cmpreview canclose" style="display:none;">
               <h4>Post preview</h4>
               <span class="closemsg">×</span>
