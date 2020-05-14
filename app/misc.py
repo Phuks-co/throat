@@ -324,7 +324,7 @@ def ratelimit(limit, per=300, send_x_headers=True,
             rlimit = RateLimit(key, limit + 1, per, send_x_headers)
             g._view_rate_limit = rlimit
             if over_limit is not None and rlimit.over_limit:
-                if not g.appconfig.get('TESTING'):
+                if not config.app.testing:
                     return over_limit()
             reslt = f(*args, **kwargs)
             if isinstance(reslt, tuple) and reslt[1] != 200:
