@@ -67,9 +67,9 @@ u.sub('#ptoggle', 'click', function(e){
   var oval = document.getElementById('ptypeval').value;
   document.getElementById('ptypeval').value = (document.getElementById('ptypeval').value == 'text') ? 'link' : 'text' ;
   if(document.getElementById('ptypeval').value == 'text'){
-    this.innerHTML = _('Change to link post');
+    this.innerHTML = _('Zmeniť na link');
   }else{
-    this.innerHTML = _('Change to text post');
+    this.innerHTML = _('Zmeniť na tému');
   }
   var val = document.getElementById('ptypeval').value;
   document.getElementById('ptype').innerHTML = val;

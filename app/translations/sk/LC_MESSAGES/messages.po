@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-12 17:19-0300\n"
-"PO-Revision-Date: 2020-05-14 11:37+0200\n"
+"PO-Revision-Date: 2020-05-14 12:34+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -1615,11 +1615,11 @@ msgstr "komentárov (%1)"
 
 #: app/static/js/Sub.js:70
 msgid "Change to link post"
-msgstr "Zmeniť príspevok na link"
+msgstr "Zmeniť na link"
 
 #: app/static/js/Sub.js:72
 msgid "Change to text post"
-msgstr "Zmeniť príspevok na tému"
+msgstr "Zmeniť na tému"
 
 #: app/static/js/main.js:43
 msgid "Log in or register to continue"
