@@ -52,11 +52,11 @@ def logout():
     return redirect(url_for('home.index'))
 
 
-@do.route("/do/search", defaults={'stype': 'search'}, methods=['POST'])
+@do.route("/do/search", defaults={'stype': 'home.search'}, methods=['POST'])
 @do.route("/do/search/<stype>", methods=['POST'])
 def search(stype):
     """ Search endpoint """
-    if stype not in ('search', 'subs', 'admin.users', 'admin.post_voting', 'admin.subs', 'admin.post'):
+    if stype not in ('home.search', 'home.subs', 'admin.users', 'admin.post_voting', 'admin.subs', 'admin.post'):
         abort(404)
     if not stype.endswith('search'):
         stype += '_search'

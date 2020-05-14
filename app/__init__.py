@@ -47,7 +47,7 @@ def create_app():
     babel.init_app(app)
     jwt.init_app(app)
     webpack.init_app(app)
-    socketio.init_app(app, message_queue=config.app.redis_url, cors_allowed_origins="*")
+    socketio.init_app(app, message_queue=config.app.redis_url, cors_allowed_origins="*", async_mode="gevent")
     caching.cache.init_app(app)
     login_manager.init_app(app)
     # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)

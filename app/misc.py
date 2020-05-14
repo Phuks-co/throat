@@ -324,7 +324,7 @@ def ratelimit(limit, per=300, send_x_headers=True,
             rlimit = RateLimit(key, limit + 1, per, send_x_headers)
             g._view_rate_limit = rlimit
             if over_limit is not None and rlimit.over_limit:
-                if not g.appconfig.get('TESTING'):
+                if not config.app.testing:
                     return over_limit()
             reslt = f(*args, **kwargs)
             if isinstance(reslt, tuple) and reslt[1] != 200:
@@ -1031,10 +1031,11 @@ def getUserBadges(uid):
 
 
 def clear_metadata(path: str):
-    exif = GExiv2.Metadata(path)
+    exif = GExiv2.Metadata()
+    exif.open_path(path)
     exif.clear_exif()
     exif.clear_xmp()
-    exif.save_file()
+    exif.save_file(path)
 
 
 def upload_file(max_size=16580608):

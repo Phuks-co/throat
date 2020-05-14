@@ -103,7 +103,7 @@ def search(page, term):
     term = re.sub(r'[^A-Za-z0-9.,\-_\'" ]+', '', term)
     posts = misc.getPostList(misc.postListQueryBase().where(SubPost.title ** ('%' + term + '%')),
                              'new', page).dicts()
-    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'search', 'page': page,
+    return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home.search', 'page': page,
                                                      'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
                                                      'kw': {'term': term}})
@@ -170,7 +170,7 @@ def view_subs(page, sort):
 
     c = c.paginate(page, 50).dicts()
     cp_uri = '/subs/' + str(page)
-    return render_template('subs.html', page=page, subs=c, nav='view_subs', sort=sort, cp_uri=cp_uri)
+    return render_template('subs.html', page=page, subs=c, nav='home.view_subs', sort=sort, cp_uri=cp_uri)
 
 
 @bp.route("/subs/search/<term>", defaults={'page': 1, 'sort': 'name_asc'})
@@ -201,4 +201,4 @@ def subs_search(page, term, sort):
         return redirect(url_for('home.view_subs', page=page, sort='name_asc'))
     c = c.paginate(page, 50).dicts()
     cp_uri = '/subs/search/' + term + '/' + str(page)
-    return render_template('subs.html', page=page, subs=c, nav='subs_search', term=term, sort=sort, cp_uri=cp_uri)
+    return render_template('subs.html', page=page, subs=c, nav='home.subs_search', term=term, sort=sort, cp_uri=cp_uri)

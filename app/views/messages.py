@@ -3,8 +3,9 @@ from datetime import datetime
 from flask import Blueprint, redirect, url_for, render_template
 from flask_login import login_required, current_user
 from flask_babel import _
-from .. import misc, socketio
+from .. import misc
 from ..models import Message
+from ..socketio import socketio
 
 bp = Blueprint('messages', __name__)
 
@@ -58,7 +59,7 @@ def view_messages_sent(page):
     """ View user's messages sent """
     msgs = misc.getMessagesSent(page)
     return render_template('messages/sent.html', messages=msgs,
-                           page=page, box_route='view_messages_sent')
+                           page=page, box_route='messages.view_messages_sent')
 
 
 @bp.route("/ignore")

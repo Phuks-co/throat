@@ -1,7 +1,7 @@
 
 <div class="row buttons inboxside">
   <div>
-    <a class="sbm-post pure-button{% if box_route=='view_messages' %} button-secondary{% endif %}" href="{{ url_for('messages.view_messages') }}">
+    <a class="sbm-post pure-button{% if box_route=='messages.view_messages' %} button-secondary{% endif %}" href="{{ url_for('messages.view_messages') }}">
       Inbox
       {% if func.get_unread_count(func.MESSAGE_TYPE_PM) > 0 %}
         <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_unread_count(func.MESSAGE_TYPE_PM)}}</span>
@@ -9,7 +9,7 @@
     </a>
   </div>
   <div>
-    <a class="sbm-post pure-button{% if box_route=='view_mentions' %} button-secondary{% endif %}" href="{{ url_for('messages.view_mentions') }}">
+    <a class="sbm-post pure-button{% if box_route=='messages.view_mentions' %} button-secondary{% endif %}" href="{{ url_for('messages.view_mentions') }}">
       Mentions
       {% if func.get_unread_count(func.MESSAGE_TYPE_MENTION) > 0 %}
         <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_unread_count(func.MESSAGE_TYPE_MENTION)}}</span>
@@ -17,7 +17,7 @@
     </a>
   </div>
   <div>
-    <a class="sbm-post pure-button{% if box_route=='view_messages_postreplies' %} button-secondary{% endif %}" href="{{ url_for('messages.view_messages_postreplies') }}">
+    <a class="sbm-post pure-button{% if box_route=='messages.view_messages_postreplies' %} button-secondary{% endif %}" href="{{ url_for('messages.view_messages_postreplies') }}">
       Post Replies
       {% if func.get_unread_count(func.MESSAGE_TYPE_POSTREPLY) > 0 %}
         <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_unread_count(func.MESSAGE_TYPE_POSTREPLY)}}</span>
@@ -25,7 +25,7 @@
     </a>
   </div>
   <div>
-    <a class="sbm-post pure-button{% if box_route=='view_messages_comreplies' %} button-secondary{% endif %}" href="{{ url_for('messages.view_messages_comreplies') }}">
+    <a class="sbm-post pure-button{% if box_route=='messages.view_messages_comreplies' %} button-secondary{% endif %}" href="{{ url_for('messages.view_messages_comreplies') }}">
       Comment Replies
       {% if func.get_unread_count(func.MESSAGE_TYPE_COMMREPLY) > 0 %}
         <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_unread_count(func.MESSAGE_TYPE_COMMREPLY)}}</span>
@@ -34,7 +34,7 @@
   </div>
 <hr>
   <div>
-    <a class="sbm-post pure-button{% if box_route=='view_messages_modmail' %} button-secondary{% endif %}" href="{{ url_for('messages.view_messages_modmail') }}">
+    <a class="sbm-post pure-button{% if box_route=='messages.view_messages_modmail' %} button-secondary{% endif %}" href="{{ url_for('messages.view_messages_modmail') }}">
     Modmail
     {% if func.get_unread_count(func.MESSAGE_TYPE_MODMAIL) > 0 %}
       <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_unread_count(func.MESSAGE_TYPE_MODMAIL)}}</span>
@@ -43,10 +43,10 @@
   </div>
 <hr>
   <div>
-    <a class="sbm-post pure-button{% if box_route=='view_messages_sent' %} button-secondary{% endif %}" href="{{ url_for('messages.view_messages_sent') }}">Sent Messages</a>
+    <a class="sbm-post pure-button{% if box_route=='messages.view_messages_sent' %} button-secondary{% endif %}" href="{{ url_for('messages.view_messages_sent') }}">Sent Messages</a>
   </div>
   <div>
-    <a class="sbm-post pure-button{% if box_route=='view_saved_messages' %} button-secondary{% endif %}"  href="{{ url_for('messages.view_saved_messages') }}">Saved Messages</a>
+    <a class="sbm-post pure-button{% if box_route=='messages.view_saved_messages' %} button-secondary{% endif %}"  href="{{ url_for('messages.view_saved_messages') }}">Saved Messages</a>
   </div>
   <div>
     <a class="sbm-post pure-button"  href="{{ url_for('messages.view_ignores') }}">Blocked users</a>
