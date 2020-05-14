@@ -553,9 +553,14 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
                     document.getElementById('child-' + cid).prepend(div.firstChild);
                 }
             }
-        }, function () {
+        }, function (e) {
             qelem.parentNode.querySelector('.error').style.display = 'block';
-            qelem.parentNode.querySelector('.error').innerHTML = _('Could not contact the server');
+            if(e.startsWith('{')){
+                let err = JSON.parse(e);
+                qelem.parentNode.querySelector('.error').innerHTML =err.error[0];
+            }else {
+                qelem.parentNode.querySelector('.error').innerHTML = _('Could not contact the server ' + e);
+            }
             qelem.removeAttribute('disabled');
         });
 });
