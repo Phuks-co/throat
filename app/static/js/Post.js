@@ -571,7 +571,7 @@ let reportHtml = (data) => '<h2>' + _('Report post') + '</h2>' +
     '<div class="pure-control-group">' +
     '<label for="report_reason">' + _('Select a reason to report this post:') + '</label>' +
     '<select name="report_reason" id="report_reason">' +
-      '<option value="" disabled selected>Select one..</option>' +
+      '<option value="" disabled selected>Zvoliť</option>' +
       '<option value="spam">' + _('SPAM') + '</option>' +
       '<option value="tos">' + _('TOS violation') + '</option>' +
       '<option value="other">' + _('Other') + '</option>' +

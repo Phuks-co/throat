@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-12 17:19-0300\n"
-"PO-Revision-Date: 2020-05-14 16:52+0200\n"
+"PO-Revision-Date: 2020-05-15 01:35+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -876,7 +876,7 @@ msgstr "Dôvod banu"
 
 #: app/html/sub/bans.html:51 app/html/user/settings/invitecode.html:35
 msgid "Expires"
-msgstr "Ban vyprší"
+msgstr "Vyprší"
 
 #: app/html/sub/bans.html:53
 msgid "Actions"
