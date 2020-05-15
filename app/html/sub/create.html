@@ -1,0 +1,36 @@
+@extends("shared/layout.html")
+@require(csubform, error)
+@def title():
+@{_('Create Sub')} |\
+@end
+
+@def main():
+<div id="center-container">
+    <div class="content createsub">
+        <form id="csub-form" method="POST" data-redir="true" class="pure-form pure-form-aligned">
+            @{csubform.csrf_token()}
+            <h3>@{_('Create sub')}</h3>
+            <p>@{_('Create a sub for you, your friends, or for your favorite community')}</p>
+
+            @if error:
+                <div class="error" style="margin-top: 2em;">@{ error }</div>
+            @end
+            <fieldset>
+                <div class="pure-control-group">
+                    <label for="subname">@{_('Sub name')}</label>
+                    @{ csubform.subname(placeholder=csubform.subname.label.text, required=True, pattern="[a-zA-Z0-9]+", title=_('Alphanumeric characters')) }
+                </div>
+                <div class="pure-control-group">
+                    <label for="description">@{_('Description')}</label>
+                    @{ csubform.title(placeholder=csubform.title.label.text, required=True) }
+                </div>
+                <div class="pure-controls">
+                    <div class="alert div-error"></div>
+                    <button type="submit" id="csub-btnsubmit" class="pure-button pure-button-primary">@{_('Create sub')}</button>
+                </div>
+            </fieldset>
+        </form>
+
+    </div>
+</div>
+@end

@@ -24,6 +24,15 @@ site:
   # Users will be asked to answer one of these security questions before registering
   enable_security_question: False
 
+  # Minimum level a user must have before being able to create a sub.
+  # Set to zero to disable sub creation level limits
+  sub_creation_min_level: 2
+
+  # Maximum amount of subs a single user can own.
+  # The actual amount of subs a user may register scales with user level (user level minus one)
+  # so a level 0 or level 1 user cannot register any subs. This scaling is disabled if `sub_creation_min_level` is zero
+  sub_ownership_limit: 20
+
 app:
   # URL to a working redis server.
   # Used for websockets and caching (if enabled)

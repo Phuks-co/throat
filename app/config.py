@@ -18,7 +18,10 @@ cfg_defaults = { # key => default value
             "btc_address": None,
             "xmr_address": None,
 
-            "title_edit_timeout": 300
+            "title_edit_timeout": 300,
+
+            "sub_creation_min_level": 2,
+            "sub_ownership_limit": 20
         },
         "cache": {
             "type": "null"

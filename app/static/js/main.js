@@ -213,14 +213,13 @@ u.ready(function() {
       function(data){ // success
         if (data.status != "ok") {
           button.removeAttribute('disabled');
-          var obj = data.error, q = data.error.length,
-            ul = document.createElement('ul'); // >_>
-          for (var i = 0; i < q; i++) {
-            ul.innerHTML = ul.innerHTML + "<li>" + obj[i] + "</li>";
+          let error = data.error;
+          if(Array.isArray(data.error)){
+            error = data.error[0];
           }
+
           if(target.querySelector('.div-error')){
-            target.querySelector('.div-error').innerHTML = '<span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span>' +
-                    '<ul>' + ul.innerHTML + '</ul>';
+            target.querySelector('.div-error').innerHTML = error;
             target.querySelector('.div-error').style.display = 'block';
           }
           button.innerHTML = btnorm;
@@ -244,9 +243,19 @@ u.ready(function() {
             button.removeAttribute('disabled');
           }
         }
-      }, function() { //error
-        target.querySelector('.div-error').innerHTML = '<span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> <p><ul><li>' + _('Error while contacting the server') + '</li></ul></p>';
-        target.querySelector('.div-error').style.display = 'block';
+      }, function(data) { //error
+        let error = _('Error while contacting the server');
+        if(data.startsWith('{')){
+          let jsdata = JSON.parse(data);
+          error = data.error;
+          if(Array.isArray(jsdata.error)){
+            error = jsdata.error[0];
+          }
+        }
+        if(target.querySelector('.div-error')) {
+          target.querySelector('.div-error').innerHTML = error;
+          target.querySelector('.div-error').style.display = 'block';
+        }
         button.removeAttribute('disabled');
         button.innerHTML = btnorm;
       })

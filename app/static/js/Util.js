@@ -73,8 +73,8 @@ u.rawpost = function(url, data, success, error){
     }
   };
 
-  request.onerror = function() {
-    error(err, 'Could not contact the server')
+  request.onerror = function(err) {
+    error(_('Could not contact the server'), err);
   };
   request.send(data);
 };
