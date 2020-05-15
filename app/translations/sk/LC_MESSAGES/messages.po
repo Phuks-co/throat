@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-14 18:50-0300\n"
-"PO-Revision-Date: 2020-05-15 07:57+0200\n"
+"PO-Revision-Date: 2020-05-15 08:14+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -914,7 +914,7 @@ msgstr "Vytvor skupinu"
 
 #: app/html/sub/create.html:13
 msgid "Create a sub for you, your friends, or for your favorite community"
-msgstr ""
+msgstr "Vytvor skupinu venovanú tvojej obľúbenej komunite alebo oblasti záujmu"
 
 #: app/html/sub/create.html:21
 msgid "Alphanumeric characters"
@@ -922,7 +922,7 @@ msgstr "Alfanumerické znaky"
 
 #: app/html/sub/create.html:24
 msgid "Description"
-msgstr "Popis"
+msgstr "Motto"
 
 #: app/html/sub/css.html:10
 #, python-format
@@ -1131,7 +1131,7 @@ msgstr "upraviť"
 
 #: app/html/sub/post.html:99
 msgid "edit title"
-msgstr "upraviť motto"
+msgstr "upraviť názov"
 
 #: app/html/sub/post.html:104 app/html/sub/postcomments.html:65
 msgid "delete"
@@ -2146,7 +2146,7 @@ msgstr "Nemôžeš vlastniť viac ako %(max)i skupín."
 msgid "You cannot own more than %(max)i subs. Try leveling up your account."
 msgstr ""
 "Nemôžeš vlastniť viac ako %(max)i skupín. Musíš najskôr zvýšiť leveling "
-"svojho účtu"
+"svojho účtu."
 
 #: app/views/user.py:145
 msgid "Auto detect"
