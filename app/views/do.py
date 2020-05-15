@@ -1431,6 +1431,7 @@ def use_invite_code():
             SiteMetadata.create(key='invite_max', value=form.maxcodes.data)
         
         cache.delete_memoized(misc.enableInviteCode)
+        cache.delete_memoized(misc.getMaxCodes)
 
         if form.enableinvitecode.data:
             misc.create_sitelog(misc.LOG_TYPE_ENABLE_INVITE, current_user.uid)
