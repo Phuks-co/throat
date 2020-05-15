@@ -210,6 +210,7 @@ class SiteAnon(AnonymousUserMixin):
     admin = False
     canupload = False
     language = None
+    score = 0
 
     def get_id(self):
         return False
@@ -312,7 +313,7 @@ def get_ip():
 def ratelimit(limit, per=300, send_x_headers=True,
               over_limit=on_over_limit,
               scope_func=lambda: get_ip(),
-              key_func=lambda: request.endpoint):
+              key_func=lambda: request.endpoint, negative_score_per=900):
     """ This is a decorator. It does the rate-limit magic. """
 
     def decorator(f):
@@ -320,8 +321,12 @@ def ratelimit(limit, per=300, send_x_headers=True,
 
         def rate_limited(*args, **kwargs):
             """ FUNCTIONCEPTION """
+            persecond = per
+            # If the user has negative score, we use negative_score_per
+            if current_user.score < 0:
+                persecond = negative_score_per
             key = 'rate-limit/%s/%s/' % (key_func(), scope_func())
-            rlimit = RateLimit(key, limit + 1, per, send_x_headers)
+            rlimit = RateLimit(key, limit + 1, persecond, send_x_headers)
             g._view_rate_limit = rlimit
             if over_limit is not None and rlimit.over_limit:
                 if not config.app.testing:
