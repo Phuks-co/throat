@@ -21,7 +21,10 @@ cfg_defaults = { # key => default value
             "title_edit_timeout": 300,
 
             "sub_creation_min_level": 2,
-            "sub_ownership_limit": 20
+            "sub_ownership_limit": 20,
+
+            "daily_sub_posting_limit": 10,
+            "daily_site_posting_limit": 25,
         },
         "cache": {
             "type": "null"

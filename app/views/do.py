@@ -23,7 +23,7 @@ from ..socketio import socketio
 from ..forms import LogOutForm, CreateSubFlair, DummyForm
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm, ChangePasswordForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm
-from ..forms import CreateSubTextPost, EditSubTextPostForm, AssignUserBadgeForm
+from ..forms import EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, BanDomainForm
@@ -576,7 +576,7 @@ def grab_title():
 
 def post_over_limit(limit):
     form = CreateSubTextPost()
-    return render_template('createpost.html', txtpostform=form, error=_('Wait a bit before posting.'))
+    return render_template('../html/sub/createpost.html', txtpostform=form, error=_('Wait a bit before posting.'))
 
 
 @do.route("/do/post", methods=['POST'])
@@ -584,150 +584,7 @@ def post_over_limit(limit):
 @misc.ratelimit(1, per=30, over_limit=post_over_limit)
 def create_post():
     """ Sub link post creation endpoint """
-    if misc.get_user_level(current_user.uid)[0] <= 4:
-        form = forms.CreteSubPostCaptcha()
-        if not form.validate():
-            if not misc.validate_captcha(form.ctok.data, form.captcha.data):
-                return render_template('createpost.html', txtpostform=form, error=_("Invalid captcha.")), 400
-            return render_template('createpost.html', txtpostform=form, error=get_errors(form)[0])
-    form = CreateSubTextPost()
-    if form.validate():
-        # Put pre-posting checks here
-        if not current_user.is_admin():
-            try:
-                enable_posting = SiteMetadata.get(SiteMetadata.key == 'enable_posting')
-                if enable_posting.value in ('False', '0'):
-                    return render_template('createpost.html', txtpostform=form, error=_("Posting has been temporarily disabled")), 400
-            except SiteMetadata.DoesNotExist:
-                pass
-        
-        try:
-            sub = Sub.get(fn.Lower(Sub.name) == form.sub.data.lower())
-        except:
-            return render_template('createpost.html', txtpostform=form, error=_("Sub does not exist")), 400
-        
-        subdata = misc.getSubData(sub.sid)
-
-        if sub.name.lower() in ('all', 'new', 'hot', 'top', 'admin', 'home'):
-            return render_template('createpost.html', txtpostform=form, error=_("You cannot post in this sub.")), 400
-        if current_user.is_subban(sub):
-            return render_template('createpost.html', txtpostform=form, error=_("You're banned from posting on this sub")), 400
-        
-        submods = misc.getSubMods(sub.sid)
-        if subdata.get('restricted', 0) == '1' and not (current_user.uid in submods['all']):
-            return render_template('createpost.html', txtpostform=form, error=_("Only mods can post on this sub")), 400
-
-        if misc.get_user_level(current_user.uid)[0] < 7:
-            today = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-            lposts = SubPost.select().where(SubPost.uid == current_user.uid).where(SubPost.sid == sub.sid).where(SubPost.posted > today).count()
-            tposts = SubPost.select().where(SubPost.uid == current_user.uid).where(SubPost.posted > today).count()
-            if lposts > 10 or tposts > 25:
-                return render_template('createpost.html', txtpostform=form, error=_("You have posted too much today")), 400
-        if len(form.title.data.strip(misc.WHITESPACE)) < 3:
-            return render_template('createpost.html', txtpostform=form, error=_("Title is too short and/or contains whitespace characters")), 400
-        fileid = False
-        if form.ptype.data == 'link':
-            fupload = misc.upload_file()
-            if fupload:
-                form.link.data = config.storage.uploads.url + fupload
-                fileid = fupload
-
-            if not form.link.data:
-                return render_template('createpost.html', txtpostform=form, error=_("No link provided")), 400
-
-            try:
-                lx = SubPost.select(SubPost.pid).where(SubPost.sid == sub.sid)
-                lx = lx.where(SubPost.link == form.link.data).where(SubPost.deleted == 0)
-                monthago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
-                lx = lx.where(SubPost.posted > monthago).get()
-                return render_template('createpost.html', txtpostform=form, error=_("This link was recently posted on this sub")), 400
-
-            except SubPost.DoesNotExist:
-                pass
-            
-            if misc.is_domain_banned(form.link.data.lower()):
-                return render_template('createpost.html', txtpostform=form, error=_("This domain is banned")), 400
-
-            img = misc.get_thumbnail(form.link.data)
-        if form.ptype.data == 'poll':
-            ptype = 3
-            # Check if this sub allows polls...
-            if not subdata.get('allow_polls', False):
-                return render_template('createpost.html', txtpostform=form, error=_("This sub does not allow polling")), 400
-            # check if we got at least three options
-            options = request.form.getlist('op[]')
-            options = [x for x in options if len(x.strip(misc.WHITESPACE)) > 0]  # Remove empty strings
-            if len(options) < 2:
-                return render_template('createpost.html', txtpostform=form, error=_("Not enough poll options provided")), 400
-            
-            for p in options:
-                if len(p) > 128:
-                    return render_template('createpost.html', txtpostform=form, error=_("Poll option text is too long.")), 400
-            
-            if form.closetime.data:
-                try:
-                    closetime = datetime.datetime.strptime(form.closetime.data, "%Y-%m-%dT%H:%M:%S.%fZ")
-                    if (closetime - datetime.datetime.utcnow()) > datetime.timedelta(days=60):
-                        return render_template('createpost.html', txtpostform=form, error=_("Poll closing time is too far in the future.")), 400
-                except ValueError:
-                    return render_template('createpost.html', txtpostform=form, error=_("Invalid closing time.")), 400
-                
-                if datetime.datetime.utcnow() > closetime:
-                    return render_template('createpost.html', txtpostform=form, error=_("The closing time is in the past!")), 400
-        elif form.ptype.data == 'link':
-            ptype = 1
-        else:
-            ptype = 0
-
-        post = SubPost.create(sid=sub.sid,
-                              uid=current_user.uid,
-                              title=form.title.data,
-                              content=form.content.data if ptype != 1 else '',
-                              link=form.link.data if ptype == 1 else None,
-                              posted=datetime.datetime.utcnow(),
-                              score=1, upvotes=1, downvotes=0,
-                              deleted=0,
-                              comments=0,
-                              ptype=ptype,
-                              nsfw=form.nsfw.data if not sub.nsfw else 1,
-                              thumbnail=img if ptype == 1 else '')
-        
-        if ptype == 3:
-            # Create SubPostPollOption objects...
-            poll_options = [{'pid': post.pid, 'text': x} for x in options]
-            SubPostPollOption.insert_many(poll_options).execute()
-            # apply all poll options..
-            if form.hideresults.data:
-                SubPostMetadata.create(pid=post.pid, key='hide_results', value=1)
-            
-            if form.closetime.data:
-                SubPostMetadata.create(pid=post.pid, key='poll_closes_time', value=int(closetime.replace(tzinfo=datetime.timezone.utc).timestamp()))
-        
-        Sub.update(posts=Sub.posts + 1).where(Sub.sid == sub.sid).execute()
-        addr = url_for('sub.view_post', sub=sub.name, pid=post.pid)
-        posts = misc.getPostList(misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), 'new', 1).dicts()
-        socketio.emit('thread',
-                      {'addr': addr, 'sub': sub.name, 'type': form.ptype.data,
-                       'user': current_user.name, 'pid': post.pid, 'sid': sub.sid,
-                       'html': engine.get_template('shared/post.html').render({'posts': posts, 'sub': False})},
-                      namespace='/snt',
-                      room='/all/new')
-
-        # XXX: The auto-upvote is placed *after* broadcasting the post via socketio so that the upvote arrow
-        # does not appear highlighted to everybody.
-        SubPostVote.create(uid=current_user.uid, pid=post.pid, positive=True)
-        User.update(given=User.given + 1).where(User.uid == current_user.uid).execute()
-        # We send a yourvote message so that the upvote arrow *does* appear highlighted to the creator.
-        socketio.emit('yourvote', {'pid': post.pid, 'status': 1, 'score': post.score}, namespace='/snt',
-                      room='user' + current_user.uid)
-
-        if fileid:
-            UserUploads.create(pid=post.pid, uid=current_user.uid, fileid=fileid, thumbnail=img if img else '', status=0)
-
-        misc.workWithMentions(form.content.data, None, post, sub)
-        misc.workWithMentions(form.title.data, None, post, sub)
-        return redirect(addr)
-    return render_template('createpost.html', txtpostform=form, error=get_errors(form)[0]), 400
+    pass
 
 
 @do.route('/do/sendcomment/<pid>', methods=['POST'])

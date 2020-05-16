@@ -33,6 +33,12 @@ site:
   # so a level 0 or level 1 user cannot register any subs. This scaling is disabled if `sub_creation_min_level` is zero
   sub_ownership_limit: 20
 
+  # Maximum amount of posts a user can create in a single sub in a day
+  daily_sub_posting_limit: 10
+
+  # Maximum amount of posts a user can create in a single day
+  daily_site_posting_limit: 25
+
 app:
   # URL to a working redis server.
   # Used for websockets and caching (if enabled)
