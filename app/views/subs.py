@@ -45,6 +45,9 @@ def submit(ptype, sub):
         form.sub.data = sub
         try:
             sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+            subdata = misc.getSubData(sub.sid)
+            if subdata.get('allow_polls', False):
+                form.ptype.choices.append(('poll', _l('Poll')))
         except Sub.DoesNotExist:
             abort(404)
 
@@ -74,16 +77,21 @@ def create_post(ptype, sub):
     if current_user.canupload:
         form.ptype.choices.append(('upload', _l('Upload file')))
 
+    if not form.sub.data and sub != '':
+        form.sub.data = sub
+
+    if form.sub.data:
+        try:
+            sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+            subdata = misc.getSubData(sub.sid)
+            if subdata.get('allow_polls', False):
+                form.ptype.choices.append(('poll', _l('Poll')))
+        except Sub.DoesNotExist:
+            abort(404)
+
     if not form.validate():
         if not form.ptype.data:
             form.ptype.data = ptype
-
-        if not form.sub.data and sub != '':
-            form.sub.data = sub
-            try:
-                sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
-            except Sub.DoesNotExist:
-                abort(404)
 
         return engine.get_template('sub/createpost.html').render({'error': misc.get_errors(form, True), 'form': form, 'sub': sub, 'captcha': captcha})
 
