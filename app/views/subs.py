@@ -87,7 +87,7 @@ def create_post(ptype, sub):
             if subdata.get('allow_polls', False):
                 form.ptype.choices.append(('poll', _l('Poll')))
         except Sub.DoesNotExist:
-            abort(404)
+            pass
 
     if not form.validate():
         if not form.ptype.data:
