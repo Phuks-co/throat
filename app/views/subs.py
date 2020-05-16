@@ -33,7 +33,7 @@ def submit(ptype, sub):
 
     if not form.validate():
         if not form.ptype.data:
-            form.ptype.data = 'link'
+            form.ptype.data = ptype
 
         if not form.sub.data and sub != '':
             form.sub.data = sub
