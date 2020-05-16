@@ -82,7 +82,7 @@ def create_post(ptype, sub):
 
     if form.sub.data:
         try:
-            sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+            sub = Sub.get(fn.Lower(Sub.name) == form.sub.data.lower())
             subdata = misc.getSubData(sub.sid)
             if subdata.get('allow_polls', False):
                 form.ptype.choices.append(('poll', _l('Poll')))
@@ -93,12 +93,12 @@ def create_post(ptype, sub):
         if not form.ptype.data:
             form.ptype.data = ptype
 
-        return engine.get_template('sub/createpost.html').render({'error': misc.get_errors(form, True), 'form': form, 'sub': sub, 'captcha': captcha})
+        return engine.get_template('sub/createpost.html').render({'error': misc.get_errors(form, True), 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
     if misc.get_user_level(current_user.uid)[0] <= 4:
         if not misc.validate_captcha(form.ctok.data, form.captcha.data):
             return engine.get_template('sub/createpost.html').render(
-                {'error': _("Invalid captcha."), 'form': form, 'sub': sub, 'captcha': captcha})
+                {'error': _("Invalid captcha."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
     # Put pre-posting checks here
     if not current_user.is_admin():
@@ -107,7 +107,7 @@ def create_post(ptype, sub):
             if enable_posting.value in ('False', '0'):
                 return engine.get_template('sub/createpost.html').render(
                     {'error': _("Posting has been temporarily disabled."), 'form': form, 'sub': sub,
-                     'captcha': captcha})
+                     'captcha': captcha}), 400
         except SiteMetadata.DoesNotExist:
             pass
 
@@ -115,22 +115,22 @@ def create_post(ptype, sub):
         sub = Sub.get(fn.Lower(Sub.name) == form.sub.data.lower())
     except Sub.DoesNotExist:
         return engine.get_template('sub/createpost.html').render(
-            {'error': _("Sub does not exist."), 'form': form, 'sub': sub, 'captcha': captcha})
+            {'error': _("Sub does not exist."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
     subdata = misc.getSubData(sub.sid)
 
     if sub.name.lower() in ('all', 'new', 'hot', 'top', 'admin', 'home'):
         return engine.get_template('sub/createpost.html').render(
-            {'error': _("You cannot post in this sub."), 'form': form, 'sub': sub, 'captcha': captcha})
+            {'error': _("You cannot post in this sub."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
     if current_user.is_subban(sub):
         return engine.get_template('sub/createpost.html').render(
-            {'error': _("You're banned from posting on this sub."), 'form': form, 'sub': sub, 'captcha': captcha})
+            {'error': _("You're banned from posting on this sub."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
     submods = misc.getSubMods(sub.sid)
     if subdata.get('restricted', 0) == '1' and not (current_user.uid in submods['all']):
         return engine.get_template('sub/createpost.html').render(
-            {'error': _("Only mods can post on this sub."), 'form': form, 'sub': sub, 'captcha': captcha})
+            {'error': _("Only mods can post on this sub."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
     if misc.get_user_level(current_user.uid)[0] < 7:
         today = datetime.utcnow() - timedelta(days=1)
@@ -139,12 +139,12 @@ def create_post(ptype, sub):
         tposts = SubPost.select().where(SubPost.uid == current_user.uid).where(SubPost.posted > today).count()
         if lposts > config.site.daily_sub_posting_limit or tposts > config.site.daily_site_posting_limit:
             return engine.get_template('sub/createpost.html').render(
-                {'error': _("You have posted too much today."), 'form': form, 'sub': sub, 'captcha': captcha})
+                {'error': _("You have posted too much today."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
     if len(form.title.data.strip(misc.WHITESPACE)) < 3:
         return engine.get_template('sub/createpost.html').render(
             {'error': _("Title is too short and/or contains whitespace characters."), 'form': form, 'sub': sub,
-             'captcha': captcha})
+             'captcha': captcha}), 400
 
     fileid = False
     img = ''
@@ -158,7 +158,7 @@ def create_post(ptype, sub):
 
         if not form.link.data:
             return engine.get_template('sub/createpost.html').render(
-                {'error': _("No link provided."), 'form': form, 'sub': sub, 'captcha': captcha})
+                {'error': _("No link provided."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
         try:
             lx = SubPost.select(SubPost.pid).where(SubPost.sid == sub.sid)
@@ -166,31 +166,31 @@ def create_post(ptype, sub):
             monthago = datetime.utcnow() - timedelta(days=30)
             lx.where(SubPost.posted > monthago).get()
             return engine.get_template('sub/createpost.html').render(
-                {'error': _("This link was recently posted on this sub."), 'form': form, 'sub': sub, 'captcha': captcha})
+                {'error': _("This link was recently posted on this sub."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
         except SubPost.DoesNotExist:
             pass
 
         if misc.is_domain_banned(form.link.data.lower()):
             return engine.get_template('sub/createpost.html').render(
-                {'error': _("This domain is banned."), 'form': form, 'sub': sub, 'captcha': captcha})
+                {'error': _("This domain is banned."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
         img = misc.get_thumbnail(form.link.data)
     elif form.ptype.data == 'poll':
         ptype = 3
         # Check if this sub allows polls...
         if not subdata.get('allow_polls', False):
             return engine.get_template('sub/createpost.html').render(
-                {'error': _("This sub does not allow polling."), 'form': form, 'sub': sub, 'captcha': captcha})
+                {'error': _("This sub does not allow polling."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
         # check if we got at least three options
         options = form.options.data
         options = [x for x in options if len(x.strip(misc.WHITESPACE)) > 0]  # Remove empty strings
         if len(options) < 2:
             return engine.get_template('sub/createpost.html').render(
-                {'error': _("Not enough poll options provided."), 'form': form, 'sub': sub, 'captcha': captcha})
+                {'error': _("Not enough poll options provided."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
         for p in options:
             if len(p) > 128:
                 return engine.get_template('sub/createpost.html').render(
-                    {'error': _("Poll option text is too long."), 'form': form, 'sub': sub, 'captcha': captcha})
+                    {'error': _("Poll option text is too long."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
         if form.closetime.data:
             try:
@@ -198,19 +198,19 @@ def create_post(ptype, sub):
                 if (closetime - datetime.utcnow()) > timedelta(days=60):
                     return engine.get_template('sub/createpost.html').render(
                         {'error': _("Poll closing time is too far in the future."), 'form': form, 'sub': sub,
-                         'captcha': captcha})
+                         'captcha': captcha}), 400
             except ValueError:
                 return engine.get_template('sub/createpost.html').render(
-                    {'error': _("Invalid closing time."), 'form': form, 'sub': sub, 'captcha': captcha})
+                    {'error': _("Invalid closing time."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
             if datetime.utcnow() > closetime:
                 return engine.get_template('sub/createpost.html').render(
-                    {'error': _("The closing time is in the past!"), 'form': form, 'sub': sub, 'captcha': captcha})
+                    {'error': _("The closing time is in the past!"), 'form': form, 'sub': sub, 'captcha': captcha}), 400
     elif form.ptype.data == 'text':
         ptype = 0
     else:
         return engine.get_template('sub/createpost.html').render(
-            {'error': _("Invalid post type"), 'form': form, 'sub': sub, 'captcha': captcha})
+            {'error': _("Invalid post type"), 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
     post = SubPost.create(sid=sub.sid,
                           uid=current_user.uid,
