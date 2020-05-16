@@ -16,11 +16,54 @@ from ..forms import CreateSubPostForm, CreateSubForm
 bp = Blueprint('subs', __name__)
 
 
-@bp.route("/submit/<ptype>", defaults={'sub': ''}, methods=['POST', 'GET'])
-@bp.route("/submit/<ptype>/<sub>", methods=['POST', 'GET'])
+def post_over_limit():
+    captcha = None
+    if misc.get_user_level(current_user.uid)[0] <= 4:
+        captcha = misc.create_captcha()
+    form = CreateSubPostForm()
+    return engine.get_template('sub/createpost.html').render({'error': _('Wait a bit before posting.'), 'form': form, 'sub': None, 'captcha': captcha})
+
+
+@bp.route("/submit/<ptype>", defaults={'sub': ''}, methods=['GET'])
+@bp.route("/submit/<ptype>/<sub>", methods=['GET'])
 @login_required
 def submit(ptype, sub):
-    if ptype not in ['link', 'text', 'poll']:
+    if ptype not in ['link', 'text', 'poll', 'upload']:
+        abort(404)
+
+    captcha = None
+    if misc.get_user_level(current_user.uid)[0] <= 4:
+        captcha = misc.create_captcha()
+
+    form = CreateSubPostForm()
+    if current_user.canupload:
+        form.ptype.choices.append(('upload', _l('Upload file')))
+
+    form.ptype.data = ptype
+
+    if sub != '':
+        form.sub.data = sub
+        try:
+            sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+        except Sub.DoesNotExist:
+            abort(404)
+
+    if request.args.get('title'):
+        form.title.data = request.args.get('title')
+
+    if request.args.get('url'):
+        form.link.data = request.args.get('url')
+
+    return engine.get_template('sub/createpost.html').render(
+        {'error': misc.get_errors(form, True), 'form': form, 'sub': sub, 'captcha': captcha})
+
+
+@bp.route("/submit/<ptype>", defaults={'sub': ''}, methods=['POST'])
+@bp.route("/submit/<ptype>/<sub>", methods=['POST'])
+@login_required
+@misc.ratelimit(1, per=30, over_limit=post_over_limit)
+def create_post(ptype, sub):
+    if ptype not in ['link', 'text', 'poll', 'upload']:
         abort(404)
 
     captcha = None
@@ -41,12 +84,6 @@ def submit(ptype, sub):
                 sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
             except Sub.DoesNotExist:
                 abort(404)
-
-        if request.args.get('title'):
-            form.title.data = request.args.get('title')
-
-        if request.args.get('url'):
-            form.link.data = request.args.get('url')
 
         return engine.get_template('sub/createpost.html').render({'error': misc.get_errors(form, True), 'form': form, 'sub': sub, 'captcha': captcha})
 

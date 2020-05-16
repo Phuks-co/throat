@@ -574,19 +574,6 @@ def grab_title():
     return jsonify(status='ok', title=title)
 
 
-def post_over_limit(limit):
-    form = CreateSubTextPost()
-    return render_template('../html/sub/createpost.html', txtpostform=form, error=_('Wait a bit before posting.'))
-
-
-@do.route("/do/post", methods=['POST'])
-@login_required
-@misc.ratelimit(1, per=30, over_limit=post_over_limit)
-def create_post():
-    """ Sub link post creation endpoint """
-    pass
-
-
 @do.route('/do/sendcomment/<pid>', methods=['POST'])
 @login_required
 @misc.ratelimit(1, per=30)  # Once every 30 secs
