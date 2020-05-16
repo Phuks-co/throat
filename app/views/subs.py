@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from peewee import fn
 from flask import Blueprint, abort, request, render_template, redirect, url_for
 from flask_login import login_required, current_user
-from flask_babel import _
+from flask_babel import _, lazy_gettext as _l
 from .. import misc
 from ..config import config
 from ..misc import engine
@@ -28,6 +28,9 @@ def submit(ptype, sub):
         captcha = misc.create_captcha()
 
     form = CreateSubPostForm()
+    if current_user.canupload:
+        form.ptype.choices.append(('upload', _l('Upload file')))
+
     if not form.validate():
         if not form.ptype.data:
             form.ptype.data = 'link'
