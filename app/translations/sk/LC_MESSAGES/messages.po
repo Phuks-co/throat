@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-14 18:50-0300\n"
-"PO-Revision-Date: 2020-05-16 10:52+0200\n"
+"PO-Revision-Date: 2020-05-16 19:55+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -237,7 +237,7 @@ msgstr "Povoliť YouTube prehrávač"
 
 #: app/forms/sub.py:69
 msgid "Enable polls"
-msgstr "Povoliť hlasovania"
+msgstr "Povoliť ankety"
 
 #: app/forms/sub.py:70
 msgid "Default sub page post sorting"
@@ -289,7 +289,7 @@ msgstr "Link"
 
 #: app/forms/sub.py:90 app/html/shared/post.html:38
 msgid "Poll"
-msgstr "Hlasovanie"
+msgstr "Anketa"
 
 #: app/forms/sub.py:92 app/forms/sub.py:115 app/forms/sub.py:132
 msgid "NSFW?"
@@ -297,7 +297,7 @@ msgstr "NSFW?"
 
 #: app/forms/sub.py:94
 msgid "Hide poll results until it closes"
-msgstr "Skyť výsledky hlasovania až do ukončenia"
+msgstr "Skryť výsledky hlasovania až do ukončenia"
 
 #: app/forms/sub.py:95
 msgid "Poll closing time"
@@ -675,7 +675,7 @@ msgstr "Prehrať video"
 
 #: app/html/shared/post.html:65
 msgid "Show poll"
-msgstr "Zobraz hlasovanie"
+msgstr "Zobraz anketu"
 
 #: app/html/shared/post.html:67
 msgid "Show post content"
@@ -755,7 +755,7 @@ msgstr "Hľadať v príspevkoch..."
 
 #: app/html/shared/sidebar/sub.html:18
 msgid "Submit a poll"
-msgstr "Pridaj hlasovanie"
+msgstr "Pridaj anketu"
 
 #: app/html/shared/sidebar/sub.html:25
 msgid "View wiki"
@@ -1854,7 +1854,7 @@ msgstr "Linky z tejto domény tu nie sú povolené"
 
 #: app/views/do.py:656
 msgid "This sub does not allow polling"
-msgstr "Táto skupina neumožňuje hlasovanie"
+msgstr "Táto skupina neumožňuje ankety"
 
 #: app/views/do.py:661
 msgid "Not enough poll options provided"
@@ -2080,11 +2080,11 @@ msgstr "Nedostatok miesta na nahratie súboru."
 
 #: app/views/do.py:2141 app/views/do.py:2192
 msgid "Post is not a poll"
-msgstr "Príspevok nie je hlasovaním"
+msgstr "Príspevok nie je anketou"
 
 #: app/views/do.py:2146
 msgid "Poll option does not exist"
-msgstr "Táto možnosť hlasovanie neexistuje"
+msgstr "Táto možnosť hlasovania neexistuje"
 
 #: app/views/do.py:2151
 msgid "Already voted"
