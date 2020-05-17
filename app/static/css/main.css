@@ -603,6 +603,7 @@ iframe {
 .post .author {
     font-size: small;
     color: #5d5454;
+	margin-top: .4em;
 }
 .post .thumbnail {
     width: 70px;
@@ -676,7 +677,7 @@ iframe {
 .expando .icon svg {
   width: 16px;
   height: 16px;
-  top: -3px;
+  top: -5px;
   position: relative;
 }
 
@@ -761,7 +762,7 @@ a.slink{
   -moz-user-select:none;
   -webkit-user-select:none;
   user-select: none;
-  margin-left: 6.1px;
+  margin-left: .5em;
 }
 
 .links a.comments, .postinfo .links a, .bottombar.links a{
