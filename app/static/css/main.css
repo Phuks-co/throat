@@ -56,6 +56,7 @@ blockquote{
   border-radius: 5px;
   color: white;
   background-color: #800000;
+  font-size: small;
 }
 
 .mod2-inv{
@@ -843,6 +844,7 @@ a.slink{
   padding: 5px;
   line-height: 2em;
   white-space: nowrap;
+  font-size: small;
 }
 
 .pollflair{
@@ -851,6 +853,7 @@ a.slink{
   border-radius: 5px;
   color: white;
   background-color: #929292;
+  font-size: small;
 }
 
 
