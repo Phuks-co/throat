@@ -507,7 +507,7 @@ span#notification.fade {
 }
 
 .post .title {
-  color: #101010;
+  color: #484646;
   text-decoration: none;
   line-height: 1.2em;
   font-size: 1em;
@@ -516,7 +516,7 @@ span#notification.fade {
 }
 
 .post .title:visited {
-	color: #989898;
+	color: #929292;
 }
 
 .post .title:hover {
