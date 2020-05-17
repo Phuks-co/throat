@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-14 18:50-0300\n"
-"PO-Revision-Date: 2020-05-16 19:55+0200\n"
+"PO-Revision-Date: 2020-05-17 10:20+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -645,7 +645,7 @@ msgstr "Thumbnail"
 
 #: app/html/shared/post.html:35
 msgid "Announcement"
-msgstr "Oznam"
+msgstr "oznam"
 
 #: app/html/shared/post.html:41 app/html/shared/sidebar/sub.html:31
 #: app/html/sub/post.html:55
@@ -1588,7 +1588,7 @@ msgstr "%1 komentárov"
 
 #: app/static/js/Post.js:562
 msgid "Could not contact the server "
-msgstr "Nepodarilo sa spojiť so serverom"
+msgstr "Nepodarilo sa spojiť so serverom "
 
 #: app/static/js/Post.js:568
 msgid "Report post"
