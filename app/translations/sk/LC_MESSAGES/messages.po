@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-14 18:50-0300\n"
-"PO-Revision-Date: 2020-05-17 10:20+0200\n"
+"PO-Revision-Date: 2020-05-17 18:36+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -289,7 +289,7 @@ msgstr "Link"
 
 #: app/forms/sub.py:90 app/html/shared/post.html:38
 msgid "Poll"
-msgstr "Anketa"
+msgstr "anketa"
 
 #: app/forms/sub.py:92 app/forms/sub.py:115 app/forms/sub.py:132
 msgid "NSFW?"
