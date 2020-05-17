@@ -1151,7 +1151,7 @@ span.hasmail {
 
 hr {
     border: 0;
-    border-bottom: 2px dashed #a6a6a6;
+    /* border-bottom: 2px dashed #a6a6a6; */
     background: transparent;
 }
 
