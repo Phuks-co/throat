@@ -511,15 +511,16 @@ span#notification.fade {
   text-decoration: none;
   line-height: 1.2em;
   font-size: 1em;
+  font-weight: bold;
   word-wrap: break-word;
 }
 
 .post .title:visited {
-	color: #7A0105;
+	color: #989898;
 }
 
 .post .title:hover {
-	color: #A50105;
+	color: #820609;
 }
 .misctainer {
   float: left;
@@ -760,7 +761,7 @@ a.slink{
   -moz-user-select:none;
   -webkit-user-select:none;
   user-select: none;
-  margin-left: 5px;
+  margin-left: 6.1px;
 }
 
 .links a.comments, .postinfo .links a, .bottombar.links a{
@@ -1151,7 +1152,7 @@ span.hasmail {
 
 hr {
     border: 0;
-    /* border-bottom: 2px dashed #a6a6a6; */
+    border-bottom: 1px dotted #a6a6a6;
     background: transparent;
 }
 
