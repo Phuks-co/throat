@@ -154,10 +154,6 @@
     </div>
   @end
 
-  @if post['deleted'] == 0 and post['ptype'] == 3:
-    @polls.renderPoll(pollData, postmeta, post)
-  @end
-
   @if post['content']:
     @if post['deleted'] == 0:
       <div id="postcontent">
@@ -170,6 +166,10 @@
   @elif not post['link']:
     <div id="postcontent"></div>
     <div id="post-source"></div>
+  @end
+
+  @if post['deleted'] == 0 and post['ptype'] == 3:
+    @polls.renderPoll(pollData, postmeta, post)
   @end
 
 
