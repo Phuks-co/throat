@@ -152,9 +152,13 @@ def create_post(ptype, sub):
         # TODO: Make a different ptype for uploads?
         ptype = 1
         fupload = misc.upload_file()
-        if fupload:
-            form.link.data = config.storage.uploads.url + fupload
-            fileid = fupload
+        if fupload[0] is not False and fupload[0] is False:
+            return engine.get_template('sub/createpost.html').render(
+                {'error': fupload[0], 'form': form, 'sub': sub, 'captcha': captcha}), 400
+
+        if fupload[1]:
+            form.link.data = config.storage.uploads.url + fupload[0]
+            fileid = fupload[0]
 
         if not form.link.data:
             return engine.get_template('sub/createpost.html').render(
