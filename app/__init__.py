@@ -86,6 +86,9 @@ def create_app():
         """ Called after the request is processed. Used to time the request """
         if not app.debug and not current_user.is_admin():
             return response  # We won't do this if we're in production mode
+        if app.testing:
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         diff = time.time() - g.start
         diff = int(diff * 1000)
         if not hasattr(g, 'pqc'):
