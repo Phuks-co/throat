@@ -122,3 +122,54 @@ u.sub('#ban_timepick', 'change', function(e){
     document.querySelector('.date-picker-future.input').style.display = 'none';
   }
 });
+
+u.sub('input[name="ptype"]', 'change', function (e) {
+  const newVal = e.target.value;
+  u.each('.lncont', function (e) {
+    e.style.display = newVal == 'link' ? 'block' : 'none';
+  });
+
+  u.each('.lnicont', function (e) {
+    e.style.display = newVal == 'link' ? 'inline-block' : 'none';
+  });
+
+  u.each('.txcont', function (e) {
+    e.style.display = newVal == 'text' ? 'block' : 'none';
+  });
+
+  u.each('.txicont', function (e) {
+    e.style.display = newVal == 'text' ? 'inline-block' : 'none';
+  });
+
+  u.each('.pocont', function (e) {
+    e.style.display = newVal == 'poll' ? 'block' : 'none';
+  });
+
+  u.each('.ulcont', function (e) {
+    e.style.display = newVal == 'upload' ? 'block' : 'none';
+  });
+
+  u.each('.reqpoll', function (e) {
+    if(newVal == 'poll'){
+      e.setAttribute('required', '1');
+    }else{
+      e.removeAttribute('required');
+    }
+  });
+
+  u.each('.reqlink', function (e) {
+    if(newVal == 'link'){
+      e.setAttribute('required', '1');
+    }else{
+      e.removeAttribute('required');
+    }
+  });
+
+  u.each('.requpload', function (e) {
+    if(newVal == 'upload'){
+      e.setAttribute('required', '1');
+    }else{
+      e.removeAttribute('required');
+    }
+  });
+});

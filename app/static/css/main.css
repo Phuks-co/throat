@@ -1200,7 +1200,7 @@ input[type=search] {
 
 /* CREATE POST PAGE STYLES */
 .content.createpost {
-  width: 100%
+  width: 60%
 }
 
 .createpost input#title,

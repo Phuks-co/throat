@@ -39,7 +39,7 @@
     </thead>
     <tbody>
       @for code in codes:
-      <tr class="@{(code.uses >= code.max_uses or (code.expires is None or code.expires < datetime.datetime.utcnow())) and 'expired' or ''}">
+      <tr class="@{(code.uses >= code.max_uses or (code.expires is not None and code.expires < datetime.datetime.utcnow())) and 'expired' or ''}">
         <td>
           <time-ago datetime="@{code.created.isoformat()}Z">@{code.created.isoformat()}</time-ago>
         </td>

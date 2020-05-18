@@ -8,7 +8,7 @@ import 'tingle.js/dist/tingle.css';
 import 'time-elements';
 //import 'flatpickr/dist/flatpickr.css';
 import 'flatpickr/dist/themes/dark.css';
-import 'autocompleter/autocomplete.css'
+import 'autocompleter/autocomplete.css';
 
 
 import autocomplete from 'autocompleter';
@@ -105,7 +105,7 @@ function vote(obj, how, comment){
 }
 
 // sub autocomplete
-var sa = document.querySelector('.sub_autocomplete')
+const sa = document.querySelector('.sub_autocomplete');
 if(sa){
   autocomplete({
     minLength: 3,

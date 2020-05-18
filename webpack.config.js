@@ -56,7 +56,10 @@ module.exports = {
   },
   plugins: [
 //    new BundleAnalyzerPlugin(),
-    new MiniCssExtractPlugin(),
+    new MiniCssExtractPlugin({
+        filename: '[name].[chunkhash].css',
+        chunkFilename: '[id].[chunkhash].css'
+    }),
     new ManifestRevisionPlugin('./app/manifest.json', {
       rootAssetPath: './app/static/gen',
       ignorePaths: ['/static']

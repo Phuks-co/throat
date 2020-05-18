@@ -2,7 +2,7 @@
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, BooleanField, HiddenField
-from wtforms import RadioField, TextField, SelectField
+from wtforms import RadioField, SelectField, FieldList
 from wtforms.validators import DataRequired, Length, URL
 from wtforms.validators import Optional
 from flask_babel import lazy_gettext as _l
@@ -77,49 +77,27 @@ class EditSubForm(FlaskForm):
 class EditMod2Form(FlaskForm):
     """ Edit mod2 of sub (admin/owner) """
     user = StringField(_l('New mod username'), validators=[DataRequired(), Length(min=1, max=128)])
-    level = SelectField(_l('Mod level'), choices=[('1', _l('Moderator')), ('2', _l('Janitor'))], validators=[DataRequired()])
+    level = SelectField(_l('Mod level'), choices=[('1', _l('Moderator')), ('2', _l('Janitor'))],
+                        validators=[DataRequired()])
 
 
-class CreateSubTextPost(FlaskForm):
+class CreateSubPostForm(FlaskForm):
     """ Sub content submission form """
     sub = StringField(_l('Sub'), validators=[DataRequired(), Length(min=2, max=32)])
     title = StringField(_l('Post title'), validators=[DataRequired(), Length(min=3, max=350)])
     content = TextAreaField(_l('Post content'), validators=[Length(max=16384)])
     link = StringField(_l('Post link'), validators=[Length(min=10, max=256), Optional(), URL(require_tld=True)])
     ptype = RadioField(_l('Post type'),
-                       choices=[('text', _l('Text post')), ('link', _l('Link post')), ('poll', _l('Poll'))],
+                       choices=[('text', _l('Text post')), ('link', _l('Link post'))],
                        validators=[DataRequired()])
     nsfw = BooleanField(_l('NSFW?'))
     # for polls.
+    options = FieldList(StringField(_l('Option')), max_entries=6)
     hideresults = BooleanField(_l('Hide poll results until it closes'))
     closetime = StringField(_l('Poll closing time'))
 
-    def __init__(self, *args, **kwargs):
-        super(CreateSubTextPost, self).__init__(*args, **kwargs)
-        try:
-            self.sub.data = kwargs['sub']
-        except KeyError:
-            pass
-
-
-class CreteSubPostCaptcha(CreateSubTextPost):
     captcha = StringField(_l('Captcha'))
     ctok = HiddenField()
-
-
-class CreateSubLinkPost(FlaskForm):
-    """ Sub content submission form """
-    sub = StringField(_l('Sub'), validators=[DataRequired(), Length(min=2, max=32)])
-    title = StringField(_l('Post title'), validators=[DataRequired(), Length(min=4, max=350)])
-    link = StringField(_l('Post link'), validators=[DataRequired(), Length(min=10, max=256), URL(require_tld=True)])
-    nsfw = BooleanField(_l('NSFW?'))
-
-    def __init__(self, *args, **kwargs):
-        super(CreateSubLinkPost, self).__init__(*args, **kwargs)
-        try:
-            self.sub.data = kwargs['sub']
-        except KeyError:
-            pass
 
 
 class EditSubTextPostForm(FlaskForm):
@@ -137,7 +115,8 @@ class PostComment(FlaskForm):
     post = HiddenField()
     parent = HiddenField()
 
-    comment = TextAreaField(_l('Write your comment here. Styling with Markdown format is supported.'), validators=[DataRequired(), Length(min=1, max=16384)])
+    comment = TextAreaField(_l('Write your comment here. Styling with Markdown format is supported.'),
+                            validators=[DataRequired(), Length(min=1, max=16384)])
 
 
 class BanUserSubForm(FlaskForm):

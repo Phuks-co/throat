@@ -14,23 +14,28 @@ u.sub('#poll-addoption', 'click', function(e){
     // All is OK, add the option.
     var node = document.createElement('li');
     var tb = document.createElement('input');
-    tb.name = 'op[]';
+    tb.name = 'options-' + opts.childElementCount;
     tb.classList.add('sbm-poll-opt');
+    tb.classList.add('reqpoll');
     tb.type = 'text';
     tb.required = true;
 
     var tbdel = document.createElement('a');
-    tbdel.innerHTML = 'remove';
+    tbdel.innerHTML = _('remove');
     tbdel.style.marginLeft = '1em';
     tbdel.style.cursor = 'pointer';
-    tbdel.onclick = function(ev){
-        this.parentNode.parentNode.removeChild(this.parentNode);
-    }
+    tbdel.classList.add('poll-del-opt');
 
     node.appendChild(tb);
     node.appendChild(tbdel);
     opts.appendChild(node);
 });
+
+
+u.addEventForChild(document, 'click', '.poll-del-opt', function(e, qelem){
+    e.target.parentNode.parentNode.removeChild(e.target.parentNode);
+});
+
 
 u.sub('#closetime', 'click', function(e){
     if(this.checked){

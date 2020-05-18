@@ -42,7 +42,7 @@
     "jquery": "^3.2.1",
     "messageformat": "^2.3.0",
     "messageformat-po-loader": "^0.3.0",
-    "purecss": "^1.0.0",
+    "purecss": "^2.0.1",
     "socket.io-client": "^2.0.4",
     "sortablejs": "^1.7.0",
     "time-elements": "^3.0.0",
