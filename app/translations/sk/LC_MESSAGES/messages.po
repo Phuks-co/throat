@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-16 00:26-0300\n"
-"PO-Revision-Date: 2020-05-18 11:43+0200\n"
+"PO-Revision-Date: 2020-05-18 12:10+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -649,7 +649,7 @@ msgstr "Thumbnail"
 
 #: app/html/shared/post.html:35
 msgid "Announcement"
-msgstr "oznam"
+msgstr "Oznam"
 
 #: app/html/shared/post.html:41 app/html/shared/sidebar/sub.html:31
 #: app/html/sub/post.html:55
@@ -1316,7 +1316,7 @@ msgstr "Hlasovanie sa <b>skončilo</b>."
 
 #: app/html/sub/postpoll.html:9
 msgid "Show results."
-msgstr "Zobraziť výsledky."
+msgstr "Zobraziť výsledky"
 
 #: app/html/sub/postpoll.html:14
 #, python-format
