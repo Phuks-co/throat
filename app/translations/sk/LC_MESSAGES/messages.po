@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-16 00:26-0300\n"
-"PO-Revision-Date: 2020-05-18 11:33+0200\n"
+"PO-Revision-Date: 2020-05-18 11:38+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -940,7 +940,7 @@ msgstr "Tvoj komentár. Formátovanie textu povolené."
 
 #: app/html/sub/createpost.html:48
 msgid "Options"
-msgstr "Akcie"
+msgstr "Voľby"
 
 #: app/html/sub/createpost.html:56 app/static/js/Poll.js:24
 msgid "remove"
