@@ -1043,16 +1043,16 @@ def clear_metadata(path: str):
     exif.save_file(path)
 
 
-def upload_file(max_size=16580608):
+def upload_file(max_size=16777216):
     if not current_user.canupload:
-        return False
+        return False, False
 
     if 'files' not in request.files:
-        return False
+        return False, False
 
     ufile = request.files.getlist('files')[0]
     if ufile.filename == '':
-        return False
+        return _("Filename is empty"), False
 
     mtype = magic.from_buffer(ufile.read(1024), mime=True)
 
@@ -1067,7 +1067,7 @@ def upload_file(max_size=16580608):
     elif mtype == 'video/webm':
         extension = '.webm'
     else:
-        return False
+        return _("File type not allowed"), False
     ufile.seek(0)
     md5 = hashlib.md5()
     while True:
@@ -1084,11 +1084,11 @@ def upload_file(max_size=16580608):
         fsize = os.stat(fpath).st_size
         if fsize > max_size:  # Max file size exceeded
             os.remove(fpath)
-            return False
+            return _("File size exceeds the maximum allowed size (%(size)i MB)", size=max_size/1024/1024), False
         # remove metadata
         if mtype not in ('image/gif', 'video/mp4', 'video/webm'):  # Apparently we cannot write to gif images
             clear_metadata(fpath)
-    return f_name
+    return f_name, True
 
 
 def getSubMods(sid):
