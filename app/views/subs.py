@@ -152,7 +152,7 @@ def create_post(ptype, sub):
         # TODO: Make a different ptype for uploads?
         ptype = 1
         fupload = misc.upload_file()
-        if fupload[0] is not False and fupload[0] is False:
+        if fupload[0] is not False and fupload[1] is False:
             return engine.get_template('sub/createpost.html').render(
                 {'error': fupload[0], 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
