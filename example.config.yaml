@@ -87,12 +87,12 @@ storage:
     # Path where thumbnails will be stored (app MUST have write access)
     path: './app/static/thumbs'
     # URL or relative path where thumbnails are served (must end with forward slash). If hosting on the same domain, URL should also have 'static' in it, e.g.  'http://192.168.0.82/static/thumbs/'
-    url: 'https://uploads.itworks.sk/thumbs/'
+    url: ''
   
   uploads:
     # Same rules as thumbnails
     path: './app/static/ups'
-    url: 'https://uploads.itworks.sk/ups/'
+    url: ''
 
 database:
   # Database engine. Possible values:
