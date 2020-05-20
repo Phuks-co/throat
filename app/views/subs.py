@@ -1,6 +1,6 @@
 """ Generic sub actions (creating subs, creating posts, etc) """
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from peewee import fn
 from flask import Blueprint, abort, request, render_template, redirect, url_for
 from flask_login import login_required, current_user
@@ -239,7 +239,7 @@ def create_post(ptype, sub):
 
         if form.closetime.data:
             SubPostMetadata.create(pid=post.pid, key='poll_closes_time',
-                                   value=int(closetime.replace(tzinfo=datetime.timezone.utc).timestamp()))
+                                   value=int(closetime.replace(tzinfo=timezone.utc).timestamp()))
 
     Sub.update(posts=Sub.posts + 1).where(Sub.sid == sub.sid).execute()
     addr = url_for('sub.view_post', sub=sub.name, pid=post.pid)
