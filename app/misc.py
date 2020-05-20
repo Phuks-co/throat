@@ -1052,7 +1052,7 @@ def upload_file(max_size=16777216):
 
     ufile = request.files.getlist('files')[0]
     if ufile.filename == '':
-        return _("Filename is empty"), False
+        return False, False
 
     mtype = magic.from_buffer(ufile.read(1024), mime=True)
 
