@@ -100,131 +100,18 @@ def fresh_login():
     return jsonify(access_token=new_token)
 
 
-@API.route('/getPost/<int:pid>', methods=['get'])
+@API.route('/post/<target>', methods=['GET'])
 @jwt_optional
-def get_post(pid):
-    """Returns information for a post """
-    # Same as v2 API but `content` is HTML instead of markdown
-    uid = get_jwt_identity()
-    base_query = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score, SubPost.deleted,
-                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
-                                SubPost.comments, SubPost.ptype, User.status.alias('userstatus'), User.uid, SubPost.upvotes, *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes]))
-
-    if uid:
-        base_query = base_query.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == uid))).switch(SubPost)
-    base_query = base_query.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
-
-    post = base_query.where(SubPost.pid == pid).dicts()
-
-    if not post.count():
-        return jsonify(msg="Post does not exist"), 404
-
-    post = post[0]
-    post['deleted'] = True if post['deleted'] != 0 else False
-
-    if post['deleted']:  # Clear data for deleted posts
-        post['content'] = None
-        post['link'] = None
-        post['uid'] = None
-        post['user'] = '[Deleted]'
-        post['thumbnail'] = None
-        post['edited'] = None
-
-    if post['content']:
-        post['content'] = misc.our_markdown(post['content'])
-
-    if post['userstatus'] == 10:
-        post['user'] = '[Deleted]'
-        post['uid'] = None
-    del post['userstatus']
-
-    return jsonify(post=post)
-
-
-@API.route('/getPost/<int:pid>/comments', methods=['get'])
-@jwt_optional
-def get_post_comments(pid):
-    """ Returns comment tree
-
-    Return dict format:
-    "comments": [
-        {"cid": ...,
-            "content": ...,
-            "children": [
-                {"cid": ..., ...},
-                ...
-                {"cid": null}
-            ]
-        },
-        ....
-        {"cid": null, "key": ...} <-- "Load more comments" (siblings) mark
-    ]
-
-    Upon reaching a cid=null comment, return link to get_post_comment_children with
-    cid of the parent comment or 0 if it is a root comment and lim equal to the key
-    provided or absent if no key is provided
-    """
-    current_user = get_jwt_identity()
-    try:
-        post = SubPost.get(SubPost.pid == pid)
-    except SubPost.DoesNotExist:
-        return jsonify(msg="Post does not exist"), 404
-
-    # 1 - Fetch all comments (only cid and parentcid)
-    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == post.pid).order_by(SubPostComment.score.desc()).dicts()
-    if not comments.count():
-        return jsonify(comments=[])
-
-    comment_tree = misc.get_comment_tree(comments, uid=current_user)
-    return jsonify(comments=comment_tree)
-
-
-@API.route('/getPost/<int:pid>/comments/children/<cid>/<lim>', methods=['get'])
-@API.route('/getPost/<int:pid>/comments/children/<cid>', methods=['get'], defaults={'lim': ''})
-def get_post_comment_children(pid, cid, lim):
-    """ if lim is not present, load all children for cid.
-    if lim is present, load all comments after (???) index lim
-
-    NOTE: This is a crappy solution since comment sorting might change when user is
-    seeing the page and we might end up re-sending a comment (will show as duplicate).
-    This can be solved by the front-end checking if a cid was already rendered, but it
-    is a horrible solution
-    """
-    try:
-        post = SubPost.get(SubPost.pid == pid)
-    except SubPost.DoesNotExist:
-        return jsonify(msg='Post does not exist'), 404
-    if cid == 'null':
-        cid = '0'
-    if cid != '0':
-        try:
-            root = SubPostComment.get(SubPostComment.cid == cid)
-            if root.pid_id != post.pid:
-                return jsonify(msg='Comment does not belong to the given post'), 400
-        except SubPostComment.DoesNotExist:
-            return jsonify(msg='Post does not exist'), 404
-
-    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
-    if not comments.count():
-        return jsonify(comments=[])
-
-    if lim:
-        if cid == '0':
-            cid = None
-        comment_tree = misc.get_comment_tree(comments, cid, lim)
-    elif cid != '0':
-        comment_tree = misc.get_comment_tree(comments, cid)
-    else:
-        return jsonify(msg='Illegal comment id'), 400
-    return jsonify(comments=comment_tree)
-
-
-@API.route('/getPostList/<target>/<sort>', defaults={'page': 1}, methods=['GET'])
-@API.route('/getPostList/<target>/<sort>/<int:page>', methods=['GET'])
-@jwt_optional
-def get_post_list(target, sort, page):
+def get_post_list(target):
     """ Same as v2, but `content` is returned as parsed markdown and the `sort` can be `default`
     when `target` is a sub """
+
+    if target not in ('all', 'home'):
+        sort = request.args.get('sort', default='default')
+    else:
+        sort = request.args.get('sort', default='new')
+    page = request.args.get('page', default=1, type=int)
+
     if sort not in ('hot', 'top', 'new', 'default'):
         return jsonify(msg="Invalid sort"), 400
     if page < 1:
@@ -283,39 +170,173 @@ def get_post_list(target, sort, page):
     posts = misc.getPostList(base_query, sort, page).dicts()
 
     cnt = base_query.count() - page * 25
-    postlist = []
+    postList = []
     for post in posts:
         if post['userstatus'] == 10:  # account deleted
             post['user'] = '[Deleted]'
-            post['uid'] = None
+        post['archived'] = (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) > datetime.timedelta(days=60)
         del post['userstatus']
+        del post['uid']
         post['content'] = misc.our_markdown(post['content']) if post['ptype'] != 1 else ''
-        postlist.append(post)
+        postList.append(post)
 
-    return jsonify(posts=postlist, sort=sort, continues=True if cnt > 0 else False)
+    return jsonify(posts=postList, sort=sort, continues=True if cnt > 0 else False)
 
 
-@API.route('/vote/<target_type>/<pcid>/<value>', methods=['POST'])
+@API.route('/post/<sub>/<int:pid>', methods=['GET'])
+@jwt_optional
+def get_post(sub, pid):
+    """Returns information for a post """
+    uid = get_jwt_identity()
+    base_query = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score, SubPost.deleted,
+                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
+                                SubPost.comments, SubPost.ptype, User.status.alias('userstatus'), User.uid, SubPost.upvotes, *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes]))
+
+    if uid:
+        base_query = base_query.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == uid))).switch(SubPost)
+    base_query = base_query.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
+
+    post = base_query.where((SubPost.pid == pid) & (fn.Lower(Sub.name) == sub.lower())).dicts()
+
+    if not post.count():
+        return jsonify(msg="Post does not exist"), 404
+
+    post = post[0]
+    post['deleted'] = True if post['deleted'] != 0 else False
+
+    if post['deleted']:  # Clear data for deleted posts
+        post['content'] = None
+        post['link'] = None
+        post['uid'] = None
+        post['user'] = '[Deleted]'
+        post['thumbnail'] = None
+        post['edited'] = None
+
+    post['source'] = post['content']
+    if post['content']:
+        post['content'] = misc.our_markdown(post['content'])
+
+    if post['userstatus'] == 10:
+        post['user'] = '[Deleted]'
+
+    post['archived'] = (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) > datetime.timedelta(days=60)
+    if post['ptype'] == 0:
+        post['type'] = 'text'
+    elif post['ptype'] == 1:
+        post['type'] = 'link'
+    elif post['ptype'] == 2:
+        post['type'] = 'upload'
+    elif post['ptype'] == 3:
+        post['type'] = 'poll'
+    del post['ptype']
+    del post['userstatus']
+    del post['uid']
+
+    return jsonify(post=post)
+
+
+@API.route('/post/<sub>/<int:pid>/vote', methods=['POST'])
 @jwt_required
-def vote_post(target_type, pcid, value):
+def vote_post(sub, pid):
     """ Logs an upvote to a post. """
     uid = get_jwt_identity()
+    value = request.json.get('upvote', None)
+    if type(value) is not bool:
+        return jsonify(msg="Upvote must be true or false")
 
-    return misc.cast_vote(uid, target_type, pcid, value)
+    return misc.cast_vote(uid, "post", pid, value)
 
-@API.route('/create/comment', methods=['POST'])
+
+@API.route('/post/<sub>/<int:pid>/comment', methods=['GET'])
+@jwt_optional
+def get_post_comments(sub, pid):
+    """ Returns comment tree
+
+    Return dict format:
+    "comments": [
+        {"cid": ...,
+            "content": ...,
+            "children": [
+                {"cid": ..., ...},
+                ...
+                {"cid": null}
+            ]
+        },
+        ....
+        {"cid": null, "key": ...} <-- "Load more comments" (siblings) mark
+    ]
+
+    Upon reaching a cid=null comment, return link to get_post_comment_children with
+    cid of the parent comment or 0 if it is a root comment and lim equal to the key
+    provided or absent if no key is provided
+    """
+    current_user = get_jwt_identity()
+    try:
+        post = SubPost.get(SubPost.pid == pid)
+    except SubPost.DoesNotExist:
+        return jsonify(msg="Post does not exist"), 404
+
+    # 1 - Fetch all comments (only cid and parentcid)
+    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == post.pid).order_by(SubPostComment.score.desc()).dicts()
+    if not comments.count():
+        return jsonify(comments=[])
+
+    comment_tree = misc.get_comment_tree(comments, uid=current_user)
+    return jsonify(comments=comment_tree)
+
+
+@API.route('/post/<sub>/<int:pid>/comment/children/<cid>/<lim>', methods=['get'])
+@API.route('/post/<sub>/<int:pid>/comment/children/<cid>', methods=['get'], defaults={'lim': ''})
+def get_post_comment_children(sub, pid, cid, lim):
+    """ if lim is not present, load all children for cid.
+    if lim is present, load all comments after (???) index lim
+
+    NOTE: This is a crappy solution since comment sorting might change when user is
+    seeing the page and we might end up re-sending a comment (will show as duplicate).
+    This can be solved by the front-end checking if a cid was already rendered, but it
+    is a horrible solution
+    """
+    try:
+        post = SubPost.get(SubPost.pid == pid)
+    except SubPost.DoesNotExist:
+        return jsonify(msg='Post does not exist'), 404
+    if cid == 'null':
+        cid = '0'
+    if cid != '0':
+        try:
+            root = SubPostComment.get(SubPostComment.cid == cid)
+            if root.pid_id != post.pid:
+                return jsonify(msg='Comment does not belong to the given post'), 400
+        except SubPostComment.DoesNotExist:
+            return jsonify(msg='Post does not exist'), 404
+
+    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
+    if not comments.count():
+        return jsonify(comments=[])
+
+    if lim:
+        if cid == '0':
+            cid = None
+        comment_tree = misc.get_comment_tree(comments, cid, lim)
+    elif cid != '0':
+        comment_tree = misc.get_comment_tree(comments, cid)
+    else:
+        return jsonify(msg='Illegal comment id'), 400
+    return jsonify(comments=comment_tree)
+
+
+@API.route('/post/<sub>/<int:pid>/comment', methods=['POST'])
 @jwt_required
 @misc.ratelimit(1, per=30, over_limit=api_over_limit)  # Once every 30 secs
-def create_comment():
+def create_comment(sub, pid):
     uid = get_jwt_identity()
     if not request.is_json:
         return jsonify(msg="Missing JSON in request"), 400
 
-    pid = request.json.get('pid', None)
     parentcid = request.json.get('parentcid', None)
     content = request.json.get('content', None)
 
-    if not pid or not content:
+    if not content:
         return jsonify(msg='Missing required parameters'), 400
 
     try:
@@ -389,6 +410,7 @@ def create_comment():
 
     return jsonify(pid=pid, cid=comment.cid), 200
 
+
 class ChallengeRequired(Exception):
     """ Raised when a challenge is required. Catched by the error handlers below """
     pass
@@ -429,7 +451,7 @@ def get_challenge():
     return jsonify(challenge_token=challenge[0], challenge_blob=challenge[1])
 
 
-@API.route('/create/post', methods=['POST'])
+@API.route('/post', methods=['POST'])
 @jwt_required
 @misc.ratelimit(1, per=30, over_limit=api_over_limit)  # Once every 30 secs
 def create_post():
@@ -553,7 +575,7 @@ def create_post():
     return jsonify(status='ok', pid=post.pid, sub=sub.name)
 
 
-@API.route('/search/sub', methods=['GET'])
+@API.route('/sub', methods=['GET'])
 def search_sub():
     query = request.args.get('query', '')
     if len(query) < 3 or not misc.allowedNames.match(query):
@@ -565,17 +587,16 @@ def search_sub():
     return jsonify(results=list(subs))
 
 
-@API.route('/edit/comment', methods=['POST'])
+@API.route('/post/<sub>/<int:pid>/comment/<cid>', methods=['PATCH'])
 @jwt_required
-def edit_comment():
+def edit_comment(sub, pid, cid):
     uid = get_jwt_identity()
     if not request.is_json:
         return jsonify(msg="Missing JSON in request"), 400
 
-    cid = request.json.get('cid', None)
     content = request.json.get('content', None)
 
-    if not cid or not content:
+    if not content:
         return jsonify(msg="Missing required parameters"), 400
     
     try:

@@ -1552,9 +1552,9 @@ def cast_vote(uid, target_type, pcid, value):
     except User.DoesNotExist:
         return jsonify(msg=_("Unknown error. User disappeared")), 403
 
-    if value == "up":
+    if value == "up" or value is True:
         voteValue = 1
-    elif value == "down":
+    elif value == "down" or value is False:
         voteValue = -1
         if user.given < 0:
             return jsonify(msg=_('Score balance is negative')), 403
