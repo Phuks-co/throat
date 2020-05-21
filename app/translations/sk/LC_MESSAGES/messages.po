@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-16 00:26-0300\n"
-"PO-Revision-Date: 2020-05-20 21:18+0200\n"
+"PO-Revision-Date: 2020-05-21 11:03+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -492,11 +492,11 @@ msgstr "Zatiaľ tu nemáme príspevky."
 
 #: app/html/index.html:61 app/html/sub.html:49 app/html/sub/log.html:77
 msgid "Previous page"
-msgstr "Predošlé"
+msgstr "Predošlé príspevky"
 
 #: app/html/index.html:64 app/html/sub.html:52 app/html/sub/log.html:81
 msgid "Next page"
-msgstr "Nasledujúce"
+msgstr "Ďalšie príspevky"
 
 #: app/html/videomodeplayer.html:7
 msgid "Previous"
