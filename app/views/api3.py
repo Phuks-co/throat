@@ -371,6 +371,8 @@ def create_comment(sub, pid):
 
         if parent.status is not None or parent.pid.pid != post.pid:
             return jsonify(msg="Parent comment does not exist"), 404
+    else:
+        parentcid = None
 
     comment = SubPostComment.create(pid=pid, uid=uid,
                                     content=content,
@@ -408,7 +410,16 @@ def create_comment(sub, pid):
     sub = Sub.get_by_id(post.sid)
     misc.workWithMentions(content, notif_to, post, sub, cid=comment.cid, c_user=user)
 
-    return jsonify(pid=pid, cid=comment.cid), 200
+    # Return the comment data
+    comm = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
+                                 SubPostComment.score, SubPostComment.status, SubPostComment.time, SubPostComment.pid,
+                                 User.name.alias('user'), SubPostCommentVote.positive, User.status.alias('userstatus'),
+                                 SubPostComment.upvotes, SubPostComment.downvotes) \
+        .join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment) \
+        .join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == uid) &
+                                                       (SubPostCommentVote.cid == SubPostComment.cid))) \
+        .where(SubPostComment.cid == comment.cid).dicts()
+    return jsonify(comment=comm[0]), 200
 
 
 class ChallengeRequired(Exception):
