@@ -30,7 +30,7 @@ u.sub('#refuse-mod2-inv', 'click', function(e){
   u.post('/do/refuse_mod2inv/'+nsub, {},
   function(data){
     if (data.status == "ok") {
-      document.location.reload();
+      document.location = '/messages';
     }
   });
 });

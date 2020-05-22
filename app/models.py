@@ -238,8 +238,8 @@ class SubPost(BaseModel):
     pid = PrimaryKeyField()
     posted = DateTimeField(null=True)
     edited = DateTimeField(null=True)
-    ptype = IntegerField(null=True) # 1=text, 2=link, 3=poll
-    
+    ptype = IntegerField(null=True)  # 1=text, 2=link, 3=poll
+
     score = IntegerField(null=True)  # XXX: Deprecated
     upvotes = IntegerField(default=0)
     downvotes = IntegerField(default=0)
