@@ -235,6 +235,41 @@ def get_post(sub, pid):
     return jsonify(post=post)
 
 
+@API.route('/post/<sub>/<int:pid>', methods=['PATCH'])
+@jwt_required
+def edit_post(sub, pid):
+    uid = get_jwt_identity()
+    content = request.json.get('content', None)
+    if not content:
+        return jsonify(msg="Content parameter required"), 400
+
+    if len(content) > 16384:
+        return jsonify(msg="Content is too long"), 400
+
+    try:
+        post = SubPost.select().join(Sub, JOIN.LEFT_OUTER).where(
+            (SubPost.pid == pid) & (fn.Lower(Sub.name) == sub.lower()))
+        post = post.where(SubPost.deleted == 0).get()
+    except SubPost.DoesNotExist:
+        return jsonify(msg="Post does not exist"), 404
+
+    if post.uid_id != uid:
+        return jsonify(msg="Unauthorized"), 403
+
+    if misc.is_sub_banned(sub, uid=uid):
+        return jsonify(msg='You are banned on this sub.'), 403
+
+    if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
+        return jsonify(msg='Post is archived'), 403
+
+    post.content = content
+    # Only save edited time if it was posted more than five minutes ago
+    if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)).seconds > 300:
+        post.edited = datetime.datetime.utcnow()
+    post.save()
+    return get_post(sub, pid)
+
+
 @API.route('/post/<sub>/<int:pid>/vote', methods=['POST'])
 @jwt_required
 def vote_post(sub, pid):
@@ -664,7 +699,6 @@ def create_post():
 
     socketio.emit('yourvote', {'pid': post.pid, 'status': 1, 'score': post.score}, namespace='/snt',
                   room='user' + user.name)
-
 
     return jsonify(status='ok', pid=post.pid, sub=sub.name)
 
