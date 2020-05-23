@@ -542,6 +542,9 @@ def edit_txtpost(pid):
         if current_user.is_subban(post.sid):
             return jsonify(status='error', error=[_('You are banned on this sub.')])
 
+        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
+            return jsonify(status='error', error=[_("Post is archived")])
+
         post.content = form.content.data
         # Only save edited time if it was posted more than five minutes ago
         if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)).seconds > 300:
