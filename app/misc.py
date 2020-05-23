@@ -708,7 +708,7 @@ def getTodaysTopPosts():
     """ Returns top posts in the last 24 hours """
     td = datetime.utcnow() - timedelta(days=1)
     posts = (SubPost.select(SubPost.pid, Sub.name.alias('sub'), SubPost.title, SubPost.posted, SubPost.score)
-             .where(SubPost.posted > td).order_by(SubPost.score.desc()).limit(5)
+             .where(SubPost.posted > td).where(SubPost.deleted == 0).order_by(SubPost.score.desc()).limit(5)
              .join(Sub, JOIN.LEFT_OUTER).dicts())
     top_posts = []
     for p in posts:
