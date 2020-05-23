@@ -1566,7 +1566,7 @@ def cast_vote(uid, target_type, pcid, value):
         try:
             target = SubPost.select(SubPost.uid, SubPost.score, SubPost.upvotes, SubPost.downvotes,
                                     SubPost.pid.alias('id'), SubPost.posted)
-            target = target.where(SubPost.pid == pcid).get()
+            target = target.where(SubPost.pid == pcid & (SubPost.deleted == 0)).get()
         except SubPost.DoesNotExist:
             return jsonify(msg=_('Post does not exist')), 404
 
@@ -1584,7 +1584,8 @@ def cast_vote(uid, target_type, pcid, value):
                                            SubPostComment.score,
                                            SubPostComment.upvotes, SubPostComment.downvotes,
                                            SubPostComment.cid.alias('id'), SubPostComment.time.alias('posted'))
-            target = target.join(SubPost).where(SubPostComment.cid == pcid).objects().get()
+            target = target.join(SubPost).where(SubPostComment.cid == pcid).where(SubPostComment.status.is_null(True))
+            target = target.objects().get()
         except SubPostComment.DoesNotExist:
             return jsonify(msg=_('Comment does not exist')), 404
 
