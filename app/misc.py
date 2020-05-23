@@ -120,21 +120,7 @@ class SiteUser(object):
     @cache.memoize(1)
     def is_mod(self, sid, power_level=2):
         """ Returns True if the current user is a mod of 'sub' """
-        try:
-            SubMod.get((SubMod.sid == sid) & (SubMod.uid == self.uid) & (SubMod.power_level <= power_level) & (
-                    SubMod.invite == False))
-            return True
-        except SubMod.DoesNotExist:
-            pass
-
-        if self.can_admin:  # Admins mod all defaults
-            try:
-                SiteMetadata.get((SiteMetadata.key == 'default') & (SiteMetadata.value == sid))
-                return True
-            except SiteMetadata.DoesNotExist:
-                pass
-
-        return False
+        return is_sub_mod(self.uid, sid, power_level, self.can_admin)
 
     def is_subban(self, sub):
         """ Returns True if the current user is banned from 'sub' """
@@ -1672,3 +1658,20 @@ def cast_vote(uid, target_type, pcid, value):
                   namespace='/snt', room="user" + target.uid_id)
 
     return jsonify(score=target.score + new_score, rm=undone)
+
+
+def is_sub_mod(uid, sid, power_level, can_admin=False):
+    try:
+        SubMod.get((SubMod.sid == sid) & (SubMod.uid == uid) & (SubMod.power_level <= power_level) & (
+                SubMod.invite == False))
+        return True
+    except SubMod.DoesNotExist:
+        pass
+
+    if can_admin:  # Admins mod all defaults
+        try:
+            SiteMetadata.get((SiteMetadata.key == 'default') & (SiteMetadata.value == sid))
+            return True
+        except SiteMetadata.DoesNotExist:
+            pass
+    return False

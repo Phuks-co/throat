@@ -175,8 +175,6 @@ def delete_post():
                     comment=form.reason.data, link=url_for('site.view_post_inbox', pid=post.pid),
                     admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
 
-
-
         # time limited to prevent socket spam
         if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)).seconds < 86400:
             socketio.emit('deletion', {'pid': post.pid}, namespace='/snt', room='/all/new')

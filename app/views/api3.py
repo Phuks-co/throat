@@ -270,6 +270,54 @@ def edit_post(sub, pid):
     return get_post(sub, pid)
 
 
+@API.route('/post/<sub>/<int:pid>', methods=['DELETE'])
+@jwt_required
+def delete_post(sub, pid):
+    uid = get_jwt_identity()
+    try:
+        post = SubPost.select().join(Sub, JOIN.LEFT_OUTER).where(
+            (SubPost.pid == pid) & (fn.Lower(Sub.name) == sub.lower()))
+        post = post.where(SubPost.deleted == 0).get()
+    except SubPost.DoesNotExist:
+        return jsonify(msg="Post does not exist"), 404
+
+    # TODO: Implement admin logic in the api
+    if not misc.is_sub_mod(uid, post.sid_id, 2) and post.uid_id != uid:
+        return jsonify(msg="Unauthorized"), 403
+
+    if post.uid_id == uid:
+        post.deleted = 1
+    else:
+        reason = request.args.get('reason', default=None)
+        if not reason:
+            return jsonify(msg="Cannot delete post without reason"), 400
+        post.deleted = 2
+        # TODO: Make this a translatable notification
+        misc.create_message(mfrom=uid, to=post.uid.uid,
+                            subject='Your post on /s/' + sub.name + ' has been deleted.',
+                            content='Reason: ' + reason,
+                            link=sub.name, mtype=11)
+
+        misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_POST, uid, post.sid,
+                           comment=reason, link=url_for('site.view_post_inbox', pid=post.pid),
+                           admin=False)
+
+    if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)).seconds < 86400:
+        socketio.emit('deletion', {'pid': post.pid}, namespace='/snt', room='/all/new')
+
+    # check if the post is an announcement. Unannounce if it is.
+    try:
+        ann = SiteMetadata.select().where(SiteMetadata.key == 'announcement').where(
+            SiteMetadata.value == post.pid).get()
+        ann.delete_instance()
+        cache.delete_memoized(misc.getAnnouncementPid)
+    except SiteMetadata.DoesNotExist:
+        pass
+    post.save()
+    Sub.update(posts=Sub.posts - 1).where(Sub.sid == post.sid).execute()
+    return jsonify(), 200
+
+
 @API.route('/post/<sub>/<int:pid>/vote', methods=['POST'])
 @jwt_required
 def vote_post(sub, pid):
