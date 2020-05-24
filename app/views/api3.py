@@ -2,7 +2,10 @@
 
 import datetime
 import uuid
+import re
+import requests
 import bcrypt
+from bs4 import BeautifulSoup
 from flask import Blueprint, jsonify, request, url_for
 from peewee import JOIN, fn
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
@@ -10,7 +13,7 @@ from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
 from .. import misc
 from ..socketio import socketio
 from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote, SubSubscriber
-from ..models import SiteMetadata, UserMetadata
+from ..models import SiteMetadata, UserMetadata, Message
 from ..caching import cache
 
 API = Blueprint('apiv3', __name__)
@@ -18,9 +21,9 @@ API = Blueprint('apiv3', __name__)
 JWT = JWTManager()
 
 
-def api_over_limit(limit):
+def api_over_limit():
     """ Called when triggering a rate-limit """
-    return jsonify(msg="Rate limited. Please try again ({0} every {1}s)".format(limit.limit, limit.per)), 429
+    return jsonify(msg="Rate limited. Please try again later"), 429
 
 
 @API.route('/login', methods=['POST'])
@@ -235,6 +238,89 @@ def get_post(sub, pid):
     return jsonify(post=post)
 
 
+@API.route('/post/<sub>/<int:pid>', methods=['PATCH'])
+@jwt_required
+def edit_post(sub, pid):
+    uid = get_jwt_identity()
+    content = request.json.get('content', None)
+    if not content:
+        return jsonify(msg="Content parameter required"), 400
+
+    if len(content) > 16384:
+        return jsonify(msg="Content is too long"), 400
+
+    try:
+        post = SubPost.select().join(Sub, JOIN.LEFT_OUTER).where(
+            (SubPost.pid == pid) & (fn.Lower(Sub.name) == sub.lower()))
+        post = post.where(SubPost.deleted == 0).get()
+    except SubPost.DoesNotExist:
+        return jsonify(msg="Post does not exist"), 404
+
+    if post.uid_id != uid:
+        return jsonify(msg="Unauthorized"), 403
+
+    if misc.is_sub_banned(sub, uid=uid):
+        return jsonify(msg='You are banned on this sub.'), 403
+
+    if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
+        return jsonify(msg='Post is archived'), 403
+
+    post.content = content
+    # Only save edited time if it was posted more than five minutes ago
+    if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)).seconds > 300:
+        post.edited = datetime.datetime.utcnow()
+    post.save()
+    return get_post(sub, pid)
+
+
+@API.route('/post/<sub>/<int:pid>', methods=['DELETE'])
+@jwt_required
+def delete_post(sub, pid):
+    uid = get_jwt_identity()
+    try:
+        post = SubPost.select().join(Sub, JOIN.LEFT_OUTER).where(
+            (SubPost.pid == pid) & (fn.Lower(Sub.name) == sub.lower()))
+        post = post.where(SubPost.deleted == 0).get()
+    except SubPost.DoesNotExist:
+        return jsonify(msg="Post does not exist"), 404
+
+    # TODO: Implement admin logic in the api
+    if not misc.is_sub_mod(uid, post.sid_id, 2) and post.uid_id != uid:
+        return jsonify(msg="Unauthorized"), 403
+
+    if post.uid_id == uid:
+        post.deleted = 1
+    else:
+        reason = request.args.get('reason', default=None)
+        if not reason:
+            return jsonify(msg="Cannot delete post without reason"), 400
+        post.deleted = 2
+        # TODO: Make this a translatable notification
+        misc.create_message(mfrom=uid, to=post.uid.uid,
+                            subject='Your post on /s/' + sub.name + ' has been deleted.',
+                            content='Reason: ' + reason,
+                            link=sub.name, mtype=11)
+
+        misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_POST, uid, post.sid,
+                           comment=reason, link=url_for('site.view_post_inbox', pid=post.pid),
+                           admin=False)
+
+    if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)).seconds < 86400:
+        socketio.emit('deletion', {'pid': post.pid}, namespace='/snt', room='/all/new')
+
+    # check if the post is an announcement. Unannounce if it is.
+    try:
+        ann = SiteMetadata.select().where(SiteMetadata.key == 'announcement').where(
+            SiteMetadata.value == post.pid).get()
+        ann.delete_instance()
+        cache.delete_memoized(misc.getAnnouncementPid)
+    except SiteMetadata.DoesNotExist:
+        pass
+    post.save()
+    Sub.update(posts=Sub.posts - 1).where(Sub.sid == post.sid).execute()
+    return jsonify(), 200
+
+
 @API.route('/post/<sub>/<int:pid>/vote', methods=['POST'])
 @jwt_required
 def vote_post(sub, pid):
@@ -282,46 +368,6 @@ def get_post_comments(sub, pid):
         return jsonify(comments=[])
 
     comment_tree = misc.get_comment_tree(comments, uid=current_user)
-    return jsonify(comments=comment_tree)
-
-
-@API.route('/post/<sub>/<int:pid>/comment/children/<cid>/<lim>', methods=['get'])
-@API.route('/post/<sub>/<int:pid>/comment/children/<cid>', methods=['get'], defaults={'lim': ''})
-def get_post_comment_children(sub, pid, cid, lim):
-    """ if lim is not present, load all children for cid.
-    if lim is present, load all comments after (???) index lim
-
-    NOTE: This is a crappy solution since comment sorting might change when user is
-    seeing the page and we might end up re-sending a comment (will show as duplicate).
-    This can be solved by the front-end checking if a cid was already rendered, but it
-    is a horrible solution
-    """
-    try:
-        post = SubPost.get(SubPost.pid == pid)
-    except SubPost.DoesNotExist:
-        return jsonify(msg='Post does not exist'), 404
-    if cid == 'null':
-        cid = '0'
-    if cid != '0':
-        try:
-            root = SubPostComment.get(SubPostComment.cid == cid)
-            if root.pid_id != post.pid:
-                return jsonify(msg='Comment does not belong to the given post'), 400
-        except SubPostComment.DoesNotExist:
-            return jsonify(msg='Post does not exist'), 404
-
-    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
-    if not comments.count():
-        return jsonify(comments=[])
-
-    if lim:
-        if cid == '0':
-            cid = None
-        comment_tree = misc.get_comment_tree(comments, cid, lim)
-    elif cid != '0':
-        comment_tree = misc.get_comment_tree(comments, cid)
-    else:
-        return jsonify(msg='Illegal comment id'), 400
     return jsonify(comments=comment_tree)
 
 
@@ -418,8 +464,131 @@ def create_comment(sub, pid):
         .join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment) \
         .join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == uid) &
                                                        (SubPostCommentVote.cid == SubPostComment.cid))) \
-        .where(SubPostComment.cid == comment.cid).dicts()
-    return jsonify(comment=comm[0]), 200
+        .where(SubPostComment.cid == comment.cid).dicts()[0]
+    comm['source'] = comm['content']
+    comm['content'] = misc.our_markdown(comm['content'])
+    return jsonify(comment=comm), 200
+
+
+@API.route('/post/<sub>/<int:pid>/comment/<cid>', methods=['PATCH'])
+@jwt_required
+def edit_comment(sub, pid, cid):
+    """ Edits a comment """
+    uid = get_jwt_identity()
+    if not request.is_json:
+        return jsonify(msg="Missing JSON in request"), 400
+
+    content = request.json.get('content', None)
+    if not content:
+        return jsonify(msg="Content parameter required"), 400
+
+    # Fetch the comment
+    try:
+        comment = SubPostComment.get((SubPostComment.pid == pid) & (SubPostComment.cid == cid))
+    except SubPostComment.DoesNotExist:
+        return jsonify(msg="Comment not found"), 404
+
+    if comment.uid_id != uid:
+        return jsonify(msg="Unauthorized"), 403
+
+    if (datetime.datetime.utcnow() - comment.pid.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
+        return jsonify(msg="Post is archived"), 400
+
+    if len(content) > 16384:
+        return jsonify(msg="Content is too long"), 400
+
+    comment.content = content
+    comment.lastedit = datetime.datetime.utcnow()
+    comment.save()
+    # TODO: move this block to a function
+    comm = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
+                                 SubPostComment.score, SubPostComment.status, SubPostComment.time, SubPostComment.pid,
+                                 User.name.alias('user'), SubPostCommentVote.positive, User.status.alias('userstatus'),
+                                 SubPostComment.upvotes, SubPostComment.downvotes) \
+        .join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment) \
+        .join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == uid) &
+                                                       (SubPostCommentVote.cid == SubPostComment.cid))) \
+        .where(SubPostComment.cid == comment.cid).dicts()[0]
+    comm['source'] = comm['content']
+    comm['content'] = misc.our_markdown(comm['content'])
+    return jsonify(comment=comm), 200
+
+
+@API.route('/post/<sub>/<int:pid>/comment/<cid>', methods=['DELETE'])
+@jwt_required
+def delete_comment(sub, pid, cid):
+    uid = get_jwt_identity()
+
+    # Fetch the comment
+    try:
+        comment = SubPostComment.get((SubPostComment.pid == pid) & (SubPostComment.cid == cid))
+    except SubPostComment.DoesNotExist:
+        return jsonify(msg="Comment not found"), 404
+
+    if comment.uid_id != uid:
+        return jsonify(msg="Unauthorized"), 403
+
+    if (datetime.datetime.utcnow() - comment.pid.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
+        return jsonify(msg="Post is archived"), 400
+
+    comment.status = 1
+    comment.save()
+
+    q = Message.delete().where(Message.mlink == cid)
+    q.execute()
+    return jsonify(), 200
+
+
+@API.route('/post/<sub>/<int:pid>/comment/<cid>/vote', methods=['POST'])
+@jwt_required
+def vote_comment(sub, pid, cid):
+    """ Logs an upvote to a post. """
+    uid = get_jwt_identity()
+    value = request.json.get('upvote', None)
+    if type(value) is not bool:
+        return jsonify(msg="Upvote must be true or false"), 400
+
+    return misc.cast_vote(uid, "comment", cid, value)
+
+
+@API.route('/post/<sub>/<int:pid>/comment/<cid>/children', methods=['GET'])
+def get_post_comment_children(sub, pid, cid):
+    """ if key is not present, load all children for cid.
+    if key is present, load all comments after (???) index `key`
+
+    NOTE: This is a crappy solution since comment sorting might change when user is
+    seeing the page and we might end up re-sending a comment (will show as duplicate).
+    This can be solved by the front-end checking if a cid was already rendered, but it
+    is a horrible solution
+    """
+    lim = request.args.get('key', default='')
+    try:
+        post = SubPost.get(SubPost.pid == pid)
+    except SubPost.DoesNotExist:
+        return jsonify(msg='Post does not exist'), 404
+    if cid == 'null':
+        cid = '0'
+    if cid != '0':
+        try:
+            root = SubPostComment.get(SubPostComment.cid == cid)
+            if root.pid_id != post.pid:
+                return jsonify(msg='Comment does not belong to the given post'), 400
+        except SubPostComment.DoesNotExist:
+            return jsonify(msg='Post does not exist'), 404
+
+    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
+    if not comments.count():
+        return jsonify(comments=[])
+
+    if lim:
+        if cid == '0':
+            cid = None
+        comment_tree = misc.get_comment_tree(comments, cid, lim)
+    elif cid != '0':
+        comment_tree = misc.get_comment_tree(comments, cid)
+    else:
+        return jsonify(msg='Illegal comment id'), 400
+    return jsonify(comments=comment_tree)
 
 
 class ChallengeRequired(Exception):
@@ -443,13 +612,15 @@ def chall_wrong(error):
 
 
 def check_challenge():
-    challenge_token = request.json.get('challenge_token')
-    challenge_response = request.json.get('challenge_response')
+    challenge_token = request.json.get('challengeToken')
+    challenge_response = request.json.get('challengeResponse')
 
     if not challenge_token or not challenge_response:
+        misc.reset_ratelimit(30)
         raise ChallengeRequired
 
     if not misc.validate_captcha(challenge_token, challenge_response):
+        misc.reset_ratelimit(30)
         raise ChallengeWrong
 
     return True
@@ -471,7 +642,7 @@ def create_post():
         return jsonify(msg="Missing JSON in request"), 400
 
     sub = request.json.get('sub', None)
-    ptype = request.json.get('ptype', None)
+    ptype = request.json.get('type', None)
     title = request.json.get('title', None)
     link = request.json.get('link', None)
     content = request.json.get('content', None)
@@ -480,10 +651,11 @@ def create_post():
     if not sub or ptype is None or not title:
         return jsonify(msg='Missing required parameters'), 400
 
-    if ptype not in (0, 1, 3):
+    if ptype not in ('link', 'upload', 'text', 'poll'):
         return jsonify(msg='Illegal value for ptype'), 400
 
-    if ptype == 3:
+    # TODO: Polls, uploads
+    if ptype in ('poll', 'upload'):
         return jsonify(msg='This method does not support poll creation'), 400
 
     try:
@@ -526,9 +698,10 @@ def create_post():
         tposts = SubPost.select().where(SubPost.uid == uid).where(SubPost.posted > today).count()
         if lposts > 10 or tposts > 25:
             return jsonify(msg="You have posted too much today"), 403
-
-    if ptype == 1:
-        if not 'link':
+    post_type = 0
+    if ptype == 'link':
+        post_type = 1
+        if not link:
             return jsonify(msg='No link provided'), 400
 
         if content:
@@ -540,11 +713,12 @@ def create_post():
         recent = datetime.datetime.utcnow() - datetime.timedelta(days=5)
         try:
             wpost = SubPost.select().where(SubPost.sid == sub.sid).where(SubPost.link == link)
-            wpost = wpost.where(SubPost.deleted == 0).where(SubPost.posted > recent).get()
+            wpost.where(SubPost.deleted == 0).where(SubPost.posted > recent).get()
             return jsonify(msg="This link has already been posted recently on this sub"), 403
         except SubPost.DoesNotExist:
             pass
-    elif ptype == 0:
+    elif ptype == 'text':
+        post_type = 0
         if link:
             return jsonify(msg='Text posts do not accept link'), 400
         if len(content) > 16384:
@@ -557,18 +731,18 @@ def create_post():
                           uid=uid,
                           title=title.strip(misc.WHITESPACE),
                           content=content,
-                          link=link if ptype == 1 else None,
+                          link=link if ptype == 'link' else None,
                           posted=datetime.datetime.utcnow(),
                           score=1, upvotes=1, downvotes=0, deleted=0, comments=0,
-                          ptype=ptype,
+                          ptype=post_type,
                           nsfw=nsfw if not subdata.get('nsfw') == '1' else 1,
-                          thumbnail=misc.get_thumbnail(link) if ptype == 1 else '')
+                          thumbnail=misc.get_thumbnail(link) if ptype == 'link' else '')
 
     Sub.update(posts=Sub.posts + 1).where(Sub.sid == sub.sid).execute()
     addr = url_for('sub.view_post', sub=sub.name, pid=post.pid)
     posts = misc.getPostList(misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), 'new', 1).dicts()
     socketio.emit('thread',
-                  {'addr': addr, 'sub': sub.name, 'type': ptype,
+                  {'addr': addr, 'sub': sub.name, 'type': post_type,
                    'user': user.name, 'pid': post.pid, 'sid': sub.sid,
                    'html': misc.engine.get_template('shared/post.html').render({'posts': posts, 'sub': False})},
                   namespace='/snt', room='/all/new')
@@ -581,7 +755,6 @@ def create_post():
 
     socketio.emit('yourvote', {'pid': post.pid, 'status': 1, 'score': post.score}, namespace='/snt',
                   room='user' + user.name)
-
 
     return jsonify(status='ok', pid=post.pid, sub=sub.name)
 
@@ -596,39 +769,6 @@ def search_sub():
     subs = Sub.select(Sub.name).where(Sub.name ** query).limit(10).dicts()
 
     return jsonify(results=list(subs))
-
-
-@API.route('/post/<sub>/<int:pid>/comment/<cid>', methods=['PATCH'])
-@jwt_required
-def edit_comment(sub, pid, cid):
-    uid = get_jwt_identity()
-    if not request.is_json:
-        return jsonify(msg="Missing JSON in request"), 400
-
-    content = request.json.get('content', None)
-
-    if not content:
-        return jsonify(msg="Missing required parameters"), 400
-    
-    try:
-        comment = SubPostComment.select().where(SubPostComment.status.is_null(True)).where(SubPostComment.cid == cid).get()
-    except SubPostComment.DoesNotExist:
-        return jsonify(msg="Comment does not exist"), 400
-    
-    if comment.uid_id != uid:
-        return jsonify(msg="Unauthorized"), 403
-
-    if (datetime.datetime.utcnow() - comment.pid.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
-        return jsonify(msg="Post is archived"), 400
-
-    if len(content) > 16384:
-        return jsonify(msg="Content is too long"), 400
-
-    comment.content = content
-    comment.lastedit = datetime.datetime.utcnow()
-    comment.save()
-
-    return jsonify()
 
 
 @API.route('/user/settings', methods=['GET'])
@@ -680,3 +820,26 @@ def set_settings():
 
     [x.execute() for x in qrys]
     return jsonify()
+
+
+@API.route('/grabtitle', methods=['GET'])
+@jwt_required
+def grab_title():
+    url = request.args.get('url', None)
+    if not url:
+        return jsonify(msg='url parameter required'), 400
+
+    try:
+        req = misc.safeRequest(url)
+    except (requests.exceptions.RequestException, ValueError):
+        return jsonify(msg="Couldn't fetch title"), 400
+
+    og = BeautifulSoup(req[1], 'lxml', from_encoding='utf-8')
+    try:
+        title = og('title')[0].text
+    except (OSError, ValueError, IndexError):
+        return jsonify(msg="Couldn't fetch title"), 400
+
+    title = title.strip(misc.WHITESPACE)
+    title = re.sub(' - Youtube$', '', title)
+    return jsonify(title=title), 200

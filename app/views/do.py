@@ -175,8 +175,6 @@ def delete_post():
                     comment=form.reason.data, link=url_for('site.view_post_inbox', pid=post.pid),
                     admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
 
-
-
         # time limited to prevent socket spam
         if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)).seconds < 86400:
             socketio.emit('deletion', {'pid': post.pid}, namespace='/snt', room='/all/new')
@@ -541,6 +539,9 @@ def edit_txtpost(pid):
 
         if current_user.is_subban(post.sid):
             return jsonify(status='error', error=[_('You are banned on this sub.')])
+
+        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
+            return jsonify(status='error', error=[_("Post is archived")])
 
         post.content = form.content.data
         # Only save edited time if it was posted more than five minutes ago

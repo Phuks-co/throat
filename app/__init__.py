@@ -88,6 +88,7 @@ def create_app():
             return response  # We won't do this if we're in production mode
         if app.testing:
             response.headers.add('Access-Control-Allow-Origin', '*')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE')
             response.headers.add('Access-Control-Allow-Headers', 'Content-Type,authorization')
         diff = time.time() - g.start
         diff = int(diff * 1000)

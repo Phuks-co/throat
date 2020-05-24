@@ -120,21 +120,7 @@ class SiteUser(object):
     @cache.memoize(1)
     def is_mod(self, sid, power_level=2):
         """ Returns True if the current user is a mod of 'sub' """
-        try:
-            SubMod.get((SubMod.sid == sid) & (SubMod.uid == self.uid) & (SubMod.power_level <= power_level) & (
-                    SubMod.invite == False))
-            return True
-        except SubMod.DoesNotExist:
-            pass
-
-        if self.can_admin:  # Admins mod all defaults
-            try:
-                SiteMetadata.get((SiteMetadata.key == 'default') & (SiteMetadata.value == sid))
-                return True
-            except SiteMetadata.DoesNotExist:
-                pass
-
-        return False
+        return is_sub_mod(self.uid, sid, power_level, self.can_admin)
 
     def is_subban(self, sub):
         """ Returns True if the current user is banned from 'sub' """
@@ -339,6 +325,12 @@ def ratelimit(limit, per=300, send_x_headers=True,
         return update_wrapper(rate_limited, f)
 
     return decorator
+
+
+def reset_ratelimit(per, scope_func=lambda: get_ip(), key_func=lambda: request.endpoint):
+    reset = (int(time.time()) // per) * per + per
+    key = 'rate-limit/%s/%s/%s' % (key_func(), scope_func(), reset)
+    redis.delete(key)
 
 
 def safeRequest(url, recieve_timeout=10):
@@ -1566,7 +1558,7 @@ def cast_vote(uid, target_type, pcid, value):
         try:
             target = SubPost.select(SubPost.uid, SubPost.score, SubPost.upvotes, SubPost.downvotes,
                                     SubPost.pid.alias('id'), SubPost.posted)
-            target = target.where(SubPost.pid == pcid).get()
+            target = target.where((SubPost.pid == pcid) & (SubPost.deleted == 0)).get()
         except SubPost.DoesNotExist:
             return jsonify(msg=_('Post does not exist')), 404
 
@@ -1584,7 +1576,8 @@ def cast_vote(uid, target_type, pcid, value):
                                            SubPostComment.score,
                                            SubPostComment.upvotes, SubPostComment.downvotes,
                                            SubPostComment.cid.alias('id'), SubPostComment.time.alias('posted'))
-            target = target.join(SubPost).where(SubPostComment.cid == pcid).objects().get()
+            target = target.join(SubPost).where(SubPostComment.cid == pcid).where(SubPostComment.status.is_null(True))
+            target = target.objects().get()
         except SubPostComment.DoesNotExist:
             return jsonify(msg=_('Comment does not exist')), 404
 
@@ -1671,3 +1664,20 @@ def cast_vote(uid, target_type, pcid, value):
                   namespace='/snt', room="user" + target.uid_id)
 
     return jsonify(score=target.score + new_score, rm=undone)
+
+
+def is_sub_mod(uid, sid, power_level, can_admin=False):
+    try:
+        SubMod.get((SubMod.sid == sid) & (SubMod.uid == uid) & (SubMod.power_level <= power_level) & (
+                SubMod.invite == False))
+        return True
+    except SubMod.DoesNotExist:
+        pass
+
+    if can_admin:  # Admins mod all defaults
+        try:
+            SiteMetadata.get((SiteMetadata.key == 'default') & (SiteMetadata.value == sid))
+            return True
+        except SiteMetadata.DoesNotExist:
+            pass
+    return False
