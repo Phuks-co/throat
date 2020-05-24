@@ -1558,7 +1558,7 @@ def cast_vote(uid, target_type, pcid, value):
         try:
             target = SubPost.select(SubPost.uid, SubPost.score, SubPost.upvotes, SubPost.downvotes,
                                     SubPost.pid.alias('id'), SubPost.posted)
-            target = target.where(SubPost.pid == pcid & (SubPost.deleted == 0)).get()
+            target = target.where((SubPost.pid == pcid) & (SubPost.deleted == 0)).get()
         except SubPost.DoesNotExist:
             return jsonify(msg=_('Post does not exist')), 404
 
