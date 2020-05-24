@@ -2,7 +2,10 @@
 
 import datetime
 import uuid
+import re
+import requests
 import bcrypt
+from bs4 import BeautifulSoup
 from flask import Blueprint, jsonify, request, url_for
 from peewee import JOIN, fn
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
@@ -18,9 +21,9 @@ API = Blueprint('apiv3', __name__)
 JWT = JWTManager()
 
 
-def api_over_limit(limit):
+def api_over_limit():
     """ Called when triggering a rate-limit """
-    return jsonify(msg="Rate limited. Please try again ({0} every {1}s)".format(limit.limit, limit.per)), 429
+    return jsonify(msg="Rate limited. Please try again later"), 429
 
 
 @API.route('/login', methods=['POST'])
@@ -613,9 +616,11 @@ def check_challenge():
     challenge_response = request.json.get('challenge_response')
 
     if not challenge_token or not challenge_response:
+        misc.reset_ratelimit(30)
         raise ChallengeRequired
 
     if not misc.validate_captcha(challenge_token, challenge_response):
+        misc.reset_ratelimit(30)
         raise ChallengeWrong
 
     return True
@@ -637,7 +642,7 @@ def create_post():
         return jsonify(msg="Missing JSON in request"), 400
 
     sub = request.json.get('sub', None)
-    ptype = request.json.get('ptype', None)
+    ptype = request.json.get('type', None)
     title = request.json.get('title', None)
     link = request.json.get('link', None)
     content = request.json.get('content', None)
@@ -646,10 +651,11 @@ def create_post():
     if not sub or ptype is None or not title:
         return jsonify(msg='Missing required parameters'), 400
 
-    if ptype not in (0, 1, 3):
+    if ptype not in ('link', 'upload', 'text', 'poll'):
         return jsonify(msg='Illegal value for ptype'), 400
 
-    if ptype == 3:
+    # TODO: Polls, uploads
+    if ptype in ('poll', 'upload'):
         return jsonify(msg='This method does not support poll creation'), 400
 
     try:
@@ -692,9 +698,10 @@ def create_post():
         tposts = SubPost.select().where(SubPost.uid == uid).where(SubPost.posted > today).count()
         if lposts > 10 or tposts > 25:
             return jsonify(msg="You have posted too much today"), 403
-
-    if ptype == 1:
-        if not 'link':
+    post_type = 0
+    if ptype == 'link':
+        post_type = 1
+        if not link:
             return jsonify(msg='No link provided'), 400
 
         if content:
@@ -706,11 +713,12 @@ def create_post():
         recent = datetime.datetime.utcnow() - datetime.timedelta(days=5)
         try:
             wpost = SubPost.select().where(SubPost.sid == sub.sid).where(SubPost.link == link)
-            wpost = wpost.where(SubPost.deleted == 0).where(SubPost.posted > recent).get()
+            wpost.where(SubPost.deleted == 0).where(SubPost.posted > recent).get()
             return jsonify(msg="This link has already been posted recently on this sub"), 403
         except SubPost.DoesNotExist:
             pass
-    elif ptype == 0:
+    elif ptype == 'text':
+        post_type = 0
         if link:
             return jsonify(msg='Text posts do not accept link'), 400
         if len(content) > 16384:
@@ -723,18 +731,18 @@ def create_post():
                           uid=uid,
                           title=title.strip(misc.WHITESPACE),
                           content=content,
-                          link=link if ptype == 1 else None,
+                          link=link if ptype == 'link' else None,
                           posted=datetime.datetime.utcnow(),
                           score=1, upvotes=1, downvotes=0, deleted=0, comments=0,
-                          ptype=ptype,
+                          ptype=post_type,
                           nsfw=nsfw if not subdata.get('nsfw') == '1' else 1,
-                          thumbnail=misc.get_thumbnail(link) if ptype == 1 else '')
+                          thumbnail=misc.get_thumbnail(link) if ptype == 'link' else '')
 
     Sub.update(posts=Sub.posts + 1).where(Sub.sid == sub.sid).execute()
     addr = url_for('sub.view_post', sub=sub.name, pid=post.pid)
     posts = misc.getPostList(misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), 'new', 1).dicts()
     socketio.emit('thread',
-                  {'addr': addr, 'sub': sub.name, 'type': ptype,
+                  {'addr': addr, 'sub': sub.name, 'type': post_type,
                    'user': user.name, 'pid': post.pid, 'sid': sub.sid,
                    'html': misc.engine.get_template('shared/post.html').render({'posts': posts, 'sub': False})},
                   namespace='/snt', room='/all/new')
@@ -812,3 +820,26 @@ def set_settings():
 
     [x.execute() for x in qrys]
     return jsonify()
+
+
+@API.route('/grabtitle', methods=['GET'])
+@jwt_required
+def grab_title():
+    url = request.args.get('url', None)
+    if not url:
+        return jsonify(msg='url parameter required'), 400
+
+    try:
+        req = misc.safeRequest(url)
+    except (requests.exceptions.RequestException, ValueError):
+        return jsonify(msg="Couldn't fetch title"), 400
+
+    og = BeautifulSoup(req[1], 'lxml', from_encoding='utf-8')
+    try:
+        title = og('title')[0].text
+    except (OSError, ValueError, IndexError):
+        return jsonify(msg="Couldn't fetch title"), 400
+
+    title = title.strip(misc.WHITESPACE)
+    title = re.sub(' - Youtube$', '', title)
+    return jsonify(title=title), 200
