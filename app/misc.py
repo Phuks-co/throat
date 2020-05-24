@@ -327,6 +327,12 @@ def ratelimit(limit, per=300, send_x_headers=True,
     return decorator
 
 
+def reset_ratelimit(per, scope_func=lambda: get_ip(), key_func=lambda: request.endpoint):
+    reset = (int(time.time()) // per) * per + per
+    key = 'rate-limit/%s/%s/%s' % (key_func(), scope_func(), reset)
+    redis.delete(key)
+
+
 def safeRequest(url, recieve_timeout=10):
     """ Gets stuff for the internet, with timeouts and size restrictions """
     # Returns (Response, File)
