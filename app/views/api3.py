@@ -612,8 +612,8 @@ def chall_wrong(error):
 
 
 def check_challenge():
-    challenge_token = request.json.get('challenge_token')
-    challenge_response = request.json.get('challenge_response')
+    challenge_token = request.json.get('challengeToken')
+    challenge_response = request.json.get('challengeResponse')
 
     if not challenge_token or not challenge_response:
         misc.reset_ratelimit(30)
