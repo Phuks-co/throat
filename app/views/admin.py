@@ -77,7 +77,7 @@ def index():
         pass
 
     try:
-        ep = SiteMetadata.get(SiteMetadata.key == 'enable_posting').value
+        ep = 'True' if SiteMetadata.get(SiteMetadata.key == 'enable_posting').value == '1' else 'False'
     except SiteMetadata.DoesNotExist:
         ep = 'True'
 

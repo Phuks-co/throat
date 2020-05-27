@@ -81,10 +81,10 @@
         <div>
           {% if enable_posting %}
           <div>Disable posting for non-admin users</div>
-          <a class="pure-button" href="{{url_for('do.enable_posting', value='False')}}">Disable Posting</a>
+          <a class="pure-button button-warning" href="{{url_for('do.enable_posting', value='False')}}">Disable Posting</a>
           {% else %}
           <div>Enable posting for non-admin users</div>
-          <a class="pure-button" href="{{url_for('do.enable_posting', value='True')}}">Enable Posting</a>
+          <a class="pure-button button-error" href="{{url_for('do.enable_posting', value='True')}}">Enable Posting</a>
           {% endif %}
         </div>
       </div>
