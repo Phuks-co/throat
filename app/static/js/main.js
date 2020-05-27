@@ -114,7 +114,7 @@ if(sa){
     fetch: function(text, update) {
         text = text.toLowerCase();
         // you can also use AJAX requests instead of preloaded data
-        u.get('/api/v3/search/sub?query=' + text, function(data){
+        u.get('/api/v3/sub?query=' + text, function(data){
           console.log(data.results)
           var suggestions = data.results
           update(suggestions);
