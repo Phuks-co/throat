@@ -43,7 +43,6 @@ function vote(obj, how, comment){
     modal.setContent('<h2>' + _('Log in or register to continue') + '</h2>\
     <div class="pure-g"> \
       <div class="pure-u-1-2">\
-        <h3> Log in </h3> \
         <form method="POST" action="/login?next="' + encodeURI(window.location.pathname) + ' class="pure-form pure-form-aligned">\
           <input type="hidden" name="csrf_token" value="' + document.getElementById('csrf_token').value + '"/> \
           <fieldset> \
@@ -66,7 +65,6 @@ function vote(obj, how, comment){
         </form> \
       </div> \
       <div class="pure-u-1-2"> \
-      <h3>Register</h3> \
       <p>' + _('Don\'t have an account?') + '</p> \
       <a class="pure-button" href="/register">' + _('Register now!') + '</a>\
       </div> \
