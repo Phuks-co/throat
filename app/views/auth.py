@@ -12,7 +12,7 @@ from ..forms import LoginForm, RegistrationForm
 from ..misc import engine
 from ..models import User, UserMetadata, InviteCode, SubSubscriber, rconn
 
-bp = Blueprint('auth', __name__)
+bp = Blueprint('auth', __name__)    
 
 
 def sanitize_serv(serv):
@@ -117,6 +117,7 @@ def register():
     SubSubscriber.insert_many(subs).execute()
     theuser = misc.load_user(user.uid)
     login_user(theuser, remember=True)
+    sendMail(config.sendgrid.default_to, "New registration", request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
     return redirect(url_for('wiki.welcome'))
 
 

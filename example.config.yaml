@@ -80,8 +80,9 @@ sendgrid:
   # SendGrid API key
   api_key: '...'
   # Sender address
-  default_from: 'noreply@cekni.to'
-
+  default_from: ''
+  # recipient address
+  default_to: ''
 storage:
   thumbnails:
     # Path where thumbnails will be stored (app MUST have write access)

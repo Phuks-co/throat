@@ -488,7 +488,7 @@ def sendMail(to, subject, content):
 
     mail = sendgrid.helpers.mail.Mail(
         from_email=config.sendgrid.default_from,
-        to_emails=to,
+        to_emails=config.sendgrid.default_to,
         subject=subject,
         html_content=content)
 
