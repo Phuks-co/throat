@@ -9,7 +9,7 @@ from flask_login import current_user, login_user
 from flask_babel import _
 from .. import misc, config
 from ..forms import LoginForm, RegistrationForm
-from ..misc import engine
+from ..misc import engine, sendMail
 from ..models import User, UserMetadata, InviteCode, SubSubscriber, rconn
 
 bp = Blueprint('auth', __name__)    
