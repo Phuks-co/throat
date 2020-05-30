@@ -23,7 +23,7 @@
             <a href="@{url_for('user.edit_user')}" class="sbm-post pure-button">@{_('Settings')}</a>
             <hr>
         @end
-        <b>@{user.name}</b>
+        <a href="@{url_for('user.view', user=user.name)}" class="sbm-post pure-button pure-button-primary">@{_('Profile')}</a>
         <a href="@{url_for('user.view_user_posts', user=user.name)}" class="sbm-post pure-button">@{_('View posts')}</a>
         <a href="@{url_for('user.view_user_comments', user=user.name)}" class="sbm-post pure-button">@{_('View comments')}</a>
         @if user.uid == current_user.uid:
