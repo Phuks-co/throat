@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-30 16:58-0300\n"
-"PO-Revision-Date: 2020-05-30 23:37+0200\n"
+"PO-Revision-Date: 2020-05-30 23:47+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -1459,7 +1459,7 @@ msgstr "Odznaky"
 
 #: app/html/user/profile.html:97
 msgid "Owns"
-msgstr "založené skupiny"
+msgstr "Založené skupiny"
 
 #: app/html/user/profile.html:107
 msgid "Mods"

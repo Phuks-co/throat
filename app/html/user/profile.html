@@ -91,9 +91,8 @@
                             </ul>
                         </div>
                     @end
-                    <div class="userrow">
                         @if len(owns) > 0:
-                            <div class="pblock">
+                            <div class="userrow">
                                 <h3 style="text-align: center;">@{_('Owns')}</h3>
                                 <ul>
                                     @for own in owns:
@@ -103,7 +102,7 @@
                             </div>
                         @end
                         @if len(mods) > 0:
-                            <div class="pblock">
+                            <div class="userrow">
                                 <h3 style="text-align: center;">@{_('Mods')}</h3>
                                 <ul>
                                     @for mod in mods:
