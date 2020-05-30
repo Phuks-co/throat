@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-05-30 16:58-0300\n"
-"PO-Revision-Date: 2020-05-30 22:50+0200\n"
+"PO-Revision-Date: 2020-05-30 23:37+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -810,7 +810,7 @@ msgstr "Vytvoril(a) <a href=\"/u/%(name)s\">%(name)s</a>"
 
 #: app/html/shared/sidebar/sub.html:75 app/html/user/profile.html:23
 msgid "Settings"
-msgstr "Nastavenia skupiny"
+msgstr "Nastavenia"
 
 #: app/html/shared/sidebar/sub.html:76
 msgid "Edit flairs"
@@ -1186,7 +1186,7 @@ msgstr "Skóre: %(score)i <b>(+%(upvotes)i|-%(downvotes)i)</b>"
 
 #: app/html/sub/post.html:87
 msgid "unsave"
-msgstr "zrušiť uloženie"
+msgstr "odstrániť z uložených"
 
 #: app/html/sub/post.html:89
 msgid "save"
@@ -1412,14 +1412,14 @@ msgstr "Odstrániť hlasy používateľa"
 #: app/html/user/settings/password.html:12
 #: app/html/user/settings/preferences.html:12
 msgid "View posts"
-msgstr "Moje príspevky"
+msgstr "Príspevky používateľa"
 
 #: app/html/user/profile.html:28 app/html/user/settings/delete.html:13
 #: app/html/user/settings/invitecode.html:13
 #: app/html/user/settings/password.html:13
 #: app/html/user/settings/preferences.html:13
 msgid "View comments"
-msgstr "Moje komentáre"
+msgstr "Komentáre používateľa"
 
 #: app/html/user/profile.html:30 app/html/user/settings/delete.html:14
 #: app/html/user/settings/invitecode.html:14
