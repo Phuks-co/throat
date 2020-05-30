@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Throat 1.0\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-05-30 16:58-0300\n"
+"POT-Creation-Date: 2020-05-30 19:21-0300\n"
 "PO-Revision-Date: 2020-05-12 17:21-0300\n"
 "Last-Translator: \n"
 "Language: es\n"
@@ -805,7 +805,7 @@ msgstr "Dueño"
 msgid "Created by <a href=\"/u/%(name)s\">%(name)s</a>"
 msgstr "Creado por <a href=\"/u/%(name)s\">%(name)s</a>"
 
-#: app/html/shared/sidebar/sub.html:75 app/html/user/profile.html:23
+#: app/html/shared/sidebar/sub.html:75
 msgid "Settings"
 msgstr "Configuración"
 
@@ -825,6 +825,56 @@ msgstr "Logs del sub"
 msgid "Banned Users"
 msgstr "Usuarios baneados"
 
+#: app/html/shared/sidebar/user.html:6
+msgid "Are you sure you want to ban this user?"
+msgstr ""
+
+#: app/html/shared/sidebar/user.html:6 app/html/sub/bans.html:12
+msgid "Ban user"
+msgstr "Banear usuario"
+
+#: app/html/shared/sidebar/user.html:10
+msgid "Are you sure you want to remove all the votes issued by this user?"
+msgstr ""
+
+#: app/html/shared/sidebar/user.html:10
+msgid "Remove votes"
+msgstr ""
+
+#: app/html/shared/sidebar/user.html:15
+msgid "Preferences"
+msgstr "Preferencias"
+
+#: app/html/shared/sidebar/user.html:16 app/html/user/password_reset.html:24
+#: app/html/user/settings/password.html:9
+msgid "Change password"
+msgstr "Cambiar contraseña"
+
+#: app/html/shared/sidebar/user.html:17
+msgid "Delete account"
+msgstr "Borrar cuenta"
+
+#: app/html/shared/sidebar/user.html:20
+#: app/html/user/settings/invitecode.html:9
+msgid "Invite codes"
+msgstr "Códigos de invitación"
+
+#: app/html/shared/sidebar/user.html:24
+msgid "Profile"
+msgstr ""
+
+#: app/html/shared/sidebar/user.html:25
+msgid "View posts"
+msgstr "Ver posts"
+
+#: app/html/shared/sidebar/user.html:26
+msgid "View comments"
+msgstr "Ver comentarios"
+
+#: app/html/shared/sidebar/user.html:28
+msgid "View saved posts"
+msgstr "Ver posts guardados"
+
 #: app/html/site/license.html:8
 msgid ""
 "This website is powered by <a href=\"https://github.com/Phuks-"
@@ -839,10 +889,6 @@ msgstr "Editando como administrador"
 #, python-format
 msgid "Banned users on <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
 msgstr "Usuarios baneados en <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
-
-#: app/html/sub/bans.html:12 app/html/user/profile.html:14
-msgid "Ban user"
-msgstr "Banear usuario"
 
 #: app/html/sub/bans.html:20 app/html/sub/bans.html:24
 msgid "Until..."
@@ -869,12 +915,12 @@ msgid "By"
 msgstr "Por"
 
 #: app/html/sub/bans.html:48 app/html/sub/bans.html:106
-#: app/html/user/settings/invitecode.html:33
+#: app/html/user/settings/invitecode.html:21
 msgid "Created"
 msgstr "Creación"
 
 #: app/html/sub/bans.html:49 app/html/sub/bans.html:107
-#: app/html/sub/log.html:12 app/html/user/profile.html:136
+#: app/html/sub/log.html:12 app/html/user/profile.html:116
 msgid "User"
 msgstr "Usuario"
 
@@ -882,7 +928,7 @@ msgstr "Usuario"
 msgid "Reason"
 msgstr "Razón"
 
-#: app/html/sub/bans.html:51 app/html/user/settings/invitecode.html:35
+#: app/html/sub/bans.html:51 app/html/user/settings/invitecode.html:23
 msgid "Expires"
 msgstr "Expira"
 
@@ -892,7 +938,7 @@ msgstr "Acciones"
 
 #: app/html/sub/bans.html:64 app/html/sub/bans.html:71
 #: app/html/sub/bans.html:119 app/html/sub/bans.html:126
-#: app/html/sub/bans.html:135 app/html/user/settings/invitecode.html:53
+#: app/html/sub/bans.html:135 app/html/user/settings/invitecode.html:41
 msgid "N/A"
 msgstr "N/á"
 
@@ -1001,13 +1047,13 @@ msgstr ""
 msgid "Editing stylesheet for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
 msgstr ""
 
-#: app/html/sub/css.html:23 app/html/user/settings/password.html:37
-#: app/html/user/settings/preferences.html:68
+#: app/html/sub/css.html:23 app/html/user/settings/password.html:27
+#: app/html/user/settings/preferences.html:54
 msgid "Saved!"
 msgstr "Guardado!"
 
-#: app/html/sub/css.html:23 app/html/user/settings/password.html:37
-#: app/html/user/settings/preferences.html:68 app/html/user/topbar.html:7
+#: app/html/sub/css.html:23 app/html/user/settings/password.html:27
+#: app/html/user/settings/preferences.html:54 app/html/user/topbar.html:7
 #: app/static/js/main.js:193 app/static/js/main.js:197
 msgid "Save"
 msgstr "Guardar"
@@ -1038,7 +1084,7 @@ msgstr ""
 msgid "Filename: %(filename)s. Size: %(filesize)i KiB."
 msgstr ""
 
-#: app/html/sub/css.html:48 app/html/user/settings/delete.html:36
+#: app/html/sub/css.html:48 app/html/user/settings/delete.html:26
 msgid "Deleting..."
 msgstr "Borrando..."
 
@@ -1371,105 +1417,64 @@ msgstr ""
 msgid "Password (again)"
 msgstr "Contraseña (de nuevo)"
 
-#: app/html/user/password_reset.html:24 app/html/user/settings/delete.html:8
-#: app/html/user/settings/invitecode.html:8
-#: app/html/user/settings/password.html:8
-#: app/html/user/settings/password.html:19
-#: app/html/user/settings/preferences.html:8
-msgid "Change password"
-msgstr "Cambiar contraseña"
-
-#: app/html/user/profile.html:14
-msgid "Are you sure you want to ban this user?"
-msgstr ""
-
-#: app/html/user/profile.html:18
-msgid "Are you sure you want to remove all the votes issued by this user?"
-msgstr ""
-
-#: app/html/user/profile.html:18
-msgid "Remove votes"
-msgstr ""
-
-#: app/html/user/profile.html:27 app/html/user/settings/delete.html:12
-#: app/html/user/settings/invitecode.html:12
-#: app/html/user/settings/password.html:12
-#: app/html/user/settings/preferences.html:12
-msgid "View posts"
-msgstr "Ver posts"
-
-#: app/html/user/profile.html:28 app/html/user/settings/delete.html:13
-#: app/html/user/settings/invitecode.html:13
-#: app/html/user/settings/password.html:13
-#: app/html/user/settings/preferences.html:13
-msgid "View comments"
-msgstr "Ver comentarios"
-
-#: app/html/user/profile.html:30 app/html/user/settings/delete.html:14
-#: app/html/user/settings/invitecode.html:14
-#: app/html/user/settings/password.html:14
-#: app/html/user/settings/preferences.html:14
-msgid "View saved posts"
-msgstr "Ver posts guardados"
-
-#: app/html/user/profile.html:35
+#: app/html/user/profile.html:15
 msgid "Send a message"
 msgstr ""
 
-#: app/html/user/profile.html:39
+#: app/html/user/profile.html:19
 #, python-format
 msgid "Registered %(timeago)s"
 msgstr ""
 
-#: app/html/user/profile.html:65
+#: app/html/user/profile.html:45
 msgid "posts"
 msgstr ""
 
-#: app/html/user/profile.html:69
+#: app/html/user/profile.html:49
 msgid "comments"
 msgstr ""
 
-#: app/html/user/profile.html:75
+#: app/html/user/profile.html:55
 msgid "Phuks given"
 msgstr ""
 
-#: app/html/user/profile.html:79
+#: app/html/user/profile.html:59
 msgid "Total score"
 msgstr ""
 
-#: app/html/user/profile.html:86
+#: app/html/user/profile.html:66
 msgid "Badges"
 msgstr ""
 
-#: app/html/user/profile.html:97
+#: app/html/user/profile.html:77
 msgid "Owns"
 msgstr ""
 
-#: app/html/user/profile.html:107
+#: app/html/user/profile.html:87
 msgid "Mods"
 msgstr ""
 
-#: app/html/user/profile.html:118
+#: app/html/user/profile.html:98
 msgid "Posting habits"
 msgstr ""
 
-#: app/html/user/profile.html:133
+#: app/html/user/profile.html:113
 msgid "Send message"
 msgstr ""
 
-#: app/html/user/profile.html:140
+#: app/html/user/profile.html:120
 msgid "Subject"
 msgstr ""
 
-#: app/html/user/profile.html:144
+#: app/html/user/profile.html:124
 msgid "Styling with Markdown format is supported."
 msgstr ""
 
-#: app/html/user/profile.html:147
+#: app/html/user/profile.html:127
 msgid "Sending..."
 msgstr ""
 
-#: app/html/user/profile.html:147
+#: app/html/user/profile.html:127
 msgid "Send Message"
 msgstr ""
 
@@ -1485,77 +1490,57 @@ msgstr ""
 msgid "Drag to sort"
 msgstr ""
 
-#: app/html/user/settings/delete.html:7
-#: app/html/user/settings/invitecode.html:7
-#: app/html/user/settings/password.html:7
-#: app/html/user/settings/preferences.html:7
-msgid "Preferences"
-msgstr "Preferencias"
-
 #: app/html/user/settings/delete.html:9
-#: app/html/user/settings/invitecode.html:9
-#: app/html/user/settings/password.html:9
-#: app/html/user/settings/preferences.html:9
-msgid "Delete account"
-msgstr "Borrar cuenta"
-
-#: app/html/user/settings/delete.html:19
 msgid "Account deletion"
 msgstr "Borrado de cuenta"
 
-#: app/html/user/settings/delete.html:25
+#: app/html/user/settings/delete.html:15
 msgid "THIS ACTION CANNOT BE UNDONE"
 msgstr "ESTA ACCIÓN NO PUEDE SER DESHECHA"
 
-#: app/html/user/settings/delete.html:36
+#: app/html/user/settings/delete.html:26
 msgid "Deleted."
 msgstr "Borrado."
 
-#: app/html/user/settings/delete.html:36
+#: app/html/user/settings/delete.html:26
 msgid "Delete my account"
 msgstr "Borrar mi cuenta"
 
-#: app/html/user/settings/invitecode.html:16
-#: app/html/user/settings/invitecode.html:21
-#: app/html/user/settings/preferences.html:17
-msgid "Invite codes"
-msgstr "Códigos de invitación"
-
-#: app/html/user/settings/invitecode.html:23
+#: app/html/user/settings/invitecode.html:11
 #, python-format
 msgid "You can create <b>%(num)i</b> invite codes."
 msgstr "Puedes crear hasta <b>%(num)i</b> códigos de invitación."
 
-#: app/html/user/settings/invitecode.html:24
+#: app/html/user/settings/invitecode.html:12
 msgid "Create new"
 msgstr "Crear nuevo"
 
-#: app/html/user/settings/invitecode.html:26
+#: app/html/user/settings/invitecode.html:14
 msgid "You cannot create invite codes."
 msgstr "No puedes crear códigos de invitación."
 
-#: app/html/user/settings/invitecode.html:29
+#: app/html/user/settings/invitecode.html:17
 msgid "Your invite codes"
 msgstr "Tus códigos de invitación"
 
-#: app/html/user/settings/invitecode.html:34 app/static/js/Editor.js:59
+#: app/html/user/settings/invitecode.html:22 app/static/js/Editor.js:59
 msgid "Code"
 msgstr "Código"
 
-#: app/html/user/settings/invitecode.html:36
+#: app/html/user/settings/invitecode.html:24
 msgid "Uses"
 msgstr "Usos"
 
-#: app/html/user/settings/invitecode.html:37
+#: app/html/user/settings/invitecode.html:25
 msgid "Max uses"
 msgstr "Usos máximos"
 
-#: app/html/user/settings/password.html:37
-#: app/html/user/settings/preferences.html:68
+#: app/html/user/settings/password.html:27
+#: app/html/user/settings/preferences.html:54
 msgid "Editing..."
 msgstr "Editando..."
 
-#: app/html/user/settings/preferences.html:23
+#: app/html/user/settings/preferences.html:9
 #, python-format
 msgid "%(user)s's preferences"
 msgstr "Preferencias de %(user)s"
