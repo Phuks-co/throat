@@ -47,9 +47,15 @@ def view(user):
     else:
         progress = 0
 
-    return render_template('user.html', user=user, badges=badges, habit=habit,
-                           msgform=CreateUserMessageForm(), pcount=pcount,
-                           ccount=ccount, owns=owns, mods=mods, level=level, progress=progress)
+    givenScore = misc.getUserGivenScore(user.uid)
+
+    return engine.get_template('user/profile.html').render(
+        {'user': user, 'level': level, 'progress': progress, 'postCount': pcount, 'commentCount': ccount,
+         'givenScore': givenScore, 'badges': badges, 'owns': owns, 'mods': mods, 'habits': habit,
+         'msgform': CreateUserMessageForm()})
+    # return render_template('../html/user/profile.html', user=user, badges=badges, habit=habit,
+    #                        msgform=CreateUserMessageForm(), pcount=pcount,
+    #                        ccount=ccount, owns=owns, mods=mods, level=level, progress=progress)
 
 
 @bp.route("/u/<user>/posts", defaults={'page': 1})

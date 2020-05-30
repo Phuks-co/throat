@@ -1,0 +1,156 @@
+@extends("shared/layout.html")
+@require(user, level, progress, postCount, commentCount, givenScore, badges, owns, mods, habits, msgform)
+
+@def title():
+/u/@{user.name} |\
+@end
+
+@def sidebar():
+
+    @if user.status != 10:
+        @if current_user.is_admin() and user.status == 0 and user.name != current_user.name:
+            <form method="POST" data-reload="true" id="banuser" action="@{url_for('do.ban_user', username=user.name)}">
+                @{form.DummyForm().csrf_token()}
+                <a href="javascript:{}" onclick="if(confirm("@{_('Are you sure you want to ban this user?')}")){document.getElementById('banuser').submit();}" class="sbm-post pure-button pure-button-primary">@{_('Ban user')}</a>
+            </form>
+            <form  method="POST" data-reload="true" id="wipevotes" action="@{url_for('do.admin_undo_votes', uid=user.uid)}">
+                @{form.DummyForm().csrf_token()}
+                <a href="javascript:{}" onclick="if(confirm("@{_('Are you sure you want to remove all the votes issued by this user?')}")){document.getElementById('wipevotes').submit();}" class="sbm-post pure-button pure-button-primary">@{_('Remove votes')}</a>
+            </form>
+            <hr>
+        @end
+        @if user.uid == current_user.uid:
+            <a href="@{url_for('user.edit_user')}" class="sbm-post pure-button">@{_('Settings')}</a>
+            <hr>
+        @end
+        <b>@{user.name}</b>
+        <a href="@{url_for('user.view_user_posts', user=user.name)}" class="sbm-post pure-button">@{_('View posts')}</a>
+        <a href="@{url_for('user.view_user_comments', user=user.name)}" class="sbm-post pure-button">@{_('View comments')}</a>
+        @if user.uid == current_user.uid:
+            <a href="@{url_for('user.view_user_savedposts', user=user.name)}" class="sbm-post pure-button">@{_('View saved posts')}</a>
+        @end
+        @if current_user.is_authenticated:
+            <hr>
+            <div class="pmessage">
+                <a href="#msg-form" data-replyto='@{user.name}' data-replytitle='' class="formpopmsg sbm-post pure-button">@{_('Send a message')}</a>
+            </div>
+        @end
+    @end
+    <p>@{_('Registered %(timeago)s', timeago='<time-ago datetime="'+ user.joindate.isoformat() + 'Z"></time-ago>')}</p>
+@end
+@def main():
+    <div id="center-container">
+        <div class="content">
+            @if user.status != 10:
+                <div class="uprofile-top">
+                    <h1 style="margin-right: 0; margin-left:0" class="noshit">@{user.name}</h1>
+                        <div class="pblock level">
+                            <div class="uprofile-level-box">
+                                <div class="mask left" style="transform: rotate(@{progress*1.8!!s}deg)">
+                                    <div class="fill" style="transform: rotate(@{progress*1.8!!s}deg)"></div>
+                                </div>
+                                <div class="mask right">
+                                    <div class="fill" style="transform: rotate(@{progress*1.8!!s}deg)"></div>
+                                    <div class="fill fix" style="transform: rotate(@{progress*2.8!!s}deg)"></div>
+                                </div>
+                                <div class="inset">
+                                    <div class="lv" style="line-height: 133%; padding-top: 0.4em">Level</div>
+                                    <div class="levelNo">@{level!!s}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pblock">
+                            <div class="statdiv">
+                                <div class="ucount"><a href="@{url_for('user.view_user_posts', user=user.name)}">@{postCount!!s}</a></div>
+                                <div>@{_('posts')}</div>
+                            </div>
+                            <div class="statdiv">
+                                <div class="ucount"><a href="@{url_for('user.view_user_comments', user=user.name)}">@{commentCount!!s}</a></div>
+                                <div>@{_('comments')}</div>
+                            </div>
+                        </div>
+                        <div class="pblock">
+                            <div class="statdiv">
+                                <abbr class="ucount" title="+@{givenScore[0]!!s}, -@{givenScore[1]!!s}}">@{givenScore[2]!!s}</abbr>
+                                <div>@{_('Phuks given')}</div>
+                            </div>
+                            <div class="statdiv">
+                                <div class="ucount">@{user.score!!s}</div>
+                                <div>@{_('Total score')}</div>
+                            </div>
+                        </div>
+                    </div>
+                <div>
+                    @if len(badges) > 0:
+                        <div class="userrow">
+                            <h2 style="text-align: center; margin-top: 2em;">@{_('Badges')}</h2>
+                            <ul id="userBadges">
+                                @for badge in badges:
+                                    <li class="profilebadge" title="@{badge['name']!!e} @{badge['alt'] != '' and ' - ' + badge['alt'] or ''}">@{badge['icon']}</li>
+                                @end
+                            </ul>
+                        </div>
+                    @end
+                    <div class="userrow">
+                        @if len(owns) > 0:
+                            <div class="pblock">
+                                <h3 style="text-align: center;">@{_('Owns')}</h3>
+                                <ul>
+                                    @for own in owns:
+                                        <li><a href="@{url_for('sub.view_sub', sub=own)}">@{own}</a></li>
+                                    @end
+                                </ul>
+                            </div>
+                        @end
+                        @if len(mods) > 0:
+                            <div class="pblock">
+                                <h3 style="text-align: center;">@{_('Mods')}</h3>
+                                <ul>
+                                    @for mod in mods:
+                                        <li><a href="@{url_for('sub.view_sub', sub=mod)}">@{mod}</a></li>
+                                    @end
+                                </ul>
+                            </div>
+                        @end
+                    </div>
+                    @if len(habits) > 0:
+                        <div class="userrow">
+                            <h3 style="text-align: center;">@{_('Posting habits')}</h3>
+                            <ul>
+                                @for i in habits:
+                                    <li class="habitentry"><a href="@{url_for('sub.view_sub', sub=i.name)}">@{i.name}</a> - @{i.count!!s}</li>
+                                @end
+                            </ul>
+                        </div>
+                    @end
+                </div>
+
+                <div id="formpop" style="display:none;">
+                    <div class="modal-content">
+                        <span class="closepopmsg">&times;</span>
+                        <form data-reset="true" id="msg-form" action="@{url_for('do.create_sendmsg')}" data-redir="@{url_for('messages.inbox_sort')}" class="pure-form pure-form-aligned ajaxform">
+                            @{msgform.csrf_token()}
+                            <h3>@{_('Send message')}</h3>
+                            <fieldset>
+                                <div id="lto" class="pure-control-group" style="display:none">
+                                    <label for="to">@{_('User')}</label>
+                                    @{msgform.to(placeholder=msgform.to.label.text, required=True, value=user.name)}
+                                </div>
+                                <div class="pure-control-group">
+                                    <label for="subject">@{_('Subject')}</label>
+                                    @{msgform.subject(placeholder=msgform.subject.label.text, required=True)}
+                                </div>
+                                <div class="pure-control-group markdown-editor">
+                                    @{msgform.content(placeholder=_('Styling with Markdown format is supported.'), rows="10", id="cntnt")}
+                                </div>
+                                <div class="pure-controls">
+                                    <button type="submit" id="msg-btnsubmit" class="pure-button pure-button-primary" data-prog="@{_('Sending...')}">@{_('Send Message')}</button>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            @end
+        </div>
+    </div>
+@end
