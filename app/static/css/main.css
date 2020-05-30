@@ -1497,6 +1497,7 @@ td.subsentry.blocked {
   height: 120px;
   background-color: #d6dadc;
   border-radius: 50%;
+  vertical-align: bottom;
 }
 
 .pblock.level .uprofile-level-box .mask, .pblock.level .uprofile-level-box .fill{
@@ -1527,10 +1528,12 @@ td.subsentry.blocked {
   margin-top: 10px;
   background-color: white;
   border-radius: 50%;
+}
 
-  line-height: 100px;
-  font-size: 60px;
-  font-weight: bold;
+.pblock.level .inset .levelNo{
+    line-height: 50px;
+    font-size: 60px;
+    font-weight: 600;
 }
 
 
