@@ -1,0 +1,29 @@
+@require(user)
+
+@if current_user.is_admin() and user.status == 0 and user.name != current_user.name:
+    <form method="POST" data-reload="true" id="banuser" action="@{url_for('do.ban_user', username=user.name)}">
+        @{form.DummyForm().csrf_token()}
+        <a href="javascript:{}" onclick="if(confirm("@{_('Are you sure you want to ban this user?')}")){document.getElementById('banuser').submit();}" class="sbm-post pure-button pure-button-primary">@{_('Ban user')}</a>
+    </form>
+    <form  method="POST" data-reload="true" id="wipevotes" action="@{url_for('do.admin_undo_votes', uid=user.uid)}">
+        @{form.DummyForm().csrf_token()}
+        <a href="javascript:{}" onclick="if(confirm("@{_('Are you sure you want to remove all the votes issued by this user?')}")){document.getElementById('wipevotes').submit();}" class="sbm-post pure-button pure-button-primary">@{_('Remove votes')}</a>
+    </form>
+    <hr>
+@end
+@if user.uid == current_user.uid:
+    <a href="/settings" class="sbm-post pure-button @{(request.path == '/settings') and 'pure-button-primary' or ''}">@{_('Preferences')}</a>
+    <a href="/settings/password" class="sbm-post pure-button @{(request.path == '/settings/password') and 'pure-button-primary' or ''}">@{_('Change password')}</a>
+    <a href="/settings/delete" class="sbm-post pure-button @{(request.path == '/settings/delete') and 'pure-button-primary' or ''}">@{_('Delete account')}</a>
+    @if func.enableInviteCode():
+        <hr/>
+        <a href="/settings/invite" class="sbm-post pure-button @{(request.path == '/settings/invite') and 'pure-button-primary' or ''}">@{_('Invite codes')}</a>
+    @end
+    <hr>
+@end
+<a href="@{url_for('user.view', user=user.name)}" class="sbm-post pure-button @{(request.endpoint == 'user.view') and 'pure-button-primary' or ''}">@{_('Profile')}</a>
+<a href="@{url_for('user.view_user_posts', user=user.name)}" class="sbm-post pure-button @{(request.endpoint == 'user.view_user_posts') and 'pure-button-primary' or ''}">@{_('View posts')}</a>
+<a href="@{url_for('user.view_user_comments', user=user.name)}" class="sbm-post pure-button @{(request.endpoint == 'user.view_user_comments') and 'pure-button-primary' or ''}" >@{_('View comments')}</a>
+@if user.uid == current_user.uid:
+    <a href="@{url_for('user.view_user_savedposts', user=user.name)}" class="sbm-post pure-button @{(request.endpoint == 'user.view_user_savedposts') and 'pure-button-primary' or ''}">@{_('View saved posts')}</a>
+@end

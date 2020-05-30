@@ -1,17 +1,7 @@
 @extends("shared/layout.html")
 @require(form)
 @def sidebar():
-  <h3><a href="@{url_for('user.view', user=current_user.name)}" class="sbm-post">@{current_user.name}</a></h3>
-  <hr/>
-
-  <a href="/settings" class="sbm-post pure-button">@{_('Preferences')}</a>
-  <a href="/settings/password" class="sbm-post pure-button">@{_('Change password')}</a>
-  <a href="/settings/delete" class="sbm-post pure-button pure-button-primary">@{_('Delete account')}</a>
-
-  <hr/>
-  <a href="@{url_for('user.view_user_posts', user=current_user.name)}" class="sbm-post pure-button">@{_('View posts')}</a>
-  <a href="@{url_for('user.view_user_comments', user=current_user.name)}" class="sbm-post pure-button">@{_('View comments')}</a>
-  <a href="@{url_for('user.view_user_savedposts', user=current_user.name)}" class="sbm-post pure-button">@{_('View saved posts')}</a>
+  @include('shared/sidebar/user.html')
 @end
 
 @def main():
