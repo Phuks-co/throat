@@ -151,19 +151,19 @@ def edit_user():
     form.language.choices = [('', _('Auto detect'))]
     for i in languages:
         form.language.choices.append((i, Locale(*i.split("_")).display_name.capitalize()))
-    return engine.get_template('user/settings/preferences.html').render({'edituserform': form})
+    return engine.get_template('user/settings/preferences.html').render({'edituserform': form, 'user': User.get(User.uid == current_user.uid)})
 
 
 @bp.route("/settings/password")
 @login_required
 def edit_password():
-    return engine.get_template('user/settings/password.html').render({'form': ChangePasswordForm()})
+    return engine.get_template('user/settings/password.html').render({'form': ChangePasswordForm(), 'user': User.get(User.uid == current_user.uid)})
 
 
 @bp.route("/settings/delete")
 @login_required
 def delete_account():
-    return engine.get_template('user/settings/delete.html').render({'form': DeleteAccountForm()})
+    return engine.get_template('user/settings/delete.html').render({'form': DeleteAccountForm(), 'user': User.get(User.uid == current_user.uid)})
 
 
 @bp.route("/recover")
