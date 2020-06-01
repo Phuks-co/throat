@@ -507,6 +507,12 @@ span#notification.fade {
     background-color: #f2f2f2;
 }
 
+.post-heading h1 {
+    font-size: medium;
+    margin: 0;
+    font-weight: normal;
+}
+
 .post .title {
   color: #484646;
   text-decoration: none;
