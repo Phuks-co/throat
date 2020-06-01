@@ -379,6 +379,23 @@ class PhuksDown(m.SaferHtmlRenderer):
     def check_url(self, url, is_image_src=False):
         return bool(self._allowed_url_re.match(url))
 
+    def autolink(self, raw_url, is_email):
+        if self.check_url(raw_url):
+            url = self.rewrite_url(('mailto:' if is_email else '') + raw_url)
+            url = m.escape_html(url)
+            return '<a href="%s" rel="noopener nofollow ugc">%s</a>' % (url, m.escape_html(raw_url))
+        else:
+            return m.escape_html('<%s>' % raw_url)
+
+    def link(self, content, raw_url, title=''):
+        if self.check_url(raw_url):
+            url = self.rewrite_url(raw_url)
+            maybe_title = ' title="%s"' % m.escape_html(title) if title else ''
+            url = m.escape_html(url)
+            return ('<a rel="noopener nofollow ugc" href="%s"%s>' % (url, maybe_title))  + content + '</a>'
+        else:
+            return m.escape_html("[%s](%s)" % (content, raw_url))
+
 
 md = m.Markdown(PhuksDown(sanitization_mode='escape'),
                 extensions=['tables', 'fenced-code', 'autolink', 'strikethrough',
