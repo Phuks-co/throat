@@ -1,6 +1,8 @@
 // When adding new languages, add them here.
 let languages = {
     'sk': require('../../../translations/sk/LC_MESSAGES/messages.po'),
+    'es': require('../../../translations/es/LC_MESSAGES/messages.po'),
+    'ru': require('../../../translations/ru/LC_MESSAGES/messages.po'),
 };
 
 // Taken from gettext.js

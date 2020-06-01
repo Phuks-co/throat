@@ -1,0 +1,2271 @@
+# Translations template for Throat.
+# Copyright (C) 2020 Phuks LLC
+# This file is distributed under the same license as the Throat project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Throat 1.0\n"
+"Report-Msgid-Bugs-To: polsaker@phuks.co\n"
+"POT-Creation-Date: 2020-05-31 10:32+0300\n"
+"PO-Revision-Date: 2020-05-31 13:47+0300\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+"X-Generator: Poedit 2.3.1\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"Language: ru_RU\n"
+
+#: app/badges.py:5
+msgid "The guys that take all the blame"
+msgstr "Парни, которые берут всю вину на себя"
+
+#: app/badges.py:6
+msgid "Helped find or fix a bug"
+msgstr "Помог найти или исправить ошибку"
+
+#: app/badges.py:7
+msgid "You knew what you were getting into when you let me get into you"
+msgstr "Ты знал, во что ввязываешься"
+
+#: app/badges.py:8
+msgid "Gave bucks to Phuks"
+msgstr "Финансировал"
+
+#: app/badges.py:12
+msgid "Mined a lot of Phuks"
+msgstr "Добыто очень много"
+
+#: app/badges.py:13
+msgid "Top post of the day"
+msgstr "Главный пост дня"
+
+#: app/badges.py:14
+msgid "Make a good post every day for a week"
+msgstr "Сделайте хороший пост каждый день в течение недели"
+
+#: app/badges.py:16
+msgid "Too hyped to wait!"
+msgstr "Слишком важный, чтобы ждать!"
+
+#: app/badges.py:18
+msgid ""
+"Once proud men, the Broccoli People now must remain in hiding after early on "
+"the Vegetable Wars against the Cabbages."
+msgstr "Муха села на варенье, вот и все стихотворенье."
+
+#: app/badges.py:19
+msgid ""
+"The Cabbage People are now the dominant force in the Vegetable Wars, being "
+"in the road to become an hegemon after defeating the Broccolis."
+msgstr ""
+
+#: app/badges.py:21
+msgid "Winner of the shitposter of the year 2018 contest"
+msgstr ""
+
+#: app/misc.py:288
+msgid "Whoa, calm down and wait a bit before posting again."
+msgstr ""
+
+#: app/misc.py:894
+#, python-format
+msgid "Error in the '%(field)s' field - %(error)s"
+msgstr ""
+
+#: app/misc.py:1062
+msgid "File type not allowed"
+msgstr ""
+
+#: app/misc.py:1079
+#, python-format
+msgid "File size exceeds the maximum allowed size (%(size)i MB)"
+msgstr ""
+
+#: app/html/shared/post.html:71 app/html/shared/post.html:73
+#: app/html/site/log.html:28 app/html/sub/log.html:28 app/html/sub/post.html:14
+#: app/html/sub/postcomments.html:46 app/misc.py:1143
+msgid "[Deleted]"
+msgstr "[Удалено]"
+
+#: app/misc.py:1189
+msgid "URLs not allowed, uploaded files only"
+msgstr ""
+
+#: app/misc.py:1205
+msgid "@import token not allowed"
+msgstr ""
+
+#: app/misc.py:1214
+msgid "Invalid CSS"
+msgstr "Ошибка в CSS"
+
+#: app/misc.py:1545
+msgid "Unknown error. User disappeared"
+msgstr "Неизвестная ошибка. Пользователь исчез"
+
+#: app/misc.py:1552
+msgid "Score balance is negative"
+msgstr ""
+
+#: app/misc.py:1554
+msgid "Invalid vote value"
+msgstr "Недопустимое значение голоса"
+
+#: app/misc.py:1563 app/views/do.py:150 app/views/do.py:278 app/views/do.py:309
+#: app/views/do.py:591 app/views/do.py:1060 app/views/do.py:1137
+#: app/views/do.py:1223 app/views/do.py:1238 app/views/do.py:1309
+#: app/views/do.py:1338 app/views/do.py:1657 app/views/do.py:1984
+#: app/views/do.py:2035 app/views/do.py:2073 app/views/do.py:2108
+#: app/views/do.py:2111
+msgid "Post does not exist"
+msgstr ""
+
+#: app/misc.py:1566
+msgid "You can't vote on deleted posts"
+msgstr "Вы не можете голосовать за удаленные сообщения"
+
+#: app/misc.py:1582 app/views/do.py:1515 app/views/do.py:1551
+#: app/views/do.py:2148 app/views/do.py:2151
+msgid "Comment does not exist"
+msgstr "Комментарий не существует"
+
+#: app/misc.py:1585
+msgid "You can't vote on your own comments"
+msgstr "Вы не можете голосовать за свои собственные комментарии"
+
+#: app/misc.py:1587
+msgid "You can't vote on deleted comments"
+msgstr "Вы не можете голосовать за удаленные комментарии"
+
+#: app/misc.py:1595
+msgid "Invalid target"
+msgstr ""
+
+#: app/misc.py:1599 app/views/do.py:541 app/views/do.py:1063
+#: app/views/do.py:1523
+msgid "You are banned on this sub."
+msgstr "Вы запрещены на этом сабе."
+
+#: app/misc.py:1604 app/views/do.py:544 app/views/do.py:596
+#: app/views/do.py:1530
+msgid "Post is archived"
+msgstr ""
+
+#: app/forms/admin.py:12
+msgid "Question"
+msgstr ""
+
+#: app/forms/admin.py:18 app/forms/sub.py:86
+msgid "Sub"
+msgstr "Саб"
+
+#: app/forms/admin.py:20
+msgid "New owner username"
+msgstr "Имя пользователя нового владельца"
+
+#: app/forms/admin.py:26
+msgid "Badge nick"
+msgstr ""
+
+#: app/forms/admin.py:28 app/forms/user.py:44 app/forms/user.py:68
+#: app/html/errors/403.html:20 app/html/user/login.html:15
+#: app/static/js/main.js:51 app/static/js/main.js:52
+msgid "Username"
+msgstr "Никнейм"
+
+#: app/forms/admin.py:34
+msgid "Enter Domain"
+msgstr ""
+
+#: app/forms/admin.py:39
+msgid "Enable invite code to register"
+msgstr "Включить код приглашения для регистрации"
+
+#: app/forms/admin.py:40
+msgid "Minimum level to create invite codes"
+msgstr ""
+
+#: app/forms/admin.py:41
+msgid "Max amount of invites per user"
+msgstr "Максимальное количество приглашений на одного пользователя"
+
+#: app/forms/admin.py:45
+msgid "Enter one-time password"
+msgstr ""
+
+#: app/forms/sub.py:13
+msgid "Search"
+msgstr "Поиск"
+
+#: app/forms/sub.py:18 app/html/sub/create.html:20
+msgid "Sub name"
+msgstr "Имя саба"
+
+#: app/forms/sub.py:20 app/forms/sub.py:62
+msgid "Title"
+msgstr "Название"
+
+#: app/forms/sub.py:23
+msgid "Sub is NSFW?"
+msgstr "Саб NSFW?"
+
+#: app/forms/sub.py:28
+msgid "Custom stylesheet"
+msgstr ""
+
+#: app/forms/sub.py:40
+msgid "Your comment"
+msgstr "Ваш комментарий"
+
+#: app/forms/sub.py:46 app/forms/sub.py:52
+msgid "Flair text"
+msgstr "Флаер текст"
+
+#: app/forms/sub.py:65
+msgid "Sub is NSFW"
+msgstr "Саб NSFW"
+
+#: app/forms/sub.py:66
+msgid "Only mods can post"
+msgstr ""
+
+#: app/forms/sub.py:67
+msgid "Allow users to flair their own posts"
+msgstr "Разрешить пользователям создавать свои собственные посты"
+
+#: app/forms/sub.py:68
+msgid "Enable video player (youtube links only)"
+msgstr "Включить видеоплеер (только ссылки на youtube)"
+
+#: app/forms/sub.py:69
+msgid "Enable polls"
+msgstr ""
+
+#: app/forms/sub.py:70
+msgid "Default sub page post sorting"
+msgstr "Сортировка постов на подстраницах по умолчанию"
+
+#: app/forms/sub.py:74
+msgid "Sidebar text"
+msgstr ""
+
+#: app/forms/sub.py:79
+msgid "New mod username"
+msgstr "Новый мод имя пользователя"
+
+#: app/forms/sub.py:80
+msgid "Mod level"
+msgstr ""
+
+#: app/forms/sub.py:80
+msgid "Moderator"
+msgstr "Модератор"
+
+#: app/forms/sub.py:80
+msgid "Janitor"
+msgstr ""
+
+#: app/forms/sub.py:87
+msgid "Post title"
+msgstr "Заголовок"
+
+#: app/forms/sub.py:88 app/forms/sub.py:105
+msgid "Post content"
+msgstr "Комментарий"
+
+#: app/forms/sub.py:89
+msgid "Post link"
+msgstr "Ссылка на пост"
+
+#: app/forms/sub.py:90
+msgid "Post type"
+msgstr ""
+
+#: app/forms/sub.py:91
+msgid "Text post"
+msgstr "Текстовый пост"
+
+#: app/forms/sub.py:91
+msgid "Link post"
+msgstr "Добавить ссылку"
+
+#: app/forms/sub.py:93 app/forms/sub.py:110
+msgid "NSFW?"
+msgstr "NSFW?"
+
+#: app/forms/sub.py:95
+msgid "Option"
+msgstr "Опции"
+
+#: app/forms/sub.py:96
+msgid "Hide poll results until it closes"
+msgstr ""
+
+#: app/forms/sub.py:97
+msgid "Poll closing time"
+msgstr "Время закрытия опроса"
+
+#: app/forms/sub.py:99 app/forms/user.py:78 app/forms/user.py:138
+#: app/html/sub/createpost.html:116 app/html/user/password_recovery.html:23
+msgid "Captcha"
+msgstr "Капча"
+
+#: app/forms/sub.py:118
+msgid "Write your comment here. Styling with Markdown format is supported."
+msgstr "Напишите свой комментарий здесь. Поддерживается формат Markdown."
+
+#: app/forms/sub.py:124
+msgid "Username to ban"
+msgstr "Ник для бана"
+
+#: app/forms/sub.py:125
+msgid "Reason for the ban"
+msgstr ""
+
+#: app/forms/sub.py:126
+msgid "ban expires"
+msgstr ""
+
+#: app/forms/sub.py:132
+msgid "Flair"
+msgstr "Флаер"
+
+#: app/forms/user.py:46 app/forms/user.py:70 app/forms/user.py:146
+#: app/html/errors/403.html:24 app/html/user/login.html:19
+#: app/html/user/password_reset.html:16 app/static/js/main.js:55
+#: app/static/js/main.js:56
+msgid "Password"
+msgstr "Пароль"
+
+#: app/forms/user.py:48 app/html/errors/403.html:30 app/html/user/login.html:25
+#: app/static/js/main.js:61
+msgid "Remember me"
+msgstr "Запомнить меня"
+
+#: app/forms/user.py:69 app/forms/user.py:108
+msgid "Email Address (optional)"
+msgstr "E-mail"
+
+#: app/forms/user.py:69 app/forms/user.py:110 app/forms/user.py:137
+msgid "Invalid email address."
+msgstr ""
+
+#: app/forms/user.py:72 app/forms/user.py:86 app/forms/user.py:148
+msgid "Passwords must match"
+msgstr ""
+
+#: app/forms/user.py:75 app/forms/user.py:89 app/forms/user.py:151
+msgid "Repeat Password"
+msgstr "Повторите"
+
+#: app/forms/user.py:76
+msgid "Invite Code"
+msgstr ""
+
+#: app/forms/user.py:77
+msgid "I accept the TOS"
+msgstr "Я согласен с TOS"
+
+#: app/forms/user.py:80
+msgid "Security question"
+msgstr ""
+
+#: app/forms/user.py:84
+msgid "New password"
+msgstr "Новый пароль"
+
+#: app/forms/user.py:91
+msgid "Your current password"
+msgstr ""
+
+#: app/forms/user.py:98
+msgid "Your password"
+msgstr "Ваш пароль"
+
+#: app/forms/user.py:102
+msgid "Type 'YES' here"
+msgstr ""
+
+#: app/forms/user.py:111
+msgid "Disable custom sub styles"
+msgstr ""
+
+#: app/forms/user.py:112
+msgid "Show NSFW content"
+msgstr ""
+
+#: app/forms/user.py:114
+msgid "Enable experimental features"
+msgstr ""
+
+#: app/forms/user.py:115
+msgid "Disable infinite scroll"
+msgstr ""
+
+#: app/forms/user.py:116
+msgid "Disable chat"
+msgstr ""
+
+#: app/forms/user.py:118
+msgid "Global stylesheet (select a sub)"
+msgstr ""
+
+#: app/forms/user.py:120
+msgid "Language"
+msgstr "Язык"
+
+#: app/forms/user.py:125
+msgid "to"
+msgstr ""
+
+#: app/forms/user.py:126
+msgid "subject"
+msgstr "выбор"
+
+#: app/forms/user.py:129
+msgid "message"
+msgstr ""
+
+#: app/forms/user.py:136
+msgid "Email Address"
+msgstr "E-mail"
+
+#: app/html/chat.html:12 app/html/shared/layout.html:174
+msgid "Type here"
+msgstr "Введите здесь"
+
+#: app/html/index.html:8 app/html/index.html:12 app/html/sub.html:21
+msgid "Hot"
+msgstr "Горячий"
+
+#: app/html/index.html:9 app/html/index.html:13 app/html/sub.html:22
+msgid "Top"
+msgstr "Top"
+
+#: app/html/index.html:10 app/html/index.html:14 app/html/sub.html:23
+msgid "New"
+msgstr "Новый"
+
+#: app/html/index.html:23
+msgid "Welcome"
+msgstr "Добро пожаловать"
+
+#: app/html/index.html:24 app/html/shared/layout.html:152
+msgid "ToS"
+msgstr "ToS"
+
+#: app/html/index.html:25 app/html/shared/layout.html:153
+msgid "Privacy"
+msgstr "Конфиденциальность"
+
+#: app/html/index.html:26 app/html/shared/layout.html:154
+msgid "Changelog"
+msgstr "Список изменений"
+
+#: app/html/index.html:27 app/html/shared/layout.html:155
+msgid "API"
+msgstr "API"
+
+#: app/html/index.html:28 app/html/shared/layout.html:156
+msgid "Canary"
+msgstr "Другое"
+
+#: app/html/index.html:29 app/html/shared/layout.html:157
+#: app/html/shared/sidebar/home.html:52
+msgid "Donate"
+msgstr "Поддержите"
+
+#: app/html/index.html:31
+#, python-format
+msgid "Served by %(host)s"
+msgstr "Сделано - %(host)s"
+
+#: app/html/index.html:33 app/html/shared/layout.html:163
+msgid "Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries"
+msgstr "Построено за __EXECUTION_TIME__ms - __DB_QUERIES__ запросов"
+
+#: app/html/index.html:50 app/html/sub.html:39
+msgid "There are no posts here, yet."
+msgstr "Здесь еще нет никаких постов."
+
+#: app/html/index.html:61 app/html/sub.html:49 app/html/sub/log.html:77
+msgid "Previous page"
+msgstr "Предыдущая страница"
+
+#: app/html/index.html:64 app/html/sub.html:52 app/html/sub/log.html:81
+msgid "Next page"
+msgstr "Далее"
+
+#: app/html/videomodeplayer.html:7
+msgid "Previous"
+msgstr "Назад"
+
+#: app/html/videomodeplayer.html:10
+msgid "Next"
+msgstr "Далее"
+
+#: app/html/admin/totp.html:11
+msgid "Further authentication required"
+msgstr ""
+
+#: app/html/admin/totp.html:14
+msgid "One-time password"
+msgstr ""
+
+#: app/html/admin/totp.html:21 app/html/errors/403.html:32
+#: app/html/shared/layout.html:102 app/html/user/login.html:5
+#: app/html/user/login.html:30 app/static/js/main.js:63
+msgid "Log in"
+msgstr "Вход"
+
+#: app/html/errors/403.html:4
+msgid "Error 403 - Forbidden"
+msgstr ""
+
+#: app/html/errors/403.html:10
+msgid "Error 403 - Authorized personnel only"
+msgstr ""
+
+#: app/html/errors/403.html:12
+msgid "It seems that you're trying to get to the depths of the throat."
+msgstr ""
+
+#: app/html/errors/403.html:17 app/html/user/login.html:12
+msgid "Login"
+msgstr ""
+
+#: app/html/errors/403.html:21 app/html/user/login.html:16
+#: app/html/user/register.html:21 app/static/js/main.js:52
+msgid "Alphanumeric characters plus '-' and '_'"
+msgstr ""
+
+#: app/html/errors/403.html:27 app/html/user/login.html:22
+#: app/static/js/main.js:58
+msgid "Forgot your password?"
+msgstr "Забыли пароль?"
+
+#: app/html/errors/404.html:4 app/html/errors/404.html:10
+msgid "Error 404 - Not found"
+msgstr ""
+
+#: app/html/errors/404.html:12
+msgid "The resource you were looking for does not exist."
+msgstr ""
+
+#: app/html/errors/418.html:4 app/html/errors/418.html:10
+msgid "Error 418 - I'm a teapot"
+msgstr ""
+
+#: app/html/errors/418.html:12
+msgid "The requested entity body is short and stout."
+msgstr ""
+
+#: app/html/errors/500.html:4 app/html/errors/500.html:10 app/views/do.py:601
+msgid "Internal error"
+msgstr ""
+
+#: app/html/errors/500.html:12
+msgid ""
+"We're experiencing technical difficulties, please try again later. If the "
+"error persists, report it to the administration."
+msgstr ""
+
+#: app/html/shared/layout.html:40
+msgid "Admin mode is currently enabled."
+msgstr ""
+
+#: app/html/shared/layout.html:43
+msgid "Disable"
+msgstr ""
+
+#: app/html/shared/layout.html:50
+msgid "all"
+msgstr "все"
+
+#: app/html/shared/layout.html:51
+msgid "new"
+msgstr "новые"
+
+#: app/html/shared/layout.html:53
+msgid "uploads"
+msgstr "загрузка"
+
+#: app/html/shared/layout.html:57
+msgid "Customize this bar"
+msgstr ""
+
+#: app/html/shared/layout.html:66
+msgid "More"
+msgstr "Далее"
+
+#: app/html/shared/layout.html:103 app/html/user/register.html:5
+#: app/html/user/register.html:13 app/html/user/register.html:64
+msgid "Register"
+msgstr "Регистрация"
+
+#: app/html/shared/layout.html:107
+msgid "Score"
+msgstr ""
+
+#: app/html/shared/layout.html:125
+msgid "Log out"
+msgstr "Выйти"
+
+#: app/html/shared/layout.html:158
+msgid "License"
+msgstr "Лицензия"
+
+#: app/html/shared/layout.html:159
+msgid "Bugs"
+msgstr "Ошибки"
+
+#: app/html/shared/layout.html:161
+#, python-format
+msgid "Served by %(hostname)s"
+msgstr ""
+
+#: app/html/shared/layout.html:172
+msgid "Chat"
+msgstr "Чат"
+
+#: app/html/shared/post.html:7 app/html/sub/post.html:31
+#: app/html/sub/postcomments.html:10
+msgid "Upvote"
+msgstr ""
+
+#: app/html/shared/post.html:9 app/html/sub/post.html:33
+#: app/html/sub/postcomments.html:11
+msgid "Downvote"
+msgstr ""
+
+#: app/html/shared/post.html:22 app/html/sub/css.html:45
+msgid "Thumbnail"
+msgstr "Фото"
+
+#: app/html/shared/post.html:35
+msgid "Announcement"
+msgstr ""
+
+#: app/html/shared/post.html:38 app/views/subs.py:50 app/views/subs.py:88
+msgid "Poll"
+msgstr "Голосование"
+
+#: app/html/shared/post.html:41 app/html/shared/sidebar/sub.html:31
+#: app/html/sub/post.html:55
+msgid "Not safe for work"
+msgstr ""
+
+#: app/html/shared/post.html:41 app/html/shared/sidebar/sub.html:31
+#: app/html/sub/post.html:55
+msgid "NSFW"
+msgstr ""
+
+#: app/html/shared/post.html:50
+msgid "not https"
+msgstr ""
+
+#: app/html/shared/post.html:58
+msgid "Embed video"
+msgstr ""
+
+#: app/html/shared/post.html:60
+msgid "Show image"
+msgstr ""
+
+#: app/html/shared/post.html:62
+msgid "Play video"
+msgstr ""
+
+#: app/html/shared/post.html:65
+msgid "Show poll"
+msgstr ""
+
+#: app/html/shared/post.html:67
+msgid "Show post content"
+msgstr ""
+
+#: app/html/shared/post.html:71
+#, python-format
+msgid "posted %(timeago)s by %(user)s on %(sub)s"
+msgstr "добавлено %(timeago)s - %(user)s в %(sub)s"
+
+#: app/html/shared/post.html:73
+#, python-format
+msgid "posted %(timeago)s by %(user)s"
+msgstr "добавлен %(timeago)s - %(user)s"
+
+#: app/html/shared/post.html:77
+msgid "sticky"
+msgstr "закрепить"
+
+#: app/html/shared/post.html:80
+msgid "wiki"
+msgstr "wiki"
+
+#: app/html/shared/post.html:86
+#, python-format
+msgid "comments (%(comments)i)"
+msgstr "комментариев (%(comments)i)"
+
+#: app/html/shared/post.html:88
+msgid "comment"
+msgstr "комментарий"
+
+#: app/html/shared/post.html:92
+msgid "block sub"
+msgstr "блокировать саб"
+
+#: app/html/shared/post.html:94 app/html/sub/post.html:137
+#: app/html/sub/postcomments.html:67
+msgid "report"
+msgstr "флаг"
+
+#: app/html/shared/sidebar/home.html:8 app/html/shared/sidebar/sub.html:15
+msgid "Submit a text post"
+msgstr "Добавить текст"
+
+#: app/html/shared/sidebar/home.html:9 app/html/shared/sidebar/sub.html:16
+msgid "Submit a link post"
+msgstr "Добавить ссылку"
+
+#: app/html/shared/sidebar/home.html:11
+msgid "View all subs"
+msgstr "Посмотреть сабы"
+
+#: app/html/shared/sidebar/home.html:12
+msgid "Go to random sub"
+msgstr "Случайный саб"
+
+#: app/html/shared/sidebar/home.html:13
+msgid "Create a sub"
+msgstr "Создать саб"
+
+#: app/html/shared/sidebar/home.html:18
+msgid "Top posts in the last 24 hours"
+msgstr "Горячее за 24 часа"
+
+#: app/html/shared/sidebar/home.html:33
+msgid "Sub of the day"
+msgstr "Сабы за день"
+
+#: app/html/shared/sidebar/home.html:55
+msgid "Site logs"
+msgstr "Журналы"
+
+#: app/html/shared/sidebar/sub.html:5
+msgid "Title search..."
+msgstr "Поиск..."
+
+#: app/html/shared/sidebar/sub.html:18
+msgid "Submit a poll"
+msgstr "Добавить опрос"
+
+#: app/html/shared/sidebar/sub.html:25
+msgid "View wiki"
+msgstr "Посмотреть Wiki"
+
+#: app/html/shared/sidebar/sub.html:35
+#, python-format
+msgid "%(subs)i subscribers"
+msgstr "%(subs)i - читают"
+
+#: app/html/shared/sidebar/sub.html:39
+msgid "Subscribed"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:41
+msgid "Subscribe"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:44
+msgid "Blocked"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:46
+msgid "Block"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:56 app/html/shared/sidebar/sub.html:80
+msgid "Moderators"
+msgstr "Модераторы"
+
+#: app/html/shared/sidebar/sub.html:59
+msgid "Owner"
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:70
+#, python-format
+msgid "Created by <a href=\"/u/%(name)s\">%(name)s</a>"
+msgstr "Создал <a href=\"/u/%(name)s\">%(name)s</a"
+
+#: app/html/shared/sidebar/sub.html:75
+msgid "Settings"
+msgstr "Настройки"
+
+#: app/html/shared/sidebar/sub.html:76
+msgid "Edit flairs"
+msgstr "Изменить флаер"
+
+#: app/html/shared/sidebar/sub.html:77
+msgid "Edit stylesheet"
+msgstr "Изменить стиль"
+
+#: app/html/shared/sidebar/sub.html:85
+msgid "Sub Log"
+msgstr "Журнал"
+
+#: app/html/shared/sidebar/sub.html:86
+msgid "Banned Users"
+msgstr "Забаненные"
+
+#: app/html/shared/sidebar/user.html:6
+msgid "Are you sure you want to ban this user?"
+msgstr ""
+
+#: app/html/shared/sidebar/user.html:6 app/html/sub/bans.html:12
+msgid "Ban user"
+msgstr "Бан пользователя"
+
+#: app/html/shared/sidebar/user.html:10
+msgid "Are you sure you want to remove all the votes issued by this user?"
+msgstr ""
+
+#: app/html/shared/sidebar/user.html:10
+msgid "Remove votes"
+msgstr ""
+
+#: app/html/shared/sidebar/user.html:15
+msgid "Preferences"
+msgstr "Предпочтения"
+
+#: app/html/shared/sidebar/user.html:16 app/html/user/password_reset.html:24
+#: app/html/user/settings/password.html:9
+msgid "Change password"
+msgstr "Поменять пароль"
+
+#: app/html/shared/sidebar/user.html:17
+msgid "Delete account"
+msgstr "Удалить аккаунт"
+
+#: app/html/shared/sidebar/user.html:20
+#: app/html/user/settings/invitecode.html:9
+msgid "Invite codes"
+msgstr ""
+
+#: app/html/shared/sidebar/user.html:24
+msgid "Profile"
+msgstr "Профиль"
+
+#: app/html/shared/sidebar/user.html:25
+msgid "View posts"
+msgstr "Просмотр поста"
+
+#: app/html/shared/sidebar/user.html:26
+msgid "View comments"
+msgstr "Просмотр комментариев"
+
+#: app/html/shared/sidebar/user.html:28
+msgid "View saved posts"
+msgstr "Просмотр сохраненных"
+
+#: app/html/site/license.html:8
+msgid ""
+"This website is powered by <a href=\"https://github.com/Phuks-co/throat"
+"\">Throat</a>, released under the MIT license."
+msgstr ""
+
+#: app/html/sub/bans.html:7 app/html/sub/css.html:7
+msgid "Editing as Admin"
+msgstr ""
+
+#: app/html/sub/bans.html:10
+#, python-format
+msgid "Banned users on <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgstr "Забанил пользоватя <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+
+#: app/html/sub/bans.html:20 app/html/sub/bans.html:24
+msgid "Until..."
+msgstr ""
+
+#: app/html/sub/bans.html:23
+msgid "Forever"
+msgstr ""
+
+#: app/html/sub/bans.html:28
+msgid "Ban"
+msgstr "Бан"
+
+#: app/html/sub/bans.html:40
+msgid "Banned users"
+msgstr "Забаненные пользователи"
+
+#: app/html/sub/bans.html:42
+msgid "none"
+msgstr ""
+
+#: app/html/sub/bans.html:47 app/html/sub/bans.html:105
+msgid "By"
+msgstr ""
+
+#: app/html/sub/bans.html:48 app/html/sub/bans.html:106
+#: app/html/user/settings/invitecode.html:21
+msgid "Created"
+msgstr "Создан"
+
+#: app/html/sub/bans.html:49 app/html/sub/bans.html:107
+#: app/html/sub/log.html:12 app/html/user/profile.html:116
+msgid "User"
+msgstr "Участник"
+
+#: app/html/sub/bans.html:50 app/html/sub/bans.html:108
+msgid "Reason"
+msgstr ""
+
+#: app/html/sub/bans.html:51 app/html/user/settings/invitecode.html:23
+msgid "Expires"
+msgstr ""
+
+#: app/html/sub/bans.html:53
+msgid "Actions"
+msgstr ""
+
+#: app/html/sub/bans.html:64 app/html/sub/bans.html:71
+#: app/html/sub/bans.html:119 app/html/sub/bans.html:126
+#: app/html/sub/bans.html:135 app/html/user/settings/invitecode.html:41
+msgid "N/A"
+msgstr ""
+
+#: app/html/sub/bans.html:80
+msgid "Never"
+msgstr ""
+
+#: app/html/sub/bans.html:86
+msgid "unban"
+msgstr ""
+
+#: app/html/sub/bans.html:98
+msgid "Past bans"
+msgstr ""
+
+#: app/html/sub/bans.html:109
+msgid "Removed"
+msgstr ""
+
+#: app/html/sub/create.html:4
+msgid "Create Sub"
+msgstr "Создать Саб"
+
+#: app/html/sub/create.html:12 app/html/sub/create.html:29
+msgid "Create sub"
+msgstr "Создать саб"
+
+#: app/html/sub/create.html:13
+msgid "Create a sub for you, your friends, or for your favorite community"
+msgstr "Создайте Саб для себя, своих друзей или для вашего любимого сообщества"
+
+#: app/html/sub/create.html:21
+msgid "Alphanumeric characters"
+msgstr ""
+
+#: app/html/sub/create.html:24
+msgid "Description"
+msgstr "Описание"
+
+#: app/html/sub/createpost.html:10
+msgid "Submit a post"
+msgstr "Добавить пост"
+
+#: app/html/sub/createpost.html:43
+msgid ""
+"(Optional) Write your post content here. Styling with Markdown format is "
+"supported."
+msgstr "(Необязательно). Напишите ваш пост здесь. Поддержка Markdown."
+
+#: app/html/sub/createpost.html:48
+msgid "Options"
+msgstr "Опции"
+
+#: app/html/sub/createpost.html:56 app/static/js/Poll.js:24
+msgid "remove"
+msgstr "удалить"
+
+#: app/html/sub/createpost.html:66
+msgid "Add option"
+msgstr "Добавить опции"
+
+#: app/html/sub/createpost.html:74
+msgid "File"
+msgstr "Файл"
+
+#: app/html/sub/createpost.html:76
+msgid "Upload a file!"
+msgstr "Загрузите файл!"
+
+#: app/html/sub/createpost.html:82 app/html/sub/log.html:69
+msgid "Link"
+msgstr "Ссылка"
+
+#: app/html/sub/createpost.html:83
+msgid "URL"
+msgstr "URL"
+
+#: app/html/sub/createpost.html:88 app/static/js/Post.js:398
+msgid "Grab title"
+msgstr "Извлечь"
+
+#: app/html/sub/createpost.html:92
+msgid "Hide poll results until poll closes"
+msgstr "Скрыть результаты опроса до закрытия опроса"
+
+#: app/html/sub/createpost.html:97
+msgid "Close the poll at..."
+msgstr "Заркыть опрос..."
+
+#: app/html/sub/createpost.html:122
+msgid "Submit post"
+msgstr "Разместить пост"
+
+#: app/html/sub/createpost.html:127 app/html/sub/post.html:185
+#: app/static/js/Post.js:223 app/static/js/Post.js:276
+#: app/static/js/Post.js:352 app/static/js/Post.js:497
+msgid "Preview"
+msgstr "Предпросмотр"
+
+#: app/html/sub/createpost.html:130
+msgid "Post preview"
+msgstr "Предпросмотр поста"
+
+#: app/html/sub/css.html:10
+#, python-format
+msgid "Editing stylesheet for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgstr ""
+
+#: app/html/sub/css.html:23 app/html/user/settings/password.html:27
+#: app/html/user/settings/preferences.html:54
+msgid "Saved!"
+msgstr "Сохранено!"
+
+#: app/html/sub/css.html:23 app/html/user/settings/password.html:27
+#: app/html/user/settings/preferences.html:54 app/html/user/topbar.html:7
+#: app/static/js/main.js:193 app/static/js/main.js:197
+msgid "Save"
+msgstr "Сохранить"
+
+#: app/html/sub/css.html:30
+msgid "Upload files"
+msgstr "Загрузка файлов"
+
+#: app/html/sub/css.html:31
+#, python-format
+msgid "Upload limit is 2 MiB. Space used: %(storage)i KiB"
+msgstr ""
+
+#: app/html/sub/css.html:37
+msgid "Only images allowed"
+msgstr ""
+
+#: app/html/sub/css.html:38
+msgid "Upload"
+msgstr "Загрузить"
+
+#: app/html/sub/css.html:42
+msgid "No files were uploaded, yet."
+msgstr ""
+
+#: app/html/sub/css.html:46
+#, python-format
+msgid "Filename: %(filename)s. Size: %(filesize)i KiB."
+msgstr ""
+
+#: app/html/sub/css.html:48 app/html/user/settings/delete.html:26
+msgid "Deleting..."
+msgstr "Удаление..."
+
+#: app/html/sub/css.html:48
+msgid "Deleted!"
+msgstr "Удалено!"
+
+#: app/html/sub/css.html:48
+msgid "Delete"
+msgstr "Удалить"
+
+#: app/html/sub/css.html:53
+#, python-format
+msgid "You can use uploaded images with <code>%%imagename%%</code>."
+msgstr ""
+
+#: app/html/sub/css.html:54
+msgid "Example:"
+msgstr ""
+
+#: app/html/sub/css.html:57
+#, python-format
+msgid "%%mybackground%%"
+msgstr ""
+
+#: app/html/sub/log.html:7
+#, python-format
+msgid "Sub log for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgstr "Логи саба <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+
+#: app/html/sub/log.html:11
+msgid "Time"
+msgstr "Время"
+
+#: app/html/sub/log.html:13
+msgid "Action"
+msgstr "Действие"
+
+#: app/html/sub/log.html:34
+msgid "Created the sub"
+msgstr "Создал  саб"
+
+#: app/html/sub/log.html:36
+msgid "Changed sub settings"
+msgstr "Изменил настройки"
+
+#: app/html/sub/log.html:38
+#, python-format
+msgid ""
+"Banned <a href=\"/u/%(username)s\">%(username)s</a> with reason <code>"
+"%(reason)s</code>"
+msgstr ""
+"Забанил <a href=\"/u/%(username)s\">%(username)s</a> - <code>%(reason)s</"
+"code>"
+
+#: app/html/sub/log.html:40
+#, python-format
+msgid "Unbanned <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr "Разбанил <a href=\"/u/%(username)s\">%(username)s</a>"
+
+#: app/html/sub/log.html:42
+#, python-format
+msgid "Sent mod invite to <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
+"Отправлено мод приглашение <a href=\"/u/%(username)s\">%(username)s</a>"
+
+#: app/html/sub/log.html:44
+msgid "Accepted mod invite"
+msgstr ""
+
+#: app/html/sub/log.html:46
+#, python-format
+msgid "Removed <a href=\"/u/%(username)s\">%(username)s</a> from the mod team"
+msgstr "Удален <a href=\"/u/%(username)s\">%(username)s</a> из команды"
+
+#: app/html/sub/log.html:48
+#, python-format
+msgid "Revoked mod invite for <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
+
+#: app/html/sub/log.html:50
+#, python-format
+msgid "Mod invite declined by <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
+
+#: app/html/sub/log.html:52
+msgid "Edited the sub's stylesheet"
+msgstr "Изменил css саба"
+
+#: app/html/sub/log.html:54
+#, python-format
+msgid "Sub was transferred to <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr "Саб был передан <a href=\"/u/%(username)s\">%(username)s</a>"
+
+#: app/html/sub/log.html:56
+msgid "Stickied a post"
+msgstr "Закрепил пост"
+
+#: app/html/sub/log.html:58
+msgid "Unstickied a post"
+msgstr "Открепил пост"
+
+#: app/html/sub/log.html:60
+#, python-format
+msgid "Deleted a post with reason <code>%(desc)s</code>"
+msgstr "Удалил пост с указанием причины <code>%(desc)s</code>"
+
+#: app/html/sub/log.html:62
+#, python-format
+msgid "Deleted a comment with reason <code>%(desc)s</code>"
+msgstr "Удалил комментарий по уважительной причине <code>%(desc)s</code>"
+
+#: app/html/sub/log.html:64
+#, python-format
+msgid "[Type %(type)i]"
+msgstr ""
+
+#: app/html/sub/post.html:14
+#, python-format
+msgid "Posted %(timeago)s by %(user)s"
+msgstr "Добавлен %(timeago)s - %(user)s"
+
+#: app/html/sub/post.html:17
+#, python-format
+msgid "edited %(timeago)s"
+msgstr ""
+
+#: app/html/sub/post.html:19
+#, python-format
+msgid "Score: %(score)i <b>(+%(upvotes)i|-%(downvotes)i)</b>"
+msgstr "Карма: %(score)i <b>(+%(upvotes)i|-%(downvotes)i)</b>"
+
+#: app/html/sub/post.html:87
+msgid "unsave"
+msgstr ""
+
+#: app/html/sub/post.html:89
+msgid "save"
+msgstr "сохранить"
+
+#: app/html/sub/post.html:92
+msgid "flair"
+msgstr "флаер"
+
+#: app/html/sub/post.html:96 app/html/sub/postcomments.html:62
+#: app/static/js/Post.js:211 app/static/js/Post.js:214
+#: app/static/js/Post.js:267 app/static/js/Post.js:270
+msgid "edit"
+msgstr "изменить"
+
+#: app/html/sub/post.html:99
+msgid "edit title"
+msgstr ""
+
+#: app/html/sub/post.html:104 app/html/sub/postcomments.html:65
+msgid "delete"
+msgstr "удалить"
+
+#: app/html/sub/post.html:108
+msgid "tag as nsfw"
+msgstr ""
+
+#: app/html/sub/post.html:110
+msgid "remove nsfw"
+msgstr ""
+
+#: app/html/sub/post.html:116
+msgid "close poll"
+msgstr ""
+
+#: app/html/sub/post.html:121
+msgid "unstick"
+msgstr ""
+
+#: app/html/sub/post.html:123
+msgid "make sticky"
+msgstr "закрепить"
+
+#: app/html/sub/post.html:127
+msgid "remove wiki"
+msgstr "убрать wiki"
+
+#: app/html/sub/post.html:129
+msgid "make wiki"
+msgstr "сделать wiki"
+
+#: app/html/sub/post.html:133
+msgid "make announcement"
+msgstr ""
+
+#: app/html/sub/post.html:147
+#, python-format
+msgid "Current flair: <span class=\"postflair\">%(flair)s</span>."
+msgstr "Текущий флаер: <span class=\"postflair\">%(flair)s</span>."
+
+#: app/html/sub/post.html:147
+msgid "Remove"
+msgstr "Удалить"
+
+#: app/html/sub/post.html:149
+msgid "Select a new flair"
+msgstr "Выберите новый флаер"
+
+#: app/html/sub/post.html:167
+msgid "[deleted]"
+msgstr "[удалено]"
+
+#: app/html/sub/post.html:184
+msgid "Submit comment"
+msgstr "Отправить комментарий"
+
+#: app/html/sub/post.html:187 app/static/js/Post.js:224
+#: app/static/js/Post.js:277
+msgid "Comment preview"
+msgstr "Предпросмотр комментария"
+
+#: app/html/sub/post.html:195
+msgid "No comments, yet..."
+msgstr "Пока никаких комментариев..."
+
+#: app/html/sub/post.html:198
+#, python-format
+msgid "%(comments)i comments"
+msgstr "%(comments)i комментариев"
+
+#: app/html/sub/postcomments.html:26
+msgid "[OP]"
+msgstr ""
+
+#: app/html/sub/postcomments.html:33
+#, python-format
+msgid ""
+"<span class=\"cscore\">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>"
+"%(downvotes)i</b>)"
+msgstr ""
+"<span class=\"cscore\">%(score)i</span> карма</b> (+<b>%(upvotes)i</b>|-<b>"
+"%(downvotes)i</b>)"
+
+#: app/html/sub/postcomments.html:39
+#, python-format
+msgid "Edited %(timeago)s"
+msgstr "Отредактированный %(timeago)s"
+
+#: app/html/sub/postcomments.html:56
+msgid "permalink"
+msgstr "ссылка"
+
+#: app/html/sub/postcomments.html:59 app/static/js/Post.js:473
+#: app/static/js/Post.js:476
+msgid "reply"
+msgstr "ответить"
+
+#: app/html/sub/postcomments.html:70 app/static/js/Post.js:190
+#: app/static/js/Post.js:193 app/static/js/Post.js:243
+#: app/static/js/Post.js:246
+msgid "source"
+msgstr "исходник"
+
+#: app/html/sub/postcomments.html:84
+#, python-format
+msgid "Load more (%(amt)i comments)"
+msgstr "Еще (%(amt)i комментариев)"
+
+#: app/html/sub/postcomments.html:86
+msgid "Load more (1 comment)"
+msgstr "Загрузить больше (1 комментарий)"
+
+#: app/html/sub/postpoll.html:6
+msgid "This poll is now <b>closed</b>."
+msgstr "Этот опрос сейчас идет <b>закрыть</b>."
+
+#: app/html/sub/postpoll.html:9
+msgid "Show results."
+msgstr "Показать результаты."
+
+#: app/html/sub/postpoll.html:14
+#, python-format
+msgid "This poll will close %(timeuntil)s"
+msgstr "Этот опрос будет закрыт %(timeuntil)s"
+
+#: app/html/sub/postpoll.html:17
+msgid "Results will be hidden until the poll closes"
+msgstr "Результаты будут скрыты до тех пор, пока опрос не закроется"
+
+#: app/html/sub/postpoll.html:21
+#, python-format
+msgid "Only users above <b>level %(level)s</b> can vote."
+msgstr "Только пользователи выше <b>level %(level)s</b>могут голосовать."
+
+#: app/html/sub/postpoll.html:28 app/static/js/Poll.js:85
+#: app/static/js/Poll.js:137
+msgid "(voted)"
+msgstr "(голосовали)"
+
+#: app/html/sub/postpoll.html:36
+msgid "Vote"
+msgstr "Голос"
+
+#: app/html/sub/postpoll.html:51
+#, python-format
+msgid "(<span class=\"poll-opt-votecount\">%(votes)i</span> votes)"
+msgstr "(<span class=\"poll-opt-votecount\">%(votes)i</span> голосов)"
+
+#: app/html/sub/postpoll.html:59 app/static/js/Poll.js:125
+msgid "Withdraw vote"
+msgstr "Отменить голосование"
+
+#: app/html/user/password_recovery.html:11
+msgid "Password recovery"
+msgstr "Восстановление пароля"
+
+#: app/html/user/password_recovery.html:15
+msgid "E-mail address"
+msgstr "E-mail адрес"
+
+#: app/html/user/password_recovery.html:27
+msgid "mail sent!"
+msgstr "e-mail отправлен!"
+
+#: app/html/user/password_recovery.html:27 app/html/user/password_reset.html:24
+msgid "Processing..."
+msgstr "Обработка..."
+
+#: app/html/user/password_recovery.html:27
+msgid "Send recovery email"
+msgstr "Восстановить e-mail"
+
+#: app/html/user/password_reset.html:11
+msgid "Password reset"
+msgstr "Сброс пароля"
+
+#: app/html/user/password_reset.html:20
+msgid "Password (again)"
+msgstr "Пароль (снова)"
+
+#: app/html/user/profile.html:15
+msgid "Send a message"
+msgstr "Отправить сообщение"
+
+#: app/html/user/profile.html:19
+#, python-format
+msgid "Registered %(timeago)s"
+msgstr "Зарегистрированный %(timeago)s"
+
+#: app/html/user/profile.html:45
+msgid "posts"
+msgstr "пост"
+
+#: app/html/user/profile.html:49
+msgid "comments"
+msgstr "комментарий"
+
+#: app/html/user/profile.html:55
+msgid "Phuks given"
+msgstr ""
+
+#: app/html/user/profile.html:59
+msgid "Total score"
+msgstr "Вся карма"
+
+#: app/html/user/profile.html:66
+msgid "Badges"
+msgstr "Награды"
+
+#: app/html/user/profile.html:77
+msgid "Owns"
+msgstr ""
+
+#: app/html/user/profile.html:87
+msgid "Mods"
+msgstr "Модс"
+
+#: app/html/user/profile.html:98
+msgid "Posting habits"
+msgstr "Читает"
+
+#: app/html/user/profile.html:113
+msgid "Send message"
+msgstr ""
+
+#: app/html/user/profile.html:120
+msgid "Subject"
+msgstr ""
+
+#: app/html/user/profile.html:124
+msgid "Styling with Markdown format is supported."
+msgstr ""
+
+#: app/html/user/profile.html:127
+msgid "Sending..."
+msgstr ""
+
+#: app/html/user/profile.html:127
+msgid "Send Message"
+msgstr ""
+
+#: app/html/user/register.html:62
+msgid "I accept the <a href=\"/tos\">Terms of Use</a>"
+msgstr "Я согласен в <a href=\"/tos\">Политикой</a>"
+
+#: app/html/user/topbar.html:5
+msgid "Customize your sub bar"
+msgstr "Настройте свой суб-бар"
+
+#: app/html/user/topbar.html:6
+msgid "Drag to sort"
+msgstr ""
+
+#: app/html/user/settings/delete.html:9
+msgid "Account deletion"
+msgstr ""
+
+#: app/html/user/settings/delete.html:15
+msgid "THIS ACTION CANNOT BE UNDONE"
+msgstr ""
+
+#: app/html/user/settings/delete.html:26
+msgid "Deleted."
+msgstr "Удалить."
+
+#: app/html/user/settings/delete.html:26
+msgid "Delete my account"
+msgstr "Удалить мой аккаунт"
+
+#: app/html/user/settings/invitecode.html:11
+#, python-format
+msgid "You can create <b>%(num)i</b> invite codes."
+msgstr ""
+
+#: app/html/user/settings/invitecode.html:12
+msgid "Create new"
+msgstr "Создать новый"
+
+#: app/html/user/settings/invitecode.html:14
+msgid "You cannot create invite codes."
+msgstr "Вы не можете создавать инвайты."
+
+#: app/html/user/settings/invitecode.html:17
+msgid "Your invite codes"
+msgstr "Ваши инвайты"
+
+#: app/html/user/settings/invitecode.html:22 app/static/js/Editor.js:59
+msgid "Code"
+msgstr "Код"
+
+#: app/html/user/settings/invitecode.html:24
+msgid "Uses"
+msgstr "Участник"
+
+#: app/html/user/settings/invitecode.html:25
+msgid "Max uses"
+msgstr "Max uses"
+
+#: app/html/user/settings/password.html:27
+#: app/html/user/settings/preferences.html:54
+msgid "Editing..."
+msgstr "Редактирование..."
+
+#: app/html/user/settings/preferences.html:9
+#, python-format
+msgid "%(user)s's preferences"
+msgstr "%(user)s предпочтения"
+
+#: app/static/js/Editor.js:26
+msgid "Bold (ctrl-b)"
+msgstr "Жирный (ctrl-b)"
+
+#: app/static/js/Editor.js:27
+msgid "Italic (ctrl-i)"
+msgstr "Курсив (ctrl-i)"
+
+#: app/static/js/Editor.js:28
+msgid "Strikethrough (ctrl-shift-s)"
+msgstr "Перечеркнутый (ctrl-shift-s)"
+
+#: app/static/js/Editor.js:29
+msgid "Title (ctrl-shift-h)"
+msgstr "Заголовок (ctrl-shift-h)"
+
+#: app/static/js/Editor.js:36
+msgid "Insert hyperlink"
+msgstr "Вставить гиперссылку"
+
+#: app/static/js/Editor.js:39
+msgid "Link Title"
+msgstr "Название Ссылки"
+
+#: app/static/js/Editor.js:46
+msgid "Insert link (ctrl-shift-k)"
+msgstr "Вставить ссылку (ctrl-shift-k)"
+
+#: app/static/js/Editor.js:52
+msgid "Bullet list"
+msgstr ""
+
+#: app/static/js/Editor.js:53
+msgid "Number list"
+msgstr "Номерной список"
+
+#: app/static/js/Editor.js:60
+msgid "Quote (ctrl-shift-.)"
+msgstr "Цитата (ctrl-shift-.)"
+
+#: app/static/js/Messages.js:13
+msgid "read"
+msgstr "читать"
+
+#: app/static/js/Messages.js:37 app/static/js/Post.js:13
+msgid "saved"
+msgstr "сохраненный"
+
+#: app/static/js/Messages.js:50
+msgid "deleted"
+msgstr "удалить"
+
+#: app/static/js/Poll.js:66
+msgid "Voting..."
+msgstr "Голосование..."
+
+#: app/static/js/Poll.js:76 app/static/js/Poll.js:128 app/static/js/Post.js:123
+#: app/static/js/Post.js:138 app/static/js/Post.js:154
+#: app/static/js/Post.js:169 app/static/js/Post.js:348
+#: app/static/js/Post.js:375
+msgid "Error: %1"
+msgstr ""
+
+#: app/static/js/Poll.js:121
+msgid "Working..."
+msgstr "Работающий..."
+
+#: app/static/js/Post.js:20 app/static/js/Post.js:38
+msgid "removed"
+msgstr "удаленный"
+
+#: app/static/js/Post.js:28 app/static/js/Post.js:367
+msgid "Why are you deleting this?"
+msgstr "Почему вы это удаляете?"
+
+#: app/static/js/Post.js:36 app/static/js/Post.js:71 app/static/js/Post.js:87
+#: app/static/js/Post.js:102 app/static/js/Post.js:416
+#: app/static/js/Post.js:440
+msgid "Error."
+msgstr "Ошибка."
+
+#: app/static/js/Post.js:49
+msgid "New title"
+msgstr "Новый заголовок"
+
+#: app/static/js/Post.js:73 app/static/js/Post.js:89 app/static/js/Post.js:104
+msgid "Done"
+msgstr "Сделать"
+
+#: app/static/js/Post.js:125 app/static/js/Post.js:140
+#: app/static/js/Post.js:156 app/static/js/Post.js:171
+msgid "Done!"
+msgstr "Сделано!"
+
+#: app/static/js/Post.js:223 app/static/js/Post.js:275
+msgid "Save changes"
+msgstr "Сохранить изменения"
+
+#: app/static/js/Post.js:294 app/static/js/Post.js:315
+#: app/static/js/Post.js:521
+msgid "There was an error while editing: %1"
+msgstr ""
+
+#: app/static/js/Post.js:297 app/static/js/Post.js:318
+#: app/static/js/Post.js:524
+msgid "Saved."
+msgstr "Сохраненный."
+
+#: app/static/js/Post.js:302 app/static/js/Post.js:323
+#: app/static/js/Post.js:355 app/static/js/Post.js:655 app/static/js/Util.js:77
+msgid "Could not contact the server"
+msgstr ""
+
+#: app/static/js/Post.js:340 app/static/js/Post.js:409
+#: app/static/js/Post.js:422
+msgid "Loading..."
+msgstr "Загрузка..."
+
+#: app/static/js/Post.js:377
+msgid "comment removed"
+msgstr "комментарий удален"
+
+#: app/static/js/Post.js:392
+msgid "Grabbing..."
+msgstr ""
+
+#: app/static/js/Post.js:396
+msgid "Error fetching title"
+msgstr ""
+
+#: app/static/js/Post.js:402
+msgid "Grab again"
+msgstr "Извлечь"
+
+#: app/static/js/Post.js:496
+msgid "Post comment"
+msgstr "Отправить комментарий"
+
+#: app/static/js/Post.js:530
+msgid "1 comments"
+msgstr "1 комментарий"
+
+#: app/static/js/Post.js:537
+msgid "%1 comments"
+msgstr "%1 коммент"
+
+#: app/static/js/Post.js:562
+msgid "Could not contact the server "
+msgstr "Не удалось связаться с сервером "
+
+#: app/static/js/Post.js:568
+msgid "Report post"
+msgstr "Флаг поста"
+
+#: app/static/js/Post.js:569
+msgid "This report will be forwarded to the site administration"
+msgstr "Этот отчет будет направлен персоналу"
+
+#: app/static/js/Post.js:572
+msgid "Select a reason to report this post:"
+msgstr "Выберите причину:"
+
+#: app/static/js/Post.js:575
+msgid "SPAM"
+msgstr "СПАМ"
+
+#: app/static/js/Post.js:576
+msgid "TOS violation"
+msgstr "Нарушение TOS"
+
+#: app/static/js/Post.js:577
+msgid "Other"
+msgstr "Другое"
+
+#: app/static/js/Post.js:581
+msgid "Explain why you're reporting this post:"
+msgstr "Почему вы сообщаете об этом посте:"
+
+#: app/static/js/Post.js:586
+msgid "Submit"
+msgstr "Отправить"
+
+#: app/static/js/Post.js:648
+#, python-format
+msgid "Error: %s"
+msgstr "Ошибка: %s"
+
+#: app/static/js/Post.js:651
+msgid ""
+"Your report has been sent and will be reviewed by the site administrators."
+msgstr "Ваш отчет был отправлен и будет рассмотрен персоналом."
+
+#: app/static/js/Socket.js:78
+msgid "comments (%1)"
+msgstr "комментариев (%1)"
+
+#: app/static/js/Sub.js:70
+msgid "Change to link post"
+msgstr "Изменения в ссылке поста"
+
+#: app/static/js/Sub.js:72
+msgid "Change to text post"
+msgstr "Переход к текстовому сообщению"
+
+#: app/static/js/main.js:43
+msgid "Log in or register to continue"
+msgstr "Войдите или зарегистрируйтесь"
+
+#: app/static/js/main.js:70
+msgid "Don't have an account?"
+msgstr "У вас нет аккаунта?"
+
+#: app/static/js/main.js:71
+msgid "Register now!"
+msgstr "Зарегистрируйтесь!"
+
+#: app/static/js/main.js:157
+msgid "File size exceeds maximum allowed (%1 MB)"
+msgstr ""
+
+#: app/static/js/main.js:181
+msgid "Saving..."
+msgstr ""
+
+#: app/static/js/main.js:190 app/static/js/main.js:195
+msgid ""
+"There was an error while saving your settings. Please try again in a few "
+"minutes."
+msgstr ""
+
+#: app/static/js/main.js:247
+msgid "Error while contacting the server"
+msgstr ""
+
+#: app/static/js/main.js:303
+msgid "Are you sure you want to PERMANENTLY delete your account?"
+msgstr ""
+
+#: app/static/js/utils/TextConfirm.js:14
+msgid "Are you sure?"
+msgstr ""
+
+#: app/views/admin.py:28
+msgid "No TOTP secret found."
+msgstr ""
+
+#: app/views/admin.py:36
+msgid "Invalid or expired token."
+msgstr ""
+
+#: app/views/auth.py:42 app/views/auth.py:48
+msgid "User not found or invalid ticket"
+msgstr ""
+
+#: app/views/auth.py:63 app/views/subs.py:101
+msgid "Invalid captcha."
+msgstr ""
+
+#: app/views/auth.py:67
+msgid "Username has invalid characters."
+msgstr ""
+
+#: app/views/auth.py:72
+msgid "Username is not available."
+msgstr ""
+
+#: app/views/auth.py:80
+msgid "E-mail address is already in use."
+msgstr ""
+
+#: app/views/auth.py:87
+msgid "Incorrect answer for security question."
+msgstr ""
+
+#: app/views/auth.py:92 app/views/auth.py:100 app/views/auth.py:103
+msgid "Invalid invite code."
+msgstr "Неверный код приглашения."
+
+#: app/views/auth.py:144 app/views/auth.py:148 app/views/auth.py:162
+msgid "Invalid username or password."
+msgstr "Неправильный ник или пароль."
+
+#: app/views/auth.py:165
+msgid "Something went really really wrong here."
+msgstr "Здесь что-то пошло совсем не так."
+
+#: app/views/do.py:78 app/views/do.py:98
+msgid "Wrong password"
+msgstr "Неправильный пароль"
+
+#: app/views/do.py:100
+msgid "YES"
+msgstr ""
+
+#: app/views/do.py:101
+msgid "Type \"YES\" in the box"
+msgstr ""
+
+#: app/views/do.py:121 app/views/do.py:207 app/views/do.py:236
+#: app/views/do.py:273 app/views/do.py:304 app/views/do.py:334
+#: app/views/do.py:700 app/views/do.py:764 app/views/do.py:835
+#: app/views/do.py:883 app/views/do.py:916 app/views/do.py:947
+#: app/views/do.py:978 app/views/do.py:1370
+msgid "Sub does not exist"
+msgstr "Саб не существует"
+
+#: app/views/do.py:153
+msgid "Post was already deleted"
+msgstr "Пост уже удален"
+
+#: app/views/do.py:159 app/views/do.py:210 app/views/do.py:294
+#: app/views/do.py:703 app/views/do.py:1518 app/views/do.py:1555
+#: app/views/do.py:1664
+msgid "Not authorized"
+msgstr "Не авторизован"
+
+#: app/views/do.py:165
+msgid "Cannot delete without reason"
+msgstr "Нельзя удалять без причины"
+
+#: app/views/do.py:286 app/views/do.py:1380
+msgid "Flair does not exist"
+msgstr "Флаера не существует"
+
+#: app/views/do.py:313
+msgid "Post has no flair"
+msgstr "Пост не имеет флаера"
+
+#: app/views/do.py:339 app/views/do.py:375 app/views/do.py:677
+#: app/views/do.py:709 app/views/do.py:778 app/views/do.py:831
+#: app/views/do.py:879 app/views/do.py:912 app/views/do.py:943
+msgid "User does not exist"
+msgstr ""
+
+#: app/views/do.py:370
+msgid "Badge does not exist"
+msgstr ""
+
+#: app/views/do.py:395 app/views/do.py:420 app/views/do.py:443
+#: app/views/do.py:468
+msgid "sub not found"
+msgstr ""
+
+#: app/views/do.py:398
+msgid "already subscribed"
+msgstr ""
+
+#: app/views/do.py:423
+msgid "not subscribed"
+msgstr ""
+
+#: app/views/do.py:446
+msgid "already blocked"
+msgstr ""
+
+#: app/views/do.py:471
+msgid "sub not blocked"
+msgstr ""
+
+#: app/views/do.py:535
+msgid "Post not found"
+msgstr ""
+
+#: app/views/do.py:538 app/views/do.py:593
+msgid "Post was deleted"
+msgstr "Пост удален"
+
+#: app/views/do.py:565 app/views/do.py:571
+msgid "Couldn't get title"
+msgstr ""
+
+#: app/views/do.py:603
+msgid "You are currently banned from commenting"
+msgstr "В настоящее время вам запрещено комментировать эти сообщения"
+
+#: app/views/do.py:609 app/views/do.py:613
+msgid "Parent comment does not exist"
+msgstr "Родительский комментарий не существует"
+
+#: app/views/do.py:723
+msgid "Expiration time too far into the future"
+msgstr ""
+
+#: app/views/do.py:725
+msgid "Invalid expiration time"
+msgstr ""
+
+#: app/views/do.py:728
+msgid "Expiration date is in the past"
+msgstr ""
+
+#: app/views/do.py:732
+msgid "Janitors may only create temporary bans"
+msgstr ""
+
+#: app/views/do.py:735
+msgid "Already banned"
+msgstr ""
+
+#: app/views/do.py:782
+msgid "User is already a mod"
+msgstr ""
+
+#: app/views/do.py:788
+msgid "User has a pending invite"
+msgstr ""
+
+#: app/views/do.py:795
+msgid "Invalid power level"
+msgstr ""
+
+#: app/views/do.py:800
+msgid "User can't mod more than 20 subs"
+msgstr "Участник не может создавать более 20 сабов"
+
+#: app/views/do.py:844
+msgid "User is not banned"
+msgstr "Пользователь не забанен"
+
+#: app/views/do.py:847
+msgid "Janitors may only remove bans placed by themselves"
+msgstr "Janitors могут снимать только запреты, установленные ими самими"
+
+#: app/views/do.py:866
+msgid "Ban removed"
+msgstr "Снять бан"
+
+#: app/views/do.py:891
+msgid "User is not mod"
+msgstr "Пользователь  не мод"
+
+#: app/views/do.py:901 app/views/do.py:932
+msgid "Access denied"
+msgstr ""
+
+#: app/views/do.py:924
+msgid "User has not been invited to moderate the sub"
+msgstr "Пользователь не был приглашен для модерирования sub"
+
+#: app/views/do.py:953 app/views/do.py:985
+msgid "You have not been invited to mod this sub"
+msgstr "Вас не пригласили модировать этот саб"
+
+#: app/views/do.py:957
+msgid "You can't mod more than 20 subs"
+msgstr "Вы не можете модировать больше 20 сабов"
+
+#: app/views/do.py:1000
+msgid "Message not found"
+msgstr ""
+
+#: app/views/do.py:1037 app/views/do.py:1043 app/views/do.py:1087
+#: app/views/do.py:1093
+msgid "Message does not exist"
+msgstr ""
+
+#: app/views/do.py:1052
+msgid "Missing title"
+msgstr ""
+
+#: app/views/do.py:1055
+msgid "Title too short."
+msgstr "Название слишком короткое."
+
+#: app/views/do.py:1066
+msgid "You cannot edit the post title anymore"
+msgstr "Вы больше не можете редактировать Заголовок"
+
+#: app/views/do.py:1069
+msgid "You did not post this!"
+msgstr "Вы же этого не писали!"
+
+#: app/views/do.py:1077
+msgid "Bork bork"
+msgstr "Борк Борк"
+
+#: app/views/do.py:1129
+msgid "Post already announced"
+msgstr "Сообщение уже объявлено"
+
+#: app/views/do.py:1162
+msgid "Domain is already banned"
+msgstr "Домен уже забанен"
+
+#: app/views/do.py:1182
+msgid "Domain is not banned"
+msgstr "Домен не запрещен"
+
+#: app/views/do.py:1226
+msgid "Already saved"
+msgstr "Уже сохранен"
+
+#: app/views/do.py:1245
+msgid "Post was not saved"
+msgstr "Пост не был сохранен"
+
+#: app/views/do.py:1403
+msgid "Flair has invalid characters"
+msgstr "Флаер имеет недопустимые символы"
+
+#: app/views/do.py:1421
+msgid "Invalid captcha (refresh page.)"
+msgstr "Недопустимая капча (обновить страницу.)"
+
+#: app/views/do.py:1457
+#, python-format
+msgid ""
+"<h1><strong>%(lema)s</strong></h1>\n"
+"            <p>Somebody (most likely you) has requested a password reset "
+"for\n"
+"            your account</p>\n"
+"            <p>To proceed, visit the following address (valid for the next "
+"24hs)</p>\n"
+"            <a href=\"%(url)s\">%(url)s</a>\n"
+"            <hr>\n"
+"            <p>If you didn't request a password recovery, please ignore "
+"this\n"
+"            email</p>\n"
+"            "
+msgstr ""
+"<h1><strong>%(lema)s</strong></h1>\n"
+"            <p>Кто-то (скорее всего, вы) запросил сброс пароля для\n"
+"            вашего аккаунта</p>\n"
+"            <p>Чтобы продолжить, посетите следующий адрес (действителен в "
+"течение следующих 24 часов)</p>\n"
+"            <a href=\"%(url)s\">%(url)s</a>\n"
+"            <hr>\n"
+"            <p>Если вы не запросили восстановление пароля, пожалуйста, "
+"проигнорируйте это\n"
+"            email</p>\n"
+"            "
+
+#: app/views/do.py:1527
+msgid "You can't edit a deleted comment"
+msgstr "Вы не можете редактировать удаленный комментарий"
+
+#: app/views/do.py:1578 app/views/do.py:1591
+msgid "Not authenticated"
+msgstr "Не прошел проверку подлинности"
+
+#: app/views/do.py:1643
+msgid "Missing text"
+msgstr "Пропущенный текст"
+
+#: app/views/do.py:1674
+msgid "User not found"
+msgstr "Пользователь не найден"
+
+#: app/views/do.py:1707
+msgid "File name too long."
+msgstr "Имя файла слишком длинное."
+
+#: app/views/do.py:1711
+msgid "File name too short or missing."
+msgstr "Имя файла слишком короткое или отсутствует."
+
+#: app/views/do.py:1715
+msgid "Invalid file name."
+msgstr "Недействительное имя файла."
+
+#: app/views/do.py:1720
+msgid "Please select a file to upload."
+msgstr ""
+
+#: app/views/do.py:1732
+msgid "Invalid file type. Only jpg, png and gif allowed."
+msgstr ""
+
+#: app/views/do.py:1757
+msgid "Not enough available space to upload file."
+msgstr "Мало места для загрузки файлов."
+
+#: app/views/do.py:1987 app/views/do.py:2038
+msgid "Post is not a poll"
+msgstr "Пост - это не опрос"
+
+#: app/views/do.py:1992
+msgid "Poll option does not exist"
+msgstr ""
+
+#: app/views/do.py:1997
+msgid "Already voted"
+msgstr "Уже проголосовали"
+
+#: app/views/do.py:2004 app/views/do.py:2011 app/views/do.py:2043
+#: app/views/do.py:2050
+msgid "Poll is closed"
+msgstr ""
+
+#: app/views/do.py:2018
+msgid "Insufficient user level"
+msgstr "Недостаточный уровень доверия"
+
+#: app/views/do.py:2082 app/views/do.py:2086
+msgid "Poll already closed."
+msgstr ""
+
+#: app/views/do.py:2116 app/views/do.py:2156
+msgid "You have already reported this post"
+msgstr "Вы уже сообщали об этом посте"
+
+#: app/views/do.py:2121 app/views/do.py:2161
+msgid "Report reason too short."
+msgstr "Сообщить причину слишком коротко."
+
+#: app/views/messages.py:51
+msgid "Mentions"
+msgstr "Упоминания"
+
+#: app/views/messages.py:87 app/views/messages.py:104
+msgid "Replies"
+msgstr "Ответы"
+
+#: app/views/subs.py:24
+msgid "Wait a bit before posting."
+msgstr "Подождите немного, прежде чем отправлять сообщение."
+
+#: app/views/subs.py:40 app/views/subs.py:78
+msgid "Upload file"
+msgstr "Загрузка файла"
+
+#: app/views/subs.py:109
+msgid "Posting has been temporarily disabled."
+msgstr "Проводка была временно отключена."
+
+#: app/views/subs.py:118
+msgid "Sub does not exist."
+msgstr "Саба не существует."
+
+#: app/views/subs.py:124
+msgid "You cannot post in this sub."
+msgstr "Вы не можете разместить пост в этом сабе."
+
+#: app/views/subs.py:128
+msgid "You're banned from posting on this sub."
+msgstr "Вам запрещено публиковать посты в этом сабе."
+
+#: app/views/subs.py:133
+msgid "Only mods can post on this sub."
+msgstr "Только моды могут размещать темы тут."
+
+#: app/views/subs.py:142
+msgid "You have posted too much today."
+msgstr "Вы сегодня слишком много написали."
+
+#: app/views/subs.py:146
+msgid "Title is too short and/or contains whitespace characters."
+msgstr "Заголовок слишком короткий и / или содержит пробелы."
+
+#: app/views/subs.py:165
+msgid "No link provided."
+msgstr "Ссылка не предоставляется."
+
+#: app/views/subs.py:173
+msgid "This link was recently posted on this sub."
+msgstr "Эта ссылка была недавно опубликована в этом сабе."
+
+#: app/views/subs.py:179
+msgid "This domain is banned."
+msgstr "Этот домен запрещен."
+
+#: app/views/subs.py:186
+msgid "This sub does not allow polling."
+msgstr "Этот саб не позволяет проводить опрос."
+
+#: app/views/subs.py:192
+msgid "Not enough poll options provided."
+msgstr "Не хватает предоставленных вариантов опроса."
+
+#: app/views/subs.py:197
+msgid "Poll option text is too long."
+msgstr "Текст опции опроса слишком длинный."
+
+#: app/views/subs.py:204
+msgid "Poll closing time is too far in the future."
+msgstr "Время закрытия опроса слишком далеко в будущем."
+
+#: app/views/subs.py:208
+msgid "Invalid closing time."
+msgstr "Неверное время закрытия."
+
+#: app/views/subs.py:212
+msgid "The closing time is in the past!"
+msgstr "Время закрытия осталось в прошлом!"
+
+#: app/views/subs.py:217
+msgid "Invalid post type"
+msgstr "Недопустимый тип поста"
+
+#: app/views/subs.py:289
+msgid "Sub name has invalid characters"
+msgstr "Имя саба содержит недопустимые символы"
+
+#: app/views/subs.py:292
+msgid "Invalid sub name"
+msgstr "Неверное имя"
+
+#: app/views/subs.py:297
+msgid "Sub is already registered"
+msgstr "Саб уже зарегистрирован"
+
+#: app/views/subs.py:305
+#, python-format
+msgid "You must be at least level %(level)i."
+msgstr "Вы должны быть по крайней мере ровными Lx %(level)i."
+
+#: app/views/subs.py:313
+#, python-format
+msgid "You cannot own more than %(max)i subs."
+msgstr "Вы не можете владеть больше чем %(max)i сабов."
+
+#: app/views/subs.py:318
+#, python-format
+msgid "You cannot own more than %(max)i subs. Try leveling up your account."
+msgstr "Вы не можете владеть больше чем %(max)i сабов."
+
+#: app/views/user.py:151
+msgid "Auto detect"
+msgstr "Автоматически определять"
+
+#: app/views/wiki.py:30
+msgid "License file was deleted :("
+msgstr "Лицензионный файл был удален :("

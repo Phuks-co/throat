@@ -123,10 +123,9 @@ def invite_codes():
     avail = 0
     if (maxcodes - created) >= 0:
         avail = maxcodes - created
-    return engine.get_template('user/settings/invitecode.html').render({'codes': codes,
-                                                                        'created': created,
-                                                                        'max': maxcodes,
-                                                                        'avail': avail})
+    return engine.get_template('user/settings/invitecode.html').render(
+        {'codes': codes, 'created': created, 'max': maxcodes, 'avail': avail,
+         'user': User.get(User.uid == current_user.uid)})
 
 
 @bp.route('/settings/subs')
