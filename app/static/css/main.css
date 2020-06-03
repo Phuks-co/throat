@@ -511,6 +511,7 @@ span#notification.fade {
   font-size: medium;
   margin: 0;
   font-weight: normal;
+  display: inline-block;
 }
 
 .post .title {

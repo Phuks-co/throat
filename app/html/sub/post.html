@@ -60,9 +60,9 @@
         @end
 
         @if post['link'] == None:
-          <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}" class="title">@{post['title']!!e}</a>
+          <h1></h1><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}" class="title">@{post['title']!!e}</a></h1>
         @else:
-          <a rel="noopener nofollow ugc" href="@{(post['deleted'] == 0) and post['link'] or '#'}" class="title">@{post['title']!!e}</a>
+          <h1><a rel="noopener nofollow ugc" href="@{(post['deleted'] == 0) and post['link'] or '#'}" class="title">@{post['title']!!e}</a></h1>
           @if post['deleted'] == 0:
             <a href="/domain/@{func.getDomain(post['link'])!!e}" class="domain">(@{func.getDomain(post['link'])!!e})</a>
           @end
