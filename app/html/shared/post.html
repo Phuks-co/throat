@@ -15,7 +15,7 @@
         @if post['link'] == None:
           <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']!!s}">
         @else:
-          <a target="_blank" href="@{post['link']!!e}">
+          <a target="_blank" rel="noopener nofollow ugc" href="@{post['link']!!e}">
         @end
           <div class="thumbnail">
             @if post['thumbnail'] != '' and post['link'] != None:
@@ -65,7 +65,7 @@
           @if post['link'].startswith('http:'):
             <span title="@{_('not https')}" class="p-icon" data-icon="exclaim"></span> \
           @end
-          <a target="_blank" href="@{post['link']!!e}" class="title">@{post['title']!!e}</a> <a href="/domain/@{func.getDomain(post['link'])!!e}" class="domain">(@{func.getDomain(post['link'])!!e})</a>
+          <a target="_blank" rel="noopener nofollow ugc" href="@{post['link']!!e}" class="title">@{post['title']!!e}</a> <a href="/domain/@{func.getDomain(post['link'])!!e}" class="domain">(@{func.getDomain(post['link'])!!e})</a>
         @end
       </div>
 	  
