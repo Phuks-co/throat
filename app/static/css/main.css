@@ -1205,6 +1205,24 @@ input[type=search] {
     input#subject, form#msg-form .editbtns {
         width: 100%;
     }
+
+    .motto {
+        display: none;
+    }
+    #createPostIcon {
+        display: block;
+    }
+}
+
+#createPostIcon {
+    position: absolute;
+    top: .5em;
+    right: 3.2em;
+    width: 28px;
+    height: 28px;
+}
+#createPostIcon svg {
+    height: inherit;
 }
 
 @media (min-width: 35.5em){
@@ -1218,6 +1236,10 @@ input[type=search] {
     }
     .pure-control-group .markdown-editor {
         width: calc(100% - 210px);
+    }
+
+    #createPostIcon {
+        display: none;
     }
 }
 

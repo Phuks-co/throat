@@ -11,7 +11,8 @@ import os
 import hashlib
 import re
 import gi
-gi.require_version('GExiv2', '0.10') # noqa
+
+gi.require_version('GExiv2', '0.10')  # noqa
 from gi.repository import GExiv2
 import bcrypt
 import tinycss2
@@ -392,7 +393,7 @@ class PhuksDown(m.SaferHtmlRenderer):
             url = self.rewrite_url(raw_url)
             maybe_title = ' title="%s"' % m.escape_html(title) if title else ''
             url = m.escape_html(url)
-            return ('<a rel="noopener nofollow ugc" href="%s"%s>' % (url, maybe_title))  + content + '</a>'
+            return ('<a rel="noopener nofollow ugc" href="%s"%s>' % (url, maybe_title)) + content + '</a>'
         else:
             return m.escape_html("[%s](%s)" % (content, raw_url))
 
@@ -1093,7 +1094,7 @@ def upload_file(max_size=16777216):
         fsize = os.stat(fpath).st_size
         if fsize > max_size:  # Max file size exceeded
             os.remove(fpath)
-            return _("File size exceeds the maximum allowed size (%(size)i MB)", size=max_size/1024/1024), False
+            return _("File size exceeds the maximum allowed size (%(size)i MB)", size=max_size / 1024 / 1024), False
         # remove metadata
         if mtype not in ('image/gif', 'video/mp4', 'video/webm'):  # Apparently we cannot write to gif images
             clear_metadata(fpath)
