@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Throat 1.0\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-05-30 19:21-0300\n"
+"POT-Creation-Date: 2020-06-04 17:51-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,51 +69,51 @@ msgstr ""
 msgid "Whoa, calm down and wait a bit before posting again."
 msgstr ""
 
-#: app/misc.py:894
+#: app/misc.py:911
 #, python-format
 msgid "Error in the '%(field)s' field - %(error)s"
 msgstr ""
 
-#: app/misc.py:1062
+#: app/misc.py:1079
 msgid "File type not allowed"
 msgstr ""
 
-#: app/misc.py:1079
+#: app/misc.py:1096
 #, python-format
 msgid "File size exceeds the maximum allowed size (%(size)i MB)"
 msgstr ""
 
 #: app/html/shared/post.html:71 app/html/shared/post.html:73
 #: app/html/site/log.html:28 app/html/sub/log.html:28 app/html/sub/post.html:14
-#: app/html/sub/postcomments.html:46 app/misc.py:1143
+#: app/html/sub/postcomments.html:46 app/misc.py:1160
 msgid "[Deleted]"
 msgstr ""
 
-#: app/misc.py:1189
+#: app/misc.py:1206
 msgid "URLs not allowed, uploaded files only"
 msgstr ""
 
-#: app/misc.py:1205
+#: app/misc.py:1222
 msgid "@import token not allowed"
 msgstr ""
 
-#: app/misc.py:1214
+#: app/misc.py:1231
 msgid "Invalid CSS"
 msgstr ""
 
-#: app/misc.py:1545
+#: app/misc.py:1562
 msgid "Unknown error. User disappeared"
 msgstr ""
 
-#: app/misc.py:1552
+#: app/misc.py:1569
 msgid "Score balance is negative"
 msgstr ""
 
-#: app/misc.py:1554
+#: app/misc.py:1571
 msgid "Invalid vote value"
 msgstr ""
 
-#: app/misc.py:1563 app/views/do.py:150 app/views/do.py:278 app/views/do.py:309
+#: app/misc.py:1580 app/views/do.py:150 app/views/do.py:278 app/views/do.py:309
 #: app/views/do.py:591 app/views/do.py:1060 app/views/do.py:1137
 #: app/views/do.py:1223 app/views/do.py:1238 app/views/do.py:1309
 #: app/views/do.py:1338 app/views/do.py:1657 app/views/do.py:1984
@@ -122,33 +122,33 @@ msgstr ""
 msgid "Post does not exist"
 msgstr ""
 
-#: app/misc.py:1566
+#: app/misc.py:1583
 msgid "You can't vote on deleted posts"
 msgstr ""
 
-#: app/misc.py:1582 app/views/do.py:1515 app/views/do.py:1551
+#: app/misc.py:1599 app/views/do.py:1515 app/views/do.py:1551
 #: app/views/do.py:2148 app/views/do.py:2151
 msgid "Comment does not exist"
 msgstr ""
 
-#: app/misc.py:1585
+#: app/misc.py:1602
 msgid "You can't vote on your own comments"
 msgstr ""
 
-#: app/misc.py:1587
+#: app/misc.py:1604
 msgid "You can't vote on deleted comments"
 msgstr ""
 
-#: app/misc.py:1595
+#: app/misc.py:1612
 msgid "Invalid target"
 msgstr ""
 
-#: app/misc.py:1599 app/views/do.py:541 app/views/do.py:1063
+#: app/misc.py:1616 app/views/do.py:541 app/views/do.py:1063
 #: app/views/do.py:1523
 msgid "You are banned on this sub."
 msgstr ""
 
-#: app/misc.py:1604 app/views/do.py:544 app/views/do.py:596
+#: app/misc.py:1621 app/views/do.py:544 app/views/do.py:596
 #: app/views/do.py:1530
 msgid "Post is archived"
 msgstr ""
@@ -758,6 +758,14 @@ msgstr ""
 msgid "Title search..."
 msgstr ""
 
+#: app/html/shared/sidebar/sub.html:10
+msgid "Only mods can post."
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:13
+msgid "You are currently banned from posting."
+msgstr ""
+
 #: app/html/shared/sidebar/sub.html:18
 msgid "Submit a poll"
 msgstr ""
@@ -771,52 +779,52 @@ msgstr ""
 msgid "%(subs)i subscribers"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:39
+#: app/html/shared/sidebar/sub.html:40
 msgid "Subscribed"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:41
+#: app/html/shared/sidebar/sub.html:42
 msgid "Subscribe"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:44
+#: app/html/shared/sidebar/sub.html:45
 msgid "Blocked"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:46
+#: app/html/shared/sidebar/sub.html:47
 msgid "Block"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:56 app/html/shared/sidebar/sub.html:80
+#: app/html/shared/sidebar/sub.html:58 app/html/shared/sidebar/sub.html:82
 msgid "Moderators"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:59
+#: app/html/shared/sidebar/sub.html:61
 msgid "Owner"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:70
+#: app/html/shared/sidebar/sub.html:72
 #, python-format
 msgid "Created by <a href=\"/u/%(name)s\">%(name)s</a>"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:75
+#: app/html/shared/sidebar/sub.html:77
 msgid "Settings"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:76
+#: app/html/shared/sidebar/sub.html:78
 msgid "Edit flairs"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:77
+#: app/html/shared/sidebar/sub.html:79
 msgid "Edit stylesheet"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:85
+#: app/html/shared/sidebar/sub.html:87
 msgid "Sub Log"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:86
+#: app/html/shared/sidebar/sub.html:88
 msgid "Banned Users"
 msgstr ""
 
@@ -2242,7 +2250,7 @@ msgstr ""
 msgid "You cannot own more than %(max)i subs. Try leveling up your account."
 msgstr ""
 
-#: app/views/user.py:151
+#: app/views/user.py:150
 msgid "Auto detect"
 msgstr ""
 

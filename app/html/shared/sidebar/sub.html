@@ -7,10 +7,10 @@
 
 @if current_user.is_authenticated:
   @if subInfo.get('restricted', 0) == '1' and not (current_user.uid in (subMods['all'])):
-    <div>Only mods can post.</div>
+    <div>@{_('Only mods can post.')}</div>
   @else:
     @if current_user.is_subban(sub):
-      <div>You are currently banned from posting.</div>
+      <div>@{_('You are currently banned from posting.')}</div>
     @else:
       <a href="@{url_for('subs.submit', ptype='text', sub=sub['name'])}" class="sbm-post pure-button">@{_('Submit a text post')}</a>
       <a href="@{url_for('subs.submit', ptype='link', sub=sub['name'])}" class="sbm-post pure-button">@{_('Submit a link post')}</a>

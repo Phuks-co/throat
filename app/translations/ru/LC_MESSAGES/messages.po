@@ -1,4 +1,4 @@
-# Translations template for Throat.
+# Russian (Russia) translations for Throat.
 # Copyright (C) 2020 Phuks LLC
 # This file is distributed under the same license as the Throat project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
@@ -7,18 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Throat 1.0\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-05-31 10:32+0300\n"
+"POT-Creation-Date: 2020-06-04 17:51-0300\n"
 "PO-Revision-Date: 2020-05-31 13:47+0300\n"
+"Last-Translator: \n"
+"Language: ru_RU\n"
 "Language-Team: \n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
-"X-Generator: Poedit 2.3.1\n"
-"Last-Translator: \n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
-"Language: ru_RU\n"
 
 #: app/badges.py:5
 msgid "The guys that take all the blame"
@@ -54,14 +53,14 @@ msgstr "Слишком важный, чтобы ждать!"
 
 #: app/badges.py:18
 msgid ""
-"Once proud men, the Broccoli People now must remain in hiding after early on "
-"the Vegetable Wars against the Cabbages."
+"Once proud men, the Broccoli People now must remain in hiding after early"
+" on the Vegetable Wars against the Cabbages."
 msgstr "Муха села на варенье, вот и все стихотворенье."
 
 #: app/badges.py:19
 msgid ""
-"The Cabbage People are now the dominant force in the Vegetable Wars, being "
-"in the road to become an hegemon after defeating the Broccolis."
+"The Cabbage People are now the dominant force in the Vegetable Wars, "
+"being in the road to become an hegemon after defeating the Broccolis."
 msgstr ""
 
 #: app/badges.py:21
@@ -72,51 +71,51 @@ msgstr ""
 msgid "Whoa, calm down and wait a bit before posting again."
 msgstr ""
 
-#: app/misc.py:894
+#: app/misc.py:911
 #, python-format
 msgid "Error in the '%(field)s' field - %(error)s"
 msgstr ""
 
-#: app/misc.py:1062
+#: app/misc.py:1079
 msgid "File type not allowed"
 msgstr ""
 
-#: app/misc.py:1079
+#: app/misc.py:1096
 #, python-format
 msgid "File size exceeds the maximum allowed size (%(size)i MB)"
 msgstr ""
 
 #: app/html/shared/post.html:71 app/html/shared/post.html:73
 #: app/html/site/log.html:28 app/html/sub/log.html:28 app/html/sub/post.html:14
-#: app/html/sub/postcomments.html:46 app/misc.py:1143
+#: app/html/sub/postcomments.html:46 app/misc.py:1160
 msgid "[Deleted]"
 msgstr "[Удалено]"
 
-#: app/misc.py:1189
+#: app/misc.py:1206
 msgid "URLs not allowed, uploaded files only"
 msgstr ""
 
-#: app/misc.py:1205
+#: app/misc.py:1222
 msgid "@import token not allowed"
 msgstr ""
 
-#: app/misc.py:1214
+#: app/misc.py:1231
 msgid "Invalid CSS"
 msgstr "Ошибка в CSS"
 
-#: app/misc.py:1545
+#: app/misc.py:1562
 msgid "Unknown error. User disappeared"
 msgstr "Неизвестная ошибка. Пользователь исчез"
 
-#: app/misc.py:1552
+#: app/misc.py:1569
 msgid "Score balance is negative"
 msgstr ""
 
-#: app/misc.py:1554
+#: app/misc.py:1571
 msgid "Invalid vote value"
 msgstr "Недопустимое значение голоса"
 
-#: app/misc.py:1563 app/views/do.py:150 app/views/do.py:278 app/views/do.py:309
+#: app/misc.py:1580 app/views/do.py:150 app/views/do.py:278 app/views/do.py:309
 #: app/views/do.py:591 app/views/do.py:1060 app/views/do.py:1137
 #: app/views/do.py:1223 app/views/do.py:1238 app/views/do.py:1309
 #: app/views/do.py:1338 app/views/do.py:1657 app/views/do.py:1984
@@ -125,33 +124,33 @@ msgstr "Недопустимое значение голоса"
 msgid "Post does not exist"
 msgstr ""
 
-#: app/misc.py:1566
+#: app/misc.py:1583
 msgid "You can't vote on deleted posts"
 msgstr "Вы не можете голосовать за удаленные сообщения"
 
-#: app/misc.py:1582 app/views/do.py:1515 app/views/do.py:1551
+#: app/misc.py:1599 app/views/do.py:1515 app/views/do.py:1551
 #: app/views/do.py:2148 app/views/do.py:2151
 msgid "Comment does not exist"
 msgstr "Комментарий не существует"
 
-#: app/misc.py:1585
+#: app/misc.py:1602
 msgid "You can't vote on your own comments"
 msgstr "Вы не можете голосовать за свои собственные комментарии"
 
-#: app/misc.py:1587
+#: app/misc.py:1604
 msgid "You can't vote on deleted comments"
 msgstr "Вы не можете голосовать за удаленные комментарии"
 
-#: app/misc.py:1595
+#: app/misc.py:1612
 msgid "Invalid target"
 msgstr ""
 
-#: app/misc.py:1599 app/views/do.py:541 app/views/do.py:1063
+#: app/misc.py:1616 app/views/do.py:541 app/views/do.py:1063
 #: app/views/do.py:1523
 msgid "You are banned on this sub."
 msgstr "Вы запрещены на этом сабе."
 
-#: app/misc.py:1604 app/views/do.py:544 app/views/do.py:596
+#: app/misc.py:1621 app/views/do.py:544 app/views/do.py:596
 #: app/views/do.py:1530
 msgid "Post is archived"
 msgstr ""
@@ -571,8 +570,8 @@ msgstr ""
 
 #: app/html/errors/500.html:12
 msgid ""
-"We're experiencing technical difficulties, please try again later. If the "
-"error persists, report it to the administration."
+"We're experiencing technical difficulties, please try again later. If the"
+" error persists, report it to the administration."
 msgstr ""
 
 #: app/html/shared/layout.html:40
@@ -761,6 +760,14 @@ msgstr "Журналы"
 msgid "Title search..."
 msgstr "Поиск..."
 
+#: app/html/shared/sidebar/sub.html:10
+msgid "Only mods can post."
+msgstr ""
+
+#: app/html/shared/sidebar/sub.html:13
+msgid "You are currently banned from posting."
+msgstr ""
+
 #: app/html/shared/sidebar/sub.html:18
 msgid "Submit a poll"
 msgstr "Добавить опрос"
@@ -774,52 +781,52 @@ msgstr "Посмотреть Wiki"
 msgid "%(subs)i subscribers"
 msgstr "%(subs)i - читают"
 
-#: app/html/shared/sidebar/sub.html:39
+#: app/html/shared/sidebar/sub.html:40
 msgid "Subscribed"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:41
+#: app/html/shared/sidebar/sub.html:42
 msgid "Subscribe"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:44
+#: app/html/shared/sidebar/sub.html:45
 msgid "Blocked"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:46
+#: app/html/shared/sidebar/sub.html:47
 msgid "Block"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:56 app/html/shared/sidebar/sub.html:80
+#: app/html/shared/sidebar/sub.html:58 app/html/shared/sidebar/sub.html:82
 msgid "Moderators"
 msgstr "Модераторы"
 
-#: app/html/shared/sidebar/sub.html:59
+#: app/html/shared/sidebar/sub.html:61
 msgid "Owner"
 msgstr ""
 
-#: app/html/shared/sidebar/sub.html:70
+#: app/html/shared/sidebar/sub.html:72
 #, python-format
 msgid "Created by <a href=\"/u/%(name)s\">%(name)s</a>"
 msgstr "Создал <a href=\"/u/%(name)s\">%(name)s</a"
 
-#: app/html/shared/sidebar/sub.html:75
+#: app/html/shared/sidebar/sub.html:77
 msgid "Settings"
 msgstr "Настройки"
 
-#: app/html/shared/sidebar/sub.html:76
+#: app/html/shared/sidebar/sub.html:78
 msgid "Edit flairs"
 msgstr "Изменить флаер"
 
-#: app/html/shared/sidebar/sub.html:77
+#: app/html/shared/sidebar/sub.html:79
 msgid "Edit stylesheet"
 msgstr "Изменить стиль"
 
-#: app/html/shared/sidebar/sub.html:85
+#: app/html/shared/sidebar/sub.html:87
 msgid "Sub Log"
 msgstr "Журнал"
 
-#: app/html/shared/sidebar/sub.html:86
+#: app/html/shared/sidebar/sub.html:88
 msgid "Banned Users"
 msgstr "Забаненные"
 
@@ -875,8 +882,8 @@ msgstr "Просмотр сохраненных"
 
 #: app/html/site/license.html:8
 msgid ""
-"This website is powered by <a href=\"https://github.com/Phuks-co/throat"
-"\">Throat</a>, released under the MIT license."
+"This website is powered by <a href=\"https://github.com/Phuks-"
+"co/throat\">Throat</a>, released under the MIT license."
 msgstr ""
 
 #: app/html/sub/bans.html:7 app/html/sub/css.html:7
@@ -1132,11 +1139,11 @@ msgstr "Изменил настройки"
 #: app/html/sub/log.html:38
 #, python-format
 msgid ""
-"Banned <a href=\"/u/%(username)s\">%(username)s</a> with reason <code>"
-"%(reason)s</code>"
+"Banned <a href=\"/u/%(username)s\">%(username)s</a> with reason "
+"<code>%(reason)s</code>"
 msgstr ""
-"Забанил <a href=\"/u/%(username)s\">%(username)s</a> - <code>%(reason)s</"
-"code>"
+"Забанил <a href=\"/u/%(username)s\">%(username)s</a> - "
+"<code>%(reason)s</code>"
 
 #: app/html/sub/log.html:40
 #, python-format
@@ -1146,8 +1153,7 @@ msgstr "Разбанил <a href=\"/u/%(username)s\">%(username)s</a>"
 #: app/html/sub/log.html:42
 #, python-format
 msgid "Sent mod invite to <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr ""
-"Отправлено мод приглашение <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr "Отправлено мод приглашение <a href=\"/u/%(username)s\">%(username)s</a>"
 
 #: app/html/sub/log.html:44
 msgid "Accepted mod invite"
@@ -1315,11 +1321,11 @@ msgstr ""
 #: app/html/sub/postcomments.html:33
 #, python-format
 msgid ""
-"<span class=\"cscore\">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>"
-"%(downvotes)i</b>)"
+"<span class=\"cscore\">%(score)i</span> points</b> "
+"(+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
 msgstr ""
-"<span class=\"cscore\">%(score)i</span> карма</b> (+<b>%(upvotes)i</b>|-<b>"
-"%(downvotes)i</b>)"
+"<span class=\"cscore\">%(score)i</span> карма</b> "
+"(+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
 
 #: app/html/sub/postcomments.html:39
 #, python-format
@@ -1734,8 +1740,7 @@ msgid "Error: %s"
 msgstr "Ошибка: %s"
 
 #: app/static/js/Post.js:651
-msgid ""
-"Your report has been sent and will be reviewed by the site administrators."
+msgid "Your report has been sent and will be reviewed by the site administrators."
 msgstr "Ваш отчет был отправлен и будет рассмотрен персоналом."
 
 #: app/static/js/Socket.js:78
@@ -2057,8 +2062,8 @@ msgid ""
 "            <p>Somebody (most likely you) has requested a password reset "
 "for\n"
 "            your account</p>\n"
-"            <p>To proceed, visit the following address (valid for the next "
-"24hs)</p>\n"
+"            <p>To proceed, visit the following address (valid for the "
+"next 24hs)</p>\n"
 "            <a href=\"%(url)s\">%(url)s</a>\n"
 "            <hr>\n"
 "            <p>If you didn't request a password recovery, please ignore "
@@ -2069,8 +2074,8 @@ msgstr ""
 "<h1><strong>%(lema)s</strong></h1>\n"
 "            <p>Кто-то (скорее всего, вы) запросил сброс пароля для\n"
 "            вашего аккаунта</p>\n"
-"            <p>Чтобы продолжить, посетите следующий адрес (действителен в "
-"течение следующих 24 часов)</p>\n"
+"            <p>Чтобы продолжить, посетите следующий адрес (действителен в"
+" течение следующих 24 часов)</p>\n"
 "            <a href=\"%(url)s\">%(url)s</a>\n"
 "            <hr>\n"
 "            <p>Если вы не запросили восстановление пароля, пожалуйста, "
@@ -2262,10 +2267,11 @@ msgstr "Вы не можете владеть больше чем %(max)i саб
 msgid "You cannot own more than %(max)i subs. Try leveling up your account."
 msgstr "Вы не можете владеть больше чем %(max)i сабов."
 
-#: app/views/user.py:151
+#: app/views/user.py:150
 msgid "Auto detect"
 msgstr "Автоматически определять"
 
 #: app/views/wiki.py:30
 msgid "License file was deleted :("
 msgstr "Лицензионный файл был удален :("
+
