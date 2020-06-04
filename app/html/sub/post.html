@@ -8,6 +8,25 @@
   @{post['title']} |\
 @end
 
+@def meta_description():
+
+    @if post['content']:
+        <meta name="description" content="@{''.join(BeautifulSoup(markdown(post['content'])).findAll(text=True)).replace('\n', ' ')!!e}"/>
+    @else:
+        <meta name="description" content="@{sub['title']!!e}" />
+    @end
+
+    <meta property="og:site_name" content="@{config.site.lema}">
+    <meta property="og:description" content="@{_('Posted in %(prefix)s/%(sub)s by %(username)s', prefix=config.site.sub_prefix, sub=sub['name'], username=post['user'])}">
+    <meta property="og:title" content="@{post['title']}">
+    @if post['thumbnail'] != '' and post['link'] != None:
+    <meta property="og:image" content="@{config.storage.thumbnails.url}@{post['thumbnail']}">
+    <meta property="og:ttl" content="600">
+    <meta property="og:image:height" content="70">
+    <meta property="og:image:width" content="70">
+    @end
+@end
+
 @def sidebar():
 <hr>
   <div class="author" style="padding:.5em;">

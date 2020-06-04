@@ -5,18 +5,20 @@
     @end
     @head()
     <meta charset="utf-8">
-    <meta name="keywords" content="forum, vote, comment, submit, throat, phuks, phuks.co">
-    <meta name="referrer" content="always">
-
-    <meta name="description" content="@{config.site.lema}">
-    <meta name="robots" content="index, follow">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="forum, vote, comment, submit, throat, phuks, phuks.co"/>
+    <meta name="referrer" content="always"/>
+    @def meta_description():
+        <meta name="description" content="@{config.site.lema}"/>
+    @end
+    @meta_description()
+    <meta name="robots" content="index, follow"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     
     <!-- mobile stuff -->
-    <meta name="theme-color" content="white">
-    <meta name="msapplication-navbutton-color" content="white">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="white-translucent">
+    <meta name="theme-color" content="white"/>
+    <meta name="msapplication-navbutton-color" content="white"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="white-translucent"/>
 
     <link rel="icon" href="@{url_for('static', filename='img/icon.png') }">
 
@@ -43,7 +45,6 @@
       <button type="submit" class="btn_link">@{_('Disable')}</button>
     </form>
   </div>
-</div>
   @end
   <div class="th-subbar pure-u-1">
     <ul id="topbar">
