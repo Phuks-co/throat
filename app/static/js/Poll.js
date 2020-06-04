@@ -38,12 +38,15 @@ u.addEventForChild(document, 'click', '.poll-del-opt', function(e, qelem){
 
 
 u.sub('#closetime', 'click', function(e){
+    console.log('wooo')
     if(this.checked){
         document.getElementById('closetime_date').removeAttribute('disabled');
         document.querySelector('.date-picker-future.input').removeAttribute('disabled');
+        document.querySelector('.date-picker-future.flatpickr-mobile').removeAttribute('disabled');
     }else{
         document.getElementById('closetime_date').setAttribute('disabled', true);
         document.querySelector('.date-picker-future.input').setAttribute('disabled', true);
+        document.querySelector('.date-picker-future.flatpickr-mobile').setAttribute('disabled', true);
         document.getElementById('closetime_date').value = '';
         document.querySelector('.date-picker-future.input').value = '';
     }
