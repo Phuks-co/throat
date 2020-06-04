@@ -1212,6 +1212,17 @@ input[type=search] {
     #createPostIcon {
         display: block;
     }
+
+    .post .author {
+        line-height: 1.7em;
+    }
+
+    .misctainer {
+        padding: 0;
+    }
+    .pbody {
+        width: calc(100% - 105px);
+    }
 }
 
 #createPostIcon {
