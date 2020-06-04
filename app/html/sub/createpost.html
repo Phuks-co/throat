@@ -28,8 +28,8 @@
                 <div style="padding-top: 1em; padding-bottom: 1em;">
                     @for kl in form.ptype:
                     <div class="pure-control-group">
-                        @{kl(style="margin-left: 10em")}
-                        <label for="@{kl.id!!s}" class="pure-radio" style="text-align: left">
+                        @{kl(style="")}
+                        <label for="@{kl.id!!s}" class="pure-radio" style="text-align: left; display: initial;">
                             @{kl.label.text!!s}
                         </label>
                     </div>
