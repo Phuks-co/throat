@@ -47,7 +47,6 @@ blockquote{
 }
 .pure-control-group .markdown-editor{
   display: inline-block;
-  width: calc(100% - 210px);
 }
 
 .announcement{
@@ -508,10 +507,10 @@ span#notification.fade {
 }
 
 .post-heading h1 {
-  font-size: medium;
-  margin: 0;
-  font-weight: normal;
-  display: inline-block;
+    font-size: medium;
+    margin: 0;
+    font-weight: normal;
+    display: inline-block;
 }
 
 .post .title {
@@ -1206,24 +1205,67 @@ input[type=search] {
 /* /SIDEBAR STYLES */
 
 /* CREATE POST PAGE STYLES */
-.content.createpost {
-  width: 60%
+@media (max-width: 35.5em){
+    .content.createpost {
+      width: 90%;
+    }
+
+    .createpost input#title, .createpost input#link, textarea#content,
+    input#subject, form#msg-form .editbtns {
+        width: 100%;
+    }
+
+    .motto {
+        display: none;
+    }
+    #createPostIcon {
+        display: block;
+    }
+
+    .post .author {
+        line-height: 1.7em;
+    }
+
+    .misctainer {
+        padding: 0;
+    }
+    .pbody {
+        width: calc(100% - 105px);
+    }
 }
 
-.createpost input#title,
-.createpost input#link,
-.createpost textarea#content {
-    width: calc(100% - 210px);
+#createPostIcon {
+    position: absolute;
+    top: .5em;
+    right: 3.2em;
+    width: 28px;
+    height: 28px;
+}
+#createPostIcon svg {
+    height: inherit;
+}
+
+@media (min-width: 35.5em){
+    .content.createpost {
+      width: 60%;
+    }
+    .createpost input#title,
+    .createpost input#link,
+    .createpost textarea#content {
+        width: calc(100% - 210px);
+    }
+    .pure-control-group .markdown-editor {
+        width: calc(100% - 210px);
+    }
+
+    #createPostIcon {
+        display: none;
+    }
 }
 
 .createpost input.sbm-poll-opt {
   margin-top: 0.5em;
   width: 90%;
-}
-
-.createpost #sbm-poll-opts {
-  display: inline-block;
-  width: calc(100% - 210px);
 }
 /* / CREATE POST PAGE STYLES */
 
@@ -1403,13 +1445,6 @@ form#msg-form {
 
 .comments article.comment.highlight{
   background-color: rgba(244, 194, 10, 0.35);
-}
-
-@media (max-width: 35.5em){
-  .createpost input#title, .createpost input#link, textarea#content,
-  input#subject, form#msg-form .editbtns{
-    width: auto;
-  }
 }
 
 #formpop {

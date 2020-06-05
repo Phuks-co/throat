@@ -21,32 +21,31 @@
         </div>
       </a>
     </div>
-  </div>
-  <div class="pbody">
-    <div classub.htmlsub.htmls="post-heading">
-      {% if post.nsfw %}
-      <div class="nsfw" alt="Not safe for work">NSFW</div>
-      {%endif%}
-      {% if post.flair %}<span class="postflair">{{post.flair}}</span>{% endif %}
-      {% if post.link == None %}
-        <a href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}" class="title">{{post.title}}</a>
-      {% else %}
-        {% if post.link.startswith('http:') %}<span title="not https" class="p-icon" data-icon="exclaim"></span>{% endif %}
-        <a rel="noopener nofollow ugc" href="{{post.link}}" class="title">{{post.title}}</a> <a href="{{url_for('home.all_domain_new', domain=func.getDomain(post.link), page=1)}}" class="domain">({{func.getDomain(post.link)}})</a>
-      {% endif %}
-    </div>
-    <div class="author">
-        {% if post.link %}
-          {% if func.getDomain(post.link) in ('www.hooktube.com', 'hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'vimeo.com', 'vine.co') %}
-          <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="play"></div></div>
-          {% elif func.isImage(post.link) %}
-          <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="image"></div></div>
-          {% elif func.isVideo(post.link) or func.isGifv(post.link) %}
-          <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="play"></div></div>
-          {% endif %}
-        {% elif post.content != '' %}
-        <div class="expando" data-pid="{{post.pid}}" data-t="txt" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="text"></div></div>
+    <div class="pbody">
+      <div class="post-heading">
+        {% if post.nsfw %}
+        <div class="nsfw" alt="Not safe for work">NSFW</div>
+        {%endif%}
+        {% if post.flair %}<span class="postflair">{{post.flair}}</span>{% endif %}
+        {% if post.link == None %}
+          <a href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}" class="title">{{post.title}}</a>
+        {% else %}
+          {% if post.link.startswith('http:') %}<span title="not https" class="p-icon" data-icon="exclaim"></span>{% endif %}
+          <a rel="noopener nofollow ugc" href="{{post.link}}" class="title">{{post.title}}</a> <a href="{{url_for('home.all_domain_new', domain=func.getDomain(post.link), page=1)}}" class="domain">({{func.getDomain(post.link)}})</a>
         {% endif %}
+      </div>
+      <div class="author">
+          {% if post.link %}
+            {% if func.getDomain(post.link) in ('www.hooktube.com', 'hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'vimeo.com', 'vine.co') %}
+            <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="play"></div></div>
+            {% elif func.isImage(post.link) %}
+            <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="image"></div></div>
+            {% elif func.isVideo(post.link) or func.isGifv(post.link) %}
+            <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="play"></div></div>
+            {% endif %}
+          {% elif post.content != '' %}
+          <div class="expando" data-pid="{{post.pid}}" data-t="txt" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="text"></div></div>
+          {% endif %}
       posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> by
       {% if post.userstatus != 10 %}
         <a class="authorlink" href="{{url_for('user.view', user=post.user)}}">{{post.user}}</a>

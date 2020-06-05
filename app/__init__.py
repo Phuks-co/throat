@@ -4,6 +4,7 @@
 import time
 import socket
 import datetime
+from bs4 import BeautifulSoup
 from flask import Flask, url_for, g, request
 from flask_login import LoginManager, current_user
 from flask_webpack import Webpack
@@ -68,7 +69,8 @@ def create_app():
     engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config, 'conf': app.config,
                                'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,
                                'form': forms, 'hostname': socket.gethostname(), 'datetime': datetime,
-                               'e': escape_html, 'markdown': misc.our_markdown, '_': _, 'get_locale': get_locale})
+                               'e': escape_html, 'markdown': misc.our_markdown, '_': _, 'get_locale': get_locale,
+                               'BeautifulSoup': BeautifulSoup})
 
     if app.config['TESTING']:
         import logging

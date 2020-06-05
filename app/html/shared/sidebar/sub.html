@@ -7,10 +7,10 @@
 
 @if current_user.is_authenticated:
   @if subInfo.get('restricted', 0) == '1' and not (current_user.uid in (subMods['all'])):
-    <div>Only mods can post.</div>
+    <div>@{_('Only mods can post.')}</div>
   @else:
     @if current_user.is_subban(sub):
-      <div>You are currently banned from posting.</div>
+      <div>@{_('You are currently banned from posting.')}</div>
     @else:
       <a href="@{url_for('subs.submit', ptype='text', sub=sub['name'])}" class="sbm-post pure-button">@{_('Submit a text post')}</a>
       <a href="@{url_for('subs.submit', ptype='link', sub=sub['name'])}" class="sbm-post pure-button">@{_('Submit a link post')}</a>
@@ -34,18 +34,20 @@
 </div>
 <div class="subs">@{_('%(subs)i subscribers', subs=sub['subscribers'])}</div>
 
-<div role="group" class="pure-button-group" data-sid="@{sub['sid']}">
-  @if current_user.has_subscribed(sub['name']):
-    <button data-ac="unsubscribe" class="sub button-secondary pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>@{_('Subscribed')}</button>
-  @else:
-    <button data-ac="subscribe" class="unsub button-secondary pure-button button-xsmall"><span class="sbm-icon" data-icon="add"></span>@{_('Subscribe')}</button>
-  @end
-  @if current_user.has_blocked(sub['sid']):
-    <button data-ac="unblock" class="blk button-warning pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>@{_('Blocked')}</button>
-  @else:
-    <button data-ac="block" class="unblk button-warning pure-button button-xsmall"><span class="sbm-icon" data-icon="close"></span>@{_('Block')}</button>
-  @end
-</div>
+@if current_user.is_authenticated:
+    <div role="group" class="pure-button-group" data-sid="@{sub['sid']}">
+        @if current_user.has_subscribed(sub['name']):
+            <button data-ac="unsubscribe" class="sub button-secondary pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>@{_('Subscribed')}</button>
+        @else:
+            <button data-ac="subscribe" class="unsub button-secondary pure-button button-xsmall"><span class="sbm-icon" data-icon="add"></span>@{_('Subscribe')}</button>
+        @end
+        @if current_user.has_blocked(sub['sid']):
+            <button data-ac="unblock" class="blk button-warning pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>@{_('Blocked')}</button>
+        @else:
+            <button data-ac="block" class="unblk button-warning pure-button button-xsmall"><span class="sbm-icon" data-icon="close"></span>@{_('Block')}</button>
+        @end
+    </div>
+@end
 <hr>
 @if sub['sidebar'] != '':
   @{func.our_markdown(sub['sidebar'])}
