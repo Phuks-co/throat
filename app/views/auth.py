@@ -117,7 +117,12 @@ def register():
     SubSubscriber.insert_many(subs).execute()
     theuser = misc.load_user(user.uid)
     login_user(theuser, remember=True)
-    sendMail(config.sendgrid.default_to, "New registration", request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
+    regdate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    referrer = request.referrer
+    useragent = request.headers.get('User-Agent')
+    ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    body = ip + "\n" + regdate + "\n" + useragent
+    sendMail(config.sendgrid.default_to, "New registration", body)
     return redirect(url_for('wiki.welcome'))
 
 

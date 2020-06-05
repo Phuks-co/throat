@@ -1,65 +1,65 @@
 <div pid="{{post.pid}}" class="{% if post.deleted != 0 %}deletedpost {% endif %}post">
-    <div class="misctainer">
-      <div class="votebuttons">
-        {% if post.userstatus != 10 and (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) < datetime.timedelta(days=60) %}
-        <div title="Upvote" class="upvote{%if post.positive == 1%} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
-        <div class="score">{{post.score}}</div>
-        <div title="Downvote" class="downvote{%if post.positive == 0%} downvoted{%endif%}" data-pid="{{post.pid}}" data-icon="downvote"></div>
-        {%endif%}
-      </div>
-      <div class="thcontainer">
-        <a href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}" class="title">
-          <div class="thumbnail">
-            {% if post.thumbnail != '' and post.link != None %}
-              <img src="{{config.storage.thumbnails.url}}{{post.thumbnail}}"/>
-            {% elif post.link != None %}
-              <span class="placeholder" data-icon="link"></span>
-            {%else%}
-              <span class="placeholder" data-icon="chat"></span>
-            {% endif%}
+  <div class="misctainer">
+    <div class="votebuttons">
+      {% if post.userstatus != 10 and (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) < datetime.timedelta(days=60) %}
+      <div title="Upvote" class="upvote{%if post.positive == 1%} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
+      <div class="score">{{post.score}}</div>
+      <div title="Downvote" class="downvote{%if post.positive == 0%} downvoted{%endif%}" data-pid="{{post.pid}}" data-icon="downvote"></div>
+      {%endif%}
+    </div>
+    <div class="thcontainer">
+      <a href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}" class="title">
+        <div class="thumbnail">
+          {% if post.thumbnail != '' and post.link != None %}
+            <img src="{{config.storage.thumbnails.url}}{{post.thumbnail}}"/>
+          {% elif post.link != None %}
+            <span class="placeholder" data-icon="link"></span>
+          {%else%}
+            <span class="placeholder" data-icon="chat"></span>
+          {% endif%}
 
-          </div>
-        </a>
-      </div>
+        </div>
+      </a>
     </div>
-    <div class="pbody">
-      <div classub.htmlsub.htmls="post-heading">
-        {% if post.nsfw %}
-        <div class="nsfw" alt="Not safe for work">NSFW</div>
-        {%endif%}
-        {% if post.flair %}<span class="postflair">{{post.flair}}</span>{% endif %}
-        {% if post.link == None %}
-          <a href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}" class="title">{{post.title}}</a>
-        {% else %}
-          {% if post.link.startswith('http:') %}<span title="not https" class="p-icon" data-icon="exclaim"></span>{% endif %}
-          <a href="{{post.link}}" class="title">{{post.title}}</a> <a href="{{url_for('home.all_domain_new', domain=func.getDomain(post.link), page=1)}}" class="domain">({{func.getDomain(post.link)}})</a>
-        {% endif %}
-      </div>
-      <div class="author">
-          {% if post.link %}
-            {% if func.getDomain(post.link) in ('www.hooktube.com', 'hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'vimeo.com', 'vine.co') %}
-            <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="play"></div></div>
-            {% elif func.isImage(post.link) %}
-            <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="image"></div></div>
-            {% elif func.isVideo(post.link) or func.isGifv(post.link) %}
-            <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="play"></div></div>
-            {% endif %}
-          {% elif post.content != '' %}
-          <div class="expando" data-pid="{{post.pid}}" data-t="txt" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="text"></div></div>
+  </div>
+  <div class="pbody">
+    <div classub.htmlsub.htmls="post-heading">
+      {% if post.nsfw %}
+      <div class="nsfw" alt="Not safe for work">NSFW</div>
+      {%endif%}
+      {% if post.flair %}<span class="postflair">{{post.flair}}</span>{% endif %}
+      {% if post.link == None %}
+        <a href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}" class="title">{{post.title}}</a>
+      {% else %}
+        {% if post.link.startswith('http:') %}<span title="not https" class="p-icon" data-icon="exclaim"></span>{% endif %}
+        <a rel="noopener nofollow ugc" href="{{post.link}}" class="title">{{post.title}}</a> <a href="{{url_for('home.all_domain_new', domain=func.getDomain(post.link), page=1)}}" class="domain">({{func.getDomain(post.link)}})</a>
+      {% endif %}
+    </div>
+    <div class="author">
+        {% if post.link %}
+          {% if func.getDomain(post.link) in ('www.hooktube.com', 'hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'vimeo.com', 'vine.co') %}
+          <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="play"></div></div>
+          {% elif func.isImage(post.link) %}
+          <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="image"></div></div>
+          {% elif func.isVideo(post.link) or func.isGifv(post.link) %}
+          <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="play"></div></div>
           {% endif %}
-        posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> by
-        {% if post.userstatus != 10 %}
-          <a class="authorlink" href="{{url_for('user.view', user=post.user)}}">{{post.user}}</a>
+        {% elif post.content != '' %}
+        <div class="expando" data-pid="{{post.pid}}" data-t="txt" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="text"></div></div>
         {% endif %}
-        {% if sub and post.pid in func.getStickyPid(sub.sid) %}
-        - <span class="stick">sticky</span>
-        {% endif %}
-        {% if not sub %} on
-        <a href="{{url_for('sub.view_sub', sub=post.sub)}}">{{post.sub}}</a>
-        {%endif%}
-      </div>
-      <div class="links">
-        <a class="comments" href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}">comments {%if post.comments>0%}({{post.comments}}){%endif%}</a>
-      </div>
+      posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> by
+      {% if post.userstatus != 10 %}
+        <a class="authorlink" href="{{url_for('user.view', user=post.user)}}">{{post.user}}</a>
+      {% endif %}
+      {% if sub and post.pid in func.getStickyPid(sub.sid) %}
+      - <span class="stick">sticky</span>
+      {% endif %}
+      {% if not sub %} on
+      <a href="{{url_for('sub.view_sub', sub=post.sub)}}">{{post.sub}}</a>
+      {%endif%}
     </div>
+    <div class="links">
+      <a class="comments" href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}">comments {%if post.comments>0%}({{post.comments}}){%endif%}</a>
+    </div>
+  </div>
 </div>
