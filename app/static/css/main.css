@@ -615,6 +615,7 @@ iframe {
 .post .thumbnail {
     width: 70px;
     height: 70px;
+    text-align: center;
 }
 .post .thumbnail img{
   max-width: 100%;
