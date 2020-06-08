@@ -17,8 +17,8 @@
     @end
 
     <meta property="og:site_name" content="@{config.site.lema}">
-    <meta property="og:description" content="@{_('Posted in %(prefix)s/%(sub)s by %(username)s', prefix=config.site.sub_prefix, sub=sub['name'], username=post['user'])}">
-    <meta property="og:title" content="@{post['title']}">
+    <meta property="og:description" content="@{_('Posted in %(prefix)s/%(sub)s by %(username)s', prefix=config.site.sub_prefix, sub=sub['name'], username=post['user'])!!e}">
+    <meta property="og:title" content="@{post['title']!!e}">
     @if post['thumbnail'] != '' and post['link'] != None:
     <meta property="og:image" content="@{config.storage.thumbnails.url}@{post['thumbnail']}">
     <meta property="og:ttl" content="600">
