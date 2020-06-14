@@ -18,9 +18,9 @@
 
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
-    <a href="@{url_for('sub.view_sub_hot', sub=sub['name'])}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'sub.view_sub_hot' %}pure-button-primary{%endif%} pure-u-md-7-24">@{_('Hot')}</a>
-    <a href="@{url_for('sub.view_sub_top', sub=sub['name'])}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'sub.view_sub_top' %}pure-button-primary{%endif%} pure-u-md-7-24">@{_('Top')}</a>
-    <a href="@{url_for('sub.view_sub_new', sub=sub['name'])}" class="sbm-post pure-button button-xsmall {% if request.endpoint == 'sub.view_sub_new' %}pure-button-primary{%endif%} pure-u-md-7-24">@{_('New')}</a>
+    <a href="@{url_for('sub.view_sub_hot', sub=sub['name'])}" class="sbm-post pure-button button-xsmall @{(sort_type == 'sub.view_sub_hot') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Hot')}</a>
+    <a href="@{url_for('sub.view_sub_top', sub=sub['name'])}" class="sbm-post pure-button button-xsmall @{(sort_type == 'sub.view_sub_top') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Top')}</a>
+    <a href="@{url_for('sub.view_sub_new', sub=sub['name'])}" class="sbm-post pure-button button-xsmall @{(sort_type == 'sub.view_sub_new') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('New')}</a>
   </div>
 </div>
 @include('shared/sidebar/sub.html')
