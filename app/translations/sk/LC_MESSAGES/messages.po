@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-06-04 20:42-0300\n"
-"PO-Revision-Date: 2020-06-26 16:26+0200\n"
+"PO-Revision-Date: 2020-06-26 16:33+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -93,7 +93,7 @@ msgstr "Súbor je väčší ako povolený limit (%(size)i MB)"
 #: app/html/site/log.html:28 app/html/sub/log.html:28 app/html/sub/post.html:33
 #: app/html/sub/postcomments.html:46 app/misc.py:1161
 msgid "[Deleted]"
-msgstr "[Vymazané]"
+msgstr ""
 
 #: app/misc.py:1207
 msgid "URLs not allowed, uploaded files only"
