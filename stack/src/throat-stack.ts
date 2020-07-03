@@ -12,6 +12,7 @@ import * as route53 from "@aws-cdk/aws-route53";
 import * as targets from "@aws-cdk/aws-route53-targets";
 import * as acm from "@aws-cdk/aws-certificatemanager";
 import * as elb from "@aws-cdk/aws-elasticloadbalancingv2";
+import * as secretsmanager from "@aws-cdk/aws-secretsmanager";
 
 export class ThroatStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -139,6 +140,8 @@ export class ThroatStack extends cdk.Stack {
       ),
     });
 
+    const cookieSecret = new secretsmanager.Secret(this, "cookie-secret");
+
     const ecsStack = new ecsPattern.ApplicationLoadBalancedFargateService(
       this,
       "ecs",
@@ -152,7 +155,6 @@ export class ThroatStack extends cdk.Stack {
           image: ecs.ContainerImage.fromDockerImageAsset(asset),
           family: ec2.InstanceClass.BURSTABLE3,
           environment: {
-            secretKey: "use secrets manager to generate and use secret here",
             databaseName,
             databaseUsername,
             engine: "PostgresqlDatabase",
@@ -160,14 +162,10 @@ export class ThroatStack extends cdk.Stack {
             uploadPath: `s3://${bucket.bucketName}/upload`,
             redisDns: redis.attrRedisEndpointAddress,
           },
-          secrets:
-            database.secret == null
-              ? {}
-              : {
-                  databasePassword: ecs.Secret.fromSecretsManager(
-                    database.secret
-                  ),
-                },
+          secrets: {
+            secretKey: ecs.Secret.fromSecretsManager(cookieSecret),
+            databasePassword: ecs.Secret.fromSecretsManager(database.secret!),
+          },
         },
         publicLoadBalancer: true,
       }
