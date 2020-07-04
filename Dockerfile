@@ -7,14 +7,14 @@ COPY package-lock.json /package-lock.json
 RUN \
   apt-get update \
   && apt-get install -yqq \
-    npm \
-    build-essential \
-    libgirepository1.0-dev \
-    libcairo2-dev \
-    libgexiv2-dev \
-    libpq-dev \
-    postgresql-client \
-    wget \
+     npm \
+     build-essential \
+     libgirepository1.0-dev \
+     libcairo2-dev \
+     libgexiv2-dev \
+     libpq-dev \
+     postgresql-client \
+     wget \
   # Install node prereqs, nodejs and yarn
   # Ref: https://deb.nodesource.com/setup_12.x
   # Ref: https://yarnpkg.com/en/docs/install
@@ -23,16 +23,13 @@ RUN \
   && echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list \
   && wget -qO- https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
   && apt-get install -yqq \
-    nodejs \
-    yarn \
+     nodejs \
+     yarn \
   && npm i -g npm@^6 \
-
   # Install our python requirements
   && pip install -r requirements.txt && rm requirements.txt \
-
   # Install our npm requirements
   && npm ci && rm package.json && rm package-lock.json \
-
   # Clean Up
   && rm -rf /var/lib/apt/lists/*
 
