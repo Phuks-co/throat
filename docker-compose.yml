@@ -21,8 +21,6 @@ services:
     image: throat_throat
     command: ["python", "scripts/migrate.py"]
     volumes:
-      - ./scripts:/throat/scripts
-      - ./migrations:/throat/migrations
       - ./config.yaml:/throat/config.yaml
     depends_on:
       - db

@@ -3,6 +3,8 @@
 
 # Whitelist files and folders that should be in the container
 !app
+!migrations
+!scripts
 
 !babel.cfg
 !package.json
