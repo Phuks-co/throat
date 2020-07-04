@@ -1,26 +1,22 @@
-FROM python:3.8-slim-buster
+FROM python:3.8-buster
 
-RUN apt-get update && apt-get install -y \
-	git \
-	redis-server \
-	build-essential \
-	libmagic-dev \
-	libexiv2-dev \
-	zlib1g-dev \
-	libbz2-dev \
-	libreadline-dev \
-	libsqlite3-dev \
-	wget \
-	libffi-dev \
-	curl \
-	libssl-dev \
-	npm \
-	libboost-python-dev \
-	libcairo2-dev \
-	ibgirepository1.0-dev \
-	libgexiv2-dev \
-	libpq-dev \
-	postgresql-client
+# Install node prereqs, nodejs and yarn
+# Ref: https://deb.nodesource.com/setup_12.x
+# Ref: https://yarnpkg.com/en/docs/install
+RUN \
+  echo "deb https://deb.nodesource.com/node_12.x buster main" > /etc/apt/sources.list.d/nodesource.list \
+  && wget -qO- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
+  && echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list \
+  && wget -qO- https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+  && apt-get update \
+  && apt-get install -yqq \
+    nodejs \
+    yarn \
+    libgirepository1.0-dev \
+    libgexiv2-dev \
+  && pip install -U pip && pip install pipenv \
+  && npm i -g npm@^6 \
+  && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /requirements.txt
 RUN pip install -r requirements.txt && rm requirements.txt
