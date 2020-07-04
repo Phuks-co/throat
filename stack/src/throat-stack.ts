@@ -70,7 +70,7 @@ export class ThroatStack extends cdk.Stack {
 
     // Set up ECR Asset (Docker container)
     const asset = new ecrAsset.DockerImageAsset(this, "throat-asset", {
-      directory: "../docker",
+      directory: "../",
     });
 
     const role = new iam.Role(this, "throat-role", {
@@ -155,17 +155,26 @@ export class ThroatStack extends cdk.Stack {
           image: ecs.ContainerImage.fromDockerImageAsset(asset),
           family: ec2.InstanceClass.BURSTABLE3,
           environment: {
-            databaseName,
-            databaseUsername,
-            engine: "PostgresqlDatabase",
-            thumbPath: `s3://${bucket.bucketName}/thumbs`,
-            uploadPath: `s3://${bucket.bucketName}/upload`,
-            redisDns: redis.attrRedisEndpointAddress,
+            app_redis_url: `redis://${redis.attrRedisEndpointAddress}:${redis.attrRedisEndpointPort}`,
+            app_debug: `false`,
+            app_testing: `false`,
+            cach_type: "redis",
+            cach_redis_url: `redis://${redis.attrRedisEndpointAddress}:${redis.attrRedisEndpointPort}`,
+            database_engine: "PostgresqlDatabase",
+            database_host: database.instanceEndpoint.hostname,
+            database_port: database.instanceEndpoint.port.toString(),
+            database_name: databaseName,
+            database_user: databaseUsername,
+            storage_thumbnails_path: `s3://${bucket.bucketName}/thumbs`,
+            storage_thumbnails_url: `https://${cfnDomainName}/thumbs`,
+            storage_uploads_path: `s3://${bucket.bucketName}/upload`,
+            storage_uploads_url: `https://${cfnDomainName}/upload`,
           },
           secrets: {
-            secretKey: ecs.Secret.fromSecretsManager(cookieSecret),
-            databasePassword: ecs.Secret.fromSecretsManager(database.secret!),
+            app_secret_key: ecs.Secret.fromSecretsManager(cookieSecret),
+            database_password: ecs.Secret.fromSecretsManager(database.secret!),
           },
+          containerPort: 5000,
         },
         publicLoadBalancer: true,
       }
