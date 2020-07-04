@@ -40,6 +40,9 @@ site:
   daily_site_posting_limit: 25
 
 app:
+  # host to pass to SocketIO when we start the application
+  host: "localhost"
+
   # URL to a working redis server.
   # Used for websockets and caching (if enabled)
   redis_url: 'redis://127.0.0.1:6379'

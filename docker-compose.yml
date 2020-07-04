@@ -19,7 +19,7 @@ services:
       - redis
   migration:
     image: throat_throat
-    command: ["python", "scripts/migrate.py"]
+    command: ["python3", "scripts/migrate.py"]
     volumes:
       - ./config.yaml:/throat/config.yaml
     depends_on:
