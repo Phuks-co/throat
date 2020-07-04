@@ -1,3 +1,8 @@
+# Any value in this file can be overridden by an environment variable
+# named using the keys, in upper case, joined by underscores.  So for
+# example, if the environment variable $SITE_NAME is set, its value
+# will be used instead of the site name declared below.
+
 site:
   name: 'Throat'
   # Lema shown in the page's title
