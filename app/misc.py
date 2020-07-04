@@ -1169,6 +1169,7 @@ def getSubData(sid, simple=False, extra=False):
 
 
 def getModSubs(uid):
+    # returns all subs that the user can moderate
     modsquery = SubMod.select(Sub, SubMod.power_level).join(Sub).where(
         (SubMod.uid == uid) & (SubMod.invite == False))
     owns = [x.sub for x in modsquery if x.power_level == 0]
@@ -1179,6 +1180,7 @@ def getModSubs(uid):
 
 
 def getSubReports(sid):
+    # returns all reports for the given sub, sorted by open and closed
     reports = {'open': [], 'closed': []}
 
     open_post_reports = SubPostReport.select() \
