@@ -1168,6 +1168,16 @@ def getSubData(sid, simple=False, extra=False):
     return data
 
 
+def getModSubs(uid):
+    modsquery = SubMod.select(Sub, SubMod.power_level).join(Sub).where(
+        (SubMod.uid == uid) & (SubMod.invite == False))
+    owns = [x.sub for x in modsquery if x.power_level == 0]
+    mods = [x.sub for x in modsquery if 1 <= x.power_level <= 2]
+    subs = owns + mods
+
+    return subs
+
+
 def getSubReports(sid):
     reports = {'open': [], 'closed': []}
 

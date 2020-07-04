@@ -10,7 +10,7 @@ from .. import misc
 from ..forms import TOTPForm, LogOutForm, UseInviteCodeForm, AssignUserBadgeForm, EditModForm, BanDomainForm
 from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, SubPostCommentVote, SubPostVote, SiteMetadata
 from ..models import User, Sub, SubMod, SubPost, SubPostComment, UserMetadata, SubPostReport, SubPostCommentReport
-from ..misc import engine, getSubReports
+from ..misc import engine, getSubReports, getModSubs
 from ..badges import badges
 
 bp = Blueprint('mod', __name__)
@@ -56,11 +56,7 @@ def index():
     if not current_user.is_mod:
         abort(404)
 
-    modsquery = SubMod.select(Sub, SubMod.power_level).join(Sub).where(
-        (SubMod.uid == current_user.uid) & (SubMod.invite == False))
-    owns = [x.sub for x in modsquery if x.power_level == 0]
-    mods = [x.sub for x in modsquery if 1 <= x.power_level <= 2]
-    subs = owns + mods
+    subs = getModSubs(current_user.uid)
 
     return render_template('mod/mod.html', subs=subs)
 
@@ -73,17 +69,12 @@ def reports():
     if not current_user.is_mod:
         abort(404)
 
-    modsquery = SubMod.select(Sub, SubMod.power_level).join(Sub).where(
-        (SubMod.uid == current_user.uid) & (SubMod.invite == False))
-    owns = [x.sub for x in modsquery if x.power_level == 0]
-    mods = [x.sub for x in modsquery if 1 <= x.power_level <= 2]
-    subs = owns + mods
+    subs = getModSubs(current_user.uid)
 
     all_reports = {'open': [], 'closed': []}
 
     for sub in subs:
         sub_reports = getSubReports(sub.sid)
-        print("SUB REPORTS:", sub_reports)
         all_reports.update({'open': list(all_reports['open']) + list(sub_reports['open'])})
 
     return render_template('mod/reports.html', subs=subs, reports=all_reports)
