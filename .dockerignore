@@ -1,0 +1,12 @@
+# Blanket ignore everything by default
+*
+
+# Whitelist files and folders that should be in the container
+!app
+
+!babel.cfg
+!package.json
+!package-lock.json
+!requirements.txt
+!throat.py
+!webpack.config.js

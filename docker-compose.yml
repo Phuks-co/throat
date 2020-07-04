@@ -1,0 +1,28 @@
+version: "3.5"
+services:
+  db:
+    image: postgres
+    env_file:
+      - db.config
+  redis:
+    image: redis
+  throat:
+    build: .
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/throat
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+      - redis
+  migration:
+    image: throat_throat
+    command: ["python", "scripts/migrate.py"]
+    volumes:
+      - ./scripts:/throat/scripts
+      - ./migrations:/throat/migrations
+      - ./config.yaml:/throat/config.yaml
+    depends_on:
+      - db
