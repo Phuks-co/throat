@@ -22,6 +22,7 @@ from .views.user import bp as user
 from .views.subs import bp as subs
 from .views.wiki import bp as wiki
 from .views.admin import bp as admin
+from .views.mod import bp as mod
 from .views.errors import bp as errors
 from .views.messages import bp as messages
 
@@ -65,6 +66,7 @@ def create_app():
     app.register_blueprint(api3, url_prefix='/api/v3')
     app.register_blueprint(errors)
     app.register_blueprint(admin, url_prefix='/admin')
+    app.register_blueprint(mod, url_prefix='/mod')
 
     engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config, 'conf': app.config,
                                'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,

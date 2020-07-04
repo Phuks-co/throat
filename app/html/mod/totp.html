@@ -1,0 +1,27 @@
+@extends("shared/layout.html")
+@require(authform, error)
+@def title():
+  Mod |\
+@end
+
+@def main():
+<div id="center-container">
+  <div class="content">
+      <form method="POST" class="pure-form pure-form-aligned">
+        <h1>@{_('Further authentication required')}</h1> @{ authform.csrf_token() }
+        <fieldset>
+          <div class="pure-control-group">
+            <label for="username">@{_('One-time password')}</label>
+            @{authform.totp(required=True, autofocus=True)}
+          </div>
+          <div class="pure-controls">
+            @if error:
+              <div class="error">@{error}</div>
+            @end
+            <button type="submit" class="pure-button pure-button-primary">@{_('Log in')}</button>
+          </div>
+        </fieldset>
+      </form>
+  </div>
+</div>
+@end
