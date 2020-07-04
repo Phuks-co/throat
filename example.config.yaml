@@ -118,10 +118,33 @@ mail:
   default_from: 'noreply@example.com'
 
 storage:
+  # One of: LOCAL, S3, S3_US_WEST, S3_US_WEST_OREGON, S3_EU_WEST,
+  # S3_AP_SOUTHEAST, S3_AP_NORTHEAST, GOOGLE_STORAGE, AZURE_BLOBS,
+  # CLOUDFILES
+  provider: 'LOCAL'
+
+  # For cloud providers, uncomment and set these:
+  #key: '...'
+  #secret: '...'
+
+  # If the provider is local, and you want Throat to serve the files
+  # instead of setting up nginx or another web server to do so,
+  # uncomment these.  The server_url is the relative endpoint for the
+  # files, with no trailing forward slash.  The thumbnails and uploads
+  # paths must be the same for this to work.  Serving files from
+  # Throat is not recommended for production, but may be useful for
+  # development.
+  #server: True
+  #server_url: '/files'
+
   thumbnails:
-    # Path where thumbnails will be stored (app MUST have write access)
+    # Path for LOCAL provider (app must have write access), or bucket
+    # name for cloud provider.
     path: './thumbs'
-    # URL or relative path where thumbnails are served (must end with forward slash)
+    # If the provider is LOCAL, and server is False, the URL or
+    # relative path where thumbnails are served (must end with forward
+    # slash).  If server is True or a cloud provider is used, this is
+    # ignored.
     url: 'https://thumbs.example.com/'
 
   uploads:

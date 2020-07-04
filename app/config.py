@@ -50,7 +50,10 @@ cfg_defaults = {  # key => default value
         },
         "mail": {},
         "storage": {
-            "thumbnails": {
+            "provider": 'LOCAL',
+            "server": False,
+            "server_url": '/files',
+            "thumbnails":{
                 "path": './thumbs',
                 "url": 'https://thumbnails.shitposting.space/',
             },
@@ -114,6 +117,18 @@ class Config(Map):
                 cfg = yaml.safe_load(stream)
 
         super(Config, self).__init__(cfg, cfg_defaults, use_environment=use_environment)
+        self.check_config()
+
+    def check_config(self):
+        # Make sure our storage paths are absolute.
+        if self.storage.provider == 'LOCAL':
+            self.storage.thumbnails['path'] = os.path.abspath(self.storage.thumbnails['path'])
+            self.storage.uploads['path'] = os.path.abspath(self.storage.uploads['path'])
+
+        if (self.storage.server and
+                self.storage.uploads.path != self.storage.thumbnails.path):
+            logging.warning("Thumbnails will not be served by local server "
+                            "because thumbnails and uploads paths differ")
 
     def get_flask_dict(self):
         flattened = {}
@@ -125,6 +140,12 @@ class Config(Map):
                     else:
                         key = '{}_{}'.format(cpk, i).upper()
                     flattened[key] = self[cpk][i]
+
+        # These values are used by flask_cloudy.
+        for key in ['provider', 'key', 'secret', 'server', 'server_url']:
+            if key in self.storage:
+                flattened[f'STORAGE_{key}'.upper()] = self.storage[key]
+        flattened['STORAGE_CONTAINER'] = self.storage.uploads.path;
         return flattened
 
 
