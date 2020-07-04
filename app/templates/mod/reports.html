@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}Mod - {{config.site.lema}}{% endblock %}
+
+{% block sidebar %}
+{{ super() }}
+{% include 'mod/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<div id="center-container">
+  <div class="content">
+    <h1>Open Reports</h1>
+
+    <div class="admin section">
+      <div class="col-12 admin-page-form">
+        <div class="admin section stats">
+          Count: {{reports.open|length}}
+          <div>
+            {% for report in reports.open %}
+            Report ID: {{report}}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

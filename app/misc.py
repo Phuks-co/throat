@@ -1196,7 +1196,7 @@ def getSubReports(sid):
 
     reports['closed'] = closed_post_reports + closed_post_comment_reports
 
-
+    print('REPORTS RETURNED:', reports)
     return reports
 
 

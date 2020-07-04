@@ -109,16 +109,6 @@
             </span>
           </a>
         </div>
-        @if current_user.is_mod:
-        <div class="glyphbutton sep ">
-          <a href="/mod"><span class="p-icon" data-icon="mail"></span>
-            <!-- <span class="hasmail">
-              <span class="p-icon @{(current_user.notifications != 0) and 'hasmail' or ''}" data-icon="mail"></span>
-              <span id="mailcount" class="mailcount" @{(current_user.notifications == 0) and 'style="display:none;"' or ''}>@{current_user.notifications!!s}</span>
-            </span> -->
-          </a>
-        </div>
-        @end
         <div id="toggledark" class="glyphbutton">
           <span class="p-icon" data-icon="@{(request.cookies.get( "dayNight")=="dark") and 'sun' or 'moon'}"></span>
         </div>

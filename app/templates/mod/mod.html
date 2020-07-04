@@ -13,38 +13,31 @@
     <h1>Mod Dashboard</h1>
 
     <div class="admin section">
-        <div class="col-12 admin-page-form">
-          <div class="admin section stats">
-            {% for sub in subs %}
-            {% set reports = func.getSubReports(sub.sid)%}
+      <div class="col-12 admin-page-form">
+        <div class="admin section stats">
+          {% for sub in subs %}
+          {% set reports = func.getSubReports(sub.sid)%}
 
-            <a hef="{{url_for('sub.view_sub', sub=sub.name)}}"><h3>{{sub.name}}</h3></a>
-            <table class="pure-table">
-              <tbody>
-                <tr>
-                  <td>Subscribers</td>
-                  <td>{{sub.subscribers}}</td>
-                </tr>
-                <tr>
-                  <td>Open Reports</td>
-                  <td>{{reports.open.count()}}</td>
-                </tr>
-                <tr>
-                  <td>Closed Reports</td>
-                  <td>{{reports.closed.count()}}</td>
-                </tr>
-              </tbody>
-            </table>
-            {% endfor %}
+          <a hef="{{url_for('sub.view_sub', sub=sub.name)}}"><h3>{{sub.name}}</h3></a>
+          <table class="pure-table">
+            <tbody>
+              <tr>
+                <td>Subscribers</td>
+                <td>{{sub.subscribers}}</td>
+              </tr>
+              <tr>
+                <td>Open Reports</td>
+                <td>{{reports.open.count()}}</td>
+              </tr>
+              <tr>
+                <td>Closed Reports</td>
+                <td>{{reports.closed.count()}}</td>
+              </tr>
+            </tbody>
+          </table>
+          {% endfor %}
 
-          </div>
-
-          <!-- <ul>
-              @for mod in mods:
-                  <li><a href="@{url_for('sub.view_sub', sub=mod)}">@{mod}</a></li>
-              @end
-          </ul> -->
-
+        </div>
       </div>
     </div>
   </div>
