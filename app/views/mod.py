@@ -9,7 +9,7 @@ from flask_babel import _
 from .. import misc
 from ..forms import TOTPForm, LogOutForm, UseInviteCodeForm, AssignUserBadgeForm, EditModForm, BanDomainForm
 from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, SubPostCommentVote, SubPostVote, SiteMetadata
-from ..models import UserUploads
+from ..models import User, Sub, SubMod, SubPost, SubPostComment, UserMetadata, SubPostReport, SubPostCommentReport
 from ..misc import engine
 from ..badges import badges
 
@@ -56,4 +56,10 @@ def index():
     if not current_user.is_mod:
         abort(404)
 
-    return render_template('mod/mod.html')
+    modsquery = SubMod.select(Sub, SubMod.power_level).join(Sub).where(
+        (SubMod.uid == current_user.uid) & (SubMod.invite == False))
+    owns = [x.sub for x in modsquery if x.power_level == 0]
+    mods = [x.sub for x in modsquery if 1 <= x.power_level <= 2]
+    subs = owns + mods
+
+    return render_template('mod/mod.html', subs=subs)
