@@ -25,6 +25,6 @@ COPY . /throat
 WORKDIR /throat
 RUN mv ../node_modules node_modules && npm run build
 
-EXPOSE 80
+EXPOSE 5000
 
 CMD ["./throat.py"]

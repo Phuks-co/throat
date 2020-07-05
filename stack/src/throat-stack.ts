@@ -218,10 +218,22 @@ export class ThroatStack extends cdk.Stack {
           family: ec2.InstanceClass.BURSTABLE3,
           environment,
           secrets,
+          containerPort: 5000,
         },
         publicLoadBalancer: true,
       }
     );
+
+    ecsStack.loadBalancer
+      .addListener("http_https", {
+        port: 80,
+        protocol: elb.ApplicationProtocol.HTTP,
+      })
+      .addRedirectResponse("redirect", {
+        port: "443",
+        protocol: elb.ApplicationProtocol.HTTPS,
+        statusCode: "HTTP_301",
+      });
 
     ecsStack.node.addDependency(redis);
   }

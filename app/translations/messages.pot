@@ -475,7 +475,7 @@ msgstr ""
 #: app/html/index.html:29 app/html/shared/layout.html:149
 #: app/html/shared/sidebar/home.html:52
 msgid "Donate"
-msgstr "Give Shit"
+msgstr ""
 
 #: app/html/index.html:31
 #, python-format
