@@ -75,7 +75,6 @@ def reports():
 
     for sub in subs:
         sub_reports = getSubReports(sub.sid)
-        # Turning this into a list was necessary to cat the two, but it smooshes the object to just the id. Not useful in the end. Need better way to cat to peewee query objects
         all_reports.update({'open': list(all_reports['open']) + list(sub_reports['open'])})
 
     return render_template('mod/reports.html', subs=subs, reports=all_reports)

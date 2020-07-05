@@ -18,7 +18,9 @@
           Count: {{reports.open|length}}
           <div>
             {% for report in reports.open %}
-            Report: {{report}}
+            <div>
+            ID: {{report.id}} | Reported: {{report.datetime}} |
+            </div>
             {% endfor %}
           </div>
         </div>

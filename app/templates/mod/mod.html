@@ -18,7 +18,7 @@
           {% for sub in subs %}
           {% set reports = func.getSubReports(sub.sid)%}
 
-          <a hef="{{url_for('sub.view_sub', sub=sub.name)}}"><h3>{{sub.name}}</h3></a>
+          <a href="{{url_for('sub.view_sub', sub=sub.name)}}"><h3>{{sub.name}}</h3></a>
           <table class="pure-table">
             <tbody>
               <tr>
