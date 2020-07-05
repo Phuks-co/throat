@@ -75,7 +75,7 @@ class Map(dict):
             if isinstance(val, dict):
                 self[key] = Map(self.get(key, {}), val, f'{self.prefix}{key}')
             elif key not in self.keys():
-                self[key] = val
+                self[key] = val;
 
         # Look for environment variables that override values or add additional values.
         if self.prefix != '':
