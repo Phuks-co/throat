@@ -65,7 +65,7 @@ def index():
 @bp.route("/reports/<int:page>")
 @login_required
 def reports(page):
-    """ WIP: Report Queue """
+    """ WIP: Open Report Queue """
 
     if not current_user.is_mod:
         abort(404)
@@ -78,6 +78,9 @@ def reports(page):
             str(sid) in sub.sid
         return True
 
+    # Get all reports on posts and comments, filter by "open",
+    # then filter by subs current user can Mod
+    # also returns count of all open reports
     Reported = User.alias()
     posts_q = SubPostReport.select(
         Value('post').alias('type'),
