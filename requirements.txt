@@ -8,6 +8,7 @@ Flask-SocketIO>=3.3.2
 Flask-Webpack>=0.1.0
 flask-caching
 flask-redis
+flask-cloudy
 bcrypt
 misaka>=2.1.1
 peewee

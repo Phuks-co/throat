@@ -26,7 +26,7 @@ from .views.mod import bp as mod
 from .views.errors import bp as errors
 from .views.messages import bp as messages
 
-from . import misc, forms, caching
+from . import misc, forms, caching, storage
 from .socketio import socketio
 from .misc import SiteAnon, engine, engine_init_app, re_amention, mail
 
@@ -59,6 +59,7 @@ def create_app(config=Config('config.yaml')):
     engine_init_app(app)
     if 'MAIL_SERVER' in app.config:
         mail.init_app(app)
+    storage.storage.init_app(app)
     # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 
     app.register_blueprint(home)
