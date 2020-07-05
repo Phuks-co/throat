@@ -111,6 +111,8 @@ def reports(page):
 
     query = posts_q | comments_q
     query = query.order_by(query.c.datetime.desc())
+    open_report_count = query.count()
     query = query.paginate(page, 50)
 
-    return engine.get_template('mod/reports.html').render({'reports': list(query.dicts())})
+    return engine.get_template('mod/reports.html').render(
+        {'open_reports': list(query.dicts()), 'open_report_count': str(open_report_count)})

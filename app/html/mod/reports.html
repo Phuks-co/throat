@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(reports)
+@require(open_reports, open_report_count)
 @def title():
 Mod |\
 @end
@@ -16,7 +16,7 @@ Mod |\
     <div class="admin section">
       <div class="col-12 admin-page-form">
         <div class="admin section stats">
-          Total Open Reports: 
+          Total Open Reports: @open_report_count
 
           <table class="pure-table">
             <thead>
@@ -30,7 +30,7 @@ Mod |\
               </tr>
             </thead>
             <tbody>
-            @for report in reports:
+            @for report in open_reports:
             <tr>
               <td>
                 @if report['type'] == 'comment':
