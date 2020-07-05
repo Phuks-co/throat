@@ -42,6 +42,7 @@ from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, Us
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db, SubPostReport, SubPostCommentReport
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair, InviteCode
 from .models import SubMod, SubBan
+from .storage import thumbnail_url
 from peewee import JOIN, fn, SQL, NodeList, Value
 import requests
 import logging
@@ -1352,7 +1353,7 @@ def validate_css(css, sid):
     # create a map for uris.
     uris = {}
     for su in SubUploads.select().where(SubUploads.sid == sid):
-        uris[su.name] = config.storage.uploads.url + su.fileid
+        uris[su.name] = file_url(su.fileid)
     for x in st:
         if x.__class__.__name__ == "AtRule":
             if x.at_keyword.lower() == "import":
@@ -1407,8 +1408,8 @@ def populate_feed(feed, posts):
         url = url_for('sub.view_post', sub=post['sub'], pid=post['pid'], _external=True)
 
         if post['thumbnail']:
-            content += '<td><a href=' + url + '"><img src="' + config.storage.thumbnails.url + post[
-                'thumbnail'] + '" alt="' + post['title'] + '"/></a></td>'
+            content += '<td><a href=' + url + '"><img src="' + thumbnail_url(post[
+                'thumbnail']) + '" alt="' + post['title'] + '"/></a></td>'
         content += '<td>Submitted by <a href=/u/' + post['user'] + '>' + post['user'] + '</a><br/>' + our_markdown(
             post['content'])
         if post['link']:

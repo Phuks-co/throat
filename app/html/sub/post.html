@@ -20,7 +20,7 @@
     <meta property="og:description" content="@{_('Posted in %(prefix)s/%(sub)s by %(username)s', prefix=config.site.sub_prefix, sub=sub['name'], username=post['user'])}">
     <meta property="og:title" content="@{post['title']}">
     @if post['thumbnail'] != '' and post['link'] != None:
-    <meta property="og:image" content="@{config.storage.thumbnails.url}@{post['thumbnail']}">
+    <meta property="og:image" content="@{thumbnail_url(post['thumbnail'])}">
     <meta property="og:ttl" content="600">
     <meta property="og:image:height" content="70">
     <meta property="og:image:width" content="70">
@@ -58,7 +58,7 @@
         <a class="title">
           <div class="thumbnail">
             @if post['thumbnail'] != '' and post['link'] != None:
-              <img src="@{config.storage.thumbnails.url}@{post['thumbnail']}"/>
+              <img src="@{thumbnail_url(post['thumbnail'])}"/>
             @elif post['link'] != None:
               <span class="placeholder" data-icon="link"></span>
             @else:

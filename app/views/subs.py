@@ -12,6 +12,7 @@ from ..socketio import socketio
 from ..models import Sub, db as pdb, SubMod, SubMetadata, SubStylesheet, SubSubscriber, SiteMetadata, SubPost
 from ..models import SubPostPollOption, SubPostMetadata, SubPostVote, User, UserUploads
 from ..forms import CreateSubPostForm, CreateSubForm
+from ..storage import file_url
 
 bp = Blueprint('subs', __name__)
 
@@ -157,7 +158,7 @@ def create_post(ptype, sub):
                 {'error': fupload[0], 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
         if fupload[1]:
-            form.link.data = config.storage.uploads.url + fupload[0]
+            form.link.data = file_url(fupload[0])
             fileid = fupload[0]
 
         if not form.link.data:
