@@ -1,18 +1,17 @@
+import * as acm from "@aws-cdk/aws-certificatemanager";
 import * as cdk from "@aws-cdk/core";
-import * as ecrAsset from "@aws-cdk/aws-ecr-assets";
+import * as cloudfront from "@aws-cdk/aws-cloudfront";
+import * as ec2 from "@aws-cdk/aws-ec2";
 import * as ecs from "@aws-cdk/aws-ecs";
 import * as ecsPattern from "@aws-cdk/aws-ecs-patterns";
-import * as s3 from "@aws-cdk/aws-s3";
-import * as ec2 from "@aws-cdk/aws-ec2";
-import * as rds from "@aws-cdk/aws-rds";
-import * as iam from "@aws-cdk/aws-iam";
 import * as elasticache from "@aws-cdk/aws-elasticache";
-import * as cloudfront from "@aws-cdk/aws-cloudfront";
-import * as route53 from "@aws-cdk/aws-route53";
-import * as targets from "@aws-cdk/aws-route53-targets";
-import * as acm from "@aws-cdk/aws-certificatemanager";
 import * as elb from "@aws-cdk/aws-elasticloadbalancingv2";
+import * as iam from "@aws-cdk/aws-iam";
+import * as rds from "@aws-cdk/aws-rds";
+import * as route53 from "@aws-cdk/aws-route53";
+import * as s3 from "@aws-cdk/aws-s3";
 import * as secretsmanager from "@aws-cdk/aws-secretsmanager";
+import * as targets from "@aws-cdk/aws-route53-targets";
 
 export class ThroatStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -174,15 +173,9 @@ export class ThroatStack extends cdk.Stack {
 
     const environment = {
       APP_REDIS_URL: `redis://${redis.attrRedisEndpointAddress}:${redis.attrRedisEndpointPort}`,
-      //APP_DEBUG: `false`,
-      //APP_TESTING: `false`,
       CACHE_TYPE: "redis",
       CACHE_REDIS_URL: `redis://${redis.attrRedisEndpointAddress}:${redis.attrRedisEndpointPort}`,
       DATABASE_ENGINE: "PostgresqlDatabase",
-      // DATABASE_HOST: database.dbInstanceEndpointAddress,
-      // DATABASE_PORT: database.dbInstanceEndpointPort,
-      // DATABASE_NAME: databaseName,
-      // DATABASE_USER: databaseUsername,
       STORAGE_THUMBNAILS_PATH: `s3://${bucket.bucketName}/thumbs`,
       STORAGE_THUMBNAILS_URL: `https://${cfnDomainName}/thumbs`,
       STORAGE_UPLOADS_PATH: `s3://${bucket.bucketName}/upload`,
