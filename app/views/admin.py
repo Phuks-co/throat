@@ -1,15 +1,15 @@
 """ Admin endpoints """
 import time
 import re
-from peewee import fn, JOIN
+from peewee import fn, JOIN, Value
 from pyotp import TOTP
-from flask import Blueprint, abort, redirect, url_for, session, render_template
+from flask import Blueprint, abort, redirect, url_for, session, render_template, jsonify
 from flask_login import login_required, current_user
 from flask_babel import _
 from .. import misc
 from ..forms import TOTPForm, LogOutForm, UseInviteCodeForm, AssignUserBadgeForm, EditModForm, BanDomainForm
 from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, SubPostCommentVote, SubPostVote, SiteMetadata
-from ..models import UserUploads
+from ..models import UserUploads, SubPostReport, SubPostCommentReport
 from ..misc import engine
 from ..badges import badges
 
@@ -311,3 +311,43 @@ def user_uploads(page):
     uploads = UserUploads.select().order_by(UserUploads.pid.desc()).paginate(page, 30)
     users = User.select(User.name).join(UserMetadata).where(UserMetadata.key == 'canupload')
     return render_template('admin/uploads.html', page=page, uploads=uploads, users=users)
+
+
+@bp.route("/reports", defaults={'page': 1})
+@bp.route("/reports/<int:page>")
+@login_required
+def reports(page):
+    if not current_user.is_admin():
+        abort(404)
+    Reported = User.alias()
+    posts_q = SubPostReport.select(
+        Value('post').alias('type'),
+        SubPostReport.pid,
+        Value(None).alias('cid'),
+        User.name.alias('reporter'),
+        Reported.name.alias('reported'),
+        SubPostReport.datetime,
+        SubPostReport.reason,
+        Sub.name.alias('sub')
+    ).join(User, on=User.uid == SubPostReport.uid) \
+        .switch(SubPostReport).join(SubPost).join(Sub) \
+        .join(Reported, on=Reported.uid == SubPost.uid)
+
+    comments_q = SubPostCommentReport.select(
+        Value('comment').alias('type'),
+        SubPostComment.pid,
+        SubPostCommentReport.cid,
+        User.name.alias('reporter'),
+        Reported.name.alias('reported'),
+        SubPostCommentReport.datetime,
+        SubPostCommentReport.reason,
+        Sub.name.alias('sub')
+    ).join(User, on=User.uid == SubPostCommentReport.uid) \
+        .switch(SubPostCommentReport).join(SubPostComment).join(SubPost).join(Sub) \
+        .join(Reported, on=Reported.uid == SubPostComment.uid)
+
+    query = posts_q | comments_q
+    query = query.order_by(query.c.datetime.desc())
+    query = query.paginate(page, 50)
+
+    return engine.get_template('admin/reports.html').render({'reports': list(query.dicts())})
