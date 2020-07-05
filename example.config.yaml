@@ -49,7 +49,7 @@ app:
   host: "localhost"
 
   # URL to a working redis server.
-  # Used for websockets and caching (if enabled)
+  # Used for websockets (if enabled)
   redis_url: 'redis://127.0.0.1:6379'
 
   # Secret key used to encrypt session cookies.
@@ -83,7 +83,7 @@ cache:
   # - 'simple' (only for testing)
   type: 'redis'
 
-  # Redis to use for websockets and caching (if enabled)
+  # Redis to use for caching (if enabled)
   redis_url: 'redis://127.0.0.1:6379'
 
 sendgrid:
