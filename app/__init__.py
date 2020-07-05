@@ -76,11 +76,14 @@ def create_app(config=Config('config.yaml')):
     app.register_blueprint(admin, url_prefix='/admin')
     app.register_blueprint(mod, url_prefix='/mod')
 
+    app.add_template_global(storage.file_url)
+    app.add_template_global(storage.thumbnail_url)
     engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config, 'conf': app.config,
                                'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,
                                'form': forms, 'hostname': socket.gethostname(), 'datetime': datetime,
                                'e': escape_html, 'markdown': misc.our_markdown, '_': _, 'get_locale': get_locale,
-                               'BeautifulSoup': BeautifulSoup})
+                               'BeautifulSoup': BeautifulSoup, 'thumbnail_url': storage.thumbnail_url,
+                               'file_url': storage.file_url})
 
     if config.app.development:
         import logging
