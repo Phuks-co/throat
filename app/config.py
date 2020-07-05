@@ -22,6 +22,7 @@ cfg_defaults = { # key => default value
             "title_edit_timeout": 300,
 
             "sub_creation_min_level": 2,
+            "sub_creation_admin_only": False,
             "sub_ownership_limit": 20,
 
             "daily_sub_posting_limit": 10,
@@ -92,7 +93,7 @@ class Config(Map):
     def __init__(self):
         with open('config.yaml','r') as stream:
             self._cfg = yaml.safe_load(stream)
-        
+
         super(Config, self).__init__(self._cfg, cfg_defaults)
 
     def get_flask_dict(self):
