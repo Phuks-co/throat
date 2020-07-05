@@ -2,8 +2,10 @@ version: "3.5"
 services:
   db:
     image: postgres
-    env_file:
-      - db.config
+    environment:
+      POSTGRES_USER: throat
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DATABASE: throat
   redis:
     image: redis
   throat:
@@ -12,6 +14,18 @@ services:
     tty: true
     volumes:
       - .:/throat
+    environment:
+      # Configs set here will override your config.yaml
+      APP_HOST: 0.0.0.0
+      APP_REDIS_URL: redis://redis:6379
+      CACHE_REDIS_URL: redis://redis:6379
+      DATABASE_ENGINE: PostgresqlDatabase
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: throat
+      DATABASE_PASSWORD: dev
+      DATABASE_NAME: throat
+      DATABASE_AUTOCOMMIT: "true"
     ports:
       - "5000:5000"
     depends_on:
@@ -20,6 +34,14 @@ services:
   migration:
     image: throat_throat
     command: ["python3", "scripts/migrate.py"]
+    environment:
+      DATABASE_ENGINE: PostgresqlDatabase
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: throat
+      DATABASE_PASSWORD: dev
+      DATABASE_NAME: throat
+      DATABASE_AUTOCOMMIT: "true"
     volumes:
       - ./config.yaml:/throat/config.yaml
     depends_on:
