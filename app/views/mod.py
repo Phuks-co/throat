@@ -70,6 +70,14 @@ def reports(page):
     if not current_user.is_mod:
         abort(404)
 
+    mod_subs = getModSubs(current_user.uid)
+
+    def isSubMod(sid, mod_subs):
+        # return True if current user is Mod of sub given a post ID
+        for sub in mod_subs:
+            str(sid) in sub.sid
+        return True
+
     Reported = User.alias()
     posts_q = SubPostReport.select(
         Value('post').alias('type'),
@@ -79,10 +87,12 @@ def reports(page):
         Reported.name.alias('reported'),
         SubPostReport.datetime,
         SubPostReport.reason,
+        SubPostReport.open.alias('open'),
         Sub.name.alias('sub')
     ).join(User, on=User.uid == SubPostReport.uid) \
-        .switch(SubPostReport).join(SubPost).join(Sub) \
-        .join(Reported, on=Reported.uid == SubPost.uid)
+        .switch(SubPostReport).join(SubPost).join(Sub).where(isSubMod(Sub.sid, mod_subs) == True) \
+        .join(Reported, on=Reported.uid == SubPost.uid) \
+        .where(SubPostReport.open == True)
 
     comments_q = SubPostCommentReport.select(
         Value('comment').alias('type'),
@@ -92,10 +102,12 @@ def reports(page):
         Reported.name.alias('reported'),
         SubPostCommentReport.datetime,
         SubPostCommentReport.reason,
+        SubPostCommentReport.open.alias('open'),
         Sub.name.alias('sub')
     ).join(User, on=User.uid == SubPostCommentReport.uid) \
-        .switch(SubPostCommentReport).join(SubPostComment).join(SubPost).join(Sub) \
-        .join(Reported, on=Reported.uid == SubPostComment.uid)
+        .switch(SubPostCommentReport).join(SubPostComment).join(SubPost).join(Sub).where(isSubMod(Sub.sid, mod_subs) == True) \
+        .join(Reported, on=Reported.uid == SubPostComment.uid) \
+        .where(SubPostCommentReport.open == True)
 
     query = posts_q | comments_q
     query = query.order_by(query.c.datetime.desc())
