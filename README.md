@@ -24,6 +24,16 @@ We recommend using a virtualenv or Pyenv
 
 And you're done! You can run a test server by executing `./throat.py`. For production instances we recommend setting up `gunicorn`
 
+## Develop on Docker
+If you prefer to develop on docker
+ - The provided Docker resources only support Postgres
+ - You still must copy `example.config.yaml` to `config.yaml` and make any changes you want
+ - In addition, configs are overridden by environment variables set in docker-compose.yml
+   which reference the redis and postgres services created by docker-compose.
+
+`make up` will bring the containerized site up and mount your current working directory
+inside the container for dev. `make down` will spin down the containerized services.
+
 ## Chat
 
 If you have any questions, you can reach us on #throat:phuks.co on [Matrix](https://chat.phoxy.win/#/login)
