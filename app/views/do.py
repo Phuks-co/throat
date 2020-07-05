@@ -18,7 +18,7 @@ from flask import render_template, request
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_babel import _
 from ..config import config
-from .. import forms, misc, caching
+from .. import forms, misc, caching, storage
 from ..socketio import socketio
 from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm, ChangePasswordForm
@@ -1825,7 +1825,7 @@ def sub_upload(sub):
             break
         md5.update(data)
 
-    f_name = str(uuid.uuid5(misc.FILE_NAMESPACE, md5.hexdigest())) + extension
+    f_name = str(uuid.uuid5(storage.FILE_NAMESPACE, md5.hexdigest())) + extension
     ufile.seek(0)
     lm = False
     if not os.path.isfile(os.path.join(config.storage.uploads.path, f_name)):
@@ -1833,7 +1833,7 @@ def sub_upload(sub):
         ufile.save(os.path.join(config.storage.uploads.path, f_name))
         # remove metadata
         if mtype != 'image/gif':  # Apparently we cannot write to gif images
-            misc.clear_metadata(os.path.join(config.storage.uploads.path, f_name), mtype)
+            storage.clear_metadata(os.path.join(config.storage.uploads.path, f_name), mtype)
     # sadly, we can only get file size accurately after saving it
     fsize = os.stat(os.path.join(config.storage.uploads.path, f_name)).st_size
     if fsize > remaining:
