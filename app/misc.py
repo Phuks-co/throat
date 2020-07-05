@@ -39,7 +39,7 @@ from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, Us
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db, SubPostReport, SubPostCommentReport
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair
 from .models import SubMod, SubBan
-from peewee import JOIN, fn, SQL, NodeList
+from peewee import JOIN, fn, SQL, NodeList, Value
 import requests
 import logging
 
