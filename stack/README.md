@@ -27,17 +27,17 @@ cdk deploy \
 
 The above command will do the following
 
-Set up an encrypted [S3](https://aws.amazon.com/s3/) bucket for use in upload and thumbnail handling
-Creates a [CloudFront Distribution](https://aws.amazon.com/cloudfront/) to handle serving uploads
-Creates a DNS entry for `uploads.www.phuks.co` and an associated SSL certificate
-Set up a [VPC](https://aws.amazon.com/vpc/) with no public endpoints allowed inside of it.
-Create a bastion host which can be accessed with [Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-sessions-start.html) in order to "see" inside the VPC.
-Creates a [Elasticache Redis Cluster](https://aws.amazon.com/elasticache/) to handle the caching required by throat.
-Creates a [Postgres RDS Instance](https://aws.amazon.com/rds/postgresql/) that is encrypted.
-Creates a [ECS Fargate](https://aws.amazon.com/ecs/) Task of the throat server
-Creates a [ECS Fargate](https://aws.amazon.com/ecs/) Task of the throat migration
-Creates a [ALB](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) that will dynamically route to throat servers spun up by Fargate.
-Creates a DNS entry for `www.phuks.co` and an SSL certificate, attached to the ALB.
+* Set up an encrypted [S3](https://aws.amazon.com/s3/) bucket for use in upload and thumbnail handling
+* Creates a [CloudFront Distribution](https://aws.amazon.com/cloudfront/) to handle serving uploads
+* Creates a DNS entry for `uploads.www.phuks.co` and an associated SSL certificate
+* Set up a [VPC](https://aws.amazon.com/vpc/) with no public endpoints allowed inside of it.
+* Create a bastion host which can be accessed with [Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-sessions-start.html) in order to "see" inside the VPC.
+* Creates a [Elasticache Redis Cluster](https://aws.amazon.com/elasticache/) to handle the caching required by throat.
+* Creates a [Postgres RDS Instance](https://aws.amazon.com/rds/postgresql/) that is encrypted.
+* Creates a [ECS Fargate](https://aws.amazon.com/ecs/) Task of the throat server
+* Creates a [ECS Fargate](https://aws.amazon.com/ecs/) Task of the throat migration
+* Creates a [ALB](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) that will dynamically route to throat servers spun up by Fargate.
+* Creates a DNS entry for `www.phuks.co` and an SSL certificate, attached to the ALB.
 
 As a note, at the moment the amount of monitoring that is done is limited, we don't capture most of the metrics that we could be capturing, this is a TODO.
 
