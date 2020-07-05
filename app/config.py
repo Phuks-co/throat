@@ -1,4 +1,5 @@
 """ Config manager """
+import os
 import yaml
 
 
@@ -51,29 +52,39 @@ cfg_defaults = { # key => default value
             "wtf_csrf_time_limit": None,
             "max_content_length": 10485760,  # 10mb
             "fallback_language": "en"
-        }
-
+        },
+    "database": {}
     }
 
 
 class Map(dict):
-    def __init__(self, sdict, defaults):
-        super(Map, self).__init__(sdict)
-        self.defaults = defaults
-        for k, v in sdict.items():
-            self[k] = v
+    """ A dictionary object whose keys are accessable as attributes. """
+    def __init__(self, sdict, defaults, prefix=''):
+        """Create a Map from the dictionary sdict, with missing values filled
+        in from defaults. If a non-empty prefix string is supplied,
+        and any environment variables exist beginning with that
+        prefix, add those values to the dictionary overwriting
+        anything in sdict or default.
+        """
+        super(Map, self).__init__(dict(sdict))
+        self.prefix = ('' if prefix == '' else prefix + '_').upper()
 
-    def _get(self, attr):
-        try:
-            return self[attr]
-        except KeyError:
-            return self.defaults[attr]
+        # If any values are missing, copy them from defaults.
+        # Turn all subdictionaries into Maps as well.
+        for key, val in defaults.items():
+            if isinstance(val, dict):
+                self[key] = Map(self.get(key, {}), val, f'{self.prefix}{key}')
+            elif key not in self.keys():
+                self[key] = val;
+
+        # Look for environment variables that override values or add additional values.
+        if self.prefix != '':
+            for var in os.environ.keys():
+                if var.startswith(self.prefix):
+                    self[var[len(self.prefix):].lower()] = os.environ.get(var)
 
     def __getattr__(self, attr):
-        val = self._get(attr)
-        if isinstance(val, dict):
-            return Map(val, self.defaults.get(attr, {}))
-        return val
+        return self[attr]
 
 
 class Config(Map):
@@ -87,12 +98,12 @@ class Config(Map):
     def get_flask_dict(self):
         flattened = {}
         for cpk in ['cache', 'sendgrid', 'app']:
-            for i in self._cfg[cpk]:
+            for i in self[cpk]:
                 if cpk == 'app':
                     key = i.upper()
                 else:
                     key = '{}_{}'.format(cpk, i).upper()
-                flattened[key] = self._cfg[cpk][i]
+                flattened[key] = self[cpk][i]
         return flattened
 
 config = Config()

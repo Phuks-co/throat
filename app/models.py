@@ -14,7 +14,7 @@ from .config import config
 rconn = redis.from_url(config.app.redis_url)
 
 def db_connect():
-    dbconnect = config.database
+    dbconnect = dict(config.database)
     # Taken from peewee's flask_utils
     try:
         name = dbconnect.pop('name')
