@@ -40,7 +40,7 @@ def db_connect():
     except AssertionError:
         raise RuntimeError('Database engine not a subclass of '
                             'peewee.Database: %s' % engine)
-
+    
     return database_class(name, **dbconnect)
 
 dbm = db_connect()
