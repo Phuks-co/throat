@@ -10,6 +10,7 @@ flask-caching
 bcrypt
 misaka>=2.1.1
 peewee
+psycopg2
 tinycss2==0.6.1
 redis
 requests

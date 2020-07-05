@@ -18,12 +18,12 @@ export class ThroatStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const base = this.node.tryGetContext("baseDns") ?? "phucks.co";
+    const base = this.node.tryGetContext("baseDns") ?? "phuks.co";
     const subname = this.node.tryGetContext("subname") ?? ""; // Such as www...
     const databaseName: string =
-      this.node.tryGetContext("databaseName") ?? "phucks";
+      this.node.tryGetContext("databaseName") ?? "phuks";
     const databaseUsername: string =
-      this.node.tryGetContext("databaseUsername") ?? "phucks";
+      this.node.tryGetContext("databaseUsername") ?? "phuks";
 
     // Set up S3 bucket
     const bucket = new s3.Bucket(this, "images", {
@@ -36,21 +36,48 @@ export class ThroatStack extends cdk.Stack {
       enableDnsHostnames: false,
     });
 
+    const sg1 = new ec2.SecurityGroup(this, "sg1", {
+      vpc,
+      allowAllOutbound: true,
+    });
+
+    sg1.connections.allowFrom(
+      ec2.Peer.ipv4(vpc.vpcCidrBlock),
+      ec2.Port.allTcp()
+    );
+    const securityGroups = [
+      ec2.SecurityGroup.fromSecurityGroupId(
+        this,
+        "default-vpc",
+        vpc.vpcDefaultSecurityGroup
+      ),
+      sg1,
+    ];
+
+    const bastion = new ec2.BastionHostLinux(this, "bastion-host", {
+      vpc,
+    });
+
+    const subnetGroup = new elasticache.CfnSubnetGroup(
+      this,
+      "redis-subnet-group",
+      {
+        cacheSubnetGroupName: "redissubnetgroup",
+        subnetIds: vpc.privateSubnets.map((s) => s.subnetId),
+        description: "VPC Private Subnets",
+      }
+    );
+
     // Add redis
     const redis = new elasticache.CfnCacheCluster(this, "redis-cluster", {
       engine: "redis",
       cacheNodeType: "cache.t3.micro",
       numCacheNodes: 1,
-      cacheSubnetGroupName: new elasticache.CfnSubnetGroup(
-        this,
-        "redis-subnet-group",
-        {
-          subnetIds: vpc.privateSubnets.map((s) => s.subnetId),
-          description: "VPC Private Subnets",
-        }
-      ).cacheSubnetGroupName,
-      vpcSecurityGroupIds: [vpc.vpcDefaultSecurityGroup], // Even money this doesn't work.
+      cacheSubnetGroupName: subnetGroup.cacheSubnetGroupName,
+      vpcSecurityGroupIds: securityGroups.map((sg) => sg.securityGroupId), // Even money this doesn't work.
     });
+
+    redis.addDependsOn(subnetGroup);
 
     // Set up RDS
     const database = new rds.DatabaseInstance(this, "db", {
@@ -65,13 +92,15 @@ export class ThroatStack extends cdk.Stack {
       multiAz: false,
       databaseName: databaseName,
       storageType: rds.StorageType.GP2,
+      // securityGroups,
       // TODO monitor performance and log things to cloudwatch
     });
 
-    // Set up ECR Asset (Docker container)
-    const asset = new ecrAsset.DockerImageAsset(this, "throat-asset", {
-      directory: "../",
-    });
+    bastion.connections.allowTo(database, ec2.Port.tcp(5432));
+    database.connections.allowFrom(
+      ec2.Peer.ipv4(vpc.vpcCidrBlock),
+      ec2.Port.tcp(5432)
+    );
 
     const role = new iam.Role(this, "throat-role", {
       assumedBy: new iam.ServicePrincipal("ecs-tasks.amazonaws.com"),
@@ -87,9 +116,10 @@ export class ThroatStack extends cdk.Stack {
 
     const cfnDomainName = `uploads.${subname}.${base}`;
 
-    const certArn = new acm.DnsValidatedCertificate(this, "cfn-dist", {
+    const certArn = new acm.DnsValidatedCertificate(this, "cft-dist-cert", {
       domainName: cfnDomainName,
       hostedZone: zone,
+      region: "us-east-1",
     }).certificateArn;
 
     const oai = new cloudfront.OriginAccessIdentity(this, "oai", {
@@ -142,6 +172,38 @@ export class ThroatStack extends cdk.Stack {
 
     const cookieSecret = new secretsmanager.Secret(this, "cookie-secret");
 
+    const environment = {
+      APP_REDIS_URL: `redis://${redis.attrRedisEndpointAddress}:${redis.attrRedisEndpointPort}`,
+      //APP_DEBUG: `false`,
+      //APP_TESTING: `false`,
+      CACHE_TYPE: "redis",
+      CACHE_REDIS_URL: `redis://${redis.attrRedisEndpointAddress}:${redis.attrRedisEndpointPort}`,
+      DATABASE_ENGINE: "PostgresqlDatabase",
+      // DATABASE_HOST: database.dbInstanceEndpointAddress,
+      // DATABASE_PORT: database.dbInstanceEndpointPort,
+      // DATABASE_NAME: databaseName,
+      // DATABASE_USER: databaseUsername,
+      STORAGE_THUMBNAILS_PATH: `s3://${bucket.bucketName}/thumbs`,
+      STORAGE_THUMBNAILS_URL: `https://${cfnDomainName}/thumbs`,
+      STORAGE_UPLOADS_PATH: `s3://${bucket.bucketName}/upload`,
+      STORAGE_UPLOADS_URL: `https://${cfnDomainName}/upload`,
+    };
+    const secrets = {
+      APP_SECRET_KEY: ecs.Secret.fromSecretsManager(cookieSecret),
+      DATABASE_SECRET: ecs.Secret.fromSecretsManager(database.secret!),
+    };
+
+    const image = ecs.ContainerImage.fromAsset("../");
+    const migration = new ecs.ContainerDefinition(this, "migration-container", {
+      image,
+      taskDefinition: new ecs.FargateTaskDefinition(this, "migration-task", {
+        taskRole: role,
+      }),
+      environment,
+      secrets,
+      command: ["./scripts/migrate.py"],
+    });
+
     const ecsStack = new ecsPattern.ApplicationLoadBalancedFargateService(
       this,
       "ecs",
@@ -152,32 +214,15 @@ export class ThroatStack extends cdk.Stack {
         protocol: elb.ApplicationProtocol.HTTPS,
         taskImageOptions: {
           taskRole: role,
-          image: ecs.ContainerImage.fromDockerImageAsset(asset),
+          image,
           family: ec2.InstanceClass.BURSTABLE3,
-          environment: {
-            app_redis_url: `redis://${redis.attrRedisEndpointAddress}:${redis.attrRedisEndpointPort}`,
-            app_debug: `false`,
-            app_testing: `false`,
-            cach_type: "redis",
-            cach_redis_url: `redis://${redis.attrRedisEndpointAddress}:${redis.attrRedisEndpointPort}`,
-            database_engine: "PostgresqlDatabase",
-            database_host: database.instanceEndpoint.hostname,
-            database_port: database.instanceEndpoint.port.toString(),
-            database_name: databaseName,
-            database_user: databaseUsername,
-            storage_thumbnails_path: `s3://${bucket.bucketName}/thumbs`,
-            storage_thumbnails_url: `https://${cfnDomainName}/thumbs`,
-            storage_uploads_path: `s3://${bucket.bucketName}/upload`,
-            storage_uploads_url: `https://${cfnDomainName}/upload`,
-          },
-          secrets: {
-            app_secret_key: ecs.Secret.fromSecretsManager(cookieSecret),
-            database_password: ecs.Secret.fromSecretsManager(database.secret!),
-          },
-          containerPort: 5000,
+          environment,
+          secrets,
         },
         publicLoadBalancer: true,
       }
     );
+
+    ecsStack.node.addDependency(redis);
   }
 }

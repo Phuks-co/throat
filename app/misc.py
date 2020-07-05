@@ -51,7 +51,6 @@ engine = Engine(
     extensions=[CoreExtension()]
 )
 
-print(config)
 redis = redis.from_url(config.app.redis_url)
 
 # Regex that matches VALID user and sub names

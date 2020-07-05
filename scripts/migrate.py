@@ -23,4 +23,6 @@ elif args.auto:
 elif args.rollback:
     router.rollback(args.rollback)
 else:
+    print("Migration Start")
     router.run()
+    print("Migration finished")

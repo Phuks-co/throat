@@ -1,7 +1,7 @@
 """ Config manager """
 import os
 import yaml
-
+import json
 
 cfg_defaults = { # key => default value
         "site": {
@@ -67,7 +67,7 @@ class Map(dict):
         anything in sdict or default.
         """
         super(Map, self).__init__(dict(sdict))
-        self.prefix = ('' if prefix is '' else prefix + '_').upper()
+        self.prefix = ('' if prefix == '' else prefix + '_').upper()
 
         # If any values are missing, copy them from defaults.
         # Turn all subdictionaries into Maps as well.
@@ -75,7 +75,7 @@ class Map(dict):
             if isinstance(val, dict):
                 self[key] = Map(self.get(key, {}), val, f'{self.prefix}{key}')
             elif key not in self.keys():
-                self[key] = val;
+                self[key] = val
 
         # Look for environment variables that override values or add additional values.
         if self.prefix != '':
@@ -92,8 +92,17 @@ class Config(Map):
     def __init__(self):
         with open('config.yaml','r') as stream:
             self._cfg = yaml.safe_load(stream)
-        
+
         super(Config, self).__init__(self._cfg, cfg_defaults)
+        if self.database.get("secret", None):
+            for (key, value) in json.loads(self.database.secret).items():
+                if key == "engine": # eventually a mapping here would be nice.
+                    continue
+                self.database[{
+                        "dbname": "name",
+                        "username": "user"
+                    }.get(key, key)] = value
+            del self.database['secret']
 
     def get_flask_dict(self):
         flattened = {}
