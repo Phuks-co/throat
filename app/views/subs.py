@@ -298,6 +298,11 @@ def create_sub():
     except Sub.DoesNotExist:
         pass
 
+    if config.site.sub_creation_admin_only and not current_user.admin:
+        return engine.get_template('sub/create.html').render(
+            {'error': _("Only Site Admins may create new subs. Please contact an administrator to request a new sub.", level=config.site.sub_creation_min_level),
+             'csubform': form})
+
     level = misc.get_user_level(current_user.uid)[0]
     if not config.app.testing and config.site.sub_creation_min_level != 0:
         if (level <= 1) and (not current_user.admin):

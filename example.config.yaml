@@ -25,9 +25,13 @@ site:
   # was created. Set to zero to disable title editing (default is 5 minutes)
   title_edit_timeout: 300
 
-  # If True, enables setting security questions on the admin page. 
+  # If True, enables setting security questions on the admin page.
   # Users will be asked to answer one of these security questions before registering
   enable_security_question: False
+
+  # Only allow Admins to create new subs
+  # If True, only admins can create new subs
+  sub_creation_admin_only: False
 
   # Minimum level a user must have before being able to create a sub.
   # Set to zero to disable sub creation level limits
@@ -94,7 +98,7 @@ storage:
     path: './thumbs'
     # URL or relative path where thumbnails are served (must end with forward slash)
     url: 'https://thumbs.example.com/'
-  
+
   uploads:
     # Same rules as thumbnails
     path: './stor'
@@ -106,7 +110,7 @@ database:
   # - PostgresqlDatabase
   # - SqliteDatabase (untested)
   engine: 'PICK ONE'
-  
+
   # Parameters for both MySQL and postgres
   #host: 'localhost'
   #port: 3306
@@ -117,7 +121,7 @@ database:
 
   # For sqlite:
   #database: '/path/to/sqlite.db'
-  
+
   # Uncomment if using Postgres:
   #autocommit: True
 
