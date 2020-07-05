@@ -15,14 +15,30 @@
     <div class="admin section">
       <div class="col-12 admin-page-form">
         <div class="admin section stats">
-          Count: {{reports.open|length}}
-          <div>
-            {% for report in reports.open %}
-            <div>
-            ID: {{report.id}} | Reported: {{report.datetime}} |
-            </div>
-            {% endfor %}
-          </div>
+          Total Open Reports: {{reports.open|length}}
+
+          <table class="pure-table">
+            <thead>
+              <tr>
+                <td>Time</td>
+                <td>Sub</td>
+                <td>Reported by</td>
+                <td>Reason</td>
+                <td>Post</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for report in reports.open %}
+              <tr>
+                <td>{{report.datetime}}</td>
+                <td>sub</td>
+                <td>{{report.uid}}</td>
+                <td>{{report.reason}}</td>
+                <td>link</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
