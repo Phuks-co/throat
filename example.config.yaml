@@ -83,6 +83,9 @@ cache:
   # - 'simple' (only for testing)
   type: 'redis'
 
+  # Redis to use for websockets and caching (if enabled)
+  redis_url: 'redis://127.0.0.1:6379'
+
 sendgrid:
   # At the moment this is only used to send password recovery
   # emails.
