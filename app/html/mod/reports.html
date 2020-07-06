@@ -27,6 +27,7 @@ Mod |\
                 <th>@{_('User reported')}</th>
                 <th>@{_('Time')}</th>
                 <th>@{_('Link')}</th>
+                <th>@{_('Close')}</th>
               </tr>
             </thead>
             <tbody>
@@ -50,6 +51,7 @@ Mod |\
                   <a href="@{url_for('sub.view_post', sub=report['sub'], pid=report['pid'])}">@{_('Link')}</a>
                 @end
               </td>
+              <td><a data-prid="@{report['prid']!!s}" data-crid="@{report['crid']!!s}" class="close-report">@{_('[x]')}</a></td>
             </tr>
             @end
             </tbody>

@@ -5,7 +5,7 @@ import redis
 import copy
 from flask import g
 from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model, Database
-from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
+from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField, AutoField
 from playhouse.db_url import connect as db_url_connect
 from playhouse.flask_utils import FlaskDB
 from .config import config
@@ -417,6 +417,7 @@ class SubUploads(BaseModel):
 
 
 class SubPostReport(BaseModel):
+    prid = AutoField()
     pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
     uid = ForeignKeyField(db_column='uid', model=User, field='uid')
     datetime = DateTimeField(default=datetime.datetime.now)
@@ -428,6 +429,7 @@ class SubPostReport(BaseModel):
 
 
 class SubPostCommentReport(BaseModel):
+    crid = AutoField()
     cid = ForeignKeyField(db_column='cid', model=SubPostComment, field='cid')
     uid = ForeignKeyField(db_column='uid', model=User, field='uid')
     datetime = DateTimeField(default=datetime.datetime.now)

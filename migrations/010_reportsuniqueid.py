@@ -33,6 +33,6 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
-    migrator.add_fields(migrator.orm['sub_post_report'], open=pw.BooleanField(default=True))
+    migrator.add_fields(migrator.orm['sub_post_report'], prid=pw.AutoField())
 
-    migrator.add_fields(migrator.orm['sub_post_comment_report'], open=pw.BooleanField(default=True))
+    migrator.add_fields(migrator.orm['sub_post_comment_report'], crid=pw.AutoField())
