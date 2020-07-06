@@ -574,7 +574,16 @@ let reportHtml = (data) => '<h2>' + _('Report post') + '</h2>' +
       '<option value="" disabled selected>Select one..</option>' +
       '<option value="spam">' + _('SPAM') + '</option>' +
       '<option value="tos">' + _('TOS violation') + '</option>' +
+      '<option value="rule">' + _('Sub Rule violation') + '</option>' +
       '<option value="other">' + _('Other') + '</option>' +
+    '</select>' +
+  '</div>' +
+  '<div class="pure-control-group" style="display:none" id="report_rule_set">'+
+  '<label for="report_reason">' + _('Which Sub rule did this post violate?') + '</label>' +
+    '<select name="report_rule" id="report_rule">' +
+      '<option value="" disabled selected>Select one..</option>' +
+      '<option value="Sub Rule: rid1">' + _('Rule 1') + '</option>' +
+      '<option value="Sub Rule: rid2">' + _('Rule 2') + '</option>' +
     '</select>' +
   '</div>' +
   '<div class="pure-control-group" style="display:none" id="report_text_set">'+
@@ -606,7 +615,7 @@ u.addEventForChild(document, 'click', '.report-comment', function (e, qelem) {
 });
 
 u.addEventForChild(document, 'change', '#report_reason', function (e, qelem) {
-    if (qelem.value != '' && qelem.value != 'other') {
+    if (qelem.value != '' && qelem.value != 'other' && qelem.value != 'rule') {
         document.getElementById('submit_report').removeAttribute('disabled');
         document.getElementById('report_text_set').style.display = 'none';
     } else if (qelem.value == 'other') {
@@ -614,11 +623,26 @@ u.addEventForChild(document, 'change', '#report_reason', function (e, qelem) {
             document.getElementById('submit_report').setAttribute('disabled', 'true');
         }
         document.getElementById('report_text_set').style.display = 'block';
+        document.getElementById('report_rule_set').style.display = 'none';
+    } else if (qelem.value == 'rule') {
+        if (document.getElementById('report_rule').value == '') {
+            document.getElementById('submit_report').setAttribute('disabled', 'true');
+        }
+        document.getElementById('report_text_set').style.display = 'none';
+        document.getElementById('report_rule_set').style.display = 'block';
     }
 });
 
 u.addEventForChild(document, 'keyup', '#report_text', function (e, qelem) {
     if (qelem.value.length > 3) {
+        document.getElementById('submit_report').removeAttribute('disabled');
+    } else {
+        document.getElementById('submit_report').setAttribute('disabled', 'true');
+    }
+});
+
+u.addEventForChild(document, 'change', '#report_rule', function (e, qelem) {
+    if (qelem.value != '') {
         document.getElementById('submit_report').removeAttribute('disabled');
     } else {
         document.getElementById('submit_report').setAttribute('disabled', 'true');
@@ -634,6 +658,10 @@ u.addEventForChild(document, 'click', '#submit_report', function (e, qelem) {
     if (reason == 'other') {
         reason = document.getElementById('report_text').value;
     }
+    if (reason == 'rule') {
+        reason = document.getElementById('report_rule').value;
+    }
+    console.log('REASON: ' + reason)
 
     qelem.setAttribute('disabled', true);
     let uri = '/do/report';
@@ -645,7 +673,7 @@ u.addEventForChild(document, 'click', '#submit_report', function (e, qelem) {
         function (data) {
             if (data.status != "ok") {
                 errorbox.style.display = 'block';
-                errorbox.innerHTML = _('Error: %s', data.error);
+                errorbox.innerHTML = _('Error: ') + data.error;
                 qelem.removeAttribute('disabled');
             } else {
                 qelem.parentNode.parentNode.parentNode.innerHTML = _('Your report has been sent and will be reviewed by the site administrators.');

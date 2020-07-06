@@ -506,6 +506,7 @@ class SubPostReport(BaseModel):
     uid = ForeignKeyField(db_column='uid', model=User, field='uid')
     datetime = DateTimeField(default=datetime.datetime.now)
     reason = CharField(max_length=128)
+    open = BooleanField(default=True)
 
     def __repr__(self):
         return f'<SubPostReport "{self.reason[:20]}">'
@@ -519,6 +520,7 @@ class SubPostCommentReport(BaseModel):
     uid = ForeignKeyField(db_column='uid', model=User, field='uid')
     datetime = DateTimeField(default=datetime.datetime.now)
     reason = CharField(max_length=128)
+    open = BooleanField(default=True)
 
     def __repr__(self):
         return f'<SubPostCommentReport "{self.reason[:20]}">'
