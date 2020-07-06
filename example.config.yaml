@@ -49,8 +49,11 @@ site:
   daily_site_posting_limit: 25
 
 app:
+  # host to pass to SocketIO when we start the application
+  host: "localhost"
+
   # URL to a working redis server.
-  # Used for websockets and caching (if enabled)
+  # Used for websockets (if enabled)
   redis_url: 'redis://127.0.0.1:6379'
 
   # Secret key used to encrypt session cookies.
@@ -83,6 +86,9 @@ cache:
   # - 'redis' (recommended)
   # - 'simple' (only for testing)
   type: 'redis'
+
+  # Redis to use for caching (if enabled)
+  redis_url: 'redis://127.0.0.1:6379'
 
 sendgrid:
   # At the moment this is only used to send password recovery
