@@ -11,6 +11,9 @@ from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, U
 from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditSubTextPostForm, EditMod2Form, EditSubRule
 from ..forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair, CreateSubFlair, PostComment, CreateSubRule
 from .. import misc
+import json
+from playhouse.shortcuts import model_to_dict
+
 
 sub = Blueprint('sub', __name__)
 
@@ -311,6 +314,7 @@ def view_post(sub, pid, comments=False, highlight=None):
 
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     subInfo = misc.getSubData(sub['sid'])
+    rules = subInfo['rules'].get()
 
     try:
         UserSaved.get((UserSaved.uid == current_user.uid) & (UserSaved.pid == pid))
@@ -358,7 +362,7 @@ def view_post(sub, pid, comments=False, highlight=None):
     return engine.get_template('sub/post.html').render({'post': post, 'sub': sub, 'subInfo': subInfo,
                                                         'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,
                                                         'commentform': PostComment(), 'comments': comments,
-                                                        'subMods': misc.getSubMods(sub['sid']), 'highlight': highlight})
+                                                        'subMods': misc.getSubMods(sub['sid']), 'highlight': highlight, 'rules': json.dumps(model_to_dict(rules), default=str)})
 
 
 @sub.route("/<sub>/<pid>/<cid>")

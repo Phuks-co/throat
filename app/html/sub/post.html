@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods, highlight)
+@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods, highlight, rules)
 @import "sub/postcomments.html" as pcomm
 @import "sub/postpoll.html" as polls
 
@@ -36,7 +36,7 @@
       @{_('edited %(timeago)s', timeago='<time-ago datetime="' + post['edited'].isoformat() + 'Z"></time-ago>')}<br/>
     @end
     @{_('Score: %(score)i <b>(+%(upvotes)i|-%(downvotes)i)</b>', score=post['score'], upvotes=post['upvotes'], downvotes=post['downvotes'])}
-  </div>    
+  </div>
 <hr>
   @include('shared/sidebar/sub.html')
 @end
@@ -134,14 +134,14 @@
           @if post['deleted'] == 0 and post['ptype'] == 3 and pollData['poll_open'] and (post['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in subMods['all']):
               <li><a class="poll-close"> @{_('close poll')} </a></li>
           @end
-            
+
           @if current_user.uid in subMods['all']:
             @if str(post['pid']) in subInfo['sticky']:
               <li><a class="stick-post">@{_('unstick')}</a></li>
             @else:
               <li><a class="stick-post">@{_('make sticky')}</a></li>
             @end
-            
+
             @if str(post['pid']) == subInfo['wiki']:
               <li><a class="wiki-post">@{_('remove wiki')}</a></li>
             @else:
@@ -153,7 +153,7 @@
               @end
             @end
           @end
-          <li><a data-ac="report" class="report-post">@{_('report')}</a></li>
+          <li><a data-ac="report" data-rules='@{rules}' class="report-post">@{_('report')}</a></li>
         @end
       </ul>
     </div>

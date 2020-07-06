@@ -565,7 +565,7 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
         });
 });
 
-let reportHtml = (data) => '<h2>' + _('Report post') + '</h2>' +
+let reportHtml = (data, sub_rules_html) => '<h2>' + _('Report post') + '</h2>' +
     '<p><i>' + _('This report will be forwarded to the site administration') + '</i></p>' +
     '<form class="pure-form pure-form-aligned">' +
     '<div class="pure-control-group">' +
@@ -582,8 +582,7 @@ let reportHtml = (data) => '<h2>' + _('Report post') + '</h2>' +
   '<label for="report_reason">' + _('Which Sub rule did this post violate?') + '</label>' +
     '<select name="report_rule" id="report_rule">' +
       '<option value="" disabled selected>Select one..</option>' +
-      '<option value="Sub Rule: rid1">' + _('Rule 1') + '</option>' +
-      '<option value="Sub Rule: rid2">' + _('Rule 2') + '</option>' +
+      sub_rules_html +
     '</select>' +
   '</div>' +
   '<div class="pure-control-group" style="display:none" id="report_text_set">'+
@@ -597,10 +596,23 @@ let reportHtml = (data) => '<h2>' + _('Report post') + '</h2>' +
 '</form>';
 
 u.addEventForChild(document, 'click', '.report-post', function (e, qelem) {
+    const rules = JSON.parse(qelem.getAttribute('data-rules'));
+    console.log('RULES: ' + rules);
+
+    let sub_rules_html = '';
+
+    [rules].forEach(function(rule) {
+      console.log('RULE:' + rule);
+      let rule_html = '<option value="Sub Rule:' + rule.text + '">' + rule.text + '</option>';
+      sub_rules_html = sub_rules_html + rule_html;
+      console.log('SUB_RULES_HTML:' + sub_rules_html);
+      return sub_rules_html
+    });
+
     const pid = qelem.parentNode.parentNode.parentNode.getAttribute('pid');
     const modal = new Tingle.modal({});
     // set content
-    modal.setContent(reportHtml('data-pid=' + pid));
+    modal.setContent(reportHtml('data-pid=' + pid, 'sub_rules_html=' + sub_rules_html));
     // open modal
     modal.open();
 });
