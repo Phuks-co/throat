@@ -1,4 +1,4 @@
-"""Peewee migrations -- 008_userlang.py.
+"""Peewee migrations -- 009_reportstatus.py.
 
 Some examples (model - class or model name)::
 
