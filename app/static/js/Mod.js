@@ -10,7 +10,6 @@ u.addEventForChild(document, 'click', '.close-report', function (e, qelem) {
   let type = qelem.getAttribute('data-type');
 
   if (type == "comment") {
-    console.log("COMMENT REPORT")
     let uri = '/do/report/close_comment_report/' + id;
     u.post(uri, {},
       function (data) {

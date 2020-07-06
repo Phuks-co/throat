@@ -5,7 +5,7 @@ import redis
 import copy
 from flask import g
 from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model, Database
-from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField, AutoField
+from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
 from playhouse.db_url import connect as db_url_connect
 from playhouse.flask_utils import FlaskDB
 from .config import config

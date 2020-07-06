@@ -12,7 +12,6 @@ import hashlib
 import re
 import gi
 
-
 gi.require_version('GExiv2', '0.10')  # noqa
 from gi.repository import GExiv2
 import bcrypt

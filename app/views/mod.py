@@ -8,10 +8,9 @@ from flask_login import login_required, current_user
 from flask_babel import _
 from .. import misc
 from ..forms import TOTPForm, LogOutForm, UseInviteCodeForm, AssignUserBadgeForm, EditModForm, BanDomainForm
-from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, SubPostCommentVote, SubPostVote, SiteMetadata
+from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, SiteMetadata
 from ..models import User, Sub, SubMod, SubPost, SubPostComment, UserMetadata, SubPostReport, SubPostCommentReport
 from ..misc import engine, getSubReports, getModSubs, engine
-from ..badges import badges
 
 bp = Blueprint('mod', __name__)
 

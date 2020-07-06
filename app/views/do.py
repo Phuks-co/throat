@@ -2204,7 +2204,6 @@ def close_post_report(id):
     if updated_report.open == False:
         return jsonify(status='ok')
     else:
-        print('ERROR')
         return jsonify(status='error', error=_('Failed to close report'))
 
 
@@ -2246,5 +2245,4 @@ def close_comment_report(id):
     if updated_report.open == False:
         return jsonify(status='ok')
     else:
-        print('ERROR')
         return jsonify(status='error', error=_('Failed to close report'))
