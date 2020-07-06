@@ -30,6 +30,7 @@ lxml
 flask-jwt-extended
 captcha
 peewee_migrate
+psycopg2
 pyyaml
 email_validator
 feedgen

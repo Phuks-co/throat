@@ -44,12 +44,14 @@ import logging
 
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
-from wheezy.template.loader import FileLoader
+from wheezy.template.loader import FileLoader, autoreload
 
 engine = Engine(
     loader=FileLoader([os.path.split(__file__)[0] + '/html']),
     extensions=[CoreExtension()]
 )
+if config.app.debug:
+    engine = autoreload(engine)
 
 redis = redis.from_url(config.app.redis_url)
 
