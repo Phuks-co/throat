@@ -95,6 +95,10 @@ class Config(Map):
             self._cfg = yaml.safe_load(stream)
 
         super(Config, self).__init__(self._cfg, cfg_defaults)
+        # This handles a weird issues with how secrets are handled inside ECS
+        # They come in a particular shape, and inside the deployment description
+        # we are unable to pull out smaller parts, so this takes a JSON map as
+        # described nowhere on the internet
         if self.database.get("secret", None):
             for (key, value) in json.loads(self.database.secret).items():
                 if key == "engine": # eventually a mapping here would be nice.

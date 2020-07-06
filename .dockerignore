@@ -7,11 +7,8 @@ cdk*
 !migrations
 !scripts
 
-<<<<<<< HEAD
 !phuks.txt
 !config.yaml
-=======
->>>>>>> phuks/master
 !babel.cfg
 !package.json
 !package-lock.json
