@@ -46,7 +46,7 @@ def login():
         user = User.get(fn.Lower(User.name) == username.lower())
     except User.DoesNotExist:
         return jsonify(msg="Bad username or password"), 401
-
+    
     if user.status != 0:
         return jsonify(msg="Forbidden"), 403
 
@@ -764,7 +764,7 @@ def search_sub():
     query = request.args.get('query', '')
     if len(query) < 3 or not misc.allowedNames.match(query):
         return jsonify(results=[])
-
+    
     query = '%' + query + '%'
     subs = Sub.select(Sub.name).where(Sub.name ** query).limit(10).dicts()
 
@@ -802,10 +802,10 @@ def set_settings():
     settings = request.json.get('settings', None)
     if not settings:
         return jsonify(msg="Missing parameters"), 400
-
+     
     if [x for x in settings.keys() if x not in ['labrat', 'nostyles', 'nsfw', 'nochat']]:
         return jsonify(msg="Invalid setting options sent"), 400
-
+    
     # Apply settings
     qrys = []
     for sett in settings:
@@ -814,8 +814,8 @@ def set_settings():
             if not isinstance(settings[sett], bool):
                 return jsonify(msg="Invalid type for setting"), 400
             value = '1' if value else '0'
-
-
+        
+        
         qrys.append(UserMetadata.update(value=value).where((UserMetadata.key == sett) & (UserMetadata.uid == uid)))
 
     [x.execute() for x in qrys]

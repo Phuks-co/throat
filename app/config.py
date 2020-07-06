@@ -92,7 +92,7 @@ class Config(Map):
     def __init__(self):
         with open('config.yaml','r') as stream:
             self._cfg = yaml.safe_load(stream)
-
+        
         super(Config, self).__init__(self._cfg, cfg_defaults)
 
     def get_flask_dict(self):
