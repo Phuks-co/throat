@@ -25,6 +25,13 @@ site:
   # Set to zero to disable file upload level limits
   upload_min_level: 0
 
+# For those who are allowed to upload files, allow video uploads
+  # (.mp4 and .webm) as well.
+  allow_video_uploads: True
+
+  # Maximum size of an uploaded file, in bytes.
+  upload_max_size: 16777216
+
   # Allow chat access for all users
   # If True, each user will have the option of disabling chat for themselves
   enable_chat: True

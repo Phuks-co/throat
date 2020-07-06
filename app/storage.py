@@ -7,6 +7,7 @@ import gi
 gi.require_version('GExiv2', '0.10')  # noqa
 from gi.repository import GExiv2
 import hashlib
+import jinja2
 
 from flask import request, url_for
 from flask_babel import _
@@ -53,7 +54,7 @@ def clear_metadata(path: str, mime_type: str):
         pass
 
 
-def upload_file(max_size=16777216):
+def upload_file():
     if not current_user.canupload:
         return False, False
 
@@ -65,6 +66,7 @@ def upload_file(max_size=16777216):
         return False, False
 
     mtype = magic.from_buffer(ufile.read(1024), mime=True)
+    extension = None
 
     if mtype == 'image/jpeg':
         extension = '.jpg'
@@ -72,18 +74,26 @@ def upload_file(max_size=16777216):
         extension = '.png'
     elif mtype == 'image/gif':
         extension = '.gif'
-    elif mtype == 'video/mp4':
-        extension = '.mp4'
-    elif mtype == 'video/webm':
-        extension = '.webm'
-    else:
+    elif config.site.allow_video_uploads:
+        if mtype == 'video/mp4':
+            extension = '.mp4'
+        elif mtype == 'video/webm':
+            extension = '.webm'
+
+    if extension is None:
         return _("File type not allowed"), False
+
     ufile.seek(0)
+    size = 0
     md5 = hashlib.md5()
     while True:
         data = ufile.read(65536)
         if not data:
             break
+        size += len(data)
+        if size > config.site.upload_max_size:
+            return _("File size exceeds the maximum allowed size (%(size)s)",
+                     size=human_readable(config.site.upload_max_size)), False
         md5.update(data)
 
     f_name = str(uuid.uuid5(FILE_NAMESPACE, md5.hexdigest())) + extension
@@ -91,10 +101,10 @@ def upload_file(max_size=16777216):
     fpath = os.path.join(config.storage.uploads.path, f_name)
     if not os.path.isfile(fpath):
         ufile.save(fpath)
-        fsize = os.stat(fpath).st_size
-        if fsize > max_size:  # Max file size exceeded
-            os.remove(fpath)
-            return _("File size exceeds the maximum allowed size (%(size)i MB)", size=max_size / 1024 / 1024), False
         # remove metadata
         clear_metadata(fpath, mtype)
     return f_name, True
+
+
+def human_readable(bytes):
+    return jinja2.Template('{{ bytes|filesizeformat }}').render(bytes=bytes)

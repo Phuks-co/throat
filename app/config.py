@@ -16,6 +16,8 @@ cfg_defaults = {  # key => default value
             "enable_security_question": False,
             "cas_authorized_hosts": [],
             "allow_uploads": False,
+            "allow_video_uploads": True,
+            "upload_max_size": 16777216,
             "upload_min_level": 0,
             "enable_chat": True,
             "sitelog_public": True,
