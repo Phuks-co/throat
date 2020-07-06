@@ -4,27 +4,24 @@ import _ from './utils/I18n';
 
 
 u.addEventForChild(document, 'click', '.close-report', function (e, qelem) {
-  let pid = qelem.getAttribute('data-pid');
-  let uri = '/do/report/close_post_report/' + pid;
+  let id = qelem.getAttribute('data-id');
+  let type = qelem.getAttribute('data-type');
+  let uri = '/do/report/close_post_report/' + id;
 
-  if (!pid) {
+  if (type == "comment") {
     console.log("COMMENT REPORT")
     return;
   }
   u.post(uri, {},
       function (data) {
           if (data.status != "ok") {
-              errorbox.style.display = 'block';
-              errorbox.innerHTML = _('Error: %s', data.error);
-              qelem.removeAttribute('disabled');
+            console.log("CLOSED REPORT");
           } else {
-              qelem.parentNode.parentNode.parentNode.innerHTML = _('Your report has been sent and will be reviewed by the site administrators.');
-          }
-      }, function () {
-          errorbox.style.display = 'block';
-          errorbox.innerHTML = _('Could not contact the server');
-          qelem.removeAttribute('disabled');
-      });
-
-  console.log("CLOSED REPORT");
+            console.log("FAILED");
+          }}
+      // }, function () {
+      //     errorbox.style.display = 'block';
+      //     errorbox.innerHTML = _('Could not contact the server');
+      // }
+    );
 });

@@ -84,7 +84,7 @@ def reports(page):
     Reported = User.alias()
     posts_q = SubPostReport.select(
         Value('post').alias('type'),
-        SubPostReport.prid,
+        SubPostReport.id,
         SubPostReport.pid,
         Value(None).alias('cid'),
         User.name.alias('reporter'),
@@ -100,7 +100,7 @@ def reports(page):
 
     comments_q = SubPostCommentReport.select(
         Value('comment').alias('type'),
-        SubPostCommentReport.crid,
+        SubPostCommentReport.id,
         SubPostComment.pid,
         SubPostCommentReport.cid,
         User.name.alias('reporter'),

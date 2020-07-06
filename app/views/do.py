@@ -2171,17 +2171,18 @@ def report_comment():
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
-@do.route('/do/report/close_post_report/<prid>', methods=['POST'])
+@do.route('/do/report/close_post_report/<id>', methods=['POST'])
 @login_required
-def close_post_report(prid):
+def close_post_report(id):
     # sub = Sub.get(Sub.sid == report.sub)
     # Need to auth first just in case, but broken for now
     # if not current_user.is_mod(sub.sid) and not current_user.is_admin():
     #     return jsonify(status='error', error=[_('Not authorized')])
 
     # close the report
-    report = SubPostReport.select(prid)
-    report.update(open=False)
+    report = SubPostReport.select().where(SubPostReport.id == id).get()
+    report.update(open=False).execute()
+    report.save()
 
     return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})

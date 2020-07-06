@@ -51,7 +51,7 @@ Mod |\
                   <a href="@{url_for('sub.view_post', sub=report['sub'], pid=report['pid'])}">@{_('Link')}</a>
                 @end
               </td>
-              <td><a data-prid="@{report['prid']!!s}" data-crid="@{report['crid']!!s}" class="close-report">@{_('[x]')}</a></td>
+              <td><a data-type="@{report['type']}" data-id="@{report['id']!!s}" class="close-report">@{_('[x]')}</a></td>
             </tr>
             @end
             </tbody>

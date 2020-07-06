@@ -417,7 +417,6 @@ class SubUploads(BaseModel):
 
 
 class SubPostReport(BaseModel):
-    prid = AutoField()
     pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
     uid = ForeignKeyField(db_column='uid', model=User, field='uid')
     datetime = DateTimeField(default=datetime.datetime.now)
@@ -429,7 +428,6 @@ class SubPostReport(BaseModel):
 
 
 class SubPostCommentReport(BaseModel):
-    crid = AutoField()
     cid = ForeignKeyField(db_column='cid', model=SubPostComment, field='cid')
     uid = ForeignKeyField(db_column='uid', model=User, field='uid')
     datetime = DateTimeField(default=datetime.datetime.now)
