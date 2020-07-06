@@ -47,6 +47,9 @@ def create_app(config=Config('config.yaml')):
     app.config.update(config.get_flask_dict())
     app.config['WEBPACK_MANIFEST_PATH'] = 'manifest.json'
 
+    if 'STORAGE_ALLOWED_EXTENSIONS' not in app.config:
+        app.config['STORAGE_ALLOWED_EXTENSIONS'] = storage.allowed_extensions
+
     babel.init_app(app)
     jwt.init_app(app)
     webpack.init_app(app)

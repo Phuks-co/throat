@@ -37,7 +37,7 @@ from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, Us
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db, SubPostReport, SubPostCommentReport
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair, InviteCode
 from .models import SubMod, SubBan
-from .storage import thumbnail_url
+from .storage import store_thumbnail, thumbnail_url
 from peewee import JOIN, fn, SQL, NodeList, Value
 import requests
 import logging
@@ -804,12 +804,8 @@ def get_thumbnail(link):
         x, y = im.size
 
     im.thumbnail((70, 70), Image.ANTIALIAS)
-    im.seek(0)
     md5 = hashlib.md5(im.tobytes())
-    filename = str(uuid.uuid5(THUMB_NAMESPACE, md5.hexdigest())) + '.jpg'
-    im.seek(0)
-    if not os.path.isfile(os.path.join(config.storage.thumbnails.path, filename)):
-        im.save(os.path.join(config.storage.thumbnails.path, filename), "JPEG", optimize=True, quality=85)
+    filename = store_thumbnail(im, str(uuid.uuid5(THUMB_NAMESPACE, md5.hexdigest())) )
     im.close()
 
     return filename
