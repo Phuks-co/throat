@@ -57,7 +57,28 @@ def index():
 
     subs = getModSubs(current_user.uid)
 
-    return render_template('mod/mod.html', subs=subs)
+    updated_subs = []
+
+    for sub in subs:
+        # get the sub sid
+        this_sub = Sub.select().where(Sub.sid == sub.sid).get()
+        sid = str(this_sub.sid)
+        # use sid to getSubReports
+        reports = getSubReports(sid)
+        # count open and closed reports
+        open_reports_count = reports['open'].count()
+        closed_reports_count = reports['closed'].count()
+        # add open_report_count and closed_report_count as properties on sub
+
+        updated_sub = {
+            'name': str(this_sub.name) ,
+            'subscribers': str(this_sub.subscribers),
+            'open_reports_count': open_reports_count,
+            'closed_reports_count': closed_reports_count
+        }
+
+        updated_subs = updated_subs + [updated_sub]
+    return render_template('mod/mod.html', subs=updated_subs)
 
 
 @bp.route("/reports", defaults={'page': 1})
@@ -136,7 +157,7 @@ def reports(page):
 @bp.route("/reports/closed/<int:page>")
 @login_required
 def closed(page):
-    """ WIP: Open Closed List """
+    """ WIP: Closed Reports List """
 
     if not current_user.is_mod:
         abort(404)

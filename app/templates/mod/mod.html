@@ -16,7 +16,6 @@
       <div class="col-12 admin-page-form">
         <div class="admin section stats">
           {% for sub in subs %}
-          {% set reports = func.getSubReports(sub.sid)%}
 
           <a href="{{url_for('sub.view_sub', sub=sub.name)}}"><h3>{{sub.name}}</h3></a>
           <table class="pure-table">
@@ -27,11 +26,11 @@
               </tr>
               <tr>
                 <td>Open Reports</td>
-                <td>{{reports.open.count()}}</td>
+                <td>{{sub.open_reports_count}}</td>
               </tr>
               <tr>
                 <td>Closed Reports</td>
-                <td>{{reports.closed.count()}}</td>
+                <td>{{sub.closed_reports_count}}</td>
               </tr>
             </tbody>
           </table>
