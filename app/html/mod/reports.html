@@ -21,6 +21,7 @@ Mod |\
           <table class="pure-table">
             <thead>
               <tr>
+                <th>@{_('Sub')}</th>
                 <th>@{_('Type')}</th>
                 <th>@{_('Reporter')}</th>
                 <th>@{_('Reason')}</th>
@@ -33,6 +34,7 @@ Mod |\
             <tbody>
             @for report in open_reports:
             <tr>
+              <td><div class="sub"><a href="@{ url_for('sub.view_sub', sub=report['sub']) }">@{ report['sub'] }</a></div></td>
               <td>
                 @if report['type'] == 'comment':
                   @{_('Comment')}

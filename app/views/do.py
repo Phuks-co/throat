@@ -2180,10 +2180,8 @@ def close_post_report(id):
     #     return jsonify(status='error', error=[_('Not authorized')])
 
     # close the report
-    report = SubPostReport.select().where(SubPostReport.id == id).get()
-    print('GET REPORT:', report)
-    report.update(open=False).execute()
-    print('EXECUTE UPDATE:', report)
+    report = SubPostReport.update(open=False).where(SubPostReport.id == id).execute()
+    print('EXECUTE REPORT:', report)
 
     #check if it closed
     updated_report = SubPostReport.select().where(SubPostReport.id == id).get()
