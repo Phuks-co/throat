@@ -13,7 +13,7 @@ from wheezy.html.utils import escape_html
 
 from .config import config
 from .forms import LoginForm, LogOutForm, CreateSubForm
-
+from .models import db_init_app
 from .views import do, subs as sub, api3, jwt
 from .views.auth import bp as auth
 from .views.home import bp as home
@@ -43,6 +43,7 @@ login_manager.login_view = 'login'
 def create_app():
     app = Flask(__name__)
     app.jinja_env.cache = {}
+    app.config['THROAT_CONFIG'] = config
     app.config.update(config.get_flask_dict())
     app.config['WEBPACK_MANIFEST_PATH'] = 'manifest.json'
 
@@ -52,6 +53,7 @@ def create_app():
     socketio.init_app(app, message_queue=config.app.redis_url, cors_allowed_origins="*", async_mode="gevent")
     caching.cache.init_app(app)
     login_manager.init_app(app)
+    db_init_app(app)
     # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 
     app.register_blueprint(home)
