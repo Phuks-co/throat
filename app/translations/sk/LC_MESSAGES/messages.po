@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cekni.to\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-06-04 20:42-0300\n"
-"PO-Revision-Date: 2020-06-28 18:02+0200\n"
+"POT-Creation-Date: 2020-07-05 15:29-0300\n"
+"PO-Revision-Date: 2020-07-07 01:27+0200\n"
 "Last-Translator: \n"
 "Language-Team: sk <info@cekni.to>\n"
 "Language: sk\n"
@@ -479,7 +479,7 @@ msgid "Canary"
 msgstr "Canary"
 
 #: app/html/index.html:29 app/html/shared/layout.html:149
-#: app/html/shared/sidebar/home.html:52
+#: app/html/shared/sidebar/home.html:54
 msgid "Donate"
 msgstr "Podporte nás"
 
@@ -511,6 +511,41 @@ msgstr "Predošlé"
 #: app/html/videomodeplayer.html:10
 msgid "Next"
 msgstr "Ďalšie"
+
+#: app/html/admin/reports.html:21
+msgid "Type"
+msgstr "Typ"
+
+#: app/html/admin/reports.html:22
+msgid "Reporter"
+msgstr "Nahlásil(a)"
+
+#: app/html/admin/reports.html:23 app/html/sub/bans.html:50
+#: app/html/sub/bans.html:108
+msgid "Reason"
+msgstr "Dôvod banu"
+
+#: app/html/admin/reports.html:24
+msgid "User reported"
+msgstr "Nahlásený(á)"
+
+#: app/html/admin/reports.html:25 app/html/sub/log.html:11
+msgid "Time"
+msgstr "Čas"
+
+#: app/html/admin/reports.html:26 app/html/admin/reports.html:45
+#: app/html/admin/reports.html:47 app/html/sub/createpost.html:82
+#: app/html/sub/log.html:69
+msgid "Link"
+msgstr "Link"
+
+#: app/html/admin/reports.html:34
+msgid "Comment"
+msgstr "Komentár"
+
+#: app/html/admin/reports.html:36
+msgid "Post"
+msgstr "Príspevok"
 
 #: app/html/admin/totp.html:11
 msgid "Further authentication required"
@@ -730,6 +765,46 @@ msgstr "blokuj skupinu"
 msgid "report"
 msgstr "nahlásiť"
 
+#: app/html/shared/sidebar/admin.html:1
+msgid "Admin"
+msgstr "Admin"
+
+#: app/html/shared/sidebar/admin.html:3
+msgid "Admins"
+msgstr "Admini"
+
+#: app/html/shared/sidebar/admin.html:4
+msgid "Users"
+msgstr "Používatelia"
+
+#: app/html/shared/sidebar/admin.html:5
+msgid "User Badges"
+msgstr "Odznaky"
+
+#: app/html/shared/sidebar/admin.html:7
+msgid "Subs"
+msgstr "Skupiny"
+
+#: app/html/shared/sidebar/admin.html:8
+msgid "Posts"
+msgstr "Príspevky"
+
+#: app/html/shared/sidebar/admin.html:9
+msgid "Reports"
+msgstr "Hlásenia"
+
+#: app/html/shared/sidebar/admin.html:11
+msgid "Uploads"
+msgstr "Uploads"
+
+#: app/html/shared/sidebar/admin.html:12
+msgid "Banned Domains"
+msgstr "Zabanované domény"
+
+#: app/html/shared/sidebar/admin.html:14
+msgid "Site log"
+msgstr "Záznamy"
+
 #: app/html/shared/sidebar/home.html:8 app/html/shared/sidebar/sub.html:15
 msgid "Submit a text post"
 msgstr "Pridaj tému"
@@ -746,19 +821,19 @@ msgstr "Všetky skupiny"
 msgid "Go to random sub"
 msgstr "Náhodná skupina"
 
-#: app/html/shared/sidebar/home.html:13
+#: app/html/shared/sidebar/home.html:15
 msgid "Create a sub"
 msgstr "Vytvor skupinu"
 
-#: app/html/shared/sidebar/home.html:18
+#: app/html/shared/sidebar/home.html:20
 msgid "Top posts in the last 24 hours"
 msgstr "Top príspevky za posledných 24 hodín"
 
-#: app/html/shared/sidebar/home.html:33
+#: app/html/shared/sidebar/home.html:35
 msgid "Sub of the day"
 msgstr "Skupina dňa"
 
-#: app/html/shared/sidebar/home.html:55
+#: app/html/shared/sidebar/home.html:57
 msgid "Site logs"
 msgstr "Záznamy"
 
@@ -767,16 +842,12 @@ msgid "Title search..."
 msgstr "Hľadať v príspevkoch..."
 
 #: app/html/shared/sidebar/sub.html:10
-#, fuzzy
-#| msgid "Only mods can post"
 msgid "Only mods can post."
 msgstr "Prispievať môžu iba moderátori"
 
 #: app/html/shared/sidebar/sub.html:13
-#, fuzzy
-#| msgid "You are currently banned from commenting"
 msgid "You are currently banned from posting."
-msgstr "Momentálne máš ban na komentáre"
+msgstr "Momentálne máš ban na príspevky."
 
 #: app/html/shared/sidebar/sub.html:18
 msgid "Submit a poll"
@@ -941,10 +1012,6 @@ msgstr "Vydaný"
 msgid "User"
 msgstr "Používateľ"
 
-#: app/html/sub/bans.html:50 app/html/sub/bans.html:108
-msgid "Reason"
-msgstr "Dôvod banu"
-
 #: app/html/sub/bans.html:51 app/html/user/settings/invitecode.html:23
 msgid "Expires"
 msgstr "Vyprší"
@@ -1028,10 +1095,6 @@ msgstr "Súbor"
 #: app/html/sub/createpost.html:76
 msgid "Upload a file!"
 msgstr "Nahraj súbor"
-
-#: app/html/sub/createpost.html:82 app/html/sub/log.html:69
-msgid "Link"
-msgstr "Link"
 
 #: app/html/sub/createpost.html:83
 msgid "URL"
@@ -1137,10 +1200,6 @@ msgstr "%%mybackground%%"
 msgid "Sub log for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
 msgstr "Záznamy skupiny <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
 
-#: app/html/sub/log.html:11
-msgid "Time"
-msgstr "Čas"
-
 #: app/html/sub/log.html:13
 msgid "Action"
 msgstr "Akcia"
@@ -1232,10 +1291,9 @@ msgid "[Type %(type)i]"
 msgstr "[Napíš %(type)i]"
 
 #: app/html/sub/post.html:20
-#, fuzzy, python-format
-#| msgid "Posted %(timeago)s by %(user)s"
+#, python-format
 msgid "Posted in %(prefix)s/%(sub)s by %(username)s"
-msgstr "%(timeago)s pridal(a) %(user)s"
+msgstr "Pridal(a) %(username)s v %(prefix)s/%(sub)s"
 
 #: app/html/sub/post.html:33
 #, python-format
@@ -1800,8 +1858,6 @@ msgid "Register now!"
 msgstr "Registruj sa!"
 
 #: app/static/js/main.js:131
-#, fuzzy
-#| msgid "sub not found"
 msgid "No subs found"
 msgstr "skupina sa nenašla"
 
@@ -2292,17 +2348,25 @@ msgstr "Neplatný názov skupiny"
 msgid "Sub is already registered"
 msgstr "Táto skupina už existuje"
 
-#: app/views/subs.py:305
+#: app/views/subs.py:303
+msgid ""
+"Only Site Admins may create new subs. Please contact an administrator to "
+"request a new sub."
+msgstr ""
+"Nové skupiny môže vytvárať len Admin. Ak chceš vytvoriť skupinu, prosím "
+"kontaktuj admina."
+
+#: app/views/subs.py:310
 #, python-format
 msgid "You must be at least level %(level)i."
 msgstr "Musíš mať aspoň level %(level)i."
 
-#: app/views/subs.py:313
+#: app/views/subs.py:318
 #, python-format
 msgid "You cannot own more than %(max)i subs."
 msgstr "Nemôžeš vlastniť viac ako %(max)i skupín."
 
-#: app/views/subs.py:318
+#: app/views/subs.py:323
 #, python-format
 msgid "You cannot own more than %(max)i subs. Try leveling up your account."
 msgstr ""
