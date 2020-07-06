@@ -2174,38 +2174,77 @@ def report_comment():
 @do.route('/do/report/close_post_report/<id>', methods=['POST'])
 @login_required
 def close_post_report(id):
-    # sub = Sub.get(Sub.sid == report.sub)
-    # Need to auth first just in case, but broken for now
-    # if not current_user.is_mod(sub.sid) and not current_user.is_admin():
-    #     return jsonify(status='error', error=[_('Not authorized')])
+    # ensure user is mod or admin and report, post, and sub exist
+    try:
+        report = SubPostReport.get(SubPostReport.id == id)
+    except SubPostReport.DoesNotExist:
+        return jsonify(status='error', error=_('Report does not exist'))
+
+    try:
+        post = SubPost.get(SubPost.pid == report.pid)
+    except SubPost.DoesNotExist:
+        return jsonify(status='error', error=_('Post does not exist'))
+
+    try:
+        sub = Sub.get(Sub.sid == post.sid)
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=_('Sub does not exist'))
+
+    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+        return jsonify(status='error', error=[_('Not authorized')])
+
+    if report.open == False:
+        return jsonify(status='error', error=_('This report has already been closed'))
 
     # close the report
     report = SubPostReport.update(open=False).where(SubPostReport.id == id).execute()
-    print('EXECUTE REPORT:', report)
 
-    #check if it closed
+    #check if it closed and return status
     updated_report = SubPostReport.select().where(SubPostReport.id == id).get()
-    print('PRINT REPORT:', updated_report.open)
     if updated_report.open == False:
-        print('OKAY')
         return jsonify(status='ok')
     else:
         print('ERROR')
-        return jsonify(status='error')
-    # return json.dumps({'status': 'error', 'error': get_errors(form)})
+        return jsonify(status='error', error=_('Failed to close report'))
 
 
-# @do.route('/do/report/close_comment_report/<cid>', methods=['POST'])
-# @login_required
-# def close_comment_report(cid):
-#     sub = Sub.get(Sub.sid == report.sub)
-#
-#     if not current_user.is_mod(sub.sid) and not current_user.is_admin():
-#         return jsonify(status='error', error=[_('Not authorized')])
-#
-#     # close the report
-#     report =
-#     SubPostCommentRCommenteport.update(open=False)
-#
-#     return jsonify(status='ok')
-#     return json.dumps({'status': 'error', 'error': get_errors(form)})
+@do.route('/do/report/close_comment_report/<id>', methods=['POST'])
+@login_required
+def close_comment_report(id):
+    # ensure user is mod or admin and report, post, and sub exist
+    try:
+        report = SubPostCommentReport.get(SubPostCommentReport.id == id)
+    except SubPostCommentReport.DoesNotExist:
+        return jsonify(status='error', error=_('Report does not exist'))
+
+    try:
+        comment = SubPostComment.get(SubPostComment.cid == report.cid)
+    except SubPostCommentReport.DoesNotExist:
+        return jsonify(status='error', error=_('Comment does not exist'))
+
+    try:
+        post = SubPost.get(SubPost.pid == comment.pid)
+    except SubPost.DoesNotExist:
+        return jsonify(status='error', error=_('Post does not exist'))
+
+    try:
+        sub = Sub.get(Sub.sid == post.sid)
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=_('Sub does not exist'))
+
+    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+        return jsonify(status='error', error=[_('Not authorized')])
+
+    if report.open == False:
+        return jsonify(status='error', error=_('This report has already been closed'))
+
+    # close the report
+    report = SubPostCommentReport.update(open=False).where(SubPostCommentReport.id == id).execute()
+
+    #check if it closed and return status
+    updated_report = SubPostCommentReport.select().where(SubPostCommentReport.id == id).get()
+    if updated_report.open == False:
+        return jsonify(status='ok')
+    else:
+        print('ERROR')
+        return jsonify(status='error', error=_('Failed to close report'))

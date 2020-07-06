@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(open_reports, open_report_count)
+@require(open_reports, open_report_count, closed_report_count)
 @def title():
 Mod |\
 @end
@@ -16,7 +16,8 @@ Mod |\
     <div class="admin section">
       <div class="col-12 admin-page-form">
         <div class="admin section stats">
-          Total Open Reports: @open_report_count
+          Total Open Reports: @open_report_count  |  Total Closed Reports: @closed_report_count
+          <div class="div-error error alertbox"></div>
 
           <table class="pure-table">
             <thead>
@@ -27,7 +28,6 @@ Mod |\
                 <th>@{_('Reason')}</th>
                 <th>@{_('User reported')}</th>
                 <th>@{_('Time')}</th>
-                <th>@{_('Link')}</th>
                 <th>@{_('Close')}</th>
               </tr>
             </thead>
@@ -37,22 +37,15 @@ Mod |\
               <td><div class="sub"><a href="@{ url_for('sub.view_sub', sub=report['sub']) }">@{ report['sub'] }</a></div></td>
               <td>
                 @if report['type'] == 'comment':
-                  @{_('Comment')}
+                  <a href="@{url_for('sub.view_perm', sub=report['sub'], cid=report['cid'], pid=report['pid'])}">@{_('Comment')}</a>
                 @else:
-                  @{_('Post')}
+                <a href="@{url_for('sub.view_post', sub=report['sub'], pid=report['pid'])}">@{_('Post')}</a>
                 @end
               </td>
               <td><div class="username"><a href="@{ url_for('user.view', user=report['reporter']) }">@{ report['reporter'] }</a></div></td>
               <td>@{report['reason']!!e}</td>
               <td><div class="username"><a href="@{ url_for('user.view', user=report['reported']) }">@{ report['reported'] }</a></div></td>
               <td><time-ago datetime="@{report['datetime'].isoformat()}Z"></time-ago></td>
-              <td>
-                @if report['type'] == 'comment':
-                  <a href="@{url_for('sub.view_perm', sub=report['sub'], cid=report['cid'], pid=report['pid'])}">@{_('Link')}</a>
-                @else:
-                  <a href="@{url_for('sub.view_post', sub=report['sub'], pid=report['pid'])}">@{_('Link')}</a>
-                @end
-              </td>
               <td><a data-type="@{report['type']}" data-id="@{report['id']!!s}" class="close-report">@{_('[x]')}</a></td>
             </tr>
             @end

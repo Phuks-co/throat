@@ -95,8 +95,11 @@ def reports(page):
         Sub.name.alias('sub')
     ).join(User, on=User.uid == SubPostReport.uid) \
         .switch(SubPostReport).join(SubPost).join(Sub).where(isSubMod(Sub.sid, mod_subs) == True) \
-        .join(Reported, on=Reported.uid == SubPost.uid) \
-        .where(SubPostReport.open == True)
+        .join(Reported, on=Reported.uid == SubPost.uid)
+
+    open_posts_q = posts_q.where(SubPostReport.open == True)
+    closed_posts_q = posts_q.where(SubPostReport.open == False)
+
 
     comments_q = SubPostCommentReport.select(
         Value('comment').alias('type'),
@@ -111,13 +114,20 @@ def reports(page):
         Sub.name.alias('sub')
     ).join(User, on=User.uid == SubPostCommentReport.uid) \
         .switch(SubPostCommentReport).join(SubPostComment).join(SubPost).join(Sub).where(isSubMod(Sub.sid, mod_subs) == True) \
-        .join(Reported, on=Reported.uid == SubPostComment.uid) \
-        .where(SubPostCommentReport.open == True)
+        .join(Reported, on=Reported.uid == SubPostComment.uid)
 
-    query = posts_q | comments_q
-    query = query.order_by(query.c.datetime.desc())
-    open_report_count = query.count()
-    query = query.paginate(page, 50)
+    open_comments_q = comments_q.where(SubPostCommentReport.open == True)
+    closed_comments_q = comments_q.where(SubPostCommentReport.open == False)
+
+    open_query = open_posts_q | open_comments_q
+    open_query = open_query.order_by(open_query.c.datetime.desc())
+    open_report_count = open_query.count()
+
+    closed_query = closed_posts_q | closed_comments_q
+    closed_query = closed_query.order_by(closed_query.c.datetime.desc())
+    closed_report_count = closed_query.count()
+
+    open_query = open_query.paginate(page, 50)
 
     return engine.get_template('mod/reports.html').render(
-        {'open_reports': list(query.dicts()), 'open_report_count': str(open_report_count)})
+        {'open_reports': list(open_query.dicts()), 'open_report_count': str(open_report_count), 'closed_report_count': str(closed_report_count)})

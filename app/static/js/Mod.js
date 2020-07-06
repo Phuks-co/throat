@@ -4,24 +4,40 @@ import _ from './utils/I18n';
 
 
 u.addEventForChild(document, 'click', '.close-report', function (e, qelem) {
+  const errorbox = document.querySelector('.error');
+
   let id = qelem.getAttribute('data-id');
   let type = qelem.getAttribute('data-type');
-  let uri = '/do/report/close_post_report/' + id;
 
   if (type == "comment") {
     console.log("COMMENT REPORT")
-    return;
-  }
-  u.post(uri, {},
+    let uri = '/do/report/close_comment_report/' + id;
+    u.post(uri, {},
       function (data) {
-          if (data.status == "ok") {
-            console.log("CLOSED REPORT");
+          if (data.status != "ok") {
+            errorbox.style.display = 'block';
+            errorbox.innerHTML = _('Error:') + data.error;
           } else {
-            console.log("FAILED");
-          }}
-      // }, function () {
-      //     errorbox.style.display = 'block';
-      //     errorbox.innerHTML = _('Could not contact the server');
-      // }
-    );
+              window.location.reload();
+          }
+      }, function () {
+          errorbox.style.display = 'block';
+          errorbox.innerHTML = _('Could not contact the server');
+      });
+  }
+  else {
+    let uri = '/do/report/close_post_report/' + id;
+    u.post(uri, {},
+      function (data) {
+          if (data.status != "ok") {
+            errorbox.style.display = 'block';
+            errorbox.innerHTML = _('Error:') + data.error;
+          } else {
+              window.location.reload();
+          }
+      }, function () {
+          errorbox.style.display = 'block';
+          errorbox.innerHTML = _('Could not contact the server');
+      });
+    }
 });
