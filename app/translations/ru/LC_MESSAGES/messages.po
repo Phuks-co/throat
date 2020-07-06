@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Throat 1.0\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-06-04 20:42-0300\n"
+"POT-Creation-Date: 2020-07-05 15:29-0300\n"
 "PO-Revision-Date: 2020-05-31 13:47+0300\n"
 "Last-Translator: \n"
 "Language: ru_RU\n"
@@ -475,7 +475,7 @@ msgid "Canary"
 msgstr "Другое"
 
 #: app/html/index.html:29 app/html/shared/layout.html:149
-#: app/html/shared/sidebar/home.html:52
+#: app/html/shared/sidebar/home.html:54
 msgid "Donate"
 msgstr "Поддержите"
 
@@ -507,6 +507,41 @@ msgstr "Назад"
 #: app/html/videomodeplayer.html:10
 msgid "Next"
 msgstr "Далее"
+
+#: app/html/admin/reports.html:21
+msgid "Type"
+msgstr ""
+
+#: app/html/admin/reports.html:22
+msgid "Reporter"
+msgstr ""
+
+#: app/html/admin/reports.html:23 app/html/sub/bans.html:50
+#: app/html/sub/bans.html:108
+msgid "Reason"
+msgstr ""
+
+#: app/html/admin/reports.html:24
+msgid "User reported"
+msgstr ""
+
+#: app/html/admin/reports.html:25 app/html/sub/log.html:11
+msgid "Time"
+msgstr "Время"
+
+#: app/html/admin/reports.html:26 app/html/admin/reports.html:45
+#: app/html/admin/reports.html:47 app/html/sub/createpost.html:82
+#: app/html/sub/log.html:69
+msgid "Link"
+msgstr "Ссылка"
+
+#: app/html/admin/reports.html:34
+msgid "Comment"
+msgstr ""
+
+#: app/html/admin/reports.html:36
+msgid "Post"
+msgstr ""
 
 #: app/html/admin/totp.html:11
 msgid "Further authentication required"
@@ -724,6 +759,46 @@ msgstr "блокировать саб"
 msgid "report"
 msgstr "флаг"
 
+#: app/html/shared/sidebar/admin.html:1
+msgid "Admin"
+msgstr ""
+
+#: app/html/shared/sidebar/admin.html:3
+msgid "Admins"
+msgstr ""
+
+#: app/html/shared/sidebar/admin.html:4
+msgid "Users"
+msgstr ""
+
+#: app/html/shared/sidebar/admin.html:5
+msgid "User Badges"
+msgstr ""
+
+#: app/html/shared/sidebar/admin.html:7
+msgid "Subs"
+msgstr ""
+
+#: app/html/shared/sidebar/admin.html:8
+msgid "Posts"
+msgstr ""
+
+#: app/html/shared/sidebar/admin.html:9
+msgid "Reports"
+msgstr ""
+
+#: app/html/shared/sidebar/admin.html:11
+msgid "Uploads"
+msgstr ""
+
+#: app/html/shared/sidebar/admin.html:12
+msgid "Banned Domains"
+msgstr ""
+
+#: app/html/shared/sidebar/admin.html:14
+msgid "Site log"
+msgstr ""
+
 #: app/html/shared/sidebar/home.html:8 app/html/shared/sidebar/sub.html:15
 msgid "Submit a text post"
 msgstr "Добавить текст"
@@ -740,19 +815,19 @@ msgstr "Посмотреть сабы"
 msgid "Go to random sub"
 msgstr "Случайный саб"
 
-#: app/html/shared/sidebar/home.html:13
+#: app/html/shared/sidebar/home.html:15
 msgid "Create a sub"
 msgstr "Создать саб"
 
-#: app/html/shared/sidebar/home.html:18
+#: app/html/shared/sidebar/home.html:20
 msgid "Top posts in the last 24 hours"
 msgstr "Горячее за 24 часа"
 
-#: app/html/shared/sidebar/home.html:33
+#: app/html/shared/sidebar/home.html:35
 msgid "Sub of the day"
 msgstr "Сабы за день"
 
-#: app/html/shared/sidebar/home.html:55
+#: app/html/shared/sidebar/home.html:57
 msgid "Site logs"
 msgstr "Журналы"
 
@@ -929,10 +1004,6 @@ msgstr "Создан"
 msgid "User"
 msgstr "Участник"
 
-#: app/html/sub/bans.html:50 app/html/sub/bans.html:108
-msgid "Reason"
-msgstr ""
-
 #: app/html/sub/bans.html:51 app/html/user/settings/invitecode.html:23
 msgid "Expires"
 msgstr ""
@@ -1016,10 +1087,6 @@ msgstr "Файл"
 #: app/html/sub/createpost.html:76
 msgid "Upload a file!"
 msgstr "Загрузите файл!"
-
-#: app/html/sub/createpost.html:82 app/html/sub/log.html:69
-msgid "Link"
-msgstr "Ссылка"
 
 #: app/html/sub/createpost.html:83
 msgid "URL"
@@ -1123,10 +1190,6 @@ msgstr ""
 #, python-format
 msgid "Sub log for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
 msgstr "Логи саба <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
-
-#: app/html/sub/log.html:11
-msgid "Time"
-msgstr "Время"
 
 #: app/html/sub/log.html:13
 msgid "Action"
@@ -2265,17 +2328,23 @@ msgstr "Неверное имя"
 msgid "Sub is already registered"
 msgstr "Саб уже зарегистрирован"
 
-#: app/views/subs.py:305
+#: app/views/subs.py:303
+msgid ""
+"Only Site Admins may create new subs. Please contact an administrator to "
+"request a new sub."
+msgstr ""
+
+#: app/views/subs.py:310
 #, python-format
 msgid "You must be at least level %(level)i."
 msgstr "Вы должны быть по крайней мере ровными Lx %(level)i."
 
-#: app/views/subs.py:313
+#: app/views/subs.py:318
 #, python-format
 msgid "You cannot own more than %(max)i subs."
 msgstr "Вы не можете владеть больше чем %(max)i сабов."
 
-#: app/views/subs.py:318
+#: app/views/subs.py:323
 #, python-format
 msgid "You cannot own more than %(max)i subs. Try leveling up your account."
 msgstr "Вы не можете владеть больше чем %(max)i сабов."

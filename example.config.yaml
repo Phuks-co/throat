@@ -1,3 +1,8 @@
+# Any value in this file can be overridden by an environment variable
+# named using the keys, in upper case, joined by underscores.  So for
+# example, if the environment variable $SITE_NAME is set, its value
+# will be used instead of the site name declared below.
+
 site:
   name: 'čekni.to'
   # Lema shown in the page's title
@@ -20,9 +25,13 @@ site:
   # was created. Set to zero to disable title editing (default is 5 minutes)
   title_edit_timeout: 300
 
-  # If True, enables setting security questions on the admin page. 
+  # If True, enables setting security questions on the admin page.
   # Users will be asked to answer one of these security questions before registering
   enable_security_question: False
+
+  # Only allow Admins to create new subs
+  # If True, only admins can create new subs
+  sub_creation_admin_only: False
 
   # Minimum level a user must have before being able to create a sub.
   # Set to zero to disable sub creation level limits
@@ -40,8 +49,11 @@ site:
   daily_site_posting_limit: 25
 
 app:
+  # host to pass to SocketIO when we start the application
+  host: "localhost"
+
   # URL to a working redis server.
-  # Used for websockets and caching (if enabled)
+  # Used for websockets (if enabled)
   redis_url: 'redis://127.0.0.1:6379'
 
   # Secret key used to encrypt session cookies.
@@ -75,6 +87,9 @@ cache:
   # - 'redis' (recommended)
   # - 'simple' (only for testing)
   type: 'redis'
+
+  # Redis to use for caching (if enabled)
+  redis_url: 'redis://127.0.0.1:6379'
 
 sendgrid:
   # At the moment this is only used to send password recovery
@@ -114,7 +129,7 @@ database:
 
   # For sqlite:
   #database: '/path/to/sqlite.db'
-  
+
   # Uncomment if using Postgres:
   autocommit: True
 
