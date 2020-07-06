@@ -6,6 +6,11 @@ services:
       POSTGRES_USER: throat
       POSTGRES_PASSWORD: dev
       POSTGRES_DATABASE: throat
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   redis:
     image: redis
   throat:
@@ -46,3 +51,4 @@ services:
       - ./config.yaml:/throat/config.yaml
     depends_on:
       - db
+    restart: on-failure
