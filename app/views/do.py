@@ -20,7 +20,7 @@ from flask_babel import _
 from ..config import config
 from .. import forms, misc, caching
 from ..socketio import socketio
-from ..forms import LogOutForm, CreateSubFlair, DummyForm
+from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm, ChangePasswordForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
@@ -33,7 +33,7 @@ from ..misc import cache, sendMail, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata, UserSaved
 from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
-from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport
+from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport, SubRule
 from peewee import fn, JOIN
 
 do = Blueprint('do', __name__)
@@ -1407,6 +1407,31 @@ def create_flair(sub):
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
+
+@do.route("/do/rule/<sub>/delete", methods=['POST'])
+@login_required
+def delete_rule(sub):
+    """ Removes a rule (from edit rule page) """
+    try:
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=[_('Sub does not exist')])
+
+    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
+        abort(403)
+
+    form = DeleteSubRule()
+    if form.validate():
+        try:
+            rule = SubRule.get((SubRule.sid == sub.sid) & (SubRule.rid == form.rule.data))
+        except SubRule.DoesNotExist:
+            return jsonify(status='error', error=[_('Rule does not exist')])
+
+        flair.delete_instance()
+        return jsonify(status='ok')
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
 @do.route("/do/rule/<sub>/create", methods=['POST'])
 @login_required
 def create_rule(sub):
@@ -1425,7 +1450,7 @@ def create_rule(sub):
         if not allowed_rules.match(form.text.data):
             return jsonify(status='error', error=[_('Rule has invalid characters')])
 
-        SubFlair.create(sid=sub.sid, text=form.text.data)
+        SubRule.create(sid=sub.sid, text=form.text.data)
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 

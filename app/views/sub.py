@@ -7,9 +7,9 @@ from feedgen.feed import FeedGenerator
 from peewee import fn, JOIN
 from ..misc import engine
 from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption
-from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, UserSaved, SubMod, SubBan
-from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditSubTextPostForm, EditMod2Form
-from ..forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair, CreateSubFlair, PostComment
+from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, UserSaved, SubMod, SubBan, SubRule
+from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditSubTextPostForm, EditMod2Form, EditSubRule
+from ..forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair, CreateSubFlair, PostComment, CreateSubRule
 from .. import misc
 
 sub = Blueprint('sub', __name__)
@@ -84,6 +84,26 @@ def edit_sub_flairs(sub):
                            createflair=CreateSubFlair())
 
 
+@sub.route("/<sub>/edit/rules")
+@login_required
+def edit_sub_rules(sub):
+    """ Here we manage the sub's rules. """
+    try:
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+    except Sub.DoesNotExist:
+        abort(404)
+
+    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
+        abort(403)
+
+    rules = SubRule.select().where(SubRule.sid == sub.sid).dicts()
+    formrules = []
+    for rule in rules:
+        formrules.append(EditSubRule(rule=rule['rid'], text=rule['text']))
+    return render_template('editrules.html', sub=sub, rules=formrules,
+                           createrule=CreateSubRule())
+
+
 @sub.route("/<sub>/edit")
 @login_required
 def edit_sub(sub):
@@ -152,7 +172,7 @@ def sub_new_rss(sub):
     fg.title('New posts from ' + sub.name)
     fg.link(href=request.url_root, rel='alternate')
     fg.link(href=request.url, rel='self')
-    
+
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub.sid),
                             'new', 1).dicts()
 
@@ -208,7 +228,7 @@ def view_sub_bans(sub):
 
     xbans = SubBan.select(user, created_by, SubBan.created, SubBan.reason, SubBan.expires)
     xbans = xbans.join(user, on=SubBan.uid).switch(SubBan).join(created_by, JOIN.LEFT_OUTER, on=SubBan.created_by_id)
-    
+
     xbans = xbans.where(SubBan.sid == sub.sid)
     xbans = xbans.where((SubBan.effective == False) | ((SubBan.expires.is_null(False)) & (SubBan.expires < datetime.datetime.utcnow()) ))
     xbans = xbans.order_by(SubBan.created.is_null(True), SubBan.created.desc(), SubBan.expires.asc())
@@ -288,7 +308,7 @@ def view_post(sub, pid, comments=False, highlight=None):
         abort(403)
     if post['sub'].lower() != sub.lower():
         abort(404)
-    
+
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     subInfo = misc.getSubData(sub['sid'])
 
@@ -324,7 +344,7 @@ def view_post(sub, pid, comments=False, highlight=None):
                 pollData['voted_for'] = u_vote.vid_id
             except SubPostPollVote.DoesNotExist:
                 pollData['has_voted'] = False
-            
+
         # Check if the poll is open
         pollData['poll_open'] = True
         if 'poll_closed' in postmeta:
@@ -349,7 +369,7 @@ def view_perm(sub, pid, cid):
         the_comment = SubPostComment.select().where(SubPostComment.cid == cid).dicts()[0]
     except (SubPostComment.DoesNotExist, IndexError):
         abort(404)
-    
+
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
     if not comments.count():
         comments = []
