@@ -2181,11 +2181,20 @@ def close_post_report(id):
 
     # close the report
     report = SubPostReport.select().where(SubPostReport.id == id).get()
+    print('GET REPORT:', report)
     report.update(open=False).execute()
-    report.save()
+    print('EXECUTE UPDATE:', report)
 
-    return jsonify(status='ok')
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
+    #check if it closed
+    updated_report = SubPostReport.select().where(SubPostReport.id == id).get()
+    print('PRINT REPORT:', updated_report.open)
+    if updated_report.open == False:
+        print('OKAY')
+        return jsonify(status='ok')
+    else:
+        print('ERROR')
+        return jsonify(status='error')
+    # return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 # @do.route('/do/report/close_comment_report/<cid>', methods=['POST'])

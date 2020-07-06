@@ -14,7 +14,7 @@ u.addEventForChild(document, 'click', '.close-report', function (e, qelem) {
   }
   u.post(uri, {},
       function (data) {
-          if (data.status != "ok") {
+          if (data.status == "ok") {
             console.log("CLOSED REPORT");
           } else {
             console.log("FAILED");
