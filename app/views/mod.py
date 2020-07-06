@@ -55,7 +55,7 @@ def index():
     if not current_user.is_mod:
         abort(404)
 
-    subs = getModSubs(current_user.uid)
+    subs = getModSubs(current_user.uid, 1)
 
     updated_subs = []
 
@@ -90,7 +90,7 @@ def reports(page):
     if not current_user.is_mod:
         abort(404)
 
-    mod_subs = getModSubs(current_user.uid)
+    mod_subs = getModSubs(current_user.uid, 1)
 
     def isSubMod(sid, mod_subs):
         # return True if current user is Mod of sub given a post ID
@@ -162,7 +162,7 @@ def closed(page):
     if not current_user.is_mod:
         abort(404)
 
-    mod_subs = getModSubs(current_user.uid)
+    mod_subs = getModSubs(current_user.uid, 1)
 
     def isSubMod(sid, mod_subs):
         # return True if current user is Mod of sub given a post ID
