@@ -55,7 +55,7 @@ cfg_defaults = {  # key => default value
             "provider": 'LOCAL',
             "acl": "private",
             "server": False,
-            "server_url": '/files',
+            "server_url": '/files/',
             "thumbnails":{
                 "path": './thumbs',
                 "url": 'https://thumbnails.shitposting.space/',
@@ -146,6 +146,11 @@ class Config(Map):
 
         # These values are used by flask_cloudy.
         self.storage.acl = '' if self.storage.acl is None else self.storage.acl
+        if 'server_url' in self.storage:
+            # flask-cloudy does not want the trailing slash
+            self.storage['server_url'] = self.storage['server_url'][:-1]
+        self.storage.thumbnails.url = '' if self.storage.thumbnails.url is None else self.storage.thumbnails.url
+        self.storage.uploads.url = '' if self.storage.uploads.url is None else self.storage.uploads.url
         for key in ['provider', 'key', 'secret', 'server', 'server_url']:
             if key in self.storage:
                 flattened[f'STORAGE_{key}'.upper()] = self.storage[key]

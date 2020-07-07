@@ -28,14 +28,14 @@ storage = Storage()
 def make_url(storage, cfg, name):
     if name is None or name is '':
         return url_for('static', filename='file-not-found.png')
-    if config.storage.provider == 'LOCAL' and not config.storage.server:
-        return cfg.url + name
-    else:
+    if config.storage.provider == 'LOCAL' and config.storage.server:
         obj = storage.get(name)
         if obj is None:
             return url_for('static', filename='file-not-found.png')
         else:
             return obj.url
+    else:
+        return cfg.url + name
 
 
 def file_url(name):
