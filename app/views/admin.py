@@ -331,7 +331,7 @@ def reports(page):
         SubPostReport.reason,
         SubPostReport.open,
         Sub.name.alias('sub')
-    ).where((SubPostReport.reason == 'tos') | (SubPostReport.reason == 'spam')) \
+    ).where(SubPostReport.send_to_admin == True) \
         .join(User, on=User.uid == SubPostReport.uid) \
         .switch(SubPostReport).join(SubPost).join(Sub) \
         .join(Reported, on=Reported.uid == SubPost.uid)
@@ -350,7 +350,7 @@ def reports(page):
         SubPostCommentReport.reason,
         SubPostCommentReport.open,
         Sub.name.alias('sub')
-    ).where((SubPostCommentReport.reason == 'tos') | (SubPostCommentReport.reason == 'spam')) \
+    ).where(SubPostCommentReport.send_to_admin == True) \
         .join(User, on=User.uid == SubPostCommentReport.uid) \
         .switch(SubPostCommentReport).join(SubPostComment).join(SubPost).join(Sub) \
         .join(Reported, on=Reported.uid == SubPostComment.uid)

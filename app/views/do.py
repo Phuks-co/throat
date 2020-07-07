@@ -2169,12 +2169,12 @@ def report():
             return jsonify(status='error', error=_('Report reason too short.'))
 
         # do the reporting.
-        SubPostReport.create(pid=post['pid'], uid=current_user.uid, reason=form.reason.data)
+        SubPostReport.create(pid=post['pid'], uid=current_user.uid, reason=form.reason.data, send_to_admin=form.send_to_admin.data)
         if callbacks_enabled:
             # callbacks!
             cb = getattr(callbacks, 'ON_POST_REPORT', False)
             if cb:
-                cb(post, current_user, form.reason.data)
+                cb(post, current_user, form.reason.data, form.send_to_admin.data)
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
@@ -2209,12 +2209,12 @@ def report_comment():
             return jsonify(status='error', error=_('Report reason too short.'))
 
         # do the reporting.
-        SubPostCommentReport.create(cid=comm.cid, uid=current_user.uid, reason=form.reason.data)
+        SubPostCommentReport.create(cid=comm.cid, uid=current_user.uid, reason=form.reason.data, send_to_admin=form.send_to_admin.data)
         # callbacks!
         if callbacks_enabled:
             cb = getattr(callbacks, 'ON_COMMENT_REPORT', False)
             if cb:
-                cb(comm, current_user, form.reason.data)
+                cb(comm, current_user, form.reason.data, form.send_to_admin.data)
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 

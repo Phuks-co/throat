@@ -507,6 +507,7 @@ class SubPostReport(BaseModel):
     datetime = DateTimeField(default=datetime.datetime.now)
     reason = CharField(max_length=128)
     open = BooleanField(default=True)
+    send_to_admin = BooleanField(default=True)
 
     def __repr__(self):
         return f'<SubPostReport "{self.reason[:20]}">'
@@ -521,6 +522,7 @@ class SubPostCommentReport(BaseModel):
     datetime = DateTimeField(default=datetime.datetime.now)
     reason = CharField(max_length=128)
     open = BooleanField(default=True)
+    send_to_admin = BooleanField(default=True)
 
     def __repr__(self):
         return f'<SubPostCommentReport "{self.reason[:20]}">'

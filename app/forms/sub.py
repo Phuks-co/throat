@@ -64,7 +64,7 @@ class CreateSubRule(FlaskForm):
 
 class EditSubRule(FlaskForm):
     """ Edits ONE rule from a sub """
-    flair = HiddenField()
+    rule = HiddenField()
     text = StringField(_l('Rule text'), validators=[DataRequired(), Length(max=22)])
 
 
@@ -152,6 +152,7 @@ class DeletePost(FlaskForm):
     """ Post deletion form. """
     post = HiddenField()
     reason = StringField()
+    send_to_admin = BooleanField()
 
 
 class VoteForm(FlaskForm):

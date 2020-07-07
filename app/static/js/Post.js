@@ -674,18 +674,19 @@ u.addEventForChild(document, 'click', '#submit_report', function (e, qelem) {
 
     const errorbox = qelem.parentNode.querySelector('.error');
 
+    let send_to_admin = true;
     let reason = document.getElementById('report_reason').value;
     if (reason == 'other') {
         reason = document.getElementById('report_text').value;
     }
     if (reason == 'rule') {
+      send_to_admin = false;
       if (document.getElementById('report_rule').value == "other sub rule") {
         reason = "Sub Rule: " + document.getElementById('report_text').value;
       } else {
         reason = document.getElementById('report_rule').value;
       }
     }
-    console.log('REASON: ' + reason)
 
     qelem.setAttribute('disabled', true);
     let uri = '/do/report';
@@ -693,7 +694,7 @@ u.addEventForChild(document, 'click', '#submit_report', function (e, qelem) {
         pid = qelem.getAttribute('data-cid');
         uri = '/do/report/comment';
     }
-    u.post(uri, {post: pid, reason: reason},
+    u.post(uri, {post: pid, reason: reason, send_to_admin: send_to_admin},
         function (data) {
             if (data.status != "ok") {
                 errorbox.style.display = 'block';
