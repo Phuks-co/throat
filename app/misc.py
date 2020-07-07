@@ -53,8 +53,6 @@ engine = Engine(
 if config.app.debug:
     engine = autoreload(engine)
 
-redis = redis.from_url(config.app.redis_url)
-
 # Regex that matches VALID user and sub names
 allowedNames = re.compile("^[a-zA-Z0-9_-]+$")
 WHITESPACE = "\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007" \
@@ -275,13 +273,13 @@ class RateLimit(object):
         self.limit = limit
         self.per = per
         self.send_x_headers = send_x_headers
-        p = redis.pipeline()
+        p = rconn.pipeline()
         p.incr(self.key)
         p.expireat(self.key, self.reset + self.expiration_window)
         self.current = min(p.execute()[0], limit)
 
     def decr(self):
-        p = redis.pipeline()
+        p = rconn.pipeline()
         p.decr(self.key)
         p.expireat(self.key, self.reset + self.expiration_window)
         self.current = min(p.execute()[0], self.limit)
@@ -342,7 +340,7 @@ def ratelimit(limit, per=300, send_x_headers=True,
 def reset_ratelimit(per, scope_func=lambda: get_ip(), key_func=lambda: request.endpoint):
     reset = (int(time.time()) // per) * per + per
     key = 'rate-limit/%s/%s/%s' % (key_func(), scope_func(), reset)
-    redis.delete(key)
+    rconn.delete(key)
 
 
 def safeRequest(url, recieve_timeout=10):

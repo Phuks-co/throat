@@ -2,17 +2,15 @@
 import datetime
 import functools
 import sys
-import redis
 import copy
 from flask import g
+from flask_redis import FlaskRedis
 from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model, Database
 from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
 from playhouse.db_url import connect as db_url_connect
 from playhouse.flask_utils import FlaskDB
-from .config import config
 
-# Why not here? >_>
-rconn = redis.from_url(config.app.redis_url)
+rconn = FlaskRedis()
 
 db = Proxy()
 
