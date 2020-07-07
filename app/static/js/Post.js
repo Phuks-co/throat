@@ -656,12 +656,18 @@ u.addEventForChild(document, 'keyup', '#report_text', function (e, qelem) {
 });
 
 u.addEventForChild(document, 'change', '#report_rule', function (e, qelem) {
-    if (qelem.value != '') {
-        document.getElementById('submit_report').removeAttribute('disabled');
-    } else {
-        document.getElementById('submit_report').setAttribute('disabled', 'true');
-    }
+  if (qelem.value == 'other sub rule') {
+      if (document.getElementById('report_text').value.length < 3) {
+          document.getElementById('submit_report').setAttribute('disabled', 'true');
+      }
+      document.getElementById('report_text_set').style.display = 'block';
+  } else if (qelem.value != '') {
+    document.getElementById('submit_report').removeAttribute('disabled');
+  } else {
+      document.getElementById('submit_report').setAttribute('disabled', 'true');
+  }
 });
+
 
 u.addEventForChild(document, 'click', '#submit_report', function (e, qelem) {
     let pid = qelem.getAttribute('data-pid');
@@ -673,7 +679,11 @@ u.addEventForChild(document, 'click', '#submit_report', function (e, qelem) {
         reason = document.getElementById('report_text').value;
     }
     if (reason == 'rule') {
+      if (document.getElementById('report_rule').value == "other sub rule") {
+        reason = "Sub Rule: " + document.getElementById('report_text').value;
+      } else {
         reason = document.getElementById('report_rule').value;
+      }
     }
     console.log('REASON: ' + reason)
 

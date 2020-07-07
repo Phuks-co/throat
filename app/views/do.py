@@ -26,7 +26,7 @@ from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
-from ..forms import DeleteSubFlair, BanDomainForm
+from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
 from ..misc import cache, sendMail, allowedNames, get_errors, engine
@@ -1414,6 +1414,7 @@ def delete_rule(sub):
     """ Removes a rule (from edit rule page) """
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+        print('>>>>SUB: ', sub)
     except Sub.DoesNotExist:
         return jsonify(status='error', error=[_('Sub does not exist')])
 
@@ -1426,8 +1427,7 @@ def delete_rule(sub):
             rule = SubRule.get((SubRule.sid == sub.sid) & (SubRule.rid == form.rule.data))
         except SubRule.DoesNotExist:
             return jsonify(status='error', error=[_('Rule does not exist')])
-
-        flair.delete_instance()
+        rule.delete_instance()
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 

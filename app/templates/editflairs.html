@@ -5,13 +5,14 @@
   <li class="large"><a href="{{url_for('sub.view_sub', sub=sub.name)}}">/{{config.site.sub_prefix}}/{{sub.name}}</a></li>
 </ul>
 {% endblock %}
-{% block content %}
-{{ super() }}
 
 {% block sidebar %}
 {{ super() }}
 {% include 'mod/sidebar.html' %}
 {% endblock %}
+
+{% block content %}
+{{ super() }}
 
 {% if not current_user.is_mod(sub.sid, 1) and current_user.is_admin() %}
 <div class="important"><h3>Editing as Admin</h3></div>
