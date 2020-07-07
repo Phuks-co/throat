@@ -71,7 +71,7 @@ def reports(page):
         Reported.name.alias('reported'),
         SubPostReport.datetime,
         SubPostReport.reason,
-        SubPostReport.open.alias('open'),
+        SubPostReport.open,
         Sub.name.alias('sub')
     ).join(User, on=User.uid == SubPostReport.uid) \
         .switch(SubPostReport).join(SubPost).join(Sub).join(SubMod) \
@@ -91,7 +91,7 @@ def reports(page):
         Reported.name.alias('reported'),
         SubPostCommentReport.datetime,
         SubPostCommentReport.reason,
-        SubPostCommentReport.open.alias('open'),
+        SubPostCommentReport.open,
         Sub.name.alias('sub')
     ).join(User, on=User.uid == SubPostCommentReport.uid) \
         .switch(SubPostCommentReport).join(SubPostComment).join(SubPost).join(Sub).join(SubMod) \

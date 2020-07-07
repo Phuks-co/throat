@@ -34,7 +34,7 @@ from .caching import cache
 from .socketio import socketio
 from .badges import badges
 
-from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
+from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata, SubRule
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db, SubPostReport, SubPostCommentReport
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair
 from .models import SubMod, SubBan
@@ -1166,6 +1166,13 @@ def getSubData(sid, simple=False, extra=False):
             data['stylesheet'] = SubStylesheet.get(SubStylesheet.sid == sid).content
         except SubStylesheet.DoesNotExist:
             data['stylesheet'] = ''
+
+        try:
+            data['rules'] = SubRule.select().join(Sub).where(Sub.sid == sid)
+            print('RULES:', data['rules'])
+        except SubRule.DoesNotExist:
+            data['rules'] = ''
+
     return data
 
 

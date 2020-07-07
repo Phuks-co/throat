@@ -565,7 +565,7 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
         });
 });
 
-let reportHtml = (data) => '<h2>' + _('Report post') + '</h2>' +
+let reportHtml = (data, sub_rules_html) => '<h2>' + _('Report post') + '</h2>' +
     '<p><i>' + _('This report will be forwarded to the site administration') + '</i></p>' +
     '<form class="pure-form pure-form-aligned">' +
     '<div class="pure-control-group">' +
@@ -574,7 +574,16 @@ let reportHtml = (data) => '<h2>' + _('Report post') + '</h2>' +
       '<option value="" disabled selected>Select one..</option>' +
       '<option value="spam">' + _('SPAM') + '</option>' +
       '<option value="tos">' + _('TOS violation') + '</option>' +
+      '<option value="rule">' + _('Sub Rule violation') + '</option>' +
       '<option value="other">' + _('Other') + '</option>' +
+    '</select>' +
+  '</div>' +
+  '<div class="pure-control-group" style="display:none" id="report_rule_set">'+
+  '<label for="report_reason">' + _('Which Sub rule did this post violate?') + '</label>' +
+    '<select name="report_rule" id="report_rule">' +
+      '<option value="" disabled selected>Select one..</option>' +
+      sub_rules_html +
+      '<option value="other sub rule">Other Sub Rule</option>' +
     '</select>' +
   '</div>' +
   '<div class="pure-control-group" style="display:none" id="report_text_set">'+
@@ -589,11 +598,25 @@ let reportHtml = (data) => '<h2>' + _('Report post') + '</h2>' +
 
 u.addEventForChild(document, 'click', '.report-post', function (e, qelem) {
     const pid = qelem.parentNode.parentNode.parentNode.getAttribute('pid');
-    const modal = new Tingle.modal({});
-    // set content
-    modal.setContent(reportHtml('data-pid=' + pid));
-    // open modal
-    modal.open();
+
+    // fetch sub rules
+    u.get('/api/v3/sub/rules?pid=' + pid, function(data){
+      let rules = [];
+      let sub_rules_html = '';
+      rules = data.results;
+      // set html element for each sub rule
+      rules.forEach(function(rule) {
+        let rule_html = '<option value="Sub Rule: ' + rule.text + '">' + rule.text + '</option>';
+        sub_rules_html = sub_rules_html + rule_html;
+        return sub_rules_html
+      });
+
+      const modal = new Tingle.modal({});
+      // set content
+      modal.setContent(reportHtml('data-pid=' + pid, 'sub_rules_html=' + sub_rules_html));
+      // open modal
+      modal.open();
+    });
 });
 
 u.addEventForChild(document, 'click', '.report-comment', function (e, qelem) {
@@ -606,7 +629,7 @@ u.addEventForChild(document, 'click', '.report-comment', function (e, qelem) {
 });
 
 u.addEventForChild(document, 'change', '#report_reason', function (e, qelem) {
-    if (qelem.value != '' && qelem.value != 'other') {
+    if (qelem.value != '' && qelem.value != 'other' && qelem.value != 'rule') {
         document.getElementById('submit_report').removeAttribute('disabled');
         document.getElementById('report_text_set').style.display = 'none';
     } else if (qelem.value == 'other') {
@@ -614,6 +637,13 @@ u.addEventForChild(document, 'change', '#report_reason', function (e, qelem) {
             document.getElementById('submit_report').setAttribute('disabled', 'true');
         }
         document.getElementById('report_text_set').style.display = 'block';
+        document.getElementById('report_rule_set').style.display = 'none';
+    } else if (qelem.value == 'rule') {
+        if (document.getElementById('report_rule').value == '') {
+            document.getElementById('submit_report').setAttribute('disabled', 'true');
+        }
+        document.getElementById('report_text_set').style.display = 'none';
+        document.getElementById('report_rule_set').style.display = 'block';
     }
 });
 
@@ -625,14 +655,37 @@ u.addEventForChild(document, 'keyup', '#report_text', function (e, qelem) {
     }
 });
 
+u.addEventForChild(document, 'change', '#report_rule', function (e, qelem) {
+  if (qelem.value == 'other sub rule') {
+      if (document.getElementById('report_text').value.length < 3) {
+          document.getElementById('submit_report').setAttribute('disabled', 'true');
+      }
+      document.getElementById('report_text_set').style.display = 'block';
+  } else if (qelem.value != '') {
+    document.getElementById('submit_report').removeAttribute('disabled');
+  } else {
+      document.getElementById('submit_report').setAttribute('disabled', 'true');
+  }
+});
+
+
 u.addEventForChild(document, 'click', '#submit_report', function (e, qelem) {
     let pid = qelem.getAttribute('data-pid');
 
     const errorbox = qelem.parentNode.querySelector('.error');
 
+    let send_to_admin = true;
     let reason = document.getElementById('report_reason').value;
     if (reason == 'other') {
         reason = document.getElementById('report_text').value;
+    }
+    if (reason == 'rule') {
+      send_to_admin = false;
+      if (document.getElementById('report_rule').value == "other sub rule") {
+        reason = "Sub Rule: " + document.getElementById('report_text').value;
+      } else {
+        reason = document.getElementById('report_rule').value;
+      }
     }
 
     qelem.setAttribute('disabled', true);
@@ -641,11 +694,11 @@ u.addEventForChild(document, 'click', '#submit_report', function (e, qelem) {
         pid = qelem.getAttribute('data-cid');
         uri = '/do/report/comment';
     }
-    u.post(uri, {post: pid, reason: reason},
+    u.post(uri, {post: pid, reason: reason, send_to_admin: send_to_admin},
         function (data) {
             if (data.status != "ok") {
                 errorbox.style.display = 'block';
-                errorbox.innerHTML = _('Error: %s', data.error);
+                errorbox.innerHTML = _('Error: ') + data.error;
                 qelem.removeAttribute('disabled');
             } else {
                 qelem.parentNode.parentNode.parentNode.innerHTML = _('Your report has been sent and will be reviewed by the site administrators.');

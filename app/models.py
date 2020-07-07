@@ -228,6 +228,19 @@ class SubFlair(BaseModel):
         table_name = 'sub_flair'
 
 
+class SubRule(BaseModel):
+    sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
+                          field='sid')
+    text = CharField(null=True)
+    rid = PrimaryKeyField()
+
+    def __repr__(self):
+        return f'<SubRule {self.text}>'
+
+    class Meta:
+        table_name = 'sub_rule'
+
+
 class SubLog(BaseModel):
     action = IntegerField(null=True)
     desc = CharField(null=True)
@@ -494,6 +507,7 @@ class SubPostReport(BaseModel):
     datetime = DateTimeField(default=datetime.datetime.now)
     reason = CharField(max_length=128)
     open = BooleanField(default=True)
+    send_to_admin = BooleanField(default=True)
 
     def __repr__(self):
         return f'<SubPostReport "{self.reason[:20]}">'
@@ -508,6 +522,7 @@ class SubPostCommentReport(BaseModel):
     datetime = DateTimeField(default=datetime.datetime.now)
     reason = CharField(max_length=128)
     open = BooleanField(default=True)
+    send_to_admin = BooleanField(default=True)
 
     def __repr__(self):
         return f'<SubPostCommentReport "{self.reason[:20]}">'
