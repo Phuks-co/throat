@@ -583,6 +583,7 @@ let reportHtml = (data, sub_rules_html) => '<h2>' + _('Report post') + '</h2>' +
     '<select name="report_rule" id="report_rule">' +
       '<option value="" disabled selected>Select one..</option>' +
       sub_rules_html +
+      '<option value="other sub rule">Other Sub Rule</option>' +
     '</select>' +
   '</div>' +
   '<div class="pure-control-group" style="display:none" id="report_text_set">'+
@@ -596,25 +597,26 @@ let reportHtml = (data, sub_rules_html) => '<h2>' + _('Report post') + '</h2>' +
 '</form>';
 
 u.addEventForChild(document, 'click', '.report-post', function (e, qelem) {
-    const rules = JSON.parse(qelem.getAttribute('data-rules'));
-    console.log('RULES: ' + rules);
-
-    let sub_rules_html = '';
-
-    [rules].forEach(function(rule) {
-      console.log('RULE:' + rule);
-      let rule_html = '<option value="Sub Rule:' + rule.text + '">' + rule.text + '</option>';
-      sub_rules_html = sub_rules_html + rule_html;
-      console.log('SUB_RULES_HTML:' + sub_rules_html);
-      return sub_rules_html
-    });
-
     const pid = qelem.parentNode.parentNode.parentNode.getAttribute('pid');
-    const modal = new Tingle.modal({});
-    // set content
-    modal.setContent(reportHtml('data-pid=' + pid, 'sub_rules_html=' + sub_rules_html));
-    // open modal
-    modal.open();
+
+    // fetch sub rules
+    u.get('/api/v3/sub/rules?pid=' + pid, function(data){
+      let rules = [];
+      let sub_rules_html = '';
+      rules = data.results;
+      // set html element for each sub rule
+      rules.forEach(function(rule) {
+        let rule_html = '<option value="Sub Rule:' + rule.text + '">' + rule.text + '</option>';
+        sub_rules_html = sub_rules_html + rule_html;
+        return sub_rules_html
+      });
+
+      const modal = new Tingle.modal({});
+      // set content
+      modal.setContent(reportHtml('data-pid=' + pid, 'sub_rules_html=' + sub_rules_html));
+      // open modal
+      modal.open();
+    });
 });
 
 u.addEventForChild(document, 'click', '.report-comment', function (e, qelem) {

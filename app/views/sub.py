@@ -314,8 +314,6 @@ def view_post(sub, pid, comments=False, highlight=None):
 
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     subInfo = misc.getSubData(sub['sid'])
-    rules = list(SubRule.select().where(SubRule.sid == sub['sid']).dicts())
-    print('RULES FROM SUB:', rules)
 
     try:
         UserSaved.get((UserSaved.uid == current_user.uid) & (UserSaved.pid == pid))
@@ -363,7 +361,7 @@ def view_post(sub, pid, comments=False, highlight=None):
     return engine.get_template('sub/post.html').render({'post': post, 'sub': sub, 'subInfo': subInfo,
                                                         'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,
                                                         'commentform': PostComment(), 'comments': comments,
-                                                        'subMods': misc.getSubMods(sub['sid']), 'highlight': highlight, 'rules': json.dumps(rules)})
+                                                        'subMods': misc.getSubMods(sub['sid']), 'highlight': highlight})
 
 
 @sub.route("/<sub>/<pid>/<cid>")

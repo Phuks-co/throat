@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods, highlight, rules)
+@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods, highlight)
 @import "sub/postcomments.html" as pcomm
 @import "sub/postpoll.html" as polls
 
@@ -153,7 +153,7 @@
               @end
             @end
           @end
-          <li><a data-ac="report" data-rules='@{rules}' class="report-post">@{_('report')}</a></li>
+          <li><a data-ac="report" class="report-post">@{_('report')}</a></li>
         @end
       </ul>
     </div>
