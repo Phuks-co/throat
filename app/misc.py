@@ -370,14 +370,23 @@ def safeRequest(url, recieve_timeout=10):
     return r, f
 
 
-RE_AMENTION_BARE = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/' + config.site.sub_prefix + r'\/)([A-Za-z0-9\-\_]+))'
+class RE_AMention():
+    def __init__(self, app=None):
+        if app is not None:
+            self.init_app(app)
 
-RE_AMENTION_PRE0 = r'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))(?:(?:@|\/u\/|\/' + config.site.sub_prefix + r'\/)(?:[A-Za-z0-9\-\_]+)))'
-RE_AMENTION_PRE1 = r'(?:(\[.+?\]\(.+?\))|' + RE_AMENTION_BARE + r')'
-RE_AMENTION_ESCAPED = re.compile(r"```.*{0}.*```|`.*?{0}.*?`|({1})".format(RE_AMENTION_PRE0, RE_AMENTION_PRE1),
-                                 flags=re.MULTILINE + re.DOTALL)
-RE_AMENTION_LINKS = re.compile(r"\[.*?({1}).*?\]\(.*?\)|({0})".format(RE_AMENTION_PRE1, RE_AMENTION_BARE),
-                               flags=re.MULTILINE + re.DOTALL)
+    def init_app(self, app):
+        prefix = app.config['THROAT_CONFIG'].site.sub_prefix
+        BARE = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/' + prefix + r'\/)([A-Za-z0-9\-\_]+))'
+
+        PRE0 = r'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))(?:(?:@|\/u\/|\/' + prefix + r'\/)(?:[A-Za-z0-9\-\_]+)))'
+        PRE1 = r'(?:(\[.+?\]\(.+?\))|' + BARE + r')'
+        self.ESCAPED = re.compile(r"```.*{0}.*```|`.*?{0}.*?`|({1})".format(PRE0, PRE1),
+                                  flags=re.MULTILINE + re.DOTALL)
+        self.LINKS = re.compile(r"\[.*?({1}).*?\]\(.*?\)|({0})".format(PRE1, BARE),
+                                flags=re.MULTILINE + re.DOTALL)
+
+re_amention = RE_AMention()
 
 
 class PhuksDown(m.SaferHtmlRenderer):
@@ -430,7 +439,7 @@ def our_markdown(text):
         txt = txt.replace('~', '\\~')
         return '[{0}]({1})'.format(txt, ln)
 
-    text = RE_AMENTION_ESCAPED.sub(repl, text)
+    text = re_amention.ESCAPED.sub(repl, text)
     try:
         return md(text)
     except RecursionError:
@@ -540,7 +549,7 @@ def getYoutubeID(url):
 
 def workWithMentions(data, receivedby, post, sub, cid=None, c_user=current_user):
     """ Does all the job for mentions """
-    mts = re.findall(RE_AMENTION_LINKS, data)
+    mts = re.findall(re_amention.LINKS, data)
     if isinstance(sub, Sub):
         subname = sub.name
     else:

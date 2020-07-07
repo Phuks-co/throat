@@ -28,7 +28,7 @@ from .views.messages import bp as messages
 
 from . import misc, forms, caching
 from .socketio import socketio
-from .misc import SiteAnon, engine
+from .misc import SiteAnon, engine, re_amention
 
 # /!\ FOR DEBUGGING ONLY /!\
 # from werkzeug.contrib.profiler import ProfilerMiddleware
@@ -55,6 +55,7 @@ def create_app():
     login_manager.init_app(app)
     rconn.init_app(app)
     db_init_app(app)
+    re_amention.init_app(app)
     # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 
     app.register_blueprint(home)
