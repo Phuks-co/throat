@@ -6,23 +6,11 @@ from flask import Blueprint, abort, redirect, url_for, session, render_template,
 from flask_login import login_required, current_user
 from flask_babel import _
 from .. import misc
-from ..forms import LogOutForm
 from ..models import UserMetadata, User, Sub, SubPost, SubPostComment
 from ..models import User, Sub, SubMod, SubPost, SubPostComment, UserMetadata, SubPostReport, SubPostCommentReport
 from ..misc import engine, getSubReports, getModSubs
 
 bp = Blueprint('mod', __name__)
-
-
-@bp.route('/logout', methods=['POST'])
-@login_required
-def logout():
-    if not current_user.is_mod:
-        abort(404)
-    form = LogOutForm()
-    if form.validate():
-        del session['apriv']
-    return redirect(url_for('mod.index'))
 
 
 @bp.route("/")
