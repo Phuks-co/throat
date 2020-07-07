@@ -2,38 +2,16 @@
 import time
 import re
 from peewee import fn, JOIN, Value
-from pyotp import TOTP
 from flask import Blueprint, abort, redirect, url_for, session, render_template, jsonify
 from flask_login import login_required, current_user
 from flask_babel import _
 from .. import misc
-from ..forms import TOTPForm, LogOutForm, UseInviteCodeForm, AssignUserBadgeForm, EditModForm, BanDomainForm
-from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, SiteMetadata
+from ..forms import LogOutForm
+from ..models import UserMetadata, User, Sub, SubPost, SubPostComment
 from ..models import User, Sub, SubMod, SubPost, SubPostComment, UserMetadata, SubPostReport, SubPostCommentReport
-from ..misc import engine, getSubReports, getModSubs, engine
+from ..misc import engine, getSubReports, getModSubs
 
 bp = Blueprint('mod', __name__)
-
-
-@bp.route('/mod/auth', methods=['GET', 'POST'])
-@login_required
-def auth():
-    if not current_user.is_mod:
-        abort(404)
-    form = TOTPForm()
-    try:
-        user_secret = UserMetadata.get((UserMetadata.uid == current_user.uid) & (UserMetadata.key == 'totp_secret'))
-    except UserMetadata.DoesNotExist:
-        return engine.get_template('mod/totp.html').render({'authform': form, 'error': _('No TOTP secret found.')})
-    if form.validate_on_submit():
-        totp = TOTP(user_secret.value)
-        if totp.verify(form.totp.data):
-            session['apriv'] = time.time()
-            return redirect(url_for('mod.index'))
-        else:
-            return engine.get_template('mod/totp.html').render(
-                {'authform': form, 'error': _('Invalid or expired token.')})
-    return engine.get_template('mod/totp.html').render({'authform': form, 'error': None})
 
 
 @bp.route('/logout', methods=['POST'])
@@ -52,7 +30,7 @@ def logout():
 def index():
     """ WIP: Mod Dashboard """
 
-    if not current_user.is_mod:
+    if not (SubMod.select().where(SubMod.user == current_user.uid) or current_user.can_admin):
         abort(404)
 
     subs = getModSubs(current_user.uid, 1)
@@ -87,16 +65,10 @@ def index():
 def reports(page):
     """ WIP: Open Report Queue """
 
-    if not current_user.is_mod:
+    if not (SubMod.select().where(SubMod.user == current_user.uid) or current_user.can_admin):
         abort(404)
 
     mod_subs = getModSubs(current_user.uid, 1)
-
-    def isSubMod(sid, mod_subs):
-        # return True if current user is Mod of sub given a post ID
-        for sub in mod_subs:
-            str(sid) in sub.sid
-        return True
 
     # Get all reports on posts and comments, filter by "open",
     # then filter by subs current user can Mod
@@ -114,7 +86,8 @@ def reports(page):
         SubPostReport.open.alias('open'),
         Sub.name.alias('sub')
     ).join(User, on=User.uid == SubPostReport.uid) \
-        .switch(SubPostReport).join(SubPost).join(Sub).where(isSubMod(Sub.sid, mod_subs) == True) \
+        .switch(SubPostReport).join(SubPost).join(Sub).join(SubMod) \
+        .where(SubMod.user == current_user.uid) \
         .join(Reported, on=Reported.uid == SubPost.uid)
 
     open_posts_q = posts_q.where(SubPostReport.open == True)
@@ -133,7 +106,8 @@ def reports(page):
         SubPostCommentReport.open.alias('open'),
         Sub.name.alias('sub')
     ).join(User, on=User.uid == SubPostCommentReport.uid) \
-        .switch(SubPostCommentReport).join(SubPostComment).join(SubPost).join(Sub).where(isSubMod(Sub.sid, mod_subs) == True) \
+        .switch(SubPostCommentReport).join(SubPostComment).join(SubPost).join(Sub).join(SubMod) \
+        .where(SubMod.user == current_user.uid) \
         .join(Reported, on=Reported.uid == SubPostComment.uid)
 
     open_comments_q = comments_q.where(SubPostCommentReport.open == True)
@@ -159,16 +133,11 @@ def reports(page):
 def closed(page):
     """ WIP: Closed Reports List """
 
-    if not current_user.is_mod:
+
+    if not (SubMod.select().where(SubMod.user == current_user.uid) or current_user.can_admin):
         abort(404)
 
     mod_subs = getModSubs(current_user.uid, 1)
-
-    def isSubMod(sid, mod_subs):
-        # return True if current user is Mod of sub given a post ID
-        for sub in mod_subs:
-            str(sid) in sub.sid
-        return True
 
     # Get all reports on posts and comments, filter by "open",
     # then filter by subs current user can Mod
@@ -186,7 +155,8 @@ def closed(page):
         SubPostReport.open.alias('open'),
         Sub.name.alias('sub')
     ).join(User, on=User.uid == SubPostReport.uid) \
-        .switch(SubPostReport).join(SubPost).join(Sub).where(isSubMod(Sub.sid, mod_subs) == True) \
+        .switch(SubPostReport).join(SubPost).join(Sub).join(SubMod) \
+        .where(SubMod.user == current_user.uid) \
         .join(Reported, on=Reported.uid == SubPost.uid)
 
     open_posts_q = posts_q.where(SubPostReport.open == True)
@@ -205,7 +175,8 @@ def closed(page):
         SubPostCommentReport.open.alias('open'),
         Sub.name.alias('sub')
     ).join(User, on=User.uid == SubPostCommentReport.uid) \
-        .switch(SubPostCommentReport).join(SubPostComment).join(SubPost).join(Sub).where(isSubMod(Sub.sid, mod_subs) == True) \
+        .switch(SubPostCommentReport).join(SubPostComment).join(SubPost).join(Sub).join(SubMod) \
+        .where(SubMod.user == current_user.uid) \
         .join(Reported, on=Reported.uid == SubPostComment.uid)
 
     open_comments_q = comments_q.where(SubPostCommentReport.open == True)
