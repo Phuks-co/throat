@@ -2219,9 +2219,10 @@ def report_comment():
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
-@do.route('/do/report/close_post_report/<id>', methods=['POST'])
+@do.route('/do/report/close_post_report/<id>/<action>', methods=['POST'])
 @login_required
-def close_post_report(id):
+# id is the pid of the post, and action is STR either "close" or "reopen"
+def close_post_report(id, action):
     # ensure user is mod or admin and report, post, and sub exist
     try:
         report = SubPostReport.get(SubPostReport.id == id)
@@ -2238,26 +2239,47 @@ def close_post_report(id):
     except Sub.DoesNotExist:
         return jsonify(status='error', error=_('Sub does not exist'))
 
+    if (action != 'close') and (action != 'reopen'):
+        print("INVALID ACTION:", action)
+        return jsonify(status='error', error=[_('Invalid action')])
+
     if not current_user.is_mod(sub.sid) and not current_user.is_admin():
         return jsonify(status='error', error=[_('Not authorized')])
 
-    if report.open == False:
+    if action == 'close' and report.open == False:
         return jsonify(status='error', error=_('This report has already been closed'))
 
-    # close the report
-    report = SubPostReport.update(open=False).where(SubPostReport.id == id).execute()
+    elif action == 'reopen' and report.open == True:
+        return jsonify(status='error', error=_('This report is already open'))
 
-    #check if it closed and return status
+    # change the report status
+    if action == 'close':
+        report = SubPostReport.update(open=False).where(SubPostReport.id == id).execute()
+    elif action == 'reopen':
+        report = SubPostReport.update(open=True).where(SubPostReport.id == id).execute()
+
+    #check if it changed and return status
     updated_report = SubPostReport.select().where(SubPostReport.id == id).get()
-    if updated_report.open == False:
+    if (action == 'close') and (updated_report.open == False):
         return jsonify(status='ok')
-    else:
+
+    elif (action == 'close') and (updated_report.open == True):
         return jsonify(status='error', error=_('Failed to close report'))
 
+    elif (action == 'reopen') and (updated_report.open == True):
+        return jsonify(status='ok')
 
-@do.route('/do/report/close_comment_report/<id>', methods=['POST'])
+    elif (action == 'reopen') and (updated_report.open == False):
+        return jsonify(status='error', error=_('Failed to reopen report'))
+
+    else:
+        return jsonify(status='error', error=_('Failed to update report'))
+
+
+@do.route('/do/report/close_comment_report/<id>/<action>', methods=['POST'])
 @login_required
-def close_comment_report(id):
+# id is the cid of the comment, and action is STR either "close" or "reopen"
+def close_comment_report(id, action):
     # ensure user is mod or admin and report, post, and sub exist
     try:
         report = SubPostCommentReport.get(SubPostCommentReport.id == id)
@@ -2279,18 +2301,37 @@ def close_comment_report(id):
     except Sub.DoesNotExist:
         return jsonify(status='error', error=_('Sub does not exist'))
 
+    if (action != 'close') and (action != 'reopen'):
+        return jsonify(status='error', error=[_('Invalid action')])
+
     if not current_user.is_mod(sub.sid) and not current_user.is_admin():
         return jsonify(status='error', error=[_('Not authorized')])
 
-    if report.open == False:
+    if action == 'close' and report.open == False:
         return jsonify(status='error', error=_('This report has already been closed'))
 
-    # close the report
-    report = SubPostCommentReport.update(open=False).where(SubPostCommentReport.id == id).execute()
+    elif action == 'reopen' and report.open == True:
+        return jsonify(status='error', error=_('This report is already open'))
 
-    #check if it closed and return status
+    # change the report status
+    if action == 'close':
+        report = SubPostCommentReport.update(open=False).where(SubPostCommentReport.id == id).execute()
+    elif action == 'reopen':
+        report = SubPostCommentReport.update(open=True).where(SubPostCommentReport.id == id).execute()
+
+    #check if it changed and return status
     updated_report = SubPostCommentReport.select().where(SubPostCommentReport.id == id).get()
-    if updated_report.open == False:
+    if (action == 'close') and (updated_report.open == False):
         return jsonify(status='ok')
-    else:
+
+    elif (action == 'close') and (updated_report.open == True):
         return jsonify(status='error', error=_('Failed to close report'))
+
+    elif (action == 'reopen') and (updated_report.open == True):
+        return jsonify(status='ok')
+
+    elif (action == 'reopen') and (updated_report.open == False):
+        return jsonify(status='error', error=_('Failed to reopen report'))
+
+    else:
+        return jsonify(status='error', error=_('Failed to update report'))
