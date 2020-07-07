@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(reports)
+@require(reports, open_report_count, closed_report_count)
 @def title():
 Admin |\
 @end
@@ -12,41 +12,43 @@ Admin |\
 <div id="container">
   <div id="center-container">
     <div class="content">
-      <h2>Reports</h2>
+      <h1>@{_('Admin Reports')}</h1>
+      <p class="helper-text">Includes reports of TOS violations and spam for all subs</p>
       <div class="admin section users">
         <div class="col-12">
+          @{_('Total Open Reports:')} @open_report_count  |  @{_('Total Closed Reports:')} @closed_report_count
           <table class="pure-table">
             <thead>
               <tr>
+                <th>@{_('Sub')}</th>
                 <th>@{_('Type')}</th>
                 <th>@{_('Reporter')}</th>
                 <th>@{_('Reason')}</th>
                 <th>@{_('User reported')}</th>
                 <th>@{_('Time')}</th>
-                <th>@{_('Link')}</th>
+                <th>@{_('Status')}</th>
               </tr>
             </thead>
             <tbody>
             @for report in reports:
             <tr>
+              <td><div class="sub"><a href="@{ url_for('sub.view_sub', sub=report['sub']) }">@{ report['sub'] }</a></div></td>
               <td>
                 @if report['type'] == 'comment':
-                  @{_('Comment')}
+                  <a href="@{url_for('sub.view_perm', sub=report['sub'], cid=report['cid'], pid=report['pid'])}">@{_('Comment')}</a>
                 @else:
-                  @{_('Post')}
+                <a href="@{url_for('sub.view_post', sub=report['sub'], pid=report['pid'])}">@{_('Post')}</a>
                 @end
               </td>
               <td><div class="username"><a href="@{ url_for('user.view', user=report['reporter']) }">@{ report['reporter'] }</a></div></td>
               <td>@{report['reason']!!e}</td>
               <td><div class="username"><a href="@{ url_for('user.view', user=report['reported']) }">@{ report['reported'] }</a></div></td>
               <td><time-ago datetime="@{report['datetime'].isoformat()}Z"></time-ago></td>
-              <td>
-                @if report['type'] == 'comment':
-                  <a href="@{url_for('sub.view_perm', sub=report['sub'], cid=report['cid'], pid=report['pid'])}">@{_('Link')}</a>
-                @else:
-                  <a href="@{url_for('sub.view_post', sub=report['sub'], pid=report['pid'])}">@{_('Link')}</a>
-                @end
-              </td>
+              @if report['open'] == True:
+                <td>@{_('Open')} <a data-type="@{report['type']}" data-id="@{report['id']!!s}" class="close-report">@{_('[x]')}</a></td>
+              @else:
+                <td>@{_('Closed')}</td>
+              @end
             </tr>
             @end
             </tbody>

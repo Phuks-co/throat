@@ -606,7 +606,7 @@ u.addEventForChild(document, 'click', '.report-post', function (e, qelem) {
       rules = data.results;
       // set html element for each sub rule
       rules.forEach(function(rule) {
-        let rule_html = '<option value="Sub Rule:' + rule.text + '">' + rule.text + '</option>';
+        let rule_html = '<option value="Sub Rule: ' + rule.text + '">' + rule.text + '</option>';
         sub_rules_html = sub_rules_html + rule_html;
         return sub_rules_html
       });

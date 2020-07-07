@@ -12,11 +12,12 @@ Mod |\
 <div id="center-container">
   <div class="content">
     <h1>@{_('Open Reports')}</h1>
+    <p class="helper-text">Includes all open reports for subs you can moderate. Reports may not be re-opened once closed.</p>
 
     <div class="admin section">
       <div class="col-12 admin-page-form">
         <div class="admin section stats">
-          @{_('Total Open Reports')} @open_report_count  |  @{_('Total Closed Reports')} <a href="@{url_for('mod.closed')}">@closed_report_count</a>
+          @{_('Total Open Reports:')} @open_report_count  |  @{_('Total Closed Reports:')} <a href="@{url_for('mod.closed')}">@closed_report_count</a>
           <div class="div-error error alertbox"></div>
 
           <table class="pure-table">
@@ -46,7 +47,7 @@ Mod |\
               <td>@{report['reason']!!e}</td>
               <td><div class="username"><a href="@{ url_for('user.view', user=report['reported']) }">@{ report['reported'] }</a></div></td>
               <td><time-ago datetime="@{report['datetime'].isoformat()}Z"></time-ago></td>
-              <td><a data-type="@{report['type']}" data-id="@{report['id']!!s}" class="close-report">@{_('[x]')}</a></td>
+              <td class="close-report-button"><a data-type="@{report['type']}" data-id="@{report['id']!!s}" class="close-report">@{_('[x]')}</a></td>
             </tr>
             @end
             </tbody>

@@ -758,7 +758,7 @@ a.slink{
   right:12px;
   font-size: 13px;
   color: #0f5387;
-  
+
   cursor: pointer;
   -ms-user-select:none;
   -moz-user-select:none;
@@ -1818,13 +1818,13 @@ table td {
 .irc-bg14{background-color:#4c4c4c}
 .irc-bg15{background-color:#959595}
 
-/* Poll styles */ 
+/* Poll styles */
 
 .poll-pbar {
-  border: 1px solid #ccc; 
-  width: 70%; 
-  margin: 0 5px 2px 0; 
-  padding: 1px; 
+  border: 1px solid #ccc;
+  width: 70%;
+  margin: 0 5px 2px 0;
+  padding: 1px;
   vertical-align: middle;
   display: inline-block;
   height: 1.5em;
@@ -1835,14 +1835,14 @@ table td {
   vertical-align: middle;
   display: inline-block;
 }
-  
+
 .poll-pbar > div {
-  background-color: #526a7d; 
+  background-color: #526a7d;
   height: 1.25em;
 }
 
 .poll-pbar.poll-voted > div {
-  background-color: #fd5c00; 
+  background-color: #fd5c00;
 }
 
 .poll-pbar.poll-voted{
@@ -1988,4 +1988,17 @@ a[href="#toodamncool"]{
 .invitecodes .expired{
   color: gray;
   text-decoration: line-through;
+}
+
+td.close-report-button {
+  text-align: center;
+}
+
+a.close-report {
+  cursor: pointer;
+}
+
+.helper-text {
+  font-style: italic;
+  color: gray;
 }

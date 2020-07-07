@@ -322,32 +322,50 @@ def reports(page):
     Reported = User.alias()
     posts_q = SubPostReport.select(
         Value('post').alias('type'),
+        SubPostReport.id,
         SubPostReport.pid,
         Value(None).alias('cid'),
         User.name.alias('reporter'),
         Reported.name.alias('reported'),
         SubPostReport.datetime,
         SubPostReport.reason,
+        SubPostReport.open,
         Sub.name.alias('sub')
-    ).join(User, on=User.uid == SubPostReport.uid) \
+    ).where((SubPostReport.reason == 'tos') | (SubPostReport.reason == 'spam')) \
+        .join(User, on=User.uid == SubPostReport.uid) \
         .switch(SubPostReport).join(SubPost).join(Sub) \
         .join(Reported, on=Reported.uid == SubPost.uid)
 
+    open_posts_q = posts_q.where(SubPostReport.open == True)
+    closed_posts_q = posts_q.where(SubPostReport.open == False)
+
     comments_q = SubPostCommentReport.select(
         Value('comment').alias('type'),
+        SubPostCommentReport.id,
         SubPostComment.pid,
         SubPostCommentReport.cid,
         User.name.alias('reporter'),
         Reported.name.alias('reported'),
         SubPostCommentReport.datetime,
         SubPostCommentReport.reason,
+        SubPostCommentReport.open,
         Sub.name.alias('sub')
-    ).join(User, on=User.uid == SubPostCommentReport.uid) \
+    ).where((SubPostCommentReport.reason == 'tos') | (SubPostCommentReport.reason == 'spam')) \
+        .join(User, on=User.uid == SubPostCommentReport.uid) \
         .switch(SubPostCommentReport).join(SubPostComment).join(SubPost).join(Sub) \
         .join(Reported, on=Reported.uid == SubPostComment.uid)
+
+    open_comments_q = comments_q.where(SubPostCommentReport.open == True)
+    closed_comments_q = comments_q.where(SubPostCommentReport.open == False)
+
+    open_query = open_posts_q | open_comments_q
+    open_report_count = open_query.count()
+
+    closed_query = closed_posts_q | closed_comments_q
+    closed_report_count = closed_query.count()
 
     query = posts_q | comments_q
     query = query.order_by(query.c.datetime.desc())
     query = query.paginate(page, 50)
 
-    return engine.get_template('admin/reports.html').render({'reports': list(query.dicts())})
+    return engine.get_template('admin/reports.html').render({'reports': list(query.dicts()), 'open_report_count': str(open_report_count), 'closed_report_count': str(closed_report_count)})
