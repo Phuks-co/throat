@@ -112,7 +112,7 @@ def store_file(ufile, basename, mtype, remove_metadata=False):
             clear_metadata(fullpath, mtype)
 
             # TODO probably there are errors that need handling
-            return storage.upload(fullpath, name=filename)
+            return storage.upload(fullpath, name=filename, acl=config.storage.acl).name
     return filename
 
 
@@ -139,7 +139,8 @@ def store_thumbnail(im, basename):
             with tempfile.TemporaryDirectory() as tempdir:
                 fullpath = os.path.join(tempdir, filename)
                 im.save(fullpath, "JPEG", optimize=True, quality=85)
-                return storage.upload(fullpath, name=filename).name
+                return storage.upload(fullpath, name=filename,
+                                      acl=config.storage.acl).name
 
     filename = basename + '.jpg'
     if config.storage.thumbnails.path == config.storage.uploads.path:

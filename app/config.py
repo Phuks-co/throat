@@ -53,6 +53,7 @@ cfg_defaults = {  # key => default value
         "mail": {},
         "storage": {
             "provider": 'LOCAL',
+            "acl": "private",
             "server": False,
             "server_url": '/files',
             "thumbnails":{
@@ -144,6 +145,7 @@ class Config(Map):
                     flattened[key] = self[cpk][i]
 
         # These values are used by flask_cloudy.
+        self.storage.acl = '' if self.storage.acl is None else self.storage.acl
         for key in ['provider', 'key', 'secret', 'server', 'server_url']:
             if key in self.storage:
                 flattened[f'STORAGE_{key}'.upper()] = self.storage[key]

@@ -134,6 +134,10 @@ storage:
   #key: '...'
   #secret: '...'
 
+  # Access control for cloud providers.  Options are "public-read",
+  # "private", or blank for no access control.
+  acl: private
+
   # If the provider is local, and you want Throat to serve the files
   # instead of setting up nginx or another web server to do so,
   # uncomment these.  The server_url is the relative endpoint for the
