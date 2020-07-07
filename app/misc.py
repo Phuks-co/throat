@@ -67,6 +67,7 @@ class SiteUser(object):
     def __init__(self, userclass=None, subs=(), prefs=()):
         self.user = userclass
         self.notifications = self.user.get('notifications', 0)
+        self.open_reports = self.user.get('open_reports', 0)
         self.name = self.user['name']
         self.uid = self.user['uid']
         self.prefs = [x['key'] for x in prefs]
@@ -124,6 +125,14 @@ class SiteUser(object):
     def is_mod(self, sid, power_level=2):
         """ Returns True if the current user is a mod of 'sub' """
         return is_sub_mod(self.uid, sid, power_level, self.can_admin)
+
+    def is_a_mod(self):
+        """ Returns True if the current user is a mod of any sub """
+        try:
+            SubMod.select().where(SubMod.user == current_user.uid).get() or current_user.can_admin
+            return True
+        except SubMod.DoesNotExist:
+            return False
 
     def is_subban(self, sub):
         """ Returns True if the current user is banned from 'sub' """

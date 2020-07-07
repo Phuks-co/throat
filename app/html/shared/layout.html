@@ -113,8 +113,8 @@
           <span class="p-icon" data-icon="@{(request.cookies.get( "dayNight")=="dark") and 'sun' or 'moon'}"></span>
         </div>
         <span class="separator"></span>
-        @if current_user.can_mod:
-          <a href="@{ url_for('user.view', user=current_user.name)}" class="smallcaps" id="unameb">@{_('Reports')}</a>
+        @if current_user.is_a_mod():
+          <a href="@{ url_for('mod.reports')}" class="smallcaps" id="unameb">@{_('Reports')}</a>
         @end
         <form method="POST" action="@{ url_for('do.logout') }" id="logout">
           @{ form.LogOutForm().csrf_token() }
