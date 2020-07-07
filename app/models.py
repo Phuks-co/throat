@@ -40,7 +40,7 @@ def db_connect():
     except AssertionError:
         raise RuntimeError('Database engine not a subclass of '
                             'peewee.Database: %s' % engine)
-    
+
     return database_class(name, **dbconnect)
 
 dbm = db_connect()
@@ -129,7 +129,7 @@ class Message(BaseModel):
     content = TextField(null=True)
     mid = PrimaryKeyField()
     mlink = CharField(null=True)
-    # mtype values: 
+    # mtype values:
     # 1: sent, 4: post replies, 5: comment replies, 8: mentions, 9: saved message
     # 6: deleted, 41: ignored messages  => won't display anywhere
     # 2 (mod invite), 7 (ban notification), 11 (deletion): modmail
@@ -194,7 +194,7 @@ class Sub(BaseModel):
 
     class Meta:
         table_name = 'sub'
-    
+
     def get_metadata(self, key):
         """ Returns `key` for submetadata or `None` if it does not exist.
         Only works for single keys """
@@ -301,7 +301,7 @@ class SubPostPollOption(BaseModel):
 
 
 class SubPostPollVote(BaseModel):
-    """ List of options for a poll """ 
+    """ List of options for a poll """
     pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
     uid = ForeignKeyField(db_column='uid', model=User)
     vid = ForeignKeyField(db_column='vid', model=SubPostPollOption, backref='votes')
@@ -493,6 +493,7 @@ class SubPostReport(BaseModel):
     uid = ForeignKeyField(db_column='uid', model=User, field='uid')
     datetime = DateTimeField(default=datetime.datetime.now)
     reason = CharField(max_length=128)
+    open = BooleanField(default=True)
 
     def __repr__(self):
         return f'<SubPostReport "{self.reason[:20]}">'
@@ -506,6 +507,7 @@ class SubPostCommentReport(BaseModel):
     uid = ForeignKeyField(db_column='uid', model=User, field='uid')
     datetime = DateTimeField(default=datetime.datetime.now)
     reason = CharField(max_length=128)
+    open = BooleanField(default=True)
 
     def __repr__(self):
         return f'<SubPostCommentReport "{self.reason[:20]}">'

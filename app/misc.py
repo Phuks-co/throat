@@ -35,10 +35,10 @@ from .socketio import socketio
 from .badges import badges
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata
-from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db
+from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db, SubPostReport, SubPostCommentReport
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair
 from .models import SubMod, SubBan
-from peewee import JOIN, fn, SQL, NodeList
+from peewee import JOIN, fn, SQL, NodeList, Value
 import requests
 import logging
 
@@ -1167,6 +1167,48 @@ def getSubData(sid, simple=False, extra=False):
         except SubStylesheet.DoesNotExist:
             data['stylesheet'] = ''
     return data
+
+
+def getModSubs(uid, power_level):
+    # returns all subs that the user can moderate
+
+    subs = SubMod.select(Sub, SubMod.power_level).join(Sub).where(
+        (SubMod.uid == uid) & (SubMod.power_level <= power_level) & (SubMod.invite == False))
+
+    return subs
+
+
+def getSubReports(sid):
+    # returns all reports for the given sub, sorted by open and closed
+    reports = {'open': [], 'closed': []}
+
+    open_post_reports = SubPostReport.select() \
+        .join(SubPost) \
+        .where(SubPost.sid == sid) \
+        .where(SubPostReport.open == True)
+
+    open_post_comment_reports = SubPostCommentReport.select() \
+        .join(SubPostComment).where(SubPostComment.cid == SubPostCommentReport.cid) \
+        .join(SubPost).where(SubPost.pid == SubPostComment.pid) \
+        .join(Sub).where(SubPost.sid == sid) \
+        .where(SubPostCommentReport.open == True)
+
+    reports['open'] = open_post_reports + open_post_comment_reports
+
+    closed_post_reports = SubPostReport.select() \
+        .join(SubPost).where(SubPost.sid == sid) \
+        .where(SubPostReport.open == False)
+
+    closed_post_comment_reports = SubPostCommentReport.select() \
+        .join(SubPostComment).where(SubPostComment.cid == SubPostCommentReport.cid) \
+        .join(SubPost).where(SubPost.pid == SubPostComment.pid) \
+        .join(Sub).where(SubPost.sid == sid) \
+        .where(SubPostCommentReport.open == False)
+
+    reports['closed'] = closed_post_reports + closed_post_comment_reports
+
+    print('REPORTS RETURNED:', reports)
+    return reports
 
 
 @cache.memoize(5)

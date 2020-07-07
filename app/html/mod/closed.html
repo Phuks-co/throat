@@ -1,0 +1,58 @@
+@extends("shared/layout.html")
+@require(closed_reports, open_report_count, closed_report_count)
+@def title():
+Mod |\
+@end
+
+@def sidebar():
+  @include('shared/sidebar/mod.html')
+@end
+
+@def main():
+<div id="center-container">
+  <div class="content">
+    <h1>@{_('Closed Reports')}</h1>
+
+    <div class="admin section">
+      <div class="col-12 admin-page-form">
+        <div class="admin section stats">
+          @{_('Total Open Reports')} <a href="@{url_for('mod.reports')}">@open_report_count</a>  |  @{_('Total Closed Reports')} @closed_report_count
+          <div class="div-error error alertbox"></div>
+
+          <table class="pure-table">
+            <thead>
+              <tr>
+                <th>@{_('Sub')}</th>
+                <th>@{_('Type')}</th>
+                <th>@{_('Reporter')}</th>
+                <th>@{_('Reason')}</th>
+                <th>@{_('User reported')}</th>
+                <th>@{_('Time')}</th>
+              </tr>
+            </thead>
+            <tbody>
+            @for report in closed_reports:
+            <tr>
+              <td><div class="sub"><a href="@{ url_for('sub.view_sub', sub=report['sub']) }">@{ report['sub'] }</a></div></td>
+              <td>
+                @if report['type'] == 'comment':
+                  <a href="@{url_for('sub.view_perm', sub=report['sub'], cid=report['cid'], pid=report['pid'])}">@{_('Comment')}</a>
+                @else:
+                <a href="@{url_for('sub.view_post', sub=report['sub'], pid=report['pid'])}">@{_('Post')}</a>
+                @end
+              </td>
+              <td><div class="username"><a href="@{ url_for('user.view', user=report['reporter']) }">@{ report['reporter'] }</a></div></td>
+              <td>@{report['reason']!!e}</td>
+              <td><div class="username"><a href="@{ url_for('user.view', user=report['reported']) }">@{ report['reported'] }</a></div></td>
+              <td><time-ago datetime="@{report['datetime'].isoformat()}Z"></time-ago></td>
+            </tr>
+            @end
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@end
