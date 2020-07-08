@@ -21,6 +21,10 @@ site:
   # (by default it's only admins and users authorized through a metadata key)
   allow_uploads: False
 
+  # Allow chat access for all users
+  # If True, each user will have the option of disabling chat for themselves
+  enable_chat: True
+
   # Amount of time in seconds the post author can edit a post's title after the post
   # was created. Set to zero to disable title editing (default is 5 minutes)
   title_edit_timeout: 300

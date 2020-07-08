@@ -47,7 +47,9 @@
       <li>/u/username goes to the user's profile</li>
       <li><a href="{{url_for('home.all_new')}}">/all/new</a> shows a live view of new posts, the votes and comment counts auto update</li>
       <li><a href="/m/news+sports+music">/m/news+sports+music</a> shows all posts, sorted by new, from those subs</li>
-      <li><a href="{{url_for('site.chat')}}">/chat</a> goes to a full page chat window for all users</li>
+      @if config.site.enable_chat:
+        <li><a href="{{url_for('site.chat')}}">/chat</a> goes to a full page chat window for all users</li>
+      @end
       <li><span class="tx-icon hasmail" data-icon="edit"></span> allows you to change the order of the top bar subscription list</li>
     </ul>
     <!--
