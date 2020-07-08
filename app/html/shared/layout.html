@@ -112,10 +112,6 @@
         <div id="toggledark" class="glyphbutton">
           <span class="p-icon" data-icon="@{(request.cookies.get( "dayNight")=="dark") and 'sun' or 'moon'}"></span>
         </div>
-        <span class="separator"></span>
-        @if current_user.is_a_mod():
-          <a href="@{ url_for('mod.reports')}" class="smallcaps" id="unameb">@{_('Reports')}</a>
-        @end
         <form method="POST" action="@{ url_for('do.logout') }" id="logout">
           @{ form.LogOutForm().csrf_token() }
           <button type="submit" class="pure-button button-secondary">@{_('Log out')}</button>

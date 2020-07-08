@@ -843,7 +843,7 @@ def getPostList(baseQuery, sort, page):
             posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, 25)
         else:
             posts = baseQuery.order_by(
-                (SubPost.score * 20 + (fn.datetime(SubPost.posted, 'unixepoch') - 1134028003) / 1500).desc()).limit(
+                (SubPost.score * 20 + (fn.Unix_Timestamp(SubPost.posted) - 1134028003) / 1500).desc()).limit(
                 100).paginate(page, 25)
     return posts
 
