@@ -1760,84 +1760,15 @@ def is_sub_mod(uid, sid, power_level, can_admin=False):
             pass
     return False
 
-def getReports(a, b, page):
-    mod_subs = getModSubs(current_user.uid, 1)
-
-    # Get all reports on posts and comments, filter by "open",
-    # then filter by subs current user can Mod
-    # also returns count of all open reports
-    Reported = User.alias()
-    posts_q = SubPostReport.select(
-        Value('post').alias('type'),
-        SubPostReport.id,
-        SubPostReport.pid,
-        Value(None).alias('cid'),
-        User.name.alias('reporter'),
-        Reported.name.alias('reported'),
-        SubPostReport.datetime,
-        SubPostReport.reason,
-        SubPostReport.open,
-        Sub.name.alias('sub')
-    ).join(User, on=User.uid == SubPostReport.uid) \
-        .switch(SubPostReport).join(SubPost).join(Sub).join(SubMod) \
-        .where(SubMod.user == current_user.uid) \
-        .join(Reported, on=Reported.uid == SubPost.uid)
-
-    open_posts_q = posts_q.where(SubPostReport.open == True)
-    closed_posts_q = posts_q.where(SubPostReport.open == False)
-
-
-    comments_q = SubPostCommentReport.select(
-        Value('comment').alias('type'),
-        SubPostCommentReport.id,
-        SubPostComment.pid,
-        SubPostCommentReport.cid,
-        User.name.alias('reporter'),
-        Reported.name.alias('reported'),
-        SubPostCommentReport.datetime,
-        SubPostCommentReport.reason,
-        SubPostCommentReport.open,
-        Sub.name.alias('sub')
-    ).join(User, on=User.uid == SubPostCommentReport.uid) \
-        .switch(SubPostCommentReport).join(SubPostComment).join(SubPost).join(Sub).join(SubMod) \
-        .where(SubMod.user == current_user.uid) \
-        .join(Reported, on=Reported.uid == SubPostComment.uid)
-
-    open_comments_q = comments_q.where(SubPostCommentReport.open == True)
-    closed_comments_q = comments_q.where(SubPostCommentReport.open == False)
-
-    open_query = open_posts_q | open_comments_q
-    open_query = open_query.order_by(open_query.c.datetime.desc())
-    open_report_count = open_query.count()
-
-    closed_query = closed_posts_q | closed_comments_q
-    closed_query = closed_query.order_by(closed_query.c.datetime.desc())
-    closed_report_count = closed_query.count()
-
-    open_query = open_query.paginate(page, 50)
-
-    return {'query': list(open_query.dicts()), 'open_report_count': str(open_report_count), 'closed_report_count': str(closed_report_count)}
-
-
-
 
 # def getReports(view, status, page, *args, **kwargs):
 #     sid = kwargs.get('sid', None)
-#     # Options need to include:
-#     # - whether this is coming from a mod view or admin view
-#     # - whether this is for a single sub, or all subs user is mod
-#     # - whether the query is for open or closed reports
-#     # Need to return:
-#     # - open or closed reports list for this sub or all subs
-#     # - open and closed report counts for this sub or all subs
 #
-#     # Get Subs for which user is Mod
 #     mod_subs = getModSubs(current_user.uid, 1)
-#     print("..............BEGIN POST REPORT QUERY")
 #
-#     # Get all reports on posts and comments for requested subs,
+#     # get all open post reports
 #     Reported = User.alias()
-#     all_post_reports = SubPostReport.select(
+#     posts_q = SubPostReport.select(
 #         Value('post').alias('type'),
 #         SubPostReport.id,
 #         SubPostReport.pid,
@@ -1849,38 +1780,24 @@ def getReports(a, b, page):
 #         SubPostReport.open,
 #         Sub.name.alias('sub')
 #     ).join(User, on=User.uid == SubPostReport.uid) \
-#         .switch(SubPostReport).join(SubPost) \
+#         .switch(SubPostReport).join(SubPost).join(Sub).join(SubMod) \
+#         .where(SubMod.user == current_user.uid) \
 #         .join(Reported, on=Reported.uid == SubPost.uid)
 #
-#     print("..............First If, 'sid'")
 #
-#     # return sub_post_reports as reports for the requested subs
-#     if sid:
-#         # check if current user has access to these reports
-#         if (current_user.is_mod(sid, 1) or current_user.is_admin()):
-#             sub_post_reports = all_post_reports.join(SubPost).join(Sub).where(Sub.sid == sub.sid)
-#         else:
-#             return jsonify(msg=_('You do not have access to these reports.')), 403
+#     if (sid):
+#         return
 #     else:
-#         sub_post_reports = all_post_reports.join(SubPost).join(Sub).join(SubMod).where(SubMod.user == current_user.uid)
+#         posts_q = posts_q.where(SubMod.user == current_user.uid)
 #
-#     print("..............Second If, 'view'")
-#
-#     # filter by if Mod or Admin view
 #     if (view == 'admin'):
-#         sub_post_reports = sub_post_reports.where(SubPostReport.send_to_admin == True)
+#         posts_q = posts_q.where(SubPostReport.send_to_admin == True)
 #
-#     print("..............Filter by status")
+#     open_posts_q = posts_q.where(SubPostReport.open == True)
+#     closed_posts_q = posts_q.where(SubPostReport.open == False)
 #
-#     # filter by requested status
-#     open_sub_post_reports = sub_post_reports.where(SubPostReport.open == True)
-#     closed_sub_post_reports = sub_post_reports.where(SubPostReport.open == False)
-#
-#     print("..............Do it all again for comments")
-#
-#     # Do it all again for comments
-#     Reported = User.alias()
-#     all_comment_reports = SubPostCommentReport.select(
+#     # get all open comment reports
+#     comments_q = SubPostCommentReport.select(
 #         Value('comment').alias('type'),
 #         SubPostCommentReport.id,
 #         SubPostComment.pid,
@@ -1892,54 +1809,161 @@ def getReports(a, b, page):
 #         SubPostCommentReport.open,
 #         Sub.name.alias('sub')
 #     ).join(User, on=User.uid == SubPostCommentReport.uid) \
-#         .switch(SubPostCommentReport).join(SubPostComment).join(SubPost) \
-#         .join(Reported, on=Reported.uid == SubPost.uid)
+#         .switch(SubPostCommentReport).join(SubPostComment).join(SubPost).join(Sub).join(SubMod) \
+#         .where(SubMod.user == current_user.uid) \
+#         .join(Reported, on=Reported.uid == SubPostComment.uid)
 #
-#     print("..............Comments: First If, 'sid'")
 #
-#     # return sub_post_reports as reports for the requested subs
 #     if (sid):
-#         # check if current user has access to these reports
-#         if (current_user.is_mod(sid, 1) or current_user.is_admin()):
-#             sub_comment_reports = all_comment_reports.join(SubPostComment).join(SubPost).join(Sub).where(Sub.sid == sub.sid)
-#         else:
-#             return jsonify(msg=_('You do not have access to these reports.')), 403
+#         return
 #     else:
-#         sub_comment_reports = all_comment_reports.join(SubPostComment).join(SubPost).join(Sub).join(SubMod).where(SubMod.user == current_user.uid)
+#         posts_q = posts_q.where(SubMod.user == current_user.uid)
 #
-#     print("..............Comments: Second If, 'view'")
-#
-#     # filter by if Mod or Admin view
 #     if (view == 'admin'):
-#         sub_comment_reports = sub_comment_reports.where(SubPostCommentReport.send_to_admin == True)
+#         comments_q = comments_q.where(SubPostCommentReport.send_to_admin == True)
 #
-#     print("..............Comments: Filter by status")
+#     open_comments_q = comments_q.where(SubPostCommentReport.open == True)
+#     closed_comments_q = comments_q.where(SubPostCommentReport.open == False)
 #
-#     # filter by requested status
-#     open_sub_comment_reports = sub_comment_reports.where(SubPostCommentReport.open == True)
-#     closed_sub_comment_reports = sub_comment_reports.where(SubPostCommentReport.open == False)
-#
-#     print("..............Defining open and closed queries")
-#
-#     # Define open and closed queries and counts
-#     print("............................Defining open query")
-#     open_query = open_sub_post_reports | open_sub_comment_reports
-#     print("............................Defining closed query")
-#     closed_query = closed_sub_post_reports | closed_sub_comment_reports
-#     print("............................Defining open count")
+#     open_query = open_posts_q | open_comments_q
 #     open_report_count = open_query.count()
-#     print("............................Defining closed count")
+#
+#     closed_query = closed_posts_q | closed_comments_q
 #     closed_report_count = closed_query.count()
 #
-#     print("..............Setting and paginating query")
-#
-#     if (status == 'open'):
-#         query = open_query.order_by(open_query.c.datetime.desc())
-#         query = query.paginate(page, 50)
-#     elif (status == 'closed'):
-#         query = closed_query.order_by(closed_query.c.datetime.desc())
-#         query = query.paginate(page, 50)
+#     if (status == "open"):
+#         query = open_query.order_by(closed_query.c.datetime.desc()).paginate(page, 50)
 #     else:
-#         return jsonify(msg=_('Invalid status request')), 400
+#         query = closed_query.order_by(closed_query.c.datetime.desc()).paginate(page, 50)
 #
 #     return {'query': list(query.dicts()), 'open_report_count': str(open_report_count), 'closed_report_count': str(closed_report_count)}
+
+
+
+
+def getReports(view, status, page, *args, **kwargs):
+    sid = kwargs.get('sid', None)
+    # Options need to include:
+    # - whether this is coming from a mod view or admin view
+    # - whether this is for a single sub, or all subs user is mod
+    # - whether the query is for open or closed reports
+    # Need to return:
+    # - open or closed reports list for this sub or all subs
+    # - open and closed report counts for this sub or all subs
+
+    # Get Subs for which user is Mod
+    mod_subs = getModSubs(current_user.uid, 1)
+    print("..............BEGIN POST REPORT QUERY")
+
+    # Get all reports on posts and comments for requested subs,
+    Reported = User.alias()
+    all_post_reports = SubPostReport.select(
+        Value('post').alias('type'),
+        SubPostReport.id,
+        SubPostReport.pid,
+        Value(None).alias('cid'),
+        User.name.alias('reporter'),
+        Reported.name.alias('reported'),
+        SubPostReport.datetime,
+        SubPostReport.reason,
+        SubPostReport.open,
+        Sub.name.alias('sub')
+    ).join(User, on=User.uid == SubPostReport.uid) \
+        .switch(SubPostReport).join(SubPost).join(Sub) \
+        .join(Reported, on=Reported.uid == SubPost.uid)
+
+    print("..............First If, 'sid'")
+
+    # return sub_post_reports as reports for the requested subs
+    if sid:
+        # check if current user has access to these reports
+        return
+        if (current_user.is_mod(sid, 1) or current_user.is_admin()):
+            sub_post_reports = all_post_reports.where(Sub.sid == sid)
+        else:
+            return jsonify(msg=_('You do not have access to these reports.')), 403
+
+
+    print("..............Second If, 'view'")
+
+    # filter by if Mod or Admin view
+    if (view == 'admin'):
+        sub_post_reports = sub_post_reports.where(SubPostReport.send_to_admin == True)
+    else:
+        sub_post_reports = all_post_reports.where(SubMod.user == current_user.uid)
+
+    print("..............Filter by status")
+
+    # filter by requested status
+    open_sub_post_reports = sub_post_reports.where(SubPostReport.open == True)
+    closed_sub_post_reports = sub_post_reports.where(SubPostReport.open == False)
+
+    print("..............Do it all again for comments")
+
+    # Do it all again for comments
+    Reported = User.alias()
+    all_comment_reports = SubPostCommentReport.select(
+        Value('comment').alias('type'),
+        SubPostCommentReport.id,
+        SubPostComment.pid,
+        SubPostCommentReport.cid,
+        User.name.alias('reporter'),
+        Reported.name.alias('reported'),
+        SubPostCommentReport.datetime,
+        SubPostCommentReport.reason,
+        SubPostCommentReport.open,
+        Sub.name.alias('sub')
+     ).join(User, on=User.uid == SubPostCommentReport.uid) \
+         .switch(SubPostCommentReport).join(SubPostComment).join(SubPost).join(Sub) \
+         .join(Reported, on=Reported.uid == SubPostComment.uid)
+
+    print("..............Comments: First If, 'sid'")
+
+    # return sub_post_reports as reports for the requested subs
+    if (sid):
+        # check if current user has access to these reports
+        # return
+        if (current_user.is_mod(sid, 1) or current_user.is_admin()):
+            sub_comment_reports = all_comment_reports.where(Sub.sid == sid)
+        else:
+            return jsonify(msg=_('You do not have access to these reports.')), 403
+
+
+    print("..............Comments: Second If, 'view'")
+
+    # filter by if Mod or Admin view
+    if (view == 'admin'):
+        sub_comment_reports = sub_comment_reports.where(SubPostCommentReport.send_to_admin == True)
+    else:
+        sub_comment_reports = all_comment_reports.where(SubMod.user == current_user.uid)
+
+    print("..............Comments: Filter by status")
+
+    # filter by requested status
+    open_sub_comment_reports = sub_comment_reports.where(SubPostCommentReport.open == True)
+    closed_sub_comment_reports = sub_comment_reports.where(SubPostCommentReport.open == False)
+
+    print("..............Defining open and closed queries")
+
+    # Define open and closed queries and counts
+    print("............................Defining open query")
+    open_query = open_sub_post_reports | open_sub_comment_reports
+    print("............................Defining closed query")
+    closed_query = closed_sub_post_reports | closed_sub_post_reports
+    print("............................Defining open count")
+    open_report_count = open_query.count()
+    print("............................Defining closed count")
+    closed_report_count = closed_query.count()
+
+    print("..............Setting and paginating query")
+
+    if (status == 'open'):
+        query = open_query.order_by(open_query.c.datetime.desc())
+        query = query.paginate(page, 50)
+    elif (status == 'closed'):
+        query = closed_query.order_by(closed_query.c.datetime.desc())
+        query = query.paginate(page, 50)
+    else:
+        return jsonify(msg=_('Invalid status request')), 400
+
+    return {'query': list(query.dicts()), 'open_report_count': str(open_report_count), 'closed_report_count': str(closed_report_count)}
