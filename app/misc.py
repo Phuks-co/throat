@@ -843,7 +843,7 @@ def getPostList(baseQuery, sort, page):
             posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, 25)
         else:
             posts = baseQuery.order_by(
-                (SubPost.score * 20 + (fn.Unix_Timestamp(SubPost.posted) - 1134028003) / 1500).desc()).limit(
+                (SubPost.score * 20 + (fn.datetime(SubPost.posted, 'unixepoch') - 1134028003) / 1500).desc()).limit(
                 100).paginate(page, 25)
     return posts
 
@@ -1763,7 +1763,7 @@ def is_sub_mod(uid, sid, power_level, can_admin=False):
 
 def getReports(view, status, page, *args, **kwargs):
     # view = STR either 'mod' or 'admin'
-    # status = STR either 'open' or 'closed'
+    # status = STR: 'open', 'closed', or 'all'
     sid = kwargs.get('sid', None)
 
     # Get Subs for which user is Mod
@@ -1785,18 +1785,13 @@ def getReports(view, status, page, *args, **kwargs):
     ).join(User, on=User.uid == SubPostReport.uid) \
         .switch(SubPostReport)
 
-    # return sub_post_reports as reports for the requested subs
-    if (sid):
-        # check if current user has access to these reports
-        return
-        if (current_user.is_mod(sid, 1) or current_user.is_admin()):
-            sub_post_reports = all_post_reports.join(SubPost).join(Sub).where(Sub.sid == sid).switch(SubPostReport)
-        else:
-            return jsonify(msg=_('You do not have access to these reports.')), 403
-
-    # filter by if Mod or Admin view
-    if (view == 'admin'):
-        sub_post_reports = sub_post_reports.where(SubPostReport.send_to_admin == True)
+    # filter by if Mod or Admin view and if SID
+    if ((view == 'admin') and not sid):
+        sub_post_reports = all_post_reports.where(SubPostReport.send_to_admin == True).join(SubPost).join(Sub).join(SubMod)
+    elif ((view == 'admin') and sid):
+        sub_post_reports = all_post_reports.where(SubPostReport.send_to_admin == True).join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod)
+    elif ((view == 'mod') and sid):
+        sub_post_reports = all_post_reports.join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod).where(SubMod.user == current_user.uid)
     else:
         sub_post_reports = all_post_reports.join(SubPost).join(Sub).join(SubMod).where(SubMod.user == current_user.uid)
 
@@ -1822,17 +1817,14 @@ def getReports(view, status, page, *args, **kwargs):
      ).join(User, on=User.uid == SubPostCommentReport.uid) \
          .switch(SubPostCommentReport)
 
-    # return sub_post_reports as reports for the requested subs
-    if (sid):
-        # check if current user has access to these reports
-        if (current_user.is_mod(sid, 1) or current_user.is_admin()):
-            sub_comment_reports = all_comment_reports.join(SubPostComment).join(SubPost).join(Sub).where(Sub.sid == sid).switch(SubPostReport)
-        else:
-            return jsonify(msg=_('You do not have access to these reports.')), 403
 
-    # filter by if Mod or Admin view
-    if (view == 'admin'):
-        sub_comment_reports = sub_comment_reports.where(SubPostCommentReport.send_to_admin == True)
+    # filter by if Mod or Admin view and if SID
+    if ((view == 'admin') and not sid):
+        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.send_to_admin == True).join(SubPostComment).join(SubPost).join(Sub).join(SubMod)
+    elif ((view == 'admin') and sid):
+        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.send_to_admin == True).join(SubPostComment).join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod)
+    elif ((view == 'mod') and sid):
+        sub_comment_reports = all_comment_reports.join(SubPostComment).join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod).where(SubMod.user == current_user.uid)
     else:
         sub_comment_reports = all_comment_reports.join(SubPostComment).join(SubPost).join(Sub).join(SubMod).where(SubMod.user == current_user.uid)
 
@@ -1853,6 +1845,10 @@ def getReports(view, status, page, *args, **kwargs):
         query = query.paginate(page, 50)
     elif (status == 'closed'):
         query = closed_query.order_by(closed_query.c.datetime.desc())
+        query = query.paginate(page, 50)
+    elif (status == 'all'):
+        query = open_query | closed_query
+        query = query.order_by(closed_query.c.datetime.desc())
         query = query.paginate(page, 50)
     else:
         return jsonify(msg=_('Invalid status request')), 400

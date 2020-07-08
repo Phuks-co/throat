@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(sub, closed_reports, open_report_count, closed_report_count)
+@require(sub, reports)
 @def title():
 Mod |\
 @end
@@ -17,7 +17,7 @@ Mod |\
     <div class="admin section">
       <div class="col-12 admin-page-form">
         <div class="admin section stats">
-          @{_('Total Open Reports:' )} <a href="@{url_for('mod.reports_sub', sub=sub.name)}">@open_report_count</a>  |  @{_('Total Closed Reports:' )} @closed_report_count
+          @{_('Total Open Reports:' )} <a href="@{url_for('mod.reports_sub', sub=sub.name)}">@reports['open_report_count']</a>  |  @{_('Total Closed Reports:' )} @reports['closed_report_count']
           <div class="div-error error alertbox"></div>
 
           <table class="pure-table">
@@ -33,7 +33,7 @@ Mod |\
               </tr>
             </thead>
             <tbody>
-            @for report in closed_reports:
+            @for report in reports['query']:
             <tr>
               <td><div class="sub"><a href="@{ url_for('sub.view_sub', sub=report['sub']) }">@{ report['sub'] }</a></div></td>
               <td>

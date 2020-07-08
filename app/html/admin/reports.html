@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(reports, open_report_count, closed_report_count)
+@require(reports)
 @def title():
 Admin |\
 @end
@@ -17,7 +17,7 @@ Admin |\
 
       <div class="admin section users">
         <div class="col-12">
-          @{_('Total Open Reports:')} @open_report_count  |  @{_('Total Closed Reports:')} @closed_report_count
+          @{_('Total Open Reports:')} @reports['open_report_count']  |  @{_('Total Closed Reports:')} @reports['closed_report_count']
           <table class="pure-table">
             <thead>
               <tr>
@@ -31,7 +31,7 @@ Admin |\
               </tr>
             </thead>
             <tbody>
-            @for report in reports:
+            @for report in reports['query']:
             <tr>
               <td><div class="sub"><a href="@{ url_for('sub.view_sub', sub=report['sub']) }">@{ report['sub'] }</a></div></td>
               <td>
@@ -48,7 +48,7 @@ Admin |\
               @if report['open'] == True:
                 <td>@{_('Open')} <a data-type="@{report['type']}" data-id="@{report['id']!!s}" data-action="close" class="close-report">@{_('[x]')}</a></td>
               @else:
-                <td>@{_('Closed')}<a data-type="@{report['type']}" data-id="@{report['id']!!s}" data-action="reopen" class="close-report">@{_('reopen')}</a></td>
+                <td>@{_('Closed')}<a data-type="@{report['type']}" data-id="@{report['id']!!s}" data-action="reopen" class="close-report">@{_(' [reopen]')}</a></td>
               @end
             </tr>
             @end
