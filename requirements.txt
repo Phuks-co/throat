@@ -14,7 +14,6 @@ peewee
 tinycss2==0.6.1
 requests
 pillow
-pytest
 sendgrid
 bs4
 gevent
