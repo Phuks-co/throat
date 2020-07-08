@@ -32,10 +32,12 @@
                 <label for="noscroll" class="pure-checkbox">@{edituserform.noscroll.label.text!!s}</label>
                 @{edituserform.noscroll()}
             </div>
-            <div class="pure-control-group">
-                <label for="nochat" class="pure-checkbox">@{edituserform.nochat.label.text!!s}</label>
-                @{edituserform.nochat()}
-            </div>
+            @if config.site.enable_chat:
+              <div class="pure-control-group">
+                  <label for="nochat" class="pure-checkbox">@{edituserform.nochat.label.text!!s}</label>
+                  @{edituserform.nochat()}
+              </div>
+            @end
 
             <div class="pure-control-group">
                 <label for="nochat" class="pure-checkbox">@{edituserform.subtheme.label.text!!s}</label>

@@ -157,20 +157,22 @@
     @end
     @footer()
   </div>
-  @def chat():
-    @#...
-    @if not current_user.is_anonymous and 'nochat' not in current_user.prefs:
-    <div id="chpop" style="height: 1.65em">
-      <div id="chtitle" hid="true"><span id="cht-text">@{_('Chat')}</span> <div class="glyphbutton"><a href="/chat"><span class="p-icon " data-icon="resize"></span></a></div></div>
-      <div id="chcont"></div>
-      <div id="chbott" style="display: none"><input type="text" id="chsend" maxlength="250" placeholder="@{_('Type here')}"/></div>
-    </div>
+  @if config.site.enable_chat:
+    @def chat():
+      @#...
+      @if not current_user.is_anonymous and 'nochat' not in current_user.prefs:
+      <div id="chpop" style="height: 1.65em">
+        <div id="chtitle" hid="true"><span id="cht-text">@{_('Chat')}</span> <div class="glyphbutton"><a href="/chat"><span class="p-icon " data-icon="resize"></span></a></div></div>
+        <div id="chcont"></div>
+        <div id="chbott" style="display: none"><input type="text" id="chsend" maxlength="250" placeholder="@{_('Type here')}"/></div>
+      </div>
+      @end
     @end
+    @chat()
+    <script type="text/javascript">
+      window.chat = @{('nochat' not in current_user.prefs) and 'true' or 'false'};
+    </script>
   @end
-  @chat()
-  <script type="text/javascript">
-    window.chat = @{('nochat' not in current_user.prefs) and 'true' or 'false'};
-  </script>
   <script type="text/javascript" src="@{ asset_url_for('main.js') }"></script>
   <style>@{current_user.get_global_stylesheet()}</style>
   @def pagefoot():

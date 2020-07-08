@@ -14,6 +14,7 @@ cfg_defaults = { # key => default value
             "enable_security_question": False,
             "cas_authorized_hosts": [],
             "allow_uploads": False,
+            "enable_chat": True,
 
             "changelog_sub": None,
             "btc_address": None,
