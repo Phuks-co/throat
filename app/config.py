@@ -1,6 +1,8 @@
 """ Config manager """
 import os
 import yaml
+from flask import current_app
+from werkzeug.local import LocalProxy
 
 
 cfg_defaults = { # key => default value
@@ -91,11 +93,14 @@ class Map(dict):
 
 class Config(Map):
     """ Main config object """
-    def __init__(self):
-        with open('config.yaml','r') as stream:
-            self._cfg = yaml.safe_load(stream)
+    def __init__(self, config_filename=None):
+        if config_filename is None:
+            cfg = {}
+        else:
+            with open(config_filename, 'r') as stream:
+                cfg = yaml.safe_load(stream)
 
-        super(Config, self).__init__(self._cfg, cfg_defaults)
+        super(Config, self).__init__(cfg, cfg_defaults)
 
     def get_flask_dict(self):
         flattened = {}
@@ -108,4 +113,5 @@ class Config(Map):
                 flattened[key] = self[cpk][i]
         return flattened
 
-config = Config()
+
+config = LocalProxy(lambda: current_app.config['THROAT_CONFIG'])

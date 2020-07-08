@@ -11,7 +11,7 @@ from flask_webpack import Webpack
 from flask_babel import Babel, _
 from wheezy.html.utils import escape_html
 
-from .config import config
+from .config import Config, config
 from .forms import LoginForm, LogOutForm, CreateSubForm
 from .models import db_init_app, rconn
 from .views import do, subs as sub, api3, jwt
@@ -40,7 +40,7 @@ login_manager.anonymous_user = SiteAnon
 login_manager.login_view = 'login'
 
 
-def create_app():
+def create_app(config=Config('config.yaml')):
     app = Flask(__name__)
     app.jinja_env.cache = {}
     app.config['THROAT_CONFIG'] = config
