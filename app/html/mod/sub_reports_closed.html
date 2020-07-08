@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(reports)
+@require(sub, reports)
 @def title():
 Mod |\
 @end
@@ -11,13 +11,13 @@ Mod |\
 @def main():
 <div id="center-container">
   <div class="content">
-    <h1>@{_('Closed Reports')}</h1>
-    <p class="helper-text">@{_('Includes all closed reports for subs you can moderate.')}</p>
+    <h1>@{_('Closed Reports for ')} @{config.site.sub_prefix}/@{sub.name}</h1>
+    <p class="helper-text">@{_('Includes all closed reports this sub.')}</p>
 
     <div class="admin section">
       <div class="col-12 admin-page-form">
         <div class="admin section stats">
-          @{_('Total Open Reports')} <a href="@{url_for('mod.reports')}">@reports['open_report_count']</a>  |  @{_('Total Closed Reports')} @reports['closed_report_count']
+          @{_('Total Open Reports:' )} <a href="@{url_for('mod.reports_sub', sub=sub.name)}">@reports['open_report_count']</a>  |  @{_('Total Closed Reports:' )} @reports['closed_report_count']
           <div class="div-error error alertbox"></div>
 
           <table class="pure-table">

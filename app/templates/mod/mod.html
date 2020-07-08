@@ -25,15 +25,16 @@
                 <td>{{sub.subscribers}}</td>
               </tr>
               <tr>
-                <td>Open Reports</td>
+                <td><a href="{{url_for('mod.reports_sub', sub=sub.name)}}">Open Reports</a></td>
                 <td>{{sub.open_reports_count}}</td>
               </tr>
               <tr>
-                <td>Closed Reports</td>
+                <td><a href="{{url_for('mod.reports_sub_closed', sub=sub.name)}}">Closed Reports</a></td>
                 <td>{{sub.closed_reports_count}}</td>
               </tr>
             </tbody>
           </table>
+          <br />
           {% endfor %}
 
         </div>

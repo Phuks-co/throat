@@ -6,11 +6,13 @@ import _ from './utils/I18n';
 u.addEventForChild(document, 'click', '.close-report', function (e, qelem) {
   const errorbox = document.querySelector('.error');
 
+  let action = qelem.getAttribute('data-action');
+  console.log('ACTION:' + action)
   let id = qelem.getAttribute('data-id');
   let type = qelem.getAttribute('data-type');
 
   if (type == "comment") {
-    let uri = '/do/report/close_comment_report/' + id;
+    let uri = '/do/report/close_comment_report/' + id + '/' + action;
     u.post(uri, {},
       function (data) {
           if (data.status != "ok") {
@@ -25,7 +27,7 @@ u.addEventForChild(document, 'click', '.close-report', function (e, qelem) {
       });
   }
   else {
-    let uri = '/do/report/close_post_report/' + id;
+    let uri = '/do/report/close_post_report/' + id + '/' + action;
     u.post(uri, {},
       function (data) {
           if (data.status != "ok") {
