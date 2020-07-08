@@ -1194,39 +1194,6 @@ def getModSubs(uid, power_level):
     return subs
 
 
-def getSubReports(sid):
-    # returns all reports for the given sub, sorted by open and closed
-    reports = {'open': [], 'closed': []}
-
-    open_post_reports = SubPostReport.select() \
-        .join(SubPost) \
-        .where(SubPost.sid == sid) \
-        .where(SubPostReport.open == True)
-
-    open_post_comment_reports = SubPostCommentReport.select() \
-        .join(SubPostComment).where(SubPostComment.cid == SubPostCommentReport.cid) \
-        .join(SubPost).where(SubPost.pid == SubPostComment.pid) \
-        .join(Sub).where(SubPost.sid == sid) \
-        .where(SubPostCommentReport.open == True)
-
-    reports['open'] = open_post_reports + open_post_comment_reports
-
-    closed_post_reports = SubPostReport.select() \
-        .join(SubPost).where(SubPost.sid == sid) \
-        .where(SubPostReport.open == False)
-
-    closed_post_comment_reports = SubPostCommentReport.select() \
-        .join(SubPostComment).where(SubPostComment.cid == SubPostCommentReport.cid) \
-        .join(SubPost).where(SubPost.pid == SubPostComment.pid) \
-        .join(Sub).where(SubPost.sid == sid) \
-        .where(SubPostCommentReport.open == False)
-
-    reports['closed'] = closed_post_reports + closed_post_comment_reports
-
-    print('REPORTS RETURNED:', reports)
-    return reports
-
-
 @cache.memoize(5)
 def getUserGivenScore(uid):
     pos = SubPostVote.select().where(SubPostVote.uid == uid).where(SubPostVote.positive == 1).count()

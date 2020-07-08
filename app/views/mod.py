@@ -8,7 +8,7 @@ from flask_babel import _
 from .. import misc
 from ..models import UserMetadata, User, Sub, SubPost, SubPostComment
 from ..models import User, Sub, SubMod, SubPost, SubPostComment, UserMetadata, SubPostReport, SubPostCommentReport
-from ..misc import engine, getSubReports, getModSubs, getReports
+from ..misc import engine, getModSubs, getReports
 
 bp = Blueprint('mod', __name__)
 
@@ -29,12 +29,10 @@ def index():
         # get the sub sid
         this_sub = Sub.select().where(Sub.sid == sub.sid).get()
         sid = str(this_sub.sid)
-        # use sid to getSubReports
-        reports = getSubReports(sid)
-        # count open and closed reports
-        open_reports_count = reports['open'].count()
-        closed_reports_count = reports['closed'].count()
+        reports = getReports('mod', 'all', 1, sid=sid)
         # add open_report_count and closed_report_count as properties on sub
+        open_reports_count = reports['open_report_count']
+        closed_reports_count = reports['closed_report_count']
 
         updated_sub = {
             'name': str(this_sub.name) ,
