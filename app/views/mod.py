@@ -109,3 +109,21 @@ def reports_sub_closed(sub, page):
     reports = getReports('mod', 'closed', page, sid=sub.sid)
 
     return engine.get_template('mod/sub_reports_closed.html').render({'sub': sub, 'reports': reports})
+
+
+@bp.route("/reports/details/<sub>/<type>/<id>")
+@login_required
+def report_details(sub, type, id):
+    """ WIP: Report Details View """
+
+    try:
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+    except Sub.DoesNotExist:
+        abort(404)
+
+    if not (current_user.is_mod(sub.sid, 1) or current_user.is_admin()):
+        abort(404)
+
+    reports = getReports('mod', 'all', 1, type=type, report_id=id)
+
+    return engine.get_template('mod/reportdetails.html').render({'reports': reports})

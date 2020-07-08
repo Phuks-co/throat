@@ -843,7 +843,7 @@ def getPostList(baseQuery, sort, page):
             posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, 25)
         else:
             posts = baseQuery.order_by(
-                (SubPost.score * 20 + (fn.Unix_Timestamp(SubPost.posted) - 1134028003) / 1500).desc()).limit(
+                (SubPost.score * 20 + (fn.datetime(SubPost.posted, 'unixepoch') - 1134028003) / 1500).desc()).limit(
                 100).paginate(page, 25)
     return posts
 
@@ -1732,6 +1732,10 @@ def getReports(view, status, page, *args, **kwargs):
     # view = STR either 'mod' or 'admin'
     # status = STR: 'open', 'closed', or 'all'
     sid = kwargs.get('sid', None)
+    type = kwargs.get('type', None)
+    report_id = kwargs.get('report_id', None)
+    print("..........GOT TYPE:", type)
+    print("..........GOT ID:", report_id)
 
     # Get Subs for which user is Mod
     mod_subs = getModSubs(current_user.uid, 1)
@@ -1752,13 +1756,15 @@ def getReports(view, status, page, *args, **kwargs):
     ).join(User, on=User.uid == SubPostReport.uid) \
         .switch(SubPostReport)
 
-    # filter by if Mod or Admin view and if SID
+    # filter by if Mod or Admin view and if filtering by sub or specific post
     if ((view == 'admin') and not sid):
         sub_post_reports = all_post_reports.where(SubPostReport.send_to_admin == True).join(SubPost).join(Sub).join(SubMod)
     elif ((view == 'admin') and sid):
         sub_post_reports = all_post_reports.where(SubPostReport.send_to_admin == True).join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod)
     elif ((view == 'mod') and sid):
         sub_post_reports = all_post_reports.join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod).where(SubMod.user == current_user.uid)
+    elif ((report_id) and (type == 'post')):
+        sub_post_reports = all_post_reports.where(SubPostReport.id == report_id).join(SubPost).join(Sub).join(SubMod)
     else:
         sub_post_reports = all_post_reports.join(SubPost).join(Sub).join(SubMod).where(SubMod.user == current_user.uid)
 
@@ -1785,13 +1791,15 @@ def getReports(view, status, page, *args, **kwargs):
          .switch(SubPostCommentReport)
 
 
-    # filter by if Mod or Admin view and if SID
+    # filter by if Mod or Admin view and if filtering by sub or specific post
     if ((view == 'admin') and not sid):
         sub_comment_reports = all_comment_reports.where(SubPostCommentReport.send_to_admin == True).join(SubPostComment).join(SubPost).join(Sub).join(SubMod)
     elif ((view == 'admin') and sid):
         sub_comment_reports = all_comment_reports.where(SubPostCommentReport.send_to_admin == True).join(SubPostComment).join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod)
     elif ((view == 'mod') and sid):
         sub_comment_reports = all_comment_reports.join(SubPostComment).join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod).where(SubMod.user == current_user.uid)
+    elif ((report_id) and (type == 'comment')):
+        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.id == report_id).join(SubPostComment).join(SubPost).join(Sub).join(SubMod)
     else:
         sub_comment_reports = all_comment_reports.join(SubPostComment).join(SubPost).join(Sub).join(SubMod).where(SubMod.user == current_user.uid)
 
@@ -1801,9 +1809,17 @@ def getReports(view, status, page, *args, **kwargs):
     open_sub_comment_reports = sub_comment_reports.where(SubPostCommentReport.open == True)
     closed_sub_comment_reports = sub_comment_reports.where(SubPostCommentReport.open == False)
 
-    # Define open and closed queries and counts
-    open_query = open_sub_post_reports | open_sub_comment_reports
-    closed_query = closed_sub_post_reports | closed_sub_post_reports
+    # Define open and closed queries and counts depending on whether query is for specific post
+    if ((report_id) and (type == 'post')):
+        open_query = open_sub_post_reports
+        closed_query = closed_sub_post_reports
+    elif((report_id) and (type == 'comment')):
+        open_query = open_sub_comment_reports
+        closed_query = closed_sub_comment_reports
+    else:
+        open_query = open_sub_post_reports | open_sub_comment_reports
+        closed_query = closed_sub_post_reports | closed_sub_post_reports
+
     open_report_count = open_query.count()
     closed_report_count = closed_query.count()
 
