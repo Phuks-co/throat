@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(reports)
+@require(report, related_reports)
 @def title():
 Mod |\
 @end
@@ -12,50 +12,126 @@ Mod |\
 <div id="center-container">
   <div class="content">
     <h1>@{_('Report Details')}</h1>
-    <p class="helper-text">@{_('Details on this specific report.')}</p>
+    <div class="mod report header">
+      @if report['type'] == 'comment':
+        <h2>@{_('Comment Report')} # @{report['id']!!s}</h2>
+      @else:
+        <h2>@{_('Post Report')} # @{report['id']!!s}</h2>
+      @end
+      <div>
+        <button class="pure-button pure-button-primary button-xsmall btn-editpost">@{_('Close Report')}</button>
+        @if report['type'] == 'comment':
+          <button class="pure-button pure-button-primary button-xsmall btn-editpost">
+            @{_('Close All Reports for this Comment')}
+          </button>
+        @else:
+          <button class="pure-button pure-button-primary button-xsmall btn-editpost">
+            @{_('Close All Reports for this Post')}
+          </button>
+        @end
+      </div>
+    </div>
 
-    <div class="admin section">
+    <hr>
+
+    <div class="mod section">
       <div class="col-12 admin-page-form">
-        <div class="admin section stats">
           <div class="div-error error alertbox"></div>
-          <table class="pure-table">
-            <thead>
-              <tr>
-                <th>@{_('Sub')}</th>
-                <th>@{_('Type')}</th>
-                <th>@{_('Reporter')}</th>
-                <th>@{_('Reason')}</th>
-                <th>@{_('User reported')}</th>
-                <th>@{_('Time')}</th>
-                <th>@{_('Status')}</th>
-              </tr>
-            </thead>
-            <tbody>
-            @for report in reports['query']:
-            <tr>
-              <td><div class="sub"><a href="@{ url_for('sub.view_sub', sub=report['sub']) }">@{ report['sub'] }</a></div></td>
-              <td>
-                @if report['type'] == 'comment':
-                  <a href="@{url_for('sub.view_perm', sub=report['sub'], cid=report['cid'], pid=report['pid'])}">@{_('Comment')}</a>
-                @else:
-                <a href="@{url_for('sub.view_post', sub=report['sub'], pid=report['pid'])}">@{_('Post')}</a>
-                @end
-              </td>
-              <td><div class="username"><a href="@{ url_for('user.view', user=report['reporter']) }">@{ report['reporter'] }</a></div></td>
-              <td>@{report['reason']!!e}</td>
-              <td><div class="username"><a href="@{ url_for('user.view', user=report['reported']) }">@{ report['reported'] }</a></div></td>
-              <td><time-ago datetime="@{report['datetime'].isoformat()}Z"></time-ago></td>
-              @if report['open'] == True:
-                <td>@{_('Open')} <a data-type="@{report['type']}" data-id="@{report['id']!!s}" data-action="close" class="close-report">@{_('[x]')}</a></td>
-              @else:
-                <td>@{_('Closed')}<a data-type="@{report['type']}" data-id="@{report['id']!!s}" data-action="reopen" class="close-report">@{_(' [reopen]')}</a></td>
-              @end
-            </tr>
-            @end
-            </tbody>
-          </table>
 
-        </div>
+          <div class="mod report details">
+            <div class="report-details-row">
+              <span class="report-details-item"><span class="label">@{_('Sub')}:</span>
+                <a href="@{ url_for('sub.view_sub', sub=report['sub']) }">@{report['sub'] }</a>
+              </span>
+              <span class="report-details-item"><span class="label">@{_('Reason')}:</span>
+                @{report['reason']!!e}
+              </span>
+            </div>
+            <div class="report-details-row">
+              <span class="report-details-item"><span class="label">@{_('Reported User')}:</span>
+                  <a href="@{ url_for('user.view', user=report['reported']) }">@{report['reported'] }</a>
+              </span>
+              <span class="report-details-item"><span class="label">@{_('Reporter')}:</span>
+                <a href="@{ url_for('user.view', user=report['reporter']) }">@{report['reporter'] }</a>
+              </span>
+            </div>
+            <div class="report-details-row">
+              <span class="report-details-item"><span class="label">@{_('Time')}:</span>
+                <time-ago datetime="@{report['datetime'].isoformat()}Z"></time-ago>
+              </span>
+              <span class="report-details-item"><span class="label">@{_('Status')}:</span>
+                @if report['open'] == True:
+                  @{_('Open')} <a data-type="@{report['type']}" data-id="@{report['id']!!s}" data-action="close" class="close-report">@{_('[x]')}</a>
+                @else:
+                  @{_('Closed')}<a data-type="@{report['type']}" data-id="@{report['id']!!s}" data-action="reopen" class="close-report">@{_('[reopen]')}</a>
+                @end
+              </span>
+            </div>
+          </div>
+          <div>
+            <button class="pure-button pure-button-primary button-xsmall btn-editpost">@{_('Ban Reported User')}: @{report['reported']}</button>
+          </div>
+
+          <hr>
+
+          <div class="mod report preview">
+            <h3>Post Preview:</h3>
+            <div class="preview-text-container">
+              <div class="preview-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam fringilla non tortor eget egestas. Vivamus magna nulla, vestibulum ut sapien eget, pretium interdum ipsum. Phasellus ac egestas nisl.</div>
+            </div>
+            <div class="preview-meta-data">
+              <span class="meta-data-item">Jun 12, 2016 14:08</span>
+              <span class="meta-data-item"><a href="">Go to context</a></span>
+              <span>
+                @if report['type'] == 'comment':
+                  <button class="pure-button pure-button-primary button-xsmall btn-editpost">
+                    @{_('Delete Comment')}
+                  </button>
+                @else:
+                  <button class="pure-button pure-button-primary button-xsmall btn-editpost">
+                    @{_('Delete Post')}
+                  </button>
+                @end
+              </span>
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="mod report notes">
+            <h3>@{_('Mod notes on this report:')}</h3>
+            <div class="">Existing mod notes go here</div>
+            <div class="">Form to create new Mod Note</div>
+          </div>
+
+          <hr>
+
+          <div class="mod report related reports">
+            @if report['type'] == 'comment':
+              <h3>@{_('Other reports on this comment:')}</h3>
+            @else:
+              <h3>@{_('Other reports on this post:')}</h3>
+            @end
+            <table class="pure-table">
+              <thead>
+                <tr>
+                  <th>@{_('Time')}</th>
+                  <th>@{_('Reporter')}</th>
+                  <th>@{_('Reason')}</th>
+                  <th>@{_('Status')}</th>
+                </tr>
+              </thead>
+                <tr>
+                  <td>Time</td>
+                  <td>Reporter</td>
+                  <td>Reason</td>
+                  <td>Status</td>
+                </tr>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+
       </div>
     </div>
   </div>

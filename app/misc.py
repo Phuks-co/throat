@@ -1823,6 +1823,7 @@ def getReports(view, status, page, *args, **kwargs):
     open_report_count = open_query.count()
     closed_report_count = closed_query.count()
 
+    # Order and paginate queries
     if (status == 'open'):
         query = open_query.order_by(open_query.c.datetime.desc())
         query = query.paginate(page, 50)
@@ -1835,5 +1836,9 @@ def getReports(view, status, page, *args, **kwargs):
         query = query.paginate(page, 50)
     else:
         return jsonify(msg=_('Invalid status request')), 400
+
+    if (report_id and type):
+        # If only getting one report, this is a more usable format
+        return list(query.dicts())[0]
 
     return {'query': list(query.dicts()), 'open_report_count': str(open_report_count), 'closed_report_count': str(closed_report_count)}

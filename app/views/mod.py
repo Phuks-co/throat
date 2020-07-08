@@ -124,6 +124,6 @@ def report_details(sub, type, id):
     if not (current_user.is_mod(sub.sid, 1) or current_user.is_admin()):
         abort(404)
 
-    reports = getReports('mod', 'all', 1, type=type, report_id=id)
+    report = getReports('mod', 'all', 1, type=type, report_id=id)
 
-    return engine.get_template('mod/reportdetails.html').render({'reports': reports})
+    return engine.get_template('mod/reportdetails.html').render({'report': report, 'related_reports': 'test'})
