@@ -9,7 +9,7 @@ from flask_babel import _
 from .. import misc
 from ..forms import TOTPForm, LogOutForm, UseInviteCodeForm, AssignUserBadgeForm, EditModForm, BanDomainForm
 from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, SubPostCommentVote, SubPostVote, SiteMetadata
-from ..models import UserUploads, SubPostReport, SubPostCommentReport
+from ..models import UserUploads, SubPostReport, SubPostCommentReport, InviteCode
 from ..misc import engine, getReports
 from ..badges import badges
 
@@ -68,6 +68,7 @@ def index():
     downs += SubPostCommentVote.select().where(SubPostCommentVote.positive == 0).count()
 
     invite = UseInviteCodeForm()
+
     try:
         level = SiteMetadata.get(SiteMetadata.key == 'invite_level')
         maxcodes = SiteMetadata.get(SiteMetadata.key == 'invite_max')
@@ -83,8 +84,8 @@ def index():
 
     return render_template('admin/admin.html', subs=subs,
                            posts=posts, ups=ups, downs=downs, users=users,
-                           comms=comms,
-                           useinvitecodeform=invite, enable_posting=(ep == 'True'))
+                           comms=comms, useinvitecode=invite,
+                           enable_posting=(ep == 'True'))
 
 
 @bp.route("/users", defaults={'page': 1})
@@ -120,6 +121,39 @@ def userbadges():
     return render_template('admin/userbadges.html', badges=badges.items(),
                            assignuserbadgeform=AssignUserBadgeForm(),
                            ct=len(ct), admin_route='admin.userbadges')
+
+
+@bp.route("/invitecodes")
+@login_required
+def invitecodes():
+    """
+    View and configure Invite Codes
+    """
+    if not current_user.is_admin():
+        abort(404)
+
+    invite_settings = {
+        meta.key: meta.value
+        for meta in SiteMetadata.select().where(
+            SiteMetadata.key in ('useinvitecode', 'invite_level', 'invite_max'))
+    }
+
+    invite_codes = InviteCode.select(
+        InviteCode.code,
+        User.name.alias('referrer_user_name'),
+        InviteCode.created,
+        InviteCode.expires,
+        InviteCode.uses,
+        InviteCode.max_uses,
+    ).join(User).dicts()
+
+    invite = UseInviteCodeForm()
+    return render_template(
+        'admin/invitecodes.html',
+        useinvitecodeform=invite,
+        invite_settings=invite_settings,
+        invite_codes=invite_codes,
+    )
 
 
 @bp.route("/admins")
