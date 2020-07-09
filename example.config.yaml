@@ -70,7 +70,7 @@ app:
 
   # This will make all captchas valid, disable caching and rate limits
   # Always set to False in a production environment
-  testing: True
+  development: True
 
   # Available languages for users to select. This will also be used when trying to guess
   # the user's language.

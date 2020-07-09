@@ -79,7 +79,7 @@ def create_app(config=Config('config.yaml')):
                                'e': escape_html, 'markdown': misc.our_markdown, '_': _, 'get_locale': get_locale,
                                'BeautifulSoup': BeautifulSoup})
 
-    if app.config['TESTING']:
+    if config.app.development:
         import logging
         logging.basicConfig(level=logging.DEBUG)
         logging.getLogger("engineio.server").setLevel(logging.WARNING)
@@ -95,7 +95,7 @@ def create_app(config=Config('config.yaml')):
         """ Called after the request is processed. Used to time the request """
         if not app.debug and not current_user.is_admin():
             return response  # We won't do this if we're in production mode
-        if app.testing:
+        if app.config['THROAT_CONFIG'].app.development:
             response.headers.add('Access-Control-Allow-Origin', '*')
             response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE')
             response.headers.add('Access-Control-Allow-Headers', 'Content-Type,authorization')

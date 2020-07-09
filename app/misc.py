@@ -333,7 +333,7 @@ def ratelimit(limit, per=300, send_x_headers=True,
             rlimit = RateLimit(key, limit + 1, persecond, send_x_headers)
             g._view_rate_limit = rlimit
             if over_limit is not None and rlimit.over_limit:
-                if not config.app.testing:
+                if not config.app.testing and not config.app.development:
                     return over_limit()
             reslt = f(*args, **kwargs)
             if isinstance(reslt, tuple) and reslt[1] != 200:
@@ -1431,7 +1431,7 @@ def create_captcha():
 
 
 def validate_captcha(token, response):
-    if config.app.testing:
+    if config.app.testing or config.app.development:
         return True
     cap = rconn.get('cap-' + token)
     if cap:

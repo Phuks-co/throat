@@ -304,7 +304,7 @@ def create_sub():
              'csubform': form})
 
     level = misc.get_user_level(current_user.uid)[0]
-    if not config.app.testing and config.site.sub_creation_min_level != 0:
+    if not config.app.development and config.site.sub_creation_min_level != 0:
         if (level <= 1) and (not current_user.admin):
             return engine.get_template('sub/create.html').render(
                 {'error': _("You must be at least level %(level)i.", level=config.site.sub_creation_min_level),
