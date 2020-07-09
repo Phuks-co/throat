@@ -25,6 +25,8 @@ from bs4 import BeautifulSoup
 from functools import update_wrapper
 import misaka as m
 import sendgrid
+from flask_mail import Mail
+from flask_mail import Message as EmailMessage
 
 from .config import config
 from flask import url_for, request, g, jsonify, session
@@ -74,6 +76,8 @@ _engine = Engine(
     extensions=[EscapeExtension(), CoreExtension()]
 )
 engine = _engine
+
+mail = Mail()
 
 
 def engine_init_app(app):
@@ -581,15 +585,39 @@ def getInviteCodeInfo(uid):
     return info
 
 
-def sendMail(to, subject, content):
-    """ Sends a mail through sendgrid """
+def send_email(to, subject, text_content, html_content, sender=None):
+    if smtp_configured():
+        if sender is None:
+            sender = config.app.mail_default_from
+        send_email_with_smtp(sender, to, subject, text_content, html_content)
+    else:
+        if sender is None:
+            sender = config.sendgrid.default_from
+        send_email_with_sendgrid(sender, to, subject, html_content)
+
+
+def smtp_configured():
+    return "mail_server" in config.app
+
+
+def send_email_with_smtp(sender, recipients, subject, text_content, html_content):
+    if not isinstance(recipients, list):
+        recipients = [recipients]
+    msg = EmailMessage(subject, sender=sender, recipients=recipients)
+    msg.body = text_content
+    msg.html = html_content
+    mail.send(msg)
+
+
+def send_email_with_sendgrid(sender, to, subject, html_content):
+    """ Send a mail through sendgrid """
     sg = sendgrid.SendGridAPIClient(api_key=config.sendgrid.api_key)
 
     mail = sendgrid.helpers.mail.Mail(
-        from_email=config.sendgrid.default_from,
+        from_email=sender,
         to_emails=to,
         subject=subject,
-        html_content=content)
+        html_content=html_content)
 
     sg.send(mail)
 

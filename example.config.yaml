@@ -93,6 +93,14 @@ app:
   # Fallback language when there is no accept-language header sent by the browser
   fallback_language: 'en'
 
+  # If you uncomment the mail server, port and default_from address
+  # below, Throat will send email using SMTP instead of Sendgrid:
+  #mail_server: smtp.example.com
+  #mail_port: 587
+  #mail_use_tls: 1
+  #mail_username: throat
+  #mail_password: pass1234
+  #mail_default_from: throat@mail.example.com
 
 cache:
   # Caching strategy to use.

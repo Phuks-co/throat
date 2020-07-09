@@ -29,7 +29,7 @@ from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
-from ..misc import cache, sendMail, allowedNames, get_errors, engine
+from ..misc import cache, send_email, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata, UserSaved
 from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
@@ -1520,10 +1520,21 @@ def recovery():
         UserMetadata.create(uid=user.uid, key='recovery-key', value=rekey)
         UserMetadata.create(uid=user.uid, key='recovery-key-time', value=time.time())
 
-        sendMail(
+        send_email(
             subject='Password recovery',
             to=user.email,
-            content=_("""<h1><strong>%(lema)s</strong></h1>
+            text_content = _("""%(lema)s
+
+            Somebody (most likely you) has requested a password reset for your account.
+
+            To proceed, visit the following address (valid for the next 24 hours):
+
+            %(url)s
+
+            If you didn't request a password recovery, please ignore this email.
+            """, lema=config.site.lema, url=url_for('user.password_reset', key=rekey,
+                                                    uid=user.uid, _external=True)),
+            html_content=_("""<h1><strong>%(lema)s</strong></h1>
             <p>Somebody (most likely you) has requested a password reset for
             your account</p>
             <p>To proceed, visit the following address (valid for the next 24hs)</p>
@@ -1532,7 +1543,7 @@ def recovery():
             <p>If you didn't request a password recovery, please ignore this
             email</p>
             """, lema=config.site.lema, url=url_for('user.password_reset', key=rekey,
-                                            uid=user.uid, _external=True))
+                                                    uid=user.uid, _external=True))
         )
 
         return jsonify(status="ok")
