@@ -14,11 +14,11 @@ from ..forms import BanUserSubForm, CreateSubFlair, PostComment, CreateSubRule
 from .. import misc
 
 
-sub = Blueprint('sub', __name__)
+blueprint = Blueprint('sub', __name__)
 
 
-@sub.route("/<sub>/")
-@sub.route("/<sub>")
+@blueprint.route("/<sub>/")
+@blueprint.route("/<sub>")
 def view_sub(sub):
     """ Here we can view subs """
     if sub.lower() == "all":
@@ -43,7 +43,7 @@ def view_sub(sub):
         return redirect(url_for('sub.view_sub_hot', sub=sub.name))
 
 
-@sub.route("/<sub>/edit/css")
+@blueprint.route("/<sub>/edit/css")
 @login_required
 def edit_sub_css(sub):
     """ Here we can edit sub info and settings """
@@ -66,7 +66,7 @@ def edit_sub_css(sub):
     return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'error': False, 'storage': int(stor), 'files': ufiles})
 
 
-@sub.route("/<sub>/edit/flairs")
+@blueprint.route("/<sub>/edit/flairs")
 @login_required
 def edit_sub_flairs(sub):
     """ Here we manage the sub's flairs. """
@@ -86,7 +86,7 @@ def edit_sub_flairs(sub):
                            createflair=CreateSubFlair())
 
 
-@sub.route("/<sub>/edit/rules")
+@blueprint.route("/<sub>/edit/rules")
 @login_required
 def edit_sub_rules(sub):
     """ Here we manage the sub's rules. """
@@ -106,7 +106,7 @@ def edit_sub_rules(sub):
                            createrule=CreateSubRule())
 
 
-@sub.route("/<sub>/edit")
+@blueprint.route("/<sub>/edit")
 @login_required
 def edit_sub(sub):
     """ Here we can edit sub info and settings """
@@ -128,8 +128,8 @@ def edit_sub(sub):
         abort(403)
 
 
-@sub.route("/<sub>/sublog", defaults={'page': 1})
-@sub.route("/<sub>/sublog/<int:page>")
+@blueprint.route("/<sub>/sublog", defaults={'page': 1})
+@blueprint.route("/<sub>/sublog/<int:page>")
 def view_sublog(sub, page):
     """ Here we can see a log of mod/admin activity in the sub """
     try:
@@ -148,7 +148,7 @@ def view_sublog(sub, page):
     return engine.get_template('sub/log.html').render({'sub': sub, 'logs': logs, 'page': page})
 
 
-@sub.route("/<sub>/mods")
+@blueprint.route("/<sub>/mods")
 @login_required
 def edit_sub_mods(sub):
     """ Here we can edit moderators for a sub """
@@ -168,7 +168,7 @@ def edit_sub_mods(sub):
         abort(403)
 
 
-@sub.route("/<sub>/new.rss")
+@blueprint.route("/<sub>/new.rss")
 def sub_new_rss(sub):
     """ RSS feed for /sub/new """
     try:
@@ -182,14 +182,13 @@ def sub_new_rss(sub):
     fg.link(href=request.url_root, rel='alternate')
     fg.link(href=request.url, rel='self')
 
-    posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub.sid),
-                            'new', 1).dicts()
+    posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub.sid), 'new', 1).dicts()
 
     return Response(misc.populate_feed(fg, posts).atom_str(pretty=True), mimetype='application/atom+xml')
 
 
-@sub.route("/<sub>/new", defaults={'page': 1})
-@sub.route("/<sub>/new/<int:page>")
+@blueprint.route("/<sub>/new", defaults={'page': 1})
+@blueprint.route("/<sub>/new/<int:page>")
 def view_sub_new(sub, page):
     """ The index page, all posts sorted as most recent posted first """
     if sub.lower() == "all":
@@ -208,7 +207,7 @@ def view_sub_new(sub, page):
                                                    'subMods': misc.getSubMods(sub['sid'])})
 
 
-@sub.route("/<sub>/bannedusers")
+@blueprint.route("/<sub>/bannedusers")
 def view_sub_bans(sub):
     """ See banned users for the sub """
     try:
@@ -220,22 +219,22 @@ def view_sub_bans(sub):
     created_by = User.alias()
     banned = SubBan.select(user, created_by, SubBan.created, SubBan.reason, SubBan.expires)
     banned = banned.join(user, on=SubBan.uid).switch(SubBan).join(created_by, JOIN.LEFT_OUTER, on=SubBan.created_by_id)
-    banned = banned.where((SubBan.sid == sub.sid) & ((SubBan.effective == True) & ((SubBan.expires.is_null(True)) | (SubBan.expires > datetime.datetime.utcnow()) )))
+    banned = banned.where((SubBan.sid == sub.sid) & ((SubBan.effective == True) & ((SubBan.expires.is_null(True)) | (SubBan.expires > datetime.datetime.utcnow()))))
     banned = banned.order_by(SubBan.created.is_null(True), SubBan.created.desc())
 
     xbans = SubBan.select(user, created_by, SubBan.created, SubBan.reason, SubBan.expires)
     xbans = xbans.join(user, on=SubBan.uid).switch(SubBan).join(created_by, JOIN.LEFT_OUTER, on=SubBan.created_by_id)
 
     xbans = xbans.where(SubBan.sid == sub.sid)
-    xbans = xbans.where((SubBan.effective == False) | ((SubBan.expires.is_null(False)) & (SubBan.expires < datetime.datetime.utcnow()) ))
+    xbans = xbans.where((SubBan.effective == False) | ((SubBan.expires.is_null(False)) & (SubBan.expires < datetime.datetime.utcnow())))
     xbans = xbans.order_by(SubBan.created.is_null(True), SubBan.created.desc(), SubBan.expires.asc())
 
     return engine.get_template('sub/bans.html').render({'sub': sub, 'banned': banned, 'xbans': xbans,
                                                         'banuserform': BanUserSubForm(), 'submods': misc.getSubMods(sub.sid)})
 
 
-@sub.route("/<sub>/top", defaults={'page': 1})
-@sub.route("/<sub>/top/<int:page>")
+@blueprint.route("/<sub>/top", defaults={'page': 1})
+@blueprint.route("/<sub>/top/<int:page>")
 def view_sub_top(sub, page):
     """ The index page, /top sorting """
     if sub.lower() == "all":
@@ -254,8 +253,8 @@ def view_sub_top(sub, page):
                                                    'subMods': misc.getSubMods(sub['sid'])})
 
 
-@sub.route("/<sub>/hot", defaults={'page': 1})
-@sub.route("/<sub>/hot/<int:page>")
+@blueprint.route("/<sub>/hot", defaults={'page': 1})
+@blueprint.route("/<sub>/hot/<int:page>")
 def view_sub_hot(sub, page):
     """ The index page, /hot sorting """
     if sub.lower() == "all":
@@ -273,13 +272,14 @@ def view_sub_hot(sub, page):
                                                    'subMods': misc.getSubMods(sub['sid'])})
 
 
-@sub.route("/<sub>/<int:pid>")
+@blueprint.route("/<sub>/<int:pid>")
 def view_post(sub, pid, comments=False, highlight=None):
     """ View post and comments (WIP) """
     try:
         post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
-        abort(403)
+        return abort(404)
+
     if post['sub'].lower() != sub.lower():
         abort(404)
 
@@ -335,7 +335,7 @@ def view_post(sub, pid, comments=False, highlight=None):
                                                         'subMods': misc.getSubMods(sub['sid']), 'highlight': highlight})
 
 
-@sub.route("/<sub>/<pid>/<cid>")
+@blueprint.route("/<sub>/<pid>/<cid>")
 def view_perm(sub, pid, cid):
     """ Permalink to comment """
     # We get the comment...
