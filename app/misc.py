@@ -1163,11 +1163,6 @@ def getSubData(sid, simple=False, extra=False):
 
     if not simple:
         try:
-            data['videomode']
-        except KeyError:
-            data['videomode'] = 0
-
-        try:
             data['wiki']
         except KeyError:
             data['wiki'] = ''

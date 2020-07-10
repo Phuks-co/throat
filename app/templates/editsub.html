@@ -42,13 +42,6 @@
       </div>
 
       <div class="pure-control-group">
-        <label for="videomode" class="pure-checkbox">
-          {{editsubform.videomode(checked=True if metadata.videomode else False)}}
-          {{editsubform.videomode.label.text}}
-        </label>
-      </div>
-
-      <div class="pure-control-group">
         <label for="polling" class="pure-checkbox">
           {{editsubform.polling(checked=True if metadata.allow_polls else False)}}
           {{editsubform.polling.label.text}}

@@ -81,7 +81,6 @@ class EditSubForm(FlaskForm):
     nsfw = BooleanField(_l('Sub is NSFW'))
     restricted = BooleanField(_l('Only mods can post'))
     usercanflair = BooleanField(_l('Allow users to flair their own posts'))
-    videomode = BooleanField(_l('Enable video player (youtube links only)'))
     polling = BooleanField(_l('Enable polls'))
     subsort = RadioField(_l('Default sub page post sorting'),
                          choices=[('v', 'Hot'), ('v_two', 'New'),

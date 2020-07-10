@@ -244,7 +244,6 @@ def edit_sub(sub):
 
             sub.update_metadata('restricted', form.restricted.data)
             sub.update_metadata('ucf', form.usercanflair.data)
-            sub.update_metadata('videomode', form.videomode.data)
             sub.update_metadata('allow_polls', form.polling.data)
             sub.update_metadata('sublog_private', form.sublogprivate.data)
 
