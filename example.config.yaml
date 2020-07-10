@@ -29,6 +29,9 @@ site:
   # If False, only Admin can view the sitelog
   sitelog_public: True
 
+  # Forces all the sub logs to be public and removes the option to make them private.
+  force_sublog_public: True
+
   # Amount of time in seconds the post author can edit a post's title after the post
   # was created. Set to zero to disable title editing (default is 5 minutes)
   title_edit_timeout: 300

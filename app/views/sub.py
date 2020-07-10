@@ -5,14 +5,13 @@ from flask import Blueprint, redirect, url_for, abort, render_template, request,
 from flask_login import login_required, current_user
 from feedgen.feed import FeedGenerator
 from peewee import fn, JOIN
+from ..config import config
 from ..misc import engine
 from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption
 from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, UserSaved, SubMod, SubBan, SubRule
-from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditSubTextPostForm, EditMod2Form, EditSubRule
-from ..forms import EditSubLinkPostForm, BanUserSubForm, EditPostFlair, CreateSubFlair, PostComment, CreateSubRule
+from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditMod2Form, EditSubRule
+from ..forms import BanUserSubForm, CreateSubFlair, PostComment, CreateSubRule
 from .. import misc
-import json
-from playhouse.shortcuts import model_to_dict
 
 
 sub = Blueprint('sub', __name__)
@@ -139,10 +138,11 @@ def view_sublog(sub, page):
         abort(404)
 
     subInfo = misc.getSubData(sub.sid)
-    log_is_private = subInfo.get('sublog_private', 0) == '1'
+    if not config.site.force_sublog_public:
+        log_is_private = subInfo.get('sublog_private', 0) == '1'
 
-    if log_is_private and not (current_user.is_mod(sub.sid, 1) or current_user.is_admin()):
-        abort(404)
+        if log_is_private and not (current_user.is_mod(sub.sid, 1) or current_user.is_admin()):
+            abort(404)
 
     logs = SubLog.select().where(SubLog.sid == sub.sid).order_by(SubLog.lid.desc()).paginate(page, 50)
     return engine.get_template('sub/log.html').render({'sub': sub, 'logs': logs, 'page': page})
