@@ -1214,6 +1214,35 @@ def enable_posting(value):
     return redirect(url_for('admin.index'))
 
 
+
+@do.route("/do/admin/enable_registration/<value>")
+def enable_registration(value):
+    """ Isolation Mode: disable registration """
+    if not current_user.is_admin():
+        abort(404)
+
+    if value == 'True':
+        state = '1'
+    elif value == 'False':
+        state = '0'
+    else:
+        abort(400)
+
+    try:
+        sm = SiteMetadata.get(SiteMetadata.key == 'enable_registration')
+        sm.value = state
+        sm.save()
+    except SiteMetadata.DoesNotExist:
+        SiteMetadata.create(key='enable_registration', value=state)
+
+    if value == 'True':
+        misc.create_sitelog(misc.LOG_TYPE_ENABLE_REGISTRATION, current_user.uid)
+    else:
+        misc.create_sitelog(misc.LOG_TYPE_DISABLE_REGISTRATION, current_user.uid)
+
+    return redirect(url_for('admin.index'))
+
+
 @do.route("/do/save_post/<pid>", methods=['POST'])
 def save_post(pid):
     """ Save a post to your Saved Posts """
