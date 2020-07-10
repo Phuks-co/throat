@@ -38,7 +38,7 @@ inside the container for dev. `make down` will spin down the containerized servi
 
 ### Python tests
 
-1. Python, libmagic and gobject are required, but node, postgres and redis are not.
+1. Python, redis, libmagic and gobject are required, but node and postgres are not.
 2. Install dependencies with `pip install -r requirements.txt`
 3. Install the test dependencies with `pip install -r requirements-test.txt`
 4. Run the tests with `python -m pytest`
