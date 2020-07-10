@@ -328,4 +328,4 @@ def reports(page):
 
     reports = getReports('admin', 'all', page)
 
-    return engine.get_template('admin/reports.html').render({'reports': reports})
+    return engine.get_template('admin/reports.html').render({'reports': reports, 'page': page})

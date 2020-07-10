@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(reports)
+@require(reports, page)
 @def title():
 Mod |\
 @end
@@ -54,6 +54,12 @@ Mod |\
           </table>
         </div>
       </div>
+      @if page > 1:
+        <a href="@{url_for('mod.closed', page=(page-1))}" class="pure-button">@{_('Previous page')}</a>
+      @end
+      @if len(reports['query']) == 50:
+        <a href="@{url_for('mod.closed', page=(page+1))}" class="pure-button">@{_('Next page')}</a>
+      @end
     </div>
   </div>
 </div>
