@@ -86,5 +86,7 @@
 @end
 <hr>
 
-<a href="@{url_for('sub.view_sublog', sub=sub['name'])}" class="sbm-post pure-button">@{_('Sub Log')}</a>
+@if (subInfo.get('sublog_private', 0) != '1') or (current_user.uid in (subMods['all'])) or current_user.can_admin:
+  <a href="@{url_for('sub.view_sublog', sub=sub['name'])}" class="sbm-post pure-button">@{_('Sub Log')}</a>
+@end
 <a href="@{url_for('sub.view_sub_bans', sub=sub['name'])}" class="sbm-post pure-button">@{_('Banned Users')}</a>

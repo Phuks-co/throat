@@ -88,6 +88,7 @@ class EditSubForm(FlaskForm):
                                   ('v_three', 'Top')],
                          validators=[Optional()])
     sidebar = TextAreaField(_l('Sidebar text'), validators=[Length(max=8000)])
+    sublogprivate = BooleanField(_l('Make the sub log private'))
 
 
 class EditMod2Form(FlaskForm):
