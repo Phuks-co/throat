@@ -4,7 +4,10 @@ from peewee_migrate import Router
 from playhouse.db_url import connect
 import os
 import argparse
-from app.models import dbm as database
+from app import create_app
+from app.models import db as database
+
+app = create_app()
 
 router = Router(database, migrate_dir='../migrations' if os.getcwd().endswith('scripts') else 'migrations',
                 ignore=['basemodel'])
