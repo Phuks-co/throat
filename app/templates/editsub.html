@@ -55,6 +55,13 @@
         </label>
       </div>
 
+      <div class="pure-control-group">
+        <label for="sublogprivate" class="pure-checkbox">
+          {{editsubform.sublogprivate(checked=True if metadata.sublog_private else False)}}
+          {{editsubform.sublogprivate.label.text}}
+        </label>
+      </div>
+
       <h4>Default post sort</h4>
       {% for kl in editsubform.subsort %}
         <div class="pure-control-group">

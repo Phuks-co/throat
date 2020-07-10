@@ -52,7 +52,7 @@
 @end
 <hr>
 <a href="@{url_for('wiki.donate')}" class="sbm-post pure-button">@{_('Donate')}</a>
-@if current_user.is_authenticated:
+@if current_user.is_authenticated and (config.site.sitelog_public or current_user.can_admin):
 <hr>
 <a href="@{url_for('site.view_sitelog')}" class="sbm-post pure-button">@{_('Site logs')}</a>
 @end

@@ -1,10 +1,11 @@
 """ Miscellaneous site endpoints """
 from peewee import SQL
 from flask import Blueprint, redirect, url_for, abort, render_template
-from flask_login import login_required
+from flask_login import login_required, current_user
 from .. import misc
 from ..models import SiteLog, SubPost, SubLog, Sub, SubPostComment
 from ..misc import engine
+from ..config import config
 
 bp = Blueprint('site', __name__)
 
@@ -21,6 +22,10 @@ def chat():
 @login_required
 def view_sitelog(page):
     """ Here we can see a log of admin activity on the site """
+
+    if not config.site.sitelog_public and not current_user.can_admin:
+        abort(404)
+
     s1 = SiteLog.select(SiteLog.time, SiteLog.action, SiteLog.desc, SiteLog.link, SiteLog.uid, SQL("'' as sub"),
                         SiteLog.target)
     s2 = SubLog.select(SubLog.time, SubLog.action, SubLog.desc, SubLog.link, SubLog.uid, Sub.name.alias('sub'),

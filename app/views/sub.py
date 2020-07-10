@@ -138,6 +138,12 @@ def view_sublog(sub, page):
     except Sub.DoesNotExist:
         abort(404)
 
+    subInfo = misc.getSubData(sub.sid)
+    log_is_private = subInfo.get('sublog_private', 0) == '1'
+
+    if log_is_private and not (current_user.is_mod(sub.sid, 1) or current_user.is_admin()):
+        abort(404)
+
     logs = SubLog.select().where(SubLog.sid == sub.sid).order_by(SubLog.lid.desc()).paginate(page, 50)
     return engine.get_template('sub/log.html').render({'sub': sub, 'logs': logs, 'page': page})
 
