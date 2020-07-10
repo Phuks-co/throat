@@ -81,10 +81,16 @@ def index():
     except SiteMetadata.DoesNotExist:
         ep = 'True'
 
+    try:
+        er = 'True' if SiteMetadata.get(SiteMetadata.key == 'enable_registration').value == '1' else 'False'
+    except SiteMetadata.DoesNotExist:
+        er = 'True'
+
     return render_template('admin/admin.html', subs=subs,
                            posts=posts, ups=ups, downs=downs, users=users,
                            comms=comms,
-                           useinvitecodeform=invite, enable_posting=(ep == 'True'))
+                           useinvitecodeform=invite, enable_posting=(ep == 'True'),
+                           enable_registration=(er == 'True'))
 
 
 @bp.route("/users", defaults={'page': 1})

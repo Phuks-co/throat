@@ -64,6 +64,10 @@
                         Disabled registration without invite code
                     @elif log.action == 48:
                         Re-enabled registration
+                    @elif log.action == 49:
+                        Disabled new user registration
+                    @elif log.action == 50:
+                        Re-enabled new user registration
                     @else:
                         <i>[Type @{log.action!!s}]</i> @{log.desc}
                     @end
