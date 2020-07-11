@@ -50,7 +50,7 @@
 @end
 <hr>
 @if sub['sidebar'] != '':
-  @{func.our_markdown(sub['sidebar'])}
+  @{func.our_markdown(sub['sidebar'])!!html}
   <hr>
 @end
 

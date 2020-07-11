@@ -4,7 +4,7 @@
 @def content():
 <div id="center-container">
     <div class="content">
-        <h2>@{_('Sub log for <a href="%(url)s">/%(prefix)s/%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), prefix=config.site.sub_prefix, sub=sub.name)}</h2>
+        <h2>@{_('Sub log for <a href="%(url)s">/%(prefix)s/%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), prefix=config.site.sub_prefix, sub=sub.name)!!html}</h2>
         <table class="pure-table">
             <thead>
             <tr>
