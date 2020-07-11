@@ -12,6 +12,8 @@ import hashlib
 import re
 import gi
 
+from mutagen.mp4 import MP4
+from mutagen.m4a import M4A
 gi.require_version('GExiv2', '0.10')  # noqa
 from gi.repository import GExiv2
 import bcrypt
@@ -1090,12 +1092,19 @@ def getUserBadges(uid):
     return ret
 
 
-def clear_metadata(path: str):
-    exif = GExiv2.Metadata()
-    exif.open_path(path)
-    exif.clear_exif()
-    exif.clear_xmp()
-    exif.save_file(path)
+def clear_metadata(path: str, mime_type: str):
+    if mime_type in ('image/jpeg', 'image/png'):
+        exif = GExiv2.Metadata()
+        exif.open_path(path)
+        exif.clear()
+        exif.save_file(path)
+    elif mime_type == 'video/mp4':
+        video = MP4(path)
+        video.clear()
+        video.save()
+    elif mime_type == 'video/webm':
+        # XXX: Mutagen doesn't seem to support webm files
+        pass
 
 
 def upload_file(max_size=16777216):
@@ -1141,8 +1150,7 @@ def upload_file(max_size=16777216):
             os.remove(fpath)
             return _("File size exceeds the maximum allowed size (%(size)i MB)", size=max_size / 1024 / 1024), False
         # remove metadata
-        if mtype not in ('image/gif', 'video/mp4', 'video/webm'):  # Apparently we cannot write to gif images
-            clear_metadata(fpath)
+        clear_metadata(fpath, mtype)
     return f_name, True
 
 
