@@ -1,3 +1,4 @@
+boto3
 wheel
 Flask>=1.0.2 
 wtforms>=2.3.0

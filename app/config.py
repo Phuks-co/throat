@@ -75,6 +75,7 @@ cfg_defaults = {  # key => default value
             "fallback_language": "en",
             "testing": False
         },
+        "aws": {},
         "database": {}
     }
 

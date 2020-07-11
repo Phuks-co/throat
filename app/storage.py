@@ -23,7 +23,71 @@ class SizeLimitExceededError(Exception):
 
 FILE_NAMESPACE = uuid.UUID('acd2da84-91a2-4169-9fdb-054583b364c4')
 
-storage = Storage()
+ISO8601 = '%Y-%m-%dT%H:%M:%SZ'
+
+class objectview(object):
+    def __init__(self, d):
+        self.__dict__ = d
+
+class S3Storage:
+    def __init__(self):
+        self.s3 = None
+        self.app = None
+        self.container = None
+
+    def init_app(self, app):
+        self.app = app
+        config = app.config['THROAT_CONFIG']
+        self.container = config.storage.container
+        import boto3
+        if "key" in config.storage.keys():
+            # Region? For the moment I'm just going to assume that a key has been set that will get the region right, the
+            # libcloud region set is going to be a pain to deal with, and eventually incomplete.
+            session = boto3.Session(aws_access_key_id=config.storage.key, aws_secret_access_key=config.storage.secret)
+            self.s3 = session.client("s3")
+        else:
+            self.s3 = boto3.client("s3")
+
+    def get(self, filename):
+        # Using head here because we never use the object directly
+        try:
+            head = self.s3.head_object(Bucket=self.container, Key=filename)
+            return objectview({
+                'size': head['ContentLength'],
+                'name': filename
+            })
+        except:
+            return None
+
+    def delete(self, filename):
+        self.s3.delete_object(Bucket=self.container, Key=filename)
+
+    def upload(self, fullpath, name=None, **kwargs):
+        if 'acl' in kwargs:
+            kwargs['ACL'] = kwargs['acl']
+            del kwargs['acl']
+        if 'content_type' in kwargs:
+            kwargs['ContentType'] = kwargs['content_type']
+            del kwargs['content_type']
+        self.s3.upload_file(
+                    fullpath,
+                    Bucket=self.container,
+                    Key=name,
+                    ExtraArgs=kwargs
+                )
+        return objectview({'name': name})
+
+
+storage = None
+
+
+def storage_init_app(app):
+    global storage
+    if 'S3' in app.config['THROAT_CONFIG'].storage.provider:
+        storage = S3Storage()
+    else:
+        storage = Storage()
+    storage.init_app(app)
 
 
 def make_url(storage, cfg, name):

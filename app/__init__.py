@@ -62,7 +62,7 @@ def create_app(config=Config('config.yaml')):
     engine_init_app(app)
     if 'MAIL_SERVER' in app.config:
         mail.init_app(app)
-    storage.storage.init_app(app)
+    storage.storage_init_app(app)
     # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 
     app.register_blueprint(home)
