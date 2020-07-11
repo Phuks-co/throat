@@ -1,6 +1,7 @@
 # -*- coding: utf-8
 """ Here is where all the good stuff happens """
 
+from urllib.parse import urlparse
 import time
 import socket
 import datetime
@@ -55,6 +56,18 @@ def create_app(config=Config('config.yaml')):
     if 'STORAGE_ALLOWED_EXTENSIONS' not in app.config:
         app.config['STORAGE_ALLOWED_EXTENSIONS'] = storage.allowed_extensions
 
+    csp = { 'default-src': '\'self\'' }
+    media_servers = [ '\'self\'' ]
+    for url in [config.storage.thumbnails.url, config.storage.uploads.url]:
+        parsed = urlparse(url)
+        host = f'{parsed.scheme}://{parsed.netloc}'
+        if host not in media_servers:
+            media_servers.append(host)
+    csp['img-src'] = media_servers + ['data:']
+    csp['media-src'] = media_servers
+    csp['style-src'] = [ '\'self\'', '\'unsafe-inline\'']
+    talisman.init_app(app, content_security_policy=csp)
+
     babel.init_app(app)
     jwt.init_app(app)
     webpack.init_app(app)
@@ -69,7 +82,6 @@ def create_app(config=Config('config.yaml')):
         mail.init_app(app)
     storage.storage_init_app(app)
     auth_provider.init_app(app)
-    talisman.init_app(app)
     # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 
     app.register_blueprint(home)
