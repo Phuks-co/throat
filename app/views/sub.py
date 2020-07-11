@@ -335,18 +335,15 @@ def view_post(sub, pid, comments=False, highlight=None):
                                                         'subMods': misc.getSubMods(sub['sid']), 'highlight': highlight})
 
 
-@blueprint.route("/<sub>/<pid>/<cid>")
+@blueprint.route("/<sub>/<int:pid>/<cid>")
 def view_perm(sub, pid, cid):
     """ Permalink to comment """
     # We get the comment...
     try:
-        the_comment = SubPostComment.select().where(SubPostComment.cid == cid).dicts()[0]
+        SubPostComment.select().where(SubPostComment.cid == cid).dicts()[0]
     except (SubPostComment.DoesNotExist, IndexError):
         abort(404)
 
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
-    if not comments.count():
-        comments = []
-    else:
-        comment_tree = misc.get_comment_tree(comments, cid, uid=current_user.uid)
+    comment_tree = misc.get_comment_tree(comments, cid, uid=current_user.uid)
     return view_post(sub, pid, comment_tree, cid)
