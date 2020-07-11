@@ -21,6 +21,10 @@ site:
   # (by default it's only admins and users authorized through a metadata key)
   allow_uploads: False
 
+  # Minimum level a user must have before being able to upload files.
+  # Set to zero to disable file upload level limits
+  upload_min_level: 0
+
   # Allow chat access for all users
   # If True, each user will have the option of disabling chat for themselves
   enable_chat: True

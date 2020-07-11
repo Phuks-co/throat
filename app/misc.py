@@ -117,7 +117,9 @@ class SiteUser(object):
             self.admin = False
 
         self.canupload = True if ('canupload' in self.prefs) or self.admin else False
-        if config.site.allow_uploads:
+        if config.site.allow_uploads and config.site.upload_min_level == 0:
+            self.canupload = True
+        elif config.site.allow_uploads and (config.site.upload_min_level <= get_user_level(self, self.score)[0]):
             self.canupload = True
 
     def __repr__(self):
