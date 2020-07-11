@@ -37,7 +37,7 @@ from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, Us
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db, SubPostReport, SubPostCommentReport
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair, InviteCode
 from .models import SubMod, SubBan
-from .storage import store_thumbnail, thumbnail_url
+from .storage import store_thumbnail, file_url, thumbnail_url
 from peewee import JOIN, fn, SQL, NodeList, Value
 import requests
 import logging
