@@ -151,10 +151,11 @@ class Config(Map):
             self.storage['server_url'] = self.storage['server_url'][:-1]
         self.storage.thumbnails.url = '' if self.storage.thumbnails.url is None else self.storage.thumbnails.url
         self.storage.uploads.url = '' if self.storage.uploads.url is None else self.storage.uploads.url
-        for key in ['provider', 'key', 'secret', 'server', 'server_url']:
+        for key in ['provider', 'key', 'secret', 'container', 'server', 'server_url']:
             if key in self.storage:
                 flattened[f'STORAGE_{key}'.upper()] = self.storage[key]
-        flattened['STORAGE_CONTAINER'] = self.storage.uploads.path;
+        if self.storage['provider'] == 'LOCAL':
+            flattened['STORAGE_CONTAINER'] = self.storage.uploads.path;
         return flattened
 
 
