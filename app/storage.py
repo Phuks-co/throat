@@ -7,6 +7,7 @@ from mutagen.mp4 import MP4
 import gi
 gi.require_version('GExiv2', '0.10')  # noqa
 from gi.repository import GExiv2
+from contextlib import ExitStack
 import hashlib
 import jinja2
 
@@ -43,11 +44,12 @@ def file_url(name):
 
 
 def thumbnail_url(name):
-    if config.storage.thumbnails.path == config.storage.uploads.path:
-        return make_url(storage, config.storage.thumbnails, name)
-    else:
-        with storage.use(config.storage.thumbnails.path) as thumbnail_storage:
-            return make_url(thumbnail_storage, config.storage.thumbnails, name)
+    with ExitStack() as stack:
+        stg = storage
+        if (config.storage.provider == 'LOCAL' and
+                config.storage.thumbnails.path != config.storage.uploads.path):
+            stg = stack.enter_context(storage.use(config.storage.thumbnails.path))
+        return make_url(stg, config.storage.thumbnails, name)
 
 
 def clear_metadata(path: str, mime_type: str):
@@ -143,11 +145,12 @@ def store_thumbnail(im, basename):
                                       acl=config.storage.acl).name
 
     filename = basename + '.jpg'
-    if config.storage.thumbnails.path == config.storage.uploads.path:
-        return find_existing_or_store_new(storage, im, filename)
-    else:
-        with storage.use(config.storage.thumbnails.path) as thumbnail_storage:
-            return find_existing_or_store_new(thumbnail_storage, im, filename)
+    with ExitStack() as stack:
+        stg = storage
+        if (config.storage.provider == 'LOCAL' and
+                config.storage.thumbnails.path != config.storage.uploads.path):
+            stg = stack.enter_context(storage.use(config.storage.thumbnails.path))
+        return find_existing_or_store_new(stg, im, filename)
 
 
 def mtype_from_file(ufile, allow_video_formats=True):
