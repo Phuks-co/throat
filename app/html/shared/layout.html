@@ -96,7 +96,7 @@
         @else:
         <a href="@{ url_for('user.view', user=current_user.name)}" class="smallcaps" id="unameb">@{current_user.name}</a>
         <span class="separator"></span>
-        <abbr title="@{_('Score')}" class="bold" id="postscore">@{current_user.score!!s}</abbr>
+        <abbr title="@{_('Score')}" class="bold" id="postscore">@{current_user.score}</abbr>
         <span class="separator"></span>
         <div class="glyphbutton">
           <a href="/settings"><span class="p-icon" data-icon="cog"></span></a>
@@ -105,7 +105,7 @@
           <a href="@{ url_for('messages.inbox_sort') }">
             <span class="hasmail">
               <span class="p-icon @{(current_user.notifications != 0) and 'hasmail' or ''}" data-icon="mail"></span>
-              <span id="mailcount" class="mailcount" @{(current_user.notifications == 0) and 'style="display:none;"' or ''}>@{current_user.notifications!!s}</span>
+              <span id="mailcount" class="mailcount" @{(current_user.notifications == 0) and 'style="display:none;"' or ''}>@{current_user.notifications}</span>
             </span>
           </a>
         </div>

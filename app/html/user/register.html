@@ -17,32 +17,32 @@
                 @end
 
                 <div class="pure-control-group">
-                    <label for="username">@{regform.username.label.text!!s}</label>
+                    <label for="username">@{regform.username.label.text}</label>
                     @{regform.username(required=True, pattern="[a-zA-Z0-9_-]+", title=_('Alphanumeric characters plus \'-\' and \'_\''))!!html}
                 </div>
                 @if func.enableInviteCode():
                 <div class="pure-control-group">
-                    <label for="invitecode">@{regform.invitecode.label.text!!s}</label>
+                    <label for="invitecode">@{regform.invitecode.label.text}</label>
                     @{regform.invitecode(autocomplete="off", required=True)!!html}
                 </div>
                 @end
                 <div class="pure-control-group">
-                    <label for="password">@{regform.password.label.text!!s}</label>
+                    <label for="password">@{regform.password.label.text}</label>
                     @{regform.password(autocomplete="off", required=True)!!html}
                 </div>
 
                 <div class="pure-control-group">
-                    <label for="confirm">@{regform.confirm.label.text!!s}</label>
+                    <label for="confirm">@{regform.confirm.label.text}</label>
                     @{regform.confirm(autocomplete="off", required=True)!!html}
                 </div>
 
                 <div class="pure-control-group">
-                    <label for="email">@{regform.email.label.text!!s}</label>
+                    <label for="email">@{regform.email.label.text}</label>
                     @{regform.email()!!html}
                 </div>
                 @if config.site.enable_security_question:
                 <div class="pure-control-group">
-                    <label for="email">@{regform.securityanswer.label.text!!s}</label>
+                    <label for="email">@{regform.securityanswer.label.text}</label>
                     <div style="display: inline-block;">
                         <b>@{func.pick_random_security_question()}</b> <br/>
                         @{regform.securityanswer()!!html}
@@ -54,7 +54,7 @@
                     <img src="data:image/png;base64,@{ regform.cap_b64 }"/>
                 </div>
                 <div class="pure-control-group">
-                    <label for="captcha">@{ regform.captcha.label.text!!s }</label>
+                    <label for="captcha">@{ regform.captcha.label.text }</label>
                     <input autocomplete="off" id="captcha" name="captcha" required="" type="text" value="">
                 </div>
                 <div class="pure-controls">

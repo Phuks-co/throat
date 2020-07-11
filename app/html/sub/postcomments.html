@@ -7,8 +7,8 @@
         <div id="comment-@{comment['cid']}">
           <div class="pull left votecomment" @{(comment['status'] == 1) and 'style="display:none;"' or ''}>
             @if comment['userstatus'] != 10:
-              <div title="@{_('Upvote')}" class="c-upvote @{(comment.get('positive') == True) and 'upvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="upvote"></div>
-              <div title="@{_('Downvote')}" class="c-downvote @{(comment.get('positive') == False) and 'downvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="downvote"></div>
+              <div title="@{_('Upvote')}" class="c-upvote @{(comment.get('positive') == True) and 'upvoted' or ''}" data-pid="@{post['pid']}" data-icon="upvote"></div>
+              <div title="@{_('Downvote')}" class="c-downvote @{(comment.get('positive') == False) and 'downvoted' or ''}" data-pid="@{post['pid']}" data-icon="downvote"></div>
             @end
           </div>
           <div class="commblock">
@@ -56,7 +56,7 @@
               <li><a href="@{url_for('sub.view_perm', sub=post['sub'], cid=comment['cid'], pid=post['pid'])}#comment-@{comment['cid']}">@{_('permalink')}</a></li>
               @if current_user.is_authenticated and not post['deleted']:
                 @if not current_user.is_subban(post['sid']):
-                  <li><a class="reply-comment" data-pid="@{comment['pid']!!s}" data-to="@{comment['cid']}">@{_('reply')}</a></li>
+                  <li><a class="reply-comment" data-pid="@{comment['pid']}" data-to="@{comment['cid']}">@{_('reply')}</a></li>
                 @end
                 @if comment['uid'] == current_user.uid and not comment['status'] == 1:
                   <li><a class="edit-comment" data-cid="@{comment['cid']}">@{_('edit')}</a></li>
@@ -79,7 +79,7 @@
         </div>
       </article>
     @else:
-        <a href="#" class="loadsibling" data-pid="@{post['pid']!!s}" data-key="@{comment.get('key', '')}" data-pcid="@{comment['pcid']}">
+        <a href="#" class="loadsibling" data-pid="@{post['pid']}" data-key="@{comment.get('key', '')}" data-pcid="@{comment['pcid']}">
         @if comment['more'] > 1:
           @{_('Load more (%(amt)i comments)', amt=comment['more'])}
         @else:

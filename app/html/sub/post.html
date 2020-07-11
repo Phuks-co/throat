@@ -43,15 +43,15 @@
 
 @def main():
 <div class="wholepost">
-  <div class="postbar post" pid="@{post['pid']!!s}">
+  <div class="postbar post" pid="@{post['pid']}">
     <div class="misctainer">
       <div class="votebuttons">
         @if post['userstatus'] != 10 and (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(days=60):
-          <div title="@{_('Upvote')}" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="upvote"></div>
-          <div class="score">@{post['score']!!s}</div>
-          <div title="@{_('Downvote')}" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="downvote"></div>
+          <div title="@{_('Upvote')}" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{post['pid']}" data-icon="upvote"></div>
+          <div class="score">@{post['score']}</div>
+          <div title="@{_('Downvote')}" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']}" data-icon="downvote"></div>
         @else:
-          <div class="score archived">@{post['score']!!s}</div>
+          <div class="score archived">@{post['score']}</div>
         @end
       </div>
       <div class="thcontainer">
@@ -68,7 +68,7 @@
         </a>
       </div>
     </div>
-    <div class="postinfo" id="postinfo" pid="@{post['pid']!!s}">
+    <div class="postinfo" id="postinfo" pid="@{post['pid']}">
       <div class="post-heading">
         @if post['nsfw'] or sub['nsfw']:
           <div class="nsfw" alt="@{_('Not safe for work')}">@{_('NSFW')}</div>
@@ -87,14 +87,14 @@
           @end
         @end
       </div>
-      <ul class="links" data-pid="@{post['pid']!!s}">
+      <ul class="links" data-pid="@{post['pid']}">
         @if post['link']:
           @if func.getDomain(post['link']) in ('youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'streamja.com', 'streamable.com', 'vimeo.com', 'vine.co', 'hooktube.com', 'www.hooktube.com', 'instaud.io'):
-            <li><div class="expando" data-pid="@{post['pid']!!s}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="play"></div></div></li>
+            <li><div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="play"></div></div></li>
           @elif post['link'].lower().endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
-            <li><div class="expando" data-pid="@{post['pid']!!s}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="image"></div></div></li>
+            <li><div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="image"></div></div></li>
           @elif post['link'].lower().endswith(('.mp4', '.webm', '.gifv')):
-            <li><div class="expando" data-pid="@{post['pid']!!s}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="play"></div></div></li>
+            <li><div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="play"></div></div></li>
           @end
         @end
         @if current_user.is_authenticated and post['deleted'] == 0:
@@ -103,19 +103,19 @@
           @end
 
           @if is_saved:
-            <li><a class="removesavedpost" data-pid="@{post['pid']!!s}">@{_('unsave')}</a></li>
+            <li><a class="removesavedpost" data-pid="@{post['pid']}">@{_('unsave')}</a></li>
           @else:
-            <li><a class="savepost" data-pid="@{post['pid']!!s}">@{_('save')}</a></li>
+            <li><a class="savepost" data-pid="@{post['pid']}">@{_('save')}</a></li>
           @end
           @if (subInfo.get('ucf', 0) == 1 and current_user.uid == post.uid) or current_user.uid in subMods['all']:
             <li><a class="editflair">@{_('flair')}</a></li>
           @end
           @if post['uid'] == current_user.uid:
             @if post['ptype'] != 1:
-              <li><a class="edit-post" data-pid="@{post['pid']!!s}">@{_('edit')}</a></li>
+              <li><a class="edit-post" data-pid="@{post['pid']}">@{_('edit')}</a></li>
             @end
             @if (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(seconds=config.site.title_edit_timeout):
-              <li><a class="edit-title" data-pid="@{post['pid']!!s}">@{_('edit title')}</a></li>
+              <li><a class="edit-title" data-pid="@{post['pid']}">@{_('edit title')}</a></li>
             @end
           @end
 
@@ -163,11 +163,11 @@
     <div style="display:none;" id="postflairs">
       <span class="closemsg">×</span>
       @if post['flair']:
-        <div>@{_('Current flair: <span class="postflair">%(flair)s</span>.', flair=e(post['flair']))} <a data-sub="@{post['sub']}" data-pid="@{post['pid']!!s}" href="#" id="remove-flair">@{_('Remove')}</a>.</div>
+        <div>@{_('Current flair: <span class="postflair">%(flair)s</span>.', flair=e(post['flair']))} <a data-sub="@{post['sub']}" data-pid="@{post['pid']}" href="#" id="remove-flair">@{_('Remove')}</a>.</div>
       @end
       <h4>@{_('Select a new flair')}</h4>
       @for ll in func.getSubFlairs(post['sid']):
-        <span class="selflair" data-sub="@{post['sub']}" data-flair="@{ll.xid!!s}" data-pid="@{post['pid']!!s}">@{ll.text}</span>
+        <span class="selflair" data-sub="@{post['sub']}" data-flair="@{ll.xid}" data-pid="@{post['pid']}">@{ll.text}</span>
       @end
     </div>
   @end
@@ -200,7 +200,7 @@
       @{commentform.comment(id="comment2", placeholder=commentform.comment.label.text, rows="6")!!html}
     </div>
     <div class="div-error error alertbox"></div>
-    <button type="submit" class="pure-button pure-button-primary btn-postcomment" data-cid="0" data-pid="@{post['pid']!!s}">@{_('Submit comment')}</button>
+    <button type="submit" class="pure-button pure-button-primary btn-postcomment" data-cid="0" data-pid="@{post['pid']}">@{_('Submit comment')}</button>
     <button data-pvid="ncme" class="pure-button btn-preview">@{_('Preview')}</button>
     <div class="cmpreview canclose" style="display:none;">
       <h4>@{_('Comment preview')}</h4>

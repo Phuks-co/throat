@@ -81,7 +81,7 @@
         @if sort_type in ('home.all_new'):
         // TODO: add for subs
         window.nposts = '/all/new';
-        window.blocked = @{current_user.blocksid!!s}
+        window.blocked = @{current_user.blocksid}
         @end
       @end
       @if sort_type in ('home.all_new', 'sub.view_sub_new') and current_user.likes_scroll():
