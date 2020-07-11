@@ -11,14 +11,14 @@
 @def meta_description():
 
     @if post['content']:
-        <meta name="description" content="@{''.join(BeautifulSoup(markdown(post['content'])).findAll(text=True)).replace('\n', ' ')!!e}"/>
+        <meta name="description" content="@{''.join(BeautifulSoup(markdown(post['content'])).findAll(text=True)).replace('\n', ' ')}"/>
     @else:
-        <meta name="description" content="@{sub['title']!!e}" />
+        <meta name="description" content="@{sub['title']}" />
     @end
 
     <meta property="og:site_name" content="@{config.site.lema}">
-    <meta property="og:description" content="@{_('Posted in %(prefix)s/%(sub)s by %(username)s', prefix=config.site.sub_prefix, sub=sub['name'], username=post['user'])!!e}">
-    <meta property="og:title" content="@{post['title']!!e}">
+    <meta property="og:description" content="@{_('Posted in %(prefix)s/%(sub)s by %(username)s', prefix=config.site.sub_prefix, sub=sub['name'], username=post['user'])}">
+    <meta property="og:title" content="@{post['title']}">
     @if post['thumbnail'] != '' and post['link'] != None:
     <meta property="og:image" content="@{config.storage.thumbnails.url}@{post['thumbnail']}">
     <meta property="og:ttl" content="600">
@@ -75,26 +75,26 @@
         @end
 
         @if post['flair']:
-          <span class="postflair">@{post['flair']!!e}</span>
+          <span class="postflair">@{post['flair']}</span>
         @end
 
         @if post['link'] == None:
-          <h1><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}" class="title">@{post['title']!!e}</a></h1>
+          <h1><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}" class="title">@{post['title']}</a></h1>
         @else:
-          <h1><a rel="noopener nofollow ugc" href="@{(post['deleted'] == 0) and post['link'] or '#'}" class="title">@{post['title']!!e}</a></h1>
+          <h1><a rel="noopener nofollow ugc" href="@{(post['deleted'] == 0) and post['link'] or '#'}" class="title">@{post['title']}</a></h1>
           @if post['deleted'] == 0:
-            <a href="/domain/@{func.getDomain(post['link'])!!e}" class="domain">(@{func.getDomain(post['link'])!!e})</a>
+            <a href="/domain/@{func.getDomain(post['link'])}" class="domain">(@{func.getDomain(post['link'])})</a>
           @end
         @end
       </div>
       <ul class="links" data-pid="@{post['pid']!!s}">
         @if post['link']:
           @if func.getDomain(post['link']) in ('youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'streamja.com', 'streamable.com', 'vimeo.com', 'vine.co', 'hooktube.com', 'www.hooktube.com', 'instaud.io'):
-            <li><div class="expando" data-pid="@{post['pid']!!s}" data-t="lnk" data-link="@{post['link']!!e}"><div class="icon expando-btn" data-icon="play"></div></div></li>
+            <li><div class="expando" data-pid="@{post['pid']!!s}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="play"></div></div></li>
           @elif post['link'].lower().endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
-            <li><div class="expando" data-pid="@{post['pid']!!s}" data-t="lnk" data-link="@{post['link']!!e}"><div class="icon expando-btn" data-icon="image"></div></div></li>
+            <li><div class="expando" data-pid="@{post['pid']!!s}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="image"></div></div></li>
           @elif post['link'].lower().endswith(('.mp4', '.webm', '.gifv')):
-            <li><div class="expando" data-pid="@{post['pid']!!s}" data-t="lnk" data-link="@{post['link']!!e}"><div class="icon expando-btn" data-icon="play"></div></div></li>
+            <li><div class="expando" data-pid="@{post['pid']!!s}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="play"></div></div></li>
           @end
         @end
         @if current_user.is_authenticated and post['deleted'] == 0:
@@ -167,7 +167,7 @@
       @end
       <h4>@{_('Select a new flair')}</h4>
       @for ll in func.getSubFlairs(post['sid']):
-        <span class="selflair" data-sub="@{post['sub']}" data-flair="@{ll.xid!!s}" data-pid="@{post['pid']!!s}">@{ll.text!!e}</span>
+        <span class="selflair" data-sub="@{post['sub']}" data-flair="@{ll.xid!!s}" data-pid="@{post['pid']!!s}">@{ll.text}</span>
       @end
     </div>
   @end
@@ -181,7 +181,7 @@
       <div id="postcontent">
         @{markdown(post['content'])!!html}
       </div>
-      <div id="post-source">@{post['content']!!e}</div>
+      <div id="post-source">@{post['content']}</div>
     @else:
       <div class="deleted">@{_('[deleted]')}</div>
     @end

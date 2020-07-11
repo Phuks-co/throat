@@ -25,9 +25,9 @@
       <div class="poll-option" data-oid="@{opt.id!!s}" data-votes="@{opt.votecount!!s}">
         <span class="poll-option-text">
           @if opt.id == pollData.get('voted_for'):
-            <b>@{opt.text!!e} @{_('(voted)')}</b>
+            <b>@{opt.text} @{_('(voted)')}</b>
           @else:
-            @{opt.text!!e}
+            @{opt.text}
           @end
         </span>
         <div class="poll-bar">

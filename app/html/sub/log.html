@@ -61,7 +61,7 @@
                     @elif log.action == 53:
                         @{_('Deleted a comment with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @else:
-                        <i>@{_('[Type %(type)i]', type=log.action)!!html}</i> @{log.desc!!e}
+                        <i>@{_('[Type %(type)i]', type=log.action)!!html}</i> @{log.desc}
                     @end
                 </td>
                 <td>

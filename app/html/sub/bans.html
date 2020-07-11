@@ -72,7 +72,7 @@
           @end
           </td>
           <td><a href="@{url_for('user.view', user=ban.user.name)}">@{ban.user.name}</a></td>
-          <td>@{ban.reason!!e}</td>
+          <td>@{ban.reason}</td>
           <td>
             @if ban.expires:
               <time-until datetime="@{ban.expires.isoformat()}Z">@{ban.expires.isoformat()}</time-until>\
@@ -127,7 +127,7 @@
         @end
         </td>
         <td><a href="@{url_for('user.view', user=ban.user.name)}">@{ban.user.name}</a></td>
-        <td>@{ban.reason!!e}</td>
+        <td>@{ban.reason}</td>
         <td>
         @if ban.expires:
           <time-ago datetime="@{ban.expires.isoformat()}Z">@{ban.expires.isoformat()}</time-ago> \

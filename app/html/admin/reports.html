@@ -42,7 +42,7 @@ Admin |\
                 @end
               </td>
               <td><div class="username"><a href="@{ url_for('user.view', user=report['reporter']) }">@{ report['reporter'] }</a></div></td>
-              <td>@{report['reason']!!e}</td>
+              <td>@{report['reason']}</td>
               <td><div class="username"><a href="@{ url_for('user.view', user=report['reported']) }">@{ report['reported'] }</a></div></td>
               <td><time-ago datetime="@{report['datetime'].isoformat()}Z"></time-ago></td>
               @if report['open'] == True:
