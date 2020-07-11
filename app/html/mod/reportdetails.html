@@ -10,7 +10,7 @@ Mod |\
 
 @def main():
 <div id="center-container">
-  <div class="content">
+  <div class="mod report content">
     <h1>@{_('Report Details')}</h1>
     <div class="mod report header">
       @if report['type'] == 'comment':
@@ -19,12 +19,6 @@ Mod |\
         <h2>@{_('Post Report')} # @{report['id']!!s}</h2>
       @end
       <div>
-
-        <!-- @if report['open'] == True:
-          @{_('Open')} <span class="close-report-button"><a data-type="@{report['type']}" data-id="@{report['id']!!s}" data-action="close" class="close-report">@{_('[x]')}</a></span>
-        @else:
-          @{_('Closed')}<span class="close-report-button"><a data-type="@{report['type']}" data-id="@{report['id']!!s}" data-action="reopen" class="close-report">@{_('[reopen]')}</a></span>
-        @end -->
 
         <!-- CLOSE REPORT -->
         @if report['open'] == True:
@@ -127,36 +121,45 @@ Mod |\
             <h3>@{_('Post Preview:')}</h3>
               <div class="preview-text-container">
                 <div class="preview-text">
-                  <h3>@{post['title']!!e}</h3>
-                  @if post['deleted'] != 2:
-                  <!-- need to account for Mod deleted posts still -->
-                    @if post['content']:
-                      <div id="postcontent">
-                        @{markdown(post['content'])}
-                      </div>
-                      <div id="post-source">@{post['content']!!e}</div>
+                  <div class="postinfo" id="postinfo" pid="@{report['pid']!!s}">
+                    @if post['deleted'] != 2:
+                      @if post['deleted'] == 1:
+                        @{_('[post deleted by mods]')}
+                      @end
+                      <h3>@{post['title']!!e}</h3>
+                      @if post['content']:
+                        <div id="postcontent">
+                          @{markdown(post['content'])}
+                        </div>
+                        <div id="post-source">@{post['content']!!e}</div>
+                      @else:
+                        <!-- need to account for other post types still -->
+                        @{_('[post preview could not be rendered]')}
+                      @end
                     @else:
-                      <!-- need to account for other post types still -->
-                      @{_('Post preview could not be rendered')}
+                      @{_('[post deleted by user]')}
                     @end
-                  @end
+                    <div id="delpostli"></div>
+                  </div>
                 </div>
               </div>
 
-              @else:
-              <h3>@{_('Comment Preview:')}</h3>
-                <div class="preview-text-container">
-                  <div class="preview-text">
-                    @if comment['status'] == 1:
-                      @{_('[Deleted]')}
-                    @else:
-                      @{comment['content']}
-                    @end
-                  </div>
+            @else:
+            <h3>@{_('Comment Preview:')}</h3>
+              <div class="preview-text-container">
+                <div class="preview-text">
+                  @if comment['status'] == 1:
+                    @{_('[Deleted]')}
+                    <!-- need to account for Mod deleted comments still -->
+                  @else:
+                    @{comment['content']}
+                  @end
                 </div>
-              @end
+              </div>
+            @end
 
             <div class="preview-meta-data">
+              <!-- Actually pull metadata date, etc -->
               <span class="meta-data-item">Jun 12, 2016 14:08</span>
               <span class="meta-data-item">
                 @if report['type'] == 'comment':
@@ -167,29 +170,21 @@ Mod |\
               </span>
               <span>
                 @if report['type'] == 'comment':
-                  <button class="pure-button pure-button-primary button-xsmall btn-editpost">
+                  <button class="pure-button pure-button-primary button-xsmall btn-editpost delete-comment" data-cid="@{report['cid']}">
                     @{_('Delete Comment')}
                   </button>
                 @else:
-                  <button class="pure-button pure-button-primary button-xsmall btn-editpost">
-                    @{_('Delete Post')}
-                  </button>
+                  @if post['deleted'] == 0:
+                    <button class="pure-button pure-button-primary button-xsmall btn-editpost delete-post" data-pid="@{str(report['pid'])}">
+                      @{_('Delete Post')}
+                    </button>
+                  @end
                 @end
               </span>
             </div>
-
           </div>
 
           <hr>
-
-          <div class="mod report notes">
-            <h3>@{_('Mod notes on this report:')}</h3>
-            <div class="">Existing mod notes go here</div>
-            <div class="">Form to create new Mod Note</div>
-          </div>
-
-          <hr>
-
           <div class="mod report related reports">
             @if report['type'] == 'comment':
               <h3>@{_('Other reports on this comment:')}</h3>

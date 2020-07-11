@@ -2003,6 +2003,12 @@ a.close-report {
   color: gray;
 }
 
+@media (min-width: 860px) {
+  .mod.report.content {
+    min-width: 650px;
+  }
+}
+
 .mod button {
   margin: 10px auto;
 }
