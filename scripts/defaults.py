@@ -5,6 +5,9 @@ import argparse
 
 from peewee import fn
 from app.models import Sub, SiteMetadata
+from app import create_app
+
+app = create_app()
 
 # Args
 parser = argparse.ArgumentParser(description='Manage default subs.')

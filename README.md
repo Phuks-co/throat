@@ -34,6 +34,15 @@ If you prefer to develop on docker
 `make up` will bring the containerized site up and mount your current working directory
 inside the container for dev. `make down` will spin down the containerized services.
 
+## Tests
+
+### Python tests
+
+1. Python, redis, libmagic and gobject are required, but node and postgres are not.
+2. Install dependencies with `pip install -r requirements.txt`
+3. Install the test dependencies with `pip install -r requirements-test.txt`
+4. Run the tests with `python -m pytest`
+
 ## Chat
 
 If you have any questions, you can reach us on #throat:phuks.co on [Matrix](https://chat.phoxy.win/#/login)

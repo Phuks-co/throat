@@ -4,7 +4,7 @@ from urllib.parse import urlparse, urljoin
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextField, TextAreaField
 from wtforms import BooleanField, HiddenField, SelectField
-from wtforms.validators import DataRequired, Length, Email, Required, EqualTo
+from wtforms.validators import DataRequired, Length, Email, EqualTo
 from wtforms.validators import Optional, Regexp
 from wtforms.fields.html5 import EmailField
 from flask_babel import lazy_gettext as _l
@@ -68,13 +68,13 @@ class RegistrationForm(FlaskForm):
     username = TextField(_l('Username'), [Length(min=2, max=32), Regexp(r'[a-zA-Z0-9_-]+')])
     email = EmailField(_l('Email Address (optional)'), validators=[OptionalIfFieldIsEmpty('email'), Email(_l("Invalid email address."))])
     password = PasswordField(_l('Password'), [
-        Required(),
+        DataRequired(),
         EqualTo('confirm', message=_l('Passwords must match')),
         Length(min=7, max=256)
     ])
     confirm = PasswordField(_l('Repeat Password'))
     invitecode = TextField(_l('Invite Code'))
-    accept_tos = BooleanField(_l('I accept the TOS'), [Required()])
+    accept_tos = BooleanField(_l('I accept the TOS'), [DataRequired()])
     captcha = TextField(_l('Captcha'))
     ctok = HiddenField()
     securityanswer = TextField(_l('Security question'))
@@ -82,24 +82,24 @@ class RegistrationForm(FlaskForm):
 
 class ChangePasswordForm(FlaskForm):
     password = PasswordField(_l('New password'), [
-        Required(),
+        DataRequired(),
         EqualTo('confirm', message=_l('Passwords must match')),
         Length(min=7, max=256),
     ])
-    confirm = PasswordField(_l('Repeat Password'), [Required()])
+    confirm = PasswordField(_l('Repeat Password'), [DataRequired()])
 
     oldpassword = PasswordField(_l('Your current password'), [
-        Required(),
+        DataRequired(),
         Length(min=7, max=256)
     ])
 
 
 class DeleteAccountForm(FlaskForm):
     password = PasswordField(_l('Your password'), [
-        Required(),
+        DataRequired(),
         Length(min=7, max=256),
     ])
-    consent = TextField(_l("Type 'YES' here"), [Required(), Length(max=10)])
+    consent = TextField(_l("Type 'YES' here"), [DataRequired(), Length(max=10)])
 
 
 class EditUserForm(FlaskForm):
@@ -144,7 +144,7 @@ class PasswordResetForm(FlaskForm):
     user = HiddenField()
     key = HiddenField()
     password = PasswordField(_l('Password'), [
-        Required(),
+        DataRequired(),
         EqualTo('confirm', message=_l('Passwords must match')),
         Length(min=7, max=256)
     ])

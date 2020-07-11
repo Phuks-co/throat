@@ -1,6 +1,8 @@
 """ Config manager """
 import os
 import yaml
+from flask import current_app
+from werkzeug.local import LocalProxy
 
 
 cfg_defaults = { # key => default value
@@ -14,6 +16,9 @@ cfg_defaults = { # key => default value
             "enable_security_question": False,
             "cas_authorized_hosts": [],
             "allow_uploads": False,
+            "enable_chat": True,
+            "sitelog_public": True,
+            "force_sublog_public": True,
 
             "changelog_sub": None,
             "btc_address": None,
@@ -49,7 +54,7 @@ cfg_defaults = { # key => default value
             "redis_url": 'redis://127.0.0.1:6379',
             "secret_key": 'yS\x1c\x88\xd7\xb5\xb0\xdc\t:kO\r\xf0D{"Y\x1f\xbc^\xad',
             "debug": True,
-            "testing": True,
+            "development": False,
             "wtf_csrf_time_limit": None,
             "max_content_length": 10485760,  # 10mb
             "fallback_language": "en"
@@ -90,11 +95,14 @@ class Map(dict):
 
 class Config(Map):
     """ Main config object """
-    def __init__(self):
-        with open('config.yaml','r') as stream:
-            self._cfg = yaml.safe_load(stream)
+    def __init__(self, config_filename=None):
+        if config_filename is None:
+            cfg = {}
+        else:
+            with open(config_filename, 'r') as stream:
+                cfg = yaml.safe_load(stream)
 
-        super(Config, self).__init__(self._cfg, cfg_defaults)
+        super(Config, self).__init__(cfg, cfg_defaults)
 
     def get_flask_dict(self):
         flattened = {}
@@ -107,4 +115,5 @@ class Config(Map):
                 flattened[key] = self[cpk][i]
         return flattened
 
-config = Config()
+
+config = LocalProxy(lambda: current_app.config['THROAT_CONFIG'])
