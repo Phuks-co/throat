@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(user, level, progress, postCount, commentCount, givenScore, badges, owns, mods, habits, msgform)
+@require(user, level, progress, postCount, commentCount, givenScore, invitecodeinfo, badges, owns, mods, habits, msgform)
 
 @def title():
 /u/@{user.name} |\
@@ -61,6 +61,26 @@
                         </div>
                     </div>
                 <div>
+                    @if invitecodeinfo and ((current_user.uid == user.uid) or current_user.is_admin()):
+                        <div class="userrow">
+                            <h2 style="text-align: center; margin-top: 2em;">@{_('Invite Info')}</h2>
+                            @if invitecodeinfo.get('invitedBy'):
+                                <div>
+                                    Invited by <a href="@{url_for('user.view', user=invitecodeinfo['invitedBy']['name'])}">@{invitecodeinfo['invitedBy']['name']}</a> with code @{invitecodeinfo['invitedBy']['code']}
+                                </div>
+                                <hr>
+                            @end
+                            @if invitecodeinfo.get('invitedTo'):
+                                <div>Invited Users:
+                                    <ul id="invitedUsers">
+                                    @for invited in invitecodeinfo['invitedTo']:
+                                        <li><a href="@{url_for('user.view', user=invited['name'])}">@{invited['name']}</a> with code @{invited['code']}</li>
+                                    @end
+                                    </ul>
+                                </div>
+                            @end
+                        </div>
+                    @end
                     @if len(badges) > 0:
                         <div class="userrow">
                             <h2 style="text-align: center; margin-top: 2em;">@{_('Badges')}</h2>
