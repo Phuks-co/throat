@@ -1635,8 +1635,10 @@ def delete_comment():
             misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_COMMENT, current_user.uid, post.sid,
                                comment=form.reason.data, link=url_for('site.view_post_inbox', pid=comment.pid),
                                admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
+            comment.status = 2
+        else:
+            comment.status = 1
 
-        comment.status = 1
         comment.save()
 
         q = Message.delete().where(Message.mlink == form.cid.data)

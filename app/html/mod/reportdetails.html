@@ -122,9 +122,9 @@ Mod |\
               <div class="preview-text-container">
                 <div class="preview-text">
                   <div class="postinfo" id="postinfo" pid="@{report['pid']!!s}">
-                    @if post['deleted'] != 2:
-                      @if post['deleted'] == 1:
-                        @{_('[post deleted by mods]')}
+                    @if post['deleted'] != 1:
+                      @if post['deleted'] == 2:
+                        @{_('[post deleted by mod or admin]')}
                       @end
                       <h3>@{post['title']!!e}</h3>
                       @if post['content']:
@@ -148,19 +148,26 @@ Mod |\
             <h3>@{_('Comment Preview:')}</h3>
               <div class="preview-text-container">
                 <div class="preview-text">
-                  @if comment['status'] == 1:
-                    @{_('[Deleted]')}
-                    <!-- need to account for Mod deleted comments still -->
+                  @if comment['status'] != 1:
+                    @if comment['status'] == 2:
+                      @{_('[comment deleted by mod or admin]')}
+                    @end
+                    <div id="commentcontent">@{comment['content']}</div>
                   @else:
-                    @{comment['content']}
+                    @{_('[comment deleted by user]')}
                   @end
                 </div>
               </div>
             @end
 
             <div class="preview-meta-data">
-              <!-- Actually pull metadata date, etc -->
-              <span class="meta-data-item">Jun 12, 2016 14:08</span>
+              <span class="meta-data-item">
+                @if report['type'] == 'comment':
+                  @{_('Posted')} <time-ago datetime="@{comment['time'].isoformat()}Z"></time-ago>
+                @else:
+                  @{_('Posted')} <time-ago datetime="@{post['posted'].isoformat()}Z"></time-ago>
+                @end
+              </span>
               <span class="meta-data-item">
                 @if report['type'] == 'comment':
                   <a href="@{url_for('sub.view_perm', sub=report['sub'], cid=report['cid'], pid=report['pid'])}">@{_('Go to comment')}</a>
