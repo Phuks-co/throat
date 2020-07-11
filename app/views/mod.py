@@ -56,7 +56,7 @@ def reports(page):
 
     reports = getReports('mod', 'open', page)
 
-    return engine.get_template('mod/reports.html').render({'reports': reports})
+    return engine.get_template('mod/reports.html').render({'reports': reports, 'page': page})
 
 
 @bp.route("/reports/closed", defaults={'page': 1})
@@ -70,7 +70,7 @@ def closed(page):
 
     reports = getReports('mod', 'closed', page)
 
-    return engine.get_template('mod/closed.html').render({'reports': reports})
+    return engine.get_template('mod/closed.html').render({'reports': reports, 'page': page})
 
 
 @bp.route("/reports/<sub>", defaults={'page': 1})
@@ -89,7 +89,7 @@ def reports_sub(sub, page):
 
     reports = getReports('mod', 'open', page, sid=sub.sid)
 
-    return engine.get_template('mod/sub_reports.html').render({'sub': sub, 'reports': reports})
+    return engine.get_template('mod/sub_reports.html').render({'sub': sub, 'reports': reports, 'page': page})
 
 
 @bp.route("/reports/closed/<sub>", defaults={'page': 1})
@@ -126,4 +126,4 @@ def report_details(sub, type, id):
 
     report = getReports('mod', 'all', 1, type=type, report_id=id)
 
-    return engine.get_template('mod/reportdetails.html').render({'report': report, 'related_reports': 'test'})
+    return engine.get_template('mod/sub_reports_closed.html').render({'sub': sub, 'reports': reports, 'page': page})

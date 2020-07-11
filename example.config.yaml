@@ -21,6 +21,17 @@ site:
   # (by default it's only admins and users authorized through a metadata key)
   allow_uploads: False
 
+  # Allow chat access for all users
+  # If True, each user will have the option of disabling chat for themselves
+  enable_chat: True
+
+  # Allow all users to view the site log
+  # If False, only Admin can view the sitelog
+  sitelog_public: True
+
+  # Forces all the sub logs to be public and removes the option to make them private.
+  force_sublog_public: True
+
   # Amount of time in seconds the post author can edit a post's title after the post
   # was created. Set to zero to disable title editing (default is 5 minutes)
   title_edit_timeout: 300
@@ -66,7 +77,7 @@ app:
 
   # This will make all captchas valid, disable caching and rate limits
   # Always set to False in a production environment
-  testing: True
+  development: True
 
   # Available languages for users to select. This will also be used when trying to guess
   # the user's language.

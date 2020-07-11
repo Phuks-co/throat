@@ -1,0 +1,15 @@
+@extends("shared/layout.html")
+@require(test)
+
+@def title():
+@{_('Register')} |\
+@end
+
+@def main():
+<div id="center-container">
+    <div class="content">
+      <h1>@{_('Register')}</h1>
+        <p>@{_('Registration has been temporarily disabled. Please check back later. We apologize for any inconvience.')}</p>
+    </div>
+</div>
+@end

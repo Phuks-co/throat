@@ -1,14 +1,12 @@
 from flask_socketio import SocketIO, join_room
 from flask_login import current_user
 from flask import request
-import redis
-from .config import config
+from .models import rconn
 import json
 from wheezy.html.utils import escape_html
 
 
 socketio = SocketIO()
-redis = redis.from_url(config.app.redis_url)
 #  The new stuff
 
 
@@ -16,8 +14,8 @@ redis = redis.from_url(config.app.redis_url)
 def chat_message(g):
     if g.get('msg') and current_user.is_authenticated:
         message = {'user': current_user.name, 'msg': escape_html(g.get('msg')[:250])}
-        redis.lpush('chathistory', json.dumps(message))
-        redis.ltrim('chathistory', 0, 20)
+        rconn.lpush('chathistory', json.dumps(message))
+        rconn.ltrim('chathistory', 0, 20)
         socketio.emit('msg', message, namespace='/snt', room='chat')
 
 
@@ -33,7 +31,7 @@ def handle_message():
 
 @socketio.on('getchatbacklog', namespace='/snt')
 def get_chat_backlog():
-    msgs = redis.lrange('chathistory', 0, 20)
+    msgs = rconn.lrange('chathistory', 0, 20)
     for m in msgs[::-1]:
         socketio.emit('msg', json.loads(m.decode()), namespace='/snt', room=request.sid)
 

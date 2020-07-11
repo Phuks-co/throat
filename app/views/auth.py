@@ -10,7 +10,7 @@ from flask_babel import _
 from .. import misc, config
 from ..forms import LoginForm, RegistrationForm
 from ..misc import engine
-from ..models import User, UserMetadata, InviteCode, SubSubscriber, rconn
+from ..models import User, UserMetadata, InviteCode, SubSubscriber, rconn, SiteMetadata
 
 bp = Blueprint('auth', __name__)
 
@@ -56,6 +56,14 @@ def register():
         return redirect(url_for('home.index'))
     form = RegistrationForm()
     form.cap_key, form.cap_b64 = misc.create_captcha()
+
+    try:
+        enable_registration = SiteMetadata.get(SiteMetadata.key == 'enable_registration')
+        if enable_registration.value in ('False', '0'):
+            return engine.get_template('user/registeration_disabled.html').render({'test': 'test'})
+    except SiteMetadata.DoesNotExist:
+        pass
+
     if not form.validate():
         return engine.get_template('user/register.html').render({'error': misc.get_errors(form, True), 'regform': form})
 

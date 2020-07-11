@@ -1,20 +1,22 @@
 """ Database and storage related functions and classes """
 import datetime
+import functools
 import sys
-import redis
 import copy
 from flask import g
+from flask_redis import FlaskRedis
 from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model, Database
 from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
 from playhouse.db_url import connect as db_url_connect
 from playhouse.flask_utils import FlaskDB
-from .config import config
 
-# Why not here? >_>
-rconn = redis.from_url(config.app.redis_url)
+rconn = FlaskRedis()
 
-def db_connect():
-    dbconnect = dict(config.database)
+db = Proxy()
+
+
+def db_init_app(app):
+    dbconnect = dict(app.config['THROAT_CONFIG'].database)
     # Taken from peewee's flask_utils
     try:
         name = dbconnect.pop('name')
@@ -41,13 +43,12 @@ def db_connect():
         raise RuntimeError('Database engine not a subclass of '
                             'peewee.Database: %s' % engine)
 
-    return database_class(name, **dbconnect)
+    dbm = database_class(name, **dbconnect)
+    dbm.execute = functools.partial(peewee_count_queries, dbm.execute)
+    db.initialize(dbm)
 
-dbm = db_connect()
-dex = dbm.execute
 
-
-def peewee_count_queries(*args, **kwargs):
+def peewee_count_queries(dex, *args, **kwargs):
     """ Used to count and display number of queries """
     try:
         if not hasattr(g, 'pqc'):
@@ -55,14 +56,8 @@ def peewee_count_queries(*args, **kwargs):
         g.pqc += 1
     except RuntimeError:
         pass
-    return dex(*args, **kwargs)
+    return dex (*args, **kwargs)
 
-
-dbm.execute = peewee_count_queries
-
-
-db = Proxy()
-db.initialize(dbm)
 
 
 class BaseModel(Model):

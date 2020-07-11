@@ -46,19 +46,25 @@ from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
 from wheezy.template.loader import FileLoader, autoreload
 
-engine = Engine(
-    loader=FileLoader([os.path.split(__file__)[0] + '/html']),
-    extensions=[CoreExtension()]
-)
-if config.app.debug:
-    engine = autoreload(engine)
-
-redis = redis.from_url(config.app.redis_url)
 
 # Regex that matches VALID user and sub names
 allowedNames = re.compile("^[a-zA-Z0-9_-]+$")
 WHITESPACE = "\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007" \
              "\u2008\u2009\u200a\u200b\u2029\u202f\u205f\u3000\u180e\u200b\u200c\u200d\u2060\ufeff\u00AD\ufffc "
+
+_engine = Engine(
+    loader=FileLoader([os.path.split(__file__)[0] + '/html']),
+    extensions=[CoreExtension()]
+)
+engine = _engine
+
+
+def engine_init_app(app):
+    global engine
+    if app.debug:
+        engine = autoreload(_engine)
+    else:
+        engine = _engine
 
 
 class SiteUser(object):
@@ -275,13 +281,13 @@ class RateLimit(object):
         self.limit = limit
         self.per = per
         self.send_x_headers = send_x_headers
-        p = redis.pipeline()
+        p = rconn.pipeline()
         p.incr(self.key)
         p.expireat(self.key, self.reset + self.expiration_window)
         self.current = min(p.execute()[0], limit)
 
     def decr(self):
-        p = redis.pipeline()
+        p = rconn.pipeline()
         p.decr(self.key)
         p.expireat(self.key, self.reset + self.expiration_window)
         self.current = min(p.execute()[0], self.limit)
@@ -327,7 +333,7 @@ def ratelimit(limit, per=300, send_x_headers=True,
             rlimit = RateLimit(key, limit + 1, persecond, send_x_headers)
             g._view_rate_limit = rlimit
             if over_limit is not None and rlimit.over_limit:
-                if not config.app.testing:
+                if not config.app.testing and not config.app.development:
                     return over_limit()
             reslt = f(*args, **kwargs)
             if isinstance(reslt, tuple) and reslt[1] != 200:
@@ -342,7 +348,7 @@ def ratelimit(limit, per=300, send_x_headers=True,
 def reset_ratelimit(per, scope_func=lambda: get_ip(), key_func=lambda: request.endpoint):
     reset = (int(time.time()) // per) * per + per
     key = 'rate-limit/%s/%s/%s' % (key_func(), scope_func(), reset)
-    redis.delete(key)
+    rconn.delete(key)
 
 
 def safeRequest(url, recieve_timeout=10):
@@ -372,14 +378,23 @@ def safeRequest(url, recieve_timeout=10):
     return r, f
 
 
-RE_AMENTION_BARE = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/' + config.site.sub_prefix + r'\/)([A-Za-z0-9\-\_]+))'
+class RE_AMention():
+    def __init__(self, app=None):
+        if app is not None:
+            self.init_app(app)
 
-RE_AMENTION_PRE0 = r'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))(?:(?:@|\/u\/|\/' + config.site.sub_prefix + r'\/)(?:[A-Za-z0-9\-\_]+)))'
-RE_AMENTION_PRE1 = r'(?:(\[.+?\]\(.+?\))|' + RE_AMENTION_BARE + r')'
-RE_AMENTION_ESCAPED = re.compile(r"```.*{0}.*```|`.*?{0}.*?`|({1})".format(RE_AMENTION_PRE0, RE_AMENTION_PRE1),
-                                 flags=re.MULTILINE + re.DOTALL)
-RE_AMENTION_LINKS = re.compile(r"\[.*?({1}).*?\]\(.*?\)|({0})".format(RE_AMENTION_PRE1, RE_AMENTION_BARE),
-                               flags=re.MULTILINE + re.DOTALL)
+    def init_app(self, app):
+        prefix = app.config['THROAT_CONFIG'].site.sub_prefix
+        BARE = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/' + prefix + r'\/)([A-Za-z0-9\-\_]+))'
+
+        PRE0 = r'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))(?:(?:@|\/u\/|\/' + prefix + r'\/)(?:[A-Za-z0-9\-\_]+)))'
+        PRE1 = r'(?:(\[.+?\]\(.+?\))|' + BARE + r')'
+        self.ESCAPED = re.compile(r"```.*{0}.*```|`.*?{0}.*?`|({1})".format(PRE0, PRE1),
+                                  flags=re.MULTILINE + re.DOTALL)
+        self.LINKS = re.compile(r"\[.*?({1}).*?\]\(.*?\)|({0})".format(PRE1, BARE),
+                                flags=re.MULTILINE + re.DOTALL)
+
+re_amention = RE_AMention()
 
 
 class PhuksDown(m.SaferHtmlRenderer):
@@ -432,7 +447,7 @@ def our_markdown(text):
         txt = txt.replace('~', '\\~')
         return '[{0}]({1})'.format(txt, ln)
 
-    text = RE_AMENTION_ESCAPED.sub(repl, text)
+    text = re_amention.ESCAPED.sub(repl, text)
     try:
         return md(text)
     except RecursionError:
@@ -542,7 +557,7 @@ def getYoutubeID(url):
 
 def workWithMentions(data, receivedby, post, sub, cid=None, c_user=current_user):
     """ Does all the job for mentions """
-    mts = re.findall(RE_AMENTION_LINKS, data)
+    mts = re.findall(re_amention.LINKS, data)
     if isinstance(sub, Sub):
         subname = sub.name
     else:
@@ -1148,11 +1163,6 @@ def getSubData(sid, simple=False, extra=False):
 
     if not simple:
         try:
-            data['videomode']
-        except KeyError:
-            data['videomode'] = 0
-
-        try:
             data['wiki']
         except KeyError:
             data['wiki'] = ''
@@ -1367,6 +1377,8 @@ LOG_TYPE_DISABLE_POSTING = 45
 LOG_TYPE_ENABLE_POSTING = 46
 LOG_TYPE_ENABLE_INVITE = 47
 LOG_TYPE_DISABLE_INVITE = 48
+LOG_TYPE_DISABLE_REGISTRATION = 49
+LOG_TYPE_ENABLE_REGISTRATION = 50
 
 
 def create_sitelog(action, uid, comment='', link=''):
@@ -1414,7 +1426,7 @@ def create_captcha():
 
 
 def validate_captcha(token, response):
-    if config.app.testing:
+    if config.app.testing or config.app.development:
         return True
     cap = rconn.get('cap-' + token)
     if cap:

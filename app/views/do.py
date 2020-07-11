@@ -244,8 +244,8 @@ def edit_sub(sub):
 
             sub.update_metadata('restricted', form.restricted.data)
             sub.update_metadata('ucf', form.usercanflair.data)
-            sub.update_metadata('videomode', form.videomode.data)
             sub.update_metadata('allow_polls', form.polling.data)
+            sub.update_metadata('sublog_private', form.sublogprivate.data)
 
             if form.subsort.data != "None":
                 sub.update_metadata('sort', form.subsort.data)
@@ -1210,6 +1210,35 @@ def enable_posting(value):
         misc.create_sitelog(misc.LOG_TYPE_ENABLE_POSTING, current_user.uid)
     else:
         misc.create_sitelog(misc.LOG_TYPE_DISABLE_POSTING, current_user.uid)
+
+    return redirect(url_for('admin.index'))
+
+
+
+@do.route("/do/admin/enable_registration/<value>")
+def enable_registration(value):
+    """ Isolation Mode: disable registration """
+    if not current_user.is_admin():
+        abort(404)
+
+    if value == 'True':
+        state = '1'
+    elif value == 'False':
+        state = '0'
+    else:
+        abort(400)
+
+    try:
+        sm = SiteMetadata.get(SiteMetadata.key == 'enable_registration')
+        sm.value = state
+        sm.save()
+    except SiteMetadata.DoesNotExist:
+        SiteMetadata.create(key='enable_registration', value=state)
+
+    if value == 'True':
+        misc.create_sitelog(misc.LOG_TYPE_ENABLE_REGISTRATION, current_user.uid)
+    else:
+        misc.create_sitelog(misc.LOG_TYPE_DISABLE_REGISTRATION, current_user.uid)
 
     return redirect(url_for('admin.index'))
 

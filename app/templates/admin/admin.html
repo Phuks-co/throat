@@ -10,6 +10,12 @@
 {{ super() }}
 <div id="center-container">
   <div class="content">
+    {% if not enable_posting %}
+      <div class="error" style="margin-top: 2em;">Posting has been temporarily disabled</div>
+    {% endif %}
+    {% if not enable_registration %}
+      <div class="error" style="margin-top: 2em;">Registration has been temporarily disabled</div>
+    {% endif %}
     <h1>Admin</h1>
     <div class="admin section stats">
       <table class="pure-table">
@@ -88,6 +94,21 @@
           {% endif %}
         </div>
       </div>
+      <hr>
+      <div class="col-12"><h2>Isolation Mode</h2>
+      </div>
+      <div class="col-12 admin-page-form">
+        <div>
+          {% if enable_registration %}
+          <div>Disable registration for new users</div>
+          <a class="pure-button button-warning" href="{{url_for('do.enable_registration', value='False')}}">Disable Registration</a>
+          {% else %}
+          <div>Enable registration for new users</div>
+          <a class="pure-button button-error" href="{{url_for('do.enable_registration', value='True')}}">Enable Registration</a>
+          {% endif %}
+        </div>
+      </div>
+      <hr>
     </div>
     {% if config.site.enable_security_question %}
       <hr>

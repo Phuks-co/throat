@@ -1,6 +1,6 @@
 @extends("shared/layout.html")
 @import "shared/post.html" as ipost
-@require(sub, posts, page, sort_type, subInfo, playlist)
+@require(sub, posts, page, sort_type, subInfo)
 
 
 @def title():
@@ -8,13 +8,6 @@
 @end
 
 @def sidebar():
-
-@if subInfo['videomode'] == '1':
-  <div class="musicmodediv">
-    @include('videomodeplayer.html')
-  </div>
-<hr>
-@end
 
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
