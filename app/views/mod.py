@@ -9,6 +9,9 @@ from .. import misc
 from ..models import UserMetadata, User, Sub, SubPost, SubPostComment
 from ..models import User, Sub, SubMod, SubPost, SubPostComment, UserMetadata, SubPostReport, SubPostCommentReport
 from ..misc import engine, getModSubs, getReports
+from ..forms import BanUserSubForm
+from .. import misc
+
 
 bp = Blueprint('mod', __name__)
 
@@ -108,7 +111,7 @@ def reports_sub_closed(sub, page):
 
     reports = getReports('mod', 'closed', page, sid=sub.sid)
 
-    return engine.get_template('mod/sub_reports_closed.html').render({'sub': sub, 'reports': reports})
+    return engine.get_template('mod/sub_reports_closed.html').render({'sub': sub, 'reports': reports, 'page': page})
 
 
 @bp.route("/reports/details/<sub>/<type>/<id>")
@@ -125,5 +128,22 @@ def report_details(sub, type, id):
         abort(404)
 
     report = getReports('mod', 'all', 1, type=type, report_id=id)
+    related_reports = "related_reports"
 
-    return engine.get_template('mod/sub_reports_closed.html').render({'sub': sub, 'reports': reports, 'page': page})
+    if report['type'] == "post":
+        try:
+            post = misc.getSinglePost(report['pid'])
+            comment = ""
+        except SubPost.DoesNotExist:
+            return abort(404)
+    else:
+        try:
+            comment = SubPostComment.select().where(SubPostComment.cid == report['cid']).dicts()[0]
+            post = ""
+        except (SubPostComment.DoesNotExist, IndexError):
+            abort(404)
+
+    reported = User.select().where(User.name == report['reported']).get()
+    is_sub_banned = misc.is_sub_banned(sub, uid=reported.uid)
+
+    return engine.get_template('mod/reportdetails.html').render({'sub': sub, 'report': report, 'related_reports': related_reports, 'banuserform': BanUserSubForm(), 'submods': misc.getSubMods(sub.sid), 'is_sub_banned': is_sub_banned, 'post': post, 'comment': comment})

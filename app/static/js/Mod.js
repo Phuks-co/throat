@@ -42,3 +42,8 @@ u.addEventForChild(document, 'click', '.close-report', function (e, qelem) {
       });
     }
 });
+
+u.addEventForChild(document, 'click', '.banuserbutton', function (e, qelem) {
+  let form = document.getElementById('report-ban-user-form');
+  form.style.display = 'block';
+});

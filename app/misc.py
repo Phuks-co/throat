@@ -1746,8 +1746,6 @@ def getReports(view, status, page, *args, **kwargs):
     sid = kwargs.get('sid', None)
     type = kwargs.get('type', None)
     report_id = kwargs.get('report_id', None)
-    print("..........GOT TYPE:", type)
-    print("..........GOT ID:", report_id)
 
     # Get Subs for which user is Mod
     mod_subs = getModSubs(current_user.uid, 1)
