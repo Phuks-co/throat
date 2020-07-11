@@ -16,6 +16,7 @@ cfg_defaults = { # key => default value
             "enable_security_question": False,
             "cas_authorized_hosts": [],
             "allow_uploads": False,
+            "upload_min_level": 0,
             "enable_chat": True,
             "sitelog_public": True,
             "force_sublog_public": True,
