@@ -90,7 +90,7 @@ def index():
     return render_template('admin/admin.html', subs=subs,
                            posts=posts, ups=ups, downs=downs, users=users,
                            comms=comms, useinvitecode=invite,
-                           enable_posting=(ep == 'True')
+                           enable_posting=(ep == 'True'),
                            enable_registration=(er == 'True'))
 
 
