@@ -11,11 +11,11 @@
 
   <div class="content createpost">
     <form  method="POST" class="ajaxform" action="@{url_for('do.edit_sub_css', sub=sub.name)}">
-      @{form.csrf_token()}
+      @{form.csrf_token()!!html}
       <div class="pure-control-group">
         <div>
           <label for="css">@{form.css.label.text!!s}</label>
-          @{form.css(style="width:100%; font-family:monospace", rows=50)}
+          @{form.css(style="width:100%; font-family:monospace", rows=50)!!html}
         </div>
       </div>
       <div class="alert div-error"></div>

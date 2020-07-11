@@ -12,10 +12,10 @@
 <h3>@{_('Ban user')}</h3>
 <div class="editmoderators">
   <form id="ban-user-form" data-reload="true" data-sub="@{sub.name}" class="ajaxform pure-form" action="@{url_for('do.ban_user_sub', sub=sub.name)}">
-    @{banuserform.csrf_token()}
+    @{banuserform.csrf_token()!!html}
     <p>
-      <label>@{banuserform.user(placeholder=banuserform.user.label.text, required=True)}</label>
-      @{banuserform.reason(placeholder=banuserform.reason.label.text, required=True)}
+      <label>@{banuserform.user(placeholder=banuserform.user.label.text, required=True)!!html}</label>
+      @{banuserform.reason(placeholder=banuserform.reason.label.text, required=True)!!html}
       @if current_user.uid in submods['janitors']:
         @{_('Until...')}\
       @else:

@@ -48,7 +48,7 @@
                 @else:
                   0\
                 @end
-              </span>% @{_('(<span class="poll-opt-votecount">%(votes)i</span> votes)', votes=opt.votecount)}
+              </span>% @{_('(<span class="poll-opt-votecount">%(votes)i</span> votes)', votes=opt.votecount)!!html}
             </div>
           @end
         </div>
@@ -61,4 +61,4 @@
   </div>
 @end
 
-@renderPoll(pollData, postmeta, post)
+@{renderPoll(pollData, postmeta, post)!!html}

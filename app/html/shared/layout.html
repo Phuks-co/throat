@@ -3,14 +3,14 @@
   <head>
     @def head():
     @end
-    @head()
+    @{head()!!html}
     <meta charset="utf-8">
     <meta name="keywords" content="forum, vote, comment, submit, throat, phuks, phuks.co"/>
     <meta name="referrer" content="always"/>
     @def meta_description():
         <meta name="description" content="@{config.site.lema}"/>
     @end
-    @meta_description()
+    @{meta_description()!!html}
     <meta name="robots" content="index, follow"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
@@ -26,12 +26,12 @@
 
       @if not current_user.is_anonymous:
         @if current_user.notifications > 0:
-          (@{current_user.notifications!!s})
+          (@{current_user.notifications})
         @end
       @end
       @def title():
       @end
-      @{title()!!e} @{config.site.lema} \
+      @{title()!!html} @{config.site.lema} \
     </title>
 
     <link rel="stylesheet" type="text/css" href="@{asset_url_for('main.css') }">
@@ -41,7 +41,7 @@
   @if config.site.enable_totp and current_user.admin:
   <div class="admin_alert">@{_('Admin mode is currently enabled.')}
     <form method="POST" action="/admin/logout" id="adminlogout">
-      @{ form.LogOutForm().csrf_token() }
+      @{ form.LogOutForm().csrf_token() !!html }
       <button type="submit" class="btn_link">@{_('Disable')}</button>
     </form>
   </div>
@@ -113,11 +113,11 @@
           <span class="p-icon" data-icon="@{(request.cookies.get( "dayNight")=="dark") and 'sun' or 'moon'}"></span>
         </div>
         <form method="POST" action="@{ url_for('do.logout') }" id="logout">
-          @{ form.LogOutForm().csrf_token() }
+          @{ form.LogOutForm().csrf_token() !!html }
           <button type="submit" class="pure-button button-secondary">@{_('Log out')}</button>
         </form>
         @end
-        @{ form.LogOutForm().csrf_token() }
+        @{ form.LogOutForm().csrf_token() !!html }
       </div>
     </div>
   </div>
@@ -126,16 +126,16 @@
     <div class="pure-u-1 pure-u-md-18-24"> <!-- main -->
       @def main():
       @end
-      @main()
+      @{main()!!html}
     </div>
     <div class="sidebar pure-u-1 pure-u-md-6-24"> <!-- sidebar -->
       @def sidebar():
       @end
-      @sidebar()
+      @{sidebar()!!html}
     </div>
   </div>
   @end
-  @content()
+  @{content()!!html}
 
   <div class="footer">
     @def footer():
@@ -155,7 +155,7 @@
        | @{_('Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries')}
       @end
     @end
-    @footer()
+    @{footer()!!html}
   </div>
   @if config.site.enable_chat:
     @def chat():
@@ -168,7 +168,7 @@
       </div>
       @end
     @end
-    @chat()
+    @{chat()!!html}
     <script type="text/javascript">
       window.chat = @{('nochat' not in current_user.prefs) and 'true' or 'false'};
     </script>
@@ -177,6 +177,6 @@
   <style>@{current_user.get_global_stylesheet()}</style>
   @def pagefoot():
   @end
-  @pagefoot()
+  @{pagefoot()!!html}
 </body>
 </html>

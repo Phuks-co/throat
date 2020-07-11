@@ -30,13 +30,13 @@
               @else:
                 <a class="poster deleted">[Deleted]</a>
               @end
-              <b>@{_('<span class="cscore">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)', score=comment['score'], upvotes=comment['upvotes'], downvotes=comment['downvotes'])}
+              <b>@{_('<span class="cscore">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)', score=comment['score'], upvotes=comment['upvotes'], downvotes=comment['downvotes'])!!html}
               <span class="time ">
                   <time-ago datetime="@{comment['time'].isoformat()}Z"></time-ago>
               </span>
               @if comment['lastedit'] and comment['status'] != 1:
                 <span class="time edited">
-                  @{_('Edited %(timeago)s', timeago='<time-ago datetime="' + comment['lastedit'].isoformat() + 'Z"></time-ago>')}<br/>
+                  @{_('Edited %(timeago)s', timeago='<time-ago datetime="' + comment['lastedit'].isoformat() + 'Z"></time-ago>')!!html}<br/>
                 </span>
               @end
             </div>
@@ -45,7 +45,7 @@
               @if comment['status'] == 1:
                 @{_('[Deleted]')} \
               @else:
-                @{comment['content']}
+                @{comment['content']!!html}
               @end
             </div>
             
@@ -74,7 +74,7 @@
         </div>
         <div id="child-@{comment['cid']}" class="pchild" @{(comment['status'] == 1) and 'style="display:none;"' or ''}>
           @if comment['children']:
-            @renderComments(post, subInfo, subMods, comment['children'], highlight)
+            @{renderComments(post, subInfo, subMods, comment['children'], highlight)!!html}
           @end
         </div>
       </article>
@@ -90,4 +90,4 @@
   @end
 @end
 
-@renderComments(post, subInfo, subMods, comments, highlight)
+@{renderComments(post, subInfo, subMods, comments, highlight)!!html}}

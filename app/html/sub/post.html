@@ -30,12 +30,12 @@
 @def sidebar():
 <hr>
   <div class="author" style="padding:.5em;">
-    @{_('Posted %(timeago)s by %(user)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user='<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + '</a>' if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>')}
+    @{_('Posted %(timeago)s by %(user)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user='<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + '</a>' if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>')!!html}
     <br/>
     @if post['edited']:
-      @{_('edited %(timeago)s', timeago='<time-ago datetime="' + post['edited'].isoformat() + 'Z"></time-ago>')}<br/>
+      @{_('edited %(timeago)s', timeago='<time-ago datetime="' + post['edited'].isoformat() + 'Z"></time-ago>')!!html}<br/>
     @end
-    @{_('Score: %(score)i <b>(+%(upvotes)i|-%(downvotes)i)</b>', score=post['score'], upvotes=post['upvotes'], downvotes=post['downvotes'])}
+    @{_('Score: %(score)i <b>(+%(upvotes)i|-%(downvotes)i)</b>', score=post['score'], upvotes=post['upvotes'], downvotes=post['downvotes'])!!html}
   </div>
 <hr>
   @include('shared/sidebar/sub.html')
@@ -173,13 +173,13 @@
   @end
 
   @if post['deleted'] == 0 and post['ptype'] == 3:
-    @polls.renderPoll(pollData, postmeta, post)
+    @{polls.renderPoll(pollData, postmeta, post)!!html}
   @end
 
   @if post['content']:
     @if post['deleted'] == 0:
       <div id="postcontent">
-        @{markdown(post['content'])}
+        @{markdown(post['content'])!!html}
       </div>
       <div id="post-source">@{post['content']!!e}</div>
     @else:
@@ -193,11 +193,11 @@
 
   @if current_user.is_authenticated and post['deleted'] == 0 and not current_user.is_subban(sub):
   <form data-reset="true" data-redir="true" action="@{url_for('do.create_comment', pid=post['pid'])}" id="rcomm-0" class="comment-form ajaxform static pure-form">
-    @{commentform.csrf_token()}
-    @{commentform.post(value=post['pid'])}
-    @{commentform.parent(value='0')}
+    @{commentform.csrf_token()!!html}
+    @{commentform.post(value=post['pid'])!!html}
+    @{commentform.parent(value='0')!!html}
     <div class="markdown-editor" id="ncme">
-      @{commentform.comment(id="comment2", placeholder=commentform.comment.label.text, rows="6")}
+      @{commentform.comment(id="comment2", placeholder=commentform.comment.label.text, rows="6")!!html}
     </div>
     <div class="div-error error alertbox"></div>
     <button type="submit" class="pure-button pure-button-primary btn-postcomment" data-cid="0" data-pid="@{post['pid']!!s}">@{_('Submit comment')}</button>
@@ -215,7 +215,7 @@
   @else:
     <div class="comments">
       <h2 id="cmnts"><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{_('%(comments)i comments', comments=post['comments'])}</a></h2>
-      @pcomm.renderComments(post, subInfo, subMods, comments, highlight)
+      @{pcomm.renderComments(post, subInfo, subMods, comments, highlight)!!html}
     </div>
   @end
 

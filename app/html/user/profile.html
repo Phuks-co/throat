@@ -16,7 +16,7 @@
             </div>
         @end
     @end
-    <p>@{_('Registered %(timeago)s', timeago='<time-ago datetime="'+ user.joindate.isoformat() + 'Z"></time-ago>')}</p>
+    <p>@{_('Registered %(timeago)s', timeago='<time-ago datetime="'+ user.joindate.isoformat() + 'Z"></time-ago>')!!html}</p>
 @end
 @def main():
     <div id="center-container">

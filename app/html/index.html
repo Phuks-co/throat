@@ -52,7 +52,7 @@
   <div class="alldaposts">
     @for post in posts:
       @if not ann or ann['pid'] != post['pid']:
-        @ipost.singlePost(post, False)
+        @{ipost.singlePost(post, False)!!html}
       @end
     @end
   </div>
