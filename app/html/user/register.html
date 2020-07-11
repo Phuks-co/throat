@@ -9,7 +9,7 @@
 <div id="center-container">
     <div class="content">
         <form method="POST" class="pure-form pure-form-aligned">
-            @{ regform.csrf_token() }
+            @{ regform.csrf_token()!!html }
             <h1>@{_('Register')}</h1>
             <fieldset>
                 @if error:
@@ -17,35 +17,35 @@
                 @end
 
                 <div class="pure-control-group">
-                    <label for="username">@{regform.username.label.text!!s}</label>
-                    @{regform.username(required=True, pattern="[a-zA-Z0-9_-]+", title=_('Alphanumeric characters plus \'-\' and \'_\''))}
+                    <label for="username">@{regform.username.label.text}</label>
+                    @{regform.username(required=True, pattern="[a-zA-Z0-9_-]+", title=_('Alphanumeric characters plus \'-\' and \'_\''))!!html}
                 </div>
                 @if func.enableInviteCode():
                 <div class="pure-control-group">
-                    <label for="invitecode">@{regform.invitecode.label.text!!s}</label>
-                    @{regform.invitecode(autocomplete="off", required=True)}
+                    <label for="invitecode">@{regform.invitecode.label.text}</label>
+                    @{regform.invitecode(autocomplete="off", required=True)!!html}
                 </div>
                 @end
                 <div class="pure-control-group">
-                    <label for="password">@{regform.password.label.text!!s}</label>
-                    @{regform.password(autocomplete="off", required=True)}
+                    <label for="password">@{regform.password.label.text}</label>
+                    @{regform.password(autocomplete="off", required=True)!!html}
                 </div>
 
                 <div class="pure-control-group">
-                    <label for="confirm">@{regform.confirm.label.text!!s}</label>
-                    @{regform.confirm(autocomplete="off", required=True)}
+                    <label for="confirm">@{regform.confirm.label.text}</label>
+                    @{regform.confirm(autocomplete="off", required=True)!!html}
                 </div>
 
                 <div class="pure-control-group">
-                    <label for="email">@{regform.email.label.text!!s}</label>
-                    @{regform.email()}
+                    <label for="email">@{regform.email.label.text}</label>
+                    @{regform.email()!!html}
                 </div>
                 @if config.site.enable_security_question:
                 <div class="pure-control-group">
-                    <label for="email">@{regform.securityanswer.label.text!!s}</label>
+                    <label for="email">@{regform.securityanswer.label.text}</label>
                     <div style="display: inline-block;">
                         <b>@{func.pick_random_security_question()}</b> <br/>
-                        @{regform.securityanswer()}
+                        @{regform.securityanswer()!!html}
                     </div>
                 </div>
                 @end
@@ -54,12 +54,12 @@
                     <img src="data:image/png;base64,@{ regform.cap_b64 }"/>
                 </div>
                 <div class="pure-control-group">
-                    <label for="captcha">@{ regform.captcha.label.text!!s }</label>
+                    <label for="captcha">@{ regform.captcha.label.text }</label>
                     <input autocomplete="off" id="captcha" name="captcha" required="" type="text" value="">
                 </div>
                 <div class="pure-controls">
                     <label for="accept_tos" class="pure-checkbox">
-                        @{ regform.accept_tos(required=True) } @{_('I accept the <a href="/tos">Terms of Use</a>')}
+                        @{ regform.accept_tos(required=True) !!html} @{_('I accept the <a href="/tos">Terms of Use</a>')!!html}
                     </label>
                     <button type="submit" class="pure-button pure-button-primary">@{_('Register')}</button>
                 </div>

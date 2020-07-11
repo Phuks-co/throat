@@ -52,9 +52,26 @@ allowedNames = re.compile("^[a-zA-Z0-9_-]+$")
 WHITESPACE = "\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007" \
              "\u2008\u2009\u200a\u200b\u2029\u202f\u205f\u3000\u180e\u200b\u200c\u200d\u2060\ufeff\u00AD\ufffc "
 
+
+def build_var(builder, lineno, token, value):
+    assert token == 'var'
+    var, _ = value
+    if not value[-1] or "html" not in value[-1]:
+        builder.add(lineno, 'w(e(str(' + var + ')))')
+    else:
+        builder.add(lineno, 'w(str(' + var + '))')
+    return True
+
+
+class EscapeExtension(object):
+    builder_rules = [
+        ('var', build_var)
+    ]
+
+
 _engine = Engine(
     loader=FileLoader([os.path.split(__file__)[0] + '/html']),
-    extensions=[CoreExtension()]
+    extensions=[EscapeExtension(), CoreExtension()]
 )
 engine = _engine
 

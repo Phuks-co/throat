@@ -8,19 +8,19 @@
 <div id="container">
   <h1>@{_('Account deletion')}</h1>
   <form  method="POST" id="edit-user-form" data-redir='/' action="@{url_for('do.delete_user')}" class="ajaxform pure-form pure-form-aligned">
-    @{form.csrf_token()}
+    @{form.csrf_token()!!html}
     <fieldset>
       
       <hr style="border-color: red;">
         <h2>@{_('THIS ACTION CANNOT BE UNDONE')}</h2>
         <div class="pure-control-group" style="color: red; font-weight: 900;">
-          <label for="consent">@{form.consent.label.text!!s}</label>
-          @{form.consent()}
+          <label for="consent">@{form.consent.label.text}</label>
+          @{form.consent()!!html}
         </div>
 
         <div class="pure-control-group">
-            <label for="password">@{form.password.label.text!!s}</label>
-            @{form.password(placeholder=form.password.label.text, required=True, autocomplete="off")}
+            <label for="password">@{form.password.label.text}</label>
+            @{form.password(placeholder=form.password.label.text, required=True, autocomplete="off")!!html}
         </div>
     
         <button type="submit" class="pure-button pure-button-primary" id="edituser-btnsubmit" data-prog="@{_('Deleting...')}" data-success="@{_('Deleted.')}">@{_('Delete my account')}</button>

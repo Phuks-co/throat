@@ -4,7 +4,7 @@
 @def content():
 <div id="center-container">
     <div class="content">
-        <h2>@{_('Sub log for <a href="%(url)s">/%(prefix)s/%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), prefix=config.site.sub_prefix, sub=sub.name)}</h2>
+        <h2>@{_('Sub log for <a href="%(url)s">/%(prefix)s/%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), prefix=config.site.sub_prefix, sub=sub.name)!!html}</h2>
         <table class="pure-table">
             <thead>
             <tr>
@@ -35,33 +35,33 @@
                     @elif log.action == 21:
                         @{_('Changed sub settings')}
                     @elif log.action == 22:
-                        @{_('Banned <a href="/u/%(username)s">%(username)s</a> with reason <code>%(reason)s</code>', username=log.target.name, reason=e(log.desc))}
+                        @{_('Banned <a href="/u/%(username)s">%(username)s</a> with reason <code>%(reason)s</code>', username=log.target.name, reason=e(log.desc))!!html}
                     @elif log.action == 23:
-                        @{_('Unbanned <a href="/u/%(username)s">%(username)s</a>', username=log.target.name)}
+                        @{_('Unbanned <a href="/u/%(username)s">%(username)s</a>', username=log.target.name)!!html}
                     @elif log.action == 24:
-                        @{_('Sent mod invite to <a href="/u/%(username)s">%(username)s</a>', username=log.target.name)}
+                        @{_('Sent mod invite to <a href="/u/%(username)s">%(username)s</a>', username=log.target.name)!!html}
                     @elif log.action == 25:
                         @{_('Accepted mod invite')}
                     @elif log.action == 26:
-                        @{_('Removed <a href="/u/%(username)s">%(username)s</a> from the mod team', username=log.target.name)}
+                        @{_('Removed <a href="/u/%(username)s">%(username)s</a> from the mod team', username=log.target.name)!!html}
                     @elif log.action == 27:
-                        @{_('Revoked mod invite for <a href="/u/%(username)s">%(username)s</a>', username=log.target.name)}
+                        @{_('Revoked mod invite for <a href="/u/%(username)s">%(username)s</a>', username=log.target.name)!!html}
                     @elif log.action == 28:
-                        @{_('Mod invite declined by <a href="/u/%(username)s">%(username)s</a>', username=log.target.name)}
+                        @{_('Mod invite declined by <a href="/u/%(username)s">%(username)s</a>', username=log.target.name)!!html}
                     @elif log.action == 29:
                         @{_('Edited the sub\'s stylesheet')}
                     @elif log.action == 30:
-                        @{_('Sub was transferred to <a href="/u/%(username)s">%(username)s</a>', username=e(log.desc))}
+                        @{_('Sub was transferred to <a href="/u/%(username)s">%(username)s</a>', username=e(log.desc))!!html}
                     @elif log.action == 50:
                         @{_('Stickied a post')}
                     @elif log.action == 51:
                         @{_('Unstickied a post')}
                     @elif log.action == 52:
-                        @{_('Deleted a post with reason <code>%(desc)s</code>', desc=e(log.desc))}
+                        @{_('Deleted a post with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 53:
-                        @{_('Deleted a comment with reason <code>%(desc)s</code>', desc=e(log.desc))}
+                        @{_('Deleted a comment with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @else:
-                        <i>@{_('[Type %(type)i]', type=log.action)}</i> @{log.desc!!e}
+                        <i>@{_('[Type %(type)i]', type=log.action)!!html}</i> @{log.desc}
                     @end
                 </td>
                 <td>

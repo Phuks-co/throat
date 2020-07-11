@@ -32,7 +32,7 @@
           <time-ago datetime="@{code.created.isoformat()}Z">@{code.created.isoformat()}</time-ago>
         </td>
         <td>
-          @{code.code!!e}
+          @{code.code}
         </td>
         <td>
           @if code.expires:
@@ -43,10 +43,10 @@
          
         </td>
         <td>
-          @{code.uses!!s}
+          @{code.uses}
         </td>
         <td>
-          @{code.max_uses!!s}
+          @{code.max_uses}
         </td>
       </tr>
       @end

@@ -50,7 +50,7 @@
 @end
 <hr>
 @if sub['sidebar'] != '':
-  @{func.our_markdown(sub['sidebar'])}
+  @{func.our_markdown(sub['sidebar'])!!html}
   <hr>
 @end
 
@@ -69,7 +69,7 @@
   </ul>
 </div>
 <div class="createdby">
-  @{_('Created by <a href="/u/%(name)s">%(name)s</a>', name=subInfo['creator']['name'])}
+  @{_('Created by <a href="/u/%(name)s">%(name)s</a>', name=subInfo['creator']['name'])!!html}
   <time-ago datetime="@{sub['creation'].isoformat()}Z"></time-ago>
 </div>
 @if current_user.uid:

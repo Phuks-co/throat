@@ -9,44 +9,44 @@
     <h1>@{_('%(user)s\'s preferences', user=current_user.name)}</h1>
     <form method="POST" id="edit-user-form" data-refresh='true' action="@{url_for('do.edit_user')}"
           class="ajaxform pure-form pure-form-aligned">
-        @{edituserform.csrf_token()}
+        @{edituserform.csrf_token()!!html}
         <fieldset>
             <div class="pure-control-group">
-                <label for="email">@{edituserform.email.label.text!!s}</label>
-                @{edituserform.email(value=current_user.user['email'], autocomplete="off")}
+                <label for="email">@{edituserform.email.label.text}</label>
+                @{edituserform.email(value=current_user.user['email'], autocomplete="off")!!html}
             </div>
             <div class="pure-control-group">
                 <label for="disable_sub_style"
-                       class="pure-checkbox">@{edituserform.disable_sub_style.label.text!!s}</label>
-                @{edituserform.disable_sub_style()}
+                       class="pure-checkbox">@{edituserform.disable_sub_style.label.text}</label>
+                @{edituserform.disable_sub_style()!!html}
             </div>
             <div class="pure-control-group">
-                <label for="show_nsfw" class="pure-checkbox">@{edituserform.show_nsfw.label.text!!s}</label>
-                @{edituserform.show_nsfw()}
+                <label for="show_nsfw" class="pure-checkbox">@{edituserform.show_nsfw.label.text}</label>
+                @{edituserform.show_nsfw()!!html}
             </div>
             <div class="pure-control-group">
-                <label for="experimental" class="pure-checkbox">@{edituserform.experimental.label.text!!s}</label>
-                @{edituserform.experimental()}
+                <label for="experimental" class="pure-checkbox">@{edituserform.experimental.label.text}</label>
+                @{edituserform.experimental()!!html}
             </div>
             <div class="pure-control-group">
-                <label for="noscroll" class="pure-checkbox">@{edituserform.noscroll.label.text!!s}</label>
-                @{edituserform.noscroll()}
+                <label for="noscroll" class="pure-checkbox">@{edituserform.noscroll.label.text}</label>
+                @{edituserform.noscroll()!!html}
             </div>
             @if config.site.enable_chat:
               <div class="pure-control-group">
-                  <label for="nochat" class="pure-checkbox">@{edituserform.nochat.label.text!!s}</label>
-                  @{edituserform.nochat()}
+                  <label for="nochat" class="pure-checkbox">@{edituserform.nochat.label.text}</label>
+                  @{edituserform.nochat()!!html}
               </div>
             @end
 
             <div class="pure-control-group">
-                <label for="nochat" class="pure-checkbox">@{edituserform.subtheme.label.text!!s}</label>
-                @{edituserform.subtheme(class_="sub_autocomplete")}
+                <label for="nochat" class="pure-checkbox">@{edituserform.subtheme.label.text}</label>
+                @{edituserform.subtheme(class_="sub_autocomplete")!!html}
             </div>
 
             <div class="pure-control-group">
-                <label for="nochat" class="pure-checkbox">@{edituserform.language.label.text!!s}</label>
-                @{edituserform.language(autocomplete="off")}
+                <label for="nochat" class="pure-checkbox">@{edituserform.language.label.text}</label>
+                @{edituserform.language(autocomplete="off")!!html}
             </div>
 
 
