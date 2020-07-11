@@ -135,6 +135,14 @@ def invitecodes():
     """
     View and configure Invite Codes
     """
+    def map_row_class(code):
+        if code['uses'] >= code['max_uses']:
+            return 'expired'
+        elif code['expires'] is not None and code['expires'] < datetime.datetime.utcnow():
+            return 'expired'
+        else:
+            return ''
+
     if not current_user.is_admin():
         abort(404)
 
@@ -144,6 +152,7 @@ def invitecodes():
             SiteMetadata.key in ('useinvitecode', 'invite_level', 'invite_max'))
     }
 
+    # TODO make this scale
     invite_codes = InviteCode.select(
         InviteCode.code,
         User.name.alias('referrer_user_name'),
@@ -152,6 +161,8 @@ def invitecodes():
         InviteCode.uses,
         InviteCode.max_uses,
     ).join(User).dicts()
+    for code in invite_codes:
+        code['row_class'] = map_row_class(code)
 
     invite = UseInviteCodeForm()
     return render_template(

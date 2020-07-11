@@ -42,7 +42,7 @@
     <hr>
     <div class="admin section invitecodes_table">
       <h2>Invite Codes</h2>
-      <table class="sortable pure-table">
+      <table class="sortable pure-table invitecodes">
         <thead>
           <tr>
             <th>Code</th>
@@ -54,16 +54,16 @@
           </tr>
         </thead>
         <tbody>
-          {% for invite_code in invite_codes %}
-            <tr>
+          {% for code in invite_codes %}
+            <tr class="{{code.row_class}}">
               <td>
-                {{invite_code.code}}
+                {{code.code}}
               </td>
-              <td><a href="{{url_for('user.view', user=invite_code.referrer_user_name)}}">{{invite_code.referrer_user_name}}</td>
-              <td>{{invite_code.created}}</td>
-              <td>{{invite_code.expires}}</td>
-              <td>{{invite_code.uses}}</td>
-              <td>{{invite_code.max_uses}}</td>
+              <td><a href="{{url_for('user.view', user=code.referrer_user_name)}}">{{code.referrer_user_name}}</td>
+              <td>{{code.created}}</td>
+              <td>{{code.expires}}</td>
+              <td>{{code.uses}}</td>
+              <td>{{code.max_uses}}</td>
             </tr>
           {% endfor %}
         </tbody>
