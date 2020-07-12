@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: Throat 1.0\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-07-12 15:12-0300\n"
-"PO-Revision-Date: 2020-07-12 07:07+0300\n"
+"PO-Revision-Date: 2020-07-12 21:47+0300\n"
 "Last-Translator: \n"
 "Language: ru_RU\n"
 "Language-Team: \n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2)\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 "
+"&& (n%100<12 || n%100>14) ? 1 : 2);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
+"X-Generator: Poedit 2.3.1\n"
 
 #: app/badges.py:5
 msgid "The guys that take all the blame"
@@ -53,14 +54,14 @@ msgstr "Слишком важный, чтобы ждать!"
 
 #: app/badges.py:18
 msgid ""
-"Once proud men, the Broccoli People now must remain in hiding after early"
-" on the Vegetable Wars against the Cabbages."
+"Once proud men, the Broccoli People now must remain in hiding after early on "
+"the Vegetable Wars against the Cabbages."
 msgstr "Муха села на варенье, вот и все стихотворенье."
 
 #: app/badges.py:19
 msgid ""
-"The Cabbage People are now the dominant force in the Vegetable Wars, "
-"being in the road to become an hegemon after defeating the Broccolis."
+"The Cabbage People are now the dominant force in the Vegetable Wars, being in "
+"the road to become an hegemon after defeating the Broccolis."
 msgstr ""
 
 #: app/badges.py:21
@@ -128,8 +129,8 @@ msgstr "Пост не существует"
 msgid "You can't vote on deleted posts"
 msgstr "Вы не можете голосовать за удаленные сообщения"
 
-#: app/misc.py:1700 app/views/do.py:1592 app/views/do.py:1628
-#: app/views/do.py:2227 app/views/do.py:2230 app/views/do.py:2323
+#: app/misc.py:1700 app/views/do.py:1592 app/views/do.py:1628 app/views/do.py:2227
+#: app/views/do.py:2230 app/views/do.py:2323
 msgid "Comment does not exist"
 msgstr "Комментарий не существует"
 
@@ -145,19 +146,17 @@ msgstr "Вы не можете голосовать за удаленные ко
 msgid "Invalid target"
 msgstr "Неверная цель"
 
-#: app/misc.py:1717 app/views/do.py:541 app/views/do.py:1063
-#: app/views/do.py:1600
+#: app/misc.py:1717 app/views/do.py:541 app/views/do.py:1063 app/views/do.py:1600
 msgid "You are banned on this sub."
 msgstr "Вы запрещены на этом сабе."
 
-#: app/misc.py:1722 app/views/do.py:544 app/views/do.py:596
-#: app/views/do.py:1607
+#: app/misc.py:1722 app/views/do.py:544 app/views/do.py:596 app/views/do.py:1607
 msgid "Post is archived"
 msgstr "Пост заархивирован"
 
 #: app/misc.py:1894
 msgid "Invalid status request"
-msgstr ""
+msgstr "Неверный запрос статуса"
 
 #: app/forms/admin.py:12
 msgid "Question"
@@ -205,15 +204,15 @@ msgstr "Введите одноразовый пароль"
 
 #: app/forms/admin.py:51
 msgid "Slug (URL)"
-msgstr ""
+msgstr "Slug (URL)"
 
 #: app/forms/admin.py:52
 msgid "Page title"
-msgstr ""
+msgstr "Заголовок страницы"
 
 #: app/forms/admin.py:54
 msgid "Content"
-msgstr ""
+msgstr "Содержание"
 
 #: app/forms/sub.py:13
 msgid "Search"
@@ -245,7 +244,7 @@ msgstr "Флаер текст"
 
 #: app/forms/sub.py:62 app/forms/sub.py:68
 msgid "Rule text"
-msgstr ""
+msgstr "Текст правила"
 
 #: app/forms/sub.py:81
 msgid "Sub is NSFW"
@@ -273,7 +272,7 @@ msgstr "Текст боковой панели"
 
 #: app/forms/sub.py:90
 msgid "Make the sub log private"
-msgstr ""
+msgstr "Сделать на страницах журнала частная"
 
 #: app/forms/sub.py:95
 msgid "New mod username"
@@ -486,18 +485,16 @@ msgid "There are no posts here, yet."
 msgstr "Здесь еще нет никаких постов."
 
 #: app/html/admin/reports.html:60 app/html/admin/wiki.html:48
-#: app/html/index.html:58 app/html/mod/closed.html:58
-#: app/html/mod/reports.html:58 app/html/mod/sub_reports.html:58
-#: app/html/mod/sub_reports_closed.html:58 app/html/sub.html:42
-#: app/html/sub/log.html:77
+#: app/html/index.html:58 app/html/mod/closed.html:58 app/html/mod/reports.html:58
+#: app/html/mod/sub_reports.html:58 app/html/mod/sub_reports_closed.html:58
+#: app/html/sub.html:42 app/html/sub/log.html:77
 msgid "Previous page"
 msgstr "Предыдущая страница"
 
 #: app/html/admin/reports.html:63 app/html/admin/wiki.html:51
-#: app/html/index.html:61 app/html/mod/closed.html:61
-#: app/html/mod/reports.html:61 app/html/mod/sub_reports.html:61
-#: app/html/mod/sub_reports_closed.html:61 app/html/sub.html:45
-#: app/html/sub/log.html:81
+#: app/html/index.html:61 app/html/mod/closed.html:61 app/html/mod/reports.html:61
+#: app/html/mod/sub_reports.html:61 app/html/mod/sub_reports_closed.html:61
+#: app/html/sub.html:45 app/html/sub/log.html:81
 msgid "Next page"
 msgstr "Далее"
 
@@ -513,21 +510,23 @@ msgstr "Отправить"
 
 #: app/html/admin/reports.html:15
 msgid "Admin Reports"
-msgstr ""
+msgstr "Отчеты Администратора"
 
 #: app/html/admin/reports.html:16
 msgid "Includes reports for all subs except reports of sub-specific rules."
 msgstr ""
+"Включает отчеты для всех субподрядчиков, за исключением отчетов о "
+"субспецифических правилах."
 
 #: app/html/admin/reports.html:20 app/html/mod/reports.html:20
 #: app/html/mod/sub_reports.html:20 app/html/mod/sub_reports_closed.html:20
 msgid "Total Open Reports:"
-msgstr ""
+msgstr "Итого Открытых Отчетов:"
 
 #: app/html/admin/reports.html:20 app/html/mod/reports.html:20
 #: app/html/mod/sub_reports.html:20 app/html/mod/sub_reports_closed.html:20
 msgid "Total Closed Reports:"
-msgstr ""
+msgstr "Итого Закрытых Отчетов:"
 
 #: app/html/admin/reports.html:25 app/html/mod/closed.html:27
 #: app/html/mod/reports.html:27 app/html/mod/sub_reports.html:27
@@ -562,7 +561,7 @@ msgstr "Время"
 
 #: app/html/admin/reports.html:30
 msgid "Status"
-msgstr ""
+msgstr "Статус"
 
 #: app/html/admin/reports.html:39 app/html/mod/closed.html:41
 #: app/html/mod/reports.html:41 app/html/mod/sub_reports.html:41
@@ -578,21 +577,21 @@ msgstr "Пост"
 
 #: app/html/admin/reports.html:49
 msgid "Open"
-msgstr ""
+msgstr "Открыть"
 
 #: app/html/admin/reports.html:49 app/html/mod/closed.html:50
 #: app/html/mod/reports.html:50 app/html/mod/sub_reports.html:50
 #: app/html/mod/sub_reports_closed.html:50
 msgid "[x]"
-msgstr ""
+msgstr "[x]"
 
 #: app/html/admin/reports.html:51
 msgid "Closed"
-msgstr ""
+msgstr "Закрытый"
 
 #: app/html/admin/reports.html:51
 msgid " [reopen]"
-msgstr ""
+msgstr "[возобновить]"
 
 #: app/html/admin/totp.html:11 app/html/mod/totp.html:11
 msgid "Further authentication required"
@@ -604,18 +603,17 @@ msgstr "Одноразовый пароль"
 
 #: app/html/admin/totp.html:21 app/html/errors/403.html:32
 #: app/html/mod/totp.html:21 app/html/shared/layout.html:94
-#: app/html/user/login.html:5 app/html/user/login.html:30
-#: app/static/js/main.js:64
+#: app/html/user/login.html:5 app/html/user/login.html:30 app/static/js/main.js:64
 msgid "Log in"
 msgstr "Войти"
 
 #: app/html/admin/wiki.html:15
 msgid "Site wiki"
-msgstr ""
+msgstr "Вики-сайт"
 
 #: app/html/admin/wiki.html:23
 msgid "Slug"
-msgstr ""
+msgstr "Slug"
 
 #: app/html/admin/wiki.html:25 app/html/sub/bans.html:48
 #: app/html/sub/bans.html:106 app/html/user/settings/invitecode.html:21
@@ -624,11 +622,11 @@ msgstr "Создан"
 
 #: app/html/admin/wiki.html:26
 msgid "Last edited"
-msgstr ""
+msgstr "Последний раз"
 
 #: app/html/admin/wiki.html:38
 msgid "Edit"
-msgstr ""
+msgstr "Редактировать"
 
 #: app/html/admin/wiki.html:39 app/html/sub/css.html:48
 msgid "Delete"
@@ -682,59 +680,62 @@ msgstr "Внутренняя ошибка"
 
 #: app/html/errors/500.html:12
 msgid ""
-"We're experiencing technical difficulties, please try again later. If the"
-" error persists, report it to the administration."
+"We're experiencing technical difficulties, please try again later. If the error "
+"persists, report it to the administration."
 msgstr ""
-"У нас возникли технические трудности, повторите попытку позже. Если "
-"ошибка не устранена, сообщите об этом администрации."
+"У нас возникли технические трудности, повторите попытку позже. Если ошибка не "
+"устранена, сообщите об этом администрации."
 
 #: app/html/mod/closed.html:14 app/html/shared/sidebar/mod.html:4
 msgid "Closed Reports"
-msgstr ""
+msgstr "Закрытые Отчеты"
 
 #: app/html/mod/closed.html:15
 msgid "Includes all closed reports for subs you can moderate."
 msgstr ""
+"Включает в себя все закрытые отчеты для сабов, которые вы можете модерировать."
 
 #: app/html/mod/closed.html:20
 msgid "Total Open Reports"
-msgstr ""
+msgstr "Итого Открытых Отчетов"
 
 #: app/html/mod/closed.html:20
 msgid "Total Closed Reports"
-msgstr ""
+msgstr "Итого Закрытых Отчетов"
 
 #: app/html/mod/closed.html:32 app/html/mod/sub_reports_closed.html:32
 msgid "Reopen"
-msgstr ""
+msgstr "Снова открыть"
 
 #: app/html/mod/reports.html:14 app/html/shared/sidebar/mod.html:3
 msgid "Open Reports"
-msgstr ""
+msgstr "Открытые Отчеты"
 
 #: app/html/mod/reports.html:15
 msgid "Includes all open reports for subs you can moderate."
 msgstr ""
+"Включает в себя все открытые отчеты для субмарин, которые вы можете "
+"модерировать."
 
 #: app/html/mod/reports.html:32 app/html/mod/sub_reports.html:32
 msgid "Close"
-msgstr ""
+msgstr "Закрывать"
 
 #: app/html/mod/sub_reports.html:14
 msgid "Open Reports for "
-msgstr ""
+msgstr "Открытые отчеты для"
 
 #: app/html/mod/sub_reports.html:15
 msgid "Includes all open reports this sub."
-msgstr ""
+msgstr "Включает в себя все открытые отчеты этого саба."
 
 #: app/html/mod/sub_reports_closed.html:14
 msgid "Closed Reports for "
-msgstr ""
+msgstr "Закрытые отчеты для"
 
 #: app/html/mod/sub_reports_closed.html:15
 msgid "Includes all closed reports this sub."
-msgstr ""
+msgstr "Включает в себя все закрытые отчеты этой субмарины."
 
 #: app/html/shared/layout.html:42
 msgid "Admin mode is currently enabled."
@@ -914,7 +915,7 @@ msgstr "Загрузки"
 
 #: app/html/shared/sidebar/admin.html:12
 msgid "Wikis"
-msgstr ""
+msgstr "Вики-узлы"
 
 #: app/html/shared/sidebar/admin.html:13
 msgid "Banned Domains"
@@ -958,7 +959,7 @@ msgstr "Журналы"
 
 #: app/html/shared/sidebar/mod.html:1 app/html/shared/sidebar/sub.html:81
 msgid "Mod Dashboard"
-msgstr ""
+msgstr "Панель Управления Модом"
 
 #: app/html/shared/sidebar/sub.html:5
 msgid "Title search..."
@@ -1024,7 +1025,7 @@ msgstr "Изменить флаер"
 
 #: app/html/shared/sidebar/sub.html:79
 msgid "Edit rules"
-msgstr ""
+msgstr "Редактировать правила"
 
 #: app/html/shared/sidebar/sub.html:80
 msgid "Edit stylesheet"
@@ -1067,8 +1068,7 @@ msgstr "Поменять пароль"
 msgid "Delete account"
 msgstr "Удалить аккаунт"
 
-#: app/html/shared/sidebar/user.html:20
-#: app/html/user/settings/invitecode.html:9
+#: app/html/shared/sidebar/user.html:20 app/html/user/settings/invitecode.html:9
 msgid "Invite codes"
 msgstr "Пригласительные коды"
 
@@ -1090,16 +1090,16 @@ msgstr "Просмотр сохраненных"
 
 #: app/html/site/license.html:9
 msgid ""
-"This website is powered by <a href=\"https://github.com/Phuks-"
-"co/throat\">Throat</a>, released under the MIT license."
+"This website is powered by <a href=\"https://github.com/Phuks-co/throat"
+"\">Throat</a>, released under the MIT license."
 msgstr ""
-"Этот сайт работает на <a href=\"https://github.com/Phuks-"
-"co/throat\">Throat</a>, выпущен под лицензией MIT."
+"Этот сайт работает на <a href=\"https://github.com/Phuks-co/throat\">Throat</"
+"a>, выпущен под лицензией MIT."
 
 #: app/html/site/wiki.html:11
 #, python-format
 msgid "Last update: %(timestamp)s"
-msgstr ""
+msgstr "Последнее обновление: %(timestamp)s"
 
 #: app/html/sub/bans.html:7 app/html/sub/css.html:7
 msgid "Editing as Admin"
@@ -1134,8 +1134,8 @@ msgstr "никто"
 msgid "By"
 msgstr "По"
 
-#: app/html/sub/bans.html:49 app/html/sub/bans.html:107
-#: app/html/sub/log.html:12 app/html/user/profile.html:142
+#: app/html/sub/bans.html:49 app/html/sub/bans.html:107 app/html/sub/log.html:12
+#: app/html/user/profile.html:142
 msgid "User"
 msgstr "Участник"
 
@@ -1147,9 +1147,9 @@ msgstr "Истекает"
 msgid "Actions"
 msgstr "Действия"
 
-#: app/html/sub/bans.html:64 app/html/sub/bans.html:71
-#: app/html/sub/bans.html:119 app/html/sub/bans.html:126
-#: app/html/sub/bans.html:135 app/html/user/settings/invitecode.html:41
+#: app/html/sub/bans.html:64 app/html/sub/bans.html:71 app/html/sub/bans.html:119
+#: app/html/sub/bans.html:126 app/html/sub/bans.html:135
+#: app/html/user/settings/invitecode.html:41
 msgid "N/A"
 msgstr "N/A"
 
@@ -1242,8 +1242,8 @@ msgid "Submit post"
 msgstr "Разместить пост"
 
 #: app/html/sub/createpost.html:127 app/html/sub/post.html:204
-#: app/static/js/Post.js:223 app/static/js/Post.js:276
-#: app/static/js/Post.js:352 app/static/js/Post.js:497
+#: app/static/js/Post.js:223 app/static/js/Post.js:276 app/static/js/Post.js:352
+#: app/static/js/Post.js:497
 msgid "Preview"
 msgstr "Предпросмотр"
 
@@ -1255,8 +1255,7 @@ msgstr "Предпросмотр поста"
 #, python-format
 msgid "Editing stylesheet for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
 msgstr ""
-"Редактирование таблицы стилей для <a "
-"href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+"Редактирование таблицы стилей для <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
 
 #: app/html/sub/css.html:23 app/html/user/settings/password.html:27
 #: app/html/user/settings/preferences.html:56
@@ -1277,8 +1276,7 @@ msgstr "Загрузка файлов"
 #, python-format
 msgid "Upload limit is 2 MiB. Space used: %(storage)i KiB"
 msgstr ""
-"Лимит загрузки составляет 2 МиБ. Используемое пространство: %(storage)i "
-"KiB"
+"Лимит загрузки составляет 2 МиБ. Используемое пространство: %(storage)i KiB"
 
 #: app/html/sub/css.html:37
 msgid "Only images allowed"
@@ -1309,8 +1307,7 @@ msgstr "Удалено!"
 #, python-format
 msgid "You can use uploaded images with <code>%%imagename%%</code>."
 msgstr ""
-"Вы можете использовать загруженные изображения с "
-"<code>%%imagename%%</code>."
+"Вы можете использовать загруженные изображения с <code>%%imagename%%</code>."
 
 #: app/html/sub/css.html:54
 msgid "Example:"
@@ -1341,11 +1338,10 @@ msgstr "Изменил настройки"
 #: app/html/sub/log.html:38
 #, python-format
 msgid ""
-"Banned <a href=\"/u/%(username)s\">%(username)s</a> with reason "
-"<code>%(reason)s</code>"
+"Banned <a href=\"/u/%(username)s\">%(username)s</a> with reason <code>"
+"%(reason)s</code>"
 msgstr ""
-"Забанил <a href=\"/u/%(username)s\">%(username)s</a> - "
-"<code>%(reason)s</code>"
+"Забанил <a href=\"/u/%(username)s\">%(username)s</a> - <code>%(reason)s</code>"
 
 #: app/html/sub/log.html:40
 #, python-format
@@ -1441,8 +1437,8 @@ msgid "flair"
 msgstr "флаер"
 
 #: app/html/sub/post.html:115 app/html/sub/postcomments.html:62
-#: app/static/js/Post.js:211 app/static/js/Post.js:214
-#: app/static/js/Post.js:267 app/static/js/Post.js:270
+#: app/static/js/Post.js:211 app/static/js/Post.js:214 app/static/js/Post.js:267
+#: app/static/js/Post.js:270
 msgid "edit"
 msgstr "изменить"
 
@@ -1507,8 +1503,7 @@ msgstr "[удалено]"
 msgid "Submit comment"
 msgstr "Отправить комментарий"
 
-#: app/html/sub/post.html:206 app/static/js/Post.js:224
-#: app/static/js/Post.js:277
+#: app/html/sub/post.html:206 app/static/js/Post.js:224 app/static/js/Post.js:277
 msgid "Comment preview"
 msgstr "Предпросмотр комментария"
 
@@ -1528,11 +1523,11 @@ msgstr "[OP]"
 #: app/html/sub/postcomments.html:33
 #, python-format
 msgid ""
-"<span class=\"cscore\">%(score)i</span> points</b> "
-"(+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
+"<span class=\"cscore\">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>"
+"%(downvotes)i</b>)"
 msgstr ""
-"<span class=\"cscore\">%(score)i</span> карма</b> "
-"(+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
+"<span class=\"cscore\">%(score)i</span> карма</b> (+<b>%(upvotes)i</b>|-<b>"
+"%(downvotes)i</b>)"
 
 #: app/html/sub/postcomments.html:39
 #, python-format
@@ -1549,8 +1544,7 @@ msgid "reply"
 msgstr "ответить"
 
 #: app/html/sub/postcomments.html:70 app/static/js/Post.js:190
-#: app/static/js/Post.js:193 app/static/js/Post.js:243
-#: app/static/js/Post.js:246
+#: app/static/js/Post.js:193 app/static/js/Post.js:243 app/static/js/Post.js:246
 msgid "source"
 msgstr "исходник"
 
@@ -1674,7 +1668,7 @@ msgstr "Читает"
 
 #: app/html/user/profile.html:109
 msgid "Invite Info"
-msgstr ""
+msgstr "Информация о Приглашении"
 
 #: app/html/user/profile.html:139
 msgid "Send message"
@@ -1705,6 +1699,8 @@ msgid ""
 "Registration has been temporarily disabled. Please check back later. We "
 "apologize for any inconvience."
 msgstr ""
+"Регистрация была временно отключена. Пожалуйста, зайдите позже. Мы приносим "
+"свои извинения за любое недоразумение."
 
 #: app/html/user/topbar.html:5
 msgid "Customize your sub bar"
@@ -1823,11 +1819,11 @@ msgstr "удалить"
 
 #: app/static/js/Mod.js:20 app/static/js/Mod.js:35
 msgid "Error:"
-msgstr ""
+msgstr "Ошибка:"
 
 #: app/static/js/Mod.js:26 app/static/js/Mod.js:41 app/static/js/Post.js:302
-#: app/static/js/Post.js:323 app/static/js/Post.js:355
-#: app/static/js/Post.js:708 app/static/js/Util.js:77
+#: app/static/js/Post.js:323 app/static/js/Post.js:355 app/static/js/Post.js:708
+#: app/static/js/Util.js:77
 msgid "Could not contact the server"
 msgstr "Не удалось связаться с сервером"
 
@@ -1836,9 +1832,8 @@ msgid "Voting..."
 msgstr "Голосование..."
 
 #: app/static/js/Poll.js:79 app/static/js/Poll.js:131 app/static/js/Post.js:123
-#: app/static/js/Post.js:138 app/static/js/Post.js:154
-#: app/static/js/Post.js:169 app/static/js/Post.js:348
-#: app/static/js/Post.js:375
+#: app/static/js/Post.js:138 app/static/js/Post.js:154 app/static/js/Post.js:169
+#: app/static/js/Post.js:348 app/static/js/Post.js:375
 msgid "Error: %1"
 msgstr "Ошибка: %1"
 
@@ -1855,8 +1850,7 @@ msgid "Why are you deleting this?"
 msgstr "Почему вы это удаляете?"
 
 #: app/static/js/Post.js:36 app/static/js/Post.js:71 app/static/js/Post.js:87
-#: app/static/js/Post.js:102 app/static/js/Post.js:416
-#: app/static/js/Post.js:440
+#: app/static/js/Post.js:102 app/static/js/Post.js:416 app/static/js/Post.js:440
 msgid "Error."
 msgstr "Ошибка."
 
@@ -1868,8 +1862,8 @@ msgstr "Новый заголовок"
 msgid "Done"
 msgstr "Сделать"
 
-#: app/static/js/Post.js:125 app/static/js/Post.js:140
-#: app/static/js/Post.js:156 app/static/js/Post.js:171
+#: app/static/js/Post.js:125 app/static/js/Post.js:140 app/static/js/Post.js:156
+#: app/static/js/Post.js:171
 msgid "Done!"
 msgstr "Сделано!"
 
@@ -1877,18 +1871,15 @@ msgstr "Сделано!"
 msgid "Save changes"
 msgstr "Сохранить изменения"
 
-#: app/static/js/Post.js:294 app/static/js/Post.js:315
-#: app/static/js/Post.js:521
+#: app/static/js/Post.js:294 app/static/js/Post.js:315 app/static/js/Post.js:521
 msgid "There was an error while editing: %1"
 msgstr "При редактировании произошла ошибка: %1"
 
-#: app/static/js/Post.js:297 app/static/js/Post.js:318
-#: app/static/js/Post.js:524
+#: app/static/js/Post.js:297 app/static/js/Post.js:318 app/static/js/Post.js:524
 msgid "Saved."
 msgstr "Сохраненный."
 
-#: app/static/js/Post.js:340 app/static/js/Post.js:409
-#: app/static/js/Post.js:422
+#: app/static/js/Post.js:340 app/static/js/Post.js:409 app/static/js/Post.js:422
 msgid "Loading..."
 msgstr "Загрузка..."
 
@@ -1946,7 +1937,7 @@ msgstr "Нарушение TOS"
 
 #: app/static/js/Post.js:577
 msgid "Sub Rule violation"
-msgstr ""
+msgstr "Нарушение Саб правил"
 
 #: app/static/js/Post.js:578
 msgid "Other"
@@ -1954,7 +1945,7 @@ msgstr "Другое"
 
 #: app/static/js/Post.js:582
 msgid "Which Sub rule did this post violate?"
-msgstr ""
+msgstr "Какое подправило нарушил этот пост?"
 
 #: app/static/js/Post.js:590
 msgid "Explain why you're reporting this post:"
@@ -1962,7 +1953,7 @@ msgstr "Почему вы сообщаете об этом посте:"
 
 #: app/static/js/Post.js:701
 msgid "Error: "
-msgstr ""
+msgstr "Ошибка:"
 
 #: app/static/js/Post.js:704
 msgid "Your report has been sent and will be reviewed by the site administrators."
@@ -2009,8 +2000,8 @@ msgid ""
 "There was an error while saving your settings. Please try again in a few "
 "minutes."
 msgstr ""
-"При сохранении настроек произошла ошибка. Пожалуйста, повторите попытку "
-"через несколько минут."
+"При сохранении настроек произошла ошибка. Пожалуйста, повторите попытку через "
+"несколько минут."
 
 #: app/static/js/main.js:249
 msgid "Error while contacting the server"
@@ -2080,10 +2071,9 @@ msgstr "ДА"
 msgid "Type \"YES\" in the box"
 msgstr "Введите \"ДА\" в поле"
 
-#: app/views/do.py:121 app/views/do.py:207 app/views/do.py:236
-#: app/views/do.py:273 app/views/do.py:304 app/views/do.py:334
-#: app/views/do.py:700 app/views/do.py:764 app/views/do.py:835
-#: app/views/do.py:883 app/views/do.py:916 app/views/do.py:947
+#: app/views/do.py:121 app/views/do.py:207 app/views/do.py:236 app/views/do.py:273
+#: app/views/do.py:304 app/views/do.py:334 app/views/do.py:700 app/views/do.py:764
+#: app/views/do.py:835 app/views/do.py:883 app/views/do.py:916 app/views/do.py:947
 #: app/views/do.py:978 app/views/do.py:1399 app/views/do.py:1448
 #: app/views/do.py:2271 app/views/do.py:2333
 msgid "Sub does not exist"
@@ -2093,9 +2083,9 @@ msgstr "Саб не существует"
 msgid "Post was already deleted"
 msgstr "Пост уже удален"
 
-#: app/views/do.py:159 app/views/do.py:210 app/views/do.py:294
-#: app/views/do.py:703 app/views/do.py:1595 app/views/do.py:1632
-#: app/views/do.py:1741 app/views/do.py:2278 app/views/do.py:2339
+#: app/views/do.py:159 app/views/do.py:210 app/views/do.py:294 app/views/do.py:703
+#: app/views/do.py:1595 app/views/do.py:1632 app/views/do.py:1741
+#: app/views/do.py:2278 app/views/do.py:2339
 msgid "Not authorized"
 msgstr "Не авторизован"
 
@@ -2111,9 +2101,9 @@ msgstr "Флаера не существует"
 msgid "Post has no flair"
 msgstr "Пост не имеет флаера"
 
-#: app/views/do.py:339 app/views/do.py:375 app/views/do.py:677
-#: app/views/do.py:709 app/views/do.py:778 app/views/do.py:831
-#: app/views/do.py:879 app/views/do.py:912 app/views/do.py:943
+#: app/views/do.py:339 app/views/do.py:375 app/views/do.py:677 app/views/do.py:709
+#: app/views/do.py:778 app/views/do.py:831 app/views/do.py:879 app/views/do.py:912
+#: app/views/do.py:943
 msgid "User does not exist"
 msgstr "Пользователь не существует"
 
@@ -2121,8 +2111,7 @@ msgstr "Пользователь не существует"
 msgid "Badge does not exist"
 msgstr "Награда не существует"
 
-#: app/views/do.py:395 app/views/do.py:420 app/views/do.py:443
-#: app/views/do.py:468
+#: app/views/do.py:395 app/views/do.py:420 app/views/do.py:443 app/views/do.py:468
 msgid "sub not found"
 msgstr "саб не найден"
 
@@ -2285,11 +2274,11 @@ msgstr "Флаер имеет недопустимые символы"
 
 #: app/views/do.py:1458
 msgid "Rule does not exist"
-msgstr ""
+msgstr "Правило не существует"
 
 #: app/views/do.py:1480
 msgid "Rule has invalid characters"
-msgstr ""
+msgstr "Правило содержит недопустимые символы"
 
 #: app/views/do.py:1498
 msgid "Invalid captcha (refresh page.)"
@@ -2299,23 +2288,21 @@ msgstr "Недопустимая капча (обновить страницу.)
 #, python-format
 msgid ""
 "<h1><strong>%(lema)s</strong></h1>\n"
-"            <p>Somebody (most likely you) has requested a password reset "
-"for\n"
+"            <p>Somebody (most likely you) has requested a password reset for\n"
 "            your account</p>\n"
-"            <p>To proceed, visit the following address (valid for the "
-"next 24hs)</p>\n"
+"            <p>To proceed, visit the following address (valid for the next "
+"24hs)</p>\n"
 "            <a href=\"%(url)s\">%(url)s</a>\n"
 "            <hr>\n"
-"            <p>If you didn't request a password recovery, please ignore "
-"this\n"
+"            <p>If you didn't request a password recovery, please ignore this\n"
 "            email</p>\n"
 "            "
 msgstr ""
 "<h1><strong>%(lema)s</strong></h1>\n"
 "            <p>Кто-то (скорее всего, вы) запросил сброс пароля для\n"
 "            вашего аккаунта</p>\n"
-"            <p>Чтобы продолжить, посетите следующий адрес (действителен в"
-" течение следующих 24 часов)</p>\n"
+"            <p>Чтобы продолжить, посетите следующий адрес (действителен в "
+"течение следующих 24 часов)</p>\n"
 "            <a href=\"%(url)s\">%(url)s</a>\n"
 "            <hr>\n"
 "            <p>Если вы не запросили восстановление пароля, пожалуйста, "
@@ -2398,31 +2385,31 @@ msgstr "Сообщить причину слишком коротко."
 
 #: app/views/do.py:2261 app/views/do.py:2318
 msgid "Report does not exist"
-msgstr ""
+msgstr "Отчет не существует"
 
 #: app/views/do.py:2275 app/views/do.py:2336
 msgid "Invalid action"
-msgstr ""
+msgstr "Неверное действие"
 
 #: app/views/do.py:2281 app/views/do.py:2342
 msgid "This report has already been closed"
-msgstr ""
+msgstr "Этот отчет уже закрыт"
 
 #: app/views/do.py:2284 app/views/do.py:2345
 msgid "This report is already open"
-msgstr ""
+msgstr "Этот отчет уже открыт"
 
 #: app/views/do.py:2298 app/views/do.py:2359
 msgid "Failed to close report"
-msgstr ""
+msgstr "Не удалось закрыть отчет"
 
 #: app/views/do.py:2304 app/views/do.py:2365
 msgid "Failed to reopen report"
-msgstr ""
+msgstr "Не удалось открыть отчет"
 
 #: app/views/do.py:2307 app/views/do.py:2368
 msgid "Failed to update report"
-msgstr ""
+msgstr "Не удалось обновить отчет"
 
 #: app/views/messages.py:51
 msgid "Mentions"
@@ -2525,8 +2512,8 @@ msgid ""
 "Only Site Admins may create new subs. Please contact an administrator to "
 "request a new sub."
 msgstr ""
-"Только администраторы сайта могут создавать новые сабы. Пожалуйста, "
-"свяжитесь с администратором, чтобы запросить новый саб."
+"Только администраторы сайта могут создавать новые сабы. Пожалуйста, свяжитесь с "
+"администратором, чтобы запросить новый саб."
 
 #: app/views/subs.py:310
 #, python-format
@@ -2589,4 +2576,3 @@ msgstr "Лицензионный файл был удален :("
 
 #~ msgid "Error: %s"
 #~ msgstr "Ошибка: %s"
-
