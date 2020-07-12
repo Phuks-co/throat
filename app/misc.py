@@ -10,6 +10,7 @@ import magic
 import os
 import hashlib
 import re
+import gevent
 import gi
 
 from mutagen.mp4 import MP4
@@ -25,6 +26,7 @@ from bs4 import BeautifulSoup
 from functools import update_wrapper
 import misaka as m
 import sendgrid
+from flask import current_app
 from flask_mail import Mail
 from flask_mail import Message as EmailMessage
 
@@ -603,10 +605,17 @@ def smtp_configured():
 def send_email_with_smtp(sender, recipients, subject, text_content, html_content):
     if not isinstance(recipients, list):
         recipients = [recipients]
-    msg = EmailMessage(subject, sender=sender, recipients=recipients)
-    msg.body = text_content
-    msg.html = html_content
-    mail.send(msg)
+    msg = EmailMessage(subject, sender=sender, recipients=recipients,
+                       body=text_content, html=html_content)
+    if config.app.testing:
+        send_smtp_email_async(current_app, msg)
+    else:
+        gevent.spawn(send_smtp_email_async, current_app._get_current_object(), msg)
+
+
+def send_smtp_email_async(app, msg):
+    with app.app_context():
+        mail.send(msg)
 
 
 def send_email_with_sendgrid(sender, to, subject, html_content):
