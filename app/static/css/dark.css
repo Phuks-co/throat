@@ -317,7 +317,7 @@ body.dark #formpop .modal-content .closemsg {
 body.dark .subsentry svg {
     fill: #fff;
 }
-body.dark .sbm-icon svg {
+body.dark .sbm-icon svg, body.dark .i-icon svg {
     fill: #fff;
 }
 /* /SUBS PAGE */

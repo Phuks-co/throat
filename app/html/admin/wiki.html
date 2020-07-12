@@ -35,8 +35,8 @@ Admin |\
               <td><time-ago datetime="@{wiki.created.isoformat()}Z"></time-ago></td>
               <td><time-ago datetime="@{wiki.updated.isoformat()}Z"></time-ago></td>
               <td>
-                <a href="@{url_for('admin.edit_wiki', slug=wiki.slug)}" title="@{_('Edit')}" class="tx-icon" data-icon="edit"></a>
-                <a href="@{url_for('admin.delete_wiki', slug=wiki.slug)}" title="@{_('Delete')}" class="tx-icon" data-icon="close"></a>
+                <a href="@{url_for('admin.edit_wiki', slug=wiki.slug)}" title="@{_('Edit')}" class="i-icon" data-icon="edit"></a>
+                <a href="@{url_for('admin.delete_wiki', slug=wiki.slug)}" title="@{_('Delete')}" class="i-icon" data-icon="close"></a>
               </td>
             </tr>
             @end
