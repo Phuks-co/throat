@@ -1,6 +1,7 @@
 """ Admin endpoints """
 import time
 import re
+import datetime
 from peewee import fn, JOIN, Value
 from pyotp import TOTP
 from flask import Blueprint, abort, redirect, url_for, session, render_template, jsonify
@@ -9,7 +10,7 @@ from flask_babel import _
 from .. import misc
 from ..forms import TOTPForm, LogOutForm, UseInviteCodeForm, AssignUserBadgeForm, EditModForm, BanDomainForm
 from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, SubPostCommentVote, SubPostVote, SiteMetadata
-from ..models import UserUploads, SubPostReport, SubPostCommentReport
+from ..models import UserUploads, SubPostReport, SubPostCommentReport, InviteCode
 from ..misc import engine, getReports
 from ..badges import badges
 
@@ -68,6 +69,7 @@ def index():
     downs += SubPostCommentVote.select().where(SubPostCommentVote.positive == 0).count()
 
     invite = UseInviteCodeForm()
+
     try:
         level = SiteMetadata.get(SiteMetadata.key == 'invite_level')
         maxcodes = SiteMetadata.get(SiteMetadata.key == 'invite_max')
@@ -126,6 +128,59 @@ def userbadges():
     return render_template('admin/userbadges.html', badges=badges.items(),
                            assignuserbadgeform=AssignUserBadgeForm(),
                            ct=len(ct), admin_route='admin.userbadges')
+
+
+@bp.route("/invitecodes", defaults={'page': 1})
+@bp.route("/invitecodes/<int:page>")
+@login_required
+def invitecodes(page):
+    """
+    View and configure Invite Codes
+    """
+    def map_style(code):
+        if code['uses'] >= code['max_uses']:
+            return 'expired'
+        elif code['expires'] is not None and code['expires'] < datetime.datetime.utcnow():
+            return 'expired'
+        else:
+            return ''
+
+    def map_used_by(code):
+        return [
+            User.get((User.uid == user.uid)).name
+            for user in UserMetadata.select().where(
+                (UserMetadata.key == 'invitecode') & (UserMetadata.value == code['code']))
+        ]
+
+    if not current_user.is_admin():
+        abort(404)
+
+    invite_settings = {
+        meta.key: meta.value
+        for meta in SiteMetadata.select().where(
+            SiteMetadata.key in ('useinvitecode', 'invite_level', 'invite_max'))
+    }
+
+    invite_codes = InviteCode.select(
+        InviteCode.code,
+        User.name.alias('created_by'),
+        InviteCode.created,
+        InviteCode.expires,
+        InviteCode.uses,
+        InviteCode.max_uses,
+    ).join(User).order_by(InviteCode.uses.desc(), InviteCode.created.desc()).paginate(page, 50).dicts()
+    for code in invite_codes:
+        code['style'] = map_style(code)
+        code['used_by'] = map_used_by(code)
+
+    invite = UseInviteCodeForm()
+    return render_template(
+        'admin/invitecodes.html',
+        useinvitecodeform=invite,
+        invite_settings=invite_settings,
+        invite_codes=invite_codes,
+        page=page,
+    )
 
 
 @bp.route("/admins")

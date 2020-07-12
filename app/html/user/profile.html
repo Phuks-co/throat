@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(user, level, progress, postCount, commentCount, givenScore, badges, owns, mods, habits, msgform)
+@require(user, level, progress, postCount, commentCount, givenScore, invitecodeinfo, badges, owns, mods, habits, msgform)
 
 @def title():
 /u/@{user.name} |\
@@ -101,6 +101,32 @@
                                     <li class="habitentry"><a href="@{url_for('sub.view_sub', sub=i.name)}">@{i.name}</a> - @{i.count}</li>
                                 @end
                             </ul>
+                        </div>
+                    @end
+                    <hr>
+                    @if invitecodeinfo and ((current_user.uid == user.uid) or current_user.is_admin()):
+                        <div class="userrow">
+                            <h2 style="text-align: center; margin-top: 2em;">@{_('Invite Info')}</h2>
+                            @if invitecodeinfo.get('invitedBy'):
+                                <div>
+                                    Invited by <a href="@{url_for('user.view', user=invitecodeinfo['invitedBy']['name'])}">@{invitecodeinfo['invitedBy']['name']}</a> with code @{invitecodeinfo['invitedBy']['code']}
+                                </div>
+                            @end
+                            @if invitecodeinfo.get('invitedTo'):
+                                <div>
+                                    <h3>Invited Users:</h3>
+                                    <table>
+                                        <thead><tr><th>User</th><th>Code</th></tr></thead>
+                                        <tbody>
+                                        @for invited in invitecodeinfo['invitedTo']:
+                                            <tr>
+                                            <td><a href="@{url_for('user.view', user=invited['name'])}">@{invited['name']}</a></td><td>@{invited['code']}</td></tr>
+                                        @end
+                                        </tbody>
+                                    </table>
+                                    </ul>
+                                </div>
+                            @end
                         </div>
                     @end
                 </div>

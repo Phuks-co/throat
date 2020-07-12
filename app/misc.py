@@ -38,7 +38,7 @@ from .badges import badges
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata, SubRule
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db, SubPostReport, SubPostCommentReport
-from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair
+from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair, InviteCode
 from .models import SubMod, SubBan
 from peewee import JOIN, fn, SQL, NodeList, Value
 import requests
@@ -545,6 +545,41 @@ def getMaxCodes(uid):
         except SiteMetadata.DoesNotExist:
             return 0
     return 0
+
+@cache.memoize(30)
+def getInviteCodeInfo(uid):
+    """
+    Returns information about who invited a user and who they have invited.
+    """
+    info = {}
+
+    # The invite code that this user used to sign up
+    try:
+        invite_code = UserMetadata.get((UserMetadata.key == 'invitecode') & (UserMetadata.uid == uid))
+        code = invite_code.value
+        invited_by_uid = InviteCode.get((InviteCode.code == code)).uid
+        invited_by_name = User.get((User.uid == invited_by_uid)).name
+        info['invitedBy'] = {'name': invited_by_name, 'code': code}
+    except UserMetadata.DoesNotExist:
+        pass
+
+    # Codes that this user has generated, that other users signed up with
+    try:
+        user_codes = InviteCode.select().where(InviteCode.uid == uid)
+        info['invitedTo'] = []
+        for code in user_codes:
+            try:
+                invited_users = UserMetadata.select().where((UserMetadata.key == 'invitecode') & (UserMetadata.value == code.code))
+                for user in invited_users:
+                    username = User.get((User.uid == user.uid)).name
+                    info['invitedTo'].append({'name': username, 'code': code.code})
+            except UserMetadata.DoesNotExist:
+                # no users have signed up with this code.
+                pass
+    except InviteCode.DoesNotExist:
+        pass
+
+    return info
 
 
 def sendMail(to, subject, content):

@@ -28,6 +28,7 @@ def view(user):
         (SubMod.uid == user.uid) & (SubMod.invite == False))
     owns = [x.sub.name for x in modsquery if x.power_level == 0]
     mods = [x.sub.name for x in modsquery if 1 <= x.power_level <= 2]
+    invitecodeinfo = misc.getInviteCodeInfo(user.uid)
     badges = misc.getUserBadges(user.uid)
     pcount = SubPost.select().where(SubPost.uid == user.uid).count()
     ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()
@@ -51,11 +52,8 @@ def view(user):
 
     return engine.get_template('user/profile.html').render(
         {'user': user, 'level': level, 'progress': progress, 'postCount': pcount, 'commentCount': ccount,
-         'givenScore': givenScore, 'badges': badges, 'owns': owns, 'mods': mods, 'habits': habit,
+         'givenScore': givenScore, 'invitecodeinfo': invitecodeinfo, 'badges': badges, 'owns': owns, 'mods': mods, 'habits': habit,
          'msgform': CreateUserMessageForm()})
-    # return render_template('../html/user/profile.html', user=user, badges=badges, habit=habit,
-    #                        msgform=CreateUserMessageForm(), pcount=pcount,
-    #                        ccount=ccount, owns=owns, mods=mods, level=level, progress=progress)
 
 
 @bp.route("/u/<user>/posts", defaults={'page': 1})
