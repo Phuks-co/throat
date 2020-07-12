@@ -196,7 +196,7 @@ class Sub(BaseModel):
         try:
             m = SubMetadata.get((SubMetadata.sid == self.sid) & (SubMetadata.key == key))
             return m.value
-        except SubMetadata.DoesNotEXist:
+        except SubMetadata.DoesNotExist:
             return None
 
     def update_metadata(self, key, value):

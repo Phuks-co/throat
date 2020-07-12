@@ -60,7 +60,7 @@ def register():
     try:
         enable_registration = SiteMetadata.get(SiteMetadata.key == 'enable_registration')
         if enable_registration.value in ('False', '0'):
-            return engine.get_template('user/registeration_disabled.html').render({'test': 'test'})
+            return engine.get_template('user/registration_disabled.html').render({'test': 'test'})
     except SiteMetadata.DoesNotExist:
         pass
 
