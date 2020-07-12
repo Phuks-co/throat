@@ -58,7 +58,8 @@ cfg_defaults = { # key => default value
             "development": False,
             "wtf_csrf_time_limit": None,
             "max_content_length": 10485760,  # 10mb
-            "fallback_language": "en"
+            "fallback_language": "en",
+            "testing": False
         },
     "database": {}
     }
