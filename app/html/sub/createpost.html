@@ -114,7 +114,7 @@
                 </div>
                 <div class="pure-control-group">
                     <label for="captcha">@{_('Captcha')}</label>
-                    @{form.captcha(autocomplete="off", required=True)}
+                    @{form.captcha(autocomplete="off", required=True)!!html}
                 </div>
                 @end
                 <div class="pure-controls">

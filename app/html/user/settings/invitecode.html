@@ -8,7 +8,7 @@
 <div id="container">
   <h1>@{_('Invite codes')}</h1>
   @if avail > 0:
-    @{_('You can create <b>%(num)i</b> invite codes.', num=avail)}
+    @{_('You can create <b>%(num)i</b> invite codes.', num=avail)!!html}
     <a href="/do/create_invite" class="pure-button pure-button-primary">@{_('Create new')}</a>
   @else:
     @{_('You cannot create invite codes.')}
