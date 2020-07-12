@@ -198,24 +198,34 @@ Mod |\
             @else:
               <h3>@{_('Other reports on this post:')}</h3>
             @end
-            <table class="pure-table">
-              <thead>
-                <tr>
-                  <th>@{_('Time')}</th>
-                  <th>@{_('Reporter')}</th>
-                  <th>@{_('Reason')}</th>
-                  <th>@{_('Status')}</th>
-                </tr>
-              </thead>
-                <tr>
-                  <td>Time</td>
-                  <td>Reporter</td>
-                  <td>Reason</td>
-                  <td>Status</td>
-                </tr>
-              <tbody>
-              </tbody>
-            </table>
+            @if len(related_reports['query']) == 0:
+              @{_('There are no other reports on this post')}
+            @else:
+              <table class="pure-table">
+                <thead>
+                  <tr>
+                    <th>@{_('Time')}</th>
+                    <th>@{_('Reporter')}</th>
+                    <th>@{_('Reason')}</th>
+                    <th>@{_('Status')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for related_report in related_reports['query']:
+                    <tr>
+                      <td><time-ago datetime="@{related_report['datetime'].isoformat()}Z"></time-ago></td>
+                      <td><a href="@{ url_for('user.view', user=related_report['reporter']) }">@{ related_report['reporter'] }</a></td>
+                      <td>@{related_report['reason']!!e}</td>
+                      @if related_report['open'] == True:
+                        <td>@{_('Open')} </td>
+                      @else:
+                        <td>@{_('Closed')} </td>
+                      @end
+                    </tr>
+                  @end
+                </tbody>
+              </table>
+            @end
           </div>
 
       </div>

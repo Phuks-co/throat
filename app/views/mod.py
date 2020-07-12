@@ -128,7 +128,7 @@ def report_details(sub, type, id):
         abort(404)
 
     report = getReports('mod', 'all', 1, type=type, report_id=id)
-    related_reports = "related_reports"
+    related_reports = getReports('mod', 'all', 1, type=type, report_id=id, related=True)
 
     if report['type'] == "post":
         try:
