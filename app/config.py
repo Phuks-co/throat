@@ -33,6 +33,10 @@ cfg_defaults = { # key => default value
 
             "daily_sub_posting_limit": 10,
             "daily_site_posting_limit": 25,
+
+            "footer": {
+                
+            }
         },
         "cache": {
             "type": "null"

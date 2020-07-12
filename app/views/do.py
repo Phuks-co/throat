@@ -2168,11 +2168,13 @@ def close_poll():
             abort(403)
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
+
 try:
     import callbacks
     callbacks_enabled = True
 except ModuleNotFoundError:
     callbacks_enabled = False
+
 
 @do.route('/do/report', methods=['POST'])
 @login_required

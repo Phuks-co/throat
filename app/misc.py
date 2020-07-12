@@ -13,7 +13,6 @@ import re
 import gi
 
 from mutagen.mp4 import MP4
-from mutagen.m4a import M4A
 gi.require_version('GExiv2', '0.10')  # noqa
 from gi.repository import GExiv2
 import bcrypt
@@ -25,7 +24,6 @@ from PIL import Image
 from bs4 import BeautifulSoup
 from functools import update_wrapper
 import misaka as m
-import redis
 import sendgrid
 
 from .config import config
@@ -414,6 +412,7 @@ class RE_AMention():
                                   flags=re.MULTILINE + re.DOTALL)
         self.LINKS = re.compile(r"\[.*?({1}).*?\]\(.*?\)|({0})".format(PRE1, BARE),
                                 flags=re.MULTILINE + re.DOTALL)
+
 
 re_amention = RE_AMention()
 

@@ -628,3 +628,15 @@ class InviteCode(BaseModel):
 
     class Meta:
         table_name = "invite_code"
+
+
+class Wiki(BaseModel):
+    is_global = BooleanField()
+    sub = ForeignKeyField(db_column='sid', model=Sub, field='sid', null=True)
+
+    slug = CharField(max_length=128)
+    title = CharField(max_length=255)
+    content = TextField()
+
+    created = DateTimeField(default=datetime.datetime.utcnow)
+    updated = DateTimeField(default=datetime.datetime.utcnow)
