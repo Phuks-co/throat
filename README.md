@@ -50,6 +50,13 @@ CMD [ "gunicorn", \
       "throat:app" ]
 ```
 
+## Authenticating with a Keycloak server
+
+Optionally, user authentication can be done using a keycloak server.
+You will need to create a realm and client
+(https://www.keycloak.org/docs/latest/server_admin/index.html#_clients).
+
+
 ## Tests
 
 ### Python tests

@@ -73,6 +73,35 @@ site:
   # Maximum amount of posts a user can create in a single day
   daily_site_posting_limit: 25
 
+
+auth:
+  # Set to LOCAL to store user authentication in database,
+  # or KEYCLOAK to use a Keycloak server to authenticate users.
+  provider: 'LOCAL'
+
+  # Set to True to require users to provide valid email addresses.
+  validate_emails: False
+
+  keycloak:
+    server: 'http://192.168.100.5:5080/auth/'
+
+    # Keycloak realm containing client with power to create users.
+    admin_realm: 'master'
+
+    # Keycloak client with power to create users.
+    admin_client: 'admin-cli'
+
+    # Keycloak realm for users.
+    user_realm: 'example'
+
+    # Keycloak client in user realm with authorization enabled.
+    auth_client: 'throatapp'
+
+    # Client credentials grant secrets
+    admin_secret: '00000000-0000-0000-0000-000000000000' # secret for admin client
+    auth_secret: '00000000-0000-0000-0000-000000000000' # secret for auth client
+
+
 app:
   # host to pass to SocketIO when we start the application
   host: "localhost"

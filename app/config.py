@@ -49,6 +49,10 @@ cfg_defaults = {  # key => default value
                 }
             }
         },
+        "auth": {
+            "provider": 'LOCAL',
+            "keycloak": {}
+        },
         "cache": {
             "type": "null"
         },
