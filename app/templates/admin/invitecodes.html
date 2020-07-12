@@ -46,28 +46,42 @@
         <thead>
           <tr>
             <th>Code</th>
-            <th>Referrer User</th>
+            <th>Created By</th>
             <th>Created On</th>
             <th>Expires</th>
             <th>Uses</th>
             <th>Max Uses</th>
+            <th>Used By</th>
           </tr>
         </thead>
         <tbody>
           {% for code in invite_codes %}
-            <tr class="{{code.row_class}}">
-              <td>
+            <tr>
+              <td class="{{code.style}}">
                 {{code.code}}
               </td>
-              <td><a href="{{url_for('user.view', user=code.referrer_user_name)}}">{{code.referrer_user_name}}</td>
+              <td><a href="{{url_for('user.view', user=code.created_by)}}">{{code.created_by}}</a></td>
               <td>{{code.created}}</td>
               <td>{{code.expires}}</td>
               <td>{{code.uses}}</td>
               <td>{{code.max_uses}}</td>
+              <td>
+                <ul>
+                {% for user in code.used_by %}
+                  <li><a href="{{url_for('user.view', user=user)}}">{{user}}</a></li>
+                {% endfor %}
+                </ul>
+              </td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
+      {% if page > 1 %}
+        <a href="{{url_for('admin.invitecodes', page=(page-1))}}" class="pure-button">Previous Page</a>
+      {% endif %}
+      {% if invite_codes|length == 50 %}
+        <a href="{{url_for('admin.invitecodes', page=(page+1))}}" class="pure-button">Next Page</a>
+      {% endif %}
     </div>
   </div>
 </div>

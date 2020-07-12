@@ -89,8 +89,8 @@ def index():
 
     return render_template('admin/admin.html', subs=subs,
                            posts=posts, ups=ups, downs=downs, users=users,
-                           comms=comms, useinvitecode=invite,
-                           enable_posting=(ep == 'True'),
+                           comms=comms,
+                           useinvitecodeform=invite, enable_posting=(ep == 'True'),
                            enable_registration=(er == 'True'))
 
 
@@ -129,19 +129,27 @@ def userbadges():
                            ct=len(ct), admin_route='admin.userbadges')
 
 
-@bp.route("/invitecodes")
+@bp.route("/invitecodes", defaults={'page': 1})
+@bp.route("/invitecodes/<int:page>")
 @login_required
-def invitecodes():
+def invitecodes(page):
     """
     View and configure Invite Codes
     """
-    def map_row_class(code):
+    def map_style(code):
         if code['uses'] >= code['max_uses']:
             return 'expired'
         elif code['expires'] is not None and code['expires'] < datetime.datetime.utcnow():
             return 'expired'
         else:
             return ''
+
+    def map_used_by(code):
+        return [
+            User.get((User.uid == user.uid)).name
+            for user in UserMetadata.select().where(
+                (UserMetadata.key == 'invitecode') & (UserMetadata.value == code['code']))
+        ]
 
     if not current_user.is_admin():
         abort(404)
@@ -152,17 +160,17 @@ def invitecodes():
             SiteMetadata.key in ('useinvitecode', 'invite_level', 'invite_max'))
     }
 
-    # TODO make this scale
     invite_codes = InviteCode.select(
         InviteCode.code,
-        User.name.alias('referrer_user_name'),
+        User.name.alias('created_by'),
         InviteCode.created,
         InviteCode.expires,
         InviteCode.uses,
         InviteCode.max_uses,
-    ).join(User).dicts()
+    ).join(User).order_by(InviteCode.uses.desc(), InviteCode.created.desc()).paginate(page, 50).dicts()
     for code in invite_codes:
-        code['row_class'] = map_row_class(code)
+        code['style'] = map_style(code)
+        code['used_by'] = map_used_by(code)
 
     invite = UseInviteCodeForm()
     return render_template(
@@ -170,6 +178,7 @@ def invitecodes():
         useinvitecodeform=invite,
         invite_settings=invite_settings,
         invite_codes=invite_codes,
+        page=page,
     )
 
 
