@@ -1506,7 +1506,7 @@ def recovery():
             key = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key'))
             keyExp = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key-time'))
             expiration = float(keyExp.value)
-            if (time.time() - expiration) > 86400:  # 1 day
+            if (time.time() - expiration) > 86400 or config.app.development:  # 1 day
                 # Key is old. remove it and proceed
                 key.delete_instance()
                 keyExp.delete_instance()
