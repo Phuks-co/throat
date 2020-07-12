@@ -139,14 +139,10 @@
     {% block footer %}
       &copy;{{config.site.copyright}}
       <br>
-      <a href="{{url_for('wiki.tos')}}">ToS</a> |
-      <a href="{{url_for('wiki.privacy')}}">Privacy</a> |
-      <a href="{{url_for('sub.view_sub', sub='changelog')}}">Changelog</a> |
-      <a href="{{url_for('wiki.view_api')}}">API</a> |
-      <a href="{{url_for('wiki.canary')}}">Canary</a> |
-      <a href="{{url_for('wiki.donate')}}">Donate</a> |
-      <a href="/license">License</a> |
-      <a href="https://phab.phuks.co">Bugs</a>
+      {% for text,link in config.site.footer.links.items() %}
+        <a href="{{link}}">{{text}}</a> |
+      {% endfor %}
+      <a href="/license">License</a>
       <br>
       Served by {{hostname}}
       {%if config.app.debug or current_user.admin%} | Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries{%endif%}

@@ -74,12 +74,3 @@ def view_multisub_new(sublist, page=1):
                            posts=posts, subs=subs, sublist=sublist,
                            sort_type='site.view_multisub_new', kw={'subs': sublist})
 
-
-@bp.route("/wiki/<slug>")
-def view_wiki(slug):
-    try:
-        page = Wiki.select().where(Wiki.slug == slug).where(Wiki.is_global == True).get()
-    except Wiki.DoesNotExist:
-        return abort(404)
-
-    return engine.get_template('site/wiki.html').render({'wiki': page})

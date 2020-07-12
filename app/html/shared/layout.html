@@ -141,14 +141,10 @@
     @def footer():
       &copy;@{config.site.copyright}
       <br>
-      <a href="@{url_for('wiki.tos')}">@{_('ToS')}</a> |
-      <a href="@{url_for('wiki.privacy')}">@{_('Privacy')}</a> |
-      <a href="@{url_for('sub.view_sub', sub='changelog')}">@{_('Changelog')}</a> |
-      <a href="@{url_for('wiki.view_api')}">@{_('API')}</a> |
-      <a href="@{url_for('wiki.canary')}">@{_('Canary')}</a> |
-      <a href="@{url_for('wiki.donate')}">@{_('Donate')}</a> |
-      <a href="/license">@{_('License')}</a> |
-      <a href="https://phab.phuks.co">@{_('Bugs')}</a>
+      @for text,link in config.site.footer.links.items():
+        <a href="@{link}">@{text}</a> |
+      @end
+      <a href="/license">License</a>
       <br>
       @{_('Served by %(hostname)s', hostname=hostname)} \
       @if config.app.debug or current_user.admin:
