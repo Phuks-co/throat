@@ -1818,22 +1818,9 @@ def sub_upload(sub):
                                                            'error': _('Invalid file type. Only jpg, png and gif allowed.'), 'files': ufiles})
 
     ufile.seek(0)
-    md5 = hashlib.md5()
-    while True:
-        data = ufile.read(65536)
-        if not data:
-            break
-        md5.update(data)
+    f_name = misc.save_file(ufile, mtype, extension)
 
-    f_name = str(uuid.uuid5(misc.FILE_NAMESPACE, md5.hexdigest())) + extension
-    ufile.seek(0)
     lm = False
-    if not os.path.isfile(os.path.join(config.storage.uploads.path, f_name)):
-        lm = True
-        ufile.save(os.path.join(config.storage.uploads.path, f_name))
-        # remove metadata
-        if mtype != 'image/gif':  # Apparently we cannot write to gif images
-            misc.clear_metadata(os.path.join(config.storage.uploads.path, f_name), mtype)
     # sadly, we can only get file size accurately after saving it
     fsize = os.stat(os.path.join(config.storage.uploads.path, f_name)).st_size
     if fsize > remaining:
@@ -1844,28 +1831,7 @@ def sub_upload(sub):
     # THUMBNAIL
     ufile.seek(0)
     im = Image.open(ufile).convert('RGB')
-    x, y = im.size
-    while y > x:
-        slice_height = min(y - x, 10)
-        bottom = im.crop((0, y - slice_height, x, y))
-        top = im.crop((0, 0, x, slice_height))
-
-        if misc._image_entropy(bottom) < misc._image_entropy(top):
-            im = im.crop((0, 0, x, y - slice_height))
-        else:
-            im = im.crop((0, slice_height, x, y))
-
-        x, y = im.size
-
-    im.thumbnail((70, 70), Image.ANTIALIAS)
-
-    im.seek(0)
-    md5 = hashlib.md5(im.tobytes())
-    filename = str(uuid.uuid5(misc.THUMB_NAMESPACE, md5.hexdigest())) + '.jpg'
-    im.seek(0)
-    if not os.path.isfile(os.path.join(config.storage.thumbnails.path, filename)):
-        im.save(os.path.join(config.storage.thumbnails.path, filename), "JPEG", optimize=True, quality=85)
-    im.close()
+    filename = misc.make_thumbnail(im)
 
     SubUploads.create(sid=sub.sid, fileid=f_name, thumbnail=filename, size=fsize, name=fname)
     misc.create_sublog(misc.LOG_TYPE_SUB_CSS_CHANGE, current_user.uid, sub.sid)

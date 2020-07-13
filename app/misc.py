@@ -12,6 +12,8 @@ import hashlib
 import re
 import gevent
 import gi
+import tempfile
+from shutil import copyfile
 
 from mutagen.mp4 import MP4
 gi.require_version('GExiv2', '0.10')  # noqa
@@ -756,7 +758,7 @@ THUMB_NAMESPACE = uuid.UUID('f674f09a-4dcf-4e4e-a0b2-79153e27e387')
 FILE_NAMESPACE = uuid.UUID('acd2da84-91a2-4169-9fdb-054583b364c4')
 
 
-def get_thumbnail(link):
+def get_thumbnail(link: str):
     """ Tries to fetch a thumbnail """
     # 1 - Check if it's an image
     try:
@@ -794,8 +796,16 @@ def get_thumbnail(link):
                 return ''
     else:
         return ''
+    return make_thumbnail(im)
 
+
+def make_thumbnail(im: Image):
     x, y = im.size
+    imghash = hashlib.blake2b(im.tobytes())
+    filename = str(uuid.uuid5(THUMB_NAMESPACE, imghash.hexdigest())) + '.jpg'
+    if os.path.isfile(os.path.join(config.storage.thumbnails.path, filename)):
+        return filename
+    im.seek(0)
     while y > x:
         slice_height = min(y - x, 10)
         bottom = im.crop((0, y - slice_height, x, y))
@@ -810,11 +820,7 @@ def get_thumbnail(link):
 
     im.thumbnail((70, 70), Image.ANTIALIAS)
     im.seek(0)
-    md5 = hashlib.md5(im.tobytes())
-    filename = str(uuid.uuid5(THUMB_NAMESPACE, md5.hexdigest())) + '.jpg'
-    im.seek(0)
-    if not os.path.isfile(os.path.join(config.storage.thumbnails.path, filename)):
-        im.save(os.path.join(config.storage.thumbnails.path, filename), "JPEG", optimize=True, quality=85)
+    im.save(os.path.join(config.storage.thumbnails.path, filename), "JPEG", optimize=True, quality=85)
     im.close()
 
     return filename
@@ -1205,27 +1211,38 @@ def upload_file(max_size=16777216):
         extension = '.webm'
     else:
         return _("File type not allowed"), False
-    ufile.seek(0)
-    md5 = hashlib.md5()
-    while True:
-        data = ufile.read(65536)
-        if not data:
-            break
-        md5.update(data)
 
-    f_name = str(uuid.uuid5(FILE_NAMESPACE, md5.hexdigest())) + extension
-    ufile.seek(0)
-    fpath = os.path.join(config.storage.uploads.path, f_name)
-    if not os.path.isfile(fpath):
-        ufile.save(fpath)
+
         fsize = os.stat(fpath).st_size
         if fsize > max_size:  # Max file size exceeded
             os.remove(fpath)
             return _("File size exceeds the maximum allowed size (%(size)i MB)", size=max_size / 1024 / 1024), False
-        # remove metadata
-        clear_metadata(fpath, mtype)
     return f_name, True
 
+
+def save_file(ufile, mtype, extension):
+    ufile.seek(0)
+    f = tempfile.NamedTemporaryFile()
+    ufile.save(f.name)
+
+    # remove metadata
+    clear_metadata(f.name, mtype)
+    f.seek(0)
+
+    imghash = hashlib.blake2b()
+    while True:
+        data = f.read(65536)
+        if not data:
+            break
+        imghash.update(data)
+
+    f_name = str(uuid.uuid5(FILE_NAMESPACE, imghash.hexdigest())) + extension
+    fpath = os.path.join(config.storage.uploads.path, f_name)
+    if not os.path.isfile(fpath):
+        # Send to orbit.
+        copyfile(f.name, fpath)
+        f.close()  # This kills the tempfile.
+    return f_name
 
 def getSubMods(sid):
     modsquery = SubMod.select(User.uid, User.name, SubMod.power_level).join(User, on=(User.uid == SubMod.uid)).where(
