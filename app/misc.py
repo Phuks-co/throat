@@ -588,18 +588,16 @@ def getInviteCodeInfo(uid):
 
 
 def send_email(to, subject, text_content, html_content, sender=None):
-    if smtp_configured():
+    if 'server' in config.mail:
         if sender is None:
-            sender = config.app.mail_default_from
+            sender = config.mail.default_from
         send_email_with_smtp(sender, to, subject, text_content, html_content)
-    else:
+    elif 'sendgrid' in config:
         if sender is None:
             sender = config.sendgrid.default_from
         send_email_with_sendgrid(sender, to, subject, html_content)
-
-
-def smtp_configured():
-    return "mail_server" in config.app
+    else:
+        raise RuntimeError('Email not configured')
 
 
 def send_email_with_smtp(sender, recipients, subject, text_content, html_content):
