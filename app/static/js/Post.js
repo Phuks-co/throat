@@ -596,14 +596,18 @@ let reportHtml = (data, sub_rules_html) => '<h2>' + _('Report post') + '</h2>' +
   '</div>' +
 '</form>';
 
-u.addEventForChild(document, 'click', '.report-post', function (e, qelem) {
-    const pid = qelem.parentNode.parentNode.parentNode.getAttribute('pid');
+let report_classes = ['.report-post', '.report-comment']
+
+u.addEventForChild(document, 'click', report_classes, function (e, qelem) {
+    const pid = qelem.getAttribute('data-pid');
+    const cid = qelem.getAttribute('cid');
 
     // fetch sub rules
     u.get('/api/v3/sub/rules?pid=' + pid, function(data){
       let rules = [];
       let sub_rules_html = '';
       rules = data.results;
+
       // set html element for each sub rule
       rules.forEach(function(rule) {
         let rule_html = '<option value="Sub Rule: ' + rule.text + '">' + rule.text + '</option>';
@@ -613,25 +617,22 @@ u.addEventForChild(document, 'click', '.report-post', function (e, qelem) {
 
       const modal = new Tingle.modal({});
       // set content
-      modal.setContent(reportHtml('data-pid=' + pid, 'sub_rules_html=' + sub_rules_html));
+      if (cid) {
+        modal.setContent(reportHtml('data-cid=' + cid, 'sub_rules_html=' + sub_rules_html));
+      }
+      else {
+        modal.setContent(reportHtml('data-pid=' + pid, 'sub_rules_html=' + sub_rules_html));
+      }
       // open modal
       modal.open();
     });
-});
-
-u.addEventForChild(document, 'click', '.report-comment', function (e, qelem) {
-    const cid = qelem.getAttribute('cid');
-    const modal = new Tingle.modal({});
-    // set content
-    modal.setContent(reportHtml('data-cid=' + cid));
-    // open modal
-    modal.open();
 });
 
 u.addEventForChild(document, 'change', '#report_reason', function (e, qelem) {
     if (qelem.value != '' && qelem.value != 'other' && qelem.value != 'rule') {
         document.getElementById('submit_report').removeAttribute('disabled');
         document.getElementById('report_text_set').style.display = 'none';
+        document.getElementById('report_rule_set').style.display = 'none';
     } else if (qelem.value == 'other') {
         if (document.getElementById('report_text').value.length < 3) {
             document.getElementById('submit_report').setAttribute('disabled', 'true');
@@ -642,8 +643,14 @@ u.addEventForChild(document, 'change', '#report_reason', function (e, qelem) {
         if (document.getElementById('report_rule').value == '') {
             document.getElementById('submit_report').setAttribute('disabled', 'true');
         }
-        document.getElementById('report_text_set').style.display = 'none';
-        document.getElementById('report_rule_set').style.display = 'block';
+        if (document.getElementById('report_rule').value == 'other sub rule') {
+          document.getElementById('report_rule_set').style.display = 'block';
+          document.getElementById('report_text_set').style.display = 'block';
+        }
+        else {
+          document.getElementById('report_text_set').style.display = 'none';
+          document.getElementById('report_rule_set').style.display = 'block';
+        }
     }
 });
 
@@ -662,15 +669,18 @@ u.addEventForChild(document, 'change', '#report_rule', function (e, qelem) {
       }
       document.getElementById('report_text_set').style.display = 'block';
   } else if (qelem.value != '') {
+    document.getElementById('report_text_set').style.display = 'none';
     document.getElementById('submit_report').removeAttribute('disabled');
   } else {
-      document.getElementById('submit_report').setAttribute('disabled', 'true');
+    document.getElementById('report_text_set').style.display = 'none';
+    document.getElementById('submit_report').setAttribute('disabled', 'true');
   }
 });
 
 
 u.addEventForChild(document, 'click', '#submit_report', function (e, qelem) {
     let pid = qelem.getAttribute('data-pid');
+    let cid = qelem.getAttribute('data-cid');
 
     const errorbox = qelem.parentNode.querySelector('.error');
 
@@ -690,7 +700,7 @@ u.addEventForChild(document, 'click', '#submit_report', function (e, qelem) {
 
     qelem.setAttribute('disabled', true);
     let uri = '/do/report';
-    if (!pid) {
+    if (cid) {
         pid = qelem.getAttribute('data-cid');
         uri = '/do/report/comment';
     }

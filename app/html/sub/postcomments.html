@@ -48,7 +48,7 @@
                 @{comment['content']!!html}
               @end
             </div>
-            
+
             @if comment['status'] != 1:
               <div hidden id="sauce-@{comment['cid']}">@{comment['source']}</div>
             @end
@@ -64,7 +64,7 @@
                 @if (comment['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in subMods['all']) and not comment['status'] == 1:
                   <li><a @{(comment['uid'] == current_user.uid) and 'selfdel="true"' or ''} class="delete-comment" data-cid="@{comment['cid']}">@{_('delete')}</a></li>
                 @end
-                <a data-ac="report" cid="@{comment['cid']}" class="report-comment">@{_('report')}</a>
+                <a data-ac="report" data-pid="@{comment['pid']}" cid="@{comment['cid']}" class="report-comment">@{_('report')}</a>
               @end
               @if comment['status'] != 1:
                 <li><a class="comment-source" data-cid="@{comment['cid']}">@{_('source')}</a></li>
@@ -86,7 +86,7 @@
           @{_('Load more (1 comment)')}
         @end
         </a>
-    @end 
+    @end
   @end
 @end
 
