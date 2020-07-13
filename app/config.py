@@ -48,10 +48,7 @@ cfg_defaults = {  # key => default value
         "cache": {
             "type": "null"
         },
-        "sendgrid": {
-            "api_key": '',
-            "default_from": 'noreply@shitposting.space',
-        },
+        "mail": {},
         "storage": {
             "thumbnails": {
                 "path": './thumbs',
@@ -120,13 +117,14 @@ class Config(Map):
 
     def get_flask_dict(self):
         flattened = {}
-        for cpk in ['cache', 'sendgrid', 'app']:
-            for i in self[cpk]:
-                if cpk == 'app':
-                    key = i.upper()
-                else:
-                    key = '{}_{}'.format(cpk, i).upper()
-                flattened[key] = self[cpk][i]
+        for cpk in ['cache', 'mail', 'sendgrid', 'app']:
+            if cpk in self.keys():
+                for i in self[cpk]:
+                    if cpk == 'app':
+                        key = i.upper()
+                    else:
+                        key = '{}_{}'.format(cpk, i).upper()
+                    flattened[key] = self[cpk][i]
         return flattened
 
 

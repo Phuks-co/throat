@@ -10,6 +10,7 @@ import magic
 import os
 import hashlib
 import re
+import gevent
 import gi
 
 from mutagen.mp4 import MP4
@@ -25,6 +26,9 @@ from bs4 import BeautifulSoup
 from functools import update_wrapper
 import misaka as m
 import sendgrid
+from flask import current_app
+from flask_mail import Mail
+from flask_mail import Message as EmailMessage
 
 from .config import config
 from flask import url_for, request, g, jsonify, session
@@ -74,6 +78,8 @@ _engine = Engine(
     extensions=[EscapeExtension(), CoreExtension()]
 )
 engine = _engine
+
+mail = Mail()
 
 
 def engine_init_app(app):
@@ -581,15 +587,44 @@ def getInviteCodeInfo(uid):
     return info
 
 
-def sendMail(to, subject, content):
-    """ Sends a mail through sendgrid """
+def send_email(to, subject, text_content, html_content, sender=None):
+    if 'server' in config.mail:
+        if sender is None:
+            sender = config.mail.default_from
+        send_email_with_smtp(sender, to, subject, text_content, html_content)
+    elif 'sendgrid' in config:
+        if sender is None:
+            sender = config.sendgrid.default_from
+        send_email_with_sendgrid(sender, to, subject, html_content)
+    else:
+        raise RuntimeError('Email not configured')
+
+
+def send_email_with_smtp(sender, recipients, subject, text_content, html_content):
+    if not isinstance(recipients, list):
+        recipients = [recipients]
+    msg = EmailMessage(subject, sender=sender, recipients=recipients,
+                       body=text_content, html=html_content)
+    if config.app.testing:
+        send_smtp_email_async(current_app, msg)
+    else:
+        gevent.spawn(send_smtp_email_async, current_app._get_current_object(), msg)
+
+
+def send_smtp_email_async(app, msg):
+    with app.app_context():
+        mail.send(msg)
+
+
+def send_email_with_sendgrid(sender, to, subject, html_content):
+    """ Send a mail through sendgrid """
     sg = sendgrid.SendGridAPIClient(api_key=config.sendgrid.api_key)
 
     mail = sendgrid.helpers.mail.Mail(
-        from_email=config.sendgrid.default_from,
+        from_email=sender,
         to_emails=to,
         subject=subject,
-        html_content=content)
+        html_content=html_content)
 
     sg.send(mail)
 
