@@ -518,7 +518,7 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
         function (data) {
             if (data.status != "ok") {
                 qelem.parentNode.querySelector('.error').style.display = 'block';
-                qelem.parentNode.querySelector('.error').innerHTML = _('There was an error while editing: %1', data.error);
+                qelem.parentNode.querySelector('.error').innerHTML = data.error;
                 qelem.removeAttribute('disabled');
             } else {
                 qelem.innerHTML = _('Saved.');
