@@ -2365,3 +2365,96 @@ def close_comment_report(id, action):
 
     else:
         return jsonify(status='error', error=_('Failed to update report'))
+
+
+@do.route('/do/report/close_post_related_reports/<related_reports>', methods=['POST'])
+@login_required
+def close_post_related_reports(related_reports):
+    related_reports = json.loads(related_reports)
+    error = ''
+    # ensure user is mod or admin and report, post, and sub exist
+    for related_report in related_reports:
+        try:
+            report = SubPostReport.get(SubPostReport.id == related_report['id'])
+        except SubPostReport.DoesNotExist:
+            error = jsonify(status='error', error=_('Report does not exist'))
+
+        try:
+            post = SubPost.get(SubPost.pid == report.pid)
+        except SubPost.DoesNotExist:
+            error = jsonify(status='error', error=_('Post does not exist'))
+
+        try:
+            sub = Sub.get(Sub.sid == post.sid)
+        except Sub.DoesNotExist:
+            error = jsonify(status='error', error=_('Sub does not exist'))
+
+        if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+            error = jsonify(status='error', error=[_('Not authorized')])
+
+        report = SubPostReport.update(open=False).where(SubPostReport.id == related_report['id']).execute()
+
+        #check if report is closed and return status
+        updated_report = SubPostReport.select().where(SubPostReport.id == related_report['id']).get()
+        if updated_report.open == False:
+            ok = jsonify(status='ok')
+
+        elif updated_report.open == True:
+            error = jsonify(status='error', error=_('Failed to close report'))
+
+        else:
+            error = jsonify(status='error', error=_('Failed to update report'))
+
+    if error != '':
+        return error
+    else:
+        return ok
+
+
+@do.route('/do/report/close_comment_related_reports/<related_reports>', methods=['POST'])
+@login_required
+def close_comment_related_reports(related_reports):
+    related_reports = json.loads(related_reports)
+    error = ''
+    # ensure user is mod or admin and report, post, and sub exist
+    for related_report in related_reports:
+        try:
+            report = SubPostCommentReport.get(SubPostCommentReport.id == related_report['id'])
+        except SubPostCommentReport.DoesNotExist:
+            error = jsonify(status='error', error=_('Report does not exist'))
+
+        try:
+            comment = SubPostComment.get(SubPostComment.cid == report.cid)
+        except SubPostCommentReport.DoesNotExist:
+            error = jsonify(status='error', error=_('Comment does not exist'))
+
+        try:
+            post = SubPost.get(SubPost.pid == comment.pid)
+        except SubPost.DoesNotExist:
+            error = jsonify(status='error', error=_('Post does not exist'))
+
+        try:
+            sub = Sub.get(Sub.sid == post.sid)
+        except Sub.DoesNotExist:
+            error = jsonify(status='error', error=_('Sub does not exist'))
+
+        if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+            error = jsonify(status='error', error=[_('Not authorized')])
+
+        report = SubPostCommentReport.update(open=False).where(SubPostCommentReport.id == related_report['id']).execute()
+
+        #check if report is closed and return status
+        updated_report = SubPostCommentReport.select().where(SubPostCommentReport.id == related_report['id']).get()
+        if updated_report.open == False:
+            ok = jsonify(status='ok')
+
+        elif updated_report.open == True:
+            error = jsonify(status='error', error=_('Failed to close report'))
+
+        else:
+            error = jsonify(status='error', error=_('Failed to update report'))
+
+    if error != '':
+        return error
+    else:
+        return ok

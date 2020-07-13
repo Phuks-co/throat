@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(sub, report, related_reports, banuserform, submods, is_sub_banned, post, comment)
+@require(sub, report, related_reports, related_reports_json, banuserform, submods, is_sub_banned, post, comment)
 @def title():
 Mod |\
 @end
@@ -14,9 +14,9 @@ Mod |\
     <h1>@{_('Report Details')}</h1>
     <div class="mod report header">
       @if report['type'] == 'comment':
-        <h2>@{_('Comment Report')} # @{report['id']!!s}</h2>
+        <h2>@{_('Comment Report')} # @{report['id']}</h2>
       @else:
-        <h2>@{_('Post Report')} # @{report['id']!!s}</h2>
+        <h2>@{_('Post Report')} # @{report['id']}</h2>
       @end
       <div>
 
@@ -35,12 +35,11 @@ Mod |\
 
         <!-- CLOSE ALL REPORTS -->
         @if report['type'] == 'comment':
-          <button class="pure-button pure-button-primary button-xsmall btn-editpost">
-            @{_('Close All Reports for this Post')}
+          <button class="pure-button pure-button-primary button-xsmall btn-editpost close-related-reports" data-type="@{report['type']}" data-reports="@{related_reports_json}" data-action="close">
+            @{_('Close All Reports for this Comment')}
           </button>
         @else:
-        <!-- need to figure out how to pass a list of IDs into the JS -->
-          <button class="pure-button pure-button-primary button-xsmall btn-editpost close-related-reports" data-type="@{report['type']}" data-reports="@{related_reports['query']}" data-action="close">
+          <button class="pure-button pure-button-primary button-xsmall btn-editpost close-related-reports" data-type="@{report['type']}" data-reports="@{related_reports_json}" data-action="close">
             @{_('Close All Reports for this Post')}
           </button>
         @end
@@ -127,12 +126,12 @@ Mod |\
                       @if post['deleted'] == 2:
                         @{_('[post deleted by mod or admin]')}
                       @end
-                      <h3>@{post['title']!!e}</h3>
+                      <h3>@{post['title']}</h3>
                       @if post['content']:
                         <div id="postcontent">
-                          @{markdown(post['content'])}
+                          @{markdown(post['content'])!!html}
                         </div>
-                        <div id="post-source">@{post['content']!!e}</div>
+                        <div id="post-source">@{post['content']}</div>
                       @else:
                         <!-- need to account for other post types still -->
                         @{_('[post preview could not be rendered]')}
@@ -205,6 +204,7 @@ Mod |\
               <table class="pure-table">
                 <thead>
                   <tr>
+                    <th>@{_('Type')}</th>
                     <th>@{_('Time')}</th>
                     <th>@{_('Reporter')}</th>
                     <th>@{_('Reason')}</th>
@@ -213,16 +213,25 @@ Mod |\
                 </thead>
                 <tbody>
                   @for related_report in related_reports['query']:
-                    <tr>
-                      <td><time-ago datetime="@{related_report['datetime'].isoformat()}Z"></time-ago></td>
-                      <td><a href="@{ url_for('user.view', user=related_report['reporter']) }">@{ related_report['reporter'] }</a></td>
-                      <td>@{related_report['reason']!!e}</td>
-                      @if related_report['open'] == True:
-                        <td>@{_('Open')} </td>
-                      @else:
-                        <td>@{_('Closed')} </td>
-                      @end
-                    </tr>
+                    @if related_report['id'] != report['id']:
+                      <tr>
+                        <td>
+                          @if related_report['type'] == 'comment':
+                            <a href="@{url_for('mod.report_details', sub=related_report['sub'], type=related_report['type'], id=related_report['id'])}">@{_('Comment')}</a>
+                          @else:
+                          <a href="@{url_for('mod.report_details', sub=related_report['sub'], type=related_report['type'], id=related_report['id'])}">@{_('Post')}</a>
+                          @end
+                        </td>
+                        <td><time-ago datetime="@{related_report['datetime'].isoformat()}Z"></time-ago></td>
+                        <td><a href="@{ url_for('user.view', user=related_report['reporter']) }">@{ related_report['reporter'] }</a></td>
+                        <td>@{related_report['reason']!!e}</td>
+                        @if related_report['open'] == True:
+                          <td>@{_('Open')} </td>
+                        @else:
+                          <td>@{_('Closed')} </td>
+                        @end
+                      </tr>
+                    @end
                   @end
                 </tbody>
               </table>

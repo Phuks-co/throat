@@ -11,6 +11,7 @@ from ..models import User, Sub, SubMod, SubPost, SubPostComment, UserMetadata, S
 from ..misc import engine, getModSubs, getReports
 from ..forms import BanUserSubForm
 from .. import misc
+import json
 
 
 bp = Blueprint('mod', __name__)
@@ -146,4 +147,4 @@ def report_details(sub, type, id):
     reported = User.select().where(User.name == report['reported']).get()
     is_sub_banned = misc.is_sub_banned(sub, uid=reported.uid)
 
-    return engine.get_template('mod/reportdetails.html').render({'sub': sub, 'report': report, 'related_reports': related_reports, 'banuserform': BanUserSubForm(), 'submods': misc.getSubMods(sub.sid), 'is_sub_banned': is_sub_banned, 'post': post, 'comment': comment})
+    return engine.get_template('mod/reportdetails.html').render({'sub': sub, 'report': report, 'related_reports': related_reports, 'related_reports_json': json.dumps(related_reports['query'], default=str), 'banuserform': BanUserSubForm(), 'submods': misc.getSubMods(sub.sid), 'is_sub_banned': is_sub_banned, 'post': post, 'comment': comment})

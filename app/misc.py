@@ -1842,8 +1842,7 @@ def getReports(view, status, page, *args, **kwargs):
         sub_post_reports = all_post_reports.where(SubPostReport.id == report_id).join(SubPost).join(Sub).join(SubMod)
     elif ((report_id) and (type == 'post') and (related == True)):
         base_report = getReports('mod', 'all', 1, type='post', report_id=report_id, related=False)
-        sub_post_reports = all_post_reports.where(SubPostReport.pid == base_report['pid'])
-        sub_post_reports = sub_post_reports.where(SubPostReport.id != base_report['id']).join(SubPost).join(Sub).join(SubMod)
+        sub_post_reports = all_post_reports.where(SubPostReport.pid == base_report['pid']).join(SubPost).join(Sub).join(SubMod)
     else:
         sub_post_reports = all_post_reports.join(SubPost).join(Sub).join(SubMod).where(SubMod.user == current_user.uid)
 
@@ -1880,8 +1879,7 @@ def getReports(view, status, page, *args, **kwargs):
         sub_comment_reports = all_comment_reports.where(SubPostCommentReport.id == report_id).join(SubPostComment).join(SubPost).join(Sub).join(SubMod)
     elif ((report_id) and (type == 'comment') and (related == True)):
         base_report = getReports('mod', 'all', 1, type='comment', report_id=report_id, related=False)
-        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.cid == base_report['cid'])
-        sub_comment_reports = sub_comment_reports.where(SubPostCommentReport.id != base_report['id']).join(SubPostComment).join(SubPost).join(Sub).join(SubMod)
+        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.cid == base_report['cid']).join(SubPostComment).join(SubPost).join(Sub).join(SubMod)
     else:
         sub_comment_reports = all_comment_reports.join(SubPostComment).join(SubPost).join(Sub).join(SubMod).where(SubMod.user == current_user.uid)
 
@@ -1900,7 +1898,7 @@ def getReports(view, status, page, *args, **kwargs):
         closed_query = closed_sub_comment_reports
     else:
         open_query = open_sub_post_reports | open_sub_comment_reports
-        closed_query = closed_sub_post_reports | closed_sub_post_reports
+        closed_query = closed_sub_post_reports | closed_sub_comment_reports
 
     open_report_count = open_query.count()
     closed_report_count = closed_query.count()
