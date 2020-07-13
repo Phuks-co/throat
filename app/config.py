@@ -78,7 +78,7 @@ cfg_defaults = {  # key => default value
 
 class Map(dict):
     """ A dictionary object whose keys are accessable as attributes. """
-    def __init__(self, sdict, defaults, prefix=''):
+    def __init__(self, sdict, defaults, use_environment=True, prefix=''):
         """Create a Map from the dictionary sdict, with missing values filled
         in from defaults. If a non-empty prefix string is supplied,
         and any environment variables exist beginning with that
@@ -92,12 +92,13 @@ class Map(dict):
         # Turn all subdictionaries into Maps as well.
         for key, val in defaults.items():
             if isinstance(val, dict):
-                self[key] = Map(self.get(key, {}), val, f'{self.prefix}{key}')
+                self[key] = Map(self.get(key, {}), val, use_environment,
+                                f'{self.prefix}{key}')
             elif key not in self.keys():
                 self[key] = val
 
-        # Look for environment variables that override values or add additional values.
-        if self.prefix != '':
+       # Look for environment variables that override values or add additional values.
+        if self.prefix != '' and use_environment:
             for var in os.environ.keys():
                 if var.startswith(self.prefix):
                     self[var[len(self.prefix):].lower()] = os.environ.get(var)
@@ -108,14 +109,14 @@ class Map(dict):
 
 class Config(Map):
     """ Main config object """
-    def __init__(self, config_filename=None):
+    def __init__(self, config_filename=None, use_environment=True):
         if config_filename is None:
             cfg = {}
         else:
             with open(config_filename, 'r') as stream:
                 cfg = yaml.safe_load(stream)
 
-        super(Config, self).__init__(cfg, cfg_defaults)
+        super(Config, self).__init__(cfg, cfg_defaults, use_environment=use_environment)
 
     def get_flask_dict(self):
         flattened = {}

@@ -911,6 +911,10 @@ def getPostList(baseQuery, sort, page):
         if config.database.engine == "PostgresqlDatabase":
             hot = SubPost.score * 20 + (fn.EXTRACT(NodeList((SQL('EPOCH FROM'), SubPost.posted))) - 1134028003) / 1500
             posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, 25)
+        elif config.database.engine == 'SqliteDatabase':
+            posts = baseQuery.order_by(
+                (SubPost.score * 20 + (fn.datetime(SubPost.posted, 'unixepoch') - 1134028003) / 1500).desc()).limit(
+                100).paginate(page, 25)
         else:
             posts = baseQuery.order_by(
                 (SubPost.score * 20 + (fn.datetime(SubPost.posted, 'unixepoch') - 1134028003) / 1500).desc()).limit(
@@ -1249,7 +1253,6 @@ def getSubData(sid, simple=False, extra=False):
 
         try:
             data['rules'] = SubRule.select().join(Sub).where(Sub.sid == sid)
-            print('RULES:', data['rules'])
         except SubRule.DoesNotExist:
             data['rules'] = ''
 

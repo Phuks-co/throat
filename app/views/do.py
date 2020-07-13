@@ -1436,14 +1436,12 @@ def create_flair(sub):
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
-
 @do.route("/do/rule/<sub>/delete", methods=['POST'])
 @login_required
 def delete_rule(sub):
     """ Removes a rule (from edit rule page) """
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
-        print('>>>>SUB: ', sub)
     except Sub.DoesNotExist:
         return jsonify(status='error', error=[_('Sub does not exist')])
 
@@ -2273,7 +2271,6 @@ def close_post_report(id, action):
         return jsonify(status='error', error=_('Sub does not exist'))
 
     if (action != 'close') and (action != 'reopen'):
-        print("INVALID ACTION:", action)
         return jsonify(status='error', error=[_('Invalid action')])
 
     if not current_user.is_mod(sub.sid) and not current_user.is_admin():
