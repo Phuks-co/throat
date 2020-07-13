@@ -2,6 +2,9 @@
 import os
 import tempfile
 import uuid
+import pathlib
+
+import libcloud.storage.types
 import magic
 from mutagen.mp4 import MP4
 import gi
@@ -17,17 +20,21 @@ from flask_login import current_user
 from flask_cloudy import Storage
 from .config import config
 
+
 class SizeLimitExceededError(Exception):
     """Exception raised for files larger than permitted by configuration."""
     pass
+
 
 FILE_NAMESPACE = uuid.UUID('acd2da84-91a2-4169-9fdb-054583b364c4')
 
 ISO8601 = '%Y-%m-%dT%H:%M:%SZ'
 
-class objectview(object):
+
+class Objectview(object):
     def __init__(self, d):
         self.__dict__ = d
+
 
 class S3Storage:
     def __init__(self):
@@ -52,7 +59,7 @@ class S3Storage:
         # Using head here because we never use the object directly
         try:
             head = self.s3.head_object(Bucket=self.container, Key=filename)
-            return objectview({
+            return Objectview({
                 'size': head['ContentLength'],
                 'name': filename
             })
@@ -75,10 +82,10 @@ class S3Storage:
                     Key=name,
                     ExtraArgs=kwargs
                 )
-        return objectview({'name': name})
+        return Objectview({'name': name})
 
 
-storage = None
+storage = None  # type: Storage
 
 
 def storage_init_app(app):
@@ -87,6 +94,11 @@ def storage_init_app(app):
         storage = S3Storage()
     else:
         storage = Storage()
+    # XXX: flask-cloudy has a tendency to mercilessly delete the container when it doesn't have anything inside of it
+    # so, to prevent errors we attempt to re-create it at startup and when uploading files.
+    # We don't do this in the thumbnails container because we never delete anything from there (for now)
+    if app.config['THROAT_CONFIG'].storage.provider == "LOCAL":
+        pathlib.Path(app.config['THROAT_CONFIG'].storage.uploads.path).mkdir(exist_ok=True)
     storage.init_app(app)
 
 
@@ -147,12 +159,12 @@ def upload_file():
         return _("File type not allowed"), False
 
     try:
-        hash = calculate_file_md5(ufile, size_limit=config.site.upload_max_size)
+        fhash = calculate_file_hash(ufile, size_limit=config.site.upload_max_size)
     except SizeLimitExceededError:
         return _("File size exceeds the maximum allowed size (%(size)s)",
                  size=human_readable(config.site.upload_max_size)), False
 
-    basename = str(uuid.uuid5(FILE_NAMESPACE, hash))
+    basename = str(uuid.uuid5(FILE_NAMESPACE, fhash))
 
     return store_file(ufile, basename, mtype, remove_metadata=True), True
 
@@ -170,20 +182,26 @@ def store_file(ufile, basename, mtype, remove_metadata=False):
     metadata before storing.
     """
     filename = basename + EXTENSIONS[mtype]
-    if storage.get(filename) is None:
-        ufile.seek(0)
-        with tempfile.TemporaryDirectory() as tempdir:
-            fullpath = os.path.join(tempdir, filename)
-            ufile.save(fullpath)
+    try:
+        if storage.get(filename) is not None:
+            return filename
+    except libcloud.storage.types.ContainerDoesNotExistError:
+        pathlib.Path(config.storage.uploads.path).mkdir(exist_ok=True)
+
+    ufile.seek(0)
+    with tempfile.TemporaryDirectory() as tempdir:
+        fullpath = os.path.join(tempdir, filename)
+        ufile.save(fullpath)
+        if remove_metadata:
             clear_metadata(fullpath, mtype)
 
-            # TODO probably there are errors that need handling
-            return storage.upload(fullpath, name=filename, acl=config.storage.acl).name
-    return filename
+        # TODO probably there are errors that need handling
+        return storage.upload(fullpath, name=filename, acl=config.storage.acl).name
 
 
 def get_stored_file_size(filename):
     obj = storage.get(filename)
+
     if obj is not None:
         return obj.size
     else:
@@ -192,11 +210,13 @@ def get_stored_file_size(filename):
 
 
 def remove_file(filename):
-    storage.delete(filename)
+    obj = storage.get(filename)
+    obj.delete()
 
 
 def store_thumbnail(im, basename):
     """Store a thumbnail image."""
+
     def find_existing_or_store_new(storage, im, filename):
         obj = storage.get(filename)
         if obj is not None:
@@ -228,14 +248,14 @@ def mtype_from_file(ufile, allow_video_formats=True):
     return None
 
 
-def calculate_file_md5(ufile, size_limit=None):
+def calculate_file_hash(ufile, size_limit=None):
     """Read all data from a file and calculate the MD5 hash of the result.
     If a size limit is given, stop reading and raise an error if it is
     exceeded.
     """
     ufile.seek(0)
     size = 0
-    md5 = hashlib.md5()
+    fhash = hashlib.blake2b()
     while True:
         data = ufile.read(65536)
         if not data:
@@ -243,9 +263,9 @@ def calculate_file_md5(ufile, size_limit=None):
         size += len(data)
         if size_limit is not None and size > size_limit:
             raise SizeLimitExceededError
-        md5.update(data)
-    return md5.hexdigest()
+        fhash.update(data)
+    return fhash.hexdigest()
 
 
-def human_readable(bytes):
-    return jinja2.Template('{{ bytes|filesizeformat }}').render(bytes=bytes)
+def human_readable(fbytes):
+    return jinja2.Template('{{ bytes|filesizeformat }}').render(bytes=fbytes)

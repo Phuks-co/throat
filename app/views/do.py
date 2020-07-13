@@ -1811,37 +1811,21 @@ def sub_upload(sub):
                                                            'error': _('Invalid file type. Only jpg, png and gif allowed.'), 'files': ufiles})
 
     try:
-        hash = storage.calculate_file_md5(ufile, size_limit=remaining)
+        fhash = storage.calculate_file_hash(ufile, size_limit=remaining)
     except storage.SizeLimitExceededError:
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
                                                            'error': _('Not enough available space to upload file.'), 'files': ufiles})
 
-    basename = str(uuid.uuid5(storage.FILE_NAMESPACE, hash))
+    basename = str(uuid.uuid5(storage.FILE_NAMESPACE, fhash))
     f_name = storage.store_file(ufile, basename, mtype, remove_metadata=True)
     fsize = storage.get_stored_file_size(f_name)
 
     # THUMBNAIL
     ufile.seek(0)
     im = Image.open(ufile).convert('RGB')
-    x, y = im.size
-    while y > x:
-        slice_height = min(y - x, 10)
-        bottom = im.crop((0, y - slice_height, x, y))
-        top = im.crop((0, 0, x, slice_height))
-
-        if misc._image_entropy(bottom) < misc._image_entropy(top):
-            im = im.crop((0, 0, x, y - slice_height))
-        else:
-            im = im.crop((0, slice_height, x, y))
-
-        x, y = im.size
-
-    im.thumbnail((70, 70), Image.ANTIALIAS)
-
-    im.seek(0)
-    md5 = hashlib.md5(im.tobytes())
-    basename = str(uuid.uuid5(misc.THUMB_NAMESPACE, md5.hexdigest()))
-    filename = storage.store_thumbnail(im, basename)
+    thash = hashlib.blake2b(im.tobytes())
+    im = misc.generate_thumb(im)
+    filename = storage.store_thumbnail(im, str(uuid.uuid5(misc.THUMB_NAMESPACE, thash.hexdigest())))
     im.close()
 
     SubUploads.create(sid=sub.sid, fileid=f_name, thumbnail=filename, size=fsize, name=fname)
@@ -1860,12 +1844,12 @@ def sub_upload_delete(sub, name):
     if not form.validate():
         return redirect(url_for('sub.edit_sub_css', sub=sub.name))
     if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
-        jsonify(status='error')
+        return jsonify(status='error')
 
     try:
         img = SubUploads.get((SubUploads.sid == sub.sid) & (SubUploads.name == name))
     except SubUploads.DoesNotExist:
-        jsonify(status='error')
+        return jsonify(status='error')
     fileid = img.fileid
     img.delete_instance()
     misc.create_sublog(misc.LOG_TYPE_SUB_CSS_CHANGE, current_user.uid, sub.sid)

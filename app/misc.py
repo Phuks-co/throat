@@ -790,6 +790,14 @@ def get_thumbnail(link):
     else:
         return ''
 
+    thash = hashlib.blake2b(im.tobytes())
+    im = generate_thumb(im)
+    filename = store_thumbnail(im, str(uuid.uuid5(THUMB_NAMESPACE, thash.hexdigest())))
+    im.close()
+    return filename
+
+
+def generate_thumb(im: Image) -> Image:
     x, y = im.size
     while y > x:
         slice_height = min(y - x, 10)
@@ -804,11 +812,7 @@ def get_thumbnail(link):
         x, y = im.size
 
     im.thumbnail((70, 70), Image.ANTIALIAS)
-    md5 = hashlib.md5(im.tobytes())
-    filename = store_thumbnail(im, str(uuid.uuid5(THUMB_NAMESPACE, md5.hexdigest())) )
-    im.close()
-
-    return filename
+    return im
 
 
 def getAdminUserBadges():
