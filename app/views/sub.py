@@ -55,6 +55,9 @@ def edit_sub_css(sub):
     if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
         abort(403)
 
+    subInfo = misc.getSubData(sub.sid)
+    subMods = misc.getSubMods(sub.sid)
+
     c = SubStylesheet.get(SubStylesheet.sid == sub.sid)
 
     form = EditSubCSSForm(css=c.source)
@@ -63,7 +66,7 @@ def edit_sub_css(sub):
     for uf in ufiles:
         stor += uf.size / 1024
 
-    return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'error': False, 'storage': int(stor), 'files': ufiles})
+    return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'error': False, 'storage': int(stor), 'files': ufiles, 'subInfo': subInfo, 'subMods': subMods})
 
 
 @blueprint.route("/<sub>/edit/flairs")

@@ -2010,3 +2010,7 @@ a.close-report {
   font-style: italic;
   color: gray;
 }
+
+.mod-sidebar.header {
+  text-align: center;
+}
