@@ -37,7 +37,7 @@ webpack = Webpack()
 babel = Babel()
 login_manager = LoginManager()
 login_manager.anonymous_user = SiteAnon
-login_manager.login_view = 'login'
+login_manager.login_view = 'auth.login'
 
 
 def create_app(config=Config('config.yaml')):

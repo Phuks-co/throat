@@ -1,0 +1,56 @@
+@extends("shared/layout.html")
+@require(page, wikis)
+@def title():
+Admin |\
+@end
+
+@def sidebar():
+  @include('shared/sidebar/admin.html')
+@end
+
+@def main():
+<div id="container">
+  <div id="center-container">
+    <div class="content">
+      <h1>@{_('Site wiki')}</h1>
+      <a href="@{url_for('admin.create_wiki')}" class="pure-button pure-button-primary" style="margin-bottom: 1em">Create wiki</a>
+
+      <div class="admin section users">
+        <div class="col-12">
+          <table class="pure-table">
+            <thead>
+              <tr>
+                <th>@{_('Slug')}</th>
+                <th>@{_('Title')}</th>
+                <th>@{_('Created')}</th>
+                <th>@{_('Last edited')}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+            @for wiki in wikis:
+            <tr>
+              <td><div class="sub"><a href="@{ url_for('wiki.view', slug=wiki.slug) }">@{ wiki.slug }</a></div></td>
+              <td>@{wiki.title}</td>
+              <td><time-ago datetime="@{wiki.created.isoformat()}Z"></time-ago></td>
+              <td><time-ago datetime="@{wiki.updated.isoformat()}Z"></time-ago></td>
+              <td>
+                <a href="@{url_for('admin.edit_wiki', slug=wiki.slug)}" title="@{_('Edit')}" class="i-icon" data-icon="edit"></a>
+                <a href="@{url_for('admin.delete_wiki', slug=wiki.slug)}" title="@{_('Delete')}" class="i-icon" data-icon="close"></a>
+              </td>
+            </tr>
+            @end
+            </tbody>
+          </table>
+        </div>
+      </div>
+      @if page > 1:
+        <a href="@{url_for('admin.wiki', page=(page-1))}" class="pure-button">@{_('Previous page')}</a>
+      @end
+      @if len(wikis) == 50:
+        <a href="@{url_for('admin.wiki', page=(page+1))}" class="pure-button">@{_('Next page')}</a>
+      @end
+    </div>
+  </div>
+</div>
+@end

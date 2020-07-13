@@ -1,0 +1,15 @@
+@extends("shared/layout.html")
+@require(wiki)
+
+@def content():
+  <div id="container">
+    <div id="center-container">
+      <div class="content wiki">
+        <h1>@{wiki.title}</h1>
+        @{func.our_markdown(wiki.content)!!html}
+
+        @{_('Last update: %(timestamp)s', timestamp=wiki.updated.ctime())}
+      </div>
+    </div>
+  </div>
+@end

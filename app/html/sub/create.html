@@ -8,7 +8,7 @@
 <div id="center-container">
     <div class="content createsub">
         <form id="csub-form" method="POST" data-redir="true" class="pure-form pure-form-aligned">
-            @{csubform.csrf_token()}
+            @{csubform.csrf_token()!!html}
             <h3>@{_('Create sub')}</h3>
             <p>@{_('Create a sub for you, your friends, or for your favorite community')}</p>
 
@@ -18,11 +18,11 @@
             <fieldset>
                 <div class="pure-control-group">
                     <label for="subname">@{_('Sub name')}</label>
-                    @{ csubform.subname(placeholder=csubform.subname.label.text, required=True, pattern="[a-zA-Z0-9]+", title=_('Alphanumeric characters')) }
+                    @{ csubform.subname(placeholder=csubform.subname.label.text, required=True, pattern="[a-zA-Z0-9]+", title=_('Alphanumeric characters')) !!html}
                 </div>
                 <div class="pure-control-group">
                     <label for="description">@{_('Description')}</label>
-                    @{ csubform.title(placeholder=csubform.title.label.text, required=True) }
+                    @{ csubform.title(placeholder=csubform.title.label.text, required=True)!!html }
                 </div>
                 <div class="pure-controls">
                     <div class="alert div-error"></div>

@@ -1,21 +1,21 @@
 @require(posts, sub)
 @def singlePost(post, sub, announcement=False):
-<div pid="@{post['pid']!!s}" class="post">
+<div pid="@{post['pid']}" class="post">
     <div class="misctainer">
       <div class="votebuttons">
         @if post['userstatus'] != 10 and (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(days=60):
-        <div title="@{_('Upvote')}" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="upvote"></div>
-        <div class="score">@{post['score']!!s}</div>
-        <div title="@{_('Downvote')}" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']!!s}" data-icon="downvote"></div>
+        <div title="@{_('Upvote')}" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{post['pid']}" data-icon="upvote"></div>
+        <div class="score">@{post['score']}</div>
+        <div title="@{_('Downvote')}" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']}" data-icon="downvote"></div>
         @else:
-        <div class="score archived">@{post['score']!!s}</div>
+        <div class="score archived">@{post['score']}</div>
         @end
       </div>
       <div class="thcontainer">
         @if post['link'] == None:
-          <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']!!s}">
+          <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']}">
         @else:
-          <a target="_blank" rel="noopener nofollow ugc" href="@{post['link']!!e}">
+          <a target="_blank" rel="noopener nofollow ugc" href="@{post['link']}">
         @end
           <div class="thumbnail">
             @if post['thumbnail'] != '' and post['link'] != None:
@@ -41,36 +41,36 @@
         <div class="nsfw" alt="@{_('Not safe for work')}">@{_('NSFW')}</div> \
         @end
         @if post['flair']:
-        <span class="postflair">@{post['flair']!!e}</span> \
+        <span class="postflair">@{post['flair']}</span> \
         @end
         @if post['link'] == None:
-          <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']!!s}" class="title">@{post['title']!!e}</a> \
+          <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']}" class="title">@{post['title']}</a> \
         @else:
           @if post['link'].startswith('http:'):
             <span title="@{_('not https')}" class="p-icon" data-icon="exclaim"></span> \
           @end
-          <a target="_blank" rel="noopener nofollow ugc" href="@{post['link']!!e}" class="title">@{post['title']!!e}</a> <a href="/domain/@{func.getDomain(post['link'])!!e}" class="domain">(@{func.getDomain(post['link'])!!e})</a>
+          <a target="_blank" rel="noopener nofollow ugc" href="@{post['link']}" class="title">@{post['title']}</a> <a href="/domain/@{func.getDomain(post['link'])}" class="domain">(@{func.getDomain(post['link'])})</a>
         @end
       </div>
       <div class="author">
         @if post['link']:
           @if func.getDomain(post['link'].lower()) in ('hooktube.com', 'www.hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'streamja.com', 'streamable.com', 'vimeo.com', 'vine.co', 'instaud.io'):
-          <div class="expando" data-pid="@{post['pid']!!s}" data-t="lnk" title="@{_('Embed video')}" data-link="@{post['link']!!e}"><div data-icon="play" class="icon expando-btn"></div></div>
+          <div class="expando" data-pid="@{post['pid']}" data-t="lnk" title="@{_('Embed video')}" data-link="@{post['link']}"><div data-icon="play" class="icon expando-btn"></div></div>
           @elif post['link'].lower().endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
-          <div class="expando" data-pid="@{post['pid']!!s}"  data-t="lnk" title="@{_('Show image')}" data-link="@{post['link']!!e}"><div data-icon="image" class="icon expando-btn"></div></div>
+          <div class="expando" data-pid="@{post['pid']}"  data-t="lnk" title="@{_('Show image')}" data-link="@{post['link']}"><div data-icon="image" class="icon expando-btn"></div></div>
           @elif post['link'].lower().endswith(('.mp4', '.webm', '.gifv')):
-          <div class="expando" data-pid="@{post['pid']!!s}"  data-t="lnk" title="@{_('Play video')}" data-link="@{post['link']!!e}"><div data-icon="play" class="icon expando-btn"></div></div>
+          <div class="expando" data-pid="@{post['pid']}"  data-t="lnk" title="@{_('Play video')}" data-link="@{post['link']}"><div data-icon="play" class="icon expando-btn"></div></div>
           @end
         @elif post['ptype'] == 3:
-          <div class="expando" data-pid="@{post['pid']!!s}" data-t="poll" title="@{_('Show poll')}" data-link="None"><div data-icon="text" class="icon expando-btn"></div></div>
+          <div class="expando" data-pid="@{post['pid']}" data-t="poll" title="@{_('Show poll')}" data-link="None"><div data-icon="text" class="icon expando-btn"></div></div>
         @elif post['content'] != '':
-          <div class="expando" data-pid="@{post['pid']!!s}" data-t="txt" title="@{_('Show post content')}" data-link="None"><div data-icon="text" class="icon expando-btn"></div></div>
+          <div class="expando" data-pid="@{post['pid']}" data-t="txt" title="@{_('Show post content')}" data-link="None"><div data-icon="text" class="icon expando-btn"></div></div>
         @end
         @#{Crappy as shit}
         @if not sub:
-          @{_('posted %(timeago)s by %(user)s on %(sub)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user='<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + '</a>' if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>', sub='<a href="/' + config.site.sub_prefix + '/' + post['sub'] + '">' + post['sub'] + '</a>')}
+          @{_('posted %(timeago)s by %(user)s on %(sub)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user='<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + '</a>' if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>', sub='<a href="/' + config.site.sub_prefix + '/' + post['sub'] + '">' + post['sub'] + '</a>')!!html}
         @else:
-          @{_('posted %(timeago)s by %(user)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user='<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + '</a>' if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>')}
+          @{_('posted %(timeago)s by %(user)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user='<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + '</a>' if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>')!!html}
         @end
 
         @if sub and post['pid'] in func.getStickyPid(sub['sid']):
@@ -80,8 +80,8 @@
         - <span class="stick">@{_('wiki')}</span>
         @end
       </div>
-      <div class="links" data-sid="@{post['sid']!!s}">
-        <a class="comments" href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']!!s}">
+      <div class="links" data-sid="@{post['sid']}">
+        <a class="comments" href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']}">
           @if post['comments']>0:
             @{_('comments (%(comments)i)', comments=post['comments'])} \
           @else:
@@ -98,5 +98,5 @@
 @end
 
 @for post in posts:
-  @singlePost(post, sub)
+  @{singlePost(post, sub)!!html}
 @end

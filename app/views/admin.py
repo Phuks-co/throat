@@ -1,15 +1,16 @@
 """ Admin endpoints """
 import time
 import re
-from peewee import fn, JOIN, Value
+import datetime
+from peewee import fn, JOIN
 from pyotp import TOTP
-from flask import Blueprint, abort, redirect, url_for, session, render_template, jsonify
+from flask import Blueprint, abort, redirect, url_for, session, render_template
 from flask_login import login_required, current_user
 from flask_babel import _
 from .. import misc
-from ..forms import TOTPForm, LogOutForm, UseInviteCodeForm, AssignUserBadgeForm, EditModForm, BanDomainForm
+from ..forms import TOTPForm, LogOutForm, UseInviteCodeForm, AssignUserBadgeForm, EditModForm, BanDomainForm, WikiForm
 from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, SubPostCommentVote, SubPostVote, SiteMetadata
-from ..models import UserUploads, SubPostReport, SubPostCommentReport
+from ..models import UserUploads, SubPostReport, SubPostCommentReport, InviteCode, Wiki
 from ..misc import engine, getReports
 from ..badges import badges
 
@@ -68,6 +69,7 @@ def index():
     downs += SubPostCommentVote.select().where(SubPostCommentVote.positive == 0).count()
 
     invite = UseInviteCodeForm()
+
     try:
         level = SiteMetadata.get(SiteMetadata.key == 'invite_level')
         maxcodes = SiteMetadata.get(SiteMetadata.key == 'invite_max')
@@ -126,6 +128,59 @@ def userbadges():
     return render_template('admin/userbadges.html', badges=badges.items(),
                            assignuserbadgeform=AssignUserBadgeForm(),
                            ct=len(ct), admin_route='admin.userbadges')
+
+
+@bp.route("/invitecodes", defaults={'page': 1})
+@bp.route("/invitecodes/<int:page>")
+@login_required
+def invitecodes(page):
+    """
+    View and configure Invite Codes
+    """
+    def map_style(code):
+        if code['uses'] >= code['max_uses']:
+            return 'expired'
+        elif code['expires'] is not None and code['expires'] < datetime.datetime.utcnow():
+            return 'expired'
+        else:
+            return ''
+
+    def map_used_by(code):
+        return [
+            User.get((User.uid == user.uid)).name
+            for user in UserMetadata.select().where(
+                (UserMetadata.key == 'invitecode') & (UserMetadata.value == code['code']))
+        ]
+
+    if not current_user.is_admin():
+        abort(404)
+
+    invite_settings = {
+        meta.key: meta.value
+        for meta in SiteMetadata.select().where(
+            SiteMetadata.key in ('useinvitecode', 'invite_level', 'invite_max'))
+    }
+
+    invite_codes = InviteCode.select(
+        InviteCode.code,
+        User.name.alias('created_by'),
+        InviteCode.created,
+        InviteCode.expires,
+        InviteCode.uses,
+        InviteCode.max_uses,
+    ).join(User).order_by(InviteCode.uses.desc(), InviteCode.created.desc()).paginate(page, 50).dicts()
+    for code in invite_codes:
+        code['style'] = map_style(code)
+        code['used_by'] = map_used_by(code)
+
+    invite = UseInviteCodeForm()
+    return render_template(
+        'admin/invitecodes.html',
+        useinvitecodeform=invite,
+        invite_settings=invite_settings,
+        invite_codes=invite_codes,
+        page=page,
+    )
 
 
 @bp.route("/admins")
@@ -329,3 +384,90 @@ def reports(page):
     reports = getReports('admin', 'all', page)
 
     return engine.get_template('admin/reports.html').render({'reports': reports, 'page': page})
+
+
+@bp.route("/wiki", defaults={'page': 1})
+@bp.route("/wiki/<int:page>")
+@login_required
+def wiki(page):
+    if not current_user.is_admin():
+        abort(404)
+
+    pages = Wiki.select().where(Wiki.is_global == True)
+
+    return engine.get_template('admin/wiki.html').render({'wikis': pages, 'page': page})
+
+
+@bp.route("/wiki/create", methods=['GET', 'POST'])
+@login_required
+def create_wiki():
+    if not current_user.is_admin():
+        abort(404)
+
+    form = WikiForm()
+
+    if form.validate_on_submit():
+        wiki = Wiki(slug=form.slug.data, title=form.title.data, content=form.content.data)
+        wiki.is_global = True
+        wiki.sub = None
+        wiki.save()
+        return redirect(url_for('admin.wiki'))
+    return engine.get_template('admin/createwiki.html').render({'form': form, 'error': misc.get_errors(form, True)})
+
+
+@bp.route("/wiki/edit/<slug>", methods=['GET'])
+@login_required
+def edit_wiki(slug):
+    if not current_user.is_admin():
+        abort(404)
+
+    form = WikiForm()
+    try:
+        wiki = Wiki.select().where(Wiki.slug == slug).where(Wiki.is_global == True).get()
+    except Wiki.DoesNotExist:
+        return abort(404)
+
+    form.slug.data = wiki.slug
+    form.content.data = wiki.content
+    form.title.data = wiki.title
+
+    return engine.get_template('admin/createwiki.html').render({'form': form, 'error': misc.get_errors(form, True)})
+
+
+@bp.route("/wiki/edit/<slug>", methods=['POST'])
+@login_required
+def edit_wiki_save(slug):
+    if not current_user.is_admin():
+        abort(404)
+
+    form = WikiForm()
+    try:
+        wiki = Wiki.select().where(Wiki.slug == slug).where(Wiki.is_global == True).get()
+    except Wiki.DoesNotExist:
+        return abort(404)
+
+    if form.validate_on_submit():
+        wiki.slug = form.slug.data
+        wiki.title = form.title.data
+        wiki.content = form.content.data
+        wiki.updated = datetime.datetime.utcnow()
+        wiki.save()
+        return redirect(url_for('admin.wiki'))
+
+    return engine.get_template('admin/createwiki.html').render({'form': form, 'error': misc.get_errors(form, True)})
+
+
+@bp.route("/wiki/delete/<slug>", methods=['GET'])
+@login_required
+def delete_wiki(slug):
+    if not current_user.is_admin():
+        abort(404)
+
+    # XXX: This could be an ajax call
+    try:
+        wiki = Wiki.select().where(Wiki.slug == slug).where(Wiki.is_global == True).get()
+    except Wiki.DoesNotExist:
+        return abort(404)
+
+    wiki.delete_instance()
+    return redirect(url_for('admin.wiki'))

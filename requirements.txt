@@ -34,3 +34,4 @@ email_validator
 feedgen
 pyOpenSSL
 pygobject
+mutagen

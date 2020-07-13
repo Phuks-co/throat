@@ -3,7 +3,7 @@ from peewee import SQL
 from flask import Blueprint, redirect, url_for, abort, render_template
 from flask_login import login_required, current_user
 from .. import misc
-from ..models import SiteLog, SubPost, SubLog, Sub, SubPostComment
+from ..models import SiteLog, SubPost, SubLog, Sub, SubPostComment, Wiki
 from ..misc import engine
 from ..config import config
 
@@ -73,3 +73,4 @@ def view_multisub_new(sublist, page=1):
     return render_template('indexmulti.html', page=page,
                            posts=posts, subs=subs, sublist=sublist,
                            sort_type='site.view_multisub_new', kw={'subs': sublist})
+

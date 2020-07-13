@@ -8,7 +8,7 @@
 <div id="container">
   <h1>@{_('Invite codes')}</h1>
   @if avail > 0:
-    @{_('You can create <b>%(num)i</b> invite codes.', num=avail)}
+    @{_('You can create <b>%(num)i</b> invite codes.', num=avail)!!html}
     <a href="/do/create_invite" class="pure-button pure-button-primary">@{_('Create new')}</a>
   @else:
     @{_('You cannot create invite codes.')}
@@ -32,7 +32,7 @@
           <time-ago datetime="@{code.created.isoformat()}Z">@{code.created.isoformat()}</time-ago>
         </td>
         <td>
-          @{code.code!!e}
+          @{code.code}
         </td>
         <td>
           @if code.expires:
@@ -43,10 +43,10 @@
          
         </td>
         <td>
-          @{code.uses!!s}
+          @{code.uses}
         </td>
         <td>
-          @{code.max_uses!!s}
+          @{code.max_uses}
         </td>
       </tr>
       @end

@@ -1223,6 +1223,10 @@ input[type=search] {
     .pbody {
         width: calc(100% - 105px);
     }
+
+    .content.wiki {
+        width: 95%;
+    }
 }
 
 #createPostIcon {
@@ -1251,6 +1255,10 @@ input[type=search] {
 
     #createPostIcon {
         display: none;
+    }
+
+    .content.wiki {
+        width: 65%;
     }
 }
 

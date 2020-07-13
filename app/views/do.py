@@ -1826,7 +1826,7 @@ def sub_upload(sub):
         ufile.save(os.path.join(config.storage.uploads.path, f_name))
         # remove metadata
         if mtype != 'image/gif':  # Apparently we cannot write to gif images
-            misc.clear_metadata(os.path.join(config.storage.uploads.path, f_name))
+            misc.clear_metadata(os.path.join(config.storage.uploads.path, f_name), mtype)
     # sadly, we can only get file size accurately after saving it
     fsize = os.stat(os.path.join(config.storage.uploads.path, f_name)).st_size
     if fsize > remaining:
@@ -2170,11 +2170,13 @@ def close_poll():
             abort(403)
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
+
 try:
     import callbacks
     callbacks_enabled = True
 except ModuleNotFoundError:
     callbacks_enabled = False
+
 
 @do.route('/do/report', methods=['POST'])
 @login_required

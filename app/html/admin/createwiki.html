@@ -1,0 +1,43 @@
+@extends("shared/layout.html")
+@require(form, error)
+@def title():
+Admin |\
+@end
+
+@def sidebar():
+  @include('shared/sidebar/admin.html')
+@end
+
+@def main():
+  <div id="center-container">
+    <div class="content createpost">
+      <form method="POST" class="pure-form pure-form-aligned">
+        @{form.csrf_token()!!html}
+        @if error:
+          <div class="error">@{ error }</div>
+        @end
+        <h2>Create wiki</h2>
+
+        <fieldset>
+          <div class="pure-control-group">
+            @{form.slug.label()!!html} @{form.slug()!!html}
+          </div>
+
+          <div class="pure-control-group">
+            @{form.title.label()!!html} @{form.title()!!html}
+          </div>
+
+          <div class="pure-control-group">
+            @{form.content.label()!!html}
+            <div class="markdown-editor">
+                @{form.content(class_="exalert", placeholder=_('(Optional) Write your post content here. Styling with Markdown format is supported.'), rows="10", style="width: 100%")!!html}
+            </div>
+          </div>
+          <div class="pure-controls">
+            <button onclick="window.sending=true;" type="submit" class="pure-button pure-button-primary" style="display: inline-block">@{_('Submit')}</button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+@end

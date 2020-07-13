@@ -42,13 +42,13 @@ Admin |\
                 @end
               </td>
               <td><div class="username"><a href="@{ url_for('user.view', user=report['reporter']) }">@{ report['reporter'] }</a></div></td>
-              <td>@{report['reason']!!e}</td>
+              <td>@{report['reason']}</td>
               <td><div class="username"><a href="@{ url_for('user.view', user=report['reported']) }">@{ report['reported'] }</a></div></td>
               <td><time-ago datetime="@{report['datetime'].isoformat()}Z"></time-ago></td>
               @if report['open'] == True:
-                <td>@{_('Open')} <a data-type="@{report['type']}" data-id="@{report['id']!!s}" data-action="close" class="close-report">@{_('[x]')}</a></td>
+                <td>@{_('Open')} <a data-type="@{report['type']}" data-id="@{report['id']}" data-action="close" class="close-report">@{_('[x]')}</a></td>
               @else:
-                <td>@{_('Closed')}<a data-type="@{report['type']}" data-id="@{report['id']!!s}" data-action="reopen" class="close-report">@{_(' [reopen]')}</a></td>
+                <td>@{_('Closed')}<a data-type="@{report['type']}" data-id="@{report['id']}" data-action="reopen" class="close-report">@{_(' [reopen]')}</a></td>
               @end
             </tr>
             @end

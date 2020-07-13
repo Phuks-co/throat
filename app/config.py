@@ -5,7 +5,7 @@ from flask import current_app
 from werkzeug.local import LocalProxy
 
 
-cfg_defaults = { # key => default value
+cfg_defaults = {  # key => default value
         "site": {
             "name": 'Throat',
             "lema": 'Throat: Open discussion ;D',
@@ -16,6 +16,7 @@ cfg_defaults = { # key => default value
             "enable_security_question": False,
             "cas_authorized_hosts": [],
             "allow_uploads": False,
+            "upload_min_level": 0,
             "enable_chat": True,
             "sitelog_public": True,
             "force_sublog_public": True,
@@ -32,6 +33,17 @@ cfg_defaults = { # key => default value
 
             "daily_sub_posting_limit": 10,
             "daily_site_posting_limit": 25,
+
+            "footer": {
+                "links": {
+                    "ToS": "/wiki/tos",
+                    "Privacy": "/wiki/privacy",
+                    "Changelog": "/s/changelog",
+                    "Canary": "/wiki/canary",
+                    "Donate": "/wiki/donate",
+                    "Bugs": "https://github.com/Phuks-co/throat/issues"
+                }
+            }
         },
         "cache": {
             "type": "null"
@@ -41,7 +53,7 @@ cfg_defaults = { # key => default value
             "default_from": 'noreply@shitposting.space',
         },
         "storage": {
-            "thumbnails":{
+            "thumbnails": {
                 "path": './thumbs',
                 "url": 'https://thumbnails.shitposting.space/',
             },
@@ -57,9 +69,10 @@ cfg_defaults = { # key => default value
             "development": False,
             "wtf_csrf_time_limit": None,
             "max_content_length": 10485760,  # 10mb
-            "fallback_language": "en"
+            "fallback_language": "en",
+            "testing": False
         },
-    "database": {}
+        "database": {}
     }
 
 
@@ -81,7 +94,7 @@ class Map(dict):
             if isinstance(val, dict):
                 self[key] = Map(self.get(key, {}), val, f'{self.prefix}{key}')
             elif key not in self.keys():
-                self[key] = val;
+                self[key] = val
 
         # Look for environment variables that override values or add additional values.
         if self.prefix != '':

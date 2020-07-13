@@ -6,7 +6,7 @@
 <div id="center-container">
     <div class="content createpost">
         <form method="POST" id="post-form" data-redir="true" class="pure-form pure-form-aligned" enctype="multipart/form-data">
-            @{ form.csrf_token() }
+            @{ form.csrf_token() !!html}
             <h2>@{_('Submit a post')}</h2>
 
             <input type="submit" style="display:none"/>
@@ -16,21 +16,21 @@
             <fieldset>
                 <div class="pure-control-group">
                     <span class="sub">
-                        <label for="sub">@{form.sub.label!!s}</label>
-                        @{ form.sub(required=True, class_="sub_autocomplete", autocomplete="off", placeholder=_('Find a sub...')) }
+                        @{form.sub.label()!!html}
+                        @{ form.sub(required=True, class_="sub_autocomplete", autocomplete="off", placeholder=_('Find a sub...')) !!html }
                     </span>
                 </div>
                 <div class="pure-control-group">
-                    <label for="title">@{form.title.label!!s}</label>
-                    @{ form.title(required=True) }
+                    @{form.title.label()!!html}
+                    @{ form.title(required=True) !!html}
                 </div>
 
                 <div style="padding-top: 1em; padding-bottom: 1em;">
                     @for kl in form.ptype:
                     <div class="pure-control-group">
-                        @{kl(style="")}
-                        <label for="@{kl.id!!s}" class="pure-radio" style="text-align: left; display: initial;">
-                            @{kl.label.text!!s}
+                        @{kl(style="")!!html}
+                        <label for="@{kl.id}" class="pure-radio" style="text-align: left; display: initial;">
+                            @{kl.label.text}
                         </label>
                     </div>
                     @end
@@ -38,9 +38,9 @@
 
 
                 <div class="pure-control-group txcont" style="@{form.ptype.data != 'text' and 'display:none' or ''}">
-                    <label for="content">@{form.content.label!!s}</label>
+                    @{form.content.label()!!html}
                     <div class="markdown-editor">
-                        @{form.content(class_="exalert", placeholder=_('(Optional) Write your post content here. Styling with Markdown format is supported.'), rows="10", style="width: 100%")}
+                        @{form.content(class_="exalert", placeholder=_('(Optional) Write your post content here. Styling with Markdown format is supported.'), rows="10", style="width: 100%")!!html}
                     </div>
                 </div>
 
@@ -73,14 +73,14 @@
                     @if current_user.canupload:
                     <label for="files">@{_('File')}</label>
                     <input type="file" name="files" @{form.ptype.data == 'upload' and 'required' or ''} class="requpload"
-                           data-max="@{ config.app.max_content_length!!s }" placeholder="@{_('Upload a file!')}"/>
+                           data-max="@{ config.app.max_content_length }" placeholder="@{_('Upload a file!')}"/>
                     @end
                 </div>
 
                 <div class="pure-control-group lnicont pure-u-sm-20-24"
                      style="@{form.ptype.data != 'link' and 'display:none' or ''}">
                     <label for="link">@{_('Link')}</label>
-                    @{form.link(class_="reqlink", type="url", pattern="https?://.+", required=form.ptype.data == 'link', placeholder=_('URL'))}
+                    @{form.link(class_="reqlink", type="url", pattern="https?://.+", required=form.ptype.data == 'link', placeholder=_('URL'))!!html}
                 </div>
 
                 <div class="pure-control-group pure-u-sm-3-24 lnicont"
@@ -102,8 +102,8 @@
 
                 @if not sub or (sub and not sub.nsfw):
                 <div class="pure-control-group">
-                    <label for="nsfw">@{form.nsfw.label.text!!s}</label>
-                    @{form.nsfw() }
+                    @{form.nsfw.label()!!html}
+                    @{form.nsfw()!!html}
                 </div>
                 @end
 
@@ -114,7 +114,7 @@
                 </div>
                 <div class="pure-control-group">
                     <label for="captcha">@{_('Captcha')}</label>
-                    @{form.captcha(autocomplete="off", required=True)}
+                    @{form.captcha(autocomplete="off", required=True)!!html}
                 </div>
                 @end
                 <div class="pure-controls">

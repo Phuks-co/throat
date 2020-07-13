@@ -12,6 +12,7 @@ import hashlib
 import re
 import gi
 
+from mutagen.mp4 import MP4
 gi.require_version('GExiv2', '0.10')  # noqa
 from gi.repository import GExiv2
 import bcrypt
@@ -23,7 +24,6 @@ from PIL import Image
 from bs4 import BeautifulSoup
 from functools import update_wrapper
 import misaka as m
-import redis
 import sendgrid
 
 from .config import config
@@ -36,7 +36,7 @@ from .badges import badges
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata, SubRule
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db, SubPostReport, SubPostCommentReport
-from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair
+from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair, InviteCode
 from .models import SubMod, SubBan
 from peewee import JOIN, fn, SQL, NodeList, Value
 import requests
@@ -52,9 +52,26 @@ allowedNames = re.compile("^[a-zA-Z0-9_-]+$")
 WHITESPACE = "\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007" \
              "\u2008\u2009\u200a\u200b\u2029\u202f\u205f\u3000\u180e\u200b\u200c\u200d\u2060\ufeff\u00AD\ufffc "
 
+
+def build_var(builder, lineno, token, value):
+    assert token == 'var'
+    var, _ = value
+    if not value[-1] or "html" not in value[-1]:
+        builder.add(lineno, 'w(e(str(' + var + ')))')
+    else:
+        builder.add(lineno, 'w(str(' + var + '))')
+    return True
+
+
+class EscapeExtension(object):
+    builder_rules = [
+        ('var', build_var)
+    ]
+
+
 _engine = Engine(
     loader=FileLoader([os.path.split(__file__)[0] + '/html']),
-    extensions=[CoreExtension()]
+    extensions=[EscapeExtension(), CoreExtension()]
 )
 engine = _engine
 
@@ -117,7 +134,9 @@ class SiteUser(object):
             self.admin = False
 
         self.canupload = True if ('canupload' in self.prefs) or self.admin else False
-        if config.site.allow_uploads:
+        if config.site.allow_uploads and config.site.upload_min_level == 0:
+            self.canupload = True
+        elif config.site.allow_uploads and (config.site.upload_min_level <= get_user_level(self, self.score)[0]):
             self.canupload = True
 
     def __repr__(self):
@@ -394,6 +413,7 @@ class RE_AMention():
         self.LINKS = re.compile(r"\[.*?({1}).*?\]\(.*?\)|({0})".format(PRE1, BARE),
                                 flags=re.MULTILINE + re.DOTALL)
 
+
 re_amention = RE_AMention()
 
 
@@ -524,6 +544,41 @@ def getMaxCodes(uid):
         except SiteMetadata.DoesNotExist:
             return 0
     return 0
+
+@cache.memoize(30)
+def getInviteCodeInfo(uid):
+    """
+    Returns information about who invited a user and who they have invited.
+    """
+    info = {}
+
+    # The invite code that this user used to sign up
+    try:
+        invite_code = UserMetadata.get((UserMetadata.key == 'invitecode') & (UserMetadata.uid == uid))
+        code = invite_code.value
+        invited_by_uid = InviteCode.get((InviteCode.code == code)).uid
+        invited_by_name = User.get((User.uid == invited_by_uid)).name
+        info['invitedBy'] = {'name': invited_by_name, 'code': code}
+    except UserMetadata.DoesNotExist:
+        pass
+
+    # Codes that this user has generated, that other users signed up with
+    try:
+        user_codes = InviteCode.select().where(InviteCode.uid == uid)
+        info['invitedTo'] = []
+        for code in user_codes:
+            try:
+                invited_users = UserMetadata.select().where((UserMetadata.key == 'invitecode') & (UserMetadata.value == code.code))
+                for user in invited_users:
+                    username = User.get((User.uid == user.uid)).name
+                    info['invitedTo'].append({'name': username, 'code': code.code})
+            except UserMetadata.DoesNotExist:
+                # no users have signed up with this code.
+                pass
+    except InviteCode.DoesNotExist:
+        pass
+
+    return info
 
 
 def sendMail(to, subject, content):
@@ -1071,12 +1126,19 @@ def getUserBadges(uid):
     return ret
 
 
-def clear_metadata(path: str):
-    exif = GExiv2.Metadata()
-    exif.open_path(path)
-    exif.clear_exif()
-    exif.clear_xmp()
-    exif.save_file(path)
+def clear_metadata(path: str, mime_type: str):
+    if mime_type in ('image/jpeg', 'image/png'):
+        exif = GExiv2.Metadata()
+        exif.open_path(path)
+        exif.clear()
+        exif.save_file(path)
+    elif mime_type == 'video/mp4':
+        video = MP4(path)
+        video.clear()
+        video.save()
+    elif mime_type == 'video/webm':
+        # XXX: Mutagen doesn't seem to support webm files
+        pass
 
 
 def upload_file(max_size=16777216):
@@ -1122,8 +1184,7 @@ def upload_file(max_size=16777216):
             os.remove(fpath)
             return _("File size exceeds the maximum allowed size (%(size)i MB)", size=max_size / 1024 / 1024), False
         # remove metadata
-        if mtype not in ('image/gif', 'video/mp4', 'video/webm'):  # Apparently we cannot write to gif images
-            clear_metadata(fpath)
+        clear_metadata(fpath, mtype)
     return f_name, True
 
 
