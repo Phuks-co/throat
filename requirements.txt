@@ -35,3 +35,4 @@ feedgen
 pyOpenSSL
 pygobject
 mutagen
+flask-mail
