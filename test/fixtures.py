@@ -1,3 +1,4 @@
+import logging
 import os
 import tempfile
 import pytest
@@ -8,6 +9,8 @@ from app import create_app
 from app.config import Config
 from app.models import db
 
+peewee_migrate_logger = logging.getLogger("peewee_migrate")
+peewee_migrate_logger.setLevel(logging.WARNING)
 @pytest.fixture
 def client():
     """Create the Flask test client."""
