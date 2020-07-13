@@ -7,7 +7,7 @@
   <div class="important"><h3>@{_('Editing as Admin')}</h3></div>
   @end
 
-  <h2>@{_('Editing stylesheet for <a href="%(url)s">/%(prefix)s/%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), prefix=config.site.sub_prefix, sub=sub.name)}</h2>
+  <h2>@{_('Editing stylesheet for <a href="%(url)s">/%(prefix)s/%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), prefix=config.site.sub_prefix, sub=sub.name)!!html}</h2>
 
   <div class="content createpost">
     <form  method="POST" class="ajaxform" action="@{url_for('do.edit_sub_css', sub=sub.name)}">
@@ -50,7 +50,7 @@
     @end
   @end
   <hr/>
-  <p>@{_('You can use uploaded images with <code>%%imagename%%</code>.')}</p>
+  <p>@{_('You can use uploaded images with <code>%%imagename%%</code>.')!!html}</p>
   <p>@{_('Example:')}
     <pre>
       body{

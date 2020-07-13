@@ -227,6 +227,6 @@
 @def pagefoot():
 
   @if not current_user.block_styles():
-    <style>@{subInfo['stylesheet']}</style>
+    <style>@{subInfo['stylesheet']!!html}</style>
   @end
 @end
