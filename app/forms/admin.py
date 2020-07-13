@@ -1,7 +1,7 @@
 """ admin-related forms """
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, TextField, TextAreaField
+from wtforms import StringField, BooleanField, TextAreaField
 from wtforms import IntegerField
 from wtforms.validators import DataRequired, Length, Regexp
 from flask_babel import lazy_gettext as _l
@@ -9,8 +9,8 @@ from flask_babel import lazy_gettext as _l
 
 class SecurityQuestionForm(FlaskForm):
     """ Create security question """
-    question = TextField(_l('Question'), validators=[DataRequired()])
-    answer = TextField('Answer', validators=[DataRequired()])
+    question = StringField(_l('Question'), validators=[DataRequired()])
+    answer = StringField('Answer', validators=[DataRequired()])
 
 
 class EditModForm(FlaskForm):
