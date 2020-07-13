@@ -39,7 +39,8 @@ Mod |\
             @{_('Close All Reports for this Post')}
           </button>
         @else:
-          <button class="pure-button pure-button-primary button-xsmall btn-editpost">
+        <!-- need to figure out how to pass a list of IDs into the JS -->
+          <button class="pure-button pure-button-primary button-xsmall btn-editpost close-related-reports" data-type="@{report['type']}" data-reports="@{related_reports['query']}" data-action="close">
             @{_('Close All Reports for this Post')}
           </button>
         @end
