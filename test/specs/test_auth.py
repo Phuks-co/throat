@@ -4,22 +4,15 @@ from flask import current_app
 
 from app import mail
 
-from test.fixtures import test_config, client
-
-
-# This is intended as a sample first test, not a real test of login
-# functionality. All it does is check that somewhere in the login page
-# is the string "password".
-def test_login(client):
-    """The login page mentions passwords."""
-    rv = client.get('/login')
-    assert b'password' in rv.data
+from test.fixtures import *
+from test.utilities import csrf_token, pp
 
 
 @pytest.mark.parametrize('test_config', [{'auth': {'validate_emails': True}},
                                          {'auth': {'validate_emails': False}}])
 def test_registration_login(client):
     """The registration page logs a user in if they register correctly."""
+    pass
     rv = client.get('/register')
     with mail.record_messages() as outbox:
         rv = client.post('/register',
@@ -42,7 +35,38 @@ def test_registration_login(client):
         assert b'Log out' in rv.data
 
 
-def csrf_token(data):
-    soup = BeautifulSoup(data, "html.parser")
-    # print(soup.prettify())
-    return soup.find(id="csrf_token")["value"]
+# @pytest.mark.parametrize('test_config', [{'site': {'validate_emails': True}}])
+# def test_login_before_confirming_email():
+#     """Registered users with unconfirmed emails can't log in."""
+#     # It should give them the option of sending another link.
+#     pass
+
+
+def test_logout_and_login_again(client, user_info, logged_in_user):
+    """A logged in user can log out and back in again."""
+    rv = client.get('/')
+    rv = client.post('/do/logout', data=dict(csrf_token=csrf_token(rv.data)),
+                     follow_redirects=True)
+    assert b'Log in' in rv.data
+
+    rv = client.get('/login')
+    pp(rv.data)
+    rv = client.post('/login',
+                     data=dict(csrf_token=csrf_token(rv.data),
+                               username=user_info['username'],
+                               password=user_info['password']),
+                     follow_redirects=True)
+    assert b'Log out' in rv.data
+
+
+# def test_reset_password_by_email():
+#     """A user can reset their password using a link received by email."""
+#     pass
+
+
+# def test_change_user_email():
+#     """A user can change their email address, and receive a reset password
+#     link at the new address."""
+#     pass
+
+

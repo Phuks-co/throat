@@ -3,16 +3,21 @@ import os
 import tempfile
 import pytest
 
+from flask import current_app
+from flask_login import current_user
 from peewee_migrate import Router
 
-from app import create_app
+from app import create_app, mail
 from app.config import Config
 from app.models import db, BaseModel, User
 from app.auth import auth_provider
 
+from test.utilities import csrf_token, pp
+
 
 peewee_migrate_logger = logging.getLogger("peewee_migrate")
 peewee_migrate_logger.setLevel(logging.WARNING)
+
 
 @pytest.fixture
 def test_config():
@@ -47,8 +52,12 @@ def client(test_config):
     recursively_update(config, test_config)
 
     app = create_app(config)
+
     app_context = app.app_context()
     app_context.push()
+
+    # Might be faster to get this to work:
+    # db.create_tables(BaseModel.__subclasses__())
     router = Router(db, migrate_dir='migrations', ignore=['basemodel'])
     router.run()
 
@@ -76,3 +85,34 @@ def recursively_update(dictionary, new_values):
             recursively_update(dictionary[elem], new_values[elem])
         else:
             dictionary[elem] = new_values[elem]
+
+
+@pytest.fixture
+def user_info():
+    return dict(username='supertester',
+                email='test@example.com',
+                password='Safe123#$@lolnot')
+
+
+@pytest.fixture
+def logged_in_user(client, user_info):
+    rv = client.get('/register')
+    with mail.record_messages() as outbox:
+        data = dict(csrf_token=csrf_token(rv.data),
+                    confirm=user_info['password'],
+                    invitecode='',
+                    accept_tos=True,
+                    captcha='xyzzy')
+        data.update(user_info)
+        rv = client.post('/register',
+                         data=data,
+                         follow_redirects=True)
+
+        if current_app.config['THROAT_CONFIG'].auth.validate_emails:
+            message = outbox[-1]
+            soup = BeautifulSoup(message.html, 'html.parser')
+            token = soup.a['href'].split('/')[-1]
+            rv = client.get("login/with-token/" + token,
+                            follow_redirects=True)
+        assert b'Log out' in rv.data
+    return current_user
