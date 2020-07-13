@@ -53,6 +53,12 @@
       @if current_user.canupload:
         <li><a href="@{url_for('home.view_user_uploads')}">@{_('uploads')}</a></li>
       @end
+      @if current_user.can_admin:
+        <li><a href="@{url_for('admin.index')}">@{_('admin')}</a></li>
+      @end
+      @if current_user.is_a_mod or current_user.can_admin:
+        <li><a href="@{url_for('mod.index')}">@{_('moderation')}</a></li>
+      @end
       <li>|</li>
       @if not current_user.is_anonymous:
       <li class="editbar"><a href="/settings/subs" title="@{_('Customize this bar')}" class="tx-icon" data-icon="edit"></a></li>

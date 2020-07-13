@@ -134,6 +134,12 @@ class SiteUser(object):
         self.is_anonymous = True if self.user['status'] != 0 else False
         self.can_admin = 'admin' in self.prefs
 
+        try:
+            SubMod.select().where(SubMod.user == self.uid).get()
+            self.is_a_mod = True
+        except:
+            self.is_a_mod = False
+
         if (time.time() - session.get('apriv', 0) < 7200) or not config.site.enable_totp:
             self.admin = 'admin' in self.prefs
         else:
@@ -156,14 +162,6 @@ class SiteUser(object):
     def is_mod(self, sid, power_level=2):
         """ Returns True if the current user is a mod of 'sub' """
         return is_sub_mod(self.uid, sid, power_level, self.can_admin)
-
-    def is_a_mod(self):
-        """ Returns True if the current user is a mod of any sub """
-        try:
-            SubMod.select().where(SubMod.user == current_user.uid).get() or current_user.can_admin
-            return True
-        except SubMod.DoesNotExist:
-            return False
 
     def is_subban(self, sub):
         """ Returns True if the current user is banned from 'sub' """
@@ -240,6 +238,8 @@ class SiteAnon(AnonymousUserMixin):
     canupload = False
     language = None
     score = 0
+    is_a_mod = False
+    can_admin = False
 
     def get_id(self):
         return False
