@@ -2011,6 +2011,19 @@ a.close-report {
   color: gray;
 }
 
+.mod-dash-subs {
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 800px;
+}
+
+.mod-dash-sub {
+  margin: 10px;
+}
+
 @media (min-width: 860px) {
   .mod.report.content {
     min-width: 650px;
