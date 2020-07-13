@@ -6,7 +6,8 @@ from flask import current_app, render_template
 from flask_babel import _
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired, BadSignature
-import keycloak
+from keycloak import KeycloakAdmin, KeycloakOpenID
+from keycloak.exceptions import KeycloakError
 
 from .config import config
 from .misc import send_email, engine
@@ -22,16 +23,23 @@ class AuthProvider:
             self.init_app(app)
 
     def init_app(self, app):
-        cfg = app.config['THROAT_CONFIG']
-        self.provider = cfg.auth.provider
+        self.provider = app.config['THROAT_CONFIG'].auth.provider
         if self.provider == 'KEYCLOAK':
-            self.realm = cfg.auth.keycloak.realm
-            self.keycloak_admin = keycloak.KeycloakAdmin(
-                server_url=cfg.auth.keycloak.server,
-                realm_name="master",
-		client_secret_key=cfg.auth.keycloak.secret,
-		verify=True,
-                auto_refresh_token=['get', 'put', 'post', 'delete'])
+            cfg = app.config['THROAT_CONFIG'].auth.keycloak
+            self.keycloak_admin = KeycloakAdmin(server_url=cfg.server,
+                                                realm_name=cfg.user_realm,
+                                                user_realm_name=cfg.admin_realm,
+                                                client_id=cfg.admin_client,
+		                                client_secret_key=cfg.admin_secret,
+		                                verify=True,
+                                                auto_refresh_token=['get', 'put', 'post', 'delete'])
+
+            self.keycloak_openid = KeycloakOpenID(server_url=cfg.server,
+                                                  client_id=cfg.auth_client,
+                                                  client_secret_key=cfg.auth_secret,
+                                                  realm_name=cfg.user_realm,
+                                                  verify=True)
+
 
     def get_user_by_email(self, email):
         # This may raise an error if the Keycloak server is unavailable or
@@ -44,14 +52,14 @@ class AuthProvider:
             pass
         if self.provider == 'KEYCLOAK':
             try:
-                users = self.keycloak_admin.get_users({"email": email}, self.realm)
-            except keycloak.exceptions.KeycloakError as err:
+                users = self.keycloak_admin.get_users({"email": email})
+            except KeycloakError as err:
                 raise AuthError(str(err))
             for userdict in users:
                 try:
                     return User.get(User.name == userdict['username'])
                 except User.DoesNotExist:
-                    return user
+                    return None
         return None
 
     def create_user(self, name, password, email, verified_email=False):
@@ -62,13 +70,12 @@ class AuthProvider:
             crypto = UserCrypto.BCRYPT
             password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         else:
-            user = self.keycloak_admin.create_user({'email': email,
-                                                    'username': name,
-                                                    'enabled': True,
-                                                    'emailVerified': verified_email,
-                                                    'credentials': [{'value': 'secret','type': 'password'}]},
-                                                   realm_name=self.realm)
-            uid = user['id']
+            uid = self.keycloak_admin.create_user({'email': email,
+                                                   'username': name,
+                                                   'enabled': True,
+                                                   'emailVerified': verified_email,
+                                                   'credentials': [{'value': password,
+                                                                    'type': 'password'}]})
             email = ''
             password = ''
             crypto = UserCrypto.REMOTE
@@ -99,8 +106,7 @@ class AuthProvider:
     def set_email_verified(self, user, value=True):
         if self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK:
             self.keycloak_admin.update_user(user_id=user.uid,
-                                            payload={'emailVerified': value},
-                                            realm_name=self.realm)
+                                            payload={'emailVerified': value})
         value = '1' if value else '0'
         try:
             umd = UserMetadata.get((UserMetadata.uid == user.uid) &
@@ -109,6 +115,26 @@ class AuthProvider:
             umd.save()
         except UserMetadata.DoesNotExist:
             UserMetadata.create(uid=user.uid, key="email_verified", value=value)
+
+    def check_password(self, user, password):
+        if user.crypto == UserCrypto.BCRYPT:
+            thash = bcrypt.hashpw(password.encode('utf-8'), user.password.encode('utf-8'))
+            return thash == user.password.encode('utf-8')
+        elif user.crypto == UserCrypto.REMOTE:
+            try:
+                # TODO do something with the token
+                self.keycloak_openid.token(username=user.name,
+                                           password=password)
+                return True
+            except KeycloakError as err:
+                print("====failed ", err)
+                return False
+
+    def delete_user(self, user):
+        if user.crypto == UserCrypto.REMOTE:
+            self.keycloak_admin.delete_user(user.uid)
+
+        # to do delete the user record
 
 
 

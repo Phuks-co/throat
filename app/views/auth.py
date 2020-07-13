@@ -177,20 +177,14 @@ def login():
             return engine.get_template('user/login.html').render(
                 {'error': _("Invalid username or password."), 'loginform': form})
 
-        if user.crypto == 1:  # bcrypt
-            thash = bcrypt.hashpw(form.password.data.encode('utf-8'),
-                                  user.password.encode('utf-8'))
-            if thash == user.password.encode('utf-8'):
-                theuser = misc.load_user(user.uid)
-                login_user(theuser, remember=form.remember.data)
-                if request.args.get('service'):
-                    return handle_cas_ok(uid=user.uid)
-                else:
-                    return form.redirect('index')
+        if auth_provider.check_password(user, form.password.data):
+            theuser = misc.load_user(user.uid)
+            login_user(theuser, remember=form.remember.data)
+            if request.args.get('service'):
+                return handle_cas_ok(uid=user.uid)
             else:
-                return engine.get_template('user/login.html').render(
-                    {'error': _("Invalid username or password."), 'loginform': form})
-        else:  # Unknown hash
+                return form.redirect('index')
+        else:
             return engine.get_template('user/login.html').render(
-                {'error': _("Something went really really wrong here."), 'loginform': form})
+                    {'error': _("Invalid username or password."), 'loginform': form})
     return engine.get_template('user/login.html').render({'error': misc.get_errors(form, True), 'loginform': form})
