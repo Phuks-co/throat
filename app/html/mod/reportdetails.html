@@ -189,7 +189,7 @@ Mod |\
               </span>
               <span>
                 @if report['type'] == 'comment':
-                  @if comment['status'] == 0:
+                  @if (comment['status'] != 1) and (comment['status'] != 2):
                     <button class="pure-button pure-button-primary button-xsmall btn-editpost delete-comment" data-cid="@{report['cid']}">
                       @{_('Delete Comment')}
                     </button>
