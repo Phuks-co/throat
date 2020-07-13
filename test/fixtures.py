@@ -16,9 +16,12 @@ def client():
     """Create the Flask test client."""
     db_fd, db_name = tempfile.mkstemp()
 
-    config = Config()
+    # Start with the defaults in config.py.
+    config = Config(use_environment=False)
+
     config['app']['testing'] = True
     config['app']['debug'] = False
+    config['app']['development'] = False
     config['cache']['type'] = 'simple'
     config['database']['engine'] = 'SqliteDatabase'
     config['database']['name'] = db_name
