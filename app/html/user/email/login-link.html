@@ -1,0 +1,11 @@
+@require(user, token)
+<p>@{_('Hi %(name)s,', name=user.name)}</p>
+<p>
+  @{_('Thank you for registering on %(site)s! To confirm your account and log in,', site=config.site.name)}
+  <a href="@{url_for('auth.login_with_token', token=token, _external=True)}">
+    @{_('click here.')}
+  </a>
+</p>
+<p>@{_("Or you can paste the following link in your browser's address bar:")}</p>
+<p>@{url_for('auth.login_with_token', token=token, _external=True)}</p>
+<p>@{_('Thanks,')}<br>@{_('The %(site)s Team', site=config.site.name)}</p>

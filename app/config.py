@@ -47,10 +47,11 @@ cfg_defaults = {  # key => default value
                     "Donate": "/wiki/donate",
                     "Bugs": "https://github.com/Phuks-co/throat/issues"
                 }
-            }
+            },
         },
         "auth": {
             "provider": 'LOCAL',
+            "validate_emails": False,
             "keycloak": {}
         },
         "cache": {

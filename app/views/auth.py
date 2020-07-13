@@ -9,6 +9,7 @@ from flask_login import current_user, login_user
 from flask_babel import _
 from .. import misc, config
 from ..auth import auth_provider, registration_is_enabled
+from ..auth import email_validation_is_required, send_login_link_email, user_from_login_token
 from ..forms import LoginForm, RegistrationForm
 from ..misc import engine
 from ..models import User, UserMetadata, InviteCode, SubSubscriber, rconn
@@ -62,7 +63,7 @@ def register():
         return engine.get_template('user/registration_disabled.html').render({'test': 'test'})
 
     if not form.validate():
-        return engine.get_template('user/register.html').render({'error': misc.get_errors(form, True), 'regform': form})
+       return engine.get_template('user/register.html').render({'error': misc.get_errors(form, True), 'regform': form})
 
     if not misc.validate_captcha(form.ctok.data, form.captcha.data):
         return engine.get_template('user/register.html').render({'error': _("Invalid captcha."), 'regform': form})
@@ -108,16 +109,45 @@ def register():
         invcode.save()
 
     user = auth_provider.create_user(name=form.username.data, password=form.password.data,
-                                     email=form.email.data)
+                                     email=form.email.data, verified_email=False)
     if misc.enableInviteCode():
         UserMetadata.create(uid=user.uid, key='invitecode', value=form.invitecode.data)
-    # defaults
+
     defaults = misc.getDefaultSubs()
     subs = [{'uid': user.uid, 'sid': x['sid'], 'status': 1, 'time': datetime.utcnow()} for x in defaults]
     SubSubscriber.insert_many(subs).execute()
-    theuser = misc.load_user(user.uid)
-    login_user(theuser, remember=True)
-    return redirect(url_for('wiki.welcome'))
+
+    if email_validation_is_required():
+        user.probation = True
+        send_login_link_email(user)
+        # TODO make a page that says "check your email"
+        return redirect(url_for('home.index'))
+    else:
+        theuser = misc.load_user(user.uid)
+        login_user(theuser, remember=True)
+        return redirect(url_for('wiki.welcome'))
+
+
+
+
+@bp.route('/login/with-token/<token>')
+def login_with_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home.index'))
+    user = user_from_login_token(token)
+    if user is None:
+        # TODO
+        # flash('The link you used is invalid or has expired.',
+        #       'error')
+        return redirect(url_for('auth.register'))
+    else:
+        user.probation = False
+        auth_provider.set_email_verified(user)
+        theuser = misc.load_user(user.uid)
+        login_user(theuser, remember=True)
+        # TODO
+        # green_flash(f"Your account on {config.site.name} is now confirmed!")
+        return redirect(url_for('wiki.welcome'))
 
 
 @bp.route("/login", methods=['GET', 'POST'])
