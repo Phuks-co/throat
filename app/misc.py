@@ -1253,7 +1253,6 @@ def getSubData(sid, simple=False, extra=False):
 
         try:
             data['rules'] = SubRule.select().join(Sub).where(Sub.sid == sid)
-            print('RULES:', data['rules'])
         except SubRule.DoesNotExist:
             data['rules'] = ''
 
