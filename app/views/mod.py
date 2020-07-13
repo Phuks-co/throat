@@ -128,6 +128,9 @@ def report_details(sub, type, id):
     if not (current_user.is_mod(sub.sid, 1) or current_user.is_admin()):
         abort(404)
 
+    subInfo = misc.getSubData(sub.sid)
+    subMods = misc.getSubMods(sub.sid)
+
     report = getReports('mod', 'all', 1, type=type, report_id=id)
     reported_user = User.select().where(User.name == report['reported']).get()
     related_reports = getReports('mod', 'all', 1, type=type, report_id=id, related=True)
@@ -148,4 +151,4 @@ def report_details(sub, type, id):
     reported = User.select().where(User.name == report['reported']).get()
     is_sub_banned = misc.is_sub_banned(sub, uid=reported.uid)
 
-    return engine.get_template('mod/reportdetails.html').render({'sub': sub, 'report': report, 'reported_user': reported_user, 'related_reports': related_reports, 'related_reports_json': json.dumps(related_reports['query'], default=str), 'banuserform': BanUserSubForm(), 'submods': misc.getSubMods(sub.sid), 'is_sub_banned': is_sub_banned, 'post': post, 'comment': comment})
+    return engine.get_template('mod/reportdetails.html').render({'sub': sub, 'report': report, 'reported_user': reported_user, 'related_reports': related_reports, 'related_reports_json': json.dumps(related_reports['query'], default=str), 'banuserform': BanUserSubForm(), 'is_sub_banned': is_sub_banned, 'post': post, 'comment': comment, 'subInfo': subInfo, 'subMods': subMods})
