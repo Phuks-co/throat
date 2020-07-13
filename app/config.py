@@ -56,7 +56,7 @@ cfg_defaults = {  # key => default value
             "acl": "private",
             "server": False,
             "server_url": '/files/',
-            "thumbnails":{
+            "thumbnails": {
                 "path": './thumbs',
                 "url": 'https://thumbnails.shitposting.space/',
             },
@@ -121,18 +121,31 @@ class Config(Map):
                 cfg = yaml.safe_load(stream)
 
         super(Config, self).__init__(cfg, cfg_defaults, use_environment=use_environment)
-        self.check_config()
+        self.check_storage_config()
 
-    def check_config(self):
-        # Make sure our storage paths are absolute.
-        if self.storage.provider == 'LOCAL':
-            self.storage.thumbnails['path'] = os.path.abspath(self.storage.thumbnails['path'])
-            self.storage.uploads['path'] = os.path.abspath(self.storage.uploads['path'])
+    def check_storage_config(self):
+        """Adjust our storage config for compatibility with flask-cloudy."""
+        storage = self.storage
+        if storage.provider == 'LOCAL':
+            # Make sure our storage paths are absolute.
+            storage.thumbnails['path'] = os.path.abspath(storage.thumbnails['path'])
+            storage.uploads['path'] = os.path.abspath(storage.uploads['path'])
+            storage['container'] = storage.uploads['path']
+            if storage.server:
+                if storage.uploads.path != storage.thumbnails.path:
+                    logging.warning("Thumbnails will not be served by local server "
+                                    "because thumbnails and uploads paths differ")
+                if storage['server_url'][-1] == '/':
+                    # flask-cloudy does not want the trailing slash
+                    self.storage['server_url'] = self.storage['server_url'][:-1]
 
-        if (self.storage.server and
-                self.storage.uploads.path != self.storage.thumbnails.path):
-            logging.warning("Thumbnails will not be served by local server "
-                            "because thumbnails and uploads paths differ")
+        storage.acl = '' if storage.acl is None else storage.acl
+
+        # This is not for flask-cloudy, just to make config more human-friendly
+        if storage.thumbnails.url != '' and storage.thumbnails.url[-1] != '/':
+            storage.thumbnails.url = storage.thumbnails.url + '/'
+        if  storage.uploads.url != '' and storage.uploads.url[-1] != '/':
+            storage.uploads.url = storage.uploads.url + '/'
 
     def get_flask_dict(self):
         flattened = {}
@@ -145,18 +158,10 @@ class Config(Map):
                         key = '{}_{}'.format(cpk, i).upper()
                     flattened[key] = self[cpk][i]
 
-        # These values are used by flask_cloudy.
-        self.storage.acl = '' if self.storage.acl is None else self.storage.acl
-        if 'server_url' in self.storage:
-            # flask-cloudy does not want the trailing slash
-            self.storage['server_url'] = self.storage['server_url'][:-1]
-        self.storage.thumbnails.url = '' if self.storage.thumbnails.url is None else self.storage.thumbnails.url
-        self.storage.uploads.url = '' if self.storage.uploads.url is None else self.storage.uploads.url
+        # These values are used by flask-cloudy.
         for key in ['provider', 'key', 'secret', 'container', 'server', 'server_url']:
             if key in self.storage:
                 flattened[f'STORAGE_{key}'.upper()] = self.storage[key]
-        if self.storage['provider'] == 'LOCAL':
-            flattened['STORAGE_CONTAINER'] = self.storage.uploads.path;
         return flattened
 
 
