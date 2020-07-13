@@ -25,6 +25,13 @@ site:
   # Set to zero to disable file upload level limits
   upload_min_level: 0
 
+# For those who are allowed to upload files, allow video uploads
+  # (.mp4 and .webm) as well.
+  allow_video_uploads: True
+
+  # Maximum size of an uploaded file, in bytes.
+  upload_max_size: 16777216
+
   # Allow chat access for all users
   # If True, each user will have the option of disabling chat for themselves
   enable_chat: True
@@ -118,10 +125,35 @@ mail:
   default_from: 'noreply@example.com'
 
 storage:
+  # One of: LOCAL, S3, S3_US_WEST, S3_US_WEST_OREGON, S3_EU_WEST,
+  # S3_AP_SOUTHEAST, S3_AP_NORTHEAST, GOOGLE_STORAGE, AZURE_BLOBS,
+  # CLOUDFILES
+  provider: 'LOCAL'
+
+  # For cloud providers, uncomment and set these:
+  #key: '...'
+  #secret: '...'
+  #container: '...'
+
+  # Access control for cloud providers.  Options are "public-read",
+  # "private", or blank for no access control.
+  # acl: private
+
+  # If the provider is local, and you want Throat to serve the files
+  # instead of setting up nginx or another web server to do so,
+  # uncomment these.  The server_url is the relative endpoint for the
+  # files.  The thumbnails and uploads paths must be the same for the
+  # local server to serve both.  Serving files from Throat is not
+  # recommended for production, but may be useful for development.
+  #server: True
+  #server_url: '/files'
+
   thumbnails:
-    # Path where thumbnails will be stored (app MUST have write access)
+    # If provider is LOCAL, path where thumbnails will be stored (app
+    # MUST have write access)
     path: './thumbs'
-    # URL or relative path where thumbnails are served (must end with forward slash)
+    # URL or relative path where thumbnails are served.  Ignored if
+    # local server is enabled above.
     url: 'https://thumbs.example.com/'
 
   uploads:

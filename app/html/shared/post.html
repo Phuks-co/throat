@@ -19,7 +19,7 @@
         @end
           <div class="thumbnail">
             @if post['thumbnail'] != '' and post['link'] != None:
-              <img alt="@{_('Thumbnail')}" src="@{config.storage.thumbnails.url}@{post['thumbnail']}"/>
+              <img alt="@{_('Thumbnail')}" src="@{thumbnail_url(post['thumbnail'])}"/>
             @elif post['link'] != None:
               <span class="placeholder" data-icon="link"></span>
             @else:

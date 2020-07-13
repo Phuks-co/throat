@@ -18,7 +18,7 @@ from flask import render_template, request
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_babel import _
 from ..config import config
-from .. import forms, misc, caching
+from .. import forms, misc, caching, storage
 from ..socketio import socketio
 from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm, ChangePasswordForm
@@ -1805,42 +1805,21 @@ def sub_upload(sub):
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
                                                            'error': _('Please select a file to upload.'), 'files': ufiles})
 
-    mtype = magic.from_buffer(ufile.read(1024), mime=True)
-
-    if mtype == 'image/jpeg':
-        extension = '.jpg'
-    elif mtype == 'image/png':
-        extension = '.png'
-    elif mtype == 'image/gif':
-        extension = '.gif'
-    else:
+    mtype = storage.mtype_from_file(ufile, allow_video_formats=False)
+    if mtype is None:
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
                                                            'error': _('Invalid file type. Only jpg, png and gif allowed.'), 'files': ufiles})
 
-    ufile.seek(0)
-    md5 = hashlib.md5()
-    while True:
-        data = ufile.read(65536)
-        if not data:
-            break
-        md5.update(data)
-
-    f_name = str(uuid.uuid5(misc.FILE_NAMESPACE, md5.hexdigest())) + extension
-    ufile.seek(0)
-    lm = False
-    if not os.path.isfile(os.path.join(config.storage.uploads.path, f_name)):
-        lm = True
-        ufile.save(os.path.join(config.storage.uploads.path, f_name))
-        # remove metadata
-        if mtype != 'image/gif':  # Apparently we cannot write to gif images
-            misc.clear_metadata(os.path.join(config.storage.uploads.path, f_name), mtype)
-    # sadly, we can only get file size accurately after saving it
-    fsize = os.stat(os.path.join(config.storage.uploads.path, f_name)).st_size
-    if fsize > remaining:
-        if lm:
-            os.remove(os.path.join(config.storage.uploads.path, f_name))
+    try:
+        hash = storage.calculate_file_md5(ufile, size_limit=remaining)
+    except storage.SizeLimitExceededError:
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
                                                            'error': _('Not enough available space to upload file.'), 'files': ufiles})
+
+    basename = str(uuid.uuid5(storage.FILE_NAMESPACE, hash))
+    f_name = storage.store_file(ufile, basename, mtype, remove_metadata=True)
+    fsize = storage.get_stored_file_size(f_name)
+
     # THUMBNAIL
     ufile.seek(0)
     im = Image.open(ufile).convert('RGB')
@@ -1861,10 +1840,8 @@ def sub_upload(sub):
 
     im.seek(0)
     md5 = hashlib.md5(im.tobytes())
-    filename = str(uuid.uuid5(misc.THUMB_NAMESPACE, md5.hexdigest())) + '.jpg'
-    im.seek(0)
-    if not os.path.isfile(os.path.join(config.storage.thumbnails.path, filename)):
-        im.save(os.path.join(config.storage.thumbnails.path, filename), "JPEG", optimize=True, quality=85)
+    basename = str(uuid.uuid5(misc.THUMB_NAMESPACE, md5.hexdigest()))
+    filename = storage.store_thumbnail(im, basename)
     im.close()
 
     SubUploads.create(sid=sub.sid, fileid=f_name, thumbnail=filename, size=fsize, name=fname)
@@ -1900,7 +1877,8 @@ def sub_upload_delete(sub, name):
         try:
             SubUploads.get(SubUploads.fileid == img.fileid)
         except SubUploads.DoesNotExist:
-            os.remove(os.path.join(config.storage.uploads.path, img.fileid))
+            # TODO thumbnail does not get deleted
+            storage.remove_file(img.fileid)
 
     return jsonify(status='ok')
 
