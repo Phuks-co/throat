@@ -11,6 +11,13 @@
     </form>
     <hr>
 @end
+@if current_user.is_admin() and user.status == 5 and user.name != current_user.name:
+    <form method="POST" data-reload="true" id="unbanuser" action="@{url_for('do.unban_user', username=user.name)}">
+        @{form.DummyForm().csrf_token()!!html}
+        <a href="javascript:{}" onclick="if(confirm('@{_('Are you sure you want to unban this user?')}')){document.getElementById('unbanuser').submit();}" class="sbm-post pure-button pure-button-primary">@{_('Un-ban user')}</a>
+    </form>
+    <hr>
+@end
 @if user.uid == current_user.uid:
     <a href="/settings" class="sbm-post pure-button @{(request.path == '/settings') and 'pure-button-primary' or ''}">@{_('Preferences')}</a>
     <a href="/settings/password" class="sbm-post pure-button @{(request.path == '/settings/password') and 'pure-button-primary' or ''}">@{_('Change password')}</a>

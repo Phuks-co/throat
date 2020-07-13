@@ -2017,14 +2017,18 @@ a.close-report {
   }
 }
 
-.mod button {
-  margin: 10px auto;
+.mod.report.close.buttons {
+  display: flex;
+  align-items: flex-start;
 }
 
-.mod.report.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.mod.report.close.buttons button {
+  margin: 10px 5px 10px 0;
+}
+
+.mod button.disabled {
+  background-color: gray;
+  pointer-events: none;
 }
 
 .mod.report.details {
@@ -2052,6 +2056,15 @@ a.close-report {
 
 .mod.report.preview {
   max-width: 600px;
+}
+
+.mod .user-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.mod .user-actions button {
+  margin: 10px 5px 10px 0;
 }
 
 .mod.report.preview .preview-text-container {

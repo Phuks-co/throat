@@ -1945,7 +1945,33 @@ def ban_user(username):
     user.status = 5
     user.save()
     misc.create_sitelog(misc.LOG_TYPE_USER_BAN, uid=current_user.uid, comment=user.name)
-    return redirect(url_for('user.view', user=username))
+    return redirect(request.referrer)
+
+
+@do.route('/do/admin/unban_user/<username>', methods=['POST'])
+@login_required
+def unban_user(username):
+    if not current_user.is_admin():
+        abort(403)
+
+    form = DummyForm()
+    if not form.validate():
+        abort(403)
+
+    try:
+        user = User.get(fn.Lower(User.name) == username.lower())
+    except User.DoesNotExist:
+        abort(404)
+
+    try:
+        user.status = 5
+    except:
+        return jsonify(status='error', error='user is not banned')
+
+    user.status = 0
+    user.save()
+    misc.create_sitelog(misc.LOG_TYPE_USER_UNBAN, uid=current_user.uid, comment=user.name)
+    return redirect(request.referrer)
 
 
 @do.route('/do/edit_top_bar', methods=['POST'])

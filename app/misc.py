@@ -1444,6 +1444,8 @@ LOG_TYPE_DISABLE_INVITE = 48
 LOG_TYPE_DISABLE_REGISTRATION = 49
 LOG_TYPE_ENABLE_REGISTRATION = 50
 
+LOG_TYPE_USER_UNBAN = 51
+
 
 def create_sitelog(action, uid, comment='', link=''):
     SiteLog.create(action=action, uid=uid, desc=comment, link=link).save()
