@@ -14,7 +14,7 @@ from wheezy.html.utils import escape_html
 from .config import Config, config
 from .forms import LoginForm, LogOutForm, CreateSubForm
 from .models import db_init_app, rconn
-from .auth import auth_provider
+from .auth import auth_provider, email_validation_is_required
 from .views import do, subs as sub, api3, jwt
 from .views.auth import bp as auth
 from .views.home import bp as home
@@ -88,7 +88,8 @@ def create_app(config=Config('config.yaml')):
                                'form': forms, 'hostname': socket.gethostname(), 'datetime': datetime,
                                'e': escape_html, 'markdown': misc.our_markdown, '_': _, 'get_locale': get_locale,
                                'BeautifulSoup': BeautifulSoup, 'thumbnail_url': storage.thumbnail_url,
-                               'file_url': storage.file_url})
+                               'file_url': storage.file_url,
+                               'email_validation_is_required': email_validation_is_required})
 
     if config.app.development:
         import logging

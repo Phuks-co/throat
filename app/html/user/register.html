@@ -37,8 +37,13 @@
                 </div>
 
                 <div class="pure-control-group">
-                    <label for="email">@{regform.email.label.text}</label>
-                    @{regform.email()!!html}
+                  @if email_validation_is_required():
+                    <label for="email">@{regform.email_required.label.text}</label>
+                    @{regform.email_required()!!html}
+                  @else:
+                    <label for="email">@{regform.email_optional.label.text}</label>
+                    @{regform.email_optional()!!html}
+                  @end
                 </div>
                 @if config.site.enable_security_question:
                 <div class="pure-control-group">

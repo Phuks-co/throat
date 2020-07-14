@@ -8,9 +8,9 @@ from flask_login import current_user
 from peewee_migrate import Router
 
 from app import create_app, mail
-from app.config import Config
+from app.config import Config, config
 from app.models import db, BaseModel, User
-from app.auth import auth_provider
+from app.auth import auth_provider, email_validation_is_required
 
 from test.utilities import csrf_token, pp
 
@@ -99,16 +99,22 @@ def logged_in_user(client, user_info):
     rv = client.get('/register')
     with mail.record_messages() as outbox:
         data = dict(csrf_token=csrf_token(rv.data),
+                    username=user_info['username'],
+                    password=user_info['password'],
                     confirm=user_info['password'],
                     invitecode='',
                     accept_tos=True,
                     captcha='xyzzy')
+        if email_validation_is_required():
+            data['email_required'] = user_info['email']
+        else:
+            data['email_optional'] = user_info['email']
         data.update(user_info)
         rv = client.post('/register',
                          data=data,
                          follow_redirects=True)
 
-        if current_app.config['THROAT_CONFIG'].auth.validate_emails:
+        if email_validation_is_required():
             message = outbox[-1]
             soup = BeautifulSoup(message.html, 'html.parser')
             token = soup.a['href'].split('/')[-1]

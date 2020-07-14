@@ -8,7 +8,7 @@ from flask import Blueprint, request, redirect, abort, url_for, session
 from flask_login import current_user, login_user
 from flask_babel import _
 from .. import misc, config
-from ..auth import auth_provider, registration_is_enabled
+from ..auth import auth_provider, registration_is_enabled, email_validation_is_required
 from ..auth import email_validation_is_required, send_login_link_email, user_from_login_token
 from ..forms import LoginForm, RegistrationForm
 from ..misc import engine
@@ -57,6 +57,10 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('home.index'))
     form = RegistrationForm()
+    if email_validation_is_required():
+        del form.email_optional
+    else:
+        del form.email_required
     form.cap_key, form.cap_b64 = misc.create_captcha()
 
     if not registration_is_enabled():
@@ -79,8 +83,13 @@ def register():
     except User.DoesNotExist:
         pass
 
-    if form.email.data:
-        if auth_provider.get_user_by_email(form.email.data) is not None:
+    if email_validation_is_required():
+        email = form.email_required.data
+    else:
+        email = form.email_optional.data
+
+    if email:
+        if auth_provider.get_user_by_email(email) is not None:
             return engine.get_template('user/register.html').render(
                 {'error': _("E-mail address is already in use."), 'regform': form})
 
@@ -109,7 +118,7 @@ def register():
         invcode.save()
 
     user = auth_provider.create_user(name=form.username.data, password=form.password.data,
-                                     email=form.email.data, verified_email=False)
+                                     email=email, verified_email=False)
     if misc.enableInviteCode():
         UserMetadata.create(uid=user.uid, key='invitecode', value=form.invitecode.data)
 

@@ -66,7 +66,11 @@ class OptionalIfFieldIsEmpty(Optional):
 class RegistrationForm(FlaskForm):
     """ Registration form. """
     username = StringField(_l('Username'), [Length(min=2, max=32), Regexp(r'[a-zA-Z0-9_-]+')])
-    email = EmailField(_l('Email Address (optional)'), validators=[OptionalIfFieldIsEmpty('email'), Email(_l("Invalid email address."))])
+    email_optional = EmailField(_l('Email Address (optional)'),
+                                validators=[OptionalIfFieldIsEmpty('email_optional'),
+                                            Email(_l("Invalid email address."))])
+    email_required = EmailField(_l('Email Address (required)'),
+                                validators=[Email(_l("Invalid email address."))])
     password = PasswordField(_l('Password'), [
         DataRequired(),
         EqualTo('confirm', message=_l('Passwords must match')),
