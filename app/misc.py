@@ -1414,9 +1414,9 @@ LOG_TYPE_DISABLE_INVITE = 48
 LOG_TYPE_DISABLE_REGISTRATION = 49
 LOG_TYPE_ENABLE_REGISTRATION = 50
 
-LOG_TYPE_CLOSE_REPORT = 55
-LOG_TYPE_REOPEN_REPORT = 56
-LOG_TYPE_CLOSE_RELATED_REPORT = 57
+LOG_TYPE_REPORT_CLOSE = 55
+LOG_TYPE_REPORT_REOPEN = 56
+LOG_TYPE_REPORT_CLOSE_RELATED = 57
 
 def create_sitelog(action, uid, comment='', link=''):
     SiteLog.create(action=action, uid=uid, desc=comment, link=link).save()
@@ -1434,7 +1434,7 @@ def create_reportlog(action, uid, id, type='', related=False, original_report=''
     elif type == 'comment' and related == False:
         CommentReportLog.create(action=action, uid=uid, id=id).save()
     elif type == 'post' and related == True:
-        CommentReportLog.create(action=action, uid=uid, id=id, desc=original_report).save()
+        PostReportLog.create(action=action, uid=uid, id=id, desc=original_report).save()
     elif type == 'comment' and related == True:
         CommentReportLog.create(action=action, uid=uid, id=id, desc=original_report).save()
 
