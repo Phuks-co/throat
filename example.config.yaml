@@ -96,6 +96,7 @@ app:
     - en
     - es
     - ru
+    - sk
 
   # Fallback language when there is no accept-language header sent by the browser
   fallback_language: 'en'
