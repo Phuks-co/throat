@@ -135,19 +135,19 @@
                     <div class="modal-content">
                         <span class="closepopmsg">&times;</span>
                         <form data-reset="true" id="msg-form" action="@{url_for('do.create_sendmsg')}" data-redir="@{url_for('messages.inbox_sort')}" class="pure-form pure-form-aligned ajaxform">
-                            @{msgform.csrf_token()}
+                            @{msgform.csrf_token()!!html}
                             <h3>@{_('Send message')}</h3>
                             <fieldset>
                                 <div id="lto" class="pure-control-group" style="display:none">
                                     <label for="to">@{_('User')}</label>
-                                    @{msgform.to(placeholder=msgform.to.label.text, required=True, value=user.name)}
+                                    @{msgform.to(placeholder=msgform.to.label.text, required=True, value=user.name)!!html}
                                 </div>
                                 <div class="pure-control-group">
                                     <label for="subject">@{_('Subject')}</label>
-                                    @{msgform.subject(placeholder=msgform.subject.label.text, required=True)}
+                                    @{msgform.subject(placeholder=msgform.subject.label.text, required=True)!!html}
                                 </div>
                                 <div class="pure-control-group markdown-editor">
-                                    @{msgform.content(placeholder=_('Styling with Markdown format is supported.'), rows="10", id="cntnt")}
+                                    @{msgform.content(placeholder=_('Styling with Markdown format is supported.'), rows="10", id="cntnt")!!html}
                                 </div>
                                 <div class="pure-controls">
                                     <button type="submit" id="msg-btnsubmit" class="pure-button pure-button-primary" data-prog="@{_('Sending...')}">@{_('Send Message')}</button>
