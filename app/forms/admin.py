@@ -52,3 +52,9 @@ class WikiForm(FlaskForm):
     title = StringField(_l("Page title"), validators=[DataRequired(), Length(min=1, max=255)])
 
     content = TextAreaField(_l("Content"), validators=[DataRequired(), Length(min=1, max=16384)])
+
+
+class CreateInviteCodeForm(FlaskForm):
+    code = StringField(_l("Code (empty to generate random)"))
+    uses = IntegerField(_l("Uses"), validators=[DataRequired()])
+    expires = StringField(_l("Expiration date"))

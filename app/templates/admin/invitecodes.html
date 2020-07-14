@@ -39,6 +39,15 @@
         </div>
       </div>
     </div>
+    <form method="POST" class="pure-form">
+      {{ form.csrf_token() }}
+      <p>
+        {{ form.code(placeholder=form.code.label.text, style="width: 350px") }}
+        {{ form.uses(placeholder=form.uses.label.text, style="width: 150px") }}
+        <input name="expires" type="text" class="date-picker-future" placeholder="Expiration">
+        <button type="submit" class="pure-button pure-button-primary">Submit</button>
+      </p>
+    </form>
     <hr>
     <div class="admin section invitecodes_table">
       <h2>Invite Codes</h2>

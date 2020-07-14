@@ -2,15 +2,17 @@
 import time
 import re
 import datetime
+import random
 from peewee import fn, JOIN
 from pyotp import TOTP
-from flask import Blueprint, abort, redirect, url_for, session, render_template
+from flask import Blueprint, abort, redirect, url_for, session, render_template, jsonify
 from flask_login import login_required, current_user
 from flask_babel import _
 from .. import misc
 from ..forms import TOTPForm, LogOutForm, UseInviteCodeForm, AssignUserBadgeForm, EditModForm, BanDomainForm, WikiForm
+from ..forms import CreateInviteCodeForm
 from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, SubPostCommentVote, SubPostVote, SiteMetadata
-from ..models import UserUploads, SubPostReport, SubPostCommentReport, InviteCode, Wiki
+from ..models import UserUploads, InviteCode, Wiki
 from ..misc import engine, getReports
 from ..badges import badges
 
@@ -130,10 +132,10 @@ def userbadges():
                            ct=len(ct), admin_route='admin.userbadges')
 
 
-@bp.route("/invitecodes", defaults={'page': 1})
-@bp.route("/invitecodes/<int:page>")
+@bp.route("/invitecodes", defaults={'page': 1}, methods=['GET', 'POST'])
+@bp.route("/invitecodes/<int:page>", methods=['GET'])
 @login_required
-def invitecodes(page):
+def invitecodes(page, error=None):
     """
     View and configure Invite Codes
     """
@@ -173,13 +175,32 @@ def invitecodes(page):
         code['style'] = map_style(code)
         code['used_by'] = map_used_by(code)
 
-    invite = UseInviteCodeForm()
+    invite_form = UseInviteCodeForm()
+
+    form = CreateInviteCodeForm()
+
+    if form.validate_on_submit():
+        invite = InviteCode()
+        invite.user = current_user.uid
+        if form.code.data:
+            invite.code = form.code.data
+        else:
+            invite.code = ''.join(random.choice('abcdefghijklmnopqrstuvwxyz0123456789') for _ in range(32))
+
+        if form.expires.data:
+            invite.expires = form.expires.data
+
+        invite.max_uses = form.uses.data
+        invite.save()
+
     return render_template(
         'admin/invitecodes.html',
-        useinvitecodeform=invite,
+        useinvitecodeform=invite_form,
         invite_settings=invite_settings,
         invite_codes=invite_codes,
         page=page,
+        error=misc.get_errors(form, True),
+        form=form
     )
 
 

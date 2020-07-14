@@ -11,7 +11,7 @@ from .sub import BanUserSubForm, EditPostFlair, EditSubCSSForm, EditMod2Form
 from .sub import CreateSubFlair, DeleteSubFlair, VoteForm, DeleteCommentForm, CreateSubRule, DeleteSubRule
 from .admin import EditModForm
 from .admin import BanDomainForm, UseInviteCodeForm, AssignUserBadgeForm
-from .admin import SecurityQuestionForm, TOTPForm, WikiForm
+from .admin import SecurityQuestionForm, TOTPForm, WikiForm, CreateInviteCodeForm
 
 
 class DummyForm(FlaskForm):
