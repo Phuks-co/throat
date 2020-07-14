@@ -6,7 +6,7 @@ from flask import Blueprint, abort, redirect, url_for, session, render_template,
 from flask_login import login_required, current_user
 from flask_babel import _
 from .. import misc
-from ..models import UserMetadata, User, Sub, SubPost, SubPostComment
+from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, PostReportLog, CommentReportLog
 from ..models import User, Sub, SubMod, SubPost, SubPostComment, UserMetadata, SubPostReport, SubPostCommentReport
 from ..misc import engine, getModSubs, getReports
 from ..forms import BanUserSubForm
@@ -156,4 +156,15 @@ def report_details(sub, type, id):
     reported = User.select().where(User.name == report['reported']).get()
     is_sub_banned = misc.is_sub_banned(sub, uid=reported.uid)
 
-    return engine.get_template('mod/reportdetails.html').render({'sub': sub, 'report': report, 'reported_user': reported_user, 'related_reports': related_reports, 'related_reports_json': json.dumps(related_reports['query'], default=str), 'banuserform': BanUserSubForm(), 'is_sub_banned': is_sub_banned, 'post': post, 'comment': comment, 'subInfo': subInfo, 'subMods': subMods})
+    if report['type'] == "post":
+        try:
+            logs = PostReportLog.select().where(PostReportLog.rid == report['id']).order_by(PostReportLog.lid.desc())
+        except PostReportLog.DoesNotExist:
+            logs = ''
+    else:
+        try:
+            logs = CommentReportLog.select().where(CommentReportLog.rid == report['id']).order_by(CommentReportLog.lid.desc())
+        except CommentReportLog.DoesNotExist:
+            logs = ''
+
+    return engine.get_template('mod/reportdetails.html').render({'sub': sub, 'report': report, 'reported_user': reported_user, 'related_reports': related_reports, 'related_reports_json': json.dumps(related_reports['query'], default=str), 'banuserform': BanUserSubForm(), 'is_sub_banned': is_sub_banned, 'post': post, 'comment': comment, 'subInfo': subInfo, 'subMods': subMods, 'logs': logs})
