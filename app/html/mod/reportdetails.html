@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(sub, report, reported_user, related_reports, related_reports_json, banuserform, is_sub_banned, post, comment, subInfo, subMods)
+@require(sub, report, reported_user, related_reports, related_reports_json, banuserform, is_sub_banned, post, comment, subInfo, subMods, logs)
 @def title():
 Mod |\
 @end
@@ -37,11 +37,11 @@ Mod |\
           <button class="pure-button pure-button-primary btn-editpost disabled">@{_('All related reports are closed')}</button>
         @else:
           @if report['type'] == 'comment':
-            <button class="pure-button pure-button-primary btn-editpost close-related-reports" data-type="@{report['type']}" data-reports="@{related_reports_json}" data-action="close">
+            <button class="pure-button pure-button-primary btn-editpost close-related-reports" data-type="@{report['type']}" data-reports="@{related_reports_json}" data-original="@{report['id']!!s}" data-action="close">
               @{_('Close All Reports for this Comment')}
             </button>
           @else:
-            <button class="pure-button pure-button-primary btn-editpost close-related-reports" data-type="@{report['type']}" data-reports="@{related_reports_json}" data-action="close">
+            <button class="pure-button pure-button-primary btn-editpost close-related-reports" data-type="@{report['type']}" data-reports="@{related_reports_json}" data-original="@{report['id']!!s}" data-action="close">
               @{_('Close All Reports for this Post')}
             </button>
           @end
@@ -207,6 +207,51 @@ Mod |\
               </span>
             </div>
           </div>
+          <hr>
+          <h3>@{_('Report Log:')}</h3>
+          @if len(logs) == 0:
+            <p class="helper-text">@{_('No logs have been made yet on this report')}</p>
+          @else:
+            <table class="pure-table">
+                <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>User</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                @for log in logs:
+                <tr>
+                    <td>
+                        <time-ago datetime="@{log.time.isoformat()}Z">@{log.time.isoformat()}</time-ago>
+                    </td>
+                    <td>
+                        @if log.uid:
+                            @if log.uid.status != 10:
+                                <a href="/u/@{log.uid.name}">@{log.uid.name}</a>\
+                            @else:
+                                @{_('[Deleted]')}
+                            @end
+                        @end
+                    </td>
+                    <td>
+                        @if log.action == 55:
+                          @{_('Report closed')}
+                        @elif log.action == 56:
+                          @{_('Report reopened')}
+                        @elif log.action == 57:
+                          @{_('Closed all reports related to: ')}<a href="@{url_for('mod.report_details', sub=report['sub'], type=report['type'], id=log.desc)}">
+                            @{report['type']} @{_('report')} @{log.desc}</a>
+                        @else:
+                            <i>[Type @{log.action}]</i>
+                        @end
+                    </td>
+                </tr>
+                @end
+                </tbody>
+            </table>
+          @end
 
           <hr>
           <div class="mod report related reports">

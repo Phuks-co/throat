@@ -511,6 +511,23 @@ class SubPostReport(BaseModel):
         table_name = 'sub_post_report'
 
 
+class PostReportLog(BaseModel):
+    rid = ForeignKeyField(db_column='id', model=SubPostReport, field='id')
+    action = IntegerField(null=True)
+    desc = CharField(null=True)
+    lid = PrimaryKeyField()
+    link = CharField(null=True)
+    time = DateTimeField(default=datetime.datetime.utcnow)
+    uid = ForeignKeyField(db_column='uid', null=True, model=User, field='uid')
+    target = ForeignKeyField(db_column='target_uid', null=True, model=User, field='uid')
+
+    def __repr__(self):
+        return f'<CommentReportLog action={self.action}>'
+
+    class Meta:
+        table_name = 'comment_report_log'
+
+
 class SubPostCommentReport(BaseModel):
     cid = ForeignKeyField(db_column='cid', model=SubPostComment, field='cid')
     uid = ForeignKeyField(db_column='uid', model=User, field='uid')
@@ -524,6 +541,23 @@ class SubPostCommentReport(BaseModel):
 
     class Meta:
         table_name = 'sub_post_comment_report'
+
+
+class CommentReportLog(BaseModel):
+    rid = ForeignKeyField(db_column='id', model=SubPostCommentReport, field='id')
+    action = IntegerField(null=True)
+    desc = CharField(null=True)
+    lid = PrimaryKeyField()
+    link = CharField(null=True)
+    time = DateTimeField(default=datetime.datetime.utcnow)
+    uid = ForeignKeyField(db_column='uid', null=True, model=User, field='uid')
+    target = ForeignKeyField(db_column='target_uid', null=True, model=User, field='uid')
+
+    def __repr__(self):
+        return f'<CommentReportLog action={self.action}>'
+
+    class Meta:
+        table_name = 'comment_report_log'
 
 
 class SubPostCommentHistory(BaseModel):

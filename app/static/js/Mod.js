@@ -50,10 +50,11 @@ u.addEventForChild(document, 'click', '.banuserbutton', function (e, qelem) {
 u.addEventForChild(document, 'click', '.close-related-reports', function (e, qelem) {
   const errorbox = document.querySelector('.error');
   let reports = qelem.getAttribute('data-reports');
+  let original_report = qelem.getAttribute('data-original')
   let type = qelem.getAttribute('data-type');
 
   if (type == "comment") {
-    let uri = '/do/report/close_comment_related_reports/' + reports;
+    let uri = '/do/report/close_comment_related_reports/' + reports + '/' + original_report;
     u.post(uri, {},
       function (data) {
         if (data.status != "ok") {
@@ -68,7 +69,7 @@ u.addEventForChild(document, 'click', '.close-related-reports', function (e, qel
       });
   }
   else {
-    let uri = '/do/report/close_post_related_reports/' + reports;
+    let uri = '/do/report/close_post_related_reports/' + reports + '/' + original_report;
     u.post(uri, {},
       function (data) {
         if (data.status != "ok") {

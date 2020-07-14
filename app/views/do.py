@@ -2293,12 +2293,14 @@ def close_post_report(id, action):
     #check if it changed and return status
     updated_report = SubPostReport.select().where(SubPostReport.id == id).get()
     if (action == 'close') and (updated_report.open == False):
+        misc.create_reportlog(misc.LOG_TYPE_REPORT_CLOSE, current_user.uid, id, type='post')
         return jsonify(status='ok')
 
     elif (action == 'close') and (updated_report.open == True):
         return jsonify(status='error', error=_('Failed to close report'))
 
     elif (action == 'reopen') and (updated_report.open == True):
+        misc.create_reportlog(misc.LOG_TYPE_REPORT_REOPEN, current_user.uid, id, type='post')
         return jsonify(status='ok')
 
     elif (action == 'reopen') and (updated_report.open == False):
@@ -2354,12 +2356,14 @@ def close_comment_report(id, action):
     #check if it changed and return status
     updated_report = SubPostCommentReport.select().where(SubPostCommentReport.id == id).get()
     if (action == 'close') and (updated_report.open == False):
+        misc.create_reportlog(misc.LOG_TYPE_REPORT_CLOSE, current_user.uid, id, type='comment')
         return jsonify(status='ok')
 
     elif (action == 'close') and (updated_report.open == True):
         return jsonify(status='error', error=_('Failed to close report'))
 
     elif (action == 'reopen') and (updated_report.open == True):
+        misc.create_reportlog(misc.LOG_TYPE_REPORT_REOPEN, current_user.uid, id, type='comment')
         return jsonify(status='ok')
 
     elif (action == 'reopen') and (updated_report.open == False):
@@ -2369,10 +2373,11 @@ def close_comment_report(id, action):
         return jsonify(status='error', error=_('Failed to update report'))
 
 
-@do.route('/do/report/close_post_related_reports/<related_reports>', methods=['POST'])
+@do.route('/do/report/close_post_related_reports/<related_reports>/<original_report>', methods=['POST'])
 @login_required
-def close_post_related_reports(related_reports):
+def close_post_related_reports(related_reports, original_report):
     related_reports = json.loads(related_reports)
+    original_report = original_report
     error = ''
     # ensure user is mod or admin and report, post, and sub exist
     for related_report in related_reports:
@@ -2399,6 +2404,7 @@ def close_post_related_reports(related_reports):
         #check if report is closed and return status
         updated_report = SubPostReport.select().where(SubPostReport.id == related_report['id']).get()
         if updated_report.open == False:
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_CLOSE_RELATED, current_user.uid, updated_report.id, type='post', related=True, original_report=original_report)
             ok = jsonify(status='ok')
 
         elif updated_report.open == True:
@@ -2413,10 +2419,11 @@ def close_post_related_reports(related_reports):
         return ok
 
 
-@do.route('/do/report/close_comment_related_reports/<related_reports>', methods=['POST'])
+@do.route('/do/report/close_comment_related_reports/<related_reports>/<original_report>', methods=['POST'])
 @login_required
-def close_comment_related_reports(related_reports):
+def close_comment_related_reports(related_reports, original_report):
     related_reports = json.loads(related_reports)
+    original_report = original_report
     error = ''
     # ensure user is mod or admin and report, post, and sub exist
     for related_report in related_reports:
@@ -2449,6 +2456,7 @@ def close_comment_related_reports(related_reports):
         updated_report = SubPostCommentReport.select().where(SubPostCommentReport.id == related_report['id']).get()
         if updated_report.open == False:
             ok = jsonify(status='ok')
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_CLOSE_RELATED, current_user.uid, updated_report.id, type='comment', related=True, original_report=original_report)
 
         elif updated_report.open == True:
             error = jsonify(status='error', error=_('Failed to close report'))

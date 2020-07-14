@@ -34,7 +34,8 @@ from .socketio import socketio
 from .badges import badges
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata, SubRule
-from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db, SubPostReport, SubPostCommentReport
+from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db
+from .models import SubPostReport, SubPostCommentReport, PostReportLog, CommentReportLog
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair, InviteCode
 from .models import SubMod, SubBan
 from .storage import store_thumbnail, file_url, thumbnail_url
@@ -144,7 +145,7 @@ class SiteUser(object):
         self.canupload = True if ('canupload' in self.prefs) or self.admin else False
         if config.site.allow_uploads and config.site.upload_min_level == 0:
             self.canupload = True
-        elif config.site.allow_uploads and (config.site.upload_min_level <= get_user_level(self, self.score)[0]):
+        elif config.site.allow_uploads and (config.site.upload_min_level <= get_user_level(self.uid, self.score)[0]):
             self.canupload = True
 
     def __repr__(self):
@@ -1382,6 +1383,7 @@ def metadata_to_dict(metadata):
 # Log types
 LOG_TYPE_USER = 10
 LOG_TYPE_USER_BAN = 19
+LOG_TYPE_USER_UNBAN = 54
 
 LOG_TYPE_SUB_CREATE = 20
 LOG_TYPE_SUB_SETTINGS = 21
@@ -1412,8 +1414,9 @@ LOG_TYPE_DISABLE_INVITE = 48
 LOG_TYPE_DISABLE_REGISTRATION = 49
 LOG_TYPE_ENABLE_REGISTRATION = 50
 
-LOG_TYPE_USER_UNBAN = 51
-
+LOG_TYPE_REPORT_CLOSE = 55
+LOG_TYPE_REPORT_REOPEN = 56
+LOG_TYPE_REPORT_CLOSE_RELATED = 57
 
 def create_sitelog(action, uid, comment='', link=''):
     SiteLog.create(action=action, uid=uid, desc=comment, link=link).save()
@@ -1423,6 +1426,17 @@ def create_sitelog(action, uid, comment='', link=''):
 def create_sublog(action, uid, sid, comment='', link='', admin=False, target=None):
     SubLog.create(action=action, uid=uid, sid=sid, desc=comment, link=link, admin=admin, target=target).save()
 
+
+# `id` is the report id
+def create_reportlog(action, uid, id, type='', related=False, original_report=''):
+    if type == 'post' and related == False:
+        PostReportLog.create(action=action, uid=uid, id=id).save()
+    elif type == 'comment' and related == False:
+        CommentReportLog.create(action=action, uid=uid, id=id).save()
+    elif type == 'post' and related == True:
+        PostReportLog.create(action=action, uid=uid, id=id, desc=original_report).save()
+    elif type == 'comment' and related == True:
+        CommentReportLog.create(action=action, uid=uid, id=id, desc=original_report).save()
 
 def is_domain_banned(link):
     bans = SiteMetadata.select().where(SiteMetadata.key == 'banned_domain')
