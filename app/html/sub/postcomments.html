@@ -18,7 +18,7 @@
               </a>
               @if comment['status'] != 1:
                 @if comment['userstatus'] == 10:
-                  <a class="poster deleted">[Deleted]</a>
+                  <a class="poster deleted">@{_('[Deleted]')}</a>
                 @else:
                   <a href="/u/@{comment['user']}" class="poster">
                     @{comment['user']}
@@ -28,7 +28,7 @@
                   </a>
                 @end
               @else:
-                <a class="poster deleted">[Deleted]</a>
+                <a class="poster deleted">@{_('[Deleted]')}</a>
               @end
               <b>@{_('<span class="cscore">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)', score=comment['score'], upvotes=comment['upvotes'], downvotes=comment['downvotes'])!!html}
               <span class="time ">

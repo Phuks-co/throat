@@ -31,45 +31,43 @@
                 </td>
                 <td>
                     @if log.action == 19:
-                        Banned <a href="/u/@{log.desc}">@{log.desc}</a>
+                        @{_('Banned <a href="/u/%(user)s">%(user)s</a>', user=log.desc)!!html}
                     @elif log.action == 20:
-                        Created a sub
+                        @{_('Created a sub')}
                     @elif log.action == 30:
-                        Sub was transferred to @{log.desc}
+                        @{_('Sub was transferred to <a href="/u/%(user)s">%(user)s</a>', user=log.desc)!!html}
                     @elif log.action == 24:
-                        Sent mod invite to <a href="/u/@{log.target.name}">@{log.target.name}</a>
+                        @{_('Sent mod invite to <a href="/u/%(user)s">%(user)s</a>', user=log.target.name)!!html}
                     @elif log.action == 26:
-                        Removed <a href="/u/@{log.target.name}">@{log.target.name}</a> from the mod team
+                        @{_('Removed <a href="/u/%(user)s">%(user)s</a> from the mod team', user=log.target.name) !!html}
                     @elif log.action == 27:
-                        Revoked mod invite for <a href="/u/@{log.target.name}">@{log.target.name}</a>
+                        @{_('Revoked mod invite for <a href="/u/%(user)s">%(user)s</a> from the mod team', user=log.target.name) !!html}
                     @elif log.action == 52:
-                        Deleted a post with reason <code>@{log.desc}</code>
+                        @{_('Deleted a post with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 53:
-                        Deleted a comment with reason <code>@{log.desc}</code>
-                    @elif log.action == 40:
-                        Created a sub
+                        @{_('Deleted a comment with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 41:
-                        Created an announcement
+                        @{_('Created an announcement')}
                     @elif log.action == 42:
-                        Banned domain <code>@{log.desc}</code>
+                        @{_('Banned domain <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 43:
-                        Unbanned domain <code>@{log.desc}</code>
+                        @{_('Unbanned domain <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 44:
-                        Removed an announcement
+                        @{_('Removed an announcement')}
                     @elif log.action == 45:
-                        Disabled post creation
+                        @{_('Disabled post creation')}
                     @elif log.action == 46:
-                        Re-enabled post creation
+                        @{_('Re-enabled post creation')}
                     @elif log.action == 47:
-                        Disabled registration without invite code
+                        @{_('Disabled registration without invite code')}
                     @elif log.action == 48:
-                        Re-enabled registration
+                        @{_('Re-enabled registration')}
                     @elif log.action == 49:
-                        Disabled new user registration
+                        @{_('Disabled new user registration')}
                     @elif log.action == 50:
-                        Re-enabled new user registration
+                        @{_('Re-enabled new user registration')}
                     @elif log.action == 54:
-                        Unbanned user <a href="/u/@{log.desc}">@{log.desc}</a>
+                        @{_('Unbanned <a href="/u/%(user)s">%(user)s</a>', user=log.desc)!!html}
                     @else:
                         <i>[Type @{log.action}]</i> @{log.desc}
                     @end

@@ -6,8 +6,8 @@ function TextConfirm(the_element, yesfunc, question){
   var bk = elem.innerHTML;
   var yes = document.createElement( "a" );
   var no =  document.createElement( "a" );
-  yes.innerHTML = "yes";
-  no.innerHTML = "no";
+  yes.innerHTML = _("yes");
+  no.innerHTML = _("no");
   var wrap = document.createElement('span');
   wrap.classList.add("red-confirm");
   if(!question){

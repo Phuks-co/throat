@@ -1402,7 +1402,6 @@ LOG_TYPE_SUB_DELETE_COMMENT = 53
 
 LOG_TYPE_SUB_TRANSFER = 30
 
-LOG_TYPE_SUB_CREATION = 40
 LOG_TYPE_ANNOUNCEMENT = 41
 LOG_TYPE_DOMAIN_BAN = 42
 LOG_TYPE_DOMAIN_UNBAN = 43
@@ -1587,7 +1586,7 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
     commdata = {}
     for comm in expcomms:
         if comm['userstatus'] == 10 or comm['status']:
-            comm['user'] = '[Deleted]'
+            comm['user'] = _('[Deleted]')
             comm['uid'] = None
 
         if comm['status']:

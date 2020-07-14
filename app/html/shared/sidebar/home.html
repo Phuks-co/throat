@@ -1,7 +1,7 @@
 @require(subOfTheDay, changeLog)
 <form class="pure-g search" action="@{ url_for('do.search') }" method="post">
   <div class="icon" data-icon="search"> </div>
-  <input aria-label="Search" name="term" placeholder="Title search..." type="search" class="pure-u-1">
+  <input aria-label="Search" name="term" placeholder="@{_('Title search...')}" type="search" class="pure-u-1">
 </form>
 
 @if current_user.is_authenticated:
@@ -22,7 +22,7 @@
       @for post in func.getTodaysTopPosts():
         <li><a class="title" href="@{url_for('sub.view_post', sub=post['sub'], pid=post['pid'])}">@{post['title']}</a>
           <div class="sidelocale">
-            <time-ago datetime="@{post['posted'].isoformat()}Z"></time-ago> in <a href="@{url_for('sub.view_sub', sub=post['sub'])}">/@{config.site.sub_prefix}/@{post['sub']}</a>
+            @{_("%(timeago)s in %(sub)s", timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', sub='<a href="' + url_for('sub.view_sub', sub=post['sub']) + '">/' + config.site.sub_prefix + '/' + post['sub'] + '</a>') !!html}
           </div></li>
       @end
     </ul>
@@ -45,7 +45,7 @@
     <ul>
       <li><a class="title" href="@{url_for('sub.view_post', sub=changeLog['sub'], pid=changeLog['pid'])}">@{changeLog['title']}</a><br>
       <span class="sidelocale">
-        <time-ago datetime="@{changeLog['posted'].isoformat()}Z"></time-ago> in <a href="@{url_for('sub.view_sub', sub=changeLog['sub'])}">/@{config.site.sub_prefix}/@{changeLog['sub']}</a></li>
+        @{_("%(timeago)s in %(sub)s", timeago='<time-ago datetime="' + changeLog['posted'].isoformat() + 'Z"></time-ago>', sub='<a href="' + url_for('sub.view_sub', sub=changeLog['sub']) + '">/' + config.site.sub_prefix + '/' + changeLog['sub'] + '</a>') !!html}
       </span>
     </ul>
   </div>

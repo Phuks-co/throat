@@ -1519,9 +1519,9 @@ def recovery():
         UserMetadata.create(uid=user.uid, key='recovery-key-time', value=time.time())
 
         send_email(
-            subject='Password recovery',
+            subject=_('Password recovery'),
             to=user.email,
-            text_content = _("""%(lema)s
+            text_content=_("""%(lema)s
 
             Somebody (most likely you) has requested a password reset for your account.
 

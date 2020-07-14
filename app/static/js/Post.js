@@ -575,7 +575,7 @@ let reportHtml = (data, sub_rules_html) => '<h2>' + _('Report post') + '</h2>' +
     '<div class="pure-control-group">' +
     '<label for="report_reason">' + _('Select a reason to report this post:') + '</label>' +
     '<select name="report_reason" id="report_reason">' +
-      '<option value="" disabled selected>Select one..</option>' +
+      '<option value="" disabled selected>' + _('Select one...') + '</option>' +
       '<option value="spam">' + _('SPAM') + '</option>' +
       '<option value="tos">' + _('TOS violation') + '</option>' +
       '<option value="rule">' + _('Sub Rule violation') + '</option>' +
@@ -585,9 +585,9 @@ let reportHtml = (data, sub_rules_html) => '<h2>' + _('Report post') + '</h2>' +
   '<div class="pure-control-group" style="display:none" id="report_rule_set">'+
   '<label for="report_reason">' + _('Which Sub rule did this post violate?') + '</label>' +
     '<select name="report_rule" id="report_rule">' +
-      '<option value="" disabled selected>Select one..</option>' +
+      '<option value="" disabled selected>' + _('Select one...') + '</option>' +
       sub_rules_html +
-      '<option value="other sub rule">Other Sub Rule</option>' +
+      '<option value="other sub rule">' + _('Other sub rule') + '</option>' +
     '</select>' +
   '</div>' +
   '<div class="pure-control-group" style="display:none" id="report_text_set">'+

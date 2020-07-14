@@ -24,7 +24,7 @@
         <option value="ban_temp">@{_('Until...')}</option>
       </select>
       @end
-      <input id="ban_expires" name="expires" type="text" class="date-picker-future" @{(current_user.uid in submods['janitors']) and 'style="display: inline-block;"' or 'style="display: none;"'} placeholder="Pick date">
+      <input id="ban_expires" name="expires" type="text" class="date-picker-future" @{(current_user.uid in submods['janitors']) and 'style="display: inline-block;"' or 'style="display: none;"'} placeholder="@{_('Pick date')}">
       <button type="submit" class="pure-button pure-button-primary" id="banuser-btnsubmit">@{_('Ban')}</button>
     </p>
     <div class="alert div-error">
