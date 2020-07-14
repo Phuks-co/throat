@@ -2076,7 +2076,7 @@ a.close-report {
   justify-content: flex-start;
 }
 
-.mod .user-actions button {
+.mod .user-actions .pure-button {
   margin: 10px 5px 10px 0;
 }
 

@@ -34,7 +34,7 @@ Mod |\
 
         <!-- CLOSE ALL REPORTS -->
         @if related_reports['open_report_count'] == '0':
-          <button class="pure-button pure-button-primary btn-editpost disabled">All related reports are closed</button>
+          <button class="pure-button pure-button-primary btn-editpost disabled">@{_('All related reports are closed')}</button>
         @else:
           @if report['type'] == 'comment':
             <button class="pure-button pure-button-primary btn-editpost close-related-reports" data-type="@{report['type']}" data-reports="@{related_reports_json}" data-action="close">
@@ -87,14 +87,17 @@ Mod |\
           </div>
           <div class="user-actions">
             @if is_sub_banned:
-              <button class="sbm-post pure-button pure-button-primary disabled">@{report['reported']} @{_('has been banned from')} @{config.site.sub_prefix}/@{report['sub'] }</button>
+              <button class="sbm-post pure-button pure-button-primary disabled">
+                @{_('%(reported)s has been banned from %(prefix)s/%(sub)s', reported=report['reported'], prefix=config.site.sub_prefix, sub=report['sub'])}
+              </button>
             @else:
-                <button class="sbm-post pure-button pure-button-primary banuserbutton">@{_('Ban')} @{report['reported']} @{_('from')} @{config.site.sub_prefix}/@{report['sub']}</button>
+                <button class="sbm-post pure-button pure-button-primary banuserbutton">
+                  @{_('Ban %(reported)s from %(prefix)s/%(sub)s', reported=report['reported'], prefix=config.site.sub_prefix, sub=report['sub'])}</button>
             @end
             @if current_user.is_admin() and reported_user.status != 5:
                 <form method="POST" data-reload="true" id="banuser" action="@{url_for('do.ban_user', username=report['reported'])}">
                     @{form.DummyForm().csrf_token()!!html}
-                    <button href="javascript:{}" onclick="if(confirm('@{_('Are you sure you want to ban this user?')}')){document.getElementById('banuser').submit();}" class="sbm-post pure-button button-secondary">@{_('Ban')} @{report['reported']} @{_('from')} @{config.site.name}</button>
+                    <a href="javascript:{}" class="sbm-post pure-button button-secondary" onclick="if(confirm('@{_('Are you sure you want to ban this user?')}')){document.getElementById('banuser').submit();}" class="sbm-post pure-button pure-button-primary">@{_('Ban')} @{report['reported']} @{_('from')} @{config.site.name}</a>
                 </form>
             @end
             @if reported_user.status == 5:

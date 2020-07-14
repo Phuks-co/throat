@@ -1942,6 +1942,9 @@ def ban_user(username):
     except User.DoesNotExist:
         abort(404)
 
+    if user.uid == current_user.uid:
+        abort(403)
+
     user.status = 5
     user.save()
     misc.create_sitelog(misc.LOG_TYPE_USER_BAN, uid=current_user.uid, comment=user.name)
@@ -2416,7 +2419,7 @@ def close_post_related_reports(related_reports):
             error = jsonify(status='error', error=_('Sub does not exist'))
 
         if not current_user.is_mod(sub.sid) and not current_user.is_admin():
-            error = jsonify(status='error', error=[_('Not authorized')])
+            error = jsonify(status='error', error=_('Not authorized'))
 
         report = SubPostReport.update(open=False).where(SubPostReport.id == related_report['id']).execute()
 
@@ -2465,7 +2468,7 @@ def close_comment_related_reports(related_reports):
             error = jsonify(status='error', error=_('Sub does not exist'))
 
         if not current_user.is_mod(sub.sid) and not current_user.is_admin():
-            error = jsonify(status='error', error=[_('Not authorized')])
+            error = jsonify(status='error', error=_('Not authorized'))
 
         report = SubPostCommentReport.update(open=False).where(SubPostCommentReport.id == related_report['id']).execute()
 
