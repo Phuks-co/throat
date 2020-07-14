@@ -523,18 +523,22 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
             } else {
                 qelem.innerHTML = _('Saved.');
                 const cmtcount = document.getElementById('cmnts');
+                let count = cmtcount.getAttribute('data-cnt');
+                count = count ? count : 0;
+                cmtcount.setAttribute('data-cnt', parseInt(count) + 1);
                 window.sending = false;
                 if (cmtcount.getElementsByTagName('a').length === 0) {
                     const a = document.createElement('a');
                     a.href = '/p/' + pid;
-                    a.innerText = _("1 comments");
+                    a.innerText = _("1 comment");
                     a.id = 'cmnts';
                     cmtcount.innerText = '';
                     cmtcount.appendChild(a);
 
                 } else {
                     const va = cmtcount.getElementsByTagName('a')[0];
-                    va.innerText = _("%1 comments", parseInt(va.innerText.split(' ')[0]) + 1);
+
+                    va.innerText = _("%1 comments", cmtcount.getAttribute('data-cnt'));
                     if (va.pathname != window.location.pathname && cid == '0') {
                         document.location = data.addr;
                     }
