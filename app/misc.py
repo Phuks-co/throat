@@ -6,15 +6,11 @@ import base64
 import uuid
 import random
 import time
-import magic
 import os
 import hashlib
 import re
-import gi
+import gevent
 
-from mutagen.mp4 import MP4
-gi.require_version('GExiv2', '0.10')  # noqa
-from gi.repository import GExiv2
 import bcrypt
 import tinycss2
 from captcha.image import ImageCaptcha
@@ -25,6 +21,9 @@ from bs4 import BeautifulSoup
 from functools import update_wrapper
 import misaka as m
 import sendgrid
+from flask import current_app
+from flask_mail import Mail
+from flask_mail import Message as EmailMessage
 
 from .config import config
 from flask import url_for, request, g, jsonify, session
@@ -38,6 +37,7 @@ from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, Us
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db, SubPostReport, SubPostCommentReport
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair, InviteCode
 from .models import SubMod, SubBan
+from .storage import store_thumbnail, file_url, thumbnail_url
 from peewee import JOIN, fn, SQL, NodeList, Value
 import requests
 import logging
@@ -74,6 +74,8 @@ _engine = Engine(
     extensions=[EscapeExtension(), CoreExtension()]
 )
 engine = _engine
+
+mail = Mail()
 
 
 def engine_init_app(app):
@@ -128,6 +130,12 @@ class SiteUser(object):
         self.is_anonymous = True if self.user['status'] != 0 else False
         self.can_admin = 'admin' in self.prefs
 
+        try:
+            SubMod.select().where(SubMod.user == self.uid).get()
+            self.is_a_mod = True
+        except:
+            self.is_a_mod = False
+
         if (time.time() - session.get('apriv', 0) < 7200) or not config.site.enable_totp:
             self.admin = 'admin' in self.prefs
         else:
@@ -150,14 +158,6 @@ class SiteUser(object):
     def is_mod(self, sid, power_level=2):
         """ Returns True if the current user is a mod of 'sub' """
         return is_sub_mod(self.uid, sid, power_level, self.can_admin)
-
-    def is_a_mod(self):
-        """ Returns True if the current user is a mod of any sub """
-        try:
-            SubMod.select().where(SubMod.user == current_user.uid).get() or current_user.can_admin
-            return True
-        except SubMod.DoesNotExist:
-            return False
 
     def is_subban(self, sub):
         """ Returns True if the current user is banned from 'sub' """
@@ -234,6 +234,8 @@ class SiteAnon(AnonymousUserMixin):
     canupload = False
     language = None
     score = 0
+    is_a_mod = False
+    can_admin = False
 
     def get_id(self):
         return False
@@ -581,15 +583,44 @@ def getInviteCodeInfo(uid):
     return info
 
 
-def sendMail(to, subject, content):
-    """ Sends a mail through sendgrid """
+def send_email(to, subject, text_content, html_content, sender=None):
+    if 'server' in config.mail:
+        if sender is None:
+            sender = config.mail.default_from
+        send_email_with_smtp(sender, to, subject, text_content, html_content)
+    elif 'sendgrid' in config:
+        if sender is None:
+            sender = config.sendgrid.default_from
+        send_email_with_sendgrid(sender, to, subject, html_content)
+    else:
+        raise RuntimeError('Email not configured')
+
+
+def send_email_with_smtp(sender, recipients, subject, text_content, html_content):
+    if not isinstance(recipients, list):
+        recipients = [recipients]
+    msg = EmailMessage(subject, sender=sender, recipients=recipients,
+                       body=text_content, html=html_content)
+    if config.app.testing:
+        send_smtp_email_async(current_app, msg)
+    else:
+        gevent.spawn(send_smtp_email_async, current_app._get_current_object(), msg)
+
+
+def send_smtp_email_async(app, msg):
+    with app.app_context():
+        mail.send(msg)
+
+
+def send_email_with_sendgrid(sender, to, subject, html_content):
+    """ Send a mail through sendgrid """
     sg = sendgrid.SendGridAPIClient(api_key=config.sendgrid.api_key)
 
     mail = sendgrid.helpers.mail.Mail(
-        from_email=config.sendgrid.default_from,
+        from_email=sender,
         to_emails=to,
         subject=subject,
-        html_content=content)
+        html_content=html_content)
 
     sg.send(mail)
 
@@ -718,7 +749,6 @@ def _image_entropy(img):
 
 
 THUMB_NAMESPACE = uuid.UUID('f674f09a-4dcf-4e4e-a0b2-79153e27e387')
-FILE_NAMESPACE = uuid.UUID('acd2da84-91a2-4169-9fdb-054583b364c4')
 
 
 def get_thumbnail(link):
@@ -760,6 +790,14 @@ def get_thumbnail(link):
     else:
         return ''
 
+    thash = hashlib.blake2b(im.tobytes())
+    im = generate_thumb(im)
+    filename = store_thumbnail(im, str(uuid.uuid5(THUMB_NAMESPACE, thash.hexdigest())))
+    im.close()
+    return filename
+
+
+def generate_thumb(im: Image) -> Image:
     x, y = im.size
     while y > x:
         slice_height = min(y - x, 10)
@@ -774,15 +812,7 @@ def get_thumbnail(link):
         x, y = im.size
 
     im.thumbnail((70, 70), Image.ANTIALIAS)
-    im.seek(0)
-    md5 = hashlib.md5(im.tobytes())
-    filename = str(uuid.uuid5(THUMB_NAMESPACE, md5.hexdigest())) + '.jpg'
-    im.seek(0)
-    if not os.path.isfile(os.path.join(config.storage.thumbnails.path, filename)):
-        im.save(os.path.join(config.storage.thumbnails.path, filename), "JPEG", optimize=True, quality=85)
-    im.close()
-
-    return filename
+    return im
 
 
 def getAdminUserBadges():
@@ -1130,68 +1160,6 @@ def getUserBadges(uid):
     return ret
 
 
-def clear_metadata(path: str, mime_type: str):
-    if mime_type in ('image/jpeg', 'image/png'):
-        exif = GExiv2.Metadata()
-        exif.open_path(path)
-        exif.clear()
-        exif.save_file(path)
-    elif mime_type == 'video/mp4':
-        video = MP4(path)
-        video.clear()
-        video.save()
-    elif mime_type == 'video/webm':
-        # XXX: Mutagen doesn't seem to support webm files
-        pass
-
-
-def upload_file(max_size=16777216):
-    if not current_user.canupload:
-        return False, False
-
-    if 'files' not in request.files:
-        return False, False
-
-    ufile = request.files.getlist('files')[0]
-    if ufile.filename == '':
-        return False, False
-
-    mtype = magic.from_buffer(ufile.read(1024), mime=True)
-
-    if mtype == 'image/jpeg':
-        extension = '.jpg'
-    elif mtype == 'image/png':
-        extension = '.png'
-    elif mtype == 'image/gif':
-        extension = '.gif'
-    elif mtype == 'video/mp4':
-        extension = '.mp4'
-    elif mtype == 'video/webm':
-        extension = '.webm'
-    else:
-        return _("File type not allowed"), False
-    ufile.seek(0)
-    md5 = hashlib.md5()
-    while True:
-        data = ufile.read(65536)
-        if not data:
-            break
-        md5.update(data)
-
-    f_name = str(uuid.uuid5(FILE_NAMESPACE, md5.hexdigest())) + extension
-    ufile.seek(0)
-    fpath = os.path.join(config.storage.uploads.path, f_name)
-    if not os.path.isfile(fpath):
-        ufile.save(fpath)
-        fsize = os.stat(fpath).st_size
-        if fsize > max_size:  # Max file size exceeded
-            os.remove(fpath)
-            return _("File size exceeds the maximum allowed size (%(size)i MB)", size=max_size / 1024 / 1024), False
-        # remove metadata
-        clear_metadata(fpath, mtype)
-    return f_name, True
-
-
 def getSubMods(sid):
     modsquery = SubMod.select(User.uid, User.name, SubMod.power_level).join(User, on=(User.uid == SubMod.uid)).where(
         SubMod.sid == sid)
@@ -1317,7 +1285,7 @@ def validate_css(css, sid):
     # create a map for uris.
     uris = {}
     for su in SubUploads.select().where(SubUploads.sid == sid):
-        uris[su.name] = config.storage.uploads.url + su.fileid
+        uris[su.name] = file_url(su.fileid)
     for x in st:
         if x.__class__.__name__ == "AtRule":
             if x.at_keyword.lower() == "import":
@@ -1372,8 +1340,8 @@ def populate_feed(feed, posts):
         url = url_for('sub.view_post', sub=post['sub'], pid=post['pid'], _external=True)
 
         if post['thumbnail']:
-            content += '<td><a href=' + url + '"><img src="' + config.storage.thumbnails.url + post[
-                'thumbnail'] + '" alt="' + post['title'] + '"/></a></td>'
+            content += '<td><a href=' + url + '"><img src="' + thumbnail_url(post[
+                'thumbnail']) + '" alt="' + post['title'] + '"/></a></td>'
         content += '<td>Submitted by <a href=/u/' + post['user'] + '>' + post['user'] + '</a><br/>' + our_markdown(
             post['content'])
         if post['link']:

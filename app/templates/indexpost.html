@@ -11,7 +11,7 @@
         <a href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}" class="title">
           <div class="thumbnail">
             {% if post.thumbnail != '' and post.link != None %}
-              <img src="{{config.storage.thumbnails.url}}{{post.thumbnail}}"/>
+              <img src="{{thumbnail_url(post.thumbnail)}}"/>
             {% elif post.link != None %}
               <span class="placeholder" data-icon="link"></span>
             {%else%}

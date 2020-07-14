@@ -1,4 +1,21 @@
-<a href="@{url_for('mod.index')}" class="sbm-post pure-button">@{_('Mod Dashboard')}</a>
-<hr>
-<a href="@{url_for('mod.reports')}" class="sbm-post pure-button">@{_('Open Reports')}</a>
-<a href="@{url_for('mod.closed')}" class="sbm-post pure-button">@{_('Closed Reports')}</a>
+@require(sub, subInfo, subMods)
+
+<h2 class="mod-sidebar header"><a href="@{url_for('mod.index')}">@{_('Mod Dashboard')}</a></h2>
+<a href="@{url_for('mod.reports')}" class="sbm-post pure-button">@{_('All Open Reports')}</a>
+<a href="@{url_for('mod.closed')}" class="sbm-post pure-button">@{_('All Closed Reports')}</a>
+
+@if current_user.uid and sub:
+  <hr>
+  <div class="subinfo">
+    <h3>@{_('Moderation for')} @{config.site.sub_prefix}/@{sub.name}</h3>
+  </div>
+  <a href="@{url_for('mod.reports_sub', sub=sub.name)}" class="sbm-post pure-button">@{_('Open Reports')}</a>
+  <a href="@{url_for('mod.reports_sub_closed', sub=sub.name)}" class="sbm-post pure-button">@{_('Closed Reports')}</a>
+  <hr>
+  <h3 class="mod-sidebar header">@{_('Sub Settings')}</h3>
+  <a href="@{url_for('sub.edit_sub', sub=sub.name)}" class="sbm-post pure-button">@{_('Settings')}</a>
+  <a href="@{url_for('sub.edit_sub_flairs', sub=sub.name)}" class="sbm-post pure-button">@{_('Edit flairs')}</a>
+  <a href="@{url_for('sub.edit_sub_rules', sub=sub.name)}" class="sbm-post pure-button">@{_('Edit rules')}</a>
+  <a href="@{url_for('sub.edit_sub_css', sub=sub.name)}" class="sbm-post pure-button">@{_('Edit stylesheet')}</a>
+  <a href="@{url_for('sub.edit_sub_mods', sub=sub.name)}" class="sbm-post pure-button">@{_('Moderators')}</a>
+@end

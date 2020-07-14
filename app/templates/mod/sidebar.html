@@ -1,4 +1,19 @@
-<a href="{{url_for('mod.index')}}" class="sbm-post pure-button">Mod Dashboard</a>
-<hr>
-<a href="{{url_for('mod.reports')}}" class="sbm-post pure-button">Open Reports</a>
-<a href="{{url_for('mod.closed')}}" class="sbm-post pure-button">Closed Reports</a>
+<h2 class="mod-sidebar header"><a href="{{url_for('mod.index')}}">Mod Dashboard</a></h2>
+<a href="{{url_for('mod.reports')}}" class="sbm-post pure-button">All Open Reports</a>
+<a href="{{url_for('mod.closed')}}" class="sbm-post pure-button">All Closed Reports</a>
+
+{% if current_user.uid and sub %}
+  <hr>
+  <div class="subinfo">
+    <h3>Moderation for {{config.site.sub_prefix}}/{{sub.name}}</h3>
+  </div>
+  <a href="{{url_for('mod.reports_sub', sub=sub.name)}}" class="sbm-post pure-button">Open Reports</a>
+  <a href="{{url_for('mod.reports_sub_closed', sub=sub.name)}}" class="sbm-post pure-button">Closed Reports</a>
+  <hr>
+  <h3 class="mod-sidebar header">Sub Settings</h3>
+  <a href="{{url_for('sub.edit_sub', sub=sub.name)}}" class="sbm-post pure-button">Settings</a>
+  <a href="{{url_for('sub.edit_sub_flairs', sub=sub.name)}}" class="sbm-post pure-button">Edit flairs</a>
+  <a href="{{url_for('sub.edit_sub_rules', sub=sub.name)}}" class="sbm-post pure-button">Edit rules</a>
+  <a href="{{url_for('sub.edit_sub_css', sub=sub.name)}}" class="sbm-post pure-button">Edit stylesheet</a>
+  <a href="{{url_for('sub.edit_sub_mods', sub=sub.name)}}" class="sbm-post pure-button">Moderators</a>
+{% endif %}

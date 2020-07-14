@@ -18,7 +18,7 @@ from flask import render_template, request
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_babel import _
 from ..config import config
-from .. import forms, misc, caching
+from .. import forms, misc, caching, storage
 from ..socketio import socketio
 from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm, ChangePasswordForm
@@ -29,7 +29,7 @@ from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
-from ..misc import cache, sendMail, allowedNames, get_errors, engine
+from ..misc import cache, send_email, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata, UserSaved
 from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
@@ -1504,7 +1504,7 @@ def recovery():
             key = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key'))
             keyExp = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key-time'))
             expiration = float(keyExp.value)
-            if (time.time() - expiration) > 86400:  # 1 day
+            if (time.time() - expiration) > 86400 or config.app.development:  # 1 day
                 # Key is old. remove it and proceed
                 key.delete_instance()
                 keyExp.delete_instance()
@@ -1518,10 +1518,21 @@ def recovery():
         UserMetadata.create(uid=user.uid, key='recovery-key', value=rekey)
         UserMetadata.create(uid=user.uid, key='recovery-key-time', value=time.time())
 
-        sendMail(
+        send_email(
             subject='Password recovery',
             to=user.email,
-            content=_("""<h1><strong>%(lema)s</strong></h1>
+            text_content = _("""%(lema)s
+
+            Somebody (most likely you) has requested a password reset for your account.
+
+            To proceed, visit the following address (valid for the next 24 hours):
+
+            %(url)s
+
+            If you didn't request a password recovery, please ignore this email.
+            """, lema=config.site.lema, url=url_for('user.password_reset', key=rekey,
+                                                    uid=user.uid, _external=True)),
+            html_content=_("""<h1><strong>%(lema)s</strong></h1>
             <p>Somebody (most likely you) has requested a password reset for
             your account</p>
             <p>To proceed, visit the following address (valid for the next 24hs)</p>
@@ -1530,7 +1541,7 @@ def recovery():
             <p>If you didn't request a password recovery, please ignore this
             email</p>
             """, lema=config.site.lema, url=url_for('user.password_reset', key=rekey,
-                                            uid=user.uid, _external=True))
+                                                    uid=user.uid, _external=True))
         )
 
         return jsonify(status="ok")
@@ -1796,66 +1807,27 @@ def sub_upload(sub):
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
                                                            'error': _('Please select a file to upload.'), 'files': ufiles})
 
-    mtype = magic.from_buffer(ufile.read(1024), mime=True)
-
-    if mtype == 'image/jpeg':
-        extension = '.jpg'
-    elif mtype == 'image/png':
-        extension = '.png'
-    elif mtype == 'image/gif':
-        extension = '.gif'
-    else:
+    mtype = storage.mtype_from_file(ufile, allow_video_formats=False)
+    if mtype is None:
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
                                                            'error': _('Invalid file type. Only jpg, png and gif allowed.'), 'files': ufiles})
 
-    ufile.seek(0)
-    md5 = hashlib.md5()
-    while True:
-        data = ufile.read(65536)
-        if not data:
-            break
-        md5.update(data)
-
-    f_name = str(uuid.uuid5(misc.FILE_NAMESPACE, md5.hexdigest())) + extension
-    ufile.seek(0)
-    lm = False
-    if not os.path.isfile(os.path.join(config.storage.uploads.path, f_name)):
-        lm = True
-        ufile.save(os.path.join(config.storage.uploads.path, f_name))
-        # remove metadata
-        if mtype != 'image/gif':  # Apparently we cannot write to gif images
-            misc.clear_metadata(os.path.join(config.storage.uploads.path, f_name), mtype)
-    # sadly, we can only get file size accurately after saving it
-    fsize = os.stat(os.path.join(config.storage.uploads.path, f_name)).st_size
-    if fsize > remaining:
-        if lm:
-            os.remove(os.path.join(config.storage.uploads.path, f_name))
+    try:
+        fhash = storage.calculate_file_hash(ufile, size_limit=remaining)
+    except storage.SizeLimitExceededError:
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
                                                            'error': _('Not enough available space to upload file.'), 'files': ufiles})
+
+    basename = str(uuid.uuid5(storage.FILE_NAMESPACE, fhash))
+    f_name = storage.store_file(ufile, basename, mtype, remove_metadata=True)
+    fsize = storage.get_stored_file_size(f_name)
+
     # THUMBNAIL
     ufile.seek(0)
     im = Image.open(ufile).convert('RGB')
-    x, y = im.size
-    while y > x:
-        slice_height = min(y - x, 10)
-        bottom = im.crop((0, y - slice_height, x, y))
-        top = im.crop((0, 0, x, slice_height))
-
-        if misc._image_entropy(bottom) < misc._image_entropy(top):
-            im = im.crop((0, 0, x, y - slice_height))
-        else:
-            im = im.crop((0, slice_height, x, y))
-
-        x, y = im.size
-
-    im.thumbnail((70, 70), Image.ANTIALIAS)
-
-    im.seek(0)
-    md5 = hashlib.md5(im.tobytes())
-    filename = str(uuid.uuid5(misc.THUMB_NAMESPACE, md5.hexdigest())) + '.jpg'
-    im.seek(0)
-    if not os.path.isfile(os.path.join(config.storage.thumbnails.path, filename)):
-        im.save(os.path.join(config.storage.thumbnails.path, filename), "JPEG", optimize=True, quality=85)
+    thash = hashlib.blake2b(im.tobytes())
+    im = misc.generate_thumb(im)
+    filename = storage.store_thumbnail(im, str(uuid.uuid5(misc.THUMB_NAMESPACE, thash.hexdigest())))
     im.close()
 
     SubUploads.create(sid=sub.sid, fileid=f_name, thumbnail=filename, size=fsize, name=fname)
@@ -1874,12 +1846,12 @@ def sub_upload_delete(sub, name):
     if not form.validate():
         return redirect(url_for('sub.edit_sub_css', sub=sub.name))
     if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
-        jsonify(status='error')
+        return jsonify(status='error')
 
     try:
         img = SubUploads.get((SubUploads.sid == sub.sid) & (SubUploads.name == name))
     except SubUploads.DoesNotExist:
-        jsonify(status='error')
+        return jsonify(status='error')
     fileid = img.fileid
     img.delete_instance()
     misc.create_sublog(misc.LOG_TYPE_SUB_CSS_CHANGE, current_user.uid, sub.sid)
@@ -1891,7 +1863,8 @@ def sub_upload_delete(sub, name):
         try:
             SubUploads.get(SubUploads.fileid == img.fileid)
         except SubUploads.DoesNotExist:
-            os.remove(os.path.join(config.storage.uploads.path, img.fileid))
+            # TODO thumbnail does not get deleted
+            storage.remove_file(img.fileid)
 
     return jsonify(status='ok')
 

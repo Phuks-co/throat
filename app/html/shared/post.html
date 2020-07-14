@@ -19,7 +19,7 @@
         @end
           <div class="thumbnail">
             @if post['thumbnail'] != '' and post['link'] != None:
-              <img alt="@{_('Thumbnail')}" src="@{config.storage.thumbnails.url}@{post['thumbnail']}"/>
+              <img alt="@{_('Thumbnail')}" src="@{thumbnail_url(post['thumbnail'])}"/>
             @elif post['link'] != None:
               <span class="placeholder" data-icon="link"></span>
             @else:
@@ -91,7 +91,7 @@
         @if not sub and not announcement:
           <span><a data-ac="block" class="unblk">@{_('block sub')}</a></span>
         @end
-        <a data-ac="report" class="report-post">@{_('report')}</a>
+        <a data-ac="report" data-pid="@{post['pid']}" class="report-post">@{_('report')}</a>
       </div>
     </div>
 </div>

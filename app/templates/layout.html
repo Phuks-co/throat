@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="keywords" content="forum, vote, comment, submit, throat, phuks, phuks.co">
     <meta name="referrer" content="always">
-    
+
     <meta name="description" content="{{config.site.lema}}">
     <meta name="robots" content="index, follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,6 +46,12 @@
       <li><a href="/all/new">new</a></li>
       {% if current_user.canupload %}
         <li><a href="{{url_for('home.view_user_uploads')}}">uploads</a></li>
+      {% endif %}
+      {% if current_user.can_admin %}
+        <li><a href="{{url_for('admin.index')}}">admin</a></li>
+      {% endif %}
+      {% if current_user.is_a_mod or current_user.can_admin %}
+        <li><a href="{{url_for('mod.index')}}">moderation</a></li>
       {% endif %}
       <li>|</li>
       {% if not current_user.is_anonymous %}

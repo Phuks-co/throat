@@ -2099,3 +2099,7 @@ a.close-report {
 .mod.report.preview .preview-meta-data span {
   margin: 0 10px;
 }
+
+.mod-sidebar.header {
+  text-align: center;
+}

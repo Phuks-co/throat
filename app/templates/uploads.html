@@ -11,7 +11,7 @@
         <div class="uploaditem">
           {% if item.thumbnail != '' %}
             <div class="uploadthumb">
-              <img src="{{config.storage.thumbnails.url}}{{item.thumbnail}}"/>
+              <img src="{{thumbnail_url(item.thumbnail)}}"/>
             </div>
           {% else %}
             <div class="uploadthumb">
@@ -20,7 +20,7 @@
           {% endif %}
           <div class="uploadlinks">
             <div class="uploadlink"><a href="{{url_for('site.view_post_inbox', pid=item.pid_id)}}">View Post</a></div>
-            <div class="uploadlink"><a href="{{config.storage.uploads.url}}{{item.fileid}}">Direct Link</a></div>
+            <div class="uploadlink"><a href="{{file_url(item.fileid)}}">Direct Link</a></div>
           </div>
         </div>
       {% endfor %}
