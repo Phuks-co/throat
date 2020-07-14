@@ -5,6 +5,11 @@
   {{ super() }}
 {% endblock %}
 
+{% block sidebar %}
+{{ super() }}
+{% include 'mod/sidebar.html' %}
+{% endblock %}
+
 {% block content %}
 {{ super() }}
   {% if not current_user.is_mod(sub.sid, 1) and current_user.is_admin() %}

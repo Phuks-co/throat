@@ -1,5 +1,10 @@
 @extends("shared/layout.html")
-@require(error, sub, form, storage, files)
+@require(error, sub, form, storage, files, subInfo, subMods)
+
+@def sidebar():
+  @include('shared/sidebar/mod.html')
+@end
+
 @def main():
 
 <div id="container">

@@ -56,7 +56,7 @@ def reports(page):
 
     reports = getReports('mod', 'open', page)
 
-    return engine.get_template('mod/reports.html').render({'reports': reports, 'page': page})
+    return engine.get_template('mod/reports.html').render({'reports': reports, 'page': page, 'sub': False, 'subInfo': False, 'subMods': False})
 
 
 @bp.route("/reports/closed", defaults={'page': 1})
@@ -70,7 +70,7 @@ def closed(page):
 
     reports = getReports('mod', 'closed', page)
 
-    return engine.get_template('mod/closed.html').render({'reports': reports, 'page': page})
+    return engine.get_template('mod/closed.html').render({'reports': reports, 'page': page, 'sub': False, 'subInfo': False, 'subMods': False})
 
 
 @bp.route("/reports/<sub>", defaults={'page': 1})
@@ -84,12 +84,15 @@ def reports_sub(sub, page):
     except Sub.DoesNotExist:
         abort(404)
 
+    subInfo = misc.getSubData(sub.sid)
+    subMods = misc.getSubMods(sub.sid)
+
     if not (current_user.is_mod(sub.sid, 1) or current_user.is_admin()):
         abort(404)
 
     reports = getReports('mod', 'open', page, sid=sub.sid)
 
-    return engine.get_template('mod/sub_reports.html').render({'sub': sub, 'reports': reports, 'page': page})
+    return engine.get_template('mod/sub_reports.html').render({'sub': sub, 'reports': reports, 'page': page, 'subInfo': subInfo, 'subMods': subMods})
 
 
 @bp.route("/reports/closed/<sub>", defaults={'page': 1})
@@ -106,6 +109,9 @@ def reports_sub_closed(sub, page):
     if not (current_user.is_mod(sub.sid, 1) or current_user.is_admin()):
         abort(404)
 
+    subInfo = misc.getSubData(sub.sid)
+    subMods = misc.getSubMods(sub.sid)
+
     reports = getReports('mod', 'closed', page, sid=sub.sid)
 
-    return engine.get_template('mod/sub_reports_closed.html').render({'sub': sub, 'reports': reports, 'page': page})
+    return engine.get_template('mod/sub_reports_closed.html').render({'sub': sub, 'reports': reports, 'page': page, 'subInfo': subInfo, 'subMods': subMods})
