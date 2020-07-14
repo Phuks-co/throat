@@ -1644,8 +1644,10 @@ def delete_comment():
             misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_COMMENT, current_user.uid, post.sid,
                                comment=form.reason.data, link=url_for('site.view_post_inbox', pid=comment.pid),
                                admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
+            comment.status = 2
+        else:
+            comment.status = 1
 
-        comment.status = 1
         comment.save()
 
         q = Message.delete().where(Message.mlink == form.cid.data)
@@ -1913,10 +1915,39 @@ def ban_user(username):
     except User.DoesNotExist:
         abort(404)
 
+    if user.uid == current_user.uid:
+        abort(403)
+
     user.status = 5
     user.save()
     misc.create_sitelog(misc.LOG_TYPE_USER_BAN, uid=current_user.uid, comment=user.name)
-    return redirect(url_for('user.view', user=username))
+    return redirect(request.referrer)
+
+
+@do.route('/do/admin/unban_user/<username>', methods=['POST'])
+@login_required
+def unban_user(username):
+    if not current_user.is_admin():
+        abort(403)
+
+    form = DummyForm()
+    if not form.validate():
+        abort(403)
+
+    try:
+        user = User.get(fn.Lower(User.name) == username.lower())
+    except User.DoesNotExist:
+        abort(404)
+
+    try:
+        user.status = 5
+    except:
+        return jsonify(status='error', error='user is not banned')
+
+    user.status = 0
+    user.save()
+    misc.create_sitelog(misc.LOG_TYPE_USER_UNBAN, uid=current_user.uid, comment=user.name)
+    return redirect(request.referrer)
 
 
 @do.route('/do/edit_top_bar', methods=['POST'])
@@ -2336,3 +2367,96 @@ def close_comment_report(id, action):
 
     else:
         return jsonify(status='error', error=_('Failed to update report'))
+
+
+@do.route('/do/report/close_post_related_reports/<related_reports>', methods=['POST'])
+@login_required
+def close_post_related_reports(related_reports):
+    related_reports = json.loads(related_reports)
+    error = ''
+    # ensure user is mod or admin and report, post, and sub exist
+    for related_report in related_reports:
+        try:
+            report = SubPostReport.get(SubPostReport.id == related_report['id'])
+        except SubPostReport.DoesNotExist:
+            error = jsonify(status='error', error=_('Report does not exist'))
+
+        try:
+            post = SubPost.get(SubPost.pid == report.pid)
+        except SubPost.DoesNotExist:
+            error = jsonify(status='error', error=_('Post does not exist'))
+
+        try:
+            sub = Sub.get(Sub.sid == post.sid)
+        except Sub.DoesNotExist:
+            error = jsonify(status='error', error=_('Sub does not exist'))
+
+        if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+            error = jsonify(status='error', error=_('Not authorized'))
+
+        report = SubPostReport.update(open=False).where(SubPostReport.id == related_report['id']).execute()
+
+        #check if report is closed and return status
+        updated_report = SubPostReport.select().where(SubPostReport.id == related_report['id']).get()
+        if updated_report.open == False:
+            ok = jsonify(status='ok')
+
+        elif updated_report.open == True:
+            error = jsonify(status='error', error=_('Failed to close report'))
+
+        else:
+            error = jsonify(status='error', error=_('Failed to update report'))
+
+    if error != '':
+        return error
+    else:
+        return ok
+
+
+@do.route('/do/report/close_comment_related_reports/<related_reports>', methods=['POST'])
+@login_required
+def close_comment_related_reports(related_reports):
+    related_reports = json.loads(related_reports)
+    error = ''
+    # ensure user is mod or admin and report, post, and sub exist
+    for related_report in related_reports:
+        try:
+            report = SubPostCommentReport.get(SubPostCommentReport.id == related_report['id'])
+        except SubPostCommentReport.DoesNotExist:
+            error = jsonify(status='error', error=_('Report does not exist'))
+
+        try:
+            comment = SubPostComment.get(SubPostComment.cid == report.cid)
+        except SubPostCommentReport.DoesNotExist:
+            error = jsonify(status='error', error=_('Comment does not exist'))
+
+        try:
+            post = SubPost.get(SubPost.pid == comment.pid)
+        except SubPost.DoesNotExist:
+            error = jsonify(status='error', error=_('Post does not exist'))
+
+        try:
+            sub = Sub.get(Sub.sid == post.sid)
+        except Sub.DoesNotExist:
+            error = jsonify(status='error', error=_('Sub does not exist'))
+
+        if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+            error = jsonify(status='error', error=_('Not authorized'))
+
+        report = SubPostCommentReport.update(open=False).where(SubPostCommentReport.id == related_report['id']).execute()
+
+        #check if report is closed and return status
+        updated_report = SubPostCommentReport.select().where(SubPostCommentReport.id == related_report['id']).get()
+        if updated_report.open == False:
+            ok = jsonify(status='ok')
+
+        elif updated_report.open == True:
+            error = jsonify(status='error', error=_('Failed to close report'))
+
+        else:
+            error = jsonify(status='error', error=_('Failed to update report'))
+
+    if error != '':
+        return error
+    else:
+        return ok

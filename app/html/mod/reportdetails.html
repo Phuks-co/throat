@@ -1,0 +1,262 @@
+@extends("shared/layout.html")
+@require(sub, report, reported_user, related_reports, related_reports_json, banuserform, is_sub_banned, post, comment, subInfo, subMods)
+@def title():
+Mod |\
+@end
+
+@def sidebar():
+  @include('shared/sidebar/mod.html')
+@end
+
+@def main():
+<div id="center-container">
+  <div class="mod report content">
+    <h1>@{_('Report Details')}</h1>
+    <div class="mod report header">
+      @if report['type'] == 'comment':
+        <h2>@{_('Comment Report')} # @{report['id']}</h2>
+      @else:
+        <h2>@{_('Post Report')} # @{report['id']}</h2>
+      @end
+      <div class="mod report close buttons">
+        <!-- CLOSE REPORT -->
+        @if report['open'] == True:
+          <button class="pure-button pure-button-primary btn-editpost close-report"
+          data-type="@{report['type']}" data-id="@{report['id']!!s}" data-action="close">
+            @{_('Close Report')}
+          </button>
+        @else:
+          <button class="pure-button pure-button-primary btn-editpost close-report"
+          data-type="@{report['type']}" data-id="@{report['id']!!s}" data-action="reopen">
+            @{_('Reopen Report')}
+          </button>
+        @end
+
+        <!-- CLOSE ALL REPORTS -->
+        @if related_reports['open_report_count'] == '0':
+          <button class="pure-button pure-button-primary btn-editpost disabled">@{_('All related reports are closed')}</button>
+        @else:
+          @if report['type'] == 'comment':
+            <button class="pure-button pure-button-primary btn-editpost close-related-reports" data-type="@{report['type']}" data-reports="@{related_reports_json}" data-action="close">
+              @{_('Close All Reports for this Comment')}
+            </button>
+          @else:
+            <button class="pure-button pure-button-primary btn-editpost close-related-reports" data-type="@{report['type']}" data-reports="@{related_reports_json}" data-action="close">
+              @{_('Close All Reports for this Post')}
+            </button>
+          @end
+        @end
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="mod section">
+      <div class="col-12 admin-page-form">
+          <div class="div-error error alertbox"></div>
+
+          <div class="mod report details">
+            <div class="report-details-row">
+              <span class="report-details-item"><span class="label">@{_('Sub')}:</span>
+                <a href="@{ url_for('sub.view_sub', sub=report['sub']) }">@{report['sub'] }</a>
+              </span>
+              <span class="report-details-item"><span class="label">@{_('Reason')}:</span>
+                @{report['reason']!!e}
+              </span>
+            </div>
+            <div class="report-details-row">
+              <span class="report-details-item"><span class="label">@{_('Reported User')}:</span>
+                  <a href="@{ url_for('user.view', user=report['reported']) }">@{report['reported'] }</a>
+              </span>
+              <span class="report-details-item"><span class="label">@{_('Reporter')}:</span>
+                <a href="@{ url_for('user.view', user=report['reporter']) }">@{report['reporter'] }</a>
+              </span>
+            </div>
+            <div class="report-details-row">
+              <span class="report-details-item"><span class="label">@{_('Time')}:</span>
+                <time-ago datetime="@{report['datetime'].isoformat()}Z"></time-ago>
+              </span>
+              <span class="report-details-item"><span class="label">@{_('Status')}:</span>
+                @if report['open'] == True:
+                  @{_('Open')}
+                @else:
+                  @{_('Closed')}
+                @end
+              </span>
+            </div>
+          </div>
+          <div class="user-actions">
+            @if is_sub_banned:
+              <button class="sbm-post pure-button pure-button-primary disabled">
+                @{_('%(reported)s has been banned from %(prefix)s/%(sub)s', reported=report['reported'], prefix=config.site.sub_prefix, sub=report['sub'])}
+              </button>
+            @else:
+                <button class="sbm-post pure-button pure-button-primary banuserbutton">
+                  @{_('Ban %(reported)s from %(prefix)s/%(sub)s', reported=report['reported'], prefix=config.site.sub_prefix, sub=report['sub'])}</button>
+            @end
+            @if current_user.is_admin() and reported_user.status != 5:
+                <form method="POST" data-reload="true" id="banuser" action="@{url_for('do.ban_user', username=report['reported'])}">
+                    @{form.DummyForm().csrf_token()!!html}
+                    <a href="javascript:{}" class="sbm-post pure-button button-secondary" onclick="if(confirm('@{_('Are you sure you want to ban this user?')}')){document.getElementById('banuser').submit();}" class="sbm-post pure-button pure-button-primary">@{_('Ban %(reported)s from %(site)s', reported=report['reported'], site=config.site.name)}</a>
+                </form>
+            @end
+            @if reported_user.status == 5:
+              <button class="sbm-post pure-button pure-button-primary disabled">@{report['reported']} @{_('has been banned from')} @{config.site.name}</button>
+            @end
+          </div>
+          <div id="report-ban-user-form" style="display: none;">
+            <form id="ban-user-form" data-reload="true" data-sub="@{sub.name}" class="ajaxform pure-form" action="@{url_for('do.ban_user_sub', sub=sub.name)}">
+              @{banuserform.csrf_token()!!html}
+              <p>
+                @{banuserform.user(value=report['reported'])!!html}
+                @{banuserform.reason(placeholder=banuserform.reason.label.text, required=True)!!html}
+                @if current_user.uid in subMods['janitors']:
+                  @{_('Until...')}\
+                @else:
+                <select id="ban_timepick">
+                  <option value="ban_perm">@{_('Forever')}</option>
+                  <option value="ban_temp">@{_('Until...')}</option>
+                </select>
+                @end
+                <input id="ban_expires" name="expires" type="text" class="date-picker-future" @{(current_user.uid in subMods['janitors']) and 'style="display: inline-block;"' or 'style="display: none;"'} placeholder="Pick date">
+                <button type="submit" class="pure-button pure-button-primary" id="banuser-btnsubmit">@{_('Ban')}</button>
+              </p>
+              <div class="alert div-error">
+                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                <p></p>
+              </div>
+            </form>
+          </div>
+
+          <hr>
+
+          <div class="mod report preview">
+
+            @if report['type'] == 'post':
+            <h3>@{_('Post Preview:')}</h3>
+              <div class="preview-text-container">
+                <div class="preview-text">
+                  <div class="postinfo" id="postinfo" pid="@{report['pid']!!s}">
+                    @if post['deleted'] != 1:
+                      @if post['deleted'] == 2:
+                        @{_('[post deleted by mod or admin]')}
+                      @end
+                      <h3>@{post['title']}</h3>
+                      @if post['content']:
+                        <div id="postcontent">
+                          @{markdown(post['content'])!!html}
+                        </div>
+                        <div id="post-source">@{post['content']}</div>
+                      @else:
+                        <!-- need to account for other post types still -->
+                        @{_('[post preview could not be rendered]')}
+                      @end
+                    @else:
+                      @{_('[post deleted by user]')}
+                    @end
+                    <div id="delpostli"></div>
+                  </div>
+                </div>
+              </div>
+
+            @else:
+            <h3>@{_('Comment Preview:')}</h3>
+              <div class="preview-text-container">
+                <div class="preview-text">
+                  @if comment['status'] != 1:
+                    @if comment['status'] == 2:
+                      @{_('[comment deleted by mod or admin]')}
+                    @end
+                    <div id="commentcontent">@{comment['content']}</div>
+                  @else:
+                    @{_('[comment deleted by user]')}
+                  @end
+                </div>
+              </div>
+            @end
+
+            <div class="preview-meta-data">
+              <span class="meta-data-item">
+                @if report['type'] == 'comment':
+                  @{_('Posted')} <time-ago datetime="@{comment['time'].isoformat()}Z"></time-ago>
+                @else:
+                  @{_('Posted')} <time-ago datetime="@{post['posted'].isoformat()}Z"></time-ago>
+                @end
+              </span>
+              <span class="meta-data-item">
+                @if report['type'] == 'comment':
+                  <a href="@{url_for('sub.view_perm', sub=report['sub'], cid=report['cid'], pid=report['pid'])}">@{_('Go to comment')}</a>
+                @else:
+                <a href="@{url_for('sub.view_post', sub=report['sub'], pid=report['pid'])}">@{_('Go to post')}</a>
+                @end
+              </span>
+              <span>
+                @if report['type'] == 'comment':
+                  @if (comment['status'] != 1) and (comment['status'] != 2):
+                    <button class="pure-button pure-button-primary button-xsmall btn-editpost delete-comment" data-cid="@{report['cid']}">
+                      @{_('Delete Comment')}
+                    </button>
+                  @end
+                @else:
+                  @if post['deleted'] == 0:
+                    <button class="pure-button pure-button-primary button-xsmall btn-editpost delete-post" data-pid="@{str(report['pid'])}">
+                      @{_('Delete Post')}
+                    </button>
+                  @end
+                @end
+              </span>
+            </div>
+          </div>
+
+          <hr>
+          <div class="mod report related reports">
+            @if report['type'] == 'comment':
+              <h3>@{_('Other reports on this comment:')}</h3>
+            @else:
+              <h3>@{_('Other reports on this post:')}</h3>
+            @end
+            @if len(related_reports['query']) == 1:
+            <!-- 1 instead of 0 because it includes the current report, which should always exist -->
+              <p class="helper-text">@{_('There are no other reports on this post')}</p>
+            @else:
+              <table class="pure-table">
+                <thead>
+                  <tr>
+                    <th>@{_('Time')}</th>
+                    <th>@{_('Reporter')}</th>
+                    <th>@{_('Reason')}</th>
+                    <th>@{_('Status')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for related_report in related_reports['query']:
+                    @if related_report['id'] != report['id']:
+                      <tr>
+                        <td>
+                          @if related_report['type'] == 'comment':
+                            <a href="@{url_for('mod.report_details', sub=related_report['sub'], type=related_report['type'], id=related_report['id'])}"><time-ago datetime="@{related_report['datetime'].isoformat()}Z"></time-ago></a>
+                          @else:
+                          <a href="@{url_for('mod.report_details', sub=related_report['sub'], type=related_report['type'], id=related_report['id'])}"><time-ago datetime="@{related_report['datetime'].isoformat()}Z"></time-ago></a>
+                          @end
+                        </td>
+                        <td><a href="@{ url_for('user.view', user=related_report['reporter']) }">@{ related_report['reporter'] }</a></td>
+                        <td>@{related_report['reason']!!e}</td>
+                        @if related_report['open'] == True:
+                          <td>@{_('Open')} </td>
+                        @else:
+                          <td>@{_('Closed')} </td>
+                        @end
+                      </tr>
+                    @end
+                  @end
+                </tbody>
+              </table>
+            @end
+          </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+@end

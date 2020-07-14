@@ -75,7 +75,7 @@ class User(BaseModel):
 
     score = IntegerField(default=0)  # AKA phuks taken
     given = IntegerField(default=0)  # AKA phuks given
-    # status: 0 = OK; 10 = deleted
+    # status: 0 = OK; 10 = deleted; 5 = site-ban
     status = IntegerField(default=0)
     resets = IntegerField(default=0)
 
@@ -270,7 +270,7 @@ class SubMetadata(BaseModel):
 
 class SubPost(BaseModel):
     content = TextField(null=True)
-    deleted = IntegerField(null=True)
+    deleted = IntegerField(null=True) # 1=self delete, 2=mod delete, 0=not deleted
     link = CharField(null=True)
     nsfw = BooleanField(null=True)
     pid = PrimaryKeyField()
@@ -332,7 +332,7 @@ class SubPostComment(BaseModel):
     score = IntegerField(null=True)
     upvotes = IntegerField(default=0)
     downvotes = IntegerField(default=0)
-    status = IntegerField(null=True)
+    status = IntegerField(null=True) # 1=self delete, 2=mod delete, 0=not deleted
     time = DateTimeField(null=True)
     uid = ForeignKeyField(db_column='uid', null=True, model=User,
                           field='uid', backref='comments')

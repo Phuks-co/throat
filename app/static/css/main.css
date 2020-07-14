@@ -2011,6 +2011,95 @@ a.close-report {
   color: gray;
 }
 
+.mod-dash-subs {
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 800px;
+}
+
+.mod-dash-sub {
+  margin: 10px;
+}
+
+@media (min-width: 860px) {
+  .mod.report.content {
+    min-width: 650px;
+  }
+}
+
+.mod.report.close.buttons {
+  display: flex;
+  align-items: flex-start;
+}
+
+.mod.report.close.buttons button {
+  margin: 10px 5px 10px 0;
+}
+
+.mod button.disabled {
+  background-color: gray;
+  pointer-events: none;
+}
+
+.mod.report.details {
+  margin: 20px auto;
+  width: 100%;
+}
+
+.report-details-row {
+  min-width: 500px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 10px auto;
+  width: 100%;
+}
+
+.report-details-item {
+  min-width: 200px;
+  width: 50%;
+}
+
+.report-details-item .label{
+  font-weight: bold;
+}
+
+.mod.report.preview {
+  max-width: 600px;
+}
+
+.mod .user-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.mod .user-actions .pure-button {
+  margin: 10px 5px 10px 0;
+}
+
+.mod.report.preview .preview-text-container {
+  border-left: 3px solid gray;
+  margin: 10px;
+}
+
+.mod.report.preview .preview-text-container .preview-text {
+  color: gray;
+  padding-left: 10px;
+}
+
+.mod.report.preview .preview-meta-data {
+  display: flex;
+  align-items: center;
+  color: gray;
+}
+
+.mod.report.preview .preview-meta-data span {
+  margin: 0 10px;
+}
+
 .mod-sidebar.header {
   text-align: center;
 }

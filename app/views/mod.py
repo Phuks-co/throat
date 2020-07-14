@@ -9,6 +9,10 @@ from .. import misc
 from ..models import UserMetadata, User, Sub, SubPost, SubPostComment
 from ..models import User, Sub, SubMod, SubPost, SubPostComment, UserMetadata, SubPostReport, SubPostCommentReport
 from ..misc import engine, getModSubs, getReports
+from ..forms import BanUserSubForm
+from .. import misc
+import json
+
 
 bp = Blueprint('mod', __name__)
 
@@ -115,3 +119,41 @@ def reports_sub_closed(sub, page):
     reports = getReports('mod', 'closed', page, sid=sub.sid)
 
     return engine.get_template('mod/sub_reports_closed.html').render({'sub': sub, 'reports': reports, 'page': page, 'subInfo': subInfo, 'subMods': subMods})
+
+@bp.route("/reports/details/<sub>/<type>/<id>")
+@login_required
+def report_details(sub, type, id):
+    """ WIP: Report Details View """
+
+    try:
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+    except Sub.DoesNotExist:
+        abort(404)
+
+    if not (current_user.is_mod(sub.sid, 1) or current_user.is_admin()):
+        abort(404)
+
+    subInfo = misc.getSubData(sub.sid)
+    subMods = misc.getSubMods(sub.sid)
+
+    report = getReports('mod', 'all', 1, type=type, report_id=id)
+    reported_user = User.select().where(User.name == report['reported']).get()
+    related_reports = getReports('mod', 'all', 1, type=type, report_id=id, related=True)
+
+    if report['type'] == "post":
+        try:
+            post = misc.getSinglePost(report['pid'])
+            comment = ""
+        except SubPost.DoesNotExist:
+            return abort(404)
+    else:
+        try:
+            comment = SubPostComment.select().where(SubPostComment.cid == report['cid']).dicts()[0]
+            post = ""
+        except (SubPostComment.DoesNotExist, IndexError):
+            abort(404)
+
+    reported = User.select().where(User.name == report['reported']).get()
+    is_sub_banned = misc.is_sub_banned(sub, uid=reported.uid)
+
+    return engine.get_template('mod/reportdetails.html').render({'sub': sub, 'report': report, 'reported_user': reported_user, 'related_reports': related_reports, 'related_reports_json': json.dumps(related_reports['query'], default=str), 'banuserform': BanUserSubForm(), 'is_sub_banned': is_sub_banned, 'post': post, 'comment': comment, 'subInfo': subInfo, 'subMods': subMods})
