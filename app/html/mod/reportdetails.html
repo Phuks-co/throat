@@ -236,11 +236,11 @@ Mod |\
                         @end
                     </td>
                     <td>
-                        @if log.action == 52:
+                        @if log.action == 55:
                           Report closed
-                        @elif log.action == 53:
+                        @elif log.action == 56:
                           Report reopened
-                        @elif log.action == 54:
+                        @elif log.action == 57:
                           @{_('Closed all reports related to: ')}<a href="@{url_for('mod.report_details', sub=report['sub'], type=report['type'], id=log.desc)}">
                             @{report['type']} @{_('report')} @{log.desc}</a>
                         @else:
