@@ -7,7 +7,9 @@ from peewee_migrate import Router
 
 from app import create_app
 from app.config import Config
-from app.models import db
+from app.models import db, BaseModel, User
+from app.auth import auth_provider
+
 
 peewee_migrate_logger = logging.getLogger("peewee_migrate")
 peewee_migrate_logger.setLevel(logging.WARNING)
@@ -23,8 +25,11 @@ def client(test_config):
     """Create the Flask test client."""
     db_fd, db_name = tempfile.mkstemp()
 
+    config_filename = os.environ.get('TEST_CONFIG', None)
+
     # Start with the defaults in config.py.
-    config = Config(use_environment=False)
+    config = Config(config_filename=config_filename,
+                    use_environment=False)
 
     # Set some things that make sense for testing.
     # TODO set Redis database number to different than dev-server
@@ -48,6 +53,15 @@ def client(test_config):
     router.run()
 
     yield app.test_client()
+
+    if config.auth.provider != 'LOCAL':
+        for user in User.select():
+            try:
+                auth_provider.delete_user(user)
+            except Exception as err:
+                print(f"Error trying to clean up {user.name} in Keycloak realm:", err)
+                raise err
+
 
     app_context.pop()
     os.close(db_fd)
