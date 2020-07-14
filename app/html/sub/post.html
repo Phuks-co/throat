@@ -159,7 +159,7 @@
     </div>
   </div>
 
-  @if (subInfo.get('ucf', 0) == 1 and current_user.uid == post.uid) or current_user.uid in subMods['all']:
+  @if (subInfo.get('ucf', 0) == '1' and current_user.uid == post.uid) or current_user.uid in subMods['all']:
     <div style="display:none;" id="postflairs">
       <span class="closemsg">×</span>
       @if post['flair']:
