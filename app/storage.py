@@ -210,8 +210,11 @@ def get_stored_file_size(filename):
 
 
 def remove_file(filename):
-    obj = storage.get(filename)
-    obj.delete()
+    if isinstance(storage, S3Storage):
+        storage.delete(filename)
+    else:
+        obj = storage.get(filename)
+        obj.delete(filename)
 
 
 def store_thumbnail(im, basename):
