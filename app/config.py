@@ -3,6 +3,7 @@ import os
 import yaml
 from flask import current_app
 from werkzeug.local import LocalProxy
+import logging
 
 
 cfg_defaults = {  # key => default value
