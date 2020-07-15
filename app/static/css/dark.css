@@ -470,3 +470,34 @@ body.dark .bot-tag{
   background: #111;
   color: #7d7d7d;
 }
+
+/* deleted comments and posts view for mods and admins */
+body.dark .mod.report.preview .preview-text-container.deleted {
+  background-color: #171717;
+  border: 1px solid red;
+}
+
+body.dark .mod.report.preview .preview-text-container.deleted #postcontent {
+  background-color: #171717;
+  border: 1px solid red;
+}
+
+body.dark article.text-post.comment.deleted {
+  background-color: #171717;
+  border: 1px solid red;
+}
+
+body.dark #postcontent.deleted {
+  background-color: #171717;
+  border: 1px solid red;
+}
+
+body.dark .postbar.post.deleted {
+  background-color: #171717;
+  border: 1px solid red;
+}
+
+body.dark .poll-space.deleted {
+  background-color: #171717;
+  border: 1px solid red;
+}

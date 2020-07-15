@@ -5,7 +5,12 @@
 
 
 @def title():
-  @{post['title']} |\
+  @if (post['visibility'] == ''):
+    @{post['title']} |\
+  @else:
+    @{_('[Deleted Post]')}
+  @end
+
 @end
 
 @def meta_description():
@@ -43,7 +48,7 @@
 
 @def main():
 <div class="wholepost">
-  <div class="postbar post" pid="@{post['pid']}">
+  <div class="postbar post @{((post['visibility'] != '') and (post['visibility'] != 'none')) and 'deleted ' or ''}" pid="@{post['pid']}">
     <div class="misctainer">
       <div class="votebuttons">
         @if post['userstatus'] != 10 and (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(days=60):
@@ -79,9 +84,33 @@
         @end
 
         @if post['link'] == None:
-          <h1><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}" class="title">@{post['title']}</a></h1>
+          <h1><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}" class="title">
+            @if (post['visibility'] == ''):
+              @{post['title']}
+            @elif (post['visibility'] == 'admin-self-del'):
+              @{_('[Deleted by User]')} @{post['title']}
+            @elif (post['visibility'] == 'mod-self-del'):
+              @{_('[Deleted by User]')}
+            @elif (post['visibility'] == 'mod-del'):
+              @{_('[Deleted by Mod]')} @{post['title']}
+            @elif (post['visibility'] == 'none'):
+              @{_('[Deleted]')}
+            @end
+          </a></h1>
         @else:
-          <h1><a rel="noopener nofollow ugc" href="@{(post['deleted'] == 0) and post['link'] or '#'}" class="title">@{post['title']}</a></h1>
+          <h1><a rel="nofollow ugc @{(post['visibility'] == 'none') and 'noopener ' or ''}" href="@{(post['visibility'] != 'none') and post['link'] or '#'}" class="title">
+            @if (post['visibility'] == ''):
+              @{post['title']}
+            @elif (post['visibility'] == 'admin-self-del'):
+            @{_('[Deleted by User]')} @{post['title']}
+            @elif (post['visibility'] == 'mod-self-del'):
+              @{_('[Deleted by User]')}
+            @elif (post['visibility'] == 'mod-del'):
+              @{_('[Deleted by Mod]')} @{post['title']}
+            @elif (post['visibility'] == 'none'):
+              @{_('[Deleted]')}
+            @end
+          </a></h1>
           @if post['deleted'] == 0:
             <a href="/domain/@{func.getDomain(post['link'])}" class="domain">(@{func.getDomain(post['link'])})</a>
           @end
@@ -172,18 +201,28 @@
     </div>
   @end
 
-  @if post['deleted'] == 0 and post['ptype'] == 3:
+  @if (post['ptype'] == 3) and (post['deleted'] == 0 or post['visibility'] == 'admin-self-del' or post['visibility'] == 'mod-del'):
     @{polls.renderPoll(pollData, postmeta, post)!!html}
   @end
 
   @if post['content']:
+    <!-- <p class="helper-text">Post Visibility: @{post['visibility']}</p> -->
     @if post['deleted'] == 0:
       <div id="postcontent">
         @{markdown(post['content'])!!html}
       </div>
       <div id="post-source">@{post['content']}</div>
     @else:
-      <div class="deleted">@{_('[deleted]')}</div>
+      @if ((post['visibility'] == 'none') or (post['visibility'] == 'mod-self-del')):
+        <div id="postcontent" class="@{(post['visibility'] == 'mod-self-del') and 'deleted ' or ''}">
+          @{_('[deleted]')}
+        </div>
+      @elif ((post['visibility'] == 'admin-self-del') or (post['visibility'] == 'mod-del')):
+        <div id="postcontent" class="deleted">
+          @{markdown(post['content'])!!html}
+        </div>
+        <div id="post-source">@{post['content']}</div>
+      @end
     @end
   @elif not post['link']:
     <div id="postcontent"></div>

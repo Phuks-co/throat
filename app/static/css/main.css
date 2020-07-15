@@ -2097,6 +2097,10 @@ a.close-report {
   background-color: #FDD8D4;
 }
 
+.mod.report.preview .preview-text-container.deleted #postcontent {
+  background-color: #FDD8D4;
+}
+
 .mod.report.preview .preview-meta-data {
   display: flex;
   align-items: center;
@@ -2116,5 +2120,13 @@ article.text-post.comment.deleted {
 }
 
 #postcontent.deleted {
+  background-color: #FDD8D4;
+}
+
+.postbar.post.deleted {
+  background-color: #FDD8D4;
+}
+
+.poll-space.deleted {
   background-color: #FDD8D4;
 }

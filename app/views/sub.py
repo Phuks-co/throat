@@ -302,6 +302,23 @@ def view_post(sub, pid, comments=False, highlight=None):
         else:
             comments = misc.get_comment_tree(comments, uid=current_user.uid)
 
+    post['visibility'] = ''
+    if post['deleted'] == 1:
+        if current_user.is_admin():
+            post['visibility'] = 'admin-self-del'
+        elif current_user.is_mod(sub['sid'], 1):
+            post['visibility'] = 'mod-self-del'
+        else:
+            post['visibility'] = 'none'
+    elif post['deleted'] == 2:
+        if current_user.is_admin() or current_user.is_mod(sub['sid'], 1):
+            post['visibility'] = 'mod-del'
+        else:
+            post['visibility'] = 'none'
+
+    if post['userstatus'] == 10 and post['deleted'] == 1:
+        post['visibility'] = 'none'
+
     pollData = {'has_voted': False}
     postmeta = {}
     if post['ptype'] == 3:
