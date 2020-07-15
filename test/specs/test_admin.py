@@ -5,25 +5,16 @@ from peewee import fn
 
 from test.fixtures import *
 from test.utilities import csrf_token, pp
+from test.utilities import register_user, log_in_user, log_out_current_user
 
 def promote_user_to_admin(client, user_info):
     """Assuming user_info is the info for the logged-in user, promote them
     to admin and leave them logged in.
     """
-    rv = client.get('/')
-    rv = client.post('/do/logout', data=dict(csrf_token=csrf_token(rv.data)),
-                     follow_redirects=True)
-    assert b'Log in' in rv.data
-
+    log_out_current_user(client)
     admin = User.get(fn.Lower(User.name) == user_info['username'])
     UserMetadata.create(uid=admin.uid, key='admin', value='1')
-
-    rv = client.get('/login')
-    rv = client.post('/login', data=dict(csrf_token=csrf_token(rv.data),
-                                         username=user_info['username'],
-                                         password=user_info['password']),
-                     follow_redirects=True)
-    assert b'Log out' in rv.data
+    log_in_user(client, user_info)
 
 
 def test_admin_can_ban_and_unban_user(client, user_info, user2_info):
@@ -39,18 +30,15 @@ def test_admin_can_ban_and_unban_user(client, user_info, user2_info):
                      data=dict(csrf_token=csrf_token(rv.data)),
                      follow_redirects=True)
 
-    # TO DO, test based on functionality
-    user = User.get(fn.Lower(User.name) == username)
-    assert user.status == 5
+    # For now, banning makes you unable to log in.
+    log_out_current_user(client)
+    log_in_user(client, user_info, expect_success=False)
+    log_in_user(client, user2_info, expect_success=True)
 
-    help(client.post)
     rv = client.get(f'/u/{username}')
     rv = client.post(f'/do/admin/unban_user/{username}',
                      data=dict(csrf_token=csrf_token(rv.data)),
                      follow_redirects=True)
-    print(rv.status)
-    pp(rv.data)
 
-    # TO DO, test based on functionality
-    user = User.get(fn.Lower(User.name) == username)
-    assert user.status == 0
+    log_out_current_user(client)
+    log_in_user(client, user_info, expect_success=True)

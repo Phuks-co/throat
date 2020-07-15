@@ -3,16 +3,14 @@ import os
 import tempfile
 import pytest
 
-from flask import current_app
-from flask_login import current_user
 from peewee_migrate import Router
 
-from app import create_app, mail
+from app import create_app
 from app.config import Config, config
 from app.models import db, BaseModel, User, UserMetadata
-from app.auth import auth_provider, email_validation_is_required
+from app.auth import auth_provider
 
-from test.utilities import csrf_token, pp
+from test.utilities import recursively_update
 
 
 peewee_migrate_logger = logging.getLogger("peewee_migrate")
@@ -76,46 +74,6 @@ def client(test_config):
     os.close(db_fd)
     os.unlink(db_name)
 
-
-def recursively_update(dictionary, new_values):
-    for elem in new_values.keys():
-        if (elem in dictionary.keys() and
-                isinstance(new_values[elem], dict) and
-                isinstance(dictionary[elem], dict)):
-            recursively_update(dictionary[elem], new_values[elem])
-        else:
-            dictionary[elem] = new_values[elem]
-
-
-def register_user(client, user_info):
-    """Register a user with the client and leave them logged in."""
-    rv = client.get('/')
-    rv = client.post('/do/logout', data=dict(csrf_token=csrf_token(rv.data)),
-                     follow_redirects=True)
-    rv = client.get('/register')
-    with mail.record_messages() as outbox:
-        data = dict(csrf_token=csrf_token(rv.data),
-                    username=user_info['username'],
-                    password=user_info['password'],
-                    confirm=user_info['password'],
-                    invitecode='',
-                    accept_tos=True,
-                    captcha='xyzzy')
-        if email_validation_is_required():
-            data['email_required'] = user_info['email']
-        else:
-            data['email_optional'] = user_info['email']
-        data.update(user_info)
-        rv = client.post('/register',
-                         data=data,
-                         follow_redirects=True)
-
-        if email_validation_is_required():
-            message = outbox[-1]
-            soup = BeautifulSoup(message.html, 'html.parser')
-            token = soup.a['href'].split('/')[-1]
-            rv = client.get("login/with-token/" + token,
-                            follow_redirects=True)
 
 @pytest.fixture
 def user_info():

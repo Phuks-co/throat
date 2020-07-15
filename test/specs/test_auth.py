@@ -1,7 +1,6 @@
 import json
 import pytest
 from bs4 import BeautifulSoup
-from flask import current_app
 
 from app import mail
 from app.config import config
@@ -9,6 +8,7 @@ from app.auth import auth_provider, email_validation_is_required
 
 from test.fixtures import *
 from test.utilities import csrf_token, pp
+from test.utilities import register_user, log_in_user, log_out_current_user
 
 
 @pytest.mark.parametrize('test_config', [{'auth': {'validate_emails': True}},
@@ -73,18 +73,9 @@ def test_email_required_for_registration(client, user_info):
 def test_logout_and_login_again(client, user_info):
     """A logged in user can log out and back in again."""
     register_user(client, user_info)
-    rv = client.get('/')
-    rv = client.post('/do/logout', data=dict(csrf_token=csrf_token(rv.data)),
-                     follow_redirects=True)
-    assert b'Log in' in rv.data
-
-    rv = client.get('/login')
-    rv = client.post('/login',
-                     data=dict(csrf_token=csrf_token(rv.data),
-                               username=user_info['username'],
-                               password=user_info['password']),
-                     follow_redirects=True)
-    assert b'Log out' in rv.data
+    assert b'Log out' in client.get('/').data
+    log_out_current_user(client, verify=True)
+    log_in_user(client, user_info, expect_success=True)
 
 
 # def test_reset_password_by_email():
@@ -107,28 +98,14 @@ def test_change_password(client, user_info):
     reply = json.loads(rv.data.decode('utf-8'))
     assert reply['status'] == 'ok'
 
-    rv = client.get('/')
-    rv = client.post('/do/logout', data=dict(csrf_token=csrf_token(rv.data)),
-                     follow_redirects=True)
-    assert b'Log in' in rv.data
+    log_out_current_user(client)
 
     # Try to log in with the old password
-    rv = client.get('/login')
-    rv = client.post('/login',
-                     data=dict(csrf_token=csrf_token(rv.data),
-                               username=user_info['username'],
-                               password=user_info['password']),
-                     follow_redirects=True)
-    assert b'Log in' in rv.data
+    log_in_user(client, user_info, expect_success=False)
 
-    # Try to log in with the new password
-    rv = client.get('/login')
-    rv = client.post('/login',
-                     data=dict(csrf_token=csrf_token(rv.data),
-                               username=user_info['username'],
-                               password=new_password),
-                     follow_redirects=True)
-    assert b'Log out' in rv.data
+    new_info = dict(user_info)
+    new_info.update(password=new_password)
+    log_in_user(client, new_info, expect_success=True)
 
 
 # def test_change_user_email():
@@ -174,14 +151,8 @@ def test_delete_account(client, user_info):
     rv = client.get('/')
     assert b'Log in' in rv.data
 
-    # Try to log in with the old password
-    rv = client.get('/login')
-    rv = client.post('/login',
-                     data=dict(csrf_token=csrf_token(rv.data),
-                               username=user_info['username'],
-                               password=user_info['password']),
-                     follow_redirects=True)
-    assert b'Log in' in rv.data
+    # Try to log in to the deleted account.
+    log_in_user(client, user_info, expect_success=False)
 
 
 
