@@ -66,7 +66,7 @@ def client(test_config):
     if config.auth.provider != 'LOCAL':
         for user in User.select():
             try:
-                auth_provider.delete_user(user)
+                auth_provider.actually_delete_user(user)
             except Exception as err:
                 print(f"Error trying to clean up {user.name} in Keycloak realm:", err)
                 raise err

@@ -92,8 +92,7 @@ def delete_user():
         if form.consent.data != _('YES'):
             return jsonify(status='error', error=[_('Type "YES" in the box')])
 
-        usr.status = 10
-        usr.save()
+        auth_provider.mark_user_deleted(usr)
         logout_user()
 
         return jsonify(status='ok')

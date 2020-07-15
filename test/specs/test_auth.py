@@ -134,3 +134,52 @@ def test_change_password(client, user_info, logged_in_user):
 #     pass
 
 
+def test_delete_account(client, user_info, logged_in_user):
+    """A user can delete their account."""
+
+    # The password has to be right.
+    rv = client.get('/settings/delete')
+    rv = client.post('/do/delete_account',
+                     data=dict(csrf_token=csrf_token(rv.data),
+                               password='ThisIsNotTheRightPassword',
+                               consent='YES'),
+                     follow_redirects=True)
+    reply = json.loads(rv.data.decode('utf-8'))
+    assert reply['status'] == 'error'
+
+    # The consent must be given.
+    rv = client.get('/settings/delete')
+    rv = client.post('/do/delete_account',
+                     data=dict(csrf_token=csrf_token(rv.data),
+                               password='ThisIsNotTheRightPassword',
+                               consent='NO'),
+                     follow_redirects=True)
+    reply = json.loads(rv.data.decode('utf-8'))
+    assert reply['status'] == 'error'
+
+    rv = client.get('/settings/delete')
+    rv = client.post('/do/delete_account',
+                     data=dict(csrf_token=csrf_token(rv.data),
+                               password=user_info['password'],
+                               consent='YES'),
+                     follow_redirects=True)
+    reply = json.loads(rv.data.decode('utf-8'))
+    assert reply['status'] == 'ok'
+
+    # Deleting your account should log you out.
+    rv = client.get('/')
+    assert b'Log in' in rv.data
+
+    # Try to log in with the old password
+    rv = client.get('/login')
+    rv = client.post('/login',
+                     data=dict(csrf_token=csrf_token(rv.data),
+                               username=user_info['username'],
+                               password=user_info['password']),
+                     follow_redirects=True)
+    assert b'Log in' in rv.data
+
+
+
+# TODO deleted users should be able to make a new account with the
+# same email but banned users should not

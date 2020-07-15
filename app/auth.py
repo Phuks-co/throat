@@ -158,11 +158,22 @@ class AuthProvider:
                 return False
         return False
 
-    def delete_user(self, user):
+    def mark_user_deleted(self, user):
+        if user.crypto == UserCrypto.REMOTE:
+            self.keycloak_admin.update_user(user_id=user.uid,
+                                            payload={'email': '',
+                                                     'emailVerified': False,
+                                                     'enabled': False})
+        user.email = ''
+        user.email_verified = False
+        user.status = 10
+        user.save()
+
+    def actually_delete_user(self, user):
+        # Used by automatic tests to clean up test realm on server.
+        # You should probably be using mark_user_deleted.
         if user.crypto == UserCrypto.REMOTE:
             self.keycloak_admin.delete_user(user.uid)
-
-        # to do delete the user record
 
 
 
