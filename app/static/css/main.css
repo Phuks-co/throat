@@ -2093,6 +2093,10 @@ a.close-report {
   padding-left: 10px;
 }
 
+.mod.report.preview .preview-text-container.deleted {
+  background-color: #FDD8D4;
+}
+
 .mod.report.preview .preview-meta-data {
   display: flex;
   align-items: center;
@@ -2105,4 +2109,12 @@ a.close-report {
 
 .mod-sidebar.header {
   text-align: center;
+}
+
+article.text-post.comment.deleted {
+  background-color: #FDD8D4;
+}
+
+#postcontent.deleted {
+  background-color: #FDD8D4;
 }
