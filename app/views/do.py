@@ -30,8 +30,8 @@ from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
 from ..misc import cache, send_email, allowedNames, get_errors, engine
-from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubLog, SiteLog, SubMetadata, UserSaved
-from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode
+from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved
+from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
 from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport, SubRule
 from peewee import fn, JOIN
@@ -165,15 +165,12 @@ def delete_post():
                 return jsonify(status="error", error=[_("Cannot delete without reason")])
             deletion = 2
             # notify user.
-            # TODO: Make this a translatable notification
-            misc.create_message(mfrom=current_user.uid, to=post.uid.uid,
-                                subject='Your post on /s/' + sub.name + ' has been deleted.',
-                                content='Reason: ' + form.reason.data,
-                                link=sub.name, mtype=11)
+            Notification(type='POST_DELETE', sub=post.sid, post=post.pid, content='Reason: ' + form.reason.data,
+                         sender=current_user.uid, target=post.uid).save()
 
             misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_POST, current_user.uid, post.sid,
-                    comment=form.reason.data, link=url_for('site.view_post_inbox', pid=post.pid),
-                    admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
+                               comment=form.reason.data, link=url_for('site.view_post_inbox', pid=post.pid),
+                               admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
 
         # time limited to prevent socket spam
         if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)).seconds < 86400:
@@ -632,19 +629,13 @@ def create_comment(pid):
         if form.parent.data != "0":
             parent = SubPostComment.get(SubPostComment.cid == form.parent.data)
             to = parent.uid.uid
-            subject = 'Comment reply: ' + post.title
-            mtype = 5
+            ntype = 'COMMENT_REPLY'
         else:
             to = post.uid.uid
-            subject = 'Post reply: ' + post.title
-            mtype = 4
+            ntype = 'POST_REPLY'
         if to != current_user.uid and current_user.uid not in misc.get_ignores(to):
-            misc.create_message(mfrom=current_user.uid,
-                                to=to,
-                                subject=subject,
-                                content='',
-                                link=comment.cid,
-                                mtype=mtype)
+            Notification(type=ntype, sub=post.sid, post=post.pid, comment=comment.cid,
+                         sender=current_user.uid, target=to).save()
             socketio.emit('notification',
                           {'count': misc.get_notification_count(to)},
                           namespace='/snt',
@@ -734,13 +725,7 @@ def ban_user_sub(sub):
         if misc.is_sub_banned(sub, uid=user.uid):
             return jsonify(status='error', error=[_('Already banned')])
 
-        # TODO: Transform into a translatable notification
-        misc.create_message(mfrom=current_user.uid,
-                            to=user.uid,
-                            subject='You have been banned from /s/' + sub.name,
-                            content='Reason: ' + form.reason.data,
-                            link=sub.name,
-                            mtype=7)
+        Notification(type='SUB_BAN', sub=sub.sid, sender=current_user.uid, content='Reason: ' + form.reason.data, target=user.uid).save()
         socketio.emit('notification',
                       {'count': misc.get_notification_count(user.uid)},
                       namespace='/snt',
@@ -799,13 +784,11 @@ def inv_mod(sub):
                 # TODO: Adjust by level
                 return jsonify(status='error', error=[_("User can't mod more than 20 subs")])
 
-            # TODO: Transform into a translatable notification
-            misc.create_message(mfrom=current_user.uid,
-                                to=user.uid,
-                                subject='You have been invited to mod a sub.',
-                                content=current_user.name + ' has invited you to be a ' + ('moderator' if power_level == 1 else 'janitor') + ' in ' + sub.name,
-                                link=sub.name,
-                                mtype=2)
+            if form.level.data == '1':
+                mtype = 'MOD_INVITE'
+            else:
+                mtype = 'MOD_INVITE_JANITOR'
+            Notification(type=mtype, sub=sub.sid, sender=current_user.uid, target=user.uid).save()
             socketio.emit('notification',
                           {'count': misc.get_notification_count(user.uid)},
                           namespace='/snt',
@@ -850,11 +833,7 @@ def remove_sub_ban(sub, user):
             sb.expires = datetime.datetime.utcnow()
             sb.save()
 
-            misc.create_message(mfrom=current_user.uid,
-                                to=user.uid,
-                                subject='You have been unbanned from /s/' + sub.name,
-                                content='', mtype=7,
-                                link=sub.name)
+            Notification(type='SUB_UNBAN', sub=sub.sid, sender=current_user.uid, target=user.uid).save()
             socketio.emit('notification',
                           {'count': misc.get_notification_count(user.uid)},
                           namespace='/snt',

@@ -1,0 +1,30 @@
+@def render_sidebar(curr_endpoint):
+<div class="row buttons inboxside">
+  <div>
+    <a class="sbm-post pure-button" href="@{ url_for('messages.view_messages') }">
+      Inbox
+      @if func.get_unread_count(func.MESSAGE_TYPE_PM) > 0:
+        <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> @{func.get_unread_count(func.MESSAGE_TYPE_PM)}</span>
+      @end
+    </a>
+  </div>
+  <div>
+    <a class="sbm-post pure-button @{curr_endpoint=='notifications' and 'button-secondary' or ''}" href="@{ url_for('messages.view_notifications') }">
+      Notifications
+      @if func.get_notif_count() > 0:
+        <span class="newmsgcount"><span class="i-icon" data-icon="mail" style="display: inline-block;"></span> @{func.get_notif_count()}</span>
+      @end
+    </a>
+  </div>
+<hr>
+  <div>
+    <a class="sbm-post pure-button" href="@{ url_for('messages.view_messages_sent') }">Sent Messages</a>
+  </div>
+  <div>
+    <a class="sbm-post pure-button"  href="@{ url_for('messages.view_saved_messages') }">Saved Messages</a>
+  </div>
+  <div>
+    <a class="sbm-post pure-button"  href="@{ url_for('messages.view_ignores') }">Blocked users</a>
+  </div>
+</div>
+@end

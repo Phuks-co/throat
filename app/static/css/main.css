@@ -523,7 +523,7 @@ span#notification.fade {
 	color: #d95204;
 }
 
-.post .title:hover {
+.post a.title:hover {
 	color: #ff6d15;
 }
 .misctainer {

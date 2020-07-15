@@ -35,7 +35,7 @@ from .badges import badges
 
 from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata, SubRule
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db
-from .models import SubPostReport, SubPostCommentReport, PostReportLog, CommentReportLog
+from .models import SubPostReport, SubPostCommentReport, PostReportLog, CommentReportLog, Notification
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair, InviteCode
 from .models import SubMod, SubBan
 from .storage import store_thumbnail, file_url, thumbnail_url
@@ -645,10 +645,6 @@ def getYoutubeID(url):
 def workWithMentions(data, receivedby, post, sub, cid=None, c_user=current_user):
     """ Does all the job for mentions """
     mts = re.findall(re_amention.LINKS, data)
-    if isinstance(sub, Sub):
-        subname = sub.name
-    else:
-        subname = sub['name']
     if mts:
         mts = list(set(mts))  # Removes dupes
         clean_mts = []
@@ -677,14 +673,11 @@ def workWithMentions(data, receivedby, post, sub, cid=None, c_user=current_user)
             if user.uid != c_user.uid and user.uid != receivedby:
                 # Checks done. Send our shit
                 if cid:
-                    link = url_for('sub.view_perm', pid=post.pid, sub=subname, cid=cid)
+                    Notification(type='COMMENT_MENTION', sub=post.sid, post=post.pid, comment=cid,
+                                 sender=c_user.uid, target=user.uid).save()
                 else:
-                    link = url_for('sub.view_post', pid=post.pid, sub=subname)
-                create_message(c_user.uid, user.uid,
-                               subject="You've been tagged in a post",
-                               content="@{0} tagged you in [{1}]({2})"
-                               .format(c_user.name, "Here: " + post.title, link),
-                               link=link, mtype=8)
+                    Notification(type='POST_MENTION', sub=post.sid, post=post.pid, comment=cid,
+                                 sender=c_user.uid, target=user.uid).save()
                 socketio.emit('notification',
                               {'count': get_notification_count(user.uid)},
                               namespace='/snt',
@@ -990,11 +983,12 @@ def getStickies(sid):
 
 
 def load_user(user_id):
-    user = User.select(fn.Count(Message.mid).alias('notifications'),
+    user = User.select((fn.Count(Message.mid) + fn.Count(Notification.id)).alias('notifications'),
                        User.given, User.score, User.name, User.uid, User.status, User.email, User.language)
     user = user.join(Message, JOIN.LEFT_OUTER, on=(
-            (Message.receivedby == User.uid) & (Message.mtype != 6) & (Message.mtype != 9) &
-            (Message.mtype != 41) & Message.read.is_null(True))).switch(User)
+            (Message.receivedby == User.uid) & (Message.mtype == 1) & Message.read.is_null(True))).switch(User)
+    user = user.join(Notification, JOIN.LEFT_OUTER,
+                     on=(Notification.target == User.uid) & Notification.read.is_null(True)).switch(User)
     user = user.group_by(User.uid).where(User.uid == user_id).dicts().get()
 
     if request.path == '/socket.io/':
@@ -1013,8 +1007,9 @@ def load_user(user_id):
 
 
 def get_notification_count(uid):
-    return Message.select().where((Message.receivedby == uid) & (Message.mtype != 6) & (Message.mtype != 9) & (
-            Message.mtype != 41) & Message.read.is_null(True)).count()
+    msg = Message.select().where((Message.receivedby == uid) & (Message.mtype == 1) & Message.read.is_null(True)).count()
+    notif = Notification.select().where((Notification.target == uid) & Notification.read.is_null(True)).count()
+    return msg + notif
 
 
 def get_errors(form, first=False):
@@ -1633,6 +1628,12 @@ def get_messages(mtype, read=False, uid=None):
 @cache.memoize(1)
 def get_unread_count(mtype):
     return get_messages(mtype, True).count()
+
+
+@cache.memoize(1)
+def get_notif_count():
+    """ Temporary till we get rid of the old template """
+    return Notification.select().where((Notification.target == current_user.uid) & Notification.read.is_null(True)).count()
 
 
 def cast_vote(uid, target_type, pcid, value):

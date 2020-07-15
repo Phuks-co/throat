@@ -13,7 +13,7 @@ from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
 from .. import misc
 from ..socketio import socketio
 from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote, SubSubscriber
-from ..models import SiteMetadata, UserMetadata, Message, SubRule
+from ..models import SiteMetadata, UserMetadata, Message, SubRule, Notification
 from ..caching import cache
 
 API = Blueprint('apiv3', __name__)
@@ -296,10 +296,8 @@ def delete_post(sub, pid):
             return jsonify(msg="Cannot delete post without reason"), 400
         post.deleted = 2
         # TODO: Make this a translatable notification
-        misc.create_message(mfrom=uid, to=post.uid.uid,
-                            subject='Your post on /s/' + sub.name + ' has been deleted.',
-                            content='Reason: ' + reason,
-                            link=sub.name, mtype=11)
+        Notification(type='POST_DELETE', sub=post.sid, post=post.pid, content='Reason: ' + reason,
+                     sender=uid, target=post.uid).save()
 
         misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_POST, uid, post.sid,
                            comment=reason, link=url_for('site.view_post_inbox', pid=post.pid),
@@ -436,19 +434,14 @@ def create_comment(sub, pid):
     if parentcid:
         parent = SubPostComment.get(SubPostComment.cid == parentcid)
         notif_to = parent.uid_id
-        subject = 'Comment reply: ' + post.title
-        mtype = 5
+        ntype = 'COMMENT_REPLY'
     else:
         notif_to = post.uid_id
-        subject = 'Post reply: ' + post.title
-        mtype = 4
+        ntype = 'POST_REPLY'
+
     if notif_to != uid and uid not in misc.get_ignores(notif_to):
-        misc.create_message(mfrom=uid,
-                            to=notif_to,
-                            subject=subject,
-                            content='',
-                            link=comment.cid,
-                            mtype=mtype)
+        Notification(type=ntype, sub=post.sid, post=post.pid, comment=comment.cid,
+                     sender=uid, target=notif_to).save()
         socketio.emit('notification', {'count': misc.get_notification_count(notif_to)},
                       namespace='/snt', room='user' + notif_to)
 
