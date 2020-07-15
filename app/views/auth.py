@@ -129,14 +129,18 @@ def register():
     if email_validation_is_required():
         user.probation = True
         send_login_link_email(user)
-        # TODO make a page that says "check your email"
-        return redirect(url_for('home.index'))
+        return redirect(url_for('auth.confirm_registration'))
     else:
         theuser = misc.load_user(user.uid)
         login_user(theuser, remember=True)
         return redirect(url_for('wiki.welcome'))
 
 
+@bp.route('/register/confirm')
+def confirm_registration():
+    if current_user.is_authenticated:
+        return redirect(url_for('home.index'))
+    return engine.get_template('user/check-your-email.html').render({})
 
 
 @bp.route('/login/with-token/<token>')

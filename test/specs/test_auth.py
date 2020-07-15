@@ -31,6 +31,7 @@ def test_registration_login(client):
         rv = client.post('/register', data=data, follow_redirects=True)
 
         if email_validation_is_required():
+            assert b'spam' in rv.data  # Telling user to go check it.
             message = outbox[-1]
             soup = BeautifulSoup(message.html, 'html.parser')
             token = soup.a['href'].split('/')[-1]
