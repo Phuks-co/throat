@@ -118,7 +118,6 @@ class AuthProvider:
                                                  'emailVerified': user.verified_email,
                                                  'credentials': [{'value': new_password,
                                                                   'type': 'password'}]})
-                # user.email = ''  # TODO decide if this is a good idea
                 self.set_user_auth_source(user, UserAuthSource.KEYCLOAK)
                 user.crypto = UserCrypto.REMOTE
                 user.password = ''
@@ -158,15 +157,26 @@ class AuthProvider:
                 return False
         return False
 
-    def mark_user_deleted(self, user):
+    def change_user_status(self, user, new_status):
+        if new_status == 10:
+            payload = {'email': '',
+                       'emailVerified': False,
+                       'enabled': False}
+            user.email = ''
+            user.email_verified = False
+        elif user.status != 10 and new_status == 5:
+            payload = {'enabled': False}
+        elif user.status != 10 and new_status == 0:
+            payload = {'enabled': True}
+        else:
+            raise RuntimeError("Invalid user status")
+
         if user.crypto == UserCrypto.REMOTE:
-            self.keycloak_admin.update_user(user_id=user.uid,
-                                            payload={'email': '',
-                                                     'emailVerified': False,
-                                                     'enabled': False})
-        user.email = ''
-        user.email_verified = False
-        user.status = 10
+            if (self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK and
+                    self.provider == 'KEYCLOAK'):
+                self.keycloak_admin.update_user(user_id=user.uid, payload=payload)
+
+        user.status = new_status
         user.save()
 
     def actually_delete_user(self, user):
@@ -174,7 +184,6 @@ class AuthProvider:
         # You should probably be using mark_user_deleted.
         if user.crypto == UserCrypto.REMOTE:
             self.keycloak_admin.delete_user(user.uid)
-
 
 
 auth_provider = AuthProvider()

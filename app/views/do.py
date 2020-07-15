@@ -92,7 +92,7 @@ def delete_user():
         if form.consent.data != _('YES'):
             return jsonify(status='error', error=[_('Type "YES" in the box')])
 
-        auth_provider.mark_user_deleted(usr)
+        auth_provider.change_user_status(usr, 10)
         logout_user()
 
         return jsonify(status='ok')
@@ -1903,8 +1903,7 @@ def ban_user(username):
     if user.uid == current_user.uid:
         abort(403)
 
-    user.status = 5
-    user.save()
+    auth_provider.change_user_status(user, 5)
     misc.create_sitelog(misc.LOG_TYPE_USER_BAN, uid=current_user.uid, comment=user.name)
     return redirect(request.referrer)
 
@@ -1924,13 +1923,10 @@ def unban_user(username):
     except User.DoesNotExist:
         abort(404)
 
-    try:
-        user.status = 5
-    except:
-        return jsonify(status='error', error='user is not banned')
+    if user.status != 5:
+        return jsonify(status='error', error=_('User is not banned'))
 
-    user.status = 0
-    user.save()
+    auth_provider.change_user_status(user, 0)
     misc.create_sitelog(misc.LOG_TYPE_USER_UNBAN, uid=current_user.uid, comment=user.name)
     return redirect(request.referrer)
 
