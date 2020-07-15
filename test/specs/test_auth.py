@@ -70,8 +70,9 @@ def test_email_required_for_registration(client, user_info):
 
 
 # TODO make sure this can be done with unicode in password
-def test_logout_and_login_again(client, user_info, logged_in_user):
+def test_logout_and_login_again(client, user_info):
     """A logged in user can log out and back in again."""
+    register_user(client, user_info)
     rv = client.get('/')
     rv = client.post('/do/logout', data=dict(csrf_token=csrf_token(rv.data)),
                      follow_redirects=True)
@@ -91,8 +92,9 @@ def test_logout_and_login_again(client, user_info, logged_in_user):
 #     pass
 
 
-def test_change_password(client, user_info, logged_in_user):
+def test_change_password(client, user_info):
     """A user can change their password and log in with the new password."""
+    register_user(client, user_info)
     new_password = 'mynewSuperSecret#123'
     assert new_password != user_info['password']
     rv = client.get('/settings/password')
@@ -128,14 +130,16 @@ def test_change_password(client, user_info, logged_in_user):
                      follow_redirects=True)
     assert b'Log out' in rv.data
 
+
 # def test_change_user_email():
 #     """A user can change their email address, and receive a reset password
 #     link at the new address."""
 #     pass
 
 
-def test_delete_account(client, user_info, logged_in_user):
+def test_delete_account(client, user_info):
     """A user can delete their account."""
+    register_user(client, user_info)
 
     # The password has to be right.
     rv = client.get('/settings/delete')

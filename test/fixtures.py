@@ -9,7 +9,7 @@ from peewee_migrate import Router
 
 from app import create_app, mail
 from app.config import Config, config
-from app.models import db, BaseModel, User
+from app.models import db, BaseModel, User, UserMetadata
 from app.auth import auth_provider, email_validation_is_required
 
 from test.utilities import csrf_token, pp
@@ -87,15 +87,11 @@ def recursively_update(dictionary, new_values):
             dictionary[elem] = new_values[elem]
 
 
-@pytest.fixture
-def user_info():
-    return dict(username='supertester',
-                email='test@example.com',
-                password='Safe123#$@lolnot')
-
-
-@pytest.fixture
-def logged_in_user(client, user_info):
+def register_user(client, user_info):
+    """Register a user with the client and leave them logged in."""
+    rv = client.get('/')
+    rv = client.post('/do/logout', data=dict(csrf_token=csrf_token(rv.data)),
+                     follow_redirects=True)
     rv = client.get('/register')
     with mail.record_messages() as outbox:
         data = dict(csrf_token=csrf_token(rv.data),
@@ -120,5 +116,16 @@ def logged_in_user(client, user_info):
             token = soup.a['href'].split('/')[-1]
             rv = client.get("login/with-token/" + token,
                             follow_redirects=True)
-        assert b'Log out' in rv.data
-    return current_user
+
+@pytest.fixture
+def user_info():
+    return dict(username='supertester',
+                email='test@example.com',
+                password='Safe123#$@lolnot')
+
+
+@pytest.fixture
+def user2_info():
+    return dict(username='administrator',
+                email='admin@example.com',
+                password='999aaaAAA###')
