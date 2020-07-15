@@ -7,7 +7,7 @@
 <h3>@{_('Editing as Admin')}</h3>
 @end
 
-<h2>@{_('Banned users on')} <a href="@{url_for('sub.view_sub', sub=sub.name)}">/@{config.site.sub_prefix}/@{sub.name}</a></h2>
+  <h2>@{_('Banned users on <a href="%(sub)s">%(sub)s</a>', sub=url_for('sub.view_sub', sub=sub.name))!!html}</h2>
 @if current_user.is_admin() or current_user.is_mod(sub.sid, 2):
 <h3>@{_('Ban user')}</h3>
 <div class="editmoderators">
