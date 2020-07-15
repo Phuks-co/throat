@@ -37,7 +37,7 @@
   @if sort_type.startswith('home.') or sort_type.startswith('home.all_'):
     @if ann:
       <div id="announcement-post">
-      @ipost.singlePost(ann, False, announcement=True)
+      @{ipost.singlePost(ann, False, announcement=True)!!html}
       <hr/>
       </div>
     @end

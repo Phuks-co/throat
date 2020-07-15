@@ -514,7 +514,9 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
     const content = document.querySelector('#rcomm-' + cid + ' textarea').value;
     qelem.setAttribute('disabled', true);
     window.sending = true;
-    u.post('/do/sendcomment/' + pid, {parent: cid, post: pid, comment: content},
+    let pcid = cid;
+    if(pcid[0] == '-') pcid = 0;
+    u.post('/do/sendcomment/' + pid, {parent: pcid, post: pid, comment: content},
         function (data) {
             if (data.status != "ok") {
                 qelem.parentNode.querySelector('.error').style.display = 'block';
@@ -523,10 +525,14 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
             } else {
                 qelem.innerHTML = _('Saved.');
                 const cmtcount = document.getElementById('cmnts');
+                window.sending = false;
+                if(!cmtcount) {
+                    document.querySelector('.reply-comment[data-to="' + cid + '"] s').click();
+                    return;
+                }
                 let count = cmtcount.getAttribute('data-cnt');
                 count = count ? count : 0;
                 cmtcount.setAttribute('data-cnt', parseInt(count) + 1);
-                window.sending = false;
                 if (cmtcount.getElementsByTagName('a').length === 0) {
                     const a = document.createElement('a');
                     a.href = '/p/' + pid;
