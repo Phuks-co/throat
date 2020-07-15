@@ -20,6 +20,7 @@ sendgrid
 bs4
 gevent
 gevent-websocket
+gunicorn
 wheezy.template
 wheezy.html
 python-magic

@@ -39,6 +39,16 @@ To add an admin user to a running docker-compose application:
 
 If Wheezy templates are not automatically reloading in docker between changes, try `docker restart throat_throat_1`.
 
+## Docker Deployments
+
+### Gunicorn
+```
+CMD [ "gunicorn", \
+      "-w", "4", \
+      "-k", "geventwebsocket.gunicorn.workers.GeventWebSocketWorker", \
+      "-b", "0.0.0.0:5000", \
+      "throat:app" ]
+```
 
 ## Tests
 
