@@ -4,13 +4,13 @@ import datetime
 import uuid
 import re
 import requests
-import bcrypt
 from bs4 import BeautifulSoup
 from flask import Blueprint, jsonify, request, url_for
 from peewee import JOIN, fn
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
 from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
 from .. import misc
+from ..auth import auth_provider
 from ..socketio import socketio
 from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote, SubSubscriber
 from ..models import SiteMetadata, UserMetadata, Message, SubRule, Notification
@@ -50,13 +50,8 @@ def login():
     if user.status != 0:
         return jsonify(msg="Forbidden"), 403
 
-    if user.crypto == 1:  # bcrypt
-        thash = bcrypt.hashpw(password.encode('utf-8'),
-                              user.password.encode('utf-8'))
-        if thash != user.password.encode('utf-8'):
-            return jsonify(msg="Bad username or password"), 401
-    else:
-        return jsonify(msg="Bad user data"), 400
+    if not auth_provider.validate_password(user):
+        return jsonify(msg="Bad username or password"), 401
 
     # Identity can be any data that is json serializable
     access_token = create_access_token(identity=user.uid, fresh=True)
@@ -91,13 +86,8 @@ def fresh_login():
     except User.DoesNotExist:
         return jsonify(msg="Bad username or password"), 401
 
-    if user.crypto == 1:  # bcrypt
-        thash = bcrypt.hashpw(password.encode('utf-8'),
-                              user.password.encode('utf-8'))
-        if thash != user.password.encode('utf-8'):
-            return jsonify(msg="Bad username or password"), 401
-    else:
-        return jsonify(msg="Bad user data"), 400
+    if not auth_provider.validate_password(user):
+        return jsonify(msg="Bad username or password"), 401
 
     new_token = create_access_token(identity=user.uid, fresh=True)
     return jsonify(access_token=new_token)

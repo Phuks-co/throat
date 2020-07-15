@@ -190,7 +190,7 @@ def login():
             return engine.get_template('user/login.html').render(
                 {'error': _("Invalid username or password."), 'loginform': form})
 
-        if auth_provider.check_password(user, form.password.data):
+        if auth_provider.validate_password(user, form.password.data):
             theuser = misc.load_user(user.uid)
             login_user(theuser, remember=form.remember.data)
             if request.args.get('service'):

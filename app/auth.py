@@ -116,7 +116,7 @@ class AuthProvider:
         except UserMetadata.DoesNotExist:
             UserMetadata.create(uid=user.uid, key="email_verified", value=value)
 
-    def check_password(self, user, password):
+    def validate_password(self, user, password):
         if user.crypto == UserCrypto.BCRYPT:
             thash = bcrypt.hashpw(password.encode('utf-8'), user.password.encode('utf-8'))
             return thash == user.password.encode('utf-8')
@@ -129,6 +129,7 @@ class AuthProvider:
             except KeycloakError as err:
                 print("====failed ", err)
                 return False
+        return False
 
     def delete_user(self, user):
         if user.crypto == UserCrypto.REMOTE:

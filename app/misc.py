@@ -1251,16 +1251,6 @@ def get_ignores(uid):
     return [x.target for x in UserIgnores.select().where(UserIgnores.uid == uid)]
 
 
-def validate_password(usr, passwd):
-    """ Returns True if `passwd` is valid for `usr`. `usr` is a db object. """
-    if usr.crypto == 1:  # bcrypt
-        thash = bcrypt.hashpw(passwd.encode('utf-8'),
-                              usr.password.encode('utf-8'))
-        if thash == usr.password.encode('utf-8'):
-            return True
-    return False
-
-
 def iter_validate_css(obj, uris):
     for x in obj:
         if x.__class__.__name__ == "URLToken":

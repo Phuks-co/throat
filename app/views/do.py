@@ -20,6 +20,7 @@ from flask_babel import _
 from ..config import config
 from .. import forms, misc, caching, storage
 from ..socketio import socketio
+from ..auth import auth_provider
 from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm, ChangePasswordForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm
@@ -74,7 +75,7 @@ def edit_user_password():
     form = ChangePasswordForm()
     if form.validate():
         usr = User.get(User.uid == current_user.uid)
-        if not misc.validate_password(usr, form.oldpassword.data):
+        if not auth_provider.validate_password(usr, form.oldpassword.data):
             return json.dumps({'status': 'error', 'error': [_('Wrong password')]})
 
         password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
@@ -94,7 +95,7 @@ def delete_user():
     form = DeleteAccountForm()
     if form.validate():
         usr = User.get(User.uid == current_user.uid)
-        if not misc.validate_password(usr, form.password.data):
+        if not auth_provider.validate_password(usr, form.password.data):
             return jsonify(status='error', error=[_('Wrong password')])
 
         if form.consent.data != _('YES'):
