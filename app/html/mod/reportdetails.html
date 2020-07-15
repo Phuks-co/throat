@@ -161,15 +161,18 @@ Mod |\
 
             @else:
             <h3>@{_('Comment Preview:')}</h3>
-              <div class="preview-text-container">
+              <div class="preview-text-container @{((comment['status'] == 1) or (comment['status'] == 2)) and 'deleted ' or ''}">
                 <div class="preview-text">
                   @if comment['status'] != 1:
                     @if comment['status'] == 2:
-                      @{_('[comment deleted by mod or admin]')}
+                      <p class="helper=text">@{_('[comment deleted by mod or admin]')}</p>
                     @end
                     <div id="commentcontent">@{comment['content']}</div>
+                  @elif current_user.is_admin():
+                    <p class="helper=text">@{_('[comment deleted by user]')}</p>
+                    <div id="commentcontent">@{comment['content']}</div>
                   @else:
-                    @{_('[comment deleted by user]')}
+                    <p class="helper=text">@{_('[comment deleted by user]')}</p>
                   @end
                 </div>
               </div>

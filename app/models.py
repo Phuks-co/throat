@@ -332,7 +332,7 @@ class SubPostComment(BaseModel):
     score = IntegerField(null=True)
     upvotes = IntegerField(default=0)
     downvotes = IntegerField(default=0)
-    status = IntegerField(null=True) # 1=self delete, 2=mod delete, 0=not deleted
+    status = IntegerField(null=True) # 1=self delete, 2=mod delete, 0 or null=not deleted
     time = DateTimeField(null=True)
     uid = ForeignKeyField(db_column='uid', null=True, model=User,
                           field='uid', backref='comments')

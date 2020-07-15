@@ -1585,13 +1585,38 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
 
     commdata = {}
     for comm in expcomms:
-        if comm['userstatus'] == 10 or comm['status']:
-            comm['user'] = _('[Deleted]')
-            comm['uid'] = None
+        comm['visibility'] = ''
+        sub = Sub.select().join(SubPost).join(SubPostComment).where(SubPostComment.cid == comm['cid']).get()
 
         if comm['status']:
-            comm['content'] = ''
-            comm['lastedit'] = None
+            if comm['status'] == 1:
+                if current_user.is_admin():
+                    comm['visibility'] = 'admin-self-del'
+                elif current_user.is_mod(sub.sid, 1):
+                    comm['visibility'] = 'mod-self-del'
+                else:
+                    comm['user'] = _('[Deleted]')
+                    comm['uid'] = None
+                    comm['content'] = ''
+                    comm['lastedit'] = None
+                    comm['visibility'] = 'none'
+            elif comm['status'] == 2:
+                if current_user.is_admin() or current_user.is_mod(sub.sid, 1):
+                    comm['visibility'] = 'mod-del'
+                else:
+                    comm['user'] = _('[Deleted]')
+                    comm['uid'] = None
+                    comm['content'] = ''
+                    comm['lastedit'] = None
+                    comm['visibility'] = 'none'
+
+        if comm['userstatus'] == 10:
+            comm['user'] = _('[Deleted]')
+            comm['uid'] = None
+            if comm['status'] == 1:
+                comm['content'] = ''
+                comm['lastedit'] = None
+                comm['visibility'] = 'none'
         # del comm['userstatus']
         commdata[comm['cid']] = comm
 
