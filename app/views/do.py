@@ -75,16 +75,7 @@ def edit_user_password():
     form = ChangePasswordForm()
     if form.validate():
         usr = User.get(User.uid == current_user.uid)
-        if not auth_provider.validate_password(usr, form.oldpassword.data):
-            return json.dumps({'status': 'error', 'error': [_('Wrong password')]})
-
-        password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
-        if isinstance(password, bytes):
-            password = password.decode('utf-8')
-
-        usr.password = password
-        usr.crypto = 1
-        usr.save()
+        auth_provider.change_password(usr, form.oldpassword.data, form.password.data)
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 

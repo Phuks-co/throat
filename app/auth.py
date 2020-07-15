@@ -76,7 +76,7 @@ class AuthProvider:
                                                    'emailVerified': verified_email,
                                                    'credentials': [{'value': password,
                                                                     'type': 'password'}]})
-            email = ''
+            # email = ''  # Store emails in local db, or not?
             password = ''
             crypto = UserCrypto.REMOTE
         user = User.create(uid=uid, name=name, crypto=crypto, password=password,
@@ -103,6 +103,32 @@ class AuthProvider:
         except UserMetadata.DoesNotExist:
             UserMetadata.create(uid=user.uid, key="auth_source", value=value)
 
+    def change_password(self, user, old_password, new_password):
+        if not self.validate_password(user, old_password):
+            return False
+        if self.provider == 'LOCAL':
+            user.crypto = UserCrypto.BCRYPT
+            user.password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+        elif self.provider == 'KEYCLOAK':
+            if self.get_user_auth_source(user) == UserAuthSource.LOCAL:
+                self.keycloak_admin.create_user({'id': user.uid,
+                                                 'email': user.email,
+                                                 'username': user.name,
+                                                 'enabled': True,
+                                                 'emailVerified': user.verified_email,
+                                                 'credentials': [{'value': new_password,
+                                                                  'type': 'password'}]})
+                # user.email = ''  # TODO decide if this is a good idea
+                self.set_user_auth_source(user, UserAuthSource.KEYCLOAK)
+                user.crypto = UserCrypto.REMOTE
+                user.password = ''
+            else:
+                self.keycloak_admin.update_user(user_id=user.uid,
+                                                payload={'credentials':
+                                                         [{'value': new_password,
+                                                           'type': 'password'}]})
+        user.save()
+
     def set_email_verified(self, user, value=True):
         if self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK:
             self.keycloak_admin.update_user(user_id=user.uid,
@@ -120,14 +146,15 @@ class AuthProvider:
         if user.crypto == UserCrypto.BCRYPT:
             thash = bcrypt.hashpw(password.encode('utf-8'), user.password.encode('utf-8'))
             return thash == user.password.encode('utf-8')
-        elif user.crypto == UserCrypto.REMOTE:
+        elif (user.crypto == UserCrypto.REMOTE and
+              self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK and
+              self.provider == 'KEYCLOAK'):
             try:
                 # TODO do something with the token
                 self.keycloak_openid.token(username=user.name,
                                            password=password)
                 return True
             except KeycloakError as err:
-                print("====failed ", err)
                 return False
         return False
 

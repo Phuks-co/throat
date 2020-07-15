@@ -1,3 +1,4 @@
+import json
 import pytest
 from bs4 import BeautifulSoup
 from flask import current_app
@@ -68,6 +69,7 @@ def test_email_required_for_registration(client, user_info):
 #     pass
 
 
+# TODO make sure this can be done with unicode in password
 def test_logout_and_login_again(client, user_info, logged_in_user):
     """A logged in user can log out and back in again."""
     rv = client.get('/')
@@ -76,7 +78,6 @@ def test_logout_and_login_again(client, user_info, logged_in_user):
     assert b'Log in' in rv.data
 
     rv = client.get('/login')
-    pp(rv.data)
     rv = client.post('/login',
                      data=dict(csrf_token=csrf_token(rv.data),
                                username=user_info['username'],
@@ -89,6 +90,43 @@ def test_logout_and_login_again(client, user_info, logged_in_user):
 #     """A user can reset their password using a link received by email."""
 #     pass
 
+
+def test_change_password(client, user_info, logged_in_user):
+    """A user can change their password and log in with the new password."""
+    new_password = 'mynewSuperSecret#123'
+    assert new_password != user_info['password']
+    rv = client.get('/settings/password')
+    rv = client.post('/do/edit_user/password',
+                     data=dict(csrf_token=csrf_token(rv.data),
+                               oldpassword=user_info['password'],
+                               password=new_password,
+                               confirm=new_password),
+                     follow_redirects=True)
+    reply = json.loads(rv.data.decode('utf-8'))
+    assert reply['status'] == 'ok'
+
+    rv = client.get('/')
+    rv = client.post('/do/logout', data=dict(csrf_token=csrf_token(rv.data)),
+                     follow_redirects=True)
+    assert b'Log in' in rv.data
+
+    # Try to log in with the old password
+    rv = client.get('/login')
+    rv = client.post('/login',
+                     data=dict(csrf_token=csrf_token(rv.data),
+                               username=user_info['username'],
+                               password=user_info['password']),
+                     follow_redirects=True)
+    assert b'Log in' in rv.data
+
+    # Try to log in with the new password
+    rv = client.get('/login')
+    rv = client.post('/login',
+                     data=dict(csrf_token=csrf_token(rv.data),
+                               username=user_info['username'],
+                               password=new_password),
+                     follow_redirects=True)
+    assert b'Log out' in rv.data
 
 # def test_change_user_email():
 #     """A user can change their email address, and receive a reset password
