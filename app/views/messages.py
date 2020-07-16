@@ -18,14 +18,8 @@ def inbox_sort():
     """ Go to inbox with the new message """
     if misc.get_unread_count(misc.MESSAGE_TYPE_PM) > 0:
         return redirect(url_for('messages.view_messages'))
-    elif misc.get_unread_count(misc.MESSAGE_TYPE_MENTION) > 0:
-        return redirect(url_for('messages.view_mentions'))
-    elif misc.get_unread_count(misc.MESSAGE_TYPE_POSTREPLY) > 0:
-        return redirect(url_for('messages.view_messages_postreplies'))
-    elif misc.get_unread_count(misc.MESSAGE_TYPE_COMMREPLY) > 0:
-        return redirect(url_for('messages.view_messages_comreplies'))
-    elif misc.get_unread_count(misc.MESSAGE_TYPE_MODMAIL) > 0:
-        return redirect(url_for('messages.view_messages_modmail'))
+    elif misc.get_notif_count():
+        return redirect(url_for('messages.view_notifications'))
     return redirect(url_for('messages.view_messages'))
 
 
