@@ -13,7 +13,7 @@ from app.auth import auth_provider
 from test.utilities import recursively_update
 
 
-peewee_migrate_logger = logging.getLogger("peewee_migrate")
+peewee_migrate_logger = logging.getLogger('peewee_migrate')
 peewee_migrate_logger.setLevel(logging.WARNING)
 
 
@@ -22,10 +22,10 @@ def test_config():
     """Extra configuration values to be used in a test."""
     return {}
 
-
+# The fixture "client" is generated from this one by pytest-flask.
 @pytest.fixture
-def client(test_config):
-    """Create the Flask test client."""
+def app(test_config):
+    """Create the Flask app."""
     db_fd, db_name = tempfile.mkstemp()
 
     config_filename = os.environ.get('TEST_CONFIG', None)
@@ -59,14 +59,14 @@ def client(test_config):
     router = Router(db, migrate_dir='migrations', ignore=['basemodel'])
     router.run()
 
-    yield app.test_client()
+    yield app
 
     if config.auth.provider != 'LOCAL':
         for user in User.select():
             try:
                 auth_provider.actually_delete_user(user)
             except Exception as err:
-                print(f"Error trying to clean up {user.name} in Keycloak realm:", err)
+                print(f'Error trying to clean up {user.name} in Keycloak realm:', err)
                 raise err
 
 

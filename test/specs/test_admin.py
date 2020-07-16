@@ -2,8 +2,10 @@ import json
 import pytest
 
 from peewee import fn
+from flask import url_for
 
-from test.fixtures import *
+from pytest_flask.fixtures import client
+from test.fixtures import*
 from test.utilities import csrf_token, pp
 from test.utilities import register_user, log_in_user, log_out_current_user
 
@@ -25,8 +27,8 @@ def test_admin_can_ban_and_unban_user(client, user_info, user2_info):
     username = user_info['username']
     print("username=", username)
 
-    rv = client.get(f'/u/{username}')
-    rv = client.post(f'/do/admin/ban_user/{username}',
+    rv = client.get(url_for('user.view', user=username))
+    rv = client.post(url_for('do.ban_user', username=username),
                      data=dict(csrf_token=csrf_token(rv.data)),
                      follow_redirects=True)
 
@@ -35,8 +37,8 @@ def test_admin_can_ban_and_unban_user(client, user_info, user2_info):
     log_in_user(client, user_info, expect_success=False)
     log_in_user(client, user2_info, expect_success=True)
 
-    rv = client.get(f'/u/{username}')
-    rv = client.post(f'/do/admin/unban_user/{username}',
+    rv = client.get(url_for('user.view', user=username))
+    rv = client.post(url_for('do.unban_user', username=username),
                      data=dict(csrf_token=csrf_token(rv.data)),
                      follow_redirects=True)
 

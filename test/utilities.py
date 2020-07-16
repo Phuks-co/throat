@@ -1,17 +1,18 @@
 from bs4 import BeautifulSoup
+from flask import url_for
 from app import mail
 from app.auth import email_validation_is_required
 
 
 def csrf_token(data):
-    soup = BeautifulSoup(data, "html.parser")
+    soup = BeautifulSoup(data, 'html.parser')
     # print(soup.prettify())
-    return soup.find(id="csrf_token")["value"]
+    return soup.find(id='csrf_token')['value']
 
 
 # pretty-print for debugging purposes
 def pp(data):
-    print(BeautifulSoup(data, "html.parser").prettify())
+    print(BeautifulSoup(data, 'html.parser').prettify())
 
 
 def recursively_update(dictionary, new_values):
@@ -27,8 +28,8 @@ def recursively_update(dictionary, new_values):
 def log_in_user(client, user_info, expect_success=True):
     """Log in the user described by the user_info directory.  User should
 already be registered."""
-    rv = client.get('/login')
-    rv = client.post('/login',
+    rv = client.get(url_for('auth.login'))
+    rv = client.post(url_for('auth.login'),
                      data=dict(csrf_token=csrf_token(rv.data),
                                username=user_info['username'],
                                password=user_info['password']),
@@ -41,8 +42,8 @@ already be registered."""
 
 def log_out_current_user(client, verify=True):
     """Log out the user who is logged in."""
-    rv = client.get('/')
-    rv = client.post('/do/logout', data=dict(csrf_token=csrf_token(rv.data)),
+    rv = client.get(url_for('home.index'))
+    rv = client.post(url_for('do.logout'), data=dict(csrf_token=csrf_token(rv.data)),
                      follow_redirects=True)
     if verify:
         assert b'Log in' in rv.data
@@ -50,10 +51,10 @@ def log_out_current_user(client, verify=True):
 
 def register_user(client, user_info):
     """Register a user with the client and leave them logged in."""
-    rv = client.get('/')
-    rv = client.post('/do/logout', data=dict(csrf_token=csrf_token(rv.data)),
+    rv = client.get(url_for('home.index'))
+    rv = client.post(url_for('do.logout'), data=dict(csrf_token=csrf_token(rv.data)),
                      follow_redirects=True)
-    rv = client.get('/register')
+    rv = client.get(url_for('auth.register'))
     with mail.record_messages() as outbox:
         data = dict(csrf_token=csrf_token(rv.data),
                     username=user_info['username'],
@@ -66,7 +67,8 @@ def register_user(client, user_info):
             data['email_required'] = user_info['email']
         else:
             data['email_optional'] = user_info['email']
-        rv = client.post('/register',
+
+        rv = client.post(url_for('auth.register'),
                          data=data,
                          follow_redirects=True)
 
@@ -74,5 +76,5 @@ def register_user(client, user_info):
             message = outbox[-1]
             soup = BeautifulSoup(message.html, 'html.parser')
             token = soup.a['href'].split('/')[-1]
-            rv = client.get("login/with-token/" + token,
+            rv = client.get(url_for('auth.login_with_token', token=token),
                             follow_redirects=True)
