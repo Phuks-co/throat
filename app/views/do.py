@@ -1596,7 +1596,7 @@ def edit_comment():
             return jsonify(status='error', error=_("Post is archived"))
 
         dt = datetime.datetime.utcnow()
-        spm = SubPostCommentHistory.create(cid=comment.cid, content=comment.content, datetime=dt if not comment.lastedit else comment.lastedit)
+        spm = SubPostCommentHistory.create(cid=comment.cid, content=comment.content, datetime=dt)
         spm.save()
         comment.content = form.text.data
         comment.lastedit = dt

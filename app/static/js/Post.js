@@ -42,49 +42,41 @@ u.addEventForChild(document, 'click', '.delete-post', function (e, qelem) {
     });
 });
 
-u.addEventForChild(document, 'click', '.content-back-history', function (e, qelem) {
-    const content = qelem.parentNode.parentNode;
-    console.log("CONTENT:" + content)
-    const history = content.querySelectorAll('.history')
-    console.log("HISTORY:" + history)
-    const shown = Array.from(history).filter(function(span) {
-        return span.style['display'] != 'none'
-    })[0]
-    console.log("SHOWN:" + shown)
+u.addEventForChild(document, 'click', '.browse-comment-history', function (e, qelem) {
+  const action = qelem.getAttribute("data-action")
+  const content = qelem.parentNode.parentNode;
+  const history = content.querySelectorAll('.history')
+  const shown = Array.from(history).filter(function(span) {
+      return span.style['display'] != 'none'
+  })[0]
+  const id = parseInt(shown.getAttribute("data-id"))
+  let next_id
 
+  if (action == "back") {
+    next_id = (id + 1)
+  } else {
+    next_id = (id - 1)
+  }
 
-    const id = parseInt(shown.getAttribute("data-id"))
-    const next_id = ((id - 1) < 0 ? history.length : id) - 1
+  history[next_id].style['display'] = ''
+  shown.style['display'] = 'none'
 
-    const currentVis = parseInt(content.querySelector(".count").innerText, 10)
-    content.querySelector(".count").innerText = (currentVis  % history.length) + 1
+  const fwd_button = content.querySelector('.browse-comment-history.forward')
+  const back_button = content.querySelector('.browse-comment-history.back')
 
-    history[next_id].style['display'] = ''
-    shown.style['display'] = 'none'
+  if (next_id == 0){
+    fwd_button.classList.add('disabled')
+    back_button.classList.remove('disabled')
+  } else if (next_id == (history.length - 1)) {
+    back_button.classList.add('disabled')
+    fwd_button.classList.remove('disabled')
+  }
+  else {
+    fwd_button.classList.remove('disabled')
+    back_button.classList.remove('disabled')
+  }
 
-});
-
-u.addEventForChild(document, 'click', '.content-forward-history', function (e, qelem) {
-    const content = qelem.parentNode.parentNode;
-    console.log("CONTENT:" + content)
-
-    const history = content.querySelectorAll('.history')
-    console.log("HISTORY:" + history)
-
-    const shown = Array.from(history).filter(function(span) {
-        return span.style['display'] != 'none'
-    })[0]
-    console.log("SHOWN:" + shown)
-
-
-    const id = parseInt(shown.getAttribute("data-id"))
-    const next_id = (id + 1) % history.length
-
-    const currentVis = parseInt(content.querySelector(".count").innerText, 10)
-    content.querySelector(".count").innerText = (currentVis - 1 < 0 ? history.length: currentVis) - 1
-
-    history[next_id].style['display'] = ''
-    shown.style['display'] = 'none'
+  content.querySelector('.history-version').innerHTML = (next_id + 1) + '/' + history.length
 
 });
 

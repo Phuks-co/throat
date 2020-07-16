@@ -53,13 +53,19 @@
               @end
               @if current_user.is_admin() and comment['history']:
                   @for count, history in enumerate(comment['history']):
-                  <span style="display:none;" class="history" data-id="@{(count + 1)!!s}">
+                  <span style="display:none;" class="old history" data-id="@{(count + 1)!!s}">
                       @{history['content']!!html}
                   </span>
                   @end
                   <div>
-                    <button class="content-forward-history">←</button>&nbsp;
-                    <button class="content-back-history">→</button> (<span class="count">@{1 + len(comment['history'])!!s}</span> / @{1 + len(comment['history'])!!s})
+                    <button class="browse-comment-history back" data-action="back">←</button>
+                    <button class="browse-comment-history forward disabled" action="forward">→</button>
+                    <span class="history-meta">
+                      @{_('Viewing edit history:')}
+                        <span class="history-version">
+                          1/@{1 + len(comment['history'])!!s}
+                        </span>
+                    </span>
                   </div>
               @end
             </div>

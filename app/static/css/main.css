@@ -2130,3 +2130,31 @@ article.text-post.comment.deleted {
 .poll-space.deleted {
   background-color: #FDD8D4;
 }
+
+.browse-comment-history.disabled:focus {
+  outline-color: lightgray;
+  outline: none;
+}
+
+.browse-comment-history {
+  cursor: pointer;
+  -webkit-box-shadow: -2px 1px 3px 0px rgba(0,0,0,0.1);
+  -moz-box-shadow: -2px 1px 3px 0px rgba(0,0,0,0.1);
+  box-shadow: -2px 1px 3px 0px rgba(0,0,0,0.1);
+}
+
+.browse-comment-history.disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  border-color: lightgray;
+  color: lightgray;
+}
+
+.content .old.history {
+  color: gray;
+}
+
+.content .history-meta {
+  color: gray;
+  font-size: smaller;
+}
