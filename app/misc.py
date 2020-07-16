@@ -1616,7 +1616,7 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
         # del comm['userstatus']
         commdata[comm['cid']] = comm
 
-    if include_history:
+    if config.site.edit_history and include_history:
         history = SubPostCommentHistory.select(SubPostCommentHistory.cid, SubPostCommentHistory.content,
                 SubPostCommentHistory.datetime) \
                         .where(SubPostCommentHistory.cid << cid_list) \

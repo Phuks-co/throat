@@ -51,7 +51,7 @@
               @else:
                 <span class="current history" data-id="0">@{comment['content']!!html}</span>
               @end
-              @if current_user.is_admin() and comment['history']:
+              @if comment['history'] and (comment['visibility'] != 'none' and  comment['visibility'] != 'mod-self-del'):
                   @for count, history in enumerate(comment['history']):
                   <span style="display:none;" class="old history" data-id="@{(count + 1)!!s}">
                       @{history['content']!!html}

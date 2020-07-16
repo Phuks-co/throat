@@ -289,6 +289,7 @@ def view_post(sub, pid, comments=False, highlight=None):
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     subInfo = misc.getSubData(sub['sid'])
     subMods = misc.getSubMods(sub['sid'])
+    include_history = current_user.is_mod(sub['sid'], 1) or current_user.is_admin()
 
     try:
         UserSaved.get((UserSaved.uid == current_user.uid) & (UserSaved.pid == pid))
@@ -301,7 +302,7 @@ def view_post(sub, pid, comments=False, highlight=None):
         if not comments.count():
             comments = []
         else:
-            comments = misc.get_comment_tree(comments, uid=current_user.uid, include_history=current_user.is_admin())
+            comments = misc.get_comment_tree(comments, uid=current_user.uid, include_history=include_history)
 
     post['visibility'] = ''
     if post['deleted'] == 1:
@@ -364,6 +365,9 @@ def view_perm(sub, pid, cid):
     except (SubPostComment.DoesNotExist, IndexError):
         abort(404)
 
+    sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
+    include_history = current_user.is_mod(sub['sid'], 1) or current_user.is_admin()
+
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
-    comment_tree = misc.get_comment_tree(comments, cid, uid=current_user.uid, include_history=current_user.is_admin())
+    comment_tree = misc.get_comment_tree(comments, cid, uid=current_user.uid, include_history=include_history)
     return view_post(sub, pid, comment_tree, cid)

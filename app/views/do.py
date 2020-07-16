@@ -642,12 +642,13 @@ def create_comment(pid):
                           room='user' + to)
 
         subMods = misc.getSubMods(sub.sid)
+        include_history = current_user.is_mod(sub.sid, 1) or current_user.is_admin()
 
         # 6 - Process mentions
         misc.workWithMentions(form.comment.data, to, post, sub, cid=comment.cid)
         renderedComment = engine.get_template('sub/postcomments.html').render({
             'post': misc.getSinglePost(post.pid),
-            'comments': misc.get_comment_tree([{'cid': str(comment.cid), 'parentcid': None}], uid=current_user.uid, include_history=current_user.is_admin()),
+            'comments': misc.get_comment_tree([{'cid': str(comment.cid), 'parentcid': None}], uid=current_user.uid, include_history=include_history),
             'subInfo': misc.getSubData(sub.sid),
             'subMods': subMods,
             'highlight': str(comment.cid)
@@ -1687,10 +1688,12 @@ def get_sibling(pid, cid, lim):
     if not comments.count():
         return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': ''})
 
+    include_history = current_user.is_mod(sub.sid, 1) or current_user.is_admin()
+
     if lim:
-        comment_tree = misc.get_comment_tree(comments, cid if cid != '0' else None, lim, provide_context=False, uid=current_user.uid, include_history=current_user.is_admin())
+        comment_tree = misc.get_comment_tree(comments, cid if cid != '0' else None, lim, provide_context=False, uid=current_user.uid, include_history=include_history)
     elif cid != '0':
-        comment_tree = misc.get_comment_tree(comments, cid, provide_context=False, uid=current_user.uid, include_history=current_user.is_admin())
+        comment_tree = misc.get_comment_tree(comments, cid, provide_context=False, uid=current_user.uid, include_history=include_history)
     else:
         return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': ''})
 
