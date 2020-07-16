@@ -37,7 +37,7 @@ from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, Us
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db
 from .models import SubPostReport, SubPostCommentReport, PostReportLog, CommentReportLog, Notification
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair, InviteCode
-from .models import SubMod, SubBan
+from .models import SubMod, SubBan, SubPostCommentHistory
 from .storage import store_thumbnail, file_url, thumbnail_url
 from peewee import JOIN, fn, SQL, NodeList, Value
 import requests
@@ -1486,7 +1486,7 @@ def get_all_subs():
     return [x.name for x in Sub.select(Sub.name)]
 
 
-def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_context=True):
+def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_context=True, include_history=False):
     """ Returns a fully paginated and expanded comment tree.
 
     TODO: Move to misc and implement globally
@@ -1580,6 +1580,7 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
 
     commdata = {}
     for comm in expcomms:
+        comm['history'] = []
         comm['visibility'] = ''
         sub = Sub.select().join(SubPost).join(SubPostComment).where(SubPostComment.cid == comm['cid']).get()
 
@@ -1614,6 +1615,17 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
                 comm['visibility'] = 'none'
         # del comm['userstatus']
         commdata[comm['cid']] = comm
+
+    if include_history:
+        history = SubPostCommentHistory.select(SubPostCommentHistory.cid, SubPostCommentHistory.content,
+                SubPostCommentHistory.datetime) \
+                        .where(SubPostCommentHistory.cid << cid_list) \
+                        .order_by(SubPostCommentHistory.datetime.desc()).dicts()
+        for hist in history:
+            if hist['cid'] in commdata:
+                hist['content'] = our_markdown(hist['content'])
+                commdata[hist['cid']]['history'].append(hist)
+
 
     def recursive_populate(tree):
         """ Expands the tree with the data from `commdata` """

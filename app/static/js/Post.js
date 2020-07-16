@@ -42,6 +42,52 @@ u.addEventForChild(document, 'click', '.delete-post', function (e, qelem) {
     });
 });
 
+u.addEventForChild(document, 'click', '.content-back-history', function (e, qelem) {
+    const content = qelem.parentNode.parentNode;
+    console.log("CONTENT:" + content)
+    const history = content.querySelectorAll('.history')
+    console.log("HISTORY:" + history)
+    const shown = Array.from(history).filter(function(span) {
+        return span.style['display'] != 'none'
+    })[0]
+    console.log("SHOWN:" + shown)
+
+
+    const id = parseInt(shown.getAttribute("data-id"))
+    const next_id = ((id - 1) < 0 ? history.length : id) - 1
+
+    const currentVis = parseInt(content.querySelector(".count").innerText, 10)
+    content.querySelector(".count").innerText = (currentVis  % history.length) + 1
+
+    history[next_id].style['display'] = ''
+    shown.style['display'] = 'none'
+
+});
+
+u.addEventForChild(document, 'click', '.content-forward-history', function (e, qelem) {
+    const content = qelem.parentNode.parentNode;
+    console.log("CONTENT:" + content)
+
+    const history = content.querySelectorAll('.history')
+    console.log("HISTORY:" + history)
+
+    const shown = Array.from(history).filter(function(span) {
+        return span.style['display'] != 'none'
+    })[0]
+    console.log("SHOWN:" + shown)
+
+
+    const id = parseInt(shown.getAttribute("data-id"))
+    const next_id = (id + 1) % history.length
+
+    const currentVis = parseInt(content.querySelector(".count").innerText, 10)
+    content.querySelector(".count").innerText = (currentVis - 1 < 0 ? history.length: currentVis) - 1
+
+    history[next_id].style['display'] = ''
+    shown.style['display'] = 'none'
+
+});
+
 u.addEventForChild(document, 'click', '.edit-title', function (e, qelem) {
     const tg = e.currentTarget;
     TextConfirm(qelem, function () {

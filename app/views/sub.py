@@ -288,6 +288,7 @@ def view_post(sub, pid, comments=False, highlight=None):
 
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     subInfo = misc.getSubData(sub['sid'])
+    subMods = misc.getSubMods(sub['sid'])
 
     try:
         UserSaved.get((UserSaved.uid == current_user.uid) & (UserSaved.pid == pid))
@@ -300,7 +301,7 @@ def view_post(sub, pid, comments=False, highlight=None):
         if not comments.count():
             comments = []
         else:
-            comments = misc.get_comment_tree(comments, uid=current_user.uid)
+            comments = misc.get_comment_tree(comments, uid=current_user.uid, include_history=current_user.is_admin())
 
     post['visibility'] = ''
     if post['deleted'] == 1:
@@ -351,8 +352,7 @@ def view_post(sub, pid, comments=False, highlight=None):
 
     return engine.get_template('sub/post.html').render({'post': post, 'sub': sub, 'subInfo': subInfo,
                                                         'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,
-                                                        'commentform': PostComment(), 'comments': comments,
-                                                        'subMods': misc.getSubMods(sub['sid']), 'highlight': highlight})
+                                                        'commentform': PostComment(), 'comments': comments,'subMods': subMods, 'highlight': highlight})
 
 
 @blueprint.route("/<sub>/<int:pid>/<cid>")
@@ -365,5 +365,5 @@ def view_perm(sub, pid, cid):
         abort(404)
 
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
-    comment_tree = misc.get_comment_tree(comments, cid, uid=current_user.uid)
+    comment_tree = misc.get_comment_tree(comments, cid, uid=current_user.uid, include_history=current_user.is_admin())
     return view_post(sub, pid, comment_tree, cid)

@@ -42,14 +42,25 @@
                 @{_('[Deleted]')} \
               @elif comment['visibility'] == 'admin-self-del':
                 <p class="helper-text">@{_('[Post deleted by user]')}</p>
-                @{comment['content']!!html}
+                <span class="current history" data-id="0">@{comment['content']!!html}</span>
               @elif comment['visibility'] == 'mod-self-del':
                 <p class="helper-text">@{_('[Post deleted by user]')}</p>
               @elif comment['visibility'] == 'mod-del':
                 <p class="helper-text">@{_('[Post deleted by mod or admin]')}</p>
-                @{comment['content']!!html}
+                <span class="current history" data-id="0">@{comment['content']!!html}</span>
               @else:
-                @{comment['content']!!html}
+                <span class="current history" data-id="0">@{comment['content']!!html}</span>
+              @end
+              @if current_user.is_admin() and comment['history']:
+                  @for count, history in enumerate(comment['history']):
+                  <span style="display:none;" class="history" data-id="@{(count + 1)!!s}">
+                      @{history['content']!!html}
+                  </span>
+                  @end
+                  <div>
+                    <button class="content-forward-history">←</button>&nbsp;
+                    <button class="content-back-history">→</button> (<span class="count">@{1 + len(comment['history'])!!s}</span> / @{1 + len(comment['history'])!!s})
+                  </div>
               @end
             </div>
 

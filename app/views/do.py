@@ -641,18 +641,19 @@ def create_comment(pid):
                           namespace='/snt',
                           room='user' + to)
 
+        subMods = misc.getSubMods(sub.sid)
+
         # 6 - Process mentions
         misc.workWithMentions(form.comment.data, to, post, sub, cid=comment.cid)
         renderedComment = engine.get_template('sub/postcomments.html').render({
             'post': misc.getSinglePost(post.pid),
-            'comments': misc.get_comment_tree([{'cid': str(comment.cid), 'parentcid': None}], uid=current_user.uid),
+            'comments': misc.get_comment_tree([{'cid': str(comment.cid), 'parentcid': None}], uid=current_user.uid, include_history=current_user.is_admin()),
             'subInfo': misc.getSubData(sub.sid),
-            'subMods': misc.getSubMods(sub.sid),
+            'subMods': subMods,
             'highlight': str(comment.cid)
         })
 
-        return json.dumps({'status': 'ok', 'addr': url_for('sub.view_perm', sub=sub.name, pid=pid, cid=comment.cid),
-                           'comment': renderedComment, 'cid': str(comment.cid)})
+        return json.dumps({'status': 'ok', 'addr': url_for('sub.view_perm', sub=sub.name, pid=pid, cid=comment.cid),'comment': renderedComment, 'cid': str(comment.cid)})
     return json.dumps({'status': 'error', 'error': get_errors(form)}), 400
 
 
@@ -1669,6 +1670,9 @@ def get_sibling(pid, cid, lim):
     except SubPost.DoesNotExist:
         return jsonify(status='ok', posts=[])
 
+    subInfo = misc.getSubData(post['sid'])
+    subMods = misc.getSubMods(post['sid'])
+
     if cid == 'null':
         cid = '0'
     if cid != '0':
@@ -1684,9 +1688,9 @@ def get_sibling(pid, cid, lim):
         return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': ''})
 
     if lim:
-        comment_tree = misc.get_comment_tree(comments, cid if cid != '0' else None, lim, provide_context=False, uid=current_user.uid)
+        comment_tree = misc.get_comment_tree(comments, cid if cid != '0' else None, lim, provide_context=False, uid=current_user.uid, include_history=current_user.is_admin())
     elif cid != '0':
-        comment_tree = misc.get_comment_tree(comments, cid, provide_context=False, uid=current_user.uid)
+        comment_tree = misc.get_comment_tree(comments, cid, provide_context=False, uid=current_user.uid, include_history=current_user.is_admin())
     else:
         return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': ''})
 
