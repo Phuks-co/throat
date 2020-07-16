@@ -86,7 +86,7 @@ class User(BaseModel):
     status = IntegerField(default=0)
     resets = IntegerField(default=0)
 
-    language = CharField(default=None, max_length=11)
+    language = CharField(default=None, null=True, max_length=11)
 
     def __repr__(self):
         return f'<User {self.name}>'

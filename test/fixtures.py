@@ -50,14 +50,10 @@ def app(test_config):
     recursively_update(config, test_config)
 
     app = create_app(config)
+    db.create_tables(BaseModel.__subclasses__())
 
     app_context = app.app_context()
     app_context.push()
-
-    # Might be faster to get this to work:
-    # db.create_tables(BaseModel.__subclasses__())
-    router = Router(db, migrate_dir='migrations', ignore=['basemodel'])
-    router.run()
 
     yield app
 

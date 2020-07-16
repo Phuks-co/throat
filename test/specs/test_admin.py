@@ -25,7 +25,6 @@ def test_admin_can_ban_and_unban_user(client, user_info, user2_info):
     promote_user_to_admin(client, user2_info)
 
     username = user_info['username']
-    print("username=", username)
 
     rv = client.get(url_for('user.view', user=username))
     rv = client.post(url_for('do.ban_user', username=username),
