@@ -1,0 +1,10 @@
+@require(user, token)
+@{_('Hi %(name)s,', name=user.name)}
+
+@{_('To confirm this email address for your account on %(site)s, open the following link in your browser.', site=config.site.name)}
+
+@{url_for('user.confirm_email_change', token=token, _external=True)}
+
+@{_('Thanks,')}
+
+@{_('The %(site)s Team', site=config.site.name)}

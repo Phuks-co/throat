@@ -4,13 +4,10 @@ import uuid
 
 from flask import current_app, render_template
 from flask_babel import _
-from itsdangerous import URLSafeTimedSerializer
-from itsdangerous.exc import SignatureExpired, BadSignature
 from keycloak import KeycloakAdmin, KeycloakOpenID
 from keycloak.exceptions import KeycloakError
 
 from .config import config
-from .misc import send_email, engine
 from .models import User, UserMetadata, UserAuthSource, UserCrypto, SiteMetadata
 
 class AuthError(Exception):
@@ -42,14 +39,16 @@ class AuthProvider:
 
 
     def get_user_by_email(self, email):
-        # This may raise an error if the Keycloak server is unavailable or
-        # misconfigured.
-
         # TODO when there are pending change emails, check those too.
         try:
             return User.get(User.email == email)
         except User.DoesNotExist:
-            pass
+            try:
+                um = UserMetadata.get((UserMetadata.key == 'pending_email') &
+                                      (UserMetadata.value == email))
+                return User.get(User.uid == uim.uid)
+            except UserMetadata.DoesNotExist:
+                pass
         if self.provider == 'KEYCLOAK':
             try:
                 users = self.keycloak_admin.get_users({"email": email})
@@ -128,6 +127,44 @@ class AuthProvider:
                                                            'type': 'password'}]})
         user.save()
 
+    def get_pending_email(self, user):
+        try:
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
+                                   (UserMetadata.key == "pending_email"))
+            return umd.value
+        except UserMetadata.DoesNotExist:
+            return None
+
+    def clear_pending_email(self, user):
+        try:
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
+                                   (UserMetadata.key == "pending_email"))
+            umd.delete_instance()
+        except UserMetadata.DoesNotExist:
+            return None
+
+    def set_pending_email(self, user, email):
+        try:
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
+                                   (UserMetadata.key == "pending_email"))
+            umd.value = email
+            umd.save()
+        except UserMetadata.DoesNotExist:
+            UserMetadata.create(uid=user.uid, key="pending_email", value=email)
+
+    def confirm_pending_email(self, user, email):
+        try:
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
+                                   (UserMetadata.key == "pending_email"))
+            umd.delete_instance()
+        except UserMetadata.DoesNotExist:
+            pass
+        if self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK:
+            self.keycloak_admin.update_user(user_id=user.uid,
+                                            payload={'email': email})
+        user.email = email
+        self.set_email_verified(user)
+
     def set_email_verified(self, user, value=True):
         if self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK:
             self.keycloak_admin.update_user(user_id=user.uid,
@@ -204,19 +241,3 @@ def email_validation_is_required():
     return config.auth.validate_emails
 
 
-def send_login_link_email(user):
-    s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"],
-                               salt="login")
-    token = s.dumps({"uid": user.uid})
-    send_email(user.email, _("Confirm your new account on %(site)s", site=config.site.name),
-               text_content=engine.get_template("user/email/login-link.txt").render(dict(user=user, token=token)),
-               html_content=engine.get_template("user/email/login-link.html").render(dict(user=user, token=token)))
-
-
-def user_from_login_token(token):
-    try:
-        s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"], salt="login")
-        info = s.loads(token, max_age=8*60*60) # TODO in config?
-        return User.get((User.uid == info["uid"]))
-    except (SignatureExpired, BadSignature, User.DoesNotExist):
-        return None

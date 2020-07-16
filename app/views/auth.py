@@ -4,15 +4,16 @@ from datetime import datetime
 import uuid
 import bcrypt
 from peewee import fn
-from flask import Blueprint, request, redirect, abort, url_for, session
+from flask import Blueprint, request, redirect, abort, url_for, session, current_app
 from flask_login import current_user, login_user
 from flask_babel import _
+from itsdangerous import URLSafeTimedSerializer
+from itsdangerous.exc import SignatureExpired, BadSignature
 from .. import misc, config
 from ..auth import auth_provider, registration_is_enabled, email_validation_is_required
-from ..auth import email_validation_is_required, send_login_link_email, user_from_login_token
 from ..forms import LoginForm, RegistrationForm
-from ..misc import engine
-from ..models import User, UserMetadata, InviteCode, SubSubscriber, rconn
+from ..misc import engine, send_email
+from ..models import User, UserMetadata, UserStatus, InviteCode, SubSubscriber, rconn
 
 bp = Blueprint('auth', __name__)
 
@@ -127,7 +128,8 @@ def register():
     SubSubscriber.insert_many(subs).execute()
 
     if email_validation_is_required():
-        user.probation = True
+        user.status = UserStatus.PROBATION
+        user.save()
         send_login_link_email(user)
         return redirect(url_for('auth.confirm_registration'))
     else:
@@ -136,11 +138,29 @@ def register():
         return redirect(url_for('wiki.welcome'))
 
 
+def send_login_link_email(user):
+    s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"],
+                               salt="login")
+    token = s.dumps({"uid": user.uid})
+    send_email(user.email, _("Confirm your new account on %(site)s", site=config.site.name),
+               text_content=engine.get_template("user/email/login-link.txt").render(dict(user=user, token=token)),
+               html_content=engine.get_template("user/email/login-link.html").render(dict(user=user, token=token)))
+
+
+def user_from_login_token(token):
+    try:
+        s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"], salt="login")
+        info = s.loads(token, max_age=8*60*60) # TODO in config?
+        return User.get((User.uid == info["uid"]))
+    except (SignatureExpired, BadSignature, User.DoesNotExist):
+        return None
+
+
 @bp.route('/register/confirm')
 def confirm_registration():
     if current_user.is_authenticated:
         return redirect(url_for('home.index'))
-    return engine.get_template('user/check-your-email.html').render({})
+    return engine.get_template('user/check-your-email.html').render({'reason': 'registration'})
 
 
 @bp.route('/login/with-token/<token>')
@@ -153,14 +173,15 @@ def login_with_token(token):
         # flash('The link you used is invalid or has expired.',
         #       'error')
         return redirect(url_for('auth.register'))
-    else:
-        user.probation = False
+    elif user.status == UserStatus.PROBATION:
+        user.status = UserStatus.OK
+        user.save()
         auth_provider.set_email_verified(user)
         theuser = misc.load_user(user.uid)
         login_user(theuser, remember=True)
         # TODO
         # green_flash(f"Your account on {config.site.name} is now confirmed!")
-        return redirect(url_for('wiki.welcome'))
+    return redirect(url_for('wiki.welcome'))
 
 
 @bp.route("/login", methods=['GET', 'POST'])
@@ -186,7 +207,9 @@ def login():
             return engine.get_template('user/login.html').render(
                 {'error': _("Invalid username or password."), 'loginform': form})
 
-        if user.status != 0:
+        if user.status == UserStatus.PROBATION:
+            return redirect(url_for('auth.confirm_registration'))
+        elif user.status != UserStatus.OK:
             return engine.get_template('user/login.html').render(
                 {'error': _("Invalid username or password."), 'loginform': form})
 

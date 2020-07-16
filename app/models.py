@@ -68,8 +68,16 @@ class BaseModel(Model):
 
 class UserCrypto(IntEnum):
     """Password hash algorithm."""
-    BCRYPT=1
-    REMOTE=2  # password stored on remote auth server
+    BCRYPT = 1
+    REMOTE = 2  # password stored on remote auth server
+
+
+class UserStatus(IntEnum):
+    """User's login capability status."""
+    OK = 0
+    PROBATION = 1  # New, with email not yet confirmed.
+    BANNED = 5     # site-ban
+    DELETED = 10
 
 
 class User(BaseModel):

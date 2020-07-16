@@ -20,9 +20,9 @@ from flask_babel import _
 from ..config import config
 from .. import forms, misc, caching, storage
 from ..socketio import socketio
-from ..auth import auth_provider
+from ..auth import auth_provider, email_validation_is_required
 from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
-from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm, ChangePasswordForm
+from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
@@ -69,17 +69,6 @@ def search(stype):
     return redirect(url_for(stype, term=term))
 
 
-@do.route("/do/edit_user/password", methods=['POST'])
-@login_required
-def edit_user_password():
-    form = ChangePasswordForm()
-    if form.validate():
-        usr = User.get(User.uid == current_user.uid)
-        auth_provider.change_password(usr, form.oldpassword.data, form.password.data)
-        return jsonify(status='ok')
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
-
-
 @do.route("/do/delete_account", methods=['POST'])
 @login_required
 def delete_user():
@@ -112,7 +101,6 @@ def edit_user():
                 return jsonify(status='error', error=[_('Sub does not exist')])
 
         usr = User.get(User.uid == current_user.uid)
-        usr.email = form.email.data
         usr.language = form.language.data
         usr.save()
         current_user.update_prefs('labrat', form.experimental.data)

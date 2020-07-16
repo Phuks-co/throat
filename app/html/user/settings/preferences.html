@@ -12,10 +12,6 @@
         @{edituserform.csrf_token()!!html}
         <fieldset>
             <div class="pure-control-group">
-                <label for="email">@{edituserform.email.label.text}</label>
-                @{edituserform.email(value=current_user.user['email'], autocomplete="off")!!html}
-            </div>
-            <div class="pure-control-group">
                 <label for="disable_sub_style"
                        class="pure-checkbox">@{edituserform.disable_sub_style.label.text}</label>
                 @{edituserform.disable_sub_style()!!html}

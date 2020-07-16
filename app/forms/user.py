@@ -84,13 +84,17 @@ class RegistrationForm(FlaskForm):
     securityanswer = StringField(_l('Security question'))
 
 
-class ChangePasswordForm(FlaskForm):
+class EditAccountForm(FlaskForm):
+    email_optional = EmailField(_l('Email Address (optional)'),
+                                validators=[OptionalIfFieldIsEmpty('email_optional'),
+                                            Email(_l("Invalid email address."))])
+    email_required = EmailField(_l('Email Address (required)'),
+                                validators=[Email(_l("Invalid email address."))])
     password = PasswordField(_l('New password'), [
-        DataRequired(),
         EqualTo('confirm', message=_l('Passwords must match')),
-        Length(min=7, max=256),
-    ])
-    confirm = PasswordField(_l('Repeat Password'), [DataRequired()])
+        Optional('password'),
+        Length(min=7, max=256)])
+    confirm = PasswordField(_l('Repeat Password'), [])
 
     oldpassword = PasswordField(_l('Your current password'), [
         DataRequired(),
@@ -109,9 +113,6 @@ class DeleteAccountForm(FlaskForm):
 class EditUserForm(FlaskForm):
     """ Edit User info form. """
     # username = StringField('Username', [Length(min=2, max=32)])
-    email = EmailField(_l('Email Address (optional)'),
-                       validators=[OptionalIfFieldIsEmpty('email'),
-                                   Email(_l("Invalid email address."))])
     disable_sub_style = BooleanField(_l('Disable custom sub styles'))
     show_nsfw = BooleanField(_l('Show NSFW content'))
 

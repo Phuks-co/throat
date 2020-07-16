@@ -71,7 +71,6 @@ def test_email_required_for_registration(client, user_info):
 #     pass
 
 
-# TODO make sure this can be done with unicode in password
 def test_logout_and_login_again(client, user_info):
     """A logged in user can log out and back in again."""
     register_user(client, user_info)
@@ -88,17 +87,16 @@ def test_logout_and_login_again(client, user_info):
 def test_change_password(client, user_info):
     """A user can change their password and log in with the new password."""
     register_user(client, user_info)
-    new_password = 'mynewSuperSecret#123'
+    new_password = 'mynewSuperSecret#123' + '\N{PARTIAL DIFFERENTIAL}'
     assert new_password != user_info['password']
-    rv = client.get(url_for('user.edit_password'))
-    rv = client.post(url_for('do.edit_user_password'),
+    rv = client.get(url_for('user.edit_account'))
+    rv = client.post(url_for('user.edit_account'),
                      data=dict(csrf_token=csrf_token(rv.data),
                                oldpassword=user_info['password'],
                                password=new_password,
                                confirm=new_password),
                      follow_redirects=True)
-    reply = json.loads(rv.data.decode('utf-8'))
-    assert reply['status'] == 'ok'
+    assert rv.status == '200 OK'
 
     log_out_current_user(client)
 
@@ -110,11 +108,31 @@ def test_change_password(client, user_info):
     log_in_user(client, new_info, expect_success=True)
 
 
-# def test_change_user_email():
-#     """A user can change their email address, and receive a reset password
-#     link at the new address."""
-#     pass
+@pytest.mark.parametrize('test_config', [{'auth': {'validate_emails': True}}])
+def test_password_required_to_change_user_email(client, user_info):
+    """"""
+    register_user(client, user_info)
+    wrong_password = 'mynewSuperSecret#123'
+    new_email = 'sock@example.com'
+    assert wrong_password != user_info['password']
+    assert new_email != user_info['email']
 
+    rv = client.get(url_for('user.edit_account'))
+    data = dict(csrf_token=csrf_token(rv.data), email_required=new_email,
+                oldpassword=wrong_password, password='', confirm='')
+
+    # No confirmation email should be sent.
+    with mail.record_messages() as outbox:
+        rv = client.post(url_for('user.edit_account'), data=data, follow_redirects=True)
+        assert len(outbox) == 0
+
+    # TODO verify password recovery email goes to the right place.
+
+
+# TODO test that changes email and sends recovery while email is not yet confirmed
+# TODO test that you can change email to nada and old email wont' work
+# TODO verify that they can't change to an email someone else has
+# including one someone else is trying to change to
 
 def test_delete_account(client, user_info):
     """A user can delete their account."""
@@ -155,7 +173,6 @@ def test_delete_account(client, user_info):
 
     # Try to log in to the deleted account.
     log_in_user(client, user_info, expect_success=False)
-
 
 
 # TODO deleted users should be able to make a new account with the

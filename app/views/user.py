@@ -1,14 +1,18 @@
 """ Profile and settings endpoints """
 import time
 from peewee import fn, JOIN
-from flask import Blueprint, render_template, abort, redirect, url_for
+from flask import Blueprint, render_template, abort, redirect, url_for, current_app
 from flask_login import login_required, current_user
 from flask_babel import _, Locale
+from itsdangerous import URLSafeTimedSerializer
+from itsdangerous.exc import SignatureExpired, BadSignature
 from .. import misc, config
-from ..misc import engine
-from ..forms import EditUserForm, CreateUserMessageForm, ChangePasswordForm, DeleteAccountForm, PasswordRecoveryForm
+from ..auth import auth_provider, email_validation_is_required
+from ..misc import engine, send_email
+from ..forms import EditUserForm, CreateUserMessageForm, EditAccountForm, DeleteAccountForm, PasswordRecoveryForm
 from ..forms import PasswordResetForm
-from ..models import User, Sub, SubMod, SubPost, SubPostComment, UserSaved, InviteCode, UserMetadata
+from ..models import User, UserStatus, UserMetadata
+from ..models import Sub, SubMod, SubPost, SubPostComment, UserSaved, InviteCode
 
 bp = Blueprint('user', __name__)
 
@@ -151,10 +155,96 @@ def edit_user():
     return engine.get_template('user/settings/preferences.html').render({'edituserform': form, 'user': User.get(User.uid == current_user.uid)})
 
 
-@bp.route("/settings/password")
+@bp.route("/settings/account", methods=['GET', 'POST'])
 @login_required
-def edit_password():
-    return engine.get_template('user/settings/password.html').render({'form': ChangePasswordForm(), 'user': User.get(User.uid == current_user.uid)})
+def edit_account():
+    form = EditAccountForm()
+    user = User.get(User.uid == current_user.uid)
+    if email_validation_is_required():
+        del form.email_optional
+    else:
+        del form.email_required
+
+    if not form.validate():
+        return engine.get_template('user/settings/account.html').render(
+            {'form': form, 'user': user})
+
+    if email_validation_is_required():
+        email = form.email_required.data
+    else:
+        email = form.email_optional.data
+
+    if (email and email != user.email and
+        email != auth_provider.get_pending_email(user) and
+        auth_provider.get_user_by_email(email) is not None):
+        return engine.get_template('user/settings/account.html').render(
+                {'error': _("E-mail address is already in use."), 'form': form, 'user': user})
+
+    if not auth_provider.validate_password(user, form.oldpassword.data):
+        return engine.get_template('user/settings/account.html').render(
+            {'error': _("Incorrect password."), 'form': form, 'user': user})
+
+    if form.password.data or email != user.email:
+        if form.password.data:
+            auth_provider.change_password(user, form.oldpassword.data, form.password.data)
+            # green_flash password has been changed
+        if email != user.email:
+            if not email_validation_is_required():
+                user.email = email
+                user.save()
+                # green_flash email has been changed
+            else:
+                auth_provider.set_pending_email(user, email)
+                send_email_confirmation_link_email(user, email)
+                return redirect(url_for('user.check_your_email'))
+
+    return redirect(url_for('user.edit_account'))
+
+
+def send_email_confirmation_link_email(user, new_email):
+    s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"],
+                               salt="email-change")
+    token = s.dumps({"uid": user.uid, "email": new_email})
+    send_email(new_email, _("Confirm your email address for your %(site)s account", site=config.site.name),
+               text_content=engine.get_template("user/email/confirm-email-change.txt").render(dict(user=user, token=token)),
+               html_content=engine.get_template("user/email/confirm-email-change.html").render(dict(user=user, token=token)))
+
+
+def info_from_email_confirmation_token(token):
+    try:
+        s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"],
+                                   salt="email-change")
+        return s.loads(token, max_age=24*60*60) # TODO in config?
+    except (SignatureExpired, BadSignature):
+        return None
+
+
+@bp.route('/settings/account/email-sent')
+@login_required
+def check_your_email():
+    return engine.get_template('user/check-your-email.html').render({'reason': 'email_change'})
+
+
+@bp.route('/settings/account/confirm-email/<token>')
+def confirm_email_change(token):
+    info = info_from_email_confirmation_token(token)
+    user = None
+    try:
+        user = User.get(User.uid == current_user.uid)
+    except User.DoesNotExist:
+        pass
+
+    if user.status != UserStatus.DELETED:
+        if user is None or info is None or user.email == info['email']:
+            # TODO
+            # flash('The link you used is invalid or has expired.',
+            #       'error')
+            return redirect(url_for('auth.edit_account'))
+
+        auth_provider.confirm_pending_email(user, info['email'])
+        # TODO
+        # green_flash(f"Your password recovery email address for {config.site.name} is now confirmed!")
+    return redirect(url_for('home.index'))
 
 
 @bp.route("/settings/delete")
