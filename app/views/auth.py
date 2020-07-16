@@ -8,9 +8,10 @@ from flask import Blueprint, request, redirect, abort, url_for, session
 from flask_login import current_user, login_user
 from flask_babel import _
 from .. import misc, config
+from ..auth import auth_provider, registration_is_enabled
 from ..forms import LoginForm, RegistrationForm
 from ..misc import engine
-from ..models import User, UserMetadata, InviteCode, SubSubscriber, rconn, SiteMetadata
+from ..models import User, UserMetadata, InviteCode, SubSubscriber, rconn
 
 bp = Blueprint('auth', __name__)
 
@@ -57,12 +58,8 @@ def register():
     form = RegistrationForm()
     form.cap_key, form.cap_b64 = misc.create_captcha()
 
-    try:
-        enable_registration = SiteMetadata.get(SiteMetadata.key == 'enable_registration')
-        if enable_registration.value in ('False', '0'):
-            return engine.get_template('user/registration_disabled.html').render({'test': 'test'})
-    except SiteMetadata.DoesNotExist:
-        pass
+    if not registration_is_enabled():
+        return engine.get_template('user/registration_disabled.html').render({'test': 'test'})
 
     if not form.validate():
         return engine.get_template('user/register.html').render({'error': misc.get_errors(form, True), 'regform': form})
@@ -82,12 +79,9 @@ def register():
         pass
 
     if form.email.data:
-        try:
-            User.get(User.email == form.email.data)
+        if auth_provider.get_user_by_email(form.email.data) is not None:
             return engine.get_template('user/register.html').render(
                 {'error': _("E-mail address is already in use."), 'regform': form})
-        except User.DoesNotExist:
-            pass
 
     if config.site.enable_security_question:
         if form.securityanswer.data.lower() != session['sa'].lower():
@@ -113,10 +107,8 @@ def register():
         invcode.uses += 1
         invcode.save()
 
-    password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
-
-    user = User.create(uid=str(uuid.uuid4()), name=form.username.data, crypto=1, password=password,
-                       email=form.email.data, joindate=datetime.utcnow())
+    user = auth_provider.create_user(name=form.username.data, password=form.password.data,
+                                     email=form.email.data)
     if misc.enableInviteCode():
         UserMetadata.create(uid=user.uid, key='invitecode', value=form.invitecode.data)
     # defaults

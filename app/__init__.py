@@ -14,6 +14,7 @@ from wheezy.html.utils import escape_html
 from .config import Config, config
 from .forms import LoginForm, LogOutForm, CreateSubForm
 from .models import db_init_app, rconn
+from .auth import auth_provider
 from .views import do, subs as sub, api3, jwt
 from .views.auth import bp as auth
 from .views.home import bp as home
@@ -63,6 +64,7 @@ def create_app(config=Config('config.yaml')):
     if 'MAIL_SERVER' in app.config:
         mail.init_app(app)
     storage.storage_init_app(app)
+    auth_provider.init_app(app)
     # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 
     app.register_blueprint(home)

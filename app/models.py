@@ -1,5 +1,6 @@
 """ Database and storage related functions and classes """
 import datetime
+from enum import IntEnum
 import functools
 import sys
 import copy
@@ -63,6 +64,12 @@ def peewee_count_queries(dex, *args, **kwargs):
 class BaseModel(Model):
     class Meta:
         database = db
+
+
+class UserCrypto(IntEnum):
+    """Password hash algorithm."""
+    BCRYPT=1
+    REMOTE=2  # password stored on remote auth server
 
 
 class User(BaseModel):
@@ -426,6 +433,13 @@ class UserMetadata(BaseModel):
 
     class Meta:
         table_name = 'user_metadata'
+
+
+class UserAuthSource(IntEnum):
+    """Where authentication is done.  Value for the 'auth_source' key in
+    UserMetadata."""
+    LOCAL=0
+    KEYCLOAK=1
 
 
 class UserSaved(BaseModel):
