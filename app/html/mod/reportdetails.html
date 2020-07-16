@@ -131,15 +131,16 @@ Mod |\
           <hr>
 
           <div class="mod report preview">
-
             @if report['type'] == 'post':
             <h3>@{_('Post Preview:')}</h3>
-              <div class="preview-text-container">
+              <div class="preview-text-container @{(post['deleted'] != 0) and 'deleted ' or ''}">
                 <div class="preview-text">
                   <div class="postinfo" id="postinfo" pid="@{report['pid']!!s}">
-                    @if post['deleted'] != 1:
+                    @if post['deleted'] != 1 or current_user.is_admin():
                       @if post['deleted'] == 2:
-                        @{_('[post deleted by mod or admin]')}
+                        <p class="helper-text">@{_('[post deleted by mod or admin]')}</p>
+                      @else:
+                        <p class="helper-text">@{_('[post deleted by user]')}</p>
                       @end
                       <h3>@{post['title']}</h3>
                       @if post['content']:
@@ -152,7 +153,7 @@ Mod |\
                         @{_('[post preview could not be rendered]')}
                       @end
                     @else:
-                      @{_('[post deleted by user]')}
+                      <p class="helper-text">@{_('[post deleted by user]')}</p>
                     @end
                     <div id="delpostli"></div>
                   </div>

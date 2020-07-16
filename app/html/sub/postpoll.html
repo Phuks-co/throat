@@ -1,7 +1,7 @@
 @require(pollData, postmeta, post)
 
 @def renderPoll(pollData, postmeta, post):
-  <div class="poll-space" data-pid="@{post['pid']}" data-votes="@{pollData['total_votes']}">
+  <div class="poll-space @{((post['visibility'] != '') and (post['visibility'] != 'none')) and 'deleted ' or ''}" data-pid="@{post['pid']}" data-votes="@{pollData['total_votes']}">
     @if not pollData['poll_open']:
       <p>@{_('This poll is now <b>closed</b>.')!!html}</p>
     @elif not pollData['has_voted']:
