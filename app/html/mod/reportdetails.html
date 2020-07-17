@@ -139,12 +139,12 @@ Mod |\
                     @if post['deleted'] != 1 or current_user.is_admin():
                       @if post['deleted'] == 2:
                         <p class="helper-text">@{_('[post deleted by mod or admin]')}</p>
-                      @else:
+                      @elif post['deleted'] == 1:
                         <p class="helper-text">@{_('[post deleted by user]')}</p>
                       @end
                       <h3>@{post['title']}</h3>
                       @if post['content']:
-                        <div id="postcontent">
+                        <div id="postcontent" class="post-content-container">
                           @{markdown(post['content'])!!html}
                         </div>
                         <div id="post-source">@{post['content']}</div>

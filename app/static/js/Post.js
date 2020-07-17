@@ -42,7 +42,7 @@ u.addEventForChild(document, 'click', '.delete-post', function (e, qelem) {
     });
 });
 
-u.addEventForChild(document, 'click', '.browse-comment-history', function (e, qelem) {
+u.addEventForChild(document, 'click', '.browse-history', function (e, qelem) {
   const action = qelem.getAttribute("data-action")
   const content = qelem.parentNode.parentNode;
   const history = content.querySelectorAll('.history')
@@ -61,8 +61,8 @@ u.addEventForChild(document, 'click', '.browse-comment-history', function (e, qe
   history[next_id].style['display'] = ''
   shown.style['display'] = 'none'
 
-  const fwd_button = content.querySelector('.browse-comment-history.forward')
-  const back_button = content.querySelector('.browse-comment-history.back')
+  const fwd_button = content.querySelector('.browse-history.forward')
+  const back_button = content.querySelector('.browse-history.back')
 
   if (next_id == 0){
     fwd_button.classList.add('disabled')

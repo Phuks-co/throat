@@ -548,6 +548,31 @@ class SubPostCommentHistory(BaseModel):
         table_name = "sub_post_comment_history"
 
 
+class SubPostContentHistory(BaseModel):
+    pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
+    datetime = DateTimeField(default=datetime.datetime.now)
+    content = TextField(null=True)
+
+    def __repr__(self):
+        return f'<SubPostContentHistory "{self.content[:20]}">'
+
+    class Meta:
+        table_name = "sub_post_content_history"
+
+
+
+class SubPostTitleHistory(BaseModel):
+    pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
+    datetime = DateTimeField(default=datetime.datetime.now)
+    title = TextField(null=True)
+
+    def __repr__(self):
+        return f'<SubPostContentHistory "{self.content[:20]}">'
+
+    class Meta:
+        table_name = "sub_post_title_history"
+
+
 class UserIgnores(BaseModel):
     uid = ForeignKeyField(db_column='uid', model=User, field='uid')
     target = CharField(max_length=40)

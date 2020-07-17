@@ -31,7 +31,7 @@ from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
 from ..misc import cache, send_email, allowedNames, get_errors, engine
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved
-from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification
+from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
 from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport, SubRule
 from peewee import fn, JOIN
@@ -539,6 +539,10 @@ def edit_txtpost(pid):
 
         if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
             return jsonify(status='error', error=[_("Post is archived")])
+
+        dt = datetime.datetime.utcnow()
+        sph = SubPostContentHistory.create(pid=post.pid, content=post.content, datetime=dt)
+        sph.save()
 
         post.content = form.content.data
         # Only save edited time if it was posted more than five minutes ago
@@ -1048,6 +1052,10 @@ def edit_title():
 
         if post.uid.uid != current_user.uid:
             return jsonify(status="error", error=_("You did not post this!"))
+
+        dt = datetime.datetime.utcnow()
+        sph = SubPostTitleHistory.create(pid=post.pid, title=post.title, datetime=dt)
+        sph.save()
 
         post.title = form.reason.data
         post.save()
@@ -1597,7 +1605,7 @@ def edit_comment():
             return jsonify(status='error', error=_("Post is archived"))
 
         dt = datetime.datetime.utcnow()
-        spm = SubPostCommentHistory.create(cid=comment.cid, content=comment.content, datetime=dt)
+        spm = SubPostCommentHistory.create(cid=comment.cid, content=comment.content, datetime=comment.time)
         spm.save()
         comment.content = form.text.data
         comment.lastedit = dt
