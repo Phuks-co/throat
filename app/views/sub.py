@@ -370,4 +370,4 @@ def view_perm(sub, pid, cid):
 
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
     comment_tree = misc.get_comment_tree(comments, cid, uid=current_user.uid, include_history=include_history)
-    return view_post(sub, pid, comment_tree, cid)
+    return view_post(sub['name'], pid, comment_tree, cid)
