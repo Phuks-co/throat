@@ -2,7 +2,6 @@
 from urllib.parse import urlparse
 from datetime import datetime
 import uuid
-import bcrypt
 from peewee import fn
 from flask import Blueprint, request, redirect, abort, url_for, session, current_app
 from flask_login import current_user, login_user

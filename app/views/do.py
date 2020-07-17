@@ -5,7 +5,6 @@ import re
 import time
 import datetime
 import uuid
-import bcrypt
 import requests
 import magic
 import hashlib
@@ -35,6 +34,7 @@ from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, S
 from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
 from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport, SubRule
+from ..models import rconn, UserStatus
 from peewee import fn, JOIN
 
 do = Blueprint('do', __name__)
@@ -1467,53 +1467,30 @@ def recovery():
         except User.DoesNotExist:
             return jsonify(status="ok")  # Silently fail every time.
 
-        # User exists, check if they don't already have a key sent
-        try:
-            key = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key'))
-            keyExp = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key-time'))
-            expiration = float(keyExp.value)
-            if (time.time() - expiration) > 86400 or config.app.development:  # 1 day
-                # Key is old. remove it and proceed
-                key.delete_instance()
-                keyExp.delete_instance()
-            else:
-                return jsonify(status="ok")
-        except UserMetadata.DoesNotExist:
-            pass
+        if user.status != UserStatus.OK:
+            return jsonify(status="ok")  # Silently fail for deleted and banned users.
 
         # checks done, doing the stuff.
-        rekey = uuid.uuid4()
-        UserMetadata.create(uid=user.uid, key='recovery-key', value=rekey)
-        UserMetadata.create(uid=user.uid, key='recovery-key-time', value=time.time())
-
-        send_email(
-            subject=_('Password recovery'),
-            to=user.email,
-            text_content=_("""%(lema)s
-
-            Somebody (most likely you) has requested a password reset for your account.
-
-            To proceed, visit the following address (valid for the next 24 hours):
-
-            %(url)s
-
-            If you didn't request a password recovery, please ignore this email.
-            """, lema=config.site.lema, url=url_for('user.password_reset', key=rekey,
-                                                    uid=user.uid, _external=True)),
-            html_content=_("""<h1><strong>%(lema)s</strong></h1>
-            <p>Somebody (most likely you) has requested a password reset for
-            your account</p>
-            <p>To proceed, visit the following address (valid for the next 24hs)</p>
-            <a href="%(url)s">%(url)s</a>
-            <hr>
-            <p>If you didn't request a password recovery, please ignore this
-            email</p>
-            """, lema=config.site.lema, url=url_for('user.password_reset', key=rekey,
-                                                    uid=user.uid, _external=True))
-        )
-
+        send_password_recovery_email(user)
         return jsonify(status="ok")
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+def send_password_recovery_email(user):
+    rekey = str(uuid.uuid4())
+    rconn.setex('recovery-' + rekey, value=user.uid, time=20*60)
+    if user.email:
+        send_email(user.email, _("Set a new password on %(site)s", site=config.site.name),
+               text_content=engine.get_template("user/email/password-recovery.txt").render(dict(user=user, token=rekey)),
+               html_content=engine.get_template("user/email/password-recovery.html").render(dict(user=user, token=rekey)))
+
+
+def uid_from_recovery_token(token):
+    return rconn.get('recovery-' + token).decode('utf-8')
+
+
+def delete_recovery_token(token):
+    rconn.delete('recovery-' + token)
 
 
 @do.route("/do/reset", methods=['POST'])
@@ -1527,31 +1504,19 @@ def reset():
         try:
             user = User.get(User.uid == form.user.data)
         except User.DoesNotExist:
-            return jsonify(status='error')
+            return jsonify(status='error', error=_('Password recovery link expired'))
 
-        # User exists, check if they don't already have a key sent
-        try:
-            key = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key'))
-            keyExp = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key-time'))
-            expiration = float(keyExp.value)
-            if (time.time() - expiration) > 86400:  # 1 day
-                # key has expired. Remove
-                key.delete_instance()
-                keyExp.delete_instance()
-                return jsonify(status='error')
-        except UserMetadata.DoesNotExist:
-            return jsonify(status='error')
+        if user.status != UserStatus.OK:
+            return jsonify(status='error', error=_('Password recovery link expired'))
 
-        if key.value != form.key.data:
-            return jsonify(status='error')
-
-        key.delete_instance()
-        keyExp.delete_instance()
+        # User exists, check if their key is still valid.
+        if form.user.data == uid_from_recovery_token(form.key.data):
+            delete_recovery_token(form.key.data)
+        else:
+            return jsonify(status='error', error=_('Password recovery link expired'))
 
         # All good. Set da password.
-        password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
-        user.password = password
-        user.save()
+        auth_provider.reset_password(user, form.password.data)
         login_user(misc.load_user(user.uid))
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})

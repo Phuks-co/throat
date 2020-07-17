@@ -10,6 +10,12 @@ def csrf_token(data):
     return soup.find(id='csrf_token')['value']
 
 
+def get_value(data, key):
+    soup = BeautifulSoup(data, 'html.parser')
+    # print(soup.prettify())
+    return soup.find(id=key)['value']
+
+
 # pretty-print for debugging purposes
 def pp(data):
     print(BeautifulSoup(data, 'html.parser').prettify())

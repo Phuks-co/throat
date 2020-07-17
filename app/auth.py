@@ -127,6 +127,30 @@ class AuthProvider:
                                                            'type': 'password'}]})
         user.save()
 
+    def reset_password(self, user, new_password):
+        if self.provider == 'LOCAL':
+            user.crypto = UserCrypto.BCRYPT
+            user.password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+            self.set_user_auth_source(user, UserAuthSource.LOCAL)
+        elif self.provider == 'KEYCLOAK':
+            if self.get_user_auth_source(user) == UserAuthSource.LOCAL:
+                self.keycloak_admin.create_user({'id': user.uid,
+                                                 'email': user.email,
+                                                 'username': user.name,
+                                                 'enabled': True,
+                                                 'emailVerified': user.verified_email,
+                                                 'credentials': [{'value': new_password,
+                                                                  'type': 'password'}]})
+                self.set_user_auth_source(user, UserAuthSource.KEYCLOAK)
+                user.crypto = UserCrypto.REMOTE
+                user.password = ''
+            else:
+                self.keycloak_admin.update_user(user_id=user.uid,
+                                                payload={'credentials':
+                                                         [{'value': new_password,
+                                                           'type': 'password'}]})
+        user.save()
+
     def get_pending_email(self, user):
         try:
             umd = UserMetadata.get((UserMetadata.uid == user.uid) &
@@ -163,6 +187,7 @@ class AuthProvider:
             self.keycloak_admin.update_user(user_id=user.uid,
                                             payload={'email': email})
         user.email = email
+        user.save()
         self.set_email_verified(user)
 
     def set_email_verified(self, user, value=True):

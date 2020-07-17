@@ -6,6 +6,7 @@ from flask_login import login_required, current_user
 from flask_babel import _, Locale
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired, BadSignature
+from .do import uid_from_recovery_token
 from .. import misc, config
 from ..auth import auth_provider, email_validation_is_required
 from ..misc import engine, send_email
@@ -230,17 +231,14 @@ def confirm_email_change(token):
     info = info_from_email_confirmation_token(token)
     user = None
     try:
-        user = User.get(User.uid == current_user.uid)
-    except User.DoesNotExist:
-        pass
+        user = User.get(User.uid == info['uid'])
+    except (TypeError, User.DoesNotExist):
+        # TODO
+        # flash('The link you used is invalid or has expired.',
+        #       'error')
+        return redirect(url_for('user.edit_account'))
 
-    if user.status != UserStatus.DELETED:
-        if user is None or info is None or user.email == info['email']:
-            # TODO
-            # flash('The link you used is invalid or has expired.',
-            #       'error')
-            return redirect(url_for('auth.edit_account'))
-
+    if user.status == UserStatus.OK:
         auth_provider.confirm_pending_email(user, info['email'])
         # TODO
         # green_flash(f"Your password recovery email address for {config.site.name} is now confirmed!")
@@ -263,31 +261,18 @@ def password_recovery():
     return engine.get_template('user/password_recovery.html').render({'lpform': form})
 
 
-@bp.route('/reset/<uid>/<key>')
-def password_reset(uid, key):
+@bp.route('/reset/<token>')
+def password_reset(token):
     """ The page that actually resets the password """
     try:
-        user = User.get(User.uid == uid)
+        user = User.get(User.uid == uid_from_recovery_token(token))
     except User.DoesNotExist:
         return abort(404)
-
-    try:
-        key = UserMetadata.get(
-            (UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key') & (UserMetadata.value == key))
-        keyExp = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key-time'))
-        expiration = float(keyExp.value)
-        if (time.time() - expiration) > 86400:  # 1 day
-            # Key is old. remove it and proceed
-            key.delete_instance()
-            keyExp.delete_instance()
-            abort(404)
-    except UserMetadata.DoesNotExist:
+    if user.status != UserStatus.OK:
         return abort(404)
 
     if current_user.is_authenticated:
-        key.delete_instance()
-        keyExp.delete_instance()
         return redirect(url_for('home.index'))
 
-    form = PasswordResetForm(key=key.value, user=user.uid)
+    form = PasswordResetForm(key=token, user=user.uid)
     return engine.get_template('user/password_reset.html').render({'lpform': form})
