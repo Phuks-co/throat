@@ -33,6 +33,7 @@ cfg_defaults = {  # key => default value
             "sub_creation_min_level": 2,
             "sub_creation_admin_only": False,
             "sub_ownership_limit": 20,
+            "edit_history": False,
 
             "daily_sub_posting_limit": 10,
             "daily_site_posting_limit": 25,

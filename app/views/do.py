@@ -641,18 +641,20 @@ def create_comment(pid):
                           namespace='/snt',
                           room='user' + to)
 
+        subMods = misc.getSubMods(sub.sid)
+        include_history = current_user.is_mod(sub.sid, 1) or current_user.is_admin()
+
         # 6 - Process mentions
         misc.workWithMentions(form.comment.data, to, post, sub, cid=comment.cid)
         renderedComment = engine.get_template('sub/postcomments.html').render({
             'post': misc.getSinglePost(post.pid),
-            'comments': misc.get_comment_tree([{'cid': str(comment.cid), 'parentcid': None}], uid=current_user.uid),
+            'comments': misc.get_comment_tree([{'cid': str(comment.cid), 'parentcid': None}], uid=current_user.uid, include_history=include_history),
             'subInfo': misc.getSubData(sub.sid),
-            'subMods': misc.getSubMods(sub.sid),
+            'subMods': subMods,
             'highlight': str(comment.cid)
         })
 
-        return json.dumps({'status': 'ok', 'addr': url_for('sub.view_perm', sub=sub.name, pid=pid, cid=comment.cid),
-                           'comment': renderedComment, 'cid': str(comment.cid)})
+        return json.dumps({'status': 'ok', 'addr': url_for('sub.view_perm', sub=sub.name, pid=pid, cid=comment.cid),'comment': renderedComment, 'cid': str(comment.cid)})
     return json.dumps({'status': 'error', 'error': get_errors(form)}), 400
 
 
@@ -1595,7 +1597,7 @@ def edit_comment():
             return jsonify(status='error', error=_("Post is archived"))
 
         dt = datetime.datetime.utcnow()
-        spm = SubPostCommentHistory.create(cid=comment.cid, content=comment.content, datetime=dt if not comment.lastedit else comment.lastedit)
+        spm = SubPostCommentHistory.create(cid=comment.cid, content=comment.content, datetime=dt)
         spm.save()
         comment.content = form.text.data
         comment.lastedit = dt
@@ -1669,6 +1671,9 @@ def get_sibling(pid, cid, lim):
     except SubPost.DoesNotExist:
         return jsonify(status='ok', posts=[])
 
+    subInfo = misc.getSubData(post['sid'])
+    subMods = misc.getSubMods(post['sid'])
+
     if cid == 'null':
         cid = '0'
     if cid != '0':
@@ -1683,10 +1688,12 @@ def get_sibling(pid, cid, lim):
     if not comments.count():
         return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': ''})
 
+    include_history = current_user.is_mod(sub.sid, 1) or current_user.is_admin()
+
     if lim:
-        comment_tree = misc.get_comment_tree(comments, cid if cid != '0' else None, lim, provide_context=False, uid=current_user.uid)
+        comment_tree = misc.get_comment_tree(comments, cid if cid != '0' else None, lim, provide_context=False, uid=current_user.uid, include_history=include_history)
     elif cid != '0':
-        comment_tree = misc.get_comment_tree(comments, cid, provide_context=False, uid=current_user.uid)
+        comment_tree = misc.get_comment_tree(comments, cid, provide_context=False, uid=current_user.uid, include_history=include_history)
     else:
         return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': ''})
 

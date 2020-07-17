@@ -42,14 +42,31 @@
                 @{_('[Deleted]')} \
               @elif comment['visibility'] == 'admin-self-del':
                 <p class="helper-text">@{_('[Post deleted by user]')}</p>
-                @{comment['content']!!html}
+                <span class="current history" data-id="0">@{comment['content']!!html}</span>
               @elif comment['visibility'] == 'mod-self-del':
                 <p class="helper-text">@{_('[Post deleted by user]')}</p>
               @elif comment['visibility'] == 'mod-del':
                 <p class="helper-text">@{_('[Post deleted by mod or admin]')}</p>
-                @{comment['content']!!html}
+                <span class="current history" data-id="0">@{comment['content']!!html}</span>
               @else:
-                @{comment['content']!!html}
+                <span class="current history" data-id="0">@{comment['content']!!html}</span>
+              @end
+              @if comment['history'] and (comment['visibility'] != 'none' and  comment['visibility'] != 'mod-self-del'):
+                  @for count, history in enumerate(comment['history']):
+                  <span style="display:none;" class="old history" data-id="@{(count + 1)!!s}">
+                      @{history['content']!!html}
+                  </span>
+                  @end
+                  <div>
+                    <button class="browse-comment-history back" data-action="back">←</button>
+                    <button class="browse-comment-history forward disabled" action="forward">→</button>
+                    <span class="history-meta">
+                      @{_('Viewing edit history:')}
+                        <span class="history-version">
+                          1/@{1 + len(comment['history'])!!s}
+                        </span>
+                    </span>
+                  </div>
               @end
             </div>
 
