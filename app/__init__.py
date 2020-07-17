@@ -56,6 +56,10 @@ def create_app(config=Config('config.yaml')):
     if 'STORAGE_ALLOWED_EXTENSIONS' not in app.config:
         app.config['STORAGE_ALLOWED_EXTENSIONS'] = storage.allowed_extensions
 
+    # For flask-login, securely handle the "Remember me" cookie.
+    app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+    app.config['REMEMBER_COOKIE_SECURE'] = not app.config['DEBUG']
+
     csp = { 'default-src': '\'self\'' }
     media_servers = [ '\'self\'' ]
     for url in [config.storage.thumbnails.url, config.storage.uploads.url]:
