@@ -80,7 +80,7 @@ auth:
   provider: 'LOCAL'
 
   # Set to True to require users to provide valid email addresses.
-  validate_emails: False
+  require_valid_emails: False
 
   keycloak:
     server: 'http://192.168.100.5:5080/auth/'

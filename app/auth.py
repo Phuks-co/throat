@@ -261,8 +261,6 @@ def registration_is_enabled():
     return True
 
 
-# Someday config.auth.validate_emails may move to site metadata.
+# Someday config.auth.require_valid_emails may move to site metadata.
 def email_validation_is_required():
-    return config.auth.validate_emails
-
-
+    return config.auth.require_valid_emails

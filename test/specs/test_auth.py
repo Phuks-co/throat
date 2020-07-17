@@ -14,7 +14,7 @@ from test.utilities import register_user, log_in_user, log_out_current_user
 
 
 @pytest.mark.parametrize('test_config', [{'auth': {'validate_emails': True}},
-                                         {'auth': {'validate_emails': False}}])
+                                         {'auth': {'require_valid_emails': False}}])
 def test_registration_login(client):
     """The registration page logs a user in if they register correctly."""
     rv = client.get(url_for('auth.register'))
@@ -44,7 +44,7 @@ def test_registration_login(client):
         assert b'Log out' in rv.data
 
 
-@pytest.mark.parametrize('test_config', [{'auth': {'validate_emails': True}}])
+@pytest.mark.parametrize('test_config', [{'auth': {'require_valid_emails': True}}])
 def test_email_required_for_registration(client, user_info):
     "If emails are required, trying to register without one will fail."
     rv = client.get(url_for('auth.register'))
@@ -64,7 +64,7 @@ def test_email_required_for_registration(client, user_info):
         assert b'Log out' not in rv.data
 
 
-# @pytest.mark.parametrize('test_config', [{'auth': {'validate_emails': True}}])
+# @pytest.mark.parametrize('test_config', [{'auth': {'require_valid_emails': True}}])
 # def test_login_before_confirming_email():
 #     """Registered users with unconfirmed emails can't log in."""
 #     # It should give them the option of sending another link.
@@ -108,8 +108,8 @@ def test_change_password(client, user_info):
     log_in_user(client, new_info, expect_success=True)
 
 
-@pytest.mark.parametrize('test_config', [{'auth': {'validate_emails': True}},
-                                         {'auth': {'validate_emails': False}}])
+@pytest.mark.parametrize('test_config', [{'auth': {'require_valid_emails': True}},
+                                         {'auth': {'require_valid_emails': False}}])
 def test_change_password_recovery_email(client, user_info):
     """The user can change their password recovery email."""
     register_user(client, user_info)
@@ -170,7 +170,7 @@ def test_change_password_recovery_email(client, user_info):
         assert len(outbox) == 1
 
 
-@pytest.mark.parametrize('test_config', [{'auth': {'validate_emails': True}}])
+@pytest.mark.parametrize('test_config', [{'auth': {'require_valid_emails': True}}])
 def test_password_required_to_change_recovery_email(client, user_info):
     """Changing the password recovery requires the correct password."""
     register_user(client, user_info)

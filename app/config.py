@@ -51,7 +51,7 @@ cfg_defaults = {  # key => default value
         },
         "auth": {
             "provider": 'LOCAL',
-            "validate_emails": False,
+            "require_valid_emails": False,
             "keycloak": {}
         },
         "cache": {
