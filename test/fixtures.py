@@ -1,3 +1,4 @@
+import bcrypt
 import logging
 import os
 import tempfile
@@ -69,6 +70,17 @@ def app(test_config):
     app_context.pop()
     os.close(db_fd)
     os.unlink(db_name)
+
+
+@pytest.fixture(autouse=True)
+def fast_hashing(monkeypatch):
+    def just_add_salt(data, salt):
+        assert(isinstance(data, bytes))
+        assert(isinstance(salt, bytes))
+        data = bytearray(data)
+        data.append(salt[-1])
+        return bytes(data)
+    monkeypatch.setattr(bcrypt, 'hashpw', just_add_salt)
 
 
 @pytest.fixture
