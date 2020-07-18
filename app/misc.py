@@ -11,7 +11,6 @@ import hashlib
 import re
 import gevent
 
-import bcrypt
 import tinycss2
 from captcha.image import ImageCaptcha
 from datetime import datetime, timedelta, timezone
@@ -1249,16 +1248,6 @@ def getUserGivenScore(uid):
 #  For fucks sake make your mind.
 def get_ignores(uid):
     return [x.target for x in UserIgnores.select().where(UserIgnores.uid == uid)]
-
-
-def validate_password(usr, passwd):
-    """ Returns True if `passwd` is valid for `usr`. `usr` is a db object. """
-    if usr.crypto == 1:  # bcrypt
-        thash = bcrypt.hashpw(passwd.encode('utf-8'),
-                              usr.password.encode('utf-8'))
-        if thash == usr.password.encode('utf-8'):
-            return True
-    return False
 
 
 def iter_validate_css(obj, uris):

@@ -1,0 +1,19 @@
+@require(reason)
+@extends("shared/layout.html")
+
+@def content():
+  <div id="container">
+    <div id="center-container">
+      <div class="content email-verification">
+        <h1>@{_('Email sent!')}</h1>
+        <p>@{_('Click the link in the email we sent to you. You may want to check your spam folder, just in case ;)')}</p>
+        @if reason == 'registration':
+          <p>@{_('After you click the link, you will be able to log in and start using %(site)s!', site=config.site.name)}</p>
+        @end
+        @if reason == 'email_change':
+          <p>@{_('The new email address on your account will take effect after you open the link.')}</p>
+        @end
+      </div>
+    </div>
+  </div>
+@end

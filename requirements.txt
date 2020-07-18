@@ -39,3 +39,5 @@ pyOpenSSL
 pygobject
 mutagen
 flask-mail
+python-keycloak
+itsdangerous

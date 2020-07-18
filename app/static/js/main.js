@@ -219,13 +219,27 @@ u.ready(function() {
           if(Array.isArray(data.error)){
             error = data.error[0];
           }
-
           if(target.querySelector('.div-error')){
             target.querySelector('.div-error').innerHTML = error;
             target.querySelector('.div-error').style.display = 'block';
           }
+          if(target.querySelector('.div-message')){
+            target.querySelector('.div-message').style.display = 'none';
+          }
           button.innerHTML = btnorm;
         } else { // success
+          let message = data.message;
+          if(Array.isArray(data.message)){
+            message = data.message[0];
+          }
+          if(target.querySelector('.div-message')){
+            target.querySelector('.div-message').innerHTML = message;
+            target.querySelector('.div-message').style.display = 'block';
+          }
+          if(target.querySelector('.div-error')){
+            target.querySelector('.div-error').style.display = 'none';
+          }
+
           if(target.getAttribute('data-reset')){
             target.reset();
           }

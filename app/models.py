@@ -1,5 +1,6 @@
 """ Database and storage related functions and classes """
 import datetime
+from enum import IntEnum
 import functools
 import sys
 import copy
@@ -65,6 +66,20 @@ class BaseModel(Model):
         database = db
 
 
+class UserCrypto(IntEnum):
+    """Password hash algorithm."""
+    BCRYPT = 1
+    REMOTE = 2  # password stored on remote auth server
+
+
+class UserStatus(IntEnum):
+    """User's login capability status."""
+    OK = 0
+    PROBATION = 1  # New, with email not yet confirmed.
+    BANNED = 5     # site-ban
+    DELETED = 10
+
+
 class User(BaseModel):
     uid = CharField(primary_key=True, max_length=40)
     crypto = IntegerField()  # Password hash algo, 1 = bcrypt.
@@ -79,7 +94,7 @@ class User(BaseModel):
     status = IntegerField(default=0)
     resets = IntegerField(default=0)
 
-    language = CharField(default=None, max_length=11)
+    language = CharField(default=None, null=True, max_length=11)
 
     def __repr__(self):
         return f'<User {self.name}>'
@@ -426,6 +441,13 @@ class UserMetadata(BaseModel):
 
     class Meta:
         table_name = 'user_metadata'
+
+
+class UserAuthSource(IntEnum):
+    """Where authentication is done.  Value for the 'auth_source' key in
+    UserMetadata."""
+    LOCAL = 0
+    KEYCLOAK = 1
 
 
 class UserSaved(BaseModel):

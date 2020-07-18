@@ -8,14 +8,19 @@
 @def main():
 <div id="center-container">
     <div class="content">
+      @if error:
+        <div class="error" style="margin-top: 2em;">@{ error }</div>
+      @end
+      @for err in get_flashed_messages(category_filter=["error"]):
+        <div class="error" style="margin-top: 2em;">@{ err }</div>
+      @end
+      @for message in get_flashed_messages(category_filter=["message"]):
+        <div class="message" style="margin-top: 2em;">@{ message }</div>
+      @end
         <form method="POST" class="pure-form pure-form-aligned">
             @{ regform.csrf_token()!!html }
             <h1>@{_('Register')}</h1>
             <fieldset>
-                @if error:
-                <div class="error" style="margin-top: 2em;">@{ error }</div>
-                @end
-
                 <div class="pure-control-group">
                     <label for="username">@{regform.username.label.text}</label>
                     @{regform.username(required=True, pattern="[a-zA-Z0-9_-]+", title=_('Alphanumeric characters plus \'-\' and \'_\''))!!html}
@@ -37,8 +42,13 @@
                 </div>
 
                 <div class="pure-control-group">
-                    <label for="email">@{regform.email.label.text}</label>
-                    @{regform.email()!!html}
+                  @if email_validation_is_required():
+                    <label for="email">@{regform.email_required.label.text}</label>
+                    @{regform.email_required()!!html}
+                  @else:
+                    <label for="email">@{regform.email_optional.label.text}</label>
+                    @{regform.email_optional()!!html}
+                  @end
                 </div>
                 @if config.site.enable_security_question:
                 <div class="pure-control-group">

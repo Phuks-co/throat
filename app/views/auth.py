@@ -2,15 +2,17 @@
 from urllib.parse import urlparse
 from datetime import datetime
 import uuid
-import bcrypt
 from peewee import fn
-from flask import Blueprint, request, redirect, abort, url_for, session
+from flask import Blueprint, request, redirect, abort, url_for, session, current_app, flash
 from flask_login import current_user, login_user
 from flask_babel import _
+from itsdangerous import URLSafeTimedSerializer
+from itsdangerous.exc import SignatureExpired, BadSignature
 from .. import misc, config
+from ..auth import auth_provider, registration_is_enabled, email_validation_is_required
 from ..forms import LoginForm, RegistrationForm
-from ..misc import engine
-from ..models import User, UserMetadata, InviteCode, SubSubscriber, rconn, SiteMetadata
+from ..misc import engine, send_email
+from ..models import User, UserMetadata, UserStatus, InviteCode, SubSubscriber, rconn
 
 bp = Blueprint('auth', __name__)
 
@@ -55,17 +57,17 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('home.index'))
     form = RegistrationForm()
+    if email_validation_is_required():
+        del form.email_optional
+    else:
+        del form.email_required
     form.cap_key, form.cap_b64 = misc.create_captcha()
 
-    try:
-        enable_registration = SiteMetadata.get(SiteMetadata.key == 'enable_registration')
-        if enable_registration.value in ('False', '0'):
-            return engine.get_template('user/registration_disabled.html').render({'test': 'test'})
-    except SiteMetadata.DoesNotExist:
-        pass
+    if not registration_is_enabled():
+        return engine.get_template('user/registration_disabled.html').render({'test': 'test'})
 
     if not form.validate():
-        return engine.get_template('user/register.html').render({'error': misc.get_errors(form, True), 'regform': form})
+       return engine.get_template('user/register.html').render({'error': misc.get_errors(form, True), 'regform': form})
 
     if not misc.validate_captcha(form.ctok.data, form.captcha.data):
         return engine.get_template('user/register.html').render({'error': _("Invalid captcha."), 'regform': form})
@@ -81,13 +83,15 @@ def register():
     except User.DoesNotExist:
         pass
 
-    if form.email.data:
-        try:
-            User.get(User.email == form.email.data)
+    if email_validation_is_required():
+        email = form.email_required.data
+    else:
+        email = form.email_optional.data
+
+    if email:
+        if auth_provider.get_user_by_email(email) is not None:
             return engine.get_template('user/register.html').render(
                 {'error': _("E-mail address is already in use."), 'regform': form})
-        except User.DoesNotExist:
-            pass
 
     if config.site.enable_security_question:
         if form.securityanswer.data.lower() != session['sa'].lower():
@@ -113,18 +117,65 @@ def register():
         invcode.uses += 1
         invcode.save()
 
-    password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
-
-    user = User.create(uid=str(uuid.uuid4()), name=form.username.data, crypto=1, password=password,
-                       email=form.email.data, joindate=datetime.utcnow())
+    user = auth_provider.create_user(name=form.username.data, password=form.password.data,
+                                     email=email, verified_email=False)
     if misc.enableInviteCode():
         UserMetadata.create(uid=user.uid, key='invitecode', value=form.invitecode.data)
-    # defaults
+
     defaults = misc.getDefaultSubs()
     subs = [{'uid': user.uid, 'sid': x['sid'], 'status': 1, 'time': datetime.utcnow()} for x in defaults]
     SubSubscriber.insert_many(subs).execute()
-    theuser = misc.load_user(user.uid)
-    login_user(theuser, remember=True)
+
+    if email_validation_is_required():
+        user.status = UserStatus.PROBATION
+        user.save()
+        send_login_link_email(user)
+        return redirect(url_for('auth.confirm_registration'))
+    else:
+        theuser = misc.load_user(user.uid)
+        login_user(theuser, remember=True)
+        return redirect(url_for('wiki.welcome'))
+
+
+def send_login_link_email(user):
+    s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"],
+                               salt="login")
+    token = s.dumps({"uid": user.uid})
+    send_email(user.email, _("Confirm your new account on %(site)s", site=config.site.name),
+               text_content=engine.get_template("user/email/login-link.txt").render(dict(user=user, token=token)),
+               html_content=engine.get_template("user/email/login-link.html").render(dict(user=user, token=token)))
+
+
+def user_from_login_token(token):
+    try:
+        s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"], salt="login")
+        info = s.loads(token, max_age=8*60*60) # TODO in config?
+        return User.get((User.uid == info["uid"]))
+    except (SignatureExpired, BadSignature, User.DoesNotExist):
+        return None
+
+
+@bp.route('/register/confirm')
+def confirm_registration():
+    if current_user.is_authenticated:
+        return redirect(url_for('home.index'))
+    return engine.get_template('user/check-your-email.html').render({'reason': 'registration'})
+
+
+@bp.route('/login/with-token/<token>')
+def login_with_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home.index'))
+    user = user_from_login_token(token)
+    if user is None:
+        flash(_('The link you used is invalid or has expired.'), 'error')
+        return redirect(url_for('auth.register'))
+    elif user.status == UserStatus.PROBATION:
+        user.status = UserStatus.OK
+        user.save()
+        auth_provider.set_email_verified(user)
+        theuser = misc.load_user(user.uid)
+        login_user(theuser, remember=True)
     return redirect(url_for('wiki.welcome'))
 
 
@@ -151,24 +202,20 @@ def login():
             return engine.get_template('user/login.html').render(
                 {'error': _("Invalid username or password."), 'loginform': form})
 
-        if user.status != 0:
+        if user.status == UserStatus.PROBATION:
+            return redirect(url_for('auth.confirm_registration'))
+        elif user.status != UserStatus.OK:
             return engine.get_template('user/login.html').render(
                 {'error': _("Invalid username or password."), 'loginform': form})
 
-        if user.crypto == 1:  # bcrypt
-            thash = bcrypt.hashpw(form.password.data.encode('utf-8'),
-                                  user.password.encode('utf-8'))
-            if thash == user.password.encode('utf-8'):
-                theuser = misc.load_user(user.uid)
-                login_user(theuser, remember=form.remember.data)
-                if request.args.get('service'):
-                    return handle_cas_ok(uid=user.uid)
-                else:
-                    return form.redirect('index')
+        if auth_provider.validate_password(user, form.password.data):
+            theuser = misc.load_user(user.uid)
+            login_user(theuser, remember=form.remember.data)
+            if request.args.get('service'):
+                return handle_cas_ok(uid=user.uid)
             else:
-                return engine.get_template('user/login.html').render(
-                    {'error': _("Invalid username or password."), 'loginform': form})
-        else:  # Unknown hash
+                return form.redirect('index')
+        else:
             return engine.get_template('user/login.html').render(
-                {'error': _("Something went really really wrong here."), 'loginform': form})
+                    {'error': _("Invalid username or password."), 'loginform': form})
     return engine.get_template('user/login.html').render({'error': misc.get_errors(form, True), 'loginform': form})
