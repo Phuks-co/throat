@@ -249,7 +249,7 @@ u.addEventForChild(document, 'click', '.edit-post', function (e, qelem) {
     back.innerHTML = "<s>" + _('edit') + "</s>";
     back.onclick = function () {
         elem.innerHTML = oc;
-        this.parentNode.innerHTML = '<a class="edit-post">' + _('edit') + '</a>';
+        back.parentNode.innerHTML = '<a class="edit-post">' + _('edit') + '</a>';
     };
     let h = elem.clientHeight - 6;
     if (h < 100) {
@@ -259,8 +259,10 @@ u.addEventForChild(document, 'click', '.edit-post', function (e, qelem) {
         document.getElementById('post-source').innerHTML + '</textarea></div><div style="display:none" class="error">' +
         '</div><button class="pure-button pure-button-primary button-xsmall btn-editpost" data-pid="' + qelem.getAttribute('data-pid') + '">' +
         _('Save changes') + '</button> <button class="pure-button button-xsmall btn-preview" data-pvid="editpost" >' + _('Preview') + '</button>' +
+        '<button class="pure-button button-xsmall btn-rcancel button-transparent" data-pvid="editpost" >' + _('Cancel') + '</button>' +
         '<div class="cmpreview canclose" style="display:none;"><h4>' + _('Comment preview') + '</h4><span class="closemsg">&times;</span><div class="cpreview-content">' +
         '</div></div>';
+    elem.querySelector('.btn-rcancel').onclick = back.onclick;
     qelem.replaceWith(back);
     initializeEditor(document.getElementById('editpost'));
     document.querySelector('#editpost textarea').focus();
@@ -305,16 +307,17 @@ u.addEventForChild(document, 'click', '.edit-comment', function (e, qelem) {
     back.innerHTML = _("edit");
     back.onclick = function () {
         elem.innerHTML = oc;
-        this.parentNode.innerHTML = _('edit');
+        back.parentNode.innerHTML = _('edit');
     };
     const h = elem.clientHeight + 28;
     elem.innerHTML = '<div class="cwrap markdown-editor" id="ecomm-' + cid + '"><textarea style="height: ' + h + 'px">' +
         document.getElementById('sauce-' + cid).innerHTML + '</textarea></div><div style="display:none" class="error"></div>' +
         '<button class="pure-button pure-button-primary button-xsmall btn-editcomment" data-cid="' + cid + '">' + _('Save changes') + '</button> ' +
         '<button class="pure-button button-xsmall btn-preview" data-pvid="ecomm-' + cid + '">' + _('Preview') + '</button>' +
+        '<button class="pure-button button-xsmall btn-rcancel button-transparent" data-pvid="editpost" >' + _('Cancel') + '</button>' +
         '<div class="cmpreview canclose" style="display:none;"><h4>' + _('Comment preview') + '</h4><span class="closemsg">&times;</span>' +
         '<div class="cpreview-content"></div></div>';
-
+    elem.querySelector('.btn-rcancel').onclick = back.onclick;
     const cNode = qelem.cloneNode(false);
     cNode.appendChild(back);
     qelem.parentNode.replaceChild(cNode, qelem);
@@ -511,7 +514,7 @@ u.addEventForChild(document, 'click', '.reply-comment', function (e, qelem) {
     back.innerHTML = _('reply');
     back.onclick = function () {
         document.querySelector('#rblock-' + cid).outerHTML = '';
-        this.parentNode.innerHTML = _('reply');
+        back.parentNode.innerHTML = _('reply');;
     };
     const pN = qelem.parentNode;
     const cNode = qelem.cloneNode(false);
@@ -532,8 +535,11 @@ u.addEventForChild(document, 'click', '.reply-comment', function (e, qelem) {
     lm.innerHTML = '<div class="cwrap markdown-editor" id="rcomm-' + cid + '"><textarea class="exalert" style="height: 8em;"></textarea></div>' +
         '<div style="display:none" class="error"></div><button class="pure-button pure-button-primary button-xsmall btn-postcomment" ' +
         'data-pid="' + pid + '" data-cid="' + cid + '">' + _('Post comment') + '</button> <button class="pure-button button-xsmall btn-preview" data-pvid="rcomm-' +
-        cid + '">' + _('Preview') + '</button><div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span>' +
+        cid + '">' + _('Preview') + '</button>' +
+        '<button class="pure-button button-xsmall btn-rcancel button-transparent" data-pvid="editpost" >' + _('Cancel') + '</button>' +
+        '<div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span>' +
         '<div class="cpreview-content"></div></div>';
+    lm.querySelector('.btn-rcancel').onclick = back.onclick;
     pN.parentNode.parentNode.appendChild(lm);
     initializeEditor(document.querySelector('#rcomm-' + cid));
     document.querySelector('#rcomm-' + cid + ' textarea').focus();

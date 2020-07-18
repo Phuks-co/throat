@@ -198,6 +198,14 @@ blockquote{
   margin-left: .25em;
 }
 
+.button-transparent, .button-transparent:hover {
+    background: none;
+}
+
+.btn-rcancel {
+    margin-left: 1em;
+}
+
 .separator {
   margin-left: .1em;
   margin-right: .25em;
