@@ -90,13 +90,14 @@ def test_change_password(client, user_info):
     new_password = 'mynewSuperSecret#123' + '\N{PARTIAL DIFFERENTIAL}'
     assert new_password != user_info['password']
     rv = client.get(url_for('user.edit_account'))
-    rv = client.post(url_for('user.edit_account'),
+    rv = client.post(url_for('do.edit_account'),
                      data=dict(csrf_token=csrf_token(rv.data),
                                oldpassword=user_info['password'],
                                password=new_password,
                                confirm=new_password),
                      follow_redirects=True)
-    assert rv.status == '200 OK'
+    reply = json.loads(rv.data.decode('utf-8'))
+    assert reply['status'] == 'ok'
 
     log_out_current_user(client)
 
@@ -125,7 +126,7 @@ def test_change_password_recovery_email(client, user_info):
         data['email_optional'] = new_email
 
     with mail.record_messages() as outbox:
-        rv = client.post(url_for('user.edit_account'), data=data, follow_redirects=True)
+        rv = client.post(url_for('do.edit_account'), data=data, follow_redirects=True)
         log_out_current_user(client)
 
         if email_validation_is_required():
@@ -185,7 +186,7 @@ def test_password_required_to_change_recovery_email(client, user_info):
 
     # No confirmation email should be sent.
     with mail.record_messages() as outbox:
-        rv = client.post(url_for('user.edit_account'), data=data, follow_redirects=True)
+        rv = client.post(url_for('do.edit_account'), data=data, follow_redirects=True)
         assert len(outbox) == 0
 
     log_out_current_user(client)

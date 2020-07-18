@@ -12,17 +12,19 @@ import os
 import random
 from PIL import Image
 from bs4 import BeautifulSoup
-from flask import Blueprint, redirect, url_for, session, abort, jsonify
+from flask import Blueprint, redirect, url_for, session, abort, jsonify, current_app
 from flask import render_template, request
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_babel import _
+from itsdangerous import URLSafeTimedSerializer
+from itsdangerous.exc import SignatureExpired, BadSignature
 from ..config import config
 from .. import forms, misc, caching, storage
 from ..socketio import socketio
 from ..auth import auth_provider, email_validation_is_required
 from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
-from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm
+from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
@@ -67,6 +69,67 @@ def search(stype):
     form = SearchForm()
     term = re.sub(r'[^A-Za-z0-9.,\-_\'" ]+', '', form.term.data)
     return redirect(url_for(stype, term=term))
+
+
+@do.route("/do/edit_account", methods=['POST'])
+@login_required
+def edit_account():
+    form = EditAccountForm()
+    if email_validation_is_required():
+        del form.email_optional
+    else:
+        del form.email_required
+
+    if form.validate():
+        user = User.get(User.uid == current_user.uid)
+        if email_validation_is_required():
+            email = form.email_required.data
+        else:
+            email = form.email_optional.data
+
+        if (email and email != user.email and
+            email != auth_provider.get_pending_email(user) and
+            auth_provider.get_user_by_email(email) is not None):
+            return json.dumps({'status': 'error',
+                               'error': [_('E-mail address is already in use')]})
+
+        if not auth_provider.validate_password(user, form.oldpassword.data):
+            return json.dumps({'status': 'error',
+                               'error': [_('Incorrect password')]})
+
+        messages = []
+        if form.password.data or email != user.email:
+            if form.password.data:
+                auth_provider.change_password(user, form.oldpassword.data, form.password.data)
+            if email != user.email:
+                if not email_validation_is_required():
+                    user.email = email
+                    user.save()
+                else:
+                    auth_provider.set_pending_email(user, email)
+                    send_email_confirmation_link_email(user, email)
+                    messages.append(_('To confirm, click the link in the email we sent to you. '
+                                      'You may want to check your spam folder, just in case ;)'))
+        return json.dumps({'status': 'ok', 'message': messages})
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+def send_email_confirmation_link_email(user, new_email):
+    s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"],
+                               salt="email-change")
+    token = s.dumps({"uid": user.uid, "email": new_email})
+    send_email(new_email, _("Confirm your email address for your %(site)s account", site=config.site.name),
+               text_content=engine.get_template("user/email/confirm-email-change.txt").render(dict(user=user, token=token)),
+               html_content=engine.get_template("user/email/confirm-email-change.html").render(dict(user=user, token=token)))
+
+
+def info_from_email_confirmation_token(token):
+    try:
+        s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"],
+                                   salt="email-change")
+        return s.loads(token, max_age=24*60*60) # TODO in config?
+    except (SignatureExpired, BadSignature):
+        return None
 
 
 @do.route("/do/delete_account", methods=['POST'])

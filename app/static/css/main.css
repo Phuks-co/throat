@@ -291,6 +291,27 @@ a:hover {
     padding-bottom: 10px;
 }
 
+.div-message{
+  display: none;
+}
+
+.alert.div-message {
+  background: #00d928;
+  color: #ffffff;
+  margin: 6px;
+  padding-top: .1em;
+  padding-bottom: .1em;
+}
+
+.div-message span.closebtn {
+  margin: 4px;
+  float: right;
+}
+
+.alert.div-message ul {
+    padding-bottom: 10px;
+}
+
 #bottombar {
   height: 4em;
   width: 100%;
