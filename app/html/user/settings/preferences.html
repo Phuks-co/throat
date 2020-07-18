@@ -12,10 +12,6 @@
         @{edituserform.csrf_token()!!html}
         <fieldset>
             <div class="new-form-one">
-                <label for="email">@{edituserform.email.label.text}</label>
-                @{edituserform.email(value=current_user.user['email'], autocomplete="off")!!html}
-            </div>
-            <div class="new-form-one">
                 <label for="disable_sub_style"
                        class="pure-checkbox">@{edituserform.disable_sub_style.label.text}</label>
                 @{edituserform.disable_sub_style()!!html}
@@ -48,10 +44,7 @@
                 <label for="nochat" class="pure-checkbox">@{edituserform.language.label.text}</label>
                 @{edituserform.language(autocomplete="off")!!html}
             </div>
-			<div>
-                <label for="email" class="new-form-one">@{edituserform.email.label.text!!s}</label>
-                @{edituserform.email(value=current_user.user['email'], autocomplete="off")}
-            </div>
+
 
             <div class="alert div-error"></div>
 
