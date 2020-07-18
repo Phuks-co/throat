@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 from datetime import datetime
 import uuid
 from peewee import fn
-from flask import Blueprint, request, redirect, abort, url_for, session, current_app
+from flask import Blueprint, request, redirect, abort, url_for, session, current_app, flash
 from flask_login import current_user, login_user
 from flask_babel import _
 from itsdangerous import URLSafeTimedSerializer
@@ -168,9 +168,7 @@ def login_with_token(token):
         return redirect(url_for('home.index'))
     user = user_from_login_token(token)
     if user is None:
-        # TODO
-        # flash('The link you used is invalid or has expired.',
-        #       'error')
+        flash(_('The link you used is invalid or has expired.'), 'error')
         return redirect(url_for('auth.register'))
     elif user.status == UserStatus.PROBATION:
         user.status = UserStatus.OK
@@ -178,8 +176,6 @@ def login_with_token(token):
         auth_provider.set_email_verified(user)
         theuser = misc.load_user(user.uid)
         login_user(theuser, remember=True)
-        # TODO
-        # green_flash(f"Your account on {config.site.name} is now confirmed!")
     return redirect(url_for('wiki.welcome'))
 
 

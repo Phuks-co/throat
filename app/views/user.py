@@ -1,7 +1,7 @@
 """ Profile and settings endpoints """
 import time
 from peewee import fn, JOIN
-from flask import Blueprint, render_template, abort, redirect, url_for
+from flask import Blueprint, render_template, abort, redirect, url_for, flash
 from flask_login import login_required, current_user
 from flask_babel import _, Locale
 from .do import uid_from_recovery_token, info_from_email_confirmation_token
@@ -169,15 +169,13 @@ def confirm_email_change(token):
     try:
         user = User.get(User.uid == info['uid'])
     except (TypeError, User.DoesNotExist):
-        # TODO
-        # flash('The link you used is invalid or has expired.',
-        #       'error')
+        flash(_('The link you used is invalid or has expired'), 'error')
         return redirect(url_for('user.edit_account'))
 
     if user.status == UserStatus.OK:
         auth_provider.confirm_pending_email(user, info['email'])
-        # TODO
-        # green_flash(f"Your password recovery email address for {config.site.name} is now confirmed!")
+        flash(_('Your password recovery email address is now confirmed!'), 'message')
+        return redirect(url_for('user.edit_account'))
     return redirect(url_for('home.index'))
 
 

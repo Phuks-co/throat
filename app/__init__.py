@@ -5,7 +5,7 @@ import time
 import socket
 import datetime
 from bs4 import BeautifulSoup
-from flask import Flask, url_for, g, request
+from flask import Flask, url_for, g, request, get_flashed_messages
 from flask_login import LoginManager, current_user
 from flask_webpack import Webpack
 from flask_babel import Babel, _
@@ -88,7 +88,7 @@ def create_app(config=Config('config.yaml')):
                                'form': forms, 'hostname': socket.gethostname(), 'datetime': datetime,
                                'e': escape_html, 'markdown': misc.our_markdown, '_': _, 'get_locale': get_locale,
                                'BeautifulSoup': BeautifulSoup, 'thumbnail_url': storage.thumbnail_url,
-                               'file_url': storage.file_url,
+                               'file_url': storage.file_url, 'get_flashed_messages': get_flashed_messages,
                                'email_validation_is_required': email_validation_is_required})
 
     if config.app.development:

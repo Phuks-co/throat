@@ -291,6 +291,19 @@ a:hover {
     padding-bottom: 10px;
 }
 
+.message{
+  margin-top: 1em;
+  padding: 5px;
+  background-color: #00d928;
+  color: white;
+  margin-bottom: 15px;
+  border-radius: 3px;
+}
+
+.error span{
+  display:block;
+}
+
 .div-message{
   display: none;
 }
