@@ -46,7 +46,7 @@ class AuthProvider:
             try:
                 um = UserMetadata.get((UserMetadata.key == 'pending_email') &
                                       (UserMetadata.value == email))
-                return User.get(User.uid == uim.uid)
+                return User.get(User.uid == um.uid)
             except UserMetadata.DoesNotExist:
                 pass
         if self.provider == 'KEYCLOAK':
