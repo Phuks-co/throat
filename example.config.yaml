@@ -83,7 +83,8 @@ auth:
   require_valid_emails: False
 
   keycloak:
-    server: 'http://192.168.100.5:5080/auth/'
+    # URL of your Keycloak server.
+    server: 'http://auth.example.com'
 
     # Keycloak realm containing client with power to create users.
     admin_realm: 'master'
