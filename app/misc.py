@@ -11,7 +11,6 @@ import hashlib
 import re
 import gevent
 
-import bcrypt
 import tinycss2
 from captcha.image import ImageCaptcha
 from datetime import datetime, timedelta, timezone
