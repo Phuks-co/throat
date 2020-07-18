@@ -253,6 +253,7 @@
         <div id="post-source">@{post['content']}</div>
       @end
     @end
+  </div>
   @elif not post['link']:
     <div id="postcontent" class="post-content-container"></div>
     <div id="post-source" class="post-content-container"></div>
@@ -275,7 +276,6 @@
         </span>
       </div>
   @end
-  </div>
 
   @if current_user.is_authenticated and post['deleted'] == 0 and not current_user.is_subban(sub):
   <form data-reset="true" data-redir="true" action="@{url_for('do.create_comment', pid=post['pid'])}" id="rcomm-0" class="comment-form ajaxform static pure-form">
