@@ -1301,7 +1301,7 @@ input[type=search] {
   padding: .4em 1em; /* 1px margin on botton and top so it respects <p>'s margin */
 }
 
-.post-content-container textarea, .commblock textarea{
+.post-content-container textarea, .commblock textarea, .comment-form textarea{
   resize: vertical;
   width: 100%;
   overflow: auto;
