@@ -52,10 +52,10 @@ CMD [ "gunicorn", \
 
 ## Authenticating with a Keycloak server
 
-Optionally, user authentication can be done using a keycloak server.
-You will need to create a realm and client
-(https://www.keycloak.org/docs/latest/server_admin/index.html#_clients).
-
+Optionally, user authentication can be done using a Keycloak server.
+You will need to create a realm for the users on the server, as well
+as Keycloak clients with appropriate permissions.  See
+`doc/keycloak.org` for instructions.
 
 ## Tests
 
@@ -65,6 +65,12 @@ You will need to create a realm and client
 2. Install dependencies with `pip install -r requirements.txt`
 3. Install the test dependencies with `pip install -r requirements-test.txt`
 4. Run the tests with `python -m pytest`
+5. The tests are not affected by your configuration in `config.yaml`.
+If you wish to run the tests against production database or
+authentication servers (instead of the defaults, which are sqlite and
+local authentication), you may put configuration settings in
+`test_config.yaml` and run the tests with
+`TEST_CONFIG=test_config.yaml python -m pytest`
 
 ## Chat
 
