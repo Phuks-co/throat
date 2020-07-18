@@ -11,12 +11,6 @@
       @if error:
         <div class="error" style="margin-top: 2em;">@{ error }</div>
       @end
-      @for err in get_flashed_messages(category_filter=["error"]):
-        <div class="error" style="margin-top: 2em;">@{ err }</div>
-      @end
-      @for message in get_flashed_messages(category_filter=["message"]):
-        <div class="message" style="margin-top: 2em;">@{ message }</div>
-      @end
         <form method="POST" class="pure-form pure-form-aligned">
             @{ regform.csrf_token()!!html }
             <h1>@{_('Register')}</h1>
