@@ -31,6 +31,19 @@
     </div>
     <div class="pbody">
       <div class="post-heading">
+	      @if post['link']:
+          @if func.getDomain(post['link'].lower()) in ('hooktube.com', 'www.hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'streamja.com', 'streamable.com', 'vimeo.com', 'vine.co', 'instaud.io'):
+          <div class="expando" data-pid="@{post['pid']}" data-t="lnk" title="@{_('Embed video')}" data-link="@{post['link']}"><div data-icon="play" class="icon expando-btn"></div></div>
+          @elif post['link'].lower().endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
+          <div class="expando" data-pid="@{post['pid']}"  data-t="lnk" title="@{_('Show image')}" data-link="@{post['link']}"><div data-icon="image" class="icon expando-btn"></div></div>
+          @elif post['link'].lower().endswith(('.mp4', '.webm', '.gifv')):
+          <div class="expando" data-pid="@{post['pid']}"  data-t="lnk" title="@{_('Play video')}" data-link="@{post['link']}"><div data-icon="play" class="icon expando-btn"></div></div>
+          @end
+        @elif post['ptype'] == 3:
+          <div class="expando" data-pid="@{post['pid']}" data-t="poll" title="@{_('Show poll')}" data-link="None"><div data-icon="text" class="icon expando-btn"></div></div>
+        @elif post['content'] != '':
+          <div class="expando" data-pid="@{post['pid']}" data-t="txt" title="@{_('Show post content')}" data-link="None"><div data-icon="text" class="icon expando-btn"></div></div>
+        @end
         @if announcement:
         <span class="announcement">@{_('Announcement')}</span>
         @end
@@ -52,32 +65,6 @@
           <a target="_blank" rel="noopener nofollow ugc" href="@{post['link']}" class="title">@{post['title']}</a> <a href="/domain/@{func.getDomain(post['link'])}" class="domain">(@{func.getDomain(post['link'])})</a>
         @end
       </div>
-      <div class="author">
-        @if post['link']:
-          @if func.getDomain(post['link'].lower()) in ('hooktube.com', 'www.hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'streamja.com', 'streamable.com', 'vimeo.com', 'vine.co', 'instaud.io'):
-          <div class="expando" data-pid="@{post['pid']}" data-t="lnk" title="@{_('Embed video')}" data-link="@{post['link']}"><div data-icon="play" class="icon expando-btn"></div></div>
-          @elif post['link'].lower().endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
-          <div class="expando" data-pid="@{post['pid']}"  data-t="lnk" title="@{_('Show image')}" data-link="@{post['link']}"><div data-icon="image" class="icon expando-btn"></div></div>
-          @elif post['link'].lower().endswith(('.mp4', '.webm', '.gifv')):
-          <div class="expando" data-pid="@{post['pid']}"  data-t="lnk" title="@{_('Play video')}" data-link="@{post['link']}"><div data-icon="play" class="icon expando-btn"></div></div>
-          @end
-        @elif post['ptype'] == 3:
-          <div class="expando" data-pid="@{post['pid']}" data-t="poll" title="@{_('Show poll')}" data-link="None"><div data-icon="text" class="icon expando-btn"></div></div>
-        @elif post['content'] != '':
-          <div class="expando" data-pid="@{post['pid']}" data-t="txt" title="@{_('Show post content')}" data-link="None"><div data-icon="text" class="icon expando-btn"></div></div>
-        @end
-		
-		
-        @if post['link'] == None:
-          <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']!!s}" class="title">@{post['title']!!e}</a> \
-        @else:
-          @if post['link'].startswith('http:'):
-            <span title="@{_('not https')}" class="p-icon" data-icon="exclaim"></span> \
-          @end
-          <a target="_blank" rel="noopener nofollow ugc" href="@{post['link']!!e}" class="title">@{post['title']!!e}</a> <a href="/domain/@{func.getDomain(post['link'])!!e}" class="domain">(@{func.getDomain(post['link'])!!e})</a>
-        @end
-      </div>
-	  
 	  
       <div class="author">
         @#{Crappy as shit}
