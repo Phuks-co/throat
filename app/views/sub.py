@@ -9,6 +9,7 @@ from ..config import config
 from ..misc import engine
 from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption
 from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, UserSaved, SubMod, SubBan, SubRule
+from ..models import SubPostContentHistory, SubPostTitleHistory
 from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditMod2Form, EditSubRule
 from ..forms import BanUserSubForm, CreateSubFlair, PostComment, CreateSubRule
 from .. import misc
@@ -304,6 +305,23 @@ def view_post(sub, pid, comments=False, highlight=None):
         else:
             comments = misc.get_comment_tree(comments, uid=current_user.uid, include_history=include_history)
 
+    if config.site.edit_history and include_history:
+        try:
+            content_history = SubPostContentHistory.select(SubPostContentHistory.pid, SubPostContentHistory.content,
+                SubPostContentHistory.datetime).where(SubPostContentHistory.pid == post['pid']).order_by(SubPostContentHistory.datetime.desc()).dicts()
+        except SubPostContentHistory.DoesNotExist:
+                content_history = []
+
+        try:
+            title_history = SubPostTitleHistory.select(SubPostTitleHistory.pid, SubPostTitleHistory.title,
+                    SubPostTitleHistory.datetime).where(SubPostTitleHistory.pid == post['pid']).order_by(SubPostTitleHistory.datetime.desc()).dicts()
+        except SubPostTitleHistory.DoesNotExist:
+            title_history = []
+
+    else:
+        content_history = []
+        title_history = []
+
     post['visibility'] = ''
     if post['deleted'] == 1:
         if current_user.is_admin():
@@ -352,8 +370,7 @@ def view_post(sub, pid, comments=False, highlight=None):
                 pollData['poll_open'] = False
 
     return engine.get_template('sub/post.html').render({'post': post, 'sub': sub, 'subInfo': subInfo,
-                                                        'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,
-                                                        'commentform': PostComment(), 'comments': comments,'subMods': subMods, 'highlight': highlight})
+                                                        'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,'commentform': PostComment(), 'comments': comments,'subMods': subMods, 'highlight': highlight, 'content_history': content_history, 'title_history': title_history})
 
 
 @blueprint.route("/<sub>/<int:pid>/<cid>")

@@ -1286,12 +1286,12 @@ input[type=search] {
   margin-top: .3em;
 }
 
-#postcontent, .poll-space {
+.post-content-container, .poll-space {
   background-color: #f6f6f6;
   padding: .4em 1em; /* 1px margin on botton and top so it respects <p>'s margin */
 }
 
-#postcontent textarea, .commblock textarea{
+.post-content-container textarea, .commblock textarea{
   resize: vertical;
   width: 100%;
   overflow: auto;
@@ -1906,11 +1906,11 @@ a[href="#toodamncool"]{
 
 @keyframes rb3{20%{color: red;}40%{color: yellow;}60%{color: green;}80%{color: blue;}100%{color: orange;}}
 
-.expandotxt, #postcontent, .commblock .content{
+.expandotxt, .post-content-container, .commblock .content{
   word-wrap: break-word;
 }
 
-#postcontent img, .comments .content img{
+.post-content-container img, .comments .content img{
   max-width: 100%;
 }
 
@@ -2097,7 +2097,7 @@ a.close-report {
   background-color: #FDD8D4;
 }
 
-.mod.report.preview .preview-text-container.deleted #postcontent {
+.mod.report.preview .preview-text-container.deleted.post-content-container {
   background-color: #FDD8D4;
 }
 
@@ -2119,7 +2119,7 @@ article.text-post.comment.deleted {
   background-color: #FDD8D4;
 }
 
-#postcontent.deleted {
+.post-content-container.deleted {
   background-color: #FDD8D4;
 }
 
@@ -2131,30 +2131,47 @@ article.text-post.comment.deleted {
   background-color: #FDD8D4;
 }
 
-.browse-comment-history.disabled:focus {
+.post-history-controls {
+  margin: 1em 1em 0 1em;
+}
+
+.title-history-controls {
+  margin: 1em 0;
+}
+
+.title-history-controls button {
+  font-size: 1em;
+}
+
+.browse-history:focus {
+  outline: none;
+}
+
+.browse-history.disabled:focus {
   outline-color: lightgray;
   outline: none;
 }
 
-.browse-comment-history {
+.browse-history {
+  border-radius: 2px;
   cursor: pointer;
   -webkit-box-shadow: -2px 1px 3px 0px rgba(0,0,0,0.1);
   -moz-box-shadow: -2px 1px 3px 0px rgba(0,0,0,0.1);
   box-shadow: -2px 1px 3px 0px rgba(0,0,0,0.1);
 }
 
-.browse-comment-history.disabled {
+.browse-history.disabled {
   cursor: not-allowed;
   pointer-events: none;
   border-color: lightgray;
   color: lightgray;
 }
 
-.content .old.history {
+.wholepost .old.history {
   color: gray;
 }
 
-.content .history-meta {
+.wholepost .history-meta {
   color: gray;
   font-size: smaller;
 }

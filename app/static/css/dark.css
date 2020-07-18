@@ -213,7 +213,7 @@ body.dark{
   color: #666;
 }
 
-body.dark #postcontent, body.dark .poll-space{
+body.dark .post-content-container, body.dark .poll-space{
   background: #111;
 }
 body.dark .editbtns{
@@ -477,7 +477,7 @@ body.dark .mod.report.preview .preview-text-container.deleted {
   border: 1px solid red;
 }
 
-body.dark .mod.report.preview .preview-text-container.deleted #postcontent {
+body.dark .mod.report.preview .preview-text-container.deleted.post-content-container {
   background-color: #171717;
   border: 1px solid red;
 }
@@ -487,9 +487,8 @@ body.dark article.text-post.comment.deleted {
   border: 1px solid red;
 }
 
-body.dark #postcontent.deleted {
+body.dark .post-content-container.deleted {
   background-color: #171717;
-  border: 1px solid red;
 }
 
 body.dark .postbar.post.deleted {
@@ -500,4 +499,28 @@ body.dark .postbar.post.deleted {
 body.dark .poll-space.deleted {
   background-color: #171717;
   border: 1px solid red;
+}
+
+body.dark .browse-history {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  background-color: #171717;
+  border: 1px solid #d94f00;
+  color: lightgray;
+}
+
+body.dark .browse-history.disabled {
+  border-color: #333;
+  color: #171717;
+}
+
+body.dark .browse-history.disabled:focus {
+  outline-color: #333;
+  outline: none;
+}
+
+body.dark .browse-history:focus {
+  outline-color: #d94f00;
+  outline: none;
 }

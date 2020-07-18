@@ -10,7 +10,7 @@ u.sub('#poll-addoption', 'click', function(e){
     if(opts.childElementCount >= 6){
         return;
     }
-    
+
     // All is OK, add the option.
     var node = document.createElement('li');
     var tb = document.createElement('input');
@@ -38,7 +38,6 @@ u.addEventForChild(document, 'click', '.poll-del-opt', function(e, qelem){
 
 
 u.sub('#closetime', 'click', function(e){
-    console.log('wooo')
     if(this.checked){
         document.getElementById('closetime_date').removeAttribute('disabled');
         document.querySelector('.date-picker-future.input').removeAttribute('disabled');
@@ -156,7 +155,7 @@ u.addEventForChild(document, 'click', '.poll-withdraw-btn', function(e, qelem){
                     if(locoid == veoid){
                         locvotes--;
                         k.setAttribute('data-votes', locvotes)
-                    }    
+                    }
                     var pbar = document.querySelector(".poll-option[data-oid='" + locoid + "'] .poll-pbar").children[0];
                     if(locvotes != 0){
                         var percent = Math.round(locvotes/totalVotes*100);
@@ -170,6 +169,6 @@ u.addEventForChild(document, 'click', '.poll-withdraw-btn', function(e, qelem){
                 })
             }
             te.parentNode.style.display = 'none';
-        }   
+        }
     });
 });

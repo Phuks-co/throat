@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods, highlight)
+@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods, highlight, content_history, title_history)
 @import "sub/postcomments.html" as pcomm
 @import "sub/postpoll.html" as polls
 
@@ -83,6 +83,7 @@
           <span class="postflair">@{post['flair']}</span>
         @end
 
+        <span class="current history" data-id="0">
         @if post['link'] == None:
           <h1><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}" class="title">
             @if (post['visibility'] == ''):
@@ -114,6 +115,33 @@
           @if post['deleted'] == 0:
             <a href="/domain/@{func.getDomain(post['link'])}" class="domain">(@{func.getDomain(post['link'])})</a>
           @end
+        @end
+        </span>
+
+        @if title_history and (post['visibility'] != 'none' and  post['visibility'] != 'mod-self-del'):
+            @for count, old_title in enumerate(title_history):
+              <span style="display:none;" class="old history" data-id="@{(count + 1)!!s}">
+                @if post['link'] == None:
+                  <h1><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}" class="title">
+                      @{old_title['title']}
+                  </a></h1>
+                @else:
+                <h1><a rel="nofollow ugc @{(post['visibility'] == 'none') and 'noopener ' or ''}" href="@{(post['visibility'] != 'none') and post['link'] or '#'}" class="title">
+                  @{old_title['title']}
+                </a></h1>
+                @end
+              </span>
+            @end
+            <div class="title-history-controls">
+              <button class="browse-history back" data-action="back">←</button>
+              <button class="browse-history forward disabled" action="forward">→</button>
+              <span class="history-meta">
+                @{_('Viewing title history:')}
+                  <span class="history-version">
+                    1/@{1 + len(title_history)!!s}
+                  </span>
+              </span>
+            </div>
         @end
       </div>
       <ul class="links" data-pid="@{post['pid']}">
@@ -206,29 +234,47 @@
   @end
 
   @if post['content']:
-    <!-- <p class="helper-text">Post Visibility: @{post['visibility']}</p> -->
+  <div>
     @if post['deleted'] == 0:
-      <div id="postcontent">
-        @{markdown(post['content'])!!html}
-      </div>
+      <span class="current history" data-id="0">
+        <div id="postcontent" class="post-content-container">@{markdown(post['content'])!!html}</div>
+      </span>
       <div id="post-source">@{post['content']}</div>
     @else:
       @if ((post['visibility'] == 'none') or (post['visibility'] == 'mod-self-del')):
-        <div id="postcontent" class="@{(post['visibility'] == 'mod-self-del') and 'deleted ' or ''}">
+        <div id="postcontent" class="post-content-container @{(post['visibility'] == 'mod-self-del') and 'deleted ' or ''}">
           @{_('[deleted]')}
         </div>
       @elif ((post['visibility'] == 'admin-self-del') or (post['visibility'] == 'mod-del')):
-        <div id="postcontent" class="deleted">
-          @{markdown(post['content'])!!html}
-        </div>
+        <span class="current history" data-id="0">
+          <div id="postcontent" class="post-content-container deleted">@{markdown(post['content'])!!html}</div>
+        </span>
         <div id="post-source">@{post['content']}</div>
       @end
     @end
   @elif not post['link']:
-    <div id="postcontent"></div>
-    <div id="post-source"></div>
+    <div id="postcontent" class="post-content-container"></div>
+    <div id="post-source" class="post-content-container"></div>
   @end
 
+  @if content_history and post['content'] and  (post['visibility'] != 'none' and  post['visibility'] != 'mod-self-del'):
+      @for count, old_version in enumerate(content_history):
+        <span style="display:none;" class="old history" data-id="@{(count + 1)!!s}">
+          <div class="post-content-container @{(post['visibility'] != '') and 'deleted ' or ''}">@{markdown(old_version['content'])!!html}</div>
+        </span>
+      @end
+      <div class="post-history-controls @{(post['visibility'] != '') and 'deleted ' or ''}"">
+        <button class="browse-history back" data-action="back">←</button>
+        <button class="browse-history forward disabled" action="forward">→</button>
+        <span class="history-meta">
+          @{_('Viewing edit history:')}
+            <span class="history-version">
+              1/@{1 + len(content_history)!!s}
+            </span>
+        </span>
+      </div>
+  @end
+  </div>
 
   @if current_user.is_authenticated and post['deleted'] == 0 and not current_user.is_subban(sub):
   <form data-reset="true" data-redir="true" action="@{url_for('do.create_comment', pid=post['pid'])}" id="rcomm-0" class="comment-form ajaxform static pure-form">
