@@ -44,7 +44,7 @@ secret key goes in "auth_secret" in your config.yaml.
 * Creating a user with cURL
 Get the access token, which will be a huge string in the JSON resulting from:
 #+BEGIN_SRC sh
-  curl --location --request POST 'http://192.168.100.5:5080/auth/realms/master/protocol/openid-connect/token' \
+  curl --location --request POST 'http://localhost:8080/auth/realms/master/protocol/openid-connect/token' \
 	  --header 'Content-Type: application/x-www-form-urlencoded' \
 	  --data-urlencode 'grant_type=client_credentials' \
 	  --data-urlencode 'client_id=admin-cli' \
@@ -54,7 +54,7 @@ Get the access token, which will be a huge string in the JSON resulting from:
 Create a new user:
 
 #+BEGIN_SRC sh
-  curl --location --request POST 'http://192.168.100.5:5080/auth/admin/realms/example/users' \
+  curl --location --request POST 'http://localhost:8080/auth/admin/realms/example/users' \
 	  --header 'Content-Type: application/json' \
 	  --header 'Authorization: Bearer COPY-TOKEN-HERE' \
 	  --data-raw '{"firstName":"Testy","lastName":"Tester", "email":"test@test.com", "enabled":"true", "username":"app-user"}'
@@ -64,7 +64,7 @@ Create a new user:
 Get the admin token, and raise an error if it doesn't work
 #+BEGIN_SRC python
  from keycloak import KeycloakAdmin
- keycloak_admin = KeycloakAdmin(server_url="http://192.168.100.5:5080/auth/",
+ keycloak_admin = KeycloakAdmin(server_url="http://localhost:8080/auth/",
                                realm_name="master",
 			       client_secret_key="6ee74c8e-9ef8-49ad-a16d-b1f30429bba7",
 			       verify=True)
