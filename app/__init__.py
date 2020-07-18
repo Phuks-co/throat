@@ -13,7 +13,7 @@ from wheezy.html.utils import escape_html
 
 from .config import Config, config
 from .forms import LoginForm, LogOutForm, CreateSubForm
-from .models import db_init_app, rconn
+from .models import db_init_app, rconn, User
 from .auth import auth_provider, email_validation_is_required
 from .views import do, subs as sub, api3, jwt
 from .views.auth import bp as auth
@@ -152,4 +152,8 @@ def get_locale():
 def load_user(user_id):
     """ This is used by flask_login to reload an user from a previously stored
     unique identifier. Required for the 'remember me' functionality. """
-    return misc.load_user(user_id)
+    try:
+        user = User.get((User.alt_uid == user_id) | (User.uid == user_id))
+        return misc.load_user(user.uid)
+    except User.DoesNotExist:
+        return None

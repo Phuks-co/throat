@@ -133,7 +133,8 @@ def register():
         return redirect(url_for('auth.confirm_registration'))
     else:
         theuser = misc.load_user(user.uid)
-        login_user(theuser, remember=True)
+        login_user(theuser, remember=False)
+        session['remember_me'] = False
         return redirect(url_for('wiki.welcome'))
 
 
@@ -175,7 +176,8 @@ def login_with_token(token):
         user.save()
         auth_provider.set_email_verified(user)
         theuser = misc.load_user(user.uid)
-        login_user(theuser, remember=True)
+        login_user(theuser, remember=False)
+        session['remember_me'] = False
     return redirect(url_for('wiki.welcome'))
 
 
@@ -209,6 +211,7 @@ def login():
                 {'error': _("Invalid username or password."), 'loginform': form})
 
         if auth_provider.validate_password(user, form.password.data):
+            session['remember_me'] = form.remember.data
             theuser = misc.load_user(user.uid)
             login_user(theuser, remember=form.remember.data)
             if request.args.get('service'):
