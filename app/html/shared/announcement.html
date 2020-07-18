@@ -1,5 +1,5 @@
 @import "shared/post.html" as ipost
 @require(ann)
 
-@ipost.singlePost(ann, False, announcement=True)
+@{ipost.singlePost(ann, False, announcement=True)!!html}
 <hr/>

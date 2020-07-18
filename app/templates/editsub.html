@@ -5,6 +5,11 @@
   {{ super() }}
 {% endblock %}
 
+{% block sidebar %}
+{{ super() }}
+{% include 'mod/sidebar.html' %}
+{% endblock %}
+
 {% block content %}
 {{ super() }}
   {% if not current_user.is_mod(sub.sid, 1) and current_user.is_admin() %}
@@ -42,18 +47,20 @@
       </div>
 
       <div class="pure-control-group">
-        <label for="videomode" class="pure-checkbox">
-          {{editsubform.videomode(checked=True if metadata.videomode else False)}}
-          {{editsubform.videomode.label.text}}
-        </label>
-      </div>
-
-      <div class="pure-control-group">
         <label for="polling" class="pure-checkbox">
           {{editsubform.polling(checked=True if metadata.allow_polls else False)}}
           {{editsubform.polling.label.text}}
         </label>
       </div>
+
+      {% if not config.site.force_sublog_public %}
+      <div class="pure-control-group">
+        <label for="sublogprivate" class="pure-checkbox">
+          {{editsubform.sublogprivate(checked=True if metadata.sublog_private else False)}}
+          {{editsubform.sublogprivate.label.text}}
+        </label>
+      </div>
+      {% endif %}
 
       <h4>Default post sort</h4>
       {% for kl in editsubform.subsort %}

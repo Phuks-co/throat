@@ -13,7 +13,7 @@ from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
 from .. import misc
 from ..socketio import socketio
 from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote, SubSubscriber
-from ..models import SiteMetadata, UserMetadata, Message
+from ..models import SiteMetadata, UserMetadata, Message, SubRule, Notification
 from ..caching import cache
 
 API = Blueprint('apiv3', __name__)
@@ -46,7 +46,7 @@ def login():
         user = User.get(fn.Lower(User.name) == username.lower())
     except User.DoesNotExist:
         return jsonify(msg="Bad username or password"), 401
-    
+
     if user.status != 0:
         return jsonify(msg="Forbidden"), 403
 
@@ -296,10 +296,8 @@ def delete_post(sub, pid):
             return jsonify(msg="Cannot delete post without reason"), 400
         post.deleted = 2
         # TODO: Make this a translatable notification
-        misc.create_message(mfrom=uid, to=post.uid.uid,
-                            subject='Your post on /s/' + sub.name + ' has been deleted.',
-                            content='Reason: ' + reason,
-                            link=sub.name, mtype=11)
+        Notification(type='POST_DELETE', sub=post.sid, post=post.pid, content='Reason: ' + reason,
+                     sender=uid, target=post.uid).save()
 
         misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_POST, uid, post.sid,
                            comment=reason, link=url_for('site.view_post_inbox', pid=post.pid),
@@ -436,19 +434,14 @@ def create_comment(sub, pid):
     if parentcid:
         parent = SubPostComment.get(SubPostComment.cid == parentcid)
         notif_to = parent.uid_id
-        subject = 'Comment reply: ' + post.title
-        mtype = 5
+        ntype = 'COMMENT_REPLY'
     else:
         notif_to = post.uid_id
-        subject = 'Post reply: ' + post.title
-        mtype = 4
+        ntype = 'POST_REPLY'
+
     if notif_to != uid and uid not in misc.get_ignores(notif_to):
-        misc.create_message(mfrom=uid,
-                            to=notif_to,
-                            subject=subject,
-                            content='',
-                            link=comment.cid,
-                            mtype=mtype)
+        Notification(type=ntype, sub=post.sid, post=post.pid, comment=comment.cid,
+                     sender=uid, target=notif_to).save()
         socketio.emit('notification', {'count': misc.get_notification_count(notif_to)},
                       namespace='/snt', room='user' + notif_to)
 
@@ -764,11 +757,19 @@ def search_sub():
     query = request.args.get('query', '')
     if len(query) < 3 or not misc.allowedNames.match(query):
         return jsonify(results=[])
-    
+
     query = '%' + query + '%'
     subs = Sub.select(Sub.name).where(Sub.name ** query).limit(10).dicts()
 
     return jsonify(results=list(subs))
+
+@API.route('/sub/rules', methods=['GET'])
+def get_sub_rules():
+    pid = request.args.get('pid', '')
+    sub = SubPost.select().where(SubPost.pid == pid).join(Sub).where(Sub.sid == SubPost.sid).dicts().get()
+    rules = list(SubRule.select().where(SubRule.sid == sub['sid']).dicts())
+
+    return jsonify(results=rules)
 
 
 @API.route('/user/settings', methods=['GET'])
@@ -802,10 +803,10 @@ def set_settings():
     settings = request.json.get('settings', None)
     if not settings:
         return jsonify(msg="Missing parameters"), 400
-     
+
     if [x for x in settings.keys() if x not in ['labrat', 'nostyles', 'nsfw', 'nochat']]:
         return jsonify(msg="Invalid setting options sent"), 400
-    
+
     # Apply settings
     qrys = []
     for sett in settings:
@@ -814,8 +815,8 @@ def set_settings():
             if not isinstance(settings[sett], bool):
                 return jsonify(msg="Invalid type for setting"), 400
             value = '1' if value else '0'
-        
-        
+
+
         qrys.append(UserMetadata.update(value=value).where((UserMetadata.key == sett) & (UserMetadata.uid == uid)))
 
     [x.execute() for x in qrys]

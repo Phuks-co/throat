@@ -41,10 +41,22 @@ u.sub('.savemsg', 'click', function(e){
   });
 });
 
-// Delete message.
+// Delete notification.
 u.sub('.deletemsg', 'click', function(e){
-  var mid = this.getAttribute('data-mid'),obj=this;
-  u.post('/do/delete_pm/'+mid, {},
+  const mid = this.getAttribute('data-mid'), obj = this;
+  u.post('/messages/notifications/delete/'+mid, {},
+  function(data){
+    if (data.status == "ok") {
+      obj.innerHTML = _('deleted');
+      obj.classList.remove('deletemsg');
+      obj.classList.add('deletedmsg');
+    }
+  });
+});
+
+u.sub('.deletenotif', 'click', function(e){
+  const mid = this.getAttribute('data-mid'), obj = this;
+  u.post('/messages/notifications/delete/'+mid, {},
   function(data){
     if (data.status == "ok") {
       obj.innerHTML = _('deleted');
@@ -104,14 +116,14 @@ u.addEventForChild(document, 'click', '.closepopmsg', function(e, qelem){
 });
 
 u.sub('.block', 'click', function(e){
-  var uid = this.getAttribute('data-uid'),obj=this;
+  const uid = this.getAttribute('data-uid'),obj=this;
   u.post('/do/toggle_ignore/'+uid, {},
   function(data){
     if (data.status == "ok") {
-      if(obj.innerHTML == 'block'){
-        obj.innerHTML = 'unblock';
+      if(obj.innerHTML.trim() == _('block')){
+        u.each('a[data-uid="' + uid + '"]', function(el,i){el.innerHTML = _('unblock');});
       }else{
-        obj.innerHTML = 'block';
+        u.each('a[data-uid="' + uid + '"]', function(el,i){el.innerHTML = _('block');});
       }
     }
   });

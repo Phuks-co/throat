@@ -31,41 +31,45 @@
                 </td>
                 <td>
                     @if log.action == 19:
-                        Zabanoval(a) používateľa <a href="/u/@{log.desc!!e}">@{log.desc!!e}</a>
+                        @{_('Banned <a href="/u/%(user)s">%(user)s</a>', user=log.desc)!!html}
                     @elif log.action == 20:
-                        Vytvoril(a) skupinu
+                        @{_('Created a sub')}
                     @elif log.action == 30:
-                        Skupina bola presunutá na @{log.desc}
+                        @{_('Sub was transferred to <a href="/u/%(user)s">%(user)s</a>', user=log.desc)!!html}
                     @elif log.action == 24:
-                        Pozval(a) moderovať používateľa <a href="/u/@{log.target.name}">@{log.target.name}</a>
+                        @{_('Sent mod invite to <a href="/u/%(user)s">%(user)s</a>', user=log.target.name)!!html}
                     @elif log.action == 26:
-                        Odstránil(a) používateľa<a href="/u/@{log.target.name}">@{log.target.name}</a> from the mod team
+                        @{_('Removed <a href="/u/%(user)s">%(user)s</a> from the mod team', user=log.target.name) !!html}
                     @elif log.action == 27:
-                        Stiahol(la) pozvanie moderovať pre <a href="/u/@{log.target.name}">@{log.target.name}</a>
+                        @{_('Revoked mod invite for <a href="/u/%(user)s">%(user)s</a> from the mod team', user=log.target.name) !!html}
                     @elif log.action == 52:
-                        Vymazal(a) príspevok z dôvodu <code>@{log.desc!!e}</code>
+                        @{_('Deleted a post with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 53:
-                        Vymazal(a) komentár z dôvodu <code>@{log.desc!!e}</code>
-                    @elif log.action == 40:
-                        Vytvoril(a) skupinu
+                        @{_('Deleted a comment with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 41:
-                        Vytvoril(a) oznam
+                        @{_('Created an announcement')}
                     @elif log.action == 42:
-                        Zabanoval(a) doménu <code>@{log.desc!!e}</code>
+                        @{_('Banned domain <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 43:
-                        Odbanoval(a) doménu <code>@{log.desc!!e}</code>
+                        @{_('Unbanned domain <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 44:
-                        Odstránil(a) oznam
+                        @{_('Removed an announcement')}
                     @elif log.action == 45:
-                        Zakázal(a) prispievanie
+                        @{_('Disabled post creation')}
                     @elif log.action == 46:
-                        Povolil(a) prispievanie
+                        @{_('Re-enabled post creation')}
                     @elif log.action == 47:
-                        Zakázal(a) registrácie bez pozvánok
+                        @{_('Disabled registration without invite code')}
                     @elif log.action == 48:
-                        Povolil(a) registrácie bez pozvánok
+                        @{_('Re-enabled registration')}
+                    @elif log.action == 49:
+                        @{_('Disabled new user registration')}
+                    @elif log.action == 50:
+                        @{_('Re-enabled new user registration')}
+                    @elif log.action == 54:
+                        @{_('Unbanned <a href="/u/%(user)s">%(user)s</a>', user=log.desc)!!html}
                     @else:
-                        <i>[Type @{log.action!!s}]</i> @{log.desc}
+                        <i>[Type @{log.action}]</i> @{log.desc}
                     @end
                 </td>
                 <td>

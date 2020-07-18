@@ -9,36 +9,11 @@
     </a>
   </div>
   <div>
-    <a class="sbm-post pure-button{% if box_route=='messages.view_mentions' %} button-secondary{% endif %}" href="{{ url_for('messages.view_mentions') }}">
-      Mentions
-      {% if func.get_unread_count(func.MESSAGE_TYPE_MENTION) > 0 %}
-        <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_unread_count(func.MESSAGE_TYPE_MENTION)}}</span>
+    <a class="sbm-post pure-button" href="{{ url_for('messages.view_notifications') }}">
+      Notifications
+      {% if func.get_notif_count() > 0 %}
+        <span class="newmsgcount"><span class="i-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_notif_count()}}</span>
       {% endif %}
-    </a>
-  </div>
-  <div>
-    <a class="sbm-post pure-button{% if box_route=='messages.view_messages_postreplies' %} button-secondary{% endif %}" href="{{ url_for('messages.view_messages_postreplies') }}">
-      Post Replies
-      {% if func.get_unread_count(func.MESSAGE_TYPE_POSTREPLY) > 0 %}
-        <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_unread_count(func.MESSAGE_TYPE_POSTREPLY)}}</span>
-      {% endif %}
-    </a>
-  </div>
-  <div>
-    <a class="sbm-post pure-button{% if box_route=='messages.view_messages_comreplies' %} button-secondary{% endif %}" href="{{ url_for('messages.view_messages_comreplies') }}">
-      Comment Replies
-      {% if func.get_unread_count(func.MESSAGE_TYPE_COMMREPLY) > 0 %}
-        <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_unread_count(func.MESSAGE_TYPE_COMMREPLY)}}</span>
-      {% endif %}
-    </a>
-  </div>
-<hr>
-  <div>
-    <a class="sbm-post pure-button{% if box_route=='messages.view_messages_modmail' %} button-secondary{% endif %}" href="{{ url_for('messages.view_messages_modmail') }}">
-    Modmail
-    {% if func.get_unread_count(func.MESSAGE_TYPE_MODMAIL) > 0 %}
-      <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_unread_count(func.MESSAGE_TYPE_MODMAIL)}}</span>
-    {% endif %}
     </a>
   </div>
 <hr>

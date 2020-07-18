@@ -1,0 +1,111 @@
+@extends("shared/layout.html")
+@require(notifications)
+@import 'shared/sidebar/messages.html' as sb
+@def sidebar():
+  @{sb.render_sidebar('notifications')!!html}
+@end
+
+@def main():
+<div id="center-container">
+  <div class="inbox content">
+    <h1>@{_('Notifications')}</h1>
+    <div class="user-activity col-12">
+      @for msg in notifications:
+      <article class="pmessage post @{msg['read'] == None and 'newmsg' or ''}" data-cid="@{msg['cid']}">
+        <div class="main">
+          <p class="title">
+            @if msg['type'] == 'POST_REPLY':
+              @{_('<a href="/u/%(user)s">%(user)s</a> replied to your post <a href="%(link)s">%(title)s</a>', user=msg['sender'], link=url_for("sub.view_post", sub=msg['sub_name'], pid=msg['pid']), title=e(msg['post_title'])) !!html}
+            @elif msg['type'] == 'COMMENT_REPLY':
+              @{_('<a href="/u/%(user)s">%(user)s</a> replied to your comment in <a href="%(link)s">%(title)s</a>', user=msg['sender'], link=url_for("sub.view_post", sub=msg['sub_name'], pid=msg['pid']), title=e(msg['post_title'])) !!html}
+            @elif msg['type'] in ('POST_MENTION', 'COMMENT_MENTION'):
+              @{_('<a href="/u/%(user)s">%(user)s</a> mentioned you in <a href="%(link)s">%(title)s</a>', user=msg['sender'], link=url_for("sub.view_post", sub=msg['sub_name'], pid=msg['pid']), title=e(msg['post_title'])) !!html}
+            @elif msg['type'] == 'SUB_BAN':
+              @{_('<a href="/u/%(user)s">%(user)s</a> banned you from <a href="%(sub)s">%(sub)s</a>', user=msg['sender'], sub=url_for("sub.view_sub", sub=msg['sub_name'])) !!html}
+            @elif msg['type'] == 'SUB_UNBAN':
+              @{_('<a href="/u/%(user)s">%(user)s</a> unbanned you from <a href="%(sub)s">%(sub)s</a>', user=msg['sender'], sub=url_for("sub.view_sub", sub=msg['sub_name'])) !!html}
+            @elif msg['type'] in ('MOD_INVITE', 'MOD_INVITE_JANITOR', 'MOD_INVITE_OWNER'):
+              @{_('<a href="/u/%(user)s">%(user)s</a> invited you to moderate <a href="%(sub)s">%(sub)s</a>', user=msg['sender'], sub=url_for("sub.view_sub", sub=msg['sub_name'])) !!html}
+            @elif msg['type'] == 'POST_DELETE':
+              @if msg['pid']:
+                @{_('<a href="/u/%(user)s">%(user)s</a> deleted your post <a href="%(link)s">%(title)s</a>', user=msg['sender'], link=url_for("sub.view_post", sub=msg['sub_name'], pid=msg['pid']), title=e(msg['post_title'])) !!html}
+              @else:
+                @{_('<a href="/u/%(user)s">%(user)s</a> deleted one of your posts in <a href="%(sub)s">%(sub)s</a>', user=msg['sender'], sub=url_for("sub.view_sub", sub=msg['sub_name']), title=e(msg['post_title'])) !!html}
+              @end
+            @else:
+              @{msg['type']}
+            @end
+          </p>
+          @if msg['cid']:
+            @if msg['comment_context']:
+            <p class="author">@{_("Your comment. Posted %(timeago)s. <b>%(score)i</b> points.", timeago='<time-ago datetime="' + msg['comment_context_posted'].isoformat() + 'Z"></time-ago>', score=msg['comment_context_score'])!!html}</p>
+            <div class="container">@{markdown(msg['comment_context'])!!html}</div>
+            <div class="pchild" style="padding-left: 5px;">
+            @end
+            <div class="pull left votecomment" style="margin-right: 10px;">
+                <div title="Upvote" class="c-upvote@{(msg.get('comment_positive') == 1) and ' upvoted' or ''}" data-icon="upvote"></div>
+                <div title="Downvote" class="c-downvote@{(msg.get('comment_positive') == 0) and ' downvoted' or ''}" data-icon="downvote"></div>
+            </div>
+            <p class="author" style="margin-top: 0;">
+              @if msg['read']:
+                @{_("Posted %(timeago)s. <b>%(score)s</b> points. Read %(timeagoread)s", timeago='<time-ago datetime="' + msg['created'].isoformat() + 'Z"></time-ago>', score='<span class="cscore">' + str(msg['comment_score']) + '</span>', timeagoread='<time-ago datetime="' + msg['read'].isoformat() + 'Z"></time-ago>')!!html}
+              @else:
+                @{_("Posted %(timeago)s. <b>%(score)s</b> points.", timeago='<time-ago datetime="' + msg['created'].isoformat() + 'Z"></time-ago>', score='<span class="cscore">' + str(msg['comment_score']) + '</span>')!!html}
+              @end
+            </p>
+            <div class="container">@{markdown(msg['comment_content'])!!html}</div>
+            <ul class="bottombar links">
+              <li><a href="@{url_for('sub.view_perm', sub=msg['sub_name'], cid=msg['cid'], pid=msg['pid'])}#comment-@{msg['cid']}">@{_('permalink')}</a></li>
+              <li><a class="reply-comment" data-pid="@{msg['pid']}" data-to="@{msg['cid']}">@{_('reply')}</a></li>
+              <li><a class="deletenotif" data-mid="@{msg['id']}">@{_('delete notification')}</a></li>
+              <li><a class="block" data-uid="@{msg['senderuid']}">
+                @if msg['ignored']:
+                  @{_('unblock')} \
+                @else:
+                  @{_('block')} \
+                @end
+              </a></li>
+
+            </ul>
+            @if msg['comment_context']:
+            </div> <!-- div.pchild -->
+            @end
+          @elif msg['pid'] and msg['type'] != 'POST_DELETE':
+            <div class="container">@{markdown(msg['post_content'])!!html}</div>
+            <ul class="bottombar links">
+              <li><a href="@{url_for('sub.view_post', sub=msg['sub_name'], pid=msg['pid'])}">@{_('permalink')}</a></li>
+              <li><a class="reply-comment" data-pid="@{msg['pid']}" data-to="-@{msg['pid']}">@{_('reply')}</a></li>
+              <li><a class="deletenotif" data-mid="@{msg['id']}">@{_('delete notification')}</a></li>
+              <li><a class="block" data-uid="@{msg['senderuid']}">
+                @if msg['ignored']:
+                  @{_('unblock')} \
+                @else:
+                  @{_('block')} \
+                @end
+              </a></li>
+            </ul>
+          @else:
+            @if msg['content']:
+              @{msg['content']}
+            @end
+            @if msg['type'] in ('MOD_INVITE', 'MOD_INVITE_JANITOR', 'MOD_INVITE_OWNER'):
+              <p>@{_("Please visit %(link)s to accept or reject the invitation", link='<a href="' + url_for('sub.edit_sub_mods', sub=msg['sub_name']) +'">here</a>')!!html}<p>
+            @end
+            <ul class="bottombar links">
+              <li><a class="deletenotif" data-mid="@{msg['id']}">@{_('delete notification')}</a></li>
+              <li><a class="block" data-uid="@{msg['senderuid']}">
+                @if msg['ignored']:
+                  @{_('unblock')} \
+                @else:
+                  @{_('block')} \
+                @end
+              </a></li>
+            </ul>
+          @end
+        </div>
+      </article>
+      @end
+    </div>
+  </div>
+</div>
+@end

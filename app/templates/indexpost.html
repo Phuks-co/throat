@@ -1,22 +1,22 @@
 <div pid="{{post.pid}}" class="{% if post.deleted != 0 %}deletedpost {% endif %}post">
-  <div class="misctainer">
-    <div class="votebuttons">
-      {% if post.userstatus != 10 and (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) < datetime.timedelta(days=60) %}
-      <div title="Upvote" class="upvote{%if post.positive == 1%} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
-      <div class="score">{{post.score}}</div>
-      <div title="Downvote" class="downvote{%if post.positive == 0%} downvoted{%endif%}" data-pid="{{post.pid}}" data-icon="downvote"></div>
-      {%endif%}
-    </div>
-    <div class="thcontainer">
-      <a href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}" class="title">
-        <div class="thumbnail">
-          {% if post.thumbnail != '' and post.link != None %}
-            <img src="{{config.storage.thumbnails.url}}{{post.thumbnail}}"/>
-          {% elif post.link != None %}
-            <span class="placeholder" data-icon="link"></span>
-          {%else%}
-            <span class="placeholder" data-icon="chat"></span>
-          {% endif%}
+    <div class="misctainer">
+      <div class="votebuttons">
+        {% if post.userstatus != 10 and (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) < datetime.timedelta(days=60) %}
+        <div title="Upvote" class="upvote{%if post.positive == 1%} upvoted{%endif%}" data-pid="{{post.pid}}" data-icon="upvote"></div>
+        <div class="score">{{post.score}}</div>
+        <div title="Downvote" class="downvote{%if post.positive == 0%} downvoted{%endif%}" data-pid="{{post.pid}}" data-icon="downvote"></div>
+        {%endif%}
+      </div>
+      <div class="thcontainer">
+        <a href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}" class="title">
+          <div class="thumbnail">
+            {% if post.thumbnail != '' and post.link != None %}
+              <img src="{{thumbnail_url(post.thumbnail)}}"/>
+            {% elif post.link != None %}
+              <span class="placeholder" data-icon="link"></span>
+            {%else%}
+              <span class="placeholder" data-icon="chat"></span>
+            {% endif%}
 
         </div>
       </a>

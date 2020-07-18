@@ -2,12 +2,19 @@
 
 @if current_user.is_admin() and user.status == 0 and user.name != current_user.name:
     <form method="POST" data-reload="true" id="banuser" action="@{url_for('do.ban_user', username=user.name)}">
-        @{form.DummyForm().csrf_token()}
+        @{form.DummyForm().csrf_token()!!html}
         <a href="javascript:{}" onclick="if(confirm('@{_('Are you sure you want to ban this user?')}')){document.getElementById('banuser').submit();}" class="sbm-post pure-button pure-button-primary">@{_('Ban user')}</a>
     </form>
     <form  method="POST" data-reload="true" id="wipevotes" action="@{url_for('do.admin_undo_votes', uid=user.uid)}">
-        @{form.DummyForm().csrf_token()}
+        @{form.DummyForm().csrf_token()!!html}
         <a href="javascript:{}" onclick="if(confirm('@{_('Are you sure you want to remove all the votes issued by this user?')}')){document.getElementById('wipevotes').submit();}" class="sbm-post pure-button pure-button-primary">@{_('Remove votes')}</a>
+    </form>
+    <hr>
+@end
+@if current_user.is_admin() and user.status == 5 and user.name != current_user.name:
+    <form method="POST" data-reload="true" id="unbanuser" action="@{url_for('do.unban_user', username=user.name)}">
+        @{form.DummyForm().csrf_token()!!html}
+        <a href="javascript:{}" onclick="if(confirm('@{_('Are you sure you want to unban this user?')}')){document.getElementById('unbanuser').submit();}" class="sbm-post pure-button pure-button-primary">@{_('Un-ban user')}</a>
     </form>
     <hr>
 @end

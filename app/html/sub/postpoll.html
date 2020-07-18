@@ -1,9 +1,9 @@
 @require(pollData, postmeta, post)
 
 @def renderPoll(pollData, postmeta, post):
-  <div class="poll-space" data-pid="@{post['pid']!!s}" data-votes="@{pollData['total_votes']!!s}">
+  <div class="poll-space @{((post['visibility'] != '') and (post['visibility'] != 'none')) and 'deleted ' or ''}" data-pid="@{post['pid']}" data-votes="@{pollData['total_votes']}">
     @if not pollData['poll_open']:
-      <p>@{_('This poll is now <b>closed</b>.')}</p>
+      <p>@{_('This poll is now <b>closed</b>.')!!html}</p>
     @elif not pollData['has_voted']:
       @if ('hide_results' in postmeta and not poll_open) or ('hide_results' not in postmeta):
         <p><button type="button" class="poll-show-results pure-button">@{_('Show results.')}</button></p>
@@ -11,54 +11,54 @@
     @end
     @if pollData['poll_open']:
       @if pollData.get('poll_closes'):
-        <p>@{_('This poll will close %(timeuntil)s', timeuntil='<time-until datetime="' + pollData['poll_closes'] + 'Z"></time-until>')}</p>
+        <p>@{_('This poll will close %(timeuntil)s', timeuntil='<time-until datetime="' + pollData['poll_closes'] + 'Z"></time-until>')!!html}</p>
       @end
       @if 'hide_results' in postmeta:
         <p><i>@{_('Results will be hidden until the poll closes')}</i></p>
       @end
     @end
     @if postmeta.get('poll_vote_after_level'):
-      <p>@{_('Only users above <b>level %(level)s</b> can vote.', level=postmeta['poll_vote_after_level'])}</p>
+      <p>@{_('Only users above <b>level %(level)s</b> can vote.', level=postmeta['poll_vote_after_level'])!!html}</p>
     @end
     <div style="display: none;" class="error">Error</div>
     @for opt in pollData['options']:
-      <div class="poll-option" data-oid="@{opt.id!!s}" data-votes="@{opt.votecount!!s}">
+      <div class="poll-option" data-oid="@{opt.id}" data-votes="@{opt.votecount}">
         <span class="poll-option-text">
           @if opt.id == pollData.get('voted_for'):
-            <b>@{opt.text!!e} @{_('(voted)')}</b>
+            <b>@{opt.text} @{_('(voted)')}</b>
           @else:
-            @{opt.text!!e}
+            @{opt.text}
           @end
         </span>
         <div class="poll-bar">
           <div class="poll-vote">
               @if current_user.is_authenticated and ((not postmeta.get('poll_vote_after_level')) or (postmeta.get('poll_vote_after_level') and current_user.get_user_level()[0] >= int(postmeta.get('poll_vote_after_level')))):
-              <button style="@{(pollData['has_voted'] or not pollData['poll_open']) and 'display: none' or ''}" type="button" class="poll-vote-btn pure-button button-xsmall button-secondary" data-oid="@{opt.id!!s}">@{_('Vote')}</button>
+              <button style="@{(pollData['has_voted'] or not pollData['poll_open']) and 'display: none' or ''}" type="button" class="poll-vote-btn pure-button button-xsmall button-secondary" data-oid="@{opt.id}">@{_('Vote')}</button>
               @end
           </div>
-            
+
           @if ('hide_results' in postmeta and not pollData['poll_open']) or ('hide_results' not in postmeta):
             <div class="poll-hid poll-pbar @{(opt.id == pollData.get('voted_for')) and 'poll-voted' or ''}" style="@{(not pollData['has_voted'] and pollData['poll_open']) and 'display: none' or ''}">
-              <div style="width:@{(pollData['total_votes'] != 0) and int(round(opt.votecount/pollData['total_votes']*100)) or 0!!s}%"></div>
+              <div style="width:@{(pollData['total_votes'] != 0) and int(round(opt.votecount/pollData['total_votes']*100)) or 0}%"></div>
             </div>
             <div class="poll-hid poll-votes"  style="@{(not pollData['has_voted'] and pollData['poll_open']) and 'display: none' or ''}">
               <span class="percentage-number">
                 @if pollData['total_votes'] != 0:
-                  @{int(round(opt.votecount/pollData['total_votes']*100))!!s} \
+                  @{int(round(opt.votecount/pollData['total_votes']*100))} \
                 @else:
                   0\
                 @end
-              </span>% @{_('(<span class="poll-opt-votecount">%(votes)i</span> votes)', votes=opt.votecount)}
+              </span>% @{_('(<span class="poll-opt-votecount">%(votes)i</span> votes)', votes=opt.votecount)!!html}
             </div>
           @end
         </div>
       </div>
     @end
-    
+
     <div class='poll-withdraw-form' style="@{(not (pollData['has_voted'] and current_user.is_authenticated and pollData['poll_open'])) and 'display: none' or ''}">
       <button type="button" class="poll-withdraw-btn pure-button button-secondary">@{_('Withdraw vote')}</button>
     </div>
   </div>
 @end
 
-@renderPoll(pollData, postmeta, post)
+@{renderPoll(pollData, postmeta, post)!!html}

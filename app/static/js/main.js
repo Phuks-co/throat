@@ -30,6 +30,7 @@ require('./Editor');
 require('./Messages');
 require('./Sub');
 require('./Poll');
+require('./Mod');
 var socket = require('./Socket');
 
 function vote(obj, how, comment){
@@ -38,7 +39,7 @@ function vote(obj, how, comment){
     // Show popover
     var modal = new Tingle.modal({
     });
-  
+
     // set content
     modal.setContent('<h2>' + _('Log in or register to continue') + '</h2>\
     <div class="pure-g"> \
@@ -70,11 +71,11 @@ function vote(obj, how, comment){
       </div> \
     </div> \
     ');
-  
-  
+
+
     // open modal
     modal.open();
-  
+
     return;
   }
   if(comment){
@@ -171,7 +172,7 @@ u.ready(function() {
   if(list){
     new window.Sortable(list, {
       animation: 100,
-    }); 
+    });
   }
 
   u.sub('.save-top_bar', 'click', function(e){
@@ -184,7 +185,7 @@ u.ready(function() {
     });
     u.post('/do/edit_top_bar', {sids: subs}, function(d){
       if (d.status == "ok") {
-        
+
       }else{
         alert(_('There was an error while saving your settings. Please try again in a few minutes.'));
       }
@@ -449,7 +450,7 @@ new Konami(function() {
 
 window.onbeforeunload = function (e) {
   var flag = false;
-  
+
   u.each('.exalert', function(e){
     if(e.value !== ''){
       flag = true;

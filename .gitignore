@@ -55,18 +55,13 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
-
-# To prevent Miguel from uploading a metric fuckload of useless shit
-*.scss
-*.less
-
 # webassets tmp stuff
 app/static/gen
 app/static/.webassets-cache
 config.yaml
 
 # thumbs
-thumbs/*
+thumbs
 .pylint
 
 manifest.json
@@ -75,6 +70,9 @@ package-lock.json
 
 # vscode settings
 .vscode
+
+# pycharm settings
+.idea
 
 # pyenv configs
 .python-version

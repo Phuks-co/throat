@@ -1,5 +1,10 @@
 @extends("shared/layout.html")
-@require(error, sub, form, storage, files)
+@require(error, sub, form, storage, files, subInfo, subMods)
+
+@def sidebar():
+  @include('shared/sidebar/mod.html')
+@end
+
 @def main():
 
 <div id="container">
@@ -7,15 +12,15 @@
   <div class="important"><h3>@{_('Editing as Admin')}</h3></div>
   @end
 
-  <h2>@{_('Editing stylesheet for <a href="%(url)s">/%(prefix)s/%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), prefix=config.site.sub_prefix, sub=sub.name)}</h2>
+  <h2>@{_('Editing stylesheet for <a href="%(url)s">/%(prefix)s/%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), prefix=config.site.sub_prefix, sub=sub.name)!!html}</h2>
 
   <div class="content createpost">
     <form  method="POST" class="ajaxform" action="@{url_for('do.edit_sub_css', sub=sub.name)}">
-      @{form.csrf_token()}
+      @{form.csrf_token()!!html}
       <div class="pure-control-group">
         <div>
-          <label for="css">@{form.css.label.text!!s}</label>
-          @{form.css(style="width:100%; font-family:monospace", rows=50)}
+          <label for="css">@{form.css.label.text}</label>
+          @{form.css(style="width:100%; font-family:monospace", rows=50)!!html}
         </div>
       </div>
       <div class="alert div-error"></div>
@@ -42,15 +47,17 @@
     @{_('No files were uploaded, yet.')}
   @else:
     @for f in files:
-      <div><img alt="@{_('Thumbnail')}" src="@{config.storage.thumbnails.url}@{f.thumbnail}"/>
-      @{_('Filename: %(filename)s. Size: %(filesize)i KiB.', filename=f.name, filesize=f.size/1024)!!e}
+      <div><img alt="@{_('Thumbnail')}" src="@{thumbnail_url(f.thumbnail)}"/>
+      @{_('Filename: %(filename)s. Size: %(filesize)i KiB.', filename=f.name, filesize=f.size/1024)}
       <form  method="POST" data-reload="true" action="@{url_for('do.sub_upload_delete', sub=sub.name, name=f.name)}" class="ajaxform" style="display: inline-block; margin-left: 1em; margin-top: 5px;">
-      @{form.csrf_token()}<button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="@{_('Deleting...')}" data-success="@{_('Deleted!')}">@{_('Delete')}</button></form>
+        @{form.csrf_token() !!html}
+        <button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="@{_('Deleting...')}" data-success="@{_('Deleted!')}">@{_('Delete')}</button>
+      </form>
     </div>
     @end
   @end
   <hr/>
-  <p>@{_('You can use uploaded images with <code>%%imagename%%</code>.')}</p>
+  <p>@{_('You can use uploaded images with <code>%%imagename%%</code>.')!!html}</p>
   <p>@{_('Example:')}
     <pre>
       body{

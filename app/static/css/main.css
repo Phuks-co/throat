@@ -1233,6 +1233,10 @@ input[type=search] {
     .pbody {
         width: calc(100% - 105px);
     }
+
+    .content.wiki {
+        width: 95%;
+    }
 }
 
 #createPostIcon {
@@ -1262,6 +1266,10 @@ input[type=search] {
     #createPostIcon {
         display: none;
     }
+
+    .content.wiki {
+        width: 65%;
+    }
 }
 
 .createpost input.sbm-poll-opt {
@@ -1288,12 +1296,12 @@ input[type=search] {
   margin-top: .3em;
 }
 
-#postcontent, .poll-space {
+.post-content-container, .poll-space {
   background-color: #f6f6f6;
   padding: .4em 1em; /* 1px margin on botton and top so it respects <p>'s margin */
 }
 
-#postcontent textarea, .commblock textarea{
+.post-content-container textarea, .commblock textarea{
   resize: vertical;
   width: 100%;
   overflow: auto;
@@ -1354,10 +1362,13 @@ article.comment .score{
   display: inline-block;
   height: 20px;
   width: 20px;
-  border: solid 1px black;
-  margin-right: 1px;
+  margin-right: 6px;
   text-align: center;
   padding-top: 1px;
+}
+
+.editbtns div:hover{
+  background: #ccc;
 }
 
 .editbtns div svg{
@@ -1829,13 +1840,13 @@ table td {
 .irc-bg14{background-color:#4c4c4c}
 .irc-bg15{background-color:#959595}
 
-/* Poll styles */ 
+/* Poll styles */
 
 .poll-pbar {
-  border: 1px solid #ccc; 
-  width: 70%; 
-  margin: 0 5px 2px 0; 
-  padding: 1px; 
+  border: 1px solid #ccc;
+  width: 70%;
+  margin: 0 5px 2px 0;
+  padding: 1px;
   vertical-align: middle;
   display: inline-block;
   height: 1.5em;
@@ -1846,14 +1857,14 @@ table td {
   vertical-align: middle;
   display: inline-block;
 }
-  
+
 .poll-pbar > div {
-  background-color: #526a7d; 
+  background-color: #526a7d;
   height: 1.25em;
 }
 
 .poll-pbar.poll-voted > div {
-  background-color: #fd5c00; 
+  background-color: #fd5c00;
 }
 
 .poll-pbar.poll-voted{
@@ -1906,11 +1917,11 @@ a[href="#toodamncool"]{
 
 @keyframes rb3{20%{color: red;}40%{color: yellow;}60%{color: green;}80%{color: blue;}100%{color: orange;}}
 
-.expandotxt, #postcontent, .commblock .content{
+.expandotxt, .post-content-container, .commblock .content{
   word-wrap: break-word;
 }
 
-#postcontent img, .comments .content img{
+.post-content-container img, .comments .content img{
   max-width: 100%;
 }
 
@@ -2022,4 +2033,178 @@ label.new-form-one {
 button.new-form-one {
   margin-top:1em;
   margin-left:15em;
+}
+td.close-report-button {
+  text-align: center;
+}
+
+a.close-report {
+  cursor: pointer;
+}
+
+.helper-text {
+  font-style: italic;
+  color: gray;
+}
+
+.mod-dash-subs {
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 800px;
+}
+
+.mod-dash-sub {
+  margin: 10px;
+}
+
+@media (min-width: 860px) {
+  .mod.report.content {
+    min-width: 650px;
+  }
+}
+
+.mod.report.close.buttons {
+  display: flex;
+  align-items: flex-start;
+}
+
+.mod.report.close.buttons button {
+  margin: 10px 5px 10px 0;
+}
+
+.mod button.disabled {
+  background-color: gray;
+  pointer-events: none;
+}
+
+.mod.report.details {
+  margin: 20px auto;
+  width: 100%;
+}
+
+.report-details-row {
+  min-width: 500px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 10px auto;
+  width: 100%;
+}
+
+.report-details-item {
+  min-width: 200px;
+  width: 50%;
+}
+
+.report-details-item .label{
+  font-weight: bold;
+}
+
+.mod.report.preview {
+  max-width: 600px;
+}
+
+.mod .user-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.mod .user-actions .pure-button {
+  margin: 10px 5px 10px 0;
+}
+
+.mod.report.preview .preview-text-container {
+  border-left: 3px solid gray;
+  margin: 10px;
+}
+
+.mod.report.preview .preview-text-container .preview-text {
+  color: gray;
+  padding-left: 10px;
+}
+
+.mod.report.preview .preview-text-container.deleted {
+  background-color: #FDD8D4;
+}
+
+.mod.report.preview .preview-text-container.deleted.post-content-container {
+  background-color: #FDD8D4;
+}
+
+.mod.report.preview .preview-meta-data {
+  display: flex;
+  align-items: center;
+  color: gray;
+}
+
+.mod.report.preview .preview-meta-data span {
+  margin: 0 10px;
+}
+
+.mod-sidebar.header {
+  text-align: center;
+}
+
+article.text-post.comment.deleted {
+  background-color: #FDD8D4;
+}
+
+.post-content-container.deleted {
+  background-color: #FDD8D4;
+}
+
+.postbar.post.deleted {
+  background-color: #FDD8D4;
+}
+
+.poll-space.deleted {
+  background-color: #FDD8D4;
+}
+
+.post-history-controls {
+  margin: 1em 1em 0 1em;
+}
+
+.title-history-controls {
+  margin: 1em 0;
+}
+
+.title-history-controls button {
+  font-size: 1em;
+}
+
+.browse-history:focus {
+  outline: none;
+}
+
+.browse-history.disabled:focus {
+  outline-color: lightgray;
+  outline: none;
+}
+
+.browse-history {
+  border-radius: 2px;
+  cursor: pointer;
+  -webkit-box-shadow: -2px 1px 3px 0px rgba(0,0,0,0.1);
+  -moz-box-shadow: -2px 1px 3px 0px rgba(0,0,0,0.1);
+  box-shadow: -2px 1px 3px 0px rgba(0,0,0,0.1);
+}
+
+.browse-history.disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  border-color: lightgray;
+  color: lightgray;
+}
+
+.wholepost .old.history {
+  color: gray;
+}
+
+.wholepost .history-meta {
+  color: gray;
+  font-size: smaller;
 }

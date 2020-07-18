@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+{% block title %}Admin - {{config.site.lema}}{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block sidebar %}
+{{ super() }}
+{% include 'admin/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+
+<div id="center-container">
+  <div class="content">
+    <div class="admin section invitecode">
+      <div class="col-12 admin-page-form">
+        <div>
+          <form id="useinvitecode" class="ajaxform nice-form pure-form pure-form-aligned" method="POST" action="{{url_for('do.use_invite_code')}}" data-reload="true">
+            {{useinvitecodeform.csrf_token}}
+            <h2>Invite Code to register: {% if func.enableInviteCode() %}Enabled{% else %}Disabled{% endif %}</h2>
+            <fieldset>
+                <label for="enableinvitecode" class="pure-checkbox">
+                  {{useinvitecodeform.enableinvitecode(checked=func.enableInviteCode())}} {{useinvitecodeform.enableinvitecode.label.text}}
+                </label>
+                <div class="pure-control-group">
+                    <label for="confirm">{{useinvitecodeform.minlevel.label.text}} (current value: {{ invite_settings.invite_level }})</label>
+                    {{useinvitecodeform.minlevel(autocomplete="off", required=True)}}
+                </div>
+                <div class="pure-control-group">
+                    <label for="confirm">{{useinvitecodeform.maxcodes.label.text}} (current value: {{ invite_settings.invite_max }})</label>
+                    {{useinvitecodeform.maxcodes(autocomplete="off", required=True)}}
+                </div>
+                  <button type="submit" class="pure-button pure-button-primary">Save</button>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+    </div>
+    <form method="POST" class="pure-form">
+      {{ form.csrf_token() }}
+      <p>
+        {{ form.code(placeholder=form.code.label.text, style="width: 350px") }}
+        {{ form.uses(placeholder=form.uses.label.text, style="width: 150px") }}
+        <input name="expires" type="text" class="date-picker-future" placeholder="Expiration">
+        <button type="submit" class="pure-button pure-button-primary">Submit</button>
+      </p>
+    </form>
+    <hr>
+    <div class="admin section invitecodes_table">
+      <h2>Invite Codes</h2>
+      <table class="sortable pure-table invitecodes">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Created By</th>
+            <th>Created On</th>
+            <th>Expires</th>
+            <th>Uses</th>
+            <th>Max Uses</th>
+            <th>Used By</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for code in invite_codes %}
+            <tr>
+              <td class="{{code.style}}">
+                {{code.code}}
+              </td>
+              <td><a href="{{url_for('user.view', user=code.created_by)}}">{{code.created_by}}</a></td>
+              <td>{{code.created}}</td>
+              <td>{{code.expires}}</td>
+              <td>{{code.uses}}</td>
+              <td>{{code.max_uses}}</td>
+              <td>
+                <ul>
+                {% for user in code.used_by %}
+                  <li><a href="{{url_for('user.view', user=user)}}">{{user}}</a></li>
+                {% endfor %}
+                </ul>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if page > 1 %}
+        <a href="{{url_for('admin.invitecodes', page=(page-1))}}" class="pure-button">Previous Page</a>
+      {% endif %}
+      {% if invite_codes|length == 50 %}
+        <a href="{{url_for('admin.invitecodes', page=(page+1))}}" class="pure-button">Next Page</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

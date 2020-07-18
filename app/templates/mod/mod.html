@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block title %}Mod - {{config.site.lema}}{% endblock %}
+
+{% block sidebar %}
+{{ super() }}
+{% include 'mod/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<div id="center-container">
+  <div class="content">
+    <h1>Mod Dashboard</h1>
+    {% if current_user.can_admin %}<p class="helper-text">Currently viewing all subs as Admin</p>{% endif %}
+    <div class="admin section">
+      <div class="col-12 admin-page-form">
+        <div class="admin section stats">
+          <div class="mod-dash-subs">
+            {% for sub in subs %}
+            <div class="mod-dash-sub">
+              <a href="{{url_for('sub.view_sub', sub=sub.name)}}"><h3>{{sub.name}}</h3></a>
+              <table class="pure-table">
+                <tbody>
+                  <tr>
+                    <td>Subscribers</td>
+                    <td>{{sub.subscribers}}</td>
+                  </tr>
+                  <tr>
+                    <td><a href="{{url_for('mod.reports_sub', sub=sub.name)}}">Open Reports</a></td>
+                    <td>{{sub.open_reports_count}}</td>
+                  </tr>
+                  <tr>
+                    <td><a href="{{url_for('mod.reports_sub_closed', sub=sub.name)}}">Closed Reports</a></td>
+                    <td>{{sub.closed_reports_count}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

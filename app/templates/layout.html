@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="keywords" content="forum, diskusie, komentare, reddit, cekni, cekni.to, www.cekni.to">
     <meta name="referrer" content="always">
-    
+
     <meta name="description" content="{{config.site.lema}}">
     <meta name="robots" content="index, follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,6 +46,12 @@
       <li><a href="/all/new">new</a></li>
       {% if current_user.canupload %}
         <li><a href="{{url_for('home.view_user_uploads')}}">uploads</a></li>
+      {% endif %}
+      {% if current_user.can_admin %}
+        <li><a href="{{url_for('admin.index')}}">admin</a></li>
+      {% endif %}
+      {% if current_user.is_a_mod or current_user.can_admin %}
+        <li><a href="{{url_for('mod.index')}}">moderation</a></li>
       {% endif %}
       <li>|</li>
       {% if not current_user.is_anonymous %}
@@ -139,11 +145,9 @@
     {% block footer %}
       &copy;{{config.site.copyright}}
       <br>
-      <a href="{{url_for('wiki.tos')}}">Podmienky používania</a> |
-      <a href="{{url_for('wiki.privacy')}}">Ochrana osobných údajov</a> |
-      <a href="{{url_for('sub.view_sub', sub='changelog')}}">Changelog</a> |
-      <a href="{{url_for('wiki.donate')}}">Podporte nás</a> |
-      <a href="https://discord.gg/Z59XKVB">Discord</a>
+      {% for text,link in config.site.footer.links.items() %}
+        <a href="{{link}}">{{text}}</a> |
+      {% endfor %}
       <br>
       Served by {{hostname}}
       {%if config.app.debug or current_user.admin%} | Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries{%endif%}

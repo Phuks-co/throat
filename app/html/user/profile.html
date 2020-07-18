@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(user, level, progress, postCount, commentCount, givenScore, badges, owns, mods, habits, msgform)
+@require(user, level, progress, postCount, commentCount, givenScore, invitecodeinfo, badges, owns, mods, habits, msgform)
 
 @def title():
 /u/@{user.name} |\
@@ -16,7 +16,7 @@
             </div>
         @end
     @end
-    <p>@{_('Registered %(timeago)s', timeago='<time-ago datetime="'+ user.joindate.isoformat() + 'Z"></time-ago>')}</p>
+    <p>@{_('Registered %(timeago)s', timeago='<time-ago datetime="'+ user.joindate.isoformat() + 'Z"></time-ago>')!!html}</p>
 @end
 @def main():
     <div id="center-container">
@@ -26,36 +26,36 @@
                     <h1 style="margin-right: 0; margin-left:0" class="noshit">@{user.name}</h1>
                         <div class="pblock level">
                             <div class="uprofile-level-box">
-                                <div class="mask left" style="transform: rotate(@{progress*1.8!!s}deg)">
-                                    <div class="fill" style="transform: rotate(@{progress*1.8!!s}deg)"></div>
+                                <div class="mask left" style="transform: rotate(@{progress*1.8}deg)">
+                                    <div class="fill" style="transform: rotate(@{progress*1.8}deg)"></div>
                                 </div>
                                 <div class="mask right">
-                                    <div class="fill" style="transform: rotate(@{progress*1.8!!s}deg)"></div>
-                                    <div class="fill fix" style="transform: rotate(@{progress*2.8!!s}deg)"></div>
+                                    <div class="fill" style="transform: rotate(@{progress*1.8}deg)"></div>
+                                    <div class="fill fix" style="transform: rotate(@{progress*2.8}deg)"></div>
                                 </div>
                                 <div class="inset">
                                     <div class="lv" style="line-height: 133%; padding-top: 0.4em">Level</div>
-                                    <div class="levelNo">@{level!!s}</div>
+                                    <div class="levelNo">@{level}</div>
                                 </div>
                             </div>
                         </div>
                         <div class="pblock">
                             <div class="statdiv">
-                                <div class="ucount"><a href="@{url_for('user.view_user_posts', user=user.name)}">@{postCount!!s}</a></div>
+                                <div class="ucount"><a href="@{url_for('user.view_user_posts', user=user.name)}">@{postCount}</a></div>
                                 <div>@{_('posts')}</div>
                             </div>
                             <div class="statdiv">
-                                <div class="ucount"><a href="@{url_for('user.view_user_comments', user=user.name)}">@{commentCount!!s}</a></div>
+                                <div class="ucount"><a href="@{url_for('user.view_user_comments', user=user.name)}">@{commentCount}</a></div>
                                 <div>@{_('comments')}</div>
                             </div>
                         </div>
                         <div class="pblock">
                             <div class="statdiv">
-                                <abbr class="ucount" title="+@{givenScore[0]!!s}, -@{givenScore[1]!!s}}">@{givenScore[2]!!s}</abbr>
+                                <abbr class="ucount" title="+@{givenScore[0]}, -@{givenScore[1]}}">@{givenScore[2]}</abbr>
                                 <div>@{_('Phuks given')}</div>
                             </div>
                             <div class="statdiv">
-                                <div class="ucount">@{user.score!!s}</div>
+                                <div class="ucount">@{user.score}</div>
                                 <div>@{_('Total score')}</div>
                             </div>
                         </div>
@@ -66,7 +66,7 @@
                             <h2 style="text-align: center; margin-top: 2em;">@{_('Badges')}</h2>
                             <ul id="userBadges">
                                 @for badge in badges:
-                                    <li class="profilebadge" title="@{badge['name']!!e} @{badge['alt'] != '' and ' - ' + badge['alt'] or ''}">@{badge['icon']}</li>
+                                    <li class="profilebadge" title="@{badge['name']} @{badge['alt'] != '' and ' - ' + badge['alt'] or ''}">@{badge['icon']!!html}</li>
                                 @end
                             </ul>
                         </div>
@@ -98,9 +98,35 @@
                             <h3 style="text-align: center;">@{_('Posting habits')}</h3>
                             <ul>
                                 @for i in habits:
-                                    <li class="habitentry"><a href="@{url_for('sub.view_sub', sub=i.name)}">@{i.name}</a> - @{i.count!!s}</li>
+                                    <li class="habitentry"><a href="@{url_for('sub.view_sub', sub=i.name)}">@{i.name}</a> - @{i.count}</li>
                                 @end
                             </ul>
+                        </div>
+                    @end
+                    <hr>
+                    @if invitecodeinfo and ((current_user.uid == user.uid) or current_user.is_admin()):
+                        <div class="userrow">
+                            <h2 style="text-align: center; margin-top: 2em;">@{_('Invite Info')}</h2>
+                            @if invitecodeinfo.get('invitedBy'):
+                                <div>
+                                    Invited by <a href="@{url_for('user.view', user=invitecodeinfo['invitedBy']['name'])}">@{invitecodeinfo['invitedBy']['name']}</a> with code @{invitecodeinfo['invitedBy']['code']}
+                                </div>
+                            @end
+                            @if invitecodeinfo.get('invitedTo'):
+                                <div>
+                                    <h3>Invited Users:</h3>
+                                    <table>
+                                        <thead><tr><th>User</th><th>Code</th></tr></thead>
+                                        <tbody>
+                                        @for invited in invitecodeinfo['invitedTo']:
+                                            <tr>
+                                            <td><a href="@{url_for('user.view', user=invited['name'])}">@{invited['name']}</a></td><td>@{invited['code']}</td></tr>
+                                        @end
+                                        </tbody>
+                                    </table>
+                                    </ul>
+                                </div>
+                            @end
                         </div>
                     @end
                 </div>
@@ -109,19 +135,19 @@
                     <div class="modal-content">
                         <span class="closepopmsg">&times;</span>
                         <form data-reset="true" id="msg-form" action="@{url_for('do.create_sendmsg')}" data-redir="@{url_for('messages.inbox_sort')}" class="pure-form pure-form-aligned ajaxform">
-                            @{msgform.csrf_token()}
+                            @{msgform.csrf_token()!!html}
                             <h3>@{_('Send message')}</h3>
                             <fieldset>
                                 <div id="lto" class="pure-control-group" style="display:none">
                                     <label for="to">@{_('User')}</label>
-                                    @{msgform.to(placeholder=msgform.to.label.text, required=True, value=user.name)}
+                                    @{msgform.to(placeholder=msgform.to.label.text, required=True, value=user.name)!!html}
                                 </div>
                                 <div class="pure-control-group">
                                     <label for="subject">@{_('Subject')}</label>
-                                    @{msgform.subject(placeholder=msgform.subject.label.text, required=True)}
+                                    @{msgform.subject(placeholder=msgform.subject.label.text, required=True)!!html}
                                 </div>
                                 <div class="pure-control-group markdown-editor">
-                                    @{msgform.content(placeholder=_('Styling with Markdown format is supported.'), rows="10", id="cntnt")}
+                                    @{msgform.content(placeholder=_('Styling with Markdown format is supported.'), rows="10", id="cntnt")!!html}
                                 </div>
                                 <div class="pure-controls">
                                     <button type="submit" id="msg-btnsubmit" class="pure-button pure-button-primary" data-prog="@{_('Sending...')}">@{_('Send Message')}</button>

@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block title %}{{config.site.lema}}{% endblock %}
+{% block navbar %}
+<ul class="right">
+  <li class="large"><a href="{{url_for('sub.view_sub', sub=sub.name)}}">/{{config.site.sub_prefix}}/{{sub.name}}</a></li>
+</ul>
+{% endblock %}
+
+{% block sidebar %}
+{{ super() }}
+{% include 'mod/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+
+{% if not current_user.is_mod(sub.sid, 1) and current_user.is_admin() %}
+<div class="important"><h3>Editing as Admin</h3></div>
+{% endif %}
+
+<h1>Editing /{{config.site.sub_prefix}}/{{sub.name}}'s rules</h1>
+<div class="col-12 admin-page-form">
+  <form  method="POST" class="ajaxform pure-form" action="{{url_for('do.create_rule', sub=sub.name)}}" data-reload="true">
+    <h4>Create new rules</h4>
+    <p class="helper-text">Users will be able to report violations of this rule. The text of the rule should be short and easy to understand. You'll still need to update your sidebar with a more detailed version of your Sub rules for users to read.</p>
+    {{createrule.csrf_token}}
+      {{createrule.text(placeholder="Rule text")}}
+      <button type="submit" class="pure-button pure-button-primary" id="editsub-btnsubmit" data-prog="Saving..." data-success="Saved!">Add rule</button>
+    <div class="alert div-error">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      <p></p>
+    </div>
+  </form>
+</div>
+
+{% if rules %}
+<hr>
+<h4>rules</h4>
+  <div class="col-12 admin-page-form">
+    <ul>
+    {% for rule in rules %}
+    <li><span class="postrule">{{rule.text.data}}</span>
+      <form  method="POST" data-reload="true" action="{{url_for('do.delete_rule', sub=sub.name)}}" class="ajaxform" style="display: inline-block; margin-left: 1em; margin-top: 5px;">
+      {{rule.csrf_token}}{{rule.rule}}<button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="Deleting..." data-success="Deleted!">Delete</button></form>
+    {% endfor %}
+  </ul>
+  </div>
+{% endif %}
+{% endblock %}

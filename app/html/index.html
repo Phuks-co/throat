@@ -20,12 +20,9 @@
   <hr />
   &copy;@{config.site.copyright}
   <br>
-  <a href="@{url_for('wiki.welcome')}">@{_('Welcome')}</a> |
-  <a href="@{url_for('wiki.tos')}">@{_('ToS')}</a> |
-  <a href="@{url_for('wiki.privacy')}">@{_('Privacy')}</a> |
-  <a href="@{url_for('sub.view_sub', sub='changelog')}">@{_('Changelog')}</a> |
-  <a href="@{url_for('wiki.donate')}">@{_('Donate')}</a> |
-  <a href="https://discord.gg/Z59XKVB">Discord</a>
+  @for text,link in config.site.footer.links.items():
+    <a href="@{link}">@{text}</a> |
+  @end
   <br>
   @{_('Served by %(host)s', host=hostname)} \
   @if config.app.debug or current_user.admin:
@@ -39,7 +36,7 @@
   @if sort_type.startswith('home.') or sort_type.startswith('home.all_'):
     @if ann:
       <div id="announcement-post">
-      @ipost.singlePost(ann, False, announcement=True)
+      @{ipost.singlePost(ann, False, announcement=True)!!html}
       <hr/>
       </div>
     @end
@@ -51,7 +48,7 @@
   <div class="alldaposts">
     @for post in posts:
       @if not ann or ann['pid'] != post['pid']:
-        @ipost.singlePost(post, False)
+        @{ipost.singlePost(post, False)!!html}
       @end
     @end
   </div>
@@ -80,7 +77,7 @@
         @if sort_type in ('home.all_new'):
         // TODO: add for subs
         window.nposts = '/all/new';
-        window.blocked = @{current_user.blocksid!!s}
+        window.blocked = @{current_user.blocksid}
         @end
       @end
       @if sort_type in ('home.all_new', 'sub.view_sub_new') and current_user.likes_scroll():

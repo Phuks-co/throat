@@ -1,0 +1,67 @@
+@extends("shared/layout.html")
+@require(sub, reports, page, subInfo, subMods)
+@def title():
+Mod |\
+@end
+
+@def sidebar():
+  @include('shared/sidebar/mod.html')
+@end
+
+@def main():
+<div id="center-container">
+  <div class="content">
+    <h1>@{_('Open Reports for ')} @{config.site.sub_prefix}/@{sub.name}</h1>
+    <p class="helper-text">@{_('Includes all open reports this sub.')}</p>
+
+    <div class="admin section">
+      <div class="col-12 admin-page-form">
+        <div class="admin section stats">
+          @{_('Total Open Reports:' )} @reports['open_report_count']  |  @{_('Total Closed Reports:' )} <a href="@{url_for('mod.reports_sub_closed', sub=sub.name)}">@reports['closed_report_count']</a>
+          <div class="div-error error alertbox"></div>
+
+          <table class="pure-table">
+            <thead>
+              <tr>
+                <th>@{_('Sub')}</th>
+                <th>@{_('Type')}</th>
+                <th>@{_('Reporter')}</th>
+                <th>@{_('Reason')}</th>
+                <th>@{_('User reported')}</th>
+                <th>@{_('Time')}</th>
+                <th>@{_('Close')}</th>
+              </tr>
+            </thead>
+            <tbody>
+            @for report in reports['query']:
+            <tr>
+              <td><div class="sub"><a href="@{ url_for('sub.view_sub', sub=report['sub']) }">@{ report['sub'] }</a></div></td>
+              <td>
+                @if report['type'] == 'comment':
+                  <a href="@{url_for('mod.report_details', sub=report['sub'], type=report['type'], id=report['id'])}">@{_('Comment')}</a>
+                @else:
+                <a href="@{url_for('mod.report_details', sub=report['sub'], type=report['type'], id=report['id'])}">@{_('Post')}</a>
+                @end
+              </td>
+              <td><div class="username"><a href="@{ url_for('user.view', user=report['reporter']) }">@{ report['reporter'] }</a></div></td>
+              <td>@{report['reason']}</td>
+              <td><div class="username"><a href="@{ url_for('user.view', user=report['reported']) }">@{ report['reported'] }</a></div></td>
+              <td><time-ago datetime="@{report['datetime'].isoformat()}Z"></time-ago></td>
+              <td class="close-report-button"><a data-type="@{report['type']}" data-id="@{report['id']}" data-action="close" class="close-report">@{_('[x]')}</a></td>
+            </tr>
+            @end
+            </tbody>
+          </table>
+        </div>
+      </div>
+      @if page > 1:
+        <a href="@{url_for('mod.reports_sub', page=(page-1), sub=sub.name)}" class="pure-button">@{_('Previous page')}</a>
+      @end
+      @if len(reports['query']) == 50:
+        <a href="@{url_for('mod.reports_sub', page=(page+1), sub=sub.name)}" class="pure-button">@{_('Next page')}</a>
+      @end
+    </div>
+  </div>
+</div>
+
+@end

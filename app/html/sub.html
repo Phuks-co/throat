@@ -1,6 +1,6 @@
 @extends("shared/layout.html")
 @import "shared/post.html" as ipost
-@require(sub, posts, page, sort_type, subInfo, playlist)
+@require(sub, posts, page, sort_type, subInfo)
 
 
 @def title():
@@ -8,13 +8,6 @@
 @end
 
 @def sidebar():
-
-@if subInfo['videomode'] == '1':
-  <div class="musicmodediv">
-    @include('videomodeplayer.html')
-  </div>
-<hr>
-@end
 
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
@@ -31,7 +24,7 @@
   @if func.getStickyPid:
     <div class="stickyposts">
       @for post in func.getStickies(sub['sid']):
-        @ipost.singlePost(post, sub)
+        @{ipost.singlePost(post, sub)!!html}
       @end
     </div>
   @end
@@ -41,7 +34,7 @@
   <div class="alldaposts">
     @for post in posts:
       @if not post['pid'] in func.getStickyPid(sub['sid']):
-        @ipost.singlePost(post, sub)
+        @{ipost.singlePost(post, sub)!!html}
       @end
     @end
   </div>
@@ -57,6 +50,6 @@
 @def pagefoot():
 
   @if not current_user.block_styles():
-    <style>@{subInfo['stylesheet']}</style>
+    <style>@{subInfo['stylesheet']!!html}</style>
   @end
 @end

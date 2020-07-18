@@ -4,6 +4,12 @@
 <ul class="right">
   <li class="large"><a href="{{url_for('sub.view_sub', sub=sub.name)}}">/{{config.site.sub_prefix}}/{{sub.name}}</a></li>
 </ul>
+
+{% block sidebar %}
+{{ super() }}
+{% include 'mod/sidebar.html' %}
+{% endblock %}
+
 {% endblock %}
 {% block content %}
 {{ super() }}

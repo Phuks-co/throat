@@ -10,6 +10,9 @@ from app.models import User, Client, Grant, Message, SiteLog, SiteMetadata, Sub,
     SubSubscriber, Token, UserMetadata, UserSaved, \
     UserUploads, UserIgnores, \
     SubUploads, SubPostPollOption, SubPostPollVote, SubPostReport, APIToken, APITokenSettings
+from app import create_app
+
+app = create_app()
 
 parser = argparse.ArgumentParser(description='Manage administrators.')
 addremove = parser.add_mutually_exclusive_group(required=True)
