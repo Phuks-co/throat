@@ -1549,7 +1549,8 @@ def send_password_recovery_email(user):
 
 
 def uid_from_recovery_token(token):
-    return rconn.get('recovery-' + token).decode('utf-8')
+    value = rconn.get('recovery-' + token)
+    return None if value is None else value.decode('utf-8')
 
 
 def delete_recovery_token(token):
