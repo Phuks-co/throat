@@ -1,10 +1,7 @@
 import bcrypt
-import logging
 import os
 import tempfile
 import pytest
-
-from peewee_migrate import Router
 
 from app import create_app
 from app.config import Config, config
@@ -12,10 +9,6 @@ from app.models import db, BaseModel, User, UserMetadata
 from app.auth import auth_provider
 
 from test.utilities import recursively_update
-
-
-peewee_migrate_logger = logging.getLogger('peewee_migrate')
-peewee_migrate_logger.setLevel(logging.WARNING)
 
 
 @pytest.fixture
