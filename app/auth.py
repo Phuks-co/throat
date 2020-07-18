@@ -108,24 +108,13 @@ class AuthProvider:
         if self.provider == 'LOCAL':
             user.crypto = UserCrypto.BCRYPT
             user.password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+            user.save()
         elif self.provider == 'KEYCLOAK':
-            if self.get_user_auth_source(user) == UserAuthSource.LOCAL:
-                self.keycloak_admin.create_user({'id': user.uid,
-                                                 'email': user.email,
-                                                 'username': user.name,
-                                                 'enabled': True,
-                                                 'emailVerified': user.verified_email,
-                                                 'credentials': [{'value': new_password,
-                                                                  'type': 'password'}]})
-                self.set_user_auth_source(user, UserAuthSource.KEYCLOAK)
-                user.crypto = UserCrypto.REMOTE
-                user.password = ''
-            else:
-                self.keycloak_admin.update_user(user_id=user.uid,
-                                                payload={'credentials':
-                                                         [{'value': new_password,
-                                                           'type': 'password'}]})
-        user.save()
+            # validate_password promotes LOCAL users to KEYCLOAK ones.
+            self.keycloak_admin.update_user(user_id=user.uid,
+                                            payload={'credentials':
+                                                     [{'value': new_password,
+                                                       'type': 'password'}]})
 
     def reset_password(self, user, new_password):
         if self.provider == 'LOCAL':
@@ -206,7 +195,20 @@ class AuthProvider:
     def validate_password(self, user, password):
         if user.crypto == UserCrypto.BCRYPT:
             thash = bcrypt.hashpw(password.encode('utf-8'), user.password.encode('utf-8'))
-            return thash == user.password.encode('utf-8')
+            if thash == user.password.encode('utf-8'):
+                if self.provider == 'KEYCLOAK':
+                    self.keycloak_admin.create_user({'id': user.uid,
+                                                     'email': user.email,
+                                                     'username': user.name,
+                                                     'enabled': True,
+                                                     'emailVerified': user.verified_email,
+                                                     'credentials': [{'value': password,
+                                                                      'type': 'password'}]})
+                    self.set_user_auth_source(user, UserAuthSource.KEYCLOAK)
+                    user.crypto = UserCrypto.REMOTE
+                    user.password = ''
+                    user.save()
+                return True
         elif (user.crypto == UserCrypto.REMOTE and
               self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK and
               self.provider == 'KEYCLOAK'):
