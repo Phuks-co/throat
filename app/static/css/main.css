@@ -300,7 +300,7 @@ a:hover {
   border-radius: 3px;
 }
 
-.error span{
+.message span{
   display:block;
 }
 
