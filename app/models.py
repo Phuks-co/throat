@@ -446,8 +446,8 @@ class UserMetadata(BaseModel):
 class UserAuthSource(IntEnum):
     """Where authentication is done.  Value for the 'auth_source' key in
     UserMetadata."""
-    LOCAL=0
-    KEYCLOAK=1
+    LOCAL = 0
+    KEYCLOAK = 1
 
 
 class UserSaved(BaseModel):
