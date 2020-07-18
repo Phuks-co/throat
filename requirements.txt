@@ -40,3 +40,5 @@ psycopg2
 gunicorn
 mutagen
 flask-mail
+python-keycloak
+itsdangerous

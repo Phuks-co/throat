@@ -5,7 +5,6 @@ import re
 import time
 import datetime
 import uuid
-import bcrypt
 import requests
 import magic
 import hashlib
@@ -13,16 +12,19 @@ import os
 import random
 from PIL import Image
 from bs4 import BeautifulSoup
-from flask import Blueprint, redirect, url_for, session, abort, jsonify
+from flask import Blueprint, redirect, url_for, session, abort, jsonify, current_app
 from flask import render_template, request
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_babel import _
+from itsdangerous import URLSafeTimedSerializer
+from itsdangerous.exc import SignatureExpired, BadSignature
 from ..config import config
 from .. import forms, misc, caching, storage
 from ..socketio import socketio
+from ..auth import auth_provider, email_validation_is_required
 from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
-from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm, ChangePasswordForm
-from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm
+from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
+from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
@@ -34,6 +36,7 @@ from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, S
 from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
 from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport, SubRule
+from ..models import rconn, UserStatus
 from peewee import fn, JOIN
 
 do = Blueprint('do', __name__)
@@ -68,24 +71,65 @@ def search(stype):
     return redirect(url_for(stype, term=term))
 
 
-@do.route("/do/edit_user/password", methods=['POST'])
+@do.route("/do/edit_account", methods=['POST'])
 @login_required
-def edit_user_password():
-    form = ChangePasswordForm()
+def edit_account():
+    form = EditAccountForm()
+    if email_validation_is_required():
+        del form.email_optional
+    else:
+        del form.email_required
+
     if form.validate():
-        usr = User.get(User.uid == current_user.uid)
-        if not misc.validate_password(usr, form.oldpassword.data):
-            return json.dumps({'status': 'error', 'error': [_('Wrong password')]})
+        user = User.get(User.uid == current_user.uid)
+        if email_validation_is_required():
+            email = form.email_required.data
+        else:
+            email = form.email_optional.data
 
-        password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
-        if isinstance(password, bytes):
-            password = password.decode('utf-8')
+        if (email and email != user.email and
+            email != auth_provider.get_pending_email(user) and
+            auth_provider.get_user_by_email(email) is not None):
+            return json.dumps({'status': 'error',
+                               'error': [_('E-mail address is already in use')]})
 
-        usr.password = password
-        usr.crypto = 1
-        usr.save()
-        return jsonify(status='ok')
+        if not auth_provider.validate_password(user, form.oldpassword.data):
+            return json.dumps({'status': 'error',
+                               'error': [_('Incorrect password')]})
+
+        messages = []
+        if form.password.data or email != user.email:
+            if form.password.data:
+                auth_provider.change_password(user, form.oldpassword.data, form.password.data)
+            if email != user.email:
+                if not email_validation_is_required():
+                    user.email = email
+                    user.save()
+                else:
+                    auth_provider.set_pending_email(user, email)
+                    send_email_confirmation_link_email(user, email)
+                    messages.append(_('To confirm, click the link in the email we sent to you. '
+                                      'You may want to check your spam folder, just in case ;)'))
+        return json.dumps({'status': 'ok', 'message': messages})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+def send_email_confirmation_link_email(user, new_email):
+    s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"],
+                               salt="email-change")
+    token = s.dumps({"uid": user.uid, "email": new_email})
+    send_email(new_email, _("Confirm your email address for your %(site)s account", site=config.site.name),
+               text_content=engine.get_template("user/email/confirm-email-change.txt").render(dict(user=user, token=token)),
+               html_content=engine.get_template("user/email/confirm-email-change.html").render(dict(user=user, token=token)))
+
+
+def info_from_email_confirmation_token(token):
+    try:
+        s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"],
+                                   salt="email-change")
+        return s.loads(token, max_age=24*60*60) # TODO in config?
+    except (SignatureExpired, BadSignature):
+        return None
 
 
 @do.route("/do/delete_account", methods=['POST'])
@@ -94,14 +138,13 @@ def delete_user():
     form = DeleteAccountForm()
     if form.validate():
         usr = User.get(User.uid == current_user.uid)
-        if not misc.validate_password(usr, form.password.data):
+        if not auth_provider.validate_password(usr, form.password.data):
             return jsonify(status='error', error=[_('Wrong password')])
 
         if form.consent.data != _('YES'):
             return jsonify(status='error', error=[_('Type "YES" in the box')])
 
-        usr.status = 10
-        usr.save()
+        auth_provider.change_user_status(usr, 10)
         logout_user()
 
         return jsonify(status='ok')
@@ -121,7 +164,6 @@ def edit_user():
                 return jsonify(status='error', error=[_('Sub does not exist')])
 
         usr = User.get(User.uid == current_user.uid)
-        usr.email = form.email.data
         usr.language = form.language.data
         usr.save()
         current_user.update_prefs('labrat', form.experimental.data)
@@ -1488,53 +1530,31 @@ def recovery():
         except User.DoesNotExist:
             return jsonify(status="ok")  # Silently fail every time.
 
-        # User exists, check if they don't already have a key sent
-        try:
-            key = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key'))
-            keyExp = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key-time'))
-            expiration = float(keyExp.value)
-            if (time.time() - expiration) > 86400 or config.app.development:  # 1 day
-                # Key is old. remove it and proceed
-                key.delete_instance()
-                keyExp.delete_instance()
-            else:
-                return jsonify(status="ok")
-        except UserMetadata.DoesNotExist:
-            pass
+        if user.status != UserStatus.OK:
+            return jsonify(status="ok")  # Silently fail for deleted and banned users.
 
         # checks done, doing the stuff.
-        rekey = uuid.uuid4()
-        UserMetadata.create(uid=user.uid, key='recovery-key', value=rekey)
-        UserMetadata.create(uid=user.uid, key='recovery-key-time', value=time.time())
-
-        send_email(
-            subject=_('Password recovery'),
-            to=user.email,
-            text_content=_("""%(lema)s
-
-            Somebody (most likely you) has requested a password reset for your account.
-
-            To proceed, visit the following address (valid for the next 24 hours):
-
-            %(url)s
-
-            If you didn't request a password recovery, please ignore this email.
-            """, lema=config.site.lema, url=url_for('user.password_reset', key=rekey,
-                                                    uid=user.uid, _external=True)),
-            html_content=_("""<h2><strong>%(lema)s</strong></h2>
-            <p>Somebody (most likely you) has requested a password reset for
-            your account</p>
-            <p>To proceed, visit the following address (valid for the next 24hs)</p>
-            <a href="%(url)s">%(url)s</a>
-            <hr>
-            <p>If you didn't request a password recovery, please ignore this
-            email</p>
-            """, lema=config.site.lema, url=url_for('user.password_reset', key=rekey,
-                                                    uid=user.uid, _external=True))
-        )
-
+        send_password_recovery_email(user)
         return jsonify(status="ok")
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+def send_password_recovery_email(user):
+    rekey = str(uuid.uuid4())
+    rconn.setex('recovery-' + rekey, value=user.uid, time=20*60)
+    if user.email:
+        send_email(user.email, _("Set a new password on %(site)s", site=config.site.name),
+               text_content=engine.get_template("user/email/password-recovery.txt").render(dict(user=user, token=rekey)),
+               html_content=engine.get_template("user/email/password-recovery.html").render(dict(user=user, token=rekey)))
+
+
+def uid_from_recovery_token(token):
+    value = rconn.get('recovery-' + token)
+    return None if value is None else value.decode('utf-8')
+
+
+def delete_recovery_token(token):
+    rconn.delete('recovery-' + token)
 
 
 @do.route("/do/reset", methods=['POST'])
@@ -1548,31 +1568,19 @@ def reset():
         try:
             user = User.get(User.uid == form.user.data)
         except User.DoesNotExist:
-            return jsonify(status='error')
+            return jsonify(status='error', error=_('Password recovery link expired'))
 
-        # User exists, check if they don't already have a key sent
-        try:
-            key = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key'))
-            keyExp = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'recovery-key-time'))
-            expiration = float(keyExp.value)
-            if (time.time() - expiration) > 86400:  # 1 day
-                # key has expired. Remove
-                key.delete_instance()
-                keyExp.delete_instance()
-                return jsonify(status='error')
-        except UserMetadata.DoesNotExist:
-            return jsonify(status='error')
+        if user.status != UserStatus.OK:
+            return jsonify(status='error', error=_('Password recovery link expired'))
 
-        if key.value != form.key.data:
-            return jsonify(status='error')
-
-        key.delete_instance()
-        keyExp.delete_instance()
+        # User exists, check if their key is still valid.
+        if form.user.data == uid_from_recovery_token(form.key.data):
+            delete_recovery_token(form.key.data)
+        else:
+            return jsonify(status='error', error=_('Password recovery link expired'))
 
         # All good. Set da password.
-        password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
-        user.password = password
-        user.save()
+        auth_provider.reset_password(user, form.password.data)
         login_user(misc.load_user(user.uid))
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -1912,8 +1920,7 @@ def ban_user(username):
     if user.uid == current_user.uid:
         abort(403)
 
-    user.status = 5
-    user.save()
+    auth_provider.change_user_status(user, 5)
     misc.create_sitelog(misc.LOG_TYPE_USER_BAN, uid=current_user.uid, comment=user.name)
     return redirect(request.referrer)
 
@@ -1933,13 +1940,10 @@ def unban_user(username):
     except User.DoesNotExist:
         abort(404)
 
-    try:
-        user.status = 5
-    except:
-        return jsonify(status='error', error='user is not banned')
+    if user.status != 5:
+        return jsonify(status='error', error=_('User is not banned'))
 
-    user.status = 0
-    user.save()
+    auth_provider.change_user_status(user, 0)
     misc.create_sitelog(misc.LOG_TYPE_USER_UNBAN, uid=current_user.uid, comment=user.name)
     return redirect(request.referrer)
 

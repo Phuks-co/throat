@@ -19,12 +19,14 @@
     <hr>
 @end
 @if user.uid == current_user.uid:
-    <a href="/settings" class="sbm-post pure-button @{(request.path == '/settings') and 'pure-button-primary' or ''}">@{_('Preferences')}</a>
-    <a href="/settings/password" class="sbm-post pure-button @{(request.path == '/settings/password') and 'pure-button-primary' or ''}">@{_('Change password')}</a>
-    <a href="/settings/delete" class="sbm-post pure-button @{(request.path == '/settings/delete') and 'pure-button-primary' or ''}">@{_('Delete account')}</a>
+    <a href="@{url_for('user.edit_user')}" class="sbm-post pure-button @{(request.path == url_for('user.edit_user')) and 'pure-button-primary' or ''}">@{_('Preferences')}</a>
+    <a href="@{url_for('user.edit_account')}" class="sbm-post pure-button @{(request.path == url_for('user.edit_account')) and 'pure-button-primary' or ''}">@{_('Account')}</a>
+    @if request.path == url_for('user.edit_account'):
+    <a href="@{url_for('user.delete_account')}" class="sbm-post pure-button @{(request.path == url_for('user.delete_account')) and 'pure-button-primary' or ''}">@{_('Delete account')}</a>
+    @end
     @if func.enableInviteCode():
         <hr/>
-        <a href="/settings/invite" class="sbm-post pure-button @{(request.path == '/settings/invite') and 'pure-button-primary' or ''}">@{_('Invite codes')}</a>
+        <a href="@{url_for('user.invite_codes')}" class="sbm-post pure-button @{(request.path == url_for('user.invite_codes')) and 'pure-button-primary' or ''}">@{_('Invite codes')}</a>
     @end
     <hr>
 @end

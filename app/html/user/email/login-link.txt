@@ -1,0 +1,10 @@
+@require(user, token)
+@{_('Hi %(name)s,', name=user.name)}
+
+@{_('Thank you for registering on %(site)s! To confirm your account and log in, open the following link in your browser.', site=config.site.name)}
+
+@{url_for('auth.login_with_token', token=token, _external=True)}
+
+@{_('Thanks,')}
+
+@{_('The %(site)s Team', site=config.site.name)}

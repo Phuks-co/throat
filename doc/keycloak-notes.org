@@ -1,0 +1,78 @@
+* Notes on setting up Keycloak
+
+** To run the docker image:
+
+#+BEGIN_SRC sh
+docker run -p 8080:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin quay.io/keycloak/keycloak:10.0.2
+#+END_SRC
+
+ Or change the first port number if you need it to take a different
+ port on localhost.
+
+** Setting up Keycloak
+
+ Open up the admin interface at http://localhost:8080
+
+ Follow the directions at
+ https://www.keycloak.org/getting-started/getting-started-docker to
+ create a realm called example and a user called example-admin in that
+ realm (Note: not sure the user is necessary or desirable).
+
+ Skip the bit about setting up an application client and testing it.
+
+ Go back to the master realm and select Clients on the left, then
+ choose admin-cli.  Change its "Access Type" to confidential and turn
+ on "Service Accounts Enabled."  Choose Save.  A credentials tab will
+ appear: select it and copy the secret key, which will look something
+ like this: "6ee74c8e-9ef8-49ad-a16d-b1f30429bba7".  Paste it into
+ "admin_secret" in the Keycloak section of your config.yaml.
+
+ Then go to "Service Account Roles", select "admin" from Available Roles,
+ and then choose "assign selected".
+
+So admin-cli is the client which can create users, but you need a client
+in the example realm you created above to log them in.  To create that
+client, choose the Example realm again, and create a client called 'throatapp'.
+
+Change 'throatapp's "Access Type" to confidential and turn on "Service
+Accounts Enabled" and "Authorization Enabled".  Enter a valid url in
+the required redirect URL box; such as http://localhost:5000 for a dev
+server, or your public-facing url in production.  Choose Save.  A
+credentials tab will appear: select it and copy the secret key.  This
+secret key goes in "auth_secret" in your config.yaml.
+
+* Creating a user with cURL
+Get the access token, which will be a huge string in the JSON resulting from:
+#+BEGIN_SRC sh
+  curl --location --request POST 'http://localhost:8080/auth/realms/master/protocol/openid-connect/token' \
+	  --header 'Content-Type: application/x-www-form-urlencoded' \
+	  --data-urlencode 'grant_type=client_credentials' \
+	  --data-urlencode 'client_id=admin-cli' \
+	  --data-urlencode 'client_secret=6ee74c8e-9ef8-49ad-a16d-b1f30429bba7'
+#+END_SRC
+
+Create a new user:
+
+#+BEGIN_SRC sh
+  curl --location --request POST 'http://localhost:8080/auth/admin/realms/example/users' \
+	  --header 'Content-Type: application/json' \
+	  --header 'Authorization: Bearer COPY-TOKEN-HERE' \
+	  --data-raw '{"firstName":"Testy","lastName":"Tester", "email":"test@test.com", "enabled":"true", "username":"app-user"}'
+#+END_SRC
+
+* Python
+Get the admin token, and raise an error if it doesn't work
+#+BEGIN_SRC python
+ from keycloak import KeycloakAdmin
+ keycloak_admin = KeycloakAdmin(server_url="http://localhost:8080/auth/",
+                               realm_name="master",
+			       client_secret_key="6ee74c8e-9ef8-49ad-a16d-b1f30429bba7",
+			       verify=True)
+#+END_SRC
+
+* To do
+
+Right now using a client from the master realm gives the holder of
+that secret power to create and delete users in all the realms on the
+server. It should be possible in Keycloak to create a client in a realm
+that can only create users in that realm.

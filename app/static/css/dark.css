@@ -141,6 +141,10 @@ body.dark .p-icon[data-icon="exclaim"] path {
 
 /* Buttons */
 
+body.dark .pure-button.button-transparent, body.dark .pure-button.button-transparent:hover {
+    background: none;
+}
+
 body.dark .button-secondary,
 body.dark .pure-button {
   background: rgba(51, 51, 51, 0.5);

@@ -199,6 +199,14 @@ blockquote{
   margin-left: .25em;
 }
 
+.button-transparent, .button-transparent:hover {
+    background: none;
+}
+
+.btn-rcancel {
+    margin-left: 1em;
+}
+
 .separator {
   margin-left: .1em;
   margin-right: .25em;
@@ -290,6 +298,40 @@ a:hover {
 }
 
 .alert.div-error ul {
+    padding-bottom: 10px;
+}
+
+.message{
+  margin-top: 1em;
+  padding: 5px;
+  background-color: #00d928;
+  color: white;
+  margin-bottom: 15px;
+  border-radius: 3px;
+}
+
+.message span{
+  display:block;
+}
+
+.div-message{
+  display: none;
+}
+
+.alert.div-message {
+  background: #00d928;
+  color: #ffffff;
+  margin: 6px;
+  padding-top: .1em;
+  padding-bottom: .1em;
+}
+
+.div-message span.closebtn {
+  margin: 4px;
+  float: right;
+}
+
+.alert.div-message ul {
     padding-bottom: 10px;
 }
 

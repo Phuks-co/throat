@@ -1,0 +1,48 @@
+@extends("shared/layout.html")
+@require(form, user)
+@def sidebar():
+  @include('shared/sidebar/user.html')
+@end
+
+@def main():
+<div id="container">
+  <h1>@{_('%(user)s\'s account', user=user.name)}</h1>
+  @for err in get_flashed_messages(category_filter=["error"]):
+    <div class="error" style="margin-top: 2em;">@{ err }</div>
+  @end
+  @for message in get_flashed_messages(category_filter=["message"]):
+    <div class="message" style="margin-top: 2em;">@{ message }</div>
+  @end
+  <form  method="POST" id="edit-user-form" data-refresh='true'  action="@{url_for('do.edit_account')}" class="ajaxform pure-form pure-form-aligned">
+    @{form.csrf_token()!!html}
+    <fieldset>
+      <div class="pure-control-group">
+        @if email_validation_is_required():
+        <label for="email">@{form.email_required.label.text}</label>
+        @{form.email_required(value=user.email, autocomplete="off")!!html}
+        @else:
+        <label for="email">@{form.email_optional.label.text}</label>
+        @{form.email_optional(value=user.email, autocomplete="off")!!html}
+        @end
+      </div>
+      <div class="pure-control-group">
+        <label for="password">@{form.password.label.text}</label>
+        @{form.password(placeholder=form.password.label.text, autocomplete="off")!!html}
+      </div>
+      <div class="pure-control-group">
+        <label for="confirm">@{form.confirm.label.text}</label>
+        @{form.confirm(placeholder=form.confirm.label.text, autocomplete="off")!!html}
+      </div>
+      <hr>
+      <div class="pure-control-group">
+        <label for="oldpassword">@{form.oldpassword.label.text}</label>
+        @{form.oldpassword(placeholder=form.oldpassword.label.text, required=True, autocomplete="off")!!html}
+      </div>
+      <div class="alert div-message"></div>
+      <div class="alert div-error"></div>
+      <button type="submit" class="pure-button pure-button-primary" id="edituser-btnsubmit" data-prog="@{_('Editing...')}" data-success="@{_('Saved!')}">@{_('Save')}</button>
+    </fieldset>
+  </form>
+
+</div>
+@end
