@@ -83,7 +83,7 @@ u.addEventForChild(document, 'click', '.browse-history', function (e, qelem) {
 u.addEventForChild(document, 'click', '.edit-title', function (e, qelem) {
     const tg = e.currentTarget;
     TextConfirm(qelem, function () {
-        const title = document.querySelector('.post-heading .title').innerHTML;
+        const title = document.querySelector('.post-heading .title').text.trim();
         const reason = prompt(_('New title'), title);
         if (!reason) {
             return false;
