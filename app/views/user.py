@@ -198,12 +198,14 @@ def password_recovery():
 @bp.route('/reset/<token>')
 def password_reset(token):
     """ The page that actually resets the password """
+    user = None
     try:
         user = User.get(User.uid == uid_from_recovery_token(token))
     except User.DoesNotExist:
-        return abort(404)
-    if user.status != UserStatus.OK:
-        return abort(404)
+        pass
+    if user == None or user.status != UserStatus.OK:
+        flash(_('Password reset link was invalid or expired'), 'error')
+        return redirect(url_for('user.password_recovery'))
 
     if current_user.is_authenticated:
         return redirect(url_for('home.index'))
