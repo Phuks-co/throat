@@ -130,6 +130,20 @@
 
   <div class="pure-g new-g">
     <div class="pure-u-1 pure-u-md-18-24"> <!-- main -->
+      {% with errors = get_flashed_messages(category_filter=["error"]) %}
+        {% if errors %}
+          {% for err in errors %}
+            <div class="error" style="margin-top: 2em;">@{ err }</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {% with messages = get_flashed_messages(category_filter=["message"]) %}
+        {% if messages %}
+          {% for msg in messages %}
+            <div class="message" style="margin-top: 2em;">@{ msg }</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
       {% block main %}
         <div id="container">{% block content %}{% endblock %}</div>
       {% endblock %}

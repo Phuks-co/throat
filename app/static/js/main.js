@@ -232,7 +232,11 @@ u.ready(function() {
           }
           if(target.querySelector('.div-message')){
             target.querySelector('.div-message').innerHTML = message;
-            target.querySelector('.div-message').style.display = 'block';
+            if (message) {
+                target.querySelector('.div-message').style.display = 'block';
+            } else {
+                target.querySelector('.div-message').style.display = 'none';
+            }
           }
           if(target.querySelector('.div-error')){
             target.querySelector('.div-error').style.display = 'none';

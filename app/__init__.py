@@ -40,6 +40,10 @@ login_manager = LoginManager()
 login_manager.anonymous_user = SiteAnon
 login_manager.login_view = 'auth.login'
 
+# Allow translation of the messages shown by flask_login.
+login_manager.login_message = _('Please log in to access this page.')
+login_manager.needs_refresh_message = _('Please reauthenticate to access this page.')
+
 
 def create_app(config=Config('config.yaml')):
     app = Flask(__name__)

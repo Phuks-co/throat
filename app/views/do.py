@@ -97,7 +97,7 @@ def edit_account():
             return json.dumps({'status': 'error',
                                'error': [_('Incorrect password')]})
 
-        messages = []
+        messages = None
         if form.password.data or email != user.email:
             if form.password.data:
                 auth_provider.change_password(user, form.oldpassword.data, form.password.data)
@@ -108,8 +108,8 @@ def edit_account():
                 else:
                     auth_provider.set_pending_email(user, email)
                     send_email_confirmation_link_email(user, email)
-                    messages.append(_('To confirm, click the link in the email we sent to you. '
-                                      'You may want to check your spam folder, just in case ;)'))
+                    messages = [_('To confirm, click the link in the email we sent to you. '
+                                  'You may want to check your spam folder, just in case ;)')]
         return json.dumps({'status': 'ok', 'message': messages})
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 

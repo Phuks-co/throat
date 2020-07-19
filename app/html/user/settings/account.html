@@ -7,12 +7,6 @@
 @def main():
 <div id="container">
   <h1>@{_('%(user)s\'s account', user=user.name)}</h1>
-  @for err in get_flashed_messages(category_filter=["error"]):
-    <div class="error" style="margin-top: 2em;">@{ err }</div>
-  @end
-  @for message in get_flashed_messages(category_filter=["message"]):
-    <div class="message" style="margin-top: 2em;">@{ message }</div>
-  @end
   <form  method="POST" id="edit-user-form" data-refresh='true'  action="@{url_for('do.edit_account')}" class="ajaxform pure-form pure-form-aligned">
     @{form.csrf_token()!!html}
     <fieldset>

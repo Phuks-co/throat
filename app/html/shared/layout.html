@@ -130,6 +130,12 @@
   @def content():
   <div class="pure-g new-g">
     <div class="pure-u-1 pure-u-md-18-24"> <!-- main -->
+      @for err in get_flashed_messages(category_filter=["error"]):
+        <div class="error" style="margin-top: 2em;">@{ err }</div>
+      @end
+      @for message in get_flashed_messages(category_filter=["message"]):
+        <div class="message" style="margin-top: 2em;">@{ message }</div>
+      @end
       @def main():
       @end
       @{main()!!html}
