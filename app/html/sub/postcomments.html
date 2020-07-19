@@ -46,7 +46,7 @@
               @elif comment['visibility'] == 'mod-self-del':
                 <p class="helper-text">@{_('[post deleted by user]')}</p>
               @elif comment['visibility'] == 'mod-del':
-                <p class="helper-text">@{_('[Post deleted by mod or admin]')}</p>
+                <p class="helper-text">@{_('[post deleted by mod or admin]')}</p>
                 <span class="current history" data-id="0">@{comment['content']!!html}</span>
               @else:
                 <span class="current history" data-id="0">@{comment['content']!!html}</span>
@@ -73,8 +73,11 @@
             @if comment['visibility'] != 'none':
               <div hidden id="sauce-@{comment['cid']}">@{comment['source']}</div>
             @end
-            <ul class="bottombar links" @{(comment['visibility'] == '') and 'style="display:none;"' or ''}>
+            <ul class="bottombar links">
               <li><a href="@{url_for('sub.view_perm', sub=post['sub'], cid=comment['cid'], pid=post['pid'])}#comment-@{comment['cid']}">@{_('permalink')}</a></li>
+              @if (current_user.is_admin() and comment['status'] == 2):
+                <li><a class="undelete-comment" data-cid="@{comment['cid']}">@{_('un-delete')}</a></li>
+              @end
               @if current_user.is_authenticated and comment['visibility'] == '':
                 @if not current_user.is_subban(post['sid']):
                   <li><a class="reply-comment" data-pid="@{comment['pid']}" data-to="@{comment['cid']}">@{_('reply')}</a></li>

@@ -26,7 +26,7 @@ from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
-from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost
+from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost, UndeleteCommentForm
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
@@ -1695,6 +1695,33 @@ def delete_comment():
 
         q = Message.delete().where(Message.mlink == form.cid.data)
         q.execute()
+        return jsonify(status='ok')
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+
+@do.route("/do/undelete_comment", methods=['POST'])
+@login_required
+def undelete_comment():
+    """ un-deletes a comment """
+    form = forms.UndeleteCommentForm()
+    if form.validate():
+        try:
+            comment = SubPostComment.get(SubPostComment.cid == form.cid.data)
+        except SubPostComment.DoesNotExist:
+            return jsonify(status='error', error=_('Comment does not exist'))
+
+        post = SubPost.get(SubPost.pid == comment.pid)
+
+        if not current_user.is_admin():
+            return jsonify(status='error', error=_('Not authorized'))
+
+        misc.create_sublog(misc.LOG_TYPE_SUB_UNDELETE_COMMENT, current_user.uid, post.sid,
+                           comment=form.reason.data, link=url_for('site.view_post_inbox', pid=comment.pid),
+                           admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
+        comment.status = 0
+        comment.save()
+
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
