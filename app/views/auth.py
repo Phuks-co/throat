@@ -131,7 +131,7 @@ def register():
     referrer = request.referrer
     useragent = request.headers.get('User-Agent')
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    body = ip + "\n" + regdate + "\n" + useragent
+    text_content = ip + "\n" + regdate + "\n" + useragent
     send_email(config.mail.default_to, "New registration", text_content, "")
 
     if email_validation_is_required():
