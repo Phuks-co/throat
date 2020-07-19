@@ -95,8 +95,8 @@ auth:
   require_valid_emails: False
 
   keycloak:
-    # URL of your Keycloak server.
-    server: 'http://auth.example.com'
+    # URL of the Keycloak server's REST API.
+    server: 'http://auth.example.com/auth/'
 
     # Keycloak realm containing client with power to create users.
     admin_realm: 'master'
