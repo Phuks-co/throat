@@ -102,6 +102,7 @@ class SiteUser(object):
         self.subtheme = self.subtheme[0] if self.subtheme else ''
 
         self.language = self.user['language']
+        self.resets = self.user['resets']
 
         self.subsid = []
         self.subscriptions = []
@@ -153,7 +154,7 @@ class SiteUser(object):
 
     def get_id(self):
         """ Returns the unique user id. Used on load_user """
-        return self.uid
+        return self.uid if self.resets == 0 else f'{self.uid}${self.resets}'
 
     @cache.memoize(1)
     def is_mod(self, sid, power_level=2):
@@ -986,7 +987,7 @@ def getStickies(sid):
 def load_user(user_id):
     user = User.select((fn.Count(Message.mid) + fn.Count(Notification.id)).alias('notifications'),
                        User.given, User.score, User.name, User.uid, User.status,
-                       User.email, User.language)
+                       User.email, User.language, User.resets)
     user = user.join(Message, JOIN.LEFT_OUTER, on=(
             (Message.receivedby == User.uid) & (Message.mtype == 1) & Message.read.is_null(True))).switch(User)
     user = user.join(Notification, JOIN.LEFT_OUTER,

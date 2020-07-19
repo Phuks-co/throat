@@ -2,13 +2,15 @@ import bcrypt
 from datetime import datetime
 import uuid
 
-from flask import current_app, render_template
+from flask import current_app, render_template, session
 from flask_babel import _
+from flask_login import login_user
 from keycloak import KeycloakAdmin, KeycloakOpenID
 from keycloak.exceptions import KeycloakError
 
 from .config import config
 from .models import User, UserMetadata, UserAuthSource, UserCrypto, SiteMetadata
+from . import misc
 
 class AuthError(Exception):
     pass
@@ -108,13 +110,17 @@ class AuthProvider:
         if self.provider == 'LOCAL':
             user.crypto = UserCrypto.BCRYPT
             user.password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
-            user.save()
         elif self.provider == 'KEYCLOAK':
             # validate_password promotes LOCAL users to KEYCLOAK ones.
             self.keycloak_admin.update_user(user_id=user.uid,
                                             payload={'credentials':
                                                      [{'value': new_password,
                                                        'type': 'password'}]})
+        # Invalidate other existing login sessions.
+        user.resets += 1
+        user.save()
+        theuser = misc.load_user(user.uid)
+        login_user(theuser, remember=session.get("remember_me", False))
 
     def reset_password(self, user, new_password):
         if self.provider == 'LOCAL':
@@ -138,6 +144,7 @@ class AuthProvider:
                                                 payload={'credentials':
                                                          [{'value': new_password,
                                                            'type': 'password'}]})
+        user.resets += 1
         user.save()
 
     def get_pending_email(self, user):
@@ -249,6 +256,7 @@ class AuthProvider:
                 self.keycloak_admin.update_user(user_id=user.uid, payload=payload)
 
         user.status = new_status
+        user.resets += 1  # Make them log in again.
         user.save()
 
     def actually_delete_user(self, user):
