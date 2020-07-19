@@ -1734,7 +1734,7 @@ def cast_vote(uid, target_type, pcid, value):
     except SubMetadata.DoesNotExist:
         pass
 
-    if (datetime.utcnow() - target.posted.replace(tzinfo=None)) > timedelta(days=60):
+    if (datetime.utcnow() - target.posted.replace(tzinfo=None)) > timedelta(days=config.site.archive_post_after):
         return jsonify(msg=_("Post is archived")), 400
 
     positive = True if voteValue == 1 else False

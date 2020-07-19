@@ -3,7 +3,7 @@
 <div pid="@{post['pid']}" class="post">
     <div class="misctainer">
       <div class="votebuttons">
-        @if post['userstatus'] != 10 and (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(days=60):
+        @if post['userstatus'] != 10 and (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(days=config.site.archive_post_after):
         <div title="@{_('Upvote')}" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{post['pid']}" data-icon="upvote"></div>
         <div class="score">@{post['score']}</div>
         <div title="@{_('Downvote')}" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']}" data-icon="downvote"></div>

@@ -625,7 +625,7 @@ def edit_txtpost(pid):
         if current_user.is_subban(post.sid):
             return jsonify(status='error', error=[_('You are banned on this sub.')])
 
-        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
+        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
             return jsonify(status='error', error=[_("Post is archived")])
 
         dt = datetime.datetime.utcnow()
@@ -681,12 +681,12 @@ def create_comment(pid):
         if post.deleted:
             return jsonify(status='error', error=[_('Post was deleted')]), 400
 
-        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
+        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
             return jsonify(status='error', error=[_("Post is archived")]), 400
 
         try:
             sub = Sub.get(Sub.sid == post.sid_id)
-        except:
+        except Sub.DoesNotExist:
             return jsonify(status='error', error=_('Internal error')), 400
         if current_user.is_subban(sub):
             return jsonify(status='error', error=[_('You are currently banned from commenting')]), 400
@@ -1655,7 +1655,7 @@ def edit_comment():
             return jsonify(status='error',
                            error=_("You can't edit a deleted comment"))
 
-        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
+        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
             return jsonify(status='error', error=_("Post is archived"))
 
         dt = datetime.datetime.utcnow()

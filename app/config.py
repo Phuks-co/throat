@@ -44,6 +44,8 @@ cfg_defaults = {  # key => default value
                     "Privacy": "/wiki/privacy"
                 }
             },
+
+            "archive_post_after": 60
         },
         "auth": {
             "provider": 'LOCAL',
