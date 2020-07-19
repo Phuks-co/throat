@@ -127,7 +127,7 @@ class AuthProvider:
                                                  'email': user.email,
                                                  'username': user.name,
                                                  'enabled': True,
-                                                 'emailVerified': user.verified_email,
+                                                 'emailVerified': self.is_email_verified(user),
                                                  'credentials': [{'value': new_password,
                                                                   'type': 'password'}]})
                 self.set_user_auth_source(user, UserAuthSource.KEYCLOAK)
@@ -179,6 +179,14 @@ class AuthProvider:
         user.save()
         self.set_email_verified(user)
 
+    def is_email_verified(self, user):
+        try:
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
+                                   (UserMetadata.key == "email_verified"))
+            return bool(umd.value)
+        except UserMetadata.DoesNotExist:
+            return False
+
     def set_email_verified(self, user, value=True):
         if self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK:
             self.keycloak_admin.update_user(user_id=user.uid,
@@ -201,7 +209,7 @@ class AuthProvider:
                                                      'email': user.email,
                                                      'username': user.name,
                                                      'enabled': True,
-                                                     'emailVerified': user.verified_email,
+                                                     'emailVerified': self.is_email_verified(user),
                                                      'credentials': [{'value': password,
                                                                       'type': 'password'}]})
                     self.set_user_auth_source(user, UserAuthSource.KEYCLOAK)
