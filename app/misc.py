@@ -152,7 +152,7 @@ class SiteUser(object):
 
     def get_id(self):
         """ Returns the unique user id. Used on load_user """
-        return self.uid if self.user['alt_uid'] is None else self.user['alt_uid']
+        return self.uid
 
     @cache.memoize(1)
     def is_mod(self, sid, power_level=2):
@@ -982,9 +982,8 @@ def getStickies(sid):
 
 
 def load_user(user_id):
-    from flask import request
     user = User.select((fn.Count(Message.mid) + fn.Count(Notification.id)).alias('notifications'),
-                       User.given, User.score, User.name, User.uid, User.alt_uid, User.status,
+                       User.given, User.score, User.name, User.uid, User.status,
                        User.email, User.language)
     user = user.join(Message, JOIN.LEFT_OUTER, on=(
             (Message.receivedby == User.uid) & (Message.mtype == 1) & Message.read.is_null(True))).switch(User)
