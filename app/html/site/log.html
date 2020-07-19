@@ -48,6 +48,8 @@
                         @{_('Un-deleted a post with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 53:
                         @{_('Deleted a comment with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
+                    @elif log.action == 59:
+                        @{_('Un-deleted a comment with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 41:
                         @{_('Created an announcement')}
                     @elif log.action == 42:

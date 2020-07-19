@@ -34,6 +34,12 @@ class DeleteCommentForm(FlaskForm):
     reason = StringField()
 
 
+class UndeleteCommentForm(FlaskForm):
+    """ Un-deletes a comment in a post """
+    cid = HiddenField()  # comment id
+    reason = StringField()
+
+
 class EditCommentForm(FlaskForm):
     """ Edits a comment in a post """
     cid = HiddenField()  # comment id

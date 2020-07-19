@@ -886,6 +886,7 @@ def getSinglePost(pid):
                                SubPost.ptype)
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER).where(
         SubPost.pid == pid).dicts().get()
+    posts['slug'] = slugify(posts['title'])
     return posts
 
 
@@ -1386,6 +1387,7 @@ LOG_TYPE_SUB_STICKY_DEL = 51
 LOG_TYPE_SUB_DELETE_POST = 52
 LOG_TYPE_SUB_DELETE_COMMENT = 53
 LOG_TYPE_SUB_UNDELETE_POST = 58
+LOG_TYPE_SUB_UNDELETE_COMMENT = 59
 
 LOG_TYPE_SUB_TRANSFER = 30
 

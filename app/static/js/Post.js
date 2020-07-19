@@ -441,6 +441,28 @@ u.addEventForChild(document, 'click', '.delete-comment', function (e, qelem) {
     });
 });
 
+// Un-delete comment
+u.addEventForChild(document, 'click', '.undelete-comment', function (e, qelem) {
+    // confirmation
+    const cid = qelem.getAttribute('data-cid'), tg = qelem;
+    TextConfirm(qelem, function () {
+        let reason = '';
+        reason = prompt(_('Why are you un-deleting this?'));
+        if (!reason) {
+            return false;
+        }
+        u.post('/do/undelete_comment', {cid: cid, 'reason': reason},
+            function (data) {
+                if (data.status != "ok") {
+                    tg.parentNode.innerHTML = _('Error: %1', data.error);
+                } else {
+                    tg.parentNode.innerHTML = _('comment un-deleted');
+                    document.location.reload();
+                }
+            });
+    });
+});
+
 // Grab post title from url
 u.sub('#graburl', 'click', function (e) {
     e.preventDefault();
