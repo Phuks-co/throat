@@ -40,8 +40,8 @@ cfg_defaults = {  # key => default value
 
             "footer": {
                 "links": {
-                    "ToS": "/wiki/tos",
-                    "Privacy": "/wiki/privacy"
+                    "Podmienky používania": "/wiki/tos",
+                    "Ochrana osobných údajov": "/wiki/privacy"
                 }
             },
 
