@@ -32,6 +32,12 @@
               @else:
                 @{_('<a href="/u/%(user)s">%(user)s</a> deleted one of your posts in <a href="%(sub)s">%(sub)s</a>', user=msg['sender'], sub=url_for("sub.view_sub", sub=msg['sub_name']), title=e(msg['post_title'])) !!html}
               @end
+            @elif msg['type'] == 'POST_UNDELETE':
+              @if msg['pid']:
+                @{_('<a href="/u/%(user)s">%(user)s</a> un-deleted your post <a href="%(link)s">%(title)s</a>', user=msg['sender'], link=url_for("sub.view_post", sub=msg['sub_name'], pid=msg['pid']), title=e(msg['post_title'])) !!html}
+              @else:
+                @{_('<a href="/u/%(user)s">%(user)s</a> un-deleted one of your posts in <a href="%(sub)s">%(sub)s</a>', user=msg['sender'], sub=url_for("sub.view_sub", sub=msg['sub_name']), title=e(msg['post_title'])) !!html}
+              @end
             @else:
               @{msg['type']}
             @end

@@ -42,6 +42,25 @@ u.addEventForChild(document, 'click', '.delete-post', function (e, qelem) {
     });
 });
 
+u.addEventForChild(document, 'click', '.undelete-post', function (e, qelem) {
+    TextConfirm(qelem, function () {
+        let reason = "";
+        reason = prompt(_('Why are you undeleting this?'));
+        if (!reason) {
+            return false;
+        }
+        u.post('/do/undelete_post', {post: document.getElementById('postinfo').getAttribute('pid'), reason: reason},
+            function (data) {
+                if (data.status != "ok") {
+                    document.getElementById('delpostli').innerHTML = _('Error.');
+                } else {
+                    document.getElementById('delpostli').innerHTML = _('undeleted');
+                    document.location.reload();
+                }
+            });
+    });
+});
+
 u.addEventForChild(document, 'click', '.browse-history', function (e, qelem) {
   const action = qelem.getAttribute("data-action")
   const content = qelem.parentNode.parentNode;

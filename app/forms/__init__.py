@@ -6,7 +6,7 @@ from .user import CreateUserMessageForm, EditUserForm, PasswordRecoveryForm
 from .user import EditAccountForm, DeleteAccountForm
 from .sub import CreateSubForm, EditSubForm, EditSubTextPostForm, EditSubFlair, EditSubRule
 from .sub import CreateSubPostForm, EditCommentForm
-from .sub import PostComment, DeletePost, EditSubLinkPostForm, SearchForm
+from .sub import PostComment, DeletePost, UndeletePost, EditSubLinkPostForm, SearchForm
 from .sub import BanUserSubForm, EditPostFlair, EditSubCSSForm, EditMod2Form
 from .sub import CreateSubFlair, DeleteSubFlair, VoteForm, DeleteCommentForm, CreateSubRule, DeleteSubRule
 from .admin import EditModForm
