@@ -1,7 +1,6 @@
 """ All endpoints related to stuff done inside of a particular sub """
 import datetime
 import time
-from slugify import slugify
 from flask import Blueprint, redirect, url_for, abort, render_template, request, Response
 from flask_login import login_required, current_user
 from feedgen.feed import FeedGenerator
@@ -289,7 +288,7 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
     if post['sub'].lower() != sub.lower():
         abort(404)
 
-    post['slug'] = slugify(post['title'])
+    post['slug'] = misc.slugify(post['title'])
     # We check the slug and correct it if it's wrong
     if slug is not None and slug != post['slug']:
         return redirect(url_for('sub.view_post', sub=sub, pid=pid, slug=post['slug']))
@@ -390,8 +389,8 @@ def view_perm(sub, pid, slug, cid):
     except SubPostComment.DoesNotExist:
         return abort(404)
 
-    if slug != slugify(comment.pid.title):
-        return redirect(url_for('sub.view_perm', sub=sub, pid=pid, slug=slugify(comment.pid.title), cid=cid))
+    if slug != misc.slugify(comment.pid.title):
+        return redirect(url_for('sub.view_perm', sub=sub, pid=pid, slug=misc.slugify(comment.pid.title), cid=cid))
 
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     include_history = current_user.is_mod(sub['sid'], 1) or current_user.is_admin()

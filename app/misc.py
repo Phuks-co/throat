@@ -23,6 +23,7 @@ import sendgrid
 from flask import current_app
 from flask_mail import Mail
 from flask_mail import Message as EmailMessage
+from slugify import slugify as s_slugify
 
 from .config import config
 from flask import url_for, request, g, jsonify, session
@@ -1933,3 +1934,7 @@ def getReports(view, status, page, *args, **kwargs):
         return list(query.dicts())[0]
 
     return {'query': list(query.dicts()), 'open_report_count': str(open_report_count), 'closed_report_count': str(closed_report_count)}
+
+
+def slugify(text):
+    return s_slugify(text, max_length=80)
