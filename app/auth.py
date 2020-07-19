@@ -117,7 +117,7 @@ class AuthProvider:
                                                      [{'value': new_password,
                                                        'type': 'password'}]})
         # Invalidate other existing login sessions.
-        user.alt_uid = str(uuid.uuid4())
+        user.resets += 1
         user.save()
         theuser = misc.load_user(user.uid)
         login_user(theuser, remember=session.get("remember_me", False))
@@ -144,7 +144,7 @@ class AuthProvider:
                                                 payload={'credentials':
                                                          [{'value': new_password,
                                                            'type': 'password'}]})
-        user.alt_uid = str(uuid.uuid4())
+        user.resets += 1
         user.save()
 
     def get_pending_email(self, user):
@@ -256,7 +256,7 @@ class AuthProvider:
                 self.keycloak_admin.update_user(user_id=user.uid, payload=payload)
 
         user.status = new_status
-        user.alt_uid = str(uuid.uuid4())  # Make them log in again.
+        user.resets += 1  # Make them log in again.
         user.save()
 
     def actually_delete_user(self, user):

@@ -82,7 +82,6 @@ class UserStatus(IntEnum):
 
 class User(BaseModel):
     uid = CharField(primary_key=True, max_length=40)
-    alt_uid = CharField(null=True, max_length=40)  # uid for login manager
     crypto = IntegerField()  # Password hash algo, 1 = bcrypt.
     email = CharField(null=True)
     joindate = DateTimeField(null=True)

@@ -151,9 +151,12 @@ def get_locale():
 @login_manager.user_loader
 def load_user(user_id):
     """ This is used by flask_login to reload an user from a previously stored
-    unique identifier. Required for the 'remember me' functionality. """
-    try:
-        user = User.get((User.alt_uid == user_id) | (User.uid == user_id))
+    unique identifier. Required for the 'remember me' functionality.
+    The unique identifier is the user_id and their number of password resets. """
+    splits = user_id.split('$')
+    user = User.get(User.uid == splits[0])
+    resets = 0 if len(splits) == 1 else int(splits[1])
+    if resets == user.resets:
         return misc.load_user(user.uid)
-    except User.DoesNotExist:
+    else:
         return None
