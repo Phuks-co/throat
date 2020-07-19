@@ -167,7 +167,7 @@ def get_post_list(target):
     for post in posts:
         if post['userstatus'] == 10:  # account deleted
             post['user'] = '[Deleted]'
-        post['archived'] = (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) > datetime.timedelta(days=60)
+        post['archived'] = (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after)
         del post['userstatus']
         del post['uid']
         post['content'] = misc.our_markdown(post['content']) if post['ptype'] != 1 else ''
@@ -212,7 +212,7 @@ def get_post(sub, pid):
     if post['userstatus'] == 10:
         post['user'] = '[Deleted]'
 
-    post['archived'] = (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) > datetime.timedelta(days=60)
+    post['archived'] = (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after)
     if post['ptype'] == 0:
         post['type'] = 'text'
     elif post['ptype'] == 1:
@@ -252,7 +252,7 @@ def edit_post(sub, pid):
     if misc.is_sub_banned(sub, uid=uid):
         return jsonify(msg='You are banned on this sub.'), 403
 
-    if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
+    if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
         return jsonify(msg='Post is archived'), 403
 
     post.content = content
@@ -385,7 +385,7 @@ def create_comment(sub, pid):
     if post.deleted:
         return jsonify(msg='Post was deleted'), 404
 
-    if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
+    if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
         return jsonify(msg="Post is archived"), 403
 
     try:
@@ -474,7 +474,7 @@ def edit_comment(sub, pid, cid):
     if comment.uid_id != uid:
         return jsonify(msg="Unauthorized"), 403
 
-    if (datetime.datetime.utcnow() - comment.pid.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
+    if (datetime.datetime.utcnow() - comment.pid.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
         return jsonify(msg="Post is archived"), 400
 
     if len(content) > 16384:
@@ -511,7 +511,7 @@ def delete_comment(sub, pid, cid):
     if comment.uid_id != uid:
         return jsonify(msg="Unauthorized"), 403
 
-    if (datetime.datetime.utcnow() - comment.pid.posted.replace(tzinfo=None)) > datetime.timedelta(days=60):
+    if (datetime.datetime.utcnow() - comment.pid.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
         return jsonify(msg="Post is archived"), 400
 
     comment.status = 1
