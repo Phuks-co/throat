@@ -42,7 +42,7 @@ cfg_defaults = {  # key => default value
                 "links": {
                     "Podmienky používania": "/wiki/tos",
                     "Ochrana osobných údajov": "/wiki/privacy"
-                    "Changelog": "/s/changelog""
+                    "Changelog": "/s/changelog"
                     "Podporte nás": "/wiki/donate"
                 }
             },
