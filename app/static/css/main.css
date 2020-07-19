@@ -1739,6 +1739,11 @@ table td {
   display: inline-block;
   vertical-align: middle;
   line-height: 1.8em;
+  color: #fff;	
+}
+
+.glyphbutton .p-icon {
+  margin-top: 2px;
 }
 
 #chtitle .glyphbutton{
