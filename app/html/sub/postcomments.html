@@ -74,7 +74,7 @@
               <div hidden id="sauce-@{comment['cid']}">@{comment['source']}</div>
             @end
             <ul class="bottombar links">
-              <li><a href="@{url_for('sub.view_perm', sub=post['sub'], cid=comment['cid'], pid=post['pid'])}#comment-@{comment['cid']}">@{_('permalink')}</a></li>
+              <li><a href="@{url_for('sub.view_perm', sub=post['sub'], cid=comment['cid'], pid=post['pid'], slug=post['slug'])}#comment-@{comment['cid']}">@{_('permalink')}</a></li>
               @if (current_user.is_admin() and comment['status'] == 2):
                 <li><a class="undelete-comment" data-cid="@{comment['cid']}">@{_('un-delete')}</a></li>
               @end

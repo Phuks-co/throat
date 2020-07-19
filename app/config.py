@@ -41,13 +41,11 @@ cfg_defaults = {  # key => default value
             "footer": {
                 "links": {
                     "ToS": "/wiki/tos",
-                    "Privacy": "/wiki/privacy",
-                    "Changelog": "/s/changelog",
-                    "Canary": "/wiki/canary",
-                    "Donate": "/wiki/donate",
-                    "Bugs": "https://github.com/Phuks-co/throat/issues"
+                    "Privacy": "/wiki/privacy"
                 }
             },
+
+            "archive_post_after": 60
         },
         "auth": {
             "provider": 'LOCAL',
@@ -129,6 +127,7 @@ class Config(Map):
 
         super(Config, self).__init__(cfg, cfg_defaults, use_environment=use_environment)
         self.check_storage_config()
+        self.check_auth_config()
 
     def check_storage_config(self):
         """Adjust our storage config for compatibility with flask-cloudy."""
@@ -149,10 +148,11 @@ class Config(Map):
         storage.acl = '' if storage.acl is None else storage.acl
 
         # This is not for flask-cloudy, just to make config more human-friendly
-        if storage.thumbnails.url != '' and storage.thumbnails.url[-1] != '/':
-            storage.thumbnails.url = storage.thumbnails.url + '/'
-        if  storage.uploads.url != '' and storage.uploads.url[-1] != '/':
-            storage.uploads.url = storage.uploads.url + '/'
+        ensure_trailing_slash(storage.thumbnails, 'url')
+        ensure_trailing_slash(storage.uploads, 'url')
+
+    def check_auth_config(self):
+        ensure_trailing_slash(self.auth.keycloak, 'server')
 
     def get_flask_dict(self):
         flattened = {}
@@ -170,6 +170,12 @@ class Config(Map):
             if key in self.storage:
                 flattened[f'STORAGE_{key}'.upper()] = self.storage[key]
         return flattened
+
+
+def ensure_trailing_slash(d, key):
+    """ Add a slash to the end of a dictionary entry if it doesn't already have one. """
+    if key in d and d[key] and d[key][-1] != '/':
+        d[key] = d[key] + '/'
 
 
 config = LocalProxy(lambda: current_app.config['THROAT_CONFIG'])

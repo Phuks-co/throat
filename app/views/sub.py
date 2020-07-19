@@ -276,8 +276,9 @@ def view_sub_hot(sub, page):
                                                    'subMods': misc.getSubMods(sub['sid'])})
 
 
-@blueprint.route("/<sub>/<int:pid>")
-def view_post(sub, pid, comments=False, highlight=None):
+@blueprint.route("/<sub>/<int:pid>", defaults={'slug': ''})
+@blueprint.route("/<sub>/<int:pid>/<slug>")
+def view_post(sub, pid, slug=None, comments=False, highlight=None):
     """ View post and comments (WIP) """
     try:
         post = misc.getSinglePost(pid)
@@ -286,6 +287,11 @@ def view_post(sub, pid, comments=False, highlight=None):
 
     if post['sub'].lower() != sub.lower():
         abort(404)
+
+    post['slug'] = misc.slugify(post['title'])
+    # We check the slug and correct it if it's wrong
+    if slug is not None and slug != post['slug']:
+        return redirect(url_for('sub.view_post', sub=sub, pid=pid, slug=post['slug']))
 
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     subInfo = misc.getSubData(sub['sid'])
@@ -373,18 +379,22 @@ def view_post(sub, pid, comments=False, highlight=None):
                                                         'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,'commentform': PostComment(), 'comments': comments,'subMods': subMods, 'highlight': highlight, 'content_history': content_history, 'title_history': title_history})
 
 
-@blueprint.route("/<sub>/<int:pid>/<cid>")
-def view_perm(sub, pid, cid):
+@blueprint.route("/<sub>/<int:pid>/_/<cid>", defaults={'slug': '_ '})
+@blueprint.route("/<sub>/<int:pid>/<slug>/<cid>")
+def view_perm(sub, pid, slug, cid):
     """ Permalink to comment """
     # We get the comment...
     try:
-        SubPostComment.select().where(SubPostComment.cid == cid).dicts()[0]
-    except (SubPostComment.DoesNotExist, IndexError):
-        abort(404)
+        comment = SubPostComment.select().where(SubPostComment.cid == cid).get()
+    except SubPostComment.DoesNotExist:
+        return abort(404)
+
+    if slug != misc.slugify(comment.pid.title):
+        return redirect(url_for('sub.view_perm', sub=sub, pid=pid, slug=misc.slugify(comment.pid.title), cid=cid))
 
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     include_history = current_user.is_mod(sub['sid'], 1) or current_user.is_admin()
 
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
     comment_tree = misc.get_comment_tree(comments, cid, uid=current_user.uid, include_history=include_history)
-    return view_post(sub['name'], pid, comment_tree, cid)
+    return view_post(sub['name'], pid, slug, comment_tree, cid)

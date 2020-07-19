@@ -73,6 +73,18 @@ site:
   # Maximum amount of posts a user can create in a single day
   daily_site_posting_limit: 25
 
+  # List of links that will be shown in the footer.
+  # Privacy and ToS links cannot be removed, and the license link can't be modified
+  footer:
+    links:
+      ToS: '/wiki/tos'
+      Privacy: '/wiki/privacy'
+      Canary: '/wiki/canary'
+      Donate: '/wiki/donate'
+      Bugs: 'https://github.com/Phuks-co/throat/issues'
+
+  # Time after which post will be archived
+  archive_post_after: 60
 
 auth:
   # Set to LOCAL to store user authentication in database,
@@ -83,8 +95,8 @@ auth:
   require_valid_emails: False
 
   keycloak:
-    # URL of your Keycloak server.
-    server: 'http://auth.example.com'
+    # URL of the Keycloak server's REST API.
+    server: 'http://auth.example.com/auth/'
 
     # Keycloak realm containing client with power to create users.
     admin_realm: 'master'

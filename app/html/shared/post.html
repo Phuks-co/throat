@@ -3,7 +3,7 @@
 <div pid="@{post['pid']}" class="post">
     <div class="misctainer">
       <div class="votebuttons">
-        @if post['userstatus'] != 10 and (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(days=60):
+        @if post['userstatus'] != 10 and (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(days=config.site.archive_post_after):
         <div title="@{_('Upvote')}" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{post['pid']}" data-icon="upvote"></div>
         <div class="score">@{post['score']}</div>
         <div title="@{_('Downvote')}" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']}" data-icon="downvote"></div>
@@ -13,7 +13,7 @@
       </div>
       <div class="thcontainer">
         @if post['link'] == None:
-          <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']}">
+          <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']}/@{func.slugify(post['title'])}">
         @else:
           <a target="_blank" rel="noopener nofollow ugc" href="@{post['link']}">
         @end
@@ -44,7 +44,7 @@
         <span class="postflair">@{post['flair']}</span> \
         @end
         @if post['link'] == None:
-          <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']}" class="title">@{post['title']}</a> \
+          <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']}/@{func.slugify(post['title'])}" class="title">@{post['title']}</a> \
         @else:
           @if post['link'].startswith('http:'):
             <span title="@{_('not https')}" class="p-icon" data-icon="exclaim"></span> \
@@ -81,7 +81,7 @@
         @end
       </div>
       <div class="links" data-sid="@{post['sid']}">
-        <a class="comments" href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']}">
+        <a class="comments" href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']}/@{func.slugify(post['title'])}">
           @if post['comments']>0:
             @{_('comments (%(comments)i)', comments=post['comments'])} \
           @else:
