@@ -36,7 +36,7 @@ from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, Us
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db
 from .models import SubPostReport, SubPostCommentReport, PostReportLog, CommentReportLog, Notification
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair, InviteCode
-from .models import SubMod, SubBan, SubPostCommentHistory, SubPostContentHistory
+from .models import SubMod, SubBan, SubPostCommentHistory
 from .storage import store_thumbnail, file_url, thumbnail_url
 from peewee import JOIN, fn, SQL, NodeList, Value
 import requests
@@ -983,7 +983,8 @@ def getStickies(sid):
 
 def load_user(user_id):
     user = User.select((fn.Count(Message.mid) + fn.Count(Notification.id)).alias('notifications'),
-                       User.given, User.score, User.name, User.uid, User.status, User.email, User.language)
+                       User.given, User.score, User.name, User.uid, User.status,
+                       User.email, User.language)
     user = user.join(Message, JOIN.LEFT_OUTER, on=(
             (Message.receivedby == User.uid) & (Message.mtype == 1) & Message.read.is_null(True))).switch(User)
     user = user.join(Notification, JOIN.LEFT_OUTER,
@@ -1842,15 +1843,15 @@ def getReports(view, status, page, *args, **kwargs):
         .switch(SubPostReport)
 
     # filter by if Mod or Admin view and if filtering by sub, specific post, or related posts
-    if ((view == 'admin') and not sid):
+    if view == 'admin' and not sid:
         sub_post_reports = all_post_reports.where(SubPostReport.send_to_admin == True).join(SubPost).join(Sub).join(SubMod)
-    elif ((view == 'admin') and sid):
+    elif view == 'admin' and sid:
         sub_post_reports = all_post_reports.where(SubPostReport.send_to_admin == True).join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod)
-    elif ((view == 'mod') and sid):
+    elif view == 'mod' and sid:
         sub_post_reports = all_post_reports.join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod).where(SubMod.user == current_user.uid)
-    elif ((report_id) and (type == 'post') and (related != True)):
+    elif report_id and type == 'post' and not related:
         sub_post_reports = all_post_reports.where(SubPostReport.id == report_id).join(SubPost).join(Sub).join(SubMod)
-    elif ((report_id) and (type == 'post') and (related == True)):
+    elif report_id and type == 'post' and related:
         base_report = getReports('mod', 'all', 1, type='post', report_id=report_id, related=False)
         sub_post_reports = all_post_reports.where(SubPostReport.pid == base_report['pid']).join(SubPost).join(Sub).join(SubMod)
     else:
@@ -1876,18 +1877,18 @@ def getReports(view, status, page, *args, **kwargs):
         SubPostCommentReport.open,
         Sub.name.alias('sub')
      ).join(User, on=User.uid == SubPostCommentReport.uid) \
-         .switch(SubPostCommentReport)
+        .switch(SubPostCommentReport)
 
     # filter by if Mod or Admin view and if filtering by sub or specific post
-    if ((view == 'admin') and not sid):
+    if view == 'admin' and not sid:
         sub_comment_reports = all_comment_reports.where(SubPostCommentReport.send_to_admin == True).join(SubPostComment).join(SubPost).join(Sub).join(SubMod)
-    elif ((view == 'admin') and sid):
+    elif view == 'admin' and sid:
         sub_comment_reports = all_comment_reports.where(SubPostCommentReport.send_to_admin == True).join(SubPostComment).join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod)
-    elif ((view == 'mod') and sid):
+    elif view == 'mod' and sid:
         sub_comment_reports = all_comment_reports.join(SubPostComment).join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod).where(SubMod.user == current_user.uid)
-    elif ((report_id) and (type == 'comment') and (related != True)):
+    elif report_id and type == 'comment' and not related:
         sub_comment_reports = all_comment_reports.where(SubPostCommentReport.id == report_id).join(SubPostComment).join(SubPost).join(Sub).join(SubMod)
-    elif ((report_id) and (type == 'comment') and (related == True)):
+    elif report_id and type == 'comment' and related:
         base_report = getReports('mod', 'all', 1, type='comment', report_id=report_id, related=False)
         sub_comment_reports = all_comment_reports.where(SubPostCommentReport.cid == base_report['cid']).join(SubPostComment).join(SubPost).join(Sub).join(SubMod)
     else:
@@ -1900,10 +1901,10 @@ def getReports(view, status, page, *args, **kwargs):
     closed_sub_comment_reports = sub_comment_reports.where(SubPostCommentReport.open == False)
 
     # Define open and closed queries and counts depending on whether query is for specific post
-    if ((report_id) and (type == 'post')):
+    if report_id and type == 'post':
         open_query = open_sub_post_reports
         closed_query = closed_sub_post_reports
-    elif((report_id) and (type == 'comment')):
+    elif report_id and type == 'comment':
         open_query = open_sub_comment_reports
         closed_query = closed_sub_comment_reports
     else:
@@ -1914,20 +1915,20 @@ def getReports(view, status, page, *args, **kwargs):
     closed_report_count = closed_query.count()
 
     # Order and paginate queries
-    if (status == 'open'):
+    if status == 'open':
         query = open_query.order_by(open_query.c.datetime.desc())
         query = query.paginate(page, 50)
-    elif (status == 'closed'):
+    elif status == 'closed':
         query = closed_query.order_by(closed_query.c.datetime.desc())
         query = query.paginate(page, 50)
-    elif (status == 'all'):
+    elif status == 'all':
         query = open_query | closed_query
         query = query.order_by(closed_query.c.datetime.desc())
         query = query.paginate(page, 50)
     else:
         return jsonify(msg=_('Invalid status request')), 400
 
-    if (report_id and type and not related):
+    if report_id and type and not related:
         # If only getting one report, this is a more usable format
         return list(query.dicts())[0]
 
