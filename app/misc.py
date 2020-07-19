@@ -886,6 +886,7 @@ def getSinglePost(pid):
                                SubPost.ptype)
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER).where(
         SubPost.pid == pid).dicts().get()
+    posts['slug'] = slugify(posts['title'])
     return posts
 
 

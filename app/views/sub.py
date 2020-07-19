@@ -288,7 +288,6 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
     if post['sub'].lower() != sub.lower():
         abort(404)
 
-    post['slug'] = misc.slugify(post['title'])
     # We check the slug and correct it if it's wrong
     if slug is not None and slug != post['slug']:
         return redirect(url_for('sub.view_post', sub=sub, pid=pid, slug=post['slug']))
