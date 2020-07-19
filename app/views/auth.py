@@ -132,7 +132,7 @@ def register():
     useragent = request.headers.get('User-Agent')
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     body = ip + "\n" + regdate + "\n" + useragent
-    sendMail(config.sendgrid.default_to, "New registration", body)
+    send_email(config.mail.default_to, "New registration", text_content, "")
 
     if email_validation_is_required():
         user.status = UserStatus.PROBATION
