@@ -196,7 +196,8 @@ def store_file(ufile, basename, mtype, remove_metadata=False):
             clear_metadata(fullpath, mtype)
 
         # TODO probably there are errors that need handling
-        return storage.upload(fullpath, name=filename, acl=config.storage.acl).name
+        return storage.upload(fullpath, name=filename, acl=config.storage.acl,
+                              content_type=mtype).name
 
 
 def get_stored_file_size(filename):
@@ -229,7 +230,8 @@ def store_thumbnail(im, basename):
                 fullpath = os.path.join(tempdir, filename)
                 im.save(fullpath, "JPEG", optimize=True, quality=85)
                 return storage.upload(fullpath, name=filename,
-                                      acl=config.storage.acl).name
+                                      acl=config.storage.acl,
+                                      content_type='image/jpeg').name
 
     filename = basename + '.jpg'
     with ExitStack() as stack:
