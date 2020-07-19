@@ -41,10 +41,10 @@
               @if comment['visibility'] == 'none':
                 @{_('[Deleted]')} \
               @elif comment['visibility'] == 'admin-self-del':
-                <p class="helper-text">@{_('[Post deleted by user]')}</p>
+                <p class="helper-text">@{_('[post deleted by user]')}</p>
                 <span class="current history" data-id="0">@{comment['content']!!html}</span>
               @elif comment['visibility'] == 'mod-self-del':
-                <p class="helper-text">@{_('[Post deleted by user]')}</p>
+                <p class="helper-text">@{_('[post deleted by user]')}</p>
               @elif comment['visibility'] == 'mod-del':
                 <p class="helper-text">@{_('[Post deleted by mod or admin]')}</p>
                 <span class="current history" data-id="0">@{comment['content']!!html}</span>
