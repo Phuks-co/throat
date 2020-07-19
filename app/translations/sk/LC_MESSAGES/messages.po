@@ -569,13 +569,13 @@ msgstr "Nahlásil(a)"
 #: app/html/mod/sub_reports_closed.html:29 app/html/sub/bans.html:50
 #: app/html/sub/bans.html:108
 msgid "Reason"
-msgstr "Dôvod banu"
+msgstr "Dôvod"
 
 #: app/html/admin/reports.html:28 app/html/mod/closed.html:30
 #: app/html/mod/reports.html:30 app/html/mod/sub_reports.html:30
 #: app/html/mod/sub_reports_closed.html:30
 msgid "User reported"
-msgstr "Nahlásený(á)"
+msgstr "Používateľ"
 
 #: app/html/admin/reports.html:29 app/html/mod/closed.html:31
 #: app/html/mod/reportdetails.html:76 app/html/mod/reportdetails.html:270
@@ -2132,7 +2132,7 @@ msgstr "odstránené"
 
 #: app/static/js/Post.js:28 app/static/js/Post.js:367
 msgid "Why are you deleting this?"
-msgstr "Prečo to chceš vymazať?"
+msgstr "Dôvod vymazania?"
 
 #: app/static/js/Post.js:36 app/static/js/Post.js:71 app/static/js/Post.js:87
 #: app/static/js/Post.js:102 app/static/js/Post.js:416
