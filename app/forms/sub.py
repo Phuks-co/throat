@@ -155,6 +155,12 @@ class DeletePost(FlaskForm):
     send_to_admin = BooleanField()
 
 
+class UndeletePost(FlaskForm):
+    """ Post deletion form. """
+    post = HiddenField()
+    reason = StringField()
+
+
 class VoteForm(FlaskForm):
     """ form for voting """
     post = HiddenField()  # Post PID

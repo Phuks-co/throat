@@ -58,6 +58,8 @@
                         @{_('Unstickied a post')}
                     @elif log.action == 52:
                         @{_('Deleted a post with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
+                    @elif log.action == 58:
+                        @{_('Un-deleted a post with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 53:
                         @{_('Deleted a comment with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @else:

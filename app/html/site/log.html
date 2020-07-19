@@ -44,6 +44,8 @@
                         @{_('Revoked mod invite for <a href="/u/%(user)s">%(user)s</a> from the mod team', user=log.target.name) !!html}
                     @elif log.action == 52:
                         @{_('Deleted a post with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
+                    @elif log.action == 58:
+                        @{_('Un-deleted a post with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 53:
                         @{_('Deleted a comment with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 41:

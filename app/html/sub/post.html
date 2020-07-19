@@ -93,7 +93,7 @@
             @elif (post['visibility'] == 'mod-self-del'):
               @{_('[Deleted by User]')}
             @elif (post['visibility'] == 'mod-del'):
-              @{_('[Deleted by Mod]')} @{post['title']}
+              @{_('[Deleted by Mod or Admin]')} @{post['title']}
             @elif (post['visibility'] == 'none'):
               @{_('[Deleted]')}
             @end
@@ -107,7 +107,7 @@
             @elif (post['visibility'] == 'mod-self-del'):
               @{_('[Deleted by User]')}
             @elif (post['visibility'] == 'mod-del'):
-              @{_('[Deleted by Mod]')} @{post['title']}
+              @{_('[Deleted by Mod or Admin]')} @{post['title']}
             @elif (post['visibility'] == 'none'):
               @{_('[Deleted]')}
             @end
@@ -213,6 +213,10 @@
           @end
           <li><a data-ac="report" data-pid="@{post['pid']}" class="report-post">@{_('report')}</a></li>
         @end
+        @if current_user.is_admin and post['deleted'] == 2:
+          <li id="delpostli"><a class="undelete-post"> @{_('un-delete')} </a></li>
+        @end
+
       </ul>
     </div>
   </div>
@@ -233,7 +237,7 @@
   @if (post['ptype'] == 3) and (post['deleted'] == 0 or post['visibility'] == 'admin-self-del' or post['visibility'] == 'mod-del'):
     @{polls.renderPoll(pollData, postmeta, post)!!html}
   @end
-
+  <div>
   @if post['content']:
   <div>
     @if post['deleted'] == 0:
@@ -276,6 +280,7 @@
         </span>
       </div>
   @end
+  </div>
 
   @if current_user.is_authenticated and post['deleted'] == 0 and not current_user.is_subban(sub):
   <form data-reset="true" data-redir="true" action="@{url_for('do.create_comment', pid=post['pid'])}" id="rcomm-0" class="comment-form ajaxform static pure-form">
