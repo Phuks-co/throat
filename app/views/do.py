@@ -26,7 +26,7 @@ from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
-from ..forms import PostComment, CreateUserMessageForm, DeletePost
+from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
@@ -227,6 +227,52 @@ def delete_post():
             pass
 
         sub.posts -= 1
+        sub.save()
+
+        post.deleted = deletion
+        post.save()
+
+        return jsonify(status='ok')
+    return jsonify(status='ok', error=get_errors(form))
+
+
+
+@do.route("/do/undelete_post", methods=['POST'])
+@login_required
+def undelete_post():
+    """ Post un-deletion endpoint """
+    form = UndeletePost()
+
+    if form.validate():
+        try:
+            post = SubPost.get(SubPost.pid == form.post.data)
+        except SubPost.DoesNotExist:
+            return jsonify(status='error', error=[_('Post does not exist')])
+
+        if post.deleted == 0:
+            return jsonify(status='error', error=[_('Post is not deleted')])
+
+        if post.deleted == 1:
+            return jsonify(status='error', error=[_('Can not un-delete a self-deleted post')])
+
+        sub = Sub.get(Sub.sid == post.sid)
+        subI = misc.getSubData(post.sid)
+
+        if not current_user.is_admin():
+            return jsonify(status='error', error=[_('Not authorized')])
+
+        if not form.reason.data:
+            return jsonify(status="error", error=[_("Cannot un-delete without reason")])
+        deletion = 0
+        # notify user.
+        Notification(type='POST_UNDELETE', sub=post.sid, post=post.pid, content='Reason: ' + form.reason.data,
+                     sender=current_user.uid, target=post.uid).save()
+
+        misc.create_sublog(misc.LOG_TYPE_SUB_UNDELETE_POST, current_user.uid, post.sid,
+                           comment=form.reason.data, link=url_for('site.view_post_inbox', pid=post.pid),
+                           admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
+
+        sub.posts += 1
         sub.save()
 
         post.deleted = deletion
