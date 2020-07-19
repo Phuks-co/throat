@@ -41,11 +41,7 @@ cfg_defaults = {  # key => default value
             "footer": {
                 "links": {
                     "ToS": "/wiki/tos",
-                    "Privacy": "/wiki/privacy",
-                    "Changelog": "/s/changelog",
-                    "Canary": "/wiki/canary",
-                    "Donate": "/wiki/donate",
-                    "Bugs": "https://github.com/Phuks-co/throat/issues"
+                    "Privacy": "/wiki/privacy"
                 }
             },
         },
