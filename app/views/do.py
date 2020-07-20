@@ -1627,7 +1627,8 @@ def reset():
 
         # All good. Set da password.
         auth_provider.reset_password(user, form.password.data)
-        login_user(misc.load_user(user.uid))
+        login_user(misc.load_user(user.uid), remember=False)
+        session['remember_me'] = False
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
