@@ -100,7 +100,7 @@ def all_domain_new(domain, page):
 @bp.route("/search/<term>/<int:page>")
 def search(page, term):
     """ The index page, with basic title search """
-    term = re.sub(r'[^A-Za-z0-9.,\-_\'" ]+', '', term)
+    term = re.sub(r'[^A-Za-zа-яА-Яё0-9.,\-_\'" ]+', '', term)
     posts = misc.getPostList(misc.postListQueryBase().where(SubPost.title ** ('%' + term + '%')),
                              'new', page).dicts()
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home.search', 'page': page,
@@ -179,7 +179,7 @@ def view_subs(page, sort):
 @bp.route("/subs/search/<term>/<int:page>/<sort>")
 def subs_search(page, term, sort):
     """ The subs index page, with basic title search """
-    term = re.sub(r'[^A-Za-z0-9\-_]+', '', term)
+    term = re.sub(r'[^A-Za-zа-яА-Я0-9\-_]+', '', term)
     c = Sub.select(Sub.sid, Sub.name, Sub.title, Sub.nsfw, Sub.creation, Sub.subscribers, Sub.posts)
 
     c = c.where(Sub.name.contains(term))
