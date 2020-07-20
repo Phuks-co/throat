@@ -99,7 +99,7 @@
             @end
           </a></h1>
         @else:
-          <h1><a rel="nofollow ugc @{(post['visibility'] == 'none') and 'noopener ' or ''}" href="@{(post['visibility'] != 'none') and post['link'] or '#'}" class="title">
+          <h1><a rel="nofollow ugc @{(post['visibility'] == 'none') and 'noopener ' or ''}" href="@{(post['visibility'] != 'none') and post['link'] or '#'}" class="title" target="_blank">
             @if (post['visibility'] == ''):
               @{post['title']}
             @elif (post['visibility'] == 'admin-self-del'):
