@@ -467,6 +467,30 @@ new Konami(function() {
     document.querySelector('#toggledark span').innerHTML = icons.sun;
 });
 
+u.ready(function () {
+  if (document.getElementById("throat-chat")) {
+    window.chat = "true";
+  }
+
+  if (document.getElementById("pagefoot-oindex")) {
+    window.oindex = "true";
+  }
+
+  if (document.getElementById("pagefoot-labrat")) {
+    window.labrat = true;
+    window.blocked = document.getElementById("pagefoot-blocked");
+    if (window.blocked) {
+      console.log("Blocked=", window.blocked)
+      window.nposts = '/all/new';
+    }
+    window.moreuri = document.getElementById("pagefoot-moreuri");
+  }
+
+  u.addEventForChild(document, 'click', '#btn-sending', function(e, target) {
+    window.sending = true;
+  })
+})
+
 
 window.onbeforeunload = function (e) {
   var flag = false;
