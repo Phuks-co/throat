@@ -18,7 +18,7 @@
             <fieldset>
                 <div class="pure-control-group">
                     <label for="subname">@{_('Sub name')}</label>
-                    @{ csubform.subname(placeholder=csubform.subname.label.text, required=True, pattern="[a-zA-Z0-9]+", title=_('Alphanumeric characters')) !!html}
+                    @{ csubform.subname(placeholder=csubform.subname.label.text, required=True, pattern="[a-zA-Zа-яА-Я0-9]+", title=_('Alphanumeric characters')) !!html}
                 </div>
                 <div class="pure-control-group">
                     <label for="description">@{_('Description')}</label>
