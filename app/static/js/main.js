@@ -489,6 +489,22 @@ u.ready(function () {
   u.addEventForChild(document, 'click', '#btn-sending', function(e, target) {
     window.sending = true;
   })
+
+  u.addEventForChild(document, 'click', '#banuser-button', function(e, target) {
+    if (confirm(_('Are you sure you want to ban this user?'))) {
+      document.getElementById('banuser').submit();
+    }
+  })
+  u.addEventForChild(document, 'click', '#wipevotes-button', function(e, target) {
+    if (confirm(_('Are you sure you want to remove all the votes issued by this user?'))) {
+      document.getElementById('wipevotes').submit();
+    }
+  })
+  u.addEventForChild(document, 'click', '#unbanuser-button', function(e, target) {
+    if (confirm(_('Are you sure you want to unban this user?'))) {
+      document.getElementById('unbanuser').submit();
+    }
+  })
 })
 
 
