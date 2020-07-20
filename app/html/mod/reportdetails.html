@@ -220,8 +220,8 @@ Mod |\
                 <thead>
                 <tr>
                     <th>Time</th>
-                    <th>User</th>
-                    <th>Action</th>
+                    <th>Action Taken</th>
+                    <th>By</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -231,15 +231,6 @@ Mod |\
                         <time-ago datetime="@{log.time.isoformat()}Z">@{log.time.isoformat()}</time-ago>
                     </td>
                     <td>
-                        @if log.uid:
-                            @if log.uid.status != 10:
-                                <a href="/u/@{log.uid.name}">@{log.uid.name}</a>\
-                            @else:
-                                @{_('[Deleted]')}
-                            @end
-                        @end
-                    </td>
-                    <td>
                         @if log.action == 55:
                           @{_('Report closed')}
                         @elif log.action == 56:
@@ -247,8 +238,27 @@ Mod |\
                         @elif log.action == 57:
                           @{_('Closed all reports related to: ')}<a href="@{url_for('mod.report_details', sub=report['sub'], type=report['type'], id=log.desc)}">
                             @{report['type']} @{_('report')} @{log.desc}</a>
+                        @elif log.action == 60:
+                          @{_('Post deleted')}
+                        @elif log.action == 61:
+                          @{_('Post un-deleted')}
+                        @elif log.action == 62:
+                          @{_('Comment deleted')}
+                        @elif log.action == 63:
+                          @{_('Comment un-deleted')}
+                        @elif log.action == 64:
+                          @{_('Banned user from site')}
+                        @elif log.action == 65:
+                          @{_('Banned user from sub')}
                         @else:
                             <i>[Type @{log.action}]</i>
+                        @end
+                    </td>
+                    <td>
+                        @if log.uid:
+                            <a href="/u/@{log.uid.name}">@{log.uid.name}</a>
+                        @else:
+                            @{_('  --  ')}
                         @end
                     </td>
                 </tr>

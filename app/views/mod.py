@@ -144,27 +144,29 @@ def report_details(sub, type, id):
         try:
             post = misc.getSinglePost(report['pid'])
             comment = ""
+            logs = PostReportLog.select().where(PostReportLog.rid == report['id']).order_by(PostReportLog.lid.desc())
         except SubPost.DoesNotExist:
             return abort(404)
     else:
         try:
             comment = SubPostComment.select().where(SubPostComment.cid == report['cid']).dicts()[0]
             post = ""
+            logs = CommentReportLog.select().where(CommentReportLog.rid == report['id']).order_by(CommentReportLog.lid.desc())
         except (SubPostComment.DoesNotExist, IndexError):
             abort(404)
 
     reported = User.select().where(User.name == report['reported']).get()
     is_sub_banned = misc.is_sub_banned(sub, uid=reported.uid)
 
-    if report['type'] == "post":
-        try:
-            logs = PostReportLog.select().where(PostReportLog.rid == report['id']).order_by(PostReportLog.lid.desc())
-        except PostReportLog.DoesNotExist:
-            logs = ''
-    else:
-        try:
-            logs = CommentReportLog.select().where(CommentReportLog.rid == report['id']).order_by(CommentReportLog.lid.desc())
-        except CommentReportLog.DoesNotExist:
-            logs = ''
+    # if report['type'] == "post":
+    #     try:
+    #         logs = PostReportLog.select().where(PostReportLog.rid == report['id']).order_by(PostReportLog.lid.desc())
+    #     except PostReportLog.DoesNotExist:
+    #         logs = ''
+    # else:
+    #     try:
+    #         logs = CommentReportLog.select().where(CommentReportLog.rid == report['id']).order_by(CommentReportLog.lid.desc())
+    #     except CommentReportLog.DoesNotExist:
+    #         logs = ''
 
     return engine.get_template('mod/reportdetails.html').render({'sub': sub, 'report': report, 'reported_user': reported_user, 'related_reports': related_reports, 'related_reports_json': json.dumps(related_reports['query'], default=str), 'banuserform': BanUserSubForm(), 'is_sub_banned': is_sub_banned, 'post': post, 'comment': comment, 'subInfo': subInfo, 'subMods': subMods, 'logs': logs})
