@@ -33,7 +33,6 @@
 @end
 
 @def sidebar():
-<hr>
   <div class="author" style="padding:.5em;">
     @{_('Posted %(timeago)s by %(user)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user='<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + '</a>' if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>')!!html}
     <br/>
