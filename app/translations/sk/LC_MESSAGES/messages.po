@@ -823,7 +823,7 @@ msgstr "[náhľad príspevku sa nepodaril]"
 
 #: app/html/mod/reportdetails.html:155
 msgid "[post deleted by user]"
-msgstr "[príspevok vymazaný používateľom]"
+msgstr "[vymazané]"
 
 #: app/html/mod/reportdetails.html:163
 msgid "Comment Preview:"
