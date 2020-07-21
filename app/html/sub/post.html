@@ -213,7 +213,7 @@
           @end
           <li><a data-ac="report" data-pid="@{post['pid']}" class="report-post">@{_('report')}</a></li>
         @end
-        @if current_user.is_admin and post['deleted'] == 2:
+        @if current_user.is_admin() and post['deleted'] == 2:
           <li id="delpostli"><a class="undelete-post"> @{_('un-delete')} </a></li>
         @end
 
