@@ -16,6 +16,7 @@ parser = argparse.ArgumentParser(description='Apply or manage database migration
 parser.add_argument('-c', '--create', metavar='NAME', help='Creates a new migration')
 parser.add_argument('-a', '--auto', metavar='NAME', help='Creates a new migration (automatic)')
 parser.add_argument('-r', '--rollback', metavar='NAME', help='Rolls back a migration')
+parser.add_argument('-l', '--list', action='store_true', help='List migration table')
 
 args = parser.parse_args()
 
@@ -25,5 +26,7 @@ elif args.auto:
     router.create(args.auto, 'app')
 elif args.rollback:
     router.rollback(args.rollback)
+elif args.list:
+    print("\n".join(m.name for m in router.model.select()))
 else:
     router.run()
