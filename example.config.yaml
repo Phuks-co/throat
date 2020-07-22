@@ -123,6 +123,12 @@ app:
   # Used for websockets (if enabled)
   redis_url: 'redis://127.0.0.1:6379'
 
+  # Whether to force all traffic to HTTPS.  If you terminate SSL with
+  # gunicorn in production you should set this to True.  If you use
+  # another server such as nginx or a load balancer to terminate SSL,
+  # this should be False.  Ignored in debug mode.
+  force_https: False
+
   # Secret key used to encrypt session cookies.
   # You can generate one by using `os.urandom(24)`
   # ///// YOU MUST CHANGE THIS VALUE \\\\\
