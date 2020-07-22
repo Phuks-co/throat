@@ -66,7 +66,8 @@ def create_app(config=Config('config.yaml')):
            'img-src':     ['\'self\'', 'data:', 'https:'],
            'media-src':   ['\'self\'', 'https:'],
            'style-src':   ['\'self\'', '\'unsafe-inline\'']}
-    talisman.init_app(app, content_security_policy=csp)
+    talisman.init_app(app, content_security_policy=csp,
+                      force_https=config.app.force_https)
 
     babel.init_app(app)
     jwt.init_app(app)
