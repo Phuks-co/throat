@@ -66,22 +66,16 @@
     @end
   @end
 @end
-
 @def pagefoot():
-
-    <script type="text/javascript" charset="utf-8">
-      window.oindex = true;
-      @if "labrat" in current_user.prefs:
-
-        window.labrat = true;
-        @if sort_type in ('home.all_new'):
-        // TODO: add for subs
-        window.nposts = '/all/new';
-        window.blocked = @{current_user.blocksid}
-        @end
-      @end
-      @if sort_type in ('home.all_new', 'sub.view_sub_new') and current_user.likes_scroll():
-        window.moreuri = '@{url_for(request.endpoint + '_more')}/';
-      @end
-    </script>
+  <label id="pagefoot-oindex" name="true" class="hide"></label>
+  @if "labrat" in current_user.prefs:
+    <label id="pagefoot-labrat" name="true" class="hide"></label>
+  end
+  @if sort_type in ('home.all_new'):
+    // TODO: add for subs
+    <label id="pagefoot-blocked" name="@{current_user.blocksid}" class="hide"></label>
+  @end
+  @if sort_type in ('home.all_new', 'sub.view_sub_new') and current_user.likes_scroll():
+    <label id="pagefoot-moreuri" name="@{url_for(request.endpoint + '_more')}" class="hide"></label>
+  @end
 @end

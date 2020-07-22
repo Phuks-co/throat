@@ -37,7 +37,7 @@
       </div>
       <div class="author">
           {% if post.link %}
-            {% if func.getDomain(post.link) in ('www.hooktube.com', 'hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'vimeo.com', 'vine.co') %}
+            {% if func.getDomain(post.link) in config.site.expando_sites %}
             <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="play"></div></div>
             {% elif func.isImage(post.link) %}
             <div class="expando" data-pid="{{post.pid}}" data-t="lnk" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="image"></div></div>

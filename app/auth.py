@@ -5,15 +5,30 @@ import uuid
 from flask import current_app, render_template, session
 from flask_babel import _
 from flask_login import login_user
-from keycloak import KeycloakAdmin, KeycloakOpenID
-from keycloak.exceptions import KeycloakError
+from keycloak import KeycloakAdmin as KeycloakAdmin_
+from keycloak import KeycloakOpenID
+from keycloak.exceptions import KeycloakError, KeycloakGetError
 
 from .config import config
 from .models import User, UserMetadata, UserAuthSource, UserCrypto, SiteMetadata
 from . import misc
 
-class AuthError(Exception):
-    pass
+
+# Fix an unhandled error in python-keycloak.
+# See github.com/marcospereirampj/python-keycloak, pull requests 92 and 99.
+class KeycloakAdmin(KeycloakAdmin_):
+    def refresh_token(self):
+        refresh_token = self.token.get('refresh_token')
+        try:
+            self.token = self.keycloak_openid.refresh_token(refresh_token)
+        except KeycloakGetError as e:
+            if e.response_code == 400 and (b'Refresh token expired' in e.response_body or
+                                           b'Token is not active' in e.response_body or
+                                           b'Session is not active' in e.response_body):
+                self.get_token()
+            else:
+                raise
+        self.connection.add_param_headers('Authorization', 'Bearer ' + self.token.get('access_token'))
 
 
 class AuthProvider:
@@ -52,10 +67,7 @@ class AuthProvider:
             except UserMetadata.DoesNotExist:
                 pass
         if self.provider == 'KEYCLOAK':
-            try:
-                users = self.keycloak_admin.get_users({"email": email})
-            except KeycloakError as err:
-                raise AuthError(str(err))
+            users = self.keycloak_admin.get_users({"email": email})
             for userdict in users:
                 try:
                     return User.get(User.name == userdict['username'])

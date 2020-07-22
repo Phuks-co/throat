@@ -31,8 +31,8 @@
     </div>
     <div class="pbody">
       <div class="post-heading">
-	      @if post['link']:
-          @if func.getDomain(post['link'].lower()) in ('hooktube.com', 'www.hooktube.com', 'youtube.com', 'www.youtube.com', 'youtu.be', 'gfycat.com', 'streamja.com', 'streamable.com', 'vimeo.com', 'vine.co', 'instaud.io'):
+        @if post['link']:
+          @if func.getDomain(post['link'].lower()) in config.site.expando_sites:
           <div class="expando" data-pid="@{post['pid']}" data-t="lnk" title="@{_('Embed video')}" data-link="@{post['link']}"><div data-icon="play" class="icon expando-btn"></div></div>
           @elif post['link'].lower().endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
           <div class="expando" data-pid="@{post['pid']}"  data-t="lnk" title="@{_('Show image')}" data-link="@{post['link']}"><div data-icon="image" class="icon expando-btn"></div></div>
@@ -44,6 +44,7 @@
         @elif post['content'] != '':
           <div class="expando" data-pid="@{post['pid']}" data-t="txt" title="@{_('Show post content')}" data-link="None"><div data-icon="text" class="icon expando-btn"></div></div>
         @end
+        @#{Crappy as shit}
         @if announcement:
         <span class="announcement">@{_('Announcement')}</span>
         @end
@@ -67,7 +68,6 @@
       </div>
 	  
       <div class="author">
-        @#{Crappy as shit}
         @if not sub:
           @{_('posted %(timeago)s by %(user)s on %(sub)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user='<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + '</a>' if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>', sub='<a href="/' + config.site.sub_prefix + '/' + post['sub'] + '">' + post['sub'] + '</a>')!!html}
         @else:

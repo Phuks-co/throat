@@ -1,6 +1,7 @@
 # -*- coding: utf-8
 """ Here is where all the good stuff happens """
 
+from urllib.parse import urlparse
 import time
 import socket
 import datetime
@@ -29,7 +30,7 @@ from .views.messages import bp as messages
 
 from . import misc, forms, caching, storage
 from .socketio import socketio
-from .misc import SiteAnon, engine, engine_init_app, re_amention, mail
+from .misc import SiteAnon, engine, engine_init_app, re_amention, mail, talisman
 
 # /!\ FOR DEBUGGING ONLY /!\
 # from werkzeug.contrib.profiler import ProfilerMiddleware
@@ -54,6 +55,18 @@ def create_app(config=Config('config.yaml')):
 
     if 'STORAGE_ALLOWED_EXTENSIONS' not in app.config:
         app.config['STORAGE_ALLOWED_EXTENSIONS'] = storage.allowed_extensions
+
+    # For flask-login, securely handle the "Remember me" cookie.
+    app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+    app.config['REMEMBER_COOKIE_SECURE'] = not app.config['DEBUG']
+
+    csp = {'default-src': ['\'self\''],
+           'child-src':   ['\'self\''] + [f'https://{url}'
+                                          for url in config.site.expando_sites],
+           'img-src':     ['\'self\'', 'data:', 'https:'],
+           'media-src':   ['\'self\'', 'https:'],
+           'style-src':   ['\'self\'', '\'unsafe-inline\'']}
+    talisman.init_app(app, content_security_policy=csp)
 
     babel.init_app(app)
     jwt.init_app(app)

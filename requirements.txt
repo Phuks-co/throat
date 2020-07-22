@@ -10,6 +10,7 @@ Flask-Webpack>=0.1.0
 flask-caching
 flask-redis
 flask-cloudy
+flask-talisman
 bcrypt
 misaka>=2.1.1
 peewee

@@ -29,6 +29,7 @@ from .config import config
 from flask import url_for, request, g, jsonify, session
 from flask_login import AnonymousUserMixin, current_user
 from flask_babel import _
+from flask_talisman import Talisman
 from .caching import cache
 from .socketio import socketio
 from .badges import badges
@@ -77,6 +78,9 @@ _engine = Engine(
 engine = _engine
 
 mail = Mail()
+
+
+talisman = Talisman()
 
 
 def engine_init_app(app):
