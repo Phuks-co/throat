@@ -945,6 +945,10 @@ a.slink{
   margin-left: 1em;
 }
 
+.loadsibling{
+  font-size: smaller;
+}
+
 .canclose .closemsg{
   position: absolute;
   top: 0;
