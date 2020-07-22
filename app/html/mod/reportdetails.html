@@ -97,7 +97,7 @@ Mod |\
             @if current_user.is_admin() and reported_user.status != 5:
                 <form method="POST" data-reload="true" id="banuser" action="@{url_for('do.ban_user', username=report['reported'])}">
                     @{form.DummyForm().csrf_token()!!html}
-                    <a href="javascript:{}" class="sbm-post pure-button button-secondary" onclick="if(confirm('@{_('Are you sure you want to ban this user?')}')){document.getElementById('banuser').submit();}" class="sbm-post pure-button pure-button-primary">@{_('Ban %(reported)s from %(site)s', reported=report['reported'], site=config.site.name)}</a>
+                  <a id="banuser-button" class="sbm-post pure-button button-secondary" >@{_('Ban %(reported)s from %(site)s', reported=report['reported'], site=config.site.name)}</a>
                 </form>
             @end
             @if reported_user.status == 5:
@@ -121,10 +121,7 @@ Mod |\
                 <input id="ban_expires" name="expires" type="text" class="date-picker-future" @{(current_user.uid in subMods['janitors']) and 'style="display: inline-block;"' or 'style="display: none;"'} placeholder="@{_('Pick date')}">
                 <button type="submit" class="pure-button pure-button-primary" id="banuser-btnsubmit">@{_('Ban')}</button>
               </p>
-              <div class="alert div-error">
-                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                <p></p>
-              </div>
+              <div class="alert div-error"></div>
             </form>
           </div>
 

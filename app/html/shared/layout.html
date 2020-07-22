@@ -174,12 +174,10 @@
         <div id="chcont"></div>
         <div id="chbott" style="display: none"><input type="text" id="chsend" maxlength="250" placeholder="@{_('Type here')}"/></div>
       </div>
+      <label id="throat-chat" name="true" style="display: none;"></label>
       @end
     @end
     @{chat()!!html}
-    <script type="text/javascript">
-      window.chat = @{('nochat' not in current_user.prefs) and 'true' or 'false'};
-    </script>
   @end
   <script type="text/javascript" src="@{ asset_url_for('main.js') }"></script>
   <style>@{current_user.get_global_stylesheet()}</style>

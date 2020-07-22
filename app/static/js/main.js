@@ -467,6 +467,46 @@ new Konami(function() {
     document.querySelector('#toggledark span').innerHTML = icons.sun;
 });
 
+u.ready(function () {
+  if (document.getElementById("throat-chat")) {
+    window.chat = "true";
+  }
+
+  if (document.getElementById("pagefoot-oindex")) {
+    window.oindex = "true";
+  }
+
+  if (document.getElementById("pagefoot-labrat")) {
+    window.labrat = true;
+    window.blocked = document.getElementById("pagefoot-blocked");
+    if (window.blocked) {
+      console.log("Blocked=", window.blocked)
+      window.nposts = '/all/new';
+    }
+    window.moreuri = document.getElementById("pagefoot-moreuri");
+  }
+
+  u.addEventForChild(document, 'click', '#btn-sending', function(e, target) {
+    window.sending = true;
+  })
+
+  u.addEventForChild(document, 'click', '#banuser-button', function(e, target) {
+    if (confirm(_('Are you sure you want to ban this user?'))) {
+      document.getElementById('banuser').submit();
+    }
+  })
+  u.addEventForChild(document, 'click', '#wipevotes-button', function(e, target) {
+    if (confirm(_('Are you sure you want to remove all the votes issued by this user?'))) {
+      document.getElementById('wipevotes').submit();
+    }
+  })
+  u.addEventForChild(document, 'click', '#unbanuser-button', function(e, target) {
+    if (confirm(_('Are you sure you want to unban this user?'))) {
+      document.getElementById('unbanuser').submit();
+    }
+  })
+})
+
 
 window.onbeforeunload = function (e) {
   var flag = false;
