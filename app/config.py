@@ -38,6 +38,13 @@ cfg_defaults = {  # key => default value
             "daily_sub_posting_limit": 10,
             "daily_site_posting_limit": 25,
 
+            # Removing things from this list will work but adding will not.
+            # See Expando.js.
+            "expando_sites": ['hooktube.com', 'www.hooktube.com', 'youtube.com',
+                              'www.youtube.com', 'youtu.be', 'gfycat.com',
+                              'streamja.com', 'streamable.com', 'vimeo.com',
+                              'vine.co', 'instaud.io'],
+
             "footer": {
                 "links": {
                     "ToS": "/wiki/tos",
