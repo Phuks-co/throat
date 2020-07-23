@@ -228,7 +228,7 @@
     <div style="display:none;" id="postflairs">
       <span class="closemsg">×</span>
       @if post['flair']:
-        <div>@{_('Current flair: <span class="postflair">%(flair)s</span>.', flair=e(post['flair']))} <a data-sub="@{post['sub']}" data-pid="@{post['pid']}" href="#" id="remove-flair">@{_('Remove')}</a>.</div>
+        <div>@{_('Current flair: <span class="postflair">%(flair)s</span>.', flair=e(post['flair']))!!html} <a data-sub="@{post['sub']}" data-pid="@{post['pid']}" href="#" id="remove-flair">@{_('Remove')}</a>.</div>
       @end
       <h4>@{_('Select a new flair')}</h4>
       @for ll in func.getSubFlairs(post['sid']):
