@@ -569,7 +569,7 @@ def get_txtpost(pid):
     try:
         post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
-        abort(404)
+        return abort(404)
 
     post['visibility'] = ''
     if post['deleted'] == 1:
@@ -588,9 +588,9 @@ def get_txtpost(pid):
     if post['userstatus'] == 10 and post['deleted'] == 1:
         post['visibility'] = 'none'
 
-
     if post['visibility'] == 'none':
         abort(404)
+
     cont = misc.our_markdown(post['content'])
     if post['ptype'] == 3:
         pollData = {'has_voted': False}

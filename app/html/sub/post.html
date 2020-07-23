@@ -165,7 +165,9 @@
             <li><a class="savepost" data-pid="@{post['pid']}">@{_('save')}</a></li>
           @end
           @if (subInfo.get('ucf', 0) == '1' and current_user.uid == post['uid']) or current_user.uid in subMods['all']:
+            @if len(func.getSubFlairs(post['sid'])) != 0:
             <li><a class="editflair">@{_('flair')}</a></li>
+            @end
           @end
           @if post['uid'] == current_user.uid:
             @if post['ptype'] != 1:
