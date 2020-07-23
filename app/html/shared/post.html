@@ -91,7 +91,9 @@
         @if not sub and not announcement:
           <span><a data-ac="block" class="unblk">@{_('block sub')}</a></span>
         @end
+        @if post['uid'] != current_user.uid:
         <a data-ac="report" data-pid="@{post['pid']}" class="report-post">@{_('report')}</a>
+        @end
       </div>
     </div>
 </div>

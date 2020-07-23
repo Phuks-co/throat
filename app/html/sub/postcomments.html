@@ -88,7 +88,7 @@
                 @if (comment['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in subMods['all']) and comment['visibility'] == '':
                   <li><a @{(comment['uid'] == current_user.uid) and 'selfdel="true"' or ''} class="delete-comment" data-cid="@{comment['cid']}">@{_('delete')}</a></li>
                 @end
-                @if comment['visibility'] == '':
+                @if comment['visibility'] == '' and comment['uid'] != current_user.uid:
                   <a data-ac="report" data-pid="@{comment['pid']}" cid="@{comment['cid']}" class="report-comment">@{_('report')}</a>
                 @end
               @end
