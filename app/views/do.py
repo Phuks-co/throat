@@ -571,7 +571,25 @@ def get_txtpost(pid):
     except SubPost.DoesNotExist:
         abort(404)
 
-    if post['deleted']:
+    post['visibility'] = ''
+    if post['deleted'] == 1:
+        if current_user.is_admin():
+            post['visibility'] = 'admin-self-del'
+        elif current_user.is_mod(post['sid'], 1):
+            post['visibility'] = 'mod-self-del'
+        else:
+            post['visibility'] = 'none'
+    elif post['deleted'] == 2:
+        if current_user.is_admin() or current_user.is_mod(post['sid'], 1):
+            post['visibility'] = 'mod-del'
+        else:
+            post['visibility'] = 'none'
+
+    if post['userstatus'] == 10 and post['deleted'] == 1:
+        post['visibility'] = 'none'
+
+
+    if post['visibility'] == 'none':
         abort(404)
     cont = misc.our_markdown(post['content'])
     if post['ptype'] == 3:
