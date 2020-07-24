@@ -9,7 +9,7 @@ from ..config import config
 from ..misc import engine
 from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption
 from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, UserSaved, SubMod, SubBan, SubRule
-from ..models import SubPostContentHistory, SubPostTitleHistory
+from ..models import SubPostContentHistory, SubPostTitleHistory, SubPostReport, SubPostCommentReport
 from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditMod2Form, EditSubRule
 from ..forms import BanUserSubForm, CreateSubFlair, PostComment, CreateSubRule
 from .. import misc
@@ -304,6 +304,11 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
     subMods = misc.getSubMods(sub['sid'])
     include_history = current_user.is_mod(sub['sid'], 1) or current_user.is_admin()
 
+    if current_user.is_mod(sub['sid'], 1) or current_user.is_admin():
+        open_reports = SubPostReport.select().where((SubPostReport.pid == pid) & SubPostReport.open == True).dicts()
+    else:
+        open_reports = False
+
     try:
         UserSaved.get((UserSaved.uid == current_user.uid) & (UserSaved.pid == pid))
         is_saved = True
@@ -382,7 +387,7 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
                 pollData['poll_open'] = False
 
     return engine.get_template('sub/post.html').render({'post': post, 'sub': sub, 'subInfo': subInfo,
-                                                        'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,'commentform': PostComment(), 'comments': comments,'subMods': subMods, 'highlight': highlight, 'content_history': content_history, 'title_history': title_history})
+                                                        'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,'commentform': PostComment(), 'comments': comments,'subMods': subMods, 'highlight': highlight, 'content_history': content_history, 'title_history': title_history, 'open_reports': open_reports})
 
 
 @blueprint.route("/<sub>/<int:pid>/_/<cid>", defaults={'slug': '_ '})

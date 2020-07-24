@@ -1743,7 +1743,7 @@ table td {
   display: inline-block;
   vertical-align: middle;
   line-height: 1.8em;
-  color: #fff;	
+  color: #fff;
 }
 
 .glyphbutton .p-icon {
@@ -2225,4 +2225,8 @@ article.text-post.comment.deleted {
 .wholepost .history-meta {
   color: gray;
   font-size: smaller;
+}
+
+.links a.post-open-reports {
+  color: red;
 }
