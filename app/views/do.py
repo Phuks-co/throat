@@ -841,6 +841,24 @@ def ban_user_sub(sub):
         SubBan.create(sid=sub.sid, uid=user.uid, reason=form.reason.data, created_by=current_user.uid, expires=expires)
 
         misc.create_sublog(misc.LOG_TYPE_SUB_BAN, current_user.uid, sub.sid, target=user.uid, comment=form.reason.data)
+
+        try:
+            related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid).join(Sub).where(Sub.sid == sub.sid)
+            related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(SubPostComment.uid == user.uid).join(SubPost).join(Sub).where(Sub.sid == sub.sid)
+
+            desc = ''
+            if expires:
+                desc = _("banned for: %(reason)s, until %(expires)s", reason=form.reason.data, expires=expires)
+            else:
+                desc = _("banned for: %(reason)s, permanent", reason=form.reason.data)
+
+            for report in related_post_reports:
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_BANNED, current_user.uid, report.id, type='post', desc=desc)
+            for report in related_comment_reports:
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_BANNED, current_user.uid, report.id, type='comment', desc=desc)
+        except:
+            pass
+
         cache.delete_memoized(misc.is_sub_banned, sub, uid=user.uid)
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -948,6 +966,17 @@ def remove_sub_ban(sub, user):
 
             misc.create_sublog(misc.LOG_TYPE_SUB_UNBAN, current_user.uid, sub.sid, target=user.uid,
                                admin=True if (not current_user.is_mod(sub.sid, 1) and current_user.is_admin()) else False)
+
+            try:
+                related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid).join(Sub).where(Sub.sid == sub.sid)
+                related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(SubPostComment.uid == user.uid).join(SubPost).join(Sub).where(Sub.sid == sub.sid)
+                for report in related_post_reports:
+                    misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_UNBANNED, current_user.uid, report.id, type='post')
+                for report in related_comment_reports:
+                    misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_UNBANNED, current_user.uid, report.id, type='comment')
+            except:
+                pass
+
             cache.delete_memoized(misc.is_sub_banned, sub, uid=user.uid)
             return jsonify(status='ok', msg=_('Ban removed'))
         else:
@@ -2024,8 +2053,8 @@ def ban_user(username):
     misc.create_sitelog(misc.LOG_TYPE_USER_BAN, uid=current_user.uid, comment=user.name)
 
     try:
-        related_post_reports = SubPostReport.select().where(SubPostReport.uid == user.uid)
-        related_comment_reports = SubPostCommentReport.select().where(SubPostCommentReport.uid == user.uid)
+        related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid)
+        related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(SubPostComment.uid == user.uid)
         for report in related_post_reports:
             misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SITE_BANNED, current_user.uid, report.id, type='post')
         for report in related_comment_reports:
@@ -2056,6 +2085,17 @@ def unban_user(username):
 
     auth_provider.change_user_status(user, 0)
     misc.create_sitelog(misc.LOG_TYPE_USER_UNBAN, uid=current_user.uid, comment=user.name)
+
+    try:
+        related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid)
+        related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(SubPostComment.uid == user.uid)
+        for report in related_post_reports:
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SITE_UNBANNED, current_user.uid, report.id, type='post')
+        for report in related_comment_reports:
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SITE_UNBANNED, current_user.uid, report.id, type='comment')
+    except:
+        pass
+
     return redirect(request.referrer)
 
 

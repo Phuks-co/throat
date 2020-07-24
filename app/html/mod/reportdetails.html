@@ -248,6 +248,10 @@ Mod |\
                           @{_('Banned user from site')}
                         @elif log.action == 65:
                           @{_('Banned user from sub')}
+                        @elif log.action == 66:
+                          @{_('Un-banned user from site')}
+                        @elif log.action == 67:
+                          @{_('Un-banned user from sub')}
                         @else:
                             <i>[Type @{log.action}]</i>
                         @end
