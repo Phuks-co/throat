@@ -331,6 +331,7 @@ def edit_sub(sub):
             sub.update_metadata('ucf', form.usercanflair.data)
             sub.update_metadata('allow_polls', form.polling.data)
             sub.update_metadata('sublog_private', form.sublogprivate.data)
+            sub.update_metadata('sub_banned_users_private', form.subbannedusersprivate.data)
 
             if form.subsort.data != "None":
                 sub.update_metadata('sort', form.subsort.data)
