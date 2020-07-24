@@ -21,7 +21,7 @@ from itsdangerous.exc import SignatureExpired, BadSignature
 from ..config import config
 from .. import forms, misc, caching, storage
 from ..socketio import socketio
-from ..auth import auth_provider, email_validation_is_required
+from ..auth import auth_provider, email_validation_is_required, AuthError
 from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountForm
@@ -100,7 +100,12 @@ def edit_account():
         messages = None
         if form.password.data or email != user.email:
             if form.password.data:
-                auth_provider.change_password(user, form.oldpassword.data, form.password.data)
+                try:
+                    auth_provider.change_password(user, form.oldpassword.data,
+                                                  form.password.data)
+                except AuthError:
+                    return json.dumps({'status': 'error',
+                                       'error': [_('Password change failed. Please try again later')]})
             if email != user.email:
                 if not email_validation_is_required():
                     user.email = email
@@ -1687,7 +1692,10 @@ def reset():
             return jsonify(status='error', error=_('Password recovery link expired'))
 
         # All good. Set da password.
-        auth_provider.reset_password(user, form.password.data)
+        try:
+            auth_provider.reset_password(user, form.password.data)
+        except AuthError:
+            return jsonify(status='error', error=_('Password change failed. Please try again later.'))
         login_user(misc.load_user(user.uid), remember=False)
         session['remember_me'] = False
         return jsonify(status='ok')
