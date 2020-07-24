@@ -62,6 +62,9 @@ site:
   # Allows Sub Mods and Admins to view the edit history of posts
   edit_history: False
 
+  # Removes the name of the Mod or Admin who took action on a post or user in notifications sent to user
+  anonymous_modding: False
+
   # Maximum amount of subs a single user can own.
   # The actual amount of subs a user may register scales with user level (user level minus one)
   # so a level 0 or level 1 user cannot register any subs. This scaling is disabled if `sub_creation_min_level` is zero
