@@ -1424,11 +1424,11 @@ def create_sublog(action, uid, sid, comment='', link='', admin=False, target=Non
 
 
 # `id` is the report id
-def create_reportlog(action, uid, id, type='', related=False, original_report=''):
+def create_reportlog(action, uid, id, type='', related=False, original_report='', desc=''):
     if type == 'post' and related == False:
-        PostReportLog.create(action=action, uid=uid, id=id).save()
+        PostReportLog.create(action=action, uid=uid, id=id, desc=desc).save()
     elif type == 'comment' and related == False:
-        CommentReportLog.create(action=action, uid=uid, id=id).save()
+        CommentReportLog.create(action=action, uid=uid, id=id, desc=desc).save()
     elif type == 'post' and related == True:
         PostReportLog.create(action=action, uid=uid, id=id, desc=original_report).save()
     elif type == 'comment' and related == True:

@@ -222,6 +222,7 @@ Mod |\
                     <th>Time</th>
                     <th>Action Taken</th>
                     <th>By</th>
+                    <th>Details</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -231,13 +232,10 @@ Mod |\
                         <time-ago datetime="@{log.time.isoformat()}Z">@{log.time.isoformat()}</time-ago>
                     </td>
                     <td>
-                        @if log.action == 55:
+                        @if (log.action == 55) or (log.action == 57):
                           @{_('Report closed')}
                         @elif log.action == 56:
                           @{_('Report reopened')}
-                        @elif log.action == 57:
-                          @{_('Closed all reports related to: ')}<a href="@{url_for('mod.report_details', sub=report['sub'], type=report['type'], id=log.desc)}">
-                            @{report['type']} @{_('report')} @{log.desc}</a>
                         @elif log.action == 60:
                           @{_('Post deleted')}
                         @elif log.action == 61:
@@ -260,6 +258,14 @@ Mod |\
                         @else:
                             @{_('  --  ')}
                         @end
+                    </td>
+                    <td>
+                      @if log.action == 57:
+                        @{_('Closed all reports related to: ')}<a href="@{url_for('mod.report_details', sub=report['sub'], type=report['type'], id=log.desc)}">
+                          @{report['type']} @{_('report')} @{log.desc}</a>
+                      @elif log.desc:
+                          @{log.desc}
+                      @end
                     </td>
                 </tr>
                 @end

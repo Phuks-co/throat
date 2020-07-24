@@ -217,7 +217,7 @@ def delete_post():
             try:
                 related_reports = SubPostReport.select().where(SubPostReport.pid == post.pid)
                 for report in related_reports:
-                    misc.create_reportlog(misc.LOG_TYPE_REPORT_POST_DELETED, current_user.uid, report.id, type='post')
+                    misc.create_reportlog(misc.LOG_TYPE_REPORT_POST_DELETED, current_user.uid, report.id, type='post', desc=form.reason.data)
             except:
                 pass
 
@@ -281,7 +281,7 @@ def undelete_post():
         try:
             related_reports = SubPostReport.select().where(SubPostReport.pid == post.pid)
             for report in related_reports:
-                misc.create_reportlog(misc.LOG_TYPE_REPORT_POST_UNDELETED, current_user.uid, report.id, type='post')
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_POST_UNDELETED, current_user.uid, report.id, type='post', desc=form.reason.data)
         except:
             pass
 
@@ -1705,7 +1705,7 @@ def delete_comment():
             try:
                 related_reports = SubPostCommentReport.select().where(SubPostCommentReport.cid == comment.cid)
                 for report in related_reports:
-                    misc.create_reportlog(misc.LOG_TYPE_REPORT_COMMENT_DELETED, current_user.uid, report.id, type='comment')
+                    misc.create_reportlog(misc.LOG_TYPE_REPORT_COMMENT_DELETED, current_user.uid, report.id, type='comment', desc=form.reason.data)
             except:
                 pass
             comment.status = 2
@@ -1743,7 +1743,7 @@ def undelete_comment():
         try:
             related_reports = SubPostCommentReport.select().where(SubPostCommentReport.cid == comment.cid)
             for report in related_reports:
-                misc.create_reportlog(misc.LOG_TYPE_REPORT_COMMENT_UNDELETED, current_user.uid, report.id, type='comment')
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_COMMENT_UNDELETED, current_user.uid, report.id, type='comment', desc=form.reason.data)
         except:
             pass
         comment.status = 0
