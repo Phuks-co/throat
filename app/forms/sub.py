@@ -94,6 +94,7 @@ class EditSubForm(FlaskForm):
                          validators=[Optional()])
     sidebar = TextAreaField(_l('Sidebar text'), validators=[Length(max=8000)])
     sublogprivate = BooleanField(_l('Make the sub log private'))
+    subbannedusersprivate = BooleanField(_l('Make the list of banned users on this sub private'))
 
 
 class EditMod2Form(FlaskForm):

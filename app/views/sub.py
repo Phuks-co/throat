@@ -219,6 +219,13 @@ def view_sub_bans(sub):
     except Sub.DoesNotExist:
         abort(404)
 
+    subInfo = misc.getSubData(sub.sid)
+    if not config.site.force_sublog_public:
+        banned_users_is_private = subInfo.get('sub_banned_users_private', 0) == '1'
+
+        if banned_users_is_private and not (current_user.is_mod(sub.sid, 1) or current_user.is_admin()):
+            abort(404)
+
     user = User.alias()
     created_by = User.alias()
     banned = SubBan.select(user, created_by, SubBan.created, SubBan.reason, SubBan.expires)
