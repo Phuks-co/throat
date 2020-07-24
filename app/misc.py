@@ -1411,6 +1411,14 @@ LOG_TYPE_ENABLE_REGISTRATION = 50
 LOG_TYPE_REPORT_CLOSE = 55
 LOG_TYPE_REPORT_REOPEN = 56
 LOG_TYPE_REPORT_CLOSE_RELATED = 57
+LOG_TYPE_REPORT_POST_DELETED = 60
+LOG_TYPE_REPORT_POST_UNDELETED = 61
+LOG_TYPE_REPORT_COMMENT_DELETED = 62
+LOG_TYPE_REPORT_COMMENT_UNDELETED = 63
+LOG_TYPE_REPORT_USER_SITE_BANNED = 64
+LOG_TYPE_REPORT_USER_SUB_BANNED = 65
+LOG_TYPE_REPORT_USER_SITE_UNBANNED = 66
+LOG_TYPE_REPORT_USER_SUB_UNBANNED = 67
 
 def create_sitelog(action, uid, comment='', link=''):
     SiteLog.create(action=action, uid=uid, desc=comment, link=link).save()
@@ -1422,11 +1430,11 @@ def create_sublog(action, uid, sid, comment='', link='', admin=False, target=Non
 
 
 # `id` is the report id
-def create_reportlog(action, uid, id, type='', related=False, original_report=''):
+def create_reportlog(action, uid, id, type='', related=False, original_report='', desc=''):
     if type == 'post' and related == False:
-        PostReportLog.create(action=action, uid=uid, id=id).save()
+        PostReportLog.create(action=action, uid=uid, id=id, desc=desc).save()
     elif type == 'comment' and related == False:
-        CommentReportLog.create(action=action, uid=uid, id=id).save()
+        CommentReportLog.create(action=action, uid=uid, id=id, desc=desc).save()
     elif type == 'post' and related == True:
         PostReportLog.create(action=action, uid=uid, id=id, desc=original_report).save()
     elif type == 'comment' and related == True:

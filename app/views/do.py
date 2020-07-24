@@ -214,6 +214,13 @@ def delete_post():
                                comment=form.reason.data, link=url_for('site.view_post_inbox', pid=post.pid),
                                admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
 
+            try:
+                related_reports = SubPostReport.select().where(SubPostReport.pid == post.pid)
+                for report in related_reports:
+                    misc.create_reportlog(misc.LOG_TYPE_REPORT_POST_DELETED, current_user.uid, report.id, type='post', desc=form.reason.data)
+            except:
+                pass
+
         # time limited to prevent socket spam
         if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)).seconds < 86400:
             socketio.emit('deletion', {'pid': post.pid}, namespace='/snt', room='/all/new')
@@ -271,6 +278,12 @@ def undelete_post():
         misc.create_sublog(misc.LOG_TYPE_SUB_UNDELETE_POST, current_user.uid, post.sid,
                            comment=form.reason.data, link=url_for('site.view_post_inbox', pid=post.pid),
                            admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
+        try:
+            related_reports = SubPostReport.select().where(SubPostReport.pid == post.pid)
+            for report in related_reports:
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_POST_UNDELETED, current_user.uid, report.id, type='post', desc=form.reason.data)
+        except:
+            pass
 
         sub.posts += 1
         sub.save()
@@ -846,6 +859,24 @@ def ban_user_sub(sub):
         SubBan.create(sid=sub.sid, uid=user.uid, reason=form.reason.data, created_by=current_user.uid, expires=expires)
 
         misc.create_sublog(misc.LOG_TYPE_SUB_BAN, current_user.uid, sub.sid, target=user.uid, comment=form.reason.data)
+
+        try:
+            related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid).join(Sub).where(Sub.sid == sub.sid)
+            related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(SubPostComment.uid == user.uid).join(SubPost).join(Sub).where(Sub.sid == sub.sid)
+
+            desc = ''
+            if expires:
+                desc = _("banned for: %(reason)s, until %(expires)s", reason=form.reason.data, expires=expires)
+            else:
+                desc = _("banned for: %(reason)s, permanent", reason=form.reason.data)
+
+            for report in related_post_reports:
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_BANNED, current_user.uid, report.id, type='post', desc=desc)
+            for report in related_comment_reports:
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_BANNED, current_user.uid, report.id, type='comment', desc=desc)
+        except:
+            pass
+
         cache.delete_memoized(misc.is_sub_banned, sub, uid=user.uid)
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -953,6 +984,17 @@ def remove_sub_ban(sub, user):
 
             misc.create_sublog(misc.LOG_TYPE_SUB_UNBAN, current_user.uid, sub.sid, target=user.uid,
                                admin=True if (not current_user.is_mod(sub.sid, 1) and current_user.is_admin()) else False)
+
+            try:
+                related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid).join(Sub).where(Sub.sid == sub.sid)
+                related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(SubPostComment.uid == user.uid).join(SubPost).join(Sub).where(Sub.sid == sub.sid)
+                for report in related_post_reports:
+                    misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_UNBANNED, current_user.uid, report.id, type='post')
+                for report in related_comment_reports:
+                    misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_UNBANNED, current_user.uid, report.id, type='comment')
+            except:
+                pass
+
             cache.delete_memoized(misc.is_sub_banned, sub, uid=user.uid)
             return jsonify(status='ok', msg=_('Ban removed'))
         else:
@@ -1692,6 +1734,7 @@ def edit_comment():
 def delete_comment():
     """ deletes a comment """
     form = forms.DeleteCommentForm()
+
     if form.validate():
         try:
             comment = SubPostComment.get(SubPostComment.cid == form.cid.data)
@@ -1706,6 +1749,12 @@ def delete_comment():
             misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_COMMENT, current_user.uid, post.sid,
                                comment=form.reason.data, link=url_for('site.view_post_inbox', pid=comment.pid),
                                admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
+            try:
+                related_reports = SubPostCommentReport.select().where(SubPostCommentReport.cid == comment.cid)
+                for report in related_reports:
+                    misc.create_reportlog(misc.LOG_TYPE_REPORT_COMMENT_DELETED, current_user.uid, report.id, type='comment', desc=form.reason.data)
+            except:
+                pass
             comment.status = 2
         else:
             comment.status = 1
@@ -1738,6 +1787,12 @@ def undelete_comment():
         misc.create_sublog(misc.LOG_TYPE_SUB_UNDELETE_COMMENT, current_user.uid, post.sid,
                            comment=form.reason.data, link=url_for('site.view_post_inbox', pid=comment.pid),
                            admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
+        try:
+            related_reports = SubPostCommentReport.select().where(SubPostCommentReport.cid == comment.cid)
+            for report in related_reports:
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_COMMENT_UNDELETED, current_user.uid, report.id, type='comment', desc=form.reason.data)
+        except:
+            pass
         comment.status = 0
         comment.save()
 
@@ -2014,6 +2069,17 @@ def ban_user(username):
 
     auth_provider.change_user_status(user, 5)
     misc.create_sitelog(misc.LOG_TYPE_USER_BAN, uid=current_user.uid, comment=user.name)
+
+    try:
+        related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid)
+        related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(SubPostComment.uid == user.uid)
+        for report in related_post_reports:
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SITE_BANNED, current_user.uid, report.id, type='post')
+        for report in related_comment_reports:
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SITE_BANNED, current_user.uid, report.id, type='comment')
+    except:
+        pass
+
     return redirect(request.referrer)
 
 
@@ -2037,6 +2103,17 @@ def unban_user(username):
 
     auth_provider.change_user_status(user, 0)
     misc.create_sitelog(misc.LOG_TYPE_USER_UNBAN, uid=current_user.uid, comment=user.name)
+
+    try:
+        related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid)
+        related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(SubPostComment.uid == user.uid)
+        for report in related_post_reports:
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SITE_UNBANNED, current_user.uid, report.id, type='post')
+        for report in related_comment_reports:
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SITE_UNBANNED, current_user.uid, report.id, type='comment')
+    except:
+        pass
+
     return redirect(request.referrer)
 
 
