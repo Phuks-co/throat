@@ -520,10 +520,10 @@ class PostReportLog(BaseModel):
     target = ForeignKeyField(db_column='target_uid', null=True, model=User, field='uid')
 
     def __repr__(self):
-        return f'<CommentReportLog action={self.action}>'
+        return f'<PostReportLog action={self.action}>'
 
     class Meta:
-        table_name = 'comment_report_log'
+        table_name = 'post_report_log'
 
 
 class SubPostCommentReport(BaseModel):
