@@ -8,7 +8,8 @@ from .sub import CreateSubForm, EditSubForm, EditSubTextPostForm, EditSubFlair, 
 from .sub import CreateSubPostForm, EditCommentForm
 from .sub import PostComment, DeletePost, UndeletePost, EditSubLinkPostForm, SearchForm
 from .sub import BanUserSubForm, EditPostFlair, EditSubCSSForm, EditMod2Form
-from .sub import CreateSubFlair, DeleteSubFlair, VoteForm, DeleteCommentForm, CreateSubRule, DeleteSubRule, UndeleteCommentForm
+from .sub import CreateSubFlair, DeleteSubFlair, VoteForm, DeleteCommentForm, CreateSubRule, DeleteSubRule
+from .sub import UndeleteCommentForm, CreateReportNote
 from .admin import EditModForm
 from .admin import BanDomainForm, UseInviteCodeForm, AssignUserBadgeForm
 from .admin import SecurityQuestionForm, TOTPForm, WikiForm, CreateInviteCodeForm

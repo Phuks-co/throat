@@ -171,3 +171,8 @@ class UndeletePost(FlaskForm):
 class VoteForm(FlaskForm):
     """ form for voting """
     post = HiddenField()  # Post PID
+
+
+class CreateReportNote(FlaskForm):
+    """ Logs a note on a report """
+    text = StringField(_l('Comment text'), validators=[DataRequired(), Length(max=255)])

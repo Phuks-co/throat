@@ -28,7 +28,7 @@ from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountF
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost, UndeleteCommentForm
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
-from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule
+from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
 from ..misc import cache, send_email, allowedNames, get_errors, engine
@@ -2644,3 +2644,30 @@ def close_comment_related_reports(related_reports, original_report):
         return error
     else:
         return ok
+
+@do.route("/do/create_report_note/<type>/<id>", methods=['POST'])
+@login_required
+def create_report_note(type, id):
+    """ Creates a new note on a report """
+    if type == "post":
+        try:
+            report = SubPostReport.get(SubPostReport.id == id)
+            sub = Sub.select().join(SubPost).join(SubPostReport).where(SubPostReport.id == id).get()
+        except SubPostReport.DoesNotExist:
+            abort(404)
+    else:
+        try:
+            report = SubPostCommentReport.get(SubPostCommentReport.id == id)
+            sub = Sub.select().join(SubPost).join(SubPostComment).join(SubPostCommentReport).where(SubPostCommentReport.id == id).get()
+        except SubPostCommentReport.DoesNotExist:
+            abort(404)
+
+    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
+        abort(403)
+
+    form = CreateReportNote()
+    if form.validate():
+        misc.create_reportlog(misc.LOG_TYPE_REPORT_NOTE, current_user.uid, report.id, type=type, desc=form.text.data)
+        return jsonify(status='ok')
+        
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
