@@ -5,12 +5,12 @@
 
 
 @def title():
+  @#
   @if (post['visibility'] == ''):
     @{post['title']} |\
   @else:
     @{_('[Deleted Post]')}
   @end
-
 @end
 
 @def meta_description():
