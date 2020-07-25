@@ -896,17 +896,19 @@ def getSinglePost(pid):
     return posts
 
 
-def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False, adminDetail=False):
+def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False, adminDetail=False, isSubMod=False):
     if current_user.is_authenticated and not noDetail:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
                                SubPost.deleted, SubPost.score, SubPost.ptype,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.flair, SubPost.edited, Sub.sid,
                                SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'),
-                               *extra)
+                               *extra, *([SubPostReport.id.alias('open_reports')] if isSubMod else [Value(None).alias('open_reports')]))
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER,
                            on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(
             SubPost)
+        if isSubMod:
+            posts = posts.join(SubPostReport, JOIN.LEFT_OUTER, on=((SubPostReport.pid == SubPost.pid) & (SubPostReport.open == True))).switch(SubPost)
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
                                SubPost.deleted, SubPost.score, SubPost.ptype,
@@ -921,6 +923,7 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False,
             posts = posts.where(SubPost.sid.not_in(current_user.blocksid))
     if (not nofilter) and ((not current_user.is_authenticated) or ('nsfw' not in current_user.prefs)):
         posts = posts.where(SubPost.nsfw == 0)
+
     return posts
 
 
@@ -950,6 +953,7 @@ def getPostList(baseQuery, sort, page):
             posts = baseQuery.order_by(
                 (SubPost.score * 20 + (fn.Unix_Timestamp(SubPost.posted) - 1134028003) / 1500).desc()).limit(
                 100).paginate(page, 25)
+
     return posts
 
 
