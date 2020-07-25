@@ -4,7 +4,8 @@ from peewee import fn, JOIN
 from flask import Blueprint, render_template, abort, redirect, url_for, flash
 from flask_login import login_required, current_user
 from flask_babel import _, Locale
-from .do import uid_from_recovery_token, info_from_email_confirmation_token
+from .do import send_password_recovery_email, uid_from_recovery_token
+from .do import info_from_email_confirmation_token
 from .. import misc, config
 from ..auth import auth_provider, email_validation_is_required, AuthError
 from ..misc import engine, send_email
@@ -188,14 +189,35 @@ def delete_account():
     return engine.get_template('user/settings/delete.html').render({'form': DeleteAccountForm(), 'user': User.get(User.uid == current_user.uid)})
 
 
-@bp.route("/recover")
+@bp.route("/recover", methods=['GET', 'POST'])
 def password_recovery():
     """ Endpoint for the password recovery form """
     if current_user.is_authenticated:
         return redirect(url_for('home.index'))
     form = PasswordRecoveryForm()
     form.cap_key, form.cap_b64 = misc.create_captcha()
-    return engine.get_template('user/password_recovery.html').render({'lpform': form})
+    if not form.validate():
+        return engine.get_template('user/password_recovery.html').render(
+            {'lpform': form,
+             'error': misc.get_errors(form, True)})
+    if not misc.validate_captcha(form.ctok.data, form.captcha.data):
+        return engine.get_template('user/password_recovery.html').render(
+            {'lpform': form,
+             'error': _("Invalid captcha.")})
+    try:
+        user = User.get(User.email == form.email.data)
+        if user.status == UserStatus.OK:
+            send_password_recovery_email(user)
+    except User.DoesNotExist:
+        # Yield no information.
+        pass
+    return redirect(url_for('user.recovery_email_sent'))
+
+
+@bp.route('/recovery/email-sent')
+def recovery_email_sent():
+    return engine.get_template('user/check-your-email.html').render(
+        {'reason': 'recovery'})
 
 
 @bp.route('/reset/<token>')

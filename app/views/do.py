@@ -1625,32 +1625,6 @@ def create_rule(sub):
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
-@do.route("/do/recovery", methods=['POST'])
-def recovery():
-    """ Password recovery page. Email+captcha and sends recovery email """
-    if current_user.is_authenticated:
-        abort(403)
-
-    form = forms.PasswordRecoveryForm()
-    form.cap_key, form.cap_b64 = misc.create_captcha()
-    if form.validate():
-        if not misc.validate_captcha(form.ctok.data, form.captcha.data):
-            # XXX: Fix this
-            return jsonify(status='error', error=[_("Invalid captcha (refresh page.)")])
-        try:
-            user = User.get(User.email == form.email.data)
-        except User.DoesNotExist:
-            return jsonify(status="ok")  # Silently fail every time.
-
-        if user.status != UserStatus.OK:
-            return jsonify(status="ok")  # Silently fail for deleted and banned users.
-
-        # checks done, doing the stuff.
-        send_password_recovery_email(user)
-        return jsonify(status="ok")
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
-
-
 def send_password_recovery_email(user):
     rekey = str(uuid.uuid4())
     rconn.setex('recovery-' + rekey, value=user.uid, time=20*60)
