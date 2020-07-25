@@ -2343,13 +2343,16 @@ def report():
 
         # check if user already reported the post
         try:
-            rep = SubPostReport.get((SubPostReport.pid == post['pid']) & (SubPostReport.uid == current_user.uid))
+            SubPostReport.get((SubPostReport.pid == post['pid']) & (SubPostReport.uid == current_user.uid))
             return jsonify(status='error', error=_('You have already reported this post'))
         except SubPostReport.DoesNotExist:
             pass
 
         if len(form.reason.data) < 2:
             return jsonify(status='error', error=_('Report reason too short.'))
+
+        if not form.send_to_admin.data and misc.is_sub_banned(post['sid'], uid=current_user.uid):
+            return jsonify(status='error', error=_('You are banned from this sub.'))
 
         # do the reporting.
         SubPostReport.create(pid=post['pid'], uid=current_user.uid, reason=form.reason.data, send_to_admin=form.send_to_admin.data)
@@ -2383,13 +2386,16 @@ def report_comment():
 
         # check if user already reported the post
         try:
-            rep = SubPostCommentReport.get((SubPostCommentReport.cid == comm.cid) & (SubPostCommentReport.uid == current_user.uid))
+            SubPostCommentReport.get((SubPostCommentReport.cid == comm.cid) & (SubPostCommentReport.uid == current_user.uid))
             return jsonify(status='error', error=_('You have already reported this post'))
         except SubPostCommentReport.DoesNotExist:
             pass
 
         if len(form.reason.data) < 2:
             return jsonify(status='error', error=_('Report reason too short.'))
+
+        if not form.send_to_admin.data and misc.is_sub_banned(comm.pid.sid, uid=current_user.uid):
+            return jsonify(status='error', error=_('You are banned from this sub.'))
 
         # do the reporting.
         SubPostCommentReport.create(cid=comm.cid, uid=current_user.uid, reason=form.reason.data, send_to_admin=form.send_to_admin.data)
