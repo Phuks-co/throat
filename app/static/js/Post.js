@@ -630,9 +630,6 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
                     const va = cmtcount.getElementsByTagName('a')[0];
 
                     va.innerText = _("%1 comments", cmtcount.getAttribute('data-cnt'));
-                    if (va.pathname != window.location.pathname && cid == '0') {
-                        document.location = data.addr;
-                    }
                 }
 
                 const div = document.createElement('div');
