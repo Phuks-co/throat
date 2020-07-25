@@ -22,8 +22,7 @@
 
     <link rel="icon" href="@{url_for('static', filename='img/icon.png') }">
 
-    <title>
-
+    <title> \
       @if not current_user.is_anonymous:
         @if current_user.notifications > 0:
           (@{current_user.notifications})
@@ -31,7 +30,12 @@
       @end
       @def title():
       @end
-      @{title()!!html} @{config.site.lema} \
+      @{title()!!html} \
+      @def lema():
+        @#
+        @{config.site.lema} \
+      @end
+      @{lema()!!html} \
     </title>
 
     <link rel="stylesheet" type="text/css" href="@{asset_url_for('main.css') }">

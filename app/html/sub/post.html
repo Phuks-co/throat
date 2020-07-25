@@ -9,8 +9,12 @@
   @if (post['visibility'] == ''):
     @{post['title']} |\
   @else:
-    @{_('[Deleted Post]')}
+    @{_('[Deleted Post]')} |\
   @end
+  @{sub['name']} \
+@end
+@def lema():
+  @#
 @end
 
 @def meta_description():
