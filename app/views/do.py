@@ -2339,7 +2339,7 @@ def report():
             return jsonify(status='error', error=_('Post does not exist'))
 
         if post['deleted'] != 0:
-            return jsonify(status='error', error=_('Post does not exist'))
+            return jsonify(status='error', error=_('Post was removed'))
 
         # check if user already reported the post
         try:
@@ -2382,7 +2382,7 @@ def report_comment():
             return jsonify(status='error', error=_('Comment does not exist'))
 
         if comm.status:
-            return jsonify(status='error', error=_('Comment does not exist'))
+            return jsonify(status='error', error=_('Comment was removed'))
 
         # check if user already reported the post
         try:
