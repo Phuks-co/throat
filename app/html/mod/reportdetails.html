@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(sub, report, reported_user, related_reports, related_reports_json, banuserform, is_sub_banned, post, comment, subInfo, subMods, logs)
+@require(sub, report, reported_user, related_reports, related_reports_json, banuserform, is_sub_banned, post, comment, subInfo, subMods, logs, createreportenote)
 @def title():
 Mod |\
 @end
@@ -208,6 +208,18 @@ Mod |\
               </span>
             </div>
           </div>
+
+          <hr>
+          <div class="col-12 admin-page-form">
+            <form  method="POST" class="ajaxform pure-form" action="@{url_for('do.create_report_note', type=report['type'], id=report['id'])}" data-reload="true">
+              <h3>@{_('Leave note on report')}</h3>
+              @{createreportenote.csrf_token()!!html}
+                @{createreportenote.text(placeholder=_('Leave note'), required=True)!!html}
+                <button type="submit" class="pure-button pure-button-primary" id="editsub-btnsubmit" data-prog="Saving..." data-success="Saved!">@{_('Submit')}</button>
+              <div class="alert div-error"></div>
+            </form>
+          </div>
+
           <hr>
           <h3>@{_('Report Log:')}</h3>
           @if len(logs) == 0:
@@ -216,10 +228,10 @@ Mod |\
             <table class="pure-table">
                 <thead>
                 <tr>
-                    <th>Time</th>
-                    <th>Action Taken</th>
-                    <th>By</th>
-                    <th>Details</th>
+                    <th>@{_('Time')}</th>
+                    <th>@{_('Action Taken')}</th>
+                    <th>@{_('By')}</th>
+                    <th>@{_('Details')}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -249,6 +261,8 @@ Mod |\
                           @{_('Un-banned user from site')}
                         @elif log.action == 67:
                           @{_('Un-banned user from sub')}
+                        @elif log.action == 68:
+                          @{_('Left note')}
                         @else:
                             <i>[Type @{log.action}]</i>
                         @end

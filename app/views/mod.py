@@ -9,7 +9,7 @@ from .. import misc
 from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, PostReportLog, CommentReportLog
 from ..models import User, Sub, SubMod, SubPost, SubPostComment, UserMetadata, SubPostReport, SubPostCommentReport
 from ..misc import engine, getModSubs, getReports
-from ..forms import BanUserSubForm
+from ..forms import BanUserSubForm, CreateReportNote
 from .. import misc
 import json
 
@@ -158,4 +158,4 @@ def report_details(sub, type, id):
     reported = User.select().where(User.name == report['reported']).get()
     is_sub_banned = misc.is_sub_banned(sub, uid=reported.uid)
 
-    return engine.get_template('mod/reportdetails.html').render({'sub': sub, 'report': report, 'reported_user': reported_user, 'related_reports': related_reports, 'related_reports_json': json.dumps(related_reports['query'], default=str), 'banuserform': BanUserSubForm(), 'is_sub_banned': is_sub_banned, 'post': post, 'comment': comment, 'subInfo': subInfo, 'subMods': subMods, 'logs': logs})
+    return engine.get_template('mod/reportdetails.html').render({'sub': sub, 'report': report, 'reported_user': reported_user, 'related_reports': related_reports, 'related_reports_json': json.dumps(related_reports['query'], default=str), 'banuserform': BanUserSubForm(), 'is_sub_banned': is_sub_banned, 'post': post, 'comment': comment, 'subInfo': subInfo, 'subMods': subMods, 'logs': logs, 'createreportenote': CreateReportNote()})
