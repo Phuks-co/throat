@@ -525,26 +525,30 @@ u.addEventForChild(document, 'click', '.loadsibling', function (e, qelem) {
 
 // collapse/expand comment
 u.addEventForChild(document, 'click', '.togglecomment', function (e, qelem) {
-    let sty;
     const cid = qelem.getAttribute('data-cid');
-    console.log(document.querySelector('#comment-' + cid + ' .votecomment'));
     qelem.innerHTML = '[+]';
     if (qelem.classList.contains('collapse')) {
-        sty = 'none';
         qelem.classList.remove('collapse');
         qelem.classList.add('expand');
-        qelem.parentNode.parentNode.style['margin-left'] = '1.6em';
+        if(document.querySelector('#comment-' + cid + ' .votecomment .c-upvote')) {
+            document.querySelector('#comment-' + cid + ' .votecomment .c-upvote').classList.add('hidden');
+            document.querySelector('#comment-' + cid + ' .votecomment .c-downvote').classList.add('hidden');
+        }
+        document.querySelector('#comment-' + cid + ' .bottombar').classList.add('hidden');
+        document.querySelector('#comment-' + cid + ' .commblock .content').classList.add('hidden');
+        document.querySelector('#child-' + cid).classList.add('hidden');
     } else {
-        sty = 'block';
         qelem.innerHTML = '[–]';
         qelem.classList.add('collapse');
         qelem.classList.remove('expand');
-        qelem.parentNode.parentNode.style['margin-left'] = '0';
+        if(document.querySelector('#comment-' + cid + ' .votecomment .c-upvote')) {
+            document.querySelector('#comment-' + cid + ' .votecomment .c-upvote').classList.remove('hidden');
+            document.querySelector('#comment-' + cid + ' .votecomment .c-downvote').classList.remove('hidden');
+        }
+        document.querySelector('#comment-' + cid + ' .bottombar').classList.remove('hidden');
+        document.querySelector('#comment-' + cid + ' .commblock .content').classList.remove('hidden');
+        document.querySelector('#child-' + cid).classList.remove('hidden');
     }
-    document.querySelector('#comment-' + cid + ' .votecomment').style.display = sty;
-    document.querySelector('#comment-' + cid + ' .bottombar').style.display = sty;
-    document.querySelector('#comment-' + cid + ' .commblock .content').style.display = sty;
-    document.querySelector('#child-' + cid).style.display = sty;
 });
 
 // reply to comment
