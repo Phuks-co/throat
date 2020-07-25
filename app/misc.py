@@ -1423,6 +1423,7 @@ LOG_TYPE_REPORT_USER_SITE_BANNED = 64
 LOG_TYPE_REPORT_USER_SUB_BANNED = 65
 LOG_TYPE_REPORT_USER_SITE_UNBANNED = 66
 LOG_TYPE_REPORT_USER_SUB_UNBANNED = 67
+LOG_TYPE_REPORT_NOTE = 68
 
 def create_sitelog(action, uid, comment='', link=''):
     SiteLog.create(action=action, uid=uid, desc=comment, link=link).save()

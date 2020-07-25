@@ -21,14 +21,14 @@ from itsdangerous.exc import SignatureExpired, BadSignature
 from ..config import config
 from .. import forms, misc, caching, storage
 from ..socketio import socketio
-from ..auth import auth_provider, email_validation_is_required
+from ..auth import auth_provider, email_validation_is_required, AuthError
 from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost, UndeleteCommentForm
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
-from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule
+from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
 from ..misc import cache, send_email, allowedNames, get_errors, engine
@@ -100,7 +100,12 @@ def edit_account():
         messages = None
         if form.password.data or email != user.email:
             if form.password.data:
-                auth_provider.change_password(user, form.oldpassword.data, form.password.data)
+                try:
+                    auth_provider.change_password(user, form.oldpassword.data,
+                                                  form.password.data)
+                except AuthError:
+                    return json.dumps({'status': 'error',
+                                       'error': [_('Password change failed. Please try again later')]})
             if email != user.email:
                 if not email_validation_is_required():
                     user.email = email
@@ -1620,32 +1625,6 @@ def create_rule(sub):
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
-@do.route("/do/recovery", methods=['POST'])
-def recovery():
-    """ Password recovery page. Email+captcha and sends recovery email """
-    if current_user.is_authenticated:
-        abort(403)
-
-    form = forms.PasswordRecoveryForm()
-    form.cap_key, form.cap_b64 = misc.create_captcha()
-    if form.validate():
-        if not misc.validate_captcha(form.ctok.data, form.captcha.data):
-            # XXX: Fix this
-            return jsonify(status='error', error=[_("Invalid captcha (refresh page.)")])
-        try:
-            user = User.get(User.email == form.email.data)
-        except User.DoesNotExist:
-            return jsonify(status="ok")  # Silently fail every time.
-
-        if user.status != UserStatus.OK:
-            return jsonify(status="ok")  # Silently fail for deleted and banned users.
-
-        # checks done, doing the stuff.
-        send_password_recovery_email(user)
-        return jsonify(status="ok")
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
-
-
 def send_password_recovery_email(user):
     rekey = str(uuid.uuid4())
     rconn.setex('recovery-' + rekey, value=user.uid, time=20*60)
@@ -1687,7 +1666,10 @@ def reset():
             return jsonify(status='error', error=_('Password recovery link expired'))
 
         # All good. Set da password.
-        auth_provider.reset_password(user, form.password.data)
+        try:
+            auth_provider.reset_password(user, form.password.data)
+        except AuthError:
+            return jsonify(status='error', error=_('Password change failed. Please try again later.'))
         login_user(misc.load_user(user.uid), remember=False)
         session['remember_me'] = False
         return jsonify(status='ok')
@@ -2357,17 +2339,20 @@ def report():
             return jsonify(status='error', error=_('Post does not exist'))
 
         if post['deleted'] != 0:
-            return jsonify(status='error', error=_('Post does not exist'))
+            return jsonify(status='error', error=_('Post was removed'))
 
         # check if user already reported the post
         try:
-            rep = SubPostReport.get((SubPostReport.pid == post['pid']) & (SubPostReport.uid == current_user.uid))
+            SubPostReport.get((SubPostReport.pid == post['pid']) & (SubPostReport.uid == current_user.uid))
             return jsonify(status='error', error=_('You have already reported this post'))
         except SubPostReport.DoesNotExist:
             pass
 
         if len(form.reason.data) < 2:
             return jsonify(status='error', error=_('Report reason too short.'))
+
+        if not form.send_to_admin.data and misc.is_sub_banned(post['sid'], uid=current_user.uid):
+            return jsonify(status='error', error=_('You are banned from this sub.'))
 
         # do the reporting.
         SubPostReport.create(pid=post['pid'], uid=current_user.uid, reason=form.reason.data, send_to_admin=form.send_to_admin.data)
@@ -2397,17 +2382,20 @@ def report_comment():
             return jsonify(status='error', error=_('Comment does not exist'))
 
         if comm.status:
-            return jsonify(status='error', error=_('Comment does not exist'))
+            return jsonify(status='error', error=_('Comment was removed'))
 
         # check if user already reported the post
         try:
-            rep = SubPostCommentReport.get((SubPostCommentReport.cid == comm.cid) & (SubPostCommentReport.uid == current_user.uid))
+            SubPostCommentReport.get((SubPostCommentReport.cid == comm.cid) & (SubPostCommentReport.uid == current_user.uid))
             return jsonify(status='error', error=_('You have already reported this post'))
         except SubPostCommentReport.DoesNotExist:
             pass
 
         if len(form.reason.data) < 2:
             return jsonify(status='error', error=_('Report reason too short.'))
+
+        if not form.send_to_admin.data and misc.is_sub_banned(comm.pid.sid, uid=current_user.uid):
+            return jsonify(status='error', error=_('You are banned from this sub.'))
 
         # do the reporting.
         SubPostCommentReport.create(cid=comm.cid, uid=current_user.uid, reason=form.reason.data, send_to_admin=form.send_to_admin.data)
@@ -2636,3 +2624,30 @@ def close_comment_related_reports(related_reports, original_report):
         return error
     else:
         return ok
+
+@do.route("/do/create_report_note/<type>/<id>", methods=['POST'])
+@login_required
+def create_report_note(type, id):
+    """ Creates a new note on a report """
+    if type == "post":
+        try:
+            report = SubPostReport.get(SubPostReport.id == id)
+            sub = Sub.select().join(SubPost).join(SubPostReport).where(SubPostReport.id == id).get()
+        except SubPostReport.DoesNotExist:
+            abort(404)
+    else:
+        try:
+            report = SubPostCommentReport.get(SubPostCommentReport.id == id)
+            sub = Sub.select().join(SubPost).join(SubPostComment).join(SubPostCommentReport).where(SubPostCommentReport.id == id).get()
+        except SubPostCommentReport.DoesNotExist:
+            abort(404)
+
+    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
+        abort(403)
+
+    form = CreateReportNote()
+    if form.validate():
+        misc.create_reportlog(misc.LOG_TYPE_REPORT_NOTE, current_user.uid, report.id, type=type, desc=form.text.data)
+        return jsonify(status='ok')
+        
+    return json.dumps({'status': 'error', 'error': get_errors(form)})

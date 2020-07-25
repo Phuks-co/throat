@@ -109,7 +109,7 @@ class CreateSubPostForm(FlaskForm):
     sub = StringField(_l('Sub'), validators=[DataRequired(), Length(min=2, max=32)])
     title = StringField(_l('Post title'), validators=[DataRequired(), Length(min=3, max=350)])
     content = TextAreaField(_l('Post content'), validators=[Length(max=16384)])
-    link = StringField(_l('Post link'), validators=[Length(min=10, max=256), Optional(), URL(require_tld=True)])
+    link = StringField(_l('Post link'), validators=[Length(min=10, max=255), Optional(), URL(require_tld=True)])
     ptype = RadioField(_l('Post type'),
                        choices=[('text', _l('Text post')), ('link', _l('Link post'))],
                        validators=[DataRequired()])
@@ -171,3 +171,8 @@ class UndeletePost(FlaskForm):
 class VoteForm(FlaskForm):
     """ form for voting """
     post = HiddenField()  # Post PID
+
+
+class CreateReportNote(FlaskForm):
+    """ Logs a note on a report """
+    text = StringField(_l('Comment text'), validators=[DataRequired(), Length(max=255)])
