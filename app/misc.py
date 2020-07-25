@@ -10,6 +10,7 @@ import os
 import hashlib
 import re
 import gevent
+import ipaddress
 
 import tinycss2
 from captcha.image import ImageCaptcha
@@ -334,11 +335,12 @@ def on_over_limit():
 
 
 def get_ip():
-    """ Tries to return the user's actual IP address. """
-    if request.access_route:
-        return request.access_route[-1]
+    """ Return the user's IP address for rate-limiting. """
+    addr = ipaddress.ip_address(request.remote_addr or '127.0.0.1')
+    if isinstance(addr, ipaddress.IPv6Address):
+        return(addr.exploded[:19]) # use the /64
     else:
-        return request.remote_addr
+        return str(addr)
 
 
 def ratelimit(limit, per=300, send_x_headers=True,

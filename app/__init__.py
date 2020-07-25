@@ -11,6 +11,7 @@ from flask_login import LoginManager, current_user
 from flask_webpack import Webpack
 from flask_babel import Babel, _
 from wheezy.html.utils import escape_html
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .config import Config, config
 from .forms import LoginForm, LogOutForm, CreateSubForm
@@ -108,6 +109,9 @@ def create_app(config=Config('config.yaml')):
                                'BeautifulSoup': BeautifulSoup, 'thumbnail_url': storage.thumbnail_url,
                                'file_url': storage.file_url, 'get_flashed_messages': get_flashed_messages,
                                'email_validation_is_required': email_validation_is_required})
+
+    if config.site.trusted_proxy_count != 0:
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=config.site.trusted_proxy_count)
 
     if config.app.development:
         import logging

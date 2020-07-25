@@ -25,7 +25,7 @@ site:
   # Set to zero to disable file upload level limits
   upload_min_level: 0
 
-# For those who are allowed to upload files, allow video uploads
+  # For those who are allowed to upload files, allow video uploads
   # (.mp4 and .webm) as well.
   allow_video_uploads: True
 
@@ -88,6 +88,11 @@ site:
 
   # Time after which post will be archived
   archive_post_after: 60
+
+  # Number of trusted proxies which set the X-Forwarded-For header
+  # ahead of the application.  If you run the application behind
+  # a load balancer, this should be set to 1 or more.
+  trusted_proxy_count: 0
 
 auth:
   # Set to LOCAL to store user authentication in database,
