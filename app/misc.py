@@ -908,7 +908,7 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False,
                            on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(
             SubPost)
         if isSubMod:
-            posts = posts.join(SubPostReport, JOIN.LEFT_OUTER, on=((SubPostReport.pid == SubPost.pid) & (SubPostReport.open == True))).switch(SubPost)
+            posts = posts.join(SubPostReport, JOIN.LEFT_OUTER, on=((SubPostReport.pid == SubPost.pid) & (SubPostReport.open == True))).switch(SubPost).group_by(SubPost.pid)
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
                                SubPost.deleted, SubPost.score, SubPost.ptype,

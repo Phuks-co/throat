@@ -95,8 +95,9 @@
         <a data-ac="report" data-pid="@{post['pid']}" class="report-post">@{_('report')}</a>
         @end
         @if sub and post['open_reports'] and ((current_user.uid in func.getSubMods(sub['sid'])['all']) or current_user.is_admin()):
-          <li><a class="post-open-reports" href="">@{_('open reports')} </a></li>
+          <li><a class="post-open-reports" href="">@{_('open reports (%(num)s)', num='test')}</a></li>
           <li>@{post['open_reports']}</li>
+          <li>Type: @type(post['open_reports'])</li>
         @end
       </div>
     </div>
