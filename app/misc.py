@@ -828,18 +828,21 @@ def getSinglePost(pid):
 
 
 def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False, adminDetail=False, isSubMod=False):
+
+    reports = SubPostReport.select(SubPostReport.pid, fn.Min(SubPostReport.id).alias("open_report_id"), fn.Count(SubPostReport.id).alias('open_reports')).where(SubPostReport.open == True).group_by(SubPostReport.pid).cte("reports")
+
     if current_user.is_authenticated and not noDetail:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
                                SubPost.deleted, SubPost.score, SubPost.ptype,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.flair, SubPost.edited, Sub.sid,
                                SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'),
-                               *extra, *([SubPostReport.id.alias('open_report_id'), fn.Count(SubPostReport.id).alias('open_reports')] if isSubMod else [Value(None).alias('open_report_id'), Value(None).alias('open_reports')]))
+                               *extra, *([reports.c.open_report_id, reports.c.open_reports] if isSubMod else [Value(None).alias('open_report_id'), Value(None).alias('open_reports')]))
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER,
                            on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(
             SubPost)
         if isSubMod:
-            posts = posts.join(SubPostReport, JOIN.LEFT_OUTER, on=((SubPostReport.pid == SubPost.pid) & (SubPostReport.open == True))).switch(SubPost).group_by(SubPost.pid)
+            posts = posts.join(reports, JOIN.LEFT_OUTER, on=(reports.c.pid == SubPost.pid)).switch(SubPost).with_cte(reports)
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
                                SubPost.deleted, SubPost.score, SubPost.ptype,
