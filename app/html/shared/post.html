@@ -94,10 +94,8 @@
         @if post['uid'] != current_user.uid:
         <a data-ac="report" data-pid="@{post['pid']}" class="report-post">@{_('report')}</a>
         @end
-        @if sub and post['open_reports'] and ((current_user.uid in func.getSubMods(sub['sid'])['all']) or current_user.is_admin()):
-          <li><a class="post-open-reports" href="">@{_('open reports (%(num)s)', num='test')}</a></li>
-          <li>@{post['open_reports']}</li>
-          <li>Type: @type(post['open_reports'])</li>
+        @if sub and post['open_report_id'] and ((current_user.uid in func.getSubMods(sub['sid'])['all']) or current_user.is_admin()):
+          <li><a class="post-open-reports" href="@{url_for('mod.report_details', sub=sub['name'], type='post', id=post['open_report_id'])}">@{_('open reports (%(num)s)', num=post['open_reports'])}</a></li>
         @end
       </div>
     </div>

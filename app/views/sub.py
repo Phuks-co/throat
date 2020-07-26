@@ -208,12 +208,6 @@ def view_sub_new(sub, page):
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True, isSubMod=isSubMod).where(Sub.sid == sub['sid']),
                              'new', page).dicts()
 
-    # for post in posts:
-    #     if current_user.is_mod(sub['sid'], 1) or current_user.is_admin():
-    #         post['open_reports'] = SubPostReport.select().where((SubPostReport.pid == post['pid']) & SubPostReport.open == True).dicts()
-    #     else:
-    #         post['open_reports'] = False
-
     return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']),
                                                    'posts': posts, 'page': page, 'sort_type': 'sub.view_sub_new',
                                                    'subMods': misc.getSubMods(sub['sid'])})
@@ -269,12 +263,6 @@ def view_sub_top(sub, page):
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True, isSubMod=isSubMod).where(Sub.sid == sub['sid']),
                              'top', page).dicts()
 
-    # for post in posts:
-    #     if current_user.is_mod(sub['sid'], 1) or current_user.is_admin():
-    #         post['open_reports'] = SubPostReport.select().where((SubPostReport.pid == post['pid']) & SubPostReport.open == True).dicts()
-    #     else:
-    #         post['open_reports'] = False
-
     return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']),
                                                    'posts': posts, 'page': page, 'sort_type': 'sub.view_sub_top',
                                                    'subMods': misc.getSubMods(sub['sid'])})
@@ -295,12 +283,6 @@ def view_sub_hot(sub, page):
 
     posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True, isSubMod=isSubMod).where(Sub.sid == sub['sid']),
                              'hot', page).dicts()
-
-    # for post in posts:
-    #     if current_user.is_mod(sub['sid'], 1) or current_user.is_admin():
-    #         post['open_reports'] = SubPostReport.select().where((SubPostReport.pid == post['pid']) & SubPostReport.open == True).dicts()
-    #     else:
-    #         post['open_reports'] = False
 
     return engine.get_template('sub.html').render({'sub': sub, 'subInfo': misc.getSubData(sub['sid']),
                                                    'posts': posts, 'page': page, 'sort_type': 'sub.view_sub_hot',

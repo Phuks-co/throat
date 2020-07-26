@@ -2229,4 +2229,5 @@ article.text-post.comment.deleted {
 
 .links a.post-open-reports {
   color: red;
+  font-weight: bold;
 }

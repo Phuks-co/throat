@@ -903,7 +903,7 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.flair, SubPost.edited, Sub.sid,
                                SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'),
-                               *extra, *([SubPostReport.id.alias('open_reports')] if isSubMod else [Value(None).alias('open_reports')]))
+                               *extra, *([SubPostReport.id.alias('open_report_id'), fn.Count(SubPostReport.id).alias('open_reports')] if isSubMod else [Value(None).alias('open_report_id'), Value(None).alias('open_reports')]))
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER,
                            on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(
             SubPost)
@@ -914,7 +914,8 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False,
                                SubPost.deleted, SubPost.score, SubPost.ptype,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.flair, SubPost.edited, Sub.sid,
-                               SubPost.comments, User.uid, User.status.alias('userstatus'), *extra)
+                               SubPost.comments, User.uid, User.status.alias('userstatus'), *extra,
+                               Value(None).alias('open_report_id'), Value(None).alias('open_reports'))
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
     if not adminDetail:
         posts = posts.where(SubPost.deleted == 0)
