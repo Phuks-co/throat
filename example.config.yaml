@@ -25,7 +25,7 @@ site:
   # Set to zero to disable file upload level limits
   upload_min_level: 0
 
-# For those who are allowed to upload files, allow video uploads
+  # For those who are allowed to upload files, allow video uploads
   # (.mp4 and .webm) as well.
   allow_video_uploads: True
 
@@ -89,6 +89,11 @@ site:
   # Time after which post will be archived
   archive_post_after: 60
 
+  # Number of trusted proxies which set the X-Forwarded-For header
+  # ahead of the application.  If you run the application behind
+  # a load balancer, this should be set to 1 or more.
+  trusted_proxy_count: 0
+
 auth:
   # Set to LOCAL to store user authentication in database,
   # or KEYCLOAK to use a Keycloak server to authenticate users.
@@ -140,7 +145,7 @@ app:
   # Enables debug mode. Always set to False in a production environment
   debug: True
 
-  # This will make all captchas valid, disable caching and rate limits
+  # This will make all captchas valid and disable caching
   # Always set to False in a production environment
   development: True
 
@@ -239,3 +244,13 @@ database:
 
   # Uncomment if using MySQL
   #charset: 'utf8mb4'
+
+ratelimit:
+  # Rate limiting configuration is not required, but all configuration
+  # variables for flask-limiter may be set here (in lowercase and
+  # without the RATELIMIT_ prefix).  See
+  # https://flask-limiter.readthedocs.io/en/stable/#configuration.
+
+  # Uncomment to disable rate limiting (recommended to leave it on in
+  # production).
+  #enabled: False

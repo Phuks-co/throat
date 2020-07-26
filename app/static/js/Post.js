@@ -475,7 +475,11 @@ u.sub('#graburl', 'click', function (e) {
     u.post('/do/grabtitle', {u: uri},
         function (data) {
             if (data.status == 'error') {
-                alert(_('Error fetching title'));
+                let error = data.error;
+                if(Array.isArray(data.error)){
+                    error = data.error[0];
+                }
+                alert(error);
                 document.getElementById('graburl').removeAttribute('disabled');
                 document.getElementById('graburl').innerHTML = _('Grab title');
             } else {

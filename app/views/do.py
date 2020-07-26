@@ -32,6 +32,7 @@ from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNo
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
 from ..misc import cache, send_email, allowedNames, get_errors, engine
+from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved
 from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
@@ -42,6 +43,12 @@ from peewee import fn, JOIN
 do = Blueprint('do', __name__)
 
 # allowedCSS = re.compile("\'(^[0-9]{1,5}[a-zA-Z ]+$)|none\'")
+
+
+@do.errorhandler(429)
+def ratelimit_handler(e):
+    return jsonify(status='error',
+                   error=[_('Whoa, calm down and wait a bit, then try again.')]), 200
 
 
 @do.route("/do/logout", methods=['POST'])
@@ -680,6 +687,7 @@ def edit_txtpost(pid):
 
 @do.route("/do/grabtitle", methods=['POST'])
 @login_required
+@ratelimit(POSTING_LIMIT)
 def grab_title():
     """ Safely grabs the <title> from a page """
     url = request.json.get('u')
@@ -703,7 +711,7 @@ def grab_title():
 
 @do.route('/do/sendcomment/<pid>', methods=['POST'])
 @login_required
-@misc.ratelimit(1, per=30)  # Once every 30 secs
+@ratelimit(POSTING_LIMIT)
 def create_comment(pid):
     """ Here we send comments. """
     form = PostComment()
@@ -788,6 +796,7 @@ def create_comment(pid):
 
 
 @do.route("/do/sendmsg", methods=['POST'])
+@ratelimit(POSTING_LIMIT)
 @login_required
 def create_sendmsg():
     """ User PM message creation endpoint """
@@ -1183,6 +1192,7 @@ def delete_pm(mid):
 
 
 @do.route("/do/edit_title", methods=['POST'])
+@ratelimit(POSTING_LIMIT)
 @login_required
 def edit_title():
     form = DeletePost()
@@ -1644,6 +1654,7 @@ def delete_recovery_token(token):
 
 
 @do.route("/do/reset", methods=['POST'])
+@ratelimit(AUTH_LIMIT)
 def reset():
     """ Password reset. Takes key and uid and changes password """
     if current_user.is_authenticated:
@@ -2330,6 +2341,7 @@ except ModuleNotFoundError:
 
 @do.route('/do/report', methods=['POST'])
 @login_required
+@ratelimit(POSTING_LIMIT)
 def report():
     form = DeletePost()
     if form.validate():
@@ -2367,6 +2379,7 @@ def report():
 
 @do.route('/do/report/comment', methods=['POST'])
 @login_required
+@ratelimit(POSTING_LIMIT)
 def report_comment():
     form = DeletePost()
     if form.validate():

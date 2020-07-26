@@ -10,6 +10,7 @@ import os
 import hashlib
 import re
 import gevent
+import ipaddress
 
 import tinycss2
 from captcha.image import ImageCaptcha
@@ -21,6 +22,7 @@ from functools import update_wrapper
 import misaka as m
 import sendgrid
 from flask import current_app
+from flask_limiter import Limiter
 from flask_mail import Mail
 from flask_mail import Message as EmailMessage
 from slugify import slugify as s_slugify
@@ -298,84 +300,20 @@ class SiteAnon(AnonymousUserMixin):
         return ''
 
 
-class RateLimit(object):
-    """ This class does the rate-limit magic """
-    expiration_window = 10
-
-    def __init__(self, key_prefix, limit, per, send_x_headers):
-        self.reset = (int(time.time()) // per) * per + per
-        self.key = key_prefix + str(self.reset)
-        self.limit = limit
-        self.per = per
-        self.send_x_headers = send_x_headers
-        p = rconn.pipeline()
-        p.incr(self.key)
-        p.expireat(self.key, self.reset + self.expiration_window)
-        self.current = min(p.execute()[0], limit)
-
-    def decr(self):
-        p = rconn.pipeline()
-        p.decr(self.key)
-        p.expireat(self.key, self.reset + self.expiration_window)
-        self.current = min(p.execute()[0], self.limit)
-
-    remaining = property(lambda self: self.limit - self.current)
-    over_limit = property(lambda self: self.current >= self.limit)
-
-
-def get_view_rate_limit():
-    """ Returns the rate limit for the current view """
-    return getattr(g, '_view_rate_limit', None)
-
-
-def on_over_limit():
-    """ This is called when the rate limit is reached """
-    return jsonify(status='error', error=[_('Whoa, calm down and wait a bit before posting again.')])
-
-
 def get_ip():
-    """ Tries to return the user's actual IP address. """
-    if request.access_route:
-        return request.access_route[-1]
+    """ Return the user's IP address for rate-limiting. """
+    addr = ipaddress.ip_address(request.remote_addr or '127.0.0.1')
+    if isinstance(addr, ipaddress.IPv6Address):
+        return(addr.exploded[:19]) # use the /64
     else:
-        return request.remote_addr
+        return str(addr)
 
 
-def ratelimit(limit, per=300, send_x_headers=True,
-              over_limit=on_over_limit,
-              scope_func=lambda: get_ip(),
-              key_func=lambda: request.endpoint, negative_score_per=900):
-    """ This is a decorator. It does the rate-limit magic. """
-
-    def decorator(f):
-        """ Function inside function! """
-
-        def rate_limited(*args, **kwargs):
-            """ FUNCTIONCEPTION """
-            persecond = per
-            # If the user has negative score, we use negative_score_per
-            if current_user.score < 0:
-                persecond = negative_score_per
-            key = 'rate-limit/%s/%s/' % (key_func(), scope_func())
-            rlimit = RateLimit(key, limit + 1, persecond, send_x_headers)
-            g._view_rate_limit = rlimit
-            if over_limit is not None and rlimit.over_limit:
-                if not config.app.testing and not config.app.development:
-                    return over_limit()
-            reslt = f(*args, **kwargs)
-            if isinstance(reslt, tuple) and reslt[1] != 200:
-                rlimit.decr()
-            return reslt
-
-        return update_wrapper(rate_limited, f)
-
-    return decorator
-
-
-def reset_ratelimit(per, scope_func=lambda: get_ip(), key_func=lambda: request.endpoint):
-    reset = (int(time.time()) // per) * per + per
-    key = 'rate-limit/%s/%s/%s' % (key_func(), scope_func(), reset)
-    rconn.delete(key)
+limiter = Limiter(key_func=get_ip)
+ratelimit = limiter.limit
+POSTING_LIMIT = '6/minute;120/hour'
+AUTH_LIMIT = '25/5minute'
+SIGNUP_LIMIT = '5/30minute'
 
 
 def safeRequest(url, recieve_timeout=10):

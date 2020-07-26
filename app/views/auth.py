@@ -12,6 +12,7 @@ from .. import misc, config
 from ..auth import auth_provider, registration_is_enabled, email_validation_is_required
 from ..forms import LoginForm, RegistrationForm
 from ..misc import engine, send_email
+from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
 from ..models import User, UserMetadata, UserStatus, InviteCode, SubSubscriber, rconn
 
 bp = Blueprint('auth', __name__)
@@ -31,6 +32,7 @@ def handle_cas_ok(uid):
 
 
 @bp.route("/proxyValidate", methods=['GET'])
+@ratelimit(AUTH_LIMIT)
 def sso_proxy_validate():
     if not request.args.get('ticket') or not request.args.get('service'):
         abort(400)
@@ -52,6 +54,7 @@ def sso_proxy_validate():
 
 
 @bp.route("/register", methods=['GET', 'POST'])
+@ratelimit(SIGNUP_LIMIT)
 def register():
     """ Endpoint for the registration form """
     if current_user.is_authenticated:
@@ -164,6 +167,7 @@ def confirm_registration():
 
 
 @bp.route('/login/with-token/<token>')
+@ratelimit(SIGNUP_LIMIT)
 def login_with_token(token):
     if current_user.is_authenticated:
         return redirect(url_for('home.index'))
@@ -182,6 +186,7 @@ def login_with_token(token):
 
 
 @bp.route("/login", methods=['GET', 'POST'])
+@ratelimit(AUTH_LIMIT)
 def login():
     """ Endpoint for the login form """
     if request.args.get('service'):
