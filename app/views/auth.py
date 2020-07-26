@@ -10,6 +10,7 @@ from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired, BadSignature
 from .. import misc, config
 from ..auth import auth_provider, registration_is_enabled, email_validation_is_required
+from ..auth import normalize_email
 from ..forms import LoginForm, RegistrationForm
 from ..misc import engine, send_email
 from ..models import User, UserMetadata, UserStatus, InviteCode, SubSubscriber, rconn
@@ -87,6 +88,8 @@ def register():
         email = form.email_required.data
     else:
         email = form.email_optional.data
+    if email:
+        email = normalize_email(email)
 
     if email:
         if auth_provider.get_user_by_email(email) is not None:
