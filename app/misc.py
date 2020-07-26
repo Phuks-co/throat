@@ -573,17 +573,10 @@ def getInviteCodeInfo(uid):
 
     # Codes that this user has generated, that other users signed up with
     try:
-        user_codes = InviteCode.select().where(InviteCode.uid == uid)
-        info['invitedTo'] = []
-        for code in user_codes:
-            try:
-                invited_users = UserMetadata.select().where((UserMetadata.key == 'invitecode') & (UserMetadata.value == code.code))
-                for user in invited_users:
-                    username = User.get((User.uid == user.uid)).name
-                    info['invitedTo'].append({'name': username, 'code': code.code})
-            except UserMetadata.DoesNotExist:
-                # no users have signed up with this code.
-                pass
+        user_codes = InviteCode.select(User.name, InviteCode.code).where(InviteCode.user == uid
+                ).join(UserMetadata, JOIN.LEFT_OUTER, on=((UserMetadata.value == InviteCode.code) & (UserMetadata.key == 'invitecode'))
+                ).join(User).dicts()
+        info['invitedTo'] =  list(user_codes)
     except InviteCode.DoesNotExist:
         pass
 
