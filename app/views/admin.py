@@ -147,13 +147,6 @@ def invitecodes(page, error=None):
         else:
             return ''
 
-    def map_used_by(code):
-        return [
-            User.get((User.uid == user.uid)).name
-            for user in UserMetadata.select().where(
-                (UserMetadata.key == 'invitecode') & (UserMetadata.value == code['code']))
-        ]
-
     if not current_user.is_admin():
         abort(404)
 
@@ -171,9 +164,20 @@ def invitecodes(page, error=None):
         InviteCode.uses,
         InviteCode.max_uses,
     ).join(User).order_by(InviteCode.uses.desc(), InviteCode.created.desc()).paginate(page, 50).dicts()
+
+    code_users = UserMetadata.select(User.name.alias('used_by'), UserMetadata.value.alias("code")).where(
+            (UserMetadata.key == 'invitecode') & 
+                (UserMetadata.value << set([x['code'] for x in invite_codes]))).join(User).dicts()
+
+    used_by = {}
+    for user in code_users:
+        if not user['code'] in used_by:
+            used_by[user['code']] = []
+        used_by[user['code']].append(user['used_by'])
+
     for code in invite_codes:
         code['style'] = map_style(code)
-        code['used_by'] = map_used_by(code)
+        code['used_by'] = used_by.get(code['code'], [])
 
     invite_form = UseInviteCodeForm()
 
