@@ -116,7 +116,10 @@ def create_app(config=Config('config.yaml')):
     if config.site.trusted_proxy_count != 0:
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=config.site.trusted_proxy_count)
 
-    if config.app.development:
+    if 'logging' in config:
+        import logging.config
+        logging.config.dictConfig(config.logging)
+    elif config.app.development:
         import logging
         logging.basicConfig(level=logging.DEBUG)
         logging.getLogger("engineio.server").setLevel(logging.WARNING)

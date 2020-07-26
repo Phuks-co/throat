@@ -254,3 +254,27 @@ ratelimit:
   # Uncomment to disable rate limiting (recommended to leave it on in
   # production).
   #enabled: False
+
+logging:
+  # Configuration for logging.  This section is optional.
+  # See the Python documentation for logging.config.
+  version: 1
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: basic
+  formatters:
+    basic:
+      format: '%(levelname)s:%(name)s:%(message)s'
+  loggers:
+    engineio.server:
+      level: WARNING
+    socketio.server:
+      level: WARNING
+    peewee:
+      handlers:
+        - console
+  root:
+    level: DEBUG
+    handlers:
+      - console
