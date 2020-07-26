@@ -40,6 +40,7 @@ def app(test_config):
     config['mail']['server'] = 'smtp.example.com'
     config['mail']['port'] = 8025
     config['mail']['default_from'] = 'test@example.com'
+    config['ratelimit']['enabled'] = False
 
     recursively_update(config, test_config)
 

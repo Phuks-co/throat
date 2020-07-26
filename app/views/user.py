@@ -9,6 +9,7 @@ from .do import info_from_email_confirmation_token
 from .. import misc, config
 from ..auth import auth_provider, email_validation_is_required, AuthError
 from ..misc import engine, send_email
+from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
 from ..forms import EditUserForm, CreateUserMessageForm, EditAccountForm, DeleteAccountForm, PasswordRecoveryForm
 from ..forms import PasswordResetForm
 from ..models import User, UserStatus, UserMetadata
@@ -157,6 +158,7 @@ def edit_user():
 
 @bp.route("/settings/account")
 @login_required
+@ratelimit(AUTH_LIMIT)
 def edit_account():
     return engine.get_template('user/settings/account.html').render(
         {'form': EditAccountForm(),
@@ -164,6 +166,7 @@ def edit_account():
 
 
 @bp.route('/settings/account/confirm-email/<token>')
+@ratelimit(AUTH_LIMIT)
 def confirm_email_change(token):
     info = info_from_email_confirmation_token(token)
     user = None
@@ -190,6 +193,7 @@ def delete_account():
 
 
 @bp.route("/recover", methods=['GET', 'POST'])
+@ratelimit(SIGNUP_LIMIT)
 def password_recovery():
     """ Endpoint for the password recovery form """
     if current_user.is_authenticated:
@@ -221,6 +225,7 @@ def recovery_email_sent():
 
 
 @bp.route('/reset/<token>')
+@ratelimit(SIGNUP_LIMIT)
 def password_reset(token):
     """ The page that actually resets the password """
     user = None

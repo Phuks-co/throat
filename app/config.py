@@ -91,7 +91,10 @@ cfg_defaults = {  # key => default value
             "testing": False
         },
         "aws": {},
-        "database": {}
+        "database": {},
+        "ratelimit": {
+            "default": "60/minute"
+        },
     }
 
 
@@ -138,6 +141,7 @@ class Config(Map):
         super(Config, self).__init__(cfg, cfg_defaults, use_environment=use_environment)
         self.check_storage_config()
         self.check_auth_config()
+        self.check_ratelimit_config()
 
     def check_storage_config(self):
         """Adjust our storage config for compatibility with flask-cloudy."""
@@ -164,9 +168,13 @@ class Config(Map):
     def check_auth_config(self):
         ensure_trailing_slash(self.auth.keycloak, 'server')
 
+    def check_ratelimit_config(self):
+        if 'storage_url' not in self.ratelimit:
+            self.ratelimit['storage_url'] = self.app.redis_url
+
     def get_flask_dict(self):
         flattened = {}
-        for cpk in ['cache', 'mail', 'sendgrid', 'app']:
+        for cpk in ['cache', 'mail', 'sendgrid', 'app', 'ratelimit']:
             if cpk in self.keys():
                 for i in self[cpk]:
                     if cpk == 'app':

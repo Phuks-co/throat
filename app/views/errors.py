@@ -34,6 +34,12 @@ def forbidden_error(error):
     return engine.get_template('errors/417.html').render({}), 418
 
 
+@bp.app_errorhandler(429)
+def too_many_requests_error(error):
+    """ 429 Too many requests """
+    return engine.get_template('errors/429.html').render({}), 429
+
+
 @bp.app_errorhandler(500)
 def server_error(error):
     """ 500 Internal server error """

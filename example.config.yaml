@@ -145,7 +145,7 @@ app:
   # Enables debug mode. Always set to False in a production environment
   debug: True
 
-  # This will make all captchas valid, disable caching and rate limits
+  # This will make all captchas valid and disable caching
   # Always set to False in a production environment
   development: True
 
@@ -244,3 +244,13 @@ database:
 
   # Uncomment if using MySQL
   #charset: 'utf8mb4'
+
+ratelimit:
+  # Rate limiting configuration is not required, but all configuration
+  # variables for flask-limiter may be set here (in lowercase and
+  # without the RATELIMIT_ prefix).  See
+  # https://flask-limiter.readthedocs.io/en/stable/#configuration.
+
+  # Uncomment to disable rate limiting (recommended to leave it on in
+  # production).
+  #enabled: False

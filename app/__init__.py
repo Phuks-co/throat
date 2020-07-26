@@ -31,7 +31,7 @@ from .views.messages import bp as messages
 
 from . import misc, forms, caching, storage
 from .socketio import socketio
-from .misc import SiteAnon, engine, engine_init_app, re_amention, mail, talisman
+from .misc import SiteAnon, engine, engine_init_app, re_amention, mail, talisman, limiter
 
 # /!\ FOR DEBUGGING ONLY /!\
 # from werkzeug.contrib.profiler import ProfilerMiddleware
@@ -84,6 +84,9 @@ def create_app(config=Config('config.yaml')):
         mail.init_app(app)
     storage.storage_init_app(app)
     auth_provider.init_app(app)
+
+    limiter.init_app(app)
+
     # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 
     app.register_blueprint(home)

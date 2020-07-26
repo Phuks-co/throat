@@ -5,6 +5,7 @@ from flask import Blueprint, request, url_for, Response, abort, render_template,
 from flask_login import login_required, current_user
 from .. import misc
 from ..misc import engine
+from ..misc import ratelimit, POSTING_LIMIT
 from ..models import SubPost, UserUploads, Sub
 
 bp = Blueprint('home', __name__)
@@ -98,6 +99,7 @@ def all_domain_new(domain, page):
 
 @bp.route("/search/<term>", defaults={'page': 1})
 @bp.route("/search/<term>/<int:page>")
+@ratelimit(POSTING_LIMIT)
 def search(page, term):
     """ The index page, with basic title search """
     term = re.sub(r'[^A-Za-z0-9.,\-_\'" ]+', '', term)
@@ -177,6 +179,7 @@ def view_subs(page, sort):
 @bp.route("/subs/search/<term>/<sort>", defaults={'page': 1})
 @bp.route("/subs/search/<term>/<int:page>", defaults={'sort': 'name_asc'})
 @bp.route("/subs/search/<term>/<int:page>/<sort>")
+@ratelimit(POSTING_LIMIT)
 def subs_search(page, term, sort):
     """ The subs index page, with basic title search """
     term = re.sub(r'[^A-Za-z0-9\-_]+', '', term)
