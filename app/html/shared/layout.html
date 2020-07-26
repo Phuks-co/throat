@@ -184,7 +184,7 @@
     @{chat()!!html}
   @end
   <script src="@{ asset_url_for('main.js') }"></script>
-  <style>@{current_user.get_global_stylesheet()}</style>
+  <style>@{current_user.get_global_stylesheet()!!html}</style>
   @def pagefoot():
   @end
   @{pagefoot()!!html}
