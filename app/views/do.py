@@ -21,7 +21,7 @@ from itsdangerous.exc import SignatureExpired, BadSignature
 from ..config import config
 from .. import forms, misc, caching, storage
 from ..socketio import socketio
-from ..auth import auth_provider, email_validation_is_required, AuthError
+from ..auth import auth_provider, email_validation_is_required, AuthError, normalize_email
 from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountForm
@@ -94,11 +94,12 @@ def edit_account():
         else:
             email = form.email_optional.data
 
-        if (email and email != user.email and
-            email != auth_provider.get_pending_email(user) and
-            auth_provider.get_user_by_email(email) is not None):
-            return json.dumps({'status': 'error',
-                               'error': [_('E-mail address is already in use')]})
+        if email:
+            email = normalize_email(email)
+            user_from_email = auth_provider.get_user_by_email(email)
+            if user_from_email is not None and user.uid != user_from_email.uid:
+                return json.dumps({'status': 'error',
+                                   'error': [_('E-mail address is already in use')]})
 
         if not auth_provider.validate_password(user, form.oldpassword.data):
             return json.dumps({'status': 'error',

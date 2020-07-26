@@ -7,7 +7,7 @@ from flask_babel import _, Locale
 from .do import send_password_recovery_email, uid_from_recovery_token
 from .do import info_from_email_confirmation_token
 from .. import misc, config
-from ..auth import auth_provider, email_validation_is_required, AuthError
+from ..auth import auth_provider, email_validation_is_required, AuthError, normalize_email
 from ..misc import engine, send_email
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
 from ..forms import EditUserForm, CreateUserMessageForm, EditAccountForm, DeleteAccountForm, PasswordRecoveryForm
@@ -209,7 +209,8 @@ def password_recovery():
             {'lpform': form,
              'error': _("Invalid captcha.")})
     try:
-        user = User.get(User.email == form.email.data)
+        email = normalize_email(form.email.data)
+        user = User.get(fn.Lower(User.email) == email.lower())
         if user.status == UserStatus.OK:
             send_password_recovery_email(user)
     except User.DoesNotExist:

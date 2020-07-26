@@ -2,12 +2,14 @@ import bcrypt
 from datetime import datetime
 import uuid
 
+from email_validator import validate_email
 from flask import current_app, render_template, session
 from flask_babel import _
 from flask_login import login_user
 from keycloak import KeycloakAdmin as KeycloakAdmin_
 from keycloak import KeycloakOpenID
 from keycloak.exceptions import KeycloakError, KeycloakGetError
+from peewee import fn
 
 from .config import config
 from .models import User, UserMetadata, UserAuthSource, UserCrypto, SiteMetadata
@@ -63,13 +65,12 @@ class AuthProvider:
 
 
     def get_user_by_email(self, email):
-        # TODO when there are pending change emails, check those too.
         try:
-            return User.get(User.email == email)
+            return User.get(fn.Lower(User.email) == email.lower())
         except User.DoesNotExist:
             try:
                 um = UserMetadata.get((UserMetadata.key == 'pending_email') &
-                                      (UserMetadata.value == email))
+                                      (fn.Lower(UserMetadata.value) == email.lower()))
                 return User.get(User.uid == um.uid)
             except UserMetadata.DoesNotExist:
                 pass
@@ -349,3 +350,7 @@ def registration_is_enabled():
 # Someday config.auth.require_valid_emails may move to site metadata.
 def email_validation_is_required():
     return config.auth.require_valid_emails
+
+
+def normalize_email(email):
+    return validate_email(email, check_deliverability=False)['email']
