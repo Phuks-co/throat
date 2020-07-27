@@ -12,7 +12,7 @@ from .. import misc, config
 from ..auth import auth_provider, registration_is_enabled, email_validation_is_required
 from ..auth import normalize_email
 from ..forms import LoginForm, RegistrationForm
-from ..misc import engine, send_email
+from ..misc import engine, send_email, is_domain_banned
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
 from ..models import User, UserMetadata, UserStatus, InviteCode, SubSubscriber, rconn
 
@@ -95,6 +95,9 @@ def register():
         email = normalize_email(email)
 
     if email:
+        if is_domain_banned(email, domain_type='email'):
+            return engine.get_template('user/register.html').render(
+                {'error': _("We do not accept emails from your email provider."), 'regform': form})
         if auth_provider.get_user_by_email(email) is not None:
             return engine.get_template('user/register.html').render(
                 {'error': _("E-mail address is already in use."), 'regform': form})

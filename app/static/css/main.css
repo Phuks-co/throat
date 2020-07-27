@@ -2231,3 +2231,8 @@ article.text-post.comment.deleted {
   color: red;
   font-weight: bold;
 }
+
+.removebanneddomain {
+  float: right;
+  margin-left: 10px;
+}

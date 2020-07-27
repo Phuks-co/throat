@@ -32,7 +32,7 @@ from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNo
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
 from ..misc import cache, send_email, allowedNames, get_errors, engine
-from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT
+from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, is_domain_banned
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved
 from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
@@ -96,6 +96,9 @@ def edit_account():
 
         if email:
             email = normalize_email(email)
+            if is_domain_banned(email, domain_type='email'):
+                return json.dumps({'status': 'error',
+                                   'error': [_('We do not accept emails from your email provider')]})
             user_from_email = auth_provider.get_user_by_email(email)
             if user_from_email is not None and user.uid != user_from_email.uid:
                 return json.dumps({'status': 'error',
@@ -1302,40 +1305,56 @@ def make_announcement():
     return jsonify(status='error', error=get_errors(form))
 
 
-@do.route("/do/ban_domain", methods=['POST'])
-def ban_domain():
+@do.route("/do/ban_domain/<domain_type>", methods=['POST'])
+def ban_domain(domain_type):
     """ Add domain to ban list """
     if not current_user.is_admin():
         abort(403)
+    if domain_type == 'email':
+        key = 'banned_email_domain'
+        action = misc.LOG_TYPE_EMAIL_DOMAIN_BAN
+    elif domain_type == 'link':
+        key = 'banned_domain'
+        action = misc.LOG_TYPE_DOMAIN_BAN
+    else:
+        abort(404)
 
     form = BanDomainForm()
 
     if form.validate():
         try:
-            sm = SiteMetadata.get((SiteMetadata.key == 'banned_domain') & (SiteMetadata.value == form.domain.data))
+            sm = SiteMetadata.get((SiteMetadata.key == key) & (SiteMetadata.value == form.domain.data))
             return jsonify(status='error', error=[_('Domain is already banned')])
         except SiteMetadata.DoesNotExist:
-            sm = SiteMetadata.create(key='banned_domain', value=form.domain.data)
+            sm = SiteMetadata.create(key=key, value=form.domain.data)
             sm.save()
-            misc.create_sitelog(misc.LOG_TYPE_DOMAIN_BAN, current_user.uid, comment=form.domain.data)
+            misc.create_sitelog(action, current_user.uid, comment=form.domain.data)
             return jsonify(status='ok')
 
     return jsonify(status='error', error=get_errors(form))
 
 
-@do.route("/do/remove_banned_domain/<domain>", methods=['POST'])
-def remove_banned_domain(domain):
+@do.route("/do/remove_banned_domain/<domain_type>/<domain>", methods=['POST'])
+def remove_banned_domain(domain_type, domain):
     """ Remove domain if ban list """
     if not current_user.is_admin():
         abort(403)
+    if domain_type == 'email':
+        key = 'banned_email_domain'
+        action = misc.LOG_TYPE_EMAIL_DOMAIN_UNBAN
+    elif domain_type == 'link':
+        key = 'banned_domain'
+        action = misc.LOG_TYPE_DOMAIN_UNBAN
+    else:
+        abort(404)
 
     try:
-        sm = SiteMetadata.get((SiteMetadata.key == 'banned_domain') & (SiteMetadata.value == domain))
+        sm = SiteMetadata.get((SiteMetadata.key == key) & (SiteMetadata.value == domain))
         sm.delete_instance()
     except:
         return jsonify(status='error', error=_('Domain is not banned'))
 
-    misc.create_sitelog(misc.LOG_TYPE_DOMAIN_UNBAN, current_user.uid, comment=domain)
+    misc.create_sitelog(action, current_user.uid, comment=domain)
 
     return json.dumps({'status': 'ok'})
 

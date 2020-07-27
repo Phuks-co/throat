@@ -1361,6 +1361,9 @@ LOG_TYPE_REPORT_USER_SUB_BANNED = 65
 LOG_TYPE_REPORT_USER_SITE_UNBANNED = 66
 LOG_TYPE_REPORT_USER_SUB_UNBANNED = 67
 LOG_TYPE_REPORT_NOTE = 68
+LOG_TYPE_EMAIL_DOMAIN_BAN = 69
+LOG_TYPE_EMAIL_DOMAIN_UNBAN = 70
+
 
 def create_sitelog(action, uid, comment='', link=''):
     SiteLog.create(action=action, uid=uid, desc=comment, link=link).save()
@@ -1382,15 +1385,23 @@ def create_reportlog(action, uid, id, type='', related=False, original_report=''
     elif type == 'comment' and related == True:
         CommentReportLog.create(action=action, uid=uid, id=id, desc=original_report).save()
 
-def is_domain_banned(link):
-    bans = SiteMetadata.select().where(SiteMetadata.key == 'banned_domain')
+def is_domain_banned(addr, domain_type):
+    if domain_type == 'link':
+        key = 'banned_domain'
+        netloc = urlparse(addr).netloc
+    elif domain_type == 'email':
+        key = 'banned_email_domain'
+        netloc = addr.split('@')[1]
+    else:
+        raise RuntimeError
+
+    bans = SiteMetadata.select().where(SiteMetadata.key == key)
     banned_domains, banned_domains_b = ([], [])
     for ban in bans:
         banned_domains.append(ban.value)
         banned_domains_b.append('.' + ban.value)
 
-    url = urlparse(link)
-    if (url.netloc in banned_domains) or (url.netloc.endswith(tuple(banned_domains_b))):
+    if (netloc in banned_domains) or (netloc.endswith(tuple(banned_domains_b))):
         return True
     return False
 

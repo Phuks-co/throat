@@ -16,11 +16,11 @@
 
 <div id="center-container">
   <div class="content">
-    <h2>Banned Domains</h2>
+    <h2>{{title}}</h2>
     <div class="admin section domains">
       <hr>
       <div class="col-12 admin-page-form">
-        <form class="nice-form ajaxform" method="POST" id="BanDomainForm" action="{{url_for('do.ban_domain')}}" data-reload="true">
+        <form class="nice-form ajaxform" method="POST" id="BanDomainForm" action="{{url_for('do.ban_domain', domain_type=domain_type)}}" data-reload="true">
           {% set bandomainform = form.BanDomainForm()%}
           {{bandomainform.csrf_token}}
           <h4>Add domain</h4>
@@ -41,7 +41,7 @@
           <tbody>
             {% for domain in domains %}
             <tr>
-              <td>{{domain.value}} <button data-domain="{{domain.value}}" type="submit" class="removebanneddomain pure-button">remove</button></td>
+              <td>{{domain.value}} <button data-domain="{{domain.value}}" data-domain-type="{{domain_type}}" type="submit" class="removebanneddomain pure-button">remove</button></td>
             </tr>
             {% endfor %}
           </tbody>
