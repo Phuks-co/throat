@@ -11,8 +11,10 @@ import hashlib
 import re
 import gevent
 import ipaddress
+import cgi
 
 import tinycss2
+from bs4 import BeautifulSoup
 from captcha.image import ImageCaptcha
 from datetime import datetime, timedelta, timezone
 from io import BytesIO
@@ -318,12 +320,12 @@ AUTH_LIMIT = '25/5minute'
 SIGNUP_LIMIT = '5/30minute'
 
 
-def safeRequest(url, recieve_timeout=10):
+def safeRequest(url, receive_timeout=10, max_size=25000000, mimetypes=None):
     """ Gets stuff for the internet, with timeouts and size restrictions """
     # Returns (Response, File)
-    max_size = 25000000  # won't download more than 25MB
     try:
-        r = requests.get(url, stream=True, timeout=recieve_timeout, headers={'User-Agent': 'Throat/1 (Phuks)'})
+        r = requests.get(url, stream=True, timeout=receive_timeout,
+                         headers={'User-Agent': 'Throat/1 (Phuks)'})
     except:
         raise ValueError('error fetching')
     r.raise_for_status()
@@ -331,11 +333,16 @@ def safeRequest(url, recieve_timeout=10):
     if int(r.headers.get('Content-Length', 1)) > max_size:
         raise ValueError('response too large')
 
+    if mimetypes is not None:
+        mtype, _ = cgi.parse_header(r.headers.get('Content-Type', ''))
+        if mtype not in mimetypes:
+            raise ValueError('wrong content type')
+
     size = 0
     start = time.time()
     f = b''
     for chunk in r.iter_content(1024):
-        if time.time() - start > recieve_timeout:
+        if time.time() - start > receive_timeout:
             raise ValueError('timeout reached')
 
         size += len(chunk)
@@ -343,6 +350,19 @@ def safeRequest(url, recieve_timeout=10):
         if size > max_size:
             raise ValueError('response too large')
     return r, f
+
+
+def grab_title(url):
+    req, data = safeRequest(url, max_size=2000000, mimetypes={'text/html'})
+    if not (b'<title>' in data and b'</title>' in data):
+        raise KeyError
+    _, options = cgi.parse_header(req.headers.get('Content-Type', ''))
+    charset = options.get('charset', 'utf-8')
+    og = BeautifulSoup(data, 'lxml', from_encoding=charset)
+    title = og('title')[0].text
+    title = title.strip(WHITESPACE)
+    title = re.sub(' - YouTube$', '', title)
+    return title
 
 
 class RE_AMention():
