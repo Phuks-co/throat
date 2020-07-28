@@ -114,8 +114,12 @@ class Map(dict):
         # Turn all subdictionaries into Maps as well.
         for key, val in defaults.items():
             if isinstance(val, dict):
-                self[key] = Map(self.get(key, {}), val, use_environment,
-                                f'{self.prefix}{key}')
+                existing = self.get(key, {})
+                if existing is None:
+                    existing = {}
+                elif not isinstance(existing, dict):
+                    raise TypeError(f'Value found where dict expected at {prefix}{key} in config.yaml')
+                self[key] = Map(existing, val, use_environment, f'{self.prefix}{key}')
             elif key not in self.keys():
                 self[key] = val
 
