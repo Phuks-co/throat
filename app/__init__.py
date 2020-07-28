@@ -125,6 +125,7 @@ def create_app(config=Config('config.yaml')):
     @app.after_request
     def after_request(response):
         """ Called after the request is processed. Used to time the request """
+        app.logger.info("%s", response.status)
         if not app.debug and not current_user.is_admin():
             return response  # We won't do this if we're in production mode
         if app.config['THROAT_CONFIG'].app.development:

@@ -1,5 +1,5 @@
 """ Pages to be migrated to a wiki-like system """
-from flask import Blueprint, request, redirect, url_for, jsonify
+from flask import Blueprint, request, redirect, url_for, jsonify, current_app
 from ..misc import engine
 from ..forms import LoginForm
 
@@ -43,6 +43,10 @@ def too_many_requests_error(error):
 @bp.app_errorhandler(500)
 def server_error(error):
     """ 500 Internal server error """
+    import traceback
+    import sys
+    typ, val, tb = sys.exc_info()
+    current_app.logger.error('EXCEPTION: %s, "%s", %s', typ.__name__, val, traceback.format_tb(tb))
     if request.path.startswith('/api'):
         if request.path.startswith('/api/v3'):
             return jsonify(msg="Internal error"), 500
