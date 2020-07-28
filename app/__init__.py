@@ -35,7 +35,7 @@ from .misc import SiteAnon, engine, engine_init_app, re_amention, mail, talisman
 from .misc import logging_init_app
 
 # /!\ FOR DEBUGGING ONLY /!\
-# from werkzeug.contrib.profiler import ProfilerMiddleware
+# from werkzeug.middleware.profiler import ProfilerMiddleware
 
 webpack = Webpack()
 babel = Babel()
