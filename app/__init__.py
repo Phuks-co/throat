@@ -32,6 +32,7 @@ from .views.messages import bp as messages
 from . import misc, forms, caching, storage
 from .socketio import socketio
 from .misc import SiteAnon, engine, engine_init_app, re_amention, mail, talisman, limiter
+from .misc import logging_init_app
 
 # /!\ FOR DEBUGGING ONLY /!\
 # from werkzeug.contrib.profiler import ProfilerMiddleware
@@ -84,7 +85,7 @@ def create_app(config=Config('config.yaml')):
         mail.init_app(app)
     storage.storage_init_app(app)
     auth_provider.init_app(app)
-
+    logging_init_app(app)
     limiter.init_app(app)
 
     # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
@@ -116,15 +117,6 @@ def create_app(config=Config('config.yaml')):
     if config.site.trusted_proxy_count != 0:
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=config.site.trusted_proxy_count)
 
-    if 'logging' in config:
-        import logging.config
-        logging.config.dictConfig(config.logging)
-    elif config.app.development:
-        import logging
-        logging.basicConfig(level=logging.DEBUG)
-        logging.getLogger("engineio.server").setLevel(logging.WARNING)
-        logging.getLogger("socketio.server").setLevel(logging.WARNING)
-
     @app.before_request
     def before_request():
         """ Called before the request is processed. Used to time the request """
@@ -133,6 +125,7 @@ def create_app(config=Config('config.yaml')):
     @app.after_request
     def after_request(response):
         """ Called after the request is processed. Used to time the request """
+        app.logger.info("%s", response.status)
         if not app.debug and not current_user.is_admin():
             return response  # We won't do this if we're in production mode
         if app.config['THROAT_CONFIG'].app.development:

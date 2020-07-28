@@ -265,7 +265,7 @@ logging:
       formatter: basic
   formatters:
     basic:
-      format: '%(levelname)s:%(name)s:%(message)s'
+      format: '%(levelname)s:%(name)s:%(request.remote_addr)s:%(request.method)s %(request.path)s:%(message)s'
   loggers:
     engineio.server:
       level: WARNING
@@ -274,6 +274,14 @@ logging:
     peewee:
       handlers:
         - console
+    flask.app:
+      level: DEBUG
+    flask-limiter:
+      level: WARNING
+      handlers:
+        - console
+    geventwebsocket.handler:
+      level: WARNING
   root:
     level: DEBUG
     handlers:
