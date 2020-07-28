@@ -693,7 +693,7 @@ def create_post():
         if content:
             return jsonify(msg='Link posts do not accept content'), 400
 
-        if misc.is_domain_banned(link):
+        if misc.is_domain_banned(link, domain_type='link'):
             return jsonify(msg="Link's domain is banned"), 400
 
         recent = datetime.datetime.utcnow() - datetime.timedelta(days=5)

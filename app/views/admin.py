@@ -375,16 +375,26 @@ def post_search(term):
         abort(404)
 
 
-@bp.route("/domains", defaults={'page': 1})
-@bp.route("/domains/<int:page>")
+@bp.route("/domains/<domain_type>", defaults={'page': 1})
+@bp.route("/domains/<domain_type>/<int:page>")
 @login_required
-def domains(page):
+def domains(domain_type, page):
     """ WIP: View Banned Domains """
+    if domain_type == "email":
+        key = 'banned_email_domain'
+        title = _('Banned Email Domains')
+    elif domain_type == 'link':
+        key = 'banned_domain'
+        title = _('Banned Domains')
+    else:
+        abort(404)
     if current_user.is_admin():
-        domains = SiteMetadata.select().where(SiteMetadata.key == 'banned_domain')
+        domains = (SiteMetadata.select()
+                   .where(SiteMetadata.key == key)
+                   .order_by(SiteMetadata.value))
         return render_template('admin/domains.html', domains=domains,
-                               page=page, admin_route='admin.domains',
-                               bandomainform=BanDomainForm())
+                               title=title, domain_type=domain_type,
+                               page=page, bandomainform=BanDomainForm())
     else:
         abort(404)
 

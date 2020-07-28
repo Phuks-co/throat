@@ -176,7 +176,7 @@ def create_post(ptype, sub):
         except SubPost.DoesNotExist:
             pass
 
-        if misc.is_domain_banned(form.link.data.lower()):
+        if misc.is_domain_banned(form.link.data.lower(), domain_type='link'):
             return engine.get_template('sub/createpost.html').render(
                 {'error': _("This domain is banned."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
         img = misc.get_thumbnail(form.link.data)
