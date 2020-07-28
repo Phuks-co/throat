@@ -21,7 +21,8 @@ from bs4 import BeautifulSoup
 from functools import update_wrapper
 import misaka as m
 import sendgrid
-from flask import current_app
+from flask import current_app, request
+from flask_login import current_user
 from flask_limiter import Limiter
 from flask_mail import Mail
 from flask_mail import Message as EmailMessage
@@ -45,6 +46,7 @@ from .storage import store_thumbnail, file_url, thumbnail_url
 from peewee import JOIN, fn, SQL, NodeList, Value
 import requests
 import logging
+import logging.config
 
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
@@ -1895,3 +1897,55 @@ def getReports(view, status, page, *args, **kwargs):
 
 def slugify(text):
     return s_slugify(text, max_length=80)
+
+
+def logging_init_app(app):
+    config = app.config['THROAT_CONFIG']
+    if 'logging' in config:
+        logging.config.dictConfig(config.logging)
+        add_context_to_log_records(config.logging)
+    elif config.app.development or config.app.testing:
+        logging.basicConfig(level=logging.DEBUG)
+        logging.getLogger("engineio.server").setLevel(logging.WARNING)
+        logging.getLogger("socketio.server").setLevel(logging.WARNING)
+    else:
+        logging.basicConfig(level=logging.WARNING)
+
+
+def add_context_to_log_records(config):
+    # Extract the keys used in the formatters in config.yaml.
+    keys = set()
+    if 'formatters' in config:
+        for formatter in config['formatters'].values():
+            if 'format' in formatter:
+                keys |= set(re.findall(r'%\((.+?)\)', formatter['format']))
+
+    old_factory = logging.getLogRecordFactory()
+    if old_factory.__module__ == __name__:  # So the tests don't make a chain of these.
+        old_factory = old_factory.old_factory
+
+    # If any formatter keys refer to request or current_app, fill in the values.
+    def record_factory(*args, **kwargs):
+        record = old_factory(*args, **kwargs)
+        unavailable = ''
+        for k in keys:
+            splits = k.split('.')
+            if len(splits) > 1:
+                var, attr = splits[0:2]
+                if var == 'request':
+                    if request:
+                        if attr == 'headers' and len(splits) == 3:
+                            record.__dict__[k] = request.headers.get(splits[2], unavailable)
+                        else:
+                            record.__dict__[k] = getattr(request, attr, unavailable)
+                    else:
+                        record.__dict__[k] = unavailable
+                elif var == 'current_user':
+                    if current_user:
+                        record.__dict__[k] = getattr(current_user, attr, unavailable)
+                    else:
+                        record.__dict__[k] = unavailable
+        return record
+
+    record_factory.old_factory = old_factory
+    logging.setLogRecordFactory(record_factory)

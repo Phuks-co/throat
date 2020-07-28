@@ -41,8 +41,6 @@ def app(test_config):
     config['mail']['port'] = 8025
     config['mail']['default_from'] = 'test@example.com'
     config['ratelimit']['enabled'] = False
-    config['logging'] = {'version': 1,
-                         'root': {'level': 'DEBUG'}}
 
     recursively_update(config, test_config)
 
