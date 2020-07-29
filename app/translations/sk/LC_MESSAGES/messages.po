@@ -1891,7 +1891,7 @@ msgid ""
 "<span class=\"cscore\">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>"
 "%(downvotes)i</b>)"
 msgstr ""
-"<span class=\"cscore\">%(score)i</span> skóre</b> (+<b>%(upvotes)i</b>|-<b>"
+"skóre: <span class=\"cscore\">%(score)i</span></b> (+<b>%(upvotes)i</b>|-<b>"
 "%(downvotes)i</b>)"
 
 #: app/html/sub/postcomments.html:37
