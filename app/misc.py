@@ -11,8 +11,10 @@ import hashlib
 import re
 import gevent
 import ipaddress
+import cgi
 
 import tinycss2
+from bs4 import BeautifulSoup
 from captcha.image import ImageCaptcha
 from datetime import datetime, timedelta, timezone
 from io import BytesIO
@@ -318,31 +320,62 @@ AUTH_LIMIT = '25/5minute'
 SIGNUP_LIMIT = '5/30minute'
 
 
-def safeRequest(url, recieve_timeout=10):
-    """ Gets stuff for the internet, with timeouts and size restrictions """
+def safeRequest(url, receive_timeout=10, max_size=25000000, mimetypes=None,
+                partial_read=False):
+    """Gets stuff from the internet, with timeouts, content type and size
+    restrictions.  If partial_read is True it will return approximately
+    the first max_size bytes, otherwise it will raise an error if
+    max_size is exceeded. """
     # Returns (Response, File)
-    max_size = 25000000  # won't download more than 25MB
     try:
-        r = requests.get(url, stream=True, timeout=recieve_timeout, headers={'User-Agent': 'Throat/1 (Phuks)'})
+        r = requests.get(url, stream=True, timeout=receive_timeout,
+                         headers={'User-Agent': 'Throat/1 (Phuks)'})
     except:
         raise ValueError('error fetching')
     r.raise_for_status()
 
-    if int(r.headers.get('Content-Length', 1)) > max_size:
+    if int(r.headers.get('Content-Length', 1)) > max_size and not partial_read:
         raise ValueError('response too large')
+
+    if mimetypes is not None:
+        mtype, _ = cgi.parse_header(r.headers.get('Content-Type', ''))
+        if mtype not in mimetypes:
+            raise ValueError('wrong content type')
 
     size = 0
     start = time.time()
     f = b''
     for chunk in r.iter_content(1024):
-        if time.time() - start > recieve_timeout:
+        if time.time() - start > receive_timeout:
             raise ValueError('timeout reached')
 
         size += len(chunk)
         f += chunk
         if size > max_size:
-            raise ValueError('response too large')
+            if partial_read:
+                return r, f
+            else:
+                raise ValueError('response too large')
     return r, f
+
+
+def grab_title(url):
+    req, data = safeRequest(url, max_size=200000, mimetypes={'text/html'},
+                            partial_read=True)
+
+    # Truncate the HTML so less parsing work will be required.
+    end_title_pos = data.find(b'</title>')
+    if end_title_pos == -1:
+        raise KeyError
+    data = data[:end_title_pos] + b'</title></head><body></body>'
+
+    _, options = cgi.parse_header(req.headers.get('Content-Type', ''))
+    charset = options.get('charset', 'utf-8')
+    og = BeautifulSoup(data, 'lxml', from_encoding=charset)
+    title = og('title')[0].text
+    title = title.strip(WHITESPACE)
+    title = re.sub(' - YouTube$', '', title)
+    return title
 
 
 class RE_AMention():

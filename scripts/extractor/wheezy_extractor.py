@@ -14,7 +14,8 @@ def extract_wheezy(fileobj, keywords, comment_tags, options):
     :rtype: ``iterator``
     """
     funcs = "|".join(keywords)
-    regex = re.compile(r"(?P<function>" + funcs + r")\([\'\"]([^\"\'\\]*(?:\\.[^\"\'\\]*)*)[\'\"],?.*?\)")
+    regex = re.compile(r"(?P<function>" + funcs + r")\('([^\'\\]*(?:\\.[^\'\\]*)*)',?.*?\)")
+    regex2 = re.compile(r"(?P<function>" + funcs + r")\(\"([^\"\\]*(?:\\.[^\"\\]*)*)\",?.*?\)")
     data = fileobj.read().decode()
     lineno = 0
     for line in data.split('\n'):
@@ -22,4 +23,9 @@ def extract_wheezy(fileobj, keywords, comment_tags, options):
         ma = regex.findall(line)
         if len(ma) > 0:
             for m in ma:
-                yield (lineno, m[0], m[1].replace(r"\'", "'"), [])
+                yield lineno, m[0], m[1].replace(r"\'", "'"), []
+
+        ma = regex2.findall(line)
+        if len(ma) > 0:
+            for m in ma:
+                yield lineno, m[0], m[1].replace(r'\"', '"'), []

@@ -2,9 +2,7 @@
 
 import datetime
 import uuid
-import re
 import requests
-from bs4 import BeautifulSoup
 from flask import Blueprint, jsonify, request, url_for
 from peewee import JOIN, fn
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
@@ -12,7 +10,7 @@ from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
 from .. import misc
 from ..auth import auth_provider
 from ..socketio import socketio
-from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, captchas_required
+from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, captchas_required, grab_title
 from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote, SubSubscriber
 from ..models import SiteMetadata, UserMetadata, Message, SubRule, Notification
 from ..caching import cache
@@ -824,16 +822,8 @@ def grab_title():
         return jsonify(msg='url parameter required'), 400
 
     try:
-        req = misc.safeRequest(url)
-    except (requests.exceptions.RequestException, ValueError):
+        title = misc.grab_title(url)
+    except (requests.exceptions.RequestException, ValueError,
+            OSError, IndexError):
         return jsonify(msg="Couldn't fetch title"), 400
-
-    og = BeautifulSoup(req[1], 'lxml', from_encoding='utf-8')
-    try:
-        title = og('title')[0].text
-    except (OSError, ValueError, IndexError):
-        return jsonify(msg="Couldn't fetch title"), 400
-
-    title = title.strip(misc.WHITESPACE)
-    title = re.sub(' - Youtube$', '', title)
     return jsonify(title=title), 200
