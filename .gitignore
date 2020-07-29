@@ -81,3 +81,5 @@ badges.py
 
 .pytest_cache
 stor
+
+*.mo
