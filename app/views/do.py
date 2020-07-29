@@ -11,7 +11,6 @@ import hashlib
 import os
 import random
 from PIL import Image
-from bs4 import BeautifulSoup
 from flask import Blueprint, redirect, url_for, session, abort, jsonify, current_app
 from flask import render_template, request
 from flask_login import login_user, login_required, logout_user, current_user
@@ -31,7 +30,7 @@ from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
-from ..misc import cache, send_email, allowedNames, get_errors, engine
+from ..misc import cache, send_email, allowedNames, get_errors, engine, grab_title
 from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, is_domain_banned
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved
 from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
@@ -698,18 +697,11 @@ def grab_title():
     if not url:
         abort(400)
     try:
-        req = misc.safeRequest(url)
-    except (requests.exceptions.RequestException, ValueError):
+        title = misc.grab_title(url)
+    except (requests.exceptions.RequestException, ValueError,
+            OSError, IndexError, KeyError):
         return jsonify(status='error', error=[_('Couldn\'t get title')])
 
-    og = BeautifulSoup(req[1], 'lxml', from_encoding='utf-8')
-    try:
-        title = og('title')[0].text
-    except (OSError, ValueError, IndexError):
-        return jsonify(status='error', error=[_('Couldn\'t get title')])
-
-    title = title.strip(misc.WHITESPACE)
-    title = re.sub(' - Youtube$', '', title)
     return jsonify(status='ok', title=title)
 
 
