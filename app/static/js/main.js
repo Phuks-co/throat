@@ -425,8 +425,9 @@ u.ready(function(){
   }
 
   /* infinite scroll */
-
+  window.moreuri = document.getElementById("pagefoot-moreuri");
   if(window.moreuri){
+    window.moreuri = window.moreuri.getAttribute('data-value');
     window.loading = false;
     window.addEventListener('scroll', function () {
       if(window.loading){return;}
@@ -434,7 +435,7 @@ u.ready(function(){
         var k = document.querySelectorAll('div.post')
         var lastpid = k[k.length-1].getAttribute('pid')
         window.loading = true;
-        u.get(window.moreuri + lastpid,
+        u.get(window.moreuri + '/' + lastpid,
         function(data) {
           var ndata = document.createElement( "div" );
           ndata.innerHTML = data;
@@ -481,10 +482,10 @@ u.ready(function () {
     window.labrat = true;
     window.blocked = document.getElementById("pagefoot-blocked");
     if (window.blocked) {
+      window.blocked = window.blocked.getAttribute('data-value');
       console.log("Blocked=", window.blocked)
       window.nposts = '/all/new';
     }
-    window.moreuri = document.getElementById("pagefoot-moreuri");
   }
 
   u.addEventForChild(document, 'click', '#btn-sending', function(e, target) {
