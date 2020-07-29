@@ -101,7 +101,7 @@ Mod |\
                 </form>
             @end
             @if reported_user.status == 5:
-              <button class="sbm-post pure-button pure-button-primary disabled">@{report['reported']} @{_('has been banned from')} @{config.site.name}</button>
+              <button class="sbm-post pure-button pure-button-primary disabled">@{_('%(user)s has been banned from %(site)s', user=report['reported'], site=config.site.name)}</button>
             @end
           </div>
           <div id="report-ban-user-form" style="display: none;">
