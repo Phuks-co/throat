@@ -90,11 +90,17 @@ def index():
     except SiteMetadata.DoesNotExist:
         er = 'True'
 
+    try:
+        ec = 'True' if SiteMetadata.get(SiteMetadata.key == 'require_captchas').value == '1' else 'False'
+    except SiteMetadata.DoesNotExist:
+        ec = 'True'
+
     return render_template('admin/admin.html', subs=subs,
                            posts=posts, ups=ups, downs=downs, users=users,
                            comms=comms,
                            useinvitecodeform=invite, enable_posting=(ep == 'True'),
-                           enable_registration=(er == 'True'))
+                           enable_registration=(er == 'True'),
+                           enable_captchas=(ec == 'True'))
 
 
 @bp.route("/users", defaults={'page': 1})

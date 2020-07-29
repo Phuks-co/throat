@@ -84,6 +84,20 @@
         </div>
       </div>
       <hr>
+      <div class="col-12"><h2>Captchas</h2>
+      </div>
+      <div class="col-12 admin-page-form">
+        <div>
+          {% if enable_captchas %}
+          <div>Disable captchas for registration, password recovery and post creation</div>
+          <a class="pure-button button-error" href="{{url_for('do.enable_captchas', value='False')}}">Disable Captchas</a>
+          {% else %}
+          <div>Enable captchas for registration, password recovery and post creation</div>
+          <a class="pure-button button-warning" href="{{url_for('do.enable_captchas', value='True')}}">Enable Captchas</a>
+          {% endif %}
+        </div>
+      </div>
+      <hr>
     </div>
     {% if config.site.enable_security_question %}
       <hr>

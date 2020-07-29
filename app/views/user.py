@@ -199,15 +199,17 @@ def password_recovery():
     if current_user.is_authenticated:
         return redirect(url_for('home.index'))
     form = PasswordRecoveryForm()
-    form.cap_key, form.cap_b64 = misc.create_captcha()
+    captcha = misc.create_captcha()
     if not form.validate():
         return engine.get_template('user/password_recovery.html').render(
             {'lpform': form,
-             'error': misc.get_errors(form, True)})
+             'error': misc.get_errors(form, True),
+             'captcha': captcha})
     if not misc.validate_captcha(form.ctok.data, form.captcha.data):
         return engine.get_template('user/password_recovery.html').render(
             {'lpform': form,
-             'error': _("Invalid captcha.")})
+             'error': _("Invalid captcha."),
+             'captcha': captcha})
     try:
         email = normalize_email(form.email.data)
         user = User.get(fn.Lower(User.email) == email.lower())
