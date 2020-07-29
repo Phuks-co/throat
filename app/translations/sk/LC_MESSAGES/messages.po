@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-07-29 11:55-0300\n"
-"PO-Revision-Date: 2020-07-29 14:55\n"
+"POT-Creation-Date: 2020-07-29 12:30-0300\n"
+"PO-Revision-Date: 2020-07-29 15:41\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -1226,6 +1226,11 @@ msgstr "Vytvor skupinu"
 msgid "Top posts in the last 24 hours"
 msgstr "Top príspevky za posledných 24 hodín"
 
+#: app/html/shared/sidebar/home.html:25 app/html/shared/sidebar/home.html:48
+#, python-format
+msgid "%(timeago)s in %(sub)s"
+msgstr ""
+
 #: app/html/shared/sidebar/home.html:35
 msgid "Sub of the day"
 msgstr "Skupina dňa"
@@ -1323,7 +1328,7 @@ msgstr "Vlastník"
 #: app/html/shared/sidebar/sub.html:72
 #, python-format
 msgid "Created by <a href=\"/u/%(name)s\">%(name)s</a>"
-msgstr "Vytvoril(a) <a href=\"/u/%(name)s\">%(name)s</a>"
+msgstr ""
 
 #: app/html/shared/sidebar/sub.html:81
 msgid "Sub Moderation"
@@ -1638,7 +1643,7 @@ msgstr "Náhľad príspevku"
 #: app/html/sub/css.html:15
 #, python-format
 msgid "Editing stylesheet for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
-msgstr "Úprava CSS pre skupinu <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgstr ""
 
 #: app/html/sub/css.html:28 app/html/user/settings/account.html:37
 #: app/html/user/settings/preferences.html:52
@@ -1703,7 +1708,7 @@ msgstr ""
 #: app/html/sub/log.html:7
 #, python-format
 msgid "Sub log for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
-msgstr "Záznamy skupiny <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgstr ""
 
 #: app/html/sub/log.html:13
 msgid "Action"
@@ -1720,17 +1725,17 @@ msgstr "Zmenil(a) nastavenia skupiny"
 #: app/html/sub/log.html:38
 #, python-format
 msgid "Banned <a href=\"/u/%(username)s\">%(username)s</a> with reason <code>%(reason)s</code>"
-msgstr "Zabanoval(a) používeľa <a href=\"/u/%(username)s\">%(username)s</a> z dôvodu <code>%(reason)s</code>"
+msgstr ""
 
 #: app/html/sub/log.html:40
 #, python-format
 msgid "Unbanned <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr "Odbanoval(a) používateľa <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
 
 #: app/html/sub/log.html:42
 #, python-format
 msgid "Sent mod invite to <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr "Pozval(a) moderovať používateľa <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
 
 #: app/html/sub/log.html:44
 msgid "Accepted mod invite"
@@ -1739,17 +1744,17 @@ msgstr "Prijal(a) pozvanie moderovať"
 #: app/html/sub/log.html:46
 #, python-format
 msgid "Removed <a href=\"/u/%(username)s\">%(username)s</a> from the mod team"
-msgstr "Vylúčil(a) používateľa <a href=\"/u/%(username)s\">%(username)s</a> z tímu moderátorov"
+msgstr ""
 
 #: app/html/sub/log.html:48
 #, python-format
 msgid "Revoked mod invite for <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr "Zrušil(a) pozvanie moderovať pre používateľa <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
 
 #: app/html/sub/log.html:50
 #, python-format
 msgid "Mod invite declined by <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr "<a href=\"/u/%(username)s\">%(username)s</a> odmietol(la) pozvanie moderovať"
+msgstr ""
 
 #: app/html/sub/log.html:52
 msgid "Edited the sub's stylesheet"
@@ -1758,7 +1763,7 @@ msgstr "Upravil(a) vzhľad skupiny"
 #: app/html/sub/log.html:54
 #, python-format
 msgid "Sub was transferred to <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr "Skupina bola presunutá na používateľa <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
 
 #: app/html/sub/log.html:56
 msgid "Stickied a post"
@@ -1875,7 +1880,7 @@ msgstr ""
 #: app/html/sub/post.html:238
 #, python-format
 msgid "Current flair: <span class=\"postflair\">%(flair)s</span>."
-msgstr "Aktuálny tag: <span class=\"postflair\">%(flair)s</span>."
+msgstr ""
 
 #: app/html/sub/post.html:238
 msgid "Remove"
@@ -1918,7 +1923,7 @@ msgstr ""
 #: app/html/sub/postcomments.html:31
 #, python-format
 msgid "<span class=\"cscore\">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
-msgstr "<span class=\"cscore\">%(score)i</span> bodov</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
+msgstr ""
 
 #: app/html/sub/postcomments.html:37
 #, python-format
@@ -2137,6 +2142,12 @@ msgstr ""
 msgid "click here."
 msgstr ""
 
+#: app/html/user/email/confirm-email-change.html:9
+#: app/html/user/email/login-link.html:9
+#: app/html/user/email/password-recovery.html:10
+msgid "Or you can paste the following link in your browser's address bar:"
+msgstr ""
+
 #: app/html/user/email/confirm-email-change.html:11
 #: app/html/user/email/login-link.html:11
 #: app/html/user/email/password-recovery.html:12
@@ -2248,6 +2259,21 @@ msgstr ""
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> un-deleted one of your posts in <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr ""
 
+#: app/html/user/messages/notifications.html:71
+#, python-format
+msgid "Your comment. Posted %(timeago)s. <b>%(score)i</b> points."
+msgstr ""
+
+#: app/html/user/messages/notifications.html:81
+#, python-format
+msgid "Posted %(timeago)s. <b>%(score)s</b> points. Read %(timeagoread)s"
+msgstr ""
+
+#: app/html/user/messages/notifications.html:83
+#, python-format
+msgid "Posted %(timeago)s. <b>%(score)s</b> points."
+msgstr ""
+
 #: app/html/user/messages/notifications.html:90
 #: app/html/user/messages/notifications.html:108
 #: app/html/user/messages/notifications.html:125
@@ -2265,6 +2291,11 @@ msgstr ""
 #: app/html/user/messages/notifications.html:130 app/static/js/Messages.js:123
 #: app/static/js/Messages.js:126
 msgid "block"
+msgstr ""
+
+#: app/html/user/messages/notifications.html:122
+#, python-format
+msgid "Please visit %(link)s to accept or reject the invitation"
 msgstr ""
 
 #: app/html/user/settings/account.html:9
