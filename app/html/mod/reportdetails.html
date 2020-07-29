@@ -212,9 +212,9 @@ Mod |\
           <hr>
           <div class="col-12 admin-page-form">
             <form  method="POST" class="ajaxform pure-form" action="@{url_for('do.create_report_note', type=report['type'], id=report['id'])}" data-reload="true">
-              <h3>@{_('Leave note on report')}</h3>
+              <h3>@{_('Leave a note')}</h3>
               @{createreportenote.csrf_token()!!html}
-                @{createreportenote.text(placeholder=_('Leave note'), required=True)!!html}
+                @{createreportenote.text(placeholder=_('Leave a note'), required=True)!!html}
                 <button type="submit" class="pure-button pure-button-primary" id="editsub-btnsubmit" data-prog="Saving..." data-success="Saved!">@{_('Submit')}</button>
               <div class="alert div-error"></div>
             </form>
