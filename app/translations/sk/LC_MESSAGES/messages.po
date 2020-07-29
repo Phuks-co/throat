@@ -886,7 +886,7 @@ msgstr "Pridať poznámku k hláseniu"
 
 #: app/html/mod/reportdetails.html:217
 msgid "Leave note"
-msgstr "Zatvoriť poznámku"
+msgstr "Poznámka"
 
 #: app/html/mod/reportdetails.html:224
 msgid "Report Log:"
@@ -2352,7 +2352,7 @@ msgstr ""
 #: app/html/user/messages/notifications.html:71
 #, python-format
 msgid "Your comment. Posted %(timeago)s. <b>%(score)i</b> points."
-msgstr "Tvoj komentár. Zaslaný %(timeago)s. Skóre: <b>%(score)i</b>"
+msgstr "Tvoj komentár. Zaslaný %(timeago)s. Skóre: <b>%(score)i</b>."
 
 #: app/html/user/messages/notifications.html:81
 #, python-format
@@ -2363,7 +2363,7 @@ msgstr ""
 #: app/html/user/messages/notifications.html:83
 #, python-format
 msgid "Posted %(timeago)s. <b>%(score)s</b> points."
-msgstr "Pridané %(timeago)s. Skóre: <b>%(score)s</b>"
+msgstr "Pridané %(timeago)s. Skóre: <b>%(score)s</b> ."
 
 #: app/html/user/messages/notifications.html:90
 #: app/html/user/messages/notifications.html:108
