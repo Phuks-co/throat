@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-07-29 15:01-0300\n"
-"PO-Revision-Date: 2020-07-29 22:03\n"
+"POT-Creation-Date: 2020-07-29 19:05-0300\n"
+"PO-Revision-Date: 2020-07-29 22:13\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -70,7 +70,7 @@ msgstr ""
 msgid "Winner of the shitposter of the year 2018 contest"
 msgstr "Ganador del torneo del shitposter del año 2018"
 
-#: app/misc.py:972
+#: app/misc.py:1005
 #, python-format
 msgid "Error in the '%(field)s' field - %(error)s"
 msgstr "Error en el campo '%(field)s' - %(error)s"
@@ -79,77 +79,77 @@ msgstr "Error en el campo '%(field)s' - %(error)s"
 #: app/html/site/log.html:28 app/html/sub/log.html:28 app/html/sub/post.html:42
 #: app/html/sub/post.html:102 app/html/sub/post.html:116
 #: app/html/sub/postcomments.html:22 app/html/sub/postcomments.html:44
-#: app/misc.py:1160 app/misc.py:1566 app/misc.py:1575 app/misc.py:1582
+#: app/misc.py:1193 app/misc.py:1599 app/misc.py:1608 app/misc.py:1615
 msgid "[Deleted]"
 msgstr "[Borrado]"
 
-#: app/misc.py:1211
+#: app/misc.py:1244
 msgid "URLs not allowed, uploaded files only"
 msgstr "No se permiten URLs, solo archivos subidos"
 
-#: app/misc.py:1227
+#: app/misc.py:1260
 msgid "@import token not allowed"
 msgstr "token @import no permitido"
 
-#: app/misc.py:1236
+#: app/misc.py:1269
 msgid "Invalid CSS"
 msgstr "CSS inválido"
 
-#: app/misc.py:1659
+#: app/misc.py:1692
 msgid "Unknown error. User disappeared"
 msgstr "Error desconocido. El usuario desapareció"
 
-#: app/misc.py:1666
+#: app/misc.py:1699
 msgid "Score balance is negative"
 msgstr "Balance de puntaje negativo"
 
-#: app/misc.py:1668
+#: app/misc.py:1701
 msgid "Invalid vote value"
 msgstr "Valor inválido para el voto"
 
-#: app/misc.py:1677 app/views/do.py:208 app/views/do.py:273 app/views/do.py:393
-#: app/views/do.py:424 app/views/do.py:729 app/views/do.py:1213
-#: app/views/do.py:1294 app/views/do.py:1453 app/views/do.py:1468
-#: app/views/do.py:1539 app/views/do.py:1568 app/views/do.py:1936
-#: app/views/do.py:2272 app/views/do.py:2323 app/views/do.py:2361
-#: app/views/do.py:2399 app/views/do.py:2485 app/views/do.py:2548
-#: app/views/do.py:2609 app/views/do.py:2660
+#: app/misc.py:1710 app/views/do.py:207 app/views/do.py:272 app/views/do.py:392
+#: app/views/do.py:423 app/views/do.py:721 app/views/do.py:1205
+#: app/views/do.py:1286 app/views/do.py:1445 app/views/do.py:1460
+#: app/views/do.py:1531 app/views/do.py:1560 app/views/do.py:1928
+#: app/views/do.py:2264 app/views/do.py:2315 app/views/do.py:2353
+#: app/views/do.py:2391 app/views/do.py:2477 app/views/do.py:2540
+#: app/views/do.py:2601 app/views/do.py:2652
 msgid "Post does not exist"
 msgstr "El post no existe"
 
-#: app/misc.py:1680
+#: app/misc.py:1713
 msgid "You can't vote on deleted posts"
 msgstr "No puedes votar en posts borrados"
 
-#: app/misc.py:1696 app/views/do.py:1747 app/views/do.py:1784
-#: app/views/do.py:1822 app/views/do.py:2443 app/views/do.py:2543
-#: app/views/do.py:2655
+#: app/misc.py:1729 app/views/do.py:1739 app/views/do.py:1776
+#: app/views/do.py:1814 app/views/do.py:2435 app/views/do.py:2535
+#: app/views/do.py:2647
 msgid "Comment does not exist"
 msgstr "El comentario no existe"
 
-#: app/misc.py:1699
+#: app/misc.py:1732
 msgid "You can't vote on your own comments"
 msgstr "No puedes votar en tus propios comentarios"
 
-#: app/misc.py:1701
+#: app/misc.py:1734
 msgid "You can't vote on deleted comments"
 msgstr "No puedes votar en comentarios borrados"
 
-#: app/misc.py:1709
+#: app/misc.py:1742
 msgid "Invalid target"
 msgstr "Target inválido"
 
-#: app/misc.py:1713 app/views/do.py:674 app/views/do.py:1216
-#: app/views/do.py:1755
+#: app/misc.py:1746 app/views/do.py:673 app/views/do.py:1208
+#: app/views/do.py:1747
 msgid "You are banned on this sub."
 msgstr "Estás baneado en este sub."
 
-#: app/misc.py:1718 app/views/do.py:677 app/views/do.py:734
-#: app/views/do.py:1762
+#: app/misc.py:1751 app/views/do.py:676 app/views/do.py:726
+#: app/views/do.py:1754
 msgid "Post is archived"
 msgstr "El post está archivado"
 
-#: app/misc.py:1911
+#: app/misc.py:1944
 msgid "Invalid status request"
 msgstr ""
 
@@ -719,11 +719,11 @@ msgstr "Demasiadas peticiones"
 msgid "Too much, too fast!"
 msgstr "¡Demasiado, demasiado rápido!"
 
-#: app/html/errors/429.html:12
-msgid "Whoa, calm down, wait a bit and try again."
+#: app/html/errors/429.html:12 app/views/do.py:50
+msgid "Whoa, calm down and wait a bit, then try again."
 msgstr ""
 
-#: app/html/errors/500.html:4 app/html/errors/500.html:10 app/views/do.py:739
+#: app/html/errors/500.html:4 app/html/errors/500.html:10 app/views/do.py:731
 msgid "Internal error"
 msgstr "Error interno"
 
@@ -873,12 +873,8 @@ msgstr "Eliminar comentario"
 msgid "Delete Post"
 msgstr "Eliminar post"
 
-#: app/html/mod/reportdetails.html:215
-msgid "Leave note on report"
-msgstr ""
-
-#: app/html/mod/reportdetails.html:217
-msgid "Leave note"
+#: app/html/mod/reportdetails.html:215 app/html/mod/reportdetails.html:217
+msgid "Leave a note"
 msgstr ""
 
 #: app/html/mod/reportdetails.html:224
@@ -2673,11 +2669,11 @@ msgstr "El usuario tiene caracteres inválidos."
 msgid "Username is not available."
 msgstr "Usuario no disponible."
 
-#: app/views/auth.py:102 app/views/do.py:101
+#: app/views/auth.py:102 app/views/do.py:100
 msgid "We do not accept emails from your email provider."
 msgstr "No aceptamos correos electrónicos de su proveedor de correo electrónico."
 
-#: app/views/auth.py:106 app/views/do.py:105
+#: app/views/auth.py:106 app/views/do.py:104
 msgid "E-mail address is already in use."
 msgstr "La dirección de e-mail ya está en uso."
 
@@ -2702,401 +2698,397 @@ msgstr "El enlace que usaste no es válido o ha caducado."
 msgid "Invalid username or password."
 msgstr "Usuario o contraseña inválidos."
 
-#: app/views/do.py:51
-msgid "Whoa, calm down and wait a bit, then try again."
-msgstr ""
-
-#: app/views/do.py:109
+#: app/views/do.py:108
 msgid "Incorrect password"
 msgstr "Contraseña incorrecta"
 
-#: app/views/do.py:119
+#: app/views/do.py:118
 msgid "Password change failed. Please try again later"
 msgstr ""
 
-#: app/views/do.py:127
+#: app/views/do.py:126
 msgid "To confirm, click the link in the email we sent to you. You may want to check your spam folder, just in case ;)"
 msgstr ""
 
-#: app/views/do.py:137
+#: app/views/do.py:136
 #, python-format
 msgid "Confirm your email address for your %(site)s account"
 msgstr ""
 
-#: app/views/do.py:158
+#: app/views/do.py:157
 msgid "Wrong password"
 msgstr "Contraseña incorrecta"
 
-#: app/views/do.py:160
+#: app/views/do.py:159
 msgid "YES"
 msgstr "SI"
 
-#: app/views/do.py:161
+#: app/views/do.py:160
 msgid "Type \"YES\" in the box"
 msgstr ""
 
-#: app/views/do.py:180 app/views/do.py:321 app/views/do.py:350
-#: app/views/do.py:388 app/views/do.py:419 app/views/do.py:449
-#: app/views/do.py:835 app/views/do.py:911 app/views/do.py:980
-#: app/views/do.py:1035 app/views/do.py:1068 app/views/do.py:1099
-#: app/views/do.py:1130 app/views/do.py:1600 app/views/do.py:1647
-#: app/views/do.py:2490 app/views/do.py:2553 app/views/do.py:2614
-#: app/views/do.py:2665
+#: app/views/do.py:179 app/views/do.py:320 app/views/do.py:349
+#: app/views/do.py:387 app/views/do.py:418 app/views/do.py:448
+#: app/views/do.py:827 app/views/do.py:903 app/views/do.py:972
+#: app/views/do.py:1027 app/views/do.py:1060 app/views/do.py:1091
+#: app/views/do.py:1122 app/views/do.py:1592 app/views/do.py:1639
+#: app/views/do.py:2482 app/views/do.py:2545 app/views/do.py:2606
+#: app/views/do.py:2657
 msgid "Sub does not exist"
 msgstr ""
 
-#: app/views/do.py:211
+#: app/views/do.py:210
 msgid "Post was already deleted"
 msgstr ""
 
-#: app/views/do.py:217 app/views/do.py:285 app/views/do.py:324
-#: app/views/do.py:409 app/views/do.py:838 app/views/do.py:1750
-#: app/views/do.py:1788 app/views/do.py:1827 app/views/do.py:1943
-#: app/views/do.py:2496 app/views/do.py:2559 app/views/do.py:2617
-#: app/views/do.py:2668
+#: app/views/do.py:216 app/views/do.py:284 app/views/do.py:323
+#: app/views/do.py:408 app/views/do.py:830 app/views/do.py:1742
+#: app/views/do.py:1780 app/views/do.py:1819 app/views/do.py:1935
+#: app/views/do.py:2488 app/views/do.py:2551 app/views/do.py:2609
+#: app/views/do.py:2660
 msgid "Not authorized"
 msgstr "No autorizado"
 
-#: app/views/do.py:223
+#: app/views/do.py:222
 msgid "Cannot delete without reason"
 msgstr "No se puede borrar sin una razón"
 
-#: app/views/do.py:276
+#: app/views/do.py:275
 msgid "Post is not deleted"
 msgstr ""
 
-#: app/views/do.py:279
+#: app/views/do.py:278
 msgid "Can not un-delete a self-deleted post"
 msgstr ""
 
-#: app/views/do.py:288
+#: app/views/do.py:287
 msgid "Cannot un-delete without reason"
 msgstr ""
 
-#: app/views/do.py:401 app/views/do.py:1610
+#: app/views/do.py:400 app/views/do.py:1602
 msgid "Flair does not exist"
 msgstr ""
 
-#: app/views/do.py:428
+#: app/views/do.py:427
 msgid "Post has no flair"
 msgstr ""
 
-#: app/views/do.py:454 app/views/do.py:490 app/views/do.py:812
-#: app/views/do.py:844 app/views/do.py:925 app/views/do.py:976
-#: app/views/do.py:1031 app/views/do.py:1064 app/views/do.py:1095
+#: app/views/do.py:453 app/views/do.py:489 app/views/do.py:804
+#: app/views/do.py:836 app/views/do.py:917 app/views/do.py:968
+#: app/views/do.py:1023 app/views/do.py:1056 app/views/do.py:1087
 msgid "User does not exist"
 msgstr ""
 
-#: app/views/do.py:485
+#: app/views/do.py:484
 msgid "Badge does not exist"
 msgstr ""
 
-#: app/views/do.py:510 app/views/do.py:535 app/views/do.py:558
-#: app/views/do.py:583
+#: app/views/do.py:509 app/views/do.py:534 app/views/do.py:557
+#: app/views/do.py:582
 msgid "sub not found"
 msgstr "sub no encontrado"
 
-#: app/views/do.py:513
+#: app/views/do.py:512
 msgid "already subscribed"
 msgstr ""
 
-#: app/views/do.py:538
+#: app/views/do.py:537
 msgid "not subscribed"
 msgstr ""
 
-#: app/views/do.py:561
+#: app/views/do.py:560
 msgid "already blocked"
 msgstr ""
 
-#: app/views/do.py:586
+#: app/views/do.py:585
 msgid "sub not blocked"
 msgstr ""
 
-#: app/views/do.py:668
+#: app/views/do.py:667
 msgid "Post not found"
 msgstr ""
 
-#: app/views/do.py:671 app/views/do.py:731
+#: app/views/do.py:670 app/views/do.py:723
 msgid "Post was deleted"
 msgstr ""
 
-#: app/views/do.py:703 app/views/do.py:709
+#: app/views/do.py:703
 msgid "Couldn't get title"
 msgstr ""
 
-#: app/views/do.py:741
+#: app/views/do.py:733
 msgid "You are currently banned from commenting"
 msgstr ""
 
-#: app/views/do.py:747 app/views/do.py:751
+#: app/views/do.py:739 app/views/do.py:743
 msgid "Parent comment does not exist"
 msgstr ""
 
-#: app/views/do.py:858
+#: app/views/do.py:850
 msgid "Expiration time too far into the future"
 msgstr ""
 
-#: app/views/do.py:860
+#: app/views/do.py:852
 msgid "Invalid expiration time"
 msgstr ""
 
-#: app/views/do.py:863
+#: app/views/do.py:855
 msgid "Expiration date is in the past"
 msgstr ""
 
-#: app/views/do.py:867
+#: app/views/do.py:859
 msgid "Janitors may only create temporary bans"
 msgstr ""
 
-#: app/views/do.py:870
+#: app/views/do.py:862
 msgid "Already banned"
 msgstr ""
 
-#: app/views/do.py:888
+#: app/views/do.py:880
 #, python-format
 msgid "banned for: %(reason)s, until %(expires)s"
 msgstr ""
 
-#: app/views/do.py:890
+#: app/views/do.py:882
 #, python-format
 msgid "banned for: %(reason)s, permanent"
 msgstr ""
 
-#: app/views/do.py:929
+#: app/views/do.py:921
 msgid "User is already a mod"
 msgstr ""
 
-#: app/views/do.py:935
+#: app/views/do.py:927
 msgid "User has a pending invite"
 msgstr ""
 
-#: app/views/do.py:942
+#: app/views/do.py:934
 msgid "Invalid power level"
 msgstr ""
 
-#: app/views/do.py:947
+#: app/views/do.py:939
 msgid "User can't mod more than 20 subs"
 msgstr ""
 
-#: app/views/do.py:989 app/views/do.py:2144
+#: app/views/do.py:981 app/views/do.py:2136
 msgid "User is not banned"
 msgstr ""
 
-#: app/views/do.py:992
+#: app/views/do.py:984
 msgid "Janitors may only remove bans placed by themselves"
 msgstr ""
 
-#: app/views/do.py:1018
+#: app/views/do.py:1010
 msgid "Ban removed"
 msgstr "Ban eliminado"
 
-#: app/views/do.py:1043
+#: app/views/do.py:1035
 msgid "User is not mod"
 msgstr "El usuario no es un mod"
 
-#: app/views/do.py:1053 app/views/do.py:1084
+#: app/views/do.py:1045 app/views/do.py:1076
 msgid "Access denied"
 msgstr "Acceso denegado"
 
-#: app/views/do.py:1076
+#: app/views/do.py:1068
 msgid "User has not been invited to moderate the sub"
 msgstr ""
 
-#: app/views/do.py:1105 app/views/do.py:1137
+#: app/views/do.py:1097 app/views/do.py:1129
 msgid "You have not been invited to mod this sub"
 msgstr ""
 
-#: app/views/do.py:1109
+#: app/views/do.py:1101
 msgid "You can't mod more than 20 subs"
 msgstr ""
 
-#: app/views/do.py:1152
+#: app/views/do.py:1144
 msgid "Message not found"
 msgstr "Mensaje no encontrado"
 
-#: app/views/do.py:1189 app/views/do.py:1195 app/views/do.py:1244
-#: app/views/do.py:1250
+#: app/views/do.py:1181 app/views/do.py:1187 app/views/do.py:1236
+#: app/views/do.py:1242
 msgid "Message does not exist"
 msgstr "El mensaje no existe"
 
-#: app/views/do.py:1205
+#: app/views/do.py:1197
 msgid "Missing title"
 msgstr "Falta el título"
 
-#: app/views/do.py:1208
+#: app/views/do.py:1200
 msgid "Title too short."
 msgstr "El título es muy corto."
 
-#: app/views/do.py:1219
+#: app/views/do.py:1211
 msgid "You cannot edit the post title anymore"
 msgstr "Ya no puedes editar el título del post"
 
-#: app/views/do.py:1222
+#: app/views/do.py:1214
 msgid "You did not post this!"
 msgstr "¡No has publicado esto!"
 
-#: app/views/do.py:1234
+#: app/views/do.py:1226
 msgid "Bork bork"
 msgstr "Ñaca ñaca"
 
-#: app/views/do.py:1286
+#: app/views/do.py:1278
 msgid "Post already announced"
 msgstr ""
 
-#: app/views/do.py:1327
+#: app/views/do.py:1319
 msgid "Domain is already banned"
 msgstr ""
 
-#: app/views/do.py:1355
+#: app/views/do.py:1347
 msgid "Domain is not banned"
 msgstr ""
 
-#: app/views/do.py:1456
+#: app/views/do.py:1448
 msgid "Already saved"
 msgstr ""
 
-#: app/views/do.py:1475
+#: app/views/do.py:1467
 msgid "Post was not saved"
 msgstr ""
 
-#: app/views/do.py:1633
+#: app/views/do.py:1625
 msgid "Flair has invalid characters"
 msgstr ""
 
-#: app/views/do.py:1657
+#: app/views/do.py:1649
 msgid "Rule does not exist"
 msgstr "La regla no existe"
 
-#: app/views/do.py:1679
+#: app/views/do.py:1671
 msgid "Rule has invalid characters"
 msgstr ""
 
-#: app/views/do.py:1690
+#: app/views/do.py:1682
 #, python-format
 msgid "Set a new password on %(site)s"
 msgstr ""
 
-#: app/views/do.py:1716 app/views/do.py:1719 app/views/do.py:1725
+#: app/views/do.py:1708 app/views/do.py:1711 app/views/do.py:1717
 msgid "Password recovery link expired"
 msgstr ""
 
-#: app/views/do.py:1731
+#: app/views/do.py:1723
 msgid "Password change failed. Please try again later."
 msgstr ""
 
-#: app/views/do.py:1759
+#: app/views/do.py:1751
 msgid "You can't edit a deleted comment"
 msgstr "No puedes editar un comentario borrado"
 
-#: app/views/do.py:1852 app/views/do.py:1865
+#: app/views/do.py:1844 app/views/do.py:1857
 msgid "Not authenticated"
 msgstr "No autenticado"
 
-#: app/views/do.py:1922
+#: app/views/do.py:1914
 msgid "Missing text"
 msgstr ""
 
-#: app/views/do.py:1953
+#: app/views/do.py:1945
 msgid "User not found"
 msgstr "Usuario no encontrado"
 
-#: app/views/do.py:1986
+#: app/views/do.py:1978
 msgid "File name too long."
 msgstr "El nombre del archivo es muy largo."
 
-#: app/views/do.py:1990
+#: app/views/do.py:1982
 msgid "File name too short or missing."
 msgstr "El nombre del archivo es muy corto o no fue enviado."
 
-#: app/views/do.py:1994
+#: app/views/do.py:1986
 msgid "Invalid file name."
 msgstr "Nombre de archivo inválido."
 
-#: app/views/do.py:1999
+#: app/views/do.py:1991
 msgid "Please select a file to upload."
 msgstr "Por favor seleccione un archivo a subir."
 
-#: app/views/do.py:2004
+#: app/views/do.py:1996
 msgid "Invalid file type. Only jpg, png and gif allowed."
 msgstr "Tipo de archivo inválido. Solo se permiten jpg, png y gif."
 
-#: app/views/do.py:2010
+#: app/views/do.py:2002
 msgid "Not enough available space to upload file."
 msgstr "No tienes suficiente espacio disponible para subir este archivo."
 
-#: app/views/do.py:2275 app/views/do.py:2326
+#: app/views/do.py:2267 app/views/do.py:2318
 msgid "Post is not a poll"
 msgstr "El post no es una encuesta"
 
-#: app/views/do.py:2280
+#: app/views/do.py:2272
 msgid "Poll option does not exist"
 msgstr ""
 
-#: app/views/do.py:2285
+#: app/views/do.py:2277
 msgid "Already voted"
 msgstr ""
 
-#: app/views/do.py:2292 app/views/do.py:2299 app/views/do.py:2331
-#: app/views/do.py:2338
+#: app/views/do.py:2284 app/views/do.py:2291 app/views/do.py:2323
+#: app/views/do.py:2330
 msgid "Poll is closed"
 msgstr ""
 
-#: app/views/do.py:2306
+#: app/views/do.py:2298
 msgid "Insufficient user level"
 msgstr ""
 
-#: app/views/do.py:2370 app/views/do.py:2374
+#: app/views/do.py:2362 app/views/do.py:2366
 msgid "Poll already closed."
 msgstr ""
 
-#: app/views/do.py:2402
+#: app/views/do.py:2394
 msgid "Post was removed"
 msgstr ""
 
-#: app/views/do.py:2407 app/views/do.py:2451
+#: app/views/do.py:2399 app/views/do.py:2443
 msgid "You have already reported this post"
 msgstr ""
 
-#: app/views/do.py:2412 app/views/do.py:2456
+#: app/views/do.py:2404 app/views/do.py:2448
 msgid "Report reason too short."
 msgstr ""
 
-#: app/views/do.py:2415 app/views/do.py:2459
+#: app/views/do.py:2407 app/views/do.py:2451
 msgid "You are banned from this sub."
 msgstr ""
 
-#: app/views/do.py:2446
+#: app/views/do.py:2438
 msgid "Comment was removed"
 msgstr ""
 
-#: app/views/do.py:2480 app/views/do.py:2538 app/views/do.py:2604
-#: app/views/do.py:2650
+#: app/views/do.py:2472 app/views/do.py:2530 app/views/do.py:2596
+#: app/views/do.py:2642
 msgid "Report does not exist"
 msgstr ""
 
-#: app/views/do.py:2493 app/views/do.py:2556
+#: app/views/do.py:2485 app/views/do.py:2548
 msgid "Invalid action"
 msgstr "Acción inválida"
 
-#: app/views/do.py:2499 app/views/do.py:2562
+#: app/views/do.py:2491 app/views/do.py:2554
 msgid "This report has already been closed"
 msgstr ""
 
-#: app/views/do.py:2502 app/views/do.py:2565
+#: app/views/do.py:2494 app/views/do.py:2557
 msgid "This report is already open"
 msgstr ""
 
-#: app/views/do.py:2517 app/views/do.py:2580 app/views/do.py:2628
-#: app/views/do.py:2679
+#: app/views/do.py:2509 app/views/do.py:2572 app/views/do.py:2620
+#: app/views/do.py:2671
 msgid "Failed to close report"
 msgstr ""
 
-#: app/views/do.py:2524 app/views/do.py:2587
+#: app/views/do.py:2516 app/views/do.py:2579
 msgid "Failed to reopen report"
 msgstr ""
 
-#: app/views/do.py:2527 app/views/do.py:2590 app/views/do.py:2631
-#: app/views/do.py:2682
+#: app/views/do.py:2519 app/views/do.py:2582 app/views/do.py:2623
+#: app/views/do.py:2674
 msgid "Failed to update report"
 msgstr ""
 
