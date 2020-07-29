@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-07-29 11:55-0300\n"
-"PO-Revision-Date: 2020-07-29 14:55\n"
+"POT-Creation-Date: 2020-07-29 12:30-0300\n"
+"PO-Revision-Date: 2020-07-29 15:41\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -1226,6 +1226,11 @@ msgstr "Crea un sub"
 msgid "Top posts in the last 24 hours"
 msgstr "Posts más votados en las últimas 24 horas"
 
+#: app/html/shared/sidebar/home.html:25 app/html/shared/sidebar/home.html:48
+#, python-format
+msgid "%(timeago)s in %(sub)s"
+msgstr ""
+
 #: app/html/shared/sidebar/home.html:35
 msgid "Sub of the day"
 msgstr "Sub del día"
@@ -1323,7 +1328,7 @@ msgstr "Dueño"
 #: app/html/shared/sidebar/sub.html:72
 #, python-format
 msgid "Created by <a href=\"/u/%(name)s\">%(name)s</a>"
-msgstr "Creado por <a href=\"/u/%(name)s\">%(name)s</a>"
+msgstr ""
 
 #: app/html/shared/sidebar/sub.html:81
 msgid "Sub Moderation"
@@ -1918,7 +1923,7 @@ msgstr ""
 #: app/html/sub/postcomments.html:31
 #, python-format
 msgid "<span class=\"cscore\">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
-msgstr "<span class=\"cscore\">%(score)i</span> puntos</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
+msgstr ""
 
 #: app/html/sub/postcomments.html:37
 #, python-format
@@ -2137,6 +2142,12 @@ msgstr ""
 msgid "click here."
 msgstr ""
 
+#: app/html/user/email/confirm-email-change.html:9
+#: app/html/user/email/login-link.html:9
+#: app/html/user/email/password-recovery.html:10
+msgid "Or you can paste the following link in your browser's address bar:"
+msgstr ""
+
 #: app/html/user/email/confirm-email-change.html:11
 #: app/html/user/email/login-link.html:11
 #: app/html/user/email/password-recovery.html:12
@@ -2248,6 +2259,21 @@ msgstr ""
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> un-deleted one of your posts in <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr ""
 
+#: app/html/user/messages/notifications.html:71
+#, python-format
+msgid "Your comment. Posted %(timeago)s. <b>%(score)i</b> points."
+msgstr ""
+
+#: app/html/user/messages/notifications.html:81
+#, python-format
+msgid "Posted %(timeago)s. <b>%(score)s</b> points. Read %(timeagoread)s"
+msgstr ""
+
+#: app/html/user/messages/notifications.html:83
+#, python-format
+msgid "Posted %(timeago)s. <b>%(score)s</b> points."
+msgstr ""
+
 #: app/html/user/messages/notifications.html:90
 #: app/html/user/messages/notifications.html:108
 #: app/html/user/messages/notifications.html:125
@@ -2265,6 +2291,11 @@ msgstr ""
 #: app/html/user/messages/notifications.html:130 app/static/js/Messages.js:123
 #: app/static/js/Messages.js:126
 msgid "block"
+msgstr ""
+
+#: app/html/user/messages/notifications.html:122
+#, python-format
+msgid "Please visit %(link)s to accept or reject the invitation"
 msgstr ""
 
 #: app/html/user/settings/account.html:9
