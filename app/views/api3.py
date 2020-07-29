@@ -12,7 +12,7 @@ from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
 from .. import misc
 from ..auth import auth_provider
 from ..socketio import socketio
-from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT
+from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, captchas_required
 from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote, SubSubscriber
 from ..models import SiteMetadata, UserMetadata, Message, SubRule, Notification
 from ..caching import cache
@@ -598,17 +598,15 @@ def chall_wrong(error):
 
 
 def check_challenge():
-    challenge_token = request.json.get('challengeToken')
-    challenge_response = request.json.get('challengeResponse')
+    if captchas_required():
+        challenge_token = request.json.get('challengeToken')
+        challenge_response = request.json.get('challengeResponse')
 
-    if not challenge_token or not challenge_response:
-        misc.reset_ratelimit(30)
-        raise ChallengeRequired
+        if not challenge_token or not challenge_response:
+            raise ChallengeRequired
 
-    if not misc.validate_captcha(challenge_token, challenge_response):
-        misc.reset_ratelimit(30)
-        raise ChallengeWrong
-
+        if not misc.validate_captcha(challenge_token, challenge_response):
+            raise ChallengeWrong
     return True
 
 
@@ -616,7 +614,8 @@ def check_challenge():
 @jwt_required
 def get_challenge():
     challenge = misc.create_captcha()
-    return jsonify(challenge_token=challenge[0], challenge_blob=challenge[1])
+    token, blob = (None, None) if challenge is None else challenge
+    return jsonify(challenge_token=token, challenge_blob=blob)
 
 
 @API.route('/post', methods=['POST'])

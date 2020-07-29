@@ -1363,6 +1363,8 @@ LOG_TYPE_REPORT_USER_SUB_UNBANNED = 67
 LOG_TYPE_REPORT_NOTE = 68
 LOG_TYPE_EMAIL_DOMAIN_BAN = 69
 LOG_TYPE_EMAIL_DOMAIN_UNBAN = 70
+LOG_TYPE_DISABLE_CAPTCHAS = 71
+LOG_TYPE_ENABLE_CAPTCHAS = 72
 
 
 def create_sitelog(action, uid, comment='', link=''):
@@ -1406,9 +1408,18 @@ def is_domain_banned(addr, domain_type):
     return False
 
 
+def captchas_required():
+    try:
+        return SiteMetadata.get(SiteMetadata.key == 'require_captchas').value == '1'
+    except SiteMetadata.DoesNotExist:
+        return True
+
+
 def create_captcha():
     """ Generates a captcha image.
     Returns a tuple with a token and the base64 encoded image """
+    if not captchas_required():
+        return None
     token = str(uuid.uuid4())
     captchagen = ImageCaptcha(width=250, height=70)
     if random.randint(1, 50) == 1:
@@ -1429,7 +1440,7 @@ def create_captcha():
 
 
 def validate_captcha(token, response):
-    if config.app.testing or config.app.development:
+    if config.app.testing or config.app.development or not captchas_required():
         return True
     cap = rconn.get('cap-' + token)
     if cap:

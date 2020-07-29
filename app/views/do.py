@@ -1416,6 +1416,34 @@ def enable_registration(value):
     return redirect(url_for('admin.index'))
 
 
+@do.route("/do/admin/require_captchas/<value>")
+def enable_captchas(value):
+    """ Enable or disable the captcha solving requirement. """
+    if not current_user.is_admin():
+        abort(404)
+
+    if value == 'True':
+        state = '1'
+    elif value == 'False':
+        state = '0'
+    else:
+        abort(400)
+
+    try:
+        sm = SiteMetadata.get(SiteMetadata.key == 'require_captchas')
+        sm.value = state
+        sm.save()
+    except SiteMetadata.DoesNotExist:
+        SiteMetadata.create(key='require_captchas', value=state)
+
+    if value == 'True':
+        misc.create_sitelog(misc.LOG_TYPE_ENABLE_CAPTCHAS, current_user.uid)
+    else:
+        misc.create_sitelog(misc.LOG_TYPE_DISABLE_CAPTCHAS, current_user.uid)
+
+    return redirect(url_for('admin.index'))
+
+
 @do.route("/do/save_post/<pid>", methods=['POST'])
 def save_post(pid):
     """ Save a post to your Saved Posts """
