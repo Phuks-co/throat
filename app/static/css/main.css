@@ -2236,3 +2236,8 @@ article.text-post.comment.deleted {
   float: right;
   margin-left: 10px;
 }
+
+.loginlinklist {
+  list-style: none;
+  line-height: 1.4;
+}

@@ -11,7 +11,7 @@ from itsdangerous.exc import SignatureExpired, BadSignature
 from .. import misc, config
 from ..auth import auth_provider, registration_is_enabled, email_validation_is_required
 from ..auth import normalize_email
-from ..forms import LoginForm, RegistrationForm
+from ..forms import LoginForm, RegistrationForm, ResendConfirmationForm
 from ..misc import engine, send_email, is_domain_banned
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
 from ..models import User, UserMetadata, UserStatus, InviteCode, SubSubscriber, rconn
@@ -185,7 +185,7 @@ def login_with_token(token):
     user = user_from_login_token(token)
     if user is None:
         flash(_('The link you used is invalid or has expired.'), 'error')
-        return redirect(url_for('auth.register'))
+        return redirect(url_for('auth.resend_confirmation'))
     elif user.status == UserStatus.PROBATION:
         user.status = UserStatus.OK
         user.save()
@@ -194,6 +194,30 @@ def login_with_token(token):
         login_user(theuser, remember=False)
         session['remember_me'] = False
     return redirect(url_for('wiki.welcome'))
+
+
+@bp.route('/register/resend-confirmation', methods=['GET', 'POST'])
+@ratelimit(SIGNUP_LIMIT)
+def resend_confirmation_email():
+    if current_user.is_authenticated:
+        return redirect(url_for('home.index'))
+    form = ResendConfirmationForm()
+    if not form.validate():
+        return engine.get_template('user/resend_confirmation.html').render(
+            {'form': form,
+             'error': misc.get_errors(form, True)})
+    try:
+        email = normalize_email(form.email.data)
+        user = User.get(fn.Lower(User.email) == email.lower())
+        if user.status == UserStatus.PROBATION:
+            send_login_link_email(user)
+            return redirect(url_for('auth.confirm_registration'))
+        elif user.status == UserStatus.OK:
+            flash(_("Your email is already confirmed."), 'message')
+            return redirect(url_for('auth.login'))
+    except User.DoesNotExist:
+        pass
+    return redirect(url_for('user.recovery_email_sent'))
 
 
 @bp.route("/login", methods=['GET', 'POST'])
@@ -220,13 +244,13 @@ def login():
             return engine.get_template('user/login.html').render(
                 {'error': _("Invalid username or password."), 'loginform': form})
 
-        if user.status == UserStatus.PROBATION:
-            return redirect(url_for('auth.confirm_registration'))
-        elif user.status != UserStatus.OK:
+        if user.status != UserStatus.OK and user.status != UserStatus.PROBATION:
             return engine.get_template('user/login.html').render(
                 {'error': _("Invalid username or password."), 'loginform': form})
 
         if auth_provider.validate_password(user, form.password.data):
+            if user.status == UserStatus.PROBATION:
+                return redirect(url_for('auth.resend_confirmation_email'))
             session['remember_me'] = form.remember.data
             theuser = misc.load_user(user.uid)
             login_user(theuser, remember=form.remember.data)

@@ -64,11 +64,45 @@ def test_email_required_for_registration(client, user_info):
         assert b'Log out' not in rv.data
 
 
-# @pytest.mark.parametrize('test_config', [{'auth': {'require_valid_emails': True}}])
-# def test_login_before_confirming_email():
-#     """Registered users with unconfirmed emails can't log in."""
-#     # It should give them the option of sending another link.
-#     pass
+@pytest.mark.parametrize('test_config', [{'auth': {'require_valid_emails': True}}])
+def test_login_before_confirming_email(client, user_info):
+    """Registered users with unconfirmed emails can't log in."""
+    rv = client.get(url_for('auth.register'))
+    with mail.record_messages() as outbox:
+        data = dict(csrf_token=csrf_token(rv.data),
+                    username=user_info['username'],
+                    password=user_info['password'],
+                    confirm=user_info['password'],
+                    email_required=user_info['email'],
+                    invitecode='',
+                    accept_tos=True,
+                    captcha='xyzzy')
+        rv = client.post(url_for('auth.register'), data=data, follow_redirects=True)
+        assert b'spam' in rv.data  # Telling user to go check it.
+
+        message = outbox.pop()
+
+        rv = client.get(url_for('auth.login'))
+        rv = client.post(url_for('auth.login'),
+                         data=dict(csrf_token=csrf_token(rv.data),
+                                   username=user_info['username'],
+                                   password=user_info['password']),
+                         follow_redirects=True)
+        assert b'Resend account confirmation instructions' in rv.data
+        print("================", user_info['email'])
+        rv = client.post(url_for('auth.resend_confirmation_email'),
+                         data=dict(csrf_token=csrf_token(rv.data),
+                                   email=user_info['email']),
+                         follow_redirects=True)
+
+        assert b'spam' in rv.data  # Telling user to go check it.
+        message = outbox.pop()
+        soup = BeautifulSoup(message.html, 'html.parser')
+        token = soup.a['href'].split('/')[-1]
+        rv = client.get(url_for('auth.login_with_token', token=token),
+                        follow_redirects=True)
+
+        assert b'Log out' in rv.data
 
 
 def test_logout_and_login_again(client, user_info):
