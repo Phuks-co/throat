@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Throat 1.0\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-07-29 12:30-0300\n"
+"POT-Creation-Date: 2020-07-29 15:01-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -810,7 +810,8 @@ msgid "Ban %(reported)s from %(site)s"
 msgstr ""
 
 #: app/html/mod/reportdetails.html:104
-msgid "has been banned from"
+#, python-format
+msgid "%(user)s has been banned from %(site)s"
 msgstr ""
 
 #: app/html/mod/reportdetails.html:114 app/html/mod/reportdetails.html:118
@@ -2452,8 +2453,12 @@ msgid "deleted"
 msgstr ""
 
 #: app/static/js/Mod.js:18 app/static/js/Mod.js:33 app/static/js/Mod.js:62
-#: app/static/js/Mod.js:77
-msgid "Error:"
+#: app/static/js/Mod.js:77 app/static/js/Poll.js:78 app/static/js/Poll.js:130
+#: app/static/js/Post.js:180 app/static/js/Post.js:195
+#: app/static/js/Post.js:211 app/static/js/Post.js:226
+#: app/static/js/Post.js:408 app/static/js/Post.js:435
+#: app/static/js/Post.js:457
+msgid "Error: %1"
 msgstr ""
 
 #: app/static/js/Mod.js:24 app/static/js/Mod.js:39 app/static/js/Mod.js:68
@@ -2464,13 +2469,6 @@ msgstr ""
 
 #: app/static/js/Poll.js:68
 msgid "Voting..."
-msgstr ""
-
-#: app/static/js/Poll.js:78 app/static/js/Poll.js:130 app/static/js/Post.js:180
-#: app/static/js/Post.js:195 app/static/js/Post.js:211
-#: app/static/js/Post.js:226 app/static/js/Post.js:408
-#: app/static/js/Post.js:435 app/static/js/Post.js:457
-msgid "Error: %1"
 msgstr ""
 
 #: app/static/js/Poll.js:123
@@ -2722,11 +2720,11 @@ msgstr ""
 msgid "Username is not available."
 msgstr ""
 
-#: app/views/auth.py:102
+#: app/views/auth.py:102 app/views/do.py:101
 msgid "We do not accept emails from your email provider."
 msgstr ""
 
-#: app/views/auth.py:106
+#: app/views/auth.py:106 app/views/do.py:105
 msgid "E-mail address is already in use."
 msgstr ""
 
@@ -2753,14 +2751,6 @@ msgstr ""
 
 #: app/views/do.py:51
 msgid "Whoa, calm down and wait a bit, then try again."
-msgstr ""
-
-#: app/views/do.py:101
-msgid "We do not accept emails from your email provider"
-msgstr ""
-
-#: app/views/do.py:105
-msgid "E-mail address is already in use"
 msgstr ""
 
 #: app/views/do.py:109

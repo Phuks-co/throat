@@ -15,7 +15,7 @@ u.addEventForChild(document, 'click', '.close-report', function (e, qelem) {
       function (data) {
         if (data.status != "ok") {
           errorbox.style.display = 'block';
-          errorbox.innerHTML = _('Error:') + data.error;
+          errorbox.innerHTML = _('Error: %1', data.error);
         } else {
           window.location.reload();
         }
@@ -30,7 +30,7 @@ u.addEventForChild(document, 'click', '.close-report', function (e, qelem) {
       function (data) {
         if (data.status != "ok") {
           errorbox.style.display = 'block';
-          errorbox.innerHTML = _('Error:') + data.error;
+          errorbox.innerHTML = _('Error: %1', data.error);
         } else {
           window.location.reload();
         }
@@ -59,7 +59,7 @@ u.addEventForChild(document, 'click', '.close-related-reports', function (e, qel
       function (data) {
         if (data.status != "ok") {
           errorbox.style.display = 'block';
-          errorbox.innerHTML = _('Error:') + data.error;
+          errorbox.innerHTML = _('Error: %1', data.error);
         } else {
           window.location.reload();
         }
@@ -74,7 +74,7 @@ u.addEventForChild(document, 'click', '.close-related-reports', function (e, qel
       function (data) {
         if (data.status != "ok") {
           errorbox.style.display = 'block';
-          errorbox.innerHTML = _('Error:') + data.error;
+          errorbox.innerHTML = _('Error: %1', data.error);
         } else {
           window.location.reload();
         }

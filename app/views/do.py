@@ -97,11 +97,11 @@ def edit_account():
             email = normalize_email(email)
             if is_domain_banned(email, domain_type='email'):
                 return json.dumps({'status': 'error',
-                                   'error': [_('We do not accept emails from your email provider')]})
+                                   'error': [_('We do not accept emails from your email provider.')]})
             user_from_email = auth_provider.get_user_by_email(email)
             if user_from_email is not None and user.uid != user_from_email.uid:
                 return json.dumps({'status': 'error',
-                                   'error': [_('E-mail address is already in use')]})
+                                   'error': [_('E-mail address is already in use.')]})
 
         if not auth_provider.validate_password(user, form.oldpassword.data):
             return json.dumps({'status': 'error',
