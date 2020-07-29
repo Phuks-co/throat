@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-07-29 12:30-0300\n"
-"PO-Revision-Date: 2020-07-29 15:41\n"
+"PO-Revision-Date: 2020-07-29 16:38\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -20,19 +20,19 @@ msgstr ""
 
 #: app/__init__.py:47
 msgid "Please log in to access this page."
-msgstr ""
+msgstr "Inicie sesión para acceder a esta página."
 
 #: app/__init__.py:48
 msgid "Please reauthenticate to access this page."
-msgstr ""
+msgstr "Por favor, vuelva a autenticarse para acceder a esta página."
 
 #: app/badges.py:5
 msgid "The guys that take all the blame"
-msgstr ""
+msgstr "Los culpables de todos los males"
 
 #: app/badges.py:6
 msgid "Helped find or fix a bug"
-msgstr ""
+msgstr "Ayudó a encontrar o arreglar un bug"
 
 #: app/badges.py:7
 msgid "You knew what you were getting into when you let me get into you"
@@ -48,7 +48,7 @@ msgstr ""
 
 #: app/badges.py:13
 msgid "Top post of the day"
-msgstr ""
+msgstr "Mejores posts del día"
 
 #: app/badges.py:14
 msgid "Make a good post every day for a week"
@@ -73,7 +73,7 @@ msgstr "Ganador del torneo del shitposter del año 2018"
 #: app/misc.py:972
 #, python-format
 msgid "Error in the '%(field)s' field - %(error)s"
-msgstr ""
+msgstr "Error en el campo '%(field)s' - %(error)s"
 
 #: app/html/shared/post.html:71 app/html/shared/post.html:73
 #: app/html/site/log.html:28 app/html/sub/log.html:28 app/html/sub/post.html:42
@@ -155,12 +155,12 @@ msgstr ""
 
 #: app/storage.py:159
 msgid "File type not allowed"
-msgstr ""
+msgstr "Tipo de archivo no permitido"
 
 #: app/storage.py:165
 #, python-format
 msgid "File size exceeds the maximum allowed size (%(size)s)"
-msgstr ""
+msgstr "El archivo excede el máximo permitido (%(size)s MB)"
 
 #: app/forms/admin.py:12
 msgid "Question"
@@ -171,7 +171,7 @@ msgstr "Pregunta"
 #: app/html/mod/reports.html:26 app/html/mod/sub_reports.html:26
 #: app/html/mod/sub_reports_closed.html:26
 msgid "Sub"
-msgstr ""
+msgstr "Sub"
 
 #: app/forms/admin.py:20
 msgid "New owner username"
@@ -209,19 +209,19 @@ msgstr "Ingrese el token"
 
 #: app/forms/admin.py:51
 msgid "Slug (URL)"
-msgstr ""
+msgstr "Slug (URL)"
 
 #: app/forms/admin.py:52
 msgid "Page title"
-msgstr ""
+msgstr "Título de la página"
 
 #: app/forms/admin.py:54
 msgid "Content"
-msgstr ""
+msgstr "Contenido"
 
 #: app/forms/admin.py:58
 msgid "Code (empty to generate random)"
-msgstr ""
+msgstr "Código (vacío para generar aleatorio)"
 
 #: app/forms/admin.py:59 app/html/user/settings/invitecode.html:24
 msgid "Uses"
@@ -229,7 +229,7 @@ msgstr "Usos"
 
 #: app/forms/admin.py:60
 msgid "Expiration date"
-msgstr ""
+msgstr "Fecha de caducidad"
 
 #: app/forms/sub.py:13
 msgid "Search"
@@ -261,7 +261,7 @@ msgstr "Texto del flair"
 
 #: app/forms/sub.py:68 app/forms/sub.py:74
 msgid "Rule text"
-msgstr ""
+msgstr "Texto de la regla"
 
 #: app/forms/sub.py:87
 msgid "Sub is NSFW"
@@ -337,11 +337,11 @@ msgstr "Post de link"
 
 #: app/forms/sub.py:116 app/forms/sub.py:133
 msgid "NSFW?"
-msgstr ""
+msgstr "¿NSFW?"
 
 #: app/forms/sub.py:118
 msgid "Option"
-msgstr ""
+msgstr "Opción"
 
 #: app/forms/sub.py:119
 msgid "Hide poll results until it closes"
@@ -354,7 +354,7 @@ msgstr "Hora en la que se cerrará la encuesta"
 #: app/forms/sub.py:122 app/forms/user.py:82 app/forms/user.py:143
 #: app/html/sub/createpost.html:116 app/html/user/password_recovery.html:26
 msgid "Captcha"
-msgstr ""
+msgstr "Captcha"
 
 #: app/forms/sub.py:141
 msgid "Write your comment here. Styling with Markdown format is supported."
@@ -378,7 +378,7 @@ msgstr ""
 
 #: app/forms/sub.py:178
 msgid "Comment text"
-msgstr ""
+msgstr "Texto del comentario"
 
 #: app/forms/user.py:46 app/forms/user.py:74 app/forms/user.py:151
 #: app/html/errors/403.html:24 app/html/user/login.html:19
@@ -403,7 +403,7 @@ msgstr "Dirección de e-mail inválida."
 
 #: app/forms/user.py:72 app/forms/user.py:91
 msgid "Email Address (required)"
-msgstr ""
+msgstr "Dirección de email (requerido)"
 
 #: app/forms/user.py:76 app/forms/user.py:94 app/forms/user.py:153
 msgid "Passwords must match"
@@ -532,7 +532,7 @@ msgstr "Página siguiente"
 
 #: app/html/admin/createwiki.html:33 app/html/sub/createpost.html:43
 msgid "(Optional) Write your post content here. Styling with Markdown format is supported."
-msgstr ""
+msgstr "(Opcional) Escribe el contenido del post aquí. Formateo con Markdown soportado."
 
 #: app/html/admin/createwiki.html:37 app/html/mod/reportdetails.html:218
 #: app/static/js/Post.js:695
@@ -550,25 +550,25 @@ msgstr ""
 #: app/html/admin/reports.html:20 app/html/mod/reports.html:20
 #: app/html/mod/sub_reports.html:20 app/html/mod/sub_reports_closed.html:20
 msgid "Total Open Reports:"
-msgstr ""
+msgstr "Total de reportes abiertos:"
 
 #: app/html/admin/reports.html:20 app/html/mod/reports.html:20
 #: app/html/mod/sub_reports.html:20 app/html/mod/sub_reports_closed.html:20
 msgid "Total Closed Reports:"
-msgstr ""
+msgstr "Total de reportes cerrados:"
 
 #: app/html/admin/reports.html:25 app/html/mod/closed.html:27
 #: app/html/mod/reports.html:27 app/html/mod/sub_reports.html:27
 #: app/html/mod/sub_reports_closed.html:27
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: app/html/admin/reports.html:26 app/html/mod/closed.html:28
 #: app/html/mod/reportdetails.html:71 app/html/mod/reportdetails.html:306
 #: app/html/mod/reports.html:28 app/html/mod/sub_reports.html:28
 #: app/html/mod/sub_reports_closed.html:28
 msgid "Reporter"
-msgstr ""
+msgstr "Reportado por"
 
 #: app/html/admin/reports.html:27 app/html/mod/closed.html:29
 #: app/html/mod/reportdetails.html:63 app/html/mod/reportdetails.html:307
@@ -590,12 +590,12 @@ msgstr ""
 #: app/html/mod/sub_reports.html:31 app/html/mod/sub_reports_closed.html:31
 #: app/html/sub/log.html:11
 msgid "Time"
-msgstr ""
+msgstr "Fecha/Hora"
 
 #: app/html/admin/reports.html:30 app/html/mod/reportdetails.html:79
 #: app/html/mod/reportdetails.html:308
 msgid "Status"
-msgstr ""
+msgstr "Estado"
 
 #: app/html/admin/reports.html:39 app/html/mod/closed.html:41
 #: app/html/mod/reports.html:41 app/html/mod/sub_reports.html:41
@@ -623,11 +623,11 @@ msgstr ""
 #: app/html/admin/reports.html:51 app/html/mod/reportdetails.html:83
 #: app/html/mod/reportdetails.html:327
 msgid "Closed"
-msgstr ""
+msgstr "Cerrado"
 
 #: app/html/admin/reports.html:51
 msgid " [reopen]"
-msgstr ""
+msgstr " [reabrir]"
 
 #: app/html/admin/totp.html:11 app/html/mod/totp.html:11
 msgid "Further authentication required"
