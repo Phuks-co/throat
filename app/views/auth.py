@@ -65,25 +65,27 @@ def register():
         del form.email_optional
     else:
         del form.email_required
-    form.cap_key, form.cap_b64 = misc.create_captcha()
+    captcha = misc.create_captcha()
 
     if not registration_is_enabled():
         return engine.get_template('user/registration_disabled.html').render({'test': 'test'})
 
     if not form.validate():
-       return engine.get_template('user/register.html').render({'error': misc.get_errors(form, True), 'regform': form})
+       return engine.get_template('user/register.html').render({'error': misc.get_errors(form, True),
+                                                                'regform': form, 'captcha': captcha})
 
     if not misc.validate_captcha(form.ctok.data, form.captcha.data):
-        return engine.get_template('user/register.html').render({'error': _("Invalid captcha."), 'regform': form})
+        return engine.get_template('user/register.html').render({'error': _("Invalid captcha."),
+                                                                 'regform': form, 'captcha': captcha})
 
     if not misc.allowedNames.match(form.username.data):
         return engine.get_template('user/register.html').render(
-            {'error': _("Username has invalid characters."), 'regform': form})
+            {'error': _("Username has invalid characters."), 'regform': form, 'captcha': captcha})
     # check if user or email are in use
     try:
         User.get(fn.Lower(User.name) == form.username.data.lower())
         return engine.get_template('user/register.html').render(
-            {'error': _("Username is not available."), 'regform': form})
+            {'error': _("Username is not available."), 'regform': form, 'captcha': captcha})
     except User.DoesNotExist:
         pass
 
@@ -97,20 +99,23 @@ def register():
     if email:
         if is_domain_banned(email, domain_type='email'):
             return engine.get_template('user/register.html').render(
-                {'error': _("We do not accept emails from your email provider."), 'regform': form})
+                {'error': _("We do not accept emails from your email provider."),
+                 'regform': form, 'captcha': captcha})
         if auth_provider.get_user_by_email(email) is not None:
             return engine.get_template('user/register.html').render(
-                {'error': _("E-mail address is already in use."), 'regform': form})
+                {'error': _("E-mail address is already in use."),
+                 'regform': form, 'captcha': captcha})
 
     if config.site.enable_security_question:
         if form.securityanswer.data.lower() != session['sa'].lower():
             return engine.get_template('user/register.html').render(
-                {'error': _("Incorrect answer for security question."), 'regform': form})
+                {'error': _("Incorrect answer for security question."),
+                 'regform': form, 'captcha': captcha})
 
     if misc.enableInviteCode():
         if not form.invitecode.data:
             return engine.get_template('user/register.html').render(
-                {'error': _("Invalid invite code."), 'regform': form})
+                {'error': _("Invalid invite code."), 'regform': form, 'captcha': captcha})
         # Check if there's a valid invite code in the database
         try:
             invcode = InviteCode.get((InviteCode.code == form.invitecode.data) &
@@ -118,10 +123,10 @@ def register():
                                              InviteCode.expires > datetime.utcnow())))
             if invcode.uses >= invcode.max_uses:
                 return engine.get_template('user/register.html').render(
-                    {'error': _("Invalid invite code."), 'regform': form})
+                    {'error': _("Invalid invite code."), 'regform': form, 'captcha': captcha})
         except InviteCode.DoesNotExist:
             return engine.get_template('user/register.html').render(
-                {'error': _("Invalid invite code."), 'regform': form})
+                {'error': _("Invalid invite code."), 'regform': form, 'captcha': captcha})
 
         invcode.uses += 1
         invcode.save()

@@ -76,6 +76,10 @@
                         @{_('Banned email domain <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 70:
                         @{_('Unbanned email domain <code>%(desc)s</code>', desc=e(log.desc))!!html}
+                    @elif log.action == 71:
+                      @{_('Disabled captchas')}
+                    @elif log.action == 72:
+                      @{_('Enabled captchas')}
                     @else:
                         <i>[Type @{log.action}]</i> @{log.desc}
                     @end
