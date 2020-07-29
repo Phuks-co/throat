@@ -2,12 +2,14 @@ import bcrypt
 from datetime import datetime
 import uuid
 
+from email_validator import validate_email
 from flask import current_app, render_template, session
 from flask_babel import _
 from flask_login import login_user
 from keycloak import KeycloakAdmin as KeycloakAdmin_
 from keycloak import KeycloakOpenID
 from keycloak.exceptions import KeycloakError, KeycloakGetError
+from peewee import fn
 
 from .config import config
 from .models import User, UserMetadata, UserAuthSource, UserCrypto, SiteMetadata
@@ -29,6 +31,13 @@ class KeycloakAdmin(KeycloakAdmin_):
             else:
                 raise
         self.connection.add_param_headers('Authorization', 'Bearer ' + self.token.get('access_token'))
+
+
+class AuthError(Exception):
+    """Error used to refuse changes to users with Keycloak accounts when a
+    Keycloak server is not configured.
+    """
+    pass
 
 
 class AuthProvider:
@@ -56,13 +65,12 @@ class AuthProvider:
 
 
     def get_user_by_email(self, email):
-        # TODO when there are pending change emails, check those too.
         try:
-            return User.get(User.email == email)
+            return User.get(fn.Lower(User.email) == email.lower())
         except User.DoesNotExist:
             try:
                 um = UserMetadata.get((UserMetadata.key == 'pending_email') &
-                                      (UserMetadata.value == email))
+                                      (fn.Lower(UserMetadata.value) == email.lower()))
                 return User.get(User.uid == um.uid)
             except UserMetadata.DoesNotExist:
                 pass
@@ -89,13 +97,12 @@ class AuthProvider:
                                                    'emailVerified': verified_email,
                                                    'credentials': [{'value': password,
                                                                     'type': 'password'}]})
-            # email = ''  # Store emails in local db, or not?
             password = ''
             crypto = UserCrypto.REMOTE
         user = User.create(uid=uid, name=name, crypto=crypto, password=password,
                            email=email, joindate=datetime.utcnow())
         self.set_user_auth_source(user, auth_source)
-        self.set_email_verified(user, verified_email)
+        self._set_email_verified(user, verified_email)
         return user
 
     def get_user_auth_source(self, user):
@@ -116,46 +123,71 @@ class AuthProvider:
         except UserMetadata.DoesNotExist:
             UserMetadata.create(uid=user.uid, key="auth_source", value=value)
 
-    def change_password(self, user, old_password, new_password):
-        if not self.validate_password(user, old_password):
-            return False
-        if self.provider == 'LOCAL':
-            user.crypto = UserCrypto.BCRYPT
-            user.password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
-        elif self.provider == 'KEYCLOAK':
-            # validate_password promotes LOCAL users to KEYCLOAK ones.
-            self.keycloak_admin.update_user(user_id=user.uid,
-                                            payload={'credentials':
-                                                     [{'value': new_password,
-                                                       'type': 'password'}]})
-        # Invalidate other existing login sessions.
-        user.resets += 1
-        user.save()
-        theuser = misc.load_user(user.uid)
-        login_user(theuser, remember=session.get("remember_me", False))
+    def get_user_remote_uid(self, user):
+        try:
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
+                                   (UserMetadata.key == "remote_uid"))
+            return umd.value
+        except UserMetadata.DoesNotExist:
+            return user.uid
 
-    def reset_password(self, user, new_password):
-        if self.provider == 'LOCAL':
-            user.crypto = UserCrypto.BCRYPT
-            user.password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
-            self.set_user_auth_source(user, UserAuthSource.LOCAL)
-        elif self.provider == 'KEYCLOAK':
-            if self.get_user_auth_source(user) == UserAuthSource.LOCAL:
-                self.keycloak_admin.create_user({'id': user.uid,
-                                                 'email': user.email,
-                                                 'username': user.name,
-                                                 'enabled': True,
-                                                 'emailVerified': self.is_email_verified(user),
-                                                 'credentials': [{'value': new_password,
-                                                                  'type': 'password'}]})
-                self.set_user_auth_source(user, UserAuthSource.KEYCLOAK)
-                user.crypto = UserCrypto.REMOTE
-                user.password = ''
-            else:
-                self.keycloak_admin.update_user(user_id=user.uid,
+    def set_user_remote_uid(self, user, remote_uid):
+        try:
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
+                                   (UserMetadata.key == "remote_uid"))
+            umd.value = remote_uid
+            umd.save()
+        except UserMetadata.DoesNotExist:
+            UserMetadata.create(uid=user.uid, key="remote_uid", value=remote_uid)
+        pass
+
+    def change_password(self, user, old_password, new_password):
+        if self.validate_password(user, old_password):
+            auth_source = self.get_user_auth_source(user)
+            if self.provider == 'LOCAL' and auth_source == UserAuthSource.LOCAL:
+                user.crypto = UserCrypto.BCRYPT
+                user.password = bcrypt.hashpw(new_password.encode('utf-8'),
+                                              bcrypt.gensalt())
+            elif self.provider == 'KEYCLOAK' and auth_source == UserAuthSource.KEYCLOAK:
+                self.keycloak_admin.update_user(user_id=self.get_user_remote_uid(user),
                                                 payload={'credentials':
                                                          [{'value': new_password,
                                                            'type': 'password'}]})
+            else:
+                raise AuthError
+            # Invalidate other existing login sessions.
+            user.resets += 1
+            user.save()
+            theuser = misc.load_user(user.uid)
+            login_user(theuser, remember=session.get("remember_me", False))
+
+    def reset_password(self, user, new_password):
+        auth_source = self.get_user_auth_source(user)
+        if self.provider == 'LOCAL':
+            if auth_source == UserAuthSource.LOCAL:
+                user.crypto = UserCrypto.BCRYPT
+                user.password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+            else:
+                raise AuthError
+        elif self.provider == 'KEYCLOAK':
+            if auth_source == UserAuthSource.LOCAL:
+                kuid = self.keycloak_admin.create_user({'email': user.email,
+                                                        'username': user.name,
+                                                        'enabled': True,
+                                                        'emailVerified': self.is_email_verified(user),
+                                                        'credentials': [{'value': new_password,
+                                                                         'type': 'password'}]})
+                self.set_user_remote_uid(user, kuid)
+                self.set_user_auth_source(user, UserAuthSource.KEYCLOAK)
+                user.crypto = UserCrypto.REMOTE
+                user.password = ''
+            elif auth_source == UserAuthSource.KEYCLOAK:
+                self.keycloak_admin.update_user(user_id=self.get_user_remote_uid(user),
+                                                payload={'credentials':
+                                                         [{'value': new_password,
+                                                           'type': 'password'}]})
+            else:
+                raise AuthError
         user.resets += 1
         user.save()
 
@@ -185,18 +217,29 @@ class AuthProvider:
             UserMetadata.create(uid=user.uid, key="pending_email", value=email)
 
     def confirm_pending_email(self, user, email):
+        umd = None
         try:
             umd = UserMetadata.get((UserMetadata.uid == user.uid) &
                                    (UserMetadata.key == "pending_email"))
-            umd.delete_instance()
         except UserMetadata.DoesNotExist:
             pass
-        if self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK:
-            self.keycloak_admin.update_user(user_id=user.uid,
-                                            payload={'email': email})
+        auth_source = self.get_user_auth_source(user)
+        if self.provider == 'LOCAL':
+            if auth_source != UserAuthSource.LOCAL:
+                raise AuthError
+        elif self.provider == 'KEYCLOAK':
+            if auth_source == UserAuthSource.KEYCLOAK:
+                self.keycloak_admin.update_user(user_id=self.get_user_remote_uid(user),
+                                                payload={'email': email,
+                                                         'emailVerified': True})
+            else:
+                raise AuthError
+
+        if umd is not None:
+            umd.delete_instance()
         user.email = email
         user.save()
-        self.set_email_verified(user)
+        self._set_email_verified(user)
 
     def is_email_verified(self, user):
         try:
@@ -207,9 +250,21 @@ class AuthProvider:
             return False
 
     def set_email_verified(self, user, value=True):
-        if self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK:
-            self.keycloak_admin.update_user(user_id=user.uid,
-                                            payload={'emailVerified': value})
+        """Set both the UserMetadata and remote (if any) email_verified flags."""
+        auth_source = self.get_user_auth_source(user)
+        if self.provider == 'LOCAL':
+            if auth_source != UserAuthSource.LOCAL:
+                raise AuthError
+        elif self.provider == 'KEYCLOAK':
+            if auth_source == UserAuthSource.KEYCLOAK:
+                self.keycloak_admin.update_user(user_id=self.get_user_remote_uid(user),
+                                                payload={'emailVerified': value})
+            else:
+                raise AuthError
+        self._set_email_verified(user, value)
+
+    def _set_email_verified(self, user, value=True):
+        """Set the UserMetadata email_verified flag. """
         value = '1' if value else '0'
         try:
             umd = UserMetadata.get((UserMetadata.uid == user.uid) &
@@ -224,13 +279,13 @@ class AuthProvider:
             thash = bcrypt.hashpw(password.encode('utf-8'), user.password.encode('utf-8'))
             if thash == user.password.encode('utf-8'):
                 if self.provider == 'KEYCLOAK':
-                    self.keycloak_admin.create_user({'id': user.uid,
-                                                     'email': user.email,
-                                                     'username': user.name,
-                                                     'enabled': True,
-                                                     'emailVerified': self.is_email_verified(user),
-                                                     'credentials': [{'value': password,
-                                                                      'type': 'password'}]})
+                    kuid = self.keycloak_admin.create_user({'email': user.email,
+                                                            'username': user.name,
+                                                            'enabled': True,
+                                                            'emailVerified': self.is_email_verified(user),
+                                                            'credentials': [{'value': password,
+                                                                             'type': 'password'}]})
+                    self.set_user_remote_uid(user, kuid)
                     self.set_user_auth_source(user, UserAuthSource.KEYCLOAK)
                     user.crypto = UserCrypto.REMOTE
                     user.password = ''
@@ -255,7 +310,13 @@ class AuthProvider:
                        'enabled': False}
             user.email = ''
             user.email_verified = False
+            self.clear_pending_email(user)
         elif user.status != 10 and new_status == 5:
+            if user.email and self.is_email_verified(user):
+                domain = user.email.split('@')[1]
+                current_app.logger.info('Banned %s; confirmed email on %s',
+                                        user.name, domain)
+
             payload = {'enabled': False}
         elif user.status != 10 and new_status == 0:
             payload = {'enabled': True}
@@ -265,7 +326,8 @@ class AuthProvider:
         if user.crypto == UserCrypto.REMOTE:
             if (self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK and
                     self.provider == 'KEYCLOAK'):
-                self.keycloak_admin.update_user(user_id=user.uid, payload=payload)
+                self.keycloak_admin.update_user(user_id=self.get_user_remote_uid(user),
+                                                payload=payload)
 
         user.status = new_status
         user.resets += 1  # Make them log in again.
@@ -275,7 +337,7 @@ class AuthProvider:
         # Used by automatic tests to clean up test realm on server.
         # You should probably be using mark_user_deleted.
         if user.crypto == UserCrypto.REMOTE:
-            self.keycloak_admin.delete_user(user.uid)
+            self.keycloak_admin.delete_user(self.get_user_remote_uid(user))
 
 
 auth_provider = AuthProvider()
@@ -294,3 +356,7 @@ def registration_is_enabled():
 # Someday config.auth.require_valid_emails may move to site metadata.
 def email_validation_is_required():
     return config.auth.require_valid_emails
+
+
+def normalize_email(email):
+    return validate_email(email, check_deliverability=False)['email']

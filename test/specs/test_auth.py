@@ -79,11 +79,6 @@ def test_logout_and_login_again(client, user_info):
     log_in_user(client, user_info, expect_success=True)
 
 
-# def test_reset_password_by_email():
-#     """A user can reset their password using a link received by email."""
-#     pass
-
-
 def test_change_password(client, user_info):
     """A user can change their password and log in with the new password."""
     register_user(client, user_info)
@@ -135,19 +130,21 @@ def test_change_password_recovery_email(client, user_info):
             # Make sure that password recovery emails go to the former address
             # if the new one has not yet been confirmed.
             rv = client.get(url_for('user.password_recovery'))
-            rv = client.post(url_for('do.recovery'),
+            rv = client.post(url_for('user.password_recovery'),
                              data=dict(csrf_token=csrf_token(rv.data),
-                                       email=new_email))
+                                       email=new_email,
+                                       captcha='xyzzy'))
             assert len(outbox) == 0
 
             rv = client.get(url_for('user.password_recovery'))
-            rv = client.post(url_for('do.recovery'),
+            rv = client.post(url_for('user.password_recovery'),
                              data=dict(csrf_token=csrf_token(rv.data),
-                                       email=user_info['email']))
-            assert list(outbox.pop().send_to).pop() == user_info['email']
+                                       email=user_info['email'],
+                                       captcha='xyzzy'))
+            assert outbox.pop().send_to == {user_info['email']}
 
             # Now click the confirm link.
-            assert list(message.send_to).pop() == new_email
+            assert message.send_to == {new_email}
             soup = BeautifulSoup(message.html, 'html.parser')
             token = soup.a['href'].split('/')[-1]
             rv = client.get(url_for('user.confirm_email_change', token=token),
@@ -158,17 +155,17 @@ def test_change_password_recovery_email(client, user_info):
     # Verify password recovery email goes to the right place.
     with mail.record_messages() as outbox:
         rv = client.get(url_for('user.password_recovery'))
-        rv = client.post(url_for('do.recovery'),
+        rv = client.post(url_for('user.password_recovery'),
                          data=dict(csrf_token=csrf_token(rv.data),
-                                   email=user_info['email']))
+                                   email=user_info['email'],
+                                   captcha='xyzzy'))
         assert len(outbox) == 0
         rv = client.get(url_for('user.password_recovery'))
-        rv = client.post(url_for('do.recovery'),
+        rv = client.post(url_for('user.password_recovery'),
                          data=dict(csrf_token=csrf_token(rv.data),
-                                   email=new_email))
-        reply = json.loads(rv.data.decode('utf-8'))
-        assert reply['status'] == 'ok'
-        assert len(outbox) == 1
+                                   email=new_email,
+                                   captcha='xyzzy'))
+        assert outbox.pop().send_to == {new_email}
 
 
 @pytest.mark.parametrize('test_config', [{'auth': {'require_valid_emails': True}}])
@@ -194,14 +191,16 @@ def test_password_required_to_change_recovery_email(client, user_info):
     # Verify password recovery email goes to the right place.
     with mail.record_messages() as outbox:
         rv = client.get(url_for('user.password_recovery'))
-        rv = client.post(url_for('do.recovery'),
+        rv = client.post(url_for('user.password_recovery'),
                          data=dict(csrf_token=csrf_token(rv.data),
-                                   email=new_email))
+                                   email=new_email,
+                                   captcha='xyzzy'))
         assert len(outbox) == 0
         rv = client.get(url_for('user.password_recovery'))
-        rv = client.post(url_for('do.recovery'),
+        rv = client.post(url_for('user.password_recovery'),
                          data=dict(csrf_token=csrf_token(rv.data),
-                                   email=user_info['email']))
+                                   email=user_info['email'],
+                                   captcha='xyzzy'))
         assert len(outbox) == 1
 
 
@@ -214,11 +213,12 @@ def test_reset_password(client, user_info):
 
     with mail.record_messages() as outbox:
         rv = client.get(url_for('user.password_recovery'))
-        rv = client.post(url_for('do.recovery'),
+        rv = client.post(url_for('user.password_recovery'),
                          data=dict(csrf_token=csrf_token(rv.data),
-                                   email=user_info['email']))
+                                   email=user_info['email'],
+                                   captcha='xyzzy'))
         message = outbox.pop()
-        assert list(message.send_to).pop() == user_info['email']
+        assert message.send_to == {user_info['email']}
         soup = BeautifulSoup(message.html, 'html.parser')
         token = soup.a['href'].split('/')[-1]
         rv = client.get(url_for('user.password_reset', token=token),

@@ -41,6 +41,7 @@ psycopg2
 gunicorn
 mutagen
 flask-mail
-python-keycloak
+flask-limiter
+python-keycloak==0.21.0
 itsdangerous
 python-slugify

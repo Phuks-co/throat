@@ -1,16 +1,20 @@
 @extends("shared/layout.html")
-@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods, highlight, content_history, title_history)
+@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods, highlight, content_history, title_history, open_reports)
 @import "sub/postcomments.html" as pcomm
 @import "sub/postpoll.html" as polls
 
 
 @def title():
+  @#
   @if (post['visibility'] == ''):
     @{post['title']} |\
   @else:
-    @{_('[Deleted Post]')}
+    @{_('[Deleted Post]')} |\
   @end
-
+  @{sub['name']} \
+@end
+@def lema():
+  @#
 @end
 
 @def meta_description():
@@ -165,7 +169,9 @@
             <li><a class="savepost" data-pid="@{post['pid']}">@{_('save')}</a></li>
           @end
           @if (subInfo.get('ucf', 0) == '1' and current_user.uid == post['uid']) or current_user.uid in subMods['all']:
+            @if len(func.getSubFlairs(post['sid'])) != 0:
             <li><a class="editflair">@{_('flair')}</a></li>
+            @end
           @end
           @if post['uid'] == current_user.uid:
             @if post['ptype'] != 1:
@@ -210,7 +216,12 @@
               @end
             @end
           @end
+          @if post['uid'] != current_user.uid:
           <li><a data-ac="report" data-pid="@{post['pid']}" class="report-post">@{_('report')}</a></li>
+          @end
+          @if (current_user.is_admin() or current_user.uid in subMods['all']) and open_reports:
+            <li><a class="post-open-reports" href="@{url_for('mod.report_details', sub=sub['name'], type='post', id=list(open_reports)[0]['id'])}">@{_('open reports (%(num)s)', num=len(open_reports))}</a></li>
+          @end
         @end
         @if current_user.is_admin() and post['deleted'] == 2:
           <li id="delpostli"><a class="undelete-post"> @{_('un-delete')} </a></li>
@@ -224,7 +235,7 @@
     <div style="display:none;" id="postflairs">
       <span class="closemsg">×</span>
       @if post['flair']:
-        <div>@{_('Current flair: <span class="postflair">%(flair)s</span>.', flair=e(post['flair']))} <a data-sub="@{post['sub']}" data-pid="@{post['pid']}" href="#" id="remove-flair">@{_('Remove')}</a>.</div>
+        <div>@{_('Current flair: <span class="postflair">%(flair)s</span>.', flair=e(post['flair']))!!html} <a data-sub="@{post['sub']}" data-pid="@{post['pid']}" href="#" id="remove-flair">@{_('Remove')}</a>.</div>
       @end
       <h4>@{_('Select a new flair')}</h4>
       @for ll in func.getSubFlairs(post['sid']):

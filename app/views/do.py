@@ -21,17 +21,18 @@ from itsdangerous.exc import SignatureExpired, BadSignature
 from ..config import config
 from .. import forms, misc, caching, storage
 from ..socketio import socketio
-from ..auth import auth_provider, email_validation_is_required
+from ..auth import auth_provider, email_validation_is_required, AuthError, normalize_email
 from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
 from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost, UndeleteCommentForm
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
-from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule
+from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
 from ..misc import cache, send_email, allowedNames, get_errors, engine
+from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, is_domain_banned
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved
 from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
@@ -42,6 +43,12 @@ from peewee import fn, JOIN
 do = Blueprint('do', __name__)
 
 # allowedCSS = re.compile("\'(^[0-9]{1,5}[a-zA-Z ]+$)|none\'")
+
+
+@do.errorhandler(429)
+def ratelimit_handler(e):
+    return jsonify(status='error',
+                   error=[_('Whoa, calm down and wait a bit, then try again.')]), 200
 
 
 @do.route("/do/logout", methods=['POST'])
@@ -87,11 +94,15 @@ def edit_account():
         else:
             email = form.email_optional.data
 
-        if (email and email != user.email and
-            email != auth_provider.get_pending_email(user) and
-            auth_provider.get_user_by_email(email) is not None):
-            return json.dumps({'status': 'error',
-                               'error': [_('E-mail address is already in use')]})
+        if email:
+            email = normalize_email(email)
+            if is_domain_banned(email, domain_type='email'):
+                return json.dumps({'status': 'error',
+                                   'error': [_('We do not accept emails from your email provider')]})
+            user_from_email = auth_provider.get_user_by_email(email)
+            if user_from_email is not None and user.uid != user_from_email.uid:
+                return json.dumps({'status': 'error',
+                                   'error': [_('E-mail address is already in use')]})
 
         if not auth_provider.validate_password(user, form.oldpassword.data):
             return json.dumps({'status': 'error',
@@ -100,7 +111,12 @@ def edit_account():
         messages = None
         if form.password.data or email != user.email:
             if form.password.data:
-                auth_provider.change_password(user, form.oldpassword.data, form.password.data)
+                try:
+                    auth_provider.change_password(user, form.oldpassword.data,
+                                                  form.password.data)
+                except AuthError:
+                    return json.dumps({'status': 'error',
+                                       'error': [_('Password change failed. Please try again later')]})
             if email != user.email:
                 if not email_validation_is_required():
                     user.email = email
@@ -214,6 +230,13 @@ def delete_post():
                                comment=form.reason.data, link=url_for('site.view_post_inbox', pid=post.pid),
                                admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
 
+            try:
+                related_reports = SubPostReport.select().where(SubPostReport.pid == post.pid)
+                for report in related_reports:
+                    misc.create_reportlog(misc.LOG_TYPE_REPORT_POST_DELETED, current_user.uid, report.id, type='post', desc=form.reason.data)
+            except:
+                pass
+
         # time limited to prevent socket spam
         if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)).seconds < 86400:
             socketio.emit('deletion', {'pid': post.pid}, namespace='/snt', room='/all/new')
@@ -271,6 +294,12 @@ def undelete_post():
         misc.create_sublog(misc.LOG_TYPE_SUB_UNDELETE_POST, current_user.uid, post.sid,
                            comment=form.reason.data, link=url_for('site.view_post_inbox', pid=post.pid),
                            admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
+        try:
+            related_reports = SubPostReport.select().where(SubPostReport.pid == post.pid)
+            for report in related_reports:
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_POST_UNDELETED, current_user.uid, report.id, type='post', desc=form.reason.data)
+        except:
+            pass
 
         sub.posts += 1
         sub.save()
@@ -331,6 +360,7 @@ def edit_sub(sub):
             sub.update_metadata('ucf', form.usercanflair.data)
             sub.update_metadata('allow_polls', form.polling.data)
             sub.update_metadata('sublog_private', form.sublogprivate.data)
+            sub.update_metadata('sub_banned_users_private', form.subbannedusersprivate.data)
 
             if form.subsort.data != "None":
                 sub.update_metadata('sort', form.subsort.data)
@@ -569,10 +599,28 @@ def get_txtpost(pid):
     try:
         post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
+        return abort(404)
+
+    post['visibility'] = ''
+    if post['deleted'] == 1:
+        if current_user.is_admin():
+            post['visibility'] = 'admin-self-del'
+        elif current_user.is_mod(post['sid'], 1):
+            post['visibility'] = 'mod-self-del'
+        else:
+            post['visibility'] = 'none'
+    elif post['deleted'] == 2:
+        if current_user.is_admin() or current_user.is_mod(post['sid'], 1):
+            post['visibility'] = 'mod-del'
+        else:
+            post['visibility'] = 'none'
+
+    if post['userstatus'] == 10 and post['deleted'] == 1:
+        post['visibility'] = 'none'
+
+    if post['visibility'] == 'none':
         abort(404)
 
-    if post['deleted']:
-        abort(404)
     cont = misc.our_markdown(post['content'])
     if post['ptype'] == 3:
         pollData = {'has_voted': False}
@@ -643,6 +691,7 @@ def edit_txtpost(pid):
 
 @do.route("/do/grabtitle", methods=['POST'])
 @login_required
+@ratelimit(POSTING_LIMIT)
 def grab_title():
     """ Safely grabs the <title> from a page """
     url = request.json.get('u')
@@ -666,7 +715,7 @@ def grab_title():
 
 @do.route('/do/sendcomment/<pid>', methods=['POST'])
 @login_required
-@misc.ratelimit(1, per=30)  # Once every 30 secs
+@ratelimit(POSTING_LIMIT)
 def create_comment(pid):
     """ Here we send comments. """
     form = PostComment()
@@ -751,6 +800,7 @@ def create_comment(pid):
 
 
 @do.route("/do/sendmsg", methods=['POST'])
+@ratelimit(POSTING_LIMIT)
 @login_required
 def create_sendmsg():
     """ User PM message creation endpoint """
@@ -828,6 +878,24 @@ def ban_user_sub(sub):
         SubBan.create(sid=sub.sid, uid=user.uid, reason=form.reason.data, created_by=current_user.uid, expires=expires)
 
         misc.create_sublog(misc.LOG_TYPE_SUB_BAN, current_user.uid, sub.sid, target=user.uid, comment=form.reason.data)
+
+        try:
+            related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid).join(Sub).where(Sub.sid == sub.sid)
+            related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(SubPostComment.uid == user.uid).join(SubPost).join(Sub).where(Sub.sid == sub.sid)
+
+            desc = ''
+            if expires:
+                desc = _("banned for: %(reason)s, until %(expires)s", reason=form.reason.data, expires=expires)
+            else:
+                desc = _("banned for: %(reason)s, permanent", reason=form.reason.data)
+
+            for report in related_post_reports:
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_BANNED, current_user.uid, report.id, type='post', desc=desc)
+            for report in related_comment_reports:
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_BANNED, current_user.uid, report.id, type='comment', desc=desc)
+        except:
+            pass
+
         cache.delete_memoized(misc.is_sub_banned, sub, uid=user.uid)
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
@@ -935,6 +1003,17 @@ def remove_sub_ban(sub, user):
 
             misc.create_sublog(misc.LOG_TYPE_SUB_UNBAN, current_user.uid, sub.sid, target=user.uid,
                                admin=True if (not current_user.is_mod(sub.sid, 1) and current_user.is_admin()) else False)
+
+            try:
+                related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid).join(Sub).where(Sub.sid == sub.sid)
+                related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(SubPostComment.uid == user.uid).join(SubPost).join(Sub).where(Sub.sid == sub.sid)
+                for report in related_post_reports:
+                    misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_UNBANNED, current_user.uid, report.id, type='post')
+                for report in related_comment_reports:
+                    misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_UNBANNED, current_user.uid, report.id, type='comment')
+            except:
+                pass
+
             cache.delete_memoized(misc.is_sub_banned, sub, uid=user.uid)
             return jsonify(status='ok', msg=_('Ban removed'))
         else:
@@ -1117,6 +1196,7 @@ def delete_pm(mid):
 
 
 @do.route("/do/edit_title", methods=['POST'])
+@ratelimit(POSTING_LIMIT)
 @login_required
 def edit_title():
     form = DeletePost()
@@ -1225,40 +1305,56 @@ def make_announcement():
     return jsonify(status='error', error=get_errors(form))
 
 
-@do.route("/do/ban_domain", methods=['POST'])
-def ban_domain():
+@do.route("/do/ban_domain/<domain_type>", methods=['POST'])
+def ban_domain(domain_type):
     """ Add domain to ban list """
     if not current_user.is_admin():
         abort(403)
+    if domain_type == 'email':
+        key = 'banned_email_domain'
+        action = misc.LOG_TYPE_EMAIL_DOMAIN_BAN
+    elif domain_type == 'link':
+        key = 'banned_domain'
+        action = misc.LOG_TYPE_DOMAIN_BAN
+    else:
+        abort(404)
 
     form = BanDomainForm()
 
     if form.validate():
         try:
-            sm = SiteMetadata.get((SiteMetadata.key == 'banned_domain') & (SiteMetadata.value == form.domain.data))
+            sm = SiteMetadata.get((SiteMetadata.key == key) & (SiteMetadata.value == form.domain.data))
             return jsonify(status='error', error=[_('Domain is already banned')])
         except SiteMetadata.DoesNotExist:
-            sm = SiteMetadata.create(key='banned_domain', value=form.domain.data)
+            sm = SiteMetadata.create(key=key, value=form.domain.data)
             sm.save()
-            misc.create_sitelog(misc.LOG_TYPE_DOMAIN_BAN, current_user.uid, comment=form.domain.data)
+            misc.create_sitelog(action, current_user.uid, comment=form.domain.data)
             return jsonify(status='ok')
 
     return jsonify(status='error', error=get_errors(form))
 
 
-@do.route("/do/remove_banned_domain/<domain>", methods=['POST'])
-def remove_banned_domain(domain):
+@do.route("/do/remove_banned_domain/<domain_type>/<domain>", methods=['POST'])
+def remove_banned_domain(domain_type, domain):
     """ Remove domain if ban list """
     if not current_user.is_admin():
         abort(403)
+    if domain_type == 'email':
+        key = 'banned_email_domain'
+        action = misc.LOG_TYPE_EMAIL_DOMAIN_UNBAN
+    elif domain_type == 'link':
+        key = 'banned_domain'
+        action = misc.LOG_TYPE_DOMAIN_UNBAN
+    else:
+        abort(404)
 
     try:
-        sm = SiteMetadata.get((SiteMetadata.key == 'banned_domain') & (SiteMetadata.value == domain))
+        sm = SiteMetadata.get((SiteMetadata.key == key) & (SiteMetadata.value == domain))
         sm.delete_instance()
     except:
         return jsonify(status='error', error=_('Domain is not banned'))
 
-    misc.create_sitelog(misc.LOG_TYPE_DOMAIN_UNBAN, current_user.uid, comment=domain)
+    misc.create_sitelog(action, current_user.uid, comment=domain)
 
     return json.dumps({'status': 'ok'})
 
@@ -1559,32 +1655,6 @@ def create_rule(sub):
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
-@do.route("/do/recovery", methods=['POST'])
-def recovery():
-    """ Password recovery page. Email+captcha and sends recovery email """
-    if current_user.is_authenticated:
-        abort(403)
-
-    form = forms.PasswordRecoveryForm()
-    form.cap_key, form.cap_b64 = misc.create_captcha()
-    if form.validate():
-        if not misc.validate_captcha(form.ctok.data, form.captcha.data):
-            # XXX: Fix this
-            return jsonify(status='error', error=[_("Invalid captcha (refresh page.)")])
-        try:
-            user = User.get(User.email == form.email.data)
-        except User.DoesNotExist:
-            return jsonify(status="ok")  # Silently fail every time.
-
-        if user.status != UserStatus.OK:
-            return jsonify(status="ok")  # Silently fail for deleted and banned users.
-
-        # checks done, doing the stuff.
-        send_password_recovery_email(user)
-        return jsonify(status="ok")
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
-
-
 def send_password_recovery_email(user):
     rekey = str(uuid.uuid4())
     rconn.setex('recovery-' + rekey, value=user.uid, time=20*60)
@@ -1604,6 +1674,7 @@ def delete_recovery_token(token):
 
 
 @do.route("/do/reset", methods=['POST'])
+@ratelimit(AUTH_LIMIT)
 def reset():
     """ Password reset. Takes key and uid and changes password """
     if current_user.is_authenticated:
@@ -1626,7 +1697,10 @@ def reset():
             return jsonify(status='error', error=_('Password recovery link expired'))
 
         # All good. Set da password.
-        auth_provider.reset_password(user, form.password.data)
+        try:
+            auth_provider.reset_password(user, form.password.data)
+        except AuthError:
+            return jsonify(status='error', error=_('Password change failed. Please try again later.'))
         login_user(misc.load_user(user.uid), remember=False)
         session['remember_me'] = False
         return jsonify(status='ok')
@@ -1674,6 +1748,7 @@ def edit_comment():
 def delete_comment():
     """ deletes a comment """
     form = forms.DeleteCommentForm()
+
     if form.validate():
         try:
             comment = SubPostComment.get(SubPostComment.cid == form.cid.data)
@@ -1688,6 +1763,12 @@ def delete_comment():
             misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_COMMENT, current_user.uid, post.sid,
                                comment=form.reason.data, link=url_for('site.view_post_inbox', pid=comment.pid),
                                admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
+            try:
+                related_reports = SubPostCommentReport.select().where(SubPostCommentReport.cid == comment.cid)
+                for report in related_reports:
+                    misc.create_reportlog(misc.LOG_TYPE_REPORT_COMMENT_DELETED, current_user.uid, report.id, type='comment', desc=form.reason.data)
+            except:
+                pass
             comment.status = 2
         else:
             comment.status = 1
@@ -1720,6 +1801,12 @@ def undelete_comment():
         misc.create_sublog(misc.LOG_TYPE_SUB_UNDELETE_COMMENT, current_user.uid, post.sid,
                            comment=form.reason.data, link=url_for('site.view_post_inbox', pid=comment.pid),
                            admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
+        try:
+            related_reports = SubPostCommentReport.select().where(SubPostCommentReport.cid == comment.cid)
+            for report in related_reports:
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_COMMENT_UNDELETED, current_user.uid, report.id, type='comment', desc=form.reason.data)
+        except:
+            pass
         comment.status = 0
         comment.save()
 
@@ -1778,7 +1865,7 @@ def get_sibling(pid, cid, lim):
     if not comments.count():
         return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': ''})
 
-    include_history = current_user.is_mod(sub.sid, 1) or current_user.is_admin()
+    include_history = current_user.is_mod(post['sid'], 1) or current_user.is_admin()
 
     if lim:
         comment_tree = misc.get_comment_tree(comments, cid if cid != '0' else None, lim, provide_context=False, uid=current_user.uid, include_history=include_history)
@@ -1996,6 +2083,17 @@ def ban_user(username):
 
     auth_provider.change_user_status(user, 5)
     misc.create_sitelog(misc.LOG_TYPE_USER_BAN, uid=current_user.uid, comment=user.name)
+
+    try:
+        related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid)
+        related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(SubPostComment.uid == user.uid)
+        for report in related_post_reports:
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SITE_BANNED, current_user.uid, report.id, type='post')
+        for report in related_comment_reports:
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SITE_BANNED, current_user.uid, report.id, type='comment')
+    except:
+        pass
+
     return redirect(request.referrer)
 
 
@@ -2019,6 +2117,17 @@ def unban_user(username):
 
     auth_provider.change_user_status(user, 0)
     misc.create_sitelog(misc.LOG_TYPE_USER_UNBAN, uid=current_user.uid, comment=user.name)
+
+    try:
+        related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid)
+        related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(SubPostComment.uid == user.uid)
+        for report in related_post_reports:
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SITE_UNBANNED, current_user.uid, report.id, type='post')
+        for report in related_comment_reports:
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SITE_UNBANNED, current_user.uid, report.id, type='comment')
+    except:
+        pass
+
     return redirect(request.referrer)
 
 
@@ -2252,6 +2361,7 @@ except ModuleNotFoundError:
 
 @do.route('/do/report', methods=['POST'])
 @login_required
+@ratelimit(POSTING_LIMIT)
 def report():
     form = DeletePost()
     if form.validate():
@@ -2261,17 +2371,20 @@ def report():
             return jsonify(status='error', error=_('Post does not exist'))
 
         if post['deleted'] != 0:
-            return jsonify(status='error', error=_('Post does not exist'))
+            return jsonify(status='error', error=_('Post was removed'))
 
         # check if user already reported the post
         try:
-            rep = SubPostReport.get((SubPostReport.pid == post['pid']) & (SubPostReport.uid == current_user.uid))
+            SubPostReport.get((SubPostReport.pid == post['pid']) & (SubPostReport.uid == current_user.uid))
             return jsonify(status='error', error=_('You have already reported this post'))
         except SubPostReport.DoesNotExist:
             pass
 
         if len(form.reason.data) < 2:
             return jsonify(status='error', error=_('Report reason too short.'))
+
+        if not form.send_to_admin.data and misc.is_sub_banned(post['sid'], uid=current_user.uid):
+            return jsonify(status='error', error=_('You are banned from this sub.'))
 
         # do the reporting.
         SubPostReport.create(pid=post['pid'], uid=current_user.uid, reason=form.reason.data, send_to_admin=form.send_to_admin.data)
@@ -2286,6 +2399,7 @@ def report():
 
 @do.route('/do/report/comment', methods=['POST'])
 @login_required
+@ratelimit(POSTING_LIMIT)
 def report_comment():
     form = DeletePost()
     if form.validate():
@@ -2301,17 +2415,20 @@ def report_comment():
             return jsonify(status='error', error=_('Comment does not exist'))
 
         if comm.status:
-            return jsonify(status='error', error=_('Comment does not exist'))
+            return jsonify(status='error', error=_('Comment was removed'))
 
         # check if user already reported the post
         try:
-            rep = SubPostCommentReport.get((SubPostCommentReport.cid == comm.cid) & (SubPostCommentReport.uid == current_user.uid))
+            SubPostCommentReport.get((SubPostCommentReport.cid == comm.cid) & (SubPostCommentReport.uid == current_user.uid))
             return jsonify(status='error', error=_('You have already reported this post'))
         except SubPostCommentReport.DoesNotExist:
             pass
 
         if len(form.reason.data) < 2:
             return jsonify(status='error', error=_('Report reason too short.'))
+
+        if not form.send_to_admin.data and misc.is_sub_banned(comm.pid.sid, uid=current_user.uid):
+            return jsonify(status='error', error=_('You are banned from this sub.'))
 
         # do the reporting.
         SubPostCommentReport.create(cid=comm.cid, uid=current_user.uid, reason=form.reason.data, send_to_admin=form.send_to_admin.data)
@@ -2540,3 +2657,30 @@ def close_comment_related_reports(related_reports, original_report):
         return error
     else:
         return ok
+
+@do.route("/do/create_report_note/<type>/<id>", methods=['POST'])
+@login_required
+def create_report_note(type, id):
+    """ Creates a new note on a report """
+    if type == "post":
+        try:
+            report = SubPostReport.get(SubPostReport.id == id)
+            sub = Sub.select().join(SubPost).join(SubPostReport).where(SubPostReport.id == id).get()
+        except SubPostReport.DoesNotExist:
+            abort(404)
+    else:
+        try:
+            report = SubPostCommentReport.get(SubPostCommentReport.id == id)
+            sub = Sub.select().join(SubPost).join(SubPostComment).join(SubPostCommentReport).where(SubPostCommentReport.id == id).get()
+        except SubPostCommentReport.DoesNotExist:
+            abort(404)
+
+    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
+        abort(403)
+
+    form = CreateReportNote()
+    if form.validate():
+        misc.create_reportlog(misc.LOG_TYPE_REPORT_NOTE, current_user.uid, report.id, type=type, desc=form.text.data)
+        return jsonify(status='ok')
+        
+    return json.dumps({'status': 'error', 'error': get_errors(form)})

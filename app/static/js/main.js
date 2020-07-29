@@ -331,7 +331,8 @@ if(document.getElementById('delete_account')){
 if(document.querySelector('button.removebanneddomain')){
   u.addEventForChild(document, 'click', 'button.removebanneddomain', function(e, qelem){
     var domain=qelem.getAttribute('data-domain');
-    u.post('/do/remove_banned_domain/' + domain, {}, function(data){
+    var domain_type=qelem.getAttribute('data-domain-type')
+    u.post('/do/remove_banned_domain/' + domain_type + '/' + domain, {}, function(data){
       if (data.status == "ok") {
         document.location.reload();
       }

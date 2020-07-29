@@ -34,6 +34,7 @@ cfg_defaults = {  # key => default value
             "sub_creation_admin_only": False,
             "sub_ownership_limit": 20,
             "edit_history": False,
+            "anonymous_modding": False,
 
             "daily_sub_posting_limit": 10,
             "daily_site_posting_limit": 25,
@@ -54,7 +55,8 @@ cfg_defaults = {  # key => default value
                 }
             },
 
-            "archive_post_after": 60
+            "archive_post_after": 60,
+            "trusted_proxy_count": 0
         },
         "auth": {
             "provider": 'LOCAL',
@@ -82,6 +84,7 @@ cfg_defaults = {  # key => default value
         "app": {
             "redis_url": 'redis://127.0.0.1:6379',
             "secret_key": 'yS\x1c\x88\xd7\xb5\xb0\xdc\t:kO\r\xf0D{"Y\x1f\xbc^\xad',
+            "force_https": False,
             "debug": True,
             "development": False,
             "wtf_csrf_time_limit": None,
@@ -90,7 +93,10 @@ cfg_defaults = {  # key => default value
             "testing": False
         },
         "aws": {},
-        "database": {}
+        "database": {},
+        "ratelimit": {
+            "default": "60/minute"
+        },
     }
 
 
@@ -110,8 +116,12 @@ class Map(dict):
         # Turn all subdictionaries into Maps as well.
         for key, val in defaults.items():
             if isinstance(val, dict):
-                self[key] = Map(self.get(key, {}), val, use_environment,
-                                f'{self.prefix}{key}')
+                existing = self.get(key, {})
+                if existing is None:
+                    existing = {}
+                elif not isinstance(existing, dict):
+                    raise TypeError(f'Value found where dict expected at {prefix}{key} in config.yaml')
+                self[key] = Map(existing, val, use_environment, f'{self.prefix}{key}')
             elif key not in self.keys():
                 self[key] = val
 
@@ -137,6 +147,7 @@ class Config(Map):
         super(Config, self).__init__(cfg, cfg_defaults, use_environment=use_environment)
         self.check_storage_config()
         self.check_auth_config()
+        self.check_ratelimit_config()
 
     def check_storage_config(self):
         """Adjust our storage config for compatibility with flask-cloudy."""
@@ -163,9 +174,13 @@ class Config(Map):
     def check_auth_config(self):
         ensure_trailing_slash(self.auth.keycloak, 'server')
 
+    def check_ratelimit_config(self):
+        if 'storage_url' not in self.ratelimit:
+            self.ratelimit['storage_url'] = self.app.redis_url
+
     def get_flask_dict(self):
         flattened = {}
-        for cpk in ['cache', 'mail', 'sendgrid', 'app']:
+        for cpk in ['cache', 'mail', 'sendgrid', 'app', 'ratelimit']:
             if cpk in self.keys():
                 for i in self[cpk]:
                     if cpk == 'app':

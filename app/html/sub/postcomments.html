@@ -6,9 +6,11 @@
       <article id="@{comment['cid']}" data-cid="@{comment['cid']}" class="commentrow @{(comment['cid'] == highlight) and 'highlight ' or ''}@{(comment.get('hl')) and 'active' or ''}@{((comment['visibility'] != '') and (comment['visibility'] != 'none')) and 'deleted ' or ''} text-post no-padding comment">
         <div id="comment-@{comment['cid']}">
           @if comment['userstatus'] != 10:
-            <div class="pull left votecomment" @{(comment['visibility'] != '') and 'style=display:none;' or ''}>
+            <div class="pull left votecomment">
+                @if comment['visibility'] == '':
                 <div title="@{_('Upvote')}" class="c-upvote @{(comment.get('positive') == True) and 'upvoted' or ''}" data-pid="@{post['pid']}" data-icon="upvote"></div>
                 <div title="@{_('Downvote')}" class="c-downvote @{(comment.get('positive') == False) and 'downvoted' or ''}" data-pid="@{post['pid']}" data-icon="downvote"></div>
+                @end
             </div>
           @end
           <div class="commblock">
@@ -37,7 +39,7 @@
               @end
             </div>
 
-            <div class="content" id="content-@{comment['cid']}">
+            <div class="content @{(comment['visibility'] != '') and 'hidden' or ''}" id="content-@{comment['cid']}">
               @if comment['visibility'] == 'none':
                 @{_('[Deleted]')} \
               @elif comment['visibility'] == 'admin-self-del':
@@ -73,7 +75,7 @@
             @if comment['visibility'] != 'none':
               <div hidden id="sauce-@{comment['cid']}">@{comment['source']}</div>
             @end
-            <ul class="bottombar links">
+            <ul class="bottombar links @{(comment['visibility'] != '') and 'hidden' or ''}">
               <li><a href="@{url_for('sub.view_perm', sub=post['sub'], cid=comment['cid'], pid=post['pid'], slug=post['slug'])}#comment-@{comment['cid']}">@{_('permalink')}</a></li>
               @if (current_user.is_admin() and comment['status'] == 2):
                 <li><a class="undelete-comment" data-cid="@{comment['cid']}">@{_('un-delete')}</a></li>
@@ -88,7 +90,7 @@
                 @if (comment['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in subMods['all']) and comment['visibility'] == '':
                   <li><a @{(comment['uid'] == current_user.uid) and 'selfdel="true"' or ''} class="delete-comment" data-cid="@{comment['cid']}">@{_('delete')}</a></li>
                 @end
-                @if comment['visibility'] == '':
+                @if comment['visibility'] == '' and comment['uid'] != current_user.uid:
                   <a data-ac="report" data-pid="@{comment['pid']}" cid="@{comment['cid']}" class="report-comment">@{_('report')}</a>
                 @end
               @end
@@ -116,4 +118,4 @@
   @end
 @end
 
-@{renderComments(post, subInfo, subMods, comments, highlight)!!html}}
+@{renderComments(post, subInfo, subMods, comments, highlight)!!html}

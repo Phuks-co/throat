@@ -35,7 +35,7 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
-
+    @migrator.create_model
     class Notification(pw.Model):
         id = pw.AutoField()
         type = pw.CharField(max_length=255)
@@ -50,9 +50,6 @@ def migrate(migrator, database, fake=False, **kwargs):
 
         class Meta:
             table_name = "notification"
-
-    Notification._meta.database = migrator.database
-    Notification.create_table(True)
 
     # Migrate notifications out of the messages table
     Message = migrator.orm['message']
@@ -136,7 +133,7 @@ def migrate(migrator, database, fake=False, **kwargs):
             else:
                 mtype = 'SUB_BAN'
         else:
-            mtype = 'POST_DELETE'
+            mtype = ' '
         inserts.append({
             'type': mtype,
             'sub': sub.sid,

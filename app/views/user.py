@@ -4,10 +4,12 @@ from peewee import fn, JOIN
 from flask import Blueprint, render_template, abort, redirect, url_for, flash
 from flask_login import login_required, current_user
 from flask_babel import _, Locale
-from .do import uid_from_recovery_token, info_from_email_confirmation_token
+from .do import send_password_recovery_email, uid_from_recovery_token
+from .do import info_from_email_confirmation_token
 from .. import misc, config
-from ..auth import auth_provider, email_validation_is_required
+from ..auth import auth_provider, email_validation_is_required, AuthError, normalize_email
 from ..misc import engine, send_email
+from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
 from ..forms import EditUserForm, CreateUserMessageForm, EditAccountForm, DeleteAccountForm, PasswordRecoveryForm
 from ..forms import PasswordResetForm
 from ..models import User, UserStatus, UserMetadata
@@ -156,6 +158,7 @@ def edit_user():
 
 @bp.route("/settings/account")
 @login_required
+@ratelimit(AUTH_LIMIT)
 def edit_account():
     return engine.get_template('user/settings/account.html').render(
         {'form': EditAccountForm(),
@@ -163,6 +166,7 @@ def edit_account():
 
 
 @bp.route('/settings/account/confirm-email/<token>')
+@ratelimit(AUTH_LIMIT)
 def confirm_email_change(token):
     info = info_from_email_confirmation_token(token)
     user = None
@@ -173,9 +177,12 @@ def confirm_email_change(token):
         return redirect(url_for('user.edit_account'))
 
     if user.status == UserStatus.OK:
-        auth_provider.confirm_pending_email(user, info['email'])
-        flash(_('Your password recovery email address is now confirmed!'), 'message')
-        return redirect(url_for('user.edit_account'))
+        try:
+            auth_provider.confirm_pending_email(user, info['email'])
+            flash(_('Your password recovery email address is now confirmed!'), 'message')
+            return redirect(url_for('user.edit_account'))
+        except AuthError:
+            flash(_('Unable to confirm your new email address. Please try again later.'), 'error')
     return redirect(url_for('home.index'))
 
 
@@ -185,17 +192,41 @@ def delete_account():
     return engine.get_template('user/settings/delete.html').render({'form': DeleteAccountForm(), 'user': User.get(User.uid == current_user.uid)})
 
 
-@bp.route("/recover")
+@bp.route("/recover", methods=['GET', 'POST'])
+@ratelimit(SIGNUP_LIMIT)
 def password_recovery():
     """ Endpoint for the password recovery form """
     if current_user.is_authenticated:
         return redirect(url_for('home.index'))
     form = PasswordRecoveryForm()
     form.cap_key, form.cap_b64 = misc.create_captcha()
-    return engine.get_template('user/password_recovery.html').render({'lpform': form})
+    if not form.validate():
+        return engine.get_template('user/password_recovery.html').render(
+            {'lpform': form,
+             'error': misc.get_errors(form, True)})
+    if not misc.validate_captcha(form.ctok.data, form.captcha.data):
+        return engine.get_template('user/password_recovery.html').render(
+            {'lpform': form,
+             'error': _("Invalid captcha.")})
+    try:
+        email = normalize_email(form.email.data)
+        user = User.get(fn.Lower(User.email) == email.lower())
+        if user.status == UserStatus.OK:
+            send_password_recovery_email(user)
+    except User.DoesNotExist:
+        # Yield no information.
+        pass
+    return redirect(url_for('user.recovery_email_sent'))
+
+
+@bp.route('/recovery/email-sent')
+def recovery_email_sent():
+    return engine.get_template('user/check-your-email.html').render(
+        {'reason': 'recovery'})
 
 
 @bp.route('/reset/<token>')
+@ratelimit(SIGNUP_LIMIT)
 def password_reset(token):
     """ The page that actually resets the password """
     user = None

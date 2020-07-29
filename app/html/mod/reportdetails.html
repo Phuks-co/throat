@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(sub, report, reported_user, related_reports, related_reports_json, banuserform, is_sub_banned, post, comment, subInfo, subMods, logs)
+@require(sub, report, reported_user, related_reports, related_reports_json, banuserform, is_sub_banned, post, comment, subInfo, subMods, logs, createreportenote)
 @def title():
 Mod |\
 @end
@@ -208,6 +208,18 @@ Mod |\
               </span>
             </div>
           </div>
+
+          <hr>
+          <div class="col-12 admin-page-form">
+            <form  method="POST" class="ajaxform pure-form" action="@{url_for('do.create_report_note', type=report['type'], id=report['id'])}" data-reload="true">
+              <h3>@{_('Leave note on report')}</h3>
+              @{createreportenote.csrf_token()!!html}
+                @{createreportenote.text(placeholder=_('Leave note'), required=True)!!html}
+                <button type="submit" class="pure-button pure-button-primary" id="editsub-btnsubmit" data-prog="Saving..." data-success="Saved!">@{_('Submit')}</button>
+              <div class="alert div-error"></div>
+            </form>
+          </div>
+
           <hr>
           <h3>@{_('Report Log:')}</h3>
           @if len(logs) == 0:
@@ -216,9 +228,10 @@ Mod |\
             <table class="pure-table">
                 <thead>
                 <tr>
-                    <th>Time</th>
-                    <th>User</th>
-                    <th>Action</th>
+                    <th>@{_('Time')}</th>
+                    <th>@{_('Action Taken')}</th>
+                    <th>@{_('By')}</th>
+                    <th>@{_('Details')}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -228,25 +241,46 @@ Mod |\
                         <time-ago datetime="@{log.time.isoformat()}Z">@{log.time.isoformat()}</time-ago>
                     </td>
                     <td>
-                        @if log.uid:
-                            @if log.uid.status != 10:
-                                <a href="/u/@{log.uid.name}">@{log.uid.name}</a>\
-                            @else:
-                                @{_('[Deleted]')}
-                            @end
-                        @end
-                    </td>
-                    <td>
-                        @if log.action == 55:
+                        @if (log.action == 55) or (log.action == 57):
                           @{_('Report closed')}
                         @elif log.action == 56:
                           @{_('Report reopened')}
-                        @elif log.action == 57:
-                          @{_('Closed all reports related to: ')}<a href="@{url_for('mod.report_details', sub=report['sub'], type=report['type'], id=log.desc)}">
-                            @{report['type']} @{_('report')} @{log.desc}</a>
+                        @elif log.action == 60:
+                          @{_('Post deleted')}
+                        @elif log.action == 61:
+                          @{_('Post un-deleted')}
+                        @elif log.action == 62:
+                          @{_('Comment deleted')}
+                        @elif log.action == 63:
+                          @{_('Comment un-deleted')}
+                        @elif log.action == 64:
+                          @{_('Banned user from site')}
+                        @elif log.action == 65:
+                          @{_('Banned user from sub')}
+                        @elif log.action == 66:
+                          @{_('Un-banned user from site')}
+                        @elif log.action == 67:
+                          @{_('Un-banned user from sub')}
+                        @elif log.action == 68:
+                          @{_('Left note')}
                         @else:
                             <i>[Type @{log.action}]</i>
                         @end
+                    </td>
+                    <td>
+                        @if log.uid:
+                            <a href="/u/@{log.uid.name}">@{log.uid.name}</a>
+                        @else:
+                            @{_('  --  ')}
+                        @end
+                    </td>
+                    <td>
+                      @if log.action == 57:
+                        @{_('Closed all reports related to: ')}<a href="@{url_for('mod.report_details', sub=report['sub'], type=report['type'], id=log.desc)}">
+                          @{report['type']} @{_('report')} @{log.desc}</a>
+                      @elif log.desc:
+                          @{log.desc}
+                      @end
                     </td>
                 </tr>
                 @end

@@ -11,6 +11,7 @@ from flask_login import LoginManager, current_user
 from flask_webpack import Webpack
 from flask_babel import Babel, _
 from wheezy.html.utils import escape_html
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .config import Config, config
 from .forms import LoginForm, LogOutForm, CreateSubForm
@@ -30,10 +31,11 @@ from .views.messages import bp as messages
 
 from . import misc, forms, caching, storage
 from .socketio import socketio
-from .misc import SiteAnon, engine, engine_init_app, re_amention, mail, talisman
+from .misc import SiteAnon, engine, engine_init_app, re_amention, mail, talisman, limiter
+from .misc import logging_init_app
 
 # /!\ FOR DEBUGGING ONLY /!\
-# from werkzeug.contrib.profiler import ProfilerMiddleware
+# from werkzeug.middleware.profiler import ProfilerMiddleware
 
 webpack = Webpack()
 babel = Babel()
@@ -66,7 +68,8 @@ def create_app(config=Config('config.yaml')):
            'img-src':     ['\'self\'', 'data:', 'https:'],
            'media-src':   ['\'self\'', 'https:'],
            'style-src':   ['\'self\'', '\'unsafe-inline\'']}
-    talisman.init_app(app, content_security_policy=csp)
+    talisman.init_app(app, content_security_policy=csp,
+                      force_https=config.app.force_https)
 
     babel.init_app(app)
     jwt.init_app(app)
@@ -82,6 +85,9 @@ def create_app(config=Config('config.yaml')):
         mail.init_app(app)
     storage.storage_init_app(app)
     auth_provider.init_app(app)
+    logging_init_app(app)
+    limiter.init_app(app)
+
     # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 
     app.register_blueprint(home)
@@ -108,11 +114,8 @@ def create_app(config=Config('config.yaml')):
                                'file_url': storage.file_url, 'get_flashed_messages': get_flashed_messages,
                                'email_validation_is_required': email_validation_is_required})
 
-    if config.app.development:
-        import logging
-        logging.basicConfig(level=logging.DEBUG)
-        logging.getLogger("engineio.server").setLevel(logging.WARNING)
-        logging.getLogger("socketio.server").setLevel(logging.WARNING)
+    if config.site.trusted_proxy_count != 0:
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=config.site.trusted_proxy_count)
 
     @app.before_request
     def before_request():
@@ -122,6 +125,7 @@ def create_app(config=Config('config.yaml')):
     @app.after_request
     def after_request(response):
         """ Called after the request is processed. Used to time the request """
+        app.logger.info("%s", response.status)
         if not app.debug and not current_user.is_admin():
             return response  # We won't do this if we're in production mode
         if app.config['THROAT_CONFIG'].app.development:

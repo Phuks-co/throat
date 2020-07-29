@@ -72,6 +72,10 @@
                         @{_('Re-enabled new user registration')}
                     @elif log.action == 54:
                         @{_('Unbanned <a href="/u/%(user)s">%(user)s</a>', user=log.desc)!!html}
+                    @elif log.action == 69:
+                        @{_('Banned email domain <code>%(desc)s</code>', desc=e(log.desc))!!html}
+                    @elif log.action == 70:
+                        @{_('Unbanned email domain <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @else:
                         <i>[Type @{log.action}]</i> @{log.desc}
                     @end

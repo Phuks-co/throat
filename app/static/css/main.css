@@ -942,7 +942,7 @@ a.slink{
 }
 
 .comment-form button{
-  margin-top: .2em;
+  margin-top: .7em;
 }
 
 .alertbox{
@@ -951,6 +951,10 @@ a.slink{
 
 .comments{
   margin-left: 1em;
+}
+
+.loadsibling{
+  font-size: smaller;
 }
 
 .canclose .closemsg{
@@ -1750,7 +1754,7 @@ table td {
   display: inline-block;
   vertical-align: middle;
   line-height: 1.8em;
-  color: #fff;	
+  color: #fff;
 }
 
 .glyphbutton .p-icon {
@@ -2254,4 +2258,14 @@ article.text-post.comment.deleted {
 .wholepost .history-meta {
   color: gray;
   font-size: smaller;
+}
+
+.links a.post-open-reports {
+  color: red;
+  font-weight: bold;
+}
+
+.removebanneddomain {
+  float: right;
+  margin-left: 10px;
 }

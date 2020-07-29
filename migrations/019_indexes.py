@@ -1,4 +1,4 @@
-"""Peewee migrations -- 003_submod.py.
+"""Peewee migrations -- 019_indexes_phuks.py.
 
 Some examples (model - class or model name)::
 
@@ -35,32 +35,14 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
-    @migrator.create_model
-    class SubMod(pw.Model):
-        id = pw.AutoField()
-        uid = pw.ForeignKeyField(backref='submod_set', column_name='uid', field='uid', model=migrator.orm['user'])
-        sid = pw.ForeignKeyField(backref='submod_set', column_name='sid', field='sid', model=migrator.orm['sub'])
-        power_level = pw.IntegerField()
-
-        invite = pw.BooleanField(default=False)
-
-        class Meta:
-            table_name = "sub_mod"
-    
-    SubMod._meta.database = migrator.database
-    SubMod.create_table(True)
-
-    SubMetadata = migrator.orm['sub_metadata']
-
-    for xm in SubMetadata.select().where(SubMetadata.key == 'mod1'):
-        SubMod.create(uid=xm.value, sid=xm.sid, power_level=0)
-
-    for xm in SubMetadata.select().where(SubMetadata.key == 'mod2'):
-        SubMod.create(uid=xm.value, sid=xm.sid, power_level=1)
-
+    migrator.add_index('invite_code', 'code', unique=False)
+    migrator.add_index('sub_post_comment_vote', 'cid', unique=False)
+    migrator.add_index('wiki', 'sid', 'slug', unique=True)
 
 
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
+    migrator.drop_index('invite_code', 'code')
+    migrator.drop_index('sub_post_comment_vote', 'cid')
+    migrator.drop_index('wiki', 'sid', 'slug')
 
-    migrator.remove_model('sub_mod')

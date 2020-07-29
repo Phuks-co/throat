@@ -12,6 +12,7 @@ from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
 from .. import misc
 from ..auth import auth_provider
 from ..socketio import socketio
+from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT
 from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote, SubSubscriber
 from ..models import SiteMetadata, UserMetadata, Message, SubRule, Notification
 from ..caching import cache
@@ -21,12 +22,13 @@ API = Blueprint('apiv3', __name__)
 JWT = JWTManager()
 
 
-def api_over_limit():
-    """ Called when triggering a rate-limit """
+@API.errorhandler(429)
+def ratelimit_handler(e):
     return jsonify(msg="Rate limited. Please try again later"), 429
 
 
 @API.route('/login', methods=['POST'])
+@ratelimit(AUTH_LIMIT)
 def login():
     """ Logs the user in.
     Parameters (json): username and password
@@ -77,6 +79,7 @@ def refresh():
 
 
 @API.route('/fresh-login', methods=['POST'])
+@ratelimit(AUTH_LIMIT)
 def fresh_login():
     """ Returns a fresh access token. Requires username and password """
     username = request.json.get('username', None)
@@ -361,7 +364,7 @@ def get_post_comments(sub, pid):
 
 @API.route('/post/<sub>/<int:pid>/comment', methods=['POST'])
 @jwt_required
-@misc.ratelimit(1, per=30, over_limit=api_over_limit)  # Once every 30 secs
+@ratelimit(POSTING_LIMIT)
 def create_comment(sub, pid):
     uid = get_jwt_identity()
     if not request.is_json:
@@ -618,7 +621,7 @@ def get_challenge():
 
 @API.route('/post', methods=['POST'])
 @jwt_required
-@misc.ratelimit(1, per=30, over_limit=api_over_limit)  # Once every 30 secs
+@ratelimit(POSTING_LIMIT)
 def create_post():
     uid = get_jwt_identity()
     if not request.is_json:
@@ -690,7 +693,7 @@ def create_post():
         if content:
             return jsonify(msg='Link posts do not accept content'), 400
 
-        if misc.is_domain_banned(link):
+        if misc.is_domain_banned(link, domain_type='link'):
             return jsonify(msg="Link's domain is banned"), 400
 
         recent = datetime.datetime.utcnow() - datetime.timedelta(days=5)
@@ -814,6 +817,7 @@ def set_settings():
 
 
 @API.route('/grabtitle', methods=['GET'])
+@ratelimit(POSTING_LIMIT)
 @jwt_required
 def grab_title():
     url = request.args.get('url', None)

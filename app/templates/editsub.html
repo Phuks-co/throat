@@ -60,6 +60,13 @@
           {{editsubform.sublogprivate.label.text}}
         </label>
       </div>
+      
+      <div class="pure-control-group">
+        <label for="subbannedusersprivate" class="pure-checkbox">
+          {{editsubform.subbannedusersprivate(checked=True if metadata.sub_banned_users_private else False)}}
+          {{editsubform.subbannedusersprivate.label.text}}
+        </label>
+      </div>
       {% endif %}
 
       <h4>Default post sort</h4>

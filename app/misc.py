@@ -10,6 +10,7 @@ import os
 import hashlib
 import re
 import gevent
+import ipaddress
 
 import tinycss2
 from captcha.image import ImageCaptcha
@@ -20,7 +21,9 @@ from bs4 import BeautifulSoup
 from functools import update_wrapper
 import misaka as m
 import sendgrid
-from flask import current_app
+from flask import current_app, request
+from flask_login import current_user
+from flask_limiter import Limiter
 from flask_mail import Mail
 from flask_mail import Message as EmailMessage
 from slugify import slugify as s_slugify
@@ -43,6 +46,7 @@ from .storage import store_thumbnail, file_url, thumbnail_url
 from peewee import JOIN, fn, SQL, NodeList, Value
 import requests
 import logging
+import logging.config
 
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
@@ -298,84 +302,20 @@ class SiteAnon(AnonymousUserMixin):
         return ''
 
 
-class RateLimit(object):
-    """ This class does the rate-limit magic """
-    expiration_window = 10
-
-    def __init__(self, key_prefix, limit, per, send_x_headers):
-        self.reset = (int(time.time()) // per) * per + per
-        self.key = key_prefix + str(self.reset)
-        self.limit = limit
-        self.per = per
-        self.send_x_headers = send_x_headers
-        p = rconn.pipeline()
-        p.incr(self.key)
-        p.expireat(self.key, self.reset + self.expiration_window)
-        self.current = min(p.execute()[0], limit)
-
-    def decr(self):
-        p = rconn.pipeline()
-        p.decr(self.key)
-        p.expireat(self.key, self.reset + self.expiration_window)
-        self.current = min(p.execute()[0], self.limit)
-
-    remaining = property(lambda self: self.limit - self.current)
-    over_limit = property(lambda self: self.current >= self.limit)
-
-
-def get_view_rate_limit():
-    """ Returns the rate limit for the current view """
-    return getattr(g, '_view_rate_limit', None)
-
-
-def on_over_limit():
-    """ This is called when the rate limit is reached """
-    return jsonify(status='error', error=[_('Whoa, calm down and wait a bit before posting again.')])
-
-
 def get_ip():
-    """ Tries to return the user's actual IP address. """
-    if request.access_route:
-        return request.access_route[-1]
+    """ Return the user's IP address for rate-limiting. """
+    addr = ipaddress.ip_address(request.remote_addr or '127.0.0.1')
+    if isinstance(addr, ipaddress.IPv6Address):
+        return(addr.exploded[:19]) # use the /64
     else:
-        return request.remote_addr
+        return str(addr)
 
 
-def ratelimit(limit, per=300, send_x_headers=True,
-              over_limit=on_over_limit,
-              scope_func=lambda: get_ip(),
-              key_func=lambda: request.endpoint, negative_score_per=900):
-    """ This is a decorator. It does the rate-limit magic. """
-
-    def decorator(f):
-        """ Function inside function! """
-
-        def rate_limited(*args, **kwargs):
-            """ FUNCTIONCEPTION """
-            persecond = per
-            # If the user has negative score, we use negative_score_per
-            if current_user.score < 0:
-                persecond = negative_score_per
-            key = 'rate-limit/%s/%s/' % (key_func(), scope_func())
-            rlimit = RateLimit(key, limit + 1, persecond, send_x_headers)
-            g._view_rate_limit = rlimit
-            if over_limit is not None and rlimit.over_limit:
-                if not config.app.testing and not config.app.development:
-                    return over_limit()
-            reslt = f(*args, **kwargs)
-            if isinstance(reslt, tuple) and reslt[1] != 200:
-                rlimit.decr()
-            return reslt
-
-        return update_wrapper(rate_limited, f)
-
-    return decorator
-
-
-def reset_ratelimit(per, scope_func=lambda: get_ip(), key_func=lambda: request.endpoint):
-    reset = (int(time.time()) // per) * per + per
-    key = 'rate-limit/%s/%s/%s' % (key_func(), scope_func(), reset)
-    rconn.delete(key)
+limiter = Limiter(key_func=get_ip)
+ratelimit = limiter.limit
+POSTING_LIMIT = '6/minute;120/hour'
+AUTH_LIMIT = '25/5minute'
+SIGNUP_LIMIT = '5/30minute'
 
 
 def safeRequest(url, recieve_timeout=10):
@@ -503,8 +443,9 @@ def is_sub_banned(sub, user=None, uid=None):
         return False
 
 
+@cache.memoize(5)
 def getSubFlairs(sid):
-    return SubFlair.select().where(SubFlair.sid == sid)
+    return list(SubFlair.select().where(SubFlair.sid == sid))
 
 
 @cache.memoize(600)
@@ -572,17 +513,10 @@ def getInviteCodeInfo(uid):
 
     # Codes that this user has generated, that other users signed up with
     try:
-        user_codes = InviteCode.select().where(InviteCode.uid == uid)
-        info['invitedTo'] = []
-        for code in user_codes:
-            try:
-                invited_users = UserMetadata.select().where((UserMetadata.key == 'invitecode') & (UserMetadata.value == code.code))
-                for user in invited_users:
-                    username = User.get((User.uid == user.uid)).name
-                    info['invitedTo'].append({'name': username, 'code': code.code})
-            except UserMetadata.DoesNotExist:
-                # no users have signed up with this code.
-                pass
+        user_codes = InviteCode.select(User.name, InviteCode.code).where(InviteCode.user == uid
+                ).join(UserMetadata, JOIN.LEFT_OUTER, on=((UserMetadata.value == InviteCode.code) & (UserMetadata.key == 'invitecode'))
+                ).join(User).dicts()
+        info['invitedTo'] =  list(user_codes)
     except InviteCode.DoesNotExist:
         pass
 
@@ -895,23 +829,29 @@ def getSinglePost(pid):
     return posts
 
 
-def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False, adminDetail=False):
+def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False, adminDetail=False, isSubMod=False):
+
+    reports = SubPostReport.select(SubPostReport.pid, fn.Min(SubPostReport.id).alias("open_report_id"), fn.Count(SubPostReport.id).alias('open_reports')).where(SubPostReport.open == True).group_by(SubPostReport.pid).cte("reports")
+
     if current_user.is_authenticated and not noDetail:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
                                SubPost.deleted, SubPost.score, SubPost.ptype,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.flair, SubPost.edited, Sub.sid,
                                SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'),
-                               *extra)
+                               *extra, *([reports.c.open_report_id, reports.c.open_reports] if isSubMod else [Value(None).alias('open_report_id'), Value(None).alias('open_reports')]))
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER,
                            on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(
             SubPost)
+        if isSubMod:
+            posts = posts.join(reports, JOIN.LEFT_OUTER, on=(reports.c.pid == SubPost.pid)).switch(SubPost).with_cte(reports)
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
                                SubPost.deleted, SubPost.score, SubPost.ptype,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.flair, SubPost.edited, Sub.sid,
-                               SubPost.comments, User.uid, User.status.alias('userstatus'), *extra)
+                               SubPost.comments, User.uid, User.status.alias('userstatus'), *extra,
+                               Value(None).alias('open_report_id'), Value(None).alias('open_reports'))
     posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
     if not adminDetail:
         posts = posts.where(SubPost.deleted == 0)
@@ -920,6 +860,7 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False,
             posts = posts.where(SubPost.sid.not_in(current_user.blocksid))
     if (not nofilter) and ((not current_user.is_authenticated) or ('nsfw' not in current_user.prefs)):
         posts = posts.where(SubPost.nsfw == 0)
+
     return posts
 
 
@@ -949,6 +890,7 @@ def getPostList(baseQuery, sort, page):
             posts = baseQuery.order_by(
                 (SubPost.score * 20 + (fn.Unix_Timestamp(SubPost.posted) - 1134028003) / 1500).desc()).limit(
                 100).paginate(page, 25)
+
     return posts
 
 
@@ -1410,6 +1352,18 @@ LOG_TYPE_ENABLE_REGISTRATION = 50
 LOG_TYPE_REPORT_CLOSE = 55
 LOG_TYPE_REPORT_REOPEN = 56
 LOG_TYPE_REPORT_CLOSE_RELATED = 57
+LOG_TYPE_REPORT_POST_DELETED = 60
+LOG_TYPE_REPORT_POST_UNDELETED = 61
+LOG_TYPE_REPORT_COMMENT_DELETED = 62
+LOG_TYPE_REPORT_COMMENT_UNDELETED = 63
+LOG_TYPE_REPORT_USER_SITE_BANNED = 64
+LOG_TYPE_REPORT_USER_SUB_BANNED = 65
+LOG_TYPE_REPORT_USER_SITE_UNBANNED = 66
+LOG_TYPE_REPORT_USER_SUB_UNBANNED = 67
+LOG_TYPE_REPORT_NOTE = 68
+LOG_TYPE_EMAIL_DOMAIN_BAN = 69
+LOG_TYPE_EMAIL_DOMAIN_UNBAN = 70
+
 
 def create_sitelog(action, uid, comment='', link=''):
     SiteLog.create(action=action, uid=uid, desc=comment, link=link).save()
@@ -1421,25 +1375,33 @@ def create_sublog(action, uid, sid, comment='', link='', admin=False, target=Non
 
 
 # `id` is the report id
-def create_reportlog(action, uid, id, type='', related=False, original_report=''):
+def create_reportlog(action, uid, id, type='', related=False, original_report='', desc=''):
     if type == 'post' and related == False:
-        PostReportLog.create(action=action, uid=uid, id=id).save()
+        PostReportLog.create(action=action, uid=uid, id=id, desc=desc).save()
     elif type == 'comment' and related == False:
-        CommentReportLog.create(action=action, uid=uid, id=id).save()
+        CommentReportLog.create(action=action, uid=uid, id=id, desc=desc).save()
     elif type == 'post' and related == True:
         PostReportLog.create(action=action, uid=uid, id=id, desc=original_report).save()
     elif type == 'comment' and related == True:
         CommentReportLog.create(action=action, uid=uid, id=id, desc=original_report).save()
 
-def is_domain_banned(link):
-    bans = SiteMetadata.select().where(SiteMetadata.key == 'banned_domain')
+def is_domain_banned(addr, domain_type):
+    if domain_type == 'link':
+        key = 'banned_domain'
+        netloc = urlparse(addr).netloc
+    elif domain_type == 'email':
+        key = 'banned_email_domain'
+        netloc = addr.split('@')[1]
+    else:
+        raise RuntimeError
+
+    bans = SiteMetadata.select().where(SiteMetadata.key == key)
     banned_domains, banned_domains_b = ([], [])
     for ban in bans:
         banned_domains.append(ban.value)
         banned_domains_b.append('.' + ban.value)
 
-    url = urlparse(link)
-    if (url.netloc in banned_domains) or (url.netloc.endswith(tuple(banned_domains_b))):
+    if (netloc in banned_domains) or (netloc.endswith(tuple(banned_domains_b))):
         return True
     return False
 
@@ -1946,3 +1908,55 @@ def getReports(view, status, page, *args, **kwargs):
 
 def slugify(text):
     return s_slugify(text, max_length=80)
+
+
+def logging_init_app(app):
+    config = app.config['THROAT_CONFIG']
+    if 'logging' in config:
+        logging.config.dictConfig(config.logging)
+        add_context_to_log_records(config.logging)
+    elif config.app.development or config.app.testing:
+        logging.basicConfig(level=logging.DEBUG)
+        logging.getLogger("engineio.server").setLevel(logging.WARNING)
+        logging.getLogger("socketio.server").setLevel(logging.WARNING)
+    else:
+        logging.basicConfig(level=logging.WARNING)
+
+
+def add_context_to_log_records(config):
+    # Extract the keys used in the formatters in config.yaml.
+    keys = set()
+    if 'formatters' in config:
+        for formatter in config['formatters'].values():
+            if 'format' in formatter:
+                keys |= set(re.findall(r'%\((.+?)\)', formatter['format']))
+
+    old_factory = logging.getLogRecordFactory()
+    if old_factory.__module__ == __name__:  # So the tests don't make a chain of these.
+        old_factory = old_factory.old_factory
+
+    # If any formatter keys refer to request or current_app, fill in the values.
+    def record_factory(*args, **kwargs):
+        record = old_factory(*args, **kwargs)
+        unavailable = ''
+        for k in keys:
+            splits = k.split('.')
+            if len(splits) > 1:
+                var, attr = splits[0:2]
+                if var == 'request':
+                    if request:
+                        if attr == 'headers' and len(splits) == 3:
+                            record.__dict__[k] = request.headers.get(splits[2], unavailable)
+                        else:
+                            record.__dict__[k] = getattr(request, attr, unavailable)
+                    else:
+                        record.__dict__[k] = unavailable
+                elif var == 'current_user':
+                    if current_user:
+                        record.__dict__[k] = getattr(current_user, attr, unavailable)
+                    else:
+                        record.__dict__[k] = unavailable
+        return record
+
+    record_factory.old_factory = old_factory
+    logging.setLogRecordFactory(record_factory)

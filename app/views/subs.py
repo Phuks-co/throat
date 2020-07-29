@@ -8,6 +8,7 @@ from flask_babel import _, lazy_gettext as _l
 from .. import misc
 from ..config import config
 from ..misc import engine
+from ..misc import ratelimit, POSTING_LIMIT
 from ..socketio import socketio
 from ..models import Sub, db as pdb, SubMod, SubMetadata, SubStylesheet, SubSubscriber, SiteMetadata, SubPost
 from ..models import SubPostPollOption, SubPostMetadata, SubPostVote, User, UserUploads
@@ -65,7 +66,7 @@ def submit(ptype, sub):
 @bp.route("/submit/<ptype>", defaults={'sub': ''}, methods=['POST'])
 @bp.route("/submit/<ptype>/<sub>", methods=['POST'])
 @login_required
-@misc.ratelimit(1, per=30, over_limit=post_over_limit)
+@ratelimit(POSTING_LIMIT)
 def create_post(ptype, sub):
     if ptype not in ['link', 'text', 'poll', 'upload']:
         abort(404)
@@ -175,7 +176,7 @@ def create_post(ptype, sub):
         except SubPost.DoesNotExist:
             pass
 
-        if misc.is_domain_banned(form.link.data.lower()):
+        if misc.is_domain_banned(form.link.data.lower(), domain_type='link'):
             return engine.get_template('sub/createpost.html').render(
                 {'error': _("This domain is banned."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
         img = misc.get_thumbnail(form.link.data)
@@ -278,6 +279,7 @@ def random_sub():
 
 @bp.route("/createsub", methods=['GET', 'POST'])
 @login_required
+@ratelimit(POSTING_LIMIT)
 def create_sub():
     """ Here we can view the create sub form """
     form = CreateSubForm()

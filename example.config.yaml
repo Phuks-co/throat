@@ -25,7 +25,7 @@ site:
   # Set to zero to disable file upload level limits
   upload_min_level: 0
 
-# For those who are allowed to upload files, allow video uploads
+  # For those who are allowed to upload files, allow video uploads
   # (.mp4 and .webm) as well.
   allow_video_uploads: True
 
@@ -40,7 +40,7 @@ site:
   # If False, only Admin can view the sitelog
   sitelog_public: True
 
-  # Forces all the sub logs to be public and removes the option to make them private.
+  # Forces all the sub logs and banned user lists to be public and removes the option to make them private.
   force_sublog_public: True
 
   # Amount of time in seconds the post author can edit a post's title after the post
@@ -61,6 +61,9 @@ site:
 
   # Allows Sub Mods and Admins to view the edit history of posts
   edit_history: False
+
+  # Removes the name of the Mod or Admin who took action on a post or user in notifications sent to user
+  anonymous_modding: False
 
   # Maximum amount of subs a single user can own.
   # The actual amount of subs a user may register scales with user level (user level minus one)
@@ -85,6 +88,11 @@ site:
 
   # Time after which post will be archived
   archive_post_after: 60
+
+  # Number of trusted proxies which set the X-Forwarded-For header
+  # ahead of the application.  If you run the application behind
+  # a load balancer, this should be set to 1 or more.
+  trusted_proxy_count: 0
 
 auth:
   # Set to LOCAL to store user authentication in database,
@@ -123,6 +131,12 @@ app:
   # Used for websockets (if enabled)
   redis_url: 'redis://127.0.0.1:6379'
 
+  # Whether to force all traffic to HTTPS.  If you terminate SSL with
+  # gunicorn in production you should set this to True.  If you use
+  # another server such as nginx or a load balancer to terminate SSL,
+  # this should be False.  Ignored in debug mode.
+  force_https: False
+
   # Secret key used to encrypt session cookies.
   # You can generate one by using `os.urandom(24)`
   # ///// YOU MUST CHANGE THIS VALUE \\\\\
@@ -131,7 +145,7 @@ app:
   # Enables debug mode. Always set to False in a production environment
   debug: True
 
-  # This will make all captchas valid, disable caching and rate limits
+  # This will make all captchas valid and disable caching
   # Always set to False in a production environment
   development: True
 
@@ -230,3 +244,45 @@ database:
 
   # Uncomment if using MySQL
   #charset: 'utf8mb4'
+
+ratelimit:
+  # Rate limiting configuration is not required, but all configuration
+  # variables for flask-limiter may be set here (in lowercase and
+  # without the RATELIMIT_ prefix).  See
+  # https://flask-limiter.readthedocs.io/en/stable/#configuration.
+
+  # Uncomment to disable rate limiting (recommended to leave it on in
+  # production).
+  #enabled: False
+
+logging:
+  # Configuration for logging.  This section is optional.
+  # See the Python documentation for logging.config.
+  version: 1
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: basic
+  formatters:
+    basic:
+      format: '%(levelname)s:%(name)s:%(request.remote_addr)s:%(request.method)s %(request.path)s:%(message)s'
+  loggers:
+    engineio.server:
+      level: WARNING
+    socketio.server:
+      level: WARNING
+    peewee:
+      handlers:
+        - console
+    flask.app:
+      level: DEBUG
+    flask-limiter:
+      level: WARNING
+      handlers:
+        - console
+    geventwebsocket.handler:
+      level: WARNING
+  root:
+    level: DEBUG
+    handlers:
+      - console
