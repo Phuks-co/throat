@@ -925,7 +925,7 @@ msgstr "  --  "
 
 #: app/html/mod/reportdetails.html:265
 msgid "Closed all reports related to: "
-msgstr "Vyriešilo všetky hlásenia vo vzťahu k:"
+msgstr "Vyriešilo všetky hlásenia vo vzťahu k: "
 
 #: app/html/mod/reportdetails.html:266 app/html/shared/post.html:95
 #: app/html/sub/post.html:220 app/html/sub/postcomments.html:94
@@ -966,7 +966,7 @@ msgstr "Obsahuje všetky nevyriešené hlásenia pre túto skupinu."
 
 #: app/html/mod/sub_reports_closed.html:14
 msgid "Closed Reports for "
-msgstr "Vyriešené hlásenia pre"
+msgstr "Vyriešené hlásenia pre "
 
 #: app/html/mod/sub_reports_closed.html:15
 msgid "Includes all closed reports this sub."
@@ -1246,7 +1246,7 @@ msgstr "Moderátori"
 
 #: app/html/shared/sidebar/sub.html:10
 msgid "Only mods can post."
-msgstr "Prispievať môžu iba moderátori"
+msgstr "Prispievať môžu iba moderátori."
 
 #: app/html/shared/sidebar/sub.html:13
 msgid "You are currently banned from posting."
@@ -1861,7 +1861,7 @@ msgstr "[vymazané]"
 
 #: app/html/sub/post.html:283 app/html/sub/postcomments.html:66
 msgid "Viewing edit history:"
-msgstr "História úprav"
+msgstr "História úprav:"
 
 #: app/html/sub/post.html:301
 msgid "Submit comment"
@@ -2087,7 +2087,7 @@ msgstr "Poslať správu"
 
 #: app/html/user/register.html:66
 msgid "I accept the <a href=\"/wiki/tos\">Terms of Use</a>"
-msgstr "akceptujem <a href=\"/wiki/tos\">Podmienky používania</a>"
+msgstr "Prijímam <a href=\"/wiki/tos\">Podmienky používania</a>"
 
 #: app/html/user/registration_disabled.html:12
 msgid ""
@@ -2152,7 +2152,7 @@ msgstr ""
 
 #: app/html/user/email/password-recovery.html:5
 msgid "To proceed, "
-msgstr "Pokračovať"
+msgstr "Pokračovať "
 
 #: app/html/user/messages/notifications.html:11
 msgid "Notifications"
@@ -2249,7 +2249,7 @@ msgid ""
 "<a href=\"/u/%(user)s\">%(user)s</a> deleted one of your posts in <a href="
 "\"%(sub)s\">%(sub)s</a>"
 msgstr ""
-" href=\"/u/%(user)s\">%(user)s</a> vymazal(a) jeden z tvojich príspevkov v "
+"<a href=\"/u/%(user)s\">%(user)s</a> vymazal(a) jeden z tvojich príspevkov v "
 "skupine <a href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:54
@@ -2280,7 +2280,7 @@ msgid ""
 "<a href=\"/u/%(user)s\">%(user)s</a> un-deleted one of your posts in <a href="
 "\"%(sub)s\">%(sub)s</a>"
 msgstr ""
-" href=\"/u/%(user)s\">%(user)s</a> obnovil(a) jeden z tvojich príspevkov v "
+"<a href=\"/u/%(user)s\">%(user)s</a> obnovil(a) jeden z tvojich príspevkov v "
 "skupine <a href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:90
@@ -2990,71 +2990,13 @@ msgstr "Pravidlo obsahuje neplatné znaky"
 msgid "Set a new password on %(site)s"
 msgstr "Nastaviť nové heslo na %(site)s"
 
-#: app/views/do.py:1533
-#, python-format
-msgid ""
-"%(lema)s\n"
-"\n"
-"            Somebody (most likely you) has requested a password reset for "
-"your account.\n"
-"\n"
-"            To proceed, visit the following address (valid for the next 24 "
-"hours):\n"
-"\n"
-"            %(url)s\n"
-"\n"
-"            If you didn't request a password recovery, please ignore this "
-"email.\n"
-"            "
-msgstr ""
-"%(lema)s\n"
-"\n"
-"            Niekto (zrejme ty) si vyžiadal(a) reset tvojho hesla.\n"
-"\n"
-"            Môžeš ho resetovať počas najbližších 24 hodín cez tento link:\n"
-"\n"
-"            %(url)s\n"
-"\n"
-"            Ak si to nebol(a) ty, môžeš tento email ignorovať.\n"
-"            "
-
-#: app/views/do.py:1543
-#, python-format
-msgid ""
-"<h2><strong>%(lema)s</strong></h2>\n"
-"            <p>Somebody (most likely you) has requested a password reset "
-"for\n"
-"            your account</p>\n"
-"            <p>To proceed, visit the following address (valid for the next "
-"24hs)</p>\n"
-"            <a href=\"%(url)s\">%(url)s</a>\n"
-"            <hr>\n"
-"            <p>If you didn't request a password recovery, please ignore "
-"this\n"
-"            email</p>\n"
-"            "
-msgstr ""
-"<h2><strong>%(lema)s</strong></h2>\n"
-"            <p>Niekto (zrejme ty) si vyžiadal reset tvojho hesla na našom "
-"webe.\n"
-"            </p>\n"
-"            <p>Ak chceš heslo resetovať, klikni na tento link (platný "
-"najbližších 24 hodín):</p>\n"
-"            <a href=\"%(url)s\">%(url)s</a>\n"
-"            <hr>\n"
-"            <p>Ak si reset svojho hesla nežiadal(a), môžeš tento email s "
-"kľudným svedomím ignorovať.\n"
-"            </p>\n"
-"            "
-
-#: app/views/do.py:1613 app/views/do.py:1657 app/views/do.py:1660
-#: app/views/do.py:1666
+#: app/views/do.py:1657 app/views/do.py:1660 app/views/do.py:1666
 msgid "Password recovery link expired"
 msgstr "Link pre obnovu hesla už neplatí"
 
 #: app/views/do.py:1672
 msgid "Password change failed. Please try again later."
-msgstr "Zmena hesla sa nepodarila. Skús to neskôr"
+msgstr "Zmena hesla sa nepodarila. Skús to neskôr."
 
 #: app/views/do.py:1700
 msgid "You can't edit a deleted comment"
@@ -3291,15 +3233,15 @@ msgstr "Detekovať automaticky"
 
 #: app/views/user.py:173
 msgid "The link you used is invalid or has expired"
-msgstr "Neplatný, alebo starý link."
+msgstr "Neplatný, alebo starý link"
 
 #: app/views/user.py:179
 msgid "Your password recovery email address is now confirmed!"
-msgstr "Tvoj email pre obnovu hesla bol potvrdený."
+msgstr "Tvoj email pre obnovu hesla bol potvrdený!"
 
 #: app/views/user.py:182
 msgid "Unable to confirm your new email address. Please try again later."
-msgstr "Potvrdenie novej emailovej adresy sa nepodarilo. Skús to neskôr"
+msgstr "Potvrdenie novej emailovej adresy sa nepodarilo. Skús to neskôr."
 
 #: app/views/user.py:232
 msgid "Password reset link was invalid or expired"
@@ -3308,6 +3250,62 @@ msgstr "Link pre reset hesla je neplatný"
 #: app/views/wiki.py:23
 msgid "License file was deleted :("
 msgstr "Licenčný súbor bol vymazaný :("
+
+#, python-format
+#~ msgid ""
+#~ "%(lema)s\n"
+#~ "\n"
+#~ "            Somebody (most likely you) has requested a password reset for "
+#~ "your account.\n"
+#~ "\n"
+#~ "            To proceed, visit the following address (valid for the next "
+#~ "24 hours):\n"
+#~ "\n"
+#~ "            %(url)s\n"
+#~ "\n"
+#~ "            If you didn't request a password recovery, please ignore this "
+#~ "email.\n"
+#~ "            "
+#~ msgstr ""
+#~ "%(lema)s\n"
+#~ "\n"
+#~ "            Niekto (zrejme ty) si vyžiadal(a) reset tvojho hesla.\n"
+#~ "\n"
+#~ "            Môžeš ho resetovať počas najbližších 24 hodín cez tento "
+#~ "link:\n"
+#~ "\n"
+#~ "            %(url)s\n"
+#~ "\n"
+#~ "            Ak si to nebol(a) ty, môžeš tento email ignorovať.\n"
+#~ "            "
+
+#, python-format
+#~ msgid ""
+#~ "<h2><strong>%(lema)s</strong></h2>\n"
+#~ "            <p>Somebody (most likely you) has requested a password reset "
+#~ "for\n"
+#~ "            your account</p>\n"
+#~ "            <p>To proceed, visit the following address (valid for the "
+#~ "next 24hs)</p>\n"
+#~ "            <a href=\"%(url)s\">%(url)s</a>\n"
+#~ "            <hr>\n"
+#~ "            <p>If you didn't request a password recovery, please ignore "
+#~ "this\n"
+#~ "            email</p>\n"
+#~ "            "
+#~ msgstr ""
+#~ "<h2><strong>%(lema)s</strong></h2>\n"
+#~ "            <p>Niekto (zrejme ty) si vyžiadal reset tvojho hesla na našom "
+#~ "webe.\n"
+#~ "            </p>\n"
+#~ "            <p>Ak chceš heslo resetovať, klikni na tento link (platný "
+#~ "najbližších 24 hodín):</p>\n"
+#~ "            <a href=\"%(url)s\">%(url)s</a>\n"
+#~ "            <hr>\n"
+#~ "            <p>Ak si reset svojho hesla nežiadal(a), môžeš tento email s "
+#~ "kľudným svedomím ignorovať.\n"
+#~ "            </p>\n"
+#~ "            "
 
 #~ msgid "Banned users on"
 #~ msgstr "Zabanoval(a) používateľov v"
