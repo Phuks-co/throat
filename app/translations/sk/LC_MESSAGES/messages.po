@@ -925,7 +925,7 @@ msgstr "Príspevok vymazaný"
 
 #: app/html/mod/reportdetails.html:251
 msgid "Post un-deleted"
-msgstr "Príspevok obnovaný"
+msgstr "Príspevok obnovený"
 
 #: app/html/mod/reportdetails.html:253
 msgid "Comment deleted"
@@ -1790,7 +1790,7 @@ msgstr "Upravil(a) vzhľad skupiny"
 #, python-format
 msgid "Sub was transferred to <a href=\"/u/%(username)s\">%(username)s</a>"
 msgstr ""
-"Skupina zmanila vlastníka na <a href=\"/u/%(username)s\">%(username)s</a>"
+"Skupina zmenila vlastníka na <a href=\"/u/%(username)s\">%(username)s</a>"
 
 #: app/html/sub/log.html:56
 msgid "Stickied a post"
@@ -2155,7 +2155,7 @@ msgstr "Prijímam <a href=\"/wiki/tos\">Podmienky používania</a>"
 msgid ""
 "Registration has been temporarily disabled. Please check back later. We "
 "apologize for any inconvience."
-msgstr "Nové registrácie momentálne nefungujú. Skúste to neskôr prosím."
+msgstr "Nové registrácie momentálne nefungujú. Skús to neskôr prosím."
 
 #: app/html/user/topbar.html:5
 msgid "Customize your sub bar"
