@@ -699,7 +699,7 @@ def grab_title():
     try:
         title = misc.grab_title(url)
     except (requests.exceptions.RequestException, ValueError,
-            OSError, IndexError):
+            OSError, IndexError, KeyError):
         return jsonify(status='error', error=[_('Couldn\'t get title')])
 
     return jsonify(status='ok', title=title)

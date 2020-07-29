@@ -320,8 +320,12 @@ AUTH_LIMIT = '25/5minute'
 SIGNUP_LIMIT = '5/30minute'
 
 
-def safeRequest(url, receive_timeout=10, max_size=25000000, mimetypes=None):
-    """ Gets stuff for the internet, with timeouts and size restrictions """
+def safeRequest(url, receive_timeout=10, max_size=25000000, mimetypes=None,
+                partial_read=False):
+    """Gets stuff from the internet, with timeouts, content type and size
+    restrictions.  If partial_read is True it will return approximately
+    the first max_size bytes, otherwise it will raise an error if
+    max_size is exceeded. """
     # Returns (Response, File)
     try:
         r = requests.get(url, stream=True, timeout=receive_timeout,
@@ -330,7 +334,7 @@ def safeRequest(url, receive_timeout=10, max_size=25000000, mimetypes=None):
         raise ValueError('error fetching')
     r.raise_for_status()
 
-    if int(r.headers.get('Content-Length', 1)) > max_size:
+    if int(r.headers.get('Content-Length', 1)) > max_size and not partial_read:
         raise ValueError('response too large')
 
     if mimetypes is not None:
@@ -348,14 +352,23 @@ def safeRequest(url, receive_timeout=10, max_size=25000000, mimetypes=None):
         size += len(chunk)
         f += chunk
         if size > max_size:
-            raise ValueError('response too large')
+            if partial_read:
+                return r, f
+            else:
+                raise ValueError('response too large')
     return r, f
 
 
 def grab_title(url):
-    req, data = safeRequest(url, max_size=2000000, mimetypes={'text/html'})
-    if not (b'<title>' in data and b'</title>' in data):
+    req, data = safeRequest(url, max_size=200000, mimetypes={'text/html'},
+                            partial_read=True)
+
+    # Truncate the HTML so less parsing work will be required.
+    end_title_pos = data.find(b'</title>')
+    if end_title_pos == -1:
         raise KeyError
+    data = data[:end_title_pos] + b'</title></head><body></body>'
+
     _, options = cgi.parse_header(req.headers.get('Content-Type', ''))
     charset = options.get('charset', 'utf-8')
     og = BeautifulSoup(data, 'lxml', from_encoding=charset)
