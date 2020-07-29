@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-07-29 12:30-0300\n"
+"POT-Creation-Date: 2020-07-29 15:01-0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -811,8 +811,10 @@ msgid "Ban %(reported)s from %(site)s"
 msgstr "Zabanovať %(reported)s na %(site)s"
 
 #: app/html/mod/reportdetails.html:104
-msgid "has been banned from"
-msgstr "bol(a) zabanovaný(ý) v"
+#, python-format
+#| msgid "%(reported)s has been banned from %(prefix)s/%(sub)s"
+msgid "%(user)s has been banned from %(site)s"
+msgstr "%(user)s bol zabanovaný(á) globálne na %(site)s"
 
 #: app/html/mod/reportdetails.html:114 app/html/mod/reportdetails.html:118
 #: app/html/sub/bans.html:20 app/html/sub/bans.html:24
@@ -1237,7 +1239,7 @@ msgstr "Top príspevky za posledných 24 hodín"
 #: app/html/shared/sidebar/home.html:25 app/html/shared/sidebar/home.html:48
 #, python-format
 msgid "%(timeago)s in %(sub)s"
-msgstr "%(timeago)s v skupine %(sub)s"
+msgstr "%(timeago)s v %(sub)s"
 
 #: app/html/shared/sidebar/home.html:35
 msgid "Sub of the day"
@@ -2498,9 +2500,13 @@ msgid "deleted"
 msgstr "vymazané"
 
 #: app/static/js/Mod.js:18 app/static/js/Mod.js:33 app/static/js/Mod.js:62
-#: app/static/js/Mod.js:77
-msgid "Error:"
-msgstr "Chyba:"
+#: app/static/js/Mod.js:77 app/static/js/Poll.js:78 app/static/js/Poll.js:130
+#: app/static/js/Post.js:180 app/static/js/Post.js:195
+#: app/static/js/Post.js:211 app/static/js/Post.js:226
+#: app/static/js/Post.js:408 app/static/js/Post.js:435
+#: app/static/js/Post.js:457
+msgid "Error: %1"
+msgstr "Chyba: %1"
 
 #: app/static/js/Mod.js:24 app/static/js/Mod.js:39 app/static/js/Mod.js:68
 #: app/static/js/Mod.js:83 app/static/js/Post.js:362 app/static/js/Post.js:383
@@ -2511,13 +2517,6 @@ msgstr "Nepodarilo sa spojiť so serverom"
 #: app/static/js/Poll.js:68
 msgid "Voting..."
 msgstr "Hlasujem..."
-
-#: app/static/js/Poll.js:78 app/static/js/Poll.js:130 app/static/js/Post.js:180
-#: app/static/js/Post.js:195 app/static/js/Post.js:211
-#: app/static/js/Post.js:226 app/static/js/Post.js:408
-#: app/static/js/Post.js:435 app/static/js/Post.js:457
-msgid "Error: %1"
-msgstr "Chyba: %1"
 
 #: app/static/js/Poll.js:123
 msgid "Working..."
@@ -2770,11 +2769,11 @@ msgstr "Prihlasovacie meno obsahuje neplatné znaky."
 msgid "Username is not available."
 msgstr "Prihlasovacie meno je nedostupné."
 
-#: app/views/auth.py:102
+#: app/views/auth.py:102 app/views/do.py:101
 msgid "We do not accept emails from your email provider."
 msgstr "Emailové adresy od tohto providera neakceptujeme."
 
-#: app/views/auth.py:106
+#: app/views/auth.py:106 app/views/do.py:105
 msgid "E-mail address is already in use."
 msgstr "Tento email je už použitý."
 
@@ -2802,14 +2801,6 @@ msgstr "Neplatné meno alebo heslo."
 #: app/views/do.py:51
 msgid "Whoa, calm down and wait a bit, then try again."
 msgstr "Počkať! Trochu sa krotiť s tým prispievaním."
-
-#: app/views/do.py:101
-msgid "We do not accept emails from your email provider"
-msgstr "Emailové adresy od tohto providera neakceptujeme"
-
-#: app/views/do.py:105
-msgid "E-mail address is already in use"
-msgstr "Email je už použitý"
 
 #: app/views/do.py:109
 msgid "Incorrect password"
@@ -3345,6 +3336,18 @@ msgstr "Link pre reset hesla je neplatný"
 #: app/views/wiki.py:23
 msgid "License file was deleted :("
 msgstr "Licenčný súbor bol vymazaný :("
+
+#~ msgid "has been banned from"
+#~ msgstr "bol(a) zabanovaný(ý) v"
+
+#~ msgid "Error:"
+#~ msgstr "Chyba:"
+
+#~ msgid "We do not accept emails from your email provider"
+#~ msgstr "Emailové adresy od tohto providera neakceptujeme"
+
+#~ msgid "E-mail address is already in use"
+#~ msgstr "Email je už použitý"
 
 #~ msgid "Error fetching title"
 #~ msgstr "Nepodarilo sa prevziať názov"
