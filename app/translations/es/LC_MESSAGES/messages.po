@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-07-29 12:30-0300\n"
-"PO-Revision-Date: 2020-07-29 16:38\n"
+"PO-Revision-Date: 2020-07-29 17:39\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -601,13 +601,13 @@ msgstr "Estado"
 #: app/html/mod/reports.html:41 app/html/mod/sub_reports.html:41
 #: app/html/mod/sub_reports_closed.html:41
 msgid "Comment"
-msgstr ""
+msgstr "Comentario"
 
 #: app/html/admin/reports.html:41 app/html/mod/closed.html:43
 #: app/html/mod/reports.html:43 app/html/mod/sub_reports.html:43
 #: app/html/mod/sub_reports_closed.html:43
 msgid "Post"
-msgstr ""
+msgstr "Post"
 
 #: app/html/admin/reports.html:49 app/html/mod/reportdetails.html:81
 #: app/html/mod/reportdetails.html:325
@@ -646,11 +646,11 @@ msgstr "Iniciar sesión"
 
 #: app/html/admin/wiki.html:15
 msgid "Site wiki"
-msgstr ""
+msgstr "Wiki del sitio"
 
 #: app/html/admin/wiki.html:23
 msgid "Slug"
-msgstr ""
+msgstr "Slug"
 
 #: app/html/admin/wiki.html:25 app/html/sub/bans.html:45
 #: app/html/sub/bans.html:103 app/html/user/settings/invitecode.html:21
@@ -659,11 +659,11 @@ msgstr "Creación"
 
 #: app/html/admin/wiki.html:26
 msgid "Last edited"
-msgstr ""
+msgstr "Última edición"
 
 #: app/html/admin/wiki.html:38
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: app/html/admin/wiki.html:39 app/html/sub/css.html:54
 msgid "Delete"
@@ -671,7 +671,7 @@ msgstr "Borrar"
 
 #: app/html/errors/403.html:4
 msgid "Error 403 - Forbidden"
-msgstr ""
+msgstr "Error 403 - Prohibido"
 
 #: app/html/errors/403.html:10
 msgid "Error 403 - Authorized personnel only"
@@ -713,11 +713,11 @@ msgstr ""
 
 #: app/html/errors/429.html:4
 msgid "Too many requests"
-msgstr ""
+msgstr "Demasiadas peticiones"
 
 #: app/html/errors/429.html:10
 msgid "Too much, too fast!"
-msgstr ""
+msgstr "¡Demasiado, demasiado rápido!"
 
 #: app/html/errors/429.html:12
 msgid "Whoa, calm down, wait a bit and try again."
@@ -733,11 +733,11 @@ msgstr "Estamos experimentando dificultades técnicas, por favor intenta de nuev
 
 #: app/html/mod/closed.html:14 app/html/shared/sidebar/mod.html:13
 msgid "Closed Reports"
-msgstr ""
+msgstr "Reportes cerrados"
 
 #: app/html/mod/closed.html:15
 msgid "Includes all closed reports for subs you can moderate."
-msgstr ""
+msgstr "Incluye todos los reportes cerrados de subs que puedes moderar."
 
 #: app/html/mod/closed.html:20
 msgid "Total Open Reports"
@@ -749,7 +749,7 @@ msgstr ""
 
 #: app/html/mod/closed.html:32 app/html/mod/sub_reports_closed.html:32
 msgid "Reopen"
-msgstr ""
+msgstr "Reabrir"
 
 #: app/html/mod/reportdetails.html:14
 msgid "Report Details"
@@ -785,22 +785,22 @@ msgstr ""
 
 #: app/html/mod/reportdetails.html:68
 msgid "Reported User"
-msgstr ""
+msgstr "Usuario reportado"
 
 #: app/html/mod/reportdetails.html:91
 #, python-format
 msgid "%(reported)s has been banned from %(prefix)s/%(sub)s"
-msgstr ""
+msgstr "%(reported)s ha sido baneado de %(prefix)s/%(sub)s"
 
 #: app/html/mod/reportdetails.html:95
 #, python-format
 msgid "Ban %(reported)s from %(prefix)s/%(sub)s"
-msgstr ""
+msgstr "Banear %(reported)s de %(prefix)s/%(sub)s"
 
 #: app/html/mod/reportdetails.html:100
 #, python-format
 msgid "Ban %(reported)s from %(site)s"
-msgstr ""
+msgstr "Banear a %(reported)s de %(site)s"
 
 #: app/html/mod/reportdetails.html:104
 msgid "has been banned from"
@@ -817,7 +817,7 @@ msgstr "Por siempre"
 
 #: app/html/mod/reportdetails.html:121 app/html/sub/bans.html:27
 msgid "Pick date"
-msgstr ""
+msgstr "Elige la fecha"
 
 #: app/html/mod/reportdetails.html:122 app/html/sub/bans.html:28
 msgid "Ban"
@@ -899,7 +899,7 @@ msgstr "Por"
 
 #: app/html/mod/reportdetails.html:234
 msgid "Details"
-msgstr ""
+msgstr "Detalles"
 
 #: app/html/mod/reportdetails.html:245
 msgid "Report closed"
@@ -911,35 +911,35 @@ msgstr ""
 
 #: app/html/mod/reportdetails.html:249
 msgid "Post deleted"
-msgstr ""
+msgstr "Post eliminado"
 
 #: app/html/mod/reportdetails.html:251
 msgid "Post un-deleted"
-msgstr ""
+msgstr "Post des-borrado"
 
 #: app/html/mod/reportdetails.html:253
 msgid "Comment deleted"
-msgstr ""
+msgstr "Comentario eliminado"
 
 #: app/html/mod/reportdetails.html:255
 msgid "Comment un-deleted"
-msgstr ""
+msgstr "Comentario des-borrado"
 
 #: app/html/mod/reportdetails.html:257
 msgid "Banned user from site"
-msgstr ""
+msgstr "Usuario baneado del sitio"
 
 #: app/html/mod/reportdetails.html:259
 msgid "Banned user from sub"
-msgstr ""
+msgstr "Usuario baneado del sub"
 
 #: app/html/mod/reportdetails.html:261
 msgid "Un-banned user from site"
-msgstr ""
+msgstr "Usuario desbaneado del sitio"
 
 #: app/html/mod/reportdetails.html:263
 msgid "Un-banned user from sub"
-msgstr ""
+msgstr "Usuario desbaneado de sub"
 
 #: app/html/mod/reportdetails.html:265
 msgid "Left note"
@@ -1344,11 +1344,11 @@ msgstr "Banear usuario"
 
 #: app/html/shared/sidebar/user.html:10
 msgid "Remove votes"
-msgstr ""
+msgstr "Eliminar votos"
 
 #: app/html/shared/sidebar/user.html:17
 msgid "Un-ban user"
-msgstr ""
+msgstr "Desbanear usuario"
 
 #: app/html/shared/sidebar/user.html:22
 msgid "Preferences"
@@ -1356,7 +1356,7 @@ msgstr "Preferencias"
 
 #: app/html/shared/sidebar/user.html:23
 msgid "Account"
-msgstr ""
+msgstr "Cuenta"
 
 #: app/html/shared/sidebar/user.html:25
 msgid "Delete account"
@@ -1369,7 +1369,7 @@ msgstr "Códigos de invitación"
 
 #: app/html/shared/sidebar/user.html:33
 msgid "Profile"
-msgstr ""
+msgstr "Perfil"
 
 #: app/html/shared/sidebar/user.html:34
 msgid "View posts"
@@ -1504,7 +1504,7 @@ msgstr ""
 #: app/html/site/wiki.html:11
 #, python-format
 msgid "Last update: %(timestamp)s"
-msgstr ""
+msgstr "Última actualización: %(timestamp)s"
 
 #: app/html/sub/bans.html:7 app/html/sub/css.html:12
 msgid "Editing as Admin"
@@ -1513,7 +1513,7 @@ msgstr "Editando como administrador"
 #: app/html/sub/bans.html:10
 #, python-format
 msgid "Banned users on <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr ""
+msgstr "Usuarios baneados en <a href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/sub/bans.html:37
 msgid "Banned users"
@@ -1628,7 +1628,7 @@ msgstr ""
 
 #: app/html/sub/createpost.html:122
 msgid "Submit post"
-msgstr ""
+msgstr "Enviar post"
 
 #: app/html/sub/createpost.html:127 app/html/sub/post.html:305
 #: app/static/js/Post.js:280 app/static/js/Post.js:335
@@ -1638,12 +1638,12 @@ msgstr "Vista previa"
 
 #: app/html/sub/createpost.html:130
 msgid "Post preview"
-msgstr ""
+msgstr "Vista previa"
 
 #: app/html/sub/css.html:15
 #, python-format
 msgid "Editing stylesheet for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
-msgstr ""
+msgstr "Editando la hoja de estilos para <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
 
 #: app/html/sub/css.html:28 app/html/user/settings/account.html:37
 #: app/html/user/settings/preferences.html:52
@@ -1875,7 +1875,7 @@ msgstr "hacer anuncio"
 
 #: app/html/sub/post.html:227 app/html/sub/postcomments.html:81
 msgid "un-delete"
-msgstr ""
+msgstr "restaurar"
 
 #: app/html/sub/post.html:238
 #, python-format
@@ -1934,7 +1934,7 @@ msgstr "Editado %(timeago)s"
 #: app/html/user/messages/notifications.html:88
 #: app/html/user/messages/notifications.html:106
 msgid "permalink"
-msgstr ""
+msgstr "permalink"
 
 #: app/html/sub/postcomments.html:85
 #: app/html/user/messages/notifications.html:89
@@ -1987,20 +1987,20 @@ msgstr ""
 
 #: app/html/sub/postpoll.html:36
 msgid "Vote"
-msgstr ""
+msgstr "Votar"
 
 #: app/html/sub/postpoll.html:51
 #, python-format
 msgid "(<span class=\"poll-opt-votecount\">%(votes)i</span> votes)"
-msgstr ""
+msgstr "(<span class=\"poll-opt-votecount\">%(votes)i</span> votos)"
 
 #: app/html/sub/postpoll.html:59 app/static/js/Poll.js:127
 msgid "Withdraw vote"
-msgstr ""
+msgstr "Retirar voto"
 
 #: app/html/user/check-your-email.html:8
 msgid "Email sent!"
-msgstr ""
+msgstr "¡Email enviado!"
 
 #: app/html/user/check-your-email.html:9
 msgid "Click the link in the email we sent to you. You may want to check your spam folder, just in case ;)"
@@ -2017,7 +2017,7 @@ msgstr ""
 
 #: app/html/user/password_recovery.html:11
 msgid "Password recovery"
-msgstr ""
+msgstr "Recuperación de contraseña"
 
 #: app/html/user/password_recovery.html:17
 msgid "E-mail address"
@@ -2025,7 +2025,7 @@ msgstr "Dirección de e-mail"
 
 #: app/html/user/password_recovery.html:31
 msgid "Send recovery email"
-msgstr ""
+msgstr "Enviar email de recuperación"
 
 #: app/html/user/password_reset.html:11
 msgid "Password reset"
@@ -2045,7 +2045,7 @@ msgstr "Cambiar contraseña"
 
 #: app/html/user/profile.html:15
 msgid "Send a message"
-msgstr ""
+msgstr "Enviar un mensaje"
 
 #: app/html/user/profile.html:19
 #, python-format
@@ -2070,7 +2070,7 @@ msgstr ""
 
 #: app/html/user/profile.html:66
 msgid "Badges"
-msgstr ""
+msgstr "Medallas"
 
 #: app/html/user/profile.html:77
 msgid "Owns"
@@ -2278,20 +2278,20 @@ msgstr ""
 #: app/html/user/messages/notifications.html:108
 #: app/html/user/messages/notifications.html:125
 msgid "delete notification"
-msgstr ""
+msgstr "eliminar notificación"
 
 #: app/html/user/messages/notifications.html:93
 #: app/html/user/messages/notifications.html:111
 #: app/html/user/messages/notifications.html:128 app/static/js/Messages.js:124
 msgid "unblock"
-msgstr ""
+msgstr "desbloquear"
 
 #: app/html/user/messages/notifications.html:95
 #: app/html/user/messages/notifications.html:113
 #: app/html/user/messages/notifications.html:130 app/static/js/Messages.js:123
 #: app/static/js/Messages.js:126
 msgid "block"
-msgstr ""
+msgstr "bloquear"
 
 #: app/html/user/messages/notifications.html:122
 #, python-format
@@ -2426,7 +2426,7 @@ msgstr "Votando..."
 #: app/static/js/Post.js:226 app/static/js/Post.js:408
 #: app/static/js/Post.js:435 app/static/js/Post.js:457
 msgid "Error: %1"
-msgstr ""
+msgstr "Error: %1"
 
 #: app/static/js/Poll.js:123
 msgid "Working..."
@@ -2444,7 +2444,7 @@ msgstr "¿Por qué borras esto?"
 #: app/static/js/Post.js:144 app/static/js/Post.js:159
 #: app/static/js/Post.js:502 app/static/js/Post.js:526
 msgid "Error."
-msgstr ""
+msgstr "Error."
 
 #: app/static/js/Post.js:48
 msgid "Why are you undeleting this?"
@@ -2475,11 +2475,11 @@ msgstr "Guardar cambios"
 #: app/static/js/Post.js:281 app/static/js/Post.js:336
 #: app/static/js/Post.js:588
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #: app/static/js/Post.js:354 app/static/js/Post.js:375
 msgid "There was an error while editing: %1"
-msgstr ""
+msgstr "Hubo un error al editar: %1"
 
 #: app/static/js/Post.js:357 app/static/js/Post.js:378
 #: app/static/js/Post.js:619
@@ -2561,7 +2561,7 @@ msgstr "Otra"
 
 #: app/static/js/Post.js:682
 msgid "Which Sub rule did this post violate?"
-msgstr ""
+msgstr "¿Qué regla del sub violó este post?"
 
 #: app/static/js/Post.js:686
 msgid "Other sub rule"
@@ -2573,7 +2573,7 @@ msgstr "Describe por qué reportas este post:"
 
 #: app/static/js/Post.js:811
 msgid "Error: "
-msgstr ""
+msgstr "Error: "
 
 #: app/static/js/Post.js:814
 msgid "Your report has been sent and will be reviewed by the site administrators."
@@ -2641,11 +2641,11 @@ msgstr ""
 
 #: app/static/js/utils/TextConfirm.js:9
 msgid "yes"
-msgstr ""
+msgstr "sí"
 
 #: app/static/js/utils/TextConfirm.js:10
 msgid "no"
-msgstr ""
+msgstr "no"
 
 #: app/static/js/utils/TextConfirm.js:14
 msgid "Are you sure?"
@@ -2714,11 +2714,11 @@ msgstr ""
 
 #: app/views/do.py:105
 msgid "E-mail address is already in use"
-msgstr ""
+msgstr "La dirección de e-mail ya está en uso"
 
 #: app/views/do.py:109
 msgid "Incorrect password"
-msgstr ""
+msgstr "Contraseña incorrecta"
 
 #: app/views/do.py:119
 msgid "Password change failed. Please try again later"
@@ -2922,16 +2922,16 @@ msgstr ""
 
 #: app/views/do.py:1152
 msgid "Message not found"
-msgstr ""
+msgstr "Mensaje no encontrado"
 
 #: app/views/do.py:1189 app/views/do.py:1195 app/views/do.py:1244
 #: app/views/do.py:1250
 msgid "Message does not exist"
-msgstr ""
+msgstr "El mensaje no existe"
 
 #: app/views/do.py:1205
 msgid "Missing title"
-msgstr ""
+msgstr "Falta el título"
 
 #: app/views/do.py:1208
 msgid "Title too short."
@@ -2939,11 +2939,11 @@ msgstr "El título es muy corto."
 
 #: app/views/do.py:1219
 msgid "You cannot edit the post title anymore"
-msgstr ""
+msgstr "Ya no puedes editar el título del post"
 
 #: app/views/do.py:1222
 msgid "You did not post this!"
-msgstr ""
+msgstr "¡No has publicado esto!"
 
 #: app/views/do.py:1234
 msgid "Bork bork"
