@@ -596,7 +596,7 @@ msgstr "Používateľ"
 #: app/html/mod/sub_reports.html:31 app/html/mod/sub_reports_closed.html:31
 #: app/html/sub/log.html:11
 msgid "Time"
-msgstr "Čas"
+msgstr "Kedy"
 
 #: app/html/admin/reports.html:30 app/html/mod/reportdetails.html:79
 #: app/html/mod/reportdetails.html:308
@@ -773,11 +773,11 @@ msgstr "Príspevok"
 
 #: app/html/mod/reportdetails.html:26
 msgid "Close Report"
-msgstr "Vyriešiť hlásenia"
+msgstr "Vyriešiť hlásenie"
 
 #: app/html/mod/reportdetails.html:31
 msgid "Reopen Report"
-msgstr "Znovu otvoriť hlásenia"
+msgstr "Znovu otvoriť hlásenie"
 
 #: app/html/mod/reportdetails.html:37
 msgid "All related reports are closed"
@@ -803,7 +803,7 @@ msgstr "%(reported)s bol zabanovaný v skupine %(prefix)s/%(sub)s"
 #: app/html/mod/reportdetails.html:95
 #, python-format
 msgid "Ban %(reported)s from %(prefix)s/%(sub)s"
-msgstr "Zabanovať %(reported)s v skupine %(prefix)s/%(sub)s"
+msgstr "Zabanovať používateľa %(reported)s v skupine %(prefix)s/%(sub)s"
 
 #: app/html/mod/reportdetails.html:100
 #, python-format
@@ -862,7 +862,7 @@ msgstr "[používateľ vymazal komentár]"
 
 #: app/html/mod/reportdetails.html:182 app/html/mod/reportdetails.html:184
 msgid "Posted"
-msgstr "Kedy"
+msgstr "Zaslané"
 
 #: app/html/mod/reportdetails.html:189
 msgid "Go to comment"
@@ -907,7 +907,7 @@ msgstr "Kým"
 
 #: app/html/mod/reportdetails.html:234
 msgid "Details"
-msgstr "Podrobnosti"
+msgstr "Poznámky"
 
 #: app/html/mod/reportdetails.html:245
 msgid "Report closed"
@@ -2724,7 +2724,7 @@ msgstr "Naozaj chceš NATRVALO vymazať svoj účet?"
 
 #: app/static/js/main.js:495
 msgid "Are you sure you want to ban this user?"
-msgstr "Naozaj chceš zabanovať tohoto používateľa?"
+msgstr "Naozaj chceš zabanovať tohto používateľa?"
 
 #: app/static/js/main.js:500
 msgid "Are you sure you want to remove all the votes issued by this user?"
