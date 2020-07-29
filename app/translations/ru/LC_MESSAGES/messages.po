@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-07-29 12:30-0300\n"
-"PO-Revision-Date: 2020-07-29 15:41\n"
+"PO-Revision-Date: 2020-07-29 17:39\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -209,7 +209,7 @@ msgstr "Введите одноразовый пароль"
 
 #: app/forms/admin.py:51
 msgid "Slug (URL)"
-msgstr ""
+msgstr "Slug (URL)"
 
 #: app/forms/admin.py:52
 msgid "Page title"
@@ -337,7 +337,7 @@ msgstr "Добавить ссылку"
 
 #: app/forms/sub.py:116 app/forms/sub.py:133
 msgid "NSFW?"
-msgstr ""
+msgstr "NSFW?"
 
 #: app/forms/sub.py:118
 msgid "Option"
@@ -618,7 +618,7 @@ msgstr "Открыть"
 #: app/html/mod/reports.html:50 app/html/mod/sub_reports.html:50
 #: app/html/mod/sub_reports_closed.html:50
 msgid "[x]"
-msgstr ""
+msgstr "[x]"
 
 #: app/html/admin/reports.html:51 app/html/mod/reportdetails.html:83
 #: app/html/mod/reportdetails.html:327
@@ -650,7 +650,7 @@ msgstr "Вики-сайт"
 
 #: app/html/admin/wiki.html:23
 msgid "Slug"
-msgstr ""
+msgstr "Slug"
 
 #: app/html/admin/wiki.html:25 app/html/sub/bans.html:45
 #: app/html/sub/bans.html:103 app/html/user/settings/invitecode.html:21
@@ -947,7 +947,7 @@ msgstr ""
 
 #: app/html/mod/reportdetails.html:274
 msgid "  --  "
-msgstr ""
+msgstr "  --  "
 
 #: app/html/mod/reportdetails.html:279
 msgid "Closed all reports related to: "
@@ -1088,7 +1088,7 @@ msgstr "Небезопасно для работы"
 #: app/html/shared/post.html:41 app/html/shared/sidebar/sub.html:31
 #: app/html/sub/post.html:83
 msgid "NSFW"
-msgstr ""
+msgstr "NSFW"
 
 #: app/html/shared/post.html:50
 msgid "not https"
@@ -1130,7 +1130,7 @@ msgstr "закрепить"
 
 #: app/html/shared/post.html:80
 msgid "wiki"
-msgstr ""
+msgstr "wiki"
 
 #: app/html/shared/post.html:86
 #, python-format
@@ -1612,7 +1612,7 @@ msgstr "Ссылка"
 
 #: app/html/sub/createpost.html:83
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: app/html/sub/createpost.html:88 app/static/js/Post.js:484
 msgid "Grab title"
@@ -1703,7 +1703,7 @@ msgstr "Пример:"
 #: app/html/sub/css.html:64
 #, python-format
 msgid "%%mybackground%%"
-msgstr ""
+msgstr "%%mybackground%%"
 
 #: app/html/sub/log.html:7
 #, python-format
@@ -2296,7 +2296,7 @@ msgstr "блокировать"
 #: app/html/user/messages/notifications.html:122
 #, python-format
 msgid "Please visit %(link)s to accept or reject the invitation"
-msgstr ""
+msgstr "Пожалуйста, посетите %(link)s, чтобы принять или отклонить приглашение"
 
 #: app/html/user/settings/account.html:9
 #, python-format
@@ -2677,7 +2677,7 @@ msgstr "Никнейм недоступен."
 
 #: app/views/auth.py:102
 msgid "We do not accept emails from your email provider."
-msgstr ""
+msgstr "Мы не принимаем e-mail письма от вашего e-mail провайдера."
 
 #: app/views/auth.py:106
 msgid "E-mail address is already in use."
@@ -2706,11 +2706,11 @@ msgstr "Неправильный ник или пароль."
 
 #: app/views/do.py:51
 msgid "Whoa, calm down and wait a bit, then try again."
-msgstr ""
+msgstr "Немного повремените, прежде чем писать снова."
 
 #: app/views/do.py:101
 msgid "We do not accept emails from your email provider"
-msgstr ""
+msgstr "Мы не принимаем e-mail письма от вашего провайдера e-mail почты"
 
 #: app/views/do.py:105
 msgid "E-mail address is already in use"
