@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-07-29 15:01-0300\n"
-"PO-Revision-Date: 2020-07-29 18:03\n"
+"PO-Revision-Date: 2020-07-29 22:03\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -582,7 +582,7 @@ msgstr "Razón"
 #: app/html/mod/reports.html:30 app/html/mod/sub_reports.html:30
 #: app/html/mod/sub_reports_closed.html:30
 msgid "User reported"
-msgstr ""
+msgstr "Usuario reportado"
 
 #: app/html/admin/reports.html:29 app/html/mod/closed.html:31
 #: app/html/mod/reportdetails.html:76 app/html/mod/reportdetails.html:231
@@ -612,7 +612,7 @@ msgstr "Post"
 #: app/html/admin/reports.html:49 app/html/mod/reportdetails.html:81
 #: app/html/mod/reportdetails.html:325
 msgid "Open"
-msgstr ""
+msgstr "Abierto"
 
 #: app/html/admin/reports.html:49 app/html/mod/closed.html:50
 #: app/html/mod/reports.html:50 app/html/mod/sub_reports.html:50
@@ -805,7 +805,7 @@ msgstr "Banear a %(reported)s de %(site)s"
 #: app/html/mod/reportdetails.html:104
 #, python-format
 msgid "%(user)s has been banned from %(site)s"
-msgstr ""
+msgstr "%(user)s ha sido baneado de %(site)s"
 
 #: app/html/mod/reportdetails.html:114 app/html/mod/reportdetails.html:118
 #: app/html/sub/bans.html:20 app/html/sub/bans.html:24
@@ -826,32 +826,32 @@ msgstr "Banear"
 
 #: app/html/mod/reportdetails.html:132
 msgid "Post Preview:"
-msgstr ""
+msgstr "Vista previa:"
 
 #: app/html/mod/reportdetails.html:138 app/html/sub/postcomments.html:51
 msgid "[post deleted by mod or admin]"
-msgstr ""
+msgstr "[eliminado por moderador o administrador]"
 
 #: app/html/mod/reportdetails.html:140 app/html/mod/reportdetails.html:153
 #: app/html/sub/postcomments.html:46 app/html/sub/postcomments.html:49
 msgid "[post deleted by user]"
-msgstr ""
+msgstr "[eliminado por el usuario]"
 
 #: app/html/mod/reportdetails.html:150
 msgid "[post preview could not be rendered]"
-msgstr ""
+msgstr "[no se pudo procesar la vista previa]"
 
 #: app/html/mod/reportdetails.html:161
 msgid "Comment Preview:"
-msgstr ""
+msgstr "Vista previa del comentario:"
 
 #: app/html/mod/reportdetails.html:166
 msgid "[comment deleted by mod or admin]"
-msgstr ""
+msgstr "[comentario eliminado por moderador o administrador]"
 
 #: app/html/mod/reportdetails.html:170 app/html/mod/reportdetails.html:173
 msgid "[comment deleted by user]"
-msgstr ""
+msgstr "[comentario eliminado por el usuario]"
 
 #: app/html/mod/reportdetails.html:182 app/html/mod/reportdetails.html:184
 msgid "Posted"
@@ -859,19 +859,19 @@ msgstr ""
 
 #: app/html/mod/reportdetails.html:189
 msgid "Go to comment"
-msgstr ""
+msgstr "Ir al comentario"
 
 #: app/html/mod/reportdetails.html:191
 msgid "Go to post"
-msgstr ""
+msgstr "Ir al post"
 
 #: app/html/mod/reportdetails.html:198
 msgid "Delete Comment"
-msgstr ""
+msgstr "Eliminar comentario"
 
 #: app/html/mod/reportdetails.html:204
 msgid "Delete Post"
-msgstr ""
+msgstr "Eliminar post"
 
 #: app/html/mod/reportdetails.html:215
 msgid "Leave note on report"
@@ -891,7 +891,7 @@ msgstr ""
 
 #: app/html/mod/reportdetails.html:232
 msgid "Action Taken"
-msgstr ""
+msgstr "Acción tomada"
 
 #: app/html/mod/reportdetails.html:233 app/html/sub/bans.html:44
 #: app/html/sub/bans.html:102
@@ -1274,7 +1274,7 @@ msgstr "Editar flairs"
 
 #: app/html/shared/sidebar/mod.html:19 app/html/shared/sidebar/sub.html:79
 msgid "Edit rules"
-msgstr ""
+msgstr "Editar reglas"
 
 #: app/html/shared/sidebar/mod.html:20 app/html/shared/sidebar/sub.html:80
 msgid "Edit stylesheet"
@@ -1395,7 +1395,7 @@ msgstr ""
 
 #: app/html/site/log.html:36
 msgid "Created a sub"
-msgstr ""
+msgstr "Creó un sub"
 
 #: app/html/site/log.html:38
 #, python-format
