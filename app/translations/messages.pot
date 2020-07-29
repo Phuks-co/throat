@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Throat 1.0\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-07-29 11:55-0300\n"
+"POT-Creation-Date: 2020-07-29 12:11-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1233,6 +1233,11 @@ msgstr ""
 msgid "Top posts in the last 24 hours"
 msgstr ""
 
+#: app/html/shared/sidebar/home.html:25 app/html/shared/sidebar/home.html:48
+#, python-format
+msgid "%(timeago)s in %(sub)s"
+msgstr ""
+
 #: app/html/shared/sidebar/home.html:35
 msgid "Sub of the day"
 msgstr ""
@@ -1328,8 +1333,7 @@ msgid "Owner"
 msgstr ""
 
 #: app/html/shared/sidebar/sub.html:72
-#, python-format
-msgid "Created by <a href=\"/u/%(name)s\">%(name)s</a>"
+msgid "Created by <a href="
 msgstr ""
 
 #: app/html/shared/sidebar/sub.html:81
@@ -1386,40 +1390,31 @@ msgid "View saved posts"
 msgstr ""
 
 #: app/html/site/license.html:9
-msgid ""
-"This website is powered by <a href=\"https://github.com/Phuks-"
-"co/throat\">Throat</a>, released under the MIT license."
+msgid "This website is powered by <a href="
 msgstr ""
 
-#: app/html/site/log.html:34
-#, python-format
-msgid "Banned <a href=\"/u/%(user)s\">%(user)s</a>"
+#: app/html/site/log.html:34 app/html/sub/log.html:38
+msgid "Banned <a href="
 msgstr ""
 
 #: app/html/site/log.html:36
 msgid "Created a sub"
 msgstr ""
 
-#: app/html/site/log.html:38
-#, python-format
-msgid "Sub was transferred to <a href=\"/u/%(user)s\">%(user)s</a>"
+#: app/html/site/log.html:38 app/html/sub/log.html:54
+msgid "Sub was transferred to <a href="
 msgstr ""
 
-#: app/html/site/log.html:40
-#, python-format
-msgid "Sent mod invite to <a href=\"/u/%(user)s\">%(user)s</a>"
+#: app/html/site/log.html:40 app/html/sub/log.html:42
+msgid "Sent mod invite to <a href="
 msgstr ""
 
-#: app/html/site/log.html:42
-#, python-format
-msgid "Removed <a href=\"/u/%(user)s\">%(user)s</a> from the mod team"
+#: app/html/site/log.html:42 app/html/sub/log.html:46
+msgid "Removed <a href="
 msgstr ""
 
-#: app/html/site/log.html:44
-#, python-format
-msgid ""
-"Revoked mod invite for <a href=\"/u/%(user)s\">%(user)s</a> from the mod "
-"team"
+#: app/html/site/log.html:44 app/html/sub/log.html:48
+msgid "Revoked mod invite for <a href="
 msgstr ""
 
 #: app/html/site/log.html:46 app/html/sub/log.html:60
@@ -1484,9 +1479,8 @@ msgstr ""
 msgid "Re-enabled new user registration"
 msgstr ""
 
-#: app/html/site/log.html:74
-#, python-format
-msgid "Unbanned <a href=\"/u/%(user)s\">%(user)s</a>"
+#: app/html/site/log.html:74 app/html/sub/log.html:40
+msgid "Unbanned <a href="
 msgstr ""
 
 #: app/html/site/log.html:76
@@ -1517,8 +1511,7 @@ msgid "Editing as Admin"
 msgstr ""
 
 #: app/html/sub/bans.html:10
-#, python-format
-msgid "Banned users on <a href=\"%(sub)s\">%(sub)s</a>"
+msgid "Banned users on <a href="
 msgstr ""
 
 #: app/html/sub/bans.html:37
@@ -1647,8 +1640,7 @@ msgid "Post preview"
 msgstr ""
 
 #: app/html/sub/css.html:15
-#, python-format
-msgid "Editing stylesheet for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgid "Editing stylesheet for <a href="
 msgstr ""
 
 #: app/html/sub/css.html:28 app/html/user/settings/account.html:37
@@ -1712,8 +1704,7 @@ msgid "%%mybackground%%"
 msgstr ""
 
 #: app/html/sub/log.html:7
-#, python-format
-msgid "Sub log for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgid "Sub log for <a href="
 msgstr ""
 
 #: app/html/sub/log.html:13
@@ -1728,49 +1719,16 @@ msgstr ""
 msgid "Changed sub settings"
 msgstr ""
 
-#: app/html/sub/log.html:38
-#, python-format
-msgid ""
-"Banned <a href=\"/u/%(username)s\">%(username)s</a> with reason "
-"<code>%(reason)s</code>"
-msgstr ""
-
-#: app/html/sub/log.html:40
-#, python-format
-msgid "Unbanned <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr ""
-
-#: app/html/sub/log.html:42
-#, python-format
-msgid "Sent mod invite to <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr ""
-
 #: app/html/sub/log.html:44
 msgid "Accepted mod invite"
 msgstr ""
 
-#: app/html/sub/log.html:46
-#, python-format
-msgid "Removed <a href=\"/u/%(username)s\">%(username)s</a> from the mod team"
-msgstr ""
-
-#: app/html/sub/log.html:48
-#, python-format
-msgid "Revoked mod invite for <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr ""
-
 #: app/html/sub/log.html:50
-#, python-format
-msgid "Mod invite declined by <a href=\"/u/%(username)s\">%(username)s</a>"
+msgid "Mod invite declined by <a href="
 msgstr ""
 
 #: app/html/sub/log.html:52
 msgid "Edited the sub's stylesheet"
-msgstr ""
-
-#: app/html/sub/log.html:54
-#, python-format
-msgid "Sub was transferred to <a href=\"/u/%(username)s\">%(username)s</a>"
 msgstr ""
 
 #: app/html/sub/log.html:56
@@ -1886,8 +1844,7 @@ msgid "un-delete"
 msgstr ""
 
 #: app/html/sub/post.html:238
-#, python-format
-msgid "Current flair: <span class=\"postflair\">%(flair)s</span>."
+msgid "Current flair: <span class="
 msgstr ""
 
 #: app/html/sub/post.html:238
@@ -1929,10 +1886,7 @@ msgid "[OP]"
 msgstr ""
 
 #: app/html/sub/postcomments.html:31
-#, python-format
-msgid ""
-"<span class=\"cscore\">%(score)i</span> points</b> "
-"(+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
+msgid "<span class="
 msgstr ""
 
 #: app/html/sub/postcomments.html:37
@@ -2000,8 +1954,7 @@ msgid "Vote"
 msgstr ""
 
 #: app/html/sub/postpoll.html:51
-#, python-format
-msgid "(<span class=\"poll-opt-votecount\">%(votes)i</span> votes)"
+msgid "(<span class="
 msgstr ""
 
 #: app/html/sub/postpoll.html:59 app/static/js/Poll.js:127
@@ -2125,7 +2078,7 @@ msgid "Send Message"
 msgstr ""
 
 #: app/html/user/register.html:68
-msgid "I accept the <a href=\"/wiki/tos\">Terms of Use</a>"
+msgid "I accept the <a href="
 msgstr ""
 
 #: app/html/user/registration_disabled.html:12
@@ -2158,6 +2111,12 @@ msgstr ""
 #: app/html/user/email/login-link.html:6
 #: app/html/user/email/password-recovery.html:7
 msgid "click here."
+msgstr ""
+
+#: app/html/user/email/confirm-email-change.html:9
+#: app/html/user/email/login-link.html:9
+#: app/html/user/email/password-recovery.html:10
+msgid "Or you can paste the following link in your browser"
 msgstr ""
 
 #: app/html/user/email/confirm-email-change.html:11
@@ -2194,103 +2153,49 @@ msgid "Notifications"
 msgstr ""
 
 #: app/html/user/messages/notifications.html:18
-#, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> replied to your post <a "
-"href=\"%(link)s\">%(title)s</a>"
-msgstr ""
-
 #: app/html/user/messages/notifications.html:20
-#, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> replied to your comment in <a "
-"href=\"%(link)s\">%(title)s</a>"
-msgstr ""
-
 #: app/html/user/messages/notifications.html:22
-#, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> mentioned you in <a "
-"href=\"%(link)s\">%(title)s</a>"
+#: app/html/user/messages/notifications.html:27
+#: app/html/user/messages/notifications.html:33
+#: app/html/user/messages/notifications.html:36
+#: app/html/user/messages/notifications.html:42
+#: app/html/user/messages/notifications.html:48
+#: app/html/user/messages/notifications.html:56
+#: app/html/user/messages/notifications.html:62
+msgid "<a href="
 msgstr ""
 
 #: app/html/user/messages/notifications.html:25
-#, python-format
-msgid "You have been banned from <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr ""
-
-#: app/html/user/messages/notifications.html:27
-#, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> banned you from <a "
-"href=\"%(sub)s\">%(sub)s</a>"
+msgid "You have been banned from <a href="
 msgstr ""
 
 #: app/html/user/messages/notifications.html:31
-#, python-format
-msgid "You have been unbanned from <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr ""
-
-#: app/html/user/messages/notifications.html:33
-#, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> unbanned you from <a "
-"href=\"%(sub)s\">%(sub)s</a>"
-msgstr ""
-
-#: app/html/user/messages/notifications.html:36
-#, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> invited you to moderate <a "
-"href=\"%(sub)s\">%(sub)s</a>"
+msgid "You have been unbanned from <a href="
 msgstr ""
 
 #: app/html/user/messages/notifications.html:40
-#, python-format
-msgid "Your post <a href=\"%(link)s\">%(title)s</a> has been deleted"
-msgstr ""
-
-#: app/html/user/messages/notifications.html:42
-#, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> deleted your post <a "
-"href=\"%(link)s\">%(title)s</a>"
+#: app/html/user/messages/notifications.html:54
+msgid "Your post <a href="
 msgstr ""
 
 #: app/html/user/messages/notifications.html:46
-#, python-format
-msgid "One of your posts in <a href=\"%(sub)s\">%(sub)s</a> has been deleted"
-msgstr ""
-
-#: app/html/user/messages/notifications.html:48
-#, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> deleted one of your posts in <a "
-"href=\"%(sub)s\">%(sub)s</a>"
-msgstr ""
-
-#: app/html/user/messages/notifications.html:54
-#, python-format
-msgid "Your post <a href=\"%(link)s\">%(title)s</a> has been un-deleted"
-msgstr ""
-
-#: app/html/user/messages/notifications.html:56
-#, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> un-deleted your post <a "
-"href=\"%(link)s\">%(title)s</a>"
-msgstr ""
-
 #: app/html/user/messages/notifications.html:60
-#, python-format
-msgid "One of your posts in <a href=\"%(sub)s\">%(sub)s</a> has been un-deleted"
+msgid "One of your posts in <a href="
 msgstr ""
 
-#: app/html/user/messages/notifications.html:62
+#: app/html/user/messages/notifications.html:71
 #, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> un-deleted one of your posts in <a "
-"href=\"%(sub)s\">%(sub)s</a>"
+msgid "Your comment. Posted %(timeago)s. <b>%(score)i</b> points."
+msgstr ""
+
+#: app/html/user/messages/notifications.html:81
+#, python-format
+msgid "Posted %(timeago)s. <b>%(score)s</b> points. Read %(timeagoread)s"
+msgstr ""
+
+#: app/html/user/messages/notifications.html:83
+#, python-format
+msgid "Posted %(timeago)s. <b>%(score)s</b> points."
 msgstr ""
 
 #: app/html/user/messages/notifications.html:90
@@ -2310,6 +2215,11 @@ msgstr ""
 #: app/html/user/messages/notifications.html:130 app/static/js/Messages.js:123
 #: app/static/js/Messages.js:126
 msgid "block"
+msgstr ""
+
+#: app/html/user/messages/notifications.html:122
+#, python-format
+msgid "Please visit %(link)s to accept or reject the invitation"
 msgstr ""
 
 #: app/html/user/settings/account.html:9
