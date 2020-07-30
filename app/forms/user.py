@@ -84,6 +84,12 @@ class RegistrationForm(FlaskForm):
     securityanswer = StringField(_l('Security question'))
 
 
+class ResendConfirmationForm(FlaskForm):
+    """ For resending emails """
+    email = EmailField(_l('Email Address'),
+                       validators=[Email(_l("Invalid email address."))])
+
+
 class EditAccountForm(FlaskForm):
     email_optional = EmailField(_l('Email Address (optional)'),
                                 validators=[OptionalIfFieldIsEmpty('email_optional'),

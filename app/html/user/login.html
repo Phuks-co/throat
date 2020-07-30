@@ -32,6 +32,13 @@
             <button type="submit" class="pure-button pure-button-primary">@{_('Log in')}</button>
           </div>
         </fieldset>
+        <ul class="loginlinklist">
+          <li><a href="@{url_for('user.password_recovery')}">@{_('Forgot your password?')}</a></li>
+          @if email_validation_is_required():
+            <li><a href="@{url_for('auth.resend_confirmation_email')}">@{_("Didn't get confirmation instructions?")}</a></li>
+          @end
+          <li><a href="@{url_for('auth.register')}">@{_('Sign up')}</a></li>
+        </ul>
       </form>
   </div>
 </div>
