@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-07-29 19:05-0300\n"
-"PO-Revision-Date: 2020-07-29 22:13\n"
+"PO-Revision-Date: 2020-07-30 04:48\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -875,7 +875,7 @@ msgstr "Удалить Пост"
 
 #: app/html/mod/reportdetails.html:215 app/html/mod/reportdetails.html:217
 msgid "Leave a note"
-msgstr ""
+msgstr "Оставить заметку"
 
 #: app/html/mod/reportdetails.html:224
 msgid "Report Log:"
@@ -1040,7 +1040,7 @@ msgstr "Регистрация"
 
 #: app/html/shared/layout.html:109
 msgid "Score"
-msgstr ""
+msgstr "Счет"
 
 #: app/html/shared/layout.html:127
 msgid "Log out"
@@ -1814,7 +1814,7 @@ msgstr "Просмотр истории заголовков:"
 
 #: app/html/sub/post.html:167
 msgid "unsave"
-msgstr ""
+msgstr "не сохранять"
 
 #: app/html/sub/post.html:169
 msgid "save"
@@ -1852,7 +1852,7 @@ msgstr "закрытый опрос"
 
 #: app/html/sub/post.html:203
 msgid "unstick"
-msgstr ""
+msgstr "отклеить"
 
 #: app/html/sub/post.html:205
 msgid "make sticky"
@@ -2344,7 +2344,7 @@ msgstr "Код"
 
 #: app/html/user/settings/invitecode.html:25
 msgid "Max uses"
-msgstr ""
+msgstr "Max uses"
 
 #: app/html/user/settings/preferences.html:9
 #, python-format
