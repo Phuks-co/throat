@@ -67,7 +67,7 @@ def all_new_rss():
 @bp.route("/all/new/<int:page>")
 def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
-    posts = list(misc.getPostList(misc.postListQueryBase(), 'new', page).dicts())
+    posts = list(misc.getPostList(misc.postListQueryBase(isSubMod=current_user.can_admin), 'new', page).dicts())
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home.all_new', 'page': page,
                                                      'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
@@ -80,7 +80,7 @@ def all_new_more(pid=None):
     """ Returns more posts for /all/new (used for infinite scroll) """
     if not pid:
         abort(404)
-    posts = misc.getPostList(misc.postListQueryBase().where(SubPost.pid < pid), 'new', 1).dicts()
+    posts = misc.getPostList(misc.postListQueryBase(isSubMod=current_user.can_admin).where(SubPost.pid < pid), 'new', 1).dicts()
     return engine.get_template('shared/post.html').render({'posts': posts, 'sub': False})
 
 
@@ -115,7 +115,7 @@ def search(page, term):
 @bp.route("/all/top/<int:page>")
 def all_top(page):
     """ The index page, all posts sorted as most recent posted first """
-    posts = misc.getPostList(misc.postListQueryBase(), 'top', page).dicts()
+    posts = misc.getPostList(misc.postListQueryBase(isSubMod=current_user.can_admin), 'top', page).dicts()
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home.all_top', 'page': page,
                                                      'subOfTheDay': misc.getSubOfTheDay(),
                                                      'changeLog': misc.getChangelog(), 'ann': misc.getAnnouncement(),
@@ -127,7 +127,7 @@ def all_top(page):
 @bp.route("/all/hot/<int:page>")
 def all_hot(page):
     """ The index page, all posts sorted as most recent posted first """
-    posts = misc.getPostList(misc.postListQueryBase(), 'hot', page).dicts()
+    posts = misc.getPostList(misc.postListQueryBase(isSubMod=current_user.can_admin), 'hot', page).dicts()
 
     return engine.get_template('index.html').render({'posts': posts, 'sort_type': 'home.all_hot', 'page': page,
                                                      'subOfTheDay': misc.getSubOfTheDay(),
