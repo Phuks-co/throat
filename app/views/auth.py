@@ -131,8 +131,9 @@ def register():
         invcode.uses += 1
         invcode.save()
 
+    status = UserStatus.PROBATION if email_validation_is_required() else UserStatus.OK
     user = auth_provider.create_user(name=form.username.data, password=form.password.data,
-                                     email=email, verified_email=False)
+                                     email=email, verified_email=False, status=status)
     if misc.enableInviteCode():
         UserMetadata.create(uid=user.uid, key='invitecode', value=form.invitecode.data)
 
@@ -141,8 +142,6 @@ def register():
     SubSubscriber.insert_many(subs).execute()
 
     if email_validation_is_required():
-        user.status = UserStatus.PROBATION
-        user.save()
         send_login_link_email(user)
         return redirect(url_for('auth.confirm_registration'))
     else:

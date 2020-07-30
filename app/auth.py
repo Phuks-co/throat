@@ -12,7 +12,7 @@ from keycloak.exceptions import KeycloakError, KeycloakGetError
 from peewee import fn
 
 from .config import config
-from .models import User, UserMetadata, UserAuthSource, UserCrypto, SiteMetadata
+from .models import User, UserMetadata, UserAuthSource, UserCrypto, UserStatus, SiteMetadata
 from . import misc
 
 
@@ -83,7 +83,8 @@ class AuthProvider:
                     return None
         return None
 
-    def create_user(self, name, password, email, verified_email=False):
+    def create_user(self, name, password, email, status=UserStatus.OK,
+                    verified_email=False):
         auth_source = getattr(UserAuthSource, self.provider)
 
         if self.provider == 'LOCAL':
@@ -100,7 +101,7 @@ class AuthProvider:
             password = ''
             crypto = UserCrypto.REMOTE
         user = User.create(uid=uid, name=name, crypto=crypto, password=password,
-                           email=email, joindate=datetime.utcnow())
+                           status=status, email=email, joindate=datetime.utcnow())
         self.set_user_auth_source(user, auth_source)
         self._set_email_verified(user, verified_email)
         return user

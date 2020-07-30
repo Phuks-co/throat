@@ -419,7 +419,6 @@ def create_comment(sub, pid):
                                     cid=uuid.uuid4(), score=0, upvotes=0, downvotes=0)
 
     SubPost.update(comments=SubPost.comments + 1).where(SubPost.pid == post.pid).execute()
-    comment.save()
 
     socketio.emit('threadcomments', {'pid': post.pid, 'comments': post.comments + 1},
                   namespace='/snt', room=post.pid)
