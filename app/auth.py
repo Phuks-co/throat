@@ -149,6 +149,7 @@ class AuthProvider:
                 user.crypto = UserCrypto.BCRYPT
                 user.password = bcrypt.hashpw(new_password.encode('utf-8'),
                                               bcrypt.gensalt())
+                user.save()
             elif self.provider == 'KEYCLOAK' and auth_source == UserAuthSource.KEYCLOAK:
                 self.keycloak_admin.update_user(user_id=self.get_user_remote_uid(user),
                                                 payload={'credentials':
@@ -157,8 +158,7 @@ class AuthProvider:
             else:
                 raise AuthError
             # Invalidate other existing login sessions.
-            user.resets += 1
-            user.save()
+            User.update(resets=User.resets + 1).where(User.uid == user.uid).execute()
             theuser = misc.load_user(user.uid)
             login_user(theuser, remember=session.get("remember_me", False))
 
@@ -189,8 +189,8 @@ class AuthProvider:
                                                            'type': 'password'}]})
             else:
                 raise AuthError
-        user.resets += 1
         user.save()
+        User.update(resets=User.resets + 1).where(User.uid == user.uid).execute()
 
     def get_pending_email(self, user):
         try:
@@ -331,8 +331,8 @@ class AuthProvider:
                                                 payload=payload)
 
         user.status = new_status
-        user.resets += 1  # Make them log in again.
         user.save()
+        User.update(resets=User.resets + 1).where(User.uid == user.uid).execute()
 
     def actually_delete_user(self, user):
         # Used by automatic tests to clean up test realm on server.

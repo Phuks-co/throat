@@ -128,8 +128,8 @@ def register():
             return engine.get_template('user/register.html').render(
                 {'error': _("Invalid invite code."), 'regform': form, 'captcha': captcha})
 
-        invcode.uses += 1
-        invcode.save()
+        InviteCode.update(uses=InviteCode.uses + 1).where(
+            InviteCode.code == form.invitecode.data).execute()
 
     status = UserStatus.PROBATION if email_validation_is_required() else UserStatus.OK
     user = auth_provider.create_user(name=form.username.data, password=form.password.data,

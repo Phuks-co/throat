@@ -10,6 +10,7 @@ import magic
 import hashlib
 import os
 import random
+from collections import defaultdict
 from PIL import Image
 from flask import Blueprint, redirect, url_for, session, abort, jsonify, current_app
 from flask import render_template, request
@@ -249,8 +250,7 @@ def delete_post():
         except SiteMetadata.DoesNotExist:
             pass
 
-        sub.posts -= 1
-        sub.save()
+        Sub.update(posts=Sub.posts - 1).where(Sub.sid == post.sid).execute()
 
         post.deleted = deletion
         post.save()
@@ -302,8 +302,7 @@ def undelete_post():
         except:
             pass
 
-        sub.posts += 1
-        sub.save()
+        Sub.update(posts=Sub.posts + 1).where(Sub.sid == post.sid).execute()
 
         post.deleted = deletion
         post.save()
@@ -520,8 +519,7 @@ def subscribe_to_sub(sid):
             ss.delete_instance()
 
         SubSubscriber.create(time=datetime.datetime.utcnow(), uid=current_user.uid, sid=sid, status=1)
-        sub.subscribers += 1
-        sub.save()
+        Sub.update(subscribers=Sub.subscribers + 1).where(Sub.sid == sid).execute()
         return jsonify(status='ok')
     return jsonify(status='error', error=get_errors(form))
 
@@ -543,8 +541,7 @@ def unsubscribe_from_sub(sid):
         ss = SubSubscriber.get((SubSubscriber.uid == current_user.uid) & (SubSubscriber.sid == sid) & (SubSubscriber.status == 1))
         ss.delete_instance()
 
-        sub.subscribers -= 1
-        sub.save()
+        Sub.update(subscribers=Sub.subscribers - 1).where(Sub.sid == sid).execute()
         return jsonify(status='ok')
     return jsonify(status='error', error=get_errors(form))
 
@@ -564,10 +561,9 @@ def block_sub(sid):
     form = DummyForm()
     if form.validate():
         if current_user.has_subscribed(sub.name):
-            sub.subscribers -= 1
-            sub.save()
             ss = SubSubscriber.get((SubSubscriber.uid == current_user.uid) & (SubSubscriber.sid == sid) & (SubSubscriber.status == 1))
             ss.delete_instance()
+            Sub.update(subscribers=Sub.subscribers - 1).where(Sub.sid == sid).execute()
 
         SubSubscriber.create(time=datetime.datetime.utcnow(), uid=current_user.uid, sid=sid, status=2)
         return jsonify(status='ok')
@@ -2195,11 +2191,12 @@ def admin_undo_votes(uid):
 
     post_v = SubPostVote.select().where(SubPostVote.uid == user.uid)
     comm_v = SubPostCommentVote.select().where(SubPostCommentVote.uid == user.uid)
-    usr = {}
+    score_deltas = defaultdict(int)
+    delta_given = 0
 
     for v in post_v:
         try:
-            post = SubPost.select(SubPost.pid, SubPost.upvotes, SubPost.downvotes, SubPost.uid, SubPost.score).where(SubPost.pid == v.pid_id).get()
+            post = SubPost.select(SubPost.pid, SubPost.uid).where(SubPost.pid == v.pid_id).get()
         except SubPost.DoesNotExist:
             # Edge case. An orphan vote.
             v.delete_instance()
@@ -2207,45 +2204,39 @@ def admin_undo_votes(uid):
         # Not removing self-votes
         if post.uid_id == user.uid:
             continue
-        if not usr.get(post.uid_id):
-            usr[post.uid_id] = User.select(User.uid, User.score).where(User.uid == post.uid_id).get()
-        tgus = usr[post.uid_id]
-        post.score -= 1 if v.positive else -1
-        tgus.score -= 1 if v.positive else -1
-        user.given -= 1 if v.positive else -1
-        if post.upvotes is not None and post.downvotes is not None:
-            if v.positive:
-                post.upvotes -= 1
-            else:
-                post.downvotes -= 1
-        post.save()
-        tgus.save()
+        adjustment = 1 if v.positive else -1
+        score_deltas[post.uid_id] -= adjustment
+        delta_given -= adjustment
+        kwargs = dict(score=SubPost.score - adjustment)
+        if v.positive:
+            kwargs.update(upvotes=SubPost.upvotes - 1)
+        else:
+            kwargs.update(downvotes=SubPost.downvotes - 1)
+        SubPost.update(**kwargs).where(SubPost.pid == v.pid_id).execute()
         v.delete_instance()
     for v in comm_v:
         try:
-            comm = SubPostComment.select(SubPostComment.cid, SubPostComment.upvotes, SubPostComment.downvotes, SubPostComment.score, SubPostComment.uid).where(SubPostComment.cid == v.cid).get()
+            comm = SubPostComment.select(SubPostComment.cid, SubPostComment.score,
+                                         SubPostComment.uid).where(SubPostComment.cid == v.cid).get()
         except SubPostComment.DoesNotExist:
             # Edge case. An orphan vote.
             v.delete_instance()
             continue
-        if not usr.get(comm.uid_id):
-            usr[comm.uid_id] = User.select(User.uid, User.score).where(User.uid == comm.uid_id).get()
-        tgus = usr[comm.uid_id]
-        if not comm.score:
-            comm.score = 0
+        adjustment = 1 if v.positive else -1
+        kwargs = {}
+        score_deltas[comm.uid_id] -= adjustment
+        delta_given -= adjustment
+        if comm.score is not None:
+            kwargs.update(score=SubPostComment.score - adjustment)
+        if v.positive:
+            kwargs.update(upvotes=SubPostComment.upvotes - 1)
         else:
-            comm.score -= 1 if v.positive else -1
-        tgus.score -= 1 if v.positive else -1
-        user.given -= 1 if v.positive else -1
-        if comm.upvotes is not None and comm.downvotes is not None:
-            if v.positive:
-                comm.upvotes -= 1
-            else:
-                comm.downvotes -= 1
-        comm.save()
-        tgus.save()
+            kwargs.update(downvotes=SubPostComment.downvotes - 1)
+        SubPostComment.update(**kwargs).where(SubPostComment.cid == v.cid).execute()
         v.delete_instance()
-    user.save()
+    for recipient_uid, delta in score_deltas.items():
+        User.update(score=User.score + delta).where(User.uid == recipient_uid).execute()
+    User.update(given=User.given + delta_given).where(User.uid == uid).execute()
     return redirect(url_for('user.view', user=user.name))
 
 
