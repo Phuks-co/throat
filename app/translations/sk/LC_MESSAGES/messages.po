@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-07-29 19:05-0300\n"
-"PO-Revision-Date: 2020-07-29 22:13\n"
+"POT-Creation-Date: 2020-07-30 16:08-0300\n"
+"PO-Revision-Date: 2020-07-30 23:38\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -351,7 +351,7 @@ msgstr "Skryť výsledky hlasovania až do ukončenia"
 msgid "Poll closing time"
 msgstr "Hlasovanie končí"
 
-#: app/forms/sub.py:122 app/forms/user.py:82 app/forms/user.py:143
+#: app/forms/sub.py:122 app/forms/user.py:82 app/forms/user.py:149
 #: app/html/sub/createpost.html:116 app/html/user/password_recovery.html:26
 msgid "Captcha"
 msgstr "Captcha"
@@ -380,36 +380,36 @@ msgstr "Tag"
 msgid "Comment text"
 msgstr "Text komentára"
 
-#: app/forms/user.py:46 app/forms/user.py:74 app/forms/user.py:151
+#: app/forms/user.py:46 app/forms/user.py:74 app/forms/user.py:157
 #: app/html/errors/403.html:24 app/html/user/login.html:19
 #: app/html/user/password_reset.html:16 app/static/js/main.js:56
 #: app/static/js/main.js:57
 msgid "Password"
 msgstr "Heslo"
 
-#: app/forms/user.py:48 app/html/errors/403.html:30 app/html/user/login.html:25
+#: app/forms/user.py:48 app/html/errors/403.html:30 app/html/user/login.html:24
 #: app/static/js/main.js:62
 msgid "Remember me"
 msgstr "Pamätaj si ma"
 
-#: app/forms/user.py:69 app/forms/user.py:88
+#: app/forms/user.py:69 app/forms/user.py:94
 msgid "Email Address (optional)"
 msgstr "Email (nepovinný)"
 
 #: app/forms/user.py:71 app/forms/user.py:73 app/forms/user.py:90
-#: app/forms/user.py:92 app/forms/user.py:142
+#: app/forms/user.py:96 app/forms/user.py:98 app/forms/user.py:148
 msgid "Invalid email address."
 msgstr "Neplatný email."
 
-#: app/forms/user.py:72 app/forms/user.py:91
+#: app/forms/user.py:72 app/forms/user.py:97
 msgid "Email Address (required)"
 msgstr "Email (vyžaduje sa)"
 
-#: app/forms/user.py:76 app/forms/user.py:94 app/forms/user.py:153
+#: app/forms/user.py:76 app/forms/user.py:100 app/forms/user.py:159
 msgid "Passwords must match"
 msgstr "Heslá sa nezhodujú"
 
-#: app/forms/user.py:79 app/forms/user.py:97 app/forms/user.py:156
+#: app/forms/user.py:79 app/forms/user.py:103 app/forms/user.py:162
 msgid "Repeat Password"
 msgstr "Opakuj heslo"
 
@@ -425,65 +425,65 @@ msgstr "Súhlasím s podmienkami používania"
 msgid "Security question"
 msgstr "Bezpečnostná otázka"
 
-#: app/forms/user.py:93
+#: app/forms/user.py:89 app/forms/user.py:147
+msgid "Email Address"
+msgstr "Email"
+
+#: app/forms/user.py:99
 msgid "New password"
 msgstr "Nové heslo"
 
-#: app/forms/user.py:99
+#: app/forms/user.py:105
 msgid "Your current password"
 msgstr "Tvoje aktuálne heslo"
 
-#: app/forms/user.py:106
+#: app/forms/user.py:112
 msgid "Your password"
 msgstr "Tvoje heslo"
 
-#: app/forms/user.py:110
+#: app/forms/user.py:116
 msgid "Type 'YES' here"
 msgstr "Napíš sem 'ANO'"
 
-#: app/forms/user.py:116
+#: app/forms/user.py:122
 msgid "Disable custom sub styles"
 msgstr "Zakázať modifikované štýly"
 
-#: app/forms/user.py:117
+#: app/forms/user.py:123
 msgid "Show NSFW content"
 msgstr "Zobrazovať NSFW obsah"
 
-#: app/forms/user.py:119
+#: app/forms/user.py:125
 msgid "Enable experimental features"
 msgstr "Zapnúť experimentálne funkcie"
 
-#: app/forms/user.py:120
+#: app/forms/user.py:126
 msgid "Disable infinite scroll"
 msgstr "Zakázať nekonečné rolovanie"
 
-#: app/forms/user.py:121
+#: app/forms/user.py:127
 msgid "Disable chat"
 msgstr "Vypnúť chat"
 
-#: app/forms/user.py:123
+#: app/forms/user.py:129
 msgid "Global stylesheet (select a sub)"
 msgstr "Globálny štýl (prevziať z)"
 
-#: app/forms/user.py:125
+#: app/forms/user.py:131
 msgid "Language"
 msgstr "Jazyk"
 
-#: app/forms/user.py:130
+#: app/forms/user.py:136
 msgid "to"
 msgstr "adresát"
 
-#: app/forms/user.py:131
+#: app/forms/user.py:137
 msgid "subject"
 msgstr "predmet"
 
-#: app/forms/user.py:134
+#: app/forms/user.py:140
 msgid "message"
 msgstr "správa"
-
-#: app/forms/user.py:141
-msgid "Email Address"
-msgstr "Email"
 
 #: app/html/chat.html:12 app/html/shared/layout.html:179
 msgid "Type here"
@@ -639,8 +639,9 @@ msgstr "Jednorázové heslo"
 
 #: app/html/admin/totp.html:21 app/html/errors/403.html:32
 #: app/html/mod/totp.html:21 app/html/shared/layout.html:104
-#: app/html/user/login.html:5 app/html/user/login.html:30
-#: app/static/js/main.js:64
+#: app/html/user/login.html:5 app/html/user/login.html:29
+#: app/html/user/password_recovery.html:36 app/html/user/register.html:74
+#: app/html/user/resend_confirmation.html:25 app/static/js/main.js:64
 msgid "Log in"
 msgstr "Prihlásiť"
 
@@ -690,7 +691,8 @@ msgstr "Prihlásenie"
 msgid "Alphanumeric characters plus '-' and '_'"
 msgstr "Alfanumerické znaky plus '-' and '_'"
 
-#: app/html/errors/403.html:27 app/html/user/login.html:22
+#: app/html/errors/403.html:27 app/html/user/login.html:33
+#: app/html/user/register.html:75 app/html/user/resend_confirmation.html:27
 #: app/static/js/main.js:59
 msgid "Forgot your password?"
 msgstr "Zabudnuté heslo?"
@@ -941,10 +943,6 @@ msgstr "Odbanoval(a) používateľa v skupine"
 #: app/html/mod/reportdetails.html:265
 msgid "Left note"
 msgstr "Poznámka zatvorená"
-
-#: app/html/mod/reportdetails.html:274
-msgid "  --  "
-msgstr "  --  "
 
 #: app/html/mod/reportdetails.html:279
 msgid "Closed all reports related to: "
@@ -2012,11 +2010,22 @@ msgstr "Po kliknutí na link sa budeš môcť prihlásiť na %(site)s!"
 msgid "The new email address on your account will take effect after you open the link."
 msgstr "Zmena emailu sa prejaví po kliknutí na link."
 
+#: app/html/user/login.html:35 app/html/user/password_recovery.html:39
+#: app/html/user/register.html:77
+msgid "Didn't get confirmation instructions?"
+msgstr ""
+
+#: app/html/user/login.html:37 app/html/user/password_recovery.html:37
+#: app/html/user/resend_confirmation.html:26
+msgid "Sign up"
+msgstr ""
+
 #: app/html/user/password_recovery.html:11
 msgid "Password recovery"
 msgstr "Reset hesla"
 
 #: app/html/user/password_recovery.html:17
+#: app/html/user/resend_confirmation.html:17
 msgid "E-mail address"
 msgstr "Email"
 
@@ -2112,6 +2121,14 @@ msgstr "Prijímam <a href=\"/wiki/tos\">Podmienky používania</a>"
 #: app/html/user/registration_disabled.html:12
 msgid "Registration has been temporarily disabled. Please check back later. We apologize for any inconvience."
 msgstr "Nové registrácie momentálne nefungujú. Skús to neskôr prosím."
+
+#: app/html/user/resend_confirmation.html:11
+msgid "Resend account confirmation instructions"
+msgstr ""
+
+#: app/html/user/resend_confirmation.html:21
+msgid "Send email"
+msgstr ""
 
 #: app/html/user/topbar.html:5
 msgid "Customize your sub bar"
@@ -2621,15 +2638,15 @@ msgstr "Chyba pri kontaktovaní servera"
 msgid "Are you sure you want to PERMANENTLY delete your account?"
 msgstr "Naozaj chceš NATRVALO vymazať svoj účet?"
 
-#: app/static/js/main.js:495
+#: app/static/js/main.js:496
 msgid "Are you sure you want to ban this user?"
 msgstr "Naozaj chceš zabanovať tohoto používateľa?"
 
-#: app/static/js/main.js:500
+#: app/static/js/main.js:501
 msgid "Are you sure you want to remove all the votes issued by this user?"
 msgstr "Naozaj chceš odstrániť všetky hlasovania používateľa?"
 
-#: app/static/js/main.js:505
+#: app/static/js/main.js:506
 msgid "Are you sure you want to unban this user?"
 msgstr "Naozaj chceš odbanovať tohto používateľa?"
 
@@ -2694,7 +2711,11 @@ msgstr "Potvrď svoje konto na %(site)s"
 msgid "The link you used is invalid or has expired."
 msgstr "Neplatný, alebo starý link."
 
-#: app/views/auth.py:221 app/views/auth.py:227 app/views/auth.py:239
+#: app/views/auth.py:216
+msgid "Your email is already confirmed."
+msgstr ""
+
+#: app/views/auth.py:245 app/views/auth.py:249 app/views/auth.py:263
 msgid "Invalid username or password."
 msgstr "Neplatné meno alebo heslo."
 
