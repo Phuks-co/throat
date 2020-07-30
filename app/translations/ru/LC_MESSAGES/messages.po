@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-07-29 19:05-0300\n"
-"PO-Revision-Date: 2020-07-30 04:48\n"
+"PO-Revision-Date: 2020-07-30 17:39\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -209,7 +209,7 @@ msgstr "Введите одноразовый пароль"
 
 #: app/forms/admin.py:51
 msgid "Slug (URL)"
-msgstr "Slug (URL)"
+msgstr ""
 
 #: app/forms/admin.py:52
 msgid "Page title"
@@ -337,7 +337,7 @@ msgstr "Добавить ссылку"
 
 #: app/forms/sub.py:116 app/forms/sub.py:133
 msgid "NSFW?"
-msgstr "NSFW?"
+msgstr ""
 
 #: app/forms/sub.py:118
 msgid "Option"
@@ -378,7 +378,7 @@ msgstr "Флаер"
 
 #: app/forms/sub.py:178
 msgid "Comment text"
-msgstr "Текст комментария"
+msgstr ""
 
 #: app/forms/user.py:46 app/forms/user.py:74 app/forms/user.py:151
 #: app/html/errors/403.html:24 app/html/user/login.html:19
@@ -495,7 +495,7 @@ msgstr "Горячий"
 
 #: app/html/index.html:9 app/html/index.html:13 app/html/sub.html:15
 msgid "Top"
-msgstr "Top"
+msgstr ""
 
 #: app/html/index.html:10 app/html/index.html:14 app/html/sub.html:16
 msgid "New"
@@ -618,7 +618,7 @@ msgstr "Открыть"
 #: app/html/mod/reports.html:50 app/html/mod/sub_reports.html:50
 #: app/html/mod/sub_reports_closed.html:50
 msgid "[x]"
-msgstr "[x]"
+msgstr ""
 
 #: app/html/admin/reports.html:51 app/html/mod/reportdetails.html:83
 #: app/html/mod/reportdetails.html:327
@@ -650,7 +650,7 @@ msgstr "Вики-сайт"
 
 #: app/html/admin/wiki.html:23
 msgid "Slug"
-msgstr "Slug"
+msgstr ""
 
 #: app/html/admin/wiki.html:25 app/html/sub/bans.html:45
 #: app/html/sub/bans.html:103 app/html/user/settings/invitecode.html:21
@@ -713,15 +713,15 @@ msgstr "Тело запрашиваемого объекта короткое."
 
 #: app/html/errors/429.html:4
 msgid "Too many requests"
-msgstr "Слишком много запросов"
+msgstr ""
 
 #: app/html/errors/429.html:10
 msgid "Too much, too fast!"
-msgstr "Слишком много, слишком быстро!"
+msgstr ""
 
 #: app/html/errors/429.html:12 app/views/do.py:50
 msgid "Whoa, calm down and wait a bit, then try again."
-msgstr "Немного повремените, прежде чем писать снова."
+msgstr ""
 
 #: app/html/errors/500.html:4 app/html/errors/500.html:10 app/views/do.py:731
 msgid "Internal error"
@@ -805,7 +805,7 @@ msgstr "Бан %(reported)s от %(site)s"
 #: app/html/mod/reportdetails.html:104
 #, python-format
 msgid "%(user)s has been banned from %(site)s"
-msgstr "%(user)s был запрещен %(site)s"
+msgstr ""
 
 #: app/html/mod/reportdetails.html:114 app/html/mod/reportdetails.html:118
 #: app/html/sub/bans.html:20 app/html/sub/bans.html:24
@@ -875,7 +875,7 @@ msgstr "Удалить Пост"
 
 #: app/html/mod/reportdetails.html:215 app/html/mod/reportdetails.html:217
 msgid "Leave a note"
-msgstr "Оставить заметку"
+msgstr ""
 
 #: app/html/mod/reportdetails.html:224
 msgid "Report Log:"
@@ -887,7 +887,7 @@ msgstr "В этом отчете еще нет записей"
 
 #: app/html/mod/reportdetails.html:232
 msgid "Action Taken"
-msgstr "Принятые Меры"
+msgstr ""
 
 #: app/html/mod/reportdetails.html:233 app/html/sub/bans.html:44
 #: app/html/sub/bans.html:102
@@ -896,7 +896,7 @@ msgstr "По"
 
 #: app/html/mod/reportdetails.html:234
 msgid "Details"
-msgstr "Детали"
+msgstr ""
 
 #: app/html/mod/reportdetails.html:245
 msgid "Report closed"
@@ -940,11 +940,11 @@ msgstr "Не забанненный пользовать с саба"
 
 #: app/html/mod/reportdetails.html:265
 msgid "Left note"
-msgstr "Оставил заметку"
+msgstr ""
 
 #: app/html/mod/reportdetails.html:274
 msgid "  --  "
-msgstr "  --  "
+msgstr ""
 
 #: app/html/mod/reportdetails.html:279
 msgid "Closed all reports related to: "
@@ -1040,7 +1040,7 @@ msgstr "Регистрация"
 
 #: app/html/shared/layout.html:109
 msgid "Score"
-msgstr "Счет"
+msgstr ""
 
 #: app/html/shared/layout.html:127
 msgid "Log out"
@@ -1085,7 +1085,7 @@ msgstr "Небезопасно для работы"
 #: app/html/shared/post.html:41 app/html/shared/sidebar/sub.html:31
 #: app/html/sub/post.html:83
 msgid "NSFW"
-msgstr "NSFW"
+msgstr ""
 
 #: app/html/shared/post.html:50
 msgid "not https"
@@ -1127,7 +1127,7 @@ msgstr "закрепить"
 
 #: app/html/shared/post.html:80
 msgid "wiki"
-msgstr "wiki"
+msgstr ""
 
 #: app/html/shared/post.html:86
 #, python-format
@@ -1145,7 +1145,7 @@ msgstr "блокировать саб"
 #: app/html/shared/post.html:98 app/html/sub/post.html:223
 #, python-format
 msgid "open reports (%(num)s)"
-msgstr "открытые отчеты (%(num)s)"
+msgstr ""
 
 #: app/html/shared/sidebar/admin.html:1
 msgid "Admin"
@@ -1189,7 +1189,7 @@ msgstr "Забаненные Домены"
 
 #: app/html/shared/sidebar/admin.html:14 app/views/admin.py:391
 msgid "Banned Email Domains"
-msgstr "Забаненные E-mail Домены"
+msgstr ""
 
 #: app/html/shared/sidebar/admin.html:16
 msgid "Site log"
@@ -1226,7 +1226,7 @@ msgstr "Горячее за 24 часа"
 #: app/html/shared/sidebar/home.html:25 app/html/shared/sidebar/home.html:48
 #, python-format
 msgid "%(timeago)s in %(sub)s"
-msgstr "%(timeago)s в %(sub)s"
+msgstr ""
 
 #: app/html/shared/sidebar/home.html:35
 msgid "Sub of the day"
@@ -1325,7 +1325,7 @@ msgstr "Владелец"
 #: app/html/shared/sidebar/sub.html:72
 #, python-format
 msgid "Created by <a href=\"/u/%(name)s\">%(name)s</a>"
-msgstr "Создано <a href=\"/u/%(name)s\">%(name)s</a>"
+msgstr ""
 
 #: app/html/shared/sidebar/sub.html:81
 msgid "Sub Moderation"
@@ -1382,12 +1382,12 @@ msgstr "Сохраненные"
 
 #: app/html/site/license.html:9
 msgid "This website is powered by <a href=\"https://github.com/Phuks-co/throat\">Throat</a>, released under the MIT license."
-msgstr "Этот сайт работает на <a href=\"https://github.com/Phuks-co/throat\">Throat</a>, выпущен под лицензией MIT."
+msgstr ""
 
 #: app/html/site/log.html:34
 #, python-format
 msgid "Banned <a href=\"/u/%(user)s\">%(user)s</a>"
-msgstr "Забанен <a href=\"/u/%(user)s\">%(user)s</a>"
+msgstr ""
 
 #: app/html/site/log.html:36
 msgid "Created a sub"
@@ -1396,22 +1396,22 @@ msgstr "Создан саб"
 #: app/html/site/log.html:38
 #, python-format
 msgid "Sub was transferred to <a href=\"/u/%(user)s\">%(user)s</a>"
-msgstr "Саб был передан <a href=\"/u/%(user)s\">%(user)s</a>"
+msgstr ""
 
 #: app/html/site/log.html:40
 #, python-format
 msgid "Sent mod invite to <a href=\"/u/%(user)s\">%(user)s</a>"
-msgstr "Приглашает мод <a href=\"/u/%(user)s\">%(user)s</a>"
+msgstr ""
 
 #: app/html/site/log.html:42
 #, python-format
 msgid "Removed <a href=\"/u/%(user)s\">%(user)s</a> from the mod team"
-msgstr "Удален <a href=\"/u/%(user)s\">%(user)s</a> из команды модов"
+msgstr ""
 
 #: app/html/site/log.html:44
 #, python-format
 msgid "Revoked mod invite for <a href=\"/u/%(user)s\">%(user)s</a> from the mod team"
-msgstr "Отменено приглашение на мода для <a href=\"/u/%(user)s\">%(user)s</a> от мод команды"
+msgstr ""
 
 #: app/html/site/log.html:46 app/html/sub/log.html:60
 #, python-format
@@ -1478,25 +1478,25 @@ msgstr "Повторно включена регистрация нового п
 #: app/html/site/log.html:74
 #, python-format
 msgid "Unbanned <a href=\"/u/%(user)s\">%(user)s</a>"
-msgstr "Разбанил <a href=\"/u/%(user)s\">%(user)s</a>"
+msgstr ""
 
 #: app/html/site/log.html:76
 #, python-format
 msgid "Banned email domain <code>%(desc)s</code>"
-msgstr "Забанен e-mail домен <code>%(desc)s</code>"
+msgstr ""
 
 #: app/html/site/log.html:78
 #, python-format
 msgid "Unbanned email domain <code>%(desc)s</code>"
-msgstr "Разбанен e-mail домен <code>%(desc)s</code>"
+msgstr ""
 
 #: app/html/site/log.html:80
 msgid "Disabled captchas"
-msgstr "Каптча отключена"
+msgstr ""
 
 #: app/html/site/log.html:82
 msgid "Enabled captchas"
-msgstr "Включена капча"
+msgstr ""
 
 #: app/html/site/wiki.html:11
 #, python-format
@@ -1510,7 +1510,7 @@ msgstr "Редактирование от имени Администратор�
 #: app/html/sub/bans.html:10
 #, python-format
 msgid "Banned users on <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr "Забаненные пользователи на <a href=\"%(sub)s\">%(sub)s</a>"
+msgstr ""
 
 #: app/html/sub/bans.html:37
 msgid "Banned users"
@@ -1537,7 +1537,7 @@ msgstr "Действия"
 #: app/html/sub/bans.html:116 app/html/sub/bans.html:123
 #: app/html/sub/bans.html:132 app/html/user/settings/invitecode.html:41
 msgid "N/A"
-msgstr "N/A"
+msgstr ""
 
 #: app/html/sub/bans.html:77
 msgid "Never"
@@ -1609,7 +1609,7 @@ msgstr "Ссылка"
 
 #: app/html/sub/createpost.html:83
 msgid "URL"
-msgstr "URL"
+msgstr ""
 
 #: app/html/sub/createpost.html:88 app/static/js/Post.js:484
 msgid "Grab title"
@@ -1640,7 +1640,7 @@ msgstr "Предпросмотр поста"
 #: app/html/sub/css.html:15
 #, python-format
 msgid "Editing stylesheet for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
-msgstr "Редактирование таблицы стилей для <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgstr ""
 
 #: app/html/sub/css.html:28 app/html/user/settings/account.html:37
 #: app/html/user/settings/preferences.html:52
@@ -1700,12 +1700,12 @@ msgstr "Пример:"
 #: app/html/sub/css.html:64
 #, python-format
 msgid "%%mybackground%%"
-msgstr "%%mybackground%%"
+msgstr ""
 
 #: app/html/sub/log.html:7
 #, python-format
 msgid "Sub log for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
-msgstr "Логи саба <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgstr ""
 
 #: app/html/sub/log.html:13
 msgid "Action"
@@ -1722,17 +1722,17 @@ msgstr "Изменил настройки"
 #: app/html/sub/log.html:38
 #, python-format
 msgid "Banned <a href=\"/u/%(username)s\">%(username)s</a> with reason <code>%(reason)s</code>"
-msgstr "Забанен <a href=\"/u/%(username)s\">%(username)s</a> по причине <code>%(reason)s</code>"
+msgstr ""
 
 #: app/html/sub/log.html:40
 #, python-format
 msgid "Unbanned <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr "Разбанен <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
 
 #: app/html/sub/log.html:42
 #, python-format
 msgid "Sent mod invite to <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr "Пригласил мод для <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
 
 #: app/html/sub/log.html:44
 msgid "Accepted mod invite"
@@ -1741,17 +1741,17 @@ msgstr "Принят мод инвайт"
 #: app/html/sub/log.html:46
 #, python-format
 msgid "Removed <a href=\"/u/%(username)s\">%(username)s</a> from the mod team"
-msgstr "Удален <a href=\"/u/%(username)s\">%(username)s</a> из команды модов"
+msgstr ""
 
 #: app/html/sub/log.html:48
 #, python-format
 msgid "Revoked mod invite for <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr "Отменен мод приглашения для <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
 
 #: app/html/sub/log.html:50
 #, python-format
 msgid "Mod invite declined by <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr "Мод приглашений отклонен <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
 
 #: app/html/sub/log.html:52
 msgid "Edited the sub's stylesheet"
@@ -1760,7 +1760,7 @@ msgstr "Изменил css саба"
 #: app/html/sub/log.html:54
 #, python-format
 msgid "Sub was transferred to <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr "Саб был передан <a href=\"/u/%(username)s\">%(username)s</a>"
+msgstr ""
 
 #: app/html/sub/log.html:56
 msgid "Stickied a post"
@@ -1814,7 +1814,7 @@ msgstr "Просмотр истории заголовков:"
 
 #: app/html/sub/post.html:167
 msgid "unsave"
-msgstr "не сохранять"
+msgstr ""
 
 #: app/html/sub/post.html:169
 msgid "save"
@@ -1852,7 +1852,7 @@ msgstr "закрытый опрос"
 
 #: app/html/sub/post.html:203
 msgid "unstick"
-msgstr "отклеить"
+msgstr ""
 
 #: app/html/sub/post.html:205
 msgid "make sticky"
@@ -1877,7 +1877,7 @@ msgstr "восстановить"
 #: app/html/sub/post.html:238
 #, python-format
 msgid "Current flair: <span class=\"postflair\">%(flair)s</span>."
-msgstr "Текущий флаер: <span class=\"postflair\">%(flair)s</span>."
+msgstr ""
 
 #: app/html/sub/post.html:238
 msgid "Remove"
@@ -1915,12 +1915,12 @@ msgstr "%(comments)i комментариев"
 
 #: app/html/sub/postcomments.html:27
 msgid "[OP]"
-msgstr "[OP]"
+msgstr ""
 
 #: app/html/sub/postcomments.html:31
 #, python-format
 msgid "<span class=\"cscore\">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
-msgstr "<span class=\"cscore\">%(score)i</span> карма</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
+msgstr ""
 
 #: app/html/sub/postcomments.html:37
 #, python-format
@@ -1989,7 +1989,7 @@ msgstr "Голос"
 #: app/html/sub/postpoll.html:51
 #, python-format
 msgid "(<span class=\"poll-opt-votecount\">%(votes)i</span> votes)"
-msgstr "(<span class=\"poll-opt-votecount\">%(votes)i</span> голосов)"
+msgstr ""
 
 #: app/html/sub/postpoll.html:59 app/static/js/Poll.js:127
 msgid "Withdraw vote"
@@ -2107,7 +2107,7 @@ msgstr "Отправить Сообщение"
 
 #: app/html/user/register.html:68
 msgid "I accept the <a href=\"/wiki/tos\">Terms of Use</a>"
-msgstr "Я согласен с <a href=\"/wiki/tos\">Условиями использования</a>"
+msgstr ""
 
 #: app/html/user/registration_disabled.html:12
 msgid "Registration has been temporarily disabled. Please check back later. We apologize for any inconvience."
@@ -2143,7 +2143,7 @@ msgstr "нажмите сюда."
 #: app/html/user/email/login-link.html:9
 #: app/html/user/email/password-recovery.html:10
 msgid "Or you can paste the following link in your browser's address bar:"
-msgstr "Или вы можете вставить следующую ссылку в адресную строку вашего браузера:"
+msgstr ""
 
 #: app/html/user/email/confirm-email-change.html:11
 #: app/html/user/email/login-link.html:11
@@ -2179,97 +2179,97 @@ msgstr "Уведомления"
 #: app/html/user/messages/notifications.html:18
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> replied to your post <a href=\"%(link)s\">%(title)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> ответил на ваш пост <a href=\"%(link)s\">%(title)s</a>"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:20
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> replied to your comment in <a href=\"%(link)s\">%(title)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> ответил на ваш комментарий в <a href=\"%(link)s\">%(title)s</a>"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:22
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> mentioned you in <a href=\"%(link)s\">%(title)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> упомянул вас в <a href=\"%(link)s\">%(title)s</a>"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:25
 #, python-format
 msgid "You have been banned from <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr "Вас забанили на <a href=\"%(sub)s\">%(sub)s</a>"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:27
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> banned you from <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> забанил вас на <a href=\"%(sub)s\">%(sub)s</a>"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:31
 #, python-format
 msgid "You have been unbanned from <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr "Вы были разблокированы на <a href=\"%(sub)s\">%(sub)s</a>"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:33
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> unbanned you from <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> разбанил вас на <a href=\"%(sub)s\">%(sub)s</a>"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:36
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> invited you to moderate <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> пригласил вас модерировать <a href=\"%(sub)s\">%(sub)s</a>"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:40
 #, python-format
 msgid "Your post <a href=\"%(link)s\">%(title)s</a> has been deleted"
-msgstr "Ваш пост <a href=\"%(link)s\">%(title)s</a> был удален"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:42
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> deleted your post <a href=\"%(link)s\">%(title)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> удалил ваш пост <a href=\"%(link)s\">%(title)s</a>"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:46
 #, python-format
 msgid "One of your posts in <a href=\"%(sub)s\">%(sub)s</a> has been deleted"
-msgstr "Один из ваших постов в <a href=\"%(sub)s\">%(sub)s</a> был удален"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:48
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> deleted one of your posts in <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> удалил один из ваших постов в <a href=\"%(sub)s\">%(sub)s</a>"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:54
 #, python-format
 msgid "Your post <a href=\"%(link)s\">%(title)s</a> has been un-deleted"
-msgstr "Ваш пост <a href=\"%(link)s\">%(title)s</a> был восстановлен"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:56
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> un-deleted your post <a href=\"%(link)s\">%(title)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> восстановил ваш пост <a href=\"%(link)s\">%(title)s</a>"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:60
 #, python-format
 msgid "One of your posts in <a href=\"%(sub)s\">%(sub)s</a> has been un-deleted"
-msgstr "Один из ваших постов <a href=\"%(sub)s\">%(sub)s</a> был восстановлен"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:62
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> un-deleted one of your posts in <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> восстановил один из ваших постов в <a href=\"%(sub)s\">%(sub)s</a>"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:71
 #, python-format
 msgid "Your comment. Posted %(timeago)s. <b>%(score)i</b> points."
-msgstr "Ваш комментарий. Опубликовано %(timeago)s. <b>%(score)i</b> кармы."
+msgstr ""
 
 #: app/html/user/messages/notifications.html:81
 #, python-format
 msgid "Posted %(timeago)s. <b>%(score)s</b> points. Read %(timeagoread)s"
-msgstr "Опубликовано %(timeago)s. <b>%(score)s</b> кармы. Читать %(timeagoread)s"
+msgstr ""
 
 #: app/html/user/messages/notifications.html:83
 #, python-format
 msgid "Posted %(timeago)s. <b>%(score)s</b> points."
-msgstr "Отправлено %(timeago)s. <b>%(score)s</b> кармы."
+msgstr ""
 
 #: app/html/user/messages/notifications.html:90
 #: app/html/user/messages/notifications.html:108
@@ -2293,7 +2293,7 @@ msgstr "блокировать"
 #: app/html/user/messages/notifications.html:122
 #, python-format
 msgid "Please visit %(link)s to accept or reject the invitation"
-msgstr "Пожалуйста, посетите %(link)s, чтобы принять или отклонить приглашение"
+msgstr ""
 
 #: app/html/user/settings/account.html:9
 #, python-format
@@ -2344,7 +2344,7 @@ msgstr "Код"
 
 #: app/html/user/settings/invitecode.html:25
 msgid "Max uses"
-msgstr "Max uses"
+msgstr ""
 
 #: app/html/user/settings/preferences.html:9
 #, python-format
@@ -2671,7 +2671,7 @@ msgstr "Никнейм недоступен."
 
 #: app/views/auth.py:102 app/views/do.py:100
 msgid "We do not accept emails from your email provider."
-msgstr "Мы не принимаем e-mail письма от вашего e-mail провайдера."
+msgstr ""
 
 #: app/views/auth.py:106 app/views/do.py:104
 msgid "E-mail address is already in use."
