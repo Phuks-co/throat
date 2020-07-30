@@ -900,7 +900,7 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False,
 
 def postListQueryHome(noDetail=False, nofilter=False):
     if current_user.is_authenticated:
-        return postListQueryBase(noDetail=noDetail, nofilter=nofilter).where(SubPost.sid << current_user.subsid)
+        return postListQueryBase(noDetail=noDetail, nofilter=nofilter, isSubMod=current_user.can_admin).where(SubPost.sid << current_user.subsid)
     else:
         return postListQueryBase(noDetail=noDetail, nofilter=nofilter).join(SiteMetadata, JOIN.LEFT_OUTER,
                                                                             on=(SiteMetadata.key == 'default')).where(
