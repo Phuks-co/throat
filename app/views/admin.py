@@ -448,10 +448,8 @@ def create_wiki():
     form = WikiForm()
 
     if form.validate_on_submit():
-        wiki = Wiki(slug=form.slug.data, title=form.title.data, content=form.content.data)
-        wiki.is_global = True
-        wiki.sub = None
-        wiki.save()
+        wiki = Wiki.create(slug=form.slug.data, title=form.title.data, content=form.content.data,
+                           is_global=True, sub=None)
         return redirect(url_for('admin.wiki'))
     return engine.get_template('admin/createwiki.html').render({'form': form, 'error': misc.get_errors(form, True)})
 

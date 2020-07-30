@@ -222,8 +222,9 @@ def delete_post():
                 return jsonify(status="error", error=[_("Cannot delete without reason")])
             deletion = 2
             # notify user.
-            Notification(type='POST_DELETE', sub=post.sid, post=post.pid, content='Reason: ' + form.reason.data,
-                         sender=current_user.uid, target=post.uid).save()
+            Notification.create(type='POST_DELETE', sub=post.sid, post=post.pid,
+                                content='Reason: ' + form.reason.data,
+                                sender=current_user.uid, target=post.uid)
 
             misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_POST, current_user.uid, post.sid,
                                comment=form.reason.data, link=url_for('site.view_post_inbox', pid=post.pid),
@@ -287,8 +288,9 @@ def undelete_post():
             return jsonify(status="error", error=[_("Cannot un-delete without reason")])
         deletion = 0
         # notify user.
-        Notification(type='POST_UNDELETE', sub=post.sid, post=post.pid, content='Reason: ' + form.reason.data,
-                     sender=current_user.uid, target=post.uid).save()
+        Notification.create(type='POST_UNDELETE', sub=post.sid, post=post.pid,
+                            content='Reason: ' + form.reason.data,
+                            sender=current_user.uid, target=post.uid)
 
         misc.create_sublog(misc.LOG_TYPE_SUB_UNDELETE_POST, current_user.uid, post.sid,
                            comment=form.reason.data, link=url_for('site.view_post_inbox', pid=post.pid),
@@ -677,7 +679,6 @@ def edit_txtpost(pid):
 
         dt = datetime.datetime.utcnow()
         sph = SubPostContentHistory.create(pid=post.pid, content=post.content, datetime=dt)
-        sph.save()
 
         post.content = form.content.data
         # Only save edited time if it was posted more than five minutes ago
@@ -747,9 +748,7 @@ def create_comment(pid):
                                         parentcid=form.parent.data if form.parent.data != '0' else None,
                                         time=datetime.datetime.utcnow(),
                                         cid=uuid.uuid4(), score=0, upvotes=0, downvotes=0)
-
         SubPost.update(comments=SubPost.comments + 1).where(SubPost.pid == post.pid).execute()
-        comment.save()
 
         socketio.emit('threadcomments',
                       {'pid': post.pid,
@@ -767,8 +766,8 @@ def create_comment(pid):
             to = post.uid.uid
             ntype = 'POST_REPLY'
         if to != current_user.uid and current_user.uid not in misc.get_ignores(to):
-            Notification(type=ntype, sub=post.sid, post=post.pid, comment=comment.cid,
-                         sender=current_user.uid, target=to).save()
+            Notification.create(type=ntype, sub=post.sid, post=post.pid, comment=comment.cid,
+                                sender=current_user.uid, target=to)
             socketio.emit('notification',
                           {'count': misc.get_notification_count(to)},
                           namespace='/snt',
@@ -861,7 +860,8 @@ def ban_user_sub(sub):
         if misc.is_sub_banned(sub, uid=user.uid):
             return jsonify(status='error', error=[_('Already banned')])
 
-        Notification(type='SUB_BAN', sub=sub.sid, sender=current_user.uid, content='Reason: ' + form.reason.data, target=user.uid).save()
+        Notification.create(type='SUB_BAN', sub=sub.sid, sender=current_user.uid,
+                            content='Reason: ' + form.reason.data, target=user.uid)
         socketio.emit('notification',
                       {'count': misc.get_notification_count(user.uid)},
                       namespace='/snt',
@@ -942,7 +942,7 @@ def inv_mod(sub):
                 mtype = 'MOD_INVITE'
             else:
                 mtype = 'MOD_INVITE_JANITOR'
-            Notification(type=mtype, sub=sub.sid, sender=current_user.uid, target=user.uid).save()
+            Notification.create(type=mtype, sub=sub.sid, sender=current_user.uid, target=user.uid)
             socketio.emit('notification',
                           {'count': misc.get_notification_count(user.uid)},
                           namespace='/snt',
@@ -987,7 +987,7 @@ def remove_sub_ban(sub, user):
             sb.expires = datetime.datetime.utcnow()
             sb.save()
 
-            Notification(type='SUB_UNBAN', sub=sub.sid, sender=current_user.uid, target=user.uid).save()
+            Notification.create(type='SUB_UNBAN', sub=sub.sid, sender=current_user.uid, target=user.uid)
             socketio.emit('notification',
                           {'count': misc.get_notification_count(user.uid)},
                           namespace='/snt',
@@ -1035,7 +1035,7 @@ def remove_mod2(sub, user):
                 return jsonify(status='error', error=[_('User is not mod')])
 
             mod.delete_instance()
-            SubMetadata.create(sid=sub.sid, key='xmod2', value=user.uid).save()
+            SubMetadata.create(sid=sub.sid, key='xmod2', value=user.uid)
 
             misc.create_sublog(misc.LOG_TYPE_SUB_MOD_REMOVE, current_user.uid, sub.sid, target=user.uid,
                                admin=True if (not isTopMod and current_user.is_admin()) else False)
@@ -1215,7 +1215,6 @@ def edit_title():
 
         dt = datetime.datetime.utcnow()
         sph = SubPostTitleHistory.create(pid=post.pid, title=post.title, datetime=dt)
-        sph.save()
 
         post.title = form.reason.data
         post.save()
@@ -1319,7 +1318,6 @@ def ban_domain(domain_type):
             return jsonify(status='error', error=[_('Domain is already banned')])
         except SiteMetadata.DoesNotExist:
             sm = SiteMetadata.create(key=key, value=form.domain.data)
-            sm.save()
             misc.create_sitelog(action, current_user.uid, comment=form.domain.data)
             return jsonify(status='ok')
 
@@ -1754,8 +1752,6 @@ def edit_comment():
             return jsonify(status='error', error=_("Post is archived"))
 
         dt = datetime.datetime.utcnow()
-        spm = SubPostCommentHistory.create(cid=comment.cid, content=comment.content, datetime=comment.time)
-        spm.save()
         comment.content = form.text.data
         comment.lastedit = dt
         comment.save()

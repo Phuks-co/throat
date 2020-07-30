@@ -290,8 +290,8 @@ def delete_post(sub, pid):
             return jsonify(msg="Cannot delete post without reason"), 400
         post.deleted = 2
         # TODO: Make this a translatable notification
-        Notification(type='POST_DELETE', sub=post.sid, post=post.pid, content='Reason: ' + reason,
-                     sender=uid, target=post.uid).save()
+        Notification.create(type='POST_DELETE', sub=post.sid, post=post.pid, content='Reason: ' + reason,
+                            sender=uid, target=post.uid)
 
         misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_POST, uid, post.sid,
                            comment=reason, link=url_for('site.view_post_inbox', pid=post.pid),
@@ -433,8 +433,8 @@ def create_comment(sub, pid):
         ntype = 'POST_REPLY'
 
     if notif_to != uid and uid not in misc.get_ignores(notif_to):
-        Notification(type=ntype, sub=post.sid, post=post.pid, comment=comment.cid,
-                     sender=uid, target=notif_to).save()
+        Notification.create(type=ntype, sub=post.sid, post=post.pid, comment=comment.cid,
+                            sender=uid, target=notif_to)
         socketio.emit('notification', {'count': misc.get_notification_count(notif_to)},
                       namespace='/snt', room='user' + notif_to)
 
