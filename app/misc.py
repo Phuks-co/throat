@@ -140,6 +140,7 @@ class SiteUser(object):
         self.is_active = True if self.user['status'] == 0 else False
         self.is_authenticated = True if self.user['status'] == 0 else False
         self.is_anonymous = True if self.user['status'] != 0 else False
+        # True if the user is an admin, even without authing with TOTP
         self.can_admin = 'admin' in self.prefs
 
         try:
