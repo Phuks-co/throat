@@ -12,7 +12,13 @@
     <div class="user-activity col-12">
       @for msg in notifications:
       <article class="pmessage post @{msg['read'] == None and 'newmsg' or ''}" data-cid="@{msg['cid']}">
-        <div class="main">
+        <div class="main" data-cid="@{msg['cid']}">
+          @if msg['cid'] and not msg['comment_context']:
+          <div class="pull left votecomment" style="margin-right: 10px;">
+            <div title="Upvote" class="c-upvote@{(msg.get('comment_positive') == 1) and ' upvoted' or ''}" data-icon="upvote"></div>
+            <div title="Downvote" class="c-downvote@{(msg.get('comment_positive') == 0) and ' downvoted' or ''}" data-icon="downvote"></div>
+          </div>
+          @end
           <p class="title">
             @if msg['type'] == 'POST_REPLY':
               @{_('<a href="/u/%(user)s">%(user)s</a> replied to your post <a href="%(link)s">%(title)s</a>', user=msg['sender'], link=url_for("sub.view_post", sub=msg['sub_name'], pid=msg['pid']), title=e(msg['post_title'])) !!html}
@@ -71,11 +77,11 @@
             <p class="author">@{_("Your comment. Posted %(timeago)s. <b>%(score)i</b> points.", timeago='<time-ago datetime="' + msg['comment_context_posted'].isoformat() + 'Z"></time-ago>', score=msg['comment_context_score'])!!html}</p>
             <div class="container">@{markdown(msg['comment_context'])!!html}</div>
             <div class="pchild" style="padding-left: 5px;">
-            @end
-            <div class="pull left votecomment" style="margin-right: 10px;">
+              <div class="pull left votecomment" style="margin-right: 10px;">
                 <div title="Upvote" class="c-upvote@{(msg.get('comment_positive') == 1) and ' upvoted' or ''}" data-icon="upvote"></div>
                 <div title="Downvote" class="c-downvote@{(msg.get('comment_positive') == 0) and ' downvoted' or ''}" data-icon="downvote"></div>
-            </div>
+              </div>
+            @end
             <p class="author" style="margin-top: 0;">
               @if msg['read']:
                 @{_("Posted %(timeago)s. <b>%(score)s</b> points. Read %(timeagoread)s", timeago='<time-ago datetime="' + msg['created'].isoformat() + 'Z"></time-ago>', score='<span class="cscore">' + str(msg['comment_score']) + '</span>', timeagoread='<time-ago datetime="' + msg['read'].isoformat() + 'Z"></time-ago>')!!html}
