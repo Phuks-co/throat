@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-07-29 19:05-0300\n"
-"PO-Revision-Date: 2020-07-29 22:13\n"
+"PO-Revision-Date: 2020-07-30 14:55+0200\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -17,6 +17,7 @@ msgstr ""
 "X-Crowdin-File: /master/app/translations/messages.pot\n"
 "X-Crowdin-File-ID: 26\n"
 "Language: es_ES\n"
+"X-Generator: Poedit 2.4\n"
 
 #: app/__init__.py:47
 msgid "Please log in to access this page."
@@ -3222,4 +3223,3 @@ msgstr "El enlace para restablecer la contraseña no es válido o ha caducado"
 #: app/views/wiki.py:23
 msgid "License file was deleted :("
 msgstr "El archivo de licencia ha sido borrado :("
-
