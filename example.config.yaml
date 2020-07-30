@@ -239,8 +239,9 @@ database:
   # For sqlite:
   #database: '/path/to/sqlite.db'
 
-  # Uncomment if using Postgres:
-  autocommit: True
+  # Uncomment if using Postgres, to prevent transactions with errors from
+  # killing other unrelated transactions.
+  #autorollback: True
 
   # Uncomment if using MySQL
   #charset: 'utf8mb4'
