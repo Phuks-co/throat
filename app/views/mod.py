@@ -46,7 +46,8 @@ def index():
         }
 
         updated_subs = updated_subs + [updated_sub]
-    return render_template('mod/mod.html', subs=updated_subs)
+    return engine.get_template('mod/dashboard.html').render(
+        {'subs': updated_subs, 'sub': None, 'subInfo': None, 'subMods': None})
 
 
 @bp.route("/reports", defaults={'page': 1})
