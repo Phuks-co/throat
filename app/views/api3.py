@@ -14,6 +14,7 @@ from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, captchas_required, grab
 from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote, SubSubscriber
 from ..models import SiteMetadata, UserMetadata, Message, SubRule, Notification
 from ..caching import cache
+from ..config import config
 
 API = Blueprint('apiv3', __name__)
 
@@ -115,6 +116,8 @@ def get_post_list(target):
     base_query = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
                                 SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
                                 SubPost.comments, SubPost.ptype, User.status.alias('userstatus'), User.uid, SubPost.upvotes, *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes]))
+    blocked = []
+    subscribed = []
     if uid:
         base_query = base_query.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == uid))).switch(SubPost)
         subs = SubSubscriber.select().where(SubSubscriber.uid == uid)

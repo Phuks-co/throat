@@ -14,24 +14,21 @@ import ipaddress
 import cgi
 
 import tinycss2
-from bs4 import BeautifulSoup
 from captcha.image import ImageCaptcha
 from datetime import datetime, timedelta, timezone
 from io import BytesIO
 from PIL import Image
 from bs4 import BeautifulSoup
-from functools import update_wrapper
 import misaka as m
 import sendgrid
-from flask import current_app, request
-from flask_login import current_user
+from flask import current_app
 from flask_limiter import Limiter
 from flask_mail import Mail
 from flask_mail import Message as EmailMessage
 from slugify import slugify as s_slugify
 
 from .config import config
-from flask import url_for, request, g, jsonify, session
+from flask import url_for, request, jsonify, session
 from flask_login import AnonymousUserMixin, current_user
 from flask_babel import _
 from flask_talisman import Talisman
