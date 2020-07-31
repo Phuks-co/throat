@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-07-30 16:08-0300\n"
-"PO-Revision-Date: 2020-07-30 23:38\n"
+"POT-Creation-Date: 2020-07-31 19:57-0300\n"
+"PO-Revision-Date: 2020-07-31 23:38\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -70,7 +70,7 @@ msgstr "Люди Капусты - теперь доминирующая сила
 msgid "Winner of the shitposter of the year 2018 contest"
 msgstr "Победитель конкурса shitposter года 2018"
 
-#: app/misc.py:1005
+#: app/misc.py:1006
 #, python-format
 msgid "Error in the '%(field)s' field - %(error)s"
 msgstr "Ошибка в поле '%(field)s'  - %(error)s"
@@ -79,35 +79,35 @@ msgstr "Ошибка в поле '%(field)s'  - %(error)s"
 #: app/html/site/log.html:28 app/html/sub/log.html:28 app/html/sub/post.html:42
 #: app/html/sub/post.html:102 app/html/sub/post.html:116
 #: app/html/sub/postcomments.html:22 app/html/sub/postcomments.html:44
-#: app/misc.py:1193 app/misc.py:1599 app/misc.py:1608 app/misc.py:1615
+#: app/misc.py:1194 app/misc.py:1600 app/misc.py:1609 app/misc.py:1616
 msgid "[Deleted]"
 msgstr "[Удалено]"
 
-#: app/misc.py:1244
+#: app/misc.py:1245
 msgid "URLs not allowed, uploaded files only"
 msgstr "URL не разрешены, только загруженные файлы"
 
-#: app/misc.py:1260
+#: app/misc.py:1261
 msgid "@import token not allowed"
 msgstr "@import токен не допускается"
 
-#: app/misc.py:1269
+#: app/misc.py:1270
 msgid "Invalid CSS"
 msgstr "Ошибка в CSS"
 
-#: app/misc.py:1692
+#: app/misc.py:1693
 msgid "Unknown error. User disappeared"
 msgstr "Неизвестная ошибка. Пользователь исчез"
 
-#: app/misc.py:1699
+#: app/misc.py:1700
 msgid "Score balance is negative"
 msgstr "Баланс счета отрицательный"
 
-#: app/misc.py:1701
+#: app/misc.py:1702
 msgid "Invalid vote value"
 msgstr "Недопустимое значение голоса"
 
-#: app/misc.py:1710 app/views/do.py:207 app/views/do.py:272 app/views/do.py:392
+#: app/misc.py:1711 app/views/do.py:207 app/views/do.py:272 app/views/do.py:392
 #: app/views/do.py:423 app/views/do.py:721 app/views/do.py:1205
 #: app/views/do.py:1286 app/views/do.py:1445 app/views/do.py:1460
 #: app/views/do.py:1531 app/views/do.py:1560 app/views/do.py:1928
@@ -117,39 +117,39 @@ msgstr "Недопустимое значение голоса"
 msgid "Post does not exist"
 msgstr "Пост не существует"
 
-#: app/misc.py:1713
+#: app/misc.py:1714
 msgid "You can't vote on deleted posts"
 msgstr "Вы не можете голосовать за удаленные сообщения"
 
-#: app/misc.py:1729 app/views/do.py:1739 app/views/do.py:1776
+#: app/misc.py:1730 app/views/do.py:1739 app/views/do.py:1776
 #: app/views/do.py:1814 app/views/do.py:2435 app/views/do.py:2535
 #: app/views/do.py:2647
 msgid "Comment does not exist"
 msgstr "Комментарий не существует"
 
-#: app/misc.py:1732
+#: app/misc.py:1733
 msgid "You can't vote on your own comments"
 msgstr "Вы не можете голосовать за свои собственные комментарии"
 
-#: app/misc.py:1734
+#: app/misc.py:1735
 msgid "You can't vote on deleted comments"
 msgstr "Вы не можете голосовать за удаленные комментарии"
 
-#: app/misc.py:1742
+#: app/misc.py:1743
 msgid "Invalid target"
 msgstr "Неверная цель"
 
-#: app/misc.py:1746 app/views/do.py:673 app/views/do.py:1208
+#: app/misc.py:1747 app/views/do.py:673 app/views/do.py:1208
 #: app/views/do.py:1747
 msgid "You are banned on this sub."
 msgstr "Вы запрещены на этом сабе."
 
-#: app/misc.py:1751 app/views/do.py:676 app/views/do.py:726
+#: app/misc.py:1752 app/views/do.py:676 app/views/do.py:726
 #: app/views/do.py:1754
 msgid "Post is archived"
 msgstr "Пост заархивирован"
 
-#: app/misc.py:1944
+#: app/misc.py:1945
 msgid "Invalid status request"
 msgstr "Неверный запрос статуса"
 
@@ -733,7 +733,8 @@ msgstr "Внутренняя ошибка"
 msgid "We're experiencing technical difficulties, please try again later. If the error persists, report it to the administration."
 msgstr "У нас возникли технические трудности, повторите попытку позже. Если ошибка не устранена, сообщите об этом администрации."
 
-#: app/html/mod/closed.html:14 app/html/shared/sidebar/mod.html:13
+#: app/html/mod/closed.html:14 app/html/mod/dashboard.html:37
+#: app/html/shared/sidebar/mod.html:13
 msgid "Closed Reports"
 msgstr "Закрытые Отчеты"
 
@@ -752,6 +753,23 @@ msgstr "Итого Закрытых Отчетов"
 #: app/html/mod/closed.html:32 app/html/mod/sub_reports_closed.html:32
 msgid "Reopen"
 msgstr "Снова открыть"
+
+#: app/html/mod/dashboard.html:5 app/html/mod/dashboard.html:15
+msgid "Mod dashboard"
+msgstr ""
+
+#: app/html/mod/dashboard.html:17
+msgid "Currently viewing all subs as Admin"
+msgstr ""
+
+#: app/html/mod/dashboard.html:29
+msgid "Subscribers"
+msgstr ""
+
+#: app/html/mod/dashboard.html:33 app/html/mod/reports.html:14
+#: app/html/shared/sidebar/mod.html:12
+msgid "Open Reports"
+msgstr "Открытые Отчеты"
 
 #: app/html/mod/reportdetails.html:14
 msgid "Report Details"
@@ -964,10 +982,6 @@ msgstr "Другие сообщения на этот пост:"
 #: app/html/mod/reportdetails.html:300
 msgid "There are no other reports on this post"
 msgstr "Нет других сообщений на этот пост"
-
-#: app/html/mod/reports.html:14 app/html/shared/sidebar/mod.html:12
-msgid "Open Reports"
-msgstr "Открытые Отчеты"
 
 #: app/html/mod/reports.html:15
 msgid "Includes all open reports for subs you can moderate."
@@ -1926,14 +1940,14 @@ msgid "Edited %(timeago)s"
 msgstr "Отредактированный %(timeago)s"
 
 #: app/html/sub/postcomments.html:79
-#: app/html/user/messages/notifications.html:88
-#: app/html/user/messages/notifications.html:106
+#: app/html/user/messages/notifications.html:94
+#: app/html/user/messages/notifications.html:112
 msgid "permalink"
 msgstr "ссылка"
 
 #: app/html/sub/postcomments.html:85
-#: app/html/user/messages/notifications.html:89
-#: app/html/user/messages/notifications.html:107 app/static/js/Post.js:563
+#: app/html/user/messages/notifications.html:95
+#: app/html/user/messages/notifications.html:113 app/static/js/Post.js:563
 #: app/static/js/Post.js:566
 msgid "reply"
 msgstr "ответить"
@@ -2013,12 +2027,12 @@ msgstr "Новый  e-mail адрес в вашей учетной записи 
 #: app/html/user/login.html:35 app/html/user/password_recovery.html:39
 #: app/html/user/register.html:77
 msgid "Didn't get confirmation instructions?"
-msgstr ""
+msgstr "Не получили инструкции по подтверждению?"
 
 #: app/html/user/login.html:37 app/html/user/password_recovery.html:37
 #: app/html/user/resend_confirmation.html:26
 msgid "Sign up"
-msgstr ""
+msgstr "Регистрация"
 
 #: app/html/user/password_recovery.html:11
 msgid "Password recovery"
@@ -2068,7 +2082,7 @@ msgstr "комментарий"
 
 #: app/html/user/profile.html:55
 msgid "Phuks given"
-msgstr "Все дествия"
+msgstr "Все действия"
 
 #: app/html/user/profile.html:59
 msgid "Total score"
@@ -2124,11 +2138,11 @@ msgstr "Регистрация была временно отключена. П�
 
 #: app/html/user/resend_confirmation.html:11
 msgid "Resend account confirmation instructions"
-msgstr ""
+msgstr "Повторно отправить инструкцию по подтверждению учетной записи"
 
 #: app/html/user/resend_confirmation.html:21
 msgid "Send email"
-msgstr ""
+msgstr "Отправить e-mail"
 
 #: app/html/user/topbar.html:5
 msgid "Customize your sub bar"
@@ -2193,121 +2207,121 @@ msgstr "Продолжать, "
 msgid "Notifications"
 msgstr "Уведомления"
 
-#: app/html/user/messages/notifications.html:18
+#: app/html/user/messages/notifications.html:24
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> replied to your post <a href=\"%(link)s\">%(title)s</a>"
 msgstr "<a href=\"/u/%(user)s\">%(user)s</a> ответил на ваш пост <a href=\"%(link)s\">%(title)s</a>"
 
-#: app/html/user/messages/notifications.html:20
+#: app/html/user/messages/notifications.html:26
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> replied to your comment in <a href=\"%(link)s\">%(title)s</a>"
 msgstr "<a href=\"/u/%(user)s\">%(user)s</a> ответил на ваш комментарий в <a href=\"%(link)s\">%(title)s</a>"
 
-#: app/html/user/messages/notifications.html:22
+#: app/html/user/messages/notifications.html:28
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> mentioned you in <a href=\"%(link)s\">%(title)s</a>"
 msgstr "<a href=\"/u/%(user)s\">%(user)s</a> упомянул вас в <a href=\"%(link)s\">%(title)s</a>"
 
-#: app/html/user/messages/notifications.html:25
+#: app/html/user/messages/notifications.html:31
 #, python-format
 msgid "You have been banned from <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr "Вас забанили на <a href=\"%(sub)s\">%(sub)s</a>"
 
-#: app/html/user/messages/notifications.html:27
+#: app/html/user/messages/notifications.html:33
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> banned you from <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr "<a href=\"/u/%(user)s\">%(user)s</a> забанил вас на <a href=\"%(sub)s\">%(sub)s</a>"
 
-#: app/html/user/messages/notifications.html:31
+#: app/html/user/messages/notifications.html:37
 #, python-format
 msgid "You have been unbanned from <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr "Вы были разблокированы на <a href=\"%(sub)s\">%(sub)s</a>"
 
-#: app/html/user/messages/notifications.html:33
+#: app/html/user/messages/notifications.html:39
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> unbanned you from <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr "<a href=\"/u/%(user)s\">%(user)s</a> разбанил вас на <a href=\"%(sub)s\">%(sub)s</a>"
 
-#: app/html/user/messages/notifications.html:36
+#: app/html/user/messages/notifications.html:42
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> invited you to moderate <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr "<a href=\"/u/%(user)s\">%(user)s</a> пригласил вас модерировать <a href=\"%(sub)s\">%(sub)s</a>"
 
-#: app/html/user/messages/notifications.html:40
+#: app/html/user/messages/notifications.html:46
 #, python-format
 msgid "Your post <a href=\"%(link)s\">%(title)s</a> has been deleted"
 msgstr "Ваш пост <a href=\"%(link)s\">%(title)s</a> был удален"
 
-#: app/html/user/messages/notifications.html:42
+#: app/html/user/messages/notifications.html:48
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> deleted your post <a href=\"%(link)s\">%(title)s</a>"
 msgstr "<a href=\"/u/%(user)s\">%(user)s</a> удалил ваш пост <a href=\"%(link)s\">%(title)s</a>"
 
-#: app/html/user/messages/notifications.html:46
+#: app/html/user/messages/notifications.html:52
 #, python-format
 msgid "One of your posts in <a href=\"%(sub)s\">%(sub)s</a> has been deleted"
 msgstr "Один из ваших постов в <a href=\"%(sub)s\">%(sub)s</a> был удален"
 
-#: app/html/user/messages/notifications.html:48
+#: app/html/user/messages/notifications.html:54
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> deleted one of your posts in <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr "<a href=\"/u/%(user)s\">%(user)s</a> удалил один из ваших постов в <a href=\"%(sub)s\">%(sub)s</a>"
 
-#: app/html/user/messages/notifications.html:54
+#: app/html/user/messages/notifications.html:60
 #, python-format
 msgid "Your post <a href=\"%(link)s\">%(title)s</a> has been un-deleted"
 msgstr "Ваш пост <a href=\"%(link)s\">%(title)s</a> был восстановлен"
 
-#: app/html/user/messages/notifications.html:56
+#: app/html/user/messages/notifications.html:62
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> un-deleted your post <a href=\"%(link)s\">%(title)s</a>"
 msgstr "<a href=\"/u/%(user)s\">%(user)s</a> восстановил ваш пост <a href=\"%(link)s\">%(title)s</a>"
 
-#: app/html/user/messages/notifications.html:60
+#: app/html/user/messages/notifications.html:66
 #, python-format
 msgid "One of your posts in <a href=\"%(sub)s\">%(sub)s</a> has been un-deleted"
 msgstr "Один из ваших постов <a href=\"%(sub)s\">%(sub)s</a> был восстановлен"
 
-#: app/html/user/messages/notifications.html:62
+#: app/html/user/messages/notifications.html:68
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> un-deleted one of your posts in <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr "<a href=\"/u/%(user)s\">%(user)s</a> восстановил один из ваших постов в <a href=\"%(sub)s\">%(sub)s</a>"
 
-#: app/html/user/messages/notifications.html:71
+#: app/html/user/messages/notifications.html:77
 #, python-format
 msgid "Your comment. Posted %(timeago)s. <b>%(score)i</b> points."
 msgstr "Ваш комментарий. Опубликовано %(timeago)s. <b>%(score)i</b> кармы."
 
-#: app/html/user/messages/notifications.html:81
+#: app/html/user/messages/notifications.html:87
 #, python-format
 msgid "Posted %(timeago)s. <b>%(score)s</b> points. Read %(timeagoread)s"
 msgstr "Опубликовано %(timeago)s. <b>%(score)s</b> кармы. Читать %(timeagoread)s"
 
-#: app/html/user/messages/notifications.html:83
+#: app/html/user/messages/notifications.html:89
 #, python-format
 msgid "Posted %(timeago)s. <b>%(score)s</b> points."
 msgstr "Отправлено %(timeago)s. <b>%(score)s</b> кармы."
 
-#: app/html/user/messages/notifications.html:90
-#: app/html/user/messages/notifications.html:108
-#: app/html/user/messages/notifications.html:125
+#: app/html/user/messages/notifications.html:96
+#: app/html/user/messages/notifications.html:114
+#: app/html/user/messages/notifications.html:131
 msgid "delete notification"
 msgstr "удалить уведомление"
 
-#: app/html/user/messages/notifications.html:93
-#: app/html/user/messages/notifications.html:111
-#: app/html/user/messages/notifications.html:128 app/static/js/Messages.js:124
+#: app/html/user/messages/notifications.html:99
+#: app/html/user/messages/notifications.html:117
+#: app/html/user/messages/notifications.html:134 app/static/js/Messages.js:124
 msgid "unblock"
 msgstr "разблокировать"
 
-#: app/html/user/messages/notifications.html:95
-#: app/html/user/messages/notifications.html:113
-#: app/html/user/messages/notifications.html:130 app/static/js/Messages.js:123
+#: app/html/user/messages/notifications.html:101
+#: app/html/user/messages/notifications.html:119
+#: app/html/user/messages/notifications.html:136 app/static/js/Messages.js:123
 #: app/static/js/Messages.js:126
 msgid "block"
 msgstr "блокировать"
 
-#: app/html/user/messages/notifications.html:122
+#: app/html/user/messages/notifications.html:128
 #, python-format
 msgid "Please visit %(link)s to accept or reject the invitation"
 msgstr "Пожалуйста, посетите %(link)s, чтобы принять или отклонить приглашение"
@@ -2713,7 +2727,7 @@ msgstr "Ссылка, которую вы использовали, недейс
 
 #: app/views/auth.py:216
 msgid "Your email is already confirmed."
-msgstr ""
+msgstr "Ваш адрес e-mail почты уже подтвержден."
 
 #: app/views/auth.py:245 app/views/auth.py:249 app/views/auth.py:263
 msgid "Invalid username or password."
