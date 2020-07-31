@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-07-30 16:08-0300\n"
-"PO-Revision-Date: 2020-07-30 23:38\n"
+"PO-Revision-Date: 2020-07-31 17:38\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -576,7 +576,7 @@ msgstr "Nahlásil(a)"
 #: app/html/mod/sub_reports_closed.html:29 app/html/sub/bans.html:47
 #: app/html/sub/bans.html:105
 msgid "Reason"
-msgstr "Dôvod banu"
+msgstr "Dôvod"
 
 #: app/html/admin/reports.html:28 app/html/mod/closed.html:30
 #: app/html/mod/reports.html:30 app/html/mod/sub_reports.html:30
@@ -877,7 +877,7 @@ msgstr "Vymazať príspevok"
 
 #: app/html/mod/reportdetails.html:215 app/html/mod/reportdetails.html:217
 msgid "Leave a note"
-msgstr ""
+msgstr "Pridať poznámku"
 
 #: app/html/mod/reportdetails.html:224
 msgid "Report Log:"
@@ -2013,12 +2013,12 @@ msgstr "Zmena emailu sa prejaví po kliknutí na link."
 #: app/html/user/login.html:35 app/html/user/password_recovery.html:39
 #: app/html/user/register.html:77
 msgid "Didn't get confirmation instructions?"
-msgstr ""
+msgstr "Neprišli mi inštrukcie"
 
 #: app/html/user/login.html:37 app/html/user/password_recovery.html:37
 #: app/html/user/resend_confirmation.html:26
 msgid "Sign up"
-msgstr ""
+msgstr "Registrovať"
 
 #: app/html/user/password_recovery.html:11
 msgid "Password recovery"
@@ -2124,11 +2124,11 @@ msgstr "Nové registrácie momentálne nefungujú. Skús to neskôr prosím."
 
 #: app/html/user/resend_confirmation.html:11
 msgid "Resend account confirmation instructions"
-msgstr ""
+msgstr "Znovu odoslať inštrukcie k registrácii konta"
 
 #: app/html/user/resend_confirmation.html:21
 msgid "Send email"
-msgstr ""
+msgstr "Odoslať email"
 
 #: app/html/user/topbar.html:5
 msgid "Customize your sub bar"
@@ -2713,7 +2713,7 @@ msgstr "Neplatný, alebo starý link."
 
 #: app/views/auth.py:216
 msgid "Your email is already confirmed."
-msgstr ""
+msgstr "Emailová adresa je už overená."
 
 #: app/views/auth.py:245 app/views/auth.py:249 app/views/auth.py:263
 msgid "Invalid username or password."
