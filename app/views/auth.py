@@ -14,7 +14,7 @@ from ..auth import normalize_email
 from ..forms import LoginForm, RegistrationForm, ResendConfirmationForm
 from ..misc import engine, send_email, is_domain_banned
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
-from ..models import User, UserMetadata, UserStatus, InviteCode, SubSubscriber, rconn
+from ..models import User, UserMetadata, UserStatus, InviteCode, SubSubscriber, Sub, rconn
 
 bp = Blueprint('auth', __name__)
 
@@ -140,6 +140,8 @@ def register():
     defaults = misc.getDefaultSubs()
     subs = [{'uid': user.uid, 'sid': x['sid'], 'status': 1, 'time': datetime.utcnow()} for x in defaults]
     SubSubscriber.insert_many(subs).execute()
+    Sub.update(subscribers=Sub.subscribers + 1).where(
+        Sub.sid << [x['sid'] for x in defaults]).execute()
 
     if email_validation_is_required():
         send_login_link_email(user)

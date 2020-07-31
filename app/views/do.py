@@ -1104,6 +1104,7 @@ def accept_modinv(sub, user):
 
         if not current_user.has_subscribed(sub.name):
             SubSubscriber.create(uid=current_user.uid, sid=sub.sid, status=1)
+            Sub.update(subscribers=Sub.subscribers + 1).where(Sub.sid == sub.sid).execute()
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
