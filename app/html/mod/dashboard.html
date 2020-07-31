@@ -1,0 +1,50 @@
+@extends("shared/layout.html")
+@require(subs)
+
+@def title():
+@{_("Mod dashboard")} |\
+@end
+
+@def sidebar():
+  @include('shared/sidebar/mod.html')
+@end
+
+@def main():
+<div id="center-container">
+  <div class="content">
+    <h1>@{_("Mod dashboard")}</h1>
+    @if current_user.can_admin:
+      <p class="helper-text">@{_("Currently viewing all subs as Admin")}</p>
+    @end
+    <div class="admin section">
+      <div class="col-12 admin-page-form">
+        <div class="admin section stats">
+          <div class="mod-dash-subs">
+            @for sub in subs:
+            <div class="mod-dash-sub">
+              <a href="@{url_for('sub.view_sub', sub=sub['name'])}"><h3>@{sub['name']}</h3></a>
+              <table class="pure-table">
+                <tbody>
+                  <tr>
+                    <td>@{_("Subscribers")}</td>
+                    <td>@{sub['subscribers']}</td>
+                  </tr>
+                  <tr>
+                    <td><a href="@{url_for('mod.reports_sub', sub=sub['name'])}">@{_("Open Reports")}</a></td>
+                    <td>@{sub['open_reports_count']}</td>
+                  </tr>
+                  <tr>
+                    <td><a href="@{url_for('mod.reports_sub_closed', sub=sub['name'])}">@{_("Closed Reports")}</a></td>
+                    <td>@{sub['closed_reports_count']}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            @end
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+@end
