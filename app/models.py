@@ -60,7 +60,6 @@ def peewee_count_queries(dex, *args, **kwargs):
     return dex (*args, **kwargs)
 
 
-
 class BaseModel(Model):
     class Meta:
         database = db

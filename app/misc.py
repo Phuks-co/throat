@@ -140,6 +140,7 @@ class SiteUser(object):
         self.is_active = True if self.user['status'] == 0 else False
         self.is_authenticated = True if self.user['status'] == 0 else False
         self.is_anonymous = True if self.user['status'] != 0 else False
+        # True if the user is an admin, even without authing with TOTP
         self.can_admin = 'admin' in self.prefs
 
         try:
@@ -899,7 +900,7 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False,
 
 def postListQueryHome(noDetail=False, nofilter=False):
     if current_user.is_authenticated:
-        return postListQueryBase(noDetail=noDetail, nofilter=nofilter).where(SubPost.sid << current_user.subsid)
+        return postListQueryBase(noDetail=noDetail, nofilter=nofilter, isSubMod=current_user.can_admin).where(SubPost.sid << current_user.subsid)
     else:
         return postListQueryBase(noDetail=noDetail, nofilter=nofilter).join(SiteMetadata, JOIN.LEFT_OUTER,
                                                                             on=(SiteMetadata.key == 'default')).where(

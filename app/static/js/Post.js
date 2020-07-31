@@ -305,7 +305,7 @@ u.addEventForChild(document, 'click', '.comment-source', function (e, qelem) {
         this.parentNode.innerHTML = _('source');
     };
     const h = elem.clientHeight + 28;
-    elem.innerHTML = '<div class="cwrap"><textarea style="height: ' + h + 'px">' + document.getElementById('sauce-' + cid).innerHTML + '</textarea></div>';
+    elem.innerHTML = '<div class="cwrap"><textarea style="height: ' + h + 'px" readonly>' + document.getElementById('sauce-' + cid).innerHTML + '</textarea></div>';
     const cNode = qelem.cloneNode(false);
     cNode.appendChild(back);
     qelem.parentNode.replaceChild(cNode, qelem);

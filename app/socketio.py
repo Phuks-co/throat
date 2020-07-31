@@ -1,7 +1,7 @@
 from flask_socketio import SocketIO, join_room
 from flask_login import current_user
 from flask import request
-from .models import rconn
+from .models import rconn, db
 import json
 from wheezy.html.utils import escape_html
 
@@ -27,6 +27,7 @@ def handle_message():
                                 'ntf': current_user.notifications},
                       namespace='/snt',
                       room='user' + current_user.uid)
+    db.close()
 
 
 @socketio.on('getchatbacklog', namespace='/snt')

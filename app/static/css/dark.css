@@ -520,11 +520,13 @@ body.dark .browse-history.disabled {
 }
 
 body.dark .browse-history.disabled:focus {
-  outline-color: #333;
-  outline: none;
+    outline: #333 none;
 }
 
 body.dark .browse-history:focus {
-  outline-color: #d94f00;
-  outline: none;
+    outline: #d94f00 none;
+}
+
+body.dark .links a.post-open-reports {
+    color: #d30404;
 }

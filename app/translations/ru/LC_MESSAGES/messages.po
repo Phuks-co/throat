@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-07-29 19:05-0300\n"
-"PO-Revision-Date: 2020-07-29 22:13\n"
+"POT-Creation-Date: 2020-07-30 16:08-0300\n"
+"PO-Revision-Date: 2020-07-30 23:38\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -351,7 +351,7 @@ msgstr "Скрыть результаты опроса, пока он не за�
 msgid "Poll closing time"
 msgstr "Время закрытия опроса"
 
-#: app/forms/sub.py:122 app/forms/user.py:82 app/forms/user.py:143
+#: app/forms/sub.py:122 app/forms/user.py:82 app/forms/user.py:149
 #: app/html/sub/createpost.html:116 app/html/user/password_recovery.html:26
 msgid "Captcha"
 msgstr "Капча"
@@ -380,36 +380,36 @@ msgstr "Флаер"
 msgid "Comment text"
 msgstr "Текст комментария"
 
-#: app/forms/user.py:46 app/forms/user.py:74 app/forms/user.py:151
+#: app/forms/user.py:46 app/forms/user.py:74 app/forms/user.py:157
 #: app/html/errors/403.html:24 app/html/user/login.html:19
 #: app/html/user/password_reset.html:16 app/static/js/main.js:56
 #: app/static/js/main.js:57
 msgid "Password"
 msgstr "Пароль"
 
-#: app/forms/user.py:48 app/html/errors/403.html:30 app/html/user/login.html:25
+#: app/forms/user.py:48 app/html/errors/403.html:30 app/html/user/login.html:24
 #: app/static/js/main.js:62
 msgid "Remember me"
 msgstr "Запомнить меня"
 
-#: app/forms/user.py:69 app/forms/user.py:88
+#: app/forms/user.py:69 app/forms/user.py:94
 msgid "Email Address (optional)"
 msgstr "E-mail"
 
 #: app/forms/user.py:71 app/forms/user.py:73 app/forms/user.py:90
-#: app/forms/user.py:92 app/forms/user.py:142
+#: app/forms/user.py:96 app/forms/user.py:98 app/forms/user.py:148
 msgid "Invalid email address."
 msgstr "Неверный адрес e-mail."
 
-#: app/forms/user.py:72 app/forms/user.py:91
+#: app/forms/user.py:72 app/forms/user.py:97
 msgid "Email Address (required)"
 msgstr "Адрес e-mail почты (обязательно)"
 
-#: app/forms/user.py:76 app/forms/user.py:94 app/forms/user.py:153
+#: app/forms/user.py:76 app/forms/user.py:100 app/forms/user.py:159
 msgid "Passwords must match"
 msgstr "Пароли должны совпадать"
 
-#: app/forms/user.py:79 app/forms/user.py:97 app/forms/user.py:156
+#: app/forms/user.py:79 app/forms/user.py:103 app/forms/user.py:162
 msgid "Repeat Password"
 msgstr "Повторите"
 
@@ -425,65 +425,65 @@ msgstr "Я согласен с TOS"
 msgid "Security question"
 msgstr "Вопрос безопасности"
 
-#: app/forms/user.py:93
+#: app/forms/user.py:89 app/forms/user.py:147
+msgid "Email Address"
+msgstr "E-mail"
+
+#: app/forms/user.py:99
 msgid "New password"
 msgstr "Новый пароль"
 
-#: app/forms/user.py:99
+#: app/forms/user.py:105
 msgid "Your current password"
 msgstr "Ваш текущий пароль"
 
-#: app/forms/user.py:106
+#: app/forms/user.py:112
 msgid "Your password"
 msgstr "Ваш пароль"
 
-#: app/forms/user.py:110
+#: app/forms/user.py:116
 msgid "Type 'YES' here"
 msgstr "Введите 'ДА' здесь"
 
-#: app/forms/user.py:116
+#: app/forms/user.py:122
 msgid "Disable custom sub styles"
 msgstr "Отключить саб стили"
 
-#: app/forms/user.py:117
+#: app/forms/user.py:123
 msgid "Show NSFW content"
 msgstr "Показать содержимое NSFW"
 
-#: app/forms/user.py:119
+#: app/forms/user.py:125
 msgid "Enable experimental features"
 msgstr "Включить экспериментальные функции"
 
-#: app/forms/user.py:120
+#: app/forms/user.py:126
 msgid "Disable infinite scroll"
 msgstr "Отключить бесконечный скролл"
 
-#: app/forms/user.py:121
+#: app/forms/user.py:127
 msgid "Disable chat"
 msgstr "Отключить чат"
 
-#: app/forms/user.py:123
+#: app/forms/user.py:129
 msgid "Global stylesheet (select a sub)"
 msgstr "Глобальные стили (выберите подпункт)"
 
-#: app/forms/user.py:125
+#: app/forms/user.py:131
 msgid "Language"
 msgstr "Язык"
 
-#: app/forms/user.py:130
+#: app/forms/user.py:136
 msgid "to"
 msgstr "в"
 
-#: app/forms/user.py:131
+#: app/forms/user.py:137
 msgid "subject"
 msgstr "выбор"
 
-#: app/forms/user.py:134
+#: app/forms/user.py:140
 msgid "message"
 msgstr "сообщение"
-
-#: app/forms/user.py:141
-msgid "Email Address"
-msgstr "E-mail"
 
 #: app/html/chat.html:12 app/html/shared/layout.html:179
 msgid "Type here"
@@ -639,8 +639,9 @@ msgstr "Одноразовый пароль"
 
 #: app/html/admin/totp.html:21 app/html/errors/403.html:32
 #: app/html/mod/totp.html:21 app/html/shared/layout.html:104
-#: app/html/user/login.html:5 app/html/user/login.html:30
-#: app/static/js/main.js:64
+#: app/html/user/login.html:5 app/html/user/login.html:29
+#: app/html/user/password_recovery.html:36 app/html/user/register.html:74
+#: app/html/user/resend_confirmation.html:25 app/static/js/main.js:64
 msgid "Log in"
 msgstr "Войти"
 
@@ -690,7 +691,8 @@ msgstr "Войти"
 msgid "Alphanumeric characters plus '-' and '_'"
 msgstr "Буквенно-цифровые символы плюс '-' и '_'"
 
-#: app/html/errors/403.html:27 app/html/user/login.html:22
+#: app/html/errors/403.html:27 app/html/user/login.html:33
+#: app/html/user/register.html:75 app/html/user/resend_confirmation.html:27
 #: app/static/js/main.js:59
 msgid "Forgot your password?"
 msgstr "Забыли пароль?"
@@ -875,7 +877,7 @@ msgstr "Удалить Пост"
 
 #: app/html/mod/reportdetails.html:215 app/html/mod/reportdetails.html:217
 msgid "Leave a note"
-msgstr ""
+msgstr "Оставить заметку"
 
 #: app/html/mod/reportdetails.html:224
 msgid "Report Log:"
@@ -941,10 +943,6 @@ msgstr "Не забанненный пользовать с саба"
 #: app/html/mod/reportdetails.html:265
 msgid "Left note"
 msgstr "Оставил заметку"
-
-#: app/html/mod/reportdetails.html:274
-msgid "  --  "
-msgstr "  --  "
 
 #: app/html/mod/reportdetails.html:279
 msgid "Closed all reports related to: "
@@ -1040,7 +1038,7 @@ msgstr "Регистрация"
 
 #: app/html/shared/layout.html:109
 msgid "Score"
-msgstr ""
+msgstr "Счет"
 
 #: app/html/shared/layout.html:127
 msgid "Log out"
@@ -1814,7 +1812,7 @@ msgstr "Просмотр истории заголовков:"
 
 #: app/html/sub/post.html:167
 msgid "unsave"
-msgstr ""
+msgstr "не сохранять"
 
 #: app/html/sub/post.html:169
 msgid "save"
@@ -1852,7 +1850,7 @@ msgstr "закрытый опрос"
 
 #: app/html/sub/post.html:203
 msgid "unstick"
-msgstr ""
+msgstr "отклеить"
 
 #: app/html/sub/post.html:205
 msgid "make sticky"
@@ -2012,11 +2010,22 @@ msgstr "После того, как вы нажмете на ссылку, вы 
 msgid "The new email address on your account will take effect after you open the link."
 msgstr "Новый  e-mail адрес в вашей учетной записи вступит в силу после открытия ссылки."
 
+#: app/html/user/login.html:35 app/html/user/password_recovery.html:39
+#: app/html/user/register.html:77
+msgid "Didn't get confirmation instructions?"
+msgstr ""
+
+#: app/html/user/login.html:37 app/html/user/password_recovery.html:37
+#: app/html/user/resend_confirmation.html:26
+msgid "Sign up"
+msgstr ""
+
 #: app/html/user/password_recovery.html:11
 msgid "Password recovery"
 msgstr "Восстановление пароля"
 
 #: app/html/user/password_recovery.html:17
+#: app/html/user/resend_confirmation.html:17
 msgid "E-mail address"
 msgstr "E-mail адрес"
 
@@ -2112,6 +2121,14 @@ msgstr "Я согласен с <a href=\"/wiki/tos\">Условиями испо
 #: app/html/user/registration_disabled.html:12
 msgid "Registration has been temporarily disabled. Please check back later. We apologize for any inconvience."
 msgstr "Регистрация была временно отключена. Пожалуйста, зайдите позже. Мы приносим свои извинения за любое недоразумение."
+
+#: app/html/user/resend_confirmation.html:11
+msgid "Resend account confirmation instructions"
+msgstr ""
+
+#: app/html/user/resend_confirmation.html:21
+msgid "Send email"
+msgstr ""
 
 #: app/html/user/topbar.html:5
 msgid "Customize your sub bar"
@@ -2344,7 +2361,7 @@ msgstr "Код"
 
 #: app/html/user/settings/invitecode.html:25
 msgid "Max uses"
-msgstr ""
+msgstr "Max uses"
 
 #: app/html/user/settings/preferences.html:9
 #, python-format
@@ -2621,15 +2638,15 @@ msgstr "Ошибка при обращении к серверу"
 msgid "Are you sure you want to PERMANENTLY delete your account?"
 msgstr "Вы уверены, что хотите ПОЛНОСТЬЮ удалить свою учетную запись?"
 
-#: app/static/js/main.js:495
+#: app/static/js/main.js:496
 msgid "Are you sure you want to ban this user?"
 msgstr "Вы уверены, что хотите заблокировать этого пользователя?"
 
-#: app/static/js/main.js:500
+#: app/static/js/main.js:501
 msgid "Are you sure you want to remove all the votes issued by this user?"
 msgstr "Вы уверены, что хотите удалить все голоса, отданные этим пользователем?"
 
-#: app/static/js/main.js:505
+#: app/static/js/main.js:506
 msgid "Are you sure you want to unban this user?"
 msgstr "Вы уверены, что хотите разблокировать этого пользователя?"
 
@@ -2694,7 +2711,11 @@ msgstr "Подтвердите свой новый аккаунт на %(site)s"
 msgid "The link you used is invalid or has expired."
 msgstr "Ссылка, которую вы использовали, недействительна или срок ее действия истек."
 
-#: app/views/auth.py:221 app/views/auth.py:227 app/views/auth.py:239
+#: app/views/auth.py:216
+msgid "Your email is already confirmed."
+msgstr ""
+
+#: app/views/auth.py:245 app/views/auth.py:249 app/views/auth.py:263
 msgid "Invalid username or password."
 msgstr "Неправильный ник или пароль."
 
