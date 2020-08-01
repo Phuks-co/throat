@@ -606,6 +606,7 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
     const pid = qelem.getAttribute('data-pid');
     const content = document.querySelector('#rcomm-' + cid + ' textarea').value;
     qelem.setAttribute('disabled', true);
+    qelem.parentNode.removeChild(qelem.parentNode.querySelector('.cmpreview'));
     window.sending = true;
     let pcid = cid;
     if(pcid[0] == '-') pcid = 0;
@@ -616,7 +617,6 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
                 qelem.parentNode.querySelector('.error').innerHTML = data.error;
                 qelem.removeAttribute('disabled');
             } else {
-                qelem.innerHTML = _('Saved.');
                 const cmtcount = document.getElementById('cmnts');
                 window.sending = false;
                 if(!cmtcount) {
