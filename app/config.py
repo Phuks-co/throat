@@ -91,7 +91,9 @@ cfg_defaults = {  # key => default value
             "testing": False
         },
         "aws": {},
-        "database": {},
+        "database": {
+            "autoconnect": False
+        },
         "ratelimit": {
             "default": "60/minute"
         },

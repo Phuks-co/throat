@@ -15,7 +15,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .config import Config, config
 from .forms import LoginForm, LogOutForm, CreateSubForm
-from .models import db_init_app, rconn, User, db
+from .models import db_init_app, rconn, User
 from .auth import auth_provider, email_validation_is_required
 from .views import do, subs as sub, api3, jwt
 from .views.auth import bp as auth
@@ -144,7 +144,6 @@ def create_app(config=Config('config.yaml')):
             response.response[0] = response.response[0] \
                 .replace(b'__DB_QUERIES__', str(g.pqc).encode())
             response.headers["content-length"] = len(response.response[0])
-        db.close()
         return response
 
     @app.context_processor
