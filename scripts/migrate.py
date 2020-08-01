@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import __fix
 from peewee_migrate import Router
-from playhouse.db_url import connect
 import os
 import argparse
 from app import create_app
-from app.models import db as database
+from app.models import dbp as database
 
 app = create_app()
+database.connect()
 
 router = Router(database, migrate_dir='../migrations' if os.getcwd().endswith('scripts') else 'migrations',
                 ignore=['basemodel'])

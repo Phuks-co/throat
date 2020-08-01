@@ -65,12 +65,13 @@ def listSubs():
         print("  ", i.name)
 
 
-# Main
-if args.add:
-    addSub(args.add.lower())
-elif args.remove:
-    remSub(args.remove.lower())
-elif args.list:
-    listSubs()
-else:
-    print('ERROR: No action specified. Try \"-h\" for help.')
+with app.app_context():
+    # Main
+    if args.add:
+        addSub(args.add.lower())
+    elif args.remove:
+        remSub(args.remove.lower())
+    elif args.list:
+        listSubs()
+    else:
+        print('ERROR: No action specified. Try \"-h\" for help.')
