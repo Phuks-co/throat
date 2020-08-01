@@ -10,6 +10,7 @@ import magic
 import hashlib
 import os
 import random
+from collections import defaultdict
 from PIL import Image
 from flask import Blueprint, redirect, url_for, session, abort, jsonify, current_app
 from flask import render_template, request
@@ -222,8 +223,9 @@ def delete_post():
                 return jsonify(status="error", error=[_("Cannot delete without reason")])
             deletion = 2
             # notify user.
-            Notification(type='POST_DELETE', sub=post.sid, post=post.pid, content='Reason: ' + form.reason.data,
-                         sender=current_user.uid, target=post.uid).save()
+            Notification.create(type='POST_DELETE', sub=post.sid, post=post.pid,
+                                content='Reason: ' + form.reason.data,
+                                sender=current_user.uid, target=post.uid)
 
             misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_POST, current_user.uid, post.sid,
                                comment=form.reason.data, link=url_for('site.view_post_inbox', pid=post.pid),
@@ -248,8 +250,7 @@ def delete_post():
         except SiteMetadata.DoesNotExist:
             pass
 
-        sub.posts -= 1
-        sub.save()
+        Sub.update(posts=Sub.posts - 1).where(Sub.sid == post.sid).execute()
 
         post.deleted = deletion
         post.save()
@@ -287,8 +288,9 @@ def undelete_post():
             return jsonify(status="error", error=[_("Cannot un-delete without reason")])
         deletion = 0
         # notify user.
-        Notification(type='POST_UNDELETE', sub=post.sid, post=post.pid, content='Reason: ' + form.reason.data,
-                     sender=current_user.uid, target=post.uid).save()
+        Notification.create(type='POST_UNDELETE', sub=post.sid, post=post.pid,
+                            content='Reason: ' + form.reason.data,
+                            sender=current_user.uid, target=post.uid)
 
         misc.create_sublog(misc.LOG_TYPE_SUB_UNDELETE_POST, current_user.uid, post.sid,
                            comment=form.reason.data, link=url_for('site.view_post_inbox', pid=post.pid),
@@ -300,8 +302,7 @@ def undelete_post():
         except:
             pass
 
-        sub.posts += 1
-        sub.save()
+        Sub.update(posts=Sub.posts + 1).where(Sub.sid == post.sid).execute()
 
         post.deleted = deletion
         post.save()
@@ -518,8 +519,7 @@ def subscribe_to_sub(sid):
             ss.delete_instance()
 
         SubSubscriber.create(time=datetime.datetime.utcnow(), uid=current_user.uid, sid=sid, status=1)
-        sub.subscribers += 1
-        sub.save()
+        Sub.update(subscribers=Sub.subscribers + 1).where(Sub.sid == sid).execute()
         return jsonify(status='ok')
     return jsonify(status='error', error=get_errors(form))
 
@@ -541,8 +541,7 @@ def unsubscribe_from_sub(sid):
         ss = SubSubscriber.get((SubSubscriber.uid == current_user.uid) & (SubSubscriber.sid == sid) & (SubSubscriber.status == 1))
         ss.delete_instance()
 
-        sub.subscribers -= 1
-        sub.save()
+        Sub.update(subscribers=Sub.subscribers - 1).where(Sub.sid == sid).execute()
         return jsonify(status='ok')
     return jsonify(status='error', error=get_errors(form))
 
@@ -562,10 +561,9 @@ def block_sub(sid):
     form = DummyForm()
     if form.validate():
         if current_user.has_subscribed(sub.name):
-            sub.subscribers -= 1
-            sub.save()
             ss = SubSubscriber.get((SubSubscriber.uid == current_user.uid) & (SubSubscriber.sid == sid) & (SubSubscriber.status == 1))
             ss.delete_instance()
+            Sub.update(subscribers=Sub.subscribers - 1).where(Sub.sid == sid).execute()
 
         SubSubscriber.create(time=datetime.datetime.utcnow(), uid=current_user.uid, sid=sid, status=2)
         return jsonify(status='ok')
@@ -677,7 +675,6 @@ def edit_txtpost(pid):
 
         dt = datetime.datetime.utcnow()
         sph = SubPostContentHistory.create(pid=post.pid, content=post.content, datetime=dt)
-        sph.save()
 
         post.content = form.content.data
         # Only save edited time if it was posted more than five minutes ago
@@ -747,9 +744,7 @@ def create_comment(pid):
                                         parentcid=form.parent.data if form.parent.data != '0' else None,
                                         time=datetime.datetime.utcnow(),
                                         cid=uuid.uuid4(), score=0, upvotes=0, downvotes=0)
-
         SubPost.update(comments=SubPost.comments + 1).where(SubPost.pid == post.pid).execute()
-        comment.save()
 
         socketio.emit('threadcomments',
                       {'pid': post.pid,
@@ -767,8 +762,8 @@ def create_comment(pid):
             to = post.uid.uid
             ntype = 'POST_REPLY'
         if to != current_user.uid and current_user.uid not in misc.get_ignores(to):
-            Notification(type=ntype, sub=post.sid, post=post.pid, comment=comment.cid,
-                         sender=current_user.uid, target=to).save()
+            Notification.create(type=ntype, sub=post.sid, post=post.pid, comment=comment.cid,
+                                sender=current_user.uid, target=to)
             socketio.emit('notification',
                           {'count': misc.get_notification_count(to)},
                           namespace='/snt',
@@ -861,7 +856,8 @@ def ban_user_sub(sub):
         if misc.is_sub_banned(sub, uid=user.uid):
             return jsonify(status='error', error=[_('Already banned')])
 
-        Notification(type='SUB_BAN', sub=sub.sid, sender=current_user.uid, content='Reason: ' + form.reason.data, target=user.uid).save()
+        Notification.create(type='SUB_BAN', sub=sub.sid, sender=current_user.uid,
+                            content='Reason: ' + form.reason.data, target=user.uid)
         socketio.emit('notification',
                       {'count': misc.get_notification_count(user.uid)},
                       namespace='/snt',
@@ -942,7 +938,7 @@ def inv_mod(sub):
                 mtype = 'MOD_INVITE'
             else:
                 mtype = 'MOD_INVITE_JANITOR'
-            Notification(type=mtype, sub=sub.sid, sender=current_user.uid, target=user.uid).save()
+            Notification.create(type=mtype, sub=sub.sid, sender=current_user.uid, target=user.uid)
             socketio.emit('notification',
                           {'count': misc.get_notification_count(user.uid)},
                           namespace='/snt',
@@ -987,7 +983,7 @@ def remove_sub_ban(sub, user):
             sb.expires = datetime.datetime.utcnow()
             sb.save()
 
-            Notification(type='SUB_UNBAN', sub=sub.sid, sender=current_user.uid, target=user.uid).save()
+            Notification.create(type='SUB_UNBAN', sub=sub.sid, sender=current_user.uid, target=user.uid)
             socketio.emit('notification',
                           {'count': misc.get_notification_count(user.uid)},
                           namespace='/snt',
@@ -1035,7 +1031,7 @@ def remove_mod2(sub, user):
                 return jsonify(status='error', error=[_('User is not mod')])
 
             mod.delete_instance()
-            SubMetadata.create(sid=sub.sid, key='xmod2', value=user.uid).save()
+            SubMetadata.create(sid=sub.sid, key='xmod2', value=user.uid)
 
             misc.create_sublog(misc.LOG_TYPE_SUB_MOD_REMOVE, current_user.uid, sub.sid, target=user.uid,
                                admin=True if (not isTopMod and current_user.is_admin()) else False)
@@ -1108,6 +1104,7 @@ def accept_modinv(sub, user):
 
         if not current_user.has_subscribed(sub.name):
             SubSubscriber.create(uid=current_user.uid, sid=sub.sid, status=1)
+            Sub.update(subscribers=Sub.subscribers + 1).where(Sub.sid == sub.sid).execute()
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
@@ -1215,7 +1212,6 @@ def edit_title():
 
         dt = datetime.datetime.utcnow()
         sph = SubPostTitleHistory.create(pid=post.pid, title=post.title, datetime=dt)
-        sph.save()
 
         post.title = form.reason.data
         post.save()
@@ -1319,7 +1315,6 @@ def ban_domain(domain_type):
             return jsonify(status='error', error=[_('Domain is already banned')])
         except SiteMetadata.DoesNotExist:
             sm = SiteMetadata.create(key=key, value=form.domain.data)
-            sm.save()
             misc.create_sitelog(action, current_user.uid, comment=form.domain.data)
             return jsonify(status='ok')
 
@@ -1754,8 +1749,6 @@ def edit_comment():
             return jsonify(status='error', error=_("Post is archived"))
 
         dt = datetime.datetime.utcnow()
-        spm = SubPostCommentHistory.create(cid=comment.cid, content=comment.content, datetime=comment.time)
-        spm.save()
         comment.content = form.text.data
         comment.lastedit = dt
         comment.save()
@@ -2199,11 +2192,12 @@ def admin_undo_votes(uid):
 
     post_v = SubPostVote.select().where(SubPostVote.uid == user.uid)
     comm_v = SubPostCommentVote.select().where(SubPostCommentVote.uid == user.uid)
-    usr = {}
+    score_deltas = defaultdict(int)
+    delta_given = 0
 
     for v in post_v:
         try:
-            post = SubPost.select(SubPost.pid, SubPost.upvotes, SubPost.downvotes, SubPost.uid, SubPost.score).where(SubPost.pid == v.pid_id).get()
+            post = SubPost.select(SubPost.pid, SubPost.uid).where(SubPost.pid == v.pid_id).get()
         except SubPost.DoesNotExist:
             # Edge case. An orphan vote.
             v.delete_instance()
@@ -2211,45 +2205,39 @@ def admin_undo_votes(uid):
         # Not removing self-votes
         if post.uid_id == user.uid:
             continue
-        if not usr.get(post.uid_id):
-            usr[post.uid_id] = User.select(User.uid, User.score).where(User.uid == post.uid_id).get()
-        tgus = usr[post.uid_id]
-        post.score -= 1 if v.positive else -1
-        tgus.score -= 1 if v.positive else -1
-        user.given -= 1 if v.positive else -1
-        if post.upvotes is not None and post.downvotes is not None:
-            if v.positive:
-                post.upvotes -= 1
-            else:
-                post.downvotes -= 1
-        post.save()
-        tgus.save()
+        adjustment = 1 if v.positive else -1
+        score_deltas[post.uid_id] -= adjustment
+        delta_given -= adjustment
+        kwargs = dict(score=SubPost.score - adjustment)
+        if v.positive:
+            kwargs.update(upvotes=SubPost.upvotes - 1)
+        else:
+            kwargs.update(downvotes=SubPost.downvotes - 1)
+        SubPost.update(**kwargs).where(SubPost.pid == v.pid_id).execute()
         v.delete_instance()
     for v in comm_v:
         try:
-            comm = SubPostComment.select(SubPostComment.cid, SubPostComment.upvotes, SubPostComment.downvotes, SubPostComment.score, SubPostComment.uid).where(SubPostComment.cid == v.cid).get()
+            comm = SubPostComment.select(SubPostComment.cid, SubPostComment.score,
+                                         SubPostComment.uid).where(SubPostComment.cid == v.cid).get()
         except SubPostComment.DoesNotExist:
             # Edge case. An orphan vote.
             v.delete_instance()
             continue
-        if not usr.get(comm.uid_id):
-            usr[comm.uid_id] = User.select(User.uid, User.score).where(User.uid == comm.uid_id).get()
-        tgus = usr[comm.uid_id]
-        if not comm.score:
-            comm.score = 0
+        adjustment = 1 if v.positive else -1
+        kwargs = {}
+        score_deltas[comm.uid_id] -= adjustment
+        delta_given -= adjustment
+        if comm.score is not None:
+            kwargs.update(score=SubPostComment.score - adjustment)
+        if v.positive:
+            kwargs.update(upvotes=SubPostComment.upvotes - 1)
         else:
-            comm.score -= 1 if v.positive else -1
-        tgus.score -= 1 if v.positive else -1
-        user.given -= 1 if v.positive else -1
-        if comm.upvotes is not None and comm.downvotes is not None:
-            if v.positive:
-                comm.upvotes -= 1
-            else:
-                comm.downvotes -= 1
-        comm.save()
-        tgus.save()
+            kwargs.update(downvotes=SubPostComment.downvotes - 1)
+        SubPostComment.update(**kwargs).where(SubPostComment.cid == v.cid).execute()
         v.delete_instance()
-    user.save()
+    for recipient_uid, delta in score_deltas.items():
+        User.update(score=User.score + delta).where(User.uid == recipient_uid).execute()
+    User.update(given=User.given + delta_given).where(User.uid == uid).execute()
     return redirect(url_for('user.view', user=user.name))
 
 

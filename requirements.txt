@@ -45,3 +45,4 @@ flask-limiter
 python-keycloak==0.21.0
 itsdangerous
 python-slugify
+click

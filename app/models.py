@@ -10,10 +10,21 @@ from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model, Data
 from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
 from playhouse.db_url import connect as db_url_connect
 from playhouse.flask_utils import FlaskDB
+from werkzeug.local import LocalProxy
 
 rconn = FlaskRedis()
 
-db = Proxy()
+dbp = Proxy()
+
+
+def get_db():
+    if 'db' not in g:
+        dbp.connect()
+        g.db = dbp
+    return g.db
+
+
+db = LocalProxy(get_db)
 
 
 def db_init_app(app):
@@ -46,7 +57,13 @@ def db_init_app(app):
 
     dbm = database_class(name, **dbconnect)
     dbm.execute = functools.partial(peewee_count_queries, dbm.execute)
-    db.initialize(dbm)
+    dbp.initialize(dbm)
+
+    @app.teardown_appcontext
+    def close_db(exc):
+        dbp = g.pop('db', None)
+        if dbp is not None:
+            dbp.close()
 
 
 def peewee_count_queries(dex, *args, **kwargs):

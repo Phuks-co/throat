@@ -21,14 +21,14 @@ from PIL import Image
 from bs4 import BeautifulSoup
 import misaka as m
 import sendgrid
-from flask import current_app
+from flask import current_app, _request_ctx_stack, has_request_context, has_app_context, g
+from flask import url_for, request, jsonify, session
 from flask_limiter import Limiter
 from flask_mail import Mail
 from flask_mail import Message as EmailMessage
 from slugify import slugify as s_slugify
 
 from .config import config
-from flask import url_for, request, jsonify, session
 from flask_login import AnonymousUserMixin, current_user
 from flask_babel import _
 from flask_talisman import Talisman
@@ -643,11 +643,11 @@ def workWithMentions(data, receivedby, post, sub, cid=None, c_user=current_user)
             if user.uid != c_user.uid and user.uid != receivedby:
                 # Checks done. Send our shit
                 if cid:
-                    Notification(type='COMMENT_MENTION', sub=post.sid, post=post.pid, comment=cid,
-                                 sender=c_user.uid, target=user.uid).save()
+                    Notification.create(type='COMMENT_MENTION', sub=post.sid, post=post.pid, comment=cid,
+                                        sender=c_user.uid, target=user.uid)
                 else:
-                    Notification(type='POST_MENTION', sub=post.sid, post=post.pid, comment=cid,
-                                 sender=c_user.uid, target=user.uid).save()
+                    Notification.create(type='POST_MENTION', sub=post.sid, post=post.pid, comment=cid,
+                                        sender=c_user.uid, target=user.uid)
                 socketio.emit('notification',
                               {'count': get_notification_count(user.uid)},
                               namespace='/snt',
@@ -1399,24 +1399,24 @@ LOG_TYPE_ENABLE_CAPTCHAS = 72
 
 
 def create_sitelog(action, uid, comment='', link=''):
-    SiteLog.create(action=action, uid=uid, desc=comment, link=link).save()
+    SiteLog.create(action=action, uid=uid, desc=comment, link=link)
 
 
 # Note: `admin` makes the entry appear on the sitelog. I should rename it
 def create_sublog(action, uid, sid, comment='', link='', admin=False, target=None):
-    SubLog.create(action=action, uid=uid, sid=sid, desc=comment, link=link, admin=admin, target=target).save()
+    SubLog.create(action=action, uid=uid, sid=sid, desc=comment, link=link, admin=admin, target=target)
 
 
 # `id` is the report id
 def create_reportlog(action, uid, id, type='', related=False, original_report='', desc=''):
     if type == 'post' and related == False:
-        PostReportLog.create(action=action, uid=uid, id=id, desc=desc).save()
+        PostReportLog.create(action=action, uid=uid, id=id, desc=desc)
     elif type == 'comment' and related == False:
-        CommentReportLog.create(action=action, uid=uid, id=id, desc=desc).save()
+        CommentReportLog.create(action=action, uid=uid, id=id, desc=desc)
     elif type == 'post' and related == True:
-        PostReportLog.create(action=action, uid=uid, id=id, desc=original_report).save()
+        PostReportLog.create(action=action, uid=uid, id=id, desc=original_report)
     elif type == 'comment' and related == True:
-        CommentReportLog.create(action=action, uid=uid, id=id, desc=original_report).save()
+        CommentReportLog.create(action=action, uid=uid, id=id, desc=original_report)
 
 def is_domain_banned(addr, domain_type):
     if domain_type == 'link':
@@ -1783,8 +1783,6 @@ def cast_vote(uid, target_type, pcid, value):
         else:
             sp_vote = SubPostCommentVote.create(cid=pcid, uid=uid, positive=positive, datetime=now)
 
-        sp_vote.save()
-
         if positive:
             upd_q = target_model.update(score=target_model.score + voteValue, upvotes=target_model.upvotes + 1)
         else:
@@ -1994,8 +1992,14 @@ def add_context_to_log_records(config):
                     else:
                         record.__dict__[k] = unavailable
                 elif var == 'current_user':
-                    if current_user:
+                    # Peek at the current user but don't load it if not loaded.
+                    if has_request_context() and hasattr(_request_ctx_stack.top, 'user'):
                         record.__dict__[k] = getattr(current_user, attr, unavailable)
+                    else:
+                        record.__dict__[k] = unavailable
+                elif var == 'g':
+                    if has_app_context():
+                        record.__dict__[k] = getattr(g, attr, unavailable)
                     else:
                         record.__dict__[k] = unavailable
         return record

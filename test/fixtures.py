@@ -45,10 +45,9 @@ def app(test_config):
     recursively_update(config, test_config)
 
     app = create_app(config)
-    db.create_tables(BaseModel.__subclasses__())
-
     app_context = app.app_context()
     app_context.push()
+    db.create_tables(BaseModel.__subclasses__())
 
     yield app
 

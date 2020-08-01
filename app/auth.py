@@ -12,7 +12,7 @@ from keycloak.exceptions import KeycloakError, KeycloakGetError
 from peewee import fn
 
 from .config import config
-from .models import User, UserMetadata, UserAuthSource, UserCrypto, SiteMetadata
+from .models import User, UserMetadata, UserAuthSource, UserCrypto, UserStatus, SiteMetadata
 from . import misc
 
 
@@ -83,7 +83,8 @@ class AuthProvider:
                     return None
         return None
 
-    def create_user(self, name, password, email, verified_email=False):
+    def create_user(self, name, password, email, status=UserStatus.OK,
+                    verified_email=False):
         auth_source = getattr(UserAuthSource, self.provider)
 
         if self.provider == 'LOCAL':
@@ -100,7 +101,7 @@ class AuthProvider:
             password = ''
             crypto = UserCrypto.REMOTE
         user = User.create(uid=uid, name=name, crypto=crypto, password=password,
-                           email=email, joindate=datetime.utcnow())
+                           status=status, email=email, joindate=datetime.utcnow())
         self.set_user_auth_source(user, auth_source)
         self._set_email_verified(user, verified_email)
         return user
@@ -148,6 +149,7 @@ class AuthProvider:
                 user.crypto = UserCrypto.BCRYPT
                 user.password = bcrypt.hashpw(new_password.encode('utf-8'),
                                               bcrypt.gensalt())
+                user.save()
             elif self.provider == 'KEYCLOAK' and auth_source == UserAuthSource.KEYCLOAK:
                 self.keycloak_admin.update_user(user_id=self.get_user_remote_uid(user),
                                                 payload={'credentials':
@@ -156,8 +158,7 @@ class AuthProvider:
             else:
                 raise AuthError
             # Invalidate other existing login sessions.
-            user.resets += 1
-            user.save()
+            User.update(resets=User.resets + 1).where(User.uid == user.uid).execute()
             theuser = misc.load_user(user.uid)
             login_user(theuser, remember=session.get("remember_me", False))
 
@@ -188,8 +189,8 @@ class AuthProvider:
                                                            'type': 'password'}]})
             else:
                 raise AuthError
-        user.resets += 1
         user.save()
+        User.update(resets=User.resets + 1).where(User.uid == user.uid).execute()
 
     def get_pending_email(self, user):
         try:
@@ -330,8 +331,8 @@ class AuthProvider:
                                                 payload=payload)
 
         user.status = new_status
-        user.resets += 1  # Make them log in again.
         user.save()
+        User.update(resets=User.resets + 1).where(User.uid == user.uid).execute()
 
     def actually_delete_user(self, user):
         # Used by automatic tests to clean up test realm on server.
