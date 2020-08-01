@@ -51,7 +51,7 @@ def login():
     if user.status != 0:
         return jsonify(msg="Forbidden"), 403
 
-    if not auth_provider.validate_password(user):
+    if not auth_provider.validate_password(user, password):
         return jsonify(msg="Bad username or password"), 401
 
     # Identity can be any data that is json serializable
