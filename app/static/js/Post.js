@@ -586,7 +586,7 @@ u.addEventForChild(document, 'click', '.reply-comment', function (e, qelem) {
         'data-pid="' + pid + '" data-cid="' + cid + '">' + _('Post comment') + '</button> <button class="pure-button button-xsmall btn-preview" data-pvid="rcomm-' +
         cid + '">' + _('Preview') + '</button>' +
         '<button class="pure-button button-xsmall btn-rcancel button-transparent" data-pvid="editpost" >' + _('Cancel') + '</button>' +
-        '<div class="cmpreview canclose" style="display:none;"><h4>Comment preview</h4><span class="closemsg">&times;</span>' +
+        '<div class="cmpreview canclose" style="display:none;"><h4>' + _('Comment preview') + '</h4><span class="closemsg">&times;</span>' +
         '<div class="cpreview-content"></div></div>';
     lm.querySelector('.btn-rcancel').onclick = back.onclick;
     pN.parentNode.parentNode.appendChild(lm);
