@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-07-31 19:57-0300\n"
-"PO-Revision-Date: 2020-08-01 05:38\n"
+"PO-Revision-Date: 2020-08-01 17:18\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -1242,7 +1242,7 @@ msgstr "%(timeago)s в %(sub)s"
 
 #: app/html/shared/sidebar/home.html:35
 msgid "Sub of the day"
-msgstr "Сабы за день"
+msgstr "Саб дня"
 
 #: app/html/shared/sidebar/home.html:55
 msgid "Site logs"
