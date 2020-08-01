@@ -14,7 +14,7 @@ from ..auth import normalize_email
 from ..forms import LoginForm, RegistrationForm, ResendConfirmationForm
 from ..misc import engine, send_email, is_domain_banned
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
-from ..models import User, UserMetadata, UserStatus, InviteCode, SubSubscriber, rconn
+from ..models import User, UserMetadata, UserStatus, InviteCode, SubSubscriber, Sub, rconn
 
 bp = Blueprint('auth', __name__)
 
@@ -128,21 +128,22 @@ def register():
             return engine.get_template('user/register.html').render(
                 {'error': _("Invalid invite code."), 'regform': form, 'captcha': captcha})
 
-        invcode.uses += 1
-        invcode.save()
+        InviteCode.update(uses=InviteCode.uses + 1).where(
+            InviteCode.code == form.invitecode.data).execute()
 
+    status = UserStatus.PROBATION if email_validation_is_required() else UserStatus.OK
     user = auth_provider.create_user(name=form.username.data, password=form.password.data,
-                                     email=email, verified_email=False)
+                                     email=email, verified_email=False, status=status)
     if misc.enableInviteCode():
         UserMetadata.create(uid=user.uid, key='invitecode', value=form.invitecode.data)
 
     defaults = misc.getDefaultSubs()
     subs = [{'uid': user.uid, 'sid': x['sid'], 'status': 1, 'time': datetime.utcnow()} for x in defaults]
     SubSubscriber.insert_many(subs).execute()
+    Sub.update(subscribers=Sub.subscribers + 1).where(
+        Sub.sid << [x['sid'] for x in defaults]).execute()
 
     if email_validation_is_required():
-        user.status = UserStatus.PROBATION
-        user.save()
         send_login_link_email(user)
         return redirect(url_for('auth.confirm_registration'))
     else:

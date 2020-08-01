@@ -643,11 +643,11 @@ def workWithMentions(data, receivedby, post, sub, cid=None, c_user=current_user)
             if user.uid != c_user.uid and user.uid != receivedby:
                 # Checks done. Send our shit
                 if cid:
-                    Notification(type='COMMENT_MENTION', sub=post.sid, post=post.pid, comment=cid,
-                                 sender=c_user.uid, target=user.uid).save()
+                    Notification.create(type='COMMENT_MENTION', sub=post.sid, post=post.pid, comment=cid,
+                                        sender=c_user.uid, target=user.uid)
                 else:
-                    Notification(type='POST_MENTION', sub=post.sid, post=post.pid, comment=cid,
-                                 sender=c_user.uid, target=user.uid).save()
+                    Notification.create(type='POST_MENTION', sub=post.sid, post=post.pid, comment=cid,
+                                        sender=c_user.uid, target=user.uid)
                 socketio.emit('notification',
                               {'count': get_notification_count(user.uid)},
                               namespace='/snt',
@@ -1399,24 +1399,24 @@ LOG_TYPE_ENABLE_CAPTCHAS = 72
 
 
 def create_sitelog(action, uid, comment='', link=''):
-    SiteLog.create(action=action, uid=uid, desc=comment, link=link).save()
+    SiteLog.create(action=action, uid=uid, desc=comment, link=link)
 
 
 # Note: `admin` makes the entry appear on the sitelog. I should rename it
 def create_sublog(action, uid, sid, comment='', link='', admin=False, target=None):
-    SubLog.create(action=action, uid=uid, sid=sid, desc=comment, link=link, admin=admin, target=target).save()
+    SubLog.create(action=action, uid=uid, sid=sid, desc=comment, link=link, admin=admin, target=target)
 
 
 # `id` is the report id
 def create_reportlog(action, uid, id, type='', related=False, original_report='', desc=''):
     if type == 'post' and related == False:
-        PostReportLog.create(action=action, uid=uid, id=id, desc=desc).save()
+        PostReportLog.create(action=action, uid=uid, id=id, desc=desc)
     elif type == 'comment' and related == False:
-        CommentReportLog.create(action=action, uid=uid, id=id, desc=desc).save()
+        CommentReportLog.create(action=action, uid=uid, id=id, desc=desc)
     elif type == 'post' and related == True:
-        PostReportLog.create(action=action, uid=uid, id=id, desc=original_report).save()
+        PostReportLog.create(action=action, uid=uid, id=id, desc=original_report)
     elif type == 'comment' and related == True:
-        CommentReportLog.create(action=action, uid=uid, id=id, desc=original_report).save()
+        CommentReportLog.create(action=action, uid=uid, id=id, desc=original_report)
 
 def is_domain_banned(addr, domain_type):
     if domain_type == 'link':
@@ -1782,8 +1782,6 @@ def cast_vote(uid, target_type, pcid, value):
             sp_vote = SubPostVote.create(pid=pcid, uid=uid, positive=positive, datetime=now)
         else:
             sp_vote = SubPostCommentVote.create(cid=pcid, uid=uid, positive=positive, datetime=now)
-
-        sp_vote.save()
 
         if positive:
             upd_q = target_model.update(score=target_model.score + voteValue, upvotes=target_model.upvotes + 1)
