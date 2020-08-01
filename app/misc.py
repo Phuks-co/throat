@@ -21,14 +21,14 @@ from PIL import Image
 from bs4 import BeautifulSoup
 import misaka as m
 import sendgrid
-from flask import current_app
+from flask import current_app, _request_ctx_stack, has_request_context, has_app_context, g
+from flask import url_for, request, jsonify, session
 from flask_limiter import Limiter
 from flask_mail import Mail
 from flask_mail import Message as EmailMessage
 from slugify import slugify as s_slugify
 
 from .config import config
-from flask import url_for, request, jsonify, session
 from flask_login import AnonymousUserMixin, current_user
 from flask_babel import _
 from flask_talisman import Talisman
@@ -1992,8 +1992,14 @@ def add_context_to_log_records(config):
                     else:
                         record.__dict__[k] = unavailable
                 elif var == 'current_user':
-                    if current_user:
+                    # Peek at the current user but don't load it if not loaded.
+                    if has_request_context() and hasattr(_request_ctx_stack.top, 'user'):
                         record.__dict__[k] = getattr(current_user, attr, unavailable)
+                    else:
+                        record.__dict__[k] = unavailable
+                elif var == 'g':
+                    if has_app_context():
+                        record.__dict__[k] = getattr(g, attr, unavailable)
                     else:
                         record.__dict__[k] = unavailable
         return record
