@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-07-31 19:57-0300\n"
-"PO-Revision-Date: 2020-07-31 23:38\n"
+"PO-Revision-Date: 2020-08-01 05:38\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -756,15 +756,15 @@ msgstr "Снова открыть"
 
 #: app/html/mod/dashboard.html:5 app/html/mod/dashboard.html:15
 msgid "Mod dashboard"
-msgstr ""
+msgstr "Панель управления модом"
 
 #: app/html/mod/dashboard.html:17
 msgid "Currently viewing all subs as Admin"
-msgstr ""
+msgstr "Вы просматриваете все сабы как Админ"
 
 #: app/html/mod/dashboard.html:29
 msgid "Subscribers"
-msgstr ""
+msgstr "Подписчики"
 
 #: app/html/mod/dashboard.html:33 app/html/mod/reports.html:14
 #: app/html/shared/sidebar/mod.html:12
@@ -2346,7 +2346,7 @@ msgstr "ЭТО ДЕЙСТВИЕ НЕ МОЖЕТ БЫТЬ ОТМЕНЕНО"
 
 #: app/html/user/settings/delete.html:26
 msgid "Deleted."
-msgstr "Удалить."
+msgstr "Удалено."
 
 #: app/html/user/settings/delete.html:26
 msgid "Delete my account"
@@ -2432,7 +2432,7 @@ msgstr "сохраненный"
 
 #: app/static/js/Messages.js:50 app/static/js/Messages.js:62
 msgid "deleted"
-msgstr "удалить"
+msgstr "удалено"
 
 #: app/static/js/Mod.js:18 app/static/js/Mod.js:33 app/static/js/Mod.js:62
 #: app/static/js/Mod.js:77 app/static/js/Poll.js:78 app/static/js/Poll.js:130
