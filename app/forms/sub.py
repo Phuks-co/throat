@@ -89,8 +89,8 @@ class EditSubForm(FlaskForm):
     usercanflair = BooleanField(_l('Allow users to flair their own posts'))
     polling = BooleanField(_l('Enable polls'))
     subsort = RadioField(_l('Default sub page post sorting'),
-                         choices=[('v', 'Hot'), ('v_two', 'New'),
-                                  ('v_three', 'Top')],
+                         choices=[('v', _l('Hot')), ('v_two', _l('New')),
+                                  ('v_three', _l('Top'))],
                          validators=[Optional()])
     sidebar = TextAreaField(_l('Sidebar text'), validators=[Length(max=8000)])
     sublogprivate = BooleanField(_l('Make the sub log private'))
