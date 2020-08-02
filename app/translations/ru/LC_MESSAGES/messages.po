@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-08-02 15:50-0300\n"
-"PO-Revision-Date: 2020-08-02 18:52\n"
+"PO-Revision-Date: 2020-08-02 21:20\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -1343,19 +1343,19 @@ msgstr "Журнал"
 
 #: app/html/shared/sidebar/sub_mod.html:4 app/html/sub/flairs.html:29
 msgid "Flairs"
-msgstr ""
+msgstr "Флаер"
 
 #: app/html/shared/sidebar/sub_mod.html:5 app/html/sub/rules.html:35
 msgid "Rules"
-msgstr ""
+msgstr "Правила"
 
 #: app/html/shared/sidebar/sub_mod.html:6
 msgid "Stylesheet"
-msgstr ""
+msgstr "Таблица стилей"
 
 #: app/html/shared/sidebar/sub_mod.html:9
 msgid "Bans"
-msgstr ""
+msgstr "Баны"
 
 #: app/html/shared/sidebar/user.html:6 app/html/sub/bans.html:19
 msgid "Ban user"
@@ -1734,11 +1734,11 @@ msgstr "%%mybackground%%"
 #: app/html/sub/flairs.html:16
 #, python-format
 msgid "Editing flairs of <a href=\"%(url)s\">%(sub)s</a>"
-msgstr ""
+msgstr "Редактирование флаера <a href=\"%(url)s\">%(sub)s</a>"
 
 #: app/html/sub/flairs.html:19
 msgid "Create new flair"
-msgstr ""
+msgstr "Создать новый флаер"
 
 #: app/html/sub/flairs.html:22 app/html/sub/rules.html:28
 #: app/html/sub/settings.html:89 app/static/js/main.js:183
@@ -1747,7 +1747,7 @@ msgstr "Сохранение..."
 
 #: app/html/sub/flairs.html:22
 msgid "Add flair"
-msgstr ""
+msgstr "Добавить флаер"
 
 #: app/html/sub/log.html:7
 #, python-format
@@ -1825,71 +1825,71 @@ msgstr "[Тип %(type)i]"
 #: app/html/sub/mods.html:17
 #, python-format
 msgid "Moderators for <a href=\"%(url)s\">%(sub)s</a>"
-msgstr ""
+msgstr "Модераторы для <a href=\"%(url)s\">%(sub)s</a>"
 
 #: app/html/sub/mods.html:20
 msgid "You currently have an invite for this sub pending."
-msgstr ""
+msgstr "В настоящее время у вас есть приглашение для этого суб в ожидании."
 
 #: app/html/sub/mods.html:21
 msgid "Accept"
-msgstr ""
+msgstr "Принять"
 
 #: app/html/sub/mods.html:22
 msgid "No thanks"
-msgstr ""
+msgstr "Нет, спасибо"
 
 #: app/html/sub/mods.html:28
 msgid "Owner:"
-msgstr ""
+msgstr "Владелец:"
 
 #: app/html/sub/mods.html:32
 msgid "Owners:"
-msgstr ""
+msgstr "Владельцы:"
 
 #: app/html/sub/mods.html:42
 msgid "Active moderators: none"
-msgstr ""
+msgstr "Активные модераторы: нет"
 
 #: app/html/sub/mods.html:44
 msgid "Active moderators:"
-msgstr ""
+msgstr "Активные модераторы:"
 
 #: app/html/sub/mods.html:55 app/html/sub/mods.html:73
 msgid "resign"
-msgstr ""
+msgstr "уходить в отставку"
 
 #: app/html/sub/mods.html:64
 msgid "Janitors:"
-msgstr ""
+msgstr "Дворники:"
 
 #: app/html/sub/mods.html:84
 msgid "Pending invites: none"
-msgstr ""
+msgstr "Ожидающие приглашения: нет"
 
 #: app/html/sub/mods.html:86
 msgid "Pending invites:"
-msgstr ""
+msgstr "Ожидающие приглашения:"
 
 #: app/html/sub/mods.html:101
 msgid "revoke"
-msgstr ""
+msgstr "отменять"
 
 #: app/html/sub/mods.html:113
 msgid "Invite new mod:"
-msgstr ""
+msgstr "Пригласить новый мод:"
 
 #: app/html/sub/mods.html:116
 msgid "Invite mod"
-msgstr ""
+msgstr "Пригласить мод"
 
 #: app/html/sub/mods.html:124
 msgid "Past mods: none"
-msgstr ""
+msgstr "Прошлые моды: нет"
 
 #: app/html/sub/mods.html:126
 msgid "Past mods:"
-msgstr ""
+msgstr "Прошлые моды:"
 
 #: app/html/sub/post.html:12
 msgid "[Deleted Post]"
@@ -2114,28 +2114,28 @@ msgstr "Отменить голосование"
 #: app/html/sub/rules.html:16
 #, python-format
 msgid "Editing rules of <a href=\"%(url)s\">%(sub)s</a>"
-msgstr ""
+msgstr "Редактировать правила для <a href=\"%(url)s\">%(sub)s</a>"
 
 #: app/html/sub/rules.html:19
 msgid "Create new rule"
-msgstr ""
+msgstr "Создать новое правило"
 
 #: app/html/sub/rules.html:21
 msgid "Users will be able to report violations of this rule. The text of the rule should be short and easy to understand."
-msgstr ""
+msgstr "Пользователи смогут сообщать о нарушениях этого правила. Текст правила должен быть кратким и понятным."
 
 #: app/html/sub/rules.html:24
 msgid "You'll still need to update your sidebar with a more detailed version of your Sub rules for users to read."
-msgstr ""
+msgstr "Вам все равно нужно будет обновить боковую панель с более подробной версией ваших правил Суб, для чтения пользователями."
 
 #: app/html/sub/rules.html:28
 msgid "Add rule"
-msgstr ""
+msgstr "Добавить правило"
 
 #: app/html/sub/settings.html:16
 #, python-format
 msgid "Editing settings of <a href=\"%(url)s\">%(sub)s</a>"
-msgstr ""
+msgstr "Редактирование настроек <a href=\"%(url)s\">%(sub)s</a>"
 
 #: app/html/sub/settings.html:89 app/static/js/Post.js:280
 #: app/static/js/Post.js:334
