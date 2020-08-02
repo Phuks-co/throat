@@ -86,8 +86,8 @@ def edit_sub_flairs(sub):
     formflairs = []
     for flair in flairs:
         formflairs.append(EditSubFlair(flair=flair['xid'], text=flair['text']))
-    return render_template('editflairs.html', sub=sub, flairs=formflairs,
-                           createflair=CreateSubFlair())
+
+    return engine.get_template('sub/flairs.html').render({'sub': sub, 'flairs': formflairs, 'createflair': CreateSubFlair()})
 
 
 @blueprint.route("/<sub>/edit/rules")
@@ -106,8 +106,8 @@ def edit_sub_rules(sub):
     formrules = []
     for rule in rules:
         formrules.append(EditSubRule(rule=rule['rid'], text=rule['text']))
-    return render_template('editrules.html', sub=sub, rules=formrules,
-                           createrule=CreateSubRule())
+
+    return engine.get_template('sub/rules.html').render({'sub': sub, 'rules': formrules, 'createrule': CreateSubRule()})
 
 
 @blueprint.route("/<sub>/edit")
@@ -127,7 +127,7 @@ def edit_sub(sub):
         form.sidebar.data = sub.sidebar
         form.title.data = sub.title
 
-        return render_template('editsub.html', sub=sub, editsubform=form, metadata=submeta)
+        return engine.get_template('sub/settings.html').render({'sub': sub, 'editsubform': form, 'metadata': submeta})
     else:
         abort(403)
 
@@ -165,9 +165,7 @@ def edit_sub_mods(sub):
         subdata = misc.getSubData(sub.sid, extra=True)
         subMods = misc.getSubMods(sub.sid)
         modInvites = SubMod.select(User.name, SubMod.power_level).join(User).where((SubMod.sid == sub.sid) & (SubMod.invite == True))
-        return render_template('submods.html', sub=sub, subdata=subdata,
-                               editmod2form=EditMod2Form(), subMods=subMods, subModInvites=modInvites,
-                               banuserform=BanUserSubForm())
+        return engine.get_template('sub/mods.html').render({'sub': sub, 'subdata': subdata, 'editmod2form': EditMod2Form(), 'subMods': subMods, 'subModInvites': modInvites})
     else:
         abort(403)
 

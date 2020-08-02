@@ -4,9 +4,11 @@
 Mod |\
 @end
 
+@import 'shared/sidebar/sub_mod.html' as sb
 @def sidebar():
-  @include('shared/sidebar/mod.html')
+  @{sb.render_sidebar('closed-reports', sub=sub.name)!!html}
 @end
+
 
 @def main():
 <div id="center-container">

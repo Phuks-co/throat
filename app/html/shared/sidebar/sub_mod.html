@@ -1,0 +1,14 @@
+@def render_sidebar(curr_endpoint, sub):
+<div class="row buttons inboxside">
+  <div><a class="sbm-post pure-button @{curr_endpoint=='settings' and 'button-secondary' or ''}" href="@{ url_for('sub.edit_sub', sub=sub) }">@{_('Settings')}</a></div>
+  <div><a class="sbm-post pure-button @{curr_endpoint=='flairs' and 'button-secondary' or ''}" href="@{ url_for('sub.edit_sub_flairs', sub=sub) }">@{_('Flairs')}</a></div>
+  <div><a class="sbm-post pure-button @{curr_endpoint=='rules' and 'button-secondary' or ''}" href="@{ url_for('sub.edit_sub_rules', sub=sub) }">@{_('Rules')}</a></div>
+  <div><a class="sbm-post pure-button @{curr_endpoint=='stylesheet' and 'button-secondary' or ''}" href="@{ url_for('sub.edit_sub_css', sub=sub) }">@{_('Stylesheet')}</a></div>
+  <hr/>
+  <div><a class="sbm-post pure-button @{curr_endpoint=='mods' and 'button-secondary' or ''}" href="@{ url_for('sub.edit_sub_mods', sub=sub) }">@{_('Moderators')}</a></div>
+  <div><a class="sbm-post pure-button @{curr_endpoint=='bans' and 'button-secondary' or ''}" href="@{ url_for('sub.view_sub_bans', sub=sub) }">@{_('Bans')}</a></div>
+  <hr/>
+  <div><a class="sbm-post pure-button @{curr_endpoint=='open-reports' and 'button-secondary' or ''}" href="@{ url_for('mod.reports_sub', sub=sub) }">@{_('Open Reports')}</a></div>
+  <div><a class="sbm-post pure-button @{curr_endpoint=='closed-reports' and 'button-secondary' or ''}" href="@{ url_for('mod.reports_sub_closed', sub=sub) }">@{_('Closed Reports')}</a></div>
+</div>
+@end
