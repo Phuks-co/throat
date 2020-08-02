@@ -1,0 +1,53 @@
+@extends("shared/layout.html")
+@require(sub, rules, createrule)
+
+@import 'shared/sidebar/sub_mod.html' as sb
+@def sidebar():
+  @{sb.render_sidebar('rules', sub=sub.name)!!html}
+@end
+
+@def main():
+  @#
+  @if not current_user.is_mod(sub.sid, 1) and current_user.is_admin():
+    <div class="important"><h3>@{_('Editing as Admin')}</h3></div>
+  @end
+  <div id="center-container">
+    <div class="content mw-75">
+      <h1>@{_('Editing rules of <a href="%(url)s">%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), sub=config.site.sub_prefix + "/" + sub.name)!!html}</h1>
+      <div class="col-12 admin-page-form">
+      <form  method="POST" class="ajaxform pure-form" action="@{url_for('do.create_rule', sub=sub.name)}" data-reload="true">
+        <h4>@{_('Create new rule')}</h4>
+        <p class="helper-text">
+          @{_("Users will be able to report violations of this rule. The text of the rule should be short and easy to understand.")}
+        </p>
+        <p class="helper-text">
+          @{_("You'll still need to update your sidebar with a more detailed version of your Sub rules for users to read.")}
+        </p>
+        @{createrule.csrf_token()!!html}
+        @{createrule.text(placeholder=_("Rule text"))!!html}
+        <button type="submit" class="pure-button pure-button-primary" id="editsub-btnsubmit" data-prog="@{_('Saving...')}" data-success="@{_('Saved!')}">@{_('Add rule')}</button>
+        <div class="alert div-error"></div>
+      </form>
+    </div>
+
+    @if rules:
+      <hr>
+      <h4>@{_('Rules')}</h4>
+      <div class="col-12 admin-page-form">
+        <ul>
+        @for rule in rules:
+          <li>
+            <span class="postrule">@{rule.text.data}</span>
+            <form  method="POST" data-reload="true" action="@{url_for('do.delete_rule', sub=sub.name)}" class="ajaxform st-flair">
+              @{rule.csrf_token()!!html}
+              @{rule.rule!!html}
+              <button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="@{_('Deleting...')}" data-success="@{_('Deleted!')}">@{_('Delete')}</button>
+            </form>
+          </li>
+        @end
+        </ul>
+      </div>
+    @end
+    </div>
+  </div>
+@end

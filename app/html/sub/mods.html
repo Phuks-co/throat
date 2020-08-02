@@ -1,0 +1,137 @@
+@extends("shared/layout.html")
+@require(sub, subMods, subModInvites, editmod2form, subdata)
+
+@import 'shared/sidebar/sub_mod.html' as sb
+@def sidebar():
+  @{sb.render_sidebar('mods', sub=sub.name)!!html}
+@end
+
+
+@def main():
+  @#
+  @if not current_user.is_mod(sub.sid, 1) and current_user.is_admin():
+    <div class="important"><h3>@{_('Editing as Admin')}</h3></div>
+  @end
+  <div id="center-container">
+    <div class="content mw-75">
+      <h1>@{_('Moderators for <a href="%(url)s">%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), sub=config.site.sub_prefix + "/" + sub.name)!!html}</h1>
+      @if current_user.is_modinv(sub.sid):
+        <div class="mod2-inv">
+          @{_('You currently have an invite for this sub pending.')}
+          <a id="accept-mod2-inv" data-sub="@{sub.name}" data-user="@{current_user.user['name']}" class="slink">@{_('Accept')}</a> /
+          <a id="refuse-mod2-inv" data-sub="@{sub.name}" data-user="@{current_user.user['name']}" class="slink">@{_('No thanks')}</a>
+        </div>
+        <hr/>
+      @end
+
+      @if len(subMods['owners']) == 1:
+        <p>@{_('Owner:')} <i class="fa fa-star" title="@{_('Owner')}"></i>
+          <a href="@{url_for('user.view', user=list(subMods['owners'].values())[0] )}">@{ list(subMods['owners'].values())[0] }</a>
+        </p>
+      @else:
+        @{_('Owners:')}
+        <ul>
+          @for owner in subMods.owners:
+            <li><i class="fa fa-star" title="@{_('Owner')}"></i> <a href="@{url_for('user.view', user=owner.name)}">@{owner.name}</a></li>
+          @end
+        </ul>
+      @end
+      <hr/>
+
+      @if len(subMods['mods']) == 0:
+        <p>@{_('Active moderators: none')}</p>
+      @else:
+        <p>@{_('Active moderators:')}</p>
+      @end
+
+      <ul>
+        @for mod in subMods['mods']:
+          <span class="editmodbtn col-4">
+            <li>
+              <a href="@{url_for('user.view', user=subMods['mods'][mod])}">@{subMods['mods'][mod]}</a>
+              @if current_user.is_admin() or current_user.is_mod(sub.sid, 0):
+                <span>(<a data-sub="@{sub.name}" data-user="@{subMods['mods'][mod]}" class="slink revoke-mod2">@{_('remove')}</a>)</span>
+              @elif current_user.uid == mod:
+                <span>(<a data-sub="@{sub.name}" data-user="@{subMods['mods'][mod]}" class="slink revoke-mod2">@{_('resign')}</a>)</span>
+              @end
+            </li>
+          </span>
+        @end
+      </ul>
+
+      @if subMods['janitors']:
+        <hr/>
+        <p>@{_('Janitors:')}</p>
+        <ul>
+          @for mod in subMods['janitors']:
+            <span class="editmodbtn col-4">
+              <li>
+                <a href="@{url_for('user.view', user=subMods['janitors'][mod])}">@{subMods['janitors'][mod]}</a>
+                @if current_user.is_admin() or current_user.is_mod(sub.sid, 0):
+                  <span>(<a data-sub="@{sub.name}" data-user="@{subMods['janitors'][mod]}" class="slink revoke-mod2">@{_('remove')}</a>)</span>
+                @elif current_user.uid == mod:
+                  <span>(<a data-sub="@{sub.name}" data-user="@{subMods['janitors'][mod]}" class="slink revoke-mod2">@{_('resign')}</a>)</span>
+                @end
+            </li>
+          </span>
+        @end
+      </ul>
+    @end
+
+    <hr/>
+
+    @if len(subModInvites) == 0:
+      <p>@{_('Pending invites: none')}</p>
+    @else:
+      <p>@{_('Pending invites:')}</p>
+    @end
+
+    <ul>
+      @for modinv in subModInvites:
+        <span class="editmodbtn col-4">
+          <li>[ \
+            @if modinv.power_level == 1:
+              Mod \
+            @elif modinv.power_level == 2:
+              Janitor \
+            @end
+            ] \
+            <a href="@{url_for('user.view', user=modinv.user.name)}">@{modinv.user.name}</a>
+            @if current_user.is_admin() or current_user.is_mod(sub.sid, 0):
+              (<a data-sub="@{sub.name}" data-user="@{modinv.user.name}" class="slink revoke-mod2inv">@{_('revoke')}</a>)
+            @end
+          </li>
+        </span>
+      @end
+    </ul>
+
+    @if current_user.is_admin() or current_user.is_mod(sub.sid, 0):
+    <div class="editmoderators col-12">
+      <form data-reload="true" action="@{url_for('do.inv_mod', sub=sub.name)}" id="edit-mod2-form" data-sub="@{sub.name}" class="pure-form ajaxform">
+        @{editmod2form.csrf_token()!!html}
+        <p>
+          <label>@{_('Invite new mod:')}</label>
+          @{editmod2form.user(placeholder=editmod2form.user.label.text, required=True)!!html}
+          @{editmod2form.level(placeholder=editmod2form.level.label.text, required=True)!!html}
+          <button type="submit" class="pure-button pure-button-primary" id="editmod2-btnsubmit">@{_('Invite mod')}</button>
+        </p>
+        <div class="alert div-error"></div>
+      </form>
+    </div>
+    @end
+
+    @if not subdata.get('xmods', None):
+      <p>@{_('Past mods: none')}</p>
+    @else:
+      <p>@{_('Past mods:')}</p>
+    @end
+    <ul>
+      @for xmod in subdata.get('xmods', []):
+        <span class="col-4">
+          <li><i class="fa fa-remove"></i> <a href="@{url_for('user.view', user=xmod['name'])}">@{xmod['name']}</a></li>
+        </span>
+      @end
+    </ul>
+  </div>
+</div>
+@end

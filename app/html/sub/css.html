@@ -1,20 +1,21 @@
 @extends("shared/layout.html")
 @require(error, sub, form, storage, files, subInfo, subMods)
 
+@import 'shared/sidebar/sub_mod.html' as sb
 @def sidebar():
-  @include('shared/sidebar/mod.html')
+  @{sb.render_sidebar('stylesheet', sub=sub.name)!!html}
 @end
 
 @def main():
 
-<div id="container">
-  @if not current_user.is_mod(sub.sid, 1) and current_user.is_admin():
-  <div class="important"><h3>@{_('Editing as Admin')}</h3></div>
-  @end
+<div id="center-container">
+  <div class="content mw-75">
+    @if not current_user.is_mod(sub.sid, 1) and current_user.is_admin():
+      <div class="important"><h3>@{_('Editing as Admin')}</h3></div>
+    @end
 
-  <h2>@{_('Editing stylesheet for <a href="%(url)s">/%(prefix)s/%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), prefix=config.site.sub_prefix, sub=sub.name)!!html}</h2>
+    <h2>@{_('Editing stylesheet for <a href="%(url)s">/%(prefix)s/%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), prefix=config.site.sub_prefix, sub=sub.name)!!html}</h2>
 
-  <div class="content createpost">
     <form  method="POST" class="ajaxform" action="@{url_for('do.edit_sub_css', sub=sub.name)}">
       @{form.csrf_token()!!html}
       <div class="pure-control-group">
@@ -29,40 +30,40 @@
         </button>
       </div>
     </form>
-  </div>
 
-  <hr>
-  <h3>@{_('Upload files')}</h3>
-  @{_('Upload limit is 2 MiB. Space used: %(storage)i KiB', storage=storage)}
-  <form  method="POST" style="margin-top: 1em" action="@{url_for('do.sub_upload', sub=sub.name)}" class="pure-form pure-form-aligned" enctype="multipart/form-data">
-    @if error:
-      <div class="error">@{error}</div>
+    <hr>
+    <h3>@{_('Upload files')}</h3>
+    @{_('Upload limit is 2 MiB. Space used: %(storage)i KiB', storage=storage)}
+    <form  method="POST" style="margin-top: 1em" action="@{url_for('do.sub_upload', sub=sub.name)}" class="pure-form pure-form-aligned" enctype="multipart/form-data">
+      @if error:
+        <div class="error">@{error}</div>
+      @end
+        <input type="text" name="name" pattern="^[a-zA-Z0-9_-]+$" placeholder="Name" required/>
+        <input type="file" name="files" placeholder="@{_('Only images allowed')}" />
+        <button type="submit" class="pure-button pure-button-primary">@{_('Upload')}</button>
+    </form>
+    <br/>
+    @if files.count() == 0:
+      @{_('No files were uploaded, yet.')}
+    @else:
+      @for f in files:
+        <div><img alt="@{_('Thumbnail')}" src="@{thumbnail_url(f.thumbnail)}"/>
+        @{_('Filename: %(filename)s. Size: %(filesize)i KiB.', filename=f.name, filesize=f.size/1024)}
+        <form  method="POST" data-reload="true" action="@{url_for('do.sub_upload_delete', sub=sub.name, name=f.name)}" class="ajaxform" style="display: inline-block; margin-left: 1em; margin-top: 5px;">
+          @{form.csrf_token() !!html}
+          <button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="@{_('Deleting...')}" data-success="@{_('Deleted!')}">@{_('Delete')}</button>
+        </form>
+      </div>
+      @end
     @end
-      <input type="text" name="name" pattern="^[a-zA-Z0-9_-]+$" placeholder="Name" required/>
-      <input type="file" name="files" placeholder="@{_('Only images allowed')}" />
-      <button type="submit" class="pure-button pure-button-primary">@{_('Upload')}</button>
-  </form>
-  <br/>
-  @if files.count() == 0:
-    @{_('No files were uploaded, yet.')}
-  @else:
-    @for f in files:
-      <div><img alt="@{_('Thumbnail')}" src="@{thumbnail_url(f.thumbnail)}"/>
-      @{_('Filename: %(filename)s. Size: %(filesize)i KiB.', filename=f.name, filesize=f.size/1024)}
-      <form  method="POST" data-reload="true" action="@{url_for('do.sub_upload_delete', sub=sub.name, name=f.name)}" class="ajaxform" style="display: inline-block; margin-left: 1em; margin-top: 5px;">
-        @{form.csrf_token() !!html}
-        <button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="@{_('Deleting...')}" data-success="@{_('Deleted!')}">@{_('Delete')}</button>
-      </form>
-    </div>
-    @end
-  @end
-  <hr/>
-  <p>@{_('You can use uploaded images with <code>%%imagename%%</code>.')!!html}</p>
-  <p>@{_('Example:')}
-    <pre>
-      body{
-        background: url(@{_('%%mybackground%%')});
-      }</pre>
-  </p>
+    <hr/>
+    <p>@{_('You can use uploaded images with <code>%%imagename%%</code>.')!!html}</p>
+    <p>@{_('Example:')}
+      <pre>
+        body{
+          background: url(@{_('%%mybackground%%')});
+        }</pre>
+    </p>
+  </div>
 </div>
 @end
