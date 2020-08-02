@@ -10,9 +10,9 @@ from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
 from .. import misc
 from ..auth import auth_provider
 from ..socketio import socketio
-from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, captchas_required, grab_title
+from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, captchas_required
 from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote, SubSubscriber
-from ..models import SiteMetadata, UserMetadata, Message, SubRule, Notification
+from ..models import SiteMetadata, UserMetadata, Message, SubRule, Notification, SubMod
 from ..caching import cache
 from ..config import config
 
@@ -755,6 +755,7 @@ def search_sub():
 
     return jsonify(results=list(subs))
 
+
 @API.route('/sub/rules', methods=['GET'])
 def get_sub_rules():
     pid = request.args.get('pid', '')
@@ -762,6 +763,39 @@ def get_sub_rules():
     rules = list(SubRule.select().where(SubRule.sid == sub['sid']).dicts())
 
     return jsonify(results=rules)
+
+
+@API.route('/user/<username>', methods=['GET'])
+def get_user(username):
+    """ Returns user profile data """
+    try:
+        user = User.select().where((User.status == 0) & (fn.Lower(User.name) == username.lower())).get()
+    except User.DoesNotExist:
+        return jsonify(msg="User does not exist"), 404
+
+    level = misc.get_user_level(user.uid, user.score)
+    pcount = SubPost.select().where(SubPost.uid == user.uid).count()
+    ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()
+
+    modsquery = SubMod.select(Sub.name, SubMod.power_level).join(Sub).where(
+        (SubMod.uid == user.uid) & (SubMod.invite == False))
+    owns = [x.sub.name for x in modsquery if x.power_level == 0]
+    mods = [x.sub.name for x in modsquery if 1 <= x.power_level <= 2]
+    return jsonify(user={
+        'name': user.name,
+        'score': user.score,
+        'given': user.given,
+        'joindate': user.joindate,
+        'level': level[0],
+        'xp': level[1],
+        'badges': misc.getUserBadges(user.uid),
+        'posts': pcount,
+        'comments': ccount,
+        'subs': {
+            'owns': owns,
+            'mods': mods
+        }
+    })
 
 
 @API.route('/user/settings', methods=['GET'])
