@@ -120,13 +120,13 @@
     </div>
     @end
 
-    @if len(subdata['xmods']) == 0:
+    @if not subdata.get('xmods', None):
       <p>@{_('Past mods: none')}</p>
     @else:
       <p>@{_('Past mods:')}</p>
     @end
     <ul>
-      @for xmod in subdata['xmods']:
+      @for xmod in subdata.get('xmods', []):
         <span class="col-4">
           <li><i class="fa fa-remove"></i> <a href="@{url_for('user.view', user=xmod['name'])}">@{xmod['name']}</a></li>
         </span>
