@@ -51,6 +51,7 @@ def migrate(migrator, database, fake=False, **kwargs):
         class Meta:
             table_name = "notification"
 
+    Notification.create_table(True)
     # Migrate notifications out of the messages table
     Message = migrator.orm['message']
     SubPostComment = migrator.orm['sub_post_comment']
