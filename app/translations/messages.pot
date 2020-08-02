@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Throat 1.0\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-08-02 15:50-0300\n"
+"POT-Creation-Date: 2020-08-02 19:02-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -81,8 +81,9 @@ msgstr ""
 #: app/html/shared/post.html:71 app/html/shared/post.html:73
 #: app/html/site/log.html:28 app/html/sub/log.html:28 app/html/sub/post.html:42
 #: app/html/sub/post.html:102 app/html/sub/post.html:116
-#: app/html/sub/postcomments.html:22 app/html/sub/postcomments.html:44
-#: app/misc.py:1191 app/misc.py:1597 app/misc.py:1606 app/misc.py:1613
+#: app/html/sub/post.html:161 app/html/sub/postcomments.html:22
+#: app/html/sub/postcomments.html:44 app/misc.py:1191 app/misc.py:1597
+#: app/misc.py:1606 app/misc.py:1613
 msgid "[Deleted]"
 msgstr ""
 
@@ -975,7 +976,7 @@ msgid "Closed all reports related to: "
 msgstr ""
 
 #: app/html/mod/reportdetails.html:280 app/html/shared/post.html:95
-#: app/html/sub/post.html:220 app/html/sub/postcomments.html:87
+#: app/html/sub/post.html:223 app/html/sub/postcomments.html:87
 msgid "report"
 msgstr ""
 
@@ -1131,7 +1132,7 @@ msgstr ""
 msgid "Show post content"
 msgstr ""
 
-#: app/html/shared/post.html:71
+#: app/html/shared/post.html:71 app/html/sub/post.html:161
 #, python-format
 msgid "posted %(timeago)s by %(user)s on %(sub)s"
 msgstr ""
@@ -1162,7 +1163,7 @@ msgstr ""
 msgid "block sub"
 msgstr ""
 
-#: app/html/shared/post.html:98 app/html/sub/post.html:223
+#: app/html/shared/post.html:98 app/html/sub/post.html:226
 #, python-format
 msgid "open reports (%(num)s)"
 msgstr ""
@@ -1663,7 +1664,7 @@ msgstr ""
 msgid "Submit post"
 msgstr ""
 
-#: app/html/sub/createpost.html:127 app/html/sub/post.html:305
+#: app/html/sub/createpost.html:127 app/html/sub/post.html:308
 #: app/static/js/Post.js:280 app/static/js/Post.js:335
 #: app/static/js/Post.js:412 app/static/js/Post.js:587
 msgid "Preview"
@@ -1941,103 +1942,103 @@ msgstr ""
 msgid "Viewing title history:"
 msgstr ""
 
-#: app/html/sub/post.html:167
+#: app/html/sub/post.html:170
 msgid "unsave"
 msgstr ""
 
-#: app/html/sub/post.html:169
+#: app/html/sub/post.html:172
 msgid "save"
 msgstr ""
 
-#: app/html/sub/post.html:173
+#: app/html/sub/post.html:176
 msgid "flair"
 msgstr ""
 
-#: app/html/sub/post.html:178 app/html/sub/postcomments.html:90
+#: app/html/sub/post.html:181 app/html/sub/postcomments.html:90
 #: app/static/js/Post.js:268 app/static/js/Post.js:271
 #: app/static/js/Post.js:326 app/static/js/Post.js:329
 msgid "edit"
 msgstr ""
 
-#: app/html/sub/post.html:181
+#: app/html/sub/post.html:184
 msgid "edit title"
 msgstr ""
 
-#: app/html/sub/post.html:186 app/html/sub/postcomments.html:93
+#: app/html/sub/post.html:189 app/html/sub/postcomments.html:93
 msgid "delete"
 msgstr ""
 
-#: app/html/sub/post.html:190
+#: app/html/sub/post.html:193
 msgid "tag as nsfw"
 msgstr ""
 
-#: app/html/sub/post.html:192
+#: app/html/sub/post.html:195
 msgid "remove nsfw"
 msgstr ""
 
-#: app/html/sub/post.html:198
+#: app/html/sub/post.html:201
 msgid "close poll"
 msgstr ""
 
-#: app/html/sub/post.html:203
+#: app/html/sub/post.html:206
 msgid "unstick"
 msgstr ""
 
-#: app/html/sub/post.html:205
+#: app/html/sub/post.html:208
 msgid "make sticky"
 msgstr ""
 
-#: app/html/sub/post.html:209
+#: app/html/sub/post.html:212
 msgid "remove wiki"
 msgstr ""
 
-#: app/html/sub/post.html:211
+#: app/html/sub/post.html:214
 msgid "make wiki"
 msgstr ""
 
-#: app/html/sub/post.html:215
+#: app/html/sub/post.html:218
 msgid "make announcement"
 msgstr ""
 
-#: app/html/sub/post.html:227 app/html/sub/postcomments.html:96
+#: app/html/sub/post.html:230 app/html/sub/postcomments.html:96
 msgid "un-delete"
 msgstr ""
 
-#: app/html/sub/post.html:238
+#: app/html/sub/post.html:241
 #, python-format
 msgid "Current flair: <span class=\"postflair\">%(flair)s</span>."
 msgstr ""
 
-#: app/html/sub/post.html:238
+#: app/html/sub/post.html:241
 msgid "Remove"
 msgstr ""
 
-#: app/html/sub/post.html:240
+#: app/html/sub/post.html:243
 msgid "Select a new flair"
 msgstr ""
 
-#: app/html/sub/post.html:261
+#: app/html/sub/post.html:264
 msgid "[deleted]"
 msgstr ""
 
-#: app/html/sub/post.html:286 app/html/sub/postcomments.html:66
+#: app/html/sub/post.html:289 app/html/sub/postcomments.html:66
 msgid "Viewing edit history:"
 msgstr ""
 
-#: app/html/sub/post.html:304
+#: app/html/sub/post.html:307
 msgid "Submit comment"
 msgstr ""
 
-#: app/html/sub/post.html:307 app/static/js/Post.js:282
+#: app/html/sub/post.html:310 app/static/js/Post.js:282
 #: app/static/js/Post.js:337 app/static/js/Post.js:589
 msgid "Comment preview"
 msgstr ""
 
-#: app/html/sub/post.html:315
+#: app/html/sub/post.html:318
 msgid "No comments, yet..."
 msgstr ""
 
-#: app/html/sub/post.html:318
+#: app/html/sub/post.html:321
 #, python-format
 msgid "%(comments)i comments"
 msgstr ""
@@ -2154,6 +2155,14 @@ msgstr ""
 #: app/html/sub/settings.html:16
 #, python-format
 msgid "Editing settings of <a href=\"%(url)s\">%(sub)s</a>"
+msgstr ""
+
+#: app/html/sub/settings.html:69
+msgid "Default post sort"
+msgstr ""
+
+#: app/html/sub/settings.html:82
+msgid "Sidebar text. Markdown allowed."
 msgstr ""
 
 #: app/html/sub/settings.html:89 app/static/js/Post.js:280

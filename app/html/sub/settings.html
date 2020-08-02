@@ -66,7 +66,7 @@
           </div>
         @end
 
-        <h4>Default post sort</h4>
+        <h4>@{_('Default post sort')}</h4>
         @for kl in editsubform.subsort:
           <div class="pure-control-group">
             <label for="@{kl.id}" class="pure-radio">
@@ -79,7 +79,7 @@
         <h4>@{_('Sidebar text')}</h4>
         <div class="pure-control-group">
           <div class="markdown-editor cwrap">
-            @{editsubform.sidebar(class_="cwrap", placeholder="Sidebar text. Markdown allowed.", rows="10")!!html}
+            @{editsubform.sidebar(class_="cwrap", placeholder=_("Sidebar text. Markdown allowed."), rows="10")!!html}
           </div>
         </div>
       </fieldset>
