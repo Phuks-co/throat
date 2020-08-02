@@ -148,16 +148,19 @@
             </div>
         @end
       </div>
-      <ul class="links" data-pid="@{post['pid']}">
+      <div class="author" data-pid="@{post['pid']}">
         @if post['link']:
           @if func.getDomain(post['link']) in config.site.expando_sites:
-            <li><div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="play"></div></div></li>
+            <div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="play"></div></div>
           @elif post['link'].lower().endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
-            <li><div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="image"></div></div></li>
+            <div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="image"></div></div>
           @elif post['link'].lower().endswith(('.mp4', '.webm', '.gifv')):
-            <li><div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="play"></div></div></li>
+            <div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="play"></div></div>
           @end
         @end
+        @{_('posted %(timeago)s by %(user)s on %(sub)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user='<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + '</a>' if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>', sub='<a href="/' + config.site.sub_prefix + '/' + post['sub'] + '">' + post['sub'] + '</a>')!!html}
+      </div>
+      <ul class="links" data-pid="@{post['pid']}">
         @if current_user.is_authenticated and post['deleted'] == 0:
           @if post['content']:
             <li><a class="post-source">source</a></li>
