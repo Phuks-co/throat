@@ -1343,7 +1343,7 @@ input[type=search] {
   overflow: auto;
 }
 
-.cwrap {
+.cwrap, .pure-control-group .markdown-editor.cwrap {
   margin-top: 5px;
   width: 100%;
 }
@@ -2240,4 +2240,14 @@ article.text-post.comment.deleted {
 .loginlinklist {
   list-style: none;
   line-height: 1.4;
+}
+
+.mw-75 {
+    min-width: 75%;
+}
+
+.st-flair{
+    display: inline-block;
+    margin-left: 1em;
+    margin-top: 5px;
 }
