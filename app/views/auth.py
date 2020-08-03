@@ -186,7 +186,7 @@ def login_with_token(token):
     user = user_from_login_token(token)
     if user is None:
         flash(_('The link you used is invalid or has expired.'), 'error')
-        return redirect(url_for('auth.resend_confirmation'))
+        return redirect(url_for('auth.resend_confirmation_email'))
     elif user.status == UserStatus.PROBATION:
         user.status = UserStatus.OK
         user.save()
