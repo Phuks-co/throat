@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-08-02 19:02-0300\n"
-"PO-Revision-Date: 2020-08-03 09:18\n"
+"PO-Revision-Date: 2020-08-03 15:20\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -2242,7 +2242,7 @@ msgstr "Владеет"
 
 #: app/html/user/profile.html:87
 msgid "Mods"
-msgstr "Модс"
+msgstr "Модератор"
 
 #: app/html/user/profile.html:98
 msgid "Posting habits"
@@ -2250,7 +2250,7 @@ msgstr "Читает"
 
 #: app/html/user/profile.html:109
 msgid "Invite Info"
-msgstr "Информация о Приглашении"
+msgstr "Пригласил"
 
 #: app/html/user/profile.html:139
 msgid "Send message"
