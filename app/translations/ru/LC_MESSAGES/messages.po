@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-08-02 19:02-0300\n"
-"PO-Revision-Date: 2020-08-03 03:18\n"
+"PO-Revision-Date: 2020-08-03 09:18\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -2140,11 +2140,11 @@ msgstr "Редактирование настроек <a href=\"%(url)s\">%(sub)
 
 #: app/html/sub/settings.html:69
 msgid "Default post sort"
-msgstr ""
+msgstr "Сортировка постов по умолчанию"
 
 #: app/html/sub/settings.html:82
 msgid "Sidebar text. Markdown allowed."
-msgstr ""
+msgstr "Текст боковой панели. Markdown разрешен."
 
 #: app/html/sub/settings.html:89 app/static/js/Post.js:280
 #: app/static/js/Post.js:334
