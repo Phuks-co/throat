@@ -1503,7 +1503,7 @@ form#msg-form {
 }
 
 .comments article.comment.highlight{
-  background-color: rgba(244, 194, 10, 0.35);
+  background-color: rgba(84, 73, 73, 0.16);
 }
 
 #formpop {
@@ -2186,11 +2186,11 @@ a.close-report {
 }
 
 .mod.report.preview .preview-text-container.deleted {
-  background-color: #FDD8D4;
+  background-color: #f1f1f1;
 }
 
 .mod.report.preview .preview-text-container.deleted.post-content-container {
-  background-color: #FDD8D4;
+  background-color: #f1f1f1;
 }
 
 .mod.report.preview .preview-meta-data {
@@ -2208,19 +2208,19 @@ a.close-report {
 }
 
 article.text-post.comment.deleted {
-  background-color: #FDD8D4;
+  background-color: #f1f1f1;
 }
 
 .post-content-container.deleted {
-  background-color: #FDD8D4;
+  background-color: #f1f1f1;
 }
 
 .postbar.post.deleted {
-  background-color: #FDD8D4;
+  background-color: #f1f1f1;
 }
 
 .poll-space.deleted {
-  background-color: #FDD8D4;
+  background-color: #f1f1f1;
 }
 
 .post-history-controls {
