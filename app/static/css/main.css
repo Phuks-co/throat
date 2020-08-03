@@ -817,6 +817,7 @@ a.slink{
 
 .links a.comments, .postinfo .links a, .bottombar.links a{
   font-weight: 700;
+  margin: 4px 0 0 0 !important;
 }
 
 .alldaposts .links a{
