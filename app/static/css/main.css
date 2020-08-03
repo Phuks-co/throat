@@ -977,7 +977,7 @@ a.slink{
   width: 1.3em;
   text-align: center;
   margin-right: .3em;
-  margin-top: .3em;
+/*  margin-top: .3em; */
 }
 
 .c-upvote svg, .c-downvote svg, .upvote svg, .downvote svg {
@@ -995,6 +995,7 @@ a.slink{
 .commblock{
   display: inline-block;
   width: calc(100% - 2em);
+  margin-bottom: 1.1em;
 }
 /* /POST PAGE STYLES */
 
