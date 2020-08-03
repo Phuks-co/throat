@@ -804,7 +804,7 @@ a.slink{
 .links a{
   position:relative;
   right:12px;
-  font-size: 13.5px;
+  font-size: 13px;
   color: #888;
   
   cursor: pointer;
@@ -812,7 +812,7 @@ a.slink{
   -moz-user-select:none;
   -webkit-user-select:none;
   user-select: none;
-  margin-left: .18em;
+  margin-left: .5em;
 }
 
 .links a.comments, .postinfo .links a, .bottombar.links a{
