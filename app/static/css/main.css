@@ -2092,6 +2092,15 @@ button.new-form-one {
   background: #d2d2d2 !important;
 }
 
+/* Proper align post links in sub/post */
+.wholepost .postinfo .links{
+  margin: 4px 0 0 0.09em;
+}
+
+.commblock .bottombar.links{
+  margin: 4px 0 0 0.09em;
+}
+ 
 /* Continued original */  
 td.close-report-button {
   text-align: center;
