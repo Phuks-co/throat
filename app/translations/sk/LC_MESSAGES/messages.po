@@ -2038,6 +2038,11 @@ msgstr "[OP]"
 msgid "<span class=\"cscore\">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
 msgstr "skóre: <span class=\"cscore\">%(score)i</span></b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
 
+#: app/html/sub/postcomments.html:31
+#, python-format
+msgid "<span class="cscore">%(score)i</span> points</b>"
+msgstr "skóre: <span class=\"cscore\">%(score)i</span></b>"
+
 #: app/html/sub/postcomments.html:37
 #, python-format
 msgid "Edited %(timeago)s"
