@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-08-02 19:02-0300\n"
-"PO-Revision-Date: 2020-08-03 15:20\n"
+"PO-Revision-Date: 2020-08-04 17:18\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -2218,11 +2218,11 @@ msgstr "Зарегистрированный %(timeago)s"
 
 #: app/html/user/profile.html:45
 msgid "posts"
-msgstr "пост"
+msgstr "постов"
 
 #: app/html/user/profile.html:49
 msgid "comments"
-msgstr "комментарий"
+msgstr "комментариев"
 
 #: app/html/user/profile.html:55
 msgid "Phuks given"
