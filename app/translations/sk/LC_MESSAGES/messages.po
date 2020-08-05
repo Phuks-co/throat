@@ -495,7 +495,7 @@ msgstr "Teraz"
 
 #: app/html/index.html:9 app/html/index.html:13 app/html/sub.html:15
 msgid "Top"
-msgstr "Teraz"
+msgstr "Naj"
 
 #: app/html/index.html:10 app/html/index.html:14 app/html/sub.html:16
 msgid "New"
