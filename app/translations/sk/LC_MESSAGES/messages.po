@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-08-02 15:50-0300\n"
-"PO-Revision-Date: 2020-08-02 21:20\n"
+"POT-Creation-Date: 2020-08-02 19:02-0300\n"
+"PO-Revision-Date: 2020-08-03 03:18\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -78,8 +78,9 @@ msgstr "Došlo k chybe v poli '%(field)s' - %(error)s"
 #: app/html/shared/post.html:71 app/html/shared/post.html:73
 #: app/html/site/log.html:28 app/html/sub/log.html:28 app/html/sub/post.html:42
 #: app/html/sub/post.html:102 app/html/sub/post.html:116
-#: app/html/sub/postcomments.html:22 app/html/sub/postcomments.html:44
-#: app/misc.py:1191 app/misc.py:1597 app/misc.py:1606 app/misc.py:1613
+#: app/html/sub/post.html:161 app/html/sub/postcomments.html:22
+#: app/html/sub/postcomments.html:44 app/misc.py:1191 app/misc.py:1597
+#: app/misc.py:1606 app/misc.py:1613
 msgid "[Deleted]"
 msgstr "[vymazané]"
 
@@ -495,7 +496,7 @@ msgstr "Teraz"
 
 #: app/html/index.html:9 app/html/index.html:13 app/html/sub.html:15
 msgid "Top"
-msgstr "Teraz"
+msgstr "Naj"
 
 #: app/html/index.html:10 app/html/index.html:14 app/html/sub.html:16
 msgid "New"
@@ -968,7 +969,7 @@ msgid "Closed all reports related to: "
 msgstr "Vyriešilo všetky hlásenia vo vzťahu k: "
 
 #: app/html/mod/reportdetails.html:280 app/html/shared/post.html:95
-#: app/html/sub/post.html:220 app/html/sub/postcomments.html:87
+#: app/html/sub/post.html:223 app/html/sub/postcomments.html:87
 msgid "report"
 msgstr "nahlásiť"
 
@@ -1124,7 +1125,7 @@ msgstr "Zobraziť anketu"
 msgid "Show post content"
 msgstr "Zobraziť obsah príspevku"
 
-#: app/html/shared/post.html:71
+#: app/html/shared/post.html:71 app/html/sub/post.html:161
 #, python-format
 msgid "posted %(timeago)s by %(user)s on %(sub)s"
 msgstr "%(timeago)s pridal(a) %(user)s v %(sub)s"
@@ -1155,7 +1156,7 @@ msgstr "komentuj"
 msgid "block sub"
 msgstr "blokuj skupinu"
 
-#: app/html/shared/post.html:98 app/html/sub/post.html:223
+#: app/html/shared/post.html:98 app/html/sub/post.html:226
 #, python-format
 msgid "open reports (%(num)s)"
 msgstr "otvorené hlásenia (%(num)s)"
@@ -1652,7 +1653,7 @@ msgstr "Hlasovanie ukončiť o..."
 msgid "Submit post"
 msgstr "Odošli príspevok"
 
-#: app/html/sub/createpost.html:127 app/html/sub/post.html:305
+#: app/html/sub/createpost.html:127 app/html/sub/post.html:308
 #: app/static/js/Post.js:280 app/static/js/Post.js:335
 #: app/static/js/Post.js:412 app/static/js/Post.js:587
 msgid "Preview"
@@ -1928,103 +1929,103 @@ msgstr "[Vymazané moderátorom/adminom]"
 msgid "Viewing title history:"
 msgstr "História názvu:"
 
-#: app/html/sub/post.html:167
+#: app/html/sub/post.html:170
 msgid "unsave"
 msgstr "odstrániť z uložených"
 
-#: app/html/sub/post.html:169
+#: app/html/sub/post.html:172
 msgid "save"
 msgstr "uložiť"
 
-#: app/html/sub/post.html:173
+#: app/html/sub/post.html:176
 msgid "flair"
 msgstr "tag"
 
-#: app/html/sub/post.html:178 app/html/sub/postcomments.html:90
+#: app/html/sub/post.html:181 app/html/sub/postcomments.html:90
 #: app/static/js/Post.js:268 app/static/js/Post.js:271
 #: app/static/js/Post.js:326 app/static/js/Post.js:329
 msgid "edit"
 msgstr "upraviť"
 
-#: app/html/sub/post.html:181
+#: app/html/sub/post.html:184
 msgid "edit title"
 msgstr "upraviť názov"
 
-#: app/html/sub/post.html:186 app/html/sub/postcomments.html:93
+#: app/html/sub/post.html:189 app/html/sub/postcomments.html:93
 msgid "delete"
 msgstr "vymazať"
 
-#: app/html/sub/post.html:190
+#: app/html/sub/post.html:193
 msgid "tag as nsfw"
 msgstr "označiť ako nsfw"
 
-#: app/html/sub/post.html:192
+#: app/html/sub/post.html:195
 msgid "remove nsfw"
 msgstr "zrušiť ozančenie nsfw"
 
-#: app/html/sub/post.html:198
+#: app/html/sub/post.html:201
 msgid "close poll"
 msgstr "ukončiť hlasovanie"
 
-#: app/html/sub/post.html:203
+#: app/html/sub/post.html:206
 msgid "unstick"
 msgstr "odlepiť"
 
-#: app/html/sub/post.html:205
+#: app/html/sub/post.html:208
 msgid "make sticky"
 msgstr "prilepiť"
 
-#: app/html/sub/post.html:209
+#: app/html/sub/post.html:212
 msgid "remove wiki"
 msgstr "zrušiť wiki"
 
-#: app/html/sub/post.html:211
+#: app/html/sub/post.html:214
 msgid "make wiki"
 msgstr "vytvoriť wiki"
 
-#: app/html/sub/post.html:215
+#: app/html/sub/post.html:218
 msgid "make announcement"
 msgstr "vytvoriť oznam"
 
-#: app/html/sub/post.html:227 app/html/sub/postcomments.html:96
+#: app/html/sub/post.html:230 app/html/sub/postcomments.html:96
 msgid "un-delete"
 msgstr "obnoviť"
 
-#: app/html/sub/post.html:238
+#: app/html/sub/post.html:241
 #, python-format
 msgid "Current flair: <span class=\"postflair\">%(flair)s</span>."
 msgstr "Aktuálny tag: <span class=\"postflair\">%(flair)s</span>."
 
-#: app/html/sub/post.html:238
+#: app/html/sub/post.html:241
 msgid "Remove"
 msgstr "Odstrániť"
 
-#: app/html/sub/post.html:240
+#: app/html/sub/post.html:243
 msgid "Select a new flair"
 msgstr "Zvoliť nový tag"
 
-#: app/html/sub/post.html:261
+#: app/html/sub/post.html:264
 msgid "[deleted]"
 msgstr "[vymazané]"
 
-#: app/html/sub/post.html:286 app/html/sub/postcomments.html:66
+#: app/html/sub/post.html:289 app/html/sub/postcomments.html:66
 msgid "Viewing edit history:"
 msgstr "História úprav:"
 
-#: app/html/sub/post.html:304
+#: app/html/sub/post.html:307
 msgid "Submit comment"
 msgstr "Pridať komentár"
 
-#: app/html/sub/post.html:307 app/static/js/Post.js:282
+#: app/html/sub/post.html:310 app/static/js/Post.js:282
 #: app/static/js/Post.js:337 app/static/js/Post.js:589
 msgid "Comment preview"
 msgstr "Náhľad komentára"
 
-#: app/html/sub/post.html:315
+#: app/html/sub/post.html:318
 msgid "No comments, yet..."
 msgstr "Zatiaľ bez komentára..."
 
-#: app/html/sub/post.html:318
+#: app/html/sub/post.html:321
 #, python-format
 msgid "%(comments)i comments"
 msgstr "komentáre (%(comments)i)"
@@ -2136,6 +2137,14 @@ msgstr "Pridať pravidlo"
 #, python-format
 msgid "Editing settings of <a href=\"%(url)s\">%(sub)s</a>"
 msgstr "Nastavenia skupiny <a href=\"%(url)s\">%(sub)s</a>"
+
+#: app/html/sub/settings.html:69
+msgid "Default post sort"
+msgstr "Radenie príspevkov"
+
+#: app/html/sub/settings.html:82
+msgid "Sidebar text. Markdown allowed."
+msgstr "Text skupiny."
 
 #: app/html/sub/settings.html:89 app/static/js/Post.js:280
 #: app/static/js/Post.js:334
