@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-08-02 15:50-0300\n"
-"PO-Revision-Date: 2020-08-02 21:20\n"
+"POT-Creation-Date: 2020-08-02 19:02-0300\n"
+"PO-Revision-Date: 2020-08-04 17:18\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -78,8 +78,9 @@ msgstr "Ошибка в поле '%(field)s'  - %(error)s"
 #: app/html/shared/post.html:71 app/html/shared/post.html:73
 #: app/html/site/log.html:28 app/html/sub/log.html:28 app/html/sub/post.html:42
 #: app/html/sub/post.html:102 app/html/sub/post.html:116
-#: app/html/sub/postcomments.html:22 app/html/sub/postcomments.html:44
-#: app/misc.py:1191 app/misc.py:1597 app/misc.py:1606 app/misc.py:1613
+#: app/html/sub/post.html:161 app/html/sub/postcomments.html:22
+#: app/html/sub/postcomments.html:44 app/misc.py:1191 app/misc.py:1597
+#: app/misc.py:1606 app/misc.py:1613
 msgid "[Deleted]"
 msgstr "[Удалено]"
 
@@ -968,7 +969,7 @@ msgid "Closed all reports related to: "
 msgstr "Закрыты все отчеты, связанные с: "
 
 #: app/html/mod/reportdetails.html:280 app/html/shared/post.html:95
-#: app/html/sub/post.html:220 app/html/sub/postcomments.html:87
+#: app/html/sub/post.html:223 app/html/sub/postcomments.html:87
 msgid "report"
 msgstr "флаг"
 
@@ -1124,7 +1125,7 @@ msgstr "Показать опрос"
 msgid "Show post content"
 msgstr "Показать содержание сообщения"
 
-#: app/html/shared/post.html:71
+#: app/html/shared/post.html:71 app/html/sub/post.html:161
 #, python-format
 msgid "posted %(timeago)s by %(user)s on %(sub)s"
 msgstr "добавлено %(timeago)s - %(user)s в %(sub)s"
@@ -1155,7 +1156,7 @@ msgstr "комментарий"
 msgid "block sub"
 msgstr "блокировать саб"
 
-#: app/html/shared/post.html:98 app/html/sub/post.html:223
+#: app/html/shared/post.html:98 app/html/sub/post.html:226
 #, python-format
 msgid "open reports (%(num)s)"
 msgstr "открытые отчеты (%(num)s)"
@@ -1652,7 +1653,7 @@ msgstr "Заркыть опрос..."
 msgid "Submit post"
 msgstr "Разместить пост"
 
-#: app/html/sub/createpost.html:127 app/html/sub/post.html:305
+#: app/html/sub/createpost.html:127 app/html/sub/post.html:308
 #: app/static/js/Post.js:280 app/static/js/Post.js:335
 #: app/static/js/Post.js:412 app/static/js/Post.js:587
 msgid "Preview"
@@ -1928,103 +1929,103 @@ msgstr "[Удалено Модом или Админом]"
 msgid "Viewing title history:"
 msgstr "Просмотр истории заголовков:"
 
-#: app/html/sub/post.html:167
+#: app/html/sub/post.html:170
 msgid "unsave"
 msgstr "не сохранять"
 
-#: app/html/sub/post.html:169
+#: app/html/sub/post.html:172
 msgid "save"
 msgstr "сохранить"
 
-#: app/html/sub/post.html:173
+#: app/html/sub/post.html:176
 msgid "flair"
 msgstr "флаер"
 
-#: app/html/sub/post.html:178 app/html/sub/postcomments.html:90
+#: app/html/sub/post.html:181 app/html/sub/postcomments.html:90
 #: app/static/js/Post.js:268 app/static/js/Post.js:271
 #: app/static/js/Post.js:326 app/static/js/Post.js:329
 msgid "edit"
 msgstr "изменить"
 
-#: app/html/sub/post.html:181
+#: app/html/sub/post.html:184
 msgid "edit title"
 msgstr "редактировать заголовок"
 
-#: app/html/sub/post.html:186 app/html/sub/postcomments.html:93
+#: app/html/sub/post.html:189 app/html/sub/postcomments.html:93
 msgid "delete"
 msgstr "удалить"
 
-#: app/html/sub/post.html:190
+#: app/html/sub/post.html:193
 msgid "tag as nsfw"
 msgstr "пометить как nsfw"
 
-#: app/html/sub/post.html:192
+#: app/html/sub/post.html:195
 msgid "remove nsfw"
 msgstr "удалить NSFW"
 
-#: app/html/sub/post.html:198
+#: app/html/sub/post.html:201
 msgid "close poll"
 msgstr "закрытый опрос"
 
-#: app/html/sub/post.html:203
+#: app/html/sub/post.html:206
 msgid "unstick"
 msgstr "отклеить"
 
-#: app/html/sub/post.html:205
+#: app/html/sub/post.html:208
 msgid "make sticky"
 msgstr "закрепить"
 
-#: app/html/sub/post.html:209
+#: app/html/sub/post.html:212
 msgid "remove wiki"
 msgstr "убрать wiki"
 
-#: app/html/sub/post.html:211
+#: app/html/sub/post.html:214
 msgid "make wiki"
 msgstr "сделать wiki"
 
-#: app/html/sub/post.html:215
+#: app/html/sub/post.html:218
 msgid "make announcement"
 msgstr "сделать объявление"
 
-#: app/html/sub/post.html:227 app/html/sub/postcomments.html:96
+#: app/html/sub/post.html:230 app/html/sub/postcomments.html:96
 msgid "un-delete"
 msgstr "восстановить"
 
-#: app/html/sub/post.html:238
+#: app/html/sub/post.html:241
 #, python-format
 msgid "Current flair: <span class=\"postflair\">%(flair)s</span>."
 msgstr "Текущий флаер: <span class=\"postflair\">%(flair)s</span>."
 
-#: app/html/sub/post.html:238
+#: app/html/sub/post.html:241
 msgid "Remove"
 msgstr "Удалить"
 
-#: app/html/sub/post.html:240
+#: app/html/sub/post.html:243
 msgid "Select a new flair"
 msgstr "Выберите новый флаер"
 
-#: app/html/sub/post.html:261
+#: app/html/sub/post.html:264
 msgid "[deleted]"
 msgstr "[удалено]"
 
-#: app/html/sub/post.html:286 app/html/sub/postcomments.html:66
+#: app/html/sub/post.html:289 app/html/sub/postcomments.html:66
 msgid "Viewing edit history:"
 msgstr "Просмотр истории редактирования:"
 
-#: app/html/sub/post.html:304
+#: app/html/sub/post.html:307
 msgid "Submit comment"
 msgstr "Отправить комментарий"
 
-#: app/html/sub/post.html:307 app/static/js/Post.js:282
+#: app/html/sub/post.html:310 app/static/js/Post.js:282
 #: app/static/js/Post.js:337 app/static/js/Post.js:589
 msgid "Comment preview"
 msgstr "Предпросмотр комментария"
 
-#: app/html/sub/post.html:315
+#: app/html/sub/post.html:318
 msgid "No comments, yet..."
 msgstr "Пока никаких комментариев..."
 
-#: app/html/sub/post.html:318
+#: app/html/sub/post.html:321
 #, python-format
 msgid "%(comments)i comments"
 msgstr "%(comments)i комментариев"
@@ -2137,6 +2138,14 @@ msgstr "Добавить правило"
 msgid "Editing settings of <a href=\"%(url)s\">%(sub)s</a>"
 msgstr "Редактирование настроек <a href=\"%(url)s\">%(sub)s</a>"
 
+#: app/html/sub/settings.html:69
+msgid "Default post sort"
+msgstr "Сортировка постов по умолчанию"
+
+#: app/html/sub/settings.html:82
+msgid "Sidebar text. Markdown allowed."
+msgstr "Текст боковой панели. Markdown разрешен."
+
 #: app/html/sub/settings.html:89 app/static/js/Post.js:280
 #: app/static/js/Post.js:334
 msgid "Save changes"
@@ -2209,11 +2218,11 @@ msgstr "Зарегистрированный %(timeago)s"
 
 #: app/html/user/profile.html:45
 msgid "posts"
-msgstr "пост"
+msgstr "постов"
 
 #: app/html/user/profile.html:49
 msgid "comments"
-msgstr "комментарий"
+msgstr "комментариев"
 
 #: app/html/user/profile.html:55
 msgid "Phuks given"
@@ -2233,7 +2242,7 @@ msgstr "Владеет"
 
 #: app/html/user/profile.html:87
 msgid "Mods"
-msgstr "Модс"
+msgstr "Модератор"
 
 #: app/html/user/profile.html:98
 msgid "Posting habits"
@@ -2241,7 +2250,7 @@ msgstr "Читает"
 
 #: app/html/user/profile.html:109
 msgid "Invite Info"
-msgstr "Информация о Приглашении"
+msgstr "Пригласил"
 
 #: app/html/user/profile.html:139
 msgid "Send message"
