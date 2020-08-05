@@ -160,7 +160,7 @@
       @for text,link in config.site.footer.links.items():
         <a href="@{link}">@{text}</a> |
       @end
-      <a href="/license">License</a>
+      <a href="/license">@{_('License')}</a>
       <br>
       @{_('Served by %(hostname)s', hostname=hostname)} \
       @if config.app.debug or current_user.admin:
