@@ -2,7 +2,7 @@
 <div class="row buttons inboxside">
   <div>
     <a class="sbm-post pure-button" href="@{ url_for('messages.view_messages') }">
-      Inbox
+      @{_('Inbox')}
       @if func.get_unread_count(func.MESSAGE_TYPE_PM) > 0:
         <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> @{func.get_unread_count(func.MESSAGE_TYPE_PM)}</span>
       @end
@@ -10,7 +10,7 @@
   </div>
   <div>
     <a class="sbm-post pure-button @{curr_endpoint=='notifications' and 'button-secondary' or ''}" href="@{ url_for('messages.view_notifications') }">
-      Notifications
+      @{_('Notifications')}
       @if func.get_notif_count() > 0:
         <span class="newmsgcount"><span class="i-icon" data-icon="mail" style="display: inline-block;"></span> @{func.get_notif_count()}</span>
       @end
@@ -18,13 +18,13 @@
   </div>
 <hr>
   <div>
-    <a class="sbm-post pure-button" href="@{ url_for('messages.view_messages_sent') }">Sent Messages</a>
+    <a class="sbm-post pure-button" href="@{ url_for('messages.view_messages_sent') }">@{_('Sent Messages')}</a>
   </div>
   <div>
-    <a class="sbm-post pure-button"  href="@{ url_for('messages.view_saved_messages') }">Saved Messages</a>
+    <a class="sbm-post pure-button"  href="@{ url_for('messages.view_saved_messages') }">@{_('Saved Messages')}</a>
   </div>
   <div>
-    <a class="sbm-post pure-button"  href="@{ url_for('messages.view_ignores') }">Blocked users</a>
+    <a class="sbm-post pure-button"  href="@{ url_for('messages.view_ignores') }">@{_('Blocked users')}</a>
   </div>
 </div>
 @end

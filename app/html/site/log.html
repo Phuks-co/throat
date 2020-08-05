@@ -4,13 +4,13 @@
 @def content():
 <div id="center-container">
     <div class="content">
-        <h1>Site logs</h1>
+        <h1>@{_('Site logs')}</h1>
         <table class="pure-table">
             <thead>
             <tr>
-                <th>Time</th>
-                <th>User</th>
-                <th>Action</th>
+                <th>@{_('Time')}</th>
+                <th>@{_('User')}</th>
+                <th>@{_('Action')}</th>
                 <th></th>
             </tr>
             </thead>
@@ -92,7 +92,7 @@
                         @if log.sub:
                             | \
                         @end
-                        <a href="@{log.link}">Link</a>\
+                        <a href="@{log.link}">@{_('Link')}</a>\
                     @end
                 </td>
             </tr>
@@ -100,11 +100,11 @@
             </tbody>
         </table>
         @if page > 1:
-        <a href="@{url_for('site.view_sitelog', page=(page-1))}" class="btn">prev</a>
+        <a href="@{url_for('site.view_sitelog', page=(page-1))}" class="btn">@{_('Previous page')}</a>
         @end
 
         @if len(logs) == 50:
-        <a href="@{url_for('site.view_sitelog', page=(page+1))}" class="btn">next</a>
+        <a href="@{url_for('site.view_sitelog', page=(page+1))}" class="btn">@{_('Next page')}</a>
         @end
     </div>
 </div>
