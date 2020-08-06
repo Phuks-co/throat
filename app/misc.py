@@ -1947,7 +1947,8 @@ def getReports(view, status, page, *args, **kwargs):
 
 
 def slugify(text):
-    return s_slugify(text, max_length=80)
+    slug = s_slugify(text, max_length=80)
+    return slug if slug else '_'
 
 
 def logging_init_app(app):
