@@ -132,6 +132,8 @@ def create_app(config=Config('config.yaml')):
             response.headers.add('Access-Control-Allow-Origin', '*')
             response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE')
             response.headers.add('Access-Control-Allow-Headers', 'Content-Type,authorization')
+        if not hasattr(g, 'start'):
+            return response
         diff = time.time() - g.start
         diff = int(diff * 1000)
         if not hasattr(g, 'pqc'):

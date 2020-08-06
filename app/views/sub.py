@@ -300,7 +300,7 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
         abort(404)
 
     # We check the slug and correct it if it's wrong
-    if slug is not None and slug != post['slug']:
+    if slug != post['slug']:
         return redirect(url_for('sub.view_post', sub=sub, pid=pid, slug=post['slug']))
 
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
@@ -394,7 +394,7 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
                                                         'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,'commentform': PostComment(), 'comments': comments,'subMods': subMods, 'highlight': highlight, 'content_history': content_history, 'title_history': title_history, 'open_reports': open_reports})
 
 
-@blueprint.route("/<sub>/<int:pid>/_/<cid>", defaults={'slug': '_ '})
+@blueprint.route("/<sub>/<int:pid>/_/<cid>", defaults={'slug': '_'})
 @blueprint.route("/<sub>/<int:pid>/<slug>/<cid>")
 def view_perm(sub, pid, slug, cid):
     """ Permalink to comment """
@@ -403,7 +403,6 @@ def view_perm(sub, pid, slug, cid):
         comment = SubPostComment.select().where(SubPostComment.cid == cid).get()
     except SubPostComment.DoesNotExist:
         return abort(404)
-
     if slug != misc.slugify(comment.pid.title):
         return redirect(url_for('sub.view_perm', sub=sub, pid=pid, slug=misc.slugify(comment.pid.title), cid=cid))
 
