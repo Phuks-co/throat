@@ -58,6 +58,10 @@ You will need to create a realm for the users on the server, as well
 as Keycloak clients with appropriate permissions.  See
 `doc/keycloak.org` for instructions.
 
+## Deploying to AWS
+
+You can check out the [CDK Definition of Infrastructure](https://gitlab.com/feminist-conspiracy/infrastructure) maintained by Ovarit 
+
 ## Tests
 
 ### Python tests
