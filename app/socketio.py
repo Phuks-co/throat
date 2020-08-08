@@ -1,13 +1,32 @@
 from flask_socketio import SocketIO, join_room
 from flask_login import current_user
-from flask import request
+from flask import request, current_app
 from .models import rconn
 import json
 from wheezy.html.utils import escape_html
+import logging
 
 
-socketio = SocketIO()
-#  The new stuff
+class SocketIOWithLogging(SocketIO):
+
+    @property
+    def __logger(self):
+        return logging.getLogger(current_app.logger.name + ".socketio")
+
+    def emit(self, event, *args, **kwargs):
+        self.__logger.debug("EMIT %s %s %s", event, args[0], kwargs)
+        super(SocketIOWithLogging, self).emit(event, *args, **kwargs)
+
+    def on(self, message, namespace=None):
+        def decorator(handler):
+            def func(*args):
+                self.__logger.debug("RECV %s %s", message, args[0] if args else '')
+                handler(*args)
+            return super(SocketIOWithLogging, self).on(message, namespace)(func)
+        return decorator
+
+
+socketio = SocketIOWithLogging()
 
 
 @socketio.on('msg', namespace='/snt')

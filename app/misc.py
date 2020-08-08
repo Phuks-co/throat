@@ -1959,6 +1959,7 @@ def logging_init_app(app):
         add_context_to_log_records(config.logging)
     elif config.app.development or config.app.testing:
         logging.basicConfig(level=logging.DEBUG)
+        logging.getLogger(app.logger.name + '.socketio').setLevel(logging.WARNING)
         logging.getLogger("engineio.server").setLevel(logging.WARNING)
         logging.getLogger("socketio.server").setLevel(logging.WARNING)
     else:
