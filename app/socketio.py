@@ -55,6 +55,16 @@ def get_chat_backlog():
         socketio.emit('msg', json.loads(m.decode()), namespace='/snt', room=request.sid)
 
 
+@socketio.on('grabtitle', namespace='/snt')
+def grab_title(data):
+    token = data.get('token')
+    if token is not None:
+        join_room(token)
+        result = rconn.get(token)
+        if result is not None:
+            socketio.emit('grabtitle', json.loads(result), namespace='/snt', room=token)
+
+
 @socketio.on('subscribe', namespace='/snt')
 def handle_subscription(data):
     sub = data.get('target')

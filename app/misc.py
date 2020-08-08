@@ -10,12 +10,10 @@ import os
 import re
 import gevent
 import ipaddress
-import cgi
 
 import tinycss2
 from captcha.image import ImageCaptcha
 from datetime import datetime, timedelta, timezone
-from bs4 import BeautifulSoup
 import misaka as m
 import sendgrid
 from flask import current_app, _request_ctx_stack, has_request_context, has_app_context, g
@@ -40,7 +38,6 @@ from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, 
 from .models import SubMod, SubBan, SubPostCommentHistory
 from .storage import file_url, thumbnail_url
 from peewee import JOIN, fn, SQL, NodeList, Value
-import requests
 import logging
 import logging.config
 from werkzeug.local import LocalProxy
@@ -314,25 +311,6 @@ ratelimit = limiter.limit
 POSTING_LIMIT = '6/minute;120/hour'
 AUTH_LIMIT = '25/5minute'
 SIGNUP_LIMIT = '5/30minute'
-
-
-def grab_title(url):
-    req, data = safeRequest(url, max_size=200000, mimetypes={'text/html'},
-                            partial_read=True)
-
-    # Truncate the HTML so less parsing work will be required.
-    end_title_pos = data.find(b'</title>')
-    if end_title_pos == -1:
-        raise KeyError
-    data = data[:end_title_pos] + b'</title></head><body></body>'
-
-    _, options = cgi.parse_header(req.headers.get('Content-Type', ''))
-    charset = options.get('charset', 'utf-8')
-    og = BeautifulSoup(data, 'lxml', from_encoding=charset)
-    title = og('title')[0].text
-    title = title.strip(WHITESPACE)
-    title = re.sub(' - YouTube$', '', title)
-    return title
 
 
 class RE_AMention():

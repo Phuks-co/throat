@@ -859,10 +859,4 @@ def grab_title():
     url = request.args.get('url', None)
     if not url:
         return jsonify(msg='url parameter required'), 400
-
-    try:
-        title = misc.grab_title(url)
-    except (requests.exceptions.RequestException, ValueError,
-            OSError, IndexError):
-        return jsonify(msg="Couldn't fetch title"), 400
-    return jsonify(title=title), 200
+    return tasks.grab_title(url), 200

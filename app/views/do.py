@@ -31,7 +31,7 @@ from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
-from ..misc import cache, send_email, allowedNames, get_errors, engine, grab_title
+from ..misc import cache, send_email, allowedNames, get_errors, engine
 from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, is_domain_banned
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved
 from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
@@ -693,13 +693,7 @@ def grab_title():
     url = request.json.get('u')
     if not url:
         abort(400)
-    try:
-        title = misc.grab_title(url)
-    except (requests.exceptions.RequestException, ValueError,
-            OSError, IndexError, KeyError):
-        return jsonify(status='error', error=[_('Couldn\'t get title')])
-
-    return jsonify(status='ok', title=title)
+    return tasks.grab_title(url)
 
 
 @do.route('/do/sendcomment/<pid>', methods=['POST'])

@@ -1,6 +1,7 @@
 import cgi
 import hashlib
 from io import BytesIO
+import json
 import math
 import re
 import time
@@ -8,14 +9,16 @@ from urllib.parse import urljoin
 import uuid
 
 from bs4 import BeautifulSoup
-from flask import current_app
+from flask import current_app, jsonify
 import gevent
 from PIL import Image
 import requests
 
 from .config import config
 from .misc import WHITESPACE, logger
+from .models import rconn
 from .storage import store_thumbnail
+from .socketio import socketio
 
 
 def create_thumbnail(link, store):
@@ -38,7 +41,7 @@ def create_thumbnail_async(app, link, store):
     with app.app_context():
         result = ''
         typ, dat = fetch_image_data(link)
-        current_app.logger.info("Fetched %s for thumbnail, %s bytes", typ, len(dat))
+        logger.info("Fetched %s for thumbnail, %s bytes", typ, len(dat))
         if dat is not None:
             start = time.time()
             if typ == 'image':
@@ -60,7 +63,7 @@ def fetch_image_data(link):
     """ Try to fetch image data from a URL , and return it, or None. """
     # 1 - Check if it's an image
     try:
-        req = safeRequest(link)
+        req = safe_request(link)
     except (requests.exceptions.RequestException, ValueError):
         return None, None
     ctype = req[0].headers.get('content-type', '').split(";")[0].lower()
@@ -77,13 +80,13 @@ def fetch_image_data(link):
             return None, None
         try:
             img = urljoin(link, og('meta', {'property': 'og:image'})[0].get('content'))
-            req = safeRequest(img)
+            req = safe_request(img)
             return 'image', req[1]
         except (OSError, ValueError, IndexError):
             # no image, try fetching just the favicon then
             try:
                 img = urljoin(link, og('link', {'rel': 'icon'})[0].get('href'))
-                req = safeRequest(img)
+                req = safe_request(img)
                 return 'favicon', req[1]
             except (OSError, ValueError, IndexError):
                 return None, None
@@ -130,8 +133,55 @@ def _image_entropy(img):
     return -sum(p * math.log(p, 2) for p in hist if p != 0)
 
 
-def safeRequest(url, receive_timeout=10, max_size=25000000, mimetypes=None,
-                partial_read=False):
+def grab_title(url):
+    """Start the grab title process.  Returns a response with a token
+    which can be used to get the actual title via socketio, once it has
+    been fetched. """
+    if config.app.testing:
+        return jsonify(grab_title_async(current_app, url))
+    else:
+        token = 'title-' + str(uuid.uuid4())
+        gevent.spawn(send_title_grab_async, current_app._get_current_object(),
+                     url, token)
+        return jsonify(status='pending', token=token)
+
+
+def send_title_grab_async(app, url, token):
+    """Grab the title from the url and both stash it in redis and broadcast
+    it to whoever might be waiting via socketio. """
+    result = grab_title_async(app, url)
+    result['token'] = token
+    with app.app_context():
+        rconn.setex(name=token, value=json.dumps(result), time=15)
+        socketio.emit('grabtitle', result, namespace='/snt', room=token)
+
+
+def grab_title_async(app, url):
+    with app.app_context():
+        try:
+            req, data = safe_request(url, max_size=200000, mimetypes={'text/html'},
+                                     partial_read=True)
+
+            # Truncate the HTML so less parsing work will be required.
+            end_title_pos = data.find(b'</title>')
+            if end_title_pos == -1:
+                raise ValueError
+            data = data[:end_title_pos] + b'</title></head><body></body>'
+
+            _, options = cgi.parse_header(req.headers.get('Content-Type', ''))
+            charset = options.get('charset', 'utf-8')
+            og = BeautifulSoup(data, 'lxml', from_encoding=charset)
+            title = og('title')[0].text
+            title = title.strip(WHITESPACE)
+            title = re.sub(' - YouTube$', '', title)
+            return {'status': 'ok', 'title': title}
+        except (requests.exceptions.RequestException, ValueError,
+                OSError, IndexError, KeyError):
+            return {'status': 'error'}
+
+
+def safe_request(url, receive_timeout=10, max_size=25000000, mimetypes=None,
+                 partial_read=False):
     """Gets stuff from the internet, with timeouts, content type and size
     restrictions.  If partial_read is True it will return approximately
     the first max_size bytes, otherwise it will raise an error if
