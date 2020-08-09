@@ -2010,4 +2010,8 @@ def add_context_to_log_records(config):
     logging.setLogRecordFactory(record_factory)
 
 
+def word_truncate(content, max_length, suffix='...'):
+    return content if len(content) <= max_length else content[:max_length].rsplit(' ', 1)[0]+suffix
+
+
 logger = LocalProxy(lambda: current_app.logger)

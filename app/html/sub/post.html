@@ -20,7 +20,7 @@
 @def meta_description():
 
     @if post['content']:
-        <meta name="description" content="@{''.join(BeautifulSoup(markdown(post['content'])).findAll(text=True)).replace('\n', ' ')}"/>
+        <meta name="description" content="@{func.word_truncate(''.join(BeautifulSoup(markdown(post['content'])).findAll(text=True)).replace('\n', ' '), 250)}"/>
     @else:
         <meta name="description" content="@{sub['title']}" />
     @end
