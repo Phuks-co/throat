@@ -94,6 +94,12 @@ site:
   # a load balancer, this should be set to 1 or more.
   trusted_proxy_count: 0
 
+  # Use a function defined in the database for hot-sorting posts,
+  # instead of the default.  This option is not supported for Sqlite.
+  # This requires additional database configuration; see README.md for
+  # more information.
+  custom_hot_sort: False
+
 auth:
   # Set to LOCAL to store user authentication in database,
   # or KEYCLOAK to use a Keycloak server to authenticate users.
