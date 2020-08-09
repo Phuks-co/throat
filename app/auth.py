@@ -13,6 +13,7 @@ from peewee import fn
 
 from .config import config
 from .models import User, UserMetadata, UserAuthSource, UserCrypto, UserStatus, SiteMetadata
+from .misc import logger
 from . import misc
 
 
@@ -315,8 +316,8 @@ class AuthProvider:
         elif user.status != 10 and new_status == 5:
             if user.email and self.is_email_verified(user):
                 domain = user.email.split('@')[1]
-                current_app.logger.info('Banned %s; confirmed email on %s',
-                                        user.name, domain)
+                logger.info('Banned %s; confirmed email on %s',
+                            user.name, domain)
 
             payload = {'enabled': False}
         elif user.status != 10 and new_status == 0:

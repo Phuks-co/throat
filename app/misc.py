@@ -46,6 +46,7 @@ from peewee import JOIN, fn, SQL, NodeList, Value
 import requests
 import logging
 import logging.config
+from werkzeug.local import LocalProxy
 
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
@@ -2004,3 +2005,6 @@ def add_context_to_log_records(config):
 
     record_factory.old_factory = old_factory
     logging.setLogRecordFactory(record_factory)
+
+
+logger = LocalProxy(lambda: current_app.logger)

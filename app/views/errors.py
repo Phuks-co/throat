@@ -1,6 +1,6 @@
 """ Pages to be migrated to a wiki-like system """
 from flask import Blueprint, request, redirect, url_for, jsonify, current_app
-from ..misc import engine
+from ..misc import engine, logger
 from ..forms import LoginForm
 
 bp = Blueprint('errors', __name__)
@@ -46,7 +46,7 @@ def server_error(error):
     import traceback
     import sys
     typ, val, tb = sys.exc_info()
-    current_app.logger.error('EXCEPTION: %s, "%s", %s', typ.__name__, val, traceback.format_tb(tb))
+    logger.error('EXCEPTION: %s, "%s", %s', typ.__name__, val, traceback.format_tb(tb))
     if request.path.startswith('/api'):
         if request.path.startswith('/api/v3'):
             return jsonify(msg="Internal error"), 500
