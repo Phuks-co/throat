@@ -911,14 +911,17 @@ def getPostList(baseQuery, sort, page):
     elif sort == "new":
         posts = baseQuery.order_by(SubPost.pid.desc()).paginate(page, 25)
     else:
-        if config.site.custom_hot_sort:
-            hot = fn.HOT(SubPost.score, SubPost.posted)
-        elif 'Postgresql' in config.database.engine:
-            hot = SubPost.score * 20 + (fn.EXTRACT(NodeList((SQL('EPOCH FROM'), SubPost.posted))) - 1134028003) / 1500
+        if 'Postgresql' in config.database.engine:
+            posted = fn.EXTRACT(NodeList((SQL('EPOCH FROM'), SubPost.posted)))
         elif 'SqliteDatabase' in config.database.engine:
-            hot = SubPost.score * 20 + (fn.datetime(SubPost.posted, 'unixepoch') - 1134028003) / 1500
+            posted = fn.datetime(SubPost.posted, 'unixepoch')
         else:
-            hot = SubPost.score * 20 + (fn.Unix_Timestamp(SubPost.posted) - 1134028003) / 1500
+            posted = fn.Unix_Timestamp(SubPost.posted)
+
+        if config.site.custom_hot_sort:
+            hot = fn.HOT(SubPost.score, posted)
+        else:
+            hot = SubPost.score * 20 + (posted - 1134028003) / 1500
         posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, 25)
     return posts
 
