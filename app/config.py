@@ -56,7 +56,8 @@ cfg_defaults = {  # key => default value
             },
 
             "archive_post_after": 60,
-            "trusted_proxy_count": 0
+            "trusted_proxy_count": 0,
+            "custom_hot_sort": False,
         },
         "auth": {
             "provider": 'LOCAL',

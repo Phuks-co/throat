@@ -40,6 +40,22 @@ To add an admin user to a running docker-compose application:
 
 If Wheezy templates are not automatically reloading in docker between changes, try `docker restart throat_throat_1`.
 
+## Database Configuration
+
+The default hot sort function is simple for speed, but it does not prioritize new posts over old ones as much as some people prefer.  If you define a function named `hot` in SQL in your database, you can use that instead of the default by setting `custom_hot_sort` to `True` in your `config.yaml`.  The function needs to take two arguments, a post's current score and the date it was posted.  To allow the database to cache the results, the function should only depend on the values of its arguments and should be marked `immutable`.
+
+In addition to defining the function, you should also create an index on it to speed up the hot sort query.  Once that is done, custom functions will be faster than the default hot sort.  To implement Reddit's version of hot sort in Postgres, add the following SQL statements to your database using `psql`:
+
+```
+create or replace function hot(score integer, date double precision) returns numeric as $$
+  select round(cast(log(greatest(abs($1), 1)) * sign($1) + ($2 - 1134028003) / 45000.0 as numeric), 7)
+$$ language sql immutable;
+
+create index on sub_post (hot(score, (EXTRACT(EPOCH FROM sub_post.posted))));
+```
+
+Other databases may require variations in the handling of the date. Custom hot sorts are not supported for Sqlite.
+
 ## Docker Deployments
 
 ### Gunicorn

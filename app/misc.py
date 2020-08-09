@@ -46,6 +46,7 @@ from peewee import JOIN, fn, SQL, NodeList, Value
 import requests
 import logging
 import logging.config
+from werkzeug.local import LocalProxy
 
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
@@ -910,18 +911,15 @@ def getPostList(baseQuery, sort, page):
     elif sort == "new":
         posts = baseQuery.order_by(SubPost.pid.desc()).paginate(page, 25)
     else:
-        if config.database.engine == "PostgresqlDatabase":
+        if config.site.custom_hot_sort:
+            hot = fn.HOT(SubPost.score, SubPost.posted)
+        elif 'Postgresql' in config.database.engine:
             hot = SubPost.score * 20 + (fn.EXTRACT(NodeList((SQL('EPOCH FROM'), SubPost.posted))) - 1134028003) / 1500
-            posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, 25)
-        elif config.database.engine == 'SqliteDatabase':
-            posts = baseQuery.order_by(
-                (SubPost.score * 20 + (fn.datetime(SubPost.posted, 'unixepoch') - 1134028003) / 1500).desc()).limit(
-                100).paginate(page, 25)
+        elif 'SqliteDatabase' in config.database.engine:
+            hot = SubPost.score * 20 + (fn.datetime(SubPost.posted, 'unixepoch') - 1134028003) / 1500
         else:
-            posts = baseQuery.order_by(
-                (SubPost.score * 20 + (fn.Unix_Timestamp(SubPost.posted) - 1134028003) / 1500).desc()).limit(
-                100).paginate(page, 25)
-
+            hot = SubPost.score * 20 + (fn.Unix_Timestamp(SubPost.posted) - 1134028003) / 1500
+        posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, 25)
     return posts
 
 
@@ -2007,3 +2005,6 @@ def add_context_to_log_records(config):
 
     record_factory.old_factory = old_factory
     logging.setLogRecordFactory(record_factory)
+
+
+logger = LocalProxy(lambda: current_app.logger)
