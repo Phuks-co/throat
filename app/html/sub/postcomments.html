@@ -90,7 +90,7 @@
                 <li><a class="edit-comment" data-cid="@{comment['cid']}">@{_('edit')}</a></li>
               @end
               @if current_user.is_authenticated and comment['visibility'] == '' and (comment['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in subMods['all']) and comment['visibility'] == '':
-                <li><a @{(comment['uid'] == current_user.uid) and 'selfdel="true"' or ''} class="delete-comment" data-cid="@{comment['cid']}">@{_('delete')}</a></li>
+                <li><a @{(comment['uid'] == current_user.uid) and 'selfdel="true"' or ''!!html} class="delete-comment" data-cid="@{comment['cid']}">@{_('delete')}</a></li>
               @end
               @if (current_user.is_admin() and comment['status'] == 2):
                 <li><a class="undelete-comment" data-cid="@{comment['cid']}">@{_('un-delete')}</a></li>

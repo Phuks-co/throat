@@ -186,7 +186,7 @@
           @end
 
           @if post['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in subMods['all']:
-            <li id="delpostli"><a @{(post['uid'] == current_user.uid) and 'selfdel="true"' or ''} class="delete-post"> @{_('delete')} </a></li>
+            <li id="delpostli"><a @{(post['uid'] == current_user.uid) and 'selfdel="true"' or ''!!html} class="delete-post"> @{_('delete')} </a></li>
 
             @if not sub['nsfw']:
               @if not post['nsfw']:
