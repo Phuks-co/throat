@@ -125,8 +125,14 @@ def create_app(config=Config('config.yaml')):
     @app.after_request
     def after_request(response):
         """ Called after the request is processed. Used to time the request """
-        app.logger.info("%s", response.status)
-        if not app.debug and not current_user.is_admin():
+        if hasattr(g, 'start'):
+            diff = int((time.time() - g.start) * 1000)
+        else:
+            diff = "unknown"
+        if not hasattr(g, 'pqc'):
+            g.pqc = 0
+        app.logger.info("%s (%s ms, %s queries)", response.status, diff, g.pqc)
+        if not app.debug:
             return response  # We won't do this if we're in production mode
         if app.config['THROAT_CONFIG'].app.development:
             response.headers.add('Access-Control-Allow-Origin', '*')
@@ -134,10 +140,6 @@ def create_app(config=Config('config.yaml')):
             response.headers.add('Access-Control-Allow-Headers', 'Content-Type,authorization')
         if not hasattr(g, 'start'):
             return response
-        diff = time.time() - g.start
-        diff = int(diff * 1000)
-        if not hasattr(g, 'pqc'):
-            g.pqc = 0
         if response.response and isinstance(response.response, list):
             etime = str(diff).encode()
             # TODO: Replace with globals sent to template
