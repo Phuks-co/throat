@@ -165,7 +165,7 @@
       <a href="/license">License</a>
       <br>
       Served by {{hostname}}
-      {%if config.app.debug or current_user.admin%} | Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries{%endif%}
+      {%if config.app.debug%} | Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries{%endif%}
     {% endblock %}
   </div>
   <script src="{{ asset_url_for('main.js') }}"></script>
