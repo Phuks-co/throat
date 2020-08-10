@@ -5,7 +5,7 @@
     @if not pollData['poll_open']:
       <p>@{_('This poll is now <b>closed</b>.')!!html}</p>
     @elif not pollData['has_voted']:
-      @if ('hide_results' in postmeta and not poll_open) or ('hide_results' not in postmeta):
+      @if ('hide_results' in postmeta and not pollData['poll_open']) or ('hide_results' not in postmeta):
         <p><button type="button" class="poll-show-results pure-button">@{_('Show results.')}</button></p>
       @end
     @end
