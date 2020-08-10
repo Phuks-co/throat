@@ -301,7 +301,7 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
 
     # We check the slug and correct it if it's wrong
     if slug != post['slug']:
-        return redirect(url_for('sub.view_post', sub=sub, pid=pid, slug=post['slug']))
+        return redirect(url_for('sub.view_post', sub=sub, pid=pid, slug=post['slug']), 301)
 
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     subInfo = misc.getSubData(sub['sid'])
@@ -404,7 +404,7 @@ def view_perm(sub, pid, slug, cid):
     except SubPostComment.DoesNotExist:
         return abort(404)
     if slug != misc.slugify(comment.pid.title):
-        return redirect(url_for('sub.view_perm', sub=sub, pid=pid, slug=misc.slugify(comment.pid.title), cid=cid))
+        return redirect(url_for('sub.view_perm', sub=sub, pid=pid, slug=misc.slugify(comment.pid.title), cid=cid), 301)
 
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     include_history = current_user.is_mod(sub['sid'], 1) or current_user.is_admin()
