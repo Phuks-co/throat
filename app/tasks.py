@@ -16,12 +16,16 @@ import requests
 
 from .config import config
 from .misc import WHITESPACE, logger
-from .models import rconn
-from .storage import store_thumbnail
-from .socketio import socketio
+from .storage import store_thumbnail, thumbnail_url
+from .socketio import send_deferred_event
 
 
-def create_thumbnail(link, store):
+def create_thumbnail(fileid, store):
+    from .storage import file_url
+    create_thumbnail_external(file_url(fileid), store)
+
+
+def create_thumbnail_external(link, store):
     """Try to create a thumbnail for an external link.  So as not to delay
     the response in the event the external server is slow, fetch from
     that server in a new gevent thread. Store should be a list of
@@ -41,9 +45,7 @@ def create_thumbnail_async(app, link, store):
     with app.app_context():
         result = ''
         typ, dat = fetch_image_data(link)
-        logger.info("Fetched %s for thumbnail, %s bytes", typ, len(dat))
         if dat is not None:
-            start = time.time()
             if typ == 'image':
                 img = Image.open(BytesIO(dat)).convert('RGB')
             else: # favicon
@@ -51,43 +53,51 @@ def create_thumbnail_async(app, link, store):
                 n_im = Image.new("RGBA", im.size, "WHITE")
                 n_im.paste(im, (0, 0), im)
                 img = n_im.convert("RGB")
-            logger.info("Opening image")
             result = thumbnail_from_img(img)
         for model, field, value in store:
             model.update(thumbnail=result).where(getattr(model, field) == value).execute()
-        # socket server messages based on model, id
-
+            token = '-'.join([model.__name__, str(value)])
+            result_dict = {'target': token,
+                           'thumbnail': thumbnail_url(result) if result else ''}
+            send_deferred_event('thumbnail', token, result_dict)
 
 
 def fetch_image_data(link):
     """ Try to fetch image data from a URL , and return it, or None. """
     # 1 - Check if it's an image
     try:
-        req = safe_request(link)
+        resp, data = safe_request(link)
     except (requests.exceptions.RequestException, ValueError):
         return None, None
-    ctype = req[0].headers.get('content-type', '').split(";")[0].lower()
+    ctype = resp.headers.get('content-type', '').split(";")[0].lower()
     if ctype in ['image/gif', 'image/jpeg', 'image/png']:
         # yay, it's an image!!1
-        return 'image', req[1]
+        return 'image', data
     elif ctype == 'text/html':
         # Not an image!! Let's try with OpenGraph
         try:
-            og = BeautifulSoup(req[1], 'lxml')
-        except:
+            end_title_pos = data.find(b'</head>')
+            if end_title_pos == -1:
+                return None, None
+            data = data[:end_title_pos] + b'</head><body></body>'
+            logger.debug('Fetched header of %s: %s bytes', link, len(data))
+            _, options = cgi.parse_header(resp.headers.get('Content-Type', ''))
+            charset = options.get('charset', 'utf-8')
+            og = BeautifulSoup(data, 'lxml', from_encoding=charset)
+        except Exception as e:
             # If it errors here it's probably because lxml is not installed.
-            logger.warning('Thumbnail fetch failed. Is lxml installed?')
+            logger.warning('Thumbnail fetch failed. Is lxml installed? Error: %s', e)
             return None, None
         try:
             img = urljoin(link, og('meta', {'property': 'og:image'})[0].get('content'))
-            req = safe_request(img)
-            return 'image', req[1]
+            _, image = safe_request(img)
+            return 'image', image
         except (OSError, ValueError, IndexError):
             # no image, try fetching just the favicon then
             try:
                 img = urljoin(link, og('link', {'rel': 'icon'})[0].get('href'))
-                req = safe_request(img)
-                return 'favicon', req[1]
+                _, icon = safe_request(img)
+                return 'favicon', icon
             except (OSError, ValueError, IndexError):
                 return None, None
     return None, None
@@ -119,6 +129,7 @@ def generate_thumb(im: Image) -> Image:
             im = im.crop((0, slice_height, x, y))
 
         x, y = im.size
+        gevent.sleep(0)
 
     im.thumbnail((70, 70), Image.ANTIALIAS)
     return im
@@ -143,24 +154,23 @@ def grab_title(url):
         token = 'title-' + str(uuid.uuid4())
         gevent.spawn(send_title_grab_async, current_app._get_current_object(),
                      url, token)
-        return jsonify(status='pending', token=token)
+        return jsonify(status='deferred', token=token)
 
 
 def send_title_grab_async(app, url, token):
-    """Grab the title from the url and both stash it in redis and broadcast
-    it to whoever might be waiting via socketio. """
+    """Grab the title from the url and send it to whoever might be waiting
+    via socketio. """
     result = grab_title_async(app, url)
-    result['token'] = token
+    result.update(target=token)
     with app.app_context():
-        rconn.setex(name=token, value=json.dumps(result), time=15)
-        socketio.emit('grabtitle', result, namespace='/snt', room=token)
+        send_deferred_event('grab_title', token, result)
 
 
 def grab_title_async(app, url):
     with app.app_context():
         try:
-            req, data = safe_request(url, max_size=200000, mimetypes={'text/html'},
-                                     partial_read=True)
+            resp, data = safe_request(url, max_size=500000, mimetypes={'text/html'},
+                                      partial_read=True)
 
             # Truncate the HTML so less parsing work will be required.
             end_title_pos = data.find(b'</title>')
@@ -168,7 +178,7 @@ def grab_title_async(app, url):
                 raise ValueError
             data = data[:end_title_pos] + b'</title></head><body></body>'
 
-            _, options = cgi.parse_header(req.headers.get('Content-Type', ''))
+            _, options = cgi.parse_header(resp.headers.get('Content-Type', ''))
             charset = options.get('charset', 'utf-8')
             og = BeautifulSoup(data, 'lxml', from_encoding=charset)
             title = og('title')[0].text

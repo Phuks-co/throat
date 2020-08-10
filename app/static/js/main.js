@@ -31,6 +31,7 @@ require('./Messages');
 require('./Sub');
 require('./Poll');
 require('./Mod');
+
 var socket = require('./Socket');
 
 function vote(obj, how, comment){
@@ -479,7 +480,6 @@ u.ready(function () {
   }
 
   if (document.getElementById("pagefoot-labrat")) {
-    window.labrat = true;
     window.blocked = document.getElementById("pagefoot-blocked");
     if (window.blocked) {
       window.blocked = window.blocked.getAttribute('data-value');

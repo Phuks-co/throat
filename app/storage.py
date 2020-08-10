@@ -105,11 +105,11 @@ def storage_init_app(app):
 
 def make_url(storage, cfg, name):
     if name is None or name == '':
-        return url_for('static', filename='file-not-found.png')
+        return url_for('static', filename='img/1x1.gif')
     if config.storage.provider == 'LOCAL' and config.storage.server:
         obj = storage.get(name)
         if obj is None:
-            return url_for('static', filename='file-not-found.png')
+            return url_for('static', filename='img/1x1.gif')
         else:
             return obj.url
     else:

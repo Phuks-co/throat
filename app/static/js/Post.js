@@ -485,12 +485,12 @@ function setTitle(data) {
 }
 
 // This is the id of the title we're waiting for, so if we give up on
-// a title grab, the user starts a new grab, and then the old grab
-// shows up, we can ignore it.
+// a title grab, and then the user starts a new grab, and then the old
+// grab shows up, we can ignore it.
 var grabtitleToken = null;
 
-socket.on('grabtitle', function(data) {
-    if (data.token == grabtitleToken) {
+socket.on('grab_title', function(data) {
+    if (data.target == grabtitleToken) {
         setTitle(data);
         grabtitleToken = null;
     }
@@ -506,7 +506,7 @@ u.sub('#graburl', 'click', function (e) {
     this.setAttribute('disabled', true);
     this.innerHTML = _('Grabbing...');
     u.post('/do/grabtitle', {u: uri}, function (data) {
-        if (data.status == 'pending') {
+        if (data.status == 'deferred') {
             // Subscribe for notification when the title is ready.
             // Set a timer to put up an error alert if the site we are
             // grabbing the title from is unresponsive.
@@ -517,7 +517,7 @@ u.sub('#graburl', 'click', function (e) {
                     setTitle({status: 'error'});
                 }
             }, 15 * 1000);
-            socket.emit('grabtitle', {token: data.token})
+            socket.emit('deferred', {target: data.token})
         } else {
             setTitle(data)
         }

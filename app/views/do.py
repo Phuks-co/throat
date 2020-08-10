@@ -7,11 +7,9 @@ import datetime
 import uuid
 import requests
 import magic
-import hashlib
 import os
 import random
 from collections import defaultdict
-from PIL import Image
 from flask import Blueprint, redirect, url_for, session, abort, jsonify, current_app
 from flask import render_template, request
 from flask_login import login_user, login_required, logout_user, current_user
@@ -38,6 +36,7 @@ from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notifica
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
 from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport, SubRule
 from ..models import rconn, UserStatus
+from ..tasks import create_thumbnail
 from peewee import fn, JOIN
 
 do = Blueprint('do', __name__)
@@ -1992,15 +1991,9 @@ def sub_upload(sub):
     f_name = storage.store_file(ufile, basename, mtype, remove_metadata=True)
     fsize = storage.get_stored_file_size(f_name)
 
-    # THUMBNAIL
-    ufile.seek(0)
-    im = Image.open(ufile).convert('RGB')
-    thash = hashlib.blake2b(im.tobytes())
-    im = misc.generate_thumb(im)
-    filename = storage.store_thumbnail(im, str(uuid.uuid5(misc.THUMB_NAMESPACE, thash.hexdigest())))
-    im.close()
-
-    SubUploads.create(sid=sub.sid, fileid=f_name, thumbnail=filename, size=fsize, name=fname)
+    sub_upload = SubUploads.create(sid=sub.sid, fileid=f_name,
+                                   thumbnail='deferred', size=fsize, name=fname)
+    create_thumbnail(f_name, [(SubUploads, 'id', sub_upload.id)])
     misc.create_sublog(misc.LOG_TYPE_SUB_CSS_CHANGE, current_user.uid, sub.sid)
     return redirect(url_for('sub.edit_sub_css', sub=sub.name))
 

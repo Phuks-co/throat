@@ -55,14 +55,28 @@ def get_chat_backlog():
         socketio.emit('msg', json.loads(m.decode()), namespace='/snt', room=request.sid)
 
 
-@socketio.on('grabtitle', namespace='/snt')
-def grab_title(data):
-    token = data.get('token')
-    if token is not None:
-        join_room(token)
-        result = rconn.get(token)
+@socketio.on('deferred', namespace='/snt')
+def handle_deferred(data):
+    """ Subscribe for notification of when the work associated with a
+    target token (some unique string) is done.  The do-er of the work
+    may have already finished and placed the result in Redis.  """
+    target = data.get('target')
+    if target:
+        target = str(target)
+        join_room(target)
+        result = rconn.get(target)
         if result is not None:
-            socketio.emit('grabtitle', json.loads(result), namespace='/snt', room=token)
+            result = json.loads(result)
+            socketio.emit(result['event'], result['value'], namespace='/snt',
+                          room=target)
+
+
+def send_deferred_event(event, token, data, expiration=30):
+    """Both send an event, and stash the event and its data in Redis so it
+    can be sent to any tardy subscribers."""
+    rconn.setex(name=token, time=expiration,
+                value=json.dumps({'event': event, 'value': data}))
+    socketio.emit(event, data, namespace='/snt', room=token)
 
 
 @socketio.on('subscribe', namespace='/snt')

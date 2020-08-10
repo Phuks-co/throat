@@ -27,6 +27,64 @@ function updateNotifications(count){
 
 }
 
+
+// Thumbnails, lazy and deferred loading.  If a thumbnail exists,
+// wait until the page is loaded to put it into the src attribute
+// of the image element so the browser can start rendering
+// the page.  If a thumbnail is still being calculated, listen
+// for the socketio message announcing its completion and insert
+// it where it belongs.
+
+function loadLazy() {
+  var lazy = document.getElementsByClassName('lazy');
+  for (var i = 0; i < lazy.length; i++) {
+    var data_src = lazy[i].getAttribute('data-src');
+    if (data_src) {
+      lazy[i].src = data_src;
+      lazy[i].removeAttribute('data-src');
+    }
+    lazy[i].classList.remove('lazy;')
+  }
+}
+
+
+function subscribeDeferred() {
+  var deferred = document.getElementsByClassName('deferred');
+
+  // Set up the callback for a thumbnail event.
+  socket.on('thumbnail', function(data) {
+    for (var i = 0; i < deferred.length; i++) {
+      if (deferred[i].getAttribute('data-deferred') == data.target &&
+          data.thumbnail != '') {
+        var elem = deferred[i];
+        if (elem.tagName == 'IMG') {
+          elem.src = data.thumbnail;
+          elem.classList.remove('deferred');
+          elem.removeAttribute('data-deferred');
+        } else {
+          var img = document.createElement('img');
+          img.src = data.thumbnail;
+          elem.parentNode.replaceChild(img, elem);
+        }
+      }
+    }
+  });
+
+  // Subscribe to the thumbnail ready event.
+  for (var i = 0; i < deferred.length; i++) {
+    var data_deferred = deferred[i].getAttribute('data-deferred');
+    if (data_deferred) {
+      socket.emit('deferred', {target: data_deferred});
+    }
+  }
+}
+
+
+u.ready(function () {
+  loadLazy();
+  subscribeDeferred();
+})
+
 socket.on('notification', function(d){
   updateNotifications(d.count)
 });
@@ -64,7 +122,8 @@ socket.on('thread', function(data){
     }
 
   }
-
+  loadLazy();
+  subscribeDeferred();
   icon.rendericons();
 })
 
@@ -105,7 +164,7 @@ u.ready(function(){
       socket.emit('subscribe', {target: 'chat'});
     }
   });
-  if(window.labrat){
+  if(document.getElementById("pagefoot-labrat")){
     socket.on('connect', function() {
       window.sio = true;
       if(window.nposts){
@@ -197,6 +256,5 @@ socket.on('msg', function(data){
     }
   }
 })
-
 
 module.exports = socket;

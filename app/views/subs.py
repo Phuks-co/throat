@@ -13,7 +13,7 @@ from ..models import Sub, db as pdb, SubMod, SubMetadata, SubStylesheet, SubSubs
 from ..models import SubPostPollOption, SubPostMetadata, SubPostVote, User, UserUploads
 from ..forms import CreateSubPostForm, CreateSubForm
 from ..storage import file_url, upload_file
-from ..tasks import create_thumbnail
+from ..tasks import create_thumbnail, create_thumbnail_external
 
 bp = Blueprint('subs', __name__)
 
@@ -179,7 +179,7 @@ def create_post(ptype, sub):
         if misc.is_domain_banned(form.link.data.lower(), domain_type='link'):
             return engine.get_template('sub/createpost.html').render(
                 {'error': _("This domain is banned."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
-        img = 'pending'
+        img = 'deferred'
     elif form.ptype.data == 'poll':
         ptype = 3
         # Check if this sub allows polls...
@@ -263,12 +263,15 @@ def create_post(ptype, sub):
                   room='user' + current_user.uid)
 
     if fileid:
-        UserUploads.create(pid=post.pid, uid=current_user.uid, fileid=fileid,
-                           thumbnail=img if img else '', status=0)
-        thumbnail_store.append([(UserUploads, 'xid', UserUploads.xid)])
-    # TODO if fileid, make the thumbnail from that instead of the link.
-    if img == 'pending':
-        create_thumbnail(form.link.data, thumbnail_store)
+        upload = UserUploads.create(pid=post.pid, uid=current_user.uid, fileid=fileid,
+                                    thumbnail=img if img else '', status=0)
+        thumbnail_store.append((UserUploads, 'xid', upload.xid))
+
+    if img == 'deferred':
+        if fileid:
+            create_thumbnail(fileid, thumbnail_store)
+        else:
+            create_thumbnail_external(form.link.data, thumbnail_store)
 
     misc.workWithMentions(form.content.data, None, post, sub)
     misc.workWithMentions(form.title.data, None, post, sub)
