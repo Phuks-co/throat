@@ -8,6 +8,7 @@ from peewee import JOIN, fn
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
 from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
 from .. import misc
+from .. import tasks
 from ..auth import auth_provider
 from ..socketio import socketio
 from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, captchas_required
@@ -721,7 +722,9 @@ def create_post():
                           score=1, upvotes=1, downvotes=0, deleted=0, comments=0,
                           ptype=post_type,
                           nsfw=nsfw if not subdata.get('nsfw') == '1' else 1,
-                          thumbnail=misc.get_thumbnail(link) if ptype == 'link' else '')
+                          thumbnail='pending' if ptype == 'link' else '')
+    if ptype == 'link':
+        tasks.create_thumbnail(link, [(SubPost, 'pid', post.pid)])
 
     Sub.update(posts=Sub.posts + 1).where(Sub.sid == sub.sid).execute()
     addr = url_for('sub.view_post', sub=sub.name, pid=post.pid)

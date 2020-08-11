@@ -19,7 +19,7 @@ from flask_babel import _
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired, BadSignature
 from ..config import config
-from .. import forms, misc, caching, storage
+from .. import forms, misc, caching, storage, tasks
 from ..socketio import socketio
 from ..auth import auth_provider, email_validation_is_required, AuthError, normalize_email
 from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
