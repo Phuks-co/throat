@@ -402,6 +402,14 @@ u.addEventForChild(document, 'click', '.btn-preview', function (e, qelem) {
         function (data) {
             if (data.status == "ok") {
                 qelem.parentNode.querySelector('.cpreview-content').innerHTML = data.text;
+                const title = qelem.parentNode.parentNode.querySelector('#title');
+                console.log(title);
+                if(title) {
+                    const h = document.createElement('h2');
+                    h.innerText = title.value;
+                    qelem.parentNode.querySelector('.cpreview-content').prepend(document.createElement('hr'));
+                    qelem.parentNode.querySelector('.cpreview-content').prepend(h);
+                }
                 qelem.parentNode.querySelector('.cmpreview').style.display = 'block';
             } else {
                 qelem.parentNode.querySelector('.error').style.display = 'block';
