@@ -163,7 +163,7 @@
       <a href="https://discord.gg/Z59XKVB">Discord</a>
       <br>
       @{_('Served by %(hostname)s', hostname=hostname)} \
-      @if config.app.debug or current_user.admin:
+      @if config.app.debug:
        | @{_('Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries')}
       @end
     @end
