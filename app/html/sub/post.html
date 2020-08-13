@@ -28,7 +28,7 @@
     <meta property="og:site_name" content="@{config.site.lema}">
     <meta property="og:description" content="@{_('Posted in %(prefix)s/%(sub)s by %(username)s', prefix=config.site.sub_prefix, sub=sub['name'], username=post['user'])}">
     <meta property="og:title" content="@{post['title']}">
-    @if post['thumbnail'] != '' and post['link'] != None:
+    @if post['thumbnail'] != '' and post['thumbnail'] != 'deferred' and post['link'] != None:
     <meta property="og:image" content="@{thumbnail_url(post['thumbnail'])}">
     <meta property="og:ttl" content="600">
     <meta property="og:image:height" content="70">
@@ -65,10 +65,14 @@
       <div class="thcontainer">
         <a class="title">
           <div class="thumbnail">
-            @if post['thumbnail'] != '' and post['link'] != None:
-              <img src="@{thumbnail_url(post['thumbnail'])}"/>
-            @elif post['link'] != None:
-              <span class="placeholder" data-icon="link"></span>
+            @if post['link'] != None:
+              @if post['thumbnail'] == '':
+                <span class="placeholder" data-icon="link"></span>
+              @elif post['thumbnail'] == 'deferred':
+                <span class="placeholder deferred" data-icon="link" data-deferred="SubPost-@{post['pid']}"></span>
+              @else:
+                <img class="lazy" src="@{url_for('static', filename='img/1x1.gif')}" data-src="@{thumbnail_url(post['thumbnail'])}"/>
+              @end
             @else:
               <span class="placeholder" data-icon="chat"></span>
             @end

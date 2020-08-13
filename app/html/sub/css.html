@@ -47,13 +47,20 @@
       @{_('No files were uploaded, yet.')}
     @else:
       @for f in files:
-        <div><img alt="@{_('Thumbnail')}" src="@{thumbnail_url(f.thumbnail)}"/>
+        <div>
+          <div class="thcontainer">
+            @if f.thumbnail == 'deferred':
+              <img class="deferred" alt="@{_('Thumbnail')}" src="@{url_for('static', filename='img/1x1.gif')}" data-deferred="SubUploads-@{f.id}"/>
+            @else:
+              <img class="lazy" alt="@{_('Thumbnail')}" src="@{url_for('static', filename='img/1x1.gif')}" data-src="@{thumbnail_url(f.thumbnail)}"/>
+            @end
+          </div>
         @{_('Filename: %(filename)s. Size: %(filesize)i KiB.', filename=f.name, filesize=f.size/1024)}
         <form  method="POST" data-reload="true" action="@{url_for('do.sub_upload_delete', sub=sub.name, name=f.name)}" class="ajaxform" style="display: inline-block; margin-left: 1em; margin-top: 5px;">
           @{form.csrf_token() !!html}
           <button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="@{_('Deleting...')}" data-success="@{_('Deleted!')}">@{_('Delete')}</button>
         </form>
-      </div>
+        </div>
       @end
     @end
     <hr/>

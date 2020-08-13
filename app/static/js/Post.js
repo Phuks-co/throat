@@ -5,6 +5,7 @@ import u from './Util';
 import initializeEditor from './Editor';
 import Tingle from 'tingle.js';
 import _ from './utils/I18n';
+import socket from './Socket.js'
 
 // Saving/unsaving posts.
 u.sub('.savepost', 'click', function (e) {
@@ -471,6 +472,30 @@ u.addEventForChild(document, 'click', '.undelete-comment', function (e, qelem) {
     });
 });
 
+function setTitle(data) {
+    if (data.status == 'error') {
+        alert(_('Couldn\'t get title'));
+        document.getElementById('graburl').removeAttribute('disabled');
+        document.getElementById('graburl').innerHTML = _('Grab title');
+    } else {
+        document.getElementById('title').value = data.title;
+        document.getElementById('graburl').removeAttribute('disabled');
+        document.getElementById('graburl').innerHTML = _('Grab again');
+    }
+}
+
+// This is the id of the title we're waiting for, so if we give up on
+// a title grab, and then the user starts a new grab, and then the old
+// grab shows up, we can ignore it.
+var grabtitleToken = null;
+
+socket.on('grab_title', function(data) {
+    if (data.target == grabtitleToken) {
+        setTitle(data);
+        grabtitleToken = null;
+    }
+})
+
 // Grab post title from url
 u.sub('#graburl', 'click', function (e) {
     e.preventDefault();
@@ -480,23 +505,25 @@ u.sub('#graburl', 'click', function (e) {
     }
     this.setAttribute('disabled', true);
     this.innerHTML = _('Grabbing...');
-    u.post('/do/grabtitle', {u: uri},
-        function (data) {
-            if (data.status == 'error') {
-                let error = data.error;
-                if(Array.isArray(data.error)){
-                    error = data.error[0];
+    u.post('/do/grabtitle', {u: uri}, function (data) {
+        if (data.status == 'deferred') {
+            // Subscribe for notification when the title is ready.
+            // Set a timer to put up an error alert if the site we are
+            // grabbing the title from is unresponsive.
+            grabtitleToken = data.token;
+            setTimeout(function () {
+                if (grabtitleToken == data.token) {
+                    grabtitleToken = null;
+                    setTitle({status: 'error'});
                 }
-                alert(error);
-                document.getElementById('graburl').removeAttribute('disabled');
-                document.getElementById('graburl').innerHTML = _('Grab title');
-            } else {
-                document.getElementById('title').value = data.title;
-                document.getElementById('graburl').removeAttribute('disabled');
-                document.getElementById('graburl').innerHTML = _('Grab again');
-            }
-        });
+            }, 15 * 1000);
+            socket.emit('deferred', {target: data.token})
+        } else {
+            setTitle(data)
+        }
+    });
 });
+
 
 // Load children
 u.addEventForChild(document, 'click', '.loadchildren', function (e, qelem) {

@@ -283,6 +283,8 @@ logging:
         - console
     flask.app:
       level: DEBUG
+    flask.app.socketio:
+      level: WARNING
     flask-limiter:
       level: WARNING
       handlers:

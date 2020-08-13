@@ -18,10 +18,14 @@
           <a target="_blank" rel="noopener nofollow ugc" href="@{post['link']}">
         @end
           <div class="thumbnail">
-            @if post['thumbnail'] != '' and post['link'] != None:
-              <img alt="@{_('Thumbnail')}" src="@{thumbnail_url(post['thumbnail'])}"/>
-            @elif post['link'] != None:
-              <span class="placeholder" data-icon="link"></span>
+            @if post['link'] != None:
+              @if post['thumbnail'] == '':
+                <span class="placeholder" data-icon="link"></span>
+              @elif post['thumbnail'] == 'deferred':
+                <span class="placeholder deferred" data-icon="link" data-deferred="SubPost-@{post['pid']}"/>
+              @else:
+                <img alt="@{_('Thumbnail')}" class="lazy" src="@{url_for('static', filename='img/1x1.gif')}" data-src="@{thumbnail_url(post['thumbnail'])}"/>
+              @end
             @else:
               <span class="placeholder" data-icon="chat"></span>
             @end

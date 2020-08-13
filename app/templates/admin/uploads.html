@@ -18,15 +18,17 @@
   <div class="uploads content">
       {% for item in uploads %}
         <div class="uploaditem">
-          {% if item.thumbnail != '' %}
-            <div class="uploadthumb">
-              <img src="{{thumbnail_url(item.thumbnail)}}"/>
-            </div>
-          {% else %}
-            <div class="uploadthumb">
+          <div class="uploadthumb">
+            {% if item.thumbnail == '' %}
               <span class="placeholder" data-icon="link"></span>
-            </div>
-          {% endif %}
+            {% elif item.thumbnail == 'deferred' %}
+              <span class="placeholder deferred" data-icon="link"
+                    data-deferred="UserUploads-{{ item.xid }}"></span>
+            {% else %}
+              <img class="lazy" src="{{ url_for('static', filename='img/1x1.gif') }}"
+                   data-src="{{ thumbnail_url(item.thumbnail) }}"/>
+            {% endif %}
+          </div>
           <div class="uploadlinks">
             <div class="uploadlink"><a href="{{url_for('site.view_post_inbox', pid=item.pid)}}">View Post</a></div>
             <div class="uploadlink"><a href="{{file_url(item.fileid)}}">Direct Link</a></div>

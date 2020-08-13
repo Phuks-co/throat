@@ -16,7 +16,6 @@
             </div>
         @end
     @end
-    <p>@{_('Registered %(timeago)s', timeago='<time-ago datetime="'+ user.joindate.isoformat() + 'Z"></time-ago>')!!html}</p>
 @end
 @def main():
     <div id="center-container">
@@ -59,6 +58,7 @@
                                 <div>@{_('Total score')}</div>
                             </div>
                         </div>
+                        <p>@{_('Registered %(timeago)s', timeago='<time-ago datetime="'+ user.joindate.isoformat() + 'Z"></time-ago>')!!html}</p>
                     </div>
                 <div>
                     @if len(badges) > 0:
