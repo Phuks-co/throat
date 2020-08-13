@@ -7,11 +7,9 @@ import datetime
 import uuid
 import requests
 import magic
-import hashlib
 import os
 import random
 from collections import defaultdict
-from PIL import Image
 from flask import Blueprint, redirect, url_for, session, abort, jsonify, current_app
 from flask import render_template, request
 from flask_login import login_user, login_required, logout_user, current_user
@@ -19,7 +17,7 @@ from flask_babel import _
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired, BadSignature
 from ..config import config
-from .. import forms, misc, caching, storage
+from .. import forms, misc, caching, storage, tasks
 from ..socketio import socketio
 from ..auth import auth_provider, email_validation_is_required, AuthError, normalize_email
 from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
@@ -31,13 +29,14 @@ from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
-from ..misc import cache, send_email, allowedNames, get_errors, engine, grab_title
+from ..misc import cache, send_email, allowedNames, get_errors, engine
 from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, is_domain_banned
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved
 from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
 from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport, SubRule
 from ..models import rconn, UserStatus
+from ..tasks import create_thumbnail
 from peewee import fn, JOIN
 
 do = Blueprint('do', __name__)
@@ -693,13 +692,7 @@ def grab_title():
     url = request.json.get('u')
     if not url:
         abort(400)
-    try:
-        title = misc.grab_title(url)
-    except (requests.exceptions.RequestException, ValueError,
-            OSError, IndexError, KeyError):
-        return jsonify(status='error', error=[_('Couldn\'t get title')])
-
-    return jsonify(status='ok', title=title)
+    return tasks.grab_title(url)
 
 
 @do.route('/do/sendcomment/<pid>', methods=['POST'])
@@ -1998,15 +1991,9 @@ def sub_upload(sub):
     f_name = storage.store_file(ufile, basename, mtype, remove_metadata=True)
     fsize = storage.get_stored_file_size(f_name)
 
-    # THUMBNAIL
-    ufile.seek(0)
-    im = Image.open(ufile).convert('RGB')
-    thash = hashlib.blake2b(im.tobytes())
-    im = misc.generate_thumb(im)
-    filename = storage.store_thumbnail(im, str(uuid.uuid5(misc.THUMB_NAMESPACE, thash.hexdigest())))
-    im.close()
-
-    SubUploads.create(sid=sub.sid, fileid=f_name, thumbnail=filename, size=fsize, name=fname)
+    sub_upload = SubUploads.create(sid=sub.sid, fileid=f_name,
+                                   thumbnail='deferred', size=fsize, name=fname)
+    create_thumbnail(f_name, [(SubUploads, 'id', sub_upload.id)])
     misc.create_sublog(misc.LOG_TYPE_SUB_CSS_CHANGE, current_user.uid, sub.sid)
     return redirect(url_for('sub.edit_sub_css', sub=sub.name))
 

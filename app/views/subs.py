@@ -7,13 +7,13 @@ from flask_login import login_required, current_user
 from flask_babel import _, lazy_gettext as _l
 from .. import misc
 from ..config import config
-from ..misc import engine
-from ..misc import ratelimit, POSTING_LIMIT
+from ..misc import engine, ratelimit, POSTING_LIMIT
 from ..socketio import socketio
 from ..models import Sub, db as pdb, SubMod, SubMetadata, SubStylesheet, SubSubscriber, SiteMetadata, SubPost
 from ..models import SubPostPollOption, SubPostMetadata, SubPostVote, User, UserUploads
 from ..forms import CreateSubPostForm, CreateSubForm
 from ..storage import file_url, upload_file
+from ..tasks import create_thumbnail, create_thumbnail_external
 
 bp = Blueprint('subs', __name__)
 
@@ -179,7 +179,7 @@ def create_post(ptype, sub):
         if misc.is_domain_banned(form.link.data.lower(), domain_type='link'):
             return engine.get_template('sub/createpost.html').render(
                 {'error': _("This domain is banned."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
-        img = misc.get_thumbnail(form.link.data)
+        img = 'deferred'
     elif form.ptype.data == 'poll':
         ptype = 3
         # Check if this sub allows polls...
@@ -230,6 +230,7 @@ def create_post(ptype, sub):
                           ptype=ptype,
                           nsfw=form.nsfw.data if not sub.nsfw else 1,
                           thumbnail=img)
+    thumbnail_store = [(SubPost, 'pid', post.pid)]
 
     if ptype == 3:
         # Create SubPostPollOption objects...
@@ -262,8 +263,15 @@ def create_post(ptype, sub):
                   room='user' + current_user.uid)
 
     if fileid:
-        UserUploads.create(pid=post.pid, uid=current_user.uid, fileid=fileid, thumbnail=img if img else '',
-                           status=0)
+        upload = UserUploads.create(pid=post.pid, uid=current_user.uid, fileid=fileid,
+                                    thumbnail=img if img else '', status=0)
+        thumbnail_store.append((UserUploads, 'xid', upload.xid))
+
+    if img == 'deferred':
+        if fileid:
+            create_thumbnail(fileid, thumbnail_store)
+        else:
+            create_thumbnail_external(form.link.data, thumbnail_store)
 
     misc.workWithMentions(form.content.data, None, post, sub)
     misc.workWithMentions(form.title.data, None, post, sub)

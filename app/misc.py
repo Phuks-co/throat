@@ -7,18 +7,13 @@ import uuid
 import random
 import time
 import os
-import hashlib
 import re
 import gevent
 import ipaddress
-import cgi
 
 import tinycss2
 from captcha.image import ImageCaptcha
 from datetime import datetime, timedelta, timezone
-from io import BytesIO
-from PIL import Image
-from bs4 import BeautifulSoup
 import misaka as m
 import sendgrid
 from flask import current_app, _request_ctx_stack, has_request_context, has_app_context, g
@@ -41,9 +36,8 @@ from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, Su
 from .models import SubPostReport, SubPostCommentReport, PostReportLog, CommentReportLog, Notification
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair, InviteCode
 from .models import SubMod, SubBan, SubPostCommentHistory
-from .storage import store_thumbnail, file_url, thumbnail_url
+from .storage import file_url, thumbnail_url
 from peewee import JOIN, fn, SQL, NodeList, Value
-import requests
 import logging
 import logging.config
 from werkzeug.local import LocalProxy
@@ -317,64 +311,6 @@ ratelimit = limiter.limit
 POSTING_LIMIT = '6/minute;120/hour'
 AUTH_LIMIT = '25/5minute'
 SIGNUP_LIMIT = '5/30minute'
-
-
-def safeRequest(url, receive_timeout=10, max_size=25000000, mimetypes=None,
-                partial_read=False):
-    """Gets stuff from the internet, with timeouts, content type and size
-    restrictions.  If partial_read is True it will return approximately
-    the first max_size bytes, otherwise it will raise an error if
-    max_size is exceeded. """
-    # Returns (Response, File)
-    try:
-        r = requests.get(url, stream=True, timeout=receive_timeout,
-                         headers={'User-Agent': 'Throat/1 (Phuks)'})
-    except:
-        raise ValueError('error fetching')
-    r.raise_for_status()
-
-    if int(r.headers.get('Content-Length', 1)) > max_size and not partial_read:
-        raise ValueError('response too large')
-
-    if mimetypes is not None:
-        mtype, _ = cgi.parse_header(r.headers.get('Content-Type', ''))
-        if mtype not in mimetypes:
-            raise ValueError('wrong content type')
-
-    size = 0
-    start = time.time()
-    f = b''
-    for chunk in r.iter_content(1024):
-        if time.time() - start > receive_timeout:
-            raise ValueError('timeout reached')
-
-        size += len(chunk)
-        f += chunk
-        if size > max_size:
-            if partial_read:
-                return r, f
-            else:
-                raise ValueError('response too large')
-    return r, f
-
-
-def grab_title(url):
-    req, data = safeRequest(url, max_size=200000, mimetypes={'text/html'},
-                            partial_read=True)
-
-    # Truncate the HTML so less parsing work will be required.
-    end_title_pos = data.find(b'</title>')
-    if end_title_pos == -1:
-        raise KeyError
-    data = data[:end_title_pos] + b'</title></head><body></body>'
-
-    _, options = cgi.parse_header(req.headers.get('Content-Type', ''))
-    charset = options.get('charset', 'utf-8')
-    og = BeautifulSoup(data, 'lxml', from_encoding=charset)
-    title = og('title')[0].text
-    title = title.strip(WHITESPACE)
-    title = re.sub(' - YouTube$', '', title)
-    return title
 
 
 class RE_AMention():
@@ -702,82 +638,6 @@ def get_user_level(uid, score=None):
         return 0, xp
     level = math.sqrt(xp / 10)
     return int(level), xp
-
-
-def _image_entropy(img):
-    """calculate the entropy of an image"""
-    hist = img.histogram()
-    hist_size = sum(hist)
-    hist = [float(h) / hist_size for h in hist]
-
-    return -sum(p * math.log(p, 2) for p in hist if p != 0)
-
-
-THUMB_NAMESPACE = uuid.UUID('f674f09a-4dcf-4e4e-a0b2-79153e27e387')
-
-
-def get_thumbnail(link):
-    """ Tries to fetch a thumbnail """
-    # 1 - Check if it's an image
-    try:
-        req = safeRequest(link)
-    except (requests.exceptions.RequestException, ValueError):
-        return ''
-    ctype = req[0].headers.get('content-type', '').split(";")[0].lower()
-    good_types = ['image/gif', 'image/jpeg', 'image/png']
-    if ctype in good_types:
-        # yay, it's an image!!1
-        # Resize
-        im = Image.open(BytesIO(req[1])).convert('RGB')
-    elif ctype == 'text/html':
-        # Not an image!! Let's try with OpenGraph
-        try:
-            og = BeautifulSoup(req[1], 'lxml')
-        except:
-            # If it errors here it's probably because lxml is not installed.
-            logging.warning('Thumbnail fetch failed. Is lxml installed?')
-            return ''
-        try:
-            img = urljoin(link, og('meta', {'property': 'og:image'})[0].get('content'))
-            req = safeRequest(img)
-            im = Image.open(BytesIO(req[1])).convert('RGB')
-        except (OSError, ValueError, IndexError):
-            # no image, try fetching just the favicon then
-            try:
-                img = urljoin(link, og('link', {'rel': 'icon'})[0].get('href'))
-                req = safeRequest(img)
-                im = Image.open(BytesIO(req[1]))
-                n_im = Image.new("RGBA", im.size, "WHITE")
-                n_im.paste(im, (0, 0), im)
-                im = n_im.convert("RGB")
-            except (OSError, ValueError, IndexError):
-                return ''
-    else:
-        return ''
-
-    thash = hashlib.blake2b(im.tobytes())
-    im = generate_thumb(im)
-    filename = store_thumbnail(im, str(uuid.uuid5(THUMB_NAMESPACE, thash.hexdigest())))
-    im.close()
-    return filename
-
-
-def generate_thumb(im: Image) -> Image:
-    x, y = im.size
-    while y > x:
-        slice_height = min(y - x, 10)
-        bottom = im.crop((0, y - slice_height, x, y))
-        top = im.crop((0, 0, x, slice_height))
-
-        if _image_entropy(bottom) < _image_entropy(top):
-            im = im.crop((0, 0, x, y - slice_height))
-        else:
-            im = im.crop((0, slice_height, x, y))
-
-        x, y = im.size
-
-    im.thumbnail((70, 70), Image.ANTIALIAS)
-    return im
 
 
 def getAdminUserBadges():
@@ -1959,6 +1819,7 @@ def logging_init_app(app):
         add_context_to_log_records(config.logging)
     elif config.app.development or config.app.testing:
         logging.basicConfig(level=logging.DEBUG)
+        logging.getLogger(app.logger.name + '.socketio').setLevel(logging.WARNING)
         logging.getLogger("engineio.server").setLevel(logging.WARNING)
         logging.getLogger("socketio.server").setLevel(logging.WARNING)
     else:

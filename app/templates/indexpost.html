@@ -10,10 +10,16 @@
       <div class="thcontainer">
         <a href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}" class="title">
           <div class="thumbnail">
-            {% if post.thumbnail != '' and post.link != None %}
-              <img src="{{thumbnail_url(post.thumbnail)}}"/>
-            {% elif post.link != None %}
-              <span class="placeholder" data-icon="link"></span>
+            {% if post.link != None %}
+              {% if post.thumbnail == '' %}
+                <span class="placeholder" data-icon="link"></span>
+              {% elif post.thumbnail == 'deferred' %}
+                <span class="placeholder deferred" data-icon="link"
+                      data-deferred="SubPost-{{ post.pid }}"></span>
+              {% else %}
+                <img class="lazy" src="{{ url_for('static', filename='img/1x1.gif') }}"
+                     data-src="{{ thumbnail_url(post.thumbnail) }}"/>
+              {%endif %}
             {%else%}
               <span class="placeholder" data-icon="chat"></span>
             {% endif%}
