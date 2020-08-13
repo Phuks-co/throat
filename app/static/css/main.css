@@ -1625,6 +1625,12 @@ td.subsentry.blocked {
     font-size: 60px;
     font-weight: 600;
 }
+.uprofile-top p {
+  margin-top: 3em;
+}
+#userBadges {
+  padding: 0;
+}
 
 
 .statdiv {
