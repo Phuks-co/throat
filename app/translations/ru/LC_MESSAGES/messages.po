@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-08-02 19:02-0300\n"
-"PO-Revision-Date: 2020-08-08 18:18\n"
+"PO-Revision-Date: 2020-08-11 00:29\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -468,7 +468,7 @@ msgstr "Отключить чат"
 
 #: app/forms/user.py:129
 msgid "Global stylesheet (select a sub)"
-msgstr "Глобальные стили (выберите подпункт)"
+msgstr "Глобальные стили (выберите саб)"
 
 #: app/forms/user.py:131
 msgid "Language"
@@ -569,7 +569,7 @@ msgstr "Тип"
 #: app/html/mod/reports.html:28 app/html/mod/sub_reports.html:29
 #: app/html/mod/sub_reports_closed.html:30
 msgid "Reporter"
-msgstr "Флаг"
+msgstr "Жалобы"
 
 #: app/html/admin/reports.html:27 app/html/mod/closed.html:29
 #: app/html/mod/reportdetails.html:63 app/html/mod/reportdetails.html:307
@@ -971,7 +971,7 @@ msgstr "Закрыты все отчеты, связанные с: "
 #: app/html/mod/reportdetails.html:280 app/html/shared/post.html:95
 #: app/html/sub/post.html:223 app/html/sub/postcomments.html:87
 msgid "report"
-msgstr "флаг"
+msgstr "пожаловаться"
 
 #: app/html/mod/reportdetails.html:294
 msgid "Other reports on this comment:"
@@ -1137,7 +1137,7 @@ msgstr "добавлен %(timeago)s - %(user)s"
 
 #: app/html/shared/post.html:77
 msgid "sticky"
-msgstr "закрепить"
+msgstr "закреплен"
 
 #: app/html/shared/post.html:80
 msgid "wiki"
@@ -2693,7 +2693,7 @@ msgstr "Не удалось связаться с сервером "
 
 #: app/static/js/Post.js:668
 msgid "Report post"
-msgstr "Флаг поста"
+msgstr "Жалоба на пост"
 
 #: app/static/js/Post.js:669
 msgid "This report will be forwarded to the site administration"
