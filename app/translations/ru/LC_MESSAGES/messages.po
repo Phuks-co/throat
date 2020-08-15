@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-08-02 19:02-0300\n"
-"PO-Revision-Date: 2020-08-15 07:59\n"
+"PO-Revision-Date: 2020-08-15 13:59\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -270,7 +270,7 @@ msgstr "Саб NSFW"
 
 #: app/forms/sub.py:88
 msgid "Only mods can post"
-msgstr "Публиковать могут только моды"
+msgstr "Публиковать могут только модераторы"
 
 #: app/forms/sub.py:89
 msgid "Allow users to flair their own posts"
@@ -1268,7 +1268,7 @@ msgstr "Забаненные"
 
 #: app/html/shared/sidebar/sub.html:10
 msgid "Only mods can post."
-msgstr "Публиковать могут только моды."
+msgstr "Публиковать могут только модераторы."
 
 #: app/html/shared/sidebar/sub.html:13
 msgid "You are currently banned from posting."
@@ -3288,7 +3288,7 @@ msgstr "Вам запрещено публиковать посты в этом 
 
 #: app/views/subs.py:135
 msgid "Only mods can post on this sub."
-msgstr "Только моды могут размещать темы тут."
+msgstr "Только модераторы могут размещать тут темы."
 
 #: app/views/subs.py:144
 msgid "You have posted too much today."
