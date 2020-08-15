@@ -428,9 +428,9 @@ u.ready(function(){
   /* infinite scroll */
   window.moreuri = document.getElementById("pagefoot-moreuri");
   window.page = 1;
+  window.loading = false;
   if(window.moreuri){
     window.moreuri = window.moreuri.getAttribute('data-value');
-    window.loading = false;
     window.addEventListener('scroll', function () {
       if(window.loading){return;}
       if(window.scrollY + window.innerHeight >= (document.getElementsByTagName('body')[0].clientHeight/100)*75) {
@@ -459,6 +459,16 @@ u.ready(function(){
       }
     });
   }
+
+  window.addEventListener('scroll', function () {
+    if(window.loading){return;}
+    if(window.scrollY + window.innerHeight >= (document.getElementsByTagName('body')[0].clientHeight/100)*75) {
+      const sibload = document.querySelector(".comments a.loadsibling[data-pcid='']");
+      if(sibload) {
+        sibload.click();
+      }
+    }
+  });
 })
 
 new Konami(function() {

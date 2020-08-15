@@ -555,6 +555,7 @@ u.addEventForChild(document, 'click', '.loadsibling', function (e, qelem) {
     }
     u.post(uri, {},
         function (data) {
+            window.loading = false;
             qelem.outerHTML = data;
             Icons.rendericons();
         }, function () {
