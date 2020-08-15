@@ -74,13 +74,37 @@ def all_new(page):
                                                      'kw': {}})
 
 
-@bp.route("/all/new/more", defaults={'pid': None})
-@bp.route('/all/new/more/<int:pid>')
-def all_new_more(pid=None):
-    """ Returns more posts for /all/new (used for infinite scroll) """
-    if not pid:
-        abort(404)
-    posts = misc.getPostList(misc.postListQueryBase(isSubMod=current_user.can_admin).where(SubPost.pid < pid), 'new', 1).dicts()
+@bp.route("/all/<sort>/more", defaults={'pid': None})
+@bp.route("/all/<sort>/more/<int:page>/<int:pid>")
+def all_more(sort, page, pid):
+    """ Infinite scroll pagination for /all """
+    # XXX: Our pagination is very slow
+    if sort == 'new':
+        posts = misc.getPostList(misc.postListQueryBase(isSubMod=current_user.can_admin).where(SubPost.pid < pid), 'new', 1).dicts()
+    elif sort == 'top':
+        posts = misc.getPostList(misc.postListQueryBase(isSubMod=current_user.can_admin), 'top', page).dicts()
+    elif sort == 'hot':
+        posts = misc.getPostList(misc.postListQueryBase(isSubMod=current_user.can_admin), 'hot', page).dicts()
+    else:
+        return abort(404)
+
+    return engine.get_template('shared/post.html').render({'posts': posts, 'sub': False})
+
+
+@bp.route("/home/<sort>/more", defaults={'pid': None})
+@bp.route("/home/<sort>/more/<int:page>/<int:pid>")
+def home_more(sort, page, pid):
+    """ Infinite scroll pagination for /all """
+    # XXX: Our pagination is very slow
+    if sort == 'new':
+        posts = misc.getPostList(misc.postListQueryHome().where(SubPost.pid < pid), 'new', 1).dicts()
+    elif sort == 'top':
+        posts = misc.getPostList(misc.postListQueryHome(), 'top', page).dicts()
+    elif sort == 'hot':
+        posts = misc.getPostList(misc.postListQueryHome(), 'hot', page).dicts()
+    else:
+        return abort(404)
+
     return engine.get_template('shared/post.html').render({'posts': posts, 'sub': False})
 
 
