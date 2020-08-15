@@ -67,7 +67,14 @@ def create_app(config=Config('config.yaml')):
                                           for url in config.site.expando_sites],
            'img-src':     ['\'self\'', 'data:', 'https:'],
            'media-src':   ['\'self\'', 'https:'],
-           'style-src':   ['\'self\'', '\'unsafe-inline\'']}
+           'style-src':   ['\'self\'', '\'unsafe-inline\''],
+           'connect-src': ['\'self\'']}
+
+    if app.config['SERVER_NAME']:
+        csp['connect-src'] += [f'wss://{app.config["SERVER_NAME"]}']
+        if not config.app.force_https:
+            csp['connect-src'] += [f'ws://{app.config["SERVER_NAME"]}']
+
     talisman.init_app(app, content_security_policy=csp,
                       force_https=config.app.force_https)
 
