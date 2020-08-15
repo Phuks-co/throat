@@ -427,16 +427,18 @@ u.ready(function(){
 
   /* infinite scroll */
   window.moreuri = document.getElementById("pagefoot-moreuri");
+  window.page = 1;
   if(window.moreuri){
     window.moreuri = window.moreuri.getAttribute('data-value');
     window.loading = false;
     window.addEventListener('scroll', function () {
       if(window.loading){return;}
       if(window.scrollY + window.innerHeight >= (document.getElementsByTagName('body')[0].clientHeight/100)*75) {
+        window.page++;
         var k = document.querySelectorAll('div.post')
         var lastpid = k[k.length-1].getAttribute('pid')
         window.loading = true;
-        u.get(window.moreuri + '/' + lastpid,
+        u.get(window.moreuri + '/' + window.page + '/' + lastpid,
         function(data) {
           var ndata = document.createElement( "div" );
           ndata.innerHTML = data;

@@ -4,7 +4,7 @@
 @def sidebar():
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
-      @if sort_type.startswith('all'):
+      @if sort_type.startswith('home.all_'):
         <a href="@{url_for('home.all_hot')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home.all_hot') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Hot')}</a>
         <a href="@{url_for('home.all_top')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home.all_top') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Top')}</a>
         <a href="@{url_for('home.all_new')}" class="sbm-post pure-button button-xsmall @{(sort_type == 'home.all_new') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('New')}</a>
@@ -16,7 +16,7 @@
   </div>
 </div>
 @include('shared/sidebar/home.html')
-@if sort_type in ('home.all_new', 'sub.view_sub_new') and current_user.likes_scroll():
+@if current_user.likes_scroll():
   <hr />
   &copy;@{config.site.copyright}
   <br>
@@ -53,7 +53,7 @@
       @end
     @end
   </div>
-  @if sort_type not in ('home.all_new', 'sub.view_sub_new') or not current_user.likes_scroll():
+  @if not current_user.likes_scroll():
     @if page > 1:
       <a href="@{url_for(sort_type, page=(page-1), **kw)}" class="pure-button">@{_('Previous page')}</a>
     @end
@@ -62,7 +62,7 @@
     @end
   @end
 </div>
-  @if sort_type in ('home.all_new', 'sub.view_sub_new') and current_user.likes_scroll():
+  @if current_user.likes_scroll():
     @def footer():
     @end
   @end
@@ -76,7 +76,11 @@
   @if sort_type in ('home.all_new'):
     <label id="pagefoot-blocked" data-value="@{current_user.blocksid}" class="hide"></label>
   @end
-  @if sort_type in ('home.all_new', 'sub.view_sub_new') and current_user.likes_scroll():
-    <label id="pagefoot-moreuri" data-value="@{url_for(request.endpoint + '_more')}" class="hide"></label>
+  @if current_user.likes_scroll():
+    @if sort_type.startswith("home.all_"):
+      <label id="pagefoot-moreuri" data-value="@{url_for('home.all_more', sort=sort_type.replace('home.all_', ''))}" class="hide"></label>
+    @elif sort_type.startswith("home."):
+      <label id="pagefoot-moreuri" data-value="@{url_for('home.home_more', sort=sort_type.replace('home.', ''))}" class="hide"></label>
+    @end
   @end
 @end
