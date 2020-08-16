@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-08-02 19:02-0300\n"
-"PO-Revision-Date: 2020-08-15 13:59\n"
+"PO-Revision-Date: 2020-08-16 15:59\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -2434,7 +2434,7 @@ msgstr "<a href=\"/u/%(user)s\">%(user)s</a> восстановил один и�
 #: app/html/user/messages/notifications.html:77
 #, python-format
 msgid "Your comment. Posted %(timeago)s. <b>%(score)i</b> points."
-msgstr "Ваш комментарий. Опубликовано %(timeago)s. <b>%(score)i</b> кармы."
+msgstr "Ваш комментарий. Опубликован %(timeago)s. <b>%(score)i</b> кармы."
 
 #: app/html/user/messages/notifications.html:87
 #, python-format
