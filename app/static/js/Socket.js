@@ -47,7 +47,7 @@ function loadLazy() {
   }
 }
 
-socket.loadLazy = loadLazy;
+// socket.loadLazy = loadLazy;
 
 
 function subscribeDeferred() {
