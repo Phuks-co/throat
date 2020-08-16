@@ -47,6 +47,8 @@ function loadLazy() {
   }
 }
 
+socket.loadLazy = loadLazy;
+
 
 function subscribeDeferred() {
   var deferred = document.getElementsByClassName('deferred');

@@ -455,6 +455,7 @@ u.ready(function(){
 
           window.loading = false;
           icons.rendericons();
+          socket.loadLazy();
         })
       }
     });
