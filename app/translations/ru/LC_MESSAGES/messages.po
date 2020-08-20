@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-08-02 19:02-0300\n"
-"PO-Revision-Date: 2020-08-11 00:29\n"
+"PO-Revision-Date: 2020-08-16 15:59\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -270,7 +270,7 @@ msgstr "Саб NSFW"
 
 #: app/forms/sub.py:88
 msgid "Only mods can post"
-msgstr "Публиковать могут только моды"
+msgstr "Публиковать могут только модераторы"
 
 #: app/forms/sub.py:89
 msgid "Allow users to flair their own posts"
@@ -330,11 +330,11 @@ msgstr "Тип поста"
 
 #: app/forms/sub.py:114
 msgid "Text post"
-msgstr "Текстовый пост"
+msgstr "Текст"
 
 #: app/forms/sub.py:114
 msgid "Link post"
-msgstr "Добавить ссылку"
+msgstr "Ссылка"
 
 #: app/forms/sub.py:116 app/forms/sub.py:133
 msgid "NSFW?"
@@ -492,7 +492,7 @@ msgstr "Введите здесь"
 
 #: app/html/index.html:8 app/html/index.html:12 app/html/sub.html:14
 msgid "Hot"
-msgstr "Горячий"
+msgstr "Горячее"
 
 #: app/html/index.html:9 app/html/index.html:13 app/html/sub.html:15
 msgid "Top"
@@ -500,7 +500,7 @@ msgstr "Top"
 
 #: app/html/index.html:10 app/html/index.html:14 app/html/sub.html:16
 msgid "New"
-msgstr "Новый"
+msgstr "Новое"
 
 #: app/html/index.html:28
 #, python-format
@@ -583,7 +583,7 @@ msgstr "Причина"
 #: app/html/mod/reports.html:30 app/html/mod/sub_reports.html:31
 #: app/html/mod/sub_reports_closed.html:32
 msgid "User reported"
-msgstr "Пользователь сообщил"
+msgstr "Сообщил"
 
 #: app/html/admin/reports.html:29 app/html/mod/closed.html:31
 #: app/html/mod/reportdetails.html:76 app/html/mod/reportdetails.html:231
@@ -832,11 +832,11 @@ msgstr "%(user)s был запрещен %(site)s"
 #: app/html/mod/reportdetails.html:114 app/html/mod/reportdetails.html:118
 #: app/html/sub/bans.html:28 app/html/sub/bans.html:32
 msgid "Until..."
-msgstr "До того как..."
+msgstr "Временно. До..."
 
 #: app/html/mod/reportdetails.html:117 app/html/sub/bans.html:31
 msgid "Forever"
-msgstr "Навсегда"
+msgstr "Бессрочно"
 
 #: app/html/mod/reportdetails.html:121 app/html/sub/bans.html:36
 msgid "Pick date"
@@ -1268,7 +1268,7 @@ msgstr "Забаненные"
 
 #: app/html/shared/sidebar/sub.html:10
 msgid "Only mods can post."
-msgstr "Публиковать могут только моды."
+msgstr "Публиковать могут только модераторы."
 
 #: app/html/shared/sidebar/sub.html:13
 msgid "You are currently banned from posting."
@@ -1689,7 +1689,7 @@ msgstr "Загрузка файлов"
 #: app/html/sub/css.html:36
 #, python-format
 msgid "Upload limit is 2 MiB. Space used: %(storage)i KiB"
-msgstr "Лимит загрузки составляет 2 МиБ. Используемое пространство: %(storage)i KiB"
+msgstr "Лимит загрузки составляет 2 Мбайт. Используемое пространство: %(storage)i Кбайт"
 
 #: app/html/sub/css.html:42
 msgid "Only images allowed"
@@ -1886,11 +1886,11 @@ msgstr "Пригласить мод"
 
 #: app/html/sub/mods.html:124
 msgid "Past mods: none"
-msgstr "Прошлые моды: нет"
+msgstr "Прошлых модераторов: нет"
 
 #: app/html/sub/mods.html:126
 msgid "Past mods:"
-msgstr "Прошлые моды:"
+msgstr "Прошлые модераторы:"
 
 #: app/html/sub/post.html:12
 msgid "[Deleted Post]"
@@ -2042,7 +2042,7 @@ msgstr "<span class=\"cscore\">%(score)i</span> карма</b> (+<b>%(upvotes)i<
 #: app/html/sub/postcomments.html:37
 #, python-format
 msgid "Edited %(timeago)s"
-msgstr "Отредактированный %(timeago)s"
+msgstr "ред. %(timeago)s"
 
 #: app/html/sub/postcomments.html:80
 #: app/html/user/messages/notifications.html:95
@@ -2434,7 +2434,7 @@ msgstr "<a href=\"/u/%(user)s\">%(user)s</a> восстановил один и�
 #: app/html/user/messages/notifications.html:77
 #, python-format
 msgid "Your comment. Posted %(timeago)s. <b>%(score)i</b> points."
-msgstr "Ваш комментарий. Опубликовано %(timeago)s. <b>%(score)i</b> кармы."
+msgstr "Ваш комментарий. Опубликован %(timeago)s. <b>%(score)i</b> кармы."
 
 #: app/html/user/messages/notifications.html:87
 #, python-format
@@ -3268,7 +3268,7 @@ msgstr "Подождите немного, прежде чем отправля�
 
 #: app/views/subs.py:42 app/views/subs.py:80
 msgid "Upload file"
-msgstr "Загрузка файла"
+msgstr "Файл"
 
 #: app/views/subs.py:111
 msgid "Posting has been temporarily disabled."
@@ -3288,7 +3288,7 @@ msgstr "Вам запрещено публиковать посты в этом 
 
 #: app/views/subs.py:135
 msgid "Only mods can post on this sub."
-msgstr "Только моды могут размещать темы тут."
+msgstr "Только модераторы могут размещать тут темы."
 
 #: app/views/subs.py:144
 msgid "You have posted too much today."
