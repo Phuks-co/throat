@@ -13,8 +13,12 @@ bp = Blueprint('site', __name__)
 @bp.route('/chat')
 @login_required
 def chat():
-    return engine.get_template('chat.html').render(
-        {'subOfTheDay': misc.getSubOfTheDay(), 'changeLog': misc.getChangelog()})
+    if config.site.enable_chat:
+        return engine.get_template('chat.html').render(
+            {'subOfTheDay': misc.getSubOfTheDay(),
+             'changeLog': misc.getChangelog()})
+    else:
+        abort(404)
 
 
 @bp.route("/sitelog", defaults={'page': 1})
