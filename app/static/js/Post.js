@@ -553,6 +553,7 @@ u.addEventForChild(document, 'click', '.loadsibling', function (e, qelem) {
     } else {
         uri = '/do/get_children/' + pid + '/' + parent + '/' + key;
     }
+    window.loading = true;
     u.post(uri, {},
         function (data) {
             window.loading = false;
