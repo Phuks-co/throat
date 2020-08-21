@@ -10,6 +10,11 @@ site:
   # Copyright line shown in the footer
   copyright: 'Umbrella Corp'
 
+  # Domain name at which the app is being served.  This must be
+  # configured for websocket support (chat and push new posts) on
+  # Safari and Apple WebKit.  For development, you can omit this.
+  #server_name: "throat.example.com"
+
   # Name shown when a sub is owned by a deleted account or abandoned
   placeholder_account: 'Site'
 
@@ -132,11 +137,6 @@ auth:
 app:
   # host to pass to SocketIO when we start the application
   host: "localhost"
-
-  # Domain name at which the app is being served.  This must be
-  # configured for websocket support (chat and push new posts) on
-  # Safari and Apple WebKit.  For development, you can omit this.
-  #server_name: "throat.example.com"
 
   # URL to a working redis server.
   # Used for websockets (if enabled)

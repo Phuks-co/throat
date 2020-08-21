@@ -70,10 +70,11 @@ def create_app(config=Config('config.yaml')):
            'style-src':   ['\'self\'', '\'unsafe-inline\''],
            'connect-src': ['\'self\'']}
 
-    if app.config['SERVER_NAME']:
-        csp['connect-src'] += [f'wss://{app.config["SERVER_NAME"]}']
+    server_name = config.site.get('server_name')
+    if server_name is not None:
+        csp['connect-src'] += [f'wss://{server_name}']
         if not config.app.force_https:
-            csp['connect-src'] += [f'ws://{app.config["SERVER_NAME"]}']
+            csp['connect-src'] += [f'ws://{server_name}']
 
     talisman.init_app(app, content_security_policy=csp,
                       force_https=config.app.force_https)
