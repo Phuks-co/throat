@@ -15,7 +15,7 @@ def unauthorized(error):
 @bp.app_errorhandler(403)
 def forbidden_error(error):
     """ 403 Forbidden """
-    return engine.get_template('errors/403.html').render({'loginform': LoginForm()}), 403
+    return engine.get_template('errors/403.html').render(), 403
 
 
 @bp.app_errorhandler(404)
