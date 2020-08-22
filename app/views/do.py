@@ -29,7 +29,7 @@ from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm
 from ..badges import badges
-from ..misc import cache, send_email, allowedNames, get_errors, engine
+from ..misc import cache, send_email, allowedNames, get_errors, engine, ensure_locale_loaded
 from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, is_domain_banned
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved
 from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
@@ -46,6 +46,7 @@ do = Blueprint('do', __name__)
 
 @do.errorhandler(429)
 def ratelimit_handler(e):
+    ensure_locale_loaded()
     return jsonify(status='error',
                    error=[_('Whoa, calm down and wait a bit, then try again.')]), 200
 
@@ -180,6 +181,7 @@ def edit_user():
 
         usr = User.get(User.uid == current_user.uid)
         usr.language = form.language.data
+        session['language'] = form.language.data
         usr.save()
         current_user.update_prefs('labrat', form.experimental.data)
         current_user.update_prefs('nostyles', form.disable_sub_style.data)
