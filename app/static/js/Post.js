@@ -643,7 +643,13 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
     const pid = qelem.getAttribute('data-pid');
     const content = document.querySelector('#rcomm-' + cid + ' textarea').value;
     qelem.setAttribute('disabled', true);
-    qelem.parentNode.removeChild(qelem.parentNode.querySelector('.cmpreview'));
+
+    const previewChild = qelem.parentNode.querySelector('.cmpreview');
+    previewChild.insertAdjacentHTML('afterend', '<div class="cmpreview canclose" style="display:none;"><h4>' +
+                                    _('Comment preview') + '</h4><span class="closemsg">&times;</span>' +
+                                    '<div class="cpreview-content"></div></div>');
+    qelem.parentNode.removeChild(previewChild);
+
     window.sending = true;
     let pcid = cid;
     if(pcid[0] == '-') pcid = 0;
