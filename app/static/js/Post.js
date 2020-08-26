@@ -655,11 +655,13 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
     if(pcid[0] == '-') pcid = 0;
     u.post('/do/sendcomment/' + pid, {parent: pcid, post: pid, comment: content},
         function (data) {
+            const errorNode = qelem.parentNode.querySelector('.error');
             if (data.status != "ok") {
-                qelem.parentNode.querySelector('.error').style.display = 'block';
-                qelem.parentNode.querySelector('.error').innerHTML = data.error;
+                errorNode.style.display = 'block';
+                errorNode.innerHTML = data.error;
                 qelem.removeAttribute('disabled');
             } else {
+                errorNode.style.display = 'none';
                 const cmtcount = document.getElementById('cmnts');
                 window.sending = false;
                 if(!cmtcount) {
