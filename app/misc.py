@@ -302,7 +302,7 @@ def get_ip():
     """ Return the user's IP address for rate-limiting. """
     addr = ipaddress.ip_address(request.remote_addr or '127.0.0.1')
     if isinstance(addr, ipaddress.IPv6Address):
-        return(addr.exploded[:19]) # use the /64
+        return addr.exploded[:19]  # use the /64
     else:
         return str(addr)
 
@@ -321,9 +321,8 @@ class RE_AMention():
 
     def init_app(self, app):
         prefix = app.config['THROAT_CONFIG'].site.sub_prefix
-        BARE = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/' + prefix + r'\/)([A-Za-z0-9\-\_]+))'
-
-        PRE0 = r'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))(?:(?:@|\/u\/|\/' + prefix + r'\/)(?:[A-Za-z0-9\-\_]+)))'
+        BARE = r'(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))((@|\/u\/|\/' + prefix + r'\/)([A-Za-z0-9\-\_]+))'
+        PRE0 = r'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))(?:(?:@|\/u\/|\/' + prefix + r'\/)(?:[A-Za-z0-9\-\_]+)))'
         PRE1 = r'(?:(\[.+?\]\(.+?\))|' + BARE + r')'
         self.ESCAPED = re.compile(r"```.*{0}.*```|`.*?{0}.*?`|({1})".format(PRE0, PRE1),
                                   flags=re.MULTILINE + re.DOTALL)
