@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods, highlight, content_history, title_history, open_reports)
+@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods, highlight, content_history, title_history, open_reports, sort)
 @import "sub/postcomments.html" as pcomm
 @import "sub/postpoll.html" as polls
 
@@ -323,7 +323,24 @@
   @else:
     <div class="comments">
       <h2 id="cmnts" data-cnt="@{post['comments']}"><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{_('%(comments)i comments', comments=post['comments'])}</a></h2>
-      @{pcomm.renderComments(post, subInfo, subMods, comments, highlight)!!html}
+      @if len(comments) > 1:
+      <div class="pure-menu pure-menu-horizontal">
+        <ul class="pure-menu-list">
+          <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+            <span id="sortby" class="pure-menu-link">@{_('Sort by')}</span>
+            <ul class="pure-menu-children">
+              <li class="pure-menu-item">
+                <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'], sort='top')}" class="pure-menu-link">@{_('Top')}</a>
+              </li>
+              <li class="pure-menu-item">
+                <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'], sort='new')}" class="pure-menu-link">@{_('New')}</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      @end
+      @{pcomm.renderComments(post, subInfo, subMods, comments, highlight, sort)!!html}
     </div>
   @end
 

@@ -1851,6 +1851,8 @@ def upvotecomment(cid, value):
 @do.route('/do/get_children/<int:pid>/<cid>', methods=['post'], defaults={'lim': ''})
 def get_sibling(pid, cid, lim):
     """ Gets children comments for <cid> """
+    sort = request.args.get("sort", default="top", type=str)
+
     try:
         post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
@@ -1869,9 +1871,15 @@ def get_sibling(pid, cid, lim):
         except SubPostComment.DoesNotExist:
             return jsonify(status='ok', posts=[])
 
-    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
+    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid)
+    if sort == "new":
+        comments = comments.order_by(SubPostComment.time.desc()).dicts()
+    elif sort == "top":
+        comments = comments.order_by(SubPostComment.score.desc()).dicts()
+
     if not comments.count():
-        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': ''})
+        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': '',
+                                                                    'sort': sort})
 
     include_history = current_user.is_mod(post['sid'], 1) or current_user.is_admin()
 
@@ -1880,14 +1888,16 @@ def get_sibling(pid, cid, lim):
     elif cid != '0':
         comment_tree = misc.get_comment_tree(comments, cid, provide_context=False, uid=current_user.uid, include_history=include_history)
     else:
-        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': ''})
+        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': '',
+                                                                    'sort': sort})
 
     if len(comment_tree) > 0 and cid != '0':
         comment_tree = comment_tree[0].get('children', [])
     subInfo = misc.getSubData(post['sid'])
     subMods = misc.getSubMods(post['sid'])
 
-    return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': comment_tree, 'subInfo': subInfo, 'subMods': subMods, 'highlight': ''})
+    return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': comment_tree, 'subInfo': subInfo, 'subMods': subMods, 'highlight': '',
+                                                                'sort': sort})
 
 
 @do.route('/do/preview', methods=['POST'])

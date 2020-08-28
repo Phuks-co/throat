@@ -291,6 +291,7 @@ def view_sub_hot(sub, page):
 @blueprint.route("/<sub>/<int:pid>/<slug>")
 def view_post(sub, pid, slug=None, comments=False, highlight=None):
     """ View post and comments (WIP) """
+    sort = request.args.get("sort", default="top", type=str)
     try:
         post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
@@ -301,7 +302,7 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
 
     # We check the slug and correct it if it's wrong
     if slug != post['slug']:
-        return redirect(url_for('sub.view_post', sub=sub, pid=pid, slug=post['slug']), 301)
+        return redirect(url_for('sub.view_post', sub=sub, pid=pid, slug=post['slug'], sort=sort), 301)
 
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     subInfo = misc.getSubData(sub['sid'])
@@ -320,7 +321,13 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
         is_saved = False
 
     if not comments:
-        comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == post['pid']).order_by(SubPostComment.score.desc()).dicts()
+        comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == post['pid'])
+        if sort == "new":
+            comments = comments.order_by(SubPostComment.time.desc()).dicts()
+        elif sort == "top":
+            comments = comments.order_by(SubPostComment.score.desc()).dicts()
+        comments = comments.dicts()
+
         if not comments.count():
             comments = []
         else:
@@ -391,7 +398,11 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
                 pollData['poll_open'] = False
 
     return engine.get_template('sub/post.html').render({'post': post, 'sub': sub, 'subInfo': subInfo,
-                                                        'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,'commentform': PostComment(), 'comments': comments,'subMods': subMods, 'highlight': highlight, 'content_history': content_history, 'title_history': title_history, 'open_reports': open_reports})
+                                                        'is_saved': is_saved, 'pollData': pollData,
+                                                        'postmeta': postmeta, 'commentform': PostComment(),
+                                                        'comments': comments,'subMods': subMods, 'highlight': highlight,
+                                                        'content_history': content_history, 'title_history': title_history,
+                                                        'open_reports': open_reports, 'sort': sort})
 
 
 @blueprint.route("/<sub>/<int:pid>/_/<cid>", defaults={'slug': '_'})

@@ -545,13 +545,14 @@ u.addEventForChild(document, 'click', '.loadsibling', function (e, qelem) {
     const pid = qelem.getAttribute('data-pid');
     const key = qelem.getAttribute('data-key');
     let parent = qelem.getAttribute('data-pcid');
+    const sort = qelem.getAttribute('data-sort');
     if (parent == '') {
         parent = 'null';
     }
     if (key === '') {
-        uri = '/do/get_children/' + pid + '/' + parent;
+        uri = '/do/get_children/' + pid + '/' + parent + "?sort=" + sort;
     } else {
-        uri = '/do/get_children/' + pid + '/' + parent + '/' + key;
+        uri = '/do/get_children/' + pid + '/' + parent + '/' + key + "?sort=" + sort;
     }
     window.loading = true;
     u.post(uri, {},

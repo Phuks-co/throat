@@ -2257,3 +2257,10 @@ article.text-post.comment.deleted {
     margin-left: 1em;
     margin-top: 5px;
 }
+
+#sortby{
+  background-color: lightgray;
+  font-size: smaller;
+  text-align: center;
+  cursor: pointer;
+}
