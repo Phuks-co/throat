@@ -1533,7 +1533,9 @@ def toggle_sticky(post):
             misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_DEL, current_user.uid, post.sid,
                                link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
         except SubMetadata.DoesNotExist:
-            post.sid.update_metadata('sticky', post.pid)
+            if SubMetadata.select().where((SubMetadata.sid == post.sid_id) & (SubMetadata.key == 'sticky')).count() >= 3:
+                return jsonify(status='error', error=_('This sub already has three sticky posts'))
+            SubMetadata.create(sid=post.sid_id, key='sticky', value=post.pid)
             misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_ADD, current_user.uid, post.sid,
                     link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
 

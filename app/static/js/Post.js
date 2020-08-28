@@ -121,12 +121,13 @@ u.addEventForChild(document, 'click', '.edit-title', function (e, qelem) {
 
 // Stick post
 u.addEventForChild(document, 'click', '.stick-post', function (e, qelem) {
+    const parent = qelem.parentNode.parentNode;
     const pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg = e.currentTarget;
     TextConfirm(qelem, function () {
         u.post('/do/stick/' + pid, {post: document.getElementById('postinfo').getAttribute('pid')},
             function (data) {
                 if (data.status != "ok") {
-                    tg.innerHTML = _('Error.');
+                    parent.innerHTML = data.error;
                 } else {
                     tg.innerHTML = _('Done');
                     document.location.reload();
