@@ -291,7 +291,7 @@ def view_sub_hot(sub, page):
 @blueprint.route("/<sub>/<int:pid>/<slug>")
 def view_post(sub, pid, slug=None, comments=False, highlight=None):
     """ View post and comments (WIP) """
-    sort = request.args.get("sort", default="top", type=str)
+    sort = request.args.get("sort", default=None, type=str)
     try:
         post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
@@ -302,10 +302,23 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
 
     # We check the slug and correct it if it's wrong
     if slug != post['slug']:
-        return redirect(url_for('sub.view_post', sub=sub, pid=pid, slug=post['slug'], sort=sort), 301)
+        kwargs = {} if sort is None else {'sort': sort}
+        return redirect(url_for('sub.view_post', sub=sub, pid=pid, slug=post['slug'], **kwargs), 301)
 
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     subInfo = misc.getSubData(sub['sid'])
+
+    sticky_sort = 'top'
+    if str(pid) in subInfo['sticky']:
+        try:
+            sticky_sort = SubPostMetadata.select().where((SubPostMetadata.key == 'sort') &
+                                                          (SubPostMetadata.pid == pid)).get().value
+        except SubPostMetadata.DoesNotExist:
+            pass
+
+    if sort is None:
+        sort = sticky_sort
+
     subMods = misc.getSubMods(sub['sid'])
     include_history = current_user.is_mod(sub['sid'], 1) or current_user.is_admin()
 
@@ -402,7 +415,8 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
                                                         'postmeta': postmeta, 'commentform': PostComment(),
                                                         'comments': comments,'subMods': subMods, 'highlight': highlight,
                                                         'content_history': content_history, 'title_history': title_history,
-                                                        'open_reports': open_reports, 'sort': sort})
+                                                        'open_reports': open_reports, 'sort': sort,
+                                                        'sticky_sort': sticky_sort})
 
 
 @blueprint.route("/<sub>/<int:pid>/_/<cid>", defaults={'slug': '_'})

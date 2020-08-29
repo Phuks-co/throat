@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods, highlight, content_history, title_history, open_reports, sort)
+@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods, highlight, content_history, title_history, open_reports, sort, sticky_sort)
 @import "sub/postcomments.html" as pcomm
 @import "sub/postpoll.html" as polls
 
@@ -220,6 +220,13 @@
             @if post['sub'] == 'announcements' and current_user.is_admin():
               @if not func.getAnnouncement() or func.getAnnouncement()['pid'] != post['pid']:
                 <li><a class="announce-post">@{_('make announcement')}</a></li>
+              @end
+            @end
+            @if str(post['pid']) in subInfo['sticky']:
+              @if sticky_sort == 'new':
+                <li><a class="sort-comments">@{_('sort by top')}</a></li>
+              @else:
+                <li><a class="sort-comments">@{_('sort by new')}</a></li>
               @end
             @end
           @end

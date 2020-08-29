@@ -1543,6 +1543,35 @@ def toggle_sticky(post):
     return jsonify(status='ok')
 
 
+@do.route("/do/sticky_sort/<int:post>", methods=['POST'])
+def toggle_sort(post):
+    """ Toggles comment sort for a post. """
+    try:
+        post = SubPost.get(SubPost.pid == post)
+    except SubPost.DoesNotExist:
+        return jsonify(status='error', error=_('Post does not exist'))
+
+    if not current_user.is_mod(post.sid_id):
+        abort(403)
+
+    form = DeletePost()
+
+    if form.validate():
+        try:
+            smd = SubPostMetadata.select().where((SubPostMetadata.key == 'sort') &
+                                                 (SubPostMetadata.pid == post.pid)).get()
+            smd.value = 'top' if smd.value == 'new' else 'new'
+            smd.save()
+        except SubPostMetadata.DoesNotExist:
+            smd = SubPostMetadata.create(pid=post.pid, key='sort', value='new')
+
+    misc.create_sublog(misc.LOG_TYPE_STICKY_SORT_NEW if smd.value == 'new' else
+                       misc.LOG_TYPE_STICKY_SORT_TOP, current_user.uid, post.sid,
+                       link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
+    return jsonify(status='ok',
+                   redirect=url_for('sub.view_post', sub=post.sid.name, pid=post.pid, sort=smd.value))
+
+
 @do.route("/do/wikipost/<int:post>", methods=['POST'])
 def toggle_wikipost(post):
     """ Toggles post to the sub wiki page """

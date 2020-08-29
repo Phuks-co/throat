@@ -136,6 +136,23 @@ u.addEventForChild(document, 'click', '.stick-post', function (e, qelem) {
     });
 });
 
+// Sticky post default comment sort
+u.addEventForChild(document, 'click', '.sort-comments', function (e, qelem) {
+    const parent = qelem.parentNode.parentNode;
+    const pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg = e.currentTarget;
+    TextConfirm(qelem, function () {
+        u.post('/do/sticky_sort/' + pid, {post: document.getElementById('postinfo').getAttribute('pid')},
+            function (data) {
+                if (data.status != "ok") {
+                    parent.innerHTML = data.error;
+                } else {
+                    tg.innerHTML = _('Done');
+                    document.location.replace(data.redirect);
+                }
+            });
+    });
+});
+
 // Wiki post
 u.addEventForChild(document, 'click', '.wiki-post', function (e, qelem) {
     const pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg = e.currentTarget;
