@@ -330,10 +330,24 @@
             <span id="sortby" class="pure-menu-link">@{_('Sort by')}</span>
             <ul class="pure-menu-children">
               <li class="pure-menu-item">
-                <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'], sort='top')}" class="pure-menu-link">@{_('Top')}</a>
+                <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'], sort='top')}" class="pure-menu-link">
+		  @if sort == 'top':
+		    ✓
+		  @else:
+		    &nbsp;&nbsp;
+		  @end
+		  @{_('Top')}
+                </a>
               </li>
               <li class="pure-menu-item">
-                <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'], sort='new')}" class="pure-menu-link">@{_('New')}</a>
+                <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'], sort='new')}" class="pure-menu-link">
+		  @if sort == 'new':
+		    ✓
+		  @else:
+		    &nbsp;&nbsp;
+		  @end
+                  @{_('New')}
+                </a>
               </li>
             </ul>
           </li>
