@@ -204,6 +204,7 @@ class Sub(BaseModel):
             return None
 
     def update_metadata(self, key, value):
+        """ Updates `key` for submetadata. Only works for single keys. """
         if value == True:
             value = '1'
         elif value == False:

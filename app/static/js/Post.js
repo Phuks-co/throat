@@ -121,15 +121,33 @@ u.addEventForChild(document, 'click', '.edit-title', function (e, qelem) {
 
 // Stick post
 u.addEventForChild(document, 'click', '.stick-post', function (e, qelem) {
+    const parent = qelem.parentNode.parentNode;
     const pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg = e.currentTarget;
     TextConfirm(qelem, function () {
         u.post('/do/stick/' + pid, {post: document.getElementById('postinfo').getAttribute('pid')},
             function (data) {
                 if (data.status != "ok") {
-                    tg.innerHTML = _('Error.');
+                    alert(data.error);
                 } else {
                     tg.innerHTML = _('Done');
                     document.location.reload();
+                }
+            });
+    });
+});
+
+// Sticky post default comment sort
+u.addEventForChild(document, 'click', '.sort-comments', function (e, qelem) {
+    const parent = qelem.parentNode.parentNode;
+    const pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg = e.currentTarget;
+    TextConfirm(qelem, function () {
+        u.post('/do/sticky_sort/' + pid, {post: document.getElementById('postinfo').getAttribute('pid')},
+            function (data) {
+                if (data.status != "ok") {
+                    parent.innerHTML = data.error;
+                } else {
+                    tg.innerHTML = _('Done');
+                    document.location.replace(data.redirect);
                 }
             });
     });
@@ -545,13 +563,14 @@ u.addEventForChild(document, 'click', '.loadsibling', function (e, qelem) {
     const pid = qelem.getAttribute('data-pid');
     const key = qelem.getAttribute('data-key');
     let parent = qelem.getAttribute('data-pcid');
+    const sort = qelem.getAttribute('data-sort');
     if (parent == '') {
         parent = 'null';
     }
     if (key === '') {
-        uri = '/do/get_children/' + pid + '/' + parent;
+        uri = '/do/get_children/' + pid + '/' + parent + "?sort=" + sort;
     } else {
-        uri = '/do/get_children/' + pid + '/' + parent + '/' + key;
+        uri = '/do/get_children/' + pid + '/' + parent + '/' + key + "?sort=" + sort;
     }
     window.loading = true;
     u.post(uri, {},

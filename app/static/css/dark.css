@@ -530,3 +530,21 @@ body.dark .browse-history:focus {
 body.dark .links a.post-open-reports {
     color: #d30404;
 }
+
+body.dark #sortby{
+    background: #171717;
+  color: #ddd;
+  font-size: smaller;
+  text-align: center;
+  cursor: pointer;
+}
+
+body.dark .pure-menu-item a{
+  background: #171717;
+  color: #fff
+}
+
+body.dark .pure-menu-item a:hover{
+  background: #666;
+  color: #d17262;
+}

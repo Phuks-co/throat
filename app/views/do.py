@@ -1533,12 +1533,43 @@ def toggle_sticky(post):
             misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_DEL, current_user.uid, post.sid,
                                link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
         except SubMetadata.DoesNotExist:
-            post.sid.update_metadata('sticky', post.pid)
+            if SubMetadata.select().where((SubMetadata.sid == post.sid_id) & (SubMetadata.key == 'sticky')).count() >= 3:
+                return jsonify(status='error', error=_('This sub already has three sticky posts'))
+            SubMetadata.create(sid=post.sid_id, key='sticky', value=post.pid)
             misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_ADD, current_user.uid, post.sid,
                     link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
 
         cache.delete_memoized(misc.getStickyPid, post.sid_id)
     return jsonify(status='ok')
+
+
+@do.route("/do/sticky_sort/<int:post>", methods=['POST'])
+def toggle_sort(post):
+    """ Toggles comment sort for a post. """
+    try:
+        post = SubPost.get(SubPost.pid == post)
+    except SubPost.DoesNotExist:
+        return jsonify(status='error', error=_('Post does not exist'))
+
+    if not current_user.is_mod(post.sid_id):
+        abort(403)
+
+    form = DeletePost()
+
+    if form.validate():
+        try:
+            smd = SubPostMetadata.select().where((SubPostMetadata.key == 'sort') &
+                                                 (SubPostMetadata.pid == post.pid)).get()
+            smd.value = 'top' if smd.value == 'new' else 'new'
+            smd.save()
+        except SubPostMetadata.DoesNotExist:
+            smd = SubPostMetadata.create(pid=post.pid, key='sort', value='new')
+
+    misc.create_sublog(misc.LOG_TYPE_STICKY_SORT_NEW if smd.value == 'new' else
+                       misc.LOG_TYPE_STICKY_SORT_TOP, current_user.uid, post.sid,
+                       link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
+    return jsonify(status='ok',
+                   redirect=url_for('sub.view_post', sub=post.sid.name, pid=post.pid, sort=smd.value))
 
 
 @do.route("/do/wikipost/<int:post>", methods=['POST'])
@@ -1851,6 +1882,8 @@ def upvotecomment(cid, value):
 @do.route('/do/get_children/<int:pid>/<cid>', methods=['post'], defaults={'lim': ''})
 def get_sibling(pid, cid, lim):
     """ Gets children comments for <cid> """
+    sort = request.args.get("sort", default="top", type=str)
+
     try:
         post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
@@ -1869,9 +1902,15 @@ def get_sibling(pid, cid, lim):
         except SubPostComment.DoesNotExist:
             return jsonify(status='ok', posts=[])
 
-    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
+    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid)
+    if sort == "new":
+        comments = comments.order_by(SubPostComment.time.desc()).dicts()
+    elif sort == "top":
+        comments = comments.order_by(SubPostComment.score.desc()).dicts()
+
     if not comments.count():
-        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': ''})
+        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': '',
+                                                                    'sort': sort})
 
     include_history = current_user.is_mod(post['sid'], 1) or current_user.is_admin()
 
@@ -1880,14 +1919,16 @@ def get_sibling(pid, cid, lim):
     elif cid != '0':
         comment_tree = misc.get_comment_tree(comments, cid, provide_context=False, uid=current_user.uid, include_history=include_history)
     else:
-        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': ''})
+        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': '',
+                                                                    'sort': sort})
 
     if len(comment_tree) > 0 and cid != '0':
         comment_tree = comment_tree[0].get('children', [])
     subInfo = misc.getSubData(post['sid'])
     subMods = misc.getSubMods(post['sid'])
 
-    return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': comment_tree, 'subInfo': subInfo, 'subMods': subMods, 'highlight': ''})
+    return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': comment_tree, 'subInfo': subInfo, 'subMods': subMods, 'highlight': '',
+                                                                'sort': sort})
 
 
 @do.route('/do/preview', methods=['POST'])

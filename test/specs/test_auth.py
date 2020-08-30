@@ -89,7 +89,6 @@ def test_login_before_confirming_email(client, user_info):
                                    password=user_info['password']),
                          follow_redirects=True)
         assert b'Resend account confirmation instructions' in rv.data
-        print("================", user_info['email'])
         rv = client.post(url_for('auth.resend_confirmation_email'),
                          data=dict(csrf_token=csrf_token(rv.data),
                                    email=user_info['email']),

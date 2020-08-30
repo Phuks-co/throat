@@ -4,6 +4,7 @@ import 'purecss/build/forms.css';
 import 'purecss/build/buttons.css';
 import 'purecss/build/grids.css';
 import 'purecss/build/grids-responsive.css';
+import 'purecss/build/menus.css';
 import 'tingle.js/dist/tingle.css';
 import 'time-elements';
 //import 'flatpickr/dist/flatpickr.css';
@@ -419,6 +420,15 @@ u.ready(function(){
     }
   }
  })
+  // Sort by menu
+  u.sub('.sortmenu', 'click', function(e){
+    var sortby = document.getElementById('sortby');
+    if (sortby.style.display != 'none' && sortby.style.display){
+      sortby.style.display = 'none';
+      return
+    }
+     sortby.style.display = 'inline-flex';
+  });
   // chat
   if(document.getElementById('chcont')){
     socket.emit('subscribe', {target: 'chat'});
