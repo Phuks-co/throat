@@ -2275,3 +2275,8 @@ article.text-post.comment.deleted {
   text-align: center;
   cursor: pointer;
 }
+
+.pure-menu-children {
+    min-width: 100%;
+    border: 1px solid #ccc;
+}

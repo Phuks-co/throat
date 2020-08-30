@@ -548,3 +548,7 @@ body.dark .pure-menu-item a:hover{
   background: #666;
   color: #d17262;
 }
+
+body.dark .pure-menu-children {
+    border-color: #333;
+}
