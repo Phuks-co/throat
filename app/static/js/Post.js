@@ -127,7 +127,7 @@ u.addEventForChild(document, 'click', '.stick-post', function (e, qelem) {
         u.post('/do/stick/' + pid, {post: document.getElementById('postinfo').getAttribute('pid')},
             function (data) {
                 if (data.status != "ok") {
-                    parent.innerHTML = data.error;
+                    alert(data.error);
                 } else {
                     tg.innerHTML = _('Done');
                     document.location.reload();
