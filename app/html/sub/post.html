@@ -330,7 +330,6 @@
   @else:
     <div class="comments">
       <h2 id="cmnts" data-cnt="@{post['comments']}"><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{_('%(comments)i comments', comments=post['comments'])}</a></h2>
-      @if len(comments) > 1:
       <div class="pure-menu pure-menu-horizontal">
         <ul class="pure-menu-list">
           <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
@@ -360,7 +359,6 @@
           </li>
         </ul>
       </div>
-      @end
       @{pcomm.renderComments(post, subInfo, subMods, comments, highlight, sort)!!html}
     </div>
   @end
