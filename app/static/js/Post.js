@@ -710,7 +710,11 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
                 if (cid == '0') {
                     qelem.removeAttribute('disabled');
                     document.querySelector('#rcomm-' + cid + ' textarea').value = '';
-                    cmtcount.parentNode.insertBefore(div.firstChild, cmtcount.nextSibling);
+                    if(cmtcount.nextSibling && cmtcount.nextSibling.nextSibling && cmtcount.nextSibling.nextSibling.tagName == 'DIV') {
+                        cmtcount.parentNode.insertBefore(div.firstChild, cmtcount.nextSibling.nextSibling.nextSibling);
+                    }else{
+                        cmtcount.parentNode.insertBefore(div.firstChild, cmtcount.nextSibling);
+                    }
                     //document.getElementById(data.cid).scrollIntoView();
                 } else {
                     document.querySelector('.reply-comment[data-to="' + cid + '"] s').click();
