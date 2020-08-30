@@ -62,13 +62,6 @@ function imgurID(url) {
 	}
 }
 
-function instaudioID(url) {
-    var match = url.match(/^http(?:s?):\/\/instaud\.io\/(.+)/)
-    if (match){
-        return match[1];
-    }
-}
-
 function close_expando( pid){
   var k = document.querySelector('div.expando-master[pid="'+pid+'"]')
   k.parentNode.removeChild(k);
@@ -121,9 +114,8 @@ u.addEventForChild(document, 'click', '.expando', function(e, ematch){
             extra += 'start=' + start;
           }
         }
-        expando.querySelector('.expandotxt').innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://www.youtube.com/embed/' + youtubeID(link) + extra +'" allowfullscreen=""></iframe></div>';
-      }else if((domain == 'hooktube.com') || (domain == 'www.hooktube.com')){
-        expando.querySelector('.expandotxt').innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://hooktube.com/embed/' + youtubeID(link) +'" allowfullscreen=""></iframe></div>';
+        expando.querySelector('.expandotxt').innerHTML = '<div class="expando-wrapper" style="height: 386px; will-change: height;"><iframe style="height: 360px; width: 640px;" src="https://www.youtube.com/embed/' + youtubeID(link) + extra +'" allowfullscreen=""></iframe>';
+        resizer(expando.querySelector('.expandotxt iframe'), expando.querySelector('.expandotxt .resize-handle'), expando.querySelector('.expandotxt'))
       }else if(domain == 'gfycat.com'){
         expando.querySelector('.expandotxt').innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://gfycat.com/ifr/' + gfycatID(link) +'"></iframe></div>';
       }else if(domain == 'vimeo.com'){
@@ -135,44 +127,185 @@ u.addEventForChild(document, 'click', '.expando', function(e, ematch){
       }else if(domain == 'vine.co'){
         expando.querySelector('.expandotxt').innerHTML = '<div class="iframewrapper"><iframe width="100%" src="https://vine.co/v/' + vineID(link) +'/embed/simple"></iframe></div>';
       }else if(/\.(png|jpg|gif|tiff|svg|bmp|jpeg)$/i.test(link)) {
-        var img = document.createElement( "img" );
+        const img = document.createElement("img");
         img.src = link;
-        img.onclick = function(){close_expando(pid);};
+        img.draggable = false;
+        //img.onclick = function(){close_expando(pid);};
+        confResizer(img, expando.querySelector('.expandotxt'));
         expando.querySelector('.expandotxt').appendChild(img);
-      }else if (domain == 'instaud.io') {
-        var vid = document.createElement( "audio" );
-        //vid.src = 'https://instaud.io/_/' + instaudioID(link) + '.mp3';
-        vid.preload = 'auto';
-        vid.autoplay = true;
-        vid.loop = false;
-        vid.controls = true;
-        var s1 = document.createElement("source");
-        s1.src = 'https://instaud.io/_/' + instaudioID(link) + '.wav'
-        var s2 = document.createElement("source");
-        s2.src = 'https://instaud.io/_/' + instaudioID(link) + '.mp3'
-        vid.innerHTML = s1.outerHTML + s2.outerHTML;
-        expando.querySelector('.expandotxt').appendChild(vid);
       }else if (/\.(mp4|webm)$/i.test(link)) {
-        var vid = document.createElement( "video" );
+        const vid = document.createElement( "video" );
         vid.src = link;
         vid.preload = 'auto';
         vid.autoplay = true;
-        vid.loop = true;
+        vid.loop = true;app/html/sub/post.html
         vid.controls = true;
         vid.innerHTML = document.createElement("source").src = link;
-        expando.querySelector('.expandotxt').appendChild(vid);
+        vid.style.width = "640px";
+        vid.style.height = "360px";
+
+        const handle = document.createElement('div');
+        handle.className = 'resize-handle';
+        handle.innerHTML = '<div class="i-icon" data-icon="resizeArrow"</div>';
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'expando-wrapper';
+        wrapper.innerHTML = vid.outerHTML + handle.outerHTML;
+        expando.querySelector('.expandotxt').appendChild(wrapper);
+
+        resizer(expando.querySelector('.expandotxt video'), expando.querySelector('.expandotxt .resize-handle'), expando.querySelector('.expandotxt'))
       }else if(domain == 'i.imgur.com' && /\.gifv$/i.test(link)){
-        var vidx = document.createElement( "video" );
+        const vidx = document.createElement( "video" );
         vidx.src = 'https://i.imgur.com/' + imgurID(link) + '.mp4';
         vidx.preload = 'auto';
         vidx.autoplay = true;
         vidx.loop = true;
         vidx.controls = true;
         vidx.innerHTML = document.createElement("source").src = 'https://i.imgur.com/' + imgurID(link) + '.mp4';
-        expando.querySelector('.expandotxt').appendChild(vidx);
-      }
+        vidx.style.width = "640px";
+        vidx.style.height = "360px";
 
+        const handle = document.createElement('div');
+        handle.className = 'resize-handle';
+        handle.innerHTML = '<div class="i-icon" data-icon="resizeArrow"</div>';
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'expando-wrapper';
+        wrapper.innerHTML = vidx.outerHTML + handle.outerHTML;
+        expando.querySelector('.expandotxt').appendChild(wrapper);
+
+        resizer(expando.querySelector('.expandotxt video'), expando.querySelector('.expandotxt .resize-handle'), expando.querySelector('.expandotxt'))
+      }
     }
     th.querySelector('.expando-btn').innerHTML = icon.close;
     document.querySelector('div.post[pid="'+pid+'"]').appendChild(expando);
+    icon.rendericons();
 })
+
+function resizer(element, handle, boundary) {
+  if(!handle) element = handle;
+
+  let lastX, lastY, left, top, startWidth, startHeight, startDiag;
+  let active = false;
+
+  handle.addEventListener('mousedown', initResize);
+
+  function resize(e) {
+    const deltaX = e.clientX - lastX;
+    const deltaY = e.clientY - lastY;
+
+    if(1 & ~e.buttons) return stop();
+    if(!deltaX || !deltaY) return;
+    if(!active) activate();
+
+    // It has decided to move!
+    const ratio = 1;
+
+    const diag = Math.round(Math.hypot(Math.max(1, e.clientX - left), Math.max(1, e.clientY - top)))
+
+    const nWidth = diag / startDiag * startWidth;
+
+    if(nWidth * ratio < 100) return;
+
+    const width = element.getBoundingClientRect().width;
+    const height = element.getBoundingClientRect().height;
+
+    if(nWidth * ratio >= boundary.clientWidth * 0.95 && (nWidth * ratio) > width) return;
+
+    element.style.height = ((height / width) * (nWidth * ratio)).toFixed(2) + 'px';
+    element.style.width = nWidth * ratio + 'px';
+
+    lastX = e.clientX;
+    lastY = e.clientY;
+    //resize(element, nWidth * ratio);
+
+  }
+
+  function activate() {
+    active = true;
+    left = element.getBoundingClientRect().left;
+    top = element.getBoundingClientRect().top;
+    startWidth = element.getBoundingClientRect().width;
+    startHeight = element.getBoundingClientRect().height;
+
+    startDiag = Math.round(Math.hypot(Math.max(1, lastX - left), Math.max(1, lastY - top)))
+  }
+
+  function stop() {
+    document.removeEventListener('mouseup', stop);
+    document.removeEventListener('mousemove', resize);
+  }
+
+  function initResize(e) {
+    if (e.button !== 0) return;
+    lastX = e.clientX;
+    lastY = e.clientY;
+
+    document.addEventListener('mouseup', stop);
+    document.addEventListener('mousemove', resize);
+
+    e.preventDefault();
+  }
+
+}
+
+
+function confResizer(el, pnode, corner) {
+  if(corner) {
+    const resizer = document.createElement('div');
+    resizer.style.width = '10px';
+    resizer.style.height = '10px';
+    resizer.style.background = 'red';
+    resizer.style.position = 'absolute';
+    resizer.style.right = 0;
+    resizer.style.bottom = 0;
+    resizer.style.cursor = 'se-resize';
+    //Append Child to Element
+    element.appendChild(resizer);
+    //box function onmousemove
+    resizer.addEventListener('mousedown', initResize, false);
+  }else{
+    el.addEventListener('mousedown', initResize, false);
+  }
+
+  //element.appendChild(resizer);
+  //box function onmousemove
+  let startx = 0, starty = 0;
+  //Window funtion mousemove & mouseup
+  function initResize(e) {
+    startx = e.clientX;
+    starty = e.clientY;
+    window.addEventListener('mousemove', resize, false);
+    window.addEventListener('mouseup', stopResize, false);
+  }
+
+  function resize(e) {
+    // Average x and y mvmt
+    let emvt = (e.clientX - startx) + (e.clientY - starty);
+    emvt = emvt / 2
+    startx = e.clientX
+    starty = e.clientY
+
+    // Get ratio of resize so we can keep the aspect ratio
+    const resizeRatio = (el.width + emvt) / el.width
+
+    // Check if we're going out of bounds (so far the only limit is width)
+    if(el.width * resizeRatio >= pnode.clientWidth * 0.95 && resizeRatio > 1) return;
+
+    //el.style.width = (el.width * resizeRatio) + 'px';
+    el.style.height = (el.height * resizeRatio) + 'px';
+  }
+
+  function stopResize(e) {
+    window.removeEventListener('mousemove', resize, false);
+    window.removeEventListener('mouseup', stopResize, false);
+  }
+}
+
+/*
+panel.addEventListener("mousedown", function(e){
+  if (e.offsetX < BORDER_SIZE) {
+    m_pos = e.x;
+    document.addEventListener("mousemove", resize, false);
+  }
+}, false);*/
