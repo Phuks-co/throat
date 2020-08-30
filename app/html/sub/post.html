@@ -334,7 +334,7 @@
       <div class="pure-menu pure-menu-horizontal">
         <ul class="pure-menu-list">
           <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
-            <span id="sortby" class="pure-menu-link">@{_('Sort by')}</span>
+            <span id="sortby" class="pure-menu-link">@{_('Sort by: <b>%(currsort)s</b>', currsort=_('top') if sort == 'top' else _('new'))!!html}</span>
             <ul class="pure-menu-children">
               <li class="pure-menu-item">
                 <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'], sort='top')}" class="pure-menu-link">
