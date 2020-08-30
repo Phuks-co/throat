@@ -234,16 +234,19 @@ function resizer(element, handle, boundary) {
   function stop() {
     document.removeEventListener('mouseup', stop);
     document.removeEventListener('mousemove', resize);
+    element.style.pointerEvents = 'all';
   }
 
   function initResize(e) {
     if (e.button !== 0) return;
     lastX = e.clientX;
     lastY = e.clientY;
+    active = false;
 
     document.addEventListener('mouseup', stop);
     document.addEventListener('mousemove', resize);
-
+    element.style.pointerEvents = 'none';
+    
     e.preventDefault();
   }
 

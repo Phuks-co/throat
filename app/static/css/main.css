@@ -747,10 +747,6 @@ iframe {
     will-change: height;
 }
 
-.expando-wrapper iframe {
-    pointer-events: none;
-}
-
 .thumbnail .placeholder svg path{
   fill: #333;
 }
