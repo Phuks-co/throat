@@ -16,7 +16,7 @@
   </div>
 </div>
 @include('shared/sidebar/home.html')
-@if current_user.likes_scroll():
+@if current_user.likes_scroll() and sort_type != 'home.search':
   <hr />
   &copy;@{config.site.copyright}
   <br>
@@ -53,7 +53,7 @@
       @end
     @end
   </div>
-  @if not current_user.likes_scroll():
+  @if not current_user.likes_scroll() or sort_type == 'home.search':
     @if page > 1:
       <a href="@{url_for(sort_type, page=(page-1), **kw)}" class="pure-button">@{_('Previous page')}</a>
     @end
@@ -62,7 +62,7 @@
     @end
   @end
 </div>
-  @if current_user.likes_scroll():
+  @if current_user.likes_scroll() and sort_type != 'home.search':
     @def footer():
     @end
   @end
@@ -76,7 +76,7 @@
   @if sort_type in ('home.all_new'):
     <label id="pagefoot-blocked" data-value="@{current_user.blocksid}" class="hide"></label>
   @end
-  @if current_user.likes_scroll():
+  @if current_user.likes_scroll() and sort_type != 'home.search':
     @if sort_type.startswith("home.all_"):
       <label id="pagefoot-moreuri" data-value="@{url_for('home.all_more', sort=sort_type.replace('home.all_', ''))}" class="hide"></label>
     @elif sort_type.startswith("home."):
