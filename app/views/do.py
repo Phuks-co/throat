@@ -774,7 +774,8 @@ def create_comment(pid):
             'comments': misc.get_comment_tree([{'cid': str(comment.cid), 'parentcid': None}], uid=current_user.uid, include_history=include_history),
             'subInfo': misc.getSubData(sub.sid),
             'subMods': subMods,
-            'highlight': str(comment.cid)
+            'highlight': str(comment.cid),
+            'sort': 'new'
         })
 
         return json.dumps({'status': 'ok', 'addr': url_for('sub.view_perm', sub=sub.name, pid=pid, cid=comment.cid),'comment': renderedComment, 'cid': str(comment.cid)})
