@@ -673,7 +673,7 @@ def getSubOfTheDay():
         today = datetime.utcnow()
         tomorrow = datetime(year=today.year, month=today.month, day=today.day) + timedelta(seconds=86400)
         timeuntiltomorrow = tomorrow - today
-        if timeuntiltomorrow < 5:
+        if timeuntiltomorrow.total_seconds() < 5:
             timeuntiltomorrow = 86400
         rconn.setex('daysub', value=daysub.sid, time=timeuntiltomorrow)
     else:
