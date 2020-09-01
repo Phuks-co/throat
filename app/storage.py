@@ -8,9 +8,7 @@ import gevent
 import libcloud.storage.types
 import magic
 from mutagen.mp4 import MP4
-import gi
-gi.require_version('GExiv2', '0.10')  # noqa
-from gi.repository import GExiv2
+from PIL import Image
 from contextlib import ExitStack
 import hashlib
 import jinja2
@@ -131,10 +129,8 @@ def thumbnail_url(name):
 
 def clear_metadata(path: str, mime_type: str):
     if mime_type in ('image/jpeg', 'image/png'):
-        exif = GExiv2.Metadata()
-        exif.open_path(path)
-        exif.clear()
-        exif.save_file(path)
+        image = Image.open(path)
+        image.save(path)
     elif mime_type == 'video/mp4':
         video = MP4(path)
         video.clear()

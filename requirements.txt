@@ -36,9 +36,6 @@ pyyaml
 email_validator
 feedgen
 pyOpenSSL
-pygobject
-psycopg2
-gunicorn
 mutagen
 flask-mail
 flask-limiter

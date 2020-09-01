@@ -32,13 +32,12 @@ from .views.messages import bp as messages
 from . import misc, forms, caching, storage
 from .socketio import socketio
 from .misc import SiteAnon, engine, engine_init_app, re_amention, mail, talisman, limiter
-from .misc import logging_init_app
+from .misc import logging_init_app, get_locale, babel
 
 # /!\ FOR DEBUGGING ONLY /!\
 # from werkzeug.middleware.profiler import ProfilerMiddleware
 
 webpack = Webpack()
-babel = Babel()
 login_manager = LoginManager()
 login_manager.anonymous_user = SiteAnon
 login_manager.login_view = 'auth.login'
@@ -70,10 +69,11 @@ def create_app(config=Config('config.yaml')):
            'style-src':   ['\'self\'', '\'unsafe-inline\''],
            'connect-src': ['\'self\'']}
 
-    if app.config['SERVER_NAME']:
-        csp['connect-src'] += [f'wss://{app.config["SERVER_NAME"]}']
+    server_name = config.site.get('server_name')
+    if server_name is not None:
+        csp['connect-src'] += [f'wss://{server_name}']
         if not config.app.force_https:
-            csp['connect-src'] += [f'ws://{app.config["SERVER_NAME"]}']
+            csp['connect-src'] += [f'ws://{server_name}']
 
     talisman.init_app(app, content_security_policy=csp,
                       force_https=config.app.force_https)
@@ -167,13 +167,6 @@ def create_app(config=Config('config.yaml')):
                 'func': misc, 'time': time, 'conf': app.config, '_': _, 'locale': get_locale}
 
     return app
-
-
-@babel.localeselector
-def get_locale():
-    if current_user.language:
-        return current_user.language
-    return request.accept_languages.best_match(config.app.languages, config.app.fallback_language)
 
 
 @login_manager.user_loader

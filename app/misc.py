@@ -25,7 +25,7 @@ from slugify import slugify as s_slugify
 
 from .config import config
 from flask_login import AnonymousUserMixin, current_user
-from flask_babel import _
+from flask_babel import Babel, _
 from flask_talisman import Talisman
 from .caching import cache
 from .socketio import socketio
@@ -77,6 +77,7 @@ engine = _engine
 
 mail = Mail()
 
+babel = Babel()
 
 talisman = Talisman()
 
@@ -301,7 +302,7 @@ def get_ip():
     """ Return the user's IP address for rate-limiting. """
     addr = ipaddress.ip_address(request.remote_addr or '127.0.0.1')
     if isinstance(addr, ipaddress.IPv6Address):
-        return(addr.exploded[:19]) # use the /64
+        return addr.exploded[:19]  # use the /64
     else:
         return str(addr)
 
@@ -320,9 +321,8 @@ class RE_AMention():
 
     def init_app(self, app):
         prefix = app.config['THROAT_CONFIG'].site.sub_prefix
-        BARE = r'(?<=^|(?<=[^a-zA-Z0-9-_\.]))((@|\/u\/|\/' + prefix + r'\/)([A-Za-z0-9\-\_]+))'
-
-        PRE0 = r'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.]))(?:(?:@|\/u\/|\/' + prefix + r'\/)(?:[A-Za-z0-9\-\_]+)))'
+        BARE = r'(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))((@|\/u\/|\/' + prefix + r'\/)([A-Za-z0-9\-\_]+))'
+        PRE0 = r'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))(?:(?:@|\/u\/|\/' + prefix + r'\/)(?:[A-Za-z0-9\-\_]+)))'
         PRE1 = r'(?:(\[.+?\]\(.+?\))|' + BARE + r')'
         self.ESCAPED = re.compile(r"```.*{0}.*```|`.*?{0}.*?`|({1})".format(PRE0, PRE1),
                                   flags=re.MULTILINE + re.DOTALL)
@@ -673,6 +673,8 @@ def getSubOfTheDay():
         today = datetime.utcnow()
         tomorrow = datetime(year=today.year, month=today.month, day=today.day) + timedelta(seconds=86400)
         timeuntiltomorrow = tomorrow - today
+        if timeuntiltomorrow.total_seconds() < 5:
+            timeuntiltomorrow = 86400
         rconn.setex('daysub', value=daysub.sid, time=timeuntiltomorrow)
     else:
         try:
@@ -832,6 +834,11 @@ def load_user(user_id):
                      on=(Notification.target == User.uid) & Notification.read.is_null(True)).switch(User)
     user = user.group_by(User.uid).where(User.uid == user_id).dicts().get()
 
+    # This is the only user attribute needed by the error templates, so stash
+    # it in the session so that future errors in this session won't have to
+    # load the user to show them the correct language.
+    session['language'] = user['language']
+
     if request.path == '/socket.io/':
         return SiteUser(user, [], [])
     else:
@@ -845,6 +852,29 @@ def load_user(user_id):
             return SiteUser(user, subs, prefs)
         except User.DoesNotExist:
             return None
+
+
+def user_is_loaded():
+    return has_request_context() and hasattr(_request_ctx_stack.top, 'user')
+
+
+def ensure_locale_loaded():
+    if 'language' not in session or not session['language']:
+        session['language'] = get_locale_fallback()
+
+
+@babel.localeselector
+def get_locale():
+    language = session.get('language', None)
+    if language:
+        return language
+    if current_user.language:
+        return current_user.language
+    return get_locale_fallback()
+
+
+def get_locale_fallback():
+    return request.accept_languages.best_match(config.app.languages, config.app.fallback_language)
 
 
 def get_notification_count(uid):
@@ -1257,6 +1287,8 @@ LOG_TYPE_EMAIL_DOMAIN_BAN = 69
 LOG_TYPE_EMAIL_DOMAIN_UNBAN = 70
 LOG_TYPE_DISABLE_CAPTCHAS = 71
 LOG_TYPE_ENABLE_CAPTCHAS = 72
+LOG_TYPE_STICKY_SORT_NEW = 73
+LOG_TYPE_STICKY_SORT_TOP = 74
 
 
 def create_sitelog(action, uid, comment='', link=''):
@@ -1856,7 +1888,7 @@ def add_context_to_log_records(config):
                         record.__dict__[k] = unavailable
                 elif var == 'current_user':
                     # Peek at the current user but don't load it if not loaded.
-                    if has_request_context() and hasattr(_request_ctx_stack.top, 'user'):
+                    if user_is_loaded():
                         record.__dict__[k] = getattr(current_user, attr, unavailable)
                     else:
                         record.__dict__[k] = unavailable

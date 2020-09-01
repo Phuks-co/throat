@@ -635,13 +635,18 @@ iframe {
 	height: 100%;
 }
 
-.expandotxt img {
+.expandotxt img, .expandotxt video, .expandotxt iframe {
     max-width: 100%;
-    max-height: 90vh;
 }
 
-.expandotxt video, .expandotxt iframe{
-  max-height: 90vh;
+.resize-handle {
+    text-align: right;
+    cursor: nwse-resize;
+}
+
+.resize-handle .i-icon {
+    width: 24px;
+    height: 24px;
 }
 
 .post .domain a, .post .domain {
@@ -740,6 +745,12 @@ iframe {
 .expandotxt {
   background-color: #e1e1e1;
   padding: 1em;
+  position: relative;
+}
+
+.expando-wrapper {
+    display: inline-block;
+    will-change: height;
 }
 
 .thumbnail .placeholder svg path{
@@ -2306,4 +2317,16 @@ article.text-post.comment.deleted {
     display: inline-block;
     margin-left: 1em;
     margin-top: 5px;
+}
+
+#sortby{
+  background-color: lightgray;
+  font-size: smaller;
+  text-align: center;
+  cursor: pointer;
+}
+
+.pure-menu-children {
+    min-width: 100%;
+    border: 1px solid #ccc;
 }

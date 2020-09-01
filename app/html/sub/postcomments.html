@@ -1,5 +1,5 @@
-@require(post, comments, subInfo, subMods, highlight)
-@def renderComments(post, subInfo, subMods, comments, highlight=''):
+@require(post, comments, subInfo, subMods, highlight, sort)
+@def renderComments(post, subInfo, subMods, comments, highlight='', sort='top'):
   @#ignore
   @for comment in comments:
     @if comment['cid']:
@@ -105,7 +105,7 @@
         </div>
       </article>
     @else:
-        <a href="#" class="loadsibling" data-pid="@{post['pid']}" data-key="@{comment.get('key', '')}" data-pcid="@{comment['pcid']}">
+        <a href="#" class="loadsibling" data-pid="@{post['pid']}" data-key="@{comment.get('key', '')}" data-pcid="@{comment['pcid']}" data-sort="@{sort}">
         @if comment['more'] > 1:
           @{_('Load more (%(amt)i comments)', amt=comment['more'])}
         @else:

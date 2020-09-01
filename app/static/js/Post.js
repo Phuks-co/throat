@@ -121,15 +121,33 @@ u.addEventForChild(document, 'click', '.edit-title', function (e, qelem) {
 
 // Stick post
 u.addEventForChild(document, 'click', '.stick-post', function (e, qelem) {
+    const parent = qelem.parentNode.parentNode;
     const pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg = e.currentTarget;
     TextConfirm(qelem, function () {
         u.post('/do/stick/' + pid, {post: document.getElementById('postinfo').getAttribute('pid')},
             function (data) {
                 if (data.status != "ok") {
-                    tg.innerHTML = _('Error.');
+                    alert(data.error);
                 } else {
                     tg.innerHTML = _('Done');
                     document.location.reload();
+                }
+            });
+    });
+});
+
+// Sticky post default comment sort
+u.addEventForChild(document, 'click', '.sort-comments', function (e, qelem) {
+    const parent = qelem.parentNode.parentNode;
+    const pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg = e.currentTarget;
+    TextConfirm(qelem, function () {
+        u.post('/do/sticky_sort/' + pid, {post: document.getElementById('postinfo').getAttribute('pid')},
+            function (data) {
+                if (data.status != "ok") {
+                    parent.innerHTML = data.error;
+                } else {
+                    tg.innerHTML = _('Done');
+                    document.location.replace(data.redirect);
                 }
             });
     });
@@ -545,14 +563,16 @@ u.addEventForChild(document, 'click', '.loadsibling', function (e, qelem) {
     const pid = qelem.getAttribute('data-pid');
     const key = qelem.getAttribute('data-key');
     let parent = qelem.getAttribute('data-pcid');
+    const sort = qelem.getAttribute('data-sort');
     if (parent == '') {
         parent = 'null';
     }
     if (key === '') {
-        uri = '/do/get_children/' + pid + '/' + parent;
+        uri = '/do/get_children/' + pid + '/' + parent + "?sort=" + sort;
     } else {
-        uri = '/do/get_children/' + pid + '/' + parent + '/' + key;
+        uri = '/do/get_children/' + pid + '/' + parent + '/' + key + "?sort=" + sort;
     }
+    window.loading = true;
     u.post(uri, {},
         function (data) {
             window.loading = false;
@@ -642,17 +662,25 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
     const pid = qelem.getAttribute('data-pid');
     const content = document.querySelector('#rcomm-' + cid + ' textarea').value;
     qelem.setAttribute('disabled', true);
-    qelem.parentNode.removeChild(qelem.parentNode.querySelector('.cmpreview'));
+
+    const previewChild = qelem.parentNode.querySelector('.cmpreview');
+    previewChild.insertAdjacentHTML('afterend', '<div class="cmpreview canclose" style="display:none;"><h4>' +
+                                    _('Comment preview') + '</h4><span class="closemsg">&times;</span>' +
+                                    '<div class="cpreview-content"></div></div>');
+    qelem.parentNode.removeChild(previewChild);
+
     window.sending = true;
     let pcid = cid;
     if(pcid[0] == '-') pcid = 0;
     u.post('/do/sendcomment/' + pid, {parent: pcid, post: pid, comment: content},
         function (data) {
+            const errorNode = qelem.parentNode.querySelector('.error');
             if (data.status != "ok") {
-                qelem.parentNode.querySelector('.error').style.display = 'block';
-                qelem.parentNode.querySelector('.error').innerHTML = data.error;
+                errorNode.style.display = 'block';
+                errorNode.innerHTML = data.error;
                 qelem.removeAttribute('disabled');
             } else {
+                errorNode.style.display = 'none';
                 const cmtcount = document.getElementById('cmnts');
                 window.sending = false;
                 if(!cmtcount) {
@@ -682,7 +710,11 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
                 if (cid == '0') {
                     qelem.removeAttribute('disabled');
                     document.querySelector('#rcomm-' + cid + ' textarea').value = '';
-                    cmtcount.parentNode.insertBefore(div.firstChild, cmtcount.nextSibling);
+                    if(cmtcount.nextSibling && cmtcount.nextSibling.nextSibling && cmtcount.nextSibling.nextSibling.tagName == 'DIV') {
+                        cmtcount.parentNode.insertBefore(div.firstChild, cmtcount.nextSibling.nextSibling.nextSibling);
+                    }else{
+                        cmtcount.parentNode.insertBefore(div.firstChild, cmtcount.nextSibling);
+                    }
                     //document.getElementById(data.cid).scrollIntoView();
                 } else {
                     document.querySelector('.reply-comment[data-to="' + cid + '"] s').click();

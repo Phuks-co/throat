@@ -3,7 +3,10 @@
 
 @import 'shared/sidebar/sub_mod.html' as sb
 @def sidebar():
-@{sb.render_sidebar('bans', sub=sub.name)!!html}
+@#
+@if current_user.is_mod(sub.sid, 2):
+  @{sb.render_sidebar('bans', sub=sub.name)!!html}
+@end
 @end
 
 

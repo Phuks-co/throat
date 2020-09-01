@@ -64,6 +64,8 @@
                         @{_('Deleted a comment with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
                     @elif log.action == 59:
                         @{_('Un-deleted a comment with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
+                    @elif log.action == 73 or log.action == 74:
+                        @{_('Changed the comment sort order of a sticky post')}
                     @else:
                         <i>@{_('[Type %(type)i]', type=log.action)!!html}</i> @{log.desc}
                     @end

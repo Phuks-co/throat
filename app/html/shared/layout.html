@@ -131,9 +131,12 @@
       </div>
     </div>
   </div>
+  
   @def content():
   <div class="pure-g new-g">
-    <div class="pure-u-1 pure-u-md-18-24"> <!-- main -->
+    @def sidebar():
+    @end
+    <div class="pure-u-1 @{ sidebar() and 'pure-u-md-18-24' or '' }"> <!-- main -->
       @for err in get_flashed_messages(category_filter=["error"]):
         <div class="error" style="margin-top: 2em;">@{ err }</div>
       @end
@@ -144,11 +147,11 @@
       @end
       @{main()!!html}
     </div>
-    <div class="sidebar pure-u-1 pure-u-md-6-24"> <!-- sidebar -->
-      @def sidebar():
-      @end
-      @{sidebar()!!html}
-    </div>
+    @if sidebar(): 
+      <div class="sidebar pure-u-1 pure-u-md-6-24"> <!-- sidebar -->  
+        @{sidebar()!!html}
+      </div>
+    @end
   </div>
   @end
   @{content()!!html}
