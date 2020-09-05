@@ -194,7 +194,7 @@ class SiteUser(object):
 
     def likes_scroll(self):
         """ Returns true if user likes scroll """
-        return 'noscroll' not in self.prefs
+        return 'noscroll' in self.prefs
 
     def block_styles(self):
         """ Returns true if user selects to block sub styles """
@@ -258,7 +258,7 @@ class SiteAnon(AnonymousUserMixin):
     @classmethod
     def likes_scroll(cls):
         """ Anons like scroll. """
-        return True
+        return False
 
     @classmethod
     def get_top_bar(cls):
