@@ -462,7 +462,7 @@ msgid "Enable experimental features"
 msgstr ""
 
 #: app/forms/user.py:126
-msgid "Infinite scroll"
+msgid "Disable infinite scroll"
 msgstr ""
 
 #: app/forms/user.py:127
