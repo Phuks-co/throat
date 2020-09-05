@@ -459,8 +459,8 @@ msgid "Enable experimental features"
 msgstr "Zapnúť experimentálne funkcie"
 
 #: app/forms/user.py:126
-msgid "Disable infinite scroll"
-msgstr "Zakázať nekonečné rolovanie"
+msgid "infinite scroll"
+msgstr "Nekonečné rolovanie"
 
 #: app/forms/user.py:127
 msgid "Disable chat"
