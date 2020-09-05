@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-08-02 19:02-0300\n"
-"PO-Revision-Date: 2020-08-03 03:18\n"
+"PO-Revision-Date: 2020-09-05 13:01\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -460,7 +460,7 @@ msgstr "Zapnúť experimentálne funkcie"
 
 #: app/forms/user.py:126
 msgid "Disable infinite scroll"
-msgstr "Zakázať nekonečné rolovanie"
+msgstr "Nekonečné rolovanie"
 
 #: app/forms/user.py:127
 msgid "Disable chat"
