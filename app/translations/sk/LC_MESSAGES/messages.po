@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-08-02 19:02-0300\n"
-"PO-Revision-Date: 2020-09-05 13:01\n"
+"PO-Revision-Date: 2020-09-07 22:11\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: app/__init__.py:47
 msgid "Please log in to access this page."
-msgstr "Je nutné byť prihlásený(á)."
+msgstr "Je nutné sa prihlásiť."
 
 #: app/__init__.py:48
 msgid "Please reauthenticate to access this page."
@@ -359,7 +359,7 @@ msgstr "Captcha"
 
 #: app/forms/sub.py:141
 msgid "Write your comment here. Styling with Markdown format is supported."
-msgstr "Tvoj komentár. Formátovanie textu povolené."
+msgstr "Tvoj komentár."
 
 #: app/forms/sub.py:147
 msgid "Username to ban"
@@ -533,7 +533,7 @@ msgstr "Staršie príspevky"
 
 #: app/html/admin/createwiki.html:33 app/html/sub/createpost.html:43
 msgid "(Optional) Write your post content here. Styling with Markdown format is supported."
-msgstr "Tvoj komentár. Formátovanie textu povolené."
+msgstr "Text príspevku (nepovinný)."
 
 #: app/html/admin/createwiki.html:37 app/html/mod/reportdetails.html:218
 #: app/static/js/Post.js:695
