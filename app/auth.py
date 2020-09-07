@@ -247,7 +247,7 @@ class AuthProvider:
         try:
             umd = UserMetadata.get((UserMetadata.uid == user.uid) &
                                    (UserMetadata.key == "email_verified"))
-            return bool(umd.value)
+            return umd.value == '1'
         except UserMetadata.DoesNotExist:
             return False
 
@@ -324,6 +324,10 @@ class AuthProvider:
             payload = {'enabled': True}
         else:
             raise RuntimeError("Invalid user status")
+
+        if (new_status == 0 and email_validation_is_required() and
+                not self.is_email_verified(user)):
+            new_status = 1
 
         if user.crypto == UserCrypto.REMOTE:
             if (self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK and

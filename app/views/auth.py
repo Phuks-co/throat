@@ -184,7 +184,8 @@ def login_with_token(token):
     if current_user.is_authenticated:
         return redirect(url_for('home.index'))
     user = user_from_login_token(token)
-    if user is None:
+    if (user is None or user.status == UserStatus.BANNED
+            or user.status == UserStatus.DELETED):
         flash(_('The link you used is invalid or has expired.'), 'error')
         return redirect(url_for('auth.resend_confirmation_email'))
     elif user.status == UserStatus.PROBATION:
