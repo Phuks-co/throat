@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-09-08 10:41-0300\n"
-"PO-Revision-Date: 2020-09-08 17:15\n"
+"PO-Revision-Date: 2020-09-08 23:13\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -506,7 +506,7 @@ msgstr "Введите здесь"
 #: app/html/errors/layout.html:72 app/html/index.html:26
 #: app/html/shared/layout.html:166
 msgid "License"
-msgstr ""
+msgstr "Лицензия"
 
 #: app/html/index.html:28
 #, python-format
@@ -540,7 +540,7 @@ msgstr "Далее"
 
 #: app/html/admin/createwiki.html:19
 msgid "Create wiki"
-msgstr ""
+msgstr "Создать вики"
 
 #: app/html/admin/createwiki.html:33 app/html/sub/createpost.html:43
 msgid "(Optional) Write your post content here. Styling with Markdown format is supported."
@@ -1250,7 +1250,7 @@ msgstr "Журналы"
 
 #: app/html/shared/sidebar/messages.html:5
 msgid "Inbox"
-msgstr ""
+msgstr "Входящие"
 
 #: app/html/shared/sidebar/messages.html:13
 #: app/html/user/messages/notifications.html:11
@@ -1259,15 +1259,15 @@ msgstr "Уведомления"
 
 #: app/html/shared/sidebar/messages.html:21
 msgid "Sent Messages"
-msgstr ""
+msgstr "Отправить Сообщение"
 
 #: app/html/shared/sidebar/messages.html:24
 msgid "Saved Messages"
-msgstr ""
+msgstr "Сохраненные Сообщения"
 
 #: app/html/shared/sidebar/messages.html:27
 msgid "Blocked users"
-msgstr ""
+msgstr "Заблокированные пользователи"
 
 #: app/html/shared/sidebar/mod.html:3
 msgid "Mod Dashboard"
@@ -1841,7 +1841,7 @@ msgstr "Открепил пост"
 
 #: app/html/sub/log.html:68
 msgid "Changed the comment sort order of a sticky post"
-msgstr ""
+msgstr "Изменен порядок сортировки комментариев к прикрепленном посте"
 
 #: app/html/sub/log.html:70
 #, python-format
@@ -2014,11 +2014,11 @@ msgstr "сделать объявление"
 
 #: app/html/sub/post.html:227
 msgid "sort by top"
-msgstr ""
+msgstr "сортировать по top"
 
 #: app/html/sub/post.html:229
 msgid "sort by new"
-msgstr ""
+msgstr "сортировать по новым"
 
 #: app/html/sub/post.html:241 app/html/sub/postcomments.html:96
 msgid "un-delete"
@@ -2067,7 +2067,7 @@ msgstr "%(comments)i комментариев"
 #: app/html/sub/post.html:336
 #, python-format
 msgid "Sort by: <b>%(currsort)s</b>"
-msgstr ""
+msgstr "Сортировка по: <b>%(currsort)s</b>"
 
 #: app/html/sub/postcomments.html:27
 msgid "[OP]"
@@ -2266,7 +2266,7 @@ msgstr "Отправить сообщение"
 
 #: app/html/user/profile.html:36
 msgid "Level"
-msgstr ""
+msgstr "Уровень"
 
 #: app/html/user/profile.html:44
 msgid "posts"
@@ -3176,7 +3176,7 @@ msgstr "Пост не был сохранен"
 
 #: app/views/do.py:1538
 msgid "This sub already has three sticky posts"
-msgstr ""
+msgstr "В этой группе уже есть три прикрепленных поста"
 
 #: app/views/do.py:1647
 msgid "Flair has invalid characters"
