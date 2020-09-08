@@ -260,7 +260,8 @@ class AuthProvider:
         elif self.provider == 'KEYCLOAK':
             if auth_source == UserAuthSource.KEYCLOAK:
                 self.keycloak_admin.update_user(user_id=self.get_user_remote_uid(user),
-                                                payload={'emailVerified': value})
+                                                payload={'email': user.email,
+                                                         'emailVerified': value})
             else:
                 raise AuthError
         self._set_email_verified(user, value)
@@ -341,7 +342,7 @@ class AuthProvider:
 
     def actually_delete_user(self, user):
         # Used by automatic tests to clean up test realm on server.
-        # You should probably be using mark_user_deleted.
+        # You should probably be using change_user_status.
         if user.crypto == UserCrypto.REMOTE:
             self.keycloak_admin.delete_user(self.get_user_remote_uid(user))
 
