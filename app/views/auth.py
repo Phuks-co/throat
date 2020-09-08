@@ -143,10 +143,10 @@ def register():
         user = existing_user
         user.email = email
         auth_provider.set_email_verified(user, False)
-        auth_provider.reset_password(user, form.password.data)
         user.status = status
         user.joindate = datetime.utcnow()
-        user.save()
+        auth_provider.reset_password(user, form.password.data)
+        user = User.get(User.uid == user.uid)
     else:
         user = auth_provider.create_user(name=form.username.data, password=form.password.data,
                                          email=email, verified_email=False, status=status)
@@ -182,7 +182,8 @@ def register():
 def send_login_link_email(user):
     s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"],
                                salt="login")
-    token = s.dumps({"uid": user.uid})
+    token = s.dumps({"uid": user.uid,
+                     "resets": user.resets})
     send_email(user.email, _("Confirm your new account on %(site)s", site=config.site.name),
                text_content=engine.get_template("user/email/login-link.txt").render(dict(user=user, token=token)),
                html_content=engine.get_template("user/email/login-link.html").render(dict(user=user, token=token)))
@@ -192,7 +193,7 @@ def user_from_login_token(token):
     try:
         s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"], salt="login")
         info = s.loads(token, max_age=8*60*60) # TODO in config?
-        return User.get((User.uid == info["uid"]))
+        return User.get((User.uid == info["uid"]) & (User.resets == info.get("resets", 0)))
     except (SignatureExpired, BadSignature, User.DoesNotExist):
         return None
 
