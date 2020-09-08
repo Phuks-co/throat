@@ -359,7 +359,7 @@ msgstr "Captcha"
 
 #: app/forms/sub.py:141
 msgid "Write your comment here. Styling with Markdown format is supported."
-msgstr "Tvoj komentár. Formátovanie textu povolené."
+msgstr "Tvoj komentár."
 
 #: app/forms/sub.py:147
 msgid "Username to ban"
@@ -533,7 +533,7 @@ msgstr "Staršie príspevky"
 
 #: app/html/admin/createwiki.html:33 app/html/sub/createpost.html:43
 msgid "(Optional) Write your post content here. Styling with Markdown format is supported."
-msgstr "Tvoj komentár. Formátovanie textu povolené."
+msgstr "Text príspevku (nepovinný)."
 
 #: app/html/admin/createwiki.html:37 app/html/mod/reportdetails.html:218
 #: app/static/js/Post.js:695
