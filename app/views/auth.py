@@ -82,10 +82,16 @@ def register():
         return engine.get_template('user/register.html').render(
             {'error': _("Username has invalid characters."), 'regform': form, 'captcha': captcha})
     # check if user or email are in use
+    existing_user = None
     try:
-        User.get(fn.Lower(User.name) == form.username.data.lower())
-        return engine.get_template('user/register.html').render(
-            {'error': _("Username is not available."), 'regform': form, 'captcha': captcha})
+        existing_user = User.get(fn.Lower(User.name) == form.username.data.lower())
+        # Allow reregistering an existing user account which has never
+        # fetched the verification link and is more than two days old.
+        if (existing_user.status != UserStatus.PROBATION or
+                (datetime.utcnow() - existing_user.joindate).days < 2):
+            return engine.get_template('user/register.html').render(
+                {'error': _("Username is not available."),
+                 'regform': form, 'captcha': captcha})
     except User.DoesNotExist:
         pass
 
@@ -101,7 +107,8 @@ def register():
             return engine.get_template('user/register.html').render(
                 {'error': _("We do not accept emails from your email provider."),
                  'regform': form, 'captcha': captcha})
-        if auth_provider.get_user_by_email(email) is not None:
+        user_by_email = auth_provider.get_user_by_email(email)
+        if user_by_email is not None and user_by_email != existing_user:
             return engine.get_template('user/register.html').render(
                 {'error': _("E-mail address is already in use."),
                  'regform': form, 'captcha': captcha})
@@ -132,16 +139,35 @@ def register():
             InviteCode.code == form.invitecode.data).execute()
 
     status = UserStatus.PROBATION if email_validation_is_required() else UserStatus.OK
-    user = auth_provider.create_user(name=form.username.data, password=form.password.data,
-                                     email=email, verified_email=False, status=status)
+    if existing_user is not None:
+        user = existing_user
+        user.email = email
+        auth_provider.set_email_verified(user, False)
+        auth_provider.reset_password(user, form.password.data)
+        user.status = status
+        user.joindate = datetime.utcnow()
+        user.save()
+    else:
+        user = auth_provider.create_user(name=form.username.data, password=form.password.data,
+                                         email=email, verified_email=False, status=status)
+
+    if existing_user is not None:
+        try:
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key =='invitecode'))
+            umd.key = "previous_invitecode"
+            umd.save()
+        except UserMetadata.DoesNotExist:
+            pass
+
     if misc.enableInviteCode():
         UserMetadata.create(uid=user.uid, key='invitecode', value=form.invitecode.data)
 
-    defaults = misc.getDefaultSubs()
-    subs = [{'uid': user.uid, 'sid': x['sid'], 'status': 1, 'time': datetime.utcnow()} for x in defaults]
-    SubSubscriber.insert_many(subs).execute()
-    Sub.update(subscribers=Sub.subscribers + 1).where(
-        Sub.sid << [x['sid'] for x in defaults]).execute()
+    if existing_user is not None:
+        defaults = misc.getDefaultSubs()
+        subs = [{'uid': user.uid, 'sid': x['sid'], 'status': 1, 'time': datetime.utcnow()} for x in defaults]
+        SubSubscriber.insert_many(subs).execute()
+        Sub.update(subscribers=Sub.subscribers + 1).where(
+            Sub.sid << [x['sid'] for x in defaults]).execute()
 
     if email_validation_is_required():
         send_login_link_email(user)
