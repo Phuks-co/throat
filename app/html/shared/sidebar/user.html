@@ -1,6 +1,6 @@
 @require(user)
 
-@if current_user.is_admin() and user.status == 0 and user.name != current_user.name:
+@if current_user.is_admin() and (user.status == 0 or user.status == 1) and user.name != current_user.name:
     <form method="POST" data-reload="true" id="banuser" action="@{url_for('do.ban_user', username=user.name)}">
         @{form.DummyForm().csrf_token()!!html}
       <a id="banuser-button" class="sbm-post pure-button pure-button-primary">@{_('Ban user')}</a>
