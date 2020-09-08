@@ -212,7 +212,7 @@ def remove_file(filename):
         storage.delete(filename)
     else:
         obj = storage.get(filename)
-        obj.delete(filename)
+        obj.delete()
 
 
 def store_thumbnail(im, basename):

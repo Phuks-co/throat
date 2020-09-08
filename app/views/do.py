@@ -1996,6 +1996,10 @@ def sub_upload(sub):
 
     c = SubStylesheet.get(SubStylesheet.sid == sub.sid)
     form = EditSubCSSForm(css=c.source)
+
+    subInfo = misc.getSubData(sub.sid)
+    subMods = misc.getSubMods(sub.sid)
+
     # get remaining space
     remaining = 1024 * 1024 * 2  # 2M
     ufiles = SubUploads.select().where(SubUploads.sid == sub.sid)
@@ -2005,31 +2009,31 @@ def sub_upload(sub):
     fname = request.form.get('name')
     if len(fname) > 10:
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
-                                                           'error': _('File name too long.'), 'files': ufiles})
+                                                           'error': _('File name too long.'), 'files': ufiles, 'subInfo': subInfo, 'subMods': subMods})
 
     if len(fname) < 3:
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
-                                                           'error': _('File name too short or missing.'), 'files': ufiles})
+                                                           'error': _('File name too short or missing.'), 'files': ufiles, 'subInfo': subInfo, 'subMods': subMods})
 
     if not allowedNames.match(fname):
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
-                                                           'error': _('Invalid file name.'), 'files': ufiles})
+                                                           'error': _('Invalid file name.'), 'files': ufiles, 'subInfo': subInfo, 'subMods': subMods})
 
     ufile = request.files.getlist('files')[0]
     if ufile.filename == '':
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
-                                                           'error': _('Please select a file to upload.'), 'files': ufiles})
+                                                           'error': _('Please select a file to upload.'), 'files': ufiles, 'subInfo': subInfo, 'subMods': subMods})
 
     mtype = storage.mtype_from_file(ufile, allow_video_formats=False)
     if mtype is None:
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
-                                                           'error': _('Invalid file type. Only jpg, png and gif allowed.'), 'files': ufiles})
+                                                           'error': _('Invalid file type. Only jpg, png and gif allowed.'), 'files': ufiles, 'subInfo': subInfo, 'subMods': subMods})
 
     try:
         fhash = storage.calculate_file_hash(ufile, size_limit=remaining)
     except storage.SizeLimitExceededError:
         return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'storage': int(remaining - (1024 * 1024)),
-                                                           'error': _('Not enough available space to upload file.'), 'files': ufiles})
+                                                           'error': _('Not enough available space to upload file.'), 'files': ufiles, 'subInfo': subInfo, 'subMods': subMods})
 
     basename = str(uuid.uuid5(storage.FILE_NAMESPACE, fhash))
     f_name = storage.store_file(ufile, basename, mtype, remove_metadata=True)
