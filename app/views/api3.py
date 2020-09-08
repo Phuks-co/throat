@@ -2,18 +2,18 @@
 
 import datetime
 import uuid
-import requests
+from email_validator import EmailNotValidError
 from flask import Blueprint, jsonify, request, url_for
 from peewee import JOIN, fn
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
 from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
 from .. import misc
 from .. import tasks
-from ..auth import auth_provider
+from ..auth import auth_provider, registration_is_enabled, email_validation_is_required, create_user, normalize_email
 from ..socketio import socketio
 from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, captchas_required
 from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote, SubSubscriber
-from ..models import SiteMetadata, UserMetadata, Message, SubRule, Notification, SubMod
+from ..models import SiteMetadata, UserMetadata, Message, SubRule, Notification, SubMod, InviteCode, UserStatus
 from ..caching import cache
 from ..config import config
 
@@ -23,7 +23,7 @@ JWT = JWTManager()
 
 
 @API.errorhandler(429)
-def ratelimit_handler(e):
+def ratelimit_handler(_):
     return jsonify(msg="Rate limited. Please try again later"), 429
 
 
@@ -61,6 +61,94 @@ def login():
     return jsonify(access_token=access_token, refresh_token=refresh_token, username=user.name), 200
 
 
+@API.route('/register', methods=['GET'])
+def register_params():
+    return {
+        'enabled': registration_is_enabled(),
+        'mandatory': {
+            'email': email_validation_is_required(),
+            'invite_code': misc.enableInviteCode()
+        }
+    }
+
+
+@API.route('/register', methods=['POST'])
+@ratelimit(AUTH_LIMIT)
+def register():
+    """ Creates a new account.
+    Params (json):
+        - username
+        - password
+        - email (may be optional)
+        - invite_code (may be optional)
+
+    Check GET /register to see if email and invite codes are mandatory.
+    Returns:
+        - HTTP code 423: Challenge required (captcha or other)
+        - HTTP 403: Registration disabled
+        - HTTP 200: User successfully registered. Check the `status` field, if status == 1 then e-mail validation is
+        required
+    """
+    if not request.is_json:
+        return jsonify(msg="Missing JSON in request"), 400
+    username = request.json.get('username', None)
+    password = request.json.get('password', None)
+    email = request.json.get('email', None)
+    invite_code = request.json.get('invite_code', None)
+    check_challenge()
+
+    if not username or not password:
+        return jsonify(msg="Missing mandatory parameters"), 403
+
+    if not registration_is_enabled():
+        return jsonify(msg="Registration disabled"), 403
+
+    if email_validation_is_required() and email is None:
+        return jsonify(msg="E-mail is mandatory"), 401
+
+    if not misc.allowedNames.match(username):
+        return jsonify(msg="Invalid username"), 401
+    if email:
+        try:
+            email = normalize_email(email)
+        except EmailNotValidError:
+            return jsonify(msg="Invalid email"), 401
+        if misc.is_domain_banned(email, domain_type='email'):
+            return jsonify(msg="Email not allowed"), 401
+
+    existing_user = None
+    try:
+        existing_user = User.get(fn.Lower(User.name) == username.lower())
+        jointime = (datetime.datetime.utcnow() - existing_user.joindate)
+        if existing_user.status != UserStatus.PROBATION or jointime.days < 2:
+            return jsonify(msg="Username already in use"), 401
+    except User.DoesNotExist:
+        pass
+
+    if len(password) < 7:
+        return jsonify(msg="Password too short"), 401
+
+    if len(username) < 2:
+        return jsonify(msg="Username too short"), 401
+
+    if misc.enableInviteCode():
+        if invite_code is None:
+            return jsonify(msg="E-mail is mandatory"), 401
+        try:
+            InviteCode.get_valid(invite_code)
+        except InviteCode.DoesNotExist:
+            return jsonify(msg="Invalid invite code"), 401
+
+        InviteCode.update(uses=InviteCode.uses + 1).where(InviteCode.code == invite_code).execute()
+
+    user = create_user(username, password, email, invite_code, existing_user)
+    return {
+        'status': user.status,
+        'username': user.name,
+        'email': user.email,
+    }
+
+
 @API.route('/refresh', methods=['POST'])
 @jwt_refresh_token_required
 def refresh():
@@ -82,6 +170,8 @@ def refresh():
 @ratelimit(AUTH_LIMIT)
 def fresh_login():
     """ Returns a fresh access token. Requires username and password """
+    if not request.is_json:
+        return jsonify(msg="Missing JSON in request"), 400
     username = request.json.get('username', None)
     password = request.json.get('password', None)
     try:
@@ -89,7 +179,7 @@ def fresh_login():
     except User.DoesNotExist:
         return jsonify(msg="Bad username or password"), 401
 
-    if not auth_provider.validate_password(user):
+    if not auth_provider.validate_password(user, password):
         return jsonify(msg="Bad username or password"), 401
 
     new_token = create_access_token(identity=user.uid, fresh=True)
@@ -237,6 +327,8 @@ def get_post(sub, pid):
 @jwt_required
 def edit_post(sub, pid):
     uid = get_jwt_identity()
+    if not request.is_json:
+        return jsonify(msg="Missing JSON in request"), 400
     content = request.json.get('content', None)
     if not content:
         return jsonify(msg="Content parameter required"), 400
@@ -319,6 +411,8 @@ def delete_post(sub, pid):
 def vote_post(sub, pid):
     """ Logs an upvote to a post. """
     uid = get_jwt_identity()
+    if not request.is_json:
+        return jsonify(msg="Missing JSON in request"), 400
     value = request.json.get('upvote', None)
     if type(value) is not bool:
         return jsonify(msg="Upvote must be true or false")
@@ -599,6 +693,8 @@ def chall_wrong(error):
 
 
 def check_challenge():
+    if config.app.development:
+        return True
     if captchas_required():
         challenge_token = request.json.get('challengeToken')
         challenge_response = request.json.get('challengeResponse')

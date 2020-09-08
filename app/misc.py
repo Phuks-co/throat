@@ -1311,6 +1311,7 @@ def create_reportlog(action, uid, id, type='', related=False, original_report=''
     elif type == 'comment' and related == True:
         CommentReportLog.create(action=action, uid=uid, id=id, desc=original_report)
 
+
 def is_domain_banned(addr, domain_type):
     if domain_type == 'link':
         key = 'banned_domain'

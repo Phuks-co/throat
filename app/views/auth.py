@@ -10,11 +10,11 @@ from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired, BadSignature
 from .. import misc, config
 from ..auth import auth_provider, registration_is_enabled, email_validation_is_required
-from ..auth import normalize_email
+from ..auth import normalize_email, create_user
 from ..forms import LoginForm, RegistrationForm, ResendConfirmationForm
 from ..misc import engine, send_email, is_domain_banned
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
-from ..models import User, UserMetadata, UserStatus, InviteCode, SubSubscriber, Sub, rconn
+from ..models import User, UserStatus, InviteCode, rconn, UserMetadata
 
 bp = Blueprint('auth', __name__)
 
@@ -71,8 +71,8 @@ def register():
         return engine.get_template('user/registration_disabled.html').render({'test': 'test'})
 
     if not form.validate():
-       return engine.get_template('user/register.html').render({'error': misc.get_errors(form, True),
-                                                                'regform': form, 'captcha': captcha})
+        return engine.get_template('user/register.html').render({'error': misc.get_errors(form, True),
+                                                                 'regform': form, 'captcha': captcha})
 
     if not misc.validate_captcha(form.ctok.data, form.captcha.data):
         return engine.get_template('user/register.html').render({'error': _("Invalid captcha."),
@@ -125,12 +125,7 @@ def register():
                 {'error': _("Invalid invite code."), 'regform': form, 'captcha': captcha})
         # Check if there's a valid invite code in the database
         try:
-            invcode = InviteCode.get((InviteCode.code == form.invitecode.data) &
-                                     (InviteCode.expires.is_null() | (
-                                             InviteCode.expires > datetime.utcnow())))
-            if invcode.uses >= invcode.max_uses:
-                return engine.get_template('user/register.html').render(
-                    {'error': _("Invalid invite code."), 'regform': form, 'captcha': captcha})
+            InviteCode.get_valid(form.invitecode.data)
         except InviteCode.DoesNotExist:
             return engine.get_template('user/register.html').render(
                 {'error': _("Invalid invite code."), 'regform': form, 'captcha': captcha})
@@ -138,36 +133,7 @@ def register():
         InviteCode.update(uses=InviteCode.uses + 1).where(
             InviteCode.code == form.invitecode.data).execute()
 
-    status = UserStatus.PROBATION if email_validation_is_required() else UserStatus.OK
-    if existing_user is not None:
-        user = existing_user
-        user.email = email
-        auth_provider.set_email_verified(user, False)
-        user.status = status
-        user.joindate = datetime.utcnow()
-        auth_provider.reset_password(user, form.password.data)
-        user = User.get(User.uid == user.uid)
-    else:
-        user = auth_provider.create_user(name=form.username.data, password=form.password.data,
-                                         email=email, verified_email=False, status=status)
-
-    if existing_user is not None:
-        try:
-            umd = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key =='invitecode'))
-            umd.key = "previous_invitecode"
-            umd.save()
-        except UserMetadata.DoesNotExist:
-            pass
-
-    if misc.enableInviteCode():
-        UserMetadata.create(uid=user.uid, key='invitecode', value=form.invitecode.data)
-
-    if existing_user is not None:
-        defaults = misc.getDefaultSubs()
-        subs = [{'uid': user.uid, 'sid': x['sid'], 'status': 1, 'time': datetime.utcnow()} for x in defaults]
-        SubSubscriber.insert_many(subs).execute()
-        Sub.update(subscribers=Sub.subscribers + 1).where(
-            Sub.sid << [x['sid'] for x in defaults]).execute()
+    user = create_user(form.username.data, form.password.data, email, form.invitecode.data, existing_user)
 
     if email_validation_is_required():
         send_login_link_email(user)
@@ -192,7 +158,7 @@ def send_login_link_email(user):
 def user_from_login_token(token):
     try:
         s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"], salt="login")
-        info = s.loads(token, max_age=8*60*60) # TODO in config?
+        info = s.loads(token, max_age=8*60*60)  # TODO in config?
         return User.get((User.uid == info["uid"]) & (User.resets == info.get("resets", 0)))
     except (SignatureExpired, BadSignature, User.DoesNotExist):
         return None
