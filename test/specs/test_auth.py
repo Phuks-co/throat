@@ -1,3 +1,4 @@
+from datetime import timedelta
 import json
 import pytest
 from bs4 import BeautifulSoup
@@ -6,6 +7,7 @@ from flask import url_for
 from app import mail
 from app.config import config
 from app.auth import auth_provider, email_validation_is_required
+from app.models import User, UserStatus
 
 from pytest_flask.fixtures import client
 from test.fixtures import *
@@ -314,3 +316,47 @@ def test_delete_account(client, user_info):
 
 # TODO deleted users should be able to make a new account with the
 # same email but banned users should not
+
+@pytest.mark.parametrize('test_config', [{'auth': {'require_valid_emails': True}}])
+def test_reregister(client, user_info, user2_info):
+    "A user account which is unconfirmed after two days can be re-registered."
+    rv = client.get(url_for('auth.register'))
+    data = dict(csrf_token=csrf_token(rv.data),
+                username=user_info['username'],
+                password=user_info['password'],
+                confirm=user_info['password'],
+                invitecode='',
+                accept_tos=True,
+                email_required=user_info['email'],
+                captcha='xyzzy')
+    rv = client.post(url_for('auth.register'), data=data, follow_redirects=True)
+
+    new_user = User.get(User.name == user_info['username'])
+    assert new_user.status == UserStatus.PROBATION
+    new_user.joindate -= timedelta(days=3)
+    new_user.save()
+
+    rv = client.get(url_for('auth.register'))
+    with mail.record_messages() as outbox:
+        data = dict(csrf_token=csrf_token(rv.data),
+                    username=user_info['username'],
+                    password=user_info['password'],
+                    confirm=user_info['password'],
+                    invitecode='',
+                    email_required = user2_info['email'],
+                    accept_tos=True,)
+        rv = client.post(url_for('auth.register'), data=data,
+                         follow_redirects=True)
+
+        assert b'spam' in rv.data  # Telling user to go check it.
+        message = outbox[-1]
+        assert message.send_to == {user2_info['email']}
+        soup = BeautifulSoup(message.html, 'html.parser')
+        token = soup.a['href'].split('/')[-1]
+        rv = client.get(url_for('auth.login_with_token', token=token),
+                        follow_redirects=True)
+        assert b'Log out' in rv.data
+
+    assert auth_provider.get_user_by_email(user_info['email']) == None
+    assert (auth_provider.get_user_by_email(user2_info['email']).name ==
+            user_info['username'])

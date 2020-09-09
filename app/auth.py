@@ -12,7 +12,7 @@ from keycloak.exceptions import KeycloakError, KeycloakGetError
 from peewee import fn
 
 from .config import config
-from .models import User, UserMetadata, UserAuthSource, UserCrypto, UserStatus, SiteMetadata
+from .models import User, UserMetadata, UserAuthSource, UserCrypto, UserStatus, SiteMetadata, Sub, SubSubscriber
 from .misc import logger
 from . import misc
 
@@ -54,8 +54,8 @@ class AuthProvider:
                                                 realm_name=cfg.user_realm,
                                                 user_realm_name=cfg.admin_realm,
                                                 client_id=cfg.admin_client,
-		                                client_secret_key=cfg.admin_secret,
-		                                verify=True,
+                                                client_secret_key=cfg.admin_secret,
+                                                verify=True,
                                                 auto_refresh_token=['get', 'put', 'post', 'delete'])
 
             self.keycloak_openid = KeycloakOpenID(server_url=cfg.server,
@@ -63,7 +63,6 @@ class AuthProvider:
                                                   client_secret_key=cfg.auth_secret,
                                                   realm_name=cfg.user_realm,
                                                   verify=True)
-
 
     def get_user_by_email(self, email):
         try:
@@ -260,7 +259,8 @@ class AuthProvider:
         elif self.provider == 'KEYCLOAK':
             if auth_source == UserAuthSource.KEYCLOAK:
                 self.keycloak_admin.update_user(user_id=self.get_user_remote_uid(user),
-                                                payload={'emailVerified': value})
+                                                payload={'email': user.email,
+                                                         'emailVerified': value})
             else:
                 raise AuthError
         self._set_email_verified(user, value)
@@ -341,7 +341,7 @@ class AuthProvider:
 
     def actually_delete_user(self, user):
         # Used by automatic tests to clean up test realm on server.
-        # You should probably be using mark_user_deleted.
+        # You should probably be using change_user_status.
         if user.crypto == UserCrypto.REMOTE:
             self.keycloak_admin.delete_user(self.get_user_remote_uid(user))
 
@@ -366,3 +366,32 @@ def email_validation_is_required():
 
 def normalize_email(email):
     return validate_email(email, check_deliverability=False)['email']
+
+
+def create_user(username, password, email, invite_code, existing_user):
+    status = UserStatus.PROBATION if email_validation_is_required() else UserStatus.OK
+    if existing_user is not None:
+        user = existing_user
+        user.email = email
+        auth_provider.set_email_verified(user, False)
+        user.status = status
+        user.joindate = datetime.utcnow()
+        auth_provider.reset_password(user, password)
+        user = User.get(User.uid == user.uid)
+        try:
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == 'invitecode'))
+            umd.key = "previous_invitecode"
+            umd.save()
+        except UserMetadata.DoesNotExist:
+            pass
+    else:
+        user = auth_provider.create_user(name=username, password=password,
+                                         email=email, verified_email=False, status=status)
+    if misc.enableInviteCode():
+        UserMetadata.create(uid=user.uid, key='invitecode', value=invite_code)
+
+    defaults = misc.getDefaultSubs()
+    subs = [{'uid': user.uid, 'sid': x['sid'], 'status': 1, 'time': datetime.utcnow()} for x in defaults]
+    SubSubscriber.insert_many(subs).execute()
+    Sub.update(subscribers=Sub.subscribers + 1).where(Sub.sid << [x['sid'] for x in defaults]).execute()
+    return user

@@ -694,6 +694,17 @@ class InviteCode(BaseModel):
     uses = IntegerField(default=0)
     max_uses = IntegerField()
 
+    @classmethod
+    def get_valid(cls, invite_code):
+        """ Returns a valid invite code
+        @raise InviteCode.DoesNotExist
+        """
+
+        return InviteCode.select()\
+            .where(InviteCode.code == invite_code)\
+            .where(InviteCode.expires.is_null() | (InviteCode.expires > datetime.datetime.utcnow()))\
+            .where(InviteCode.max_uses < InviteCode.uses)
+
     def __repr__(self):
         return f'<InviteCode {self.code}>'
 
