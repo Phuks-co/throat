@@ -184,6 +184,9 @@ def invitecodes(page, error=None):
     for code in invite_codes:
         code['style'] = map_style(code)
         code['used_by'] = used_by.get(code['code'], [])
+        code['created'] = code['created'].strftime("%Y-%m-%dT%H:%M:%SZ")
+        if code['expires'] is not None:
+            code['expires'] = code['expires'].strftime("%Y-%m-%dT%H:%M:%SZ")
 
     invite_form = UseInviteCodeForm()
 

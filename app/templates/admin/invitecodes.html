@@ -70,8 +70,8 @@
                 {{code.code}}
               </td>
               <td><a href="{{url_for('user.view', user=code.created_by)}}">{{code.created_by}}</a></td>
-              <td>{{code.created}}</td>
-              <td>{{code.expires}}</td>
+              <td data-timefmt="datetime">{{code.created}}</td>
+              <td data-timefmt="datetime">{{code.expires}}</td>
               <td>{{code.uses}}</td>
               <td>{{code.max_uses}}</td>
               <td>
