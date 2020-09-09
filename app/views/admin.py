@@ -172,7 +172,8 @@ def invitecodes(page, error=None):
         InviteCode.max_uses,
     ).join(User).order_by(InviteCode.uses.desc(), InviteCode.created.desc()).paginate(page, 50).dicts()
 
-    code_users = UserMetadata.select(User.name.alias('used_by'), UserMetadata.value.alias("code")).where(
+    code_users = UserMetadata.select(User.name.alias('used_by'), User.status,
+                                     UserMetadata.value.alias("code")).where(
             (UserMetadata.key == 'invitecode') & 
                 (UserMetadata.value << set([x['code'] for x in invite_codes]))).join(User).dicts()
 
@@ -180,7 +181,7 @@ def invitecodes(page, error=None):
     for user in code_users:
         if not user['code'] in used_by:
             used_by[user['code']] = []
-        used_by[user['code']].append(user['used_by'])
+        used_by[user['code']].append((user['used_by'], user['status']))
 
     update_form = UpdateInviteCodeForm()
 

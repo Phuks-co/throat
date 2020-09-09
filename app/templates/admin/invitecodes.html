@@ -80,9 +80,23 @@
               <td>{{code.uses}}</td>
               <td>{{code.max_uses}}</td>
               <td>
-                <ul>
-                {% for user in code.used_by %}
-                  <li><a href="{{url_for('user.view', user=user)}}">{{user}}</a></li>
+                <ul class="invitecode-users">
+                  {% for user in code.used_by %}
+                  <li>
+                    {% if user[1] == 10 %}
+                      {{user[0]}}&nbsp;({{_('Deleted')}})
+                    {% else %}
+                    <a href="{{url_for('user.view', user=user[0])}}">
+                      {% if user[1] == 1 %}
+                        {{user[0]}} ({{_('Pending')}})
+                      {% elif user[1] == 5 %}
+                        {{user[0]}} ({{_('Banned')}})
+                      {% else %}
+                        {{user[0]}}
+                      {% endif %}
+                    </a>
+                    {% endif %}
+                  </li>
                 {% endfor %}
                 </ul>
               </td>
