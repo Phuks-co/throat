@@ -2,7 +2,7 @@
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, TextAreaField
-from wtforms import IntegerField
+from wtforms import IntegerField, RadioField, FieldList
 from wtforms.validators import DataRequired, Length, Regexp
 from flask_babel import lazy_gettext as _l
 
@@ -39,6 +39,16 @@ class UseInviteCodeForm(FlaskForm):
     enableinvitecode = BooleanField(_l('Enable invite code to register'))
     minlevel = IntegerField(_l("Minimum level to create invite codes"))
     maxcodes = IntegerField(_l("Max amount of invites per user"))
+
+
+class UpdateInviteCodeForm(FlaskForm):
+    """ Update the expiration dates of selected invitecodes. """
+    codes = FieldList(BooleanField(default=False))
+    etype = RadioField(_l('Change selected codes to expire:'),
+                       choices=[('never', _l('Never')), ('now', _l('Now')), ('at', _l('At:'))],
+                       default='now',
+                       validators=[DataRequired()])
+    expires = StringField(_l("Expiration date"))
 
 
 class TOTPForm(FlaskForm):

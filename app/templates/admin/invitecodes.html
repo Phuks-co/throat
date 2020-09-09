@@ -51,21 +51,26 @@
     <hr>
     <div class="admin section invitecodes_table">
       <h2>Invite Codes</h2>
-      <table class="sortable pure-table invitecodes">
-        <thead>
-          <tr>
-            <th>Code</th>
-            <th>Created By</th>
-            <th>Created On</th>
-            <th>Expires</th>
-            <th>Uses</th>
-            <th>Max Uses</th>
-            <th>Used By</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for code in invite_codes %}
+      <form method="POST" class="pure-form">
+        <table class="sortable pure-table invitecodes">
+          <thead>
             <tr>
+              <th></th>
+              <th>Code</th>
+              <th>Created By</th>
+              <th>Created On</th>
+              <th>Expires</th>
+              <th>Uses</th>
+              <th>Max Uses</th>
+              <th>Used By</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for code in invite_codes %}
+            <tr>
+              <td>
+                <input id="codes-{{loop.index0}}" name="codes-{{loop.index0}}" type="checkbox">
+              </td>
               <td class="{{code.style}}">
                 {{code.code}}
               </td>
@@ -82,9 +87,22 @@
                 </ul>
               </td>
             </tr>
-          {% endfor %}
+            {% endfor %}
         </tbody>
       </table>
+        {{ update_form.csrf_token() }}
+        <p>{{ update_form.etype.label }}</p>
+        <tr>
+          {% for subfield in update_form.etype %}
+            <td>{{ subfield }}</td>
+            <td>{{ subfield.label }}</td>
+          {% endfor %}
+          <td><input name="expires" type="text" class="date-picker-future" placeholder="Expiration"> </td>
+          </tr>
+        <p>
+          <button type="submit" class="pure-button pure-button-primary">Change Expiration</button>
+        </p>
+      </form>
       {% if page > 1 %}
         <a href="{{url_for('admin.invitecodes', page=(page-1))}}" class="pure-button">Previous Page</a>
       {% endif %}

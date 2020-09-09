@@ -13,7 +13,8 @@ from .sub import CreateSubFlair, DeleteSubFlair, VoteForm, DeleteCommentForm, Cr
 from .sub import UndeleteCommentForm, CreateReportNote
 from .admin import EditModForm
 from .admin import BanDomainForm, UseInviteCodeForm, AssignUserBadgeForm
-from .admin import SecurityQuestionForm, TOTPForm, WikiForm, CreateInviteCodeForm
+from .admin import SecurityQuestionForm, TOTPForm, WikiForm
+from .admin import CreateInviteCodeForm, UpdateInviteCodeForm
 
 
 class DummyForm(FlaskForm):
