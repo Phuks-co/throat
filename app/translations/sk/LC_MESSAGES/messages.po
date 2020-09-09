@@ -1639,7 +1639,7 @@ msgstr "Hľadať skupinu..."
 
 #: app/html/sub/createpost.html:48
 msgid "Options"
-msgstr "Voľby"
+msgstr "Možnosti"
 
 #: app/html/sub/createpost.html:56 app/html/sub/mods.html:53
 #: app/html/sub/mods.html:71 app/static/js/Poll.js:24
