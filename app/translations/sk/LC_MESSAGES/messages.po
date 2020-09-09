@@ -1676,7 +1676,7 @@ msgstr "Hlasovanie ukončiť o..."
 
 #: app/html/sub/createpost.html:122
 msgid "Submit post"
-msgstr "Odošli príspevok"
+msgstr "Pridaj príspevok"
 
 #: app/html/sub/createpost.html:127 app/html/sub/post.html:319
 #: app/static/js/Post.js:299 app/static/js/Post.js:354
