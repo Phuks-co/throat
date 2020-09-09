@@ -12,11 +12,7 @@
     @if current_user.is_subban(sub):
       <div>@{_('You are currently banned from posting.')}</div>
     @else:
-      <a href="@{url_for('subs.submit', ptype='text', sub=sub['name'])}" class="sbm-post pure-button">@{_('Submit a text post')}</a>
-      <a href="@{url_for('subs.submit', ptype='link', sub=sub['name'])}" class="sbm-post pure-button">@{_('Submit a link post')}</a>
-      @if subInfo.get('allow_polls', 0) == '1':
-        <a href="@{url_for('subs.submit', ptype='poll', sub=sub['name'])}" class="sbm-post pure-button">@{_('Submit a poll')}</a>
-      @end
+      <a href="@{url_for('subs.submit', ptype='text', sub=sub['name'])}" class="sbm-post pure-button">@{_('Submit a post')}</a>
     @endif
   @end
 @end
