@@ -5,7 +5,7 @@
 </form>
 
 @if current_user.is_authenticated:
-<a href="@{url_for('subs.submit', ptype='text', sub='')}" class="sbm-post pure-button">@{_('Submit post')}</a>
+<a href="@{url_for('subs.submit', ptype='link', sub='')}" class="sbm-post pure-button">@{_('Submit a post')}</a>
 <hr>
 <a href="@{url_for('home.view_subs')}" class="sbm-post pure-button">@{_('View all subs')}</a>
 <a href="@{url_for('subs.random_sub')}" class="sbm-post pure-button">@{_('Go to random sub')}</a>
