@@ -1,14 +1,14 @@
 /* dark mode styles */
 body.dark .th-l-stroke[stroke="#fff"] {
-    stroke: #ff6d15;
+    stroke: #1ea4f4;
 }
 
 body.dark .th-l-fill[fill="#fff"] {
-    fill: #ff6d15;
+    fill: #1ea4f4;
 }
 
 body.dark code, body.dark pre{
-  background: #161616;
+  background: #202225;
 }
 
 body.dark .profilebadge path:not(.nocolor) {
@@ -20,8 +20,8 @@ body.dark .th-toggle .bar{
 }
 
 body.dark {
-  background-color: #0a0a0a;
-  color: #7d7d7d;
+  background-color: #36393f;
+  color: #dcd8d9;
 }
 
 body.dark a {
@@ -29,7 +29,7 @@ body.dark a {
 }
 
 body.dark div.author a {
-  color: #ab4409;
+  color: #2415a7d;
 }
 
 body.dark div.author a.authorlink{
@@ -38,11 +38,11 @@ body.dark div.author a.authorlink{
 
 body.dark .content,
 body.dark #container2 {
-  color: #777;
+  color: #d4d4d4;
 }
 
 body.dark .hasmail i{
-  color: #e14f00;
+  color: #268ef4;
 }
 
 body.dark #toggledark i {
@@ -65,7 +65,7 @@ body.dark div#sortbuttons {
 
 body.dark a:hover,
 body.dark #sortbuttons a:hover{
-  color: #d17262;
+  color: #1ea4f4;
 }
 
 body.dark .post .domain a,
@@ -76,7 +76,7 @@ body.dark .post .domain {
 /* Header */
 
 body.dark .th-navbar {
-  background-color: #000;
+  background-color: #2f3136;
   -webkit-box-shadow: 0 3px 5px 0 rgba(0,0,0,0.75);
   -moz-box-shadow: 0 3px 5px 0 rgba(0,0,0,0.75);
   box-shadow: 0 3px 5px 0 rgba(0,0,0,0.75);
@@ -85,8 +85,8 @@ body.dark .th-navbar {
 /* Sub bar */
 
 body.dark .th-subbar{
-  background-color: #000;
-  border-bottom: 1px solid #aa4509;
+  background-color: #202225;
+  border-bottom: 1px solid #40444b;
 }
 
 body.dark .th-subbar ul li {
@@ -98,16 +98,16 @@ body.dark .th-subbar a {
 }
 
 body.dark .th-subbar a:hover {
-    color: #ff6d15;
+    color: #1ea4f4;
 }
 
 /* Posts */
 
 body.dark .comments article.comment.highlight{
-  background-color: rgba(64, 64, 61, 0.35);
+  background-color:#40444b;
 }
 body.dark .post:nth-child(2n) {
-  background-color: #0d0d0d;
+  background-color: #40444b;
     -webkit-box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.4);
     -moz-box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.4);
     box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.4);
@@ -124,11 +124,11 @@ body.dark .post .title {
 }
 
 body.dark .post a.title:hover {
-  color: #ff6d15;
+  color: #1ea4f4;
 }
 
 body.dark .post .title:visited {
-  color: #d95204;
+  color: #888;
   }
 
 body.dark .thumbnail .placeholder svg path {
@@ -147,8 +147,9 @@ body.dark .pure-button.button-transparent, body.dark .pure-button.button-transpa
 
 body.dark .button-secondary,
 body.dark .pure-button {
-  background: rgba(51, 51, 51, 0.5);
-  color: #ddd;
+  background: #202225;
+  color: #b9bbbe;
+  border:1px solid transparent;
 }
 
 body.dark .inboxside .button-secondary {
@@ -157,12 +158,12 @@ body.dark .inboxside .button-secondary {
 
 body.dark .button-secondary:hover,
 body.dark .pure-button:hover {
-  background: rgba(51, 51, 51, 0.8);
-  color: #ffffff;
+  background: #40444b;
+  color: #b9bbbe;
 }
 
 body.dark .pure-button-primary {
-  background-color: #161616;
+  background-color: #202225;
 }
 
 body.dark a#nextp,
@@ -176,7 +177,7 @@ body.dark a#prevp:hover {
 }
 
 body.dark .pure-button.button-warning {
-  background: #ab1010;
+  background: #202225;
 }
 
 
@@ -188,13 +189,13 @@ body.dark .expando {
 
 body.dark .post .expandotxt,
 body.dark .post:nth-child(2n) .expandotxt {
-    background-color: #202020;
+    background-color: #202225;
     color: #aaa;
 }
 
 body.dark .pure-control-group label,
 body.dark .form label {
-    color: #a63c00;
+    color: #526a7d;
 }
 
 body.dark input[type="text"]:not(.numInput),
@@ -203,14 +204,14 @@ body.dark input[type="url"],
 body.dark textarea,
 body.dark input[type="password"],
 body.dark select {
-  color: #ffffff;
-  background-color: #252525;
+  color: #d7ddde;
+  background-color: #40444b;
   box-shadow: inset 0 1px 3px #303030;
   border-color: #444;
 }
 
 body.dark textarea {
-  background-color: #000;
+  background-color: #a0a0a0;
 }
 
 body.dark{
@@ -218,7 +219,8 @@ body.dark{
 }
 
 body.dark .post-content-container, body.dark .poll-space{
-  background: #111;
+  background: #40444b;
+  color:#b9bbbe
 }
 body.dark .editbtns{
   border-color: #444;
@@ -246,8 +248,9 @@ body.dark input#buyamount ~ b {
 
 /* Sidebar */
 body.dark .sidebar{
-  background-color: #0d0d0d;
-  border-left: solid 1px #000;
+  background-color: #2f3136;
+  border: solid 1px #202225;
+  
 }
 
 body.dark .sidebar h4 {
@@ -255,9 +258,9 @@ body.dark .sidebar h4 {
 }
 
 body.dark input[type="search"] {
-  background-color: #000;
+  background-color: #202225 ;
   color: #fff;
-  border-color: black;
+  border-color: #40444b;
 }
 
 body.dark .sidebar ul.top5 li a {
@@ -274,7 +277,7 @@ body.dark .pmessage.post p.title {
     border-bottom: 1px solid #343434;
 }
 body.dark .pmessage.post {
-    background-color: #000000;
+    background-color: #2f3136;
 }
 
 body.dark .pmessage.post p.container a{
@@ -297,7 +300,7 @@ body.dark .pmessage p.container a.savedmsg {
 }
 
 body.dark .pmessage.post:nth-child(2n) {
-    background-color: #0d0d0d;
+    background-color: #202225;
 }
 
 body.dark .modal-content,
@@ -340,16 +343,16 @@ body.dark .uprofile.content {
     background: rgba(0, 0, 0, 0.9);
 }
 body.dark article.comment {
-    background-color: #101010;
+    background-color: #40444b;
 }
 body.dark article.comment:nth-child(2n) {
-    background-color: #0d0d0d;
+    background-color: #393c42;
 }
 /* /USER PAGE */
 
 /* misc */
 body.dark span.mailcount {
-  background: red;
+  background: #6f1818;
 }
 body.dark table td, body.dark table th, body.dark table{
   border-color: #4e4e4e;
@@ -357,10 +360,10 @@ body.dark table td, body.dark table th, body.dark table{
 body.dark table thead{
   background-color: #5c5c5c;
 }
-body.dark path[stroke="#ff6d15"] {
+body.dark path[stroke="#1ea4f4"] {
     stroke: #7b4a3f;
 }
-body.dark path[fill="#ff6d15"] {
+body.dark path[fill="#1ea4f4"] {
     fill: #7b4a3f;
 }
 body.dark .mod2-inv{background-color: #060606;}
@@ -387,14 +390,15 @@ body.dark #chtitle:hover{
   background: #000;
 }
 body.dark #chtitle {
-  background: #0d0d0d;
+  background: #202225;
   color: #ccc;
+  border-bottom:1px solid #40444b
 }
 body.dark #chpop {
-  background: #000;
-  border-top: 1px solid #d94f00;
-  border-left: 1px solid #d94f00;
-  border-right: 1px solid #d94f00;
+  background: #202225;
+  border-top: 1px solid #40444b;
+  border-left: 1px solid #40444b;
+  border-right: 1px solid #40444b;
 }
 body.dark #chcont {
   border-bottom: none;
@@ -402,7 +406,7 @@ body.dark #chcont {
 }
 
 body.dark #chsend {
-    background-color: #0d0d0d;
+    background-color: #40444b;
 }
 
 body.dark .msg-hl{
@@ -434,7 +438,7 @@ body.dark .admin_alert .btn_link{
   color: #1b006f;
 }
 
-body.dark .editbar path {fill: #d25309;}
+body.dark .editbar path {fill: #ccccc3;}
 
 body.dark #hiddensubs{
   background: #000;
@@ -478,17 +482,17 @@ body.dark .bot-tag{
 /* deleted comments and posts view for mods and admins */
 body.dark .mod.report.preview .preview-text-container.deleted {
   background-color: #171717;
-  border: 1px solid red;
+  border: 1px solid #6f1818;
 }
 
 body.dark .mod.report.preview .preview-text-container.deleted.post-content-container {
   background-color: #171717;
-  border: 1px solid red;
+  border: 1px solid #6f1818;
 }
 
 body.dark article.text-post.comment.deleted {
   background-color: #171717;
-  border: 1px solid red;
+  border: 1px solid #6f1818 ;
 }
 
 body.dark .post-content-container.deleted {
@@ -497,12 +501,12 @@ body.dark .post-content-container.deleted {
 
 body.dark .postbar.post.deleted {
   background-color: #171717;
-  border: 1px solid red;
+  border: 1px solid #6f1818;
 }
 
 body.dark .poll-space.deleted {
   background-color: #171717;
-  border: 1px solid red;
+  border: 1px solid #6f1818;
 }
 
 body.dark .browse-history {
@@ -540,7 +544,7 @@ body.dark #sortby{
 }
 
 body.dark .pure-menu-item a{
-  background: #171717;
+  background: #806767;
   color: #fff
 }
 
@@ -551,4 +555,28 @@ body.dark .pure-menu-item a:hover{
 
 body.dark .pure-menu-children {
     border-color: #333;
+}
+body.dark .stickyposts {
+    border-bottom: 1px solid #40444b;
+}
+
+body.dark .expando {
+    background-color: #202225!important;
+}
+
+body.dark .expando svg path {
+    fill: #ccc;
+}
+
+body.dark .announcement {
+    padding: 3px;
+    margin-right: .5em;
+    border-radius: 5px;
+    color: white;
+    background-color: #526a7d;
+    font-size: small;
+}
+
+body.dark .commenthead {
+color: #bbbbbb;
 }
