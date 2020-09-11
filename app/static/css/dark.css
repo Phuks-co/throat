@@ -46,7 +46,7 @@ body.dark .hasmail i{
 }
 
 body.dark #toggledark i {
-    color: #ff0;
+    color: #526a7d;
 }
 body.dark .postflair {
   background-color: #000;
@@ -60,7 +60,7 @@ body.dark div#sortbuttons span {
 }
 
 body.dark div#sortbuttons {
-  color: #7b4a3f;
+  color: #526a7d;
 }
 
 body.dark a:hover,
@@ -136,7 +136,7 @@ body.dark .thumbnail .placeholder svg path {
 }
 
 body.dark .p-icon[data-icon="exclaim"] path {
-    fill: #7b4a34;
+    fill: #526a7d;
 }
 
 /* Buttons */
@@ -264,7 +264,7 @@ body.dark input[type="search"] {
 }
 
 body.dark .sidebar ul.top5 li a {
-    color: #ab4409;
+    color: #526a7d;
 }
 
 body.dark hr {
@@ -286,7 +286,7 @@ body.dark .pmessage.post p.container a{
 
 body.dark .pmessage.post p.container a:hover{
     background-color: rgba(0, 0, 0, 0.5);
-    color: #b66f5f;
+    color: #526a7d;
 }
 
 body.dark .pmessage p.container a.deletedmsg {
@@ -352,7 +352,7 @@ body.dark article.comment:nth-child(2n) {
 
 /* misc */
 body.dark span.mailcount {
-  background: #6f1818;
+  background: #526a7d;
 }
 body.dark table td, body.dark table th, body.dark table{
   border-color: #4e4e4e;
@@ -364,7 +364,7 @@ body.dark path[stroke="#1ea4f4"] {
     stroke: #7b4a3f;
 }
 body.dark path[fill="#1ea4f4"] {
-    fill: #7b4a3f;
+    fill: #526a7d;
 }
 body.dark .mod2-inv{background-color: #060606;}
 
@@ -514,7 +514,7 @@ body.dark .browse-history {
   -moz-box-shadow: none;
   box-shadow: none;
   background-color: #171717;
-  border: 1px solid #d94f00;
+  border: 1px solid #526a7d;
   color: lightgray;
 }
 
@@ -528,11 +528,11 @@ body.dark .browse-history.disabled:focus {
 }
 
 body.dark .browse-history:focus {
-    outline: #d94f00 none;
+    outline: #526a7d none;
 }
 
 body.dark .links a.post-open-reports {
-    color: #d30404;
+    color: #526a7d;
 }
 
 body.dark #sortby{
@@ -584,9 +584,18 @@ color: #bbbbbb;
 body.dark .c-upvote svg, body.dark .c-downvote svg, body.dark .upvote svg, body.dark .downvote svg {
     fill: #c2cccc !important;
 }
-
-body.dark .upvoted path {
+body.dark .upvote path {
     fill: #888888;
+}
+body.dark .upvoted path {
+    fill: #c3cccc;
+}
+body.dark .downvote path {
+    fill: #888888;
+}
+
+body.dark .downvoted path {
+    fill: #242424;
 }
 
 body.dark .postflair {
@@ -601,4 +610,9 @@ body.dark td.subsentry.subsubscribed {
 
 body.dark .stick {
     color: #555555;
+}
+
+body.dark .pblock.level .uprofile-level-box .fill {
+    clip: rect(0px, 60px, 120px, 0px);
+    background-color: #526a7d;
 }
