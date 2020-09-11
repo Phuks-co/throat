@@ -580,3 +580,25 @@ body.dark .announcement {
 body.dark .commenthead {
 color: #bbbbbb;
 }
+
+body.dark .c-upvote svg, body.dark .c-downvote svg, body.dark .upvote svg, body.dark .downvote svg {
+    fill: #c2cccc !important;
+}
+
+body.dark .upvoted path {
+    fill: #888888;
+}
+
+body.dark .postflair {
+    background-color: #3a5173 !important;
+    border: 1px solid #526a7d !important;
+    color:lightgray;
+}
+
+body.dark td.subsentry.subsubscribed {
+    border-left: 4px solid #202225;
+}
+
+body.dark .stick {
+    color: #555555;
+}
