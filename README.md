@@ -19,7 +19,7 @@ We recommend using a virtualenv or Pyenv
 1. Install Python dependencies with `pip install -r requirements.txt`
 2. Install Node dependencies with `npm install`
 3. Build the bundles with `npm run build`
-4. Copy `example.config.yml` to `config.yml` and edit it
+4. Copy `example.config.yaml` to `config.yaml` and edit it
 5. Set up the database by executing `./scripts/migrate.py`
 6. Compile the translation files with `./scripts/genmo.sh`
 
