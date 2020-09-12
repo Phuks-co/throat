@@ -193,6 +193,8 @@ def invitecodes(page, error=None):
             code['expires'] = code['expires'].strftime("%Y-%m-%dT%H:%M:%SZ")
 
     invite_form = UseInviteCodeForm()
+    invite_form.maxcodes.data = invite_settings['invite_max']
+    invite_form.minlevel.data = invite_settings['invite_level']
 
     form = CreateInviteCodeForm()
 

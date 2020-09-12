@@ -26,11 +26,11 @@
                   {{useinvitecodeform.enableinvitecode(checked=func.enableInviteCode())}} {{useinvitecodeform.enableinvitecode.label.text}}
                 </label>
                 <div class="pure-control-group">
-                    <label for="confirm">{{useinvitecodeform.minlevel.label.text}} (current value: {{ invite_settings.invite_level }})</label>
+                    <label for="confirm">{{useinvitecodeform.minlevel.label.text}}</label>
                     {{useinvitecodeform.minlevel(autocomplete="off", required=True)}}
                 </div>
                 <div class="pure-control-group">
-                    <label for="confirm">{{useinvitecodeform.maxcodes.label.text}} (current value: {{ invite_settings.invite_max }})</label>
+                    <label for="confirm">{{useinvitecodeform.maxcodes.label.text}}</label>
                     {{useinvitecodeform.maxcodes(autocomplete="off", required=True)}}
                 </div>
                   <button type="submit" class="pure-button pure-button-primary">Save</button>
