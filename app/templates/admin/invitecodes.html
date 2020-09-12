@@ -52,6 +52,16 @@
     <div class="admin section invitecodes_table">
       <h2>Invite Codes</h2>
       <form method="POST" class="pure-form">
+        {{ update_form.csrf_token() }}
+        <p>{{ update_form.etype.label }}</p>
+        <div style="margin-bottom: 1em;">
+          {% for subfield in update_form.etype %}
+            <td>{{ subfield }}</td>
+            <td>{{ subfield.label }}</td>
+          {% endfor %}
+          <td><input name="expires" type="text" class="date-picker-future" placeholder="Expiration"> </td>
+          <td><button type="submit" class="pure-button pure-button-primary">Change Expiration</button></td>
+        </div>
         <table class="sortable pure-table invitecodes">
           <thead>
             <tr>
@@ -104,18 +114,6 @@
             {% endfor %}
         </tbody>
       </table>
-        {{ update_form.csrf_token() }}
-        <p>{{ update_form.etype.label }}</p>
-        <tr>
-          {% for subfield in update_form.etype %}
-            <td>{{ subfield }}</td>
-            <td>{{ subfield.label }}</td>
-          {% endfor %}
-          <td><input name="expires" type="text" class="date-picker-future" placeholder="Expiration"> </td>
-          </tr>
-        <p>
-          <button type="submit" class="pure-button pure-button-primary">Change Expiration</button>
-        </p>
       </form>
       {% if page > 1 %}
         <a href="{{url_for('admin.invitecodes', page=(page-1))}}" class="pure-button">Previous Page</a>
