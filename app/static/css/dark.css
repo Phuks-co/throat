@@ -584,7 +584,7 @@ color: #bbbbbb;
 body.dark .c-upvote svg, body.dark .c-downvote svg, body.dark .upvote svg, body.dark .downvote svg {
     fill: #c2cccc !important;
 }
-body.dark .upvote path {
+body.dark .upvote path, body.dark .c-upvote path, body.dark .c-downvote path{
     fill: #888888;
 }
 body.dark .upvoted path {
