@@ -2331,24 +2331,8 @@ article.text-post.comment.deleted {
     border: 1px solid #ccc;
 }
 
-.pure-form-aligned .pure-controls {
-    margin: 0px;
-} 
-
-.pure-form-aligned .pure-control-group label {
-    text-align: right;
-    display: inline;
-}
-
-@media only screen and (max-width: 900px) {
-.pure-g{
-    display: block;
-}
-
-.pure-u-1-2{
-    display: block;
-}
-.pure-form-aligned .pure-controls {
-    margin: 0px;
-}    
+.invitecode-users {
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
