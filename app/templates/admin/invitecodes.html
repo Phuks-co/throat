@@ -26,11 +26,11 @@
                   {{useinvitecodeform.enableinvitecode(checked=func.enableInviteCode())}} {{useinvitecodeform.enableinvitecode.label.text}}
                 </label>
                 <div class="pure-control-group">
-                    <label for="confirm">{{useinvitecodeform.minlevel.label.text}} (current value: {{ invite_settings.invite_level }})</label>
+                    <label for="confirm">{{useinvitecodeform.minlevel.label.text}}</label>
                     {{useinvitecodeform.minlevel(autocomplete="off", required=True)}}
                 </div>
                 <div class="pure-control-group">
-                    <label for="confirm">{{useinvitecodeform.maxcodes.label.text}} (current value: {{ invite_settings.invite_max }})</label>
+                    <label for="confirm">{{useinvitecodeform.maxcodes.label.text}}</label>
                     {{useinvitecodeform.maxcodes(autocomplete="off", required=True)}}
                 </div>
                   <button type="submit" class="pure-button pure-button-primary">Save</button>
@@ -51,40 +51,70 @@
     <hr>
     <div class="admin section invitecodes_table">
       <h2>Invite Codes</h2>
-      <table class="sortable pure-table invitecodes">
-        <thead>
-          <tr>
-            <th>Code</th>
-            <th>Created By</th>
-            <th>Created On</th>
-            <th>Expires</th>
-            <th>Uses</th>
-            <th>Max Uses</th>
-            <th>Used By</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for code in invite_codes %}
+      <form method="POST" class="pure-form">
+        {{ update_form.csrf_token() }}
+        <p>{{ update_form.etype.label }}</p>
+        <div style="margin-bottom: 1em;">
+          {% for subfield in update_form.etype %}
+            <td>{{ subfield }}</td>
+            <td>{{ subfield.label }}</td>
+          {% endfor %}
+          <td><input name="expires" type="text" class="date-picker-future" placeholder="Expiration"> </td>
+          <td><button type="submit" class="pure-button pure-button-primary">Change Expiration</button></td>
+        </div>
+        <table class="sortable pure-table invitecodes">
+          <thead>
             <tr>
+              <th></th>
+              <th>Code</th>
+              <th>Created By</th>
+              <th>Created On</th>
+              <th>Expires</th>
+              <th>Uses</th>
+              <th>Max Uses</th>
+              <th>Used By</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for code in invite_codes %}
+            <tr>
+              <td>
+                <input id="codes-{{loop.index0}}" name="codes-{{loop.index0}}" type="checkbox">
+              </td>
               <td class="{{code.style}}">
                 {{code.code}}
               </td>
               <td><a href="{{url_for('user.view', user=code.created_by)}}">{{code.created_by}}</a></td>
-              <td>{{code.created}}</td>
-              <td>{{code.expires}}</td>
+              <td data-timefmt="datetime">{{code.created}}</td>
+              <td data-timefmt="datetime">{{code.expires}}</td>
               <td>{{code.uses}}</td>
               <td>{{code.max_uses}}</td>
               <td>
-                <ul>
-                {% for user in code.used_by %}
-                  <li><a href="{{url_for('user.view', user=user)}}">{{user}}</a></li>
+                <ul class="invitecode-users">
+                  {% for user in code.used_by %}
+                  <li>
+                    {% if user[1] == 10 %}
+                      {{user[0]}}&nbsp;({{_('Deleted')}})
+                    {% else %}
+                    <a href="{{url_for('user.view', user=user[0])}}">
+                      {% if user[1] == 1 %}
+                        {{user[0]}} ({{_('Pending')}})
+                      {% elif user[1] == 5 %}
+                        {{user[0]}} ({{_('Banned')}})
+                      {% else %}
+                        {{user[0]}}
+                      {% endif %}
+                    </a>
+                    {% endif %}
+                  </li>
                 {% endfor %}
                 </ul>
               </td>
             </tr>
-          {% endfor %}
+            {% endfor %}
         </tbody>
       </table>
+      </form>
       {% if page > 1 %}
         <a href="{{url_for('admin.invitecodes', page=(page-1))}}" class="pure-button">Previous Page</a>
       {% endif %}

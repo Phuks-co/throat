@@ -10,7 +10,7 @@ from flask_login import login_required, current_user
 from flask_babel import _
 from .. import misc
 from ..forms import TOTPForm, LogOutForm, UseInviteCodeForm, AssignUserBadgeForm, EditModForm, BanDomainForm, WikiForm
-from ..forms import CreateInviteCodeForm
+from ..forms import CreateInviteCodeForm, UpdateInviteCodeForm
 from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, SubPostCommentVote, SubPostVote, SiteMetadata
 from ..models import UserUploads, InviteCode, Wiki
 from ..misc import engine, getReports
@@ -163,6 +163,7 @@ def invitecodes(page, error=None):
     }
 
     invite_codes = InviteCode.select(
+        InviteCode.id,
         InviteCode.code,
         User.name.alias('created_by'),
         InviteCode.created,
@@ -171,7 +172,8 @@ def invitecodes(page, error=None):
         InviteCode.max_uses,
     ).join(User).order_by(InviteCode.uses.desc(), InviteCode.created.desc()).paginate(page, 50).dicts()
 
-    code_users = UserMetadata.select(User.name.alias('used_by'), UserMetadata.value.alias("code")).where(
+    code_users = UserMetadata.select(User.name.alias('used_by'), User.status,
+                                     UserMetadata.value.alias("code")).where(
             (UserMetadata.key == 'invitecode') & 
                 (UserMetadata.value << set([x['code'] for x in invite_codes]))).join(User).dicts()
 
@@ -179,13 +181,20 @@ def invitecodes(page, error=None):
     for user in code_users:
         if not user['code'] in used_by:
             used_by[user['code']] = []
-        used_by[user['code']].append(user['used_by'])
+        used_by[user['code']].append((user['used_by'], user['status']))
+
+    update_form = UpdateInviteCodeForm()
 
     for code in invite_codes:
         code['style'] = map_style(code)
         code['used_by'] = used_by.get(code['code'], [])
+        code['created'] = code['created'].strftime("%Y-%m-%dT%H:%M:%SZ")
+        if code['expires'] is not None:
+            code['expires'] = code['expires'].strftime("%Y-%m-%dT%H:%M:%SZ")
 
     invite_form = UseInviteCodeForm()
+    invite_form.maxcodes.data = invite_settings['invite_max']
+    invite_form.minlevel.data = invite_settings['invite_level']
 
     form = CreateInviteCodeForm()
 
@@ -202,6 +211,21 @@ def invitecodes(page, error=None):
 
         invite.max_uses = form.uses.data
         invite.save()
+        return redirect(url_for('admin.invitecodes'))
+
+    if update_form.validate_on_submit():
+        if update_form.etype.data == 'at' and update_form.expires.data is None:
+            update_form.etype.data = 'never'
+        ids = [invite_codes[int(code.id.split('-')[1])]['id'] for code in update_form.codes]
+        if ids:
+            if update_form.etype.data == 'now':
+                expires = datetime.datetime.utcnow()
+            elif update_form.etype.data == 'never' or update_form.expires.data is None:
+                expires = None
+            else:
+                expires = form.expires.data
+            InviteCode.update(expires=expires).where(InviteCode.id << ids).execute()
+        return redirect(url_for('admin.invitecodes'))
 
     return render_template(
         'admin/invitecodes.html',
@@ -210,7 +234,8 @@ def invitecodes(page, error=None):
         invite_codes=invite_codes,
         page=page,
         error=misc.get_errors(form, True),
-        form=form
+        form=form,
+        update_form=update_form
     )
 
 

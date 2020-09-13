@@ -2330,3 +2330,9 @@ article.text-post.comment.deleted {
     min-width: 100%;
     border: 1px solid #ccc;
 }
+
+.invitecode-users {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}

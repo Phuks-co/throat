@@ -480,6 +480,20 @@ u.ready(function(){
   });
 })
 
+u.ready(function(){
+  u.each('*[data-timefmt]', function(el,i) {
+    var fmt = el.getAttribute('data-timefmt');
+    if (el.innerHTML == 'None') {
+      el.innerHTML = _("Never");
+    } else {
+      var d = new Date(el.innerHTML);
+      if (fmt == 'datetime') {
+        el.innerHTML = d.toLocaleString();
+      }
+    }
+  })
+});
+
 new Konami(function() {
   var d = new Date();
   d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); //365 days
