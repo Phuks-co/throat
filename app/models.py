@@ -276,6 +276,7 @@ class SubMetadata(BaseModel):
 class SubPost(BaseModel):
     content = TextField(null=True)
     deleted = IntegerField(null=True) # 1=self delete, 2=mod delete, 0=not deleted
+    distinguish = IntegerField(null=True) # 1=mod, 2=admin, 0 or null = normal
     link = CharField(null=True)
     nsfw = BooleanField(null=True)
     pid = PrimaryKeyField()
@@ -338,6 +339,7 @@ class SubPostComment(BaseModel):
     upvotes = IntegerField(default=0)
     downvotes = IntegerField(default=0)
     status = IntegerField(null=True) # 1=self delete, 2=mod delete, 0 or null=not deleted
+    distinguish = IntegerField(null=True) # 1=mod, 2=admin, 0 or null = normal
     time = DateTimeField(null=True)
     uid = ForeignKeyField(db_column='uid', null=True, model=User,
                           field='uid', backref='comments')

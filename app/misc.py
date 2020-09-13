@@ -702,7 +702,7 @@ def getChangelog():
 def getSinglePost(pid):
     if current_user.is_authenticated:
         posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
-                               SubPost.score, SubPost.upvotes, SubPost.downvotes,
+                               SubPost.score, SubPost.upvotes, SubPost.downvotes, SubPost.distinguish,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.flair, SubPost.edited,
                                SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'),
@@ -729,7 +729,7 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False,
 
     if current_user.is_authenticated and not noDetail:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
-                               SubPost.deleted, SubPost.score, SubPost.ptype,
+                               SubPost.deleted, SubPost.score, SubPost.ptype, SubPost.distinguish,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.flair, SubPost.edited, Sub.sid,
                                SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'),
@@ -1465,7 +1465,7 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
     # 4 - Populate the tree (get all the data and cram it into the tree)
     expcomms = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
                                      SubPostComment.score, SubPostComment.status, SubPostComment.time,
-                                     SubPostComment.pid,
+                                     SubPostComment.pid, SubPostComment.distinguish,
                                      User.name.alias('user'), *(
             [SubPostCommentVote.positive, SubPostComment.uid] if uid else [SubPostComment.uid]),  # silly hack
                                      User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)

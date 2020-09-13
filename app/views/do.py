@@ -27,7 +27,7 @@ from ..forms import EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost, UndeleteCommentForm
 from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNote
-from ..forms import UseInviteCodeForm, SecurityQuestionForm
+from ..forms import UseInviteCodeForm, SecurityQuestionForm, DistinguishForm
 from ..badges import badges
 from ..misc import cache, send_email, allowedNames, get_errors, engine, ensure_locale_loaded
 from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, is_domain_banned
@@ -652,6 +652,51 @@ def get_txtpost(pid):
         cont = engine.get_template('sub/postpoll.html').render({'post': post, 'pollData': pollData, 'postmeta': postmeta})
 
     return jsonify(status='ok', content=cont)
+
+
+@do.route("/do/distinguish", methods=['POST'])
+@login_required
+def distinguish():
+    """ Allows a mod or admin to distinguish a comment or post """
+
+    form = DistinguishForm()
+    cid = form.cid.data
+    pid = form.pid.data
+    if cid:
+        try:
+            item = SubPostComment.get(SubPostComment.cid == cid)
+            post = SubPost.get(SubPost.pid == item.pid)
+        except:
+            return jsonify(status='error', error=[_('Post/Comment not found')])
+
+    if pid:
+        try:
+            item = SubPost.get(SubPost.pid == pid)
+            post = item
+        except:
+            return jsonify(status='error', error=[_('Post not found')])
+
+    if form.pid == None and form.cid == None:
+        return jsonify(status='error', error=[_('Nothing to distinguish')])
+
+    if str(item.uid) != str(current_user.uid):
+        return jsonify(status='error', error=[_('You are not the author of the item')])
+
+    is_mod = current_user.is_mod(post.sid, 1)
+    if not (is_mod or current_user.is_admin()):
+        return jsonify(status='error', error=[_('You must be a mod or admin')])
+
+    if item.distinguish != 0 and item.distinguish != None:
+        item.distinguish = 0
+    elif is_mod:
+        item.distinguish = 1
+    else:
+        item.distinguish = 2
+
+    item.save()
+    return jsonify(status='ok')
+
+
 
 
 @do.route("/do/edit_txtpost/<pid>", methods=['POST'])

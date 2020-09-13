@@ -2183,6 +2183,38 @@ a.close-report {
   text-align: center;
 }
 
+div.post.admin a.authorlink {
+  display: inline-block;
+  background-color: #d94f00;
+  color: #FDD8D4;
+  border-radius: 2px;
+  padding: .15em;
+}
+
+div.post.mod a.authorlink {
+  display: inline-block;
+  background-color: green;
+  color: #FDD8D4;
+  border-radius: 2px;
+  padding: .15em;
+}
+
+article.text-post.comment.admin a.poster {
+  display: inline-block;
+  background-color: #d94f00;
+  color: #FDD8D4;
+  border-radius: 2px;
+  padding: .15em;
+}
+
+article.text-post.comment.mod a.poster {
+  display: inline-block;
+  background-color: green;
+  color: #FDD8D4;
+  border-radius: 2px;
+  padding: .15em;
+}
+
 article.text-post.comment.deleted {
   background-color: #FDD8D4;
 }

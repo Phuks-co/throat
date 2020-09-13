@@ -22,6 +22,21 @@ u.sub('.removesavedpost', 'click', function (e) {
     });
 });
 
+u.addEventForChild(document, 'click', '.distinguish', function (e, qelem) {
+    u.post('/do/distinguish', {
+       cid : qelem.getAttribute('data-cid'),
+       pid : qelem.getAttribute('data-pid')
+    },
+        function (data) {
+            console.log(data)
+            if (data.status != "ok") {
+                e.currentTarget.innerHTML = data.error
+            } else {
+                document.location.reload();
+            }
+        })
+})
+
 u.addEventForChild(document, 'click', '.delete-post', function (e, qelem) {
     TextConfirm(qelem, function () {
         let reason = "";

@@ -155,6 +155,11 @@ class EditPostFlair(FlaskForm):
     flair = RadioField(_l('Flair'), choices=[], validators=[DataRequired()])
 
 
+class DistinguishForm(FlaskForm):
+    """ Post/comment distinguish form. """
+    cid = HiddenField()
+    pid = HiddenField()
+
 class DeletePost(FlaskForm):
     """ Post deletion form. """
     post = HiddenField()
