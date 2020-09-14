@@ -2149,18 +2149,6 @@ a.close-report {
   .mod.report.content {
     min-width: 650px;
   }
-   
-    
-}
-
-@media only screen and (max-width: 800px) {
-   .new-g {
-    padding: 10px;
-}  
-    .post {
-    border-radius: 8px;
-}
-    
 }
 
 .mod.report.close.buttons {
@@ -2343,17 +2331,6 @@ article.text-post.comment.deleted {
     border: 1px solid #ccc;
 }
 
-.invitecode-users {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.pure-menu-children {
-    min-width: 100%;
-    border: 1px solid #ccc;
-}
-
 .pure-form-aligned .pure-controls {
     margin: 0px;
 } 
@@ -2374,4 +2351,26 @@ article.text-post.comment.deleted {
 .pure-form-aligned .pure-controls {
     margin: 0px;
 }    
+}
+
+.edited{
+  position:relative;
+  cursor:pointer;
+}
+.edited-title{
+  position:absolute;
+  top:0px;
+  left:10px;
+  width:200px;
+  border:1px solid gray;
+  border-radius:5px;
+  padding:3px;
+  text-align:center;
+  background-color:white;
+  display:none;
+  transition: all 1s ease-in;
+}
+
+.edited:hover > .edited-title{
+  display:block;
 }
