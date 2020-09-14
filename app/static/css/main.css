@@ -2149,6 +2149,18 @@ a.close-report {
   .mod.report.content {
     min-width: 650px;
   }
+   
+    
+}
+
+@media only screen and (max-width: 800px) {
+   .new-g {
+    padding: 10px;
+}  
+    .post {
+    border-radius: 8px;
+}
+    
 }
 
 .mod.report.close.buttons {
