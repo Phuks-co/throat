@@ -1,10 +1,10 @@
 /* dark mode styles */
 body.dark .th-l-stroke[stroke="#fff"] {
-    stroke: #1ea4f4;
+    stroke: #4f5d66;
 }
 
 body.dark .th-l-fill[fill="#fff"] {
-    fill: #1ea4f4;
+    fill: #4f5d66;
 }
 
 body.dark code, body.dark pre{
@@ -42,7 +42,7 @@ body.dark #container2 {
 }
 
 body.dark .hasmail i{
-  color: #268ef4;
+  color: #4f5d66;
 }
 
 body.dark #toggledark i {
@@ -65,7 +65,7 @@ body.dark div#sortbuttons {
 
 body.dark a:hover,
 body.dark #sortbuttons a:hover{
-  color: #1ea4f4;
+  color: #4f5d66;
 }
 
 body.dark .post .domain a,
@@ -98,7 +98,7 @@ body.dark .th-subbar a {
 }
 
 body.dark .th-subbar a:hover {
-    color: #1ea4f4;
+    color: #4f5d66;
 }
 
 /* Posts */
@@ -124,7 +124,7 @@ body.dark .post .title {
 }
 
 body.dark .post a.title:hover {
-  color: #1ea4f4;
+  color: #4f5d66;
 }
 
 body.dark .post .title:visited {
