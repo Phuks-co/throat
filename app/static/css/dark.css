@@ -8,7 +8,7 @@ body.dark .th-l-fill[fill="#fff"] {
 }
 
 body.dark code, body.dark pre{
-  background: #202225;
+  background: #a9989836;
 }
 
 body.dark .profilebadge path:not(.nocolor) {
@@ -25,7 +25,7 @@ body.dark {
 }
 
 body.dark a {
-  color: #526a7d;
+  color: #718696;
 }
 
 body.dark div.author a {
@@ -38,7 +38,7 @@ body.dark div.author a.authorlink{
 
 body.dark .content,
 body.dark #container2 {
-  color: #d4d4d4;
+  color: #c1c1c1;
 }
 
 body.dark .hasmail i{
