@@ -34,7 +34,11 @@
               </span>
               @if comment['lastedit'] and comment['visibility'] != 'none':
                 <span class="time edited">
-                  @{_('Edited %(timeago)s', timeago='<time-ago datetime="' + comment['lastedit'].isoformat() + 'Z"></time-ago>')!!html}<br/>
+                    *
+                    <div class="edited-title">
+                        @{_('Edited %(timeago)s', timeago='<time-ago datetime="' + comment['lastedit'].isoformat() + 'Z"></time-ago>')!!html}
+                    </div>
+                    <br/>
                 </span>
               @end
             </div>
