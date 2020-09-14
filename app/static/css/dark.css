@@ -268,7 +268,7 @@ body.dark .sidebar ul.top5 li a {
 }
 
 body.dark hr {
-   border-bottom: 2px dashed #545454;
+   border-bottom: 2px dotted #545454;
 }
 /* /Sidebar */
 
@@ -561,7 +561,7 @@ body.dark .stickyposts {
 }
 
 body.dark .expando {
-    background-color: #202225!important;
+    background-color: #96969661!important;
 }
 
 body.dark .expando svg path {
@@ -572,8 +572,8 @@ body.dark .announcement {
     padding: 3px;
     margin-right: .5em;
     border-radius: 5px;
-    color: white;
-    background-color: #526a7d;
+    color: #a21818;
+    background-color: #3f3d3b;
     font-size: small;
 }
 
