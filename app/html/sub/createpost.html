@@ -14,6 +14,18 @@
             <div class="error">@{ error }</div>
             @end
             <fieldset>
+
+					<div style="padding-top: 1em; padding-bottom: 1em;">
+                    @for kl in form.ptype:
+                    <div class="pure-control-group">
+                        @{kl(style="")!!html}
+                        <label for="@{kl.id}" class="pure-radio" style="text-align: left; display: initial;">
+                            @{kl.label.text}
+                        </label>
+                    </div>
+                    @end
+                </div>
+				
                 <div class="pure-control-group">
                     <span class="sub">
                         @{form.sub.label()!!html}
@@ -24,18 +36,6 @@
                     @{form.title.label()!!html}
                     @{ form.title(required=True) !!html}
                 </div>
-
-                <div style="padding-top: 1em; padding-bottom: 1em;">
-                    @for kl in form.ptype:
-                    <div class="pure-control-group">
-                        @{kl(style="")!!html}
-                        <label for="@{kl.id}" class="pure-radio" style="text-align: left; display: initial;">
-                            @{kl.label.text}
-                        </label>
-                    </div>
-                    @end
-                </div>
-
 
                 <div class="pure-control-group txcont" style="@{form.ptype.data != 'text' and 'display:none' or ''}">
                     @{form.content.label()!!html}
