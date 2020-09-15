@@ -2117,6 +2117,11 @@ button.new-form-one {
 .commblock .bottombar.links{
   margin: 4px 0 0 0.09em;
 }
+
+/* Horizontal create post type buttons */
+.label-v {clear: both; display: inline-table; overflow: hidden;}
+.label-v .pure-control-group {float: left;}
+
  
 /* Continued original */  
 td.close-report-button {
