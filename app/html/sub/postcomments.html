@@ -98,7 +98,7 @@
             </ul>
           </div>
         </div>
-        <div id="child-@{comment['cid']}" class="pchild" @{(comment['visibility'] != '') and 'style=display:none;' or ''}>
+        <div id="child-@{comment['cid']}" class="pchild@{(comment['visibility'] != '') and ' hidden' or ''}">
           @if comment['children']:
             @{renderComments(post, subInfo, subMods, comment['children'], highlight)!!html}
           @end
