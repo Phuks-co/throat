@@ -154,6 +154,9 @@ class SiteUser(object):
         elif config.site.allow_uploads and (config.site.upload_min_level <= get_user_level(self.uid, self.score)[0]):
             self.canupload = True
 
+    def can_pm_users(self):
+        return config.site.send_pm_to_user_min_level <= get_user_level(self.uid, self.score)[0] or self.admin
+
     def __repr__(self):
         return "<SiteUser {0}>".format(self.uid)
 
@@ -249,6 +252,7 @@ class SiteUser(object):
         except UserMetadata.DoesNotExist:
             UserMetadata.create(uid=self.uid, key=key, value=value)
 
+
     @cache.memoize(30)
     def get_global_stylesheet(self):
         if self.subtheme:
@@ -259,6 +263,13 @@ class SiteUser(object):
             return css.content
         return ''
 
+
+def is_target_user_admin(uid):
+    try:
+        check_admin = UserMetadata.get((UserMetadata.uid == uid) & (UserMetadata.key == 'admin') & (UserMetadata.value == '1'))
+        return True
+    except UserMetadata.DoesNotExist:
+        return False
 
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
@@ -284,6 +295,11 @@ class SiteAnon(AnonymousUserMixin):
     @classmethod
     def is_admin(cls):
         """ Anons are not admins. """
+        return False
+
+    @classmethod
+    def can_pm_users(cls):
+        """ Anons may never PM users. """
         return False
 
     @classmethod

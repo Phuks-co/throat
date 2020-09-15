@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(user, level, progress, postCount, commentCount, givenScore, invitecodeinfo, badges, owns, mods, habits, msgform)
+@require(user, level, progress, postCount, commentCount, givenScore, invitecodeinfo, badges, owns, mods, habits, msgform, target_user_is_admin)
 
 @def title():
 /u/@{user.name} |\
@@ -9,11 +9,13 @@
 
     @if user.status != 10:
         @include('shared/sidebar/user.html')
-        @if current_user.is_authenticated and current_user.uid != user.uid:
-            <hr>
-            <div class="pmessage">
-                <a href="#msg-form" data-replyto='@{user.name}' data-replytitle='' class="formpopmsg sbm-post pure-button">@{_('Send a message')}</a>
-            </div>
+        @if current_user.is_authenticated and current_user.uid != user.uid: 
+            @if target_user_is_admin or current_user.can_pm_users() or current_user.is_admin():
+                <hr>
+                <div class="pmessage">
+                    <a href="#msg-form" data-replyto='@{user.name}' data-replytitle='' class="formpopmsg sbm-post pure-button">@{_('Send a message')}</a>
+                </div>
+            @end
         @end
     @end
 @end
