@@ -580,8 +580,10 @@ u.addEventForChild(document, 'click', 'img.alimg', function(e, qelem){
 })
 
 /* sub banner href */
-if( document.getElementsByClassName("subinfo")[0].children[0].children[0] ){
+if (typeof(document.getElementsByClassName("subinfo")[0]) != 'undefined' && document.getElementsByClassName("subinfo")[0] != null){
+  //left side
   var link = document.getElementsByClassName("subinfo")[0].children[0].children[0].getAttribute("href");
+  var text = document.getElementsByClassName("subinfo")[0].children[0].children[0].innerText;
   var bannerLink = document.getElementsByClassName("banner-link")[0];
   bannerLink.setAttribute("href", link);
   bannerLink.style.position = "absolute";
@@ -590,4 +592,12 @@ if( document.getElementsByClassName("subinfo")[0].children[0].children[0] ){
   bannerLink.style.width = "100%";
   bannerLink.style.height = "100%";
   document.getElementsByClassName("cw-brand")[0].style.zIndex = "10";
+  //add text link
+  var a = document.createElement('a');
+  var linkText = document.createTextNode(text);
+  a.appendChild(linkText);
+  a.title = text;
+  a.href = link;
+  a.className = "banner-text-link";
+  document.getElementById("menu").appendChild(a);
 }
