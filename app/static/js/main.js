@@ -601,3 +601,22 @@ if (typeof(document.getElementsByClassName("subinfo")[0]) != 'undefined' && docu
   a.className = "banner-text-link";
   document.getElementById("menu").appendChild(a);
 }
+
+/* load all comments on a post */
+document.getElementById("cmnts").children[0].addEventListener('click', function(event){
+  this.innerHTML = "Loading Comments...";    
+  event.preventDefault();
+  var self = this;
+  var interval = setInterval(function(){
+      var comments = document.getElementsByClassName("loadsibling");
+      if(comments.length == 0){
+          clearInterval(interval);
+          interval = false;
+          self.innerHTML = "All Comments Loaded";
+      }
+      for(var i = 0;i<comments.length;i++){
+          comments[i].click();
+      }
+  },300); 
+  return false;    
+});
