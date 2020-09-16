@@ -1007,6 +1007,9 @@ a.slink{
   display: inline-block;
   width: calc(100% - 2em);
   margin-bottom: 1.1em;
+  font-family: verdana,arial,sans-serif;
+  font-size: 14px;
+  line-height: 1.3em;
 }
 /* /POST PAGE STYLES */
 
@@ -2109,13 +2112,14 @@ button.new-form-one {
   background: #d2d2d2 !important;
 }
 
-/* Proper align post links in sub/post */
+/* Proper size and align post links in sub/post/comments */
 .wholepost .postinfo .links{
   margin: 4px 0 0 0.09em;
 }
 
 .commblock .bottombar.links{
   margin: 4px 0 0 0.09em;
+  font: -webkit-control;
 }
 
 /* Horizontal create post type buttons */
