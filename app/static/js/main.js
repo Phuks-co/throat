@@ -578,3 +578,16 @@ u.addEventForChild(document, 'click', '#postcontent a,.commblock .content a', fu
 u.addEventForChild(document, 'click', 'img.alimg', function(e, qelem){
   qelem.parentNode.removeChild(qelem);
 })
+
+/* sub banner href */
+if( document.getElementsByClassName("subinfo")[0].children[0].children[0] ){
+  var link = document.getElementsByClassName("subinfo")[0].children[0].children[0].getAttribute("href");
+  var bannerLink = document.getElementsByClassName("banner-link")[0];
+  bannerLink.setAttribute("href", link);
+  bannerLink.style.position = "absolute";
+  bannerLink.style.top = "0px";
+  bannerLink.style.left = "0px";
+  bannerLink.style.width = "100%";
+  bannerLink.style.height = "100%";
+  document.getElementsByClassName("cw-brand")[0].style.zIndex = "10";
+}
