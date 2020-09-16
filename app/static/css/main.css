@@ -2359,7 +2359,10 @@ article.text-post.comment.deleted {
 }
 .pure-form-aligned .pure-controls {
     margin: 0px;
-}    
+}
+.banner-text-link{
+  font-size:18px;
+}
 }
 
 .edited{
@@ -2382,4 +2385,21 @@ article.text-post.comment.deleted {
 
 .edited:hover > .edited-title{
   display:block;
+}
+
+.banner-text-link{
+    position:absolute;
+    top:50%;
+    left:50%;
+    color:white;
+    font-size: 50px;
+    transform: translate(-50%,-50%);
+    letter-spacing: 1px;
+    font-weight:bold;
+    background-size: cover;
+    text-decoration:none;!important
+}
+.banner-text-link:hover{
+    color:white;
+    text-decoration:none;
 }
