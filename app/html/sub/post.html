@@ -326,10 +326,10 @@
   @end
 
   @if len(comments) == 0:
-    <div class="comments"><h3 id="cmnts" data-cnt="0">@{_('No comments, yet...')}</h3></div>
+    <div class="comments"><p id="cmnts" data-cnt="0">@{_('No comments, yet...')}</div>
   @else:
     <div class="comments">
-      <h2 id="cmnts" data-cnt="@{post['comments']}"><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{_('%(comments)i comments', comments=post['comments'])}</a></h2>
+      <p id="cmnts" data-cnt="@{post['comments']}"><b><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{_('%(comments)i comments', comments=post['comments'])}</a></b>
       <div class="pure-menu pure-menu-horizontal">
         <ul class="pure-menu-list">
           <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
