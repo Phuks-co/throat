@@ -2398,6 +2398,7 @@ article.text-post.comment.deleted {
     font-weight:bold;
     background-size: cover;
     text-decoration:none;
+    display:none;	
 }
 .banner-text-link:hover{
     color:white;
