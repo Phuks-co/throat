@@ -2397,7 +2397,7 @@ article.text-post.comment.deleted {
     letter-spacing: 1px;
     font-weight:bold;
     background-size: cover;
-    text-decoration:none;!important
+    text-decoration:none;
 }
 .banner-text-link:hover{
     color:white;
