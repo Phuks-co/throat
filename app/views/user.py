@@ -150,7 +150,7 @@ def edit_user():
                         noscroll=noscroll, nochat=nochat, subtheme=current_user.subtheme,
                         language=current_user.language)
     languages = config.app.languages
-    form.language.choices = [('', _('This is test'))]
+    form.language.choices = []
     for i in languages:
         form.language.choices.append((i, Locale(*i.split("_")).display_name.capitalize()))
     return engine.get_template('user/settings/preferences.html').render({'edituserform': form, 'user': User.get(User.uid == current_user.uid)})
