@@ -865,7 +865,7 @@ def ensure_locale_loaded():
 
 @babel.localeselector
 def get_locale():
-    language = get_locale_fallback()
+    language = session.get('language', sk)
     if language:
         return language
     if current_user.language:
