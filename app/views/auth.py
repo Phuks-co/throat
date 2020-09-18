@@ -149,6 +149,7 @@ def register():
     else:
         theuser = misc.load_user(user.uid)
         login_user(theuser, remember=False)
+        theuser.update_prefs('nsfw', '1')
         session['remember_me'] = False
         return redirect(url_for('wiki.welcome'))
 
