@@ -605,8 +605,8 @@ span#notification.fade {
   margin-right: .2em;
   margin-left: 0px;
   cursor: pointer;
-  top: 7px;
-    position: relative;
+  top: 8.5px;
+  position: relative;
 }
 
 .pure-u-1.pure-u-md-13-24.pastebin {
