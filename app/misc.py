@@ -235,7 +235,7 @@ class SiteAnon(AnonymousUserMixin):
     subsid = []
     subscriptions = []
     blocksid = []
-    prefs = []
+    prefs = ['nsfw']
     admin = False
     canupload = False
     language = None
