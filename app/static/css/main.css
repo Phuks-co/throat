@@ -533,10 +533,6 @@ span#notification.fade {
     padding-top: 2px;
 }
 
-.wholepost .post-heading {
-    margin-bottom: -7px;
-}
-
 .post:nth-child(2n) {
     background-color: #f7f7f7;
     -webkit-box-shadow: -3px 2px 4px 0px rgba(0,0,0,0.1);
