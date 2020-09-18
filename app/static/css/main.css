@@ -732,6 +732,10 @@ iframe {
   position: relative;
 }
 
+.author .expando .icon svg {
+  top: -2px;
+}
+
 .votebuttons svg{
   width: 16px;
   height: 16px;
