@@ -531,6 +531,9 @@ span#notification.fade {
 
 .post-heading {
     padding-top: 2px;
+}
+
+.wholepost .post-heading {
     margin-bottom: -7px;
 }
 
