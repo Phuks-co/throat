@@ -609,6 +609,10 @@ span#notification.fade {
   position: relative;
 }
 
+.author .expando {
+  top: 5.6px;
+}
+
 .pure-u-1.pure-u-md-13-24.pastebin {
     width: 80%;
 }
