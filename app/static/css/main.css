@@ -531,6 +531,7 @@ span#notification.fade {
 
 .post-heading {
     padding-top: 2px;
+    margin-bottom: -7px;
 }
 
 .post:nth-child(2n) {
