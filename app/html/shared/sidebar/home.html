@@ -7,11 +7,11 @@
 @if current_user.is_authenticated:
 <a href="@{url_for('subs.submit', ptype='link', sub='')}" class="sbm-post pure-button">@{_('Submit a post')}</a>
 <hr>
-<a href="@{url_for('home.view_subs')}" class="sbm-post pure-button">@{_('View all subs')}</a>
-<a href="@{url_for('subs.random_sub')}" class="sbm-post pure-button">@{_('Go to random sub')}</a>
-@end
 @if (config.site.sub_creation_admin_only == False and current_user.is_authenticated) or current_user.is_admin():
 <a href="@{url_for('subs.create_sub')}" class="sbm-post pure-button">@{_('Create a sub')}</a>
+@end
+<a href="@{url_for('home.view_subs')}" class="sbm-post pure-button">@{_('View all subs')}</a>
+<a href="@{url_for('subs.random_sub')}" class="sbm-post pure-button">@{_('Go to random sub')}</a>
 @end
   @if func.getTodaysTopPosts():
   <hr>
