@@ -605,10 +605,14 @@ span#notification.fade {
   margin-right: .2em;
   margin-left: 0px;
   cursor: pointer;
-  top: 8.5px;
+  top: 7px;
     position: relative;
-
 }
+
+.author .expando {
+  top: 8.5px;
+}
+
 .pure-u-1.pure-u-md-13-24.pastebin {
     width: 80%;
 }
