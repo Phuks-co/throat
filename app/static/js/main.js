@@ -620,3 +620,17 @@ if (typeof(document.getElementById("cmnts")) != 'undefined' && document.getEleme
     return false;    
   });
 }  
+
+//topbar active page link indication
+var activePage = window.location.pathname.split("/").slice(0,3).join("/");
+var childs = document.getElementById("topbar").children;
+for(var i = 0;i<childs.length;i++){
+    if( childs[i].firstElementChild){
+        if(childs[i].firstElementChild.nodeName == "A"){
+            var nodeLink = childs[i].firstElementChild.getAttribute("href").split("/").slice(0,3).join("/");
+            if(nodeLink == activePage){
+                 childs[i].firstElementChild.classList.add("active-page-link");   
+            }
+        }
+    }
+}
