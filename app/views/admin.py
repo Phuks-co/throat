@@ -139,7 +139,7 @@ def userbadges():
 
 
 @bp.route("/invitecodes", defaults={'page': 1}, methods=['GET', 'POST'])
-@bp.route("/invitecodes/<int:page>", methods=['GET'])
+@bp.route("/invitecodes/<int:page>", methods=['GET', 'POST'])
 @login_required
 def invitecodes(page, error=None):
     """
@@ -211,7 +211,7 @@ def invitecodes(page, error=None):
 
         invite.max_uses = form.uses.data
         invite.save()
-        return redirect(url_for('admin.invitecodes'))
+        return redirect(url_for('admin.invitecodes', page=page))
 
     if update_form.validate_on_submit():
         if update_form.etype.data == 'at' and update_form.expires.data is None:
@@ -225,7 +225,7 @@ def invitecodes(page, error=None):
             else:
                 expires = form.expires.data
             InviteCode.update(expires=expires).where(InviteCode.id << ids).execute()
-        return redirect(url_for('admin.invitecodes'))
+        return redirect(url_for('admin.invitecodes', page=page))
 
     return render_template(
         'admin/invitecodes.html',
