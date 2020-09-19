@@ -2408,3 +2408,7 @@ article.text-post.comment.deleted {
     color:white;
     text-decoration:none;
 }
+
+.active-page-link{
+    color:#de1414;
+}	
