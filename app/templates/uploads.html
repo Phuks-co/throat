@@ -1,6 +1,14 @@
 {% extends "layout.html" %}
 {% block title %}Uploads | {{config.site.lema}}{% endblock %}
 
+{% block sidebar %}
+{{ super() }}
+<a href="{{url_for('user.view', user=current_user.name)}}" class="sbm-post pure-button">{{current_user.name}}</a>
+<a href="{{url_for('user.view_user_posts', user=current_user.name)}}" class="sbm-post pure-button">View posts</a>
+<a href="{{url_for('user.view_user_comments', user=current_user.name)}}" class="sbm-post pure-button">View comments</a>
+<a href="{{url_for('user.view_user_uploads')}}" class="sbm-post pure-button">View uploads</a>
+<a href="{{url_for('user.view_user_savedposts', user=current_user.name)}}" class="sbm-post pure-button">View saved posts</a>
+{% endblock %}
 
 {% block content %}
 {{ super() }}
@@ -30,10 +38,10 @@
 </div>
 <div class="col-12">
   {% if page > 1 %}
-  <a href="{{url_for('home.view_user_uploads', page=(page-1))}}" class="pure-button">prev</a>
+  <a href="{{url_for('user.view_user_uploads', page=(page-1))}}" class="pure-button">prev</a>
   {% endif %}
   {% if subs|length == 30 %}
-  <a href="{{url_for('home.view_user_uploads', page=(page+1))}}" class="pure-button">next</a>
+  <a href="{{url_for('user.view_user_uploads', page=(page+1))}}" class="pure-button">next</a>
   {% endif %}
 </div>
 {% endblock %}

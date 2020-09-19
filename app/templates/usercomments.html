@@ -7,7 +7,10 @@
 <a href="{{url_for('user.view', user=user.name)}}" class="sbm-post pure-button">{{user.name}}</a>
 <a href="{{url_for('user.view_user_posts', user=user.name)}}" class="sbm-post pure-button">View posts</a>
 <a href="{{url_for('user.view_user_comments', user=user.name)}}" class="sbm-post pure-button">View comments</a>
-{% if user.uid == session['user_id'] %}
+{% if user.uid == current_user.uid %}
+  {% if current_user.canupload %}
+    <a href="{{url_for('user.view_user_uploads')}}" class="sbm-post pure-button">View uploads</a>
+  {% endif %}
   <a href="{{url_for('user.view_user_savedposts', user=user.name)}}" class="sbm-post pure-button">View saved posts</a>
 {% endif %}
 {% endblock %}
