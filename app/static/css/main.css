@@ -1462,11 +1462,12 @@ article.comment .score{
 }
 
 .pmessage p.container a {
-    margin-right: 4px;
+    margin: 4px 4px 0 0;
     cursor: pointer;
     padding: .5em 1em;
     border-radius: 3px;
     background-color: rgba(0, 0, 0, 0.06);
+    display: inline-block;
 }
 
 .pmessage p.container a.deletedmsg {
