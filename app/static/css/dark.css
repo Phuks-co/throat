@@ -131,6 +131,10 @@ body.dark .post .title:visited {
   color: #888;
   }
 
+body.dark .post .author {
+    color: #7b7b7b;
+    }
+
 body.dark .thumbnail .placeholder svg path {
     fill: #555;
 }
@@ -140,7 +144,7 @@ body.dark .post .thumbnail img{
 }
 
 body.dark .p-icon[data-icon="exclaim"] path {
-    fill: #526a7d;
+    fill: #8c8c8c;
 }
 
 /* Buttons */
