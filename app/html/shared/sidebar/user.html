@@ -34,5 +34,8 @@
 <a href="@{url_for('user.view_user_posts', user=user.name)}" class="sbm-post pure-button @{(request.endpoint == 'user.view_user_posts') and 'pure-button-primary' or ''}">@{_('View posts')}</a>
 <a href="@{url_for('user.view_user_comments', user=user.name)}" class="sbm-post pure-button @{(request.endpoint == 'user.view_user_comments') and 'pure-button-primary' or ''}" >@{_('View comments')}</a>
 @if user.uid == current_user.uid:
-    <a href="@{url_for('user.view_user_savedposts', user=user.name)}" class="sbm-post pure-button @{(request.endpoint == 'user.view_user_savedposts') and 'pure-button-primary' or ''}">@{_('View saved posts')}</a>
+  @if current_user.canupload:
+    <a href="@{url_for('user.view_user_uploads')}" class="sbm-post pure-button @{(request.endpoint == 'user.view_user_uploads') and 'pure-button-primary' or ''}">@{_('View uploads')}</a>
+  @end
+  <a href="@{url_for('user.view_user_savedposts', user=user.name)}" class="sbm-post pure-button @{(request.endpoint == 'user.view_user_savedposts') and 'pure-button-primary' or ''}">@{_('View saved posts')}</a>
 @end

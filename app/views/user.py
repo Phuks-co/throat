@@ -12,7 +12,7 @@ from ..misc import engine, send_email
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
 from ..forms import EditUserForm, CreateUserMessageForm, EditAccountForm, DeleteAccountForm, PasswordRecoveryForm
 from ..forms import PasswordResetForm
-from ..models import User, UserStatus, UserMetadata
+from ..models import User, UserStatus, UserMetadata, UserUploads
 from ..models import Sub, SubMod, SubPost, SubPostComment, UserSaved, InviteCode
 
 bp = Blueprint('user', __name__)
@@ -113,6 +113,13 @@ def view_user_comments(user, page):
     comments = misc.getUserComments(user.uid, page)
     return render_template('usercomments.html', user=user, page=page, comments=comments)
 
+@bp.route("/uploads", defaults={'page': 1})
+@bp.route("/uploads/<int:page>")
+@login_required
+def view_user_uploads(page):
+    """ View user uploads """
+    uploads = UserUploads.select().where(UserUploads.uid == current_user.uid).paginate(page, 30)
+    return render_template('uploads.html', page=page, uploads=uploads)
 
 @bp.route("/settings/invite")
 @login_required

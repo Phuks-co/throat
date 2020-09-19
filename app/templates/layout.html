@@ -44,9 +44,6 @@
     <ul id="topbar">
       <li><a href="/all">all</a></li>
       <li><a href="/all/new">new</a></li>
-      {% if current_user.canupload %}
-        <li><a href="{{url_for('home.view_user_uploads')}}">uploads</a></li>
-      {% endif %}
       {% if current_user.can_admin %}
         <li><a href="{{url_for('admin.index')}}">admin</a></li>
       {% endif %}
