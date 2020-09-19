@@ -6,7 +6,7 @@ from flask_login import login_required, current_user
 from .. import misc
 from ..misc import engine
 from ..misc import ratelimit, POSTING_LIMIT
-from ..models import SubPost, UserUploads, Sub
+from ..models import SubPost, Sub
 
 bp = Blueprint('home', __name__)
 
@@ -160,15 +160,6 @@ def all_hot(page):
 
 
 # Note for future self: I rewrote until this part. You should do the rest.
-
-@bp.route("/uploads", defaults={'page': 1})
-@bp.route("/uploads/<int:page>")
-@login_required
-def view_user_uploads(page):
-    """ View user uploads """
-    uploads = UserUploads.select().where(UserUploads.uid == current_user.uid).paginate(page, 30)
-    return render_template('uploads.html', page=page, uploads=uploads)
-
 
 @bp.route("/subs", defaults={'page': 1, 'sort': 'name_asc'})
 @bp.route("/subs/<sort>", defaults={'page': 1})

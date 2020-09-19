@@ -54,9 +54,6 @@
     <ul id="topbar">
       <li><a href="/all">@{_('all')}</a></li>
       <li><a href="/all/new">@{_('new')}</a></li>
-      @if current_user.canupload:
-        <li><a href="@{url_for('home.view_user_uploads')}">@{_('uploads')}</a></li>
-      @end
       @if current_user.can_admin:
         <li><a href="@{url_for('admin.index')}">@{_('admin')}</a></li>
       @end
