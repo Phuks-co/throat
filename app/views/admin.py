@@ -139,7 +139,7 @@ def userbadges():
 
 
 @bp.route("/invitecodes", defaults={'page': 1}, methods=['GET', 'POST'])
-@bp.route("/invitecodes/<int:page>", methods=['GET'])
+@bp.route("/invitecodes/<int:page>", methods=['GET', 'POST'])
 @login_required
 def invitecodes(page, error=None):
     """
@@ -159,7 +159,7 @@ def invitecodes(page, error=None):
     invite_settings = {
         meta.key: meta.value
         for meta in SiteMetadata.select().where(
-            SiteMetadata.key in ('useinvitecode', 'invite_level', 'invite_max'))
+                SiteMetadata.key << ['useinvitecode', 'invite_level', 'invite_max'])
     }
 
     invite_codes = InviteCode.select(
@@ -193,8 +193,8 @@ def invitecodes(page, error=None):
             code['expires'] = code['expires'].strftime("%Y-%m-%dT%H:%M:%SZ")
 
     invite_form = UseInviteCodeForm()
-    invite_form.maxcodes.data = invite_settings['invite_max']
-    invite_form.minlevel.data = invite_settings['invite_level']
+    invite_form.maxcodes.data = invite_settings.get('invite_max', 10)
+    invite_form.minlevel.data = invite_settings.get('invite_level', 3)
 
     form = CreateInviteCodeForm()
 
@@ -211,7 +211,7 @@ def invitecodes(page, error=None):
 
         invite.max_uses = form.uses.data
         invite.save()
-        return redirect(url_for('admin.invitecodes'))
+        return redirect(url_for('admin.invitecodes', page=page))
 
     if update_form.validate_on_submit():
         if update_form.etype.data == 'at' and update_form.expires.data is None:
@@ -225,7 +225,7 @@ def invitecodes(page, error=None):
             else:
                 expires = form.expires.data
             InviteCode.update(expires=expires).where(InviteCode.id << ids).execute()
-        return redirect(url_for('admin.invitecodes'))
+        return redirect(url_for('admin.invitecodes', page=page))
 
     return render_template(
         'admin/invitecodes.html',
