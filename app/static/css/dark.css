@@ -140,7 +140,21 @@ body.dark .thumbnail .placeholder svg path {
 }
 
 body.dark .post .thumbnail img{
-  filter: grayscale(1)
+  filter: grayscale(50%);
+  -webkit-filter: grayscale(50%);
+  -moz-filter: grayscale(50%);
+}
+
+body.dark .post .thumbnail img{
+  filter: grayscale(50%);
+  -webkit-filter: grayscale(50%);
+  -moz-filter: grayscale(50%);
+}
+
+body.dark .post .thumbnail img:hover{
+  filter: grayscale(0);
+  -webkit-filter: grayscale(0);
+  -moz-filter: grayscale(0);
 }
 
 body.dark .p-icon[data-icon="exclaim"] path {
