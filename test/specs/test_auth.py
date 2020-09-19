@@ -13,6 +13,7 @@ from pytest_flask.fixtures import client
 from test.fixtures import *
 from test.utilities import csrf_token, pp, get_value
 from test.utilities import register_user, log_in_user, log_out_current_user
+from test.utilities import promote_user_to_admin
 
 
 @pytest.mark.parametrize('test_config', [{'auth': {'validate_emails': True}},
@@ -360,3 +361,73 @@ def test_reregister(client, user_info, user2_info):
     assert auth_provider.get_user_by_email(user_info['email']) == None
     assert (auth_provider.get_user_by_email(user2_info['email']).name ==
             user_info['username'])
+
+def test_invite_code_required_for_registration(client, user_info, user2_info):
+    "If invite codes are required, trying to register without one will fail."
+    register_user(client, user_info)
+    promote_user_to_admin(client, user_info)
+
+    # Enable invite codes.
+    rv = client.get(url_for('admin.invitecodes'))
+    data = dict(csrf_token=csrf_token(rv.data),
+                enableinvitecode=True,
+                minlevel=3,
+                maxcodes=10)
+
+    rv = client.post(url_for('do.use_invite_code'), data=data,
+                     follow_redirects=True)
+    reply = json.loads(rv.data.decode('utf-8'))
+    assert reply['status'] == 'ok'
+
+    # Create an invite code.
+    rv = client.get(url_for('admin.invitecodes'))
+    data = dict(csrf_token=csrf_token(rv.data),
+                code="abcde",
+                uses=10,
+                expires='')
+    rv = client.post(url_for('admin.invitecodes'), data=data,
+                     follow_redirects=True)
+
+    log_out_current_user(client)
+
+    # Now try to register a new user without an invite code.
+    rv = client.get(url_for('auth.register'))
+    data = dict(csrf_token=csrf_token(rv.data),
+                username=user2_info['username'],
+                password=user2_info['password'],
+                confirm=user2_info['password'],
+                invitecode='',
+                email_optional=user2_info['email'],
+                accept_tos=True,
+                captcha='xyzzy')
+
+    rv = client.post(url_for('auth.register'), data=data, follow_redirects=True)
+    assert b'Invalid invite code' in rv.data
+
+    # Now try to register a new user with an incorrect invite code.
+    rv = client.get(url_for('auth.register'))
+    data = dict(csrf_token=csrf_token(rv.data),
+                username=user2_info['username'],
+                password=user2_info['password'],
+                confirm=user2_info['password'],
+                invitecode='xyzzy',
+                email_optional=user2_info['email'],
+                accept_tos=True,
+                captcha='xyzzy')
+
+    rv = client.post(url_for('auth.register'), data=data, follow_redirects=True)
+    assert b'Invalid invite code' in rv.data
+
+    # Now try to register a new user with a valid invite code.
+    rv = client.get(url_for('auth.register'))
+    data = dict(csrf_token=csrf_token(rv.data),
+                username=user2_info['username'],
+                password=user2_info['password'],
+                confirm=user2_info['password'],
+                invitecode='abcde',
+                email_optional=user2_info['email'],
+                accept_tos=True,
+                captcha='xyzzy')
+
+    rv = client.post(url_for('auth.register'), data=data, follow_redirects=True)
+    assert b'Log out' in rv.data
