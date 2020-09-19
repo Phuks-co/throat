@@ -629,7 +629,8 @@ for(var i = 0;i<childs.length;i++){
         if(childs[i].firstElementChild.nodeName == "A"){
             var nodeLink = childs[i].firstElementChild.getAttribute("href").split("/").slice(0,3).join("/");
             if(nodeLink == activePage){
-                 childs[i].firstElementChild.classList.add("active-page-link");   
+                 childs[i].firstElementChild.classList.add("active-page-link"); 
+                 childs[i].firstElementChild.style.color = '#c90511';
             }
         }
     }
