@@ -1,7 +1,9 @@
 from bs4 import BeautifulSoup
 from flask import url_for
+from peewee import fn
 from app import mail
 from app.auth import email_validation_is_required
+from app.models import User, UserStatus, UserMetadata
 
 
 def csrf_token(data):
@@ -84,3 +86,13 @@ def register_user(client, user_info):
             token = soup.a['href'].split('/')[-1]
             rv = client.get(url_for('auth.login_with_token', token=token),
                             follow_redirects=True)
+
+
+def promote_user_to_admin(client, user_info):
+    """Assuming user_info is the info for the logged-in user, promote them
+    to admin and leave them logged in.
+    """
+    log_out_current_user(client)
+    admin = User.get(fn.Lower(User.name) == user_info['username'])
+    UserMetadata.create(uid=admin.uid, key='admin', value='1')
+    log_in_user(client, user_info)

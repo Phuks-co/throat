@@ -703,7 +703,7 @@ class InviteCode(BaseModel):
         return InviteCode.select()\
             .where(InviteCode.code == invite_code)\
             .where(InviteCode.expires.is_null() | (InviteCode.expires > datetime.datetime.utcnow()))\
-            .where(InviteCode.max_uses < InviteCode.uses)
+            .where(InviteCode.max_uses > InviteCode.uses).get()
 
     def __repr__(self):
         return f'<InviteCode {self.code}>'
