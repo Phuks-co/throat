@@ -76,7 +76,10 @@ blockquote{
 }
 
 .th-navbar.open {
-    height: 8em;
+    height: 6.5em;
+    -webkit-box-shadow: 0 2px 3px 0 #ab4409;
+    -moz-box-shadow: 0 2px 3px 0 #ab4409;
+    box-shadow: 0 2px 3px 0 #ab4409;
 }
 
 #th-uinfo {
@@ -137,6 +140,20 @@ blockquote{
   }
   .th-toggle {
       display: block;
+  }
+  div.sidebar {
+      position: absolute;
+      background-color: white;
+      display: none;
+      -webkit-box-shadow: 0 3px 5px 0 #ab4409;
+      -moz-box-shadow: 0 3px 5px 0 #ab4409;
+      box-shadow: 0 3px 5px 0 #ab4409;
+  }
+  div.sidebar.open {
+      display: block;
+  }
+  .th-body {
+      position: relative;
   }
 }
 
