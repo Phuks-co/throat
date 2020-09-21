@@ -82,12 +82,12 @@ body.dark .th-navbar {
   box-shadow: 0 3px 5px 0 rgba(0,0,0,0.75);
 }
 
-body.dark .th-navbar.open {
+/* body.dark .th-navbar.open {
   background-color: #000;
     -webkit-box-shadow: 0 2px 3px 0 #aa4509;
     -moz-box-shadow: 0 2px 3px 0 #aa4509;
     box-shadow: 0 2px 3px 0 #aa4509;
-}
+} */
 
 /* Sub bar */
 
