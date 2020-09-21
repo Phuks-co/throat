@@ -348,6 +348,7 @@ if(document.querySelector('button.removebanneddomain')){
 /* purecss*/
 var menu = document.getElementById('menu'),
     WINDOW_CHANGE_EVENT = ('onorientationchange' in window) ? 'orientationchange':'resize';
+var sidebar = document.getElementById('sidebar');
 
 function toggleHorizontal() {
     [].forEach.call(
@@ -368,6 +369,7 @@ function toggleMenu() {
         toggleHorizontal();
     }
     menu.classList.toggle('open');
+    sidebar.classList.toggle('open')
     document.getElementById('toggle').classList.toggle('x');
 };
 
