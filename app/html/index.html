@@ -18,6 +18,7 @@
 @include('shared/sidebar/home.html')
 @if current_user.likes_scroll() and sort_type != 'home.search':
   <hr />
+  <div class="footer"></div>
   &copy;@{config.site.copyright}
   <br>
   @for text,link in config.site.footer.links.items():
@@ -28,6 +29,7 @@
   @if config.app.debug:
    | @{_('Page generated in __EXECUTION_TIME__ms with __DB_QUERIES__ queries')}
   @end
+  </div>
 @end
 @end
 

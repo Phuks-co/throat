@@ -77,8 +77,12 @@ blockquote{
 }
 
 .th-navbar.open {
-    height: 8em;
+    height: 6.5em;
+    -webkit-box-shadow: 0 2px 3px 0 #ab4409;
+    -moz-box-shadow: 0 2px 3px 0 #ab4409;
+    box-shadow: 0 2px 3px 0 #ab4409;
 }
+
 
 #th-uinfo {
     text-align: right;
