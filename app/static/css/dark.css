@@ -121,6 +121,11 @@ body.dark .post:nth-child(2n) {
 
 }
 
+body.dark .pchild {
+  margin-left: 15px;
+  border-left: 1px dotted #65686b;
+}
+
 body.dark .votebuttons {
   fill: #7d7d7d;
   color: #7d7d7d;
@@ -529,8 +534,8 @@ body.dark .mod.report.preview .preview-text-container.deleted.post-content-conta
 }
 
 body.dark article.text-post.comment.deleted {
-  background-color: #171717;
-  border: 1px solid #6f1818 ;
+  background-color: #6b6b6b36;
+/*  border: 1px solid #6f1818; */
 }
 
 body.dark .post-content-container.deleted {
