@@ -625,6 +625,8 @@ if (typeof(document.getElementById("cmnts")) != 'undefined' && document.getEleme
 
 //topbar active page link indication
 var activePage = window.location.pathname.split("/").slice(0,3).join("/");
+if("/all/hot" == activePage)
+   activePage = "/all";   
 var childs = document.getElementById("topbar").children;
 for(var i = 0;i<childs.length;i++){
     if( childs[i].firstElementChild){
