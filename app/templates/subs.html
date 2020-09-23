@@ -32,30 +32,30 @@
         <tr>
           <th>
             {% if sort == 'name_asc' %}
-              <a href="{{cp_uri}}/name_desc">Sub Name <span class="tx-icon" data-icon="downvote"></span></a>
+              <a href="{{cp_uri}}/name_desc">Skupina <span class="tx-icon" data-icon="downvote"></span></a>
             {%elif sort == 'name_desc' %}
-              <a href="{{cp_uri}}/name_asc">Sub Name <span class="tx-icon" data-icon="upvote"></span></a>
+              <a href="{{cp_uri}}/name_asc">Skupina <span class="tx-icon" data-icon="upvote"></span></a>
             {%else%}
-              <a href="{{cp_uri}}/name_asc">Sub Name <span class="tx-icon" data-icon="updown"></span></a>
+              <a href="{{cp_uri}}/name_asc">Skupina <span class="tx-icon" data-icon="updown"></span></a>
             {%endif %}
             </th>
-          <th>Created</th>
+     <!--     <th>Vytvorená</th> -->
           <th>
             {% if sort == 'subs_asc' %}
-              <a href="{{cp_uri}}/subs_desc">Subscribers <span class="tx-icon" data-icon="downvote"></span></a>
+              <a href="{{cp_uri}}/subs_desc">Členov <span class="tx-icon" data-icon="downvote"></span></a>
             {%elif sort == 'subs_desc' %}
-              <a href="{{cp_uri}}/subs_asc">Subscribers <span class="tx-icon" data-icon="upvote"></span></a>
+              <a href="{{cp_uri}}/subs_asc">Členov <span class="tx-icon" data-icon="upvote"></span></a>
             {%else%}
-            <a href="{{cp_uri}}/subs_desc">Subscribers <span class="i-icon" data-icon="updown"></span></a>
+            <a href="{{cp_uri}}/subs_desc">Členov <span class="i-icon" data-icon="updown"></span></a>
             {%endif %}
           </th>
           <th>
             {% if sort == 'posts_asc' %}
-              <a href="{{cp_uri}}/posts_desc">Posts <span class="tx-icon" data-icon="downvote"></span></a>
+              <a href="{{cp_uri}}/posts_desc">Príspevkov <span class="tx-icon" data-icon="downvote"></span></a>
             {%elif sort == 'posts_desc' %}
-              <a href="{{cp_uri}}/posts_asc">Posts <span class="tx-icon" data-icon="upvote"></span></a>
+              <a href="{{cp_uri}}/posts_asc">Príspevkov <span class="tx-icon" data-icon="upvote"></span></a>
             {%else%}
-              <a href="{{cp_uri}}/posts_desc">Posts <span class="i-icon" data-icon="updown"></span></a>
+              <a href="{{cp_uri}}/posts_desc">Príspevkov <span class="i-icon" data-icon="updown"></span></a>
             {%endif %}
           </th>
         </tr>
@@ -69,14 +69,14 @@
               <a href="{{url_for('sub.view_sub', sub=sub.name)}}">{{sub.name}}</a>
             </div>
           </td>
-          <td><time-ago datetime="{{sub.creation}}"></time-ago></td>
+    <!--  <td><time-ago datetime="{{sub.creation}}"></time-ago></td> -->
           <td>
             <div role="group" class="pure-button-group" data-sid="{{sub.sid}}" style="display:inline-block;">
 
               {% if current_user.has_subscribed(sub.name) %}
-                <button data-ac="unsubscribe" class="sub pure-button button-xsmall" style="display:inline-block; width: 8em;"><span class="sbm-icon" data-icon="check"></span>Subscribed</button>
+                <button data-ac="unsubscribe" class="sub pure-button button-xsmall" style="display:inline-block; width: 8em;"><span class="sbm-icon" data-icon="check"></span>Odoberám</button>
               {%else%}
-                <button data-ac="subscribe" class="unsub pure-button button-xsmall" style="display:inline-block; width: 8em;"><span class="sbm-icon" data-icon="add"></span>Subscribe</button>
+                <button data-ac="subscribe" class="unsub pure-button button-xsmall" style="display:inline-block; width: 8em;"><span class="sbm-icon" data-icon="add"></span>Odoberať</button>
               {%endif%}
             </div>
             <span style="margin-left: .3em;">{{sub.subscribers}}</span>
@@ -92,19 +92,19 @@
 {%if nav=='home.subs_search'%}
   <div class="col-12">
     {% if page > 1 %}
-    <a href="{{url_for(nav, term=term, page=(page-1))}}" class="pure-button">prev</a>
+    <a href="{{url_for(nav, term=term, page=(page-1))}}" class="pure-button"><--</a>
     {% endif %}
     {% if subs|length == 50 %}
-    <a href="{{url_for(nav,term=term, page=(page+1))}}" class="pure-button">next</a>
+    <a href="{{url_for(nav,term=term, page=(page+1))}}" class="pure-button">--></a>
     {% endif %}
   </div>
 {% else %}
   <div class="col-12">
     {% if page > 1 %}
-    <a href="{{url_for(nav, page=(page-1))}}" class="pure-button">prev</a>
+    <a href="{{url_for(nav, page=(page-1))}}" class="pure-button">p<--</a>
     {% endif %}
     {% if subs|length == 50 %}
-    <a href="{{url_for(nav, page=(page+1))}}" class="pure-button">next</a>
+    <a href="{{url_for(nav, page=(page+1))}}" class="pure-button">--></a>
     {% endif %}
   </div>
 {% endif %}
