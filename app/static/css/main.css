@@ -1591,7 +1591,7 @@ form#msg-form h3 {
 }
 
 td.subsentry.subsubscribed {
-  border-left: 4px solid #00b421;
+  border-left: 4px solid #800000;
 }
 
 td.subsentry.blocked {
@@ -1762,6 +1762,7 @@ table th {
     margin: 0;
     overflow: visible; /*to make ths where the title is really long work*/
     padding: 0.5em 1em; /* cell padding */
+    text-align: center;
 }
 
 table thead {
