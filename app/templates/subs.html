@@ -42,47 +42,52 @@
      <!--     <th>Vytvorená</th> -->
           <th>
             {% if sort == 'subs_asc' %}
-              <a href="{{cp_uri}}/subs_desc">Členov <span class="tx-icon" data-icon="downvote"></span></a>
+              <a href="{{cp_uri}}/subs_desc">Počet členov <span class="tx-icon" data-icon="downvote"></span></a>
             {%elif sort == 'subs_desc' %}
-              <a href="{{cp_uri}}/subs_asc">Členov <span class="tx-icon" data-icon="upvote"></span></a>
+              <a href="{{cp_uri}}/subs_asc">Počet členov <span class="tx-icon" data-icon="upvote"></span></a>
             {%else%}
-            <a href="{{cp_uri}}/subs_desc">Členov <span class="i-icon" data-icon="updown"></span></a>
+            <a href="{{cp_uri}}/subs_desc">Počet členov <span class="i-icon" data-icon="updown"></span></a>
             {%endif %}
           </th>
           <th>
             {% if sort == 'posts_asc' %}
-              <a href="{{cp_uri}}/posts_desc">Príspevkov <span class="tx-icon" data-icon="downvote"></span></a>
+              <a href="{{cp_uri}}/posts_desc">Počet príspevkov <span class="tx-icon" data-icon="downvote"></span></a>
             {%elif sort == 'posts_desc' %}
-              <a href="{{cp_uri}}/posts_asc">Príspevkov <span class="tx-icon" data-icon="upvote"></span></a>
+              <a href="{{cp_uri}}/posts_asc">Počet príspevkov <span class="tx-icon" data-icon="upvote"></span></a>
             {%else%}
-              <a href="{{cp_uri}}/posts_desc">Príspevkov <span class="i-icon" data-icon="updown"></span></a>
+              <a href="{{cp_uri}}/posts_desc">Počet príspevkov <span class="i-icon" data-icon="updown"></span></a>
             {%endif %}
           </th>
+		  <th>
+		  </th>
         </tr>
       </thead>
       <tbody>
         {% for sub in subs %}
         <tr>
-          <td  class="subsentry{% if current_user.has_subscribed(sub.name) %} subsubscribed{% endif %}{% if current_user.has_blocked(sub.sid) %} blocked{% endif %}" data-sid="{{sub.sid}}">
+        <td  class="subsentry{% if current_user.has_subscribed(sub.name) %} subsubscribed{% endif %}{% if current_user.has_blocked(sub.sid) %} blocked{% endif %}" data-sid="{{sub.sid}}">
             <div class="subname" title="{{sub.title}}">
+				
               {% if sub.nsfw  %}<span style="color:white;background:red">nsfw</span>{% endif %}
               <a href="{{url_for('sub.view_sub', sub=sub.name)}}">{{sub.name}}</a>
             </div>
-          </td>
+			
+        </td>
     <!--  <td><time-ago datetime="{{sub.creation}}"></time-ago></td> -->
           <td>
-            <div role="group" class="pure-button-group" data-sid="{{sub.sid}}" style="display:inline-block;">
+            <span style="margin-left: .3em;">{{sub.subscribers}}</span>
 
+          </td>
+          <td>{{sub.posts}}</td>
+			<td>
+			<div role="group" class="pure-button-group" data-sid="{{sub.sid}}" style="display:inline-block;">
               {% if current_user.has_subscribed(sub.name) %}
                 <button data-ac="unsubscribe" class="sub pure-button button-xsmall" style="display:inline-block; width: 8em;"><span class="sbm-icon" data-icon="check"></span>Odoberám</button>
               {%else%}
                 <button data-ac="subscribe" class="unsub pure-button button-xsmall" style="display:inline-block; width: 8em;"><span class="sbm-icon" data-icon="add"></span>Odoberať</button>
               {%endif%}
-            </div>
-            <span style="margin-left: .3em;">{{sub.subscribers}}</span>
-
-          </td>
-          <td>{{sub.posts}}</td>
+				</div>	
+			</td>
         </tr>
         {% endfor %}
       </tbody>
