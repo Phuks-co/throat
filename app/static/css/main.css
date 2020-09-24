@@ -2420,22 +2420,22 @@ article.text-post.comment.deleted {
 }
 
 .sub label{
-  text-align:left;
-  display:inline-block;
+  text-align:left!important;
+  display:inline-block!important;
 }
 .txcont label{
-  display: block;
-  text-align: left; 
+  display: block!important;
+  text-align: left!important; 
 }
 .createpost [type="text"],
 .createpost [type="url"],
 .createpost textarea,
 .createpost .editbtns{
-  display:block;
+  display:block!important;
   width:600px!important;
 }
 .createpost .lnicont{
-  display:block;
+  display:block!important;
 }
 
 @media only screen and (max-width: 600px) {
@@ -2443,7 +2443,7 @@ article.text-post.comment.deleted {
 .createpost [type="url"],
 .createpost textarea,
 .createpost .editbtns{
-  display:block;
+  display:block!important;
   width:300px!important;
 }
 }
