@@ -2417,4 +2417,33 @@ article.text-post.comment.deleted {
 
 .active-page-link{
     color:#de1414;
-}	
+}
+
+.sub label{
+  text-align:left;
+  display:inline-block;
+}
+.txcont label{
+  display: block;
+  text-align: left; 
+}
+.createpost [type="text"],
+.createpost [type="url"],
+.createpost textarea,
+.createpost .editbtns{
+  display:block;
+  width:600px!important;
+}
+.createpost .lnicont{
+  display:block;
+}
+
+@media only screen and (max-width: 600px) {
+.createpost [type="text"],
+.createpost [type="url"],
+.createpost textarea,
+.createpost .editbtns{
+  display:block;
+  width:300px!important;
+}
+}
