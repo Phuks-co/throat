@@ -2437,7 +2437,10 @@ article.text-post.comment.deleted {
 .createpost .lnicont{
   display:block!important;
 }
-
+.createpost #captcha,
+.createpost input[name="sub"]{
+  width:250px!important;
+}
 @media only screen and (max-width: 600px) {
 .createpost [type="text"],
 .createpost [type="url"],
