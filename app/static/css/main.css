@@ -2450,3 +2450,15 @@ article.text-post.comment.deleted {
   width:300px!important;
 }
 }
+input[name="username"],
+input[name="password"],
+input[name="confirm"],
+input[name="email_optional"]
+{
+  display:block!important;
+  width:300px!important;
+}
+input[name="captcha"]{
+  display:block!important;
+  width:250px!important;
+}
