@@ -2462,3 +2462,7 @@ input[name="captcha"]{
   display:block!important;
   width:250px!important;
 }
+.loginlinklist{
+    padding: 0;
+    list-style-type: none;
+}
