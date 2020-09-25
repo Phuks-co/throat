@@ -18,6 +18,10 @@ msgstr ""
 "X-Crowdin-File-ID: 26\n"
 "Language: sk_SK\n"
 
+#: app/templates/messages/messages.html:18
+msgid "Mark all as read"
+msgstr "Označiť všetky ako prečítané"
+
 #: app/__init__.py:46
 msgid "Please log in to access this page."
 msgstr "Je nutné sa prihlásiť."
