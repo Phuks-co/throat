@@ -17,6 +17,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
 
+#: app/templates/messages/messages.html:18
+msgid "Mark all as read"
+msgstr ""
+
 #: app/__init__.py:46
 msgid "Please log in to access this page."
 msgstr ""
