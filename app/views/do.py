@@ -662,6 +662,7 @@ def distinguish():
     form = DistinguishForm()
     cid = form.cid.data
     pid = form.pid.data
+    as_admin = form.as_admin.data
     if cid:
         try:
             item = SubPostComment.get(SubPostComment.cid == cid)
@@ -688,7 +689,7 @@ def distinguish():
 
     if item.distinguish != 0 and item.distinguish != None:
         item.distinguish = 0
-    elif is_mod:
+    elif is_mod and not as_admin:
         item.distinguish = 1
     else:
         item.distinguish = 2

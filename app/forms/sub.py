@@ -159,6 +159,7 @@ class DistinguishForm(FlaskForm):
     """ Post/comment distinguish form. """
     cid = HiddenField()
     pid = HiddenField()
+    as_admin = HiddenField()
 
 class DeletePost(FlaskForm):
     """ Post deletion form. """
