@@ -2197,6 +2197,38 @@ a.close-report {
   text-align: center;
 }
 
+div.post.admin > div > div > a.authorlink {
+  display: inline-block;
+  background-color: #d94f00;
+  color: #FDD8D4;
+  border-radius: 2px;
+  padding: .15em;
+}
+
+div.post.mod > div > div > a.authorlink {
+  display: inline-block;
+  background-color: green;
+  color: #FDD8D4;
+  border-radius: 2px;
+  padding: .15em;
+}
+
+article.text-post.comment.admin > div > div > div > a.poster {
+  display: inline-block;
+  background-color: #d94f00;
+  color: #FDD8D4;
+  border-radius: 2px;
+  padding: .15em;
+}
+
+article.text-post.comment.mod > div > div > div > a.poster {
+  display: inline-block;
+  background-color: green;
+  color: #FDD8D4;
+  border-radius: 2px;
+  padding: .15em;
+}
+
 article.text-post.comment.deleted {
   background-color: #FDD8D4;
 }

@@ -22,6 +22,28 @@ u.sub('.removesavedpost', 'click', function (e) {
     });
 });
 
+u.addEventForChild(document, 'click', '.distinguish', function (e, qelem) {
+    function distinguish(admin) {
+        u.post('/do/distinguish', {
+           cid : qelem.getAttribute('data-cid'),
+            pid : qelem.getAttribute('data-pid'),
+            as_admin: admin
+        },
+            function (data) {
+                if (data.status != "ok") {
+                    e.currentTarget.innerHTML = data.error
+                } else {
+                    document.location.reload();
+                }
+            })
+        }
+    if(qelem.text == _('distinguish') && document.getElementById('pagefoot-admin').getAttribute('data-value') == 'True') {
+        TextConfirm(qelem, function() {distinguish(true)}, _("distinguish as admin?"), function() {distinguish(false)})
+    } else {
+        distinguish(false)
+    }
+})
+
 u.addEventForChild(document, 'click', '.delete-post', function (e, qelem) {
     TextConfirm(qelem, function () {
         let reason = "";
