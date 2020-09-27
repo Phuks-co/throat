@@ -712,7 +712,7 @@ def getSinglePost(pid):
             SubPost)
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
-                               SubPost.score, SubPost.upvotes, SubPost.downvotes,
+                               SubPost.score, SubPost.upvotes, SubPost.downvotes, SubPost.distinguish,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.flair, SubPost.edited,
                                SubPost.comments, User.uid, User.status.alias('userstatus'), SubPost.deleted,
@@ -741,7 +741,7 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False,
             posts = posts.join(reports, JOIN.LEFT_OUTER, on=(reports.c.pid == SubPost.pid)).switch(SubPost).with_cte(reports)
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
-                               SubPost.deleted, SubPost.score, SubPost.ptype,
+                               SubPost.deleted, SubPost.score, SubPost.ptype, SubPost.distinguish,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.flair, SubPost.edited, Sub.sid,
                                SubPost.comments, User.uid, User.status.alias('userstatus'), *extra,

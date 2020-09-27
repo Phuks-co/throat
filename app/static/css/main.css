@@ -2183,7 +2183,7 @@ a.close-report {
   text-align: center;
 }
 
-div.post.admin a.authorlink {
+div.post.admin > div > div > a.authorlink {
   display: inline-block;
   background-color: #d94f00;
   color: #FDD8D4;
@@ -2191,7 +2191,7 @@ div.post.admin a.authorlink {
   padding: .15em;
 }
 
-div.post.mod a.authorlink {
+div.post.mod > div > div > a.authorlink {
   display: inline-block;
   background-color: green;
   color: #FDD8D4;
@@ -2199,7 +2199,7 @@ div.post.mod a.authorlink {
   padding: .15em;
 }
 
-article.text-post.comment.admin a.poster {
+article.text-post.comment.admin > div > div > div > a.poster {
   display: inline-block;
   background-color: #d94f00;
   color: #FDD8D4;
@@ -2207,7 +2207,7 @@ article.text-post.comment.admin a.poster {
   padding: .15em;
 }
 
-article.text-post.comment.mod a.poster {
+article.text-post.comment.mod > div > div > div > a.poster {
   display: inline-block;
   background-color: green;
   color: #FDD8D4;
