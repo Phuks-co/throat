@@ -77,6 +77,7 @@
   @if sort_type in ('home.all_new'):
     <label id="pagefoot-blocked" data-value="@{current_user.blocksid}" class="hide"></label>
   @end
+  <label id="pagefoot-admin" data-value="@{current_user.is_admin()}" class="hide"></label>
   @if current_user.likes_scroll() and sort_type != 'home.search':
     @if sort_type.startswith("home.all_"):
       <label id="pagefoot-moreuri" data-value="@{url_for('home.all_more', sort=sort_type.replace('home.all_', ''))}" class="hide"></label>

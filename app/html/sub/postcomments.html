@@ -3,7 +3,7 @@
   @#ignore
   @for comment in comments:
     @if comment['cid']:
-      <article id="@{comment['cid']}" data-cid="@{comment['cid']}" class="commentrow @{(comment['cid'] == highlight) and 'highlight ' or ''}@{(comment.get('hl')) and 'active' or ''}@{((comment['visibility'] != '') and (comment['visibility'] != 'none')) and 'deleted ' or ''} text-post no-padding comment">
+    <article id="@{comment['cid']}" data-cid="@{comment['cid']}" class="commentrow @{(comment['cid'] == highlight) and 'highlight ' or ''}@{(comment.get('hl')) and 'active' or ''}@{((comment['visibility'] != '') and (comment['visibility'] != 'none')) and 'deleted ' or ''} text-post no-padding comment @{(comment['distinguish'] == 1) and 'mod' or ''} @{(comment['distinguish'] == 2) and 'admin' or ''}">
         <div id="comment-@{comment['cid']}">
           @if comment['userstatus'] != 10:
             <div class="pull left votecomment">
@@ -23,6 +23,9 @@
               @else:
                 <a href="/u/@{comment['user']}" class="poster">
                   @{comment['user']}
+                  @if comment['distinguish']:
+                    <span class="speaking-tag">@{(comment['distinguish'] == 1) and _(' [speaking as mod]') or ''} @{(comment['distinguish'] == 2) and _(' [speaking as admin]') or ''}</span>
+                  @end
                   @if comment['user'] == post['user']:
                     <span class="op-tag">@{_('[OP]')}</span>
                   @end
@@ -43,7 +46,7 @@
               @end
             </div>
 
-            <div class="content @{(comment['visibility'] != '') and 'hidden' or ''}" id="content-@{comment['cid']}">
+            <div class="content  @{(comment['visibility'] != '') and 'hidden' or ''}" id="content-@{comment['cid']}">
               @if comment['visibility'] == 'none':
                 @{_('[Deleted]')} \
               @elif comment['visibility'] == 'admin-self-del':
@@ -98,6 +101,9 @@
               @end
               @if (current_user.is_admin() and comment['status'] == 2):
                 <li><a class="undelete-comment" data-cid="@{comment['cid']}">@{_('un-delete')}</a></li>
+              @end
+              @if (current_user.uid == comment['uid'] and (current_user.is_admin() or current_user.uid in subMods['all'])):
+              <li><a class="distinguish" data-cid="@{comment['cid']}">@{comment['distinguish'] and _('undistinguish') or _('distinguish')}</a></li>
               @end
             </ul>
           </div>

@@ -1,7 +1,7 @@
 // Simple, inline yes/no confirmation prompt.
 import _ from './I18n';
 
-function TextConfirm(the_element, yesfunc, question){
+function TextConfirm(the_element, yesfunc, question, nofunc){
   var elem = the_element.parentNode;
   var bk = elem.innerHTML;
   var yes = document.createElement( "a" );
@@ -26,6 +26,9 @@ function TextConfirm(the_element, yesfunc, question){
     }
   }
   no.onclick = function(){
+    if(nofunc != null){
+      nofunc();
+    }
     cNode.innerHTML = bk;
   };
 
@@ -33,3 +36,4 @@ function TextConfirm(the_element, yesfunc, question){
 }
 
 export default TextConfirm;
+
