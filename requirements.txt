@@ -32,6 +32,7 @@ lxml
 flask-jwt-extended
 captcha
 peewee_migrate
+psycopg2
 pyyaml
 email_validator
 feedgen
@@ -43,4 +44,3 @@ python-keycloak==0.21.0
 itsdangerous
 python-slugify
 click
-psycopg2
