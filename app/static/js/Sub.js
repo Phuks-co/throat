@@ -63,32 +63,6 @@ u.sub('.revoke-ban', 'click', function(e){
   });
 });
 
-u.sub('#ptoggle', 'click', function(e){
-  var oval = document.getElementById('ptypeval').value;
-  document.getElementById('ptypeval').value = (document.getElementById('ptypeval').value == 'text') ? 'link' : 'text' ;
-  if(document.getElementById('ptypeval').value == 'text'){
-    this.innerHTML = _('Change to link post');
-  }else{
-    this.innerHTML = _('Change to text post');
-  }
-  var val = document.getElementById('ptypeval').value;
-  document.getElementById('ptype').innerHTML = val;
-  if(val=='text'){
-    if(document.getElementById('link').getAttribute('required') === ''){
-      window.rReq = true;
-      document.getElementById('link').removeAttribute('required');
-    }
-    u.each('.lncont', function(e){e.style.display='none';});
-    u.each('.txcont', function(e){e.style.display=(e.type == "button") ? 'inline-block' : 'block';});
-  }else{
-    if(window.rReq){
-      document.getElementById('link').setAttribute('required', true);
-    }
-    u.each('.lncont', function(e){e.style.display=(e.type == "button") ? 'inline-block' : 'block';});
-    u.each('.txcont', function(e){e.style.display='none';});
-  }
-});
-
 u.sub('button.blk,button.unblk,button.sub,button.unsub', 'click', function(e){
   var sid=this.parentNode.getAttribute('data-sid');
   var act=this.getAttribute('data-ac')

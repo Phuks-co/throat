@@ -18,14 +18,6 @@ from ..tasks import create_thumbnail, create_thumbnail_external
 bp = Blueprint('subs', __name__)
 
 
-def post_over_limit():
-    captcha = None
-    if misc.get_user_level(current_user.uid)[0] <= 4:
-        captcha = misc.create_captcha()
-    form = CreateSubPostForm()
-    return engine.get_template('sub/createpost.html').render({'error': _('Wait a bit before posting.'), 'form': form, 'sub': None, 'captcha': captcha})
-
-
 @bp.route("/submit/<ptype>", defaults={'sub': ''}, methods=['GET'])
 @bp.route("/submit/<ptype>/<sub>", methods=['GET'])
 @login_required

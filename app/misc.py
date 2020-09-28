@@ -1376,13 +1376,6 @@ def validate_captcha(token, response):
     return False
 
 
-def get_all_subs():
-    """ Temporary function until we work out a better autocomplete
-    for createpost """
-    # TODO
-    return [x.name for x in Sub.select(Sub.name)]
-
-
 def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_context=True, include_history=False):
     """ Returns a fully paginated and expanded comment tree.
 
