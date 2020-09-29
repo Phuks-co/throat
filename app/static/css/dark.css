@@ -19,11 +19,6 @@ body.dark .th-toggle .bar{
   background-color: #666;
 }
 
-body.dark {
-  background-color: #36393f!important;
-  color: #dcd8d9;
-}
-
 body.dark a {
   color: #526a7d;
 }
@@ -658,4 +653,9 @@ body.dark .stick {
 body.dark .pblock.level .uprofile-level-box .fill {
     clip: rect(0px, 60px, 120px, 0px);
     background-color: #526a7d;
+}
+
+body.dark {
+  background-color: #36393f!important;
+  color: #dcd8d9;
 }

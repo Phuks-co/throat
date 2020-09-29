@@ -12,11 +12,6 @@ body{
   box-sizing: border-box;
 }
 
-body.dark {
-  background-color: #36393f!important;
-  color: #dcd8d9;
-}
-
 abbr[title]{
   text-decoration: none;
 }
