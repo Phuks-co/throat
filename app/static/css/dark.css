@@ -20,8 +20,8 @@ body.dark .th-toggle .bar{
 }
 
 body.dark {
-  background-color: #36393f;
-  color: #dcd8d9!important;
+  background-color: #36393f!important;
+  color: #dcd8d9;
 }
 
 body.dark a {
