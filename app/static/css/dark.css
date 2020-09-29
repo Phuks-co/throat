@@ -658,4 +658,8 @@ body.dark .pblock.level .uprofile-level-box .fill {
 body.dark {
   background-color: #36393f!important;
   color: #dcd8d9;
+  background: -moz-linear-gradient(top, #36393f 0%, 36393f 100%);
+  background: -webkit-linear-gradient(top,  #36393f 0%, 36393f 100%);
+  background: linear-gradient(to bottom,  #36393f 0%, 36393f 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#36393f', endColorstr='#36393f',GradientType=0 );
 }

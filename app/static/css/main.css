@@ -1,4 +1,5 @@
 body{
+  background-color: #fefefe;
   color: black;
   background: -moz-linear-gradient(top,  rgba(237,237,237,1) 0%, rgba(255,255,255,1) 100%);
   background: -webkit-linear-gradient(top,  rgba(237,237,237,1) 0%,rgba(255,255,255,1) 100%);
