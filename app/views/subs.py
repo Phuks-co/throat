@@ -328,7 +328,12 @@ def create_sub():
                  'csubform': form})
 
     sub = Sub.create(sid=uuid.uuid4(), name=form.subname.data, title=form.title.data)
-    SubMetadata.create(sid=sub.sid, key='mod', value=current_user.uid)
+
+    smd = [dict(sid=sub.sid, key='mod', value=current_user.uid)]
+    for key in ['allow_text_posts', 'allow_link_posts', 'allow_upload_posts']:
+        smd.append(dict(sid=sub.sid, key=key, value='1'))
+    SubMetadata.insert_many(smd).execute()
+
     SubMod.create(sid=sub.sid, uid=current_user.uid, power_level=0)
     SubStylesheet.create(sid=sub.sid, content='', source='/* CSS here */')
 

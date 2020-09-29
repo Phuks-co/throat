@@ -87,7 +87,10 @@ class EditSubForm(FlaskForm):
     nsfw = BooleanField(_l('Sub is NSFW'))
     restricted = BooleanField(_l('Only mods can post'))
     usercanflair = BooleanField(_l('Allow users to flair their own posts'))
-    polling = BooleanField(_l('Enable polls'))
+    allow_text_posts = BooleanField(_l('Enable text posts'))
+    allow_link_posts = BooleanField(_l('Enable link posts'))
+    allow_upload_posts = BooleanField(_l('Enable upload posts'))
+    allow_polls = BooleanField(_l('Enable polls'))
     subsort = RadioField(_l('Default sub page post sorting'),
                          choices=[('v', _l('Hot')), ('v_two', _l('New')),
                                   ('v_three', _l('Top'))],
