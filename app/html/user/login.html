@@ -8,16 +8,14 @@
 @def main():
 <div id="center-container">
   <div class="content">
-      <form method="POST" class="pure-form pure-form-aligned">
+      <form method="POST" id="login-form" class="pure-form pure-form-aligned">
         <h1>@{_('Login')}</h1> @{ loginform.csrf_token() !!html}
         <fieldset>
           <div class="pure-control-group">
-            <label for="username">@{_('Username')}</label>
-            @{loginform.username(placeholder=loginform.username.label.text, required=True, pattern="[a-zA-Z0-9_-]+", title=_('Alphanumeric characters plus \'-\' and \'_\''))!!html}
+            <label for="username">@{_('Username')}</label>@{loginform.username(placeholder=loginform.username.label.text, required=True, pattern="[a-zA-Z0-9_-]+", title=_('Alphanumeric characters plus \'-\' and \'_\''))!!html}
           </div>
           <div class="pure-control-group">
-            <label for="password">@{_('Password')}</label>
-            @{loginform.password(placeholder=loginform.password.label.text, required=True)!!html}
+            <label for="password">@{_('Password')}</label>@{loginform.password(placeholder=loginform.password.label.text, required=True)!!html}
           </div>
           <div class="pure-controls">
             <label for="remember" class="pure-checkbox">
