@@ -2736,7 +2736,7 @@ article.text-post.comment.deleted {
 }
 
 .createpost .lnicont {
-  display: block!important;
+  display: block;
 }
 
 .createpost #captcha, .createpost input[name="sub"] {
