@@ -7,7 +7,7 @@
     <div class="content createpost">
         <form method="POST" id="post-form" data-redir="true" class="pure-form pure-form-aligned" enctype="multipart/form-data">
             @{ form.csrf_token() !!html}
-            <h1>@{_('Submit a post')}</h1>
+            <h2>@{_('Submit a post')}</h2>
 
             <input type="submit" style="display:none"/>
             @if error:
