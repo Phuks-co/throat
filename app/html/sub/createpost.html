@@ -19,7 +19,7 @@
                         @{form.sub.label()!!html}@{ form.sub(required=True, class_="sub_autocomplete", autocomplete="off", placeholder=_('Find a sub...')) !!html }
                     </span>
                 </div>
-
+            <div class="label-v">
                 <div class="pure-controls post-types-opts">
                     @for kl in form.ptype:
                     <div class="pure-control-group">
@@ -30,6 +30,7 @@
                     </div>
                     @end
                 </div>
+            </div>
 
                 <div class="pure-control-group">
                     @{form.title.label()!!html}@{ form.title(required=True) !!html}
