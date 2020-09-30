@@ -130,7 +130,7 @@ u.sub('input[name="ptype"]', 'change', function (e) {
   });
 
   u.each('.lnicont', function (e) {
-    e.style.display = newVal == 'link' ? 'inline-block' : 'none';
+    e.style.display = newVal == 'link' ? 'block' : 'none';
   });
 
   u.each('.txcont', function (e) {
