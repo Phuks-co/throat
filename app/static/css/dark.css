@@ -385,6 +385,14 @@ body.dank .th-l-fill {animation: rb2 1s infinite; }
 @keyframes rb2{20%{fill: red;}40%{fill: yellow;}60%{fill: green;}80%{fill: blue;}100%{fill: orange;} }
 @keyframes rb{20%{stroke: red;}40%{stroke: yellow;}60%{stroke: green;}80%{stroke: blue;}100%{stroke: orange;}}
 
+/* FORM STYLES */
+
+body.dark #login-form, body.dark #post-form, body.dark #csub-form {
+  background-color: #101010;
+}
+
+/* /FORM STYLES */
+
 /* chat */
 body.dark #chbott-fixed #chsend{
   border: 1px solid #333;

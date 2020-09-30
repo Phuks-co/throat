@@ -7,15 +7,14 @@
 @def main():
 <div id="center-container">
   <div class="content">
-    <form  method="POST" class="pure-form pure-form-aligned">
+    <form  method="POST" id="login-form" class="pure-form pure-form-aligned">
       <h1>@{_('Resend account confirmation instructions')}</h1> @{ form.csrf_token() !!html}
       @if error:
       <div class="error">@{ error }</div>
       @end
       <fieldset>
         <div class="pure-control-group">
-          <label for="email">@{_('E-mail address')}</label>
-          @{form.email(required=True)!!html}
+          <label for="email">@{_('E-mail address')}</label>@{form.email(required=True)!!html}
         </div>
         <div class="pure-controls">
           <button type="submit" style="margin-top: 4%" class="pure-button pure-button-primary">@{_('Send email')}</button>
