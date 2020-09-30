@@ -12,7 +12,12 @@ u.sub('#poll-addoption', 'click', function(e){
     }
 
     // All is OK, add the option.
-    var node = document.createElement('li');
+    var node = document.createElement('div');
+    node.classList.add('pure-control-group');
+
+    var tblab = document.createElement('label');
+    tblab.innerHTML = opts.childElementCount + 1;
+
     var tb = document.createElement('input');
     tb.name = 'options-' + opts.childElementCount;
     tb.classList.add('sbm-poll-opt');
@@ -22,10 +27,10 @@ u.sub('#poll-addoption', 'click', function(e){
 
     var tbdel = document.createElement('a');
     tbdel.innerHTML = _('remove');
-    tbdel.style.marginLeft = '1em';
     tbdel.style.cursor = 'pointer';
     tbdel.classList.add('poll-del-opt');
 
+    node.appendChild(tblab);
     node.appendChild(tb);
     node.appendChild(tbdel);
     opts.appendChild(node);

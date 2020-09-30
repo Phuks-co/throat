@@ -8,7 +8,7 @@
 @def main():
 <div id="center-container">
   <div class="content">
-      <form method="POST" class="pure-form pure-form-aligned">
+      <form method="POST" id="login-form" class="pure-form pure-form-aligned">
         <h3>@{_('Login')}</h3> @{ loginform.csrf_token() !!html}
         <fieldset>
           <div class="pure-control-group">

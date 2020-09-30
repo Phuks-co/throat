@@ -11,8 +11,7 @@
       @if error:
         <div class="error" style="margin-top: 2em;">@{ error }</div>
       @end
-        <form method="POST" class="pure-form pure-form-aligned">
-            @{ regform.csrf_token()!!html }
+        <form method="POST" id="login-form" class="pure-form pure-form-aligned">@{ regform.csrf_token()!!html }
             <h1>@{_('Register')}</h1>
             <fieldset>
                 @if func.enableInviteCode():
@@ -22,27 +21,22 @@
                 </div>
                 @end
                 <div class="pure-control-group">
-                    <label for="username">@{regform.username.label.text}</label>
-                    @{regform.username(required=True, pattern="[a-zA-Z0-9_-]+", title=_('Alphanumeric characters plus \'-\' and \'_\''))!!html}
+                    <label for="username">@{regform.username.label.text}</label>@{regform.username(required=True, pattern="[a-zA-Z0-9_-]+", title=_('Alphanumeric characters plus \'-\' and \'_\''))!!html}
                 </div>
                 
                 <div class="pure-control-group">
-                    <label for="password">@{regform.password.label.text}</label>
-                    @{regform.password(autocomplete="off", required=True)!!html}
+                    <label for="password">@{regform.password.label.text}</label>@{regform.password(autocomplete="off", required=True)!!html}
                 </div>
 
                 <div class="pure-control-group">
-                    <label for="confirm">@{regform.confirm.label.text}</label>
-                    @{regform.confirm(autocomplete="off", required=True)!!html}
+                    <label for="confirm">@{regform.confirm.label.text}</label>@{regform.confirm(autocomplete="off", required=True)!!html}
                 </div>
 
                 <div class="pure-control-group">
                   @if email_validation_is_required():
-                    <label for="email">@{regform.email_required.label.text}</label>
-                    @{regform.email_required()!!html}
+                    <label for="email">@{regform.email_required.label.text}</label>@{regform.email_required()!!html}
                   @else:
-                    <label for="email">@{regform.email_optional.label.text}</label>
-                    @{regform.email_optional()!!html}
+                    <label for="email">@{regform.email_optional.label.text}</label>@{regform.email_optional()!!html}
                   @end
                 </div>
                 @if config.site.enable_security_question:
@@ -60,8 +54,7 @@
                       <img src="data:image/png;base64,@{ captcha[1] }"/>
                   </div>
                   <div class="pure-control-group">
-                    <label for="captcha">@{ regform.captcha.label.text }</label>
-                    <input autocomplete="off" id="captcha" name="captcha" required="" type="text" value="">
+                    <label for="captcha">@{ regform.captcha.label.text }</label><input autocomplete="off" id="captcha" name="captcha" required="" type="text" value="">
                   </div>
                 @end
                 <div class="pure-controls">
