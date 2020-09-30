@@ -140,6 +140,12 @@ u.ready(function() {
     altFormat: 'Y-m-d H:i',
     time_24hr: true,
   });
+  // Hide the Submit a post poll flatpickr initially.
+  var cb = document.getElementById('closetime_date');
+  if (cb && cb.nextElementSibling) {
+    cb.nextElementSibling.style.display = 'none';
+  }
+
   // for the top bar sorts
   var list = document.getElementById("subsort");
   if(list){

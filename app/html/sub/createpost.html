@@ -95,8 +95,7 @@
 
                 <div class="pure-control-group pocont" style="display:none">
                     <label for="closetime">@{_('Close the poll at...')}</label><input id="closetime" name="closetime_chk" type="checkbox" value="">
-                    <input id="closetime_date" name="closetime" type="text" class="date-picker-future" disabled>
-                    <i>(local time)</i>
+                    <input id="closetime_date" name="closetime" type="text" class="date-picker-future" style="display:none" disabled>
                 </div>
 
                 @if not sub or (sub and not sub.nsfw):
