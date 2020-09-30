@@ -1049,6 +1049,14 @@ def getSubMods(sid):
     return {'owners': owner, 'mods': mods, 'janitors': janitors, 'all': owner_uids + janitor_uids + mod_uids}
 
 
+# Relationship between the post type values in the CreateSubPost form
+# and the SubMetadata keys that allow those post values.
+ptype_names = {'link': 'allow_link_posts',
+               'text': 'allow_text_posts',
+               'upload': 'allow_upload_posts',
+               'poll': 'allow_polls'}
+
+
 def getSubData(sid, simple=False, extra=False):
     sdata = SubMetadata.select().where(SubMetadata.sid == sid)
     data = {'xmod2': [], 'sticky': []}

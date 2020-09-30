@@ -114,7 +114,8 @@ class CreateSubPostForm(FlaskForm):
     content = TextAreaField(_l('Post content'), validators=[Length(max=16384)])
     link = StringField(_l('Post link'), validators=[Length(min=10, max=255), Optional(), URL(require_tld=True)])
     ptype = RadioField(_l('Post type'),
-                       choices=[('link', _l('Link post')), ('text', _l('Text post'))],
+                       choices=[('link', _l('Link post')), ('text', _l('Text post')),
+                                ('upload', _l('Upload file')), ('poll', _l('Poll'))],
                        validators=[DataRequired()])
     nsfw = BooleanField(_l('NSFW?'))
     # for polls.

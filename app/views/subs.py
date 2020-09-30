@@ -30,8 +30,9 @@ def submit(ptype, sub):
         captcha = misc.create_captcha()
 
     form = CreateSubPostForm()
-    if current_user.canupload:
-        form.ptype.choices.append(('upload', _l('Upload file')))
+    if not current_user.canupload:
+        form.ptype.choices = [choice for choice in form.ptype.choices
+                              if choice[0] != 'upload']
 
     form.ptype.data = ptype
 
@@ -39,9 +40,6 @@ def submit(ptype, sub):
         form.sub.data = sub
         try:
             sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
-            subdata = misc.getSubData(sub.sid)
-            if subdata.get('allow_polls', False):
-                form.ptype.choices.append(('poll', _l('Poll')))
         except Sub.DoesNotExist:
             abort(404)
 
@@ -68,8 +66,9 @@ def create_post(ptype, sub):
         captcha = misc.create_captcha()
 
     form = CreateSubPostForm()
-    if current_user.canupload:
-        form.ptype.choices.append(('upload', _l('Upload file')))
+    if not current_user.canupload:
+        form.ptype.choices = [choice for choice in form.ptype.choices
+                              if choice[0] != 'upload']
 
     if not form.sub.data and sub != '':
         form.sub.data = sub
@@ -78,16 +77,20 @@ def create_post(ptype, sub):
         try:
             sub = Sub.get(fn.Lower(Sub.name) == form.sub.data.lower())
             subdata = misc.getSubData(sub.sid)
-            if subdata.get('allow_polls', False):
-                form.ptype.choices.append(('poll', _l('Poll')))
         except Sub.DoesNotExist:
-            pass
+            return engine.get_template('sub/createpost.html').render(
+                {'error': _("Sub does not exist."), 'form': form, 'sub': '', 'captcha': captcha}), 400
 
     if not form.validate():
         if not form.ptype.data:
             form.ptype.data = ptype
 
         return engine.get_template('sub/createpost.html').render({'error': misc.get_errors(form, True), 'form': form, 'sub': sub, 'captcha': captcha}), 400
+
+    ptype_flag = misc.ptype_names.get(form.ptype.data, None)
+    if ptype_flag is None or subdata.get(ptype_flag, '0') == '0':
+        return engine.get_template('sub/createpost.html').render(
+            {'error': _('That post type is not allowed in this sub.'), 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
     if misc.get_user_level(current_user.uid)[0] <= 4:
         if not misc.validate_captcha(form.ctok.data, form.captcha.data):
@@ -104,14 +107,6 @@ def create_post(ptype, sub):
                      'captcha': captcha}), 400
         except SiteMetadata.DoesNotExist:
             pass
-
-    try:
-        sub = Sub.get(fn.Lower(Sub.name) == form.sub.data.lower())
-    except Sub.DoesNotExist:
-        return engine.get_template('sub/createpost.html').render(
-            {'error': _("Sub does not exist."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
-
-    subdata = misc.getSubData(sub.sid)
 
     if sub.name.lower() in ('all', 'new', 'hot', 'top', 'admin', 'home'):
         return engine.get_template('sub/createpost.html').render(
@@ -174,10 +169,6 @@ def create_post(ptype, sub):
         img = 'deferred'
     elif form.ptype.data == 'poll':
         ptype = 3
-        # Check if this sub allows polls...
-        if not subdata.get('allow_polls', False):
-            return engine.get_template('sub/createpost.html').render(
-                {'error': _("This sub does not allow polling."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
         # check if we got at least three options
         options = form.options.data
         options = [x for x in options if len(x.strip(misc.WHITESPACE)) > 0]  # Remove empty strings
