@@ -1730,7 +1730,7 @@ td.subsentry.blocked {
   position: absolute;
   margin-left: 10px;
   margin-top: 10px;
-  background-color: white;
+  background-color: #f1f1f1;
   border-radius: 50%;
 }
 
@@ -2660,69 +2660,69 @@ article.text-post.comment.deleted {
 }
 
 @media only screen and (max-width: 900px) {
-.pure-g{
+.pure-g {
     display: block;
 }
-.pure-u-1-2{
+.pure-u-1-2 {
     display: block;
 }
 .pure-form-aligned .pure-controls {
     margin: 0px;
 }
 .banner-text-link {
-  font-size:18px;
+  font-size: 18px;
 }
 }
 
-.edited{
-  position:relative;
-  cursor:pointer;
+.edited {
+  position: relative;
+  cursor: pointer;
 }
 
 .edited-title {
-  position:absolute;
-  top:0px;
-  left:10px;
-  width:200px;
-  border:1px solid gray;
-  border-radius:5px;
-  padding:3px;
-  text-align:center;
+  position: absolute;
+  top: 0px;
+  left: 10px;
+  width: 200px;
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 3px;
+  text-align: center;
   background-color:white;
-  display:none;
+  display: none;
   transition: all 1s ease-in;
 }
 
-.edited:hover > .edited-title {
-  display:block;
+.edited:hover>.edited-title {
+  display: block;
 }
 
 .banner-text-link {
-    position:absolute;
-    top:50%;
-    left:50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
     color:white;
     font-size: 50px;
     transform: translate(-50%,-50%);
     letter-spacing: 1px;
-    font-weight:bold;
+    font-weight: bold;
     background-size: cover;
-    text-decoration:none;
-    display:none;	
+    text-decoration: none;
+    display: none;	
 }
 
 .banner-text-link:hover {
     color:white;
-    text-decoration:none;
+    text-decoration: none;
 }
 
 .active-page-link {
     color:#de1414;
 }
 
-.sub label{
-  text-align:left!important;
-  display:inline-block!important;
+.sub label {
+  text-align: left!important;
+  display: inline-block!important;
 }
 
 .txcont label {
@@ -2756,8 +2756,8 @@ input[name="username"], input[name="password"], input[name="confirm"], input[nam
 }
 
 input[name="captcha"] {
-  display:block!important;
-  width:250px!important;
+  display: block!important;
+  width: 250px!important;
 }
 
 .loginlinklist {
