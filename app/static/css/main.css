@@ -1439,6 +1439,9 @@ input[type=search] {
   background-color: #eee;
   padding: .4em 1em;
   /* 1px margin on botton and top so it respects <p>'s margin */
+  font-family: verdana,arial,sans-serif;
+  font-size: 14px;
+  line-height: 1.3em;
 }
 
 .post-content-container textarea, .commblock textarea, .comment-form textarea {
