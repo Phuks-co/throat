@@ -383,7 +383,7 @@ def delete_post(sub, pid):
             return jsonify(msg="Cannot delete post without reason"), 400
         post.deleted = 2
         # TODO: Make this a translatable notification
-        Notification.create(type='POST_DELETE', sub=post.sid, post=post.pid, content='Reason: ' + reason,
+        Notification.create(type='POST_DELETE', sub=post.sid, post=post.pid, content='Dôvod: ' + reason,
                             sender=uid, target=post.uid)
 
         misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_POST, uid, post.sid,
