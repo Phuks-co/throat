@@ -1436,7 +1436,7 @@ input[type=search] {
 }
 
 .post-content-container, .poll-space {
-  background-color: #eee;
+  /*background-color: #eee;*/
   padding: .4em 1em;
   /* 1px margin on botton and top so it respects <p>'s margin */
   font-family: verdana,arial,sans-serif;
