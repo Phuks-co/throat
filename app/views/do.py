@@ -225,7 +225,7 @@ def delete_post():
             deletion = 2
             # notify user.
             Notification.create(type='POST_DELETE', sub=post.sid, post=post.pid,
-                                content='Reason: ' + form.reason.data,
+                                content='Dôvod: ' + form.reason.data,
                                 sender=current_user.uid, target=post.uid)
 
             misc.create_sublog(misc.LOG_TYPE_SUB_DELETE_POST, current_user.uid, post.sid,
@@ -290,7 +290,7 @@ def undelete_post():
         deletion = 0
         # notify user.
         Notification.create(type='POST_UNDELETE', sub=post.sid, post=post.pid,
-                            content='Reason: ' + form.reason.data,
+                            content='Dôvod: ' + form.reason.data,
                             sender=current_user.uid, target=post.uid)
 
         misc.create_sublog(misc.LOG_TYPE_SUB_UNDELETE_POST, current_user.uid, post.sid,
@@ -899,7 +899,7 @@ def ban_user_sub(sub):
             return jsonify(status='error', error=[_('Already banned')])
 
         Notification.create(type='SUB_BAN', sub=sub.sid, sender=current_user.uid,
-                            content='Reason: ' + form.reason.data, target=user.uid)
+                            content='Dôvod: ' + form.reason.data, target=user.uid)
         socketio.emit('notification',
                       {'count': misc.get_notification_count(user.uid)},
                       namespace='/snt',
