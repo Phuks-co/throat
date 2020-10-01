@@ -107,7 +107,7 @@ class EditMod2Form(FlaskForm):
 class CreateSubPostForm(FlaskForm):
     """ Sub content submission form """
     sub = StringField(_l('Sub'), validators=[DataRequired(), Length(min=2, max=32)])
-    title = StringField(_l('Post title'), validators=[DataRequired(), Length(min=3, max=350)])
+    title = StringField(_l('Post title'), validators=[DataRequired(), Length(min=3, max=255)])
     content = TextAreaField(_l('Post content'), validators=[Length(max=16384)])
     link = StringField(_l('Post link'), validators=[Length(min=10, max=255), Optional(), URL(require_tld=True)])
     ptype = RadioField(_l('Post type'),
