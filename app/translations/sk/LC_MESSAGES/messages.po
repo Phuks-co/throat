@@ -297,7 +297,7 @@ msgstr "Nové"
 #: app/forms/sub.py:93 app/html/index.html:9 app/html/index.html:13
 #: app/html/sub.html:15 app/html/sub/post.html:345
 msgid "Top"
-msgstr "Naj"
+msgstr "Top"
 
 #: app/forms/sub.py:95 app/html/sub/settings.html:79
 msgid "Sidebar text"
@@ -2006,7 +2006,7 @@ msgstr "vytvoriť oznam"
 
 #: app/html/sub/post.html:227
 msgid "sort by top"
-msgstr "naj komentáre"
+msgstr "top komentáre"
 
 #: app/html/sub/post.html:229
 msgid "sort by new"
