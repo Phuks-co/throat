@@ -50,7 +50,7 @@
                                     <div class="pure-control-group">
                                         <label>@{i+1}</label><input type="text" id="op1" name="@{op.name}" value="@{op.data}" @{form.ptype.data == 'poll' and 'required' or ''} class="reqpoll sbm-poll-opt fixed">
                                             @if i > 1:
-                                            <a class="poll-del-opt" cursor: pointer;">@{_('remove')}</a>
+                                            <a class="poll-del-opt" style="cursor: pointer;">@{_('remove')}</a>
                                             @end
                                     </div>
                                 @end
