@@ -771,7 +771,7 @@ def create_post():
     if len(title.strip(misc.WHITESPACE)) < 3:
         return jsonify(msg='Post title is too short'), 400
 
-    if len(title) > 350:
+    if len(title) > 255:
         return jsonify(msg='Post title is too long'), 400
 
     if misc.get_user_level(uid)[0] < 7:
