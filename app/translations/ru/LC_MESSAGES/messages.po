@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-10-01 23:20-0300\n"
-"PO-Revision-Date: 2020-10-02 02:23\n"
+"PO-Revision-Date: 2020-10-02 08:21\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -206,7 +206,7 @@ msgstr "Максимальное количество приглашений н�
 
 #: app/forms/admin.py:47
 msgid "Change selected codes to expire:"
-msgstr ""
+msgstr "Вы не являетесь автором материала"
 
 #: app/forms/admin.py:48 app/html/sub/bans.html:91 app/static/js/main.js:491
 msgid "Never"
@@ -214,11 +214,11 @@ msgstr "Никогда"
 
 #: app/forms/admin.py:48
 msgid "Now"
-msgstr ""
+msgstr "Сейчас"
 
 #: app/forms/admin.py:48
 msgid "At:"
-msgstr ""
+msgstr "В:"
 
 #: app/forms/admin.py:51 app/forms/admin.py:70
 msgid "Expiration date"
@@ -1143,12 +1143,12 @@ msgstr "добавлено %(timeago)s - %(user)s в %(sub)s"
 #: app/html/shared/post.html:75 app/html/shared/post.html:77
 #: app/html/sub/post.html:165 app/html/sub/postcomments.html:27
 msgid " [speaking as mod]"
-msgstr ""
+msgstr " [как модератор]"
 
 #: app/html/shared/post.html:75 app/html/shared/post.html:77
 #: app/html/sub/post.html:165 app/html/sub/postcomments.html:27
 msgid " [speaking as admin]"
-msgstr ""
+msgstr " [как администратор]"
 
 #: app/html/shared/post.html:77
 #, python-format
@@ -1435,7 +1435,7 @@ msgstr "Комментарии"
 
 #: app/html/shared/sidebar/user.html:38
 msgid "View uploads"
-msgstr ""
+msgstr "Просмотр загрузок"
 
 #: app/html/shared/sidebar/user.html:40
 msgid "View saved posts"
@@ -2037,12 +2037,12 @@ msgstr "восстановить"
 
 #: app/html/sub/post.html:244 app/html/sub/postcomments.html:102
 msgid "undistinguish"
-msgstr ""
+msgstr "снять выделение"
 
 #: app/html/sub/post.html:244 app/html/sub/postcomments.html:102
 #: app/static/js/Post.js:40
 msgid "distinguish"
-msgstr ""
+msgstr "выделить"
 
 #: app/html/sub/post.html:255
 #, python-format
@@ -2091,7 +2091,7 @@ msgstr "Сортировка по: <b>%(currsort)s</b>"
 
 #: app/html/sub/post.html:339
 msgid "top"
-msgstr ""
+msgstr "top"
 
 #: app/html/sub/postcomments.html:30
 msgid "[OP]"
@@ -2684,7 +2684,7 @@ msgstr "удаленный"
 
 #: app/static/js/Post.js:41
 msgid "distinguish as admin?"
-msgstr ""
+msgstr "выделить как администратор?"
 
 #: app/static/js/Post.js:51 app/static/js/Post.js:476
 msgid "Why are you deleting this?"
@@ -2898,15 +2898,15 @@ msgstr "Вы уверены?"
 
 #: app/templates/admin/invitecodes.html:97
 msgid "Deleted"
-msgstr ""
+msgstr "Удаленный"
 
 #: app/templates/admin/invitecodes.html:101
 msgid "Pending"
-msgstr ""
+msgstr "Ожидаемый"
 
 #: app/templates/admin/invitecodes.html:103
 msgid "Banned"
-msgstr ""
+msgstr "Забанен"
 
 #: app/views/admin.py:31
 msgid "No TOTP secret found."
@@ -3073,7 +3073,7 @@ msgstr "группа не заблокирован"
 
 #: app/views/do.py:671
 msgid "Post/Comment not found"
-msgstr ""
+msgstr "Пост/Комментарий не найден"
 
 #: app/views/do.py:678 app/views/do.py:712
 msgid "Post not found"
@@ -3081,15 +3081,16 @@ msgstr "Пост не найден"
 
 #: app/views/do.py:681
 msgid "Nothing to distinguish"
-msgstr ""
+msgstr "Ничего особенного"
 
 #: app/views/do.py:684
 msgid "You are not the author of the item"
-msgstr ""
+msgstr "\n"
+"Вы не являетесь автором материала"
 
 #: app/views/do.py:688
 msgid "You must be a mod or admin"
-msgstr ""
+msgstr "Вы должны быть модератором или администратором"
 
 #: app/views/do.py:715 app/views/do.py:761
 msgid "Post was deleted"
