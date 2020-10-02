@@ -710,7 +710,9 @@ iframe {
 .c-upvote, .c-downvote, .upvote, .downvote {
   height: 20px;
   width: 18px;
-  display: inline-block;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
   cursor: pointer;
 }
 
@@ -723,22 +725,19 @@ iframe {
 }
 
 .misctainer {
-  padding-left: .6em;
   padding-right: .4em;
 }
 
 .votebuttons {
   height: 100%;
-  min-width: 1em;
   max-height: 70px;
-  padding: .15em .2em 0 .2em;
+  padding-top: .15em;
   float: left;
-  margin-right: 8px;
-  max-width: 2.2em;
+  width: 35px;
 }
 
 .score {
-  font-size: 17px;
+  font-size: 15px;
   margin: 5px 0 5px 0;
   text-align: center;
   letter-spacing: normal;
