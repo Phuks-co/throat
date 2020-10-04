@@ -351,6 +351,8 @@ class PhuksDown(m.SaferHtmlRenderer):
             return m.escape_html('<%s>' % raw_url)
 
     def link(self, content, raw_url, title=''):
+        if raw_url == '#spoiler':
+            return f"<spoiler>{content}</spoiler>"
         if self.check_url(raw_url):
             url = self.rewrite_url(raw_url)
             maybe_title = ' title="%s"' % m.escape_html(title) if title else ''
@@ -384,10 +386,22 @@ def our_markdown(text):
         return '[{0}]({1})'.format(txt, ln)
 
     text = re_amention.ESCAPED.sub(repl, text)
+
+    def repl_spoiler(match):
+        if match.group(1) is None:
+            return match.group(0)
+
+        return f'[{match.group(1)}](#spoiler)'
+
+    # Spoiler tags. Matches ">!foobar!<" unless it's in a code block
+    text = re.sub(r'>!(.+)!<|`.*?>!(?:.+?)!<.*?`|```.*?>!(?:.+?)!<.*?```', repl_spoiler, text)
+
     try:
-        return md(text)
+        html = md(text)
     except RecursionError:
         return '> tfw tried to break the site'
+
+    return html
 
 
 @cache.memoize(5)

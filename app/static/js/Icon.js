@@ -66,6 +66,8 @@ var Icons = {
   resize: require('../svg/resize.svg'),
   resizeArrow: require('../svg/resize_arrow.svg'),
 
+  gradient: require('../svg/gradient.svg'),
+
   rendericons: rendericons,
 };
 
