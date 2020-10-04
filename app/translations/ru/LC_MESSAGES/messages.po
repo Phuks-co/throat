@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-10-04 14:53-0300\n"
-"PO-Revision-Date: 2020-10-04 17:59\n"
+"POT-Creation-Date: 2020-10-04 19:03-0300\n"
+"PO-Revision-Date: 2020-10-04 23:59\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -70,7 +70,7 @@ msgstr "Люди Капусты - теперь доминирующая сила
 msgid "Winner of the shitposter of the year 2018 contest"
 msgstr "Победитель конкурса shitposter года 2018"
 
-#: app/misc.py:894
+#: app/misc.py:908
 #, python-format
 msgid "Error in the '%(field)s' field - %(error)s"
 msgstr "Ошибка в поле '%(field)s'  - %(error)s"
@@ -79,36 +79,36 @@ msgstr "Ошибка в поле '%(field)s'  - %(error)s"
 #: app/html/site/log.html:28 app/html/sub/log.html:28 app/html/sub/post.html:42
 #: app/html/sub/post.html:106 app/html/sub/post.html:120
 #: app/html/sub/post.html:165 app/html/sub/postcomments.html:22
-#: app/html/sub/postcomments.html:47 app/misc.py:1090 app/misc.py:1492
-#: app/misc.py:1501 app/misc.py:1508
+#: app/html/sub/postcomments.html:47 app/misc.py:1104 app/misc.py:1506
+#: app/misc.py:1515 app/misc.py:1522
 msgid "[Deleted]"
 msgstr "[Удалено]"
 
-#: app/misc.py:1141
+#: app/misc.py:1155
 msgid "URLs not allowed, uploaded files only"
 msgstr "URL не разрешены, только загруженные файлы"
 
-#: app/misc.py:1157
+#: app/misc.py:1171
 msgid "@import token not allowed"
 msgstr "@import токен не допускается"
 
-#: app/misc.py:1166
+#: app/misc.py:1180
 msgid "Invalid CSS"
 msgstr "Ошибка в CSS"
 
-#: app/misc.py:1585
+#: app/misc.py:1599
 msgid "Unknown error. User disappeared"
 msgstr "Неизвестная ошибка. Пользователь исчез"
 
-#: app/misc.py:1592
+#: app/misc.py:1606
 msgid "Score balance is negative"
 msgstr "Баланс счета отрицательный"
 
-#: app/misc.py:1594
+#: app/misc.py:1608
 msgid "Invalid vote value"
 msgstr "Недопустимое значение голоса"
 
-#: app/misc.py:1603 app/views/do.py:207 app/views/do.py:272 app/views/do.py:400
+#: app/misc.py:1617 app/views/do.py:207 app/views/do.py:272 app/views/do.py:400
 #: app/views/do.py:431 app/views/do.py:765 app/views/do.py:1259
 #: app/views/do.py:1339 app/views/do.py:1497 app/views/do.py:1512
 #: app/views/do.py:1583 app/views/do.py:1614 app/views/do.py:1643
@@ -118,39 +118,39 @@ msgstr "Недопустимое значение голоса"
 msgid "Post does not exist"
 msgstr "Пост не существует"
 
-#: app/misc.py:1606
+#: app/misc.py:1620
 msgid "You can't vote on deleted posts"
 msgstr "Вы не можете голосовать за удаленные сообщения"
 
-#: app/misc.py:1622 app/views/do.py:1822 app/views/do.py:1857
+#: app/misc.py:1636 app/views/do.py:1822 app/views/do.py:1857
 #: app/views/do.py:1895 app/views/do.py:2519 app/views/do.py:2619
 #: app/views/do.py:2731
 msgid "Comment does not exist"
 msgstr "Комментарий не существует"
 
-#: app/misc.py:1625
+#: app/misc.py:1639
 msgid "You can't vote on your own comments"
 msgstr "Вы не можете голосовать за свои собственные комментарии"
 
-#: app/misc.py:1627
+#: app/misc.py:1641
 msgid "You can't vote on deleted comments"
 msgstr "Вы не можете голосовать за удаленные комментарии"
 
-#: app/misc.py:1635
+#: app/misc.py:1649
 msgid "Invalid target"
 msgstr "Неверная цель"
 
-#: app/misc.py:1639 app/views/do.py:724 app/views/do.py:1262
+#: app/misc.py:1653 app/views/do.py:724 app/views/do.py:1262
 #: app/views/do.py:1830
 msgid "You are banned on this sub."
 msgstr "Вы запрещены в этой группе."
 
-#: app/misc.py:1644 app/views/do.py:727 app/views/do.py:770
+#: app/misc.py:1658 app/views/do.py:727 app/views/do.py:770
 #: app/views/do.py:1837
 msgid "Post is archived"
 msgstr "Пост заархивирован"
 
-#: app/misc.py:1835
+#: app/misc.py:1849
 msgid "Invalid status request"
 msgstr "Неверный запрос статуса"
 
@@ -208,7 +208,7 @@ msgstr "Максимальное количество приглашений н�
 msgid "Change selected codes to expire:"
 msgstr "Вы не являетесь автором материала"
 
-#: app/forms/admin.py:48 app/html/sub/bans.html:91 app/static/js/main.js:466
+#: app/forms/admin.py:48 app/html/sub/bans.html:91 app/static/js/main.js:471
 msgid "Never"
 msgstr "Никогда"
 
@@ -1474,7 +1474,7 @@ msgstr "Сохраненные"
 
 #: app/html/site/activity.html:12
 msgid "New posts and comments"
-msgstr ""
+msgstr "Новые посты и комментарии"
 
 #: app/html/site/activity.html:17
 #, python-format
@@ -2639,7 +2639,7 @@ msgstr "Вы не можете создавать инвайты."
 msgid "Your invite codes"
 msgstr "Ваши инвайты"
 
-#: app/html/user/settings/invitecode.html:22 app/static/js/Editor.js:59
+#: app/html/user/settings/invitecode.html:22 app/static/js/Editor.js:60
 msgid "Code"
 msgstr "Код"
 
@@ -2668,27 +2668,31 @@ msgstr "Перечеркнутый (ctrl-shift-s)"
 msgid "Title (ctrl-shift-h)"
 msgstr "Заголовок (ctrl-shift-h)"
 
-#: app/static/js/Editor.js:36
+#: app/static/js/Editor.js:30
+msgid "Spoiler"
+msgstr ""
+
+#: app/static/js/Editor.js:37
 msgid "Insert hyperlink"
 msgstr "Вставить гиперссылку"
 
-#: app/static/js/Editor.js:39
+#: app/static/js/Editor.js:40
 msgid "Link Title"
 msgstr "Название Ссылки"
 
-#: app/static/js/Editor.js:46
+#: app/static/js/Editor.js:47
 msgid "Insert link (ctrl-shift-k)"
 msgstr "Вставить ссылку (ctrl-shift-k)"
 
-#: app/static/js/Editor.js:52
+#: app/static/js/Editor.js:53
 msgid "Bullet list"
 msgstr "Список маркеров"
 
-#: app/static/js/Editor.js:53
+#: app/static/js/Editor.js:54
 msgid "Number list"
 msgstr "Номерной список"
 
-#: app/static/js/Editor.js:60
+#: app/static/js/Editor.js:61
 msgid "Quote (ctrl-shift-.)"
 msgstr "Цитата (ctrl-shift-.)"
 
@@ -2909,15 +2913,15 @@ msgstr "Ошибка при обращении к серверу"
 msgid "Are you sure you want to PERMANENTLY delete your account?"
 msgstr "Вы уверены, что хотите ПОЛНОСТЬЮ удалить свою учетную запись?"
 
-#: app/static/js/main.js:510
+#: app/static/js/main.js:515
 msgid "Are you sure you want to ban this user?"
 msgstr "Вы уверены, что хотите заблокировать этого пользователя?"
 
-#: app/static/js/main.js:515
+#: app/static/js/main.js:520
 msgid "Are you sure you want to remove all the votes issued by this user?"
 msgstr "Вы уверены, что хотите удалить все голоса, отданные этим пользователем?"
 
-#: app/static/js/main.js:520
+#: app/static/js/main.js:525
 msgid "Are you sure you want to unban this user?"
 msgstr "Вы уверены, что хотите разблокировать этого пользователя?"
 
