@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-10-04 00:59-0300\n"
-"PO-Revision-Date: 2020-10-04 10:00\n"
+"POT-Creation-Date: 2020-10-04 14:53-0300\n"
+"PO-Revision-Date: 2020-10-04 17:59\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -1276,7 +1276,7 @@ msgstr "Горячее за 24 часа"
 msgid "%(timeago)s in %(sub)s"
 msgstr "%(timeago)s в %(sub)s"
 
-#: app/html/shared/sidebar/home.html:35
+#: app/html/shared/sidebar/home.html:35 app/html/site/activity.html:11
 msgid "Recent activity"
 msgstr "Недавняя активность"
 
@@ -1471,6 +1471,10 @@ msgstr "Просмотр загрузок"
 #: app/html/shared/sidebar/user.html:40
 msgid "View saved posts"
 msgstr "Сохраненные"
+
+#: app/html/site/activity.html:12
+msgid "New posts and comments"
+msgstr ""
 
 #: app/html/site/activity.html:17
 #, python-format
