@@ -1,6 +1,8 @@
 import u from './Util';
 import TextConfirm from  './utils/TextConfirm';
 import _ from './utils/I18n';
+import 'autocompleter/autocomplete.css';
+import autocomplete from 'autocompleter';
 
 u.sub('.revoke-mod2inv', 'click', function(e){
   var user=this.getAttribute('data-user');
@@ -63,32 +65,6 @@ u.sub('.revoke-ban', 'click', function(e){
   });
 });
 
-u.sub('#ptoggle', 'click', function(e){
-  var oval = document.getElementById('ptypeval').value;
-  document.getElementById('ptypeval').value = (document.getElementById('ptypeval').value == 'text') ? 'link' : 'text' ;
-  if(document.getElementById('ptypeval').value == 'text'){
-    this.innerHTML = _('Zmeniť na link');
-  }else{
-    this.innerHTML = _('Zmeniť na tému');
-  }
-  var val = document.getElementById('ptypeval').value;
-  document.getElementById('ptype').innerHTML = val;
-  if(val=='text'){
-    if(document.getElementById('link').getAttribute('required') === ''){
-      window.rReq = true;
-      document.getElementById('link').removeAttribute('required');
-    }
-    u.each('.lncont', function(e){e.style.display='none';});
-    u.each('.txcont', function(e){e.style.display=(e.type == "button") ? 'inline-block' : 'block';});
-  }else{
-    if(window.rReq){
-      document.getElementById('link').setAttribute('required', true);
-    }
-    u.each('.lncont', function(e){e.style.display=(e.type == "button") ? 'inline-block' : 'block';});
-    u.each('.txcont', function(e){e.style.display='none';});
-  }
-});
-
 u.sub('button.blk,button.unblk,button.sub,button.unsub', 'click', function(e){
   var sid=this.parentNode.getAttribute('data-sid');
   var act=this.getAttribute('data-ac')
@@ -123,8 +99,10 @@ u.sub('#ban_timepick', 'change', function(e){
   }
 });
 
-u.sub('input[name="ptype"]', 'change', function (e) {
-  const newVal = e.target.value;
+// Changing the visibility of fields in Submit a Post based on the
+// selected radio button.
+function onPtypeChange(e) {
+  const newVal = e.value;
   u.each('.lncont', function (e) {
     e.style.display = newVal == 'link' ? 'block' : 'none';
   });
@@ -172,4 +150,140 @@ u.sub('input[name="ptype"]', 'change', function (e) {
       e.removeAttribute('required');
     }
   });
+}
+
+u.sub('input[name="ptype"]', 'change', function (e) {
+  onPtypeChange(e.target);
 });
+
+// List of suggestions for sub names, fetched from server.
+var suggestions = null;
+
+// Map radio button names to sub permission flag names.
+var ptypeNames = {
+  link: 'allow_link_posts',
+  text: 'allow_text_posts',
+  upload: 'allow_upload_posts',
+  poll: 'allow_polls'
+};
+
+// Show or hide the radio buttons in Submit a Post based
+// on what's allowed for the selected sub.
+function updateSubmitPostForm(ptypes) {
+  var radioButtons = document.querySelectorAll('input[name="ptype"]');
+  var onlyUploads = document.getElementById('onlyuploads');
+  var currentlySet = null;
+  var firstVisible = null;
+  for (var i = 0; i < radioButtons.length; i++) {
+    var e = radioButtons[i];
+    if (e.checked) {
+      currentlySet = e;
+    }
+    if (ptypes.includes(ptypeNames[e.value])) {
+      e.parentNode.style.display = '';
+      if (!firstVisible) {
+        firstVisible = e;
+      }
+    } else {
+      e.parentNode.style.display = 'none';
+    }
+  }
+
+  // Make sure a visible radio button is selected.
+  if (!firstVisible) {
+    // No radio buttons are visible, and that can only happen if the
+    // sub is uploads-only and the user can't upload.
+    // There's a message for that, so display it.
+    onlyUploads.style.display = '';
+  } else if (!ptypes.includes(ptypeNames[currentlySet.value])) {
+    currentlySet.checked = false;
+    firstVisible.checked = true;
+    onPtypeChange(firstVisible);
+    onlyUploads.style.display = 'none';
+  } else {
+      // Make sure the right fields are shown on initial load of page.
+      onPtypeChange(currentlySet);
+  }
+}
+
+// When the sub name in Submit a Post is changed, get the types of
+// posts permitted and update which radio buttons are visible
+// accordingly.
+function onSubmitPostSubChange(e) {
+  if (e.classList.contains('sub_submitpost')) {
+    var name = e.value.toLowerCase();
+    var ptypes = null;
+    const defaults = ['allow_link_posts',
+                      'allow_text_posts',
+                      'allow_upload_posts']
+    // An earlier AJAX call for autocomplete may have fetched
+    // the ptypes for the sub already.
+    if (suggestions) {
+      suggestions.forEach(function (elem) {
+        if (name == elem.name.toLowerCase()) {
+          ptypes = elem.ptypes;
+        }});
+    }
+
+    if (ptypes != null) {
+      updateSubmitPostForm(ptypes)
+    } else if (e.value == '') {
+      // No sub given, so show the defaults.
+      updateSubmitPostForm(defaults);
+    } else {
+      u.get('/api/v3/sub?query=' + name, function(data) {
+        if (data.results) {
+          data.results.forEach(function(elem) {
+            if (name == elem.name.toLowerCase())
+              ptypes = elem.ptypes;
+          });
+        }
+        if (ptypes != null) {
+          updateSubmitPostForm(ptypes)
+        } else {
+          // This sub doesn't exist, so show the defaults.
+          updateSubmitPostForm(defaults);
+        }
+      });
+    }
+  }
+}
+
+u.ready(function () {
+  var sub = document.getElementById('sub');
+  if (sub) {
+    onSubmitPostSubChange(sub);
+  }
+})
+
+u.sub('#sub', 'change', function(e) {
+  onSubmitPostSubChange(e.target)});
+
+// SUB autocomplete
+const sa = document.querySelector('.sub_autocomplete');
+if(sa){
+  autocomplete({
+    minLength: 3,
+    debounceWaitMs: 200,
+    input: sa,
+    fetch: function(text, update) {
+        text = text.toLowerCase();
+        u.get('/api/v3/sub?query=' + text, function(data){
+          suggestions = data.results;
+          update(suggestions);
+        })
+    },
+    onSelect: function(item) {
+        sa.value = item.name;
+        if (sa.id == 'sub') {
+          onSubmitPostSubChange(sa);
+        }
+    },
+    render: function(item, currentValue) {
+      var div = document.createElement("div");
+      div.textContent = item.name;
+      return div;
+    },
+    emptyMsg: _('No subs found')
+  });
+}

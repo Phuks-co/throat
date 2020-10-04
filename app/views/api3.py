@@ -1,5 +1,6 @@
 """ API endpoints. """
 
+from collections import defaultdict
 import datetime
 import uuid
 from email_validator import EmailNotValidError
@@ -762,6 +763,9 @@ def create_post():
 
     subdata = misc.getSubData(sub.sid, simple=True)
 
+    if (subdata.get(misc.ptype_names[ptype], '0') == '0'):
+         jsonify(msg='This sub does not allow this ptype'), 403
+
     if misc.is_sub_banned(sub, uid=uid):
         return jsonify(msg="You're banned from this sub"), 403
 
@@ -845,14 +849,26 @@ def create_post():
 
 @API.route('/sub', methods=['GET'])
 def search_sub():
+    """Search for subs matching the query parameter.  Return, for each sub
+    found, its name and a list of the post types allowed."""
     query = request.args.get('query', '')
     if len(query) < 3 or not misc.allowedNames.match(query):
         return jsonify(results=[])
 
     query = '%' + query + '%'
-    subs = Sub.select(Sub.name).where(Sub.name ** query).limit(10).dicts()
+    subs = (Sub.select(Sub.name, SubMetadata.key)
+            .join(SubMetadata, JOIN.LEFT_OUTER, on=(Sub.sid == SubMetadata.sid))
+            .where((Sub.name ** query) &
+                   (SubMetadata.key << set(misc.ptype_names.values())) &
+                   (SubMetadata.value == '1'))
+            .limit(10).dicts())
 
-    return jsonify(results=list(subs))
+    ptypes = defaultdict(list)
+    for elem in subs:
+        ptypes[elem['name']].append(elem['key'])
+
+    return jsonify(results=[{'name': k, 'ptypes': v}
+                            for k, v in ptypes.items()])
 
 
 @API.route('/sub/rules', methods=['GET'])

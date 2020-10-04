@@ -1,9 +1,9 @@
 """ Miscellaneous site endpoints """
-from peewee import SQL
+from peewee import SQL, Value
 from flask import Blueprint, redirect, url_for, abort, render_template
 from flask_login import login_required, current_user
 from .. import misc
-from ..models import SiteLog, SubPost, SubLog, Sub, SubPostComment, Wiki
+from ..models import SiteLog, SubPost, SubLog, Sub, SubPostComment, User, db
 from ..misc import engine
 from ..config import config
 
@@ -78,3 +78,12 @@ def view_multisub_new(sublist, page=1):
                            posts=posts, subs=subs, sublist=sublist,
                            sort_type='site.view_multisub_new', kw={'subs': sublist})
 
+
+@bp.route("/activity")
+def view_activity():
+    return engine.get_template('site/activity.html').render({
+        # 'page': page,
+        'subOfTheDay': misc.getSubOfTheDay(),
+        'changeLog': misc.getChangelog(),
+        'activity': misc.recent_activity(False)
+    })

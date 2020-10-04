@@ -105,6 +105,15 @@ site:
   # more information.
   custom_hot_sort: False
 
+  recent_activity:
+    # Enables or disables the recent activity sidebar and the page in /activity
+    enabled: True
+    # If true, only show recent activity from default subs in the sidebar (recent activity for all subs will be shown in
+    # /activity)
+    defaults_only: False
+    # If true, only show recent comments (and not posts) in the sidebar
+    comments_only: False
+
 auth:
   # Set to LOCAL to store user authentication in database,
   # or KEYCLOAK to use a Keycloak server to authenticate users.

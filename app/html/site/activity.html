@@ -1,0 +1,26 @@
+@extends("shared/layout.html")
+@require(activity)
+@def sidebar():
+
+@include('shared/sidebar/home.html')
+@end
+
+@def main():
+<div id="center-container">
+  <div class="content" style="margin-left: 1em">
+    <h1>Recent activity</h1>
+    <b>New posts and comments</b>
+    <ul id="activity_list">
+    @for it in activity:
+      <li>
+        @if it['type'] == 'post':
+        @{_('%(user)s posted "%(title)s" to %(sub)s %(timeago)s', user='<a href="/u/' + it['user'] + '">' + it['user'] + '</a>', title='<a href="' + url_for('sub.view_post', sub=it['sub'], pid=it['pid']) + '">' + e(it['content']) + '</a>', sub='<a href="' + url_for('sub.view_sub', sub=it['sub']) + '">' + config.site.sub_prefix + '/' + it['sub'] + '</a>', timeago='<time-ago datetime="' + it['time'].isoformat() + 'Z" class="sidebarlists"></time-ago>')!!html}
+        @else:
+        @{_('%(user)s commented "%(comment)s" in %(sub)s %(timeago)s', user='<a href="/u/' + it['user'] + '">' + it['user'] + '</a>', comment='<a href="' + url_for('sub.view_post', sub=it['sub'], pid=it['pid']) + '">' + e(func.word_truncate(''.join(BeautifulSoup(markdown(it['content'])).findAll(text=True)).replace('\n', ' '), 350)) + '</a>', sub='<a href="' + url_for('sub.view_sub', sub=it['sub']) + '">' + config.site.sub_prefix + '/' + it['sub'] + '</a>', timeago='<time-ago datetime="' + it['time'].isoformat() + 'Z" class="sidebarlists"></time-ago>')!!html}
+        @end
+      </li>
+    @end
+    </ul>
+  </div>
+</div>
+@end
