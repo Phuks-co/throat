@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-10-04 00:59-0300\n"
-"PO-Revision-Date: 2020-10-04 04:00\n"
+"PO-Revision-Date: 2020-10-04 10:00\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -294,15 +294,15 @@ msgstr "Разрешить пользователям создавать сво�
 
 #: app/forms/sub.py:90
 msgid "Enable text posts"
-msgstr ""
+msgstr "Включить текстовые сообщения"
 
 #: app/forms/sub.py:91
 msgid "Enable link posts"
-msgstr ""
+msgstr "Включить публикации по ссылкам"
 
 #: app/forms/sub.py:92
 msgid "Enable upload posts"
-msgstr ""
+msgstr "Разрешить загрузку в постах"
 
 #: app/forms/sub.py:93
 msgid "Enable polls"
@@ -1278,17 +1278,17 @@ msgstr "%(timeago)s в %(sub)s"
 
 #: app/html/shared/sidebar/home.html:35
 msgid "Recent activity"
-msgstr ""
+msgstr "Недавняя активность"
 
 #: app/html/shared/sidebar/home.html:40
 #, python-format
 msgid "%(user)s commented: %(text)s"
-msgstr ""
+msgstr "%(user)s прокомментировал: %(text)s"
 
 #: app/html/shared/sidebar/home.html:42
 #, python-format
 msgid "%(user)s posted: %(text)s"
-msgstr ""
+msgstr "%(user)s опубликовал: %(text)s"
 
 #: app/html/shared/sidebar/home.html:56
 msgid "Sub of the day"
@@ -1475,12 +1475,12 @@ msgstr "Сохраненные"
 #: app/html/site/activity.html:17
 #, python-format
 msgid "%(user)s posted \"%(title)s\" to %(sub)s %(timeago)s"
-msgstr ""
+msgstr "%(user)s опубликовал \"%(title)s\" в %(sub)s %(timeago)s"
 
 #: app/html/site/activity.html:19
 #, python-format
 msgid "%(user)s commented \"%(comment)s\" in %(sub)s %(timeago)s"
-msgstr ""
+msgstr "%(user)s прокомментировал \"%(comment)s\" в %(sub)s %(timeago)s"
 
 #: app/html/site/license.html:9
 msgid "This website is powered by <a href=\"https://github.com/Phuks-co/throat\">Throat</a>, released under the MIT license."
@@ -1687,7 +1687,7 @@ msgstr "Описание"
 
 #: app/html/sub/createpost.html:17
 msgid "This sub only allows upload posts, and you don't have permission to upload files yet."
-msgstr ""
+msgstr "Эта группа позволяет загружать только сообщения, и у вас еще нет разрешения на загрузку файлов."
 
 #: app/html/sub/createpost.html:22
 msgid "Find a sub..."
@@ -3067,7 +3067,7 @@ msgstr "Невозможно восстановить без причины"
 
 #: app/views/do.py:357
 msgid "At least one kind of post must be permitted"
-msgstr ""
+msgstr "Должен быть разрешен хотя бы один вид сообщений"
 
 #: app/views/do.py:408 app/views/do.py:1685
 msgid "Flair does not exist"
@@ -3419,7 +3419,7 @@ msgstr "Группы не существует."
 
 #: app/views/subs.py:93
 msgid "That post type is not allowed in this sub."
-msgstr ""
+msgstr "Этот тип записи не разрешен в этой группе"
 
 #: app/views/subs.py:106
 msgid "Posting has been temporarily disabled."
