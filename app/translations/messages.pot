@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Throat 1.0\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-10-04 00:59-0300\n"
+"POT-Creation-Date: 2020-10-04 14:53-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1283,7 +1283,7 @@ msgstr ""
 msgid "%(timeago)s in %(sub)s"
 msgstr ""
 
-#: app/html/shared/sidebar/home.html:35
+#: app/html/shared/sidebar/home.html:35 app/html/site/activity.html:11
 msgid "Recent activity"
 msgstr ""
 
@@ -1477,6 +1477,10 @@ msgstr ""
 
 #: app/html/shared/sidebar/user.html:40
 msgid "View saved posts"
+msgstr ""
+
+#: app/html/site/activity.html:12
+msgid "New posts and comments"
 msgstr ""
 
 #: app/html/site/activity.html:17
