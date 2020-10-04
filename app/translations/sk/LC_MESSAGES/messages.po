@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-10-04 00:59-0300\n"
-"PO-Revision-Date: 2020-10-04 04:00\n"
+"PO-Revision-Date: 2020-10-04 10:00\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -206,7 +206,7 @@ msgstr "Maximálny počet pozvánok na používateľa"
 
 #: app/forms/admin.py:47
 msgid "Change selected codes to expire:"
-msgstr ""
+msgstr "Zmeniť expiráciu zvolených kódov:"
 
 #: app/forms/admin.py:48 app/html/sub/bans.html:91 app/static/js/main.js:466
 msgid "Never"
@@ -214,11 +214,11 @@ msgstr "Nikdy"
 
 #: app/forms/admin.py:48
 msgid "Now"
-msgstr ""
+msgstr "Teraz"
 
 #: app/forms/admin.py:48
 msgid "At:"
-msgstr ""
+msgstr "Kedy:"
 
 #: app/forms/admin.py:51 app/forms/admin.py:70
 msgid "Expiration date"
@@ -294,15 +294,15 @@ msgstr "Členovia môžu tagovať vlastné príspevky"
 
 #: app/forms/sub.py:90
 msgid "Enable text posts"
-msgstr ""
+msgstr "Povoliť diskusné príspevky"
 
 #: app/forms/sub.py:91
 msgid "Enable link posts"
-msgstr ""
+msgstr "Povoliť linkové príspevky"
 
 #: app/forms/sub.py:92
 msgid "Enable upload posts"
-msgstr ""
+msgstr "Povoliť upload príspevky"
 
 #: app/forms/sub.py:93
 msgid "Enable polls"
@@ -1159,12 +1159,12 @@ msgstr "%(timeago)s pridal(a) %(user)s v %(sub)s"
 #: app/html/shared/post.html:75 app/html/shared/post.html:77
 #: app/html/sub/post.html:165 app/html/sub/postcomments.html:27
 msgid " [speaking as mod]"
-msgstr ""
+msgstr " [moderátor]"
 
 #: app/html/shared/post.html:75 app/html/shared/post.html:77
 #: app/html/sub/post.html:165 app/html/sub/postcomments.html:27
 msgid " [speaking as admin]"
-msgstr ""
+msgstr " [admin]"
 
 #: app/html/shared/post.html:77
 #, python-format
@@ -1278,17 +1278,17 @@ msgstr "%(timeago)s v %(sub)s"
 
 #: app/html/shared/sidebar/home.html:35
 msgid "Recent activity"
-msgstr ""
+msgstr "Posledná aktivita"
 
 #: app/html/shared/sidebar/home.html:40
 #, python-format
 msgid "%(user)s commented: %(text)s"
-msgstr ""
+msgstr "%(user)s pridal(a) komentár: %(text)s"
 
 #: app/html/shared/sidebar/home.html:42
 #, python-format
 msgid "%(user)s posted: %(text)s"
-msgstr ""
+msgstr "%(user)s pridal(a) príspevok: %(text)s"
 
 #: app/html/shared/sidebar/home.html:56
 msgid "Sub of the day"
@@ -1466,7 +1466,7 @@ msgstr "Komentáre používateľa"
 
 #: app/html/shared/sidebar/user.html:38
 msgid "View uploads"
-msgstr ""
+msgstr "Nahraté súbory"
 
 #: app/html/shared/sidebar/user.html:40
 msgid "View saved posts"
@@ -1475,12 +1475,12 @@ msgstr "Moje uložené príspevky"
 #: app/html/site/activity.html:17
 #, python-format
 msgid "%(user)s posted \"%(title)s\" to %(sub)s %(timeago)s"
-msgstr ""
+msgstr "%(user)s pridal(a) príspevok \"%(title)s\" v %(sub)s %(timeago)s"
 
 #: app/html/site/activity.html:19
 #, python-format
 msgid "%(user)s commented \"%(comment)s\" in %(sub)s %(timeago)s"
-msgstr ""
+msgstr "%(user)s pridal(a) komentár \"%(comment)s\" v %(sub)s %(timeago)s"
 
 #: app/html/site/license.html:9
 msgid "This website is powered by <a href=\"https://github.com/Phuks-co/throat\">Throat</a>, released under the MIT license."
@@ -1687,7 +1687,7 @@ msgstr "Popis"
 
 #: app/html/sub/createpost.html:17
 msgid "This sub only allows upload posts, and you don't have permission to upload files yet."
-msgstr ""
+msgstr "V tejto skupine sú povolené iba upload príspevky, a zatiaľ na to nemáš level."
 
 #: app/html/sub/createpost.html:22
 msgid "Find a sub..."
@@ -2082,12 +2082,12 @@ msgstr "obnoviť"
 
 #: app/html/sub/post.html:244 app/html/sub/postcomments.html:102
 msgid "undistinguish"
-msgstr ""
+msgstr "neprízvukovať"
 
 #: app/html/sub/post.html:244 app/html/sub/postcomments.html:102
 #: app/static/js/Post.js:40
 msgid "distinguish"
-msgstr ""
+msgstr "prízvukovať"
 
 #: app/html/sub/post.html:255
 #, python-format
@@ -2136,7 +2136,7 @@ msgstr "radiť podľa: <b>%(currsort)s</b>"
 
 #: app/html/sub/post.html:339
 msgid "top"
-msgstr ""
+msgstr "top"
 
 #: app/html/sub/postcomments.html:30
 msgid "[OP]"
@@ -2734,7 +2734,7 @@ msgstr "odstránené"
 
 #: app/static/js/Post.js:41
 msgid "distinguish as admin?"
-msgstr ""
+msgstr "prízvukovať ako admin?"
 
 #: app/static/js/Post.js:51 app/static/js/Post.js:476
 msgid "Why are you deleting this?"
@@ -2936,15 +2936,15 @@ msgstr "Naozaj?"
 
 #: app/templates/admin/invitecodes.html:97
 msgid "Deleted"
-msgstr ""
+msgstr "Vymazané"
 
 #: app/templates/admin/invitecodes.html:101
 msgid "Pending"
-msgstr ""
+msgstr "Čakajúce"
 
 #: app/templates/admin/invitecodes.html:103
 msgid "Banned"
-msgstr ""
+msgstr "Zabanované"
 
 #: app/views/admin.py:31
 msgid "No TOTP secret found."
@@ -3072,7 +3072,7 @@ msgstr "Pre obnovenie je nutné zadať dôvod"
 
 #: app/views/do.py:357
 msgid "At least one kind of post must be permitted"
-msgstr ""
+msgstr "Povoľ aspoň jeden typ príspevkov"
 
 #: app/views/do.py:408 app/views/do.py:1685
 msgid "Flair does not exist"
@@ -3115,7 +3115,7 @@ msgstr "neblokuješ"
 
 #: app/views/do.py:677
 msgid "Post/Comment not found"
-msgstr ""
+msgstr "Príspevok/komentár neexistuje"
 
 #: app/views/do.py:684 app/views/do.py:718
 msgid "Post not found"
@@ -3123,15 +3123,15 @@ msgstr "Príspevok nenájdený"
 
 #: app/views/do.py:687
 msgid "Nothing to distinguish"
-msgstr ""
+msgstr "Nejde prízvukovať"
 
 #: app/views/do.py:690
 msgid "You are not the author of the item"
-msgstr ""
+msgstr "NIe si autorom"
 
 #: app/views/do.py:694
 msgid "You must be a mod or admin"
-msgstr ""
+msgstr "Musíš byť moderátor alebo admin"
 
 #: app/views/do.py:721 app/views/do.py:767
 msgid "Post was deleted"
@@ -3423,7 +3423,7 @@ msgstr "Skupina neexistuje."
 
 #: app/views/subs.py:93
 msgid "That post type is not allowed in this sub."
-msgstr ""
+msgstr "Tento typ príspevku nie je v tejto skupine povolený."
 
 #: app/views/subs.py:106
 msgid "Posting has been temporarily disabled."
