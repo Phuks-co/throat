@@ -350,6 +350,11 @@ def edit_sub(sub):
     if current_user.is_mod(sub.sid, 1) or current_user.is_admin():
         form = EditSubForm()
         if form.validate():
+            if not (form.allow_text_posts.data or form.allow_link_posts.data or
+                    form.allow_upload_posts.data or form.allow_polls.data):
+                return (json.dumps({
+                    'status': 'error',
+                    'error': [_('At least one kind of post must be permitted')]}))
             sub.title = form.title.data
             sub.sidebar = form.sidebar.data
             sub.nsfw = form.nsfw.data
@@ -357,7 +362,10 @@ def edit_sub(sub):
 
             sub.update_metadata('restricted', form.restricted.data)
             sub.update_metadata('ucf', form.usercanflair.data)
-            sub.update_metadata('allow_polls', form.polling.data)
+            sub.update_metadata('allow_text_posts', form.allow_text_posts.data)
+            sub.update_metadata('allow_link_posts', form.allow_link_posts.data)
+            sub.update_metadata('allow_upload_posts', form.allow_upload_posts.data)
+            sub.update_metadata('allow_polls', form.allow_polls.data)
             sub.update_metadata('sublog_private', form.sublogprivate.data)
             sub.update_metadata('sub_banned_users_private', form.subbannedusersprivate.data)
 

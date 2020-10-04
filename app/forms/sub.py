@@ -87,7 +87,10 @@ class EditSubForm(FlaskForm):
     nsfw = BooleanField(_l('Sub is NSFW'))
     restricted = BooleanField(_l('Only mods can post'))
     usercanflair = BooleanField(_l('Allow users to flair their own posts'))
-    polling = BooleanField(_l('Enable polls'))
+    allow_text_posts = BooleanField(_l('Enable text posts'))
+    allow_link_posts = BooleanField(_l('Enable link posts'))
+    allow_upload_posts = BooleanField(_l('Enable upload posts'))
+    allow_polls = BooleanField(_l('Enable polls'))
     subsort = RadioField(_l('Default sub page post sorting'),
                          choices=[('v', _l('Hot')), ('v_two', _l('New')),
                                   ('v_three', _l('Top'))],
@@ -111,7 +114,8 @@ class CreateSubPostForm(FlaskForm):
     content = TextAreaField(_l('Post content'), validators=[Length(max=16384)])
     link = StringField(_l('Post link'), validators=[Length(min=10, max=255), Optional(), URL(require_tld=True)])
     ptype = RadioField(_l('Post type'),
-                       choices=[('link', _l('Link post')), ('text', _l('Text post'))],
+                       choices=[('link', _l('Link post')), ('text', _l('Text post')),
+                                ('upload', _l('Upload file')), ('poll', _l('Poll'))],
                        validators=[DataRequired()])
     nsfw = BooleanField(_l('NSFW?'))
     # for polls.

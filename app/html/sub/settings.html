@@ -44,9 +44,30 @@
         </div>
 
         <div class="pure-control-group">
-          <label for="polling" class="pure-checkbox">
-            @{editsubform.polling(checked=True if metadata.get('allow_polls') else False)!!html}
-            @{editsubform.polling.label.text}
+          <label for="allow_text_posts" class="pure-checkbox">
+            @{editsubform.allow_text_posts(checked=True if metadata.get('allow_text_posts') else False)!!html}
+            @{editsubform.allow_text_posts.label.text}
+          </label>
+        </div>
+
+        <div class="pure-control-group">
+          <label for="allow_link_posts" class="pure-checkbox">
+            @{editsubform.allow_link_posts(checked=True if metadata.get('allow_link_posts') else False)!!html}
+            @{editsubform.allow_link_posts.label.text}
+          </label>
+        </div>
+
+        <div class="pure-control-group">
+          <label for="allow_upload_posts" class="pure-checkbox">
+            @{editsubform.allow_upload_posts(checked=True if metadata.get('allow_upload_posts') else False)!!html}
+            @{editsubform.allow_upload_posts.label.text}
+          </label>
+        </div>
+
+        <div class="pure-control-group">
+          <label for="allow_polls" class="pure-checkbox">
+            @{editsubform.allow_polls(checked=True if metadata.get('allow_polls') else False)!!html}
+            @{editsubform.allow_polls.label.text}
           </label>
         </div>
 

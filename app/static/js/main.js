@@ -9,10 +9,7 @@ import 'tingle.js/dist/tingle.css';
 import 'time-elements';
 //import 'flatpickr/dist/flatpickr.css';
 import 'flatpickr/dist/themes/dark.css';
-import 'autocompleter/autocomplete.css';
 
-
-import autocomplete from 'autocompleter';
 import u from './Util';
 import Konami from './ext/konami';
 import Sortable from 'sortablejs';
@@ -107,34 +104,6 @@ function vote(obj, how, comment){
   })
 }
 
-// sub autocomplete
-const sa = document.querySelector('.sub_autocomplete');
-if(sa){
-  autocomplete({
-    minLength: 3,
-    debounceWaitMs: 200,
-    input: sa,
-    fetch: function(text, update) {
-        text = text.toLowerCase();
-        // you can also use AJAX requests instead of preloaded data
-        u.get('/api/v3/sub?query=' + text, function(data){
-          console.log(data.results)
-          var suggestions = data.results
-          update(suggestions);
-        })
-    },
-    onSelect: function(item) {
-        sa.value = item.name;
-    },
-    render: function(item, currentValue) {
-      var div = document.createElement("div");
-      div.textContent = item.name;
-      return div;
-    },
-    emptyMsg: _('No subs found')
-  });
-}
-
 // up/downvote buttons.
 u.addEventForChild(document, 'mousedown', '.upvote,.downvote,.c-upvote,.c-downvote', function(e, target){
   var upvote = (target.classList.contains('upvote') || target.classList.contains('c-upvote'))
@@ -171,6 +140,12 @@ u.ready(function() {
     altFormat: 'Y-m-d H:i',
     time_24hr: true,
   });
+  // Hide the Submit a post poll flatpickr initially.
+  var cb = document.getElementById('closetime_date');
+  if (cb && cb.nextElementSibling) {
+    cb.nextElementSibling.style.display = 'none';
+  }
+
   // for the top bar sorts
   var list = document.getElementById("subsort");
   if(list){

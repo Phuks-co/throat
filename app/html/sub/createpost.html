@@ -13,16 +13,19 @@
             @if error:
             <div class="error">@{ error }</div>
             @end
+            <div id="onlyuploads" class="error" style="display:none">
+              @{_("This sub only allows upload posts, and you don't have permission to upload files yet.")}
+            </div>
             <fieldset>
                 <div class="pure-control-group">
                     <span class="sub">
-                        @{form.sub.label()!!html}@{ form.sub(required=True, class_="sub_autocomplete", autocomplete="off", placeholder=_('Find a sub...')) !!html }
+                        @{form.sub.label()!!html}@{ form.sub(required=True, class_="sub_autocomplete sub_submitpost", autocomplete="off", placeholder=_('Find a sub...')) !!html }
                     </span>
                 </div>
 
                 <div class="pure-controls post-types-opts">
                     @for kl in form.ptype:
-                    <div class="pure-control-group">
+                    <div class="pure-control-group" style="display:none">
                         @{kl(style="")!!html}
                         <label for="@{kl.id}" class="pure-radio" style="text-align: left; display: initial;">
                             @{kl.label.text}
@@ -35,20 +38,20 @@
                     @{form.title.label()!!html}@{ form.title(required=True) !!html}
                 </div>
 
-                <div class="pure-control-group txcont" style="@{form.ptype.data != 'text' and 'display:none' or ''}">
+                <div class="pure-control-group txcont" style="display:none">
                     @{form.content.label()!!html}<div class="markdown-editor">
                         @{form.content(class_="exalert", placeholder=_('(Optional) Write your post content here. Styling with Markdown format is supported.'), rows="10", style="width: 100%")!!html}
                     </div>
                 </div>
 
-                <div class="pure-control-group pocont" style="@{form.ptype.data != 'poll' and 'display:none' or ''}">
+                <div class="pure-control-group pocont" style="display:none">
                     <label for="op1">@{_('Options')}</label>
                     <div id="sbm-poll-opts">
                         <div id="poll-opts">
                             @if len(form.options.data) != 0:
                                 @for i,op in enumerate(form.options):
                                     <div class="pure-control-group">
-                                        <label>@{i+1}</label><input type="text" id="op1" name="@{op.name}" value="@{op.data}" @{form.ptype.data == 'poll' and 'required' or ''} class="reqpoll sbm-poll-opt fixed">
+                                        <label>@{i+1}</label><input type="text" id="op1" name="@{op.name}" value="@{op.data}" class="reqpoll sbm-poll-opt fixed">
                                             @if i > 1:
                                             <a class="poll-del-opt" style="cursor: pointer;">@{_('remove')}</a>
                                             @end
@@ -56,10 +59,10 @@
                                 @end
                             @else:
                             <div class="pure-control-group">
-                                <label>1</label><input type="text" id="op1" name="options-0" @{form.ptype.data == 'poll' and 'required' or ''} class="reqpoll sbm-poll-opt fixed">
+                                <label>1</label><input type="text" id="op1" name="options-0" class="reqpoll sbm-poll-opt fixed">
                             </div>
                             <div class="pure-control-group">
-                                <label>2</label><input type="text" name="options-1" @{form.ptype.data == 'poll' and 'required' or ''} class="reqpoll sbm-poll-opt fixed">
+                                <label>2</label><input type="text" name="options-1" class="reqpoll sbm-poll-opt fixed">
                             </div>
                             @end
                         </div>
@@ -71,32 +74,28 @@
                     </div>
                 </div>
 
-                <div class="pure-control-group ulcont pure-u-sm-20-24"
-                     style="@{form.ptype.data != 'upload' and 'display:none' or ''}">
+                <div class="pure-control-group ulcont pure-u-sm-20-24" style="display:none">
                     @if current_user.canupload:
-                    <label for="files">@{_('File')}</label><input type="file" name="files" @{form.ptype.data == 'upload' and 'required' or ''} class="requpload"
+                    <label for="files">@{_('File')}</label><input type="file" name="files" class="requpload"
                            data-max="@{ config.app.max_content_length }" placeholder="@{_('Upload a file!')}"/>
                     @end
                 </div>
 
-                <div class="pure-control-group lnicont pure-u-sm-20-24"
-                     style="@{form.ptype.data != 'link' and 'display:none' or ''}">
-                    <label for="link">@{_('Link')}</label>@{form.link(class_="reqlink", type="url", pattern="https?://.+", required=form.ptype.data == 'link', placeholder=_('URL'))!!html}
+                <div class="pure-control-group lnicont pure-u-sm-20-24" style="display:none">
+                    <label for="link">@{_('Link')}</label>@{form.link(class_="reqlink", type="url", pattern="https?://.+", placeholder=_('URL'))!!html}
                 </div>
 
-                <div class="pure-control-group pure-u-sm-3-24 lnicont"
-                     style="@{form.ptype.data != 'link' and 'display:none' or ''}">
+                <div class="pure-control-group pure-u-sm-3-24 lnicont" style="display:none">
                     <button id="graburl" class="pure-button">@{_('Grab title')}</button>
                 </div>
 
-                <div class="pure-control-group pocont" style="@{form.ptype.data != 'poll' and 'display:none' or ''}">
+                <div class="pure-control-group pocont" style="display:none">
                     <label for="hideresults">@{_('Hide poll results until poll closes')}</label><input id="hideresults" name="hideresults" type="checkbox" value="y">
                 </div>
 
-                <div class="pure-control-group pocont" style="@{form.ptype.data != 'poll' and 'display:none' or ''}">
+                <div class="pure-control-group pocont" style="display:none">
                     <label for="closetime">@{_('Close the poll at...')}</label><input id="closetime" name="closetime_chk" type="checkbox" value="">
-                    <input id="closetime_date" name="closetime" type="text" class="date-picker-future" disabled>
-                    <i>(local time)</i>
+                    <input id="closetime_date" name="closetime" type="text" class="date-picker-future" style="display:none" disabled>
                 </div>
 
                 @if not sub or (sub and not sub.nsfw):
@@ -120,7 +119,7 @@
                     </button>
 
                     <button type="button" data-pvid="ncme" class="pure-button btn-preview txicont" data-txid="content"
-                            style="@{form.ptype.data != 'text' and 'display:none' or ''}">
+                            style="display:none">
                         @{_('Preview')}
                     </button>
                     <div class="cmpreview canclose" style="display:none;">
