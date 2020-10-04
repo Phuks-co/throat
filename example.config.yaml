@@ -113,6 +113,8 @@ site:
     defaults_only: False
     # If true, only show recent comments (and not posts) in the sidebar
     comments_only: False
+    # Number of entries to display in the recenta activity sidebar
+    max_entries: 10
 
 auth:
   # Set to LOCAL to store user authentication in database,

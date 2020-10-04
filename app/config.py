@@ -59,7 +59,8 @@ cfg_defaults = {  # key => default value
             "recent_activity": {
                 "enabled": True,
                 "defaults_only": False,
-                "comments_only": False
+                "comments_only": False,
+                "max_entries": 10
             }
         },
         "auth": {

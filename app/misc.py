@@ -1950,7 +1950,7 @@ def recent_activity(sidebar=True):
     if sidebar and config.site.recent_activity.comments_only:
         data = data.where(activity.c.type == 'comment')
     data = data.order_by(activity.c.time.desc())
-    data = data.limit(10 if sidebar else 50)
+    data = data.limit(config.site.recent_activity.max_entries if sidebar else 50)
     return data.dicts().execute(db)
 
 
