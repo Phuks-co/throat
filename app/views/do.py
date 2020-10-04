@@ -5,34 +5,32 @@ import re
 import time
 import datetime
 import uuid
-import requests
-import magic
-import os
 import random
 from collections import defaultdict
 from flask import Blueprint, redirect, url_for, session, abort, jsonify, current_app
-from flask import render_template, request
+from flask import request
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_babel import _
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired, BadSignature
+from bs4 import BeautifulSoup
 from ..config import config
-from .. import forms, misc, caching, storage, tasks
+from .. import forms, misc, storage, tasks
 from ..socketio import socketio
 from ..auth import auth_provider, email_validation_is_required, AuthError, normalize_email
 from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
-from ..forms import CreateSubForm, EditSubForm, EditUserForm, EditSubCSSForm
+from ..forms import EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
-from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost, UndeleteCommentForm
-from ..forms import EditSubLinkPostForm, SearchForm, EditMod2Form
+from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost
+from ..forms import SearchForm, EditMod2Form
 from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm, DistinguishForm
 from ..badges import badges
 from ..misc import cache, send_email, allowedNames, get_errors, engine, ensure_locale_loaded
 from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, is_domain_banned
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved
-from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
+from ..models import SubMod, SubBan, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
 from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport, SubRule
 from ..models import rconn, UserStatus
@@ -792,6 +790,15 @@ def create_comment(pid):
                        'comments': post.comments + 1},
                       namespace='/snt',
                       room=post.pid)
+        comment_res = misc.word_truncate(''.join(BeautifulSoup(misc.our_markdown(comment.content.decode())).findAll(text=True)).replace('\n', ' '), 250)
+        defaults = [x.value for x in SiteMetadata.select().where(SiteMetadata.key == 'default')]
+        socketio.emit('comment',
+                      {'sub': sub.name, 'show_sidebar': (sub.sid in defaults or config.site.recent_activity.defaults_only),
+                       'user': current_user.name, 'pid': post.pid, 'sid': sub.sid, 'content': comment_res,
+                       'post_url': url_for('sub.view_post', sub=sub.name, pid=post.pid),
+                       'sub_url': url_for('sub.view_sub', sub=sub.name)},
+                      namespace='/snt',
+                      room='/all/new')
 
         # 5 - send pm to parent
         # TODO: Make this a translatable notification

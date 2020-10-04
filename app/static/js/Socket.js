@@ -105,19 +105,48 @@ socket.on('deletion', function(data){
   post.parentNode.removeChild(post);
 })
 
+socket.on('comment', function(data){
+  const recentActivity = document.getElementById('activity_list');
+  if(recentActivity){
+    const content = data.title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    const elem = document.createElement('li');
+    elem.innerHTML = _('%1 commented "%2" in %3 %4', '<a href="/u/' + data.user + '">' + data.user + '</a>', '<a href="' + data.post_url + '">' + content + '</a>', '<a href="' + data.sub_url + '">' + data.sub_url + '</a>', '<time-ago datetime="' + new Date().toISOString() + '" class="sidebarlists"></time-ago>')
+    recentActivity.prepend(elem);
+  }
+});
+
 socket.on('thread', function(data){
   if(window.blocked){
     if(window.blocked.indexOf(data.sid) >= 0){return;}
   }
+  const recentActivity = document.getElementById('activity_list');
+  const title = data.title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  if(recentActivity){
+    const elem = document.createElement('li');
+    elem.innerHTML = _('%1 posted "%2" to %3 %4', '<a href="/u/' + data.user + '">' + data.user + '</a>', '<a href="' + data.post_url + '">' + title + '</a>', '<a href="' + data.sub_url + '">' + data.sub_url + '</a>', '<time-ago datetime="' + new Date().toISOString() + '" class="sidebarlists"></time-ago>')
+    recentActivity.prepend(elem);
+    return;
+  }
+  const recentActivitySidebar = document.getElementById('activity_list_sidebar');
+  if(recentActivitySidebar && data.show_sidebar){
+    const elem = document.createElement('li');
+    let html = _('%1 posted: %2', '<a href="/u/' + data.user + '">' + data.user + '</a>', '<a class="title" href="' + data.post_url + '">' + title + '</a>');
+    html += '<div class="sidelocale">' +
+              _("%1 in %2", '<time-ago datetime="' + new Date().toISOString() + '"></time-ago>', '<a href="' + data.sub_url + '">' + data.sub_url + '</a>') +
+            '</div>';
+    elem.innerHTML = html;
+    recentActivitySidebar.prepend(elem);
+    recentActivitySidebar.removeChild(recentActivitySidebar.lastChild);
+  }
   socket.emit('subscribe', {target: data.pid})
-  var ndata = document.createElement( "div" );
+  const ndata = document.createElement("div");
   ndata.innerHTML = data.html;
-  var x =document.getElementsByClassName('alldaposts')[0];
+  const x = document.getElementsByClassName('alldaposts')[0];
 
   while (ndata.firstChild) {
-    var k = x.insertBefore(ndata.firstChild ,x.children[0]);
+    const k = x.insertBefore(ndata.firstChild, x.children[0]);
     if(window.expandall && k.getElementsByClassName){
-      var q = k.getElementsByClassName('expando-btn')[0]
+      const q = k.getElementsByClassName('expando-btn')[0];
       if(q && q.getAttribute('data-icon') == "image"){
         q.click()
       }
@@ -160,23 +189,24 @@ socket.on('yourvote', function(data){
   }
 })
 
-u.ready(function(){
-  socket.on('connect', function() {
-    if(document.getElementById('chpop') && window.chat == true){
+u.ready(function () {
+  socket.on('connect', function () {
+    if (document.getElementById('chpop') && window.chat == true) {
       socket.emit('subscribe', {target: 'chat'});
     }
   });
-  if(document.getElementById("pagefoot-labrat")){
-    socket.on('connect', function() {
-      window.sio = true;
-      if(window.nposts){
-        socket.emit('subscribe', {target: window.nposts});
-      }
-      u.each('div.post', function(t, i){
-        socket.emit('subscribe', {target: parseInt(t.getAttribute('pid'))});
-      })
-    });
-  }
+  socket.on('connect', function () {
+    window.sio = true;
+    if (window.nposts) {
+      socket.emit('subscribe', {target: window.nposts});
+    }
+    if(document.getElementById('activity_list')) {
+      socket.emit('subscribe', {target: '/all/new'});
+    }
+    u.each('div.post', function (t) {
+      socket.emit('subscribe', {target: parseInt(t.getAttribute('pid'))});
+    })
+  });
 })
 
 

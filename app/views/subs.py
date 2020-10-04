@@ -247,9 +247,13 @@ def create_post(ptype, sub):
     Sub.update(posts=Sub.posts + 1).where(Sub.sid == sub.sid).execute()
     addr = url_for('sub.view_post', sub=sub.name, pid=post.pid)
     posts = misc.getPostList(misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), 'new', 1).dicts()
+    defaults = [x.value for x in SiteMetadata.select().where(SiteMetadata.key == 'default')]
     socketio.emit('thread',
                   {'addr': addr, 'sub': sub.name, 'type': form.ptype.data,
-                   'user': current_user.name, 'pid': post.pid, 'sid': sub.sid,
+                   'show_sidebar': (sub.sid in defaults or not config.site.recent_activity.defaults_only) and not config.site.recent_activity.comments_only,
+                   'user': current_user.name, 'pid': post.pid, 'sid': sub.sid, 'title': post.title,
+                   'post_url': url_for('sub.view_post', sub=sub.name, pid=post.pid),
+                   'sub_url': url_for('sub.view_sub', sub=sub.name),
                    'html': engine.get_template('shared/post.html').render({'posts': posts, 'sub': False})},
                   namespace='/snt',
                   room='/all/new')

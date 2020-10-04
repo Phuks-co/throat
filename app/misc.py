@@ -1908,4 +1908,49 @@ def word_truncate(content, max_length, suffix='...'):
     return content if len(content) <= max_length else content[:max_length].rsplit(' ', 1)[0]+suffix
 
 
+def recent_activity(sidebar=True):
+    if not config.site.recent_activity.enabled:
+        return False
+    # TODO: Pagination?
+    post_activity = SubPost.select(
+        Value('post').alias('type'),
+        SubPost.title.alias('content'),
+        User.name.alias('user'),
+        SubPost.posted.alias('time'),
+        SubPost.pid,
+        SubPost.sid
+    )
+    post_activity = post_activity.join(User).switch(SubPost)
+    post_activity = post_activity.where(SubPost.deleted == 0).order_by(SubPost.pid.desc()).limit(50)
+
+    comment_activity = SubPostComment.select(
+        Value('comment').alias('type'),
+        SubPostComment.content,
+        User.name.alias('user'),
+        SubPostComment.time.alias('time'),
+        SubPost.pid,
+        SubPost.sid
+    )
+    comment_activity = comment_activity.join(User).switch(SubPostComment).join(SubPost)
+    comment_activity = comment_activity.where(SubPostComment.status.is_null(True)).order_by(
+        SubPostComment.time.desc()).limit(50)
+
+    if sidebar and config.site.recent_activity.defaults_only:
+        defaults = [x.value for x in SiteMetadata.select().where(SiteMetadata.key == 'default')]
+        post_activity = post_activity.where(SubPost.sid << defaults)
+        comment_activity = comment_activity.where(SubPost.sid << defaults)
+
+    activity = (comment_activity | post_activity)
+    activity = activity.alias('subquery')
+    # This abomination was created to work aroun a bug (?) where mysql won't use the index of the sub table
+    data = activity.select(activity.c.type, activity.c.content, activity.c.user, activity.c.time, activity.c.pid,
+                           activity.c.sid, Sub.name.alias('sub'))
+    data = data.join(Sub, on=Sub.sid == activity.c.sid)
+    if sidebar and config.site.recent_activity.comments_only:
+        data = data.where(activity.c.type == 'comment')
+    data = data.order_by(activity.c.time.desc())
+    data = data.limit(10 if sidebar else 50)
+    return data.dicts().execute(db)
+
+
 logger = LocalProxy(lambda: current_app.logger)
