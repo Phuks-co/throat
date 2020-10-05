@@ -2219,13 +2219,25 @@ tr.deletedrow, .deletedpost {
     background: hsla(0, 100%, 51%, 0.2)!important;
 }
 
-a[href="#spoiler"] {
-  background-color: #000;
-  color: #000
-}
-
 a[href="#spoiler"]:hover, body.dark a[href="#spoiler"]:hover {
   color:#fff
+}
+
+spoiler:not(.shown) a {
+  pointer-events: none;
+  color: #111;
+}
+
+spoiler:not(.shown) {
+  color: #111;
+  background-color: #111;
+  border-radius: 3px;
+  user-select: none;
+}
+
+
+spoiler {
+  transition: background-color 400ms linear;
 }
 
 a[href="#toodamncool"] {

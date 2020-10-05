@@ -27,6 +27,7 @@ function initializeEditor(element){
     el.appendChild(makeThingy('italic', _('Italic (ctrl-i)'), function(e){addTags(textarea, '*', '*');}));
     el.appendChild(makeThingy('strikethrough',  _('Strikethrough (ctrl-shift-s)'), function(e){addTags(textarea, '~~', '~~');}));
     el.appendChild(makeThingy('title',  _('Title (ctrl-shift-h)'), function(e){addTags(textarea, '# ', '');}));
+    el.appendChild(makeThingy('gradient',  _('Spoiler'), function(e){addTags(textarea, '>! ', ' !<');}));
 
     var x = document.createElement('span');
     x.className='separator';

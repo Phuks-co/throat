@@ -3,6 +3,7 @@
 from collections import defaultdict
 import datetime
 import uuid
+from bs4 import BeautifulSoup
 from email_validator import EmailNotValidError
 from flask import Blueprint, jsonify, request, url_for
 from peewee import JOIN, fn
@@ -519,6 +520,16 @@ def create_comment(sub, pid):
     socketio.emit('threadcomments', {'pid': post.pid, 'comments': post.comments + 1},
                   namespace='/snt', room=post.pid)
 
+    defaults = [x.value for x in SiteMetadata.select().where(SiteMetadata.key == 'default')]
+    comment_res = misc.word_truncate(''.join(BeautifulSoup(misc.our_markdown(comment.content)).findAll(text=True)).replace('\n', ' '), 250)
+    socketio.emit('comment',
+                  {'sub': sub.name, 'show_sidebar': (sub.sid in defaults or config.site.recent_activity.defaults_only),
+                   'user': user.name, 'pid': post.pid, 'sid': sub.sid, 'content': comment_res,
+                   'post_url': url_for('sub.view_post', sub=sub.name, pid=post.pid),
+                   'sub_url': url_for('sub.view_sub', sub=sub.name)},
+                  namespace='/snt',
+                  room='/all/new')
+
     # 5 - send pm to parent
     if parentcid:
         parent = SubPostComment.get(SubPostComment.cid == parentcid)
@@ -763,8 +774,8 @@ def create_post():
 
     subdata = misc.getSubData(sub.sid, simple=True)
 
-    if (subdata.get(misc.ptype_names[ptype], '0') == '0'):
-         jsonify(msg='This sub does not allow this ptype'), 403
+    if subdata.get(misc.ptype_names[ptype], '0') == '0':
+        return jsonify(msg='This sub does not allow this ptype'), 403
 
     if misc.is_sub_banned(sub, uid=uid):
         return jsonify(msg="You're banned from this sub"), 403
@@ -829,11 +840,17 @@ def create_post():
     Sub.update(posts=Sub.posts + 1).where(Sub.sid == sub.sid).execute()
     addr = url_for('sub.view_post', sub=sub.name, pid=post.pid)
     posts = misc.getPostList(misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), 'new', 1).dicts()
+
+    defaults = [x.value for x in SiteMetadata.select().where(SiteMetadata.key == 'default')]
     socketio.emit('thread',
                   {'addr': addr, 'sub': sub.name, 'type': post_type,
-                   'user': user.name, 'pid': post.pid, 'sid': sub.sid,
+                   'show_sidebar': (sub.sid in defaults or not config.site.recent_activity.defaults_only) and not config.site.recent_activity.comments_only,
+                   'user': user.name, 'pid': post.pid, 'sid': sub.sid, 'title': post.title,
+                   'post_url': url_for('sub.view_post', sub=sub.name, pid=post.pid),
+                   'sub_url': url_for('sub.view_sub', sub=sub.name),
                    'html': misc.engine.get_template('shared/post.html').render({'posts': posts, 'sub': False})},
-                  namespace='/snt', room='/all/new')
+                  namespace='/snt',
+                  room='/all/new')
 
     SubPostVote.create(uid=uid, pid=post.pid, positive=True)
     User.update(given=User.given + 1).where(User.uid == uid).execute()
@@ -956,7 +973,6 @@ def set_settings():
             if not isinstance(settings[sett], bool):
                 return jsonify(msg="Invalid type for setting"), 400
             value = '1' if value else '0'
-
 
         qrys.append(UserMetadata.update(value=value).where((UserMetadata.key == sett) & (UserMetadata.uid == uid)))
 

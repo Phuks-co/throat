@@ -455,6 +455,11 @@ u.ready(function(){
       }
     }
   });
+
+  // Spoiler tags
+  u.addEventForChild(document, 'click', 'spoiler', function(e, target) {
+    target.classList.add("shown");
+  });
 })
 
 u.ready(function(){
