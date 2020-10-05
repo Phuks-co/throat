@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-10-04 19:03-0300\n"
-"PO-Revision-Date: 2020-10-04 23:59\n"
+"PO-Revision-Date: 2020-10-05 06:00\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -2670,7 +2670,7 @@ msgstr "Заголовок (ctrl-shift-h)"
 
 #: app/static/js/Editor.js:30
 msgid "Spoiler"
-msgstr ""
+msgstr "Спойлер"
 
 #: app/static/js/Editor.js:37
 msgid "Insert hyperlink"
