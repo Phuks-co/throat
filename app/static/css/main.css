@@ -23,7 +23,7 @@ abbr[title] {
 
 .content {
   word-wrap: break-word;
-  padding-top: 1em;
+  /*padding-top: 1em;*/
 }
 
 code, pre {
@@ -986,6 +986,7 @@ a.slink {
 .commenthead {
   font-size: smaller;
   color: #414141;
+  margin-top: 1em;
 }
 
 .c-downvote {
@@ -1058,6 +1059,7 @@ a.slink {
 
 .c-upvote svg, .c-downvote svg, .upvote svg, .downvote svg {
   fill: #888;
+  block-size: 0.6em;
 }
 
 .togglecomment {
