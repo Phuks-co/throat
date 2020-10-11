@@ -10,6 +10,7 @@ import os
 import re
 import gevent
 import ipaddress
+from collections import defaultdict
 
 import tinycss2
 from captcha.image import ImageCaptcha
@@ -164,6 +165,36 @@ class SiteUser(object):
     def is_mod(self, sid, power_level=2):
         """ Returns True if the current user is a mod of 'sub' """
         return is_sub_mod(self.uid, sid, power_level, self.can_admin)
+
+    @cache.memoize(1)
+    def mod_notifications(self):
+        if self.is_mod:
+            post_report_counts = (
+                SubPostReport.select(Sub.sid, fn.COUNT(SubPostReport.id).
+                                     alias('count')).
+                join(SubPost).join(Sub).join(SubMod).
+                where((SubMod.user == self.uid) & SubPostReport.open).
+                group_by(Sub.sid).dicts())
+            comment_report_counts = (
+                SubPostCommentReport.select(Sub.sid,
+                                            fn.COUNT(SubPostCommentReport.id).
+                                            alias('count')).
+                    join(SubPostComment).join(SubPost).join(Sub).join(SubMod).
+                    where((SubMod.user == self.uid) & SubPostCommentReport.open).
+                    group_by(Sub.sid).dicts())
+
+            counts = defaultdict(int)
+            for item in post_report_counts:
+                counts[item['sid']] = item['count']
+            for item in comment_report_counts:
+                counts[item['sid']] += item['count']
+
+            return [[sid, count] for sid, count in counts.items()]
+        else:
+            return []
+
+    def mod_notifications_json(self):
+        return json.dumps(self.mod_notifications())
 
     def is_subban(self, sub):
         """ Returns True if the current user is banned from 'sub' """
@@ -1061,6 +1092,18 @@ def getSubMods(sid):
     if not owner:
         owner['0'] = config.site.placeholder_account
     return {'owners': owner, 'mods': mods, 'janitors': janitors, 'all': owner_uids + janitor_uids + mod_uids}
+
+
+def notify_mods(sid):
+    "Send the sub mods an updated open report count."
+    mods = SubMod.select().where(SubMod.sub == sid)
+    count = (SubPostReport.select().join(SubPost).
+             where((SubPost.sid == sid) & SubPostReport.open).count())
+    count += (SubPostCommentReport.select().join(SubPostComment).join(SubPost).
+              where((SubPost.sid == sid) & SubPostCommentReport.open).count())
+    for mod in mods:
+        socketio.emit('mod-notification', {'update': [sid, count]},
+                      namespace='/snt', room='user' + mod.uid)
 
 
 # Relationship between the post type values in the CreateSubPost form
