@@ -839,14 +839,15 @@ def getStickies(sid):
 
 
 def load_user(user_id):
-    user = User.select((fn.Count(Message.mid) + fn.Count(Notification.id)).alias('notifications'),
+    mcount = Message.select(fn.Count(Message.mid)).where(
+        (Message.receivedby == user_id) & (Message.mtype == 1) & Message.read.is_null(True))
+    ncount = Notification.select(fn.Count(Notification.id)).where(
+        (Notification.target == user_id) & Notification.read.is_null(True))
+    user = User.select(mcount.alias('messages'), ncount.alias('notifications'),
                        User.given, User.score, User.name, User.uid, User.status,
                        User.email, User.language, User.resets)
-    user = user.join(Message, JOIN.LEFT_OUTER, on=(
-            (Message.receivedby == User.uid) & (Message.mtype == 1) & Message.read.is_null(True))).switch(User)
-    user = user.join(Notification, JOIN.LEFT_OUTER,
-                     on=(Notification.target == User.uid) & Notification.read.is_null(True)).switch(User)
-    user = user.group_by(User.uid).where(User.uid == user_id).dicts().get()
+    user = user.where(User.uid == user_id).dicts().get()
+    user['notifications'] += user['messages']
 
     # This is the only user attribute needed by the error templates, so stash
     # it in the session so that future errors in this session won't have to
