@@ -1096,13 +1096,20 @@ def getSubMods(sid):
 
 def notify_mods(sid):
     "Send the sub mods an updated open report count."
-    mods = SubMod.select().where(SubMod.sub == sid)
-    count = (SubPostReport.select().join(SubPost).
-             where((SubPost.sid == sid) & SubPostReport.open).count())
-    count += (SubPostCommentReport.select().join(SubPostComment).join(SubPost).
-              where((SubPost.sid == sid) & SubPostCommentReport.open).count())
+    reports = (SubPostReport.select(fn.Count(SubPostReport.id)).
+               join(SubPost).
+               where((SubPost.sid == sid) & SubPostReport.open))
+    comments = (SubPostCommentReport.select(fn.Count(SubPostCommentReport.id)).
+                join(SubPostComment).join(SubPost).
+                where((SubPost.sid == sid) & SubPostCommentReport.open))
+    mods = (SubMod.select(SubMod.uid,
+                          reports.alias('reports'),
+                          comments.alias('comments')).
+            where(SubMod.sub == sid))
+
     for mod in mods:
-        socketio.emit('mod-notification', {'update': [sid, count]},
+        socketio.emit('mod-notification',
+                      {'update': [sid, mod.reports + mod.comments]},
                       namespace='/snt', room='user' + mod.uid)
 
 
