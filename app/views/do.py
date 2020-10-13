@@ -30,7 +30,7 @@ from ..badges import badges
 from ..misc import cache, send_email, allowedNames, get_errors, engine, ensure_locale_loaded
 from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, is_domain_banned
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved
-from ..models import SubMod, SubBan, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
+from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
 from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport, SubRule
 from ..models import rconn, UserStatus
@@ -1837,6 +1837,8 @@ def edit_comment():
             return jsonify(status='error', error=_("Post is archived"))
 
         dt = datetime.datetime.utcnow()
+        spm = SubPostCommentHistory.create(cid=comment.cid, content=comment.content,
+                                           datetime=(comment.lastedit or comment.time))
         comment.content = form.text.data
         comment.lastedit = dt
         comment.save()
