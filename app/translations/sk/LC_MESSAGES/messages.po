@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-10-04 00:59-0300\n"
-"PO-Revision-Date: 2020-10-04 10:00\n"
+"POT-Creation-Date: 2020-10-04 19:03-0300\n"
+"PO-Revision-Date: 2020-10-05 06:00\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -70,7 +70,7 @@ msgstr "The Cabbage People are now the dominant force in the Vegetable Wars, bei
 msgid "Winner of the shitposter of the year 2018 contest"
 msgstr "Winner of the shitposter of the year 2018 contest"
 
-#: app/misc.py:894
+#: app/misc.py:908
 #, python-format
 msgid "Error in the '%(field)s' field - %(error)s"
 msgstr "Došlo k chybe v poli '%(field)s' - %(error)s"
@@ -79,36 +79,36 @@ msgstr "Došlo k chybe v poli '%(field)s' - %(error)s"
 #: app/html/site/log.html:28 app/html/sub/log.html:28 app/html/sub/post.html:42
 #: app/html/sub/post.html:106 app/html/sub/post.html:120
 #: app/html/sub/post.html:165 app/html/sub/postcomments.html:22
-#: app/html/sub/postcomments.html:47 app/misc.py:1090 app/misc.py:1492
-#: app/misc.py:1501 app/misc.py:1508
+#: app/html/sub/postcomments.html:47 app/misc.py:1104 app/misc.py:1506
+#: app/misc.py:1515 app/misc.py:1522
 msgid "[Deleted]"
 msgstr "[vymazané]"
 
-#: app/misc.py:1141
+#: app/misc.py:1155
 msgid "URLs not allowed, uploaded files only"
 msgstr "URL nie sú povolené, iba súbory"
 
-#: app/misc.py:1157
+#: app/misc.py:1171
 msgid "@import token not allowed"
 msgstr "@import token nie je povolený"
 
-#: app/misc.py:1166
+#: app/misc.py:1180
 msgid "Invalid CSS"
 msgstr "Neplatné CSS"
 
-#: app/misc.py:1585
+#: app/misc.py:1599
 msgid "Unknown error. User disappeared"
 msgstr "Neznáma chyba. Používateľ sa stratil"
 
-#: app/misc.py:1592
+#: app/misc.py:1606
 msgid "Score balance is negative"
 msgstr "Negatívna karma"
 
-#: app/misc.py:1594
+#: app/misc.py:1608
 msgid "Invalid vote value"
 msgstr "Neplatná hodnota hlasu"
 
-#: app/misc.py:1603 app/views/do.py:207 app/views/do.py:272 app/views/do.py:400
+#: app/misc.py:1617 app/views/do.py:207 app/views/do.py:272 app/views/do.py:400
 #: app/views/do.py:431 app/views/do.py:765 app/views/do.py:1259
 #: app/views/do.py:1339 app/views/do.py:1497 app/views/do.py:1512
 #: app/views/do.py:1583 app/views/do.py:1614 app/views/do.py:1643
@@ -118,39 +118,39 @@ msgstr "Neplatná hodnota hlasu"
 msgid "Post does not exist"
 msgstr "Príspevok neexistuje"
 
-#: app/misc.py:1606
+#: app/misc.py:1620
 msgid "You can't vote on deleted posts"
 msgstr "Na vymazaných príspevkoch nejde hlasovať"
 
-#: app/misc.py:1622 app/views/do.py:1822 app/views/do.py:1857
+#: app/misc.py:1636 app/views/do.py:1822 app/views/do.py:1857
 #: app/views/do.py:1895 app/views/do.py:2519 app/views/do.py:2619
 #: app/views/do.py:2731
 msgid "Comment does not exist"
 msgstr "Komentár neexistuje"
 
-#: app/misc.py:1625
+#: app/misc.py:1639
 msgid "You can't vote on your own comments"
 msgstr "Nemožno hlasovať na vlastných komentároch"
 
-#: app/misc.py:1627
+#: app/misc.py:1641
 msgid "You can't vote on deleted comments"
 msgstr "Nemožno hlasovať na vymazaných komentároch"
 
-#: app/misc.py:1635
+#: app/misc.py:1649
 msgid "Invalid target"
 msgstr "Neplatný cieľ"
 
-#: app/misc.py:1639 app/views/do.py:724 app/views/do.py:1262
+#: app/misc.py:1653 app/views/do.py:724 app/views/do.py:1262
 #: app/views/do.py:1830
 msgid "You are banned on this sub."
 msgstr "V tejto skupine si zabanovaný(á)."
 
-#: app/misc.py:1644 app/views/do.py:727 app/views/do.py:770
+#: app/misc.py:1658 app/views/do.py:727 app/views/do.py:770
 #: app/views/do.py:1837
 msgid "Post is archived"
 msgstr "Príspevok bol archivovaný"
 
-#: app/misc.py:1835
+#: app/misc.py:1849
 msgid "Invalid status request"
 msgstr "Invalid status request"
 
@@ -208,7 +208,7 @@ msgstr "Maximálny počet pozvánok na používateľa"
 msgid "Change selected codes to expire:"
 msgstr "Zmeniť expiráciu zvolených kódov:"
 
-#: app/forms/admin.py:48 app/html/sub/bans.html:91 app/static/js/main.js:466
+#: app/forms/admin.py:48 app/html/sub/bans.html:91 app/static/js/main.js:471
 msgid "Never"
 msgstr "Nikdy"
 
@@ -1276,7 +1276,7 @@ msgstr "Top príspevky za posledných 24 hodín"
 msgid "%(timeago)s in %(sub)s"
 msgstr "%(timeago)s v %(sub)s"
 
-#: app/html/shared/sidebar/home.html:35
+#: app/html/shared/sidebar/home.html:35 app/html/site/activity.html:11
 msgid "Recent activity"
 msgstr "Posledná aktivita"
 
@@ -1471,6 +1471,10 @@ msgstr "Nahraté súbory"
 #: app/html/shared/sidebar/user.html:40
 msgid "View saved posts"
 msgstr "Moje uložené príspevky"
+
+#: app/html/site/activity.html:12
+msgid "New posts and comments"
+msgstr "Nové príspevky a komentáre"
 
 #: app/html/site/activity.html:17
 #, python-format
@@ -2635,7 +2639,7 @@ msgstr "Nemôžeš vytvárť pozvánky."
 msgid "Your invite codes"
 msgstr "Tvoje pozvánky"
 
-#: app/html/user/settings/invitecode.html:22 app/static/js/Editor.js:59
+#: app/html/user/settings/invitecode.html:22 app/static/js/Editor.js:60
 msgid "Code"
 msgstr "Kód"
 
@@ -2664,27 +2668,31 @@ msgstr "Preškrtnuté (ctrl-shift-s)"
 msgid "Title (ctrl-shift-h)"
 msgstr "Názov (ctrl-shift-h)"
 
-#: app/static/js/Editor.js:36
+#: app/static/js/Editor.js:30
+msgid "Spoiler"
+msgstr "Spoiler"
+
+#: app/static/js/Editor.js:37
 msgid "Insert hyperlink"
 msgstr "Vložiť link"
 
-#: app/static/js/Editor.js:39
+#: app/static/js/Editor.js:40
 msgid "Link Title"
 msgstr "Názov linku"
 
-#: app/static/js/Editor.js:46
+#: app/static/js/Editor.js:47
 msgid "Insert link (ctrl-shift-k)"
 msgstr "Vložiť link (ctrl-shift-k)"
 
-#: app/static/js/Editor.js:52
+#: app/static/js/Editor.js:53
 msgid "Bullet list"
 msgstr "Zoznam"
 
-#: app/static/js/Editor.js:53
+#: app/static/js/Editor.js:54
 msgid "Number list"
 msgstr "Číslovanie"
 
-#: app/static/js/Editor.js:60
+#: app/static/js/Editor.js:61
 msgid "Quote (ctrl-shift-.)"
 msgstr "Citácia"
 
@@ -2905,15 +2913,15 @@ msgstr "Chyba pri kontaktovaní servera"
 msgid "Are you sure you want to PERMANENTLY delete your account?"
 msgstr "Naozaj chceš NATRVALO vymazať svoj účet?"
 
-#: app/static/js/main.js:510
+#: app/static/js/main.js:515
 msgid "Are you sure you want to ban this user?"
 msgstr "Naozaj chceš zabanovať tohoto používateľa?"
 
-#: app/static/js/main.js:515
+#: app/static/js/main.js:520
 msgid "Are you sure you want to remove all the votes issued by this user?"
 msgstr "Naozaj chceš odstrániť všetky hlasovania používateľa?"
 
-#: app/static/js/main.js:520
+#: app/static/js/main.js:525
 msgid "Are you sure you want to unban this user?"
 msgstr "Naozaj chceš odbanovať tohto používateľa?"
 
