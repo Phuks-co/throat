@@ -10,6 +10,7 @@ import os
 import re
 import gevent
 import ipaddress
+from collections import defaultdict
 
 import tinycss2
 from captcha.image import ImageCaptcha
@@ -164,6 +165,36 @@ class SiteUser(object):
     def is_mod(self, sid, power_level=2):
         """ Returns True if the current user is a mod of 'sub' """
         return is_sub_mod(self.uid, sid, power_level, self.can_admin)
+
+    @cache.memoize(1)
+    def mod_notifications(self):
+        if self.is_mod:
+            post_report_counts = (
+                SubPostReport.select(Sub.sid, fn.COUNT(SubPostReport.id).
+                                     alias('count')).
+                join(SubPost).join(Sub).join(SubMod).
+                where((SubMod.user == self.uid) & SubPostReport.open).
+                group_by(Sub.sid).dicts())
+            comment_report_counts = (
+                SubPostCommentReport.select(Sub.sid,
+                                            fn.COUNT(SubPostCommentReport.id).
+                                            alias('count')).
+                    join(SubPostComment).join(SubPost).join(Sub).join(SubMod).
+                    where((SubMod.user == self.uid) & SubPostCommentReport.open).
+                    group_by(Sub.sid).dicts())
+
+            counts = defaultdict(int)
+            for item in post_report_counts:
+                counts[item['sid']] = item['count']
+            for item in comment_report_counts:
+                counts[item['sid']] += item['count']
+
+            return [[sid, count] for sid, count in counts.items()]
+        else:
+            return []
+
+    def mod_notifications_json(self):
+        return json.dumps(self.mod_notifications())
 
     def is_subban(self, sub):
         """ Returns True if the current user is banned from 'sub' """
@@ -839,14 +870,15 @@ def getStickies(sid):
 
 
 def load_user(user_id):
-    user = User.select((fn.Count(Message.mid) + fn.Count(Notification.id)).alias('notifications'),
+    mcount = Message.select(fn.Count(Message.mid)).where(
+        (Message.receivedby == user_id) & (Message.mtype == 1) & Message.read.is_null(True))
+    ncount = Notification.select(fn.Count(Notification.id)).where(
+        (Notification.target == user_id) & Notification.read.is_null(True))
+    user = User.select(mcount.alias('messages'), ncount.alias('notifications'),
                        User.given, User.score, User.name, User.uid, User.status,
                        User.email, User.language, User.resets)
-    user = user.join(Message, JOIN.LEFT_OUTER, on=(
-            (Message.receivedby == User.uid) & (Message.mtype == 1) & Message.read.is_null(True))).switch(User)
-    user = user.join(Notification, JOIN.LEFT_OUTER,
-                     on=(Notification.target == User.uid) & Notification.read.is_null(True)).switch(User)
-    user = user.group_by(User.uid).where(User.uid == user_id).dicts().get()
+    user = user.where(User.uid == user_id).dicts().get()
+    user['notifications'] += user['messages']
 
     # This is the only user attribute needed by the error templates, so stash
     # it in the session so that future errors in this session won't have to
@@ -1061,6 +1093,25 @@ def getSubMods(sid):
     if not owner:
         owner['0'] = config.site.placeholder_account
     return {'owners': owner, 'mods': mods, 'janitors': janitors, 'all': owner_uids + janitor_uids + mod_uids}
+
+
+def notify_mods(sid):
+    "Send the sub mods an updated open report count."
+    reports = (SubPostReport.select(fn.Count(SubPostReport.id)).
+               join(SubPost).
+               where((SubPost.sid == sid) & SubPostReport.open))
+    comments = (SubPostCommentReport.select(fn.Count(SubPostCommentReport.id)).
+                join(SubPostComment).join(SubPost).
+                where((SubPost.sid == sid) & SubPostCommentReport.open))
+    mods = (SubMod.select(SubMod.uid,
+                          reports.alias('reports'),
+                          comments.alias('comments')).
+            where(SubMod.sub == sid))
+
+    for mod in mods:
+        socketio.emit('mod-notification',
+                      {'update': [sid, mod.reports + mod.comments]},
+                      namespace='/snt', room='user' + mod.uid)
 
 
 # Relationship between the post type values in the CreateSubPost form

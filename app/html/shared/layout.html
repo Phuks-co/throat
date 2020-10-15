@@ -23,11 +23,6 @@
     <link rel="icon" href="@{url_for('static', filename='img/icon.png') }">
 
     <title> \
-      @if not current_user.is_anonymous:
-        @if current_user.notifications > 0:
-          (@{current_user.notifications})
-        @end
-      @end
       @def title():
       @end
       @{title()!!html} \
@@ -56,9 +51,6 @@
       <li><a href="/all/new">@{_('new')}</a></li>
       @if current_user.can_admin:
         <li><a href="@{url_for('admin.index')}">@{_('admin')}</a></li>
-      @end
-      @if current_user.is_a_mod or current_user.can_admin:
-        <li><a href="@{url_for('mod.index')}">@{_('moderation')}</a></li>
       @end
       <li>|</li>
       @if not current_user.is_anonymous:
@@ -117,6 +109,16 @@
             </span>
           </a>
         </div>
+        @if current_user.is_a_mod or current_user.can_admin:
+          <div class="glyphbutton">
+          <a href="@{ url_for('mod.index') }">
+            <span class="hasmail">
+                <span class="p-icon" data-icon="shield"></span>
+                <span id="modcount" class="mailcount" data-mod="@{current_user.mod_notifications_json()}" style="display:none"></span>
+              </span>
+            </a>
+          </div>
+        @end
         <div id="toggledark" class="glyphbutton">
           <span class="p-icon" data-icon="@{(request.cookies.get( "dayNight")=="dark") and 'sun' or 'moon'}"></span>
         </div>
