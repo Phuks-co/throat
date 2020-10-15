@@ -2494,6 +2494,7 @@ def report():
 
         # do the reporting.
         SubPostReport.create(pid=post['pid'], uid=current_user.uid, reason=form.reason.data, send_to_admin=form.send_to_admin.data)
+        misc.notify_mods(post['sid'])
         if callbacks_enabled:
             # callbacks!
             cb = getattr(callbacks, 'ON_POST_REPORT', False)
@@ -2512,9 +2513,10 @@ def report_comment():
         try:
             comm = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
                                          SubPostComment.score, SubPostComment.status, SubPostComment.time, SubPostComment.pid,
-                                         User.name.alias('username'), SubPostComment.uid,
+                                         SubPost.sid, User.name.alias('username'), SubPostComment.uid,
                                          User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)
             comm = comm.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
+            comm = comm.join(SubPost)
             comm = comm.where(SubPostComment.cid == form.post.data)
             comm = comm.get()
         except SubPostComment.DoesNotExist:
@@ -2538,6 +2540,7 @@ def report_comment():
 
         # do the reporting.
         SubPostCommentReport.create(cid=comm.cid, uid=current_user.uid, reason=form.reason.data, send_to_admin=form.send_to_admin.data)
+        misc.notify_mods(comm.pid.sid.sid)
         # callbacks!
         if callbacks_enabled:
             cb = getattr(callbacks, 'ON_COMMENT_REPORT', False)
@@ -2584,6 +2587,8 @@ def close_post_report(id, action):
         report = SubPostReport.update(open=False).where(SubPostReport.id == id).execute()
     elif action == 'reopen':
         report = SubPostReport.update(open=True).where(SubPostReport.id == id).execute()
+
+    misc.notify_mods(sub.sid)
 
     #check if it changed and return status
     updated_report = SubPostReport.select().where(SubPostReport.id == id).get()
@@ -2647,6 +2652,7 @@ def close_comment_report(id, action):
         report = SubPostCommentReport.update(open=False).where(SubPostCommentReport.id == id).execute()
     elif action == 'reopen':
         report = SubPostCommentReport.update(open=True).where(SubPostCommentReport.id == id).execute()
+    misc.notify_mods(sub.sid)
 
     #check if it changed and return status
     updated_report = SubPostCommentReport.select().where(SubPostCommentReport.id == id).get()
@@ -2695,6 +2701,7 @@ def close_post_related_reports(related_reports, original_report):
             error = jsonify(status='error', error=_('Not authorized'))
 
         report = SubPostReport.update(open=False).where(SubPostReport.id == related_report['id']).execute()
+        misc.notify_mods(sub.sid)
 
         #check if report is closed and return status
         updated_report = SubPostReport.select().where(SubPostReport.id == related_report['id']).get()
@@ -2746,6 +2753,7 @@ def close_comment_related_reports(related_reports, original_report):
             error = jsonify(status='error', error=_('Not authorized'))
 
         report = SubPostCommentReport.update(open=False).where(SubPostCommentReport.id == related_report['id']).execute()
+        misc.notify_mods(sub.sid)
 
         #check if report is closed and return status
         updated_report = SubPostCommentReport.select().where(SubPostCommentReport.id == related_report['id']).get()

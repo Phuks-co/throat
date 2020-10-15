@@ -11,21 +11,68 @@ RegExp.escape= function(s) {
 const socket = io('///snt', {transports: ['websocket'], upgrade: false});
 
 function updateNotifications(count){
+  if(count == 0){
+    document.getElementById('mailcount').innerHTML = '';
+    document.getElementById('mailcount').style.display = 'none';
+  }else{
+    document.getElementById('mailcount').innerHTML = count;
+    document.getElementById('mailcount').style.display = 'inline-block';
+  }
+}
+
+function updateModNotifications(notifications) {
+  var modElem = document.getElementById('modcount');
+  if (modElem) {
+    var sum = 0;
+    for (var i=0; i < notifications.length; i++) {
+      sum = sum + notifications[i][1];
+    }
+    if (sum == 0) {
+      modElem.innerHTML = '';
+      modElem.style.display = 'none';
+    } else {
+      modElem.innerHTML = sum;
+      modElem.style.display = 'inline-block';
+    }
+  }
+}
+
+function updateTitleNotifications() {
   var title = document.getElementsByTagName('title')[0].innerHTML.split('\n');
   title = title[title.length-1]
   var doc = new DOMParser().parseFromString(title, "text/html");
   title = doc.documentElement.textContent;
-  if(count == 0){
-    document.title = '\n' + title;
-    document.getElementById('mailcount').innerHTML = '';
-    document.getElementById('mailcount').style.display = 'none';
-  }else{
-    document.title = '(' + count + ')\n ' + title;
-    document.getElementById('mailcount').innerHTML = count;
-    document.getElementById('mailcount').style.display = 'inline-block';
+
+  var count = 0;
+  var mailcount = document.getElementById('mailcount');
+  if (mailcount) {
+    count += Number(mailcount.innerHTML);
+  }
+  var modcount = document.getElementById('modcount');
+  if (modcount) {
+    count += Number(modcount.innerHTML);
   }
 
+  if (count == 0) {
+    document.title = '\n' + title;
+  } else {
+    document.title = '(' + count + ')\n ' + title;
+  }
 }
+
+
+var modData = [];
+
+// Get the mod notifications if present, and update the title bar with
+// the total number of notifications (for both mods and non-mods).
+u.ready(function () {
+  var modElem = document.getElementById('modcount');
+  if (modElem) {
+    modData = JSON.parse(modElem.getAttribute('data-mod'));
+      updateModNotifications(modData);
+  }
+  updateTitleNotifications();
+})
 
 
 // Thumbnails, lazy and deferred loading.  If a thumbnail exists,
@@ -88,11 +135,30 @@ u.ready(function () {
 })
 
 socket.on('notification', function(d){
-  updateNotifications(d.count)
+  updateNotifications(d.count);
+  updateTitleNotifications();
 });
+
+socket.on('mod-notification', function(d) {
+  var found = false;
+  for (var i=0; i < modData.length; i++) {
+    if (modData[i][0] == d.update[0]) {
+      modData[i][1] = d.update[1];
+      found = true;
+    }
+  }
+  if (!found){
+    modData.push(d.update);
+  }
+  updateModNotifications(modData);
+  updateTitleNotifications();
+})
 
 socket.on('uinfo', function(d){
   updateNotifications(d.ntf);
+  modData = d.mod_ntf;
+  updateModNotifications(modData);
+  updateTitleNotifications();
   document.getElementById('postscore').innerHTML = d.taken;
 });
 
