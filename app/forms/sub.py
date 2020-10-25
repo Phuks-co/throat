@@ -65,7 +65,7 @@ class DeleteSubFlair(FlaskForm):
 
 class CreateSubRule(FlaskForm):
     """ Creates a rule """
-    text = StringField(_l('Rule text'), validators=[DataRequired(), Length(max=25)])
+    text = StringField(_l('Rule text'), validators=[DataRequired(), Length(max=255)])
 
 
 class EditSubRule(FlaskForm):
