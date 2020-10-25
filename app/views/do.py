@@ -2488,6 +2488,8 @@ def report():
 
         if len(form.reason.data) < 2:
             return jsonify(status='error', error=_('Report reason too short.'))
+        elif len(form.reason.data) > 128:
+            return jsonify(status='error', error=_('Report reason too long.'))
 
         if not form.send_to_admin.data and misc.is_sub_banned(post['sid'], uid=current_user.uid):
             return jsonify(status='error', error=_('You are banned from this sub.'))
@@ -2534,6 +2536,8 @@ def report_comment():
 
         if len(form.reason.data) < 2:
             return jsonify(status='error', error=_('Report reason too short.'))
+        elif len(form.reason.data) > 128:
+            return jsonify(status='error', error=_('Report reason too long.'))
 
         if not form.send_to_admin.data and misc.is_sub_banned(comm.pid.sid, uid=current_user.uid):
             return jsonify(status='error', error=_('You are banned from this sub.'))
