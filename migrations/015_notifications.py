@@ -51,105 +51,106 @@ def migrate(migrator, database, fake=False, **kwargs):
         class Meta:
             table_name = "notification"
 
-    Notification.create_table(True)
-    # Migrate notifications out of the messages table
-    Message = migrator.orm['message']
-    SubPostComment = migrator.orm['sub_post_comment']
-    SubPost = migrator.orm['sub_post']
-    Sub = migrator.orm['sub']
+    if not fake:
+        Notification.create_table(True)
+        # Migrate notifications out of the messages table
+        Message = migrator.orm['message']
+        SubPostComment = migrator.orm['sub_post_comment']
+        SubPost = migrator.orm['sub_post']
+        Sub = migrator.orm['sub']
 
-    total = Message.select().where(Message.mtype << (4, 5)).count()
-    print(" - Migrating replies", end='', flush=True)
-    progress = 0
-    inserts = []
-    qry = Message.select(Message.mlink, Message.mtype, Message.receivedby, Message.read, Message.posted, SubPostComment.cid, SubPost.pid, SubPost.sid, SubPostComment.uid).join(SubPostComment, on=SubPostComment.cid == Message.mlink).join(SubPost).where(Message.mtype << (4, 5))
-    for msg in qry.dicts():
-        progress += 1
-        print(f"\r - Migrating replies {progress}/{total}", end='', flush=True)
-        # Here mlink is the comment's cid
-        # comnt = SubPostComment.get(SubPostComment.cid == msg.mlink)
-        # post = SubPost.get(SubPost.pid == comnt.pid)
-        inserts.append({
-            'type': 'POST_REPLY' if msg['mtype'] == 4 else 'COMMENT_REPLY',
-            'sub': msg['sid'],
-            'post': msg['pid'],
-            'comment': msg['cid'],
-            'sender': msg['uid'],
-            'target': msg['receivedby'],
-            'read': msg['read'],
-            'created': msg['posted']
-        })
+        total = Message.select().where(Message.mtype << (4, 5)).count()
+        print(" - Migrating replies", end='', flush=True)
+        progress = 0
+        inserts = []
+        qry = Message.select(Message.mlink, Message.mtype, Message.receivedby, Message.read, Message.posted, SubPostComment.cid, SubPost.pid, SubPost.sid, SubPostComment.uid).join(SubPostComment, on=SubPostComment.cid == Message.mlink).join(SubPost).where(Message.mtype << (4, 5))
+        for msg in qry.dicts():
+            progress += 1
+            print(f"\r - Migrating replies {progress}/{total}", end='', flush=True)
+            # Here mlink is the comment's cid
+            # comnt = SubPostComment.get(SubPostComment.cid == msg.mlink)
+            # post = SubPost.get(SubPost.pid == comnt.pid)
+            inserts.append({
+                'type': 'POST_REPLY' if msg['mtype'] == 4 else 'COMMENT_REPLY',
+                'sub': msg['sid'],
+                'post': msg['pid'],
+                'comment': msg['cid'],
+                'sender': msg['uid'],
+                'target': msg['receivedby'],
+                'read': msg['read'],
+                'created': msg['posted']
+            })
 
-    Notification.insert_many(inserts).execute()
-    inserts = []
-    print(" OK")
+        Notification.insert_many(inserts).execute()
+        inserts = []
+        print(" OK")
 
-    total = Message.select().where(Message.mtype == 8).count()
-    progress = 0
-    print(f" - Migrating mentions 0/{total}", end='')
-    for msg in Message.select().where(Message.mtype == 8):
-        progress += 1
-        print(f"\r - Migrating mentions {progress}/{total}", end='', flush=True)
-        parts = msg.mlink.split("/")
-        comnt = None
-        if len(parts) == 5:  # We guess if it's a comment or a post based on the permalink -_-
-            mtype = 'COMMENT_MENTION'
-            comnt = SubPostComment.get(SubPostComment.cid == parts[-1])
-        else:
-            mtype = 'POST_MENTION'
-        post = SubPost.get(SubPost.pid == parts[3])
-
-        inserts.append({
-            'type': mtype,
-            'sub': post.sid,
-            'post': post.pid,
-            'comment': comnt.cid if comnt else None,
-            'sender': comnt.uid if comnt else post.uid,
-            'target': msg.receivedby,
-            'read': msg.read,
-            'created': msg.posted
-        })
-    print(" OK")
-    Notification.insert_many(inserts).execute()
-    inserts = []
-
-    total = Message.select().where(Message.mtype << (2, 7, 11)).count()
-    progress = 0
-    print(f" - Migrating modmail 0/{total}", end='')
-    for msg in Message.select().where(Message.mtype << (2, 7, 11)):
-        progress += 1
-        print(f"\r - Migrating modmail {progress}/{total}", end='', flush=True)
-        # Link is sub name
-        try:
-            sub = Sub.get(pw.fn.Lower(Sub.name) == msg.mlink.lower())
-        except Sub.DoesNotExist:
-            # Some really really legacy situation here...
-            continue
-        if msg.mtype == 2:
-            mtype = 'MOD_INVITE' + ('_JANITOR' if "janitor" in msg.content else "")
-            msg.content = None
-        elif msg.mtype == 7:
-            if 'unbanned' in msg.subject:
-                mtype = 'SUB_UNBAN'
+        total = Message.select().where(Message.mtype == 8).count()
+        progress = 0
+        print(f" - Migrating mentions 0/{total}", end='')
+        for msg in Message.select().where(Message.mtype == 8):
+            progress += 1
+            print(f"\r - Migrating mentions {progress}/{total}", end='', flush=True)
+            parts = msg.mlink.split("/")
+            comnt = None
+            if len(parts) == 5:  # We guess if it's a comment or a post based on the permalink -_-
+                mtype = 'COMMENT_MENTION'
+                comnt = SubPostComment.get(SubPostComment.cid == parts[-1])
             else:
-                mtype = 'SUB_BAN'
-        else:
-            mtype = ' '
-        inserts.append({
-            'type': mtype,
-            'sub': sub.sid,
-            'post': None,
-            'comment': None,
-            'sender': msg.sentby,
-            'target': msg.receivedby,
-            'read': msg.read,
-            'created': msg.posted,
-            'content': msg.content
-        })
-    print(" OK")
-    print("Dumping everything into the db...")
+                mtype = 'POST_MENTION'
+            post = SubPost.get(SubPost.pid == parts[3])
 
-    Notification.insert_many(inserts).execute()
+            inserts.append({
+                'type': mtype,
+                'sub': post.sid,
+                'post': post.pid,
+                'comment': comnt.cid if comnt else None,
+                'sender': comnt.uid if comnt else post.uid,
+                'target': msg.receivedby,
+                'read': msg.read,
+                'created': msg.posted
+            })
+        print(" OK")
+        Notification.insert_many(inserts).execute()
+        inserts = []
+
+        total = Message.select().where(Message.mtype << (2, 7, 11)).count()
+        progress = 0
+        print(f" - Migrating modmail 0/{total}", end='')
+        for msg in Message.select().where(Message.mtype << (2, 7, 11)):
+            progress += 1
+            print(f"\r - Migrating modmail {progress}/{total}", end='', flush=True)
+            # Link is sub name
+            try:
+                sub = Sub.get(pw.fn.Lower(Sub.name) == msg.mlink.lower())
+            except Sub.DoesNotExist:
+                # Some really really legacy situation here...
+                continue
+            if msg.mtype == 2:
+                mtype = 'MOD_INVITE' + ('_JANITOR' if "janitor" in msg.content else "")
+                msg.content = None
+            elif msg.mtype == 7:
+                if 'unbanned' in msg.subject:
+                    mtype = 'SUB_UNBAN'
+                else:
+                    mtype = 'SUB_BAN'
+            else:
+                mtype = ' '
+            inserts.append({
+                'type': mtype,
+                'sub': sub.sid,
+                'post': None,
+                'comment': None,
+                'sender': msg.sentby,
+                'target': msg.receivedby,
+                'read': msg.read,
+                'created': msg.posted,
+                'content': msg.content
+            })
+        print(" OK")
+        print("Dumping everything into the db...")
+
+        Notification.insert_many(inserts).execute()
 
 
 def rollback(migrator, database, fake=False, **kwargs):
