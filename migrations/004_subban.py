@@ -50,17 +50,18 @@ def migrate(migrator, database, fake=False, **kwargs):
 
         class Meta:
             table_name = "sub_ban"
-    
-    migrator.run()
 
-    SubMetadata = migrator.orm['sub_metadata']
-    SubBan = migrator.orm['sub_ban']
+    if not fake:
+        migrator.run()
 
-    for xm in SubMetadata.select().where(SubMetadata.key == 'ban'):
-        SubBan.create(uid=xm.value, sid=xm.sid, effective=True, reason='', created=None)
+        SubMetadata = migrator.orm['sub_metadata']
+        SubBan = migrator.orm['sub_ban']
 
-    for xm in SubMetadata.select().where(SubMetadata.key == 'xban'):
-        SubBan.create(uid=xm.value, sid=xm.sid, effective=False, reason='', created=None)
+        for xm in SubMetadata.select().where(SubMetadata.key == 'ban'):
+            SubBan.create(uid=xm.value, sid=xm.sid, effective=True, reason='', created=None)
+
+        for xm in SubMetadata.select().where(SubMetadata.key == 'xban'):
+            SubBan.create(uid=xm.value, sid=xm.sid, effective=False, reason='', created=None)
 
 
 def rollback(migrator, database, fake=False, **kwargs):
