@@ -44,7 +44,7 @@ u.sub('.savemsg', 'click', function(e){
 // Delete notification.
 u.sub('.deletemsg', 'click', function(e){
   const mid = this.getAttribute('data-mid'), obj = this;
-  u.post('/messages/notifications/delete/'+mid, {},
+  u.post('/do/delete_pm/'+mid, {},
   function(data){
     if (data.status == "ok") {
       obj.innerHTML = _('deleted');
