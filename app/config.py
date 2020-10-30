@@ -36,6 +36,8 @@ cfg_defaults = {  # key => default value
             "edit_history": False,
             "anonymous_modding": False,
 
+            "send_pm_to_user_min_level": 3,
+
             "daily_sub_posting_limit": 10,
             "daily_site_posting_limit": 25,
 

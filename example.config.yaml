@@ -64,6 +64,15 @@ site:
   # Set to zero to disable sub creation level limits
   sub_creation_min_level: 2
 
+  # Minimum level required for a user to be permitted to private message nonprivileged users.
+  # Set to zero to allow users of all levels to PM other users.
+  # Users of any level may PM site admins.
+  send_pm_to_user_min_level: 3
+
+  # Minimum level a user must have before being able to create a sub.
+  # Set to zero to disable sub creation level limits
+  sub_creation_min_level: 2
+
   # Allows Sub Mods and Admins to view the edit history of posts
   edit_history: False
 
