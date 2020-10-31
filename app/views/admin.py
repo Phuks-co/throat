@@ -141,10 +141,11 @@ def userbadges():
 @bp.route("/invitecodes", defaults={'page': 1}, methods=['GET', 'POST'])
 @bp.route("/invitecodes/<int:page>", methods=['GET', 'POST'])
 @login_required
-def invitecodes(page, error=None):
+def invitecodes(page):
     """
     View and configure Invite Codes
     """
+
     def map_style(code):
         if code['uses'] >= code['max_uses']:
             return 'expired'
@@ -159,7 +160,7 @@ def invitecodes(page, error=None):
     invite_settings = {
         meta.key: meta.value
         for meta in SiteMetadata.select().where(
-                SiteMetadata.key << ['useinvitecode', 'invite_level', 'invite_max'])
+            SiteMetadata.key << ['useinvitecode', 'invite_level', 'invite_max'])
     }
 
     invite_codes = InviteCode.select(
@@ -174,8 +175,8 @@ def invitecodes(page, error=None):
 
     code_users = UserMetadata.select(User.name.alias('used_by'), User.status,
                                      UserMetadata.value.alias("code")).where(
-            (UserMetadata.key == 'invitecode') & 
-                (UserMetadata.value << set([x['code'] for x in invite_codes]))).join(User).dicts()
+        (UserMetadata.key == 'invitecode') &
+        (UserMetadata.value << set([x['code'] for x in invite_codes]))).join(User).dicts()
 
     used_by = {}
     for user in code_users:
@@ -243,49 +244,47 @@ def invitecodes(page, error=None):
 @login_required
 def view():
     """ WIP: View admins. """
-    if current_user.is_admin():
-        admins = UserMetadata.select().where(UserMetadata.key == 'admin')
-
-        postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias(
-            'post_count')
-        commcount = SubPostComment.select(SubPostComment.uid,
-                                          fn.Count(SubPostComment.cid).alias('comment_count')).group_by(
-            SubPostComment.uid).alias('j2')
-
-        users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count.alias('post_count'),
-                            commcount.c.comment_count)
-        users = users.join(postcount, JOIN.LEFT_OUTER, on=User.uid == postcount.c.uid)
-        users = users.join(commcount, JOIN.LEFT_OUTER, on=User.uid == commcount.c.uid)
-        users = users.where(User.uid << [x.uid for x in admins]).order_by(User.joindate.asc()).dicts()
-
-        return render_template('admin/users.html', users=users, admin_route='admin.view')
-    else:
+    if not current_user.is_admin():
         abort(404)
+    admins = UserMetadata.select().where(UserMetadata.key == 'admin')
+
+    postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias(
+        'post_count')
+    commcount = SubPostComment.select(SubPostComment.uid,
+                                      fn.Count(SubPostComment.cid).alias('comment_count')).group_by(
+        SubPostComment.uid).alias('j2')
+
+    users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count.alias('post_count'),
+                        commcount.c.comment_count)
+    users = users.join(postcount, JOIN.LEFT_OUTER, on=User.uid == postcount.c.uid)
+    users = users.join(commcount, JOIN.LEFT_OUTER, on=User.uid == commcount.c.uid)
+    users = users.where(User.uid << [x.uid for x in admins]).order_by(User.joindate.asc()).dicts()
+
+    return render_template('admin/users.html', users=users, admin_route='admin.view')
 
 
 @bp.route("/usersearch/<term>")
 @login_required
 def users_search(term):
     """ WIP: Search users. """
-    if current_user.is_admin():
-        term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
-
-        postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias(
-            'post_count')
-        commcount = SubPostComment.select(SubPostComment.uid,
-                                          fn.Count(SubPostComment.cid).alias('comment_count')).group_by(
-            SubPostComment.uid).alias('j2')
-
-        users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count,
-                            commcount.c.comment_count)
-        users = users.join(postcount, JOIN.LEFT_OUTER, on=User.uid == postcount.c.uid)
-        users = users.join(commcount, JOIN.LEFT_OUTER, on=User.uid == commcount.c.uid)
-        users = users.where(User.name.contains(term)).order_by(User.joindate.desc()).dicts()
-
-        return render_template('admin/users.html', users=users, term=term,
-                               admin_route='admin.users_search')
-    else:
+    if not current_user.is_admin():
         abort(404)
+    term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
+
+    postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias(
+        'post_count')
+    commcount = SubPostComment.select(SubPostComment.uid,
+                                      fn.Count(SubPostComment.cid).alias('comment_count')).group_by(
+        SubPostComment.uid).alias('j2')
+
+    users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count,
+                        commcount.c.comment_count)
+    users = users.join(postcount, JOIN.LEFT_OUTER, on=User.uid == postcount.c.uid)
+    users = users.join(commcount, JOIN.LEFT_OUTER, on=User.uid == commcount.c.uid)
+    users = users.where(User.name.contains(term)).order_by(User.joindate.desc()).dicts()
+
+    return render_template('admin/users.html', users=users, term=term,
+                           admin_route='admin.users_search')
 
 
 @bp.route("/subs", defaults={'page': 1})
@@ -293,24 +292,22 @@ def users_search(term):
 @login_required
 def subs(page):
     """ WIP: View subs. Assign new owners """
-    if current_user.is_admin():
-        subs = Sub.select().paginate(page, 50)
-        return render_template('admin/subs.html', subs=subs, page=page, admin_route='admin.subs', editmodform=EditModForm())
-    else:
+    if not current_user.is_admin():
         abort(404)
+    subs = Sub.select().paginate(page, 50)
+    return render_template('admin/subs.html', subs=subs, page=page, admin_route='admin.subs', editmodform=EditModForm())
 
 
 @bp.route("/subsearch/<term>")
 @login_required
 def subs_search(term):
     """ WIP: Search for a sub. """
-    if current_user.is_admin():
-        term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
-        subs = Sub.select().where(Sub.name.contains(term))
-        return render_template('admin/subs.html', subs=subs, term=term, admin_route='admin.subs_search',
-                               editmodform=EditModForm())
-    else:
+    if not current_user.is_admin():
         abort(404)
+    term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
+    subs = Sub.select().where(Sub.name.contains(term))
+    return render_template('admin/subs.html', subs=subs, term=term, admin_route='admin.subs_search',
+                           editmodform=EditModForm())
 
 
 @bp.route("/posts/all/", defaults={'page': 1})
@@ -318,11 +315,10 @@ def subs_search(term):
 @login_required
 def posts(page):
     """ WIP: View posts. """
-    if current_user.is_admin():
-        posts = misc.getPostList(misc.postListQueryBase(adminDetail=True), 'new', page).paginate(page, 50).dicts()
-        return render_template('admin/posts.html', page=page, admin_route='admin.posts', posts=posts)
-    else:
+    if not current_user.is_admin():
         abort(404)
+    posts = misc.getPostList(misc.postListQueryBase(adminDetail=True), 'new', page).paginate(page, 50).dicts()
+    return render_template('admin/posts.html', page=page, admin_route='admin.posts', posts=posts)
 
 
 @bp.route("/postvoting/<term>", defaults={'page': 1})
@@ -330,24 +326,23 @@ def posts(page):
 @login_required
 def post_voting(page, term):
     """ WIP: View post voting habits """
-    if current_user.is_admin():
-        try:
-            user = User.get(fn.Lower(User.name) == term.lower())
-            msg = []
-            votes = SubPostVote.select(SubPostVote.positive, SubPostVote.pid, User.name, SubPostVote.datetime,
-                                       SubPostVote.pid)
-            votes = votes.join(SubPost, JOIN.LEFT_OUTER, on=SubPost.pid == SubPostVote.pid)
-            votes = votes.switch(SubPost).join(User, JOIN.LEFT_OUTER, on=SubPost.uid == User.uid)
-            votes = votes.where(SubPostVote.uid == user.uid).dicts()
-        except User.DoesNotExist:
-            votes = []
-            msg = 'user not found'
-
-        return render_template('admin/postvoting.html', page=page, msg=msg,
-                               admin_route='admin.post_voting',
-                               votes=votes, term=term)
-    else:
+    if not current_user.is_admin():
         abort(404)
+    try:
+        user = User.get(fn.Lower(User.name) == term.lower())
+        msg = []
+        votes = SubPostVote.select(SubPostVote.positive, SubPostVote.pid, User.name, SubPostVote.datetime,
+                                   SubPostVote.pid)
+        votes = votes.join(SubPost, JOIN.LEFT_OUTER, on=SubPost.pid == SubPostVote.pid)
+        votes = votes.switch(SubPost).join(User, JOIN.LEFT_OUTER, on=SubPost.uid == User.uid)
+        votes = votes.where(SubPostVote.uid == user.uid).dicts()
+    except User.DoesNotExist:
+        votes = []
+        msg = 'user not found'
+
+    return render_template('admin/postvoting.html', page=page, msg=msg,
+                           admin_route='admin.post_voting',
+                           votes=votes, term=term)
 
 
 @bp.route("/commentvoting/<term>", defaults={'page': 1})
@@ -355,55 +350,53 @@ def post_voting(page, term):
 @login_required
 def comment_voting(page, term):
     """ WIP: View comment voting habits """
-    if current_user.is_admin():
-        try:
-            user = User.get(fn.Lower(User.name) == term.lower())
-            msg = []
-            votes = SubPostCommentVote.select(SubPostCommentVote.positive, SubPostCommentVote.cid, SubPostComment.uid,
-                                              User.name, SubPostCommentVote.datetime, SubPost.pid,
-                                              Sub.name.alias('sub'))
-            votes = votes.join(SubPostComment, JOIN.LEFT_OUTER, on=SubPostComment.cid == SubPostCommentVote.cid).join(
-                SubPost).join(Sub)
-            votes = votes.switch(SubPostComment).join(User, JOIN.LEFT_OUTER, on=SubPostComment.uid == User.uid)
-            votes = votes.where(SubPostCommentVote.uid == user.uid).dicts()
-        except User.DoesNotExist:
-            votes = []
-            msg = 'user not found'
-
-        return render_template('admin/commentvoting.html', page=page, msg=msg,
-                               admin_route='admin.comment_voting',
-                               votes=votes, term=term)
-    else:
+    if not current_user.is_admin():
         abort(404)
+    try:
+        user = User.get(fn.Lower(User.name) == term.lower())
+        msg = []
+        votes = SubPostCommentVote.select(SubPostCommentVote.positive, SubPostCommentVote.cid, SubPostComment.uid,
+                                          User.name, SubPostCommentVote.datetime, SubPost.pid,
+                                          Sub.name.alias('sub'))
+        votes = votes.join(SubPostComment, JOIN.LEFT_OUTER, on=SubPostComment.cid == SubPostCommentVote.cid).join(
+            SubPost).join(Sub)
+        votes = votes.switch(SubPostComment).join(User, JOIN.LEFT_OUTER, on=SubPostComment.uid == User.uid)
+        votes = votes.where(SubPostCommentVote.uid == user.uid).dicts()
+    except User.DoesNotExist:
+        votes = []
+        msg = 'user not found'
+
+    return render_template('admin/commentvoting.html', page=page, msg=msg,
+                           admin_route='admin.comment_voting',
+                           votes=votes, term=term)
 
 
 @bp.route("/post/search/<term>")
 @login_required
 def post_search(term):
     """ WIP: Post search result. """
-    if current_user.is_admin():
-        term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
-        try:
-            post = SubPost.get(SubPost.pid == term)
-        except SubPost.DoesNotExist:
-            return abort(404)
-
-        votes = SubPostVote.select(SubPostVote.positive, SubPostVote.datetime, User.name).join(User).where(
-            SubPostVote.pid == post.pid).dicts()
-        upcount = post.votes.where(SubPostVote.positive == '1').count()
-        downcount = post.votes.where(SubPostVote.positive == '0').count()
-
-        pcount = post.uid.posts.count()
-        ccount = post.uid.comments.count()
-        comms = SubPostComment.select(SubPostComment.score, SubPostComment.content, SubPostComment.cid, User.name).join(
-            User).where(SubPostComment.pid == post.pid).dicts()
-
-        return render_template('admin/post.html', sub=post.sid, post=post,
-                               votes=votes, ccount=ccount, pcount=pcount,
-                               upcount=upcount, downcount=downcount,
-                               comms=comms, user=post.uid)
-    else:
+    if not current_user.is_admin():
         abort(404)
+    term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
+    try:
+        post = SubPost.get(SubPost.pid == term)
+    except SubPost.DoesNotExist:
+        return abort(404)
+
+    votes = SubPostVote.select(SubPostVote.positive, SubPostVote.datetime, User.name).join(User).where(
+        SubPostVote.pid == post.pid).dicts()
+    upcount = post.votes.where(SubPostVote.positive == '1').count()
+    downcount = post.votes.where(SubPostVote.positive == '0').count()
+
+    pcount = post.uid.posts.count()
+    ccount = post.uid.comments.count()
+    comms = SubPostComment.select(SubPostComment.score, SubPostComment.content, SubPostComment.cid, User.name).join(
+        User).where(SubPostComment.pid == post.pid).dicts()
+
+    return render_template('admin/post.html', sub=post.sid, post=post,
+                           votes=votes, ccount=ccount, pcount=pcount,
+                           upcount=upcount, downcount=downcount,
+                           comms=comms, user=post.uid)
 
 
 @bp.route("/domains/<domain_type>", defaults={'page': 1})
@@ -411,6 +404,8 @@ def post_search(term):
 @login_required
 def domains(domain_type, page):
     """ WIP: View Banned Domains """
+    if not current_user.is_admin():
+        abort(404)
     if domain_type == "email":
         key = 'banned_email_domain'
         title = _('Banned Email Domains')
@@ -418,16 +413,13 @@ def domains(domain_type, page):
         key = 'banned_domain'
         title = _('Banned Domains')
     else:
-        abort(404)
-    if current_user.is_admin():
-        domains = (SiteMetadata.select()
-                   .where(SiteMetadata.key == key)
-                   .order_by(SiteMetadata.value))
-        return render_template('admin/domains.html', domains=domains,
-                               title=title, domain_type=domain_type,
-                               page=page, bandomainform=BanDomainForm())
-    else:
-        abort(404)
+        return abort(404)
+    domains = (SiteMetadata.select()
+               .where(SiteMetadata.key == key)
+               .order_by(SiteMetadata.value))
+    return render_template('admin/domains.html', domains=domains,
+                           title=title, domain_type=domain_type,
+                           page=page, bandomainform=BanDomainForm())
 
 
 @bp.route("/uploads", defaults={'page': 1})
@@ -435,6 +427,8 @@ def domains(domain_type, page):
 @login_required
 def user_uploads(page):
     """ View user uploads """
+    if not current_user.is_admin():
+        abort(404)
     uploads = UserUploads.select().order_by(UserUploads.pid.desc()).paginate(page, 30)
     users = User.select(User.name).join(UserMetadata).where(UserMetadata.key == 'canupload')
     return render_template('admin/uploads.html', page=page, uploads=uploads, users=users)
@@ -449,7 +443,8 @@ def reports(page):
 
     reports = getReports('admin', 'all', page)
 
-    return engine.get_template('admin/reports.html').render({'reports': reports, 'page': page, 'sub': False, 'subInfo': False, 'subMods': False})
+    return engine.get_template('admin/reports.html').render(
+        {'reports': reports, 'page': page, 'sub': False, 'subInfo': False, 'subMods': False})
 
 
 @bp.route("/wiki", defaults={'page': 1})
@@ -473,8 +468,8 @@ def create_wiki():
     form = WikiForm()
 
     if form.validate_on_submit():
-        wiki = Wiki.create(slug=form.slug.data, title=form.title.data, content=form.content.data,
-                           is_global=True, sub=None)
+        Wiki.create(slug=form.slug.data, title=form.title.data, content=form.content.data,
+                    is_global=True, sub=None)
         return redirect(url_for('admin.wiki'))
     return engine.get_template('admin/createwiki.html').render({'form': form, 'error': misc.get_errors(form, True)})
 
