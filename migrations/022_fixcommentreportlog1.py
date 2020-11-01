@@ -42,8 +42,11 @@ def migrate(migrator, database, fake=False, **kwargs):
 
     if not fake:
         CommentReportLog = migrator.orm['comment_report_log']
+        SubPostCommentReport = migrator.orm['sub_post_comment_report']
         CommentReportLogSave.create_table(True)
-        records = list(CommentReportLog.select().dicts())
+        valid_ids = list((rep.id for rep in SubPostCommentReport.select()))
+        records = list(CommentReportLog.select().
+                       where(CommentReportLog.rid << valid_ids).dicts())
         for r in records:
             r.pop("lid")
         CommentReportLogSave.insert_many(records).execute()
