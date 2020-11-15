@@ -704,6 +704,30 @@ def distinguish():
     return jsonify(status='ok')
 
 
+@do.route("/do/lock_comments/<int:post>", methods=['POST'])
+@login_required
+def toggle_lock_comments(post):
+    """ Allows a mod or admin to lock a post to new comments. """
+    try:
+        post = SubPost.get(SubPost.pid == post)
+    except SubPost.DoesNotExist:
+        return jsonify(status='error', error=_('Post does not exist'))
+
+    if not current_user.is_mod(post.sid_id):
+        abort(403)
+
+    form = DeletePost()
+
+    if form.validate():
+        try:
+            smd = SubPostMetadata.select().where((SubPostMetadata.key == 'lock-comments') &
+                                                 (SubPostMetadata.pid == post.pid)).get()
+            smd.value = '0' if smd.value == '1' else '1'
+            smd.save()
+        except SubPostMetadata.DoesNotExist:
+            smd = SubPostMetadata.create(pid=post.pid, key='lock-comments', value='1')
+
+    return jsonify(status='ok')
 
 
 @do.route("/do/edit_txtpost/<pid>", methods=['POST'])
@@ -769,6 +793,10 @@ def create_comment(pid):
         if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
             return jsonify(status='error', error=[_("Post is archived")]), 400
 
+        postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
+        if postmeta.get('lock-comments'):
+            return jsonify(status='error', error=[_("Comments are closed on this post.")]), 400
+
         try:
             sub = Sub.get(Sub.sid == post.sid_id)
         except Sub.DoesNotExist:
@@ -832,6 +860,7 @@ def create_comment(pid):
         misc.workWithMentions(form.comment.data, to, post, sub, cid=comment.cid)
         renderedComment = engine.get_template('sub/postcomments.html').render({
             'post': misc.getSinglePost(post.pid),
+            'postmeta': misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == post.pid)),
             'comments': misc.get_comment_tree([{'cid': str(comment.cid), 'parentcid': None}], uid=current_user.uid, include_history=include_history),
             'subInfo': misc.getSubData(sub.sid),
             'subMods': subMods,
@@ -1967,14 +1996,16 @@ def get_sibling(pid, cid, lim):
             return jsonify(status='ok', posts=[])
 
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid)
+    postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == post.pid)),
     if sort == "new":
         comments = comments.order_by(SubPostComment.time.desc()).dicts()
     elif sort == "top":
         comments = comments.order_by(SubPostComment.score.desc()).dicts()
 
     if not comments.count():
-        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': '',
-                                                                    'sort': sort})
+        return engine.get_template('sub/postcomments.html').render(
+            {'post': post, 'postmeta': postmeta,
+             'comments': [], 'subInfo': {}, 'highlight': '', 'sort': sort})
 
     include_history = current_user.is_mod(post['sid'], 1) or current_user.is_admin()
 
@@ -1983,16 +2014,18 @@ def get_sibling(pid, cid, lim):
     elif cid != '0':
         comment_tree = misc.get_comment_tree(comments, cid, provide_context=False, uid=current_user.uid, include_history=include_history)
     else:
-        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': '',
-                                                                    'sort': sort})
+        return engine.get_template('sub/postcomments.html').render(
+            {'post': post, 'postmeta': postmeta,
+             'comments': [], 'subInfo': {}, 'highlight': '', 'sort': sort})
 
     if len(comment_tree) > 0 and cid != '0':
         comment_tree = comment_tree[0].get('children', [])
     subInfo = misc.getSubData(post['sid'])
     subMods = misc.getSubMods(post['sid'])
 
-    return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': comment_tree, 'subInfo': subInfo, 'subMods': subMods, 'highlight': '',
-                                                                'sort': sort})
+    return engine.get_template('sub/postcomments.html').render(
+        {'post': post, 'postmeta': postmeta,
+         'comments': comment_tree, 'subInfo': subInfo, 'subMods': subMods, 'highlight': '', 'sort': sort})
 
 
 @do.route('/do/preview', methods=['POST'])

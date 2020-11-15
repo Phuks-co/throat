@@ -175,6 +175,23 @@ u.addEventForChild(document, 'click', '.sort-comments', function (e, qelem) {
     });
 });
 
+// Lock comments on post.
+u.addEventForChild(document, 'click', '.lock-comments', function (e, qelem) {
+    const parent = qelem.parentNode.parentNode;
+    const pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg = e.currentTarget;
+    TextConfirm(qelem, function () {
+        u.post('/do/lock_comments/' + pid, {post: document.getElementById('postinfo').getAttribute('pid')},
+            function (data) {
+                if (data.status != "ok") {
+                    alert(data.error);
+                } else {
+                    tg.innerHTML = _('Done');
+                    document.location.reload();
+                }
+            });
+    });
+});
+
 // Wiki post
 u.addEventForChild(document, 'click', '.wiki-post', function (e, qelem) {
     const pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg = e.currentTarget;

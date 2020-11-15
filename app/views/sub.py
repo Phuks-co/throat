@@ -380,10 +380,10 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
     if post['userstatus'] == 10 and post['deleted'] == 1:
         post['visibility'] = 'none'
 
+    postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
+
     pollData = {'has_voted': False}
-    postmeta = {}
     if post['ptype'] == 3:
-        postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
         # poll. grab options and votes.
         options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text, fn.Count(SubPostPollVote.id).alias('votecount'))
         options = options.join(SubPostPollVote, JOIN.LEFT_OUTER, on=(SubPostPollVote.vid == SubPostPollOption.id))

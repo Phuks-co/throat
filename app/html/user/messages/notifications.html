@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(notifications)
+@require(notifications, postmeta)
 @import 'shared/sidebar/messages.html' as sb
 @def sidebar():
   @{sb.render_sidebar('notifications')!!html}
@@ -92,7 +92,9 @@
             <div class="container">@{markdown(msg['comment_content'])!!html}</div>
             <ul class="bottombar links">
               <li><a href="@{url_for('sub.view_perm', sub=msg['sub_name'], cid=msg['cid'], pid=msg['pid'])}#comment-@{msg['cid']}">@{_('permalink')}</a></li>
-              <li><a class="reply-comment" data-pid="@{msg['pid']}" data-to="@{msg['cid']}">@{_('reply')}</a></li>
+              @if not postmeta[msg['pid']].get('lock-comments') and not msg['archived']:
+                <li><a class="reply-comment" data-pid="@{msg['pid']}" data-to="@{msg['cid']}">@{_('reply')}</a></li>
+              @end
               <li><a class="deletenotif" data-mid="@{msg['id']}">@{_('delete notification')}</a></li>
               <li><a class="block" data-uid="@{msg['senderuid']}">
                 @if msg['ignored']:
@@ -110,7 +112,9 @@
             <div class="container">@{markdown(msg['post_content'])!!html}</div>
             <ul class="bottombar links">
               <li><a href="@{url_for('sub.view_post', sub=msg['sub_name'], pid=msg['pid'])}">@{_('permalink')}</a></li>
-              <li><a class="reply-comment" data-pid="@{msg['pid']}" data-to="-@{msg['pid']}">@{_('reply')}</a></li>
+              @if not postmeta[msg['pid']].get('lock-comments') and not msg['archived']:
+                <li><a class="reply-comment" data-pid="@{msg['pid']}" data-to="-@{msg['pid']}">@{_('reply')}</a></li>
+              @end
               <li><a class="deletenotif" data-mid="@{msg['id']}">@{_('delete notification')}</a></li>
               <li><a class="block" data-uid="@{msg['senderuid']}">
                 @if msg['ignored']:
