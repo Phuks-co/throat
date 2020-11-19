@@ -229,10 +229,11 @@ socket.on('threadscore', function(data){
   document.querySelector('div[pid="' + data.pid + '"] .score').innerHTML = data.score;
 })
 
-socket.on('threadcomments', function(data){
+/* socket.on('threadcomments', function(data){
   console.log('article#' + data.pid + ' .ccount')
   document.querySelector('div[pid="' + data.pid + '"] .comments').innerHTML = _('comments (%1)', data.comments);
 })
+*/
 
 socket.on('threadtitle', function(data){
   document.querySelector('div[pid="' + data.pid + '"] .title').innerHTML = data.title;
