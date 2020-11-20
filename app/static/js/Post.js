@@ -158,6 +158,19 @@ u.addEventForChild(document, 'click', '.stick-post', function (e, qelem) {
     });
 });
 
+// Stick comment
+u.addEventForChild(document, 'click', '.stick-comment', function (e, qelem) {
+    u.post('/do/stick_comment/' + qelem.getAttribute('data-cid'),
+           {post: document.getElementById('postinfo').getAttribute('pid')},
+           function (data) {
+               if (data.status != "ok") {
+                   qelem.innerHTML = data.error;
+               } else {
+                   document.location.reload();
+               }
+           });
+})
+
 // Sticky post default comment sort
 u.addEventForChild(document, 'click', '.sort-comments', function (e, qelem) {
     const parent = qelem.parentNode.parentNode;

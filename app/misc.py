@@ -1568,7 +1568,7 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
     # 4 - Populate the tree (get all the data and cram it into the tree)
     expcomms = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
                                      SubPostComment.score, SubPostComment.status, SubPostComment.time,
-                                     SubPostComment.pid, SubPostComment.distinguish,
+                                     SubPostComment.pid, SubPostComment.distinguish, SubPostComment.parentcid,
                                      User.name.alias('user'), *(
             [SubPostCommentVote.positive, SubPostComment.uid] if uid else [SubPostComment.uid]),  # silly hack
                                      User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)
