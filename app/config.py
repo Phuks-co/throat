@@ -23,6 +23,7 @@ cfg_defaults = {  # key => default value
             "enable_chat": True,
             "sitelog_public": True,
             "force_sublog_public": True,
+            "front_page_submit": True,
 
             "changelog_sub": None,
             "btc_address": None,
