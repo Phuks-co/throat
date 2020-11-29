@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods, highlight, content_history, title_history, open_reports, sort, sticky_sort)
+@require(post, sub, is_saved, subInfo, pollData, commentform, comments, postmeta, subMods, highlight, content_history, title_history, open_reports, sort, sticky_sort, stuck_comment)
 @import "sub/postcomments.html" as pcomm
 @import "sub/postpoll.html" as polls
 
@@ -371,7 +371,7 @@
           </li>
         </ul>
       </div>
-      @{pcomm.renderComments(post, postmeta, subInfo, subMods, comments, highlight, sort)!!html}
+      @{pcomm.renderComments(post, postmeta, subInfo, subMods, comments, highlight, sort, stuck_comment)!!html}
     </div>
   @end
 
