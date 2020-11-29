@@ -249,6 +249,16 @@ def delete_post():
         except SiteMetadata.DoesNotExist:
             pass
 
+        # Check if the post is sticky.  Unstick if so.
+        try:
+            is_sticky = SubMetadata.get((SubMetadata.sid == post.sid_id) & (SubMetadata.key == 'sticky') &
+                                        (SubMetadata.value == post.pid))
+            is_sticky.delete_instance()
+            misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_DEL, current_user.uid, post.sid,
+                               link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
+        except SubMetadata.DoesNotExist:
+            pass
+
         Sub.update(posts=Sub.posts - 1).where(Sub.sid == post.sid).execute()
 
         post.deleted = deletion
