@@ -16,6 +16,7 @@ from ..socketio import socketio
 from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, captchas_required
 from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote, SubSubscriber
 from ..models import SiteMetadata, UserMetadata, Message, SubRule, Notification, SubMod, InviteCode, UserStatus
+from ..models import SubPostMetadata
 from ..caching import cache
 from ..config import config
 
@@ -488,6 +489,10 @@ def create_comment(sub, pid):
 
     if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
         return jsonify(msg="Post is archived"), 403
+
+    postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
+    if postmeta.get('lock-comments'):
+        return jsonify(msg="Comments are closed on this post."), 403
 
     try:
         SubMetadata.get((SubMetadata.sid == post.sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user.uid))

@@ -36,7 +36,8 @@ from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, Us
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db
 from .models import SubPostReport, SubPostCommentReport, PostReportLog, CommentReportLog, Notification
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair, InviteCode
-from .models import SubMod, SubBan, SubPostCommentHistory
+from .models import SubMod, SubBan, SubPostCommentHistory, SubPostMetadata
+
 from .storage import file_url, thumbnail_url
 from peewee import JOIN, fn, SQL, NodeList, Value
 import logging
@@ -1071,12 +1072,17 @@ def getUserComments(uid, page):
         com = SubPostComment.select(Sub.name.alias('sub'), SubPost.title, SubPostComment.cid, SubPostComment.pid,
                                     SubPostComment.uid, SubPostComment.time, SubPostComment.lastedit,
                                     SubPostComment.content, SubPostComment.status, SubPostComment.score,
-                                    SubPostComment.parentcid)
+                                    SubPostComment.parentcid, SubPost.posted)
         com = com.join(SubPost).switch(SubPostComment).join(Sub, on=(Sub.sid == SubPost.sid))
         com = com.where(SubPostComment.uid == uid).where(SubPostComment.status.is_null()).order_by(
             SubPostComment.time.desc()).paginate(page, 20).dicts()
     except SubPostComment.DoesNotExist:
         return False
+
+    now = datetime.utcnow()
+    limit = timedelta(days=config.site.archive_post_after)
+    for c in com:
+        c['archived'] = now - c['posted'].replace(tzinfo=None) > limit
     return com
 
 
@@ -1325,6 +1331,21 @@ def metadata_to_dict(metadata):
     return res
 
 
+def get_postmeta_dicts(pids):
+    "Get the metadata for multiple posts."
+    pids = set(pids)
+    postmeta_query = SubPostMetadata.select(SubPostMetadata.pid, SubPostMetadata.key, SubPostMetadata.value).where(
+        SubPostMetadata.pid << pids)
+    postmeta_entries = defaultdict(list)
+    for pm in postmeta_query:
+        postmeta_entries[pm.pid.pid].append(pm)
+
+    postmeta = {pid: {} for pid in pids}
+    for k, v in postmeta_entries.items():
+        postmeta[k] = metadata_to_dict(v)
+    return postmeta
+
+
 # Log types
 LOG_TYPE_USER = 10
 LOG_TYPE_USER_BAN = 19
@@ -1547,7 +1568,7 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
     # 4 - Populate the tree (get all the data and cram it into the tree)
     expcomms = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
                                      SubPostComment.score, SubPostComment.status, SubPostComment.time,
-                                     SubPostComment.pid, SubPostComment.distinguish,
+                                     SubPostComment.pid, SubPostComment.distinguish, SubPostComment.parentcid,
                                      User.name.alias('user'), *(
             [SubPostCommentVote.positive, SubPostComment.uid] if uid else [SubPostComment.uid]),  # silly hack
                                      User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)

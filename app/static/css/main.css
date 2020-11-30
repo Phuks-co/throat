@@ -1026,6 +1026,10 @@ a.slink {
   display:none;
 }
 
+.comments-locked {
+  margin-left: 1em;
+}
+
 .comments {
   margin-left: 1em;
 }

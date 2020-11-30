@@ -16,25 +16,29 @@
 
 {% block content %}
 {{ super() }}
-{% if sort_type == 'user.view_user_posts' %}
-  <h3>Recent posts</h3>
+{% if not current_user.is_authenticated and config.site.block_anon_stalking %}
+    <div>Please log in to see this user's posts.</div>
 {% else %}
-  <h3>Saved posts</h3>
-{% endif %}
-{% if not posts %}
-  <h3>There are no posts here, yet.</h3>
-{% endif %}
+    {% if sort_type == 'user.view_user_posts' %}
+      <h3>Recent posts</h3>
+    {% else %}
+      <h3>Saved posts</h3>
+    {% endif %}
+    {% if not posts %}
+      <h3>There are no posts here, yet.</h3>
+    {% endif %}
 
-<div class="alldaposts">
-{% for post in posts %}
-  {% include "indexpost.html" %}
-{%endfor%}
-</div>
+    <div class="alldaposts">
+    {% for post in posts %}
+      {% include "indexpost.html" %}
+    {%endfor%}
+    </div>
 
-{% if page > 1 %}
-  <a href="{{url_for(sort_type, page=(page-1), user=user.name)}}" class="pure-button">prev</a>
-{% endif %}
-{% if posts|length == 25 %}
-  <a href="{{url_for(sort_type, page=(page+1), user=user.name)}}" class="pure-button">next</a>
+    {% if page > 1 %}
+      <a href="{{url_for(sort_type, page=(page-1), user=user.name)}}" class="pure-button">prev</a>
+    {% endif %}
+    {% if posts|length == 25 %}
+      <a href="{{url_for(sort_type, page=(page+1), user=user.name)}}" class="pure-button">next</a>
+    {% endif %}
 {% endif %}
 {% endblock %}

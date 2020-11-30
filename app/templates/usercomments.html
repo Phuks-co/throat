@@ -17,65 +17,71 @@
 
 {% block content %}
 {{ super() }}
-<div id="center-container">
-  <div class="inbox content">
-    <h3>Recent comments</h3>
-    <div class="recent">
-        {% if comments|length < 1 %}
-        <p>
-          This user has not commented on anything, yet
-        </p>
-        {% else %}
-        {% for comment in comments %}
-        <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="text-post no-padding comment usercomments">
-          <div class="commtitle">
-            <span class="title"><a href="{{ url_for('sub.view_post', sub=comment.sub, pid=comment.pid) }}">{{comment.title}}</a></span>
-            in <a href="{{ url_for('sub.view_sub', sub=comment.sub) }}">{{comment.sub}}</a>
-          </div>
-          <div class="commentrow {%if comment.cid == highlight %}highlight{%endif%}" id="comment-{{comment.cid}}">
-            <div class="commblock">
-              <div class="commenthead">
-                  <a href="{{ url_for('user.view', user=user.name) }}" class="poster">{{user.name}}</a> -
-                  <b><span class="cscore">{{comment.score}}</span> points</b>
-                  <span class="time">
-                     <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago>
-                  </span>
-                {% if comment.lastedit %}
-                  <span class="time edited">
-                    *(Edited <time-ago datetime="{{comment.lastedit.isoformat()}}Z"></time-ago>)
-                  </span>
-                {% endif %}
+{% if not current_user.is_authenticated and config.site.block_anon_stalking %}
+    <div>Please log in to see this user's comments.</div>
+{% else %}
+    <div id="center-container">
+      <div class="inbox content">
+        <h3>Recent comments</h3>
+        <div class="recent">
+            {% if comments|length < 1 %}
+            <p>
+              This user has not commented on anything, yet
+            </p>
+            {% else %}
+            {% for comment in comments %}
+            <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="text-post no-padding comment usercomments">
+              <div class="commtitle">
+                <span class="title"><a href="{{ url_for('sub.view_post', sub=comment.sub, pid=comment.pid) }}">{{comment.title}}</a></span>
+                in <a href="{{ url_for('sub.view_sub', sub=comment.sub) }}">{{comment.sub}}</a>
               </div>
-              <div class="content" id="content-{{comment.cid}}">
-                {{markdown(comment.content)|safe}}
+              <div class="commentrow {%if comment.cid == highlight %}highlight{%endif%}" id="comment-{{comment.cid}}">
+                <div class="commblock">
+                  <div class="commenthead">
+                      <a href="{{ url_for('user.view', user=user.name) }}" class="poster">{{user.name}}</a> -
+                      <b><span class="cscore">{{comment.score}}</span> points</b>
+                      <span class="time">
+                         <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago>
+                      </span>
+                    {% if comment.lastedit %}
+                      <span class="time edited">
+                        *(Edited <time-ago datetime="{{comment.lastedit.isoformat()}}Z"></time-ago>)
+                      </span>
+                    {% endif %}
+                  </div>
+                  <div class="content" id="content-{{comment.cid}}">
+                    {{markdown(comment.content)|safe}}
+                  </div>
+                    <div hidden id="sauce-{{comment.cid}}">{{comment.content}}</div>
+                  <ul class="bottombar links">
+                    <!-- TODO needs peewee <li><a href="{# url_for('sub.view_perm', sub=sub.name, cid=comment.cid, pid=post.pid) #}">permalink</a></li>-->
+                    <li><a href="{{url_for('sub.view_perm', sub=comment.sub, pid=comment.pid, cid=comment.cid)}}">permalink</a></li>
+                    {%if current_user.is_authenticated%}
+                      {%if not postmeta[comment.pid].get('lock-comments') and not comment.archived %}
+                        <li><a class="reply-comment" data-pid="{{comment.pid}}" data-to="{{comment.cid}}">reply</a></li>
+                      {%endif%}
+                      {% if (comment.uid == session['user_id'] or current_user.is_admin()) %}
+                        <li><a class="edit-comment" data-cid="{{comment.cid}}">edit</a></li>
+                        <li><a class="delete-comment" data-cid="{{comment.cid}}">delete</a></li>
+                      {% endif %}
+                    {%endif%}
+                    <li><a class="comment-source" data-cid="{{comment.cid}}">source</a></li>
+                  </ul>
+                </div>
               </div>
-                <div hidden id="sauce-{{comment.cid}}">{{comment.content}}</div>
-              <ul class="bottombar links">
-                <!-- TODO needs peewee <li><a href="{# url_for('sub.view_perm', sub=sub.name, cid=comment.cid, pid=post.pid) #}">permalink</a></li> -->
-                <li><a href="{{url_for('sub.view_perm', sub=comment.sub, pid=comment.pid, cid=comment.cid)}}">permalink</a></li>
-                {%if current_user.is_authenticated%}
-                  <li><a class="reply-comment" data-pid="{{comment.pid}}" data-to="{{comment.cid}}">reply</a></li>
-                  {% if (comment.uid == session['user_id'] or current_user.is_admin()) %}
-                    <li><a class="edit-comment" data-cid="{{comment.cid}}">edit</a></li>
-                    <li><a class="delete-comment" data-cid="{{comment.cid}}">delete</a></li>
-                  {% endif %}
-                {%endif%}
-        <!--  <li><a class="comment-source" data-cid="{{comment.cid}}">source</a></li>  -->
-              </ul>
-            </div>
-          </div>
-        </article>
-      {% endfor %}
-      {% endif %}
+            </article>
+          {% endfor %}
+          {% endif %}
+        </div>
+
+        {% if page > 1 %}
+        <a href="{{url_for('user.view_user_comments', user=user.name, page=(page-1))}}" class="pure-button">prev</a>
+        {% endif %}
+        {% if comments|length == 20 %}
+        <a href="{{url_for('user.view_user_comments', user=user.name, page=(page+1))}}" class="pure-button">next</a>
+        {% endif %}
+
+      </div>
     </div>
-
-    {% if page > 1 %}
-    <a href="{{url_for('user.view_user_comments', user=user.name, page=(page-1))}}" class="pure-button">prev</a>
-    {% endif %}
-    {% if comments|length == 20 %}
-    <a href="{{url_for('user.view_user_comments', user=user.name, page=(page+1))}}" class="pure-button">next</a>
-    {% endif %}
-
-  </div>
-</div>
+{% endif %}
 {% endblock %}

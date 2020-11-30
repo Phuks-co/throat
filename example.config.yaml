@@ -9,6 +9,9 @@ site:
   lema: 'čekni.to: homepage tvojho internetu'
   # Copyright line shown in the footer
   copyright: '2020 LenOn Productions'
+  
+  # If False we won't show the "Submit a post" button in the frontpage
+  front_page_submit: True
 
   # Domain name at which the app is being served.  This must be
   # configured for websocket support (chat and push new posts) on
@@ -17,6 +20,10 @@ site:
 
   # Name shown when a sub is owned by a deleted account or abandoned
   placeholder_account: '[checkedout]'
+
+  # Blocks anonymous users from being able to look at a particular user's
+  # posts or comments (IE blocks /u/<user>/posts and /u/<user>/comments
+  block_anon_stalking: False
 
   # Prefix for subs (by default it's 's').
   # It can be anything EXCEPT 'u', 'c' or 'p'
@@ -68,10 +75,6 @@ site:
   # Set to zero to allow users of all levels to PM other users.
   # Users of any level may PM site admins.
   send_pm_to_user_min_level: 3
-
-  # Minimum level a user must have before being able to create a sub.
-  # Set to zero to disable sub creation level limits
-  sub_creation_min_level: 2
 
   # Allows Sub Mods and Admins to view the edit history of posts
   edit_history: False

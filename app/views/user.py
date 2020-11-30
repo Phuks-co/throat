@@ -111,7 +111,9 @@ def view_user_comments(user, page):
         abort(404)
 
     comments = misc.getUserComments(user.uid, page)
-    return render_template('usercomments.html', user=user, page=page, comments=comments)
+    postmeta = misc.get_postmeta_dicts((c['pid'] for c in comments))
+    return render_template('usercomments.html', user=user, page=page,
+                           comments=comments, postmeta=postmeta)
 
 @bp.route("/uploads", defaults={'page': 1})
 @bp.route("/uploads/<int:page>")
