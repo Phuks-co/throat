@@ -1,5 +1,6 @@
 // Post page-related code.
 import TextConfirm from './utils/TextConfirm';
+import InlinePrompt from './utils/InlinePrompt';
 import Icons from './Icon';
 import u from './Util';
 import initializeEditor from './Editor';
@@ -38,7 +39,14 @@ u.addEventForChild(document, 'click', '.distinguish', function (e, qelem) {
             })
         }
     if(qelem.text == _('distinguish') && document.getElementById('pagefoot-admin').getAttribute('data-value') == 'True') {
-        TextConfirm(qelem, function() {distinguish(true)}, _("distinguish as admin?"), function() {distinguish(false)})
+        InlinePrompt({
+            text: _("distinguish as:"),
+            options: [
+                [_("admin"), () => distinguish(true)],
+                [_("mod"), () => distinguish(false)],
+            ],
+            elem: qelem
+        });
     } else {
         distinguish(false)
     }
