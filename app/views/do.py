@@ -2045,7 +2045,7 @@ def get_sibling(pid, cid, lim):
             return jsonify(status='ok', posts=[])
 
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid)
-    postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == post.pid)),
+    postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
     if sort == "new":
         comments = comments.order_by(SubPostComment.time.desc()).dicts()
     elif sort == "top":
