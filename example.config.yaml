@@ -18,6 +18,10 @@ site:
   # Name shown when a sub is owned by a deleted account or abandoned
   placeholder_account: 'Site'
 
+  # Blocks anonymous users from being able to look at a particular user's
+  # posts or comments (IE blocks /u/<user>/posts and /u/<user>/comments
+  block_anon_stalking: False
+
   # Prefix for subs (by default it's 's').
   # It can be anything EXCEPT 'u', 'c' or 'p'
   sub_prefix: 's'

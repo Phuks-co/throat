@@ -24,6 +24,7 @@ cfg_defaults = {  # key => default value
             "sitelog_public": True,
             "force_sublog_public": True,
             "front_page_submit": True,
+            "block_anon_stalking": False,
 
             "changelog_sub": None,
             "btc_address": None,
