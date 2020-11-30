@@ -9,6 +9,8 @@ site:
   lema: 'Throat: Open discussion ;D'
   # Copyright line shown in the footer
   copyright: 'Umbrella Corp'
+  
+  # If False we won't show the "Submit a post" button in the frontpage
   front_page_submit: True
 
   # Domain name at which the app is being served.  This must be
