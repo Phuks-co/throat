@@ -76,14 +76,22 @@ def fetch_image_data(link):
     elif ctype == 'text/html':
         # Not an image!! Let's try with OpenGraph
         try:
-            end_title_pos = data.find(b'</head>')
-            if end_title_pos == -1:
+            # Trim the HTML to the end of the last meta tag
+            end_meta_tag = data.rfind(b'<meta')
+            if end_meta_tag == -1:
                 return None, None
-            data = data[:end_title_pos] + b'</head><body></body>'
+            end_meta_tag = data.find(b'>', end_meta_tag)
+            if end_meta_tag == -1:
+                end_meta_tag = len(data)
+            else:
+                end_meta_tag += 1
+            data = data[:end_meta_tag]
             logger.debug('Fetched header of %s: %s bytes', link, len(data))
             _, options = cgi.parse_header(resp.headers.get('Content-Type', ''))
             charset = options.get('charset', 'utf-8')
+            start = time.time()
             og = BeautifulSoup(data, 'lxml', from_encoding=charset)
+            logger.debug('Parsed HTML from %s in %s ms', link, int((time.time() - start) * 1000))
         except Exception as e:
             # If it errors here it's probably because lxml is not installed.
             logger.warning('Thumbnail fetch failed. Is lxml installed? Error: %s', e)

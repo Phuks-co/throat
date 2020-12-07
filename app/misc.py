@@ -1486,16 +1486,24 @@ def validate_captcha(token, response):
     return False
 
 
-def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_context=True, include_history=False):
+def get_comment_tree(pid, comments, root=None, only_after=None, uid=None, provide_context=True, include_history=False,
+                     postmeta=None):
     """ Returns a fully paginated and expanded comment tree.
 
     TODO: Move to misc and implement globally
+    @param pid: post for comments
     @param comments: bare list of comments (only cid and parentcid)
     @param root: if present, the root comment to start building the tree on
-    @param only_after: removes all siblings of `root` after the cid on its value
+    @param only_after: removes all siblings of `root` before the cid on its value
     @param uid:
     @param provide_context:
+    @param postmeta: SubPostMetadata dict if it has already been fetched
     """
+
+    if postmeta is None:
+        postmeta = metadata_to_dict(SubPostMetadata.select().where((SubPostMetadata.pid == pid) &
+                                                                   (SubPostMetadata.key == 'sticky_cid')))
+    sticky_cid = postmeta.get('sticky_cid')
 
     def build_tree(tuff, rootcid=None):
         """ Builds a comment tree """
@@ -1532,6 +1540,14 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
                 comment_tree = orig_root
         else:
             return []
+    elif sticky_cid is not None:
+        # If there is a sticky comment, move it to the top.
+        elem = list(filter(lambda x: x['cid'] == sticky_cid, comment_tree))
+        if elem:
+            comment_tree.remove(elem[0])
+            if only_after is None:
+                comment_tree.insert(0, elem[0])
+
     # 3 - Trim tree (remove all children of depth=3 comments, all siblings after #5
     cid_list = []
     trimmed = False
@@ -1582,6 +1598,7 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
     for comm in expcomms:
         comm['history'] = []
         comm['visibility'] = ''
+        comm['sticky'] = (comm['cid'] == sticky_cid)
         sub = Sub.select().join(SubPost).join(SubPostComment).where(SubPostComment.cid == comm['cid']).get()
 
         if comm['status']:

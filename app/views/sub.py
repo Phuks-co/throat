@@ -330,7 +330,6 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
     except UserSaved.DoesNotExist:
         is_saved = False
 
-    stuck_comment = None
     if not comments:
         comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == post['pid'])
         if sort == "new":
@@ -342,10 +341,8 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
         if not comments.count():
             comments = []
         else:
-            comments = misc.get_comment_tree(comments, uid=current_user.uid, include_history=include_history)
-            stuck_comment = postmeta.get('sticky_cid')
-            if stuck_comment is not None:
-                stuck_comment = next((com for com in comments if com['cid'] == stuck_comment))
+            comments = misc.get_comment_tree(post['pid'], comments, uid=current_user.uid,
+                                             include_history=include_history, postmeta=postmeta)
 
     if config.site.edit_history and include_history:
         try:
@@ -417,7 +414,7 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
                                                         'comments': comments,'subMods': subMods, 'highlight': highlight,
                                                         'content_history': content_history, 'title_history': title_history,
                                                         'open_reports': open_reports, 'sort': sort,
-                                                        'sticky_sort': sticky_sort, 'stuck_comment': stuck_comment})
+                                                        'sticky_sort': sticky_sort})
 
 
 @blueprint.route("/<sub>/<int:pid>/_/<cid>", defaults={'slug': '_'})
@@ -436,5 +433,5 @@ def view_perm(sub, pid, slug, cid):
     include_history = current_user.is_mod(sub['sid'], 1) or current_user.is_admin()
 
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
-    comment_tree = misc.get_comment_tree(comments, cid, uid=current_user.uid, include_history=include_history)
+    comment_tree = misc.get_comment_tree(pid, comments, cid, uid=current_user.uid, include_history=include_history)
     return view_post(sub['name'], pid, slug, comment_tree, cid)
