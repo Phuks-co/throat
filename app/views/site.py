@@ -56,7 +56,7 @@ def view_comment_inbox(cid):
     """ Gets route to post from just cid """
     try:
         comm = SubPostComment.get(SubPostComment.cid == cid)
-    except SubPost.DoesNotExist:
+    except SubPostComment.DoesNotExist:
         return abort(404)
     return redirect(url_for('sub.view_perm', sub=comm.pid.sid.name, pid=comm.pid_id, cid=comm.cid))
 
