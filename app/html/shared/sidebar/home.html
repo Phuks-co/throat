@@ -8,6 +8,7 @@
 @if config['site'].front_page_submit:
 <a href="@{url_for('subs.submit', ptype='link', sub='')}" class="sbm-post pure-button">@{_('Submit a post')}</a>
 <hr>
+@end
 @if (config.site.sub_creation_admin_only == False and current_user.is_authenticated) or current_user.is_admin():
 <a href="@{url_for('subs.create_sub')}" class="sbm-post pure-button">@{_('Create a sub')}</a>
 @end
