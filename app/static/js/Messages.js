@@ -90,22 +90,6 @@ u.sub('.pmessage .formpopmsg', 'click', function(e){
   modal.style.display = "block";
 });
 
-u.sub('.pmessage .replycom', 'click', function(e){
-  var replyto = this.getAttribute('data-replyto')
-  var post = this.getAttribute('data-post')
-  var sub = this.getAttribute('data-sub')
-  var parentid = this.getAttribute('data-parentid')
-  var mid = this.getAttribute('data-mid')
-  document.querySelector('#comment-form #from').innerHTML = replyto;
-  document.querySelector('#comment-form #sub').innerHTML = sub;
-  document.querySelector('#comment-form #post').setAttribute('value', post);
-  document.querySelector('#comment-form #sub').setAttribute('value', sub);
-  document.querySelector('#comment-form #parent').setAttribute('value', parentid);
-  var modal = document.getElementById('msgpop');
-  document.querySelector('#replyto'+mid).appendChild(document.getElementById('msgpop'));
-  modal.style.display = "block";
-});
-
 u.addEventForChild(document, 'click', '.closemsg', function(e, qelem){
   e.preventDefault();
   qelem.parentNode.style.display = 'none';

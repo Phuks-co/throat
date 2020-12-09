@@ -832,11 +832,10 @@ class Notification(BaseModel):
 class Message(BaseModel):
     mid = PrimaryKeyField()
     content = TextField(null=True)
-    mlink = CharField(null=True)
+    mlink = CharField(null=True)  # Unused
     # mtype values:
-    # 1: sent, 4: post replies, 5: comment replies, 8: mentions, 9: saved message
+    # 1: sent, 9: saved message
     # 6: deleted, 41: ignored messages  => won't display anywhere
-    # 2 (mod invite), 7 (ban notification), 11 (deletion): modmail
     mtype = IntegerField(null=True)
     posted = DateTimeField(null=True)
     read = DateTimeField(null=True)
