@@ -341,7 +341,7 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
         if not comments.count():
             comments = []
         else:
-            comments = misc.get_comment_tree(post['pid'], comments, uid=current_user.uid,
+            comments = misc.get_comment_tree(post['pid'], sub['sid'], comments, uid=current_user.uid,
                                              include_history=include_history, postmeta=postmeta)
 
     if config.site.edit_history and include_history:
@@ -433,5 +433,5 @@ def view_perm(sub, pid, slug, cid):
     include_history = current_user.is_mod(sub['sid'], 1) or current_user.is_admin()
 
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
-    comment_tree = misc.get_comment_tree(pid, comments, cid, uid=current_user.uid, include_history=include_history)
+    comment_tree = misc.get_comment_tree(pid, sub['sid'], comments, cid, uid=current_user.uid, include_history=include_history)
     return view_post(sub['name'], pid, slug, comment_tree, cid)

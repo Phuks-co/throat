@@ -1486,12 +1486,13 @@ def validate_captcha(token, response):
     return False
 
 
-def get_comment_tree(pid, comments, root=None, only_after=None, uid=None, provide_context=True, include_history=False,
-                     postmeta=None):
+def get_comment_tree(pid, sid, comments, root=None, only_after=None, uid=None, provide_context=True,
+                     include_history=False, postmeta=None):
     """ Returns a fully paginated and expanded comment tree.
 
     TODO: Move to misc and implement globally
     @param pid: post for comments
+    @param sid: sub for post
     @param comments: bare list of comments (only cid and parentcid)
     @param root: if present, the root comment to start building the tree on
     @param only_after: removes all siblings of `root` before the cid on its value
@@ -1595,17 +1596,18 @@ def get_comment_tree(pid, comments, root=None, only_after=None, uid=None, provid
     expcomms = expcomms.where(SubPostComment.cid << cid_list).dicts()
 
     commdata = {}
+    is_admin = current_user.is_admin()
+    is_mod = current_user.is_mod(sid, 1)
     for comm in expcomms:
         comm['history'] = []
         comm['visibility'] = ''
         comm['sticky'] = (comm['cid'] == sticky_cid)
-        sub = Sub.select().join(SubPost).join(SubPostComment).where(SubPostComment.cid == comm['cid']).get()
 
         if comm['status']:
             if comm['status'] == 1:
-                if current_user.is_admin():
+                if is_admin:
                     comm['visibility'] = 'admin-self-del'
-                elif current_user.is_mod(sub.sid, 1):
+                elif is_mod:
                     comm['visibility'] = 'mod-self-del'
                 else:
                     comm['user'] = _('[Deleted]')
@@ -1614,7 +1616,7 @@ def get_comment_tree(pid, comments, root=None, only_after=None, uid=None, provid
                     comm['lastedit'] = None
                     comm['visibility'] = 'none'
             elif comm['status'] == 2:
-                if current_user.is_admin() or current_user.is_mod(sub.sid, 1):
+                if is_admin or is_mod:
                     comm['visibility'] = 'mod-del'
                 else:
                     comm['user'] = _('[Deleted]')
