@@ -457,7 +457,7 @@ def get_post_comments(sub, pid):
     if not comments.count():
         return jsonify(comments=[])
 
-    comment_tree = misc.get_comment_tree(post.pid, comments, uid=current_user)
+    comment_tree = misc.get_comment_tree(post.pid, post.sid.get_id(), comments, uid=current_user)
     return jsonify(comments=comment_tree)
 
 
@@ -681,9 +681,9 @@ def get_post_comment_children(sub, pid, cid):
     if lim:
         if cid == '0':
             cid = None
-        comment_tree = misc.get_comment_tree(pid, comments, cid, lim)
+        comment_tree = misc.get_comment_tree(pid, post.sid.get_id(), comments, cid, lim)
     elif cid != '0':
-        comment_tree = misc.get_comment_tree(pid, comments, cid)
+        comment_tree = misc.get_comment_tree(pid, post.sid.get_id(), comments, cid)
     else:
         return jsonify(msg='Illegal comment id'), 400
     return jsonify(comments=comment_tree)
