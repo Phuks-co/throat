@@ -15,31 +15,32 @@
   <div class="inbox content">
     <div class="user-activity col-12">
       <h3 style="display: inline-block;"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> {{box_name}}</h3>
-      - <span class="links"><a data-bid="{{boxID}}" class="markall">Mark all as read</a></span>
+      - <span class="links"><a class="markall">Mark all as read</a></span>
       {% for message in messages %}
         <article class="pmessage post{% if not message.read %} newmsg{% endif %}">
           <div class="main">
             <p class="title">{{message.subject}}</p>
             <p class="container">{{markdown(message.content)|safe}}</p>
-            <p class="author"><time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago></p>
-            <p class="container">
+            <p class="author">&#10148;
+              Sent <time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago>
               {% if message.username %}
-              <a href="{{url_for('user.view', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
-              {%else%}
-              <a href="#" class="btn small">Phuks</a>
-              {%endif%}
-              {% if message.read %}
-                <a class="read">read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
+                by <a href="{{url_for('user.view', user=message.username)}}">{{message.username}}</a>
+                {% if message.sub %}
+                  [as mod of <a href="{{url_for('sub.view_sub', sub=message.sub)}}">{{config.site.sub_prefix}}/{{message.sub}}</a>]
+                {% endif %}
+              {% elif message.sub %}
+                by the mods of <a href="{{url_for('sub.view_sub', sub=message.sub)}}">{{config.site.sub_prefix}}/{{message.sub}}</a>
               {% else %}
-                {% if message.mtype == 8 %}
-                  <a class="" data-mid="{{message.mid}}">new</a>
-                {%else%}
-                  <a class="readmsg" data-mid="{{message.mid}}">mark as read</a>
-                {%endif%}
+                by <a href="#">{{config.site.name}}</a>
               {% endif %}
-              {% if message.username %}
-              <a href="#msg-form" data-mid="{{message.mid}}" data-replyto='{{message.username}}' data-replytitle='{{message.subject}}' class="replymsg">reply</a>
-              {%endif%}
+            </p>
+            <p class="container">
+              {% if message.username or message.sub %}
+                <a href="#msg-form" data-mid="{{message.mid}}" class="replymsg">reply</a>
+              {% endif %}
+              {% if not message.read %}
+                <a class="readmsg" data-mid="{{message.mid}}">mark as read</a>
+              {% endif %}
               <!--<a class="btn small">forward</a>-->
               <a class="savemsg" data-mid="{{message.mid}}">save</a>
               <a class="deletemsg" data-mid="{{message.mid}}">delete</a>

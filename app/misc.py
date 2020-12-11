@@ -51,6 +51,7 @@ from .models import (
     SubRule,
     SubUserFlair,
 )
+from .models import MessageType, MessageMailbox, UserUnreadMessage, UserMessageMailbox
 from .models import (
     SubPostVote,
     SubPostComment,
@@ -79,7 +80,7 @@ from .models import (
 from .models import SubMod, SubBan, SubPostCommentHistory, SubPostMetadata
 
 from .storage import file_url, thumbnail_url
-from peewee import JOIN, fn, SQL, NodeList, Value
+from peewee import JOIN, fn, SQL, NodeList, Value, Case
 import logging
 import logging.config
 from werkzeug.local import LocalProxy
@@ -209,33 +210,12 @@ class SiteUser(object):
     @cache.memoize(1)
     def mod_notifications(self):
         if self.is_mod:
-            post_report_counts = (
-                SubPostReport.select(Sub.sid, fn.COUNT(SubPostReport.id).alias("count"))
-                .join(SubPost)
-                .join(Sub)
-                .join(SubMod)
-                .where((SubMod.user == self.uid) & SubPostReport.open)
-                .group_by(Sub.sid)
-                .dicts()
-            )
-            comment_report_counts = (
-                SubPostCommentReport.select(
-                    Sub.sid, fn.COUNT(SubPostCommentReport.id).alias("count")
-                )
-                .join(SubPostComment)
-                .join(SubPost)
-                .join(Sub)
-                .join(SubMod)
-                .where((SubMod.user == self.uid) & SubPostCommentReport.open)
-                .group_by(Sub.sid)
-                .dicts()
-            )
+            notification_counts = get_mod_notification_counts(self.uid)
 
             counts = defaultdict(int)
-            for item in post_report_counts:
-                counts[item["sid"]] = item["count"]
-            for item in comment_report_counts:
-                counts[item["sid"]] += item["count"]
+            for count in notification_counts:
+                for item in count:
+                    counts[item["sid"]] += item["count"]
 
             return [[sid, count] for sid, count in counts.items()]
         else:
@@ -1168,11 +1148,7 @@ def getStickies(sid):
 
 
 def load_user(user_id):
-    mcount = Message.select(fn.Count(Message.mid)).where(
-        (Message.receivedby == user_id)
-        & (Message.mtype == 1)
-        & Message.read.is_null(True)
-    )
+    mcount = select_unread_messages(user_id, fn.Count(Message.mid))
     ncount = Notification.select(fn.Count(Notification.id)).where(
         (Notification.target == user_id) & Notification.read.is_null(True)
     )
@@ -1245,44 +1221,125 @@ def get_locale_fallback():
 
 
 def get_modmail_count(uid):
-    post_report_count = (
-        SubPostReport.select()
+    counts = get_mod_notification_counts(uid)
+    result = 0
+    for count in counts:
+        for item in count:
+            result += item["count"]
+    return result
+
+
+def get_mod_notification_counts(uid):
+    post_report_counts = list(
+        SubPostReport.select(Sub.sid, fn.COUNT(SubPostReport.id).alias("count"))
         .join(SubPost)
         .join(Sub)
         .join(SubMod)
         .where((SubMod.user == uid) & SubPostReport.open)
-        .count()
+        .group_by(Sub.sid)
+        .dicts()
     )
-    comment_report_count = (
-        SubPostCommentReport.select()
+    comment_report_counts = list(
+        SubPostCommentReport.select(
+            Sub.sid, fn.COUNT(SubPostCommentReport.id).alias("count")
+        )
         .join(SubPostComment)
         .join(SubPost)
         .join(Sub)
         .join(SubMod)
         .where((SubMod.user == uid) & SubPostCommentReport.open)
-        .count()
+        .group_by(Sub.sid)
+        .dicts()
     )
-
-    return post_report_count + comment_report_count
+    # Count modmail conversations where the newest message in the
+    # thread is unread.
+    MessageAlias1 = Message.alias()
+    conversation = MessageAlias1.select(
+        Case(
+            None,
+            [(MessageAlias1.reply_to.is_null(), MessageAlias1.mid)],
+            MessageAlias1.reply_to,
+        ).alias("convo_mid"),
+    )
+    MessageAlias2 = Message.alias()
+    conversation_newest = (
+        MessageAlias2.select(
+            conversation.c.convo_mid, fn.MAX(MessageAlias2.posted).alias("maxtime")
+        )
+        .join(
+            conversation,
+            on=(conversation.c.convo_mid == MessageAlias2.mid)
+            | (conversation.c.convo_mid == MessageAlias2.reply_to),
+        )
+        .group_by(conversation.c.convo_mid)
+    )
+    unread_modmail_counts = list(
+        Message.select(Sub.sid, fn.COUNT(Message.mid).alias("count"))
+        .join(Sub)
+        .join(SubMod)
+        .join(
+            conversation_newest,
+            on=(
+                (
+                    (conversation_newest.c.convo_mid == Message.mid)
+                    | (conversation_newest.c.convo_mid == Message.reply_to)
+                )
+                & (conversation_newest.c.maxtime == Message.posted)
+            ),
+        )
+        .switch(Message)
+        .join(UserUnreadMessage)
+        .where((SubMod.user == uid) & (UserUnreadMessage.uid == uid))
+        .group_by(Sub.sid)
+        .dicts()
+    )
+    return post_report_counts, comment_report_counts, unread_modmail_counts
 
 
 def get_notification_count(uid):
+    messages = select_unread_messages(uid).count()
     notifications = (
         Notification.select()
         .where((Notification.target == uid) & Notification.read.is_null(True))
         .count()
     )
-    messages = (
-        Message.select()
-        .where(
-            (Message.mtype == 1)
-            & (Message.receivedby == uid)
-            & Message.read.is_null(True)
-        )
-        .count()
-    )
     modmail = get_modmail_count(uid)
     return {"notifications": notifications, "messages": messages, "modmail": modmail}
+
+
+def select_unread_messages(user_id, *args):
+    """Construct a query to get the unread and non-blocked messages in a user inbox."""
+    return (
+        Message.select(*args)
+        .join(
+            UserIgnores,
+            JOIN.LEFT_OUTER,
+            on=((UserIgnores.uid == user_id) & (UserIgnores.target == Message.sentby)),
+        )
+        .join(
+            UserUnreadMessage,
+            on=(
+                (UserUnreadMessage.uid == user_id)
+                & (UserUnreadMessage.mid == Message.mid)
+            ),
+        )
+        .join(
+            UserMessageMailbox,
+            on=(
+                (UserMessageMailbox.uid == user_id)
+                & (UserMessageMailbox.mid == Message.mid)
+            ),
+        )
+        .where(
+            (UserMessageMailbox.mailbox == MessageMailbox.INBOX)
+            & (UserIgnores.uid.is_null() | (Message.mtype != MessageType.USER_TO_USER))
+        )
+    )
+
+
+@cache.memoize(1)
+def get_unread_count():
+    return select_unread_messages(current_user.uid).count()
 
 
 def get_errors(form, first=False):
@@ -1310,85 +1367,143 @@ def get_errors(form, first=False):
 # messages
 
 
-def getMessagesIndex(page, uid=None):
-    """ Returns messages inbox """
-    if not uid:
-        uid = current_user.uid
-    try:
-        msg = Message.select(
+def get_messages_inbox(page):
+    """ Returns current user's messages inbox as dictionary. """
+    msgs = (
+        Message.select(
             Message.mid,
             User.name.alias("username"),
+            Sub.name.alias("sub"),
             Message.sentby,
             Message.receivedby,
             Message.subject,
             Message.content,
             Message.posted,
-            Message.read,
             Message.mtype,
+            UserUnreadMessage.id.alias("unread_id"),
         )
-        msg = (
-            msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby))
-            .where(Message.mtype == 1)
-            .where(Message.receivedby == current_user.uid)
-            .order_by(Message.mid.desc())
-            .paginate(page, 20)
-            .dicts()
+        .join(
+            UserIgnores,
+            JOIN.LEFT_OUTER,
+            on=(
+                (UserIgnores.uid == current_user.uid)
+                & (UserIgnores.target == Message.sentby)
+            ),
         )
-    except Message.DoesNotExist:
-        return False
-    return msg
+        .join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby))
+        .join(Sub, JOIN.LEFT_OUTER, on=(Sub.sid == Message.sub))
+        .join(
+            UserUnreadMessage,
+            JOIN.LEFT_OUTER,
+            on=(
+                (UserUnreadMessage.uid == current_user.uid)
+                & (UserUnreadMessage.mid == Message.mid)
+            ),
+        )
+        .join(
+            UserMessageMailbox,
+            JOIN.LEFT_OUTER,
+            on=(
+                (UserMessageMailbox.uid == current_user.uid)
+                & (UserMessageMailbox.mid == Message.mid)
+            ),
+        )
+        .where(
+            (Message.receivedby == current_user.uid)
+            & (UserMessageMailbox.mailbox == MessageMailbox.INBOX)
+            & (UserIgnores.uid.is_null() | (Message.mtype != MessageType.USER_TO_USER))
+        )
+        .order_by(Message.mid.desc())
+        .paginate(page, 20)
+        .dicts()
+    )
+    for msg in msgs:
+        if msg["mtype"] == MessageType.MOD_TO_USER_AS_MOD:
+            msg["username"] = None
+            msg["sentby"] = None
+        msg["read"] = msg["unread_id"] is None
+    return msgs
 
 
-def getMessagesSent(page):
+def get_messages_sent(page):
     """ Returns messages sent """
-    try:
-        msg = Message.select(
+    return (
+        Message.select(
             Message.mid,
             Message.sentby,
             User.name.alias("username"),
+            Sub.name.alias("sub"),
             Message.subject,
             Message.content,
             Message.posted,
-            Message.read,
             Message.mtype,
         )
-        msg = (
-            msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.receivedby))
-            .where(Message.mtype << [1, 6, 9, 41])
-            .where(Message.sentby == current_user.uid)
-            .order_by(Message.mid.desc())
-            .paginate(page, 20)
-            .dicts()
+        .join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.receivedby))
+        .join(Sub, JOIN.LEFT_OUTER, on=(Sub.sid == Message.sub))
+        .join(
+            UserMessageMailbox,
+            JOIN.LEFT_OUTER,
+            on=(
+                (UserMessageMailbox.uid == current_user.uid)
+                & (UserMessageMailbox.mid == Message.mid)
+            ),
         )
-    except Message.DoesNotExist:
-        return False
-    return msg
+        .where(
+            (Message.sentby == current_user.uid)
+            & (UserMessageMailbox.mailbox == MessageMailbox.SENT)
+        )
+        .order_by(Message.mid.desc())
+        .paginate(page, 20)
+        .dicts()
+    )
 
 
-def getMessagesSaved(page):
+def get_messages_saved(page):
     """ Returns saved messages """
-    try:
-        msg = Message.select(
+    msgs = (
+        Message.select(
             Message.mid,
             User.name.alias("username"),
+            Sub.name.alias("sub"),
             Message.receivedby,
             Message.subject,
             Message.content,
             Message.posted,
-            Message.read,
             Message.mtype,
+            UserUnreadMessage.id.alias("unread_id"),
         )
-        msg = (
-            msg.join(User, on=(User.uid == Message.sentby))
-            .where(Message.mtype == 9)
-            .where(Message.receivedby == current_user.uid)
-            .order_by(Message.mid.desc())
-            .paginate(page, 20)
-            .dicts()
+        .join(User, on=(User.uid == Message.sentby))
+        .join(Sub, JOIN.LEFT_OUTER, on=(Sub.sid == Message.sub))
+        .join(
+            UserUnreadMessage,
+            JOIN.LEFT_OUTER,
+            on=(
+                (UserUnreadMessage.uid == current_user.uid)
+                & (UserUnreadMessage.mid == Message.mid)
+            ),
         )
-    except Message.DoesNotExist:
-        return False
-    return msg
+        .join(
+            UserMessageMailbox,
+            JOIN.LEFT_OUTER,
+            on=(
+                (UserMessageMailbox.uid == current_user.uid)
+                & (UserMessageMailbox.mid == Message.mid)
+            ),
+        )
+        .where(
+            (UserMessageMailbox.mailbox == MessageMailbox.SAVED)
+            & (Message.receivedby == current_user.uid)
+        )
+        .order_by(Message.mid.desc())
+        .paginate(page, 20)
+        .dicts()
+    )
+    for msg in msgs:
+        if msg["mtype"] == MessageType.MOD_TO_USER_AS_MOD:
+            msg["username"] = None
+            msg["sentby"] = None
+        msg["read"] = msg["unread_id"] is None
+    return msgs
 
 
 # user comments
@@ -1669,7 +1784,7 @@ def pick_random_security_question():
 def create_message(mfrom, to, subject, content, mtype):
     """ Creates a message. """
     posted = datetime.utcnow()
-    return Message.create(
+    msg = Message.create(
         sentby=mfrom,
         receivedby=to,
         subject=subject,
@@ -1677,6 +1792,10 @@ def create_message(mfrom, to, subject, content, mtype):
         posted=posted,
         mtype=mtype,
     )
+    UserUnreadMessage.create(uid=to, mid=msg.mid)
+    UserMessageMailbox.create(uid=to, mid=msg.mid, mailbox=MessageMailbox.INBOX)
+    UserMessageMailbox.create(uid=mfrom, mid=msg.mid, mailbox=MessageMailbox.SENT)
+    return msg
 
 
 try:
@@ -2176,28 +2295,6 @@ def get_comment_tree(
 
     comment_tree = recursive_populate(comment_tree)
     return comment_tree
-
-
-# Message type
-MESSAGE_TYPE_PM = [1]
-MESSAGE_TYPE_MENTION = [8]
-MESSAGE_TYPE_MODMAIL = [2, 7, 11]
-MESSAGE_TYPE_POSTREPLY = [4]
-MESSAGE_TYPE_COMMREPLY = [5]
-
-
-def get_messages(mtype, read=False, uid=None):
-    """ Returns query for messages. If `read` is True it only queries for unread messages """
-    query = Message.select().where(Message.mtype << mtype)
-    query = query.where(Message.receivedby == current_user.uid if not uid else uid)
-    if read:
-        query = query.where(Message.read.is_null(True))
-    return query
-
-
-@cache.memoize(1)
-def get_unread_count(mtype):
-    return get_messages(mtype, True).count()
 
 
 @cache.memoize(1)

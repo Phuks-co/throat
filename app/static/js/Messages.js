@@ -10,17 +10,14 @@ u.sub('.readmsg', 'click', function(e){
   u.post('/do/read_pm/'+mid, {},
   function(data){
     if (data.status == "ok") {
-      obj.innerHTML = _('read');
-      obj.classList.remove('readmsg');
-      obj.classList.add('read');
       obj.parentNode.parentNode.parentNode.classList.remove('newmsg');
+      obj.remove();
     }
   });
 });
 
 u.sub('.markall', 'click', function(e){
-  var bid = this.getAttribute('data-bid'),obj=this;
-  u.post('/do/readall_msgs/'+bid, {},
+  u.post('/do/readall_msgs', {},
   function(data){
     if (data.status == "ok") {
       document.location.reload();
