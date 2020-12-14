@@ -12,6 +12,7 @@ from flask_webpack import Webpack
 from flask_babel import Babel, _
 from wheezy.html.utils import escape_html
 from werkzeug.middleware.proxy_fix import ProxyFix
+from werkzeug.wrappers import BaseResponse
 
 from .config import Config, config
 from .forms import LoginForm, LogOutForm, CreateSubForm
@@ -123,6 +124,11 @@ def create_app(config=Config('config.yaml')):
 
     if config.site.trusted_proxy_count != 0:
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=config.site.trusted_proxy_count)
+
+    # Don't let Werkzeug make the Location header into a full URL, because relative
+    # paths are legal in Location and because Werkzeug gets it wrong if the app is
+    # behind a load balancer which terminates SSL.
+    BaseResponse.autocorrect_location_header = False
 
     @app.before_request
     def before_request():
