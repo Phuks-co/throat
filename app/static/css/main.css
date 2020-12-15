@@ -1364,9 +1364,6 @@ input[type=search] {
     .motto {
         display: none;
     }
-    #createPostIcon {
-        display: block;
-    }
     .post .author {
         line-height: 1.7em;
     }
@@ -1387,6 +1384,13 @@ input[type=search] {
     right: 3.2em;
     width: 28px;
     height: 28px;
+    display: none;
+}
+
+@media (max-width: 47.999em) {
+    #createPostIcon {
+      display: block !important;
+    }
 }
 
 #createPostIcon svg {
@@ -1402,9 +1406,6 @@ input[type=search] {
     }
     .pure-control-group .markdown-editor {
         width: calc(100% - 11em);
-    }
-    #createPostIcon {
-        display: none;
     }
     .content.wiki {
         width: 65%;
