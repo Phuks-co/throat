@@ -158,7 +158,7 @@ blockquote {
   div.sidebar {
     position: absolute;
     background-color: white;
-    display: none;
+    display: block;
     -webkit-box-shadow: 0 3px 5px 0 #ab4409;
     -moz-box-shadow: 0 3px 5px 0 #ab4409;
     box-shadow: 0 3px 5px 0 #ab4409;
@@ -2737,6 +2737,10 @@ article.text-post.comment.deleted {
 .banner-text-link:hover {
     color:white;
     text-decoration: none;
+}
+
+.banner-link {
+    z-index: -10;
 }
 
 .active-page-link {
