@@ -655,6 +655,7 @@ u.addEventForChild(document, 'click', '.togglecomment', function (e, qelem) {
             document.querySelector('#comment-' + cid + ' .votecomment .c-downvote').classList.add('hidden');
         }
         document.querySelector('#comment-' + cid + ' .bottombar').classList.add('hidden');
+        document.querySelector('#comment-' + cid + ' .replybox').classList.add('hidden');
         document.querySelector('#comment-' + cid + ' .commblock .content').classList.add('hidden');
         document.querySelector('#child-' + cid).classList.add('hidden');
     } else {
@@ -666,6 +667,7 @@ u.addEventForChild(document, 'click', '.togglecomment', function (e, qelem) {
             document.querySelector('#comment-' + cid + ' .votecomment .c-downvote').classList.remove('hidden');
         }
         document.querySelector('#comment-' + cid + ' .bottombar').classList.remove('hidden');
+        document.querySelector('#comment-' + cid + ' .replybox').classList.remove('hidden');
         document.querySelector('#comment-' + cid + ' .commblock .content').classList.remove('hidden');
         document.querySelector('#child-' + cid).classList.remove('hidden');
     }
