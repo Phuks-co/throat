@@ -10,6 +10,7 @@ import os
 import re
 import gevent
 import ipaddress
+from collections import defaultdict
 
 import tinycss2
 from captcha.image import ImageCaptcha
@@ -35,7 +36,8 @@ from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, Us
 from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db
 from .models import SubPostReport, SubPostCommentReport, PostReportLog, CommentReportLog, Notification
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair, InviteCode
-from .models import SubMod, SubBan, SubPostCommentHistory
+from .models import SubMod, SubBan, SubPostCommentHistory, SubPostMetadata
+
 from .storage import file_url, thumbnail_url
 from peewee import JOIN, fn, SQL, NodeList, Value
 import logging
@@ -153,6 +155,9 @@ class SiteUser(object):
         elif config.site.allow_uploads and (config.site.upload_min_level <= get_user_level(self.uid, self.score)[0]):
             self.canupload = True
 
+    def can_pm_users(self):
+        return config.site.send_pm_to_user_min_level <= get_user_level(self.uid, self.score)[0] or self.admin
+
     def __repr__(self):
         return "<SiteUser {0}>".format(self.uid)
 
@@ -164,6 +169,36 @@ class SiteUser(object):
     def is_mod(self, sid, power_level=2):
         """ Returns True if the current user is a mod of 'sub' """
         return is_sub_mod(self.uid, sid, power_level, self.can_admin)
+
+    @cache.memoize(1)
+    def mod_notifications(self):
+        if self.is_mod:
+            post_report_counts = (
+                SubPostReport.select(Sub.sid, fn.COUNT(SubPostReport.id).
+                                     alias('count')).
+                join(SubPost).join(Sub).join(SubMod).
+                where((SubMod.user == self.uid) & SubPostReport.open).
+                group_by(Sub.sid).dicts())
+            comment_report_counts = (
+                SubPostCommentReport.select(Sub.sid,
+                                            fn.COUNT(SubPostCommentReport.id).
+                                            alias('count')).
+                    join(SubPostComment).join(SubPost).join(Sub).join(SubMod).
+                    where((SubMod.user == self.uid) & SubPostCommentReport.open).
+                    group_by(Sub.sid).dicts())
+
+            counts = defaultdict(int)
+            for item in post_report_counts:
+                counts[item['sid']] = item['count']
+            for item in comment_report_counts:
+                counts[item['sid']] += item['count']
+
+            return [[sid, count] for sid, count in counts.items()]
+        else:
+            return []
+
+    def mod_notifications_json(self):
+        return json.dumps(self.mod_notifications())
 
     def is_subban(self, sub):
         """ Returns True if the current user is banned from 'sub' """
@@ -218,6 +253,7 @@ class SiteUser(object):
         except UserMetadata.DoesNotExist:
             UserMetadata.create(uid=self.uid, key=key, value=value)
 
+
     @cache.memoize(30)
     def get_global_stylesheet(self):
         if self.subtheme:
@@ -228,6 +264,13 @@ class SiteUser(object):
             return css.content
         return ''
 
+
+def is_target_user_admin(uid):
+    try:
+        check_admin = UserMetadata.get((UserMetadata.uid == uid) & (UserMetadata.key == 'admin') & (UserMetadata.value == '1'))
+        return True
+    except UserMetadata.DoesNotExist:
+        return False
 
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
@@ -253,6 +296,11 @@ class SiteAnon(AnonymousUserMixin):
     @classmethod
     def is_admin(cls):
         """ Anons are not admins. """
+        return False
+
+    @classmethod
+    def can_pm_users(cls):
+        """ Anons may never PM users. """
         return False
 
     @classmethod
@@ -839,14 +887,15 @@ def getStickies(sid):
 
 
 def load_user(user_id):
-    user = User.select((fn.Count(Message.mid) + fn.Count(Notification.id)).alias('notifications'),
+    mcount = Message.select(fn.Count(Message.mid)).where(
+        (Message.receivedby == user_id) & (Message.mtype == 1) & Message.read.is_null(True))
+    ncount = Notification.select(fn.Count(Notification.id)).where(
+        (Notification.target == user_id) & Notification.read.is_null(True))
+    user = User.select(mcount.alias('messages'), ncount.alias('notifications'),
                        User.given, User.score, User.name, User.uid, User.status,
                        User.email, User.language, User.resets)
-    user = user.join(Message, JOIN.LEFT_OUTER, on=(
-            (Message.receivedby == User.uid) & (Message.mtype == 1) & Message.read.is_null(True))).switch(User)
-    user = user.join(Notification, JOIN.LEFT_OUTER,
-                     on=(Notification.target == User.uid) & Notification.read.is_null(True)).switch(User)
-    user = user.group_by(User.uid).where(User.uid == user_id).dicts().get()
+    user = user.where(User.uid == user_id).dicts().get()
+    user['notifications'] += user['messages']
 
     # This is the only user attribute needed by the error templates, so stash
     # it in the session so that future errors in this session won't have to
@@ -947,7 +996,7 @@ def getMessagesSent(page):
     try:
         msg = Message.select(Message.mid, Message.sentby, User.name.alias('username'), Message.subject, Message.content,
                              Message.posted, Message.read, Message.mtype, Message.mlink)
-        msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.receivedby)).where(Message.mtype == 1).where(
+        msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.receivedby)).where(Message.mtype << [1, 6, 9, 41]).where(
             Message.sentby == current_user.uid).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False
@@ -1023,12 +1072,17 @@ def getUserComments(uid, page):
         com = SubPostComment.select(Sub.name.alias('sub'), SubPost.title, SubPostComment.cid, SubPostComment.pid,
                                     SubPostComment.uid, SubPostComment.time, SubPostComment.lastedit,
                                     SubPostComment.content, SubPostComment.status, SubPostComment.score,
-                                    SubPostComment.parentcid)
+                                    SubPostComment.parentcid, SubPost.posted)
         com = com.join(SubPost).switch(SubPostComment).join(Sub, on=(Sub.sid == SubPost.sid))
         com = com.where(SubPostComment.uid == uid).where(SubPostComment.status.is_null()).order_by(
             SubPostComment.time.desc()).paginate(page, 20).dicts()
     except SubPostComment.DoesNotExist:
         return False
+
+    now = datetime.utcnow()
+    limit = timedelta(days=config.site.archive_post_after)
+    for c in com:
+        c['archived'] = now - c['posted'].replace(tzinfo=None) > limit
     return com
 
 
@@ -1061,6 +1115,25 @@ def getSubMods(sid):
     if not owner:
         owner['0'] = config.site.placeholder_account
     return {'owners': owner, 'mods': mods, 'janitors': janitors, 'all': owner_uids + janitor_uids + mod_uids}
+
+
+def notify_mods(sid):
+    "Send the sub mods an updated open report count."
+    reports = (SubPostReport.select(fn.Count(SubPostReport.id)).
+               join(SubPost).
+               where((SubPost.sid == sid) & SubPostReport.open))
+    comments = (SubPostCommentReport.select(fn.Count(SubPostCommentReport.id)).
+                join(SubPostComment).join(SubPost).
+                where((SubPost.sid == sid) & SubPostCommentReport.open))
+    mods = (SubMod.select(SubMod.uid,
+                          reports.alias('reports'),
+                          comments.alias('comments')).
+            where(SubMod.sub == sid))
+
+    for mod in mods:
+        socketio.emit('mod-notification',
+                      {'update': [sid, mod.reports + mod.comments]},
+                      namespace='/snt', room='user' + mod.uid)
 
 
 # Relationship between the post type values in the CreateSubPost form
@@ -1258,6 +1331,21 @@ def metadata_to_dict(metadata):
     return res
 
 
+def get_postmeta_dicts(pids):
+    "Get the metadata for multiple posts."
+    pids = set(pids)
+    postmeta_query = SubPostMetadata.select(SubPostMetadata.pid, SubPostMetadata.key, SubPostMetadata.value).where(
+        SubPostMetadata.pid << pids)
+    postmeta_entries = defaultdict(list)
+    for pm in postmeta_query:
+        postmeta_entries[pm.pid.pid].append(pm)
+
+    postmeta = {pid: {} for pid in pids}
+    for k, v in postmeta_entries.items():
+        postmeta[k] = metadata_to_dict(v)
+    return postmeta
+
+
 # Log types
 LOG_TYPE_USER = 10
 LOG_TYPE_USER_BAN = 19
@@ -1398,16 +1486,25 @@ def validate_captcha(token, response):
     return False
 
 
-def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_context=True, include_history=False):
+def get_comment_tree(pid, sid, comments, root=None, only_after=None, uid=None, provide_context=True,
+                     include_history=False, postmeta=None):
     """ Returns a fully paginated and expanded comment tree.
 
     TODO: Move to misc and implement globally
+    @param pid: post for comments
+    @param sid: sub for post
     @param comments: bare list of comments (only cid and parentcid)
     @param root: if present, the root comment to start building the tree on
-    @param only_after: removes all siblings of `root` after the cid on its value
+    @param only_after: removes all siblings of `root` before the cid on its value
     @param uid:
     @param provide_context:
+    @param postmeta: SubPostMetadata dict if it has already been fetched
     """
+
+    if postmeta is None:
+        postmeta = metadata_to_dict(SubPostMetadata.select().where((SubPostMetadata.pid == pid) &
+                                                                   (SubPostMetadata.key == 'sticky_cid')))
+    sticky_cid = postmeta.get('sticky_cid')
 
     def build_tree(tuff, rootcid=None):
         """ Builds a comment tree """
@@ -1444,6 +1541,14 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
                 comment_tree = orig_root
         else:
             return []
+    elif sticky_cid is not None:
+        # If there is a sticky comment, move it to the top.
+        elem = list(filter(lambda x: x['cid'] == sticky_cid, comment_tree))
+        if elem:
+            comment_tree.remove(elem[0])
+            if only_after is None:
+                comment_tree.insert(0, elem[0])
+
     # 3 - Trim tree (remove all children of depth=3 comments, all siblings after #5
     cid_list = []
     trimmed = False
@@ -1480,7 +1585,7 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
     # 4 - Populate the tree (get all the data and cram it into the tree)
     expcomms = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
                                      SubPostComment.score, SubPostComment.status, SubPostComment.time,
-                                     SubPostComment.pid, SubPostComment.distinguish,
+                                     SubPostComment.pid, SubPostComment.distinguish, SubPostComment.parentcid,
                                      User.name.alias('user'), *(
             [SubPostCommentVote.positive, SubPostComment.uid] if uid else [SubPostComment.uid]),  # silly hack
                                      User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)
@@ -1491,16 +1596,18 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
     expcomms = expcomms.where(SubPostComment.cid << cid_list).dicts()
 
     commdata = {}
+    is_admin = current_user.is_admin()
+    is_mod = current_user.is_mod(sid, 1)
     for comm in expcomms:
         comm['history'] = []
         comm['visibility'] = ''
-        sub = Sub.select().join(SubPost).join(SubPostComment).where(SubPostComment.cid == comm['cid']).get()
+        comm['sticky'] = (comm['cid'] == sticky_cid)
 
         if comm['status']:
             if comm['status'] == 1:
-                if current_user.is_admin():
+                if is_admin:
                     comm['visibility'] = 'admin-self-del'
-                elif current_user.is_mod(sub.sid, 1):
+                elif is_mod:
                     comm['visibility'] = 'mod-self-del'
                 else:
                     comm['user'] = _('[Deleted]')
@@ -1509,7 +1616,7 @@ def get_comment_tree(comments, root=None, only_after=None, uid=None, provide_con
                     comm['lastedit'] = None
                     comm['visibility'] = 'none'
             elif comm['status'] == 2:
-                if current_user.is_admin() or current_user.is_mod(sub.sid, 1):
+                if is_admin or is_mod:
                     comm['visibility'] = 'mod-del'
                 else:
                     comm['user'] = _('[Deleted]')

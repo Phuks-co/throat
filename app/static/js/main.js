@@ -88,20 +88,25 @@ function vote(obj, how, comment){
     var unid = obj.getAttribute('data-pid');
     var count = obj.parentNode.querySelector('.score');
   }
-  u.post('/do/' + kl + '/'+ unid + '/' + how, {}, function(data){
-    console.log(obj.classList)
-    if(!data.rm){
-      obj.classList.add((how == 'up') ? 'upvoted' : 'downvoted');
-      if(obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted')){
-        obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted').classList.remove((how == 'up') ? 'downvoted' : 'upvoted')
+  if (!obj.getAttribute('data-in-progress')) {
+    obj.setAttribute('data-in-progress', true);
+    u.post('/do/' + kl + '/'+ unid + '/' + how, {}, function(data){
+      obj.removeAttribute('data-in-progress');
+      console.log(obj.classList)
+      if(!data.rm){
+        obj.classList.add((how == 'up') ? 'upvoted' : 'downvoted');
+        if(obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted')){
+          obj.parentNode.querySelector((how == 'up') ? '.downvoted' : '.upvoted').classList.remove((how == 'up') ? 'downvoted' : 'upvoted')
+        }
+      }else{
+        obj.classList.remove((how == 'up') ? 'upvoted' : 'downvoted');
       }
-    }else{
-      obj.classList.remove((how == 'up') ? 'upvoted' : 'downvoted');
-    }
-    count.innerHTML = data.score;
-  }, function(err){
-    //TODO: show errors
-  })
+      count.innerHTML = data.score;
+    }, function(err){
+      obj.removeAttribute('data-in-progress');
+      //TODO: show errors
+    })
+  }
 }
 
 // up/downvote buttons.

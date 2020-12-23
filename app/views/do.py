@@ -30,7 +30,7 @@ from ..badges import badges
 from ..misc import cache, send_email, allowedNames, get_errors, engine, ensure_locale_loaded
 from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, is_domain_banned
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved
-from ..models import SubMod, SubBan, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
+from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
 from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport, SubRule
 from ..models import rconn, UserStatus
@@ -247,6 +247,16 @@ def delete_post():
             ann.delete_instance()
             cache.delete_memoized(misc.getAnnouncementPid)
         except SiteMetadata.DoesNotExist:
+            pass
+
+        # Check if the post is sticky.  Unstick if so.
+        try:
+            is_sticky = SubMetadata.get((SubMetadata.sid == post.sid_id) & (SubMetadata.key == 'sticky') &
+                                        (SubMetadata.value == post.pid))
+            is_sticky.delete_instance()
+            misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_DEL, current_user.uid, post.sid,
+                               link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
+        except SubMetadata.DoesNotExist:
             pass
 
         Sub.update(posts=Sub.posts - 1).where(Sub.sid == post.sid).execute()
@@ -704,6 +714,30 @@ def distinguish():
     return jsonify(status='ok')
 
 
+@do.route("/do/lock_comments/<int:post>", methods=['POST'])
+@login_required
+def toggle_lock_comments(post):
+    """ Allows a mod or admin to lock a post to new comments. """
+    try:
+        post = SubPost.get(SubPost.pid == post)
+    except SubPost.DoesNotExist:
+        return jsonify(status='error', error=_('Post does not exist'))
+
+    if not current_user.is_mod(post.sid_id):
+        abort(403)
+
+    form = DeletePost()
+
+    if form.validate():
+        try:
+            smd = SubPostMetadata.select().where((SubPostMetadata.key == 'lock-comments') &
+                                                 (SubPostMetadata.pid == post.pid)).get()
+            smd.value = '0' if smd.value == '1' else '1'
+            smd.save()
+        except SubPostMetadata.DoesNotExist:
+            smd = SubPostMetadata.create(pid=post.pid, key='lock-comments', value='1')
+
+    return jsonify(status='ok')
 
 
 @do.route("/do/edit_txtpost/<pid>", methods=['POST'])
@@ -769,6 +803,10 @@ def create_comment(pid):
         if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
             return jsonify(status='error', error=[_("Post is archived")]), 400
 
+        postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
+        if postmeta.get('lock-comments'):
+            return jsonify(status='error', error=[_("Comments are closed on this post.")]), 400
+
         try:
             sub = Sub.get(Sub.sid == post.sid_id)
         except Sub.DoesNotExist:
@@ -832,7 +870,8 @@ def create_comment(pid):
         misc.workWithMentions(form.comment.data, to, post, sub, cid=comment.cid)
         renderedComment = engine.get_template('sub/postcomments.html').render({
             'post': misc.getSinglePost(post.pid),
-            'comments': misc.get_comment_tree([{'cid': str(comment.cid), 'parentcid': None}], uid=current_user.uid, include_history=include_history),
+            'postmeta': misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == post.pid)),
+            'comments': misc.get_comment_tree(post.pid, sub.sid, [{'cid': str(comment.cid), 'parentcid': None}], uid=current_user.uid, include_history=include_history),
             'subInfo': misc.getSubData(sub.sid),
             'subMods': subMods,
             'highlight': str(comment.cid),
@@ -1605,6 +1644,45 @@ def toggle_sticky(post):
     return jsonify(status='ok')
 
 
+@do.route("/do/stick_comment/<comment>", methods=['POST'])
+def set_sticky_comment(comment):
+    """ Set or unset comment stickyness. """
+    try:
+        comment = (SubPostComment.select(SubPostComment.cid, SubPostComment.uid, SubPostComment.pid, SubPost.sid)
+                   .join(SubPost)
+                   .where(SubPostComment.cid == comment).dicts())[0]
+    except IndexError:
+        return jsonify(status='error', error=_('Comment does not exist'))
+
+    if not current_user.is_mod(comment['sid']) or current_user.uid != comment['uid']:
+        abort(403)
+
+    form = DeletePost()
+
+    if form.validate():
+        try:
+            sticky = SubPostMetadata.get((SubPostMetadata.pid == comment['pid']) & (SubPostMetadata.key == 'sticky_cid'))
+            if sticky.value == comment['cid']:
+                sticky.delete_instance()
+            else:
+                sticky.value = comment['cid']
+                sticky.save()
+                mod_distinguish(comment['cid'])
+        except SubPostMetadata.DoesNotExist:
+            SubPostMetadata.create(pid=comment['pid'], key='sticky_cid', value=comment['cid'])
+            mod_distinguish(comment['cid'])
+
+    return jsonify(status='ok')
+
+
+def mod_distinguish(cid):
+    """ Set a comment as distinguished by mod, unless it already is. """
+    comment = SubPostComment.get(SubPostComment.cid == cid)
+    if comment.distinguish is None or comment.distinguish == 0:
+        comment.distinguish = 1
+        comment.save()
+
+
 @do.route("/do/sticky_sort/<int:post>", methods=['POST'])
 def toggle_sort(post):
     """ Toggles comment sort for a post. """
@@ -1837,6 +1915,8 @@ def edit_comment():
             return jsonify(status='error', error=_("Post is archived"))
 
         dt = datetime.datetime.utcnow()
+        spm = SubPostCommentHistory.create(cid=comment.cid, content=comment.content,
+                                           datetime=(comment.lastedit or comment.time))
         comment.content = form.text.data
         comment.lastedit = dt
         comment.save()
@@ -1965,32 +2045,38 @@ def get_sibling(pid, cid, lim):
             return jsonify(status='ok', posts=[])
 
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid)
+    postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
     if sort == "new":
         comments = comments.order_by(SubPostComment.time.desc()).dicts()
     elif sort == "top":
         comments = comments.order_by(SubPostComment.score.desc()).dicts()
 
     if not comments.count():
-        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': '',
-                                                                    'sort': sort})
+        return engine.get_template('sub/postcomments.html').render(
+            {'post': post, 'postmeta': postmeta,
+             'comments': [], 'subInfo': {}, 'highlight': '', 'sort': sort})
 
     include_history = current_user.is_mod(post['sid'], 1) or current_user.is_admin()
 
     if lim:
-        comment_tree = misc.get_comment_tree(comments, cid if cid != '0' else None, lim, provide_context=False, uid=current_user.uid, include_history=include_history)
+        comment_tree = misc.get_comment_tree(pid, post['sid'], comments, cid if cid != '0' else None, lim, provide_context=False,
+                                             uid=current_user.uid, include_history=include_history, postmeta=postmeta)
     elif cid != '0':
-        comment_tree = misc.get_comment_tree(comments, cid, provide_context=False, uid=current_user.uid, include_history=include_history)
+        comment_tree = misc.get_comment_tree(pid, post['sid'], comments, cid, provide_context=False, uid=current_user.uid,
+                                             include_history=include_history, postmeta=postmeta)
     else:
-        return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': [], 'subInfo': {}, 'highlight': '',
-                                                                    'sort': sort})
+        return engine.get_template('sub/postcomments.html').render(
+            {'post': post, 'postmeta': postmeta,
+             'comments': [], 'subInfo': {}, 'highlight': '', 'sort': sort})
 
     if len(comment_tree) > 0 and cid != '0':
         comment_tree = comment_tree[0].get('children', [])
     subInfo = misc.getSubData(post['sid'])
     subMods = misc.getSubMods(post['sid'])
 
-    return engine.get_template('sub/postcomments.html').render({'post': post, 'comments': comment_tree, 'subInfo': subInfo, 'subMods': subMods, 'highlight': '',
-                                                                'sort': sort})
+    return engine.get_template('sub/postcomments.html').render(
+        {'post': post, 'postmeta': postmeta,
+         'comments': comment_tree, 'subInfo': subInfo, 'subMods': subMods, 'highlight': '', 'sort': sort})
 
 
 @do.route('/do/preview', methods=['POST'])
@@ -2486,12 +2572,15 @@ def report():
 
         if len(form.reason.data) < 2:
             return jsonify(status='error', error=_('Report reason too short.'))
+        elif len(form.reason.data) > 128:
+            return jsonify(status='error', error=_('Report reason too long.'))
 
         if not form.send_to_admin.data and misc.is_sub_banned(post['sid'], uid=current_user.uid):
             return jsonify(status='error', error=_('You are banned from this sub.'))
 
         # do the reporting.
         SubPostReport.create(pid=post['pid'], uid=current_user.uid, reason=form.reason.data, send_to_admin=form.send_to_admin.data)
+        misc.notify_mods(post['sid'])
         if callbacks_enabled:
             # callbacks!
             cb = getattr(callbacks, 'ON_POST_REPORT', False)
@@ -2510,9 +2599,10 @@ def report_comment():
         try:
             comm = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
                                          SubPostComment.score, SubPostComment.status, SubPostComment.time, SubPostComment.pid,
-                                         User.name.alias('username'), SubPostComment.uid,
+                                         SubPost.sid, User.name.alias('username'), SubPostComment.uid,
                                          User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)
             comm = comm.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
+            comm = comm.join(SubPost)
             comm = comm.where(SubPostComment.cid == form.post.data)
             comm = comm.get()
         except SubPostComment.DoesNotExist:
@@ -2530,12 +2620,15 @@ def report_comment():
 
         if len(form.reason.data) < 2:
             return jsonify(status='error', error=_('Report reason too short.'))
+        elif len(form.reason.data) > 128:
+            return jsonify(status='error', error=_('Report reason too long.'))
 
         if not form.send_to_admin.data and misc.is_sub_banned(comm.pid.sid, uid=current_user.uid):
             return jsonify(status='error', error=_('You are banned from this sub.'))
 
         # do the reporting.
         SubPostCommentReport.create(cid=comm.cid, uid=current_user.uid, reason=form.reason.data, send_to_admin=form.send_to_admin.data)
+        misc.notify_mods(comm.pid.sid.sid)
         # callbacks!
         if callbacks_enabled:
             cb = getattr(callbacks, 'ON_COMMENT_REPORT', False)
@@ -2582,6 +2675,8 @@ def close_post_report(id, action):
         report = SubPostReport.update(open=False).where(SubPostReport.id == id).execute()
     elif action == 'reopen':
         report = SubPostReport.update(open=True).where(SubPostReport.id == id).execute()
+
+    misc.notify_mods(sub.sid)
 
     #check if it changed and return status
     updated_report = SubPostReport.select().where(SubPostReport.id == id).get()
@@ -2645,6 +2740,7 @@ def close_comment_report(id, action):
         report = SubPostCommentReport.update(open=False).where(SubPostCommentReport.id == id).execute()
     elif action == 'reopen':
         report = SubPostCommentReport.update(open=True).where(SubPostCommentReport.id == id).execute()
+    misc.notify_mods(sub.sid)
 
     #check if it changed and return status
     updated_report = SubPostCommentReport.select().where(SubPostCommentReport.id == id).get()
@@ -2693,6 +2789,7 @@ def close_post_related_reports(related_reports, original_report):
             error = jsonify(status='error', error=_('Not authorized'))
 
         report = SubPostReport.update(open=False).where(SubPostReport.id == related_report['id']).execute()
+        misc.notify_mods(sub.sid)
 
         #check if report is closed and return status
         updated_report = SubPostReport.select().where(SubPostReport.id == related_report['id']).get()
@@ -2744,6 +2841,7 @@ def close_comment_related_reports(related_reports, original_report):
             error = jsonify(status='error', error=_('Not authorized'))
 
         report = SubPostCommentReport.update(open=False).where(SubPostCommentReport.id == related_report['id']).execute()
+        misc.notify_mods(sub.sid)
 
         #check if report is closed and return status
         updated_report = SubPostCommentReport.select().where(SubPostCommentReport.id == related_report['id']).get()

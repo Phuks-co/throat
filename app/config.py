@@ -23,6 +23,8 @@ cfg_defaults = {  # key => default value
             "enable_chat": True,
             "sitelog_public": True,
             "force_sublog_public": True,
+            "front_page_submit": True,
+            "block_anon_stalking": False,
 
             "changelog_sub": None,
             "btc_address": None,
@@ -35,6 +37,8 @@ cfg_defaults = {  # key => default value
             "sub_ownership_limit": 20,
             "edit_history": False,
             "anonymous_modding": False,
+
+            "send_pm_to_user_min_level": 3,
 
             "daily_sub_posting_limit": 10,
             "daily_site_posting_limit": 25,

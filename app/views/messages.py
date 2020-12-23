@@ -1,11 +1,12 @@
 """ Messages endpoints """
-from datetime import datetime
+from datetime import datetime, timedelta
 from peewee import JOIN
 from flask import Blueprint, redirect, url_for, render_template, abort, jsonify
 from flask_login import login_required, current_user
 from flask_babel import _
 from .. import misc
-from ..misc import engine
+from ..config import config
+from ..misc import engine, get_postmeta_dicts
 from ..models import Message, Notification, Sub, SubPost, SubPostComment, User, SubPostCommentVote, UserIgnores
 from ..socketio import socketio
 
@@ -33,7 +34,7 @@ def view_notifications(page):
         .select(Notification.id, Notification.type, Notification.read, Notification.created, Sub.name.alias('sub_name'),
                 Notification.post.alias('pid'), Notification.comment.alias('cid'), User.name.alias('sender'),
                 Notification.sender.alias('senderuid'), Notification.content,
-                SubPost.title.alias('post_title'), SubPostComment.content.alias('comment_content'),
+                SubPost.title.alias('post_title'), SubPost.posted, SubPostComment.content.alias('comment_content'),
                 SubPostComment.score.alias('comment_score'),
                 SubPostComment.content.alias('post_comment'), SubPostCommentVote.positive.alias('comment_positive'),
                 UserIgnores.id.alias("ignored"), ParentComment.content.alias('comment_context'),
@@ -51,10 +52,17 @@ def view_notifications(page):
         .order_by(Notification.created.desc()) \
         .paginate(page, 50).dicts()
     notifications = list(notifications)
+    postmeta = get_postmeta_dicts((n['pid'] for n in notifications if n['pid'] is not None))
+
+    now = datetime.utcnow()
+    limit = timedelta(days=config.site.archive_post_after)
+    for n in notifications:
+        n['archived'] = n['posted'] is not None and (now - n['posted'].replace(tzinfo=None)) > limit
 
     Notification.update(read=datetime.utcnow()).where(
         (Notification.read.is_null(True)) & (Notification.target == current_user.uid)).execute()
-    return engine.get_template('user/messages/notifications.html').render({'notifications': notifications})
+    return engine.get_template('user/messages/notifications.html').render({'notifications': notifications,
+                                                                           'postmeta': postmeta})
 
 
 @bp.route("/notifications/delete/<int:mid>", methods=['POST'])

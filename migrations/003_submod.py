@@ -46,17 +46,18 @@ def migrate(migrator, database, fake=False, **kwargs):
 
         class Meta:
             table_name = "sub_mod"
-    
-    SubMod._meta.database = migrator.database
-    SubMod.create_table(True)
 
-    SubMetadata = migrator.orm['sub_metadata']
+    if not fake:
+        SubMod._meta.database = migrator.database
+        SubMod.create_table(True)
 
-    for xm in SubMetadata.select().where(SubMetadata.key == 'mod1'):
-        SubMod.create(uid=xm.value, sid=xm.sid, power_level=0)
+        SubMetadata = migrator.orm['sub_metadata']
 
-    for xm in SubMetadata.select().where(SubMetadata.key == 'mod2'):
-        SubMod.create(uid=xm.value, sid=xm.sid, power_level=1)
+        for xm in SubMetadata.select().where(SubMetadata.key == 'mod1'):
+            SubMod.create(uid=xm.value, sid=xm.sid, power_level=0)
+
+        for xm in SubMetadata.select().where(SubMetadata.key == 'mod2'):
+            SubMod.create(uid=xm.value, sid=xm.sid, power_level=1)
 
 
 

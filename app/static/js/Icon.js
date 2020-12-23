@@ -16,6 +16,7 @@ function rendericons(){
 // list of all the icons
 var Icons = {
   mail: require('../svg/mail.svg'),
+  shield: require('../svg/shield.svg'),
   cog: require('../svg/cog.svg'),
   sun: require('../svg/sun-fill.svg') ,
   moon: require('../svg/moon-fill.svg'),

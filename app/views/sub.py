@@ -307,14 +307,11 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
 
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     subInfo = misc.getSubData(sub['sid'])
+    postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
 
     sticky_sort = 'top'
     if str(pid) in subInfo['sticky']:
-        try:
-            sticky_sort = SubPostMetadata.select().where((SubPostMetadata.key == 'sort') &
-                                                          (SubPostMetadata.pid == pid)).get().value
-        except SubPostMetadata.DoesNotExist:
-            pass
+        sticky_sort = postmeta.get('sort', sticky_sort)
 
     if sort is None:
         sort = sticky_sort
@@ -344,7 +341,8 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
         if not comments.count():
             comments = []
         else:
-            comments = misc.get_comment_tree(comments, uid=current_user.uid, include_history=include_history)
+            comments = misc.get_comment_tree(post['pid'], sub['sid'], comments, uid=current_user.uid,
+                                             include_history=include_history, postmeta=postmeta)
 
     if config.site.edit_history and include_history:
         try:
@@ -380,10 +378,10 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
     if post['userstatus'] == 10 and post['deleted'] == 1:
         post['visibility'] = 'none'
 
+    postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
+
     pollData = {'has_voted': False}
-    postmeta = {}
     if post['ptype'] == 3:
-        postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
         # poll. grab options and votes.
         options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text, fn.Count(SubPostPollVote.id).alias('votecount'))
         options = options.join(SubPostPollVote, JOIN.LEFT_OUTER, on=(SubPostPollVote.vid == SubPostPollOption.id))
@@ -435,5 +433,5 @@ def view_perm(sub, pid, slug, cid):
     include_history = current_user.is_mod(sub['sid'], 1) or current_user.is_admin()
 
     comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
-    comment_tree = misc.get_comment_tree(comments, cid, uid=current_user.uid, include_history=include_history)
+    comment_tree = misc.get_comment_tree(pid, sub['sid'], comments, cid, uid=current_user.uid, include_history=include_history)
     return view_post(sub['name'], pid, slug, comment_tree, cid)

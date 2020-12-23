@@ -205,7 +205,7 @@
               <li><a class="poll-close"> @{_('close poll')} </a></li>
           @end
 
-          @if current_user.uid in subMods['all']:
+          @if current_user.is_mod(post['sid']):
             @if str(post['pid']) in subInfo['sticky']:
               <li><a class="stick-post">@{_('unstick')}</a></li>
             @else:
@@ -228,6 +228,11 @@
               @else:
                 <li><a class="sort-comments">@{_('sort by new')}</a></li>
               @end
+            @end
+            @if postmeta.get('lock-comments'):
+              <li><a class="lock-comments">@{_('unlock comments')}</a></li>
+            @else:
+              <li><a class="lock-comments">@{_('lock comments')}</a></li>
             @end
           @end
           @if post['uid'] != current_user.uid:
@@ -309,7 +314,7 @@
   @end
   </div>
 
-  @if current_user.is_authenticated and post['deleted'] == 0 and not current_user.is_subban(sub):
+  @if current_user.is_authenticated and post['deleted'] == 0 and not current_user.is_subban(sub) and not postmeta.get('lock-comments'):
   <form data-reset="true" data-redir="true" action="@{url_for('do.create_comment', pid=post['pid'])}" id="rcomm-0" class="comment-form ajaxform static pure-form">
     @{commentform.csrf_token()!!html}
     @{commentform.post(value=post['pid'])!!html}
@@ -326,6 +331,10 @@
       <div class="cpreview-content"></div>
     </div>
   </form>
+  @elif current_user.is_authenticated and post['deleted'] == 0 and postmeta.get('lock-comments'):
+  <div class="comments-locked">
+    <h4>@{_('This post is closed to new comments.')}</h4>
+  </div>
   @end
 
   @if len(comments) == 0:
@@ -362,7 +371,7 @@
           </li>
         </ul>
       </div>
-      @{pcomm.renderComments(post, subInfo, subMods, comments, highlight, sort)!!html}
+      @{pcomm.renderComments(post, postmeta, subInfo, subMods, comments, highlight, sort)!!html}
     </div>
   @end
 

@@ -1,22 +1,20 @@
+
 msgid ""
 msgstr ""
-"Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
+"Project-Id-Version:  2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-12-22 15:42-0300\n"
 "PO-Revision-Date: 2020-12-23 04:26\n"
 "Last-Translator: \n"
+"Language: ru_RU\n"
 "Language-Team: Russian\n"
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= "
+"2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 "
+">= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3))\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
-"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
-"X-Crowdin-Project: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
-"X-Crowdin-Project-ID: 2\n"
-"X-Crowdin-Language: ru\n"
-"X-Crowdin-File: /master/app/translations/messages.pot\n"
-"X-Crowdin-File-ID: 26\n"
-"Language: ru_RU\n"
 
 #: app/__init__.py:47
 msgid "Please log in to access this page."
@@ -59,12 +57,18 @@ msgid "Too hyped to wait!"
 msgstr "Слишком важный, чтобы ждать!"
 
 #: app/badges.py:18
-msgid "Once proud men, the Broccoli People now must remain in hiding after early on the Vegetable Wars against the Cabbages."
+msgid ""
+"Once proud men, the Broccoli People now must remain in hiding after early"
+" on the Vegetable Wars against the Cabbages."
 msgstr "Муха села на варенье, вот и все стихотворенье."
 
 #: app/badges.py:19
-msgid "The Cabbage People are now the dominant force in the Vegetable Wars, being in the road to become an hegemon after defeating the Broccolis."
-msgstr "Люди Капусты - теперь доминирующая сила в Овощных войнах, находясь на пути стать гегемоном после победы над Брокколисом."
+msgid ""
+"The Cabbage People are now the dominant force in the Vegetable Wars, "
+"being in the road to become an hegemon after defeating the Broccolis."
+msgstr ""
+"Люди Капусты - теперь доминирующая сила в Овощных войнах, находясь на "
+"пути стать гегемоном после победы над Брокколисом."
 
 #: app/badges.py:21
 msgid "Winner of the shitposter of the year 2018 contest"
@@ -580,7 +584,9 @@ msgid "Create wiki"
 msgstr "Создать вики"
 
 #: app/html/admin/createwiki.html:33 app/html/sub/createpost.html:43
-msgid "(Optional) Write your post content here. Styling with Markdown format is supported."
+msgid ""
+"(Optional) Write your post content here. Styling with Markdown format is "
+"supported."
 msgstr "(Необязательно). Напишите ваш пост здесь. Поддержка Markdown."
 
 #: app/html/admin/createwiki.html:37 app/html/mod/reportdetails.html:218
@@ -594,7 +600,9 @@ msgstr "Отчеты Администратора"
 
 #: app/html/admin/reports.html:16
 msgid "Includes reports for all subs except reports of sub-specific rules."
-msgstr "Включает отчеты для всех групп подрядчиков, за исключением отчетов о групп специфических правилах."
+msgstr ""
+"Включает отчеты для всех групп подрядчиков, за исключением отчетов о "
+"групп специфических правилах."
 
 #: app/html/admin/reports.html:20 app/html/mod/reports.html:20
 #: app/html/mod/sub_reports.html:21 app/html/mod/sub_reports_closed.html:22
@@ -765,8 +773,12 @@ msgid "Internal error"
 msgstr "Внутренняя ошибка"
 
 #: app/html/errors/500.html:12
-msgid "We're experiencing technical difficulties, please try again later. If the error persists, report it to the administration."
-msgstr "У нас возникли технические трудности, повторите попытку позже. Если ошибка не устранена, сообщите об этом администрации."
+msgid ""
+"We're experiencing technical difficulties, please try again later. If the"
+" error persists, report it to the administration."
+msgstr ""
+"У нас возникли технические трудности, повторите попытку позже. Если "
+"ошибка не устранена, сообщите об этом администрации."
 
 #: app/html/errors/layout.html:39 app/html/shared/layout.html:50
 msgid "all"
@@ -789,7 +801,9 @@ msgstr "Закрытые Отчеты"
 
 #: app/html/mod/closed.html:15
 msgid "Includes all closed reports for subs you can moderate."
-msgstr "Включает в себя все закрытые отчеты для групп, которые вы можете модерировать."
+msgstr ""
+"Включает в себя все закрытые отчеты для групп, которые вы можете "
+"модерировать."
 
 #: app/html/mod/closed.html:20
 msgid "Total Open Reports"
@@ -1034,7 +1048,9 @@ msgstr "Нет других сообщений на этот пост"
 
 #: app/html/mod/reports.html:15
 msgid "Includes all open reports for subs you can moderate."
-msgstr "Включает в себя все открытые отчеты для групп, которые вы можете модерировать."
+msgstr ""
+"Включает в себя все открытые отчеты для групп, которые вы можете "
+"модерировать."
 
 #: app/html/mod/reports.html:32 app/html/mod/sub_reports.html:33
 msgid "Close"
@@ -1484,8 +1500,12 @@ msgid "%(user)s commented \"%(comment)s\" in %(sub)s %(timeago)s"
 msgstr "%(user)s прокомментировал \"%(comment)s\" в %(sub)s %(timeago)s"
 
 #: app/html/site/license.html:9
-msgid "This website is powered by <a href=\"https://github.com/Phuks-co/throat\">Throat</a>, released under the MIT license."
-msgstr "Этот сайт работает на <a href=\"https://github.com/Phuks-co/throat\">Throat</a>, выпущен под лицензией MIT."
+msgid ""
+"This website is powered by <a href=\"https://github.com/Phuks-"
+"co/throat\">Throat</a>, released under the MIT license."
+msgstr ""
+"Этот сайт работает на <a href=\"https://github.com/Phuks-"
+"co/throat\">Throat</a>, выпущен под лицензией MIT."
 
 #: app/html/site/log.html:12 app/html/sub/bans.html:58
 #: app/html/sub/bans.html:118 app/html/sub/log.html:12
@@ -1523,8 +1543,12 @@ msgstr "Удален <a href=\"/u/%(user)s\">%(user)s</a> из команды м
 
 #: app/html/site/log.html:44
 #, python-format
-msgid "Revoked mod invite for <a href=\"/u/%(user)s\">%(user)s</a> from the mod team"
-msgstr "Отменено приглашение на мода для <a href=\"/u/%(user)s\">%(user)s</a> от мод команды"
+msgid ""
+"Revoked mod invite for <a href=\"/u/%(user)s\">%(user)s</a> from the mod "
+"team"
+msgstr ""
+"Отменено приглашение на мода для <a href=\"/u/%(user)s\">%(user)s</a> от "
+"мод команды"
 
 #: app/html/site/log.html:46 app/html/sub/log.html:60
 #, python-format
@@ -1687,8 +1711,12 @@ msgid "Description"
 msgstr "Описание"
 
 #: app/html/sub/createpost.html:17
-msgid "This sub only allows upload posts, and you don't have permission to upload files yet."
-msgstr "Эта группа позволяет загружать только сообщения, и у вас еще нет разрешения на загрузку файлов."
+msgid ""
+"This sub only allows upload posts, and you don't have permission to "
+"upload files yet."
+msgstr ""
+"Эта группа позволяет загружать только сообщения, и у вас еще нет "
+"разрешения на загрузку файлов."
 
 #: app/html/sub/createpost.html:22
 msgid "Find a sub..."
@@ -1748,7 +1776,9 @@ msgstr "Предпросмотр поста"
 #: app/html/sub/css.html:17
 #, python-format
 msgid "Editing stylesheet for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
-msgstr "Редактирование таблицы стилей для <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgstr ""
+"Редактирование таблицы стилей для <a "
+"href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
 
 #: app/html/sub/css.html:29 app/html/sub/flairs.html:22
 #: app/html/sub/rules.html:28 app/html/sub/settings.html:110
@@ -1771,7 +1801,9 @@ msgstr "Загрузка файлов"
 #: app/html/sub/css.html:36
 #, python-format
 msgid "Upload limit is 2 MiB. Space used: %(storage)i KiB"
-msgstr "Лимит загрузки составляет 2 Мбайт. Используемое пространство: %(storage)i Кбайт"
+msgstr ""
+"Лимит загрузки составляет 2 Мбайт. Используемое пространство: %(storage)i"
+" Кбайт"
 
 #: app/html/sub/css.html:42
 msgid "Only images allowed"
@@ -1803,7 +1835,9 @@ msgstr "Удалено!"
 #: app/html/sub/css.html:67
 #, python-format
 msgid "You can use uploaded images with <code>%%imagename%%</code>."
-msgstr "Вы можете использовать загруженные изображения с <code>%%imagename%%</code>."
+msgstr ""
+"Вы можете использовать загруженные изображения с "
+"<code>%%imagename%%</code>."
 
 #: app/html/sub/css.html:68
 msgid "Example:"
@@ -1847,8 +1881,12 @@ msgstr "Изменил настройки"
 
 #: app/html/sub/log.html:38
 #, python-format
-msgid "Banned <a href=\"/u/%(username)s\">%(username)s</a> with reason <code>%(reason)s</code>"
-msgstr "Забанен <a href=\"/u/%(username)s\">%(username)s</a> по причине <code>%(reason)s</code>"
+msgid ""
+"Banned <a href=\"/u/%(username)s\">%(username)s</a> with reason "
+"<code>%(reason)s</code>"
+msgstr ""
+"Забанен <a href=\"/u/%(username)s\">%(username)s</a> по причине "
+"<code>%(reason)s</code>"
 
 #: app/html/sub/log.html:40
 #, python-format
@@ -2081,7 +2119,6 @@ msgstr "сортировать по новым"
 msgid "unlock comments"
 msgstr "разблокировать комментарии"
 
-#: app/html/sub/post.html:235
 msgid "lock comments"
 msgstr "заблокировать комментарии"
 
@@ -2157,8 +2194,12 @@ msgstr "[OP]"
 
 #: app/html/sub/postcomments.html:34
 #, python-format
-msgid "<span class=\"cscore\">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
-msgstr "<span class=\"cscore\">%(score)i</span> карма</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
+msgid ""
+"<span class=\"cscore\">%(score)i</span> points</b> "
+"(+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
+msgstr ""
+"<span class=\"cscore\">%(score)i</span> карма</b> "
+"(+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
 
 #: app/html/sub/postcomments.html:40
 #, python-format
@@ -2243,12 +2284,20 @@ msgid "Create new rule"
 msgstr "Создать новое правило"
 
 #: app/html/sub/rules.html:21
-msgid "Users will be able to report violations of this rule. The text of the rule should be short and easy to understand."
-msgstr "Пользователи смогут сообщать о нарушениях этого правила. Текст правила должен быть кратким и понятным."
+msgid ""
+"Users will be able to report violations of this rule. The text of the "
+"rule should be short and easy to understand."
+msgstr ""
+"Пользователи смогут сообщать о нарушениях этого правила. Текст правила "
+"должен быть кратким и понятным."
 
 #: app/html/sub/rules.html:24
-msgid "You'll still need to update your sidebar with a more detailed version of your Sub rules for users to read."
-msgstr "Вам все равно нужно будет обновить боковую панель с более подробной версией ваших правил группы, для чтения пользователями."
+msgid ""
+"You'll still need to update your sidebar with a more detailed version of "
+"your Sub rules for users to read."
+msgstr ""
+"Вам все равно нужно будет обновить боковую панель с более подробной "
+"версией ваших правил группы, для чтения пользователями."
 
 #: app/html/sub/rules.html:28
 msgid "Add rule"
@@ -2277,17 +2326,29 @@ msgid "Email sent!"
 msgstr "E-mail отправлен!"
 
 #: app/html/user/check-your-email.html:9
-msgid "Click the link in the email we sent to you. You may want to check your spam folder, just in case ;)"
-msgstr "Нажмите на ссылку в e-mail письме, которое мы вам отправили. Вы можете проверить папку со спамом, на всякий случай;)"
+msgid ""
+"Click the link in the email we sent to you. You may want to check your "
+"spam folder, just in case ;)"
+msgstr ""
+"Нажмите на ссылку в e-mail письме, которое мы вам отправили. Вы можете "
+"проверить папку со спамом, на всякий случай;)"
 
 #: app/html/user/check-your-email.html:11
 #, python-format
-msgid "After you click the link, you will be able to log in and start using %(site)s!"
-msgstr "После того, как вы нажмете на ссылку, вы сможете войти и начать использовать %(site)s!"
+msgid ""
+"After you click the link, you will be able to log in and start using "
+"%(site)s!"
+msgstr ""
+"После того, как вы нажмете на ссылку, вы сможете войти и начать "
+"использовать %(site)s!"
 
 #: app/html/user/check-your-email.html:14
-msgid "The new email address on your account will take effect after you open the link."
-msgstr "Новый  e-mail адрес в вашей учетной записи вступит в силу после открытия ссылки."
+msgid ""
+"The new email address on your account will take effect after you open the"
+" link."
+msgstr ""
+"Новый  e-mail адрес в вашей учетной записи вступит в силу после открытия "
+"ссылки."
 
 #: app/html/user/login.html:12
 msgid "Login"
@@ -2416,8 +2477,12 @@ msgid "I accept the <a href=\"/wiki/tos\">Terms of Use</a>"
 msgstr "Я согласен с <a href=\"/wiki/tos\">Условиями использования</a>"
 
 #: app/html/user/registration_disabled.html:12
-msgid "Registration has been temporarily disabled. Please check back later. We apologize for any inconvience."
-msgstr "Регистрация была временно отключена. Пожалуйста, зайдите позже. Мы приносим свои извинения за любое недоразумение."
+msgid ""
+"Registration has been temporarily disabled. Please check back later. We "
+"apologize for any inconvience."
+msgstr ""
+"Регистрация была временно отключена. Пожалуйста, зайдите позже. Мы "
+"приносим свои извинения за любое недоразумение."
 
 #: app/html/user/resend_confirmation.html:11
 msgid "Resend account confirmation instructions"
@@ -2475,12 +2540,18 @@ msgstr "Команда  %(site)s"
 #: app/html/user/email/login-link.html:4
 #, python-format
 msgid "Thank you for registering on %(site)s! To confirm your account and log in,"
-msgstr "Спасибо за регистрацию на %(site)s! Чтобы подтвердить свой аккаунт и войти,"
+msgstr ""
+"Спасибо за регистрацию на %(site)s! Чтобы подтвердить свой аккаунт и "
+"войти,"
 
 #: app/html/user/email/password-recovery.html:4
 #, python-format
-msgid "Somebody (most likely you) has requested a password reset for your account on %(site)s."
-msgstr "Кто-то (скорее всего, вы) запросил сброс пароля для вашей учетной записи на %(site)s."
+msgid ""
+"Somebody (most likely you) has requested a password reset for your "
+"account on %(site)s."
+msgstr ""
+"Кто-то (скорее всего, вы) запросил сброс пароля для вашей учетной записи "
+"на %(site)s."
 
 #: app/html/user/email/password-recovery.html:5
 msgid "To proceed, "
@@ -2488,18 +2559,30 @@ msgstr "Продолжать, "
 
 #: app/html/user/messages/notifications.html:24
 #, python-format
-msgid "<a href=\"/u/%(user)s\">%(user)s</a> replied to your post <a href=\"%(link)s\">%(title)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> ответил на ваш пост <a href=\"%(link)s\">%(title)s</a>"
+msgid ""
+"<a href=\"/u/%(user)s\">%(user)s</a> replied to your post <a "
+"href=\"%(link)s\">%(title)s</a>"
+msgstr ""
+"<a href=\"/u/%(user)s\">%(user)s</a> ответил на ваш пост <a "
+"href=\"%(link)s\">%(title)s</a>"
 
 #: app/html/user/messages/notifications.html:26
 #, python-format
-msgid "<a href=\"/u/%(user)s\">%(user)s</a> replied to your comment in <a href=\"%(link)s\">%(title)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> ответил на ваш комментарий в <a href=\"%(link)s\">%(title)s</a>"
+msgid ""
+"<a href=\"/u/%(user)s\">%(user)s</a> replied to your comment in <a "
+"href=\"%(link)s\">%(title)s</a>"
+msgstr ""
+"<a href=\"/u/%(user)s\">%(user)s</a> ответил на ваш комментарий в <a "
+"href=\"%(link)s\">%(title)s</a>"
 
 #: app/html/user/messages/notifications.html:28
 #, python-format
-msgid "<a href=\"/u/%(user)s\">%(user)s</a> mentioned you in <a href=\"%(link)s\">%(title)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> упомянул вас в <a href=\"%(link)s\">%(title)s</a>"
+msgid ""
+"<a href=\"/u/%(user)s\">%(user)s</a> mentioned you in <a "
+"href=\"%(link)s\">%(title)s</a>"
+msgstr ""
+"<a href=\"/u/%(user)s\">%(user)s</a> упомянул вас в <a "
+"href=\"%(link)s\">%(title)s</a>"
 
 #: app/html/user/messages/notifications.html:31
 #, python-format
@@ -2508,8 +2591,12 @@ msgstr "Вас забанили на <a href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:33
 #, python-format
-msgid "<a href=\"/u/%(user)s\">%(user)s</a> banned you from <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> забанил вас на <a href=\"%(sub)s\">%(sub)s</a>"
+msgid ""
+"<a href=\"/u/%(user)s\">%(user)s</a> banned you from <a "
+"href=\"%(sub)s\">%(sub)s</a>"
+msgstr ""
+"<a href=\"/u/%(user)s\">%(user)s</a> забанил вас на <a "
+"href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:37
 #, python-format
@@ -2518,13 +2605,21 @@ msgstr "Вы были разблокированы на <a href=\"%(sub)s\">%(su
 
 #: app/html/user/messages/notifications.html:39
 #, python-format
-msgid "<a href=\"/u/%(user)s\">%(user)s</a> unbanned you from <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> разбанил вас на <a href=\"%(sub)s\">%(sub)s</a>"
+msgid ""
+"<a href=\"/u/%(user)s\">%(user)s</a> unbanned you from <a "
+"href=\"%(sub)s\">%(sub)s</a>"
+msgstr ""
+"<a href=\"/u/%(user)s\">%(user)s</a> разбанил вас на <a "
+"href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:42
 #, python-format
-msgid "<a href=\"/u/%(user)s\">%(user)s</a> invited you to moderate <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> пригласил вас модерировать <a href=\"%(sub)s\">%(sub)s</a>"
+msgid ""
+"<a href=\"/u/%(user)s\">%(user)s</a> invited you to moderate <a "
+"href=\"%(sub)s\">%(sub)s</a>"
+msgstr ""
+"<a href=\"/u/%(user)s\">%(user)s</a> пригласил вас модерировать <a "
+"href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:46
 #, python-format
@@ -2533,8 +2628,12 @@ msgstr "Ваш пост <a href=\"%(link)s\">%(title)s</a> был удален"
 
 #: app/html/user/messages/notifications.html:48
 #, python-format
-msgid "<a href=\"/u/%(user)s\">%(user)s</a> deleted your post <a href=\"%(link)s\">%(title)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> удалил ваш пост <a href=\"%(link)s\">%(title)s</a>"
+msgid ""
+"<a href=\"/u/%(user)s\">%(user)s</a> deleted your post <a "
+"href=\"%(link)s\">%(title)s</a>"
+msgstr ""
+"<a href=\"/u/%(user)s\">%(user)s</a> удалил ваш пост <a "
+"href=\"%(link)s\">%(title)s</a>"
 
 #: app/html/user/messages/notifications.html:52
 #, python-format
@@ -2543,8 +2642,12 @@ msgstr "Один из ваших постов в <a href=\"%(sub)s\">%(sub)s</a>
 
 #: app/html/user/messages/notifications.html:54
 #, python-format
-msgid "<a href=\"/u/%(user)s\">%(user)s</a> deleted one of your posts in <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> удалил один из ваших постов в <a href=\"%(sub)s\">%(sub)s</a>"
+msgid ""
+"<a href=\"/u/%(user)s\">%(user)s</a> deleted one of your posts in <a "
+"href=\"%(sub)s\">%(sub)s</a>"
+msgstr ""
+"<a href=\"/u/%(user)s\">%(user)s</a> удалил один из ваших постов в <a "
+"href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:60
 #, python-format
@@ -2553,8 +2656,12 @@ msgstr "Ваш пост <a href=\"%(link)s\">%(title)s</a> был восстан
 
 #: app/html/user/messages/notifications.html:62
 #, python-format
-msgid "<a href=\"/u/%(user)s\">%(user)s</a> un-deleted your post <a href=\"%(link)s\">%(title)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> восстановил ваш пост <a href=\"%(link)s\">%(title)s</a>"
+msgid ""
+"<a href=\"/u/%(user)s\">%(user)s</a> un-deleted your post <a "
+"href=\"%(link)s\">%(title)s</a>"
+msgstr ""
+"<a href=\"/u/%(user)s\">%(user)s</a> восстановил ваш пост <a "
+"href=\"%(link)s\">%(title)s</a>"
 
 #: app/html/user/messages/notifications.html:66
 #, python-format
@@ -2563,8 +2670,12 @@ msgstr "Один из ваших постов <a href=\"%(sub)s\">%(sub)s</a> б
 
 #: app/html/user/messages/notifications.html:68
 #, python-format
-msgid "<a href=\"/u/%(user)s\">%(user)s</a> un-deleted one of your posts in <a href=\"%(sub)s\">%(sub)s</a>"
-msgstr "<a href=\"/u/%(user)s\">%(user)s</a> восстановил один из ваших постов в <a href=\"%(sub)s\">%(sub)s</a>"
+msgid ""
+"<a href=\"/u/%(user)s\">%(user)s</a> un-deleted one of your posts in <a "
+"href=\"%(sub)s\">%(sub)s</a>"
+msgstr ""
+"<a href=\"/u/%(user)s\">%(user)s</a> восстановил один из ваших постов в "
+"<a href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:77
 #, python-format
@@ -3010,7 +3121,9 @@ msgstr "Подтвердите свой новый аккаунт на %(site)s"
 
 #: app/views/auth.py:182
 msgid "The link you used is invalid or has expired."
-msgstr "Ссылка, которую вы использовали, недействительна или срок ее действия истек."
+msgstr ""
+"Ссылка, которую вы использовали, недействительна или срок ее действия "
+"истек."
 
 #: app/views/auth.py:211
 msgid "Your email is already confirmed."
@@ -3029,8 +3142,12 @@ msgid "Password change failed. Please try again later"
 msgstr "Смена пароля не удалась. Пожалуйста, попробуйте позже"
 
 #: app/views/do.py:125
-msgid "To confirm, click the link in the email we sent to you. You may want to check your spam folder, just in case ;)"
-msgstr "Для подтверждения нажмите на ссылку в письме, которое мы вам отправили. Вы можете проверить папку со спамом, на всякий случай;)"
+msgid ""
+"To confirm, click the link in the email we sent to you. You may want to "
+"check your spam folder, just in case ;)"
+msgstr ""
+"Для подтверждения нажмите на ссылку в письме, которое мы вам отправили. "
+"Вы можете проверить папку со спамом, на всякий случай;)"
 
 #: app/views/do.py:135
 #, python-format
@@ -3144,7 +3261,8 @@ msgstr "Ничего особенного"
 
 #: app/views/do.py:700
 msgid "You are not the author of the item"
-msgstr "\n"
+msgstr ""
+"\n"
 "Вы не являетесь автором материала"
 
 #: app/views/do.py:704
@@ -3524,8 +3642,12 @@ msgid "Sub is already registered"
 msgstr "Группа уже зарегистрирована"
 
 #: app/views/subs.py:301
-msgid "Only Site Admins may create new subs. Please contact an administrator to request a new sub."
-msgstr "Только администраторы сайта могут создавать новые группы. Пожалуйста, свяжитесь с администратором, чтобы запросить новую группу."
+msgid ""
+"Only Site Admins may create new subs. Please contact an administrator to "
+"request a new sub."
+msgstr ""
+"Только администраторы сайта могут создавать новые группы. Пожалуйста, "
+"свяжитесь с администратором, чтобы запросить новую группу."
 
 #: app/views/subs.py:308
 #, python-format
@@ -3556,7 +3678,9 @@ msgstr "Ваш e-mail адрес для восстановления парол�
 
 #: app/views/user.py:194
 msgid "Unable to confirm your new email address. Please try again later."
-msgstr "Невозможно подтвердить ваш новый e-mail адрес. Пожалуйста, попробуйте позже."
+msgstr ""
+"Невозможно подтвердить ваш новый e-mail адрес. Пожалуйста, попробуйте "
+"позже."
 
 #: app/views/user.py:249
 msgid "Password reset link was invalid or expired"
@@ -3565,4 +3689,10 @@ msgstr "Ссылка для сброса пароля недействитель
 #: app/views/wiki.py:23
 msgid "License file was deleted :("
 msgstr "Лицензионный файл был удален :("
+
+#~ msgid "moderation"
+#~ msgstr "модератор"
+
+#~ msgid "distinguish as admin?"
+#~ msgstr "выделить как администратор?"
 

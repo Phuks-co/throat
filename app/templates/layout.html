@@ -19,11 +19,6 @@
     <link rel="icon" href="{{ url_for('static', filename='img/icon.png') }}?v9">
 
     <title>
-      {% if not current_user.is_anonymous %}
-        {% if current_user.notifications >0 %}
-          ({{current_user.notifications}})
-        {% endif %}
-      {% endif %}
       {% block title %}{{config.site.lema}}{% endblock %}</title>
 
     <link rel="stylesheet" type="text/css" href="{{ asset_url_for('main.css') }}">
@@ -46,9 +41,6 @@
       <li><a href="/all/new">new</a></li>
       {% if current_user.can_admin %}
         <li><a href="{{url_for('admin.index')}}">admin</a></li>
-      {% endif %}
-      {% if current_user.is_a_mod or current_user.can_admin %}
-        <li><a href="{{url_for('mod.index')}}">moderation</a></li>
       {% endif %}
       <li>|</li>
       {% if not current_user.is_anonymous %}
@@ -109,9 +101,19 @@
             <span class="hasmail">
               <span class="p-icon{% if current_user.notifications != 0 %} hasmail{%endif%}" data-icon="mail"></span>
               <span id="mailcount" class="mailcount" {% if current_user.notifications == 0 %}style="display:none;"{%endif%}>{{current_user.notifications}}</span>
+            </span>
+          </a>
+        </div>
+        {% if current_user.is_a_mod or current_user.can_admin %}
+        <div class="glyphbutton">
+          <a href="{{ url_for('mod.index') }}">
+            <span class="hasmail">
+              <span class="p-icon" data-icon="shield"></span>
+              <span id="modcount" class="mailcount" data-mod="{{current_user.mod_notifications_json()}}" style="display:none;"></span>
           </span>
           </a>
         </div>
+        {% endif %}
         <div id="toggledark" class="glyphbutton">
           <span class="p-icon" data-icon="{%if request.cookies.get( "dayNight")=="dark" %}sun{%else%}moon{%endif%}"></span>
         </div>

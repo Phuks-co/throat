@@ -8,7 +8,7 @@ from .do import send_password_recovery_email, uid_from_recovery_token
 from .do import info_from_email_confirmation_token
 from .. import misc, config
 from ..auth import auth_provider, email_validation_is_required, AuthError, normalize_email
-from ..misc import engine, send_email
+from ..misc import engine, send_email, is_target_user_admin
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
 from ..forms import EditUserForm, CreateUserMessageForm, EditAccountForm, DeleteAccountForm, PasswordRecoveryForm
 from ..forms import PasswordResetForm
@@ -37,7 +37,7 @@ def view(user):
     badges = misc.getUserBadges(user.uid)
     pcount = SubPost.select().where(SubPost.uid == user.uid).count()
     ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()
-
+    user_is_admin = misc.is_target_user_admin(user.uid)
     habit = Sub.select(Sub.name, fn.Count(SubPost.pid).alias('count')).join(SubPost, JOIN.LEFT_OUTER,
                                                                             on=(SubPost.sid == Sub.sid))
     habit = habit.where(SubPost.uid == user.uid).group_by(Sub.sid).order_by(fn.Count(SubPost.pid).desc()).limit(10)
@@ -57,7 +57,7 @@ def view(user):
 
     return engine.get_template('user/profile.html').render(
         {'user': user, 'level': level, 'progress': progress, 'postCount': pcount, 'commentCount': ccount,
-         'givenScore': givenScore, 'invitecodeinfo': invitecodeinfo, 'badges': badges, 'owns': owns, 'mods': mods, 'habits': habit,
+         'givenScore': givenScore, 'invitecodeinfo': invitecodeinfo, 'badges': badges, 'owns': owns, 'mods': mods, 'habits': habit, 'target_user_is_admin': user_is_admin,
          'msgform': CreateUserMessageForm()})
 
 
@@ -111,7 +111,9 @@ def view_user_comments(user, page):
         abort(404)
 
     comments = misc.getUserComments(user.uid, page)
-    return render_template('usercomments.html', user=user, page=page, comments=comments)
+    postmeta = misc.get_postmeta_dicts((c['pid'] for c in comments))
+    return render_template('usercomments.html', user=user, page=page,
+                           comments=comments, postmeta=postmeta)
 
 @bp.route("/uploads", defaults={'page': 1})
 @bp.route("/uploads/<int:page>")
