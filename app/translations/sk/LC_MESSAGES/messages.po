@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version:  2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-12-22 15:42-0300\n"
-"PO-Revision-Date: 2020-10-05 06:00+0000\n"
+"PO-Revision-Date: 2020-12-22 21:24\n"
 "Last-Translator: \n"
 "Language: sk_SK\n"
 "Language-Team: Slovak\n"
@@ -2111,11 +2111,11 @@ msgstr "najnovšie komentáre"
 
 #: app/html/sub/post.html:233
 msgid "unlock comments"
-msgstr ""
+msgstr "odomknúť komentáre"
 
 #: app/html/sub/post.html:235
 msgid "lock comments"
-msgstr ""
+msgstr "zamknúť komentáre"
 
 #: app/html/sub/post.html:246 app/html/sub/postcomments.html:103
 msgid "un-delete"
@@ -2163,7 +2163,7 @@ msgstr "Náhľad komentára"
 
 #: app/html/sub/post.html:336
 msgid "This post is closed to new comments."
-msgstr ""
+msgstr "Komentáre sú zamknuté."
 
 #: app/html/sub/post.html:341
 msgid "No comments, yet..."
@@ -2846,11 +2846,11 @@ msgstr "odstránené"
 
 #: app/static/js/Post.js:43
 msgid "distinguish as:"
-msgstr ""
+msgstr "prízvukovať ako:"
 
 #: app/static/js/Post.js:46
 msgid "mod"
-msgstr ""
+msgstr "moderátor"
 
 #: app/static/js/Post.js:59 app/static/js/Post.js:514
 msgid "Why are you deleting this?"
@@ -3016,9 +3016,7 @@ msgid "File size exceeds maximum allowed (%1 MB)"
 msgstr "Súbor je väčší ako povolený limit (%1 MB)"
 
 #: app/static/js/main.js:174 app/static/js/main.js:179
-msgid ""
-"There was an error while saving your settings. Please try again in a few "
-"minutes."
+msgid "There was an error while saving your settings. Please try again in a few minutes."
 msgstr "Pri ukladaní nastavení sa vyskytla chyba. Prosím skúste znovu o pár minút."
 
 #: app/static/js/main.js:249
@@ -3262,7 +3260,7 @@ msgstr "Príspevok bol vymazaný"
 
 #: app/views/do.py:808
 msgid "Comments are closed on this post."
-msgstr ""
+msgstr "Komentáre k tomuto príspevku sú vypnuté."
 
 #: app/views/do.py:815
 msgid "You are currently banned from commenting"
@@ -3507,7 +3505,7 @@ msgstr "Zadaný dôvod je príliš stručný."
 
 #: app/views/do.py:2576 app/views/do.py:2624
 msgid "Report reason too long."
-msgstr ""
+msgstr "Dôvod reportu presahuje povolenú dĺžku."
 
 #: app/views/do.py:2579 app/views/do.py:2627
 msgid "You are banned from this sub."
