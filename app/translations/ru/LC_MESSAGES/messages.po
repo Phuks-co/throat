@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-12-22 15:42-0300\n"
-"PO-Revision-Date: 2020-12-22 21:24\n"
+"PO-Revision-Date: 2020-12-23 04:26\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -2079,11 +2079,11 @@ msgstr "сортировать по новым"
 
 #: app/html/sub/post.html:233
 msgid "unlock comments"
-msgstr ""
+msgstr "разблокировать комментарии"
 
 #: app/html/sub/post.html:235
 msgid "lock comments"
-msgstr ""
+msgstr "заблокировать комментарии"
 
 #: app/html/sub/post.html:246 app/html/sub/postcomments.html:103
 msgid "un-delete"
@@ -2131,7 +2131,7 @@ msgstr "Предпросмотр комментария"
 
 #: app/html/sub/post.html:336
 msgid "This post is closed to new comments."
-msgstr ""
+msgstr "Этот пост закрыт для новых комментариев."
 
 #: app/html/sub/post.html:341
 msgid "No comments, yet..."
@@ -2746,11 +2746,11 @@ msgstr "удаленный"
 
 #: app/static/js/Post.js:43
 msgid "distinguish as:"
-msgstr ""
+msgstr "различают как:"
 
 #: app/static/js/Post.js:46
 msgid "mod"
-msgstr ""
+msgstr "модератор"
 
 #: app/static/js/Post.js:59 app/static/js/Post.js:514
 msgid "Why are you deleting this?"
@@ -3157,7 +3157,7 @@ msgstr "Пост удален"
 
 #: app/views/do.py:808
 msgid "Comments are closed on this post."
-msgstr ""
+msgstr "Комментарии недоступны для этой новости."
 
 #: app/views/do.py:815
 msgid "You are currently banned from commenting"
@@ -3402,7 +3402,7 @@ msgstr "Сообщить причину слишком коротко."
 
 #: app/views/do.py:2576 app/views/do.py:2624
 msgid "Report reason too long."
-msgstr ""
+msgstr "Слишком долго сообщать причину."
 
 #: app/views/do.py:2579 app/views/do.py:2627
 msgid "You are banned from this sub."
