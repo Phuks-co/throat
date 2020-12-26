@@ -134,9 +134,10 @@ def userbadges():
 
     form = AssignUserBadgeForm()
     form.badge.choices = [(badge.bid, badge.name) for badge in badges]
+    ct = UserMetadata.select().where(UserMetadata.key=='badge').count()
     return render_template('admin/userbadges.html', badges=badges,
                            assignuserbadgeform=form,
-                           ct=0, admin_route='admin.userbadges')
+                           ct=ct, admin_route='admin.userbadges')
 
 @bp.route("/userbadges/new", methods=['GET', 'POST'])
 @login_required
