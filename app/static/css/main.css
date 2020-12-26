@@ -2586,3 +2586,7 @@ article.text-post.comment.deleted {
   margin: 0;
   padding: 0;
 }
+
+.left {
+    text-align: left;
+}

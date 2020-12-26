@@ -5,12 +5,12 @@ import datetime
 import random
 from peewee import fn, JOIN
 from pyotp import TOTP
-from flask import Blueprint, abort, redirect, url_for, session, render_template, jsonify
+from flask import Blueprint, abort, redirect, url_for, session, render_template, jsonify, request
 from flask_login import login_required, current_user
 from flask_babel import _
 from .. import misc
 from ..forms import TOTPForm, LogOutForm, UseInviteCodeForm, AssignUserBadgeForm, EditModForm, BanDomainForm, WikiForm
-from ..forms import CreateInviteCodeForm, UpdateInviteCodeForm
+from ..forms import CreateInviteCodeForm, UpdateInviteCodeForm, EditBadgeForm, NewBadgeForm
 from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, SubPostCommentVote, SubPostVote, SiteMetadata
 from ..models import UserUploads, InviteCode, Wiki
 from ..misc import engine, getReports
@@ -131,11 +131,62 @@ def userbadges():
     """ WIP: Assign user badges. """
     if not current_user.is_admin():
         abort(404)
-    ct = misc.getAdminUserBadges()
 
-    return render_template('admin/userbadges.html', badges=badges.items(),
-                           assignuserbadgeform=AssignUserBadgeForm(),
-                           ct=len(ct), admin_route='admin.userbadges')
+    form = AssignUserBadgeForm()
+    form.badge.choices = [(badge.bid, badge.name) for badge in badges]
+    return render_template('admin/userbadges.html', badges=badges,
+                           assignuserbadgeform=form,
+                           ct=0, admin_route='admin.userbadges')
+
+@bp.route("/userbadges/new", methods=['GET', 'POST'])
+@login_required
+def newbadge():
+    """Edit badge information."""
+    if not current_user.is_admin():
+        abort(404)
+
+    form = NewBadgeForm()
+    form.trigger.choices = [(None, "No Trigger")] + [(trigger, trigger) for trigger in badges.triggers()]
+    if form.validate_on_submit():
+        icon = request.files.get(form.icon.name)
+        badges.new_badge(name=form.name.data, alt=form.alt.data, score=form.score.data,
+                trigger=form.trigger.data, rank=form.rank.data, icon=icon)
+        return redirect(url_for('admin.userbadges'))
+    return render_template('admin/editbadge.html', form=form, badge=None, new=True)
+
+@bp.route("/userbadges/edit/<int:badge>", methods=['GET', 'POST'])
+@login_required
+def editbadge(badge):
+    """Edit badge information."""
+    if not current_user.is_admin():
+        abort(404)
+
+    badge = badges[badge]
+
+    form = EditBadgeForm()
+    form.trigger.choices = [(None, "No Trigger")] + [(trigger, trigger) for trigger in badges.triggers()]
+    if form.validate_on_submit():
+        icon = request.files.get(form.icon.name)
+        badges.update_badge(bid=badge.bid, name=form.name.data, alt=form.alt.data, score=form.score.data,
+                trigger=form.trigger.data, rank=form.rank.data, icon=icon)
+        return redirect(url_for('admin.userbadges'))
+    form.name.data = badge.name
+    form.alt.data = badge.alt
+    form.score.data = badge.score
+    form.trigger.data = badge.trigger
+    form.rank.data = badge.rank
+    return render_template('admin/editbadge.html', form=form, badge=badge, new=False)
+
+
+@bp.route("/userbadges/delete/<int:badge>", methods=['POST'])
+@login_required
+def deletebadge(badge):
+    """Edit badge information."""
+    if not current_user.is_admin():
+        abort(404)
+
+    badges.delete_badge(badge)
+    return redirect(url_for('admin.userbadges'))
 
 
 @bp.route("/invitecodes", defaults={'page': 1}, methods=['GET', 'POST'])

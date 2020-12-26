@@ -492,13 +492,12 @@ def assign_userbadge():
     """ Admin endpoint used for assigning a user badge. """
     if not current_user.is_admin():
         abort(403)
+    l = [(badge.bid, badge.name) for badge in badges]
     form = AssignUserBadgeForm()
+    form.badge.choices = l
 
-    l = []
-    for bg in badges:
-        l.append(badges[bg]['nick'])
-
-    if form.badge.data not in l:
+    if form.badge.data not in [str(x[0]) for x in l]:
+        print("---- HHERE ----" + form.badge.data)
         return jsonify(status='error', error=[_("Badge does not exist")])
 
     try:
@@ -507,9 +506,7 @@ def assign_userbadge():
         return jsonify(status='error', error=[_("User does not exist")])
 
     if form.validate():
-
-        UserMetadata.create(uid=user.uid, key='badge',
-                            value=form.badge.data)
+        badges.assign_userbadge(user.uid, form.badge.data)
 
         # TODO log it, create new log type and save to sitelog ??
 

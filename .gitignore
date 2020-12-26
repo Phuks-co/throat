@@ -71,6 +71,7 @@ package-lock.json
 
 # vscode settings
 .vscode
+.vim
 
 # pycharm settings
 .idea

@@ -1,0 +1,56 @@
+{% extends "layout.html" %} {% block title %}Admin - {{ config.site.lema }}{%
+endblock %} {% block head %}
+{{ super() }}
+{% endblock %} {% block sidebar %}
+{{ super() }}
+{% include 'admin/sidebar.html' %} {% endblock %} {% block content %}
+{{ super() }}
+
+<div id="center-container">
+  <div class="content">
+    <div class="admin section">
+      <div class="col-12 admin-page-form">
+        <form method="POST" class="edit_badge_form" enctype="multipart/form-data">
+          {{ form.csrf_token }}
+          <div>{% if badge %}<span class="profilebadge"><img src="{{ badge.icon_url() }}" width="60" height="60" /></span>{% endif %}{{ form.icon(required=new) }}</div>
+          <div>{{ form.name.label }}: {{form.name(required=True)}}</div>
+          <div>
+            {{ form.score.label }}: {{form.score(required=True)}}
+          </div>
+          <div>{{ form.alt.label }}:</div>
+          <div>{{ form.alt }}</div>
+          <div>
+            {{ form.trigger.label }}: {{form.trigger(required=True)}}
+          </div>
+          <div>{{ form.rank.label }}: {{form.rank(required=True)}}</div>
+          <div>
+            <button
+              type="submit"
+              class="pure-button"
+              data-prog="Doing the magic..."
+            >
+            {% if new %}Save{% else %}Save Edits{% endif %}
+            </button>
+          </div>
+          <div class="alert div-error"></div>
+        </form>
+        {% if not new %}
+        <hr />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <form
+          method="POST"
+          action="{{url_for('admin.deletebadge', badge=badge.bid)}}"
+        >
+          <button type="submit" class="delete pure-button">Delete Badge!</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
