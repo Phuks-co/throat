@@ -14,6 +14,7 @@ from ..forms import EditUserForm, CreateUserMessageForm, EditAccountForm, Delete
 from ..forms import PasswordResetForm
 from ..models import User, UserStatus, UserMetadata, UserUploads
 from ..models import Sub, SubMod, SubPost, SubPostComment, UserSaved, InviteCode
+from ..badges import badges as badges_module
 
 bp = Blueprint('user', __name__)
 
@@ -34,7 +35,7 @@ def view(user):
     owns = [x.sub.name for x in modsquery if x.power_level == 0]
     mods = [x.sub.name for x in modsquery if 1 <= x.power_level <= 2]
     invitecodeinfo = misc.getInviteCodeInfo(user.uid)
-    badges = misc.getUserBadges(user.uid)
+    badges = badges_module.badges_for_user(user.uid)
     pcount = SubPost.select().where(SubPost.uid == user.uid).count()
     ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()
     user_is_admin = misc.is_target_user_admin(user.uid)

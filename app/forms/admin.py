@@ -1,8 +1,8 @@
 """ admin-related forms """
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, TextAreaField
-from wtforms import IntegerField, RadioField, FieldList
+from wtforms import StringField, BooleanField, TextAreaField, FileField
+from wtforms import IntegerField, RadioField, FieldList, SelectField
 from wtforms.validators import DataRequired, Length, Regexp
 from flask_babel import lazy_gettext as _l
 
@@ -23,11 +23,25 @@ class EditModForm(FlaskForm):
 
 class AssignUserBadgeForm(FlaskForm):
     """ Assign user badge to user (admin) """
-    badge = StringField(_l('Badge nick'),
-                      validators=[DataRequired(), Length(min=1, max=128)])
+    badge = SelectField(_l('Badge'))
     user = StringField(_l('Username'),
                        validators=[DataRequired(), Length(min=1, max=128)])
 
+class NewBadgeForm(FlaskForm):
+    icon = FileField(_l("Badge Icon"), validators=[DataRequired()])
+    name = StringField(_l("Badge Name"), validators=[DataRequired(), Length(min=1, max=34)])
+    alt = TextAreaField(_l("Badge Description"), validators=[Length(min=0, max=255)])
+    score = IntegerField(_l("Score Adjustment"), validators=[DataRequired()])
+    rank = IntegerField(_l("Sort"), validators=[DataRequired()])
+    trigger = SelectField(_l("Trigger"))
+
+class EditBadgeForm(FlaskForm):
+    icon = FileField(_l("Badge Icon"))
+    name = StringField(_l("Badge Name"), validators=[Length(min=1, max=34)])
+    alt = TextAreaField(_l("Badge Description"), validators=[Length(min=0, max=255)])
+    score = IntegerField(_l("Score Adjustment"))
+    rank = IntegerField(_l("Sort"))
+    trigger = SelectField(_l("Trigger"))
 
 class BanDomainForm(FlaskForm):
     """ Add banned domain """

@@ -1,29 +1,120 @@
 """ Here we store badges. """
-from flask_babel import lazy_gettext as _l
+from .storage import FILE_NAMESPACE, mtype_from_file, calculate_file_hash, store_file
+from peewee import JOIN
+from .models import Badge, UserMetadata, SubMod
+import uuid
 
-badges = {  # "intname": {"nick": "intname", "name": "foo", "alt": "a badge for foo", "icon": "bar.svg", "score": 2}
-    "admin": {"nick": "admin", "name": "Admin", "alt": _l("The guys that take all the blame"), "icon": "skull.svg", "score": 700},
-    "bugger": {"nick": "bugger", "name": "Bug squasher", "alt": _l("Helped find or fix a bug"), "icon": "bug.svg", "score": 500},
-    "eadop": {"nick": "eadop", "name": "Early adopter", "alt": _l("You knew what you were getting into when you let me get into you"), "icon": "trophy.svg", "score": 500},
-    "donor": {"nick": "donor", "name": "Donor", "alt": _l("Gave bucks to Phuks"), "icon": "donor.svg", "score": 500},
-    "splaw": {"nick": "splaw", "name": "Space Lawyer", "alt": "", "icon": "copyright.svg", "score": 100},
-    "hitler": {"nick": "hitler", "name": "Literally Hitler", "alt": "", "icon": "evil.svg", "score": 100},
 
-    "miner": {"nick": "miner", "name": "Grinder", "alt": _l("Mined a lot of Phuks"), "icon": "shovel.svg", "score": 300},
-    "spotlight": {"nick": "spotlight", "name": "Spotlight", "alt": _l("Top post of the day"), "icon": "bubbles.svg", "score": 200},
-    "commando": {"nick": "commando", "name": "Keyboard commando", "alt": _l("Make a good post every day for a week"), "icon": "coffee.svg", "score": 300},
+class Badges:
+    """
+    Badge exposes a stable API for dealing with user badges.
 
-    "enthusiasm": {"nick": "enthusiasm", "name": "Enthusiasm", "alt": _l("Too hyped to wait!"), "icon": "account-switch.svg", "score": -100},
+    We need to be able to look up a badge by id and name, along with the ability to
+    iterate through all of the badges.
 
-    "broccoli": {"nick": "broccoli", "name": "Broccoli supporter", "alt": _l("Once proud men, the Broccoli People now must remain in hiding after early on the Vegetable Wars against the Cabbages."), "icon": "broccoli.svg", "score": 100},
-    "cabbage": {"nick": "cabbage", "name": "Cabbage supporter", "alt": _l("The Cabbage People are now the dominant force in the Vegetable Wars, being in the road to become an hegemon after defeating the Broccolis."), "icon": "cabbage.svg", "score": 100},
+    We also want to be able to create badges.
 
-    "shitposter2018": {"nick": "2018shit", "name": "Shitposter of the year", "alt": _l("Winner of the shitposter of the year 2018 contest"), "icon": "shitposter18.svg", "score": 250}
+    For backwards compatability we will allow "fetching" of old_badges but only by ID.
 
+    This will also create an interfact for Triggers, as Badges and Triggers are interlinked.
+    """
+
+    def __iter__(self):
+        """
+        Returns a list of all bagdes in the database.
+        """
+        return (x for x in Badge.select(Badge.bid, Badge.name, Badge.alt, Badge.icon, Badge.score, Badge.trigger, Badge.rank)\
+                .order_by(Badge.rank, Badge.name))
+
+    def __getitem__(self, bid):
+        """
+        Returns a badge from the database.
+        """
+        try:
+            return Badge.get(Badge.bid == bid)
+        except:
+            return None
+
+    def update_badge(self, bid, name, alt, icon, score, rank, trigger):
+        """
+        Updates the information related to a badge, updates icon if provided.
+        """
+        if icon:
+            icon = gen_icon(icon)
+        else:
+            icon = self[bid].icon
+
+        Badge.update(name=name, alt=alt, icon=icon, score=score, rank=rank, trigger=trigger).where(Badge.bid==bid).execute()
+
+
+    def new_badge(self, name, alt, icon, score, rank, trigger=None):
+        """
+        Creates a new badge with an optional trigger.
+        """
+        icon = gen_icon(icon)
+        Badge.create(name=name, alt=alt, icon=icon,
+                     score=score, rank=rank, trigger=trigger)
+
+    def delete_badge(self, bid):
+        """
+        Deletes a badge by ID
+        """
+        Badge.delete().where(Badge.bid == bid).execute()
+        UserMetadata.delete().where((UserMetadata.key == 'badge')
+                                    & (UserMetadata.value == bid)).execute()
+
+    def assign_userbadge(self, uid, bid):
+        """
+        Gives a badge to a user
+        """
+        UserMetadata.get_or_create(key="badge", uid=uid, value=bid)
+
+    def triggers(self):
+        """
+        Lists available triggers that can be attached to a badge.
+        """
+        return triggers.keys()
+
+    def badges_for_user(self, uid):
+        """
+        Returns a list of badges associated with a user.
+        """
+        return Badge.select(Badge.bid, Badge.name, Badge.icon, Badge.score, Badge.alt, Badge.rank)\
+            .join(UserMetadata, JOIN.LEFT_OUTER, on=(UserMetadata.value.cast("int") == Badge.bid))\
+            .where((UserMetadata.uid == uid) & (UserMetadata.key == 'badge'))\
+            .order_by(Badge.rank, Badge.name)
+
+def gen_icon(icon):
+    mtype = mtype_from_file(icon, allow_video_formats=False)
+    if mtype is None:
+        raise Exception(
+            _l('Invalid file type. Only jpg, png and gif allowed.'))
+
+    fhash = calculate_file_hash(icon)
+    basename = str(uuid.uuid5(FILE_NAMESPACE, fhash))
+    f_name = store_file(icon, basename, mtype, remove_metadata=True)
+    return f_name
+
+badges = Badges()
+
+
+def admin(bid):
+    """
+    Auto assigns badges to admins.
+    """
+    for user in UserMetadata.select().where((UserMetadata.key == "admin") & (UserMetadata.value == True)):
+        badges.assign_userbadge(user.uid, bid)
+
+
+def mod(bid):
+    """
+    Auto assigns badges to mods.
+    """
+    for user in SubMod.select().where((SubMod.invite == False)):
+        badges.assign_userbadge(user.uid, bid)
+
+# TODO actually hook these up
+triggers = {
+    "admin": admin,
+    "mod": mod,
 }
-
-for bg in badges:
-    try:
-        badges[bg]['icon'] = open('./app/static/svg/' + badges[bg]['icon']).read()
-    except FileNotFoundError:
-        pass

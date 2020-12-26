@@ -19,6 +19,7 @@ from ..models import SiteMetadata, UserMetadata, Message, SubRule, Notification,
 from ..models import SubPostMetadata
 from ..caching import cache
 from ..config import config
+from ..badges import badges
 
 API = Blueprint('apiv3', __name__)
 
@@ -925,7 +926,7 @@ def get_user(username):
         'joindate': user.joindate,
         'level': level[0],
         'xp': level[1],
-        'badges': misc.getUserBadges(user.uid),
+        'badges': badges.badges_for_user(user.uid),
         'posts': pcount,
         'comments': ccount,
         'subs': {

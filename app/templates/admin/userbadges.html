@@ -19,52 +19,53 @@
     <div class="admin section">
       <hr>
       <div class="col-12 admin-page-form">
-          <form  method="POST" class="ajaxform" id="assign-userbadge-form" data-reload="true" action="{{url_for('do.assign_userbadge')}}">
+          <form  method="POST" class="ajaxform pure-form" data-reload="true" action="{{url_for('do.assign_userbadge')}}">
             {{assignuserbadgeform.csrf_token}}
             <h4>Assign badge to user</h4>
-            <div>{{assignuserbadgeform.badge(placeholder=assignuserbadgeform.badge.label.text, required=True)}}</div>
-            <div>{{assignuserbadgeform.user(placeholder=assignuserbadgeform.user.label.text, required=True)}}</div>
-            <div><button type="submit" class="pure-button" data-prog="Doing the magic...">Assign Badge</button></div>
-            <div class="alert div-error"></div>
+            <p>
+              {{assignuserbadgeform.user(placeholder=assignuserbadgeform.user.label.text, required=True)}}
+              {{assignuserbadgeform.badge(placeholder=assignuserbadgeform.badge.label.text, required=True)}}
+              <button type="submit" class="pure-button" data-prog="Doing the magic...">Assign Badge</button>
+            </p>
+            <div class="div-error error alertbox"></div>
           </form>
       </div>
     <hr>
       <div class="col-12">
-        {% if badges|length > 0 %}
         <div class="userrow">
           <h3>Badges</h3>
+          <p class="left"><a href="{{url_for('admin.newbadge')}}">New Badge</a></p>
           <table>
             <tr>
-              <th>Nick</th>
+              <th>Sort</th>
               <th>Icon</th>
               <th>Name</th>
               <th>Score</th>
               <th>Alt</th>
+              <th>Trigger</th>
             </tr>
             {% for badge in badges %}
-              {% for b in badge %}
               <tr>
+                  <td>{{badge.rank}}</td>
                 <td>
-                  {{b.nick}}
+                    <span class="profilebadge" title="{{badge.name}}"><img width="60" height="60" src="{{badge.icon_url()}}" /></span>
                 </td>
                 <td>
-                  <span class="profilebadge" title="{{b.name}}">{{b.icon|safe}}</span>
+                    <a href="userbadges/edit/{{badge.bid}}">{{badge.name}}</a>
                 </td>
                 <td>
-                  {{b.name}}
+                  {{badge.score}}
+                </td>
+                <td class="left">
+                  {{badge.alt}}
                 </td>
                 <td>
-                  {{b.score}}
-                </td>
-                <td>
-                  {{b.alt}}
+                  {{badge.trigger}}
                 </td>
               </tr>
-              {% endfor %}
             {% endfor %}
           </table>
         </div>
-        {% endif %}
       </div>
     </div>
   </div>
