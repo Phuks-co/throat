@@ -774,7 +774,7 @@ def edit_txtpost(pid):
 @ratelimit(POSTING_LIMIT)
 def grab_title():
     """ Safely grabs the <title> from a page """
-    url = request.json.get('u')
+    url = request.json.get('u').strip()
     if not url:
         abort(400)
     return tasks.grab_title(url)
