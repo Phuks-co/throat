@@ -80,7 +80,7 @@ class Badges:
         Returns a list of badges associated with a user.
         """
         return Badge.select(Badge.bid, Badge.name, Badge.icon, Badge.score, Badge.alt, Badge.rank)\
-            .join(UserMetadata, JOIN.LEFT_OUTER, on=(UserMetadata.value == Badge.bid.cast("varchar")))\
+            .join(UserMetadata, JOIN.LEFT_OUTER, on=(UserMetadata.value.cast("int") == Badge.bid))\
             .where((UserMetadata.uid == uid) & (UserMetadata.key == 'badge'))\
             .order_by(Badge.rank, Badge.name)
 
