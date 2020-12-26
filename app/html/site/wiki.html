@@ -8,7 +8,7 @@
         <h1>@{wiki.title}</h1>
         @{func.our_markdown(wiki.content)!!html}
 
-        @{_('Last update: %(timestamp)s', timestamp=wiki.updated.ctime())}
+        @{_('Last update: %(timestamp)s', timestamp=wiki.updated.strftime("%Y-%m-%d %H:%I:%S"))}
       </div>
     </div>
   </div>
