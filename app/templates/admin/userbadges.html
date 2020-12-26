@@ -19,13 +19,15 @@
     <div class="admin section">
       <hr>
       <div class="col-12 admin-page-form">
-          <form  method="POST" class="ajaxform" id="assign-userbadge-form" data-reload="true" action="{{url_for('do.assign_userbadge')}}">
+          <form  method="POST" class="ajaxform pure-form" data-reload="true" action="{{url_for('do.assign_userbadge')}}">
             {{assignuserbadgeform.csrf_token}}
             <h4>Assign badge to user</h4>
-            <div>{{assignuserbadgeform.user(placeholder=assignuserbadgeform.user.label.text, required=True)}}</div>
-            <div>{{assignuserbadgeform.badge(placeholder=assignuserbadgeform.badge.label.text, required=True)}}</div>
-            <div><button type="submit" class="pure-button" data-prog="Doing the magic...">Assign Badge</button></div>
-            <div class="alert div-error"></div>
+            <p>
+              {{assignuserbadgeform.user(placeholder=assignuserbadgeform.user.label.text, required=True)}}
+              {{assignuserbadgeform.badge(placeholder=assignuserbadgeform.badge.label.text, required=True)}}
+              <button type="submit" class="pure-button" data-prog="Doing the magic...">Assign Badge</button>
+            </p>
+            <div class="div-error error alertbox"></div>
           </form>
       </div>
     <hr>

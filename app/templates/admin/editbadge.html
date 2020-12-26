@@ -10,42 +10,53 @@ endblock %} {% block head %}
   <div class="content">
     <div class="admin section">
       <div class="col-12 admin-page-form">
-        <form method="POST" class="edit_badge_form" enctype="multipart/form-data">
+        <form method="POST" class="pure-form pure-form-aligned" enctype="multipart/form-data">
           {{ form.csrf_token }}
-          <div>{% if badge %}<span class="profilebadge"><img src="{{ badge.icon_url() }}" width="60" height="60" /></span>{% endif %}{{ form.icon(required=new) }}</div>
-          <div>{{ form.name.label }}: {{form.name(required=True)}}</div>
-          <div>
-            {{ form.score.label }}: {{form.score(required=True)}}
-          </div>
-          <div>{{ form.alt.label }}:</div>
-          <div>{{ form.alt }}</div>
-          <div>
-            {{ form.trigger.label }}: {{form.trigger(required=True)}}
-          </div>
-          <div>{{ form.rank.label }}: {{form.rank(required=True)}}</div>
-          <div>
-            <button
-              type="submit"
-              class="pure-button"
-              data-prog="Doing the magic..."
-            >
-            {% if new %}Save{% else %}Save Edits{% endif %}
-            </button>
-          </div>
+          <fieldset>
+            <div class="pure-control-group">
+              {% if not new %}
+                <label for="icon"><img src="{{ badge.icon_url() }}" width="60" height="60" /></label>
+              {% else %}
+                <label for="icon">{{ form.icon.label }}</label>
+              {% endif %}
+              {{ form.icon(required=new) }}
+            </div>
+            <div class="pure-control-group">
+              <label for="name">{{ form.name.label }}</label>{{form.name(required=True)}}
+            </div>
+
+            <div class="pure-control-group">
+              <label for="score">{{ form.score.label }}</label>{{form.score(required=True)}}
+            </div>
+
+            <div class="pure-control-group">
+              <label for="alt">{{ form.alt.label }}</label>{{form.alt}}
+            </div>
+
+            <div class="pure-control-group">
+              <label for="trigger">{{ form.trigger.label }}</label>{{form.trigger}}
+            </div>
+
+            <div class="pure-control-group">
+              <label for="rank">{{ form.rank.label }}</label>{{form.rank}}
+            </div>
+
+            <div class="pure-controls">
+              <button type="submit" class="pure-button" data-prog="Doing the magic...">
+                {% if new %}Save{% else %}Save Edits{% endif %}
+              </button>
+            </div>
+          </fieldset>
           <div class="alert div-error"></div>
         </form>
         {% if not new %}
         <hr />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <form
-          method="POST"
-          action="{{url_for('admin.deletebadge', badge=badge.bid)}}"
-        >
-          <button type="submit" class="delete pure-button">Delete Badge!</button>
+        <form method="POST" class="pure-form pure-form-aligned" action="{{url_for('admin.deletebadge', badge=badge.bid)}}">
+          <fieldset>
+            <div class="pure-controls">
+              <button type="submit" class="delete pure-button button-error">Delete Badge!</button>
+            </div>
+          </fieldset>
         </form>
         {% endif %}
       </div>
