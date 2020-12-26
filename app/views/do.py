@@ -497,7 +497,6 @@ def assign_userbadge():
     form.badge.choices = l
 
     if form.badge.data not in [str(x[0]) for x in l]:
-        print("---- HHERE ----" + form.badge.data)
         return jsonify(status='error', error=[_("Badge does not exist")])
 
     try:

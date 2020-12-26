@@ -765,6 +765,7 @@ class Notification(BaseModel):
 
     target = ForeignKeyField(db_column='receivedby', model=User, field='uid', null=True)
     read = DateTimeField(null=True)
+    # For future custom text notifications sent by admins (badge notifications?)015_notifications
     content = TextField(null=True)
 
     created = DateTimeField(default=datetime.datetime.utcnow)
