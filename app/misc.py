@@ -668,7 +668,7 @@ def getDomain(link):
 @cache.memoize(300)
 def isImage(link):
     """ Returns True if link ends with img suffix """
-    suffix = ('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')
+    suffix = ('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg', '.svg')
     return link.lower().endswith(suffix)
 
 
@@ -693,23 +693,13 @@ def get_user_level(uid, score=None):
         xp = user.score
     else:
         xp = score
-    userbadges = getUserBadges(uid)
+    userbadges = badges.badges_for_user(uid)
     for badge in userbadges:
-        xp += badge['score']
+        xp += badge.score
     if xp <= 0:  # We don't want to do the sqrt of a negative number
         return 0, xp
     level = math.sqrt(xp / 10)
     return int(level), xp
-
-
-def getAdminUserBadges():
-    um = UserMetadata.select().where(UserMetadata.key == 'badge').dicts()
-    ret = []
-    for bg in um:
-        if badges.get(bg['value']):
-            ret.append(badges[bg['value']])
-    return ret
-
 
 @cache.memoize(300)
 def getTodaysTopPosts():
@@ -1084,15 +1074,6 @@ def getUserComments(uid, page):
     for c in com:
         c['archived'] = now - c['posted'].replace(tzinfo=None) > limit
     return com
-
-
-def getUserBadges(uid):
-    um = UserMetadata.select().where((UserMetadata.uid == uid) & (UserMetadata.key == 'badge')).dicts()
-    ret = []
-    for bg in um:
-        if badges.get(bg['value']):
-            ret.append(badges[bg['value']])
-    return ret
 
 
 def getSubMods(sid):

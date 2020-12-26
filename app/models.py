@@ -8,6 +8,7 @@ from flask_redis import FlaskRedis
 from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model, Database
 from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
 from werkzeug.local import LocalProxy
+from .storage import file_url
 
 rconn = FlaskRedis()
 
@@ -457,6 +458,25 @@ class UserMetadata(BaseModel):
 
     class Meta:
         table_name = 'user_metadata'
+
+class Badge(BaseModel):
+    bid = PrimaryKeyField()
+    # supercalifragilisticexpialidocious == 34
+    name = CharField(unique=True, max_length=34)
+    alt = CharField(max_length=255)
+    icon = CharField()
+    score = IntegerField()
+    rank = IntegerField()
+    trigger = CharField(null=True)
+
+    def __getitem__(self, key):
+        tmp = self.__dict__.get(key)
+        if key == 'icon':
+            tmp = file_url(tmp)
+        return tmp
+
+    def icon_url(self):
+        return file_url(self.icon)
 
 
 class UserAuthSource(IntEnum):

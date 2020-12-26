@@ -68,7 +68,9 @@
                             <h2 style="text-align: center; margin-top: 2em;">@{_('Badges')}</h2>
                             <ul id="userBadges">
                                 @for badge in badges:
-                                    <li class="profilebadge" title="@{badge['name']} @{badge['alt'] != '' and ' - ' + badge['alt'] or ''}">@{badge['icon']!!html}</li>
+                                    <li class="profilebadge" title="@{badge.name} @{badge.alt != '' and ' - ' + badge.alt or ''}">
+                                        <img width="60" height="60" src="@{badge.icon_url()}" />
+                                    </li>
                                 @end
                             </ul>
                         </div>

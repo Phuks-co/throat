@@ -169,6 +169,8 @@ def upload_file():
 EXTENSIONS = {'image/jpeg': '.jpg',
               'image/png': '.png',
               'image/gif': '.gif',
+              'image/svg+xml': '.svg',
+              'image/svg': '.svg',
               'video/mp4': '.mp4',
               'video/webm': '.webm'}
 allowed_extensions = [ext[1:] for ext in EXTENSIONS.values()]
@@ -188,7 +190,12 @@ def store_file(ufile, basename, mtype, remove_metadata=False):
     ufile.seek(0)
     with tempfile.TemporaryDirectory() as tempdir:
         fullpath = os.path.join(tempdir, filename)
-        ufile.save(fullpath)
+        try: 
+            ufile.save(fullpath)
+        except:
+            b = ufile.read()
+            with open(fullpath, mode="w") as tf:
+                tf.write(b)
         if remove_metadata:
             clear_metadata(fullpath, mtype)
 
