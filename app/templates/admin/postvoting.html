@@ -9,19 +9,6 @@
 {% block sidebar %}
 {{ super() }}
 {% include 'admin/sidebar.html' %}
-<hr>
-<div>
-  User Voting
-  <form action="{{ url_for('do.search', stype='admin.post_voting') }}" method="post">
-  <span class="search">
-      <span><i class="fa fa-search"></i></span>
-      <input id="term" name="term" type="search" placeholder="Username">
-      <span>
-        <button class="pure-button" type="submit">Submit</button>
-      </span>
-  </span>
-  </form>
-</div>
 {% endblock %}
 
 {% block content %}
