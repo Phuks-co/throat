@@ -79,8 +79,6 @@ package-lock.json
 # pyenv configs
 .python-version
 
-badges.py
-
 .pytest_cache
 stor
 
