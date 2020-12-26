@@ -31,7 +31,7 @@ badges = {  # "intname": {"nick": "intname", "name": "foo", "alt": "a badge for 
 }
 
 for bg in badges:
-    badges[bg]['icon'] = open('/static/svg/' + badges[bg]['icon'])
+    badges[bg]['icon'] = open('./app/static/svg/' + badges[bg]['icon'])
 
 app = create_app()
 with app.app_context():
