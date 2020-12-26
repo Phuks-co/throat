@@ -2791,7 +2791,8 @@ input[name="captcha"] {
 .loginlinklist {
     padding: 0;
     list-style-type: none;
-    
+}
+  
 .left {
     text-align: left;
 }
