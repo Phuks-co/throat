@@ -138,7 +138,7 @@ u.addEventForChild(document, 'click', '.expando', function(e, ematch){
         vid.src = link;
         vid.preload = 'auto';
         vid.autoplay = true;
-        vid.loop = true;app/html/sub/post.html
+        vid.loop = false;
         vid.controls = true;
         vid.innerHTML = document.createElement("source").src = link;
         vid.style.width = "640px";
@@ -150,7 +150,9 @@ u.addEventForChild(document, 'click', '.expando', function(e, ematch){
 
         const wrapper = document.createElement('div');
         wrapper.className = 'expando-wrapper';
-        wrapper.innerHTML = vid.outerHTML + handle.outerHTML;
+        wrapper.appendChild(vid)
+        wrapper.appendChild(handle)
+        //wrapper.innerHTML = vid.outerHTML + handle.outerHTML;
         expando.querySelector('.expandotxt').appendChild(wrapper);
 
         resizer(expando.querySelector('.expandotxt video'), expando.querySelector('.expandotxt .resize-handle'), expando.querySelector('.expandotxt'))
