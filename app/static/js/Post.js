@@ -355,7 +355,7 @@ u.addEventForChild(document, 'click', '.edit-post', function (e, qelem) {
     }
     elem.innerHTML = '<div id="editpost" class="cwrap markdown-editor"><textarea style="height: ' + h + 'px">' +
         document.getElementById('post-source').innerHTML + '</textarea></div><div style="display:none" class="error">' +
-        '</div><button class="pure-button pure-button-primary button-xsmall btn-editpost" data-pid="' + qelem.getAttribute('data-pid') + '">' +
+        '</div><button class="pure-button pure-button-primary button-xsmall btn-editpost" data-pid="' + qelem.parentNode.parentNode.getAttribute('data-pid') + '">' +
         _('Save changes') + '</button> <button class="pure-button button-xsmall btn-preview" data-pvid="editpost" >' + _('Preview') + '</button>' +
         '<button class="pure-button button-xsmall btn-rcancel button-transparent" data-pvid="editpost" >' + _('Cancel') + '</button>' +
         '<div class="cmpreview canclose" style="display:none;"><h4>' + _('Comment preview') + '</h4><span class="closemsg">&times;</span><div class="cpreview-content">' +
