@@ -1,18 +1,22 @@
-
 msgid ""
 msgstr ""
-"Project-Id-Version:  2f2b2a8565bfc5253af48bfe43b8fae4\n"
+"Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-12-26 16:17-0300\n"
-"PO-Revision-Date: 2020-12-22 21:24+0000\n"
+"POT-Creation-Date: 2020-12-25 23:20-0300\n"
+"PO-Revision-Date: 2020-12-27 01:19\n"
 "Last-Translator: \n"
-"Language: sk_SK\n"
 "Language-Team: Slovak\n"
-"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.0\n"
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3;\n"
+"X-Crowdin-Project: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
+"X-Crowdin-Project-ID: 2\n"
+"X-Crowdin-Language: sk\n"
+"X-Crowdin-File: /master/app/translations/messages.pot\n"
+"X-Crowdin-File-ID: 26\n"
+"Language: sk_SK\n"
 
 #: app/__init__.py:47
 msgid "Please log in to access this page."
@@ -136,9 +140,8 @@ msgid "New owner username"
 msgstr "Meno nového vlastníka"
 
 #: app/forms/admin.py:26
-#, fuzzy
 msgid "Badge"
-msgstr "Odznaky"
+msgstr "Odznak"
 
 #: app/forms/admin.py:27 app/forms/user.py:44 app/forms/user.py:68
 #: app/html/user/login.html:15 app/static/js/main.js:51
@@ -147,32 +150,28 @@ msgid "Username"
 msgstr "Meno"
 
 #: app/forms/admin.py:31 app/forms/admin.py:39
-#, fuzzy
 msgid "Badge Icon"
-msgstr "Prezývka odznaku"
+msgstr "Ikona odznaku"
 
 #: app/forms/admin.py:32 app/forms/admin.py:40
-#, fuzzy
 msgid "Badge Name"
-msgstr "Názov skupiny"
+msgstr "Názov odznaku"
 
 #: app/forms/admin.py:33 app/forms/admin.py:41
-#, fuzzy
 msgid "Badge Description"
-msgstr "Popis"
+msgstr "Popis odznaku"
 
 #: app/forms/admin.py:34 app/forms/admin.py:42
 msgid "Score Adjustment"
-msgstr ""
+msgstr "Nárast karmy"
 
 #: app/forms/admin.py:35 app/forms/admin.py:43
-#, fuzzy
 msgid "Sort"
-msgstr "formát"
+msgstr "Zoradenie"
 
 #: app/forms/admin.py:36 app/forms/admin.py:44
 msgid "Trigger"
-msgstr ""
+msgstr "Spúšťač"
 
 #: app/forms/admin.py:48
 msgid "Enter Domain"
@@ -565,9 +564,7 @@ msgid "Create wiki"
 msgstr "Vytvoriť wiki"
 
 #: app/html/admin/createwiki.html:33 app/html/sub/createpost.html:43
-msgid ""
-"(Optional) Write your post content here. Styling with Markdown format is "
-"supported."
+msgid "(Optional) Write your post content here. Styling with Markdown format is supported."
 msgstr "Text príspevku (nepovinný)."
 
 #: app/html/admin/createwiki.html:37 app/html/mod/reportdetails.html:218
@@ -581,9 +578,7 @@ msgstr "Hlásenia pre adminov"
 
 #: app/html/admin/reports.html:16
 msgid "Includes reports for all subs except reports of sub-specific rules."
-msgstr ""
-"Obsahuje hlásenia zo všetkých skupín, s výnimkou špecifických pravidiel "
-"skupiny."
+msgstr "Obsahuje hlásenia zo všetkých skupín, s výnimkou špecifických pravidiel skupiny."
 
 #: app/html/admin/reports.html:20 app/html/mod/reports.html:20
 #: app/html/mod/sub_reports.html:21 app/html/mod/sub_reports_closed.html:22
@@ -754,9 +749,7 @@ msgid "Internal error"
 msgstr "Internal error"
 
 #: app/html/errors/500.html:12
-msgid ""
-"We're experiencing technical difficulties, please try again later. If the"
-" error persists, report it to the administration."
+msgid "We're experiencing technical difficulties, please try again later. If the error persists, report it to the administration."
 msgstr "Momentálne máme technické problémy. Skúste opakovať akciu neskôr."
 
 #: app/html/errors/layout.html:39 app/html/shared/layout.html:50
@@ -1475,12 +1468,8 @@ msgid "%(user)s commented \"%(comment)s\" in %(sub)s %(timeago)s"
 msgstr "%(user)s pridal(a) komentár \"%(comment)s\" v %(sub)s %(timeago)s"
 
 #: app/html/site/license.html:9
-msgid ""
-"This website is powered by <a href=\"https://github.com/Phuks-"
-"co/throat\">Throat</a>, released under the MIT license."
-msgstr ""
-"This website is powered by <a href=\"https://github.com/Phuks-"
-"co/throat\">Throat</a>, released under the MIT license."
+msgid "This website is powered by <a href=\"https://github.com/Phuks-co/throat\">Throat</a>, released under the MIT license."
+msgstr "This website is powered by <a href=\"https://github.com/Phuks-co/throat\">Throat</a>, released under the MIT license."
 
 #: app/html/site/log.html:12 app/html/sub/bans.html:58
 #: app/html/sub/bans.html:118 app/html/sub/log.html:12
@@ -1518,9 +1507,7 @@ msgstr "<a href=\"/u/%(user)s\">%(user)s</a> odstránený(á) zo skupiny moderá
 
 #: app/html/site/log.html:44
 #, python-format
-msgid ""
-"Revoked mod invite for <a href=\"/u/%(user)s\">%(user)s</a> from the mod "
-"team"
+msgid "Revoked mod invite for <a href=\"/u/%(user)s\">%(user)s</a> from the mod team"
 msgstr "Stiahnutá pozvánka moderovať pre <a href=\"/u/%(user)s\">%(user)s</a>"
 
 #: app/html/site/log.html:46 app/html/sub/log.html:60
@@ -1684,12 +1671,8 @@ msgid "Description"
 msgstr "Popis"
 
 #: app/html/sub/createpost.html:17
-msgid ""
-"This sub only allows upload posts, and you don't have permission to "
-"upload files yet."
-msgstr ""
-"V tejto skupine sú povolené iba upload príspevky, a zatiaľ na to nemáš "
-"level."
+msgid "This sub only allows upload posts, and you don't have permission to upload files yet."
+msgstr "V tejto skupine sú povolené iba upload príspevky, a zatiaľ na to nemáš level."
 
 #: app/html/sub/createpost.html:22
 msgid "Find a sub..."
@@ -1848,12 +1831,8 @@ msgstr "Zmenil(a) nastavenia skupiny"
 
 #: app/html/sub/log.html:38
 #, python-format
-msgid ""
-"Banned <a href=\"/u/%(username)s\">%(username)s</a> with reason "
-"<code>%(reason)s</code>"
-msgstr ""
-"Zabanoval(a) <a href=\"/u/%(username)s\">%(username)s</a> z dôvodu "
-"<code>%(reason)s</code>"
+msgid "Banned <a href=\"/u/%(username)s\">%(username)s</a> with reason <code>%(reason)s</code>"
+msgstr "Zabanoval(a) <a href=\"/u/%(username)s\">%(username)s</a> z dôvodu <code>%(reason)s</code>"
 
 #: app/html/sub/log.html:40
 #, python-format
@@ -1863,9 +1842,7 @@ msgstr "Odbanoval(a) <a href=\"/u/%(username)s\">%(username)s</a>"
 #: app/html/sub/log.html:42
 #, python-format
 msgid "Sent mod invite to <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr ""
-"Pozval(a) moderovať používateľa <a "
-"href=\"/u/%(username)s\">%(username)s</a>"
+msgstr "Pozval(a) moderovať používateľa <a href=\"/u/%(username)s\">%(username)s</a>"
 
 #: app/html/sub/log.html:44
 msgid "Accepted mod invite"
@@ -1874,23 +1851,17 @@ msgstr "Prijal(a) pozvanie moderovať"
 #: app/html/sub/log.html:46
 #, python-format
 msgid "Removed <a href=\"/u/%(username)s\">%(username)s</a> from the mod team"
-msgstr ""
-"Odstránil(a) <a href=\"/u/%(username)s\">%(username)s</a> z tímu "
-"moderátorov"
+msgstr "Odstránil(a) <a href=\"/u/%(username)s\">%(username)s</a> z tímu moderátorov"
 
 #: app/html/sub/log.html:48
 #, python-format
 msgid "Revoked mod invite for <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr ""
-"Zrušil(a) pozvanie moderovať pre používateľa <a "
-"href=\"/u/%(username)s\">%(username)s</a>"
+msgstr "Zrušil(a) pozvanie moderovať pre používateľa <a href=\"/u/%(username)s\">%(username)s</a>"
 
 #: app/html/sub/log.html:50
 #, python-format
 msgid "Mod invite declined by <a href=\"/u/%(username)s\">%(username)s</a>"
-msgstr ""
-"<a href=\"/u/%(username)s\">%(username)s</a> odmietol(a) pozvanie "
-"moderovať"
+msgstr "<a href=\"/u/%(username)s\">%(username)s</a> odmietol(a) pozvanie moderovať"
 
 #: app/html/sub/log.html:52
 msgid "Edited the sub's stylesheet"
@@ -2170,12 +2141,8 @@ msgstr "[OP]"
 
 #: app/html/sub/postcomments.html:34
 #, python-format
-msgid ""
-"<span class=\"cscore\">%(score)i</span> points</b> "
-"(+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
-msgstr ""
-"<span class=\"cscore\">skóre: <span class=\"cscore\">%(score)i</span></b>"
-" (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
+msgid "<span class=\"cscore\">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
+msgstr "<span class=\"cscore\">skóre: <span class=\"cscore\">%(score)i</span></b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)"
 
 #: app/html/sub/postcomments.html:40
 #, python-format
@@ -2260,17 +2227,11 @@ msgid "Create new rule"
 msgstr "Vytvoriť nové pravidlo"
 
 #: app/html/sub/rules.html:21
-msgid ""
-"Users will be able to report violations of this rule. The text of the "
-"rule should be short and easy to understand."
-msgstr ""
-"Používatelia budú môcť hlásiť porušenie tohto proavidla. Text pravidla by"
-" mal byť stručný a zrozumiteľný."
+msgid "Users will be able to report violations of this rule. The text of the rule should be short and easy to understand."
+msgstr "Používatelia budú môcť hlásiť porušenie tohto proavidla. Text pravidla by mal byť stručný a zrozumiteľný."
 
 #: app/html/sub/rules.html:24
-msgid ""
-"You'll still need to update your sidebar with a more detailed version of "
-"your Sub rules for users to read."
+msgid "You'll still need to update your sidebar with a more detailed version of your Sub rules for users to read."
 msgstr "Odporúčame rozpísať pravidlá tvojej skupiny v bočnom paneli."
 
 #: app/html/sub/rules.html:28
@@ -2300,24 +2261,16 @@ msgid "Email sent!"
 msgstr "Email bol odoslaný"
 
 #: app/html/user/check-your-email.html:9
-msgid ""
-"Click the link in the email we sent to you. You may want to check your "
-"spam folder, just in case ;)"
-msgstr ""
-"Použi link v maili, ktorý sme ti poslali. Pre istotu skontroluj aj maily "
-"v Spame. ;)"
+msgid "Click the link in the email we sent to you. You may want to check your spam folder, just in case ;)"
+msgstr "Použi link v maili, ktorý sme ti poslali. Pre istotu skontroluj aj maily v Spame. ;)"
 
 #: app/html/user/check-your-email.html:11
 #, python-format
-msgid ""
-"After you click the link, you will be able to log in and start using "
-"%(site)s!"
+msgid "After you click the link, you will be able to log in and start using %(site)s!"
 msgstr "Po kliknutí na link sa budeš môcť prihlásiť na %(site)s!"
 
 #: app/html/user/check-your-email.html:14
-msgid ""
-"The new email address on your account will take effect after you open the"
-" link."
+msgid "The new email address on your account will take effect after you open the link."
 msgstr "Zmena emailu sa prejaví po kliknutí na link."
 
 #: app/html/user/login.html:12
@@ -2447,9 +2400,7 @@ msgid "I accept the <a href=\"/wiki/tos\">Terms of Use</a>"
 msgstr "Prijímam <a href=\"/wiki/tos\">Podmienky používania</a>"
 
 #: app/html/user/registration_disabled.html:12
-msgid ""
-"Registration has been temporarily disabled. Please check back later. We "
-"apologize for any inconvience."
+msgid "Registration has been temporarily disabled. Please check back later. We apologize for any inconvience."
 msgstr "Nové registrácie momentálne nefungujú. Skús to neskôr prosím."
 
 #: app/html/user/resend_confirmation.html:11
@@ -2512,12 +2463,8 @@ msgstr "Ďakujeme za registráciu na %(site)s! Pre potvrdenie konta a prihlásen
 
 #: app/html/user/email/password-recovery.html:4
 #, python-format
-msgid ""
-"Somebody (most likely you) has requested a password reset for your "
-"account on %(site)s."
-msgstr ""
-"Niekto (s najväčšou pravdepodobnosťou Ty) si vyžiadal reset hesla na "
-"%(site)s."
+msgid "Somebody (most likely you) has requested a password reset for your account on %(site)s."
+msgstr "Niekto (s najväčšou pravdepodobnosťou Ty) si vyžiadal reset hesla na %(site)s."
 
 #: app/html/user/email/password-recovery.html:5
 msgid "To proceed, "
@@ -2525,30 +2472,18 @@ msgstr "Pokračovať "
 
 #: app/html/user/messages/notifications.html:24
 #, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> replied to your post <a "
-"href=\"%(link)s\">%(title)s</a>"
-msgstr ""
-"<a href=\"/u/%(user)s\">%(user)s</a> odpovedal(a) na tvoj príspevok <a "
-"href=\"%(link)s\">%(title)s</a>"
+msgid "<a href=\"/u/%(user)s\">%(user)s</a> replied to your post <a href=\"%(link)s\">%(title)s</a>"
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> odpovedal(a) na tvoj príspevok <a href=\"%(link)s\">%(title)s</a>"
 
 #: app/html/user/messages/notifications.html:26
 #, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> replied to your comment in <a "
-"href=\"%(link)s\">%(title)s</a>"
-msgstr ""
-"<a href=\"/u/%(user)s\">%(user)s</a> odpovedal(a) na tvoj komentár v <a "
-"href=\"%(link)s\">%(title)s</a>"
+msgid "<a href=\"/u/%(user)s\">%(user)s</a> replied to your comment in <a href=\"%(link)s\">%(title)s</a>"
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> odpovedal(a) na tvoj komentár v <a href=\"%(link)s\">%(title)s</a>"
 
 #: app/html/user/messages/notifications.html:28
 #, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> mentioned you in <a "
-"href=\"%(link)s\">%(title)s</a>"
-msgstr ""
-"<a href=\"/u/%(user)s\">%(user)s</a> ťa spomenul(a) v <a "
-"href=\"%(link)s\">%(title)s</a>"
+msgid "<a href=\"/u/%(user)s\">%(user)s</a> mentioned you in <a href=\"%(link)s\">%(title)s</a>"
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> ťa spomenul(a) v <a href=\"%(link)s\">%(title)s</a>"
 
 #: app/html/user/messages/notifications.html:31
 #, python-format
@@ -2557,12 +2492,8 @@ msgstr "Bol(a) si zabanovaný(á) v skupine <a href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:33
 #, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> banned you from <a "
-"href=\"%(sub)s\">%(sub)s</a>"
-msgstr ""
-"<a href=\"/u/%(user)s\">%(user)s</a> ťa zabanoval(a) v skupine <a "
-"href=\"%(sub)s\">%(sub)s</a>"
+msgid "<a href=\"/u/%(user)s\">%(user)s</a> banned you from <a href=\"%(sub)s\">%(sub)s</a>"
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> ťa zabanoval(a) v skupine <a href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:37
 #, python-format
@@ -2571,21 +2502,13 @@ msgstr "Bol(a) si odbanovaný(á) v skupine <a href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:39
 #, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> unbanned you from <a "
-"href=\"%(sub)s\">%(sub)s</a>"
-msgstr ""
-"<a href=\"/u/%(user)s\">%(user)s</a> ťa odbanoval(a) v skupine <a "
-"href=\"%(sub)s\">%(sub)s</a>"
+msgid "<a href=\"/u/%(user)s\">%(user)s</a> unbanned you from <a href=\"%(sub)s\">%(sub)s</a>"
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> ťa odbanoval(a) v skupine <a href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:42
 #, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> invited you to moderate <a "
-"href=\"%(sub)s\">%(sub)s</a>"
-msgstr ""
-"<a href=\"/u/%(user)s\">%(user)s</a> ťa pozval moderovať skupinu <a "
-"href=\"%(sub)s\">%(sub)s</a>"
+msgid "<a href=\"/u/%(user)s\">%(user)s</a> invited you to moderate <a href=\"%(sub)s\">%(sub)s</a>"
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> ťa pozval moderovať skupinu <a href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:46
 #, python-format
@@ -2594,28 +2517,18 @@ msgstr "Tvoj príspevok <a href=\"%(link)s\">%(title)s</a> bol vymazaný"
 
 #: app/html/user/messages/notifications.html:48
 #, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> deleted your post <a "
-"href=\"%(link)s\">%(title)s</a>"
-msgstr ""
-"<a href=\"/u/%(user)s\">%(user)s</a> vymazal(a) tvoj príspevok <a "
-"href=\"%(link)s\">%(title)s</a>"
+msgid "<a href=\"/u/%(user)s\">%(user)s</a> deleted your post <a href=\"%(link)s\">%(title)s</a>"
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> vymazal(a) tvoj príspevok <a href=\"%(link)s\">%(title)s</a>"
 
 #: app/html/user/messages/notifications.html:52
 #, python-format
 msgid "One of your posts in <a href=\"%(sub)s\">%(sub)s</a> has been deleted"
-msgstr ""
-"Jeden z tvojich príspevkov v skupine <a href=\"%(sub)s\">%(sub)s</a> bol "
-"vymazaný"
+msgstr "Jeden z tvojich príspevkov v skupine <a href=\"%(sub)s\">%(sub)s</a> bol vymazaný"
 
 #: app/html/user/messages/notifications.html:54
 #, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> deleted one of your posts in <a "
-"href=\"%(sub)s\">%(sub)s</a>"
-msgstr ""
-"<a href=\"/u/%(user)s\">%(user)s</a> vymazal(a) jeden z tvojich "
-"príspevkov v skupine <a href=\"%(sub)s\">%(sub)s</a>"
+msgid "<a href=\"/u/%(user)s\">%(user)s</a> deleted one of your posts in <a href=\"%(sub)s\">%(sub)s</a>"
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> vymazal(a) jeden z tvojich príspevkov v skupine <a href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:60
 #, python-format
@@ -2624,28 +2537,18 @@ msgstr "Tvoj príspevok <a href=\"%(link)s\">%(title)s</a> bol obnovený"
 
 #: app/html/user/messages/notifications.html:62
 #, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> un-deleted your post <a "
-"href=\"%(link)s\">%(title)s</a>"
-msgstr ""
-"<a href=\"/u/%(user)s\">%(user)s</a> obnovil(a) tvoj príspevok <a "
-"href=\"%(link)s\">%(title)s</a>"
+msgid "<a href=\"/u/%(user)s\">%(user)s</a> un-deleted your post <a href=\"%(link)s\">%(title)s</a>"
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> obnovil(a) tvoj príspevok <a href=\"%(link)s\">%(title)s</a>"
 
 #: app/html/user/messages/notifications.html:66
 #, python-format
 msgid "One of your posts in <a href=\"%(sub)s\">%(sub)s</a> has been un-deleted"
-msgstr ""
-"Jeden z tvojich príspevkov v skupine <a href=\"%(sub)s\">%(sub)s</a> bol "
-"obnovený"
+msgstr "Jeden z tvojich príspevkov v skupine <a href=\"%(sub)s\">%(sub)s</a> bol obnovený"
 
 #: app/html/user/messages/notifications.html:68
 #, python-format
-msgid ""
-"<a href=\"/u/%(user)s\">%(user)s</a> un-deleted one of your posts in <a "
-"href=\"%(sub)s\">%(sub)s</a>"
-msgstr ""
-"<a href=\"/u/%(user)s\">%(user)s</a> obnovil(a) tvoj príspevok v <a "
-"href=\"%(sub)s\">%(sub)s</a>"
+msgid "<a href=\"/u/%(user)s\">%(user)s</a> un-deleted one of your posts in <a href=\"%(sub)s\">%(sub)s</a>"
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> obnovil(a) tvoj príspevok v <a href=\"%(sub)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:77
 #, python-format
@@ -2997,9 +2900,7 @@ msgid "File size exceeds maximum allowed (%1 MB)"
 msgstr "Súbor je väčší ako povolený limit (%1 MB)"
 
 #: app/static/js/main.js:174 app/static/js/main.js:179
-msgid ""
-"There was an error while saving your settings. Please try again in a few "
-"minutes."
+msgid "There was an error while saving your settings. Please try again in a few minutes."
 msgstr "Pri ukladaní nastavení sa vyskytla chyba. Prosím skúste znovu o pár minút."
 
 #: app/static/js/main.js:249
@@ -3007,9 +2908,8 @@ msgid "Error while contacting the server"
 msgstr "Chyba pri kontaktovaní servera"
 
 #: app/static/js/main.js:272
-#, fuzzy
 msgid "Are you sure you want to delete?"
-msgstr "Naozaj chceš zabanovať tohoto používateľa?"
+msgstr "Naozaj to chceš vymazať?"
 
 #: app/static/js/main.js:358
 msgid "Are you sure you want to PERMANENTLY delete your account?"
@@ -3117,12 +3017,8 @@ msgid "Password change failed. Please try again later"
 msgstr "Zmena hesla sa nepodarila. Skús to neskôr"
 
 #: app/views/do.py:125
-msgid ""
-"To confirm, click the link in the email we sent to you. You may want to "
-"check your spam folder, just in case ;)"
-msgstr ""
-"Použi link v maili, ktorý sme ti poslali. Pre istotu skontroluj aj maily "
-"v Spame. ;)"
+msgid "To confirm, click the link in the email we sent to you. You may want to check your spam folder, just in case ;)"
+msgstr "Použi link v maili, ktorý sme ti poslali. Pre istotu skontroluj aj maily v Spame. ;)"
 
 #: app/views/do.py:135
 #, python-format
@@ -3611,12 +3507,8 @@ msgid "Sub is already registered"
 msgstr "Táto skupina už existuje"
 
 #: app/views/subs.py:301
-msgid ""
-"Only Site Admins may create new subs. Please contact an administrator to "
-"request a new sub."
-msgstr ""
-"Nové skupiny môže vytvárať len Admin. Ak chceš vytvoriť skupinu, prosím "
-"kontaktuj admina."
+msgid "Only Site Admins may create new subs. Please contact an administrator to request a new sub."
+msgstr "Nové skupiny môže vytvárať len Admin. Ak chceš vytvoriť skupinu, prosím kontaktuj admina."
 
 #: app/views/subs.py:308
 #, python-format
@@ -3631,9 +3523,7 @@ msgstr "Nemôžeš vlastniť viac ako %(max)i skupín."
 #: app/views/subs.py:321
 #, python-format
 msgid "You cannot own more than %(max)i subs. Try leveling up your account."
-msgstr ""
-"Nemôžeš vlastniť viac ako %(max)i skupín. Musíš najskôr zvýšiť leveling "
-"svojho účtu."
+msgstr "Nemôžeš vlastniť viac ako %(max)i skupín. Musíš najskôr zvýšiť leveling svojho účtu."
 
 #: app/views/user.py:163
 msgid "Auto detect"
@@ -3658,59 +3548,4 @@ msgstr "Link pre reset hesla je neplatný"
 #: app/views/wiki.py:23
 msgid "License file was deleted :("
 msgstr "Licenčný súbor bol vymazaný :("
-
-#~ msgid "moderation"
-#~ msgstr "moderovanie"
-
-#~ msgid "distinguish as admin?"
-#~ msgstr "prízvukovať ako admin?"
-
-#~ msgid "The guys that take all the blame"
-#~ msgstr "The guys that take all the blame"
-
-#~ msgid "Helped find or fix a bug"
-#~ msgstr "Helped find or fix a bug"
-
-#~ msgid "You knew what you were getting into when you let me get into you"
-#~ msgstr "You knew what you were getting into when you let me get into you"
-
-#~ msgid "Gave bucks to Phuks"
-#~ msgstr "Gave bucks to Phuks"
-
-#~ msgid "Mined a lot of Phuks"
-#~ msgstr "Mined a lot of Phuks"
-
-#~ msgid "Top post of the day"
-#~ msgstr "Príspevok dňa"
-
-#~ msgid "Make a good post every day for a week"
-#~ msgstr "Make a good post every day for a week"
-
-#~ msgid "Too hyped to wait!"
-#~ msgstr "Too hyped to wait!"
-
-#~ msgid ""
-#~ "Once proud men, the Broccoli People "
-#~ "now must remain in hiding after "
-#~ "early on the Vegetable Wars against "
-#~ "the Cabbages."
-#~ msgstr ""
-#~ "Once proud men, the Broccoli People "
-#~ "now must remain in hiding after "
-#~ "early on the Vegetable Wars against "
-#~ "the Cabbages."
-
-#~ msgid ""
-#~ "The Cabbage People are now the "
-#~ "dominant force in the Vegetable Wars,"
-#~ " being in the road to become an"
-#~ " hegemon after defeating the Broccolis."
-#~ msgstr ""
-#~ "The Cabbage People are now the "
-#~ "dominant force in the Vegetable Wars,"
-#~ " being in the road to become an"
-#~ " hegemon after defeating the Broccolis."
-
-#~ msgid "Winner of the shitposter of the year 2018 contest"
-#~ msgstr "Winner of the shitposter of the year 2018 contest"
 
