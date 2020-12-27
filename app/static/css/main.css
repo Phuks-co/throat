@@ -947,6 +947,7 @@ a.slink {
   padding: 5px;
   line-height: 2em;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .pollflair {
