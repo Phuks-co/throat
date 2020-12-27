@@ -258,6 +258,9 @@ storage:
     path: './app/static/ups'
     url: ''
 
+  # Max storage for image uploads for subs' stylesheets (in MiB)
+  sub_css_max_file_size: 2
+
 database:
   # Database engine. Possible values:
   # - MySQLDatabase

@@ -90,7 +90,8 @@ cfg_defaults = {  # key => default value
             "uploads": {
                 "path": './stor',
                 "url": 'https://useruploads.shitposting.space/',
-            }
+            },
+            "sub_css_max_file_size": 2
         },
         "app": {
             "redis_url": 'redis://127.0.0.1:6379',

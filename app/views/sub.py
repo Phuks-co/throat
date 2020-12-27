@@ -67,7 +67,9 @@ def edit_sub_css(sub):
     for uf in ufiles:
         stor += uf.size / 1024
 
-    return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'error': False, 'storage': int(stor), 'files': ufiles, 'subInfo': subInfo, 'subMods': subMods})
+    return engine.get_template('sub/css.html').render({'sub': sub, 'form': form, 'error': False, 'storage': int(stor),
+                                                       'max_storage': config.storage.sub_css_max_file_size,
+                                                       'files': ufiles, 'subInfo': subInfo, 'subMods': subMods})
 
 
 @blueprint.route("/<sub>/edit/flairs")

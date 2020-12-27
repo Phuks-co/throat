@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(error, sub, form, storage, files, subInfo, subMods)
+@require(error, sub, form, storage, max_storage, files, subInfo, subMods)
 
 @import 'shared/sidebar/sub_mod.html' as sb
 @def sidebar():
@@ -33,7 +33,7 @@
 
     <hr>
     <h3>@{_('Upload files')}</h3>
-    @{_('Upload limit is 2 MiB. Space used: %(storage)i KiB', storage=storage)}
+    @{_('Upload limit is %(max)i MiB. Space used: %(storage)i KiB', max=max_storage, storage=storage)}
     <form  method="POST" style="margin-top: 1em" action="@{url_for('do.sub_upload', sub=sub.name)}" class="pure-form pure-form-aligned" enctype="multipart/form-data">
       @if error:
         <div class="error">@{error}</div>

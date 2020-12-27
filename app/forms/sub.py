@@ -25,7 +25,7 @@ class CreateSubForm(FlaskForm):
 
 class EditSubCSSForm(FlaskForm):
     """ Edit sub stylesheet form. """
-    css = TextAreaField(_l('Custom stylesheet'), validators=[Length(max=10000)])
+    css = TextAreaField(_l('Custom stylesheet'), validators=[Length(max=65535)])
 
 
 class DeleteCommentForm(FlaskForm):
