@@ -98,11 +98,14 @@ def register():
     username = request.json.get('username', None)
     password = request.json.get('password', None)
     email = request.json.get('email', None)
-    invite_code = request.json.get('invite_code', None)
+    invite_code = request.json.get('inviteCode', None)
     check_challenge()
 
     if not username or not password:
         return jsonify(msg="Missing mandatory parameters"), 403
+
+    if len(password) < 6:
+        return jsonify(msg="Password too short"), 403
 
     if not registration_is_enabled():
         return jsonify(msg="Registration disabled"), 403
@@ -726,7 +729,6 @@ def check_challenge():
 
 
 @API.route('/challenge', methods=['GET'])
-@jwt_required
 def get_challenge():
     challenge = misc.create_captcha()
     token, blob = (None, None) if challenge is None else challenge
