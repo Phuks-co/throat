@@ -195,7 +195,7 @@ function updateSubmitPostForm(ptypes) {
     // sub is uploads-only and the user can't upload.
     // There's a message for that, so display it.
     onlyUploads.style.display = '';
-  } else if (!ptypes.includes(ptypeNames[currentlySet.value])) {
+  } else if (!ptypes[currentlySet.value]) {
     currentlySet.checked = false;
     firstVisible.checked = true;
     onPtypeChange(firstVisible);
