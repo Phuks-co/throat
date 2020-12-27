@@ -889,7 +889,7 @@ def search_sub():
 @API.route('/sub/<name>', methods=['GET'])
 def get_sub(name):
     try:
-        sub = Sub.get(Sub.name == name)
+        sub = Sub.get(fn.Lower(Sub.name) == name.lower())
     except Sub.DoesNotExist:
         return jsonify(error='Sub does not exist'), 404
 
