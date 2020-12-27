@@ -881,19 +881,35 @@ def search_sub():
         return jsonify(results=[])
 
     query = '%' + query + '%'
-    subs = (Sub.select(Sub.name, SubMetadata.key)
-            .join(SubMetadata, JOIN.LEFT_OUTER, on=(Sub.sid == SubMetadata.sid))
-            .where((Sub.name ** query) &
-                   (SubMetadata.key << set(misc.ptype_names.values())) &
-                   (SubMetadata.value == '1'))
-            .limit(10).dicts())
+    subs = Sub.select(Sub.name).where(Sub.name ** query).limit(10).dicts()
 
-    ptypes = defaultdict(list)
-    for elem in subs:
-        ptypes[elem['name']].append(elem['key'])
+    return jsonify(results=list(subs))
 
-    return jsonify(results=[{'name': k, 'ptypes': v}
-                            for k, v in ptypes.items()])
+
+@API.route('/sub/<name>', methods=['GET'])
+def get_sub(name):
+    try:
+        sub = Sub.get(Sub.name == name)
+    except Sub.DoesNotExist:
+        return jsonify(error='Sub does not exist'), 404
+
+    post_types = SubMetadata.select().where(SubMetadata.sid == sub.sid)\
+        .where(SubMetadata.key << set(misc.ptype_names.values()))\
+        .where(SubMetadata.value == '1')
+
+    allowed_post_types = {k: False for k in misc.ptype_names.keys()}
+    ptype_mapping = {i: j for j, i in misc.ptype_names.items()}
+    for ptype in post_types:
+        allowed_post_types[ptype_mapping[ptype.key]] = True
+
+    return jsonify({
+        'name': sub.name,
+        'title': sub.title,
+        'creation': sub.creation,
+        'subscribers': sub.subscribers,
+        'posts': sub.posts,
+        'postTypes': allowed_post_types
+    })
 
 
 @API.route('/sub/rules', methods=['GET'])

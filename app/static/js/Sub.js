@@ -170,16 +170,16 @@ var ptypeNames = {
 // Show or hide the radio buttons in Submit a Post based
 // on what's allowed for the selected sub.
 function updateSubmitPostForm(ptypes) {
-  var radioButtons = document.querySelectorAll('input[name="ptype"]');
-  var onlyUploads = document.getElementById('onlyuploads');
-  var currentlySet = null;
-  var firstVisible = null;
-  for (var i = 0; i < radioButtons.length; i++) {
-    var e = radioButtons[i];
+  const radioButtons = document.querySelectorAll('input[name="ptype"]');
+  const onlyUploads = document.getElementById('onlyuploads');
+  let currentlySet = null;
+  let firstVisible = null;
+  for (let i = 0; i < radioButtons.length; i++) {
+    const e = radioButtons[i];
     if (e.checked) {
       currentlySet = e;
     }
-    if (ptypes.includes(ptypeNames[e.value])) {
+    if (ptypes[e.value]) {
       e.parentNode.style.display = '';
       if (!firstVisible) {
         firstVisible = e;
@@ -211,39 +211,21 @@ function updateSubmitPostForm(ptypes) {
 // accordingly.
 function onSubmitPostSubChange(e) {
   if (e.classList.contains('sub_submitpost')) {
-    var name = e.value.toLowerCase();
-    var ptypes = null;
-    const defaults = ['allow_link_posts',
-                      'allow_text_posts',
-                      'allow_upload_posts']
-    // An earlier AJAX call for autocomplete may have fetched
-    // the ptypes for the sub already.
-    if (suggestions) {
-      suggestions.forEach(function (elem) {
-        if (name == elem.name.toLowerCase()) {
-          ptypes = elem.ptypes;
-        }});
+    const name = e.value.toLowerCase();
+    let ptypes = null;
+    const defaults = {
+      link: true,
+      upload: true,
+      text: true,
+      poll: false
     }
 
-    if (ptypes != null) {
-      updateSubmitPostForm(ptypes)
-    } else if (e.value == '') {
+    if (e.value == '') {
       // No sub given, so show the defaults.
       updateSubmitPostForm(defaults);
     } else {
-      u.get('/api/v3/sub?query=' + name, function(data) {
-        if (data.results) {
-          data.results.forEach(function(elem) {
-            if (name == elem.name.toLowerCase())
-              ptypes = elem.ptypes;
-          });
-        }
-        if (ptypes != null) {
-          updateSubmitPostForm(ptypes)
-        } else {
-          // This sub doesn't exist, so show the defaults.
-          updateSubmitPostForm(defaults);
-        }
+      u.get('/api/v3/sub/' + name, function(data) {
+          updateSubmitPostForm(data.postTypes)
       });
     }
   }
