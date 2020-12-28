@@ -31,6 +31,7 @@ from .views.errors import bp as errors
 from .views.messages import bp as messages
 
 from . import misc, forms, caching, storage
+from .notifications import notifications
 from .socketio import socketio
 from .misc import SiteAnon, engine, engine_init_app, re_amention, mail, talisman, limiter
 from .misc import logging_init_app, get_locale, babel
@@ -95,6 +96,7 @@ def create_app(config=Config('config.yaml')):
     auth_provider.init_app(app)
     logging_init_app(app)
     limiter.init_app(app)
+    notifications.init_app(app)
 
     # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 

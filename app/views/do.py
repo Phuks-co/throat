@@ -32,9 +32,10 @@ from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, is_domain_banned
 from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved
 from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
-from ..models import SubPostVote, SubPostCommentVote, UserMetadata, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport, SubRule
+from ..models import SubPostVote, SubPostCommentVote, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport, SubRule
 from ..models import rconn, UserStatus
 from ..tasks import create_thumbnail
+from ..notifications import notifications
 from peewee import fn, JOIN
 
 do = Blueprint('do', __name__)
@@ -173,7 +174,7 @@ def edit_user():
     if form.validate():
         if form.subtheme.data != '':
             try:
-                sub = Sub.get(fn.Lower(Sub.name) == form.subtheme.data.lower())
+                Sub.get(fn.Lower(Sub.name) == form.subtheme.data.lower())
             except Sub.DoesNotExist:
                 return jsonify(status='error', error=[_('Sub does not exist')])
 
@@ -853,12 +854,7 @@ def create_comment(pid):
             to = post.uid.uid
             ntype = 'POST_REPLY'
         if to != current_user.uid and current_user.uid not in misc.get_ignores(to):
-            Notification.create(type=ntype, sub=post.sid, post=post.pid, comment=comment.cid,
-                                sender=current_user.uid, target=to)
-            socketio.emit('notification',
-                          {'count': misc.get_notification_count(to)},
-                          namespace='/snt',
-                          room='user' + to)
+            notifications.send(ntype, sub=post.sid, post=post.pid, comment=comment.cid, sender=current_user.uid, target=to)
 
         subMods = misc.getSubMods(sub.sid)
         include_history = current_user.is_mod(sub.sid, 1) or current_user.is_admin()
@@ -1031,11 +1027,7 @@ def inv_mod(sub):
                 mtype = 'MOD_INVITE'
             else:
                 mtype = 'MOD_INVITE_JANITOR'
-            Notification.create(type=mtype, sub=sub.sid, sender=current_user.uid, target=user.uid)
-            socketio.emit('notification',
-                          {'count': misc.get_notification_count(user.uid)},
-                          namespace='/snt',
-                          room='user' + user.uid)
+            notifications.send(mtype, sub=sub.sid, sender=current_user.uid, target=user.uid)
 
             SubMod.create(sid=sub.sid, user=user.uid, power_level=power_level, invite=True)
 
@@ -1609,6 +1601,7 @@ def invite_codes():
     code = ''.join(random.choice('abcdefghijklmnopqrstuvwxyz0123456789') for _ in range(32))
     InviteCode.create(user=current_user.uid, code=code, expires=None, max_uses=1)
     return redirect('/settings/invite')
+
 
 @do.route("/do/stick/<int:post>", methods=['POST'])
 def toggle_sticky(post):
@@ -2870,6 +2863,7 @@ def close_comment_related_reports(related_reports, original_report):
         return error
     else:
         return ok
+
 
 @do.route("/do/create_report_note/<type>/<id>", methods=['POST'])
 @login_required

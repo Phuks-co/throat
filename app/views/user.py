@@ -116,6 +116,7 @@ def view_user_comments(user, page):
     return render_template('usercomments.html', user=user, page=page,
                            comments=comments, postmeta=postmeta)
 
+
 @bp.route("/uploads", defaults={'page': 1})
 @bp.route("/uploads/<int:page>")
 @login_required
@@ -123,6 +124,7 @@ def view_user_uploads(page):
     """ View user uploads """
     uploads = UserUploads.select().where(UserUploads.uid == current_user.uid).paginate(page, 30)
     return render_template('uploads.html', page=page, uploads=uploads)
+
 
 @bp.route("/settings/invite")
 @login_required
