@@ -3,6 +3,7 @@
 from collections import defaultdict
 import datetime
 import uuid
+from pyfcm import FCMNotification
 from bs4 import BeautifulSoup
 from email_validator import EmailNotValidError
 from flask import Blueprint, jsonify, request, url_for
@@ -20,6 +21,7 @@ from ..models import SubPostMetadata
 from ..caching import cache
 from ..config import config
 from ..badges import badges
+from ..notifications import notifications
 
 API = Blueprint('apiv3', __name__)
 
@@ -531,6 +533,7 @@ def create_comment(sub, pid):
 
     defaults = [x.value for x in SiteMetadata.select().where(SiteMetadata.key == 'default')]
     comment_res = misc.word_truncate(''.join(BeautifulSoup(misc.our_markdown(comment.content)).findAll(text=True)).replace('\n', ' '), 250)
+    sub = Sub.get(Sub.name == sub)
     socketio.emit('comment',
                   {'sub': sub.name, 'show_sidebar': (sub.sid in defaults or config.site.recent_activity.defaults_only),
                    'user': user.name, 'pid': post.pid, 'sid': sub.sid, 'content': comment_res,
@@ -549,10 +552,7 @@ def create_comment(sub, pid):
         ntype = 'POST_REPLY'
 
     if notif_to != uid and uid not in misc.get_ignores(notif_to):
-        Notification.create(type=ntype, sub=post.sid, post=post.pid, comment=comment.cid,
-                            sender=uid, target=notif_to)
-        socketio.emit('notification', {'count': misc.get_notification_count(notif_to)},
-                      namespace='/snt', room='user' + notif_to)
+        notifications.send(ntype, sub=post.sid, post=post.pid, comment=comment.cid, sender=uid, target=notif_to)
 
     # 6 - Process mentions
     sub = Sub.get_by_id(post.sid)
@@ -1012,3 +1012,28 @@ def grab_title():
     if not url:
         return jsonify(msg='url parameter required'), 400
     return tasks.grab_title(url), 200
+
+
+@API.route('/push', methods=['POST'])
+@jwt_required
+def inform_push_token():
+    """ Informs a new push token """
+    # 1. Verify if the token is valid
+    uid = get_jwt_identity()
+
+    if not request.is_json:
+        return jsonify(msg="Missing JSON in request"), 400
+
+    token = request.json.get('token', None)
+    if not token:
+        return jsonify(msg="Token parameter is required"), 400
+
+    if not notifications.push_service:
+        return jsonify(msg="Feature not available"), 400
+
+    tokenData = notifications.push_service.get_registration_id_info(token)
+    if not tokenData:
+        return jsonify(msg="Invalid token"), 400
+    # 2. Subscribe the token to the UID's topic
+    foo = notifications.push_service.subscribe_registration_ids_to_topic([token], uid)
+    return jsonify(res=foo, topic=uid)
