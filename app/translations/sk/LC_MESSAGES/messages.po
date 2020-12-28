@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-12-27 22:39-0300\n"
-"PO-Revision-Date: 2020-12-28 07:39\n"
+"PO-Revision-Date: 2020-12-28 13:46\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -117,81 +117,81 @@ msgstr "Invalid status request"
 
 #: app/notifications.py:56
 msgid "Looks like nobody bothered to code the message for this notification :("
-msgstr ""
+msgstr "Zdá sa, že táto notifikácia ešte nie je hotová. :("
 
 #: app/notifications.py:57
 msgid "New notification."
-msgstr ""
+msgstr "Nová notifikácia."
 
 #: app/notifications.py:59
 #, python-format
 msgid "Post reply in %(prefix)s/%(sub)s"
-msgstr ""
+msgstr "Reakcia na príspevok v %(prefix)s/%(sub)s"
 
 #: app/notifications.py:60
 #, python-format
 msgid "%(name)s replied to your post titled %(title)s"
-msgstr ""
+msgstr "%(name)s reagoval(a) na tvoj príspevok %(title)s"
 
 #: app/notifications.py:62
 #, python-format
 msgid "Comment reply in %(prefix)s/%(sub)s"
-msgstr ""
+msgstr "Reakcia na komentár v %(prefix)s/%(sub)s"
 
 #: app/notifications.py:63
 #, python-format
 msgid "%(name)s replied to your comment in the post titled %(title)s"
-msgstr ""
+msgstr "%(name)s reagoval(a) na tvoj komentár k príspevku %(title)s"
 
 #: app/notifications.py:65
 #, python-format
 msgid "You were mentioned in %(prefix)s/%(sub)s"
-msgstr ""
+msgstr "Spomenuli ťa v %(prefix)s/%(sub)s"
 
 #: app/notifications.py:66
 #, python-format
 msgid "%(name)s mentioned you in the post titled %(title)s"
-msgstr ""
+msgstr "%(name)s ťa spomenul(a) v príspevku %(title)s"
 
 #: app/notifications.py:68
 #, python-format
 msgid "Your post in %(prefix)s/%(sub)s was deleted"
-msgstr ""
+msgstr "Tvoj príspevok v %(prefix)s/%(sub)s bol vymazaný"
 
 #: app/notifications.py:69
 #, python-format
 msgid "%(name)s deleted your post titled %(title)s. %(comment)s"
-msgstr ""
+msgstr "%(name)s vymazal(a) tvoj príspevok %(title)s. %(comment)s"
 
 #: app/notifications.py:71
 #, python-format
 msgid "You have been banned from %(prefix)s/%(sub)s"
-msgstr ""
+msgstr "Dostal(a) si ban v skupine %(prefix)s/%(sub)s"
 
 #: app/notifications.py:72
 #, python-format
 msgid "%(name)s banned you with reason: %(content)s"
-msgstr ""
+msgstr "%(name)s ťa zabanoval(a) z dôvodu: %(content)s"
 
 #: app/notifications.py:74
 #, python-format
 msgid "You have been unbanned from %(prefix)s/%(sub)s"
-msgstr ""
+msgstr "Zrrušili ti ban v skupine %(prefix)s/%(sub)s"
 
 #: app/notifications.py:75
 #, python-format
 msgid "%(name)s unbanned you."
-msgstr ""
+msgstr "%(name)s ťa odbanoval(a)."
 
 #: app/notifications.py:77
 #, python-format
 msgid "You have been invited to moderate %(prefix)s/%(sub)s"
-msgstr ""
+msgstr "Dostal(a) si pozvánku moderovať skupinu %(prefix)s/%(sub)s"
 
 #: app/notifications.py:78
 #, python-format
 msgid "%(name)s invited you to the sub's mod team"
-msgstr ""
+msgstr "%(name)s ťa pozval(a) moderovať skupinu"
 
 #: app/storage.py:156
 msgid "File type not allowed"
@@ -1692,7 +1692,7 @@ msgstr "Editing as Admin"
 #: app/html/sub/bans.html:20
 #, python-format
 msgid "Banned users on <a href=\"%(link)s\">/%(prefix)s/%(sub)s</a>"
-msgstr ""
+msgstr "Používatelia zabanovaní v <a href=\"%(link)s\">/%(prefix)s/%(sub)s</a>"
 
 #: app/html/sub/bans.html:49
 msgid "Banned users"
@@ -1833,7 +1833,7 @@ msgstr "Nahrať súbory"
 #: app/html/sub/css.html:36
 #, python-format
 msgid "Upload limit is %(max)i MiB. Space used: %(storage)i KiB"
-msgstr ""
+msgstr "Max. veľkosť súboru je %(max)i MiB. Využitá kapacita úložiska: %(storage)i KiB"
 
 #: app/html/sub/css.html:42
 msgid "Only images allowed"
