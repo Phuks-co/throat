@@ -326,3 +326,7 @@ logging:
     level: DEBUG
     handlers:
       - console
+
+# notifications:
+  # Firebase Cloud Messaging API key
+  # fcm_api_key: ''
