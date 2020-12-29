@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Throat 1.0\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-12-27 22:39-0300\n"
+"POT-Creation-Date: 2020-12-29 15:55-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -114,80 +114,80 @@ msgstr ""
 msgid "Invalid status request"
 msgstr ""
 
-#: app/notifications.py:56
+#: app/notifications.py:57
 msgid "Looks like nobody bothered to code the message for this notification :("
 msgstr ""
 
-#: app/notifications.py:57
+#: app/notifications.py:58
 msgid "New notification."
-msgstr ""
-
-#: app/notifications.py:59
-#, python-format
-msgid "Post reply in %(prefix)s/%(sub)s"
 msgstr ""
 
 #: app/notifications.py:60
 #, python-format
-msgid "%(name)s replied to your post titled %(title)s"
+msgid "Post reply in %(prefix)s/%(sub)s"
 msgstr ""
 
-#: app/notifications.py:62
+#: app/notifications.py:61
 #, python-format
-msgid "Comment reply in %(prefix)s/%(sub)s"
+msgid "%(name)s replied to your post titled %(title)s"
 msgstr ""
 
 #: app/notifications.py:63
 #, python-format
-msgid "%(name)s replied to your comment in the post titled %(title)s"
+msgid "Comment reply in %(prefix)s/%(sub)s"
 msgstr ""
 
-#: app/notifications.py:65
+#: app/notifications.py:64
 #, python-format
-msgid "You were mentioned in %(prefix)s/%(sub)s"
+msgid "%(name)s replied to your comment in the post titled %(title)s"
 msgstr ""
 
 #: app/notifications.py:66
 #, python-format
-msgid "%(name)s mentioned you in the post titled %(title)s"
+msgid "You were mentioned in %(prefix)s/%(sub)s"
 msgstr ""
 
-#: app/notifications.py:68
+#: app/notifications.py:67
 #, python-format
-msgid "Your post in %(prefix)s/%(sub)s was deleted"
+msgid "%(name)s mentioned you in the post titled %(title)s"
 msgstr ""
 
 #: app/notifications.py:69
 #, python-format
-msgid "%(name)s deleted your post titled %(title)s. %(comment)s"
+msgid "Your post in %(prefix)s/%(sub)s was deleted"
 msgstr ""
 
-#: app/notifications.py:71
+#: app/notifications.py:70
 #, python-format
-msgid "You have been banned from %(prefix)s/%(sub)s"
+msgid "%(name)s deleted your post titled %(title)s. %(comment)s"
 msgstr ""
 
 #: app/notifications.py:72
 #, python-format
-msgid "%(name)s banned you with reason: %(content)s"
+msgid "You have been banned from %(prefix)s/%(sub)s"
 msgstr ""
 
-#: app/notifications.py:74
+#: app/notifications.py:73
 #, python-format
-msgid "You have been unbanned from %(prefix)s/%(sub)s"
+msgid "%(name)s banned you with reason: %(content)s"
 msgstr ""
 
 #: app/notifications.py:75
 #, python-format
+msgid "You have been unbanned from %(prefix)s/%(sub)s"
+msgstr ""
+
+#: app/notifications.py:76
+#, python-format
 msgid "%(name)s unbanned you."
 msgstr ""
 
-#: app/notifications.py:77
+#: app/notifications.py:78
 #, python-format
 msgid "You have been invited to moderate %(prefix)s/%(sub)s"
 msgstr ""
 
-#: app/notifications.py:78
+#: app/notifications.py:79
 #, python-format
 msgid "%(name)s invited you to the sub's mod team"
 msgstr ""
@@ -3592,7 +3592,8 @@ msgid "No link provided."
 msgstr ""
 
 #: app/views/subs.py:162
-msgid "This link was recently posted on this sub."
+#, python-format
+msgid "This link was <a href=\"%(link)s\">recently posted</a> on this sub."
 msgstr ""
 
 #: app/views/subs.py:168
