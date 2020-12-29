@@ -3,10 +3,19 @@ import icon from './Icon'
 import u from './Util';
 import anchorme from "anchorme";
 import _ from './utils/I18n';
-
+import Tinycon from 'tinycon'
 RegExp.escape= function(s) {
     return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 };
+
+Tinycon.setOptions({
+    height: 11,
+	font: '10px arial',
+	color: '#ffffff',
+	background: '#000000',
+	fallback: true
+});
+
 
 const socket = io('///snt', {transports: ['websocket'], upgrade: false});
 
@@ -21,43 +30,34 @@ function updateNotifications(count){
 }
 
 function updateModNotifications(notifications) {
-  var modElem = document.getElementById('modcount');
+  const modElem = document.getElementById('modcount');
   if (modElem) {
-    var sum = 0;
-    for (var i=0; i < notifications.length; i++) {
+    let sum = 0;
+    for (let i=0; i < notifications.length; i++) {
       sum = sum + notifications[i][1];
     }
     if (sum == 0) {
       modElem.innerHTML = '';
       modElem.style.display = 'none';
     } else {
-      modElem.innerHTML = sum;
+      modElem.innerHTML = sum.toString();
       modElem.style.display = 'inline-block';
     }
   }
 }
 
 function updateTitleNotifications() {
-  var title = document.getElementsByTagName('title')[0].innerHTML.split('\n');
-  title = title[title.length-1]
-  var doc = new DOMParser().parseFromString(title, "text/html");
-  title = doc.documentElement.textContent;
-
-  var count = 0;
-  var mailcount = document.getElementById('mailcount');
+  let count = 0;
+  const mailcount = document.getElementById('mailcount');
   if (mailcount) {
     count += Number(mailcount.innerHTML);
   }
-  var modcount = document.getElementById('modcount');
+  const modcount = document.getElementById('modcount');
   if (modcount) {
     count += Number(modcount.innerHTML);
   }
 
-  if (count == 0) {
-    document.title = '\n' + title;
-  } else {
-    document.title = '(' + count + ')\n ' + title;
-  }
+  Tinycon.setBubble(count)
 }
 
 
