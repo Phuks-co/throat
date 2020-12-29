@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-12-27 22:39-0300\n"
-"PO-Revision-Date: 2020-12-28 15:54\n"
+"POT-Creation-Date: 2020-12-29 15:55-0300\n"
+"PO-Revision-Date: 2020-12-29 19:00\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -115,80 +115,80 @@ msgstr "Príspevok bol archivovaný"
 msgid "Invalid status request"
 msgstr "Invalid status request"
 
-#: app/notifications.py:56
+#: app/notifications.py:57
 msgid "Looks like nobody bothered to code the message for this notification :("
 msgstr "Zdá sa, že táto notifikácia ešte nie je hotová. :("
 
-#: app/notifications.py:57
+#: app/notifications.py:58
 msgid "New notification."
 msgstr "Nová notifikácia."
 
-#: app/notifications.py:59
+#: app/notifications.py:60
 #, python-format
 msgid "Post reply in %(prefix)s/%(sub)s"
 msgstr "Reakcia na príspevok v %(prefix)s/%(sub)s"
 
-#: app/notifications.py:60
+#: app/notifications.py:61
 #, python-format
 msgid "%(name)s replied to your post titled %(title)s"
 msgstr "%(name)s reagoval(a) na tvoj príspevok %(title)s"
 
-#: app/notifications.py:62
+#: app/notifications.py:63
 #, python-format
 msgid "Comment reply in %(prefix)s/%(sub)s"
 msgstr "Reakcia na komentár v %(prefix)s/%(sub)s"
 
-#: app/notifications.py:63
+#: app/notifications.py:64
 #, python-format
 msgid "%(name)s replied to your comment in the post titled %(title)s"
 msgstr "%(name)s reagoval(a) na tvoj komentár k príspevku %(title)s"
 
-#: app/notifications.py:65
+#: app/notifications.py:66
 #, python-format
 msgid "You were mentioned in %(prefix)s/%(sub)s"
 msgstr "Spomenuli ťa v %(prefix)s/%(sub)s"
 
-#: app/notifications.py:66
+#: app/notifications.py:67
 #, python-format
 msgid "%(name)s mentioned you in the post titled %(title)s"
 msgstr "%(name)s ťa spomenul(a) v príspevku %(title)s"
 
-#: app/notifications.py:68
+#: app/notifications.py:69
 #, python-format
 msgid "Your post in %(prefix)s/%(sub)s was deleted"
 msgstr "Tvoj príspevok v %(prefix)s/%(sub)s bol vymazaný"
 
-#: app/notifications.py:69
+#: app/notifications.py:70
 #, python-format
 msgid "%(name)s deleted your post titled %(title)s. %(comment)s"
 msgstr "%(name)s vymazal(a) tvoj príspevok %(title)s. %(comment)s"
 
-#: app/notifications.py:71
+#: app/notifications.py:72
 #, python-format
 msgid "You have been banned from %(prefix)s/%(sub)s"
 msgstr "Dostal(a) si ban v skupine %(prefix)s/%(sub)s"
 
-#: app/notifications.py:72
+#: app/notifications.py:73
 #, python-format
 msgid "%(name)s banned you with reason: %(content)s"
 msgstr "%(name)s ťa zabanoval(a) z dôvodu: %(content)s"
 
-#: app/notifications.py:74
+#: app/notifications.py:75
 #, python-format
 msgid "You have been unbanned from %(prefix)s/%(sub)s"
 msgstr "Zrrušili ti ban v skupine %(prefix)s/%(sub)s"
 
-#: app/notifications.py:75
+#: app/notifications.py:76
 #, python-format
 msgid "%(name)s unbanned you."
 msgstr "%(name)s ťa odbanoval(a)."
 
-#: app/notifications.py:77
+#: app/notifications.py:78
 #, python-format
 msgid "You have been invited to moderate %(prefix)s/%(sub)s"
 msgstr "Dostal(a) si pozvánku moderovať skupinu %(prefix)s/%(sub)s"
 
-#: app/notifications.py:78
+#: app/notifications.py:79
 #, python-format
 msgid "%(name)s invited you to the sub's mod team"
 msgstr "%(name)s ťa pozval(a) moderovať skupinu"
@@ -3541,8 +3541,9 @@ msgid "No link provided."
 msgstr "Nezadal(a) si link."
 
 #: app/views/subs.py:162
-msgid "This link was recently posted on this sub."
-msgstr "Tento link tu už máme."
+#, python-format
+msgid "This link was <a href=\"%(link)s\">recently posted</a> on this sub."
+msgstr ""
 
 #: app/views/subs.py:168
 msgid "This domain is banned."
