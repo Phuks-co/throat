@@ -16,7 +16,7 @@ site:
   # Domain name at which the app is being served.  This must be
   # configured for websocket support (chat and push new posts) on
   # Safari and Apple WebKit.  For development, you can omit this.
-  #server_name: "throat.example.com"
+  server_name: "cekni.to"
 
   # Name shown when a sub is owned by a deleted account or abandoned
   placeholder_account: '[checkedout]'
@@ -31,7 +31,7 @@ site:
 
   # Allow everybody to upload files
   # (by default it's only admins and users authorized through a metadata key)
-  allow_uploads: False
+  allow_uploads: True
 
   # Minimum level a user must have before being able to upload files.
   # Set to zero to disable file upload level limits
@@ -39,7 +39,7 @@ site:
 
   # For those who are allowed to upload files, allow video uploads
   # (.mp4 and .webm) as well.
-  allow_video_uploads: True
+  allow_video_uploads: False
 
   # Maximum size of an uploaded file, in bytes.
   upload_max_size: 16777216
@@ -50,10 +50,10 @@ site:
 
   # Allow all users to view the site log
   # If False, only Admin can view the sitelog
-  sitelog_public: True
+  sitelog_public: False
 
   # Forces all the sub logs and banned user lists to be public and removes the option to make them private.
-  force_sublog_public: True
+  force_sublog_public: False
 
   # Amount of time in seconds the post author can edit a post's title after the post
   # was created. Set to zero to disable title editing (default is 5 minutes)
@@ -70,7 +70,11 @@ site:
   # Minimum level required for a user to be permitted to private message nonprivileged users.
   # Set to zero to allow users of all levels to PM other users.
   # Users of any level may PM site admins.
-  send_pm_to_user_min_level: 3
+  send_pm_to_user_min_level: 0
+
+  # Minimum level a user must have before being able to create a sub.
+  # Set to zero to disable sub creation level limits
+  sub_creation_min_level: 0
 
   # Allows Sub Mods and Admins to view the edit history of posts
   edit_history: False
@@ -84,28 +88,28 @@ site:
   sub_ownership_limit: 20
 
   # Maximum amount of posts a user can create in a single sub in a day
-  daily_sub_posting_limit: 10
+  daily_sub_posting_limit: 5
 
   # Maximum amount of posts a user can create in a single day
-  daily_site_posting_limit: 25
+  daily_site_posting_limit: 10
 
   # List of links that will be shown in the footer.
   # Privacy and ToS links cannot be removed, and the license link can't be modified
-  footer:
-    links:
-      ToS: '/wiki/tos'
-      Privacy: '/wiki/privacy'
-      Canary: '/wiki/canary'
-      Donate: '/wiki/donate'
-      Bugs: 'https://github.com/Phuks-co/throat/issues'
+  #footer:
+  #  links:
+  #    ToS: '/wiki/tos'
+  #    Privacy: '/wiki/privacy'
+  #    Canary: '/wiki/canary'
+  #    Donate: '/wiki/donate'
+  #    Bugs: 'https://github.com/globalistas/ceknito/issues'
 
-  # Time after which post will be archived
-  archive_post_after: 60
+  # Number of days after which post will be archived
+  archive_post_after: 365
 
   # Number of trusted proxies which set the X-Forwarded-For header
   # ahead of the application.  If you run the application behind
   # a load balancer, this should be set to 1 or more.
-  trusted_proxy_count: 0
+  trusted_proxy_count: 1
 
   # Use a function defined in the database for hot-sorting posts,
   # instead of the default.  This option is not supported for Sqlite.
@@ -122,7 +126,7 @@ site:
     # If true, only show recent comments (and not posts) in the sidebar
     comments_only: False
     # Number of entries to display in the recenta activity sidebar
-    max_entries: 10
+    max_entries: 5
 
   # URL of the icon to be used for push notifications
   icon_url: 'https://phuks.co/static/img/icon.png'
@@ -185,11 +189,8 @@ app:
   # Available languages for users to select. This will also be used when trying to guess
   # the user's language.
   languages:
+    - sk
     - en
-    - sk
-    - es
-    - ru
-    - sk
 
   # Fallback language when there is no accept-language header sent by the browser
   fallback_language: 'sk'
