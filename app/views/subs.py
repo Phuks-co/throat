@@ -157,9 +157,9 @@ def create_post(ptype, sub):
             lx = SubPost.select(SubPost.pid).where(SubPost.sid == sub.sid)
             lx = lx.where(SubPost.link == form.link.data).where(SubPost.deleted == 0)
             monthago = datetime.utcnow() - timedelta(days=30)
-            lx.where(SubPost.posted > monthago).get()
+            post = lx.where(SubPost.posted > monthago).get()
             return engine.get_template('sub/createpost.html').render(
-                {'error': _("This link was recently posted on this sub."), 'form': form, 'sub': sub, 'captcha': captcha}), 400
+                {'error': _('This link was <a href="%(link)s">recently posted</a> on this sub.', link=url_for('sub.view_post', sub=sub.name, pid=post.pid)), 'form': form, 'sub': sub, 'captcha': captcha}), 400
         except SubPost.DoesNotExist:
             pass
 
