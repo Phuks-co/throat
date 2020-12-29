@@ -7,6 +7,7 @@ from .models import Notification, User, Sub, SubPost
 from .socketio import socketio
 from .misc import get_notification_count
 
+
 class Notifications(object):
     def __init__(self):
         self.push_service = None
@@ -52,7 +53,7 @@ class Notifications(object):
 
             if post:
                 post = SubPost.get(SubPost.pid == post)
-
+            # TODO: Set current language to target's lang
             message_body = _("Looks like nobody bothered to code the message for this notification :(")
             message_title = _("New notification.")
             if notification_type == 'POST_REPLY':
@@ -76,10 +77,19 @@ class Notifications(object):
             elif notification_type in ('MOD_INVITE', 'MOD_INVITE_JANITOR'):
                 message_title = _("You have been invited to moderate %(prefix)s/%(sub)s", prefix=config.site.sub_prefix, sub=sub.name)
                 message_body = _("%(name)s invited you to the sub's mod team", name=sender.name)
+
             # TODO: click_action (URL the notification sends you to)
-            self.push_service.notify_topic_subscribers(topic_name=target,
-                                                       message_body=message_body,
-                                                       message_title=message_title)
+            # - Blocker: Implementing messaging in PWA
+            # TODO: actions (mark as read?)
+            notification_data = {
+                'type': 'notification',
+                'title': message_title,
+                'notificationPayload': {
+                    'badge': config.site.icon_url,
+                    'body': message_body
+                }
+            }
+            self.push_service.topic_subscribers_data_message(topic_name=target, data_message=notification_data)
 
 
 notifications = Notifications()

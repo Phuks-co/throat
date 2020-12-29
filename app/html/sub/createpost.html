@@ -11,7 +11,7 @@
 
             <input type="submit" style="display:none"/>
             @if error:
-            <div class="error">@{ error }</div>
+            <div class="error">@{ error !!html}</div>
             @end
             <div id="onlyuploads" class="error" style="display:none">
               @{_("This sub only allows upload posts, and you don't have permission to upload files yet.")}

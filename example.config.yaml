@@ -67,10 +67,6 @@ site:
   # If True, only admins can create new subs
   sub_creation_admin_only: False
 
-  # Minimum level a user must have before being able to create a sub.
-  # Set to zero to disable sub creation level limits
-  sub_creation_min_level: 2
-
   # Minimum level required for a user to be permitted to private message nonprivileged users.
   # Set to zero to allow users of all levels to PM other users.
   # Users of any level may PM site admins.
@@ -127,6 +123,9 @@ site:
     comments_only: False
     # Number of entries to display in the recenta activity sidebar
     max_entries: 10
+
+  # URL of the icon to be used for push notifications
+  icon_url: 'https://phuks.co/static/img/icon.png'
 
 auth:
   # Set to LOCAL to store user authentication in database,
@@ -329,3 +328,7 @@ logging:
     level: DEBUG
     handlers:
       - console
+
+# notifications:
+  # Firebase Cloud Messaging API key
+  # fcm_api_key: ''

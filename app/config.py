@@ -67,7 +67,9 @@ cfg_defaults = {  # key => default value
                 "defaults_only": False,
                 "comments_only": False,
                 "max_entries": 10
-            }
+            },
+
+            'icon_url': None
         },
         "auth": {
             "provider": 'LOCAL',

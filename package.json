@@ -47,6 +47,7 @@
     "sortablejs": "^1.7.0",
     "time-elements": "^3.0.0",
     "tingle.js": "^0.14.0",
+    "tinycon": "^0.6.8",
     "url-loader": "^1.1.2"
   }
 }
