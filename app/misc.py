@@ -2014,6 +2014,12 @@ def word_truncate(content, max_length, suffix='...'):
 def recent_activity(sidebar=True):
     if not config.site.recent_activity.enabled:
         return False
+
+    # XXX: The queries below don't work on sqlite
+    # TODO: Make em work?
+    if 'SqliteDatabase' in config.database.engine:
+        return []
+
     # TODO: Pagination?
     post_activity = SubPost.select(
         Value('post').alias('type'),
