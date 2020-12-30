@@ -21,11 +21,12 @@
       <div class="col-12 admin-page-form">
           <form  method="POST" class="ajaxform pure-form" data-reload="true" action="{{url_for('do.assign_userbadge')}}">
             {{assignuserbadgeform.csrf_token}}
-            <h4>Assign badge to user</h4>
+            <h4>Modify User Badges</h4>
             <p>
               {{assignuserbadgeform.user(placeholder=assignuserbadgeform.user.label.text, required=True)}}
               {{assignuserbadgeform.badge(placeholder=assignuserbadgeform.badge.label.text, required=True)}}
-              <button type="submit" class="pure-button" data-prog="Doing the magic...">Assign Badge</button>
+              <button type="submit" name="assign" class="pure-button" data-prog="Doing the magic...">Assign Badge</button>
+              <button type="submit" name="delete" class="pure-button" formaction="{{url_for('do.remove_userbadge')}}" data-prog="Doing the magic...">Delete Badge</button>
             </p>
             <div class="div-error error alertbox"></div>
           </form>
@@ -48,7 +49,7 @@
               <tr>
                   <td>{{badge.rank}}</td>
                 <td>
-                    <span class="profilebadge" title="{{badge.name}}"><img width="60" height="60" src="{{badge.icon_url()}}" /></span>
+                    <span data-badge="{{badge.bid}}" class="profilebadge" title="{{badge.name}}"><img width="60" height="60" src="{{badge.icon_url()}}" /></span>
                 </td>
                 <td>
                     <a href="userbadges/edit/{{badge.bid}}">{{badge.name}}</a>
