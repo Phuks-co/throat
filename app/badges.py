@@ -2,6 +2,7 @@
 from .storage import FILE_NAMESPACE, mtype_from_file, calculate_file_hash, store_file
 from peewee import JOIN
 from .models import Badge, UserMetadata, SubMod
+from flask_babel import lazy_gettext as _l
 import uuid
 
 
@@ -23,7 +24,7 @@ class Badges:
         """
         Returns a list of all bagdes in the database.
         """
-        return (x for x in Badge.select(Badge.bid, Badge.name, Badge.alt, Badge.icon, Badge.score, Badge.trigger, Badge.rank)\
+        return (x for x in Badge.select(Badge.bid, Badge.name, Badge.alt, Badge.icon, Badge.score, Badge.trigger, Badge.rank)
                 .order_by(Badge.rank, Badge.name))
 
     def __getitem__(self, bid):
@@ -44,8 +45,8 @@ class Badges:
         else:
             icon = self[bid].icon
 
-        Badge.update(name=name, alt=alt, icon=icon, score=score, rank=rank, trigger=trigger).where(Badge.bid==bid).execute()
-
+        Badge.update(name=name, alt=alt, icon=icon, score=score,
+                     rank=rank, trigger=trigger).where(Badge.bid == bid).execute()
 
     def new_badge(self, name, alt, icon, score, rank, trigger=None):
         """
@@ -69,6 +70,13 @@ class Badges:
         """
         UserMetadata.get_or_create(key="badge", uid=uid, value=bid)
 
+    def unassign_userbadge(self, uid, bid):
+        """
+        Removes a badge from a user
+        """
+        UserMetadata.delete().where((UserMetadata.key == "badge") & (
+            UserMetadata.uid == uid) & (UserMetadata.value == str(bid))).execute()
+
     def triggers(self):
         """
         Lists available triggers that can be attached to a badge.
@@ -84,6 +92,7 @@ class Badges:
             .where((UserMetadata.uid == uid) & (UserMetadata.key == 'badge'))\
             .order_by(Badge.rank, Badge.name)
 
+
 def gen_icon(icon):
     mtype = mtype_from_file(icon, allow_video_formats=False)
     if mtype is None:
@@ -95,6 +104,7 @@ def gen_icon(icon):
     f_name = store_file(icon, basename, mtype, remove_metadata=True)
     return f_name
 
+
 badges = Badges()
 
 
@@ -102,7 +112,8 @@ def admin(bid):
     """
     Auto assigns badges to admins.
     """
-    for user in UserMetadata.select().where((UserMetadata.key == "admin") & (UserMetadata.value == True)):
+    for user in UserMetadata.select().where((UserMetadata.key == "admin") & (UserMetadata.value == '1')):
+        print("Giving ",bid," to:", user.uid)
         badges.assign_userbadge(user.uid, bid)
 
 
@@ -111,7 +122,9 @@ def mod(bid):
     Auto assigns badges to mods.
     """
     for user in SubMod.select().where((SubMod.invite == False)):
+        print("Giving ", bid ," to:", user.uid)
         badges.assign_userbadge(user.uid, bid)
+
 
 # TODO actually hook these up
 triggers = {

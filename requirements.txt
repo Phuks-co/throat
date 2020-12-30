@@ -81,7 +81,6 @@ tinycss2==0.6.1
 urllib3==1.26.2
 webencodings==0.5.1
 Werkzeug==1.0.1
-Wheezy-extractor==1.0
 wheezy.html==3.0.1
 wheezy.template==3.0.3
 WTForms==2.3.3

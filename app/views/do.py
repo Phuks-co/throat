@@ -509,11 +509,39 @@ def assign_userbadge():
     if form.validate():
         badges.assign_userbadge(user.uid, bid)
 
+
         # TODO log it, create new log type and save to sitelog ??
 
         return jsonify(status='ok')
     return jsonify(status="error", error=get_errors(form))
 
+@do.route("/do/remove_userbadge", methods=['POST'])
+@login_required
+def remove_userbadge():
+    """ Admin endpoint used for removing a user badge. """
+    if not current_user.is_admin():
+        abort(403)
+    l = [(badge.bid, badge.name) for badge in badges]
+    form = AssignUserBadgeForm()
+    form.badge.choices = l
+    bid = int(form.badge.data)
+
+    if bid not in [x[0] for x in l]:
+        return jsonify(status='error', error=[_("Badge does not exist")])
+
+    try:
+        user = User.get(fn.Lower(User.name) == form.user.data.lower())
+    except User.DoesNotExist:
+        return jsonify(status='error', error=[_("User does not exist")])
+
+    if form.validate():
+        badges.unassign_userbadge(user.uid, bid)
+
+
+        # TODO log it, create new log type and save to sitelog ??
+
+        return jsonify(status='ok')
+    return jsonify(status="error", error=get_errors(form))
 
 @do.route("/do/subscribe/<sid>", methods=['POST'])
 @login_required
