@@ -1639,7 +1639,6 @@ def toggle_sticky(post):
     except SubPost.DoesNotExist:
         return jsonify(status='error', error=_('Post does not exist'))
 
-
     if not current_user.is_mod(post.sid_id):
         abort(403)
 
@@ -1656,9 +1655,10 @@ def toggle_sticky(post):
                 return jsonify(status='error', error=_('This sub already has three sticky posts'))
             SubMetadata.create(sid=post.sid_id, key='sticky', value=post.pid)
             misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_ADD, current_user.uid, post.sid,
-                    link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
+                               link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
 
         cache.delete_memoized(misc.getStickyPid, post.sid_id)
+        cache.delete_memoized(misc.getStickies, post.sid_id)
     return jsonify(status='ok')
 
 
