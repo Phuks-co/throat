@@ -45,7 +45,7 @@
         <div class="nsfw" alt="@{_('Not safe for work')}">@{_('NSFW')}</div> \
         @end
         @if post['flair']:
-        <span class="postflair">@{post['flair']}</span> \
+        <span class="postflair">@{post['flair']!!e}</span> \
         @end
         @if post['link'] == None:
           <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']}/@{func.slugify(post['title'])}" class="title">@{post['title']}</a> \

@@ -1799,10 +1799,6 @@ def create_flair(sub):
 
     form = CreateSubFlair()
     if form.validate():
-        allowed_flairs = re.compile("^[a-zA-Z0-9._ -]+$")
-        if not allowed_flairs.match(form.text.data):
-            return jsonify(status='error', error=[_('Flair has invalid characters')])
-
         SubFlair.create(sid=sub.sid, text=form.text.data)
         return jsonify(status='ok')
     return json.dumps({'status': 'error', 'error': get_errors(form)})
