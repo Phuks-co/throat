@@ -12,6 +12,7 @@ import gevent
 import ipaddress
 from collections import defaultdict
 
+from bs4 import BeautifulSoup
 import tinycss2
 from captcha.image import ImageCaptcha
 from datetime import datetime, timedelta, timezone
@@ -2061,7 +2062,17 @@ def recent_activity(sidebar=True):
         data = data.where(activity.c.type == 'comment')
     data = data.order_by(activity.c.time.desc())
     data = data.limit(config.site.recent_activity.max_entries if sidebar else 50)
-    return data.dicts().execute(db)
+    data = data.dicts().execute(db)
+
+    for rec in data:
+        if rec['type'] != 'post':
+            parsed = BeautifulSoup(our_markdown(rec['content']))
+            for spoiler in parsed.findAll('spoiler'):
+                spoiler.string.replace_with('█' * len(spoiler.string))
+            stripped = parsed.findAll(text=True)
+            rec['content'] = word_truncate(''.join(stripped).replace('\n', ' '), 350)
+
+    return data
 
 
 logger = LocalProxy(lambda: current_app.logger)
