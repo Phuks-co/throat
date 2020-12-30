@@ -87,7 +87,7 @@
         @end
 
         @if post['flair']:
-          <span class="postflair">@{post['flair']}</span>
+          <span class="postflair">@{post['flair']!!e}</span>
         @end
 
         <span class="current history" data-id="0">
@@ -177,7 +177,7 @@
           @end
           @if (subInfo.get('ucf', 0) == '1' and current_user.uid == post['uid']) or current_user.uid in subMods['all']:
             @if len(func.getSubFlairs(post['sid'])) != 0:
-            <li><a class="editflair">@{_('flair')}</a></li>
+            <li><a class="editflair">@{_('flair')!!e}</a></li>
             @end
           @end
           @if post['uid'] == current_user.uid:
@@ -261,7 +261,7 @@
       @end
       <h4>@{_('Select a new flair')}</h4>
       @for ll in func.getSubFlairs(post['sid']):
-        <span class="selflair" data-sub="@{post['sub']}" data-flair="@{ll.xid}" data-pid="@{post['pid']}">@{ll.text}</span>
+        <span class="selflair" data-sub="@{post['sub']}" data-flair="@{ll.xid}" data-pid="@{post['pid']}">@{ll.text!!e}</span>
       @end
     </div>
   @end
