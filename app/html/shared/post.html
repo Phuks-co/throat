@@ -56,7 +56,7 @@
         <span class="pollflair">@{_('Poll')}</span> \
         @end
         @if post['nsfw']:
-        <div class="nsfw" alt="@{('Not safe for work')}">@{('NSFW')}</div> \
+        <div class="nsfw" alt="@{_('Not safe for work')}">@{_('NSFW')}</div> \
         @end
         @if post['flair']:
         <span class="postflair">@{post['flair']!!e}</span> \
