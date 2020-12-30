@@ -863,17 +863,19 @@ def getWikiPid(sid):
     return [int(y['value']) for y in x]
 
 
-@cache.memoize(5)
+@cache.memoize(60)
 def getStickyPid(sid):
     """ Returns a list of stickied SubPosts """
     x = SubMetadata.select(SubMetadata.value).where(SubMetadata.sid == sid).where(SubMetadata.key == 'sticky').dicts()
     return [int(y['value']) for y in x]
 
 
+@cache.memoize(60)
 def getStickies(sid):
-    sp = getStickyPid(sid)
-    posts = postListQueryBase().where(SubPost.pid << sp).dicts()
-    return posts
+    posts = postListQueryBase().join(SubMetadata, on=(SubPost.sid == SubMetadata.sid) & (SubPost.pid == SubMetadata.value) & (SubMetadata.key == 'sticky'))
+    posts = posts.where(SubPost.sid == sid)
+    posts = posts.order_by(SubMetadata.xid.asc()).dicts()
+    return list(posts)
 
 
 def load_user(user_id):

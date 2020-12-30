@@ -509,11 +509,39 @@ def assign_userbadge():
     if form.validate():
         badges.assign_userbadge(user.uid, bid)
 
+
         # TODO log it, create new log type and save to sitelog ??
 
         return jsonify(status='ok')
     return jsonify(status="error", error=get_errors(form))
 
+@do.route("/do/remove_userbadge", methods=['POST'])
+@login_required
+def remove_userbadge():
+    """ Admin endpoint used for removing a user badge. """
+    if not current_user.is_admin():
+        abort(403)
+    l = [(badge.bid, badge.name) for badge in badges]
+    form = AssignUserBadgeForm()
+    form.badge.choices = l
+    bid = int(form.badge.data)
+
+    if bid not in [x[0] for x in l]:
+        return jsonify(status='error', error=[_("Badge does not exist")])
+
+    try:
+        user = User.get(fn.Lower(User.name) == form.user.data.lower())
+    except User.DoesNotExist:
+        return jsonify(status='error', error=[_("User does not exist")])
+
+    if form.validate():
+        badges.unassign_userbadge(user.uid, bid)
+
+
+        # TODO log it, create new log type and save to sitelog ??
+
+        return jsonify(status='ok')
+    return jsonify(status="error", error=get_errors(form))
 
 @do.route("/do/subscribe/<sid>", methods=['POST'])
 @login_required
@@ -1611,7 +1639,6 @@ def toggle_sticky(post):
     except SubPost.DoesNotExist:
         return jsonify(status='error', error=_('Post does not exist'))
 
-
     if not current_user.is_mod(post.sid_id):
         abort(403)
 
@@ -1628,9 +1655,10 @@ def toggle_sticky(post):
                 return jsonify(status='error', error=_('This sub already has three sticky posts'))
             SubMetadata.create(sid=post.sid_id, key='sticky', value=post.pid)
             misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_ADD, current_user.uid, post.sid,
-                    link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
+                               link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
 
         cache.delete_memoized(misc.getStickyPid, post.sid_id)
+        cache.delete_memoized(misc.getStickies, post.sid_id)
     return jsonify(status='ok')
 
 
