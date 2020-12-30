@@ -16,7 +16,7 @@
         @if it['type'] == 'post':
         @{_('%(user)s posted "%(title)s" to %(sub)s %(timeago)s', user='<a href="/u/' + it['user'] + '">' + it['user'] + '</a>', title='<a href="' + url_for('sub.view_post', sub=it['sub'], pid=it['pid']) + '">' + e(it['content']) + '</a>', sub='<a href="' + url_for('sub.view_sub', sub=it['sub']) + '">' + config.site.sub_prefix + '/' + it['sub'] + '</a>', timeago='<time-ago datetime="' + it['time'].isoformat() + 'Z" class="sidebarlists"></time-ago>')!!html}
         @else:
-        @{_('%(user)s commented "%(comment)s" in %(sub)s %(timeago)s', user='<a href="/u/' + it['user'] + '">' + it['user'] + '</a>', comment='<a href="' + url_for('sub.view_post', sub=it['sub'], pid=it['pid']) + '">' + e(func.word_truncate(''.join(BeautifulSoup(markdown(it['content'])).findAll(text=True)).replace('\n', ' '), 350)) + '</a>', sub='<a href="' + url_for('sub.view_sub', sub=it['sub']) + '">' + config.site.sub_prefix + '/' + it['sub'] + '</a>', timeago='<time-ago datetime="' + it['time'].isoformat() + 'Z" class="sidebarlists"></time-ago>')!!html}
+        @{_('%(user)s commented "%(comment)s" in %(sub)s %(timeago)s', user='<a href="/u/' + it['user'] + '">' + it['user'] + '</a>', comment='<a href="' + url_for('sub.view_post', sub=it['sub'], pid=it['pid']) + '">' + e(it['content']).replace('\n', ' ') + '</a>', sub='<a href="' + url_for('sub.view_sub', sub=it['sub']) + '">' + config.site.sub_prefix + '/' + it['sub'] + '</a>', timeago='<time-ago datetime="' + it['time'].isoformat() + 'Z" class="sidebarlists"></time-ago>')!!html}
         @end
       </li>
     @end
