@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-12-29 15:55-0300\n"
-"PO-Revision-Date: 2020-12-29 18:59\n"
+"PO-Revision-Date: 2020-12-30 00:59\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -3544,7 +3544,7 @@ msgstr "Ссылка не предоставляется."
 #: app/views/subs.py:162
 #, python-format
 msgid "This link was <a href=\"%(link)s\">recently posted</a> on this sub."
-msgstr ""
+msgstr "Эта ссылка была <a href=\"%(link)s\">недавно опубликована</a> в этой группе."
 
 #: app/views/subs.py:168
 msgid "This domain is banned."
