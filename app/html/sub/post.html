@@ -245,7 +245,7 @@
         @if current_user.is_admin() and post['deleted'] == 2:
           <li id="delpostli"><a class="undelete-post"> @{_('un-delete')} </a></li>
         @end
-        @if (current_user.uid == post['uid'] and (current_user.is_admin() or current_user.uid in subMods['all'])):
+        @if (current_user.uid == post['uid'] and (current_user.is_admin() or current_user.uid in subMods['all'])) and post['deleted'] == 0:
             <li><a class="distinguish" data-pid="@{post['pid']}">@{post['distinguish'] and _('undistinguish') or _('distinguish')}</a></li>
         @end
 

@@ -528,7 +528,7 @@ u.ready(function(){
     } else {
       var d = new Date(el.innerHTML);
       if (fmt == 'datetime') {
-        el.innerHTML = d.toLocaleString();
+        el.innerHTML = d.toISOString().replace(/T/, ' ').replace(/\..+/, '');
       }
     }
   })

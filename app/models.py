@@ -17,7 +17,8 @@ dbp = Proxy()
 
 def get_db():
     if 'db' not in g:
-        dbp.connect()
+        if dbp.is_closed():
+            dbp.connect()
         g.db = dbp
     return g.db
 
