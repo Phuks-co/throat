@@ -872,7 +872,7 @@ def getStickyPid(sid):
 
 @cache.memoize(60)
 def getStickies(sid):
-    posts = postListQueryBase().join(SubMetadata, on=(SubPost.sid == SubMetadata.sid) & (SubPost.pid == SubMetadata.value) & (SubMetadata.key == 'sticky'))
+    posts = postListQueryBase().join(SubMetadata, on=(SubPost.sid == SubMetadata.sid) & (SubPost.pid == SubMetadata.value.cast("int")) & (SubMetadata.key == 'sticky'))
     posts = posts.where(SubPost.sid == sid)
     posts = posts.order_by(SubMetadata.xid.asc()).dicts()
     return list(posts)
