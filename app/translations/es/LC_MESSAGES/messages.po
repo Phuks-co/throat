@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2020-12-27 22:39-0300\n"
-"PO-Revision-Date: 2020-12-28 15:54\n"
+"POT-Creation-Date: 2020-12-29 15:55-0300\n"
+"PO-Revision-Date: 2020-12-29 18:59\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -115,80 +115,80 @@ msgstr "El post está archivado"
 msgid "Invalid status request"
 msgstr "Estado inválido"
 
-#: app/notifications.py:56
+#: app/notifications.py:57
 msgid "Looks like nobody bothered to code the message for this notification :("
 msgstr ""
 
-#: app/notifications.py:57
+#: app/notifications.py:58
 msgid "New notification."
-msgstr ""
+msgstr "Nueva notificación."
 
-#: app/notifications.py:59
+#: app/notifications.py:60
 #, python-format
 msgid "Post reply in %(prefix)s/%(sub)s"
 msgstr ""
 
-#: app/notifications.py:60
+#: app/notifications.py:61
 #, python-format
 msgid "%(name)s replied to your post titled %(title)s"
 msgstr ""
 
-#: app/notifications.py:62
+#: app/notifications.py:63
 #, python-format
 msgid "Comment reply in %(prefix)s/%(sub)s"
 msgstr ""
 
-#: app/notifications.py:63
+#: app/notifications.py:64
 #, python-format
 msgid "%(name)s replied to your comment in the post titled %(title)s"
 msgstr ""
 
-#: app/notifications.py:65
+#: app/notifications.py:66
 #, python-format
 msgid "You were mentioned in %(prefix)s/%(sub)s"
 msgstr ""
 
-#: app/notifications.py:66
+#: app/notifications.py:67
 #, python-format
 msgid "%(name)s mentioned you in the post titled %(title)s"
 msgstr ""
 
-#: app/notifications.py:68
+#: app/notifications.py:69
 #, python-format
 msgid "Your post in %(prefix)s/%(sub)s was deleted"
 msgstr ""
 
-#: app/notifications.py:69
+#: app/notifications.py:70
 #, python-format
 msgid "%(name)s deleted your post titled %(title)s. %(comment)s"
 msgstr ""
 
-#: app/notifications.py:71
+#: app/notifications.py:72
 #, python-format
 msgid "You have been banned from %(prefix)s/%(sub)s"
 msgstr ""
 
-#: app/notifications.py:72
+#: app/notifications.py:73
 #, python-format
 msgid "%(name)s banned you with reason: %(content)s"
 msgstr ""
 
-#: app/notifications.py:74
+#: app/notifications.py:75
 #, python-format
 msgid "You have been unbanned from %(prefix)s/%(sub)s"
 msgstr ""
 
-#: app/notifications.py:75
+#: app/notifications.py:76
 #, python-format
 msgid "%(name)s unbanned you."
 msgstr ""
 
-#: app/notifications.py:77
+#: app/notifications.py:78
 #, python-format
 msgid "You have been invited to moderate %(prefix)s/%(sub)s"
 msgstr ""
 
-#: app/notifications.py:78
+#: app/notifications.py:79
 #, python-format
 msgid "%(name)s invited you to the sub's mod team"
 msgstr ""
@@ -1088,15 +1088,15 @@ msgstr ""
 
 #: app/html/mod/reportdetails.html:296
 msgid "Other reports on this post:"
-msgstr ""
+msgstr "Otros reportes para este post:"
 
 #: app/html/mod/reportdetails.html:300
 msgid "There are no other reports on this post"
-msgstr ""
+msgstr "No hay ningún otro reporte para este post"
 
 #: app/html/mod/reports.html:15
 msgid "Includes all open reports for subs you can moderate."
-msgstr ""
+msgstr "Incluye todos los reportes abiertos de los subs que puedes moderar."
 
 #: app/html/mod/reports.html:32 app/html/mod/sub_reports.html:33
 msgid "Close"
@@ -1104,19 +1104,19 @@ msgstr "Cerrar"
 
 #: app/html/mod/sub_reports.html:15
 msgid "Open Reports for "
-msgstr ""
+msgstr "Reportes abiertos para "
 
 #: app/html/mod/sub_reports.html:16
 msgid "Includes all open reports this sub."
-msgstr ""
+msgstr "Incluye todos los reportes abiertos para este sub."
 
 #: app/html/mod/sub_reports_closed.html:16
 msgid "Closed Reports for "
-msgstr ""
+msgstr "Reportes cerrados para "
 
 #: app/html/mod/sub_reports_closed.html:17
 msgid "Includes all closed reports this sub."
-msgstr ""
+msgstr "Incluye todos los reportes cerrados para este sub."
 
 #: app/html/shared/layout.html:41
 msgid "Admin mode is currently enabled."
@@ -1128,7 +1128,7 @@ msgstr "Desactivar"
 
 #: app/html/shared/layout.html:53 app/static/js/Post.js:45
 msgid "admin"
-msgstr ""
+msgstr "admin"
 
 #: app/html/shared/layout.html:57
 msgid "Customize this bar"
@@ -1170,7 +1170,7 @@ msgstr ""
 #: app/html/shared/post.html:27 app/html/sub/css.html:53
 #: app/html/sub/css.html:55
 msgid "Thumbnail"
-msgstr ""
+msgstr "Thumbnail"
 
 #: app/html/shared/post.html:39
 msgid "Announcement"
@@ -1184,7 +1184,7 @@ msgstr ""
 #: app/html/shared/post.html:45 app/html/shared/sidebar/sub.html:27
 #: app/html/sub/post.html:87
 msgid "NSFW"
-msgstr ""
+msgstr "NSFW"
 
 #: app/html/shared/post.html:54
 msgid "not https"
@@ -1218,12 +1218,12 @@ msgstr "publicado %(timeago)s por %(user)s en %(sub)s"
 #: app/html/shared/post.html:75 app/html/shared/post.html:77
 #: app/html/sub/post.html:165 app/html/sub/postcomments.html:27
 msgid " [speaking as mod]"
-msgstr ""
+msgstr " [hablando como mod.]"
 
 #: app/html/shared/post.html:75 app/html/shared/post.html:77
 #: app/html/sub/post.html:165 app/html/sub/postcomments.html:27
 msgid " [speaking as admin]"
-msgstr ""
+msgstr " [hablando como admin]"
 
 #: app/html/shared/post.html:77
 #, python-format
@@ -1232,7 +1232,7 @@ msgstr "publicado %(timeago)s por %(user)s"
 
 #: app/html/shared/post.html:81
 msgid "sticky"
-msgstr ""
+msgstr "fijo"
 
 #: app/html/shared/post.html:84
 msgid "wiki"
@@ -1258,11 +1258,11 @@ msgstr "publicaciones reportadas (%(num)s)"
 
 #: app/html/shared/sidebar/admin.html:1
 msgid "Admin"
-msgstr ""
+msgstr "Admin"
 
 #: app/html/shared/sidebar/admin.html:3
 msgid "Admins"
-msgstr ""
+msgstr "Admins"
 
 #: app/html/shared/sidebar/admin.html:4
 msgid "Users"
@@ -1468,15 +1468,15 @@ msgstr "Logs del sub"
 
 #: app/html/shared/sidebar/sub_mod.html:4 app/html/sub/flairs.html:29
 msgid "Flairs"
-msgstr ""
+msgstr "Adornos"
 
 #: app/html/shared/sidebar/sub_mod.html:5 app/html/sub/rules.html:35
 msgid "Rules"
-msgstr ""
+msgstr "Reglas"
 
 #: app/html/shared/sidebar/sub_mod.html:6
 msgid "Stylesheet"
-msgstr ""
+msgstr "Hoja de estilos"
 
 #: app/html/shared/sidebar/sub_mod.html:9
 msgid "Bans"
@@ -1557,12 +1557,12 @@ msgstr "Usuario"
 
 #: app/html/site/log.html:13 app/html/sub/log.html:13
 msgid "Action"
-msgstr ""
+msgstr "Acción"
 
 #: app/html/site/log.html:34
 #, python-format
 msgid "Banned <a href=\"/u/%(user)s\">%(user)s</a>"
-msgstr ""
+msgstr "Baneó a <a href=\"/u/%(user)s\">%(user)s</a>"
 
 #: app/html/site/log.html:36
 msgid "Created a sub"
@@ -1879,7 +1879,7 @@ msgstr ""
 #: app/html/sub/flairs.html:16
 #, python-format
 msgid "Editing flairs of <a href=\"%(url)s\">%(sub)s</a>"
-msgstr ""
+msgstr "Editando adornos de <a href=\"%(url)s\">%(sub)s</a>"
 
 #: app/html/sub/flairs.html:19
 msgid "Create new flair"
@@ -1978,27 +1978,27 @@ msgstr ""
 
 #: app/html/sub/mods.html:21
 msgid "Accept"
-msgstr ""
+msgstr "Aceptar"
 
 #: app/html/sub/mods.html:22
 msgid "No thanks"
-msgstr ""
+msgstr "No, gracias"
 
 #: app/html/sub/mods.html:28
 msgid "Owner:"
-msgstr ""
+msgstr "Dueño:"
 
 #: app/html/sub/mods.html:32
 msgid "Owners:"
-msgstr ""
+msgstr "Dueños:"
 
 #: app/html/sub/mods.html:42
 msgid "Active moderators: none"
-msgstr ""
+msgstr "Moderadores activos: ninguno"
 
 #: app/html/sub/mods.html:44
 msgid "Active moderators:"
-msgstr ""
+msgstr "Moderadores activos:"
 
 #: app/html/sub/mods.html:55 app/html/sub/mods.html:73
 msgid "resign"
@@ -2083,7 +2083,7 @@ msgstr "guardar"
 
 #: app/html/sub/post.html:180
 msgid "flair"
-msgstr ""
+msgstr "adornar"
 
 #: app/html/sub/post.html:185 app/html/sub/postcomments.html:97
 #: app/static/js/Post.js:347 app/static/js/Post.js:350
@@ -2141,11 +2141,11 @@ msgstr ""
 
 #: app/html/sub/post.html:233
 msgid "unlock comments"
-msgstr ""
+msgstr "desbloquear comentarios"
 
 #: app/html/sub/post.html:235
 msgid "lock comments"
-msgstr ""
+msgstr "bloquear comentarios"
 
 #: app/html/sub/post.html:246 app/html/sub/postcomments.html:103
 msgid "un-delete"
@@ -2163,7 +2163,7 @@ msgstr ""
 #: app/html/sub/post.html:260
 #, python-format
 msgid "Current flair: <span class=\"postflair\">%(flair)s</span>."
-msgstr ""
+msgstr "Adorno actual: <span class=\"postflair\">%(flair)s</span>."
 
 #: app/html/sub/post.html:260
 msgid "Remove"
@@ -2171,7 +2171,7 @@ msgstr "Eliminar"
 
 #: app/html/sub/post.html:262
 msgid "Select a new flair"
-msgstr ""
+msgstr "Selecciona un nuevo adorno"
 
 #: app/html/sub/post.html:283
 msgid "[deleted]"
@@ -2179,7 +2179,7 @@ msgstr "[borrado]"
 
 #: app/html/sub/post.html:308 app/html/sub/postcomments.html:73
 msgid "Viewing edit history:"
-msgstr ""
+msgstr "Viendo historial de ediciones:"
 
 #: app/html/sub/post.html:326
 msgid "Submit comment"
@@ -2193,7 +2193,7 @@ msgstr "Vista previa del comentario"
 
 #: app/html/sub/post.html:336
 msgid "This post is closed to new comments."
-msgstr ""
+msgstr "Este post está cerrado a nuevos comentarios."
 
 #: app/html/sub/post.html:341
 msgid "No comments, yet..."
@@ -2280,7 +2280,7 @@ msgstr "Sólo los usuarios por encima del <b>nivel %(level)s</b> pueden votar."
 #: app/html/sub/postpoll.html:28 app/static/js/Poll.js:94
 #: app/static/js/Poll.js:146
 msgid "(voted)"
-msgstr ""
+msgstr "(votado)"
 
 #: app/html/sub/postpoll.html:36
 msgid "Vote"
@@ -2808,7 +2808,7 @@ msgstr "eliminado"
 
 #: app/static/js/Post.js:43
 msgid "distinguish as:"
-msgstr ""
+msgstr "distinguir como:"
 
 #: app/static/js/Post.js:46
 msgid "mod"
@@ -2887,7 +2887,7 @@ msgstr "Obtener de nuevo"
 
 #: app/static/js/Post.js:585
 msgid "Grabbing..."
-msgstr ""
+msgstr "Obteniendo..."
 
 #: app/static/js/Post.js:708
 msgid "Post comment"
@@ -2923,7 +2923,7 @@ msgstr ""
 
 #: app/static/js/Post.js:809
 msgid "SPAM"
-msgstr ""
+msgstr "SPAM"
 
 #: app/static/js/Post.js:810
 msgid "TOS violation"
@@ -3123,11 +3123,11 @@ msgstr ""
 #: app/views/do.py:2663 app/views/do.py:2728 app/views/do.py:2790
 #: app/views/do.py:2842
 msgid "Sub does not exist"
-msgstr ""
+msgstr "El sub no existe"
 
 #: app/views/do.py:211
 msgid "Post was already deleted"
-msgstr ""
+msgstr "El post ya fue borrado"
 
 #: app/views/do.py:217 app/views/do.py:295 app/views/do.py:334
 #: app/views/do.py:427 app/views/do.py:914 app/views/do.py:1893
@@ -3143,7 +3143,7 @@ msgstr "No se puede borrar sin una razón"
 
 #: app/views/do.py:286
 msgid "Post is not deleted"
-msgstr ""
+msgstr "El post no fue borrado"
 
 #: app/views/do.py:289
 msgid "Can not un-delete a self-deleted post"
@@ -3439,7 +3439,7 @@ msgstr ""
 #: app/views/do.py:2458 app/views/do.py:2465 app/views/do.py:2497
 #: app/views/do.py:2504
 msgid "Poll is closed"
-msgstr ""
+msgstr "Encuesta cerrada"
 
 #: app/views/do.py:2472
 msgid "Insufficient user level"
@@ -3541,8 +3541,9 @@ msgid "No link provided."
 msgstr ""
 
 #: app/views/subs.py:162
-msgid "This link was recently posted on this sub."
-msgstr "Este enlace fue publicado recientemente en este sub."
+#, python-format
+msgid "This link was <a href=\"%(link)s\">recently posted</a> on this sub."
+msgstr ""
 
 #: app/views/subs.py:168
 msgid "This domain is banned."
