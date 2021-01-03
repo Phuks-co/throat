@@ -129,7 +129,7 @@ site:
     max_entries: 5
 
   # URL of the icon to be used for push notifications
-  icon_url: 'https://phuks.co/static/img/icon.png'
+  icon_url: 'https://cekni.to/static/img/icon.png'
 
 auth:
   # Set to LOCAL to store user authentication in database,
