@@ -222,6 +222,7 @@ class SubFlair(BaseModel):
                           field='sid')
     text = CharField(null=True)
     xid = PrimaryKeyField()
+    display_order = IntegerField(default=1)
 
     def __repr__(self):
         return f'<SubFlair {self.text}>'

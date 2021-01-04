@@ -3,6 +3,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, BooleanField, HiddenField
 from wtforms import RadioField, SelectField, FieldList
+from wtforms.fields.html5 import IntegerRangeField
 from wtforms.validators import DataRequired, Length, URL
 from wtforms.validators import Optional
 from flask_babel import lazy_gettext as _l
@@ -55,6 +56,7 @@ class CreateSubFlair(FlaskForm):
 class EditSubFlair(FlaskForm):
     """ Edits ONE flair from a sub """
     flair = HiddenField()
+    display_order = IntegerRangeField()
     text = StringField(_l('Flair text'), validators=[DataRequired(), Length(max=22)])
 
 

@@ -84,12 +84,18 @@ def edit_sub_flairs(sub):
     if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
         abort(403)
 
-    flairs = SubFlair.select().where(SubFlair.sid == sub.sid).dicts()
+    flairs = SubFlair.select().where(
+        SubFlair.sid == sub.sid).order_by(SubFlair.display_order).dicts()
     formflairs = []
     for flair in flairs:
-        formflairs.append(EditSubFlair(flair=flair['xid'], text=flair['text']))
+        formflairs.append(EditSubFlair(
+            flair=flair['xid'],
+            display_order=flair['display_order'],
+            text=flair['text'],
+        ))
 
-    return engine.get_template('sub/flairs.html').render({'sub': sub, 'flairs': formflairs, 'createflair': CreateSubFlair()})
+    return engine.get_template('sub/flairs.html').render(
+        {'sub': sub, 'flairs': formflairs, 'createflair': CreateSubFlair()})
 
 
 @blueprint.route("/<sub>/edit/rules")

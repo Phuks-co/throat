@@ -1804,6 +1804,47 @@ def create_flair(sub):
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
+@do.route("/do/flair/<sub>/<fl>/up", methods=['POST'])
+@login_required
+def flair_order_up(sub, fl):
+    """ Orders a flair relatively up the list (from edit flair page) """
+    try:
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+        if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
+            abort(403)
+
+        flair = SubFlair.get(
+            (SubFlair.sid == sub.sid) & (SubFlair.xid == fl))
+        if flair.display_order > 0:
+            flair.display_order -= 1
+        flair.save()
+
+    except SubFlair.DoesNotExist:
+        return jsonify(status='error', error=[_('Flair does not exist')])
+
+    return jsonify(status='ok')
+
+
+@do.route("/do/flair/<sub>/<fl>/down", methods=['POST'])
+@login_required
+def flair_order_down(sub, fl):
+    """ Orders a flair relatively down the list (from edit flair page) """
+    try:
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+        if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
+            abort(403)
+
+        flair = SubFlair.get(
+            (SubFlair.sid == sub.sid) & (SubFlair.xid == fl))
+        flair.display_order += 1
+        flair.save()
+
+    except SubFlair.DoesNotExist:
+        return jsonify(status='error', error=[_('Flair does not exist')])
+
+    return jsonify(status='ok')
+
+
 @do.route("/do/rule/<sub>/delete", methods=['POST'])
 @login_required
 def delete_rule(sub):
@@ -2913,5 +2954,5 @@ def create_report_note(type, id):
     if form.validate():
         misc.create_reportlog(misc.LOG_TYPE_REPORT_NOTE, current_user.uid, report.id, type=type, desc=form.text.data)
         return jsonify(status='ok')
-        
+
     return json.dumps({'status': 'error', 'error': get_errors(form)})

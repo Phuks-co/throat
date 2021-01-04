@@ -476,7 +476,7 @@ def is_sub_banned(sub, user=None, uid=None):
 
 @cache.memoize(5)
 def getSubFlairs(sid):
-    return list(SubFlair.select().where(SubFlair.sid == sid))
+    return list(SubFlair.select().where(SubFlair.sid == sid).order_by(SubFlair.display_order))
 
 
 @cache.memoize(600)

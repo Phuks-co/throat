@@ -28,17 +28,38 @@
       <hr>
       <h4>@{_('Flairs')}</h4>
       <div class="col-12 admin-page-form">
-        <ul>
+        <table>
+          <thead>
+            <tr><th>Flair Name</th><th>Display Order</th><th>Control Panel</th></tr>
+          </thead>
+          <tbody>
           @for flair in flairs:
-            <li>
-              <span class="postflair">@{flair.text.data}</span>
-              <form  method="POST" data-reload="true" action="@{url_for('do.delete_flair', sub=sub.name)}" class="ajaxform st-flair">
-                @{flair.csrf_token()!!html}
-                @{flair.flair!!html}
-                <button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="@{_('Deleting...')}" data-success="@{_('Deleted!')}">@{_('Delete')}</button>
-              </form>
+            <tr>
+              <td>
+                <span class="postflair">@{flair.text.data}</span>
+              </td>
+              <td>@{flair.display_order.data}</td>
+              <td>
+                <form  method="POST" data-reload="true" action="@{url_for('do.flair_order_up', sub=sub.name, fl=flair.flair.data)}" class="ajaxform st-flair">
+                  @{flair.csrf_token()!!html}
+                  @{flair.flair!!html}
+                  <button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="@{_('Editing...')}" data-success="@{_('Flair Re-Ordered')}">@{_('Move Up')}</button>
+                </form>
+                <form  method="POST" data-reload="true" action="@{url_for('do.flair_order_down', sub=sub.name, fl=flair.flair.data)}" class="ajaxform st-flair">
+                  @{flair.csrf_token()!!html}
+                  @{flair.flair!!html}
+                  <button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="@{_('Editing...')}" data-success="@{_('Flair Re-Ordered')}">@{_('Move Down')}</button>
+                </form>
+                <form  method="POST" data-reload="true" action="@{url_for('do.delete_flair', sub=sub.name)}" class="ajaxform st-flair">
+                  @{flair.csrf_token()!!html}
+                  @{flair.flair!!html}
+                  <button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="@{_('Deleting...')}" data-success="@{_('Deleted!')}">@{_('Delete')}</button>
+                </form>
+              </td>
+            </tr>
           @end
-        </ul>
+          </tbody>
+        </table>
       </div>
     @end
     </div>
