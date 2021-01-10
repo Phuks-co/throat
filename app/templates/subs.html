@@ -75,6 +75,8 @@
 
               {% if current_user.has_subscribed(sub.name) %}
                 <button data-ac="unsubscribe" class="sub pure-button button-xsmall" style="display:inline-block; width: 8em;"><span class="sbm-icon" data-icon="check"></span>Subscribed</button>
+              {% elif current_user.has_blocked(sub.sid) %}
+                <button data-ac="unblock" class="blk button-warning pure-button button-xsmall" style="display:inline-block; width: 8em;"><span class="sbm-icon" data-icon="block"></span>Blocked</button>
               {%else%}
                 <button data-ac="subscribe" class="unsub pure-button button-xsmall" style="display:inline-block; width: 8em;"><span class="sbm-icon" data-icon="add"></span>Subscribe</button>
               {%endif%}
