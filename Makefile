@@ -1,4 +1,14 @@
+CUR_DIR=$(shell pwd)
+NPM_CMD?=install
+
 .PHONY: docker-compose-build
+
+docker-npm:
+	docker run \
+		-v $(CUR_DIR):/throat \
+		-w /throat node:14-buster-slim \
+		npm $(NPM_CMD)
+
 docker-compose-build:
 	docker-compose build
 	@$(DONE)

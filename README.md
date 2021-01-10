@@ -29,6 +29,7 @@ And you're done! You can run a test server by executing `./throat.py`. For produ
 If you prefer to develop on docker
  - The provided Docker resources only support Postgres
  - You still must copy `example.config.yaml` to `config.yaml` and make any changes you want
+ - Create an initial manifest.json by using `NPM_CMD="run build" make docker-npm`
  - In addition, configs are overridden by environment variables set in docker-compose.yml
    which reference the redis and postgres services created by docker-compose.
 
@@ -76,7 +77,7 @@ as Keycloak clients with appropriate permissions.  See
 
 ## Deploying to AWS
 
-You can check out the [CDK Definition of Infrastructure](https://gitlab.com/feminist-conspiracy/infrastructure) maintained by Ovarit 
+You can check out the [CDK Definition of Infrastructure](https://gitlab.com/feminist-conspiracy/infrastructure) maintained by Ovarit
 
 ## Tests
 
@@ -99,7 +100,7 @@ If you have any questions, you can reach us on #throat:phuks.co on [Matrix](http
 
 ---
 
-You can manage default subs by using 
+You can manage default subs by using
 
  - $ ./scripts/defaults.py
 

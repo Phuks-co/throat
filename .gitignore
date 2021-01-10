@@ -67,7 +67,6 @@ thumbs
 manifest.json
 node_modules/
 node_modules
-package-lock.json
 
 # vscode settings
 .vscode

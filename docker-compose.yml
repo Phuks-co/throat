@@ -1,4 +1,9 @@
 version: "3.5"
+
+volumes:
+  db-data:
+    driver: local
+
 services:
   db:
     image: postgres
@@ -6,6 +11,8 @@ services:
       POSTGRES_USER: throat
       POSTGRES_PASSWORD: dev
       POSTGRES_DATABASE: throat
+    volumes:
+      - db-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 5s
@@ -49,6 +56,7 @@ services:
       DATABASE_AUTOCOMMIT: "true"
     volumes:
       - ./config.yaml:/throat/config.yaml
+      - ./migrations:/throat/migrations
     depends_on:
       - db
     restart: on-failure
