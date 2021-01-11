@@ -3,8 +3,7 @@ from datetime import datetime
 import uuid
 
 from email_validator import validate_email
-from flask import current_app, render_template, session
-from flask_babel import _
+from flask import session
 from flask_login import login_user
 from keycloak import KeycloakAdmin as KeycloakAdmin_
 from keycloak import KeycloakOpenID
@@ -41,6 +40,7 @@ class AuthError(Exception):
     pass
 
 
+# noinspection PyAttributeOutsideInit
 class AuthProvider:
     def __init__(self, app=None):
         if app is not None:
@@ -106,7 +106,8 @@ class AuthProvider:
         self._set_email_verified(user, verified_email)
         return user
 
-    def get_user_auth_source(self, user):
+    @staticmethod
+    def get_user_auth_source(user):
         try:
             umd = UserMetadata.get((UserMetadata.uid == user.uid) &
                                    (UserMetadata.key == "auth_source"))
@@ -114,7 +115,8 @@ class AuthProvider:
         except UserMetadata.DoesNotExist:
             return UserAuthSource.LOCAL
 
-    def set_user_auth_source(self, user, value):
+    @staticmethod
+    def set_user_auth_source(user, value):
         value = str(int(value))
         try:
             umd = UserMetadata.get((UserMetadata.uid == user.uid) &
@@ -124,7 +126,8 @@ class AuthProvider:
         except UserMetadata.DoesNotExist:
             UserMetadata.create(uid=user.uid, key="auth_source", value=value)
 
-    def get_user_remote_uid(self, user):
+    @staticmethod
+    def get_user_remote_uid(user):
         try:
             umd = UserMetadata.get((UserMetadata.uid == user.uid) &
                                    (UserMetadata.key == "remote_uid"))
@@ -132,7 +135,8 @@ class AuthProvider:
         except UserMetadata.DoesNotExist:
             return user.uid
 
-    def set_user_remote_uid(self, user, remote_uid):
+    @staticmethod
+    def set_user_remote_uid(user, remote_uid):
         try:
             umd = UserMetadata.get((UserMetadata.uid == user.uid) &
                                    (UserMetadata.key == "remote_uid"))
@@ -192,7 +196,8 @@ class AuthProvider:
         user.save()
         User.update(resets=User.resets + 1).where(User.uid == user.uid).execute()
 
-    def get_pending_email(self, user):
+    @staticmethod
+    def get_pending_email(user):
         try:
             umd = UserMetadata.get((UserMetadata.uid == user.uid) &
                                    (UserMetadata.key == "pending_email"))
@@ -200,7 +205,8 @@ class AuthProvider:
         except UserMetadata.DoesNotExist:
             return None
 
-    def clear_pending_email(self, user):
+    @staticmethod
+    def clear_pending_email(user):
         try:
             umd = UserMetadata.get((UserMetadata.uid == user.uid) &
                                    (UserMetadata.key == "pending_email"))
@@ -208,7 +214,8 @@ class AuthProvider:
         except UserMetadata.DoesNotExist:
             return None
 
-    def set_pending_email(self, user, email):
+    @staticmethod
+    def set_pending_email(user, email):
         try:
             umd = UserMetadata.get((UserMetadata.uid == user.uid) &
                                    (UserMetadata.key == "pending_email"))
@@ -242,7 +249,8 @@ class AuthProvider:
         user.save()
         self._set_email_verified(user)
 
-    def is_email_verified(self, user):
+    @staticmethod
+    def is_email_verified(user):
         try:
             umd = UserMetadata.get((UserMetadata.uid == user.uid) &
                                    (UserMetadata.key == "email_verified"))
@@ -265,7 +273,8 @@ class AuthProvider:
                 raise AuthError
         self._set_email_verified(user, value)
 
-    def _set_email_verified(self, user, value=True):
+    @staticmethod
+    def _set_email_verified(user, value=True):
         """Set the UserMetadata email_verified flag. """
         value = '1' if value else '0'
         try:
@@ -301,7 +310,7 @@ class AuthProvider:
                 self.keycloak_openid.token(username=user.name,
                                            password=password)
                 return True
-            except KeycloakError as err:
+            except KeycloakError:
                 return False
         return False
 

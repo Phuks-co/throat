@@ -14,7 +14,7 @@ from ..auth import normalize_email, create_user
 from ..forms import LoginForm, RegistrationForm, ResendConfirmationForm
 from ..misc import engine, send_email, is_domain_banned
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
-from ..models import User, UserStatus, InviteCode, rconn, UserMetadata
+from ..models import User, UserStatus, InviteCode, rconn
 
 bp = Blueprint('auth', __name__)
 
