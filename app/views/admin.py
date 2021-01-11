@@ -134,10 +134,11 @@ def userbadges():
 
     form = AssignUserBadgeForm()
     form.badge.choices = [(badge.bid, badge.name) for badge in badges]
-    ct = UserMetadata.select().where(UserMetadata.key=='badge').count()
+    ct = UserMetadata.select().where(UserMetadata.key == 'badge').count()
     return render_template('admin/userbadges.html', badges=badges,
                            assignuserbadgeform=form,
                            ct=ct, admin_route='admin.userbadges')
+
 
 @bp.route("/userbadges/new", methods=['GET', 'POST'])
 @login_required
@@ -151,9 +152,10 @@ def newbadge():
     if form.validate_on_submit():
         icon = request.files.get(form.icon.name)
         badges.new_badge(name=form.name.data, alt=form.alt.data, score=form.score.data,
-                trigger=form.trigger.data, rank=form.rank.data, icon=icon)
+                         trigger=form.trigger.data, rank=form.rank.data, icon=icon)
         return redirect(url_for('admin.userbadges'))
     return render_template('admin/editbadge.html', form=form, badge=None, new=True)
+
 
 @bp.route("/userbadges/edit/<int:badge>", methods=['GET', 'POST'])
 @login_required
@@ -169,7 +171,7 @@ def editbadge(badge):
     if form.validate_on_submit():
         icon = request.files.get(form.icon.name)
         badges.update_badge(bid=badge.bid, name=form.name.data, alt=form.alt.data, score=form.score.data,
-                trigger=form.trigger.data, rank=form.rank.data, icon=icon)
+                            trigger=form.trigger.data, rank=form.rank.data, icon=icon)
         return redirect(url_for('admin.userbadges'))
     form.name.data = badge.name
     form.alt.data = badge.alt

@@ -1,7 +1,6 @@
 import click
-from flask import current_app
 from flask.cli import AppGroup
-from .models import User, Sub, SubSubscriber
+from .models import Sub, SubSubscriber
 
 recount = AppGroup('recount')
 

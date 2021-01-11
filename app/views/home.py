@@ -2,7 +2,7 @@
 import re
 from feedgen.feed import FeedGenerator
 from flask import Blueprint, request, url_for, Response, abort, render_template, redirect
-from flask_login import login_required, current_user
+from flask_login import current_user
 from .. import misc
 from ..misc import engine
 from ..misc import ratelimit, POSTING_LIMIT

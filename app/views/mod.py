@@ -1,13 +1,9 @@
 """ Mod endpoints """
-import time
-import re
-from peewee import fn, JOIN, Value
-from flask import Blueprint, abort, redirect, url_for, session, render_template, jsonify
+from peewee import fn
+from flask import Blueprint, abort
 from flask_login import login_required, current_user
-from flask_babel import _
-from .. import misc
-from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, PostReportLog, CommentReportLog
-from ..models import User, Sub, SubMod, SubPost, SubPostComment, UserMetadata, SubPostReport, SubPostCommentReport
+from ..models import PostReportLog, CommentReportLog
+from ..models import User, Sub, SubMod, SubPost, SubPostComment
 from ..misc import engine, getModSubs, getReports
 from ..forms import BanUserSubForm, CreateReportNote
 from .. import misc
@@ -39,7 +35,7 @@ def index():
         closed_reports_count = reports['closed_report_count']
 
         updated_sub = {
-            'name': str(this_sub.name) ,
+            'name': str(this_sub.name),
             'subscribers': str(this_sub.subscribers),
             'open_reports_count': open_reports_count,
             'closed_reports_count': closed_reports_count
@@ -121,25 +117,26 @@ def reports_sub_closed(sub, page):
 
     return engine.get_template('mod/sub_reports_closed.html').render({'sub': sub, 'reports': reports, 'page': page, 'subInfo': subInfo, 'subMods': subMods})
 
-@bp.route("/reports/details/<sub>/<type>/<id>")
+
+@bp.route("/reports/details/<sub>/<report_type>/<report_id>")
 @login_required
-def report_details(sub, type, id):
+def report_details(sub, report_type, report_id):
     """ WIP: Report Details View """
 
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
-        abort(404)
+        return abort(404)
 
     if not (current_user.is_mod(sub.sid, 1) or current_user.is_admin()):
-        abort(404)
+        return abort(404)
 
     subInfo = misc.getSubData(sub.sid)
     subMods = misc.getSubMods(sub.sid)
 
-    report = getReports('mod', 'all', 1, type=type, report_id=id)
+    report = getReports('mod', 'all', 1, type=report_type, report_id=report_id)
     reported_user = User.select().where(User.name == report['reported']).get()
-    related_reports = getReports('mod', 'all', 1, type=type, report_id=id, related=True)
+    related_reports = getReports('mod', 'all', 1, type=report_type, report_id=report_id, related=True)
 
     if report['type'] == "post":
         try:
@@ -154,9 +151,13 @@ def report_details(sub, type, id):
             post = ""
             logs = CommentReportLog.select().where(CommentReportLog.rid == report['id']).order_by(CommentReportLog.lid.desc())
         except (SubPostComment.DoesNotExist, IndexError):
-            abort(404)
+            return abort(404)
 
     reported = User.select().where(User.name == report['reported']).get()
     is_sub_banned = misc.is_sub_banned(sub, uid=reported.uid)
 
-    return engine.get_template('mod/reportdetails.html').render({'sub': sub, 'report': report, 'reported_user': reported_user, 'related_reports': related_reports, 'related_reports_json': json.dumps(related_reports['query'], default=str), 'banuserform': BanUserSubForm(), 'is_sub_banned': is_sub_banned, 'post': post, 'comment': comment, 'subInfo': subInfo, 'subMods': subMods, 'logs': logs, 'createreportenote': CreateReportNote()})
+    return engine.get_template('mod/reportdetails.html').render(
+        {'sub': sub, 'report': report, 'reported_user': reported_user, 'related_reports': related_reports,
+         'related_reports_json': json.dumps(related_reports['query'], default=str), 'banuserform': BanUserSubForm(),
+         'is_sub_banned': is_sub_banned, 'post': post, 'comment': comment, 'subInfo': subInfo, 'subMods': subMods,
+         'logs': logs, 'createreportenote': CreateReportNote()})

@@ -1,9 +1,9 @@
 """ Miscellaneous site endpoints """
-from peewee import SQL, Value
+from peewee import SQL
 from flask import Blueprint, redirect, url_for, abort, render_template
 from flask_login import login_required, current_user
 from .. import misc
-from ..models import SiteLog, SubPost, SubLog, Sub, SubPostComment, User, db
+from ..models import SiteLog, SubPost, SubLog, Sub, SubPostComment
 from ..misc import engine
 from ..config import config
 

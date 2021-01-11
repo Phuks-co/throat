@@ -3,12 +3,10 @@ from datetime import datetime, timedelta
 from peewee import JOIN
 from flask import Blueprint, redirect, url_for, render_template, abort, jsonify
 from flask_login import login_required, current_user
-from flask_babel import _
 from .. import misc
 from ..config import config
 from ..misc import engine, get_postmeta_dicts
-from ..models import Message, Notification, Sub, SubPost, SubPostComment, User, SubPostCommentVote, UserIgnores
-from ..socketio import socketio
+from ..models import Notification, Sub, SubPost, SubPostComment, User, SubPostCommentVote, UserIgnores
 
 bp = Blueprint('messages', __name__)
 

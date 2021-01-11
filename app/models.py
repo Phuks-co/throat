@@ -33,8 +33,7 @@ def db_init_app(app):
         name = dbconnect.pop('name')
         engine = dbconnect.pop('engine')
     except KeyError:
-        raise RuntimeError('DATABASE configuration must specify a '
-                            '`name` and `engine`.')
+        raise RuntimeError('DATABASE configuration must specify a `name` and `engine`.')
 
     if '.' in engine:
         path, class_name = engine.rsplit('.', 1)
@@ -51,15 +50,14 @@ def db_init_app(app):
     except AttributeError:
         raise RuntimeError('Database engine not found %s' % engine)
     except AssertionError:
-        raise RuntimeError('Database engine not a subclass of '
-                            'peewee.Database: %s' % engine)
+        raise RuntimeError('Database engine not a subclass of peewee.Database: %s' % engine)
 
     dbm = database_class(name, **dbconnect)
     dbm.execute = functools.partial(peewee_count_queries, dbm.execute)
     dbp.initialize(dbm)
 
     @app.teardown_appcontext
-    def close_db(exc):
+    def close_db(_):
         dbp = g.pop('db', None)
         if dbp is not None:
             dbp.close()
@@ -73,7 +71,7 @@ def peewee_count_queries(dex, *args, **kwargs):
         g.pqc += 1
     except RuntimeError:
         pass
-    return dex (*args, **kwargs)
+    return dex(*args, **kwargs)
 
 
 class BaseModel(Model):
@@ -207,9 +205,9 @@ class Sub(BaseModel):
 
     def update_metadata(self, key, value):
         """ Updates `key` for submetadata. Only works for single keys. """
-        if value == True:
+        if value:
             value = '1'
-        elif value == False:
+        elif not value:
             value = '0'
         restr = SubMetadata.get_or_create(sid=self.sid, key=key)[0]
         if restr.value != value:
@@ -277,8 +275,8 @@ class SubMetadata(BaseModel):
 
 class SubPost(BaseModel):
     content = TextField(null=True)
-    deleted = IntegerField(null=True) # 1=self delete, 2=mod delete, 0=not deleted
-    distinguish = IntegerField(null=True) # 1=mod, 2=admin, 0 or null = normal
+    deleted = IntegerField(null=True)  # 1=self delete, 2=mod delete, 0=not deleted
+    distinguish = IntegerField(null=True)  # 1=mod, 2=admin, 0 or null = normal
     link = CharField(null=True)
     nsfw = BooleanField(null=True)
     pid = PrimaryKeyField()
@@ -340,8 +338,8 @@ class SubPostComment(BaseModel):
     score = IntegerField(null=True)
     upvotes = IntegerField(default=0)
     downvotes = IntegerField(default=0)
-    status = IntegerField(null=True) # 1=self delete, 2=mod delete, 0 or null=not deleted
-    distinguish = IntegerField(null=True) # 1=mod, 2=admin, 0 or null = normal
+    status = IntegerField(null=True)  # 1=self delete, 2=mod delete, 0 or null=not deleted
+    distinguish = IntegerField(null=True)  # 1=mod, 2=admin, 0 or null = normal
     time = DateTimeField(null=True)
     uid = ForeignKeyField(db_column='uid', null=True, model=User,
                           field='uid', backref='comments')
@@ -459,6 +457,7 @@ class UserMetadata(BaseModel):
 
     class Meta:
         table_name = 'user_metadata'
+
 
 class Badge(BaseModel):
     bid = PrimaryKeyField()
@@ -617,7 +616,6 @@ class SubPostContentHistory(BaseModel):
 
     class Meta:
         table_name = "sub_post_content_history"
-
 
 
 class SubPostTitleHistory(BaseModel):
