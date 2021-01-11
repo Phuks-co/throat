@@ -82,3 +82,7 @@ class CreateInviteCodeForm(FlaskForm):
     code = StringField(_l("Code (empty to generate random)"))
     uses = IntegerField(_l("Uses"), validators=[DataRequired()])
     expires = StringField(_l("Expiration date"))
+
+
+class SetSubOfTheDayForm(FlaskForm):
+    sub = StringField(_l("Sub"))

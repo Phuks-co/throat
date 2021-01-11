@@ -717,6 +717,15 @@ def getTodaysTopPosts():
     return top_posts
 
 
+def set_sub_of_the_day(sid):
+    today = datetime.utcnow()
+    tomorrow = datetime(year=today.year, month=today.month, day=today.day) + timedelta(seconds=86400)
+    timeuntiltomorrow = tomorrow - today
+    if timeuntiltomorrow.total_seconds() < 5:
+        timeuntiltomorrow = 86400
+    rconn.setex('daysub', value=sid, time=timeuntiltomorrow)
+
+
 @cache.memoize(10)
 def getSubOfTheDay():
     daysub = rconn.get('daysub')
@@ -725,12 +734,7 @@ def getSubOfTheDay():
             daysub = Sub.select(Sub.sid, Sub.name, Sub.title).order_by(db.random()).get()
         except Sub.DoesNotExist:  # No subs
             return False
-        today = datetime.utcnow()
-        tomorrow = datetime(year=today.year, month=today.month, day=today.day) + timedelta(seconds=86400)
-        timeuntiltomorrow = tomorrow - today
-        if timeuntiltomorrow.total_seconds() < 5:
-            timeuntiltomorrow = 86400
-        rconn.setex('daysub', value=daysub.sid, time=timeuntiltomorrow)
+        set_sub_of_the_day(daysub.sid)
     else:
         try:
             daysub = Sub.select(Sub.name, Sub.title).where(Sub.sid == daysub).get()

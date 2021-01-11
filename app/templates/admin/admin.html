@@ -99,10 +99,25 @@
       </div>
       <hr>
     </div>
+    <hr/>
+    <h2>Sub of the Day</h2>
+    <p>
+      Current: <a href="{{ url_for('sub.view_sub', sub=func.getSubOfTheDay().name) }}">/{{ config.site.sub_prefix }}/{{ func.getSubOfTheDay().name }}</a>
+    </p>
+    <form method="POST" data-reload="true" action="{{url_for('do.set_suboftheday')}}" class="inline pure-form pure-form-aligned ajaxform">
+      {{subOfTheDay.csrf_token()}}
+      Edit:
+      {{ subOfTheDay.sub(required=True, class_="sub_autocomplete", autocomplete="off") }}
+      <button type="submit" class="pure-button pure-button-primary">Change</button>
+    </form>
+    <form method="POST" data-reload="true" action="{{url_for('do.delete_suboftheday')}}" class="inline pure-form ajaxform">
+      <button type="submit" class="pure-button ">Randomize</button>
+    </form>
+
     {% if config.site.enable_security_question %}
       <hr>
       <h2>Security questions</h2>
-      <form  method="POST" style="margin-top: 1em" data-reload="true" action="{{url_for('do.create_question')}}" class="pure-form pure-form-aligned ajaxform">
+      <form method="POST" style="margin-top: 1em" data-reload="true" action="{{url_for('do.create_question')}}" class="pure-form pure-form-aligned ajaxform">
         {{form.SecurityQuestionForm().csrf_token()}}
         Create new:
         {{form.SecurityQuestionForm().question(pattern="^[a-zA-Z0-9_- ?]+$", placeholder="Question")}}
