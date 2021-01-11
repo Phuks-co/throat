@@ -232,7 +232,8 @@ def delete_post():
 
             related_reports = SubPostReport.select().where(SubPostReport.pid == post.pid)
             for report in related_reports:
-                misc.create_reportlog(misc.LOG_TYPE_REPORT_POST_DELETED, current_user.uid, report.id, log_type='post', desc=form.reason.data)
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_POST_DELETED, current_user.uid, report.id, log_type='post',
+                                      desc=form.reason.data)
 
         # time limited to prevent socket spam
         if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)).seconds < 86400:
@@ -300,7 +301,8 @@ def undelete_post():
 
         related_reports = SubPostReport.select().where(SubPostReport.pid == post.pid)
         for report in related_reports:
-            misc.create_reportlog(misc.LOG_TYPE_REPORT_POST_UNDELETED, current_user.uid, report.id, log_type='post', desc=form.reason.data)
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_POST_UNDELETED, current_user.uid, report.id, log_type='post',
+                                  desc=form.reason.data)
 
         Sub.update(posts=Sub.posts + 1).where(Sub.sid == post.sid).execute()
 
@@ -971,8 +973,10 @@ def ban_user_sub(sub):
 
         misc.create_sublog(misc.LOG_TYPE_SUB_BAN, current_user.uid, sub.sid, target=user.uid, comment=form.reason.data)
 
-        related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid).join(Sub).where(Sub.sid == sub.sid)
-        related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(SubPostComment.uid == user.uid).join(SubPost).join(Sub).where(Sub.sid == sub.sid)
+        related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid).join(Sub).where(
+            Sub.sid == sub.sid)
+        related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(
+            SubPostComment.uid == user.uid).join(SubPost).join(Sub).where(Sub.sid == sub.sid)
 
         if expires:
             desc = _("banned for: %(reason)s, until %(expires)s", reason=form.reason.data, expires=expires)
@@ -980,9 +984,11 @@ def ban_user_sub(sub):
             desc = _("banned for: %(reason)s, permanent", reason=form.reason.data)
 
         for report in related_post_reports:
-            misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_BANNED, current_user.uid, report.id, log_type='post', desc=desc)
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_BANNED, current_user.uid, report.id, log_type='post',
+                                  desc=desc)
         for report in related_comment_reports:
-            misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_BANNED, current_user.uid, report.id, log_type='comment', desc=desc)
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_BANNED, current_user.uid, report.id, log_type='comment',
+                                  desc=desc)
 
         cache.delete_memoized(misc.is_sub_banned, sub, uid=user.uid)
         return jsonify(status='ok')
@@ -1086,15 +1092,19 @@ def remove_sub_ban(sub, user):
                           namespace='/snt',
                           room='user' + user.uid)
 
-            misc.create_sublog(misc.LOG_TYPE_SUB_UNBAN, current_user.uid, sub.sid, target=user.uid,
-                               admin=True if (not current_user.is_mod(sub.sid, 1) and current_user.is_admin()) else False)
+            admin = True if (not current_user.is_mod(sub.sid, 1) and current_user.is_admin()) else False
+            misc.create_sublog(misc.LOG_TYPE_SUB_UNBAN, current_user.uid, sub.sid, target=user.uid, admin=admin)
 
-            related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid).join(Sub).where(Sub.sid == sub.sid)
-            related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(SubPostComment.uid == user.uid).join(SubPost).join(Sub).where(Sub.sid == sub.sid)
+            related_post_reports = SubPostReport.select().join(SubPost).where(SubPost.uid == user.uid).join(Sub)\
+                .where(Sub.sid == sub.sid)
+            related_comment_reports = SubPostCommentReport.select().join(SubPostComment).where(
+                SubPostComment.uid == user.uid).join(SubPost).join(Sub).where(Sub.sid == sub.sid)
             for report in related_post_reports:
-                misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_UNBANNED, current_user.uid, report.id, log_type='post')
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_UNBANNED, current_user.uid, report.id,
+                                      log_type='post')
             for report in related_comment_reports:
-                misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_UNBANNED, current_user.uid, report.id, log_type='comment')
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_USER_SUB_UNBANNED, current_user.uid, report.id,
+                                      log_type='comment')
 
             cache.delete_memoized(misc.is_sub_banned, sub, uid=user.uid)
             return jsonify(status='ok', msg=_('Ban removed'))
@@ -1942,7 +1952,8 @@ def delete_comment():
                                admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
             related_reports = SubPostCommentReport.select().where(SubPostCommentReport.cid == comment.cid)
             for report in related_reports:
-                misc.create_reportlog(misc.LOG_TYPE_REPORT_COMMENT_DELETED, current_user.uid, report.id, log_type='comment', desc=form.reason.data)
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_COMMENT_DELETED, current_user.uid, report.id,
+                                      log_type='comment', desc=form.reason.data)
             comment.status = 2
         else:
             comment.status = 1
@@ -1976,7 +1987,8 @@ def undelete_comment():
                            admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
         related_reports = SubPostCommentReport.select().where(SubPostCommentReport.cid == comment.cid)
         for report in related_reports:
-            misc.create_reportlog(misc.LOG_TYPE_REPORT_COMMENT_UNDELETED, current_user.uid, report.id, log_type='comment', desc=form.reason.data)
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_COMMENT_UNDELETED, current_user.uid, report.id,
+                                  log_type='comment', desc=form.reason.data)
         comment.status = 0
         comment.save()
 
@@ -2787,7 +2799,8 @@ def close_post_related_reports(related_reports, original_report):
         # check if report is closed and return status
         updated_report = SubPostReport.select().where(SubPostReport.id == related_report['id']).get()
         if not updated_report.open:
-            misc.create_reportlog(misc.LOG_TYPE_REPORT_CLOSE_RELATED, current_user.uid, updated_report.id, log_type='post', related=True, original_report=original_report)
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_CLOSE_RELATED, current_user.uid, updated_report.id,
+                                  log_type='post', related=True, original_report=original_report)
             return jsonify(status='ok')
         # How?
         return jsonify(status='error', error=_('Failed to update report'))
@@ -2829,7 +2842,8 @@ def close_comment_related_reports(related_reports, original_report):
         # check if report is closed and return status
         updated_report = SubPostCommentReport.select().where(SubPostCommentReport.id == related_report['id']).get()
         if not updated_report.open:
-            misc.create_reportlog(misc.LOG_TYPE_REPORT_CLOSE_RELATED, current_user.uid, updated_report.id, log_type='comment', related=True, original_report=original_report)
+            misc.create_reportlog(misc.LOG_TYPE_REPORT_CLOSE_RELATED, current_user.uid, updated_report.id,
+                                  log_type='comment', related=True, original_report=original_report)
             return jsonify(status='ok')
         # How?
         return jsonify(status='error', error=_('Failed to close report'))
@@ -2848,7 +2862,8 @@ def create_report_note(report_type, report_id):
     else:
         try:
             report = SubPostCommentReport.get(SubPostCommentReport.id == report_id)
-            sub = Sub.select().join(SubPost).join(SubPostComment).join(SubPostCommentReport).where(SubPostCommentReport.id == report_id).get()
+            sub = Sub.select().join(SubPost).join(SubPostComment).join(SubPostCommentReport).where(
+                SubPostCommentReport.id == report_id).get()
         except SubPostCommentReport.DoesNotExist:
             return abort(404)
 
@@ -2857,7 +2872,8 @@ def create_report_note(report_type, report_id):
 
     form = CreateReportNote()
     if form.validate():
-        misc.create_reportlog(misc.LOG_TYPE_REPORT_NOTE, current_user.uid, report.id, log_type=report_type, desc=form.text.data)
+        misc.create_reportlog(misc.LOG_TYPE_REPORT_NOTE, current_user.uid, report.id, log_type=report_type,
+                              desc=form.text.data)
         return jsonify(status='ok')
         
     return json.dumps({'status': 'error', 'error': get_errors(form)})
