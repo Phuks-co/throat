@@ -23,7 +23,7 @@ from ..forms import EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost
-from ..forms import SearchForm, EditMod2Form
+from ..forms import SearchForm, EditMod2Form, SetSubOfTheDayForm
 from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm, DistinguishForm
 from ..badges import badges
@@ -2877,3 +2877,32 @@ def create_report_note(report_type, report_id):
         return jsonify(status='ok')
         
     return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route('/suboftheday/delete', methods=['POST'])
+@login_required
+def delete_suboftheday():
+    if not current_user.is_admin():
+        return abort(403)
+    rconn.delete('daysub')
+    misc.cache.delete_memoized(misc.getSubOfTheDay)
+    return jsonify(status="ok")
+
+
+@do.route('/suboftheday/set', methods=['POST'])
+@login_required
+def set_suboftheday():
+    if not current_user.is_admin():
+        return abort(403)
+    form = SetSubOfTheDayForm()
+    if not form.validate():
+        return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+    try:
+        sub = Sub.get(Sub.name == form.sub.data)
+    except Sub.DoesNotExist:
+        return jsonify(status="error", error="Sub does not exist")
+    rconn.delete('daysub')
+    misc.set_sub_of_the_day(sub.sid)
+    misc.cache.delete_memoized(misc.getSubOfTheDay)
+    return jsonify(status="ok")

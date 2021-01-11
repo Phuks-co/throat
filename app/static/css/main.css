@@ -2588,6 +2588,11 @@ article.text-post.comment.deleted {
   padding: 0;
 }
 
+/** helpers **/
 .left {
     text-align: left;
+}
+
+.inline {
+  display: inline-block;
 }

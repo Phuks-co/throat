@@ -5,12 +5,12 @@ import datetime
 import random
 from peewee import fn, JOIN
 from pyotp import TOTP
-from flask import Blueprint, abort, redirect, url_for, session, render_template, jsonify, request
+from flask import Blueprint, abort, redirect, url_for, session, render_template, request
 from flask_login import login_required, current_user
 from flask_babel import _
 from .. import misc
 from ..forms import TOTPForm, LogOutForm, UseInviteCodeForm, AssignUserBadgeForm, EditModForm, BanDomainForm, WikiForm
-from ..forms import CreateInviteCodeForm, UpdateInviteCodeForm, EditBadgeForm, NewBadgeForm
+from ..forms import CreateInviteCodeForm, UpdateInviteCodeForm, EditBadgeForm, NewBadgeForm, SetSubOfTheDayForm
 from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, SubPostCommentVote, SubPostVote, SiteMetadata
 from ..models import UserUploads, InviteCode, Wiki
 from ..misc import engine, getReports
@@ -95,9 +95,11 @@ def index():
     except SiteMetadata.DoesNotExist:
         ec = 'True'
 
+    subOfTheDay = SetSubOfTheDayForm()
+
     return render_template('admin/admin.html', subs=subs,
                            posts=posts, ups=ups, downs=downs, users=users,
-                           comms=comms,
+                           comms=comms, subOfTheDay=subOfTheDay,
                            useinvitecodeform=invite, enable_posting=(ep == 'True'),
                            enable_registration=(er == 'True'),
                            enable_captchas=(ec == 'True'))
