@@ -412,13 +412,11 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
             if int(postmeta['poll_closes_time']) < time.time():
                 pollData['poll_open'] = False
 
-    return engine.get_template('sub/post.html').render({'post': post, 'sub': sub, 'subInfo': subInfo,
-                                                        'is_saved': is_saved, 'pollData': pollData,
-                                                        'postmeta': postmeta, 'commentform': PostComment(),
-                                                        'comments': comments, 'subMods': subMods, 'highlight': highlight,
-                                                        'content_history': content_history, 'title_history': title_history,
-                                                        'open_reports': open_reports, 'sort': sort,
-                                                        'sticky_sort': sticky_sort})
+    return engine.get_template('sub/post.html').render(
+        {'post': post, 'sub': sub, 'subInfo': subInfo, 'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,
+         'commentform': PostComment(), 'comments': comments, 'subMods': subMods, 'highlight': highlight,
+         'content_history': content_history, 'title_history': title_history, 'open_reports': open_reports, 'sort': sort,
+         'sticky_sort': sticky_sort})
 
 
 @blueprint.route("/<sub>/<int:pid>/_/<cid>", defaults={'slug': '_'})

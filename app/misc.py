@@ -180,10 +180,9 @@ class SiteUser(object):
                              .where((SubMod.user == self.uid) & SubPostReport.open)
                              .group_by(Sub.sid).dicts())
             comment_report_counts = (
-                SubPostCommentReport.select(Sub.sid, fn.COUNT(SubPostCommentReport.id).alias('count'))
-                                    .join(SubPostComment).join(SubPost).join(Sub).join(SubMod)
-                                    .where((SubMod.user == self.uid) & SubPostCommentReport.open)
-                                    .group_by(Sub.sid).dicts()
+                SubPostCommentReport.select(Sub.sid, fn.COUNT(SubPostCommentReport.id).alias('count')).join(
+                    SubPostComment).join(SubPost).join(Sub).join(SubMod).where(
+                    (SubMod.user == self.uid) & SubPostCommentReport.open).group_by(Sub.sid).dicts()
             )
 
             counts = defaultdict(int)
