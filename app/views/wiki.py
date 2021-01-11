@@ -24,7 +24,7 @@ except FileNotFoundError:
 
 
 @bp.route("/license")
-def license():
+def show_license():
     """ View API help page """
     return engine.get_template('site/license.html').render({'license': th_license})
 

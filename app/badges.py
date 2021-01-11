@@ -33,7 +33,7 @@ class Badges:
         """
         try:
             return Badge.get(Badge.bid == bid)
-        except:
+        except Badge.DoesNotExist:
             return None
 
     def update_badge(self, bid, name, alt, icon, score, rank, trigger):
@@ -48,7 +48,8 @@ class Badges:
         Badge.update(name=name, alt=alt, icon=icon, score=score,
                      rank=rank, trigger=trigger).where(Badge.bid == bid).execute()
 
-    def new_badge(self, name, alt, icon, score, rank, trigger=None):
+    @staticmethod
+    def new_badge(name, alt, icon, score, rank, trigger=None):
         """
         Creates a new badge with an optional trigger.
         """
@@ -56,7 +57,8 @@ class Badges:
         Badge.create(name=name, alt=alt, icon=icon,
                      score=score, rank=rank, trigger=trigger)
 
-    def delete_badge(self, bid):
+    @staticmethod
+    def delete_badge(bid):
         """
         Deletes a badge by ID
         """
@@ -64,26 +66,30 @@ class Badges:
         UserMetadata.delete().where((UserMetadata.key == 'badge')
                                     & (UserMetadata.value == bid)).execute()
 
-    def assign_userbadge(self, uid, bid):
+    @staticmethod
+    def assign_userbadge(uid, bid):
         """
         Gives a badge to a user
         """
         UserMetadata.get_or_create(key="badge", uid=uid, value=bid)
 
-    def unassign_userbadge(self, uid, bid):
+    @staticmethod
+    def unassign_userbadge(uid, bid):
         """
         Removes a badge from a user
         """
         UserMetadata.delete().where((UserMetadata.key == "badge") & (
             UserMetadata.uid == uid) & (UserMetadata.value == str(bid))).execute()
 
-    def triggers(self):
+    @staticmethod
+    def triggers():
         """
         Lists available triggers that can be attached to a badge.
         """
         return triggers.keys()
 
-    def badges_for_user(self, uid):
+    @staticmethod
+    def badges_for_user(uid):
         """
         Returns a list of badges associated with a user.
         """
@@ -113,7 +119,7 @@ def admin(bid):
     Auto assigns badges to admins.
     """
     for user in UserMetadata.select().where((UserMetadata.key == "admin") & (UserMetadata.value == '1')):
-        print("Giving ",bid," to:", user.uid)
+        print("Giving ", bid, " to:", user.uid)
         badges.assign_userbadge(user.uid, bid)
 
 
@@ -122,7 +128,7 @@ def mod(bid):
     Auto assigns badges to mods.
     """
     for user in SubMod.select().where((SubMod.invite == False)):
-        print("Giving ", bid ," to:", user.uid)
+        print("Giving ", bid, " to:", user.uid)
         badges.assign_userbadge(user.uid, bid)
 
 

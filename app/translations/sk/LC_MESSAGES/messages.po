@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2020-12-29 15:55-0300\n"
-"PO-Revision-Date: 2020-12-30 00:59\n"
+"PO-Revision-Date: 2021-01-03 09:29\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -2311,7 +2311,7 @@ msgstr "Vytvoriť nové pravidlo"
 
 #: app/html/sub/rules.html:21
 msgid "Users will be able to report violations of this rule. The text of the rule should be short and easy to understand."
-msgstr "Používatelia budú môcť hlásiť porušenie tohto proavidla. Text pravidla by mal byť stručný a zrozumiteľný."
+msgstr "Používatelia budú môcť hlásiť porušenie tohto pravidla. Text pravidla by mal byť stručný a zrozumiteľný."
 
 #: app/html/sub/rules.html:24
 msgid "You'll still need to update your sidebar with a more detailed version of your Sub rules for users to read."

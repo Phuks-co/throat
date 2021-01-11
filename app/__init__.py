@@ -1,7 +1,6 @@
 # -*- coding: utf-8
 """ Here is where all the good stuff happens """
 
-from urllib.parse import urlparse
 import time
 import socket
 import datetime
@@ -9,7 +8,7 @@ from bs4 import BeautifulSoup
 from flask import Flask, url_for, g, request, get_flashed_messages
 from flask_login import LoginManager, current_user
 from flask_webpack import Webpack
-from flask_babel import Babel, _
+from flask_babel import _
 from wheezy.html.utils import escape_html
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.wrappers import BaseResponse
@@ -49,7 +48,9 @@ login_manager.login_message = _('Please log in to access this page.')
 login_manager.needs_refresh_message = _('Please reauthenticate to access this page.')
 
 
-def create_app(config=Config('config.yaml')):
+def create_app(config=None):
+    if config is None:
+        config = Config('config.yaml')
     app = Flask(__name__)
     app.jinja_env.cache = {}
     app.config['THROAT_CONFIG'] = config
@@ -141,7 +142,7 @@ def create_app(config=Config('config.yaml')):
     def after_request(response):
         """ Called after the request is processed. Used to time the request """
         if hasattr(g, 'start'):
-            diff = int((time.time() - g.start) * 1000)
+            diff = int((time.time() - float(g.start)) * 1000)
         else:
             diff = "unknown"
         if not hasattr(g, 'pqc'):

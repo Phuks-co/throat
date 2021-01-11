@@ -1,7 +1,7 @@
 """ All endpoints related to stuff done inside of a particular sub """
 import datetime
 import time
-from flask import Blueprint, redirect, url_for, abort, render_template, request, Response
+from flask import Blueprint, redirect, url_for, abort, request, Response
 from flask_login import login_required, current_user
 from feedgen.feed import FeedGenerator
 from peewee import fn, JOIN
@@ -9,7 +9,7 @@ from ..config import config
 from ..misc import engine
 from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption
 from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, UserSaved, SubMod, SubBan, SubRule
-from ..models import SubPostContentHistory, SubPostTitleHistory, SubPostReport, SubPostCommentReport
+from ..models import SubPostContentHistory, SubPostTitleHistory, SubPostReport
 from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditMod2Form, EditSubRule
 from ..forms import BanUserSubForm, CreateSubFlair, PostComment, CreateSubRule
 from .. import misc
@@ -349,13 +349,15 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
     if config.site.edit_history and include_history:
         try:
             content_history = SubPostContentHistory.select(SubPostContentHistory.pid, SubPostContentHistory.content,
-                SubPostContentHistory.datetime).where(SubPostContentHistory.pid == post['pid']).order_by(SubPostContentHistory.datetime.desc()).dicts()
+                                                           SubPostContentHistory.datetime)\
+                .where(SubPostContentHistory.pid == post['pid']).order_by(SubPostContentHistory.datetime.desc()).dicts()
         except SubPostContentHistory.DoesNotExist:
-                content_history = []
+            content_history = []
 
         try:
             title_history = SubPostTitleHistory.select(SubPostTitleHistory.pid, SubPostTitleHistory.title,
-                    SubPostTitleHistory.datetime).where(SubPostTitleHistory.pid == post['pid']).order_by(SubPostTitleHistory.datetime.desc()).dicts()
+                                                       SubPostTitleHistory.datetime)\
+                .where(SubPostTitleHistory.pid == post['pid']).order_by(SubPostTitleHistory.datetime.desc()).dicts()
         except SubPostTitleHistory.DoesNotExist:
             title_history = []
 
@@ -410,13 +412,11 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
             if int(postmeta['poll_closes_time']) < time.time():
                 pollData['poll_open'] = False
 
-    return engine.get_template('sub/post.html').render({'post': post, 'sub': sub, 'subInfo': subInfo,
-                                                        'is_saved': is_saved, 'pollData': pollData,
-                                                        'postmeta': postmeta, 'commentform': PostComment(),
-                                                        'comments': comments,'subMods': subMods, 'highlight': highlight,
-                                                        'content_history': content_history, 'title_history': title_history,
-                                                        'open_reports': open_reports, 'sort': sort,
-                                                        'sticky_sort': sticky_sort})
+    return engine.get_template('sub/post.html').render(
+        {'post': post, 'sub': sub, 'subInfo': subInfo, 'is_saved': is_saved, 'pollData': pollData, 'postmeta': postmeta,
+         'commentform': PostComment(), 'comments': comments, 'subMods': subMods, 'highlight': highlight,
+         'content_history': content_history, 'title_history': title_history, 'open_reports': open_reports, 'sort': sort,
+         'sticky_sort': sticky_sort})
 
 
 @blueprint.route("/<sub>/<int:pid>/_/<cid>", defaults={'slug': '_'})

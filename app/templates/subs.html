@@ -76,13 +76,14 @@
     <!--  <td><time-ago datetime="{{sub.creation}}"></time-ago></td> -->
           <td>
             <span style="margin-left: .3em;">{{sub.subscribers}}</span>
-
           </td>
           <td>{{sub.posts}}</td>
 			<td>
 			<div role="group" class="pure-button-group" data-sid="{{sub.sid}}" style="display:inline-block;">
               {% if current_user.has_subscribed(sub.name) %}
                 <button data-ac="unsubscribe" class="sub pure-button button-xsmall" style="display:inline-block; width: 8em;"><span class="sbm-icon" data-icon="check"></span>Odoberám</button>
+              {% elif current_user.has_blocked(sub.sid) %}
+                <button data-ac="unblock" class="blk button-warning pure-button button-xsmall" style="display:inline-block; width: 8em;"><span class="sbm-icon" data-icon="block"></span>Blokujem</button>
               {%else%}
                 <button data-ac="subscribe" class="unsub pure-button button-xsmall" style="display:inline-block; width: 8em;"><span class="sbm-icon" data-icon="add"></span>Odoberať</button>
               {%endif%}

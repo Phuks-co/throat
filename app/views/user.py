@@ -7,12 +7,12 @@ from flask_babel import _, Locale
 from .do import send_password_recovery_email, uid_from_recovery_token
 from .do import info_from_email_confirmation_token
 from .. import misc, config
-from ..auth import auth_provider, email_validation_is_required, AuthError, normalize_email
-from ..misc import engine, send_email, is_target_user_admin
+from ..auth import auth_provider, AuthError, normalize_email
+from ..misc import engine
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
 from ..forms import EditUserForm, CreateUserMessageForm, EditAccountForm, DeleteAccountForm, PasswordRecoveryForm
 from ..forms import PasswordResetForm
-from ..models import User, UserStatus, UserMetadata, UserUploads
+from ..models import User, UserStatus, UserUploads
 from ..models import Sub, SubMod, SubPost, SubPostComment, UserSaved, InviteCode
 from ..badges import badges as badges_module
 
@@ -181,7 +181,6 @@ def edit_account():
 @ratelimit(AUTH_LIMIT)
 def confirm_email_change(token):
     info = info_from_email_confirmation_token(token)
-    user = None
     try:
         user = User.get(User.uid == info['uid'])
     except (TypeError, User.DoesNotExist):
@@ -248,7 +247,7 @@ def password_reset(token):
         user = User.get(User.uid == uid_from_recovery_token(token))
     except User.DoesNotExist:
         pass
-    if user == None or user.status != UserStatus.OK:
+    if not user or user.status != UserStatus.OK:
         flash(_('Password reset link was invalid or expired'), 'error')
         return redirect(url_for('user.password_recovery'))
 

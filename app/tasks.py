@@ -48,7 +48,7 @@ def create_thumbnail_async(app, link, store):
         if dat is not None:
             if typ == 'image':
                 img = Image.open(BytesIO(dat)).convert('RGB')
-            else: # favicon
+            else:  # favicon
                 im = Image.open(BytesIO(dat))
                 n_im = Image.new("RGBA", im.size, "WHITE")
                 n_im.paste(im, (0, 0), im)

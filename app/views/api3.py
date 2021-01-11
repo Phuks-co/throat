@@ -415,9 +415,9 @@ def delete_post(sub, pid):
     return jsonify(), 200
 
 
-@API.route('/post/<sub>/<int:pid>/vote', methods=['POST'])
+@API.route('/post/<_sub>/<int:pid>/vote', methods=['POST'])
 @jwt_required
-def vote_post(sub, pid):
+def vote_post(_sub, pid):
     """ Logs an upvote to a post. """
     uid = get_jwt_identity()
     if not request.is_json:
@@ -429,9 +429,9 @@ def vote_post(sub, pid):
     return misc.cast_vote(uid, "post", pid, value)
 
 
-@API.route('/post/<sub>/<int:pid>/comment', methods=['GET'])
+@API.route('/post/<_sub>/<int:pid>/comment', methods=['GET'])
 @jwt_optional
-def get_post_comments(sub, pid):
+def get_post_comments(_sub, pid):
     """ Returns comment tree
 
     Return dict format:
@@ -572,9 +572,9 @@ def create_comment(sub, pid):
     return jsonify(comment=comm), 200
 
 
-@API.route('/post/<sub>/<int:pid>/comment/<cid>', methods=['PATCH'])
+@API.route('/post/<_sub>/<int:pid>/comment/<cid>', methods=['PATCH'])
 @jwt_required
-def edit_comment(sub, pid, cid):
+def edit_comment(_sub, pid, cid):
     """ Edits a comment """
     uid = get_jwt_identity()
     if not request.is_json:
@@ -616,9 +616,9 @@ def edit_comment(sub, pid, cid):
     return jsonify(comment=comm), 200
 
 
-@API.route('/post/<sub>/<int:pid>/comment/<cid>', methods=['DELETE'])
+@API.route('/post/<_sub>/<int:pid>/comment/<cid>', methods=['DELETE'])
 @jwt_required
-def delete_comment(sub, pid, cid):
+def delete_comment(_sub, pid, cid):
     uid = get_jwt_identity()
 
     # Fetch the comment
@@ -641,9 +641,9 @@ def delete_comment(sub, pid, cid):
     return jsonify(), 200
 
 
-@API.route('/post/<sub>/<int:pid>/comment/<cid>/vote', methods=['POST'])
+@API.route('/post/<_sub>/<int:_pid>/comment/<cid>/vote', methods=['POST'])
 @jwt_required
-def vote_comment(sub, pid, cid):
+def vote_comment(_sub, _pid, cid):
     """ Logs an upvote to a post. """
     uid = get_jwt_identity()
     value = request.json.get('upvote', None)
@@ -653,8 +653,8 @@ def vote_comment(sub, pid, cid):
     return misc.cast_vote(uid, "comment", cid, value)
 
 
-@API.route('/post/<sub>/<int:pid>/comment/<cid>/children', methods=['GET'])
-def get_post_comment_children(sub, pid, cid):
+@API.route('/post/<_sub>/<int:pid>/comment/<cid>/children', methods=['GET'])
+def get_post_comment_children(_sub, pid, cid):
     """ if key is not present, load all children for cid.
     if key is present, load all comments after (???) index `key`
 
@@ -704,12 +704,12 @@ class ChallengeWrong(Exception):
 
 
 @API.errorhandler(ChallengeRequired)
-def chall_required(error):
+def chall_required(_error):
     return jsonify(msg="Challenge required"), 423
 
 
 @API.errorhandler(ChallengeWrong)
-def chall_wrong(error):
+def chall_wrong(_error):
     return jsonify(msg="Invalid response", failed=True), 423
 
 

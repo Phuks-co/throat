@@ -18,6 +18,7 @@ from captcha.image import ImageCaptcha
 from datetime import datetime, timedelta, timezone
 import misaka as m
 import sendgrid
+from sendgrid.helpers.mail import Mail
 from flask import current_app, _request_ctx_stack, has_request_context, has_app_context, g
 from flask import url_for, request, jsonify, session
 from flask_limiter import Limiter
@@ -48,7 +49,6 @@ from werkzeug.local import LocalProxy
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
 from wheezy.template.loader import FileLoader, autoreload
-
 
 # Regex that matches VALID user and sub names
 allowedNames = re.compile("^[a-zA-ZÀ-ž0-9_-]+$")
@@ -142,7 +142,7 @@ class SiteUser(object):
         try:
             SubMod.select().where(SubMod.user == self.uid).get()
             self.is_a_mod = True
-        except:
+        except SubMod.DoesNotExist:
             self.is_a_mod = False
 
         if (time.time() - session.get('apriv', 0) < 7200) or not config.site.enable_totp:
@@ -175,18 +175,15 @@ class SiteUser(object):
     def mod_notifications(self):
         if self.is_mod:
             post_report_counts = (
-                SubPostReport.select(Sub.sid, fn.COUNT(SubPostReport.id).
-                                     alias('count')).
-                join(SubPost).join(Sub).join(SubMod).
-                where((SubMod.user == self.uid) & SubPostReport.open).
-                group_by(Sub.sid).dicts())
+                SubPostReport.select(Sub.sid, fn.COUNT(SubPostReport.id).alias('count'))
+                             .join(SubPost).join(Sub).join(SubMod)
+                             .where((SubMod.user == self.uid) & SubPostReport.open)
+                             .group_by(Sub.sid).dicts())
             comment_report_counts = (
-                SubPostCommentReport.select(Sub.sid,
-                                            fn.COUNT(SubPostCommentReport.id).
-                                            alias('count')).
-                    join(SubPostComment).join(SubPost).join(Sub).join(SubMod).
-                    where((SubMod.user == self.uid) & SubPostCommentReport.open).
-                    group_by(Sub.sid).dicts())
+                SubPostCommentReport.select(Sub.sid, fn.COUNT(SubPostCommentReport.id).alias('count')).join(
+                    SubPostComment).join(SubPost).join(Sub).join(SubMod).where(
+                    (SubMod.user == self.uid) & SubPostCommentReport.open).group_by(Sub.sid).dicts()
+            )
 
             counts = defaultdict(int)
             for item in post_report_counts:
@@ -254,7 +251,6 @@ class SiteUser(object):
         except UserMetadata.DoesNotExist:
             UserMetadata.create(uid=self.uid, key=key, value=value)
 
-
     @cache.memoize(30)
     def get_global_stylesheet(self):
         if self.subtheme:
@@ -268,10 +264,11 @@ class SiteUser(object):
 
 def is_target_user_admin(uid):
     try:
-        check_admin = UserMetadata.get((UserMetadata.uid == uid) & (UserMetadata.key == 'admin') & (UserMetadata.value == '1'))
+        UserMetadata.get((UserMetadata.uid == uid) & (UserMetadata.key == 'admin') & (UserMetadata.value == '1'))
         return True
     except UserMetadata.DoesNotExist:
         return False
+
 
 class SiteAnon(AnonymousUserMixin):
     """ A subclass of AnonymousUserMixin. Used for logged out users. """
@@ -291,7 +288,7 @@ class SiteAnon(AnonymousUserMixin):
         return False
 
     @classmethod
-    def is_mod(cls, sub, power_level):
+    def is_mod(cls, _sub, _power_level):
         return False
 
     @classmethod
@@ -314,12 +311,12 @@ class SiteAnon(AnonymousUserMixin):
         return getDefaultSubs_list(True)
 
     @classmethod
-    def has_subscribed(cls, sub):
+    def has_subscribed(cls, _sub):
         """ Anons dont get subscribe options. """
         return False
 
     @classmethod
-    def has_blocked(cls, sub):
+    def has_blocked(cls, _sub):
         """ Anons dont get blocked options. """
         return False
 
@@ -334,7 +331,7 @@ class SiteAnon(AnonymousUserMixin):
         return False
 
     @classmethod
-    def is_subban(cls, sub):
+    def is_subban(cls, _sub):
         """ Anons dont get banned by default. """
         return False
 
@@ -363,11 +360,12 @@ AUTH_LIMIT = '25/5minute'
 SIGNUP_LIMIT = '5/30minute'
 
 
-class RE_AMention():
+class MentionRegex:
     def __init__(self, app=None):
         if app is not None:
             self.init_app(app)
 
+    # noinspection PyAttributeOutsideInit
     def init_app(self, app):
         prefix = app.config['THROAT_CONFIG'].site.sub_prefix
         BARE = r'(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))((@|\/u\/|\/' + prefix + r'\/)([A-Za-z0-9\-\_]+))'
@@ -379,7 +377,7 @@ class RE_AMention():
                                 flags=re.MULTILINE + re.DOTALL)
 
 
-re_amention = RE_AMention()
+re_amention = MentionRegex()
 
 
 class PhuksDown(m.SaferHtmlRenderer):
@@ -525,6 +523,7 @@ def getMaxCodes(uid):
             return 0
     return 0
 
+
 @cache.memoize(30)
 def getInviteCodeInfo(uid):
     """
@@ -544,10 +543,12 @@ def getInviteCodeInfo(uid):
 
     # Codes that this user has generated, that other users signed up with
     try:
-        user_codes = InviteCode.select(User.name, InviteCode.code).where(InviteCode.user == uid
-                ).join(UserMetadata, JOIN.LEFT_OUTER, on=((UserMetadata.value == InviteCode.code) & (UserMetadata.key == 'invitecode'))
-                ).join(User).dicts()
-        info['invitedTo'] =  list(user_codes)
+        user_codes = InviteCode.select(User.name, InviteCode.code) \
+            .where(InviteCode.user == uid) \
+            .join(UserMetadata, JOIN.LEFT_OUTER,
+                  on=((UserMetadata.value == InviteCode.code) & (UserMetadata.key == 'invitecode'))) \
+            .join(User).dicts()
+        info['invitedTo'] = list(user_codes)
     except InviteCode.DoesNotExist:
         pass
 
@@ -612,7 +613,7 @@ def getYoutubeID(url):
     return None
 
 
-def workWithMentions(data, receivedby, post, sub, cid=None, c_user=current_user):
+def workWithMentions(data, receivedby, post, _sub, cid=None, c_user=current_user):
     """ Does all the job for mentions """
     mts = re.findall(re_amention.LINKS, data)
     if mts:
@@ -702,6 +703,7 @@ def get_user_level(uid, score=None):
     level = math.sqrt(xp / 10)
     return int(level), xp
 
+
 @cache.memoize(300)
 def getTodaysTopPosts():
     """ Returns top posts in the last 24 hours """
@@ -777,8 +779,9 @@ def getSinglePost(pid):
 
 
 def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False, adminDetail=False, isSubMod=False):
-
-    reports = SubPostReport.select(SubPostReport.pid, fn.Min(SubPostReport.id).alias("open_report_id"), fn.Count(SubPostReport.id).alias('open_reports')).where(SubPostReport.open == True).group_by(SubPostReport.pid).cte("reports")
+    reports = SubPostReport.select(SubPostReport.pid, fn.Min(SubPostReport.id).alias("open_report_id"),
+                                   fn.Count(SubPostReport.id).alias('open_reports')).where(
+        SubPostReport.open == True).group_by(SubPostReport.pid).cte("reports")
 
     if current_user.is_authenticated and not noDetail:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
@@ -786,12 +789,14 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.flair, SubPost.edited, Sub.sid,
                                SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'),
-                               *extra, *([reports.c.open_report_id, reports.c.open_reports] if isSubMod else [Value(None).alias('open_report_id'), Value(None).alias('open_reports')]))
+                               *extra, *([reports.c.open_report_id, reports.c.open_reports] if isSubMod else [
+                                          Value(None).alias('open_report_id'), Value(None).alias('open_reports')]))
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER,
                            on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(
             SubPost)
         if isSubMod:
-            posts = posts.join(reports, JOIN.LEFT_OUTER, on=(reports.c.pid == SubPost.pid)).switch(SubPost).with_cte(reports)
+            posts = posts.join(reports, JOIN.LEFT_OUTER, on=(reports.c.pid == SubPost.pid)).switch(SubPost).with_cte(
+                reports)
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
                                SubPost.deleted, SubPost.score, SubPost.ptype, SubPost.distinguish,
@@ -813,7 +818,8 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False,
 
 def postListQueryHome(noDetail=False, nofilter=False):
     if current_user.is_authenticated:
-        return postListQueryBase(noDetail=noDetail, nofilter=nofilter, isSubMod=current_user.can_admin).where(SubPost.sid << current_user.subsid)
+        return postListQueryBase(noDetail=noDetail, nofilter=nofilter, isSubMod=current_user.can_admin).where(
+            SubPost.sid << current_user.subsid)
     else:
         return postListQueryBase(noDetail=noDetail, nofilter=nofilter).join(SiteMetadata, JOIN.LEFT_OUTER,
                                                                             on=(SiteMetadata.key == 'default')).where(
@@ -873,7 +879,8 @@ def getStickyPid(sid):
 
 @cache.memoize(60)
 def getStickies(sid):
-    posts = postListQueryBase().join(SubMetadata, on=(SubPost.sid == SubMetadata.sid) & (SubPost.pid == SubMetadata.value.cast("int")) & (SubMetadata.key == 'sticky'))
+    posts = postListQueryBase().join(SubMetadata, on=(SubPost.sid == SubMetadata.sid) & (
+            SubPost.pid == SubMetadata.value.cast("int")) & (SubMetadata.key == 'sticky'))
     posts = posts.where(SubPost.sid == sid)
     posts = posts.order_by(SubMetadata.xid.asc()).dicts()
     return list(posts)
@@ -934,7 +941,8 @@ def get_locale_fallback():
 
 
 def get_notification_count(uid):
-    msg = Message.select().where((Message.receivedby == uid) & (Message.mtype == 1) & Message.read.is_null(True)).count()
+    msg = Message.select().where(
+        (Message.receivedby == uid) & (Message.mtype == 1) & Message.read.is_null(True)).count()
     notif = Notification.select().where((Notification.target == uid) & Notification.read.is_null(True)).count()
     return msg + notif
 
@@ -989,7 +997,8 @@ def getMessagesSent(page):
     try:
         msg = Message.select(Message.mid, Message.sentby, User.name.alias('username'), Message.subject, Message.content,
                              Message.posted, Message.read, Message.mtype, Message.mlink)
-        msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.receivedby)).where(Message.mtype << [1, 6, 9, 41]).where(
+        msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.receivedby)).where(
+            Message.mtype << [1, 6, 9, 41]).where(
             Message.sentby == current_user.uid).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False
@@ -1102,7 +1111,7 @@ def getSubMods(sid):
 
 
 def notify_mods(sid):
-    "Send the sub mods an updated open report count."
+    """ Send the sub mods an updated open report count. """
     reports = (SubPostReport.select(fn.Count(SubPostReport.id)).
                join(SubPost).
                where((SubPost.sid == sid) & SubPostReport.open))
@@ -1277,7 +1286,8 @@ def populate_feed(feed, posts):
 
         if post['thumbnail']:
             content += '<td><a href=' + url + '"><img src="' + thumbnail_url(post[
-                'thumbnail']) + '" alt="' + post['title'] + '"/></a></td>'
+                                                                                 'thumbnail']) + '" alt="' + post[
+                           'title'] + '"/></a></td>'
         content += '<td>Submitted by <a href=/u/' + post['user'] + '>' + post['user'] + '</a><br/>' + our_markdown(
             post['content'])
         if post['link']:
@@ -1316,7 +1326,7 @@ def metadata_to_dict(metadata):
 
 
 def get_postmeta_dicts(pids):
-    "Get the metadata for multiple posts."
+    """Get the metadata for multiple posts."""
     pids = set(pids)
     postmeta_query = SubPostMetadata.select(SubPostMetadata.pid, SubPostMetadata.key, SubPostMetadata.value).where(
         SubPostMetadata.pid << pids)
@@ -1395,15 +1405,15 @@ def create_sublog(action, uid, sid, comment='', link='', admin=False, target=Non
 
 
 # `id` is the report id
-def create_reportlog(action, uid, id, type='', related=False, original_report='', desc=''):
-    if type == 'post' and related == False:
-        PostReportLog.create(action=action, uid=uid, id=id, desc=desc)
-    elif type == 'comment' and related == False:
-        CommentReportLog.create(action=action, uid=uid, id=id, desc=desc)
-    elif type == 'post' and related == True:
-        PostReportLog.create(action=action, uid=uid, id=id, desc=original_report)
-    elif type == 'comment' and related == True:
-        CommentReportLog.create(action=action, uid=uid, id=id, desc=original_report)
+def create_reportlog(action, uid, obj_id, log_type='', related=False, original_report='', desc=''):
+    if log_type == 'post' and related == False:
+        PostReportLog.create(action=action, uid=uid, id=obj_id, desc=desc)
+    elif log_type == 'comment' and related == False:
+        CommentReportLog.create(action=action, uid=uid, id=obj_id, desc=desc)
+    elif log_type == 'post' and related == True:
+        PostReportLog.create(action=action, uid=uid, id=obj_id, desc=original_report)
+    elif log_type == 'comment' and related == True:
+        CommentReportLog.create(action=action, uid=uid, id=obj_id, desc=original_report)
 
 
 def is_domain_banned(addr, domain_type):
@@ -1475,6 +1485,7 @@ def get_comment_tree(pid, sid, comments, root=None, only_after=None, uid=None, p
     """ Returns a fully paginated and expanded comment tree.
 
     TODO: Move to misc and implement globally
+    @param include_history:
     @param pid: post for comments
     @param sid: sub for post
     @param comments: bare list of comments (only cid and parentcid)
@@ -1570,8 +1581,9 @@ def get_comment_tree(pid, sid, comments, root=None, only_after=None, uid=None, p
     expcomms = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
                                      SubPostComment.score, SubPostComment.status, SubPostComment.time,
                                      SubPostComment.pid, SubPostComment.distinguish, SubPostComment.parentcid,
-                                     User.name.alias('user'), *(
-            [SubPostCommentVote.positive, SubPostComment.uid] if uid else [SubPostComment.uid]),  # silly hack
+                                     User.name.alias('user'),
+                                     *([SubPostCommentVote.positive, SubPostComment.uid] if uid else [
+                                         SubPostComment.uid]),  # silly hack
                                      User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)
     expcomms = expcomms.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
     if uid:
@@ -1621,14 +1633,13 @@ def get_comment_tree(pid, sid, comments, root=None, only_after=None, uid=None, p
 
     if config.site.edit_history and include_history:
         history = SubPostCommentHistory.select(SubPostCommentHistory.cid, SubPostCommentHistory.content,
-                SubPostCommentHistory.datetime) \
-                        .where(SubPostCommentHistory.cid << cid_list) \
-                        .order_by(SubPostCommentHistory.datetime.desc()).dicts()
+                                               SubPostCommentHistory.datetime) \
+            .where(SubPostCommentHistory.cid << cid_list) \
+            .order_by(SubPostCommentHistory.datetime.desc()).dicts()
         for hist in history:
             if hist['cid'] in commdata:
                 hist['content'] = our_markdown(hist['content'])
                 commdata[hist['cid']]['history'].append(hist)
-
 
     def recursive_populate(tree):
         """ Expands the tree with the data from `commdata` """
@@ -1673,7 +1684,8 @@ def get_unread_count(mtype):
 @cache.memoize(1)
 def get_notif_count():
     """ Temporary till we get rid of the old template """
-    return Notification.select().where((Notification.target == current_user.uid) & Notification.read.is_null(True)).count()
+    return Notification.select().where(
+        (Notification.target == current_user.uid) & Notification.read.is_null(True)).count()
 
 
 def cast_vote(uid, target_type, pcid, value):
@@ -1751,7 +1763,7 @@ def cast_vote(uid, target_type, pcid, value):
     positive = True if voteValue == 1 else False
     undone = False
 
-    if qvote:
+    if qvote is not False:
         if bool(qvote.positive) == (True if voteValue == 1 else False):
             qvote.delete_instance()
 
@@ -1779,9 +1791,9 @@ def cast_vote(uid, target_type, pcid, value):
     else:  # First vote cast on post
         now = datetime.utcnow()
         if target_type == "post":
-            sp_vote = SubPostVote.create(pid=pcid, uid=uid, positive=positive, datetime=now)
+            SubPostVote.create(pid=pcid, uid=uid, positive=positive, datetime=now)
         else:
-            sp_vote = SubPostCommentVote.create(cid=pcid, uid=uid, positive=positive, datetime=now)
+            SubPostCommentVote.create(cid=pcid, uid=uid, positive=positive, datetime=now)
 
         if positive:
             upd_q = target_model.update(score=target_model.score + voteValue, upvotes=target_model.upvotes + 1)
@@ -1826,16 +1838,13 @@ def is_sub_mod(uid, sid, power_level, can_admin=False):
     return False
 
 
-def getReports(view, status, page, *args, **kwargs):
+def getReports(view, status, page, *_args, **kwargs):
     # view = STR either 'mod' or 'admin'
     # status = STR: 'open', 'closed', or 'all'
     sid = kwargs.get('sid', None)
-    type = kwargs.get('type', None)
+    report_type = kwargs.get('type', None)
     report_id = kwargs.get('report_id', None)
     related = kwargs.get('related', None)
-
-    # Get Subs for which user is Mod
-    mod_subs = getModSubs(current_user.uid, 1)
 
     # Get all reports on posts and comments for requested subs,
     Reported = User.alias()
@@ -1855,16 +1864,20 @@ def getReports(view, status, page, *args, **kwargs):
 
     # filter by if Mod or Admin view and if filtering by sub, specific post, or related posts
     if view == 'admin' and not sid:
-        sub_post_reports = all_post_reports.where(SubPostReport.send_to_admin == True).join(SubPost).join(Sub).join(SubMod)
+        sub_post_reports = all_post_reports.where(SubPostReport.send_to_admin == True).join(SubPost).join(Sub).join(
+            SubMod)
     elif view == 'admin' and sid:
-        sub_post_reports = all_post_reports.where(SubPostReport.send_to_admin == True).join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod)
+        sub_post_reports = all_post_reports.where(SubPostReport.send_to_admin == True).join(SubPost).join(Sub).where(
+            Sub.sid == sid).join(SubMod)
     elif view == 'mod' and sid:
-        sub_post_reports = all_post_reports.join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod).where(SubMod.user == current_user.uid)
-    elif report_id and type == 'post' and not related:
+        sub_post_reports = all_post_reports.join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod).where(
+            SubMod.user == current_user.uid)
+    elif report_id and report_type == 'post' and not related:
         sub_post_reports = all_post_reports.where(SubPostReport.id == report_id).join(SubPost).join(Sub).join(SubMod)
-    elif report_id and type == 'post' and related:
+    elif report_id and report_type == 'post' and related:
         base_report = getReports('mod', 'all', 1, type='post', report_id=report_id, related=False)
-        sub_post_reports = all_post_reports.where(SubPostReport.pid == base_report['pid']).join(SubPost).join(Sub).join(SubMod)
+        sub_post_reports = all_post_reports.where(SubPostReport.pid == base_report['pid']).join(SubPost).join(Sub).join(
+            SubMod)
     else:
         sub_post_reports = all_post_reports.join(SubPost).join(Sub).join(SubMod).where(SubMod.user == current_user.uid)
 
@@ -1887,23 +1900,29 @@ def getReports(view, status, page, *args, **kwargs):
         SubPostCommentReport.reason,
         SubPostCommentReport.open,
         Sub.name.alias('sub')
-     ).join(User, on=User.uid == SubPostCommentReport.uid) \
+    ).join(User, on=User.uid == SubPostCommentReport.uid) \
         .switch(SubPostCommentReport)
 
     # filter by if Mod or Admin view and if filtering by sub or specific post
     if view == 'admin' and not sid:
-        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.send_to_admin == True).join(SubPostComment).join(SubPost).join(Sub).join(SubMod)
+        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.send_to_admin == True).join(
+            SubPostComment).join(SubPost).join(Sub).join(SubMod)
     elif view == 'admin' and sid:
-        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.send_to_admin == True).join(SubPostComment).join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod)
+        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.send_to_admin == True).join(
+            SubPostComment).join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod)
     elif view == 'mod' and sid:
-        sub_comment_reports = all_comment_reports.join(SubPostComment).join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod).where(SubMod.user == current_user.uid)
-    elif report_id and type == 'comment' and not related:
-        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.id == report_id).join(SubPostComment).join(SubPost).join(Sub).join(SubMod)
-    elif report_id and type == 'comment' and related:
+        sub_comment_reports = all_comment_reports.join(SubPostComment).join(SubPost).join(Sub).where(
+            Sub.sid == sid).join(SubMod).where(SubMod.user == current_user.uid)
+    elif report_id and report_type == 'comment' and not related:
+        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.id == report_id).join(SubPostComment).join(
+            SubPost).join(Sub).join(SubMod)
+    elif report_id and report_type == 'comment' and related:
         base_report = getReports('mod', 'all', 1, type='comment', report_id=report_id, related=False)
-        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.cid == base_report['cid']).join(SubPostComment).join(SubPost).join(Sub).join(SubMod)
+        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.cid == base_report['cid']).join(
+            SubPostComment).join(SubPost).join(Sub).join(SubMod)
     else:
-        sub_comment_reports = all_comment_reports.join(SubPostComment).join(SubPost).join(Sub).join(SubMod).where(SubMod.user == current_user.uid)
+        sub_comment_reports = all_comment_reports.join(SubPostComment).join(SubPost).join(Sub).join(SubMod).where(
+            SubMod.user == current_user.uid)
 
     sub_comment_reports = sub_comment_reports.join(Reported, on=Reported.uid == SubPostComment.uid)
 
@@ -1912,10 +1931,10 @@ def getReports(view, status, page, *args, **kwargs):
     closed_sub_comment_reports = sub_comment_reports.where(SubPostCommentReport.open == False)
 
     # Define open and closed queries and counts depending on whether query is for specific post
-    if report_id and type == 'post':
+    if report_id and report_type == 'post':
         open_query = open_sub_post_reports
         closed_query = closed_sub_post_reports
-    elif report_id and type == 'comment':
+    elif report_id and report_type == 'comment':
         open_query = open_sub_comment_reports
         closed_query = closed_sub_comment_reports
     else:
@@ -1939,11 +1958,12 @@ def getReports(view, status, page, *args, **kwargs):
     else:
         return jsonify(msg=_('Invalid status request')), 400
 
-    if report_id and type and not related:
+    if report_id and report_type and not related:
         # If only getting one report, this is a more usable format
         return list(query.dicts())[0]
 
-    return {'query': list(query.dicts()), 'open_report_count': str(open_report_count), 'closed_report_count': str(closed_report_count)}
+    return {'query': list(query.dicts()), 'open_report_count': str(open_report_count),
+            'closed_report_count': str(closed_report_count)}
 
 
 def slugify(text):
@@ -2011,7 +2031,7 @@ def add_context_to_log_records(config):
 
 
 def word_truncate(content, max_length, suffix='...'):
-    return content if len(content) <= max_length else content[:max_length].rsplit(' ', 1)[0]+suffix
+    return content if len(content) <= max_length else content[:max_length].rsplit(' ', 1)[0] + suffix
 
 
 def recent_activity(sidebar=True):

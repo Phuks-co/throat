@@ -62,7 +62,7 @@ class S3Storage:
                 'size': head['ContentLength'],
                 'name': filename
             })
-        except:
+        except:  # Except what?
             return None
 
     def delete(self, filename):

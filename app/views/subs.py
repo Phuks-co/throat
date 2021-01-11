@@ -2,9 +2,9 @@
 import uuid
 from datetime import datetime, timedelta, timezone
 from peewee import fn
-from flask import Blueprint, abort, request, render_template, redirect, url_for
+from flask import Blueprint, abort, request, redirect, url_for
 from flask_login import login_required, current_user
-from flask_babel import _, lazy_gettext as _l
+from flask_babel import _
 from .. import misc
 from ..config import config
 from ..misc import engine, ratelimit, POSTING_LIMIT
@@ -73,13 +73,12 @@ def create_post(ptype, sub):
     if not form.sub.data and sub != '':
         form.sub.data = sub
 
-    if form.sub.data:
-        try:
-            sub = Sub.get(fn.Lower(Sub.name) == form.sub.data.lower())
-            subdata = misc.getSubData(sub.sid)
-        except Sub.DoesNotExist:
-            return engine.get_template('sub/createpost.html').render(
-                {'error': _("Sub does not exist."), 'form': form, 'sub': '', 'captcha': captcha}), 400
+    try:
+        sub = Sub.get(fn.Lower(Sub.name) == form.sub.data.lower())
+        subdata = misc.getSubData(sub.sid)
+    except Sub.DoesNotExist:
+        return engine.get_template('sub/createpost.html').render(
+            {'error': _("Sub does not exist."), 'form': form, 'sub': '', 'captcha': captcha}), 400
 
     if not form.validate():
         if not form.ptype.data:
@@ -215,8 +214,9 @@ def create_post(ptype, sub):
                           thumbnail=img)
     thumbnail_store = [(SubPost, 'pid', post.pid)]
 
-    if ptype == 3:
+    if form.ptype.data == 'poll':
         # Create SubPostPollOption objects...
+        # noinspection PyUnboundLocalVariable
         poll_options = [{'pid': post.pid, 'text': x} for x in options]
         SubPostPollOption.insert_many(poll_options).execute()
         # apply all poll options..
@@ -224,6 +224,7 @@ def create_post(ptype, sub):
             SubPostMetadata.create(pid=post.pid, key='hide_results', value=1)
 
         if form.closetime.data:
+            # noinspection PyUnboundLocalVariable
             SubPostMetadata.create(pid=post.pid, key='poll_closes_time',
                                    value=int(closetime.replace(tzinfo=timezone.utc).timestamp()))
 
