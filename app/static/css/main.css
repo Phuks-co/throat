@@ -2794,6 +2794,11 @@ input[name="captcha"] {
     list-style-type: none;
 }
   
+/** helpers **/
 .left {
     text-align: left;
+}
+
+.inline {
+  display: inline-block;
 }
