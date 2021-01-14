@@ -107,9 +107,9 @@
               @end
               @if (current_user.uid == comment['uid'] and (current_user.is_admin() or current_user.uid in subMods['all'])):
                 <li><a class="distinguish" data-cid="@{comment['cid']}">@{comment['distinguish'] and _('undistinguish') or _('distinguish')}</a></li>
-              @end
-              @if (comment['parentcid'] is None and current_user.uid in subMods['all'] and current_user.uid == comment['uid']):
-                <li><a class="stick-comment" data-cid="@{comment['cid']}">@{comment['sticky'] and _('unstick') or _('make sticky')}</a></li>
+                @if comment['parentcid'] is None:
+                  <li><a class="stick-comment" data-cid="@{comment['cid']}">@{comment['sticky'] and _('unstick') or _('make sticky')}</a></li>
+                @end
               @end
             </ul>
           </div>

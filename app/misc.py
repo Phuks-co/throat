@@ -1755,11 +1755,8 @@ def cast_vote(uid, target_type, pcid, value):
     else:
         return jsonify(msg=_("Invalid target")), 400
 
-    try:
-        SubMetadata.get((SubMetadata.sid == target.sid) & (SubMetadata.key == "ban") & (SubMetadata.value == user.uid))
+    if is_sub_banned(target.sid, user.uid):
         return jsonify(msg=_('You are banned on this sub.')), 403
-    except SubMetadata.DoesNotExist:
-        pass
 
     if (datetime.utcnow() - target.posted.replace(tzinfo=None)) > timedelta(days=config.site.archive_post_after):
         return jsonify(msg=_("Post is archived")), 400
