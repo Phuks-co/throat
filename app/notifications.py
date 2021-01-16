@@ -39,7 +39,7 @@ class Notifications(object):
                     ParentComment.cid.alias("comment_context_cid"),
                     SubPost.content.alias('post_content')) \
             .join(Sub, JOIN.LEFT_OUTER).switch(Notification) \
-            .join(SubPost, JOIN.LEFT_OUTER).switch(Notification) \
+            .join(SubPost, JOIN.LEFT_OUTER) \
             .join(SubPostVote, JOIN.LEFT_OUTER, on=(SubPostVote.uid == uid) & (SubPostVote.pid == SubPost.pid)) \
             .switch(Notification) \
             .join(SubPostComment, JOIN.LEFT_OUTER) \
@@ -51,7 +51,6 @@ class Notifications(object):
             .join(ParentComment, JOIN.LEFT_OUTER, on=(SubPostComment.parentcid == ParentComment.cid)) \
             .where((Notification.target == uid) & (SubPostComment.status.is_null(True))) \
             .order_by(Notification.created.desc()) \
-            .group_by(Notification.id) \
             .paginate(page, 50).dicts()
         return list(notifications)
 
@@ -127,7 +126,7 @@ class Notifications(object):
                     'badge': config.site.icon_url,
                     'body': message_body
                 },
-                'notificationCount': notification_count
+                'notificationCount': int(notification_count)
             }
             self.push_service.topic_subscribers_data_message(topic_name=target, data_message=notification_data)
 
