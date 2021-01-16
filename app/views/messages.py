@@ -4,6 +4,7 @@ from peewee import JOIN
 from flask import Blueprint, redirect, url_for, render_template, abort, jsonify
 from flask_login import login_required, current_user
 from .. import misc
+from ..notifications import Notifications
 from ..config import config
 from ..misc import engine, get_postmeta_dicts
 from ..models import Notification, Sub, SubPost, SubPostComment, User, SubPostCommentVote, UserIgnores
@@ -26,30 +27,8 @@ def inbox_sort():
 @bp.route("/notifications/<int:page>")
 @login_required
 def view_notifications(page):
-    # Monster query
-    ParentComment = SubPostComment.alias()
-    notifications = Notification \
-        .select(Notification.id, Notification.type, Notification.read, Notification.created, Sub.name.alias('sub_name'),
-                Notification.post.alias('pid'), Notification.comment.alias('cid'), User.name.alias('sender'),
-                Notification.sender.alias('senderuid'), Notification.content,
-                SubPost.title.alias('post_title'), SubPost.posted, SubPostComment.content.alias('comment_content'),
-                SubPostComment.score.alias('comment_score'),
-                SubPostComment.content.alias('post_comment'), SubPostCommentVote.positive.alias('comment_positive'),
-                UserIgnores.id.alias("ignored"), ParentComment.content.alias('comment_context'),
-                ParentComment.time.alias("comment_context_posted"), ParentComment.score.alias("comment_context_score"),
-                SubPost.content.alias('post_content'))\
-        .join(Sub, JOIN.LEFT_OUTER).switch(Notification) \
-        .join(SubPost, JOIN.LEFT_OUTER).switch(Notification) \
-        .join(SubPostComment, JOIN.LEFT_OUTER) \
-        .join(SubPostCommentVote, JOIN.LEFT_OUTER, on=(
-            (SubPostCommentVote.uid == current_user.uid) & (SubPostCommentVote.cid == SubPostComment.cid))) \
-        .switch(Notification).join(User, JOIN.LEFT_OUTER, on=Notification.sender == User.uid) \
-        .join(UserIgnores, JOIN.LEFT_OUTER, on=(UserIgnores.uid == current_user.uid) & (UserIgnores.target == User.uid)) \
-        .join(ParentComment, JOIN.LEFT_OUTER, on=(SubPostComment.parentcid == ParentComment.cid)) \
-        .where((Notification.target == current_user.uid) & (SubPostComment.status.is_null(True))) \
-        .order_by(Notification.created.desc()) \
-        .paginate(page, 50).dicts()
-    notifications = list(notifications)
+    notifications = Notifications.get_notifications(current_user.uid, page)
+    # TODO: Move `lock-comments` to SubPost
     postmeta = get_postmeta_dicts((n['pid'] for n in notifications if n['pid'] is not None))
 
     now = datetime.utcnow()

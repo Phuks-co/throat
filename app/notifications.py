@@ -1,11 +1,13 @@
 """ Manages notifications """
 
+from peewee import JOIN, fn
 from flask_babel import _
 from pyfcm import FCMNotification
 from .config import config
-from .models import Notification, User, Sub, SubPost
+from .models import Notification, User, Sub, SubPost, SubPostComment, SubPostCommentVote, UserIgnores, SubPostVote
+from .models import Message
 from .socketio import socketio
-from .misc import get_notification_count
+from .misc import get_notification_count, current_user
 
 
 class Notifications(object):
@@ -16,6 +18,41 @@ class Notifications(object):
         with app.app_context():
             if config.notifications.fcm_api_key:
                 self.push_service = FCMNotification(api_key=config.notifications.fcm_api_key)
+
+    @staticmethod
+    def get_notifications(uid, page):
+        ParentComment = SubPostComment.alias()
+        notifications = Notification \
+            .select(Notification.id, Notification.type, Notification.read, Notification.created,
+                    Sub.name.alias('sub_name'),
+                    Notification.post.alias('pid'), Notification.comment.alias('cid'), User.name.alias('sender'),
+                    Notification.sender.alias('senderuid'), Notification.content,
+                    SubPost.title.alias('post_title'), SubPost.posted, SubPostComment.content.alias('comment_content'),
+                    SubPostComment.score.alias('comment_score'),
+                    SubPostComment.content.alias('post_comment'), SubPostCommentVote.positive.alias('comment_positive'),
+                    SubPostVote.positive.alias('post_positive'),
+                    SubPost.score.alias('post_score'),
+                    SubPost.link.alias('post_link'),
+                    UserIgnores.id.alias("ignored"), ParentComment.content.alias('comment_context'),
+                    ParentComment.time.alias("comment_context_posted"),
+                    ParentComment.score.alias("comment_context_score"),
+                    ParentComment.cid.alias("comment_context_cid"),
+                    SubPost.content.alias('post_content')) \
+            .join(Sub, JOIN.LEFT_OUTER).switch(Notification) \
+            .join(SubPost, JOIN.LEFT_OUTER) \
+            .join(SubPostVote, JOIN.LEFT_OUTER, on=(SubPostVote.uid == uid) & (SubPostVote.pid == SubPost.pid)) \
+            .switch(Notification) \
+            .join(SubPostComment, JOIN.LEFT_OUTER) \
+            .join(SubPostCommentVote, JOIN.LEFT_OUTER, on=(
+                (SubPostCommentVote.uid == uid) & (SubPostCommentVote.cid == SubPostComment.cid))) \
+            .switch(Notification).join(User, JOIN.LEFT_OUTER, on=Notification.sender == User.uid) \
+            .join(UserIgnores, JOIN.LEFT_OUTER,
+                  on=(UserIgnores.uid == uid) & (UserIgnores.target == User.uid)) \
+            .join(ParentComment, JOIN.LEFT_OUTER, on=(SubPostComment.parentcid == ParentComment.cid)) \
+            .where((Notification.target == uid) & (SubPostComment.status.is_null(True))) \
+            .order_by(Notification.created.desc()) \
+            .paginate(page, 50).dicts()
+        return list(notifications)
 
     def send(self, notification_type, target, sender, sub=None, comment=None, post=None, content=None):
         """
@@ -40,8 +77,9 @@ class Notifications(object):
         """
         Notification.create(type=notification_type, target=target, sender=sender, sub=sub, comment=comment, post=post, content=content)
 
+        notification_count = get_notification_count(target)
         socketio.emit('notification',
-                      {'count': get_notification_count(target)},
+                      {'count': notification_count},
                       namespace='/snt',
                       room='user' + target)
         if self.push_service:
@@ -87,7 +125,8 @@ class Notifications(object):
                 'notificationPayload': {
                     'badge': config.site.icon_url,
                     'body': message_body
-                }
+                },
+                'notificationCount': int(notification_count)
             }
             self.push_service.topic_subscribers_data_message(topic_name=target, data_message=notification_data)
 
