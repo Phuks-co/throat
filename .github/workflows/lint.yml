@@ -23,4 +23,4 @@ jobs:
       - name: Check lint on all files
         shell: bash
         run: |
-          find . -name "*.py" -type f | xargs pycodestyle --exclude='.git,venv,*migrations*' --ignore='E402,E501'
+          find . -name "*.py" -type f | xargs -0 pycodestyle --exclude='.git,venv,*migrations*' --ignore='E402,E501'
