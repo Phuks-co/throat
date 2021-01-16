@@ -1755,7 +1755,7 @@ def cast_vote(uid, target_type, pcid, value):
     else:
         return jsonify(msg=_("Invalid target")), 400
 
-    if is_sub_banned(target.sid, user.uid):
+    if is_sub_banned(target.sid, uid=user.uid):
         return jsonify(msg=_('You are banned on this sub.')), 403
 
     if (datetime.utcnow() - target.posted.replace(tzinfo=None)) > timedelta(days=config.site.archive_post_after):
