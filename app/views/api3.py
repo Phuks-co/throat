@@ -1,9 +1,7 @@
 """ API endpoints. """
 
-from collections import defaultdict
 import datetime
 import uuid
-from pyfcm import FCMNotification
 from bs4 import BeautifulSoup
 from email_validator import EmailNotValidError
 from flask import Blueprint, jsonify, request, url_for
@@ -922,12 +920,15 @@ def get_sub_rules():
 
 
 @API.route('/user/<username>', methods=['GET'])
-def get_user(username):
+def get_user(username, uid=False):
     """ Returns user profile data """
-    try:
-        user = User.select().where((User.status == 0) & (fn.Lower(User.name) == username.lower())).get()
-    except User.DoesNotExist:
-        return jsonify(msg="User does not exist"), 404
+    if not uid:
+        try:
+            user = User.select().where((User.status == 0) & (fn.Lower(User.name) == username.lower())).get()
+        except User.DoesNotExist:
+            return jsonify(msg="User does not exist"), 404
+    else:
+        user = User.get(User.uid == username)
 
     level = misc.get_user_level(user.uid, user.score)
     pcount = SubPost.select().where(SubPost.uid == user.uid).count()
@@ -952,6 +953,46 @@ def get_user(username):
             'mods': mods
         }
     })
+
+
+@API.route('/user', methods=['GET'])
+@jwt_required
+def get_own_user():
+    """ Return user info and notifications count for the current user """
+    uid = get_jwt_identity()
+    mcount = Message.select(fn.Count(Message.mid))\
+        .where((Message.receivedby == uid) & (Message.mtype == 1) & Message.read.is_null(True))
+    ncount = Notification.select(fn.Count(Notification.id))\
+        .where((Notification.target == uid) & Notification.read.is_null(True))
+    user = User.select(mcount.alias('messages'), ncount.alias('notifications'))
+    user = user.where(User.uid == uid).dicts().get()
+    return jsonify({
+        'user': None,  # TODO: send same stuff as get_user
+        'alerts': {
+            'notifications': user['notifications'],
+            'messages': user['messages'],
+            'modmail': 0  # TODO
+        }
+    })
+
+
+@API.route('/notifications', methods=['GET'])
+@jwt_required
+def get_notifications():
+    uid = get_jwt_identity()
+    page = request.args.get('page', default=1, type=int)
+    notification_list = notifications.get_notifications(uid, page)
+    for ntf in notification_list:
+        ntf['comment_content'] = misc.our_markdown(ntf['comment_content']) if ntf['comment_content'] else None
+        ntf['comment_context'] = misc.our_markdown(ntf['comment_context']) if ntf['comment_context'] else None
+        if ntf['type'] == 'POST_DELETE':
+            ntf['post_content'] = None
+        else:
+            ntf['post_content'] = misc.our_markdown(ntf['post_content']) if ntf['post_content'] else None
+
+        if ntf['type'] in ('SUB_BAN', 'SUB_UNBAN') and config.site.anonymous_modding:
+            ntf['sender'] = None
+    return jsonify(notifications=notification_list)
 
 
 @API.route('/user/settings', methods=['GET'])
