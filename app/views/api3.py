@@ -981,6 +981,7 @@ def get_own_user():
 def get_notifications():
     uid = get_jwt_identity()
     page = request.args.get('page', default=1, type=int)
+    autoMarkAsRead = request.args.get('autoMarkAsRead', default=True, type=bool)
     notification_list = notifications.get_notifications(uid, page)
     for ntf in notification_list:
         ntf['comment_content'] = misc.our_markdown(ntf['comment_content']) if ntf['comment_content'] else None
@@ -992,6 +993,10 @@ def get_notifications():
 
         if ntf['type'] in ('SUB_BAN', 'SUB_UNBAN') and config.site.anonymous_modding:
             ntf['sender'] = None
+
+    if autoMarkAsRead:
+        Notification.update(read=datetime.datetime.utcnow())\
+            .where((Notification.read.is_null(True)) & (Notification.target == uid)).execute()
     return jsonify(notifications=notification_list)
 
 
