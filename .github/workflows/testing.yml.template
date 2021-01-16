@@ -1,0 +1,33 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: install requeriments
+        shell: bash
+        run: |
+          apt update
+          apt install -y python3-pip python3-dev libpq-dev nodejs npm
+          pip3 install -r requirements.txt
+          pip3 install -r requirements-test.txt
+      
+      - name: Build JS
+        shell: bash
+        run: |
+          npm install
+          npm run build
+
+      - name: Run Tests
+        shell: bash
+        run: |
+          python3 -m pytest

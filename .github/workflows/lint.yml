@@ -1,0 +1,26 @@
+name: lint
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: install pycodestyle
+        shell: bash
+        run: |
+          apt update
+          apt install -y python3-pip
+          pip3 install pycodestyle
+        
+      - name: Check lint on all files
+        shell: bash
+        run: |
+          find . -name "*.py" -type f | xargs pycodestyle --exclude='.git,venv,*migrations*' --ignore='E402,E501'
