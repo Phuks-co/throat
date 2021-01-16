@@ -16,8 +16,8 @@ jobs:
       - name: install requeriments
         shell: bash
         run: |
-          apt update
-          apt install -y python3-pip python3-dev libpq-dev nodejs npm
+          sudo apt update
+          sudo apt install -y python3-pip python3-dev libpq-dev nodejs npm
           pip3 install -r requirements.txt
           pip3 install -r requirements-test.txt
       
