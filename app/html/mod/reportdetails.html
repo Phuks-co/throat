@@ -276,7 +276,7 @@ Mod |\
                     </td>
                     <td>
                       @if log.action == 57:
-                        @{_('Closed all reports related to: ')}<a href="@{url_for('mod.report_details', sub=report['sub'], type=report['type'], id=log.desc)}">
+                        @{_('Closed all reports related to: ')}<a href="@{url_for('mod.report_details', sub=report['sub'], report_type=report['type'], report_id=log.desc)}">
                           @{report['type']} @{_('report')} @{log.desc}</a>
                       @elif log.desc:
                           @{log.desc}
@@ -314,9 +314,9 @@ Mod |\
                       <tr>
                         <td>
                           @if related_report['type'] == 'comment':
-                            <a href="@{url_for('mod.report_details', sub=related_report['sub'], type=related_report['type'], id=related_report['id'])}"><time-ago datetime="@{related_report['datetime'].isoformat()}Z"></time-ago></a>
+                            <a href="@{url_for('mod.report_details', sub=related_report['sub'], report_type=related_report['type'], report_id=related_report['id'])}"><time-ago datetime="@{related_report['datetime'].isoformat()}Z"></time-ago></a>
                           @else:
-                          <a href="@{url_for('mod.report_details', sub=related_report['sub'], type=related_report['type'], id=related_report['id'])}"><time-ago datetime="@{related_report['datetime'].isoformat()}Z"></time-ago></a>
+                          <a href="@{url_for('mod.report_details', sub=related_report['sub'], report_type=related_report['type'], report_id=related_report['id'])}"><time-ago datetime="@{related_report['datetime'].isoformat()}Z"></time-ago></a>
                           @end
                         </td>
                         <td><a href="@{ url_for('user.view', user=related_report['reporter']) }">@{ related_report['reporter'] }</a></td>
