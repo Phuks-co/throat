@@ -38,9 +38,9 @@ Mod |\
               <td><div class="sub"><a href="@{ url_for('sub.view_sub', sub=report['sub']) }">@{ report['sub'] }</a></div></td>
               <td>
                 @if report['type'] == 'comment':
-                  <a href="@{url_for('mod.report_details', sub=report['sub'], type=report['type'], id=report['id'])}">@{_('Comment')}</a>
+                  <a href="@{url_for('mod.report_details', sub=report['sub'], report_type=report['type'], report_id=report['id'])}">@{_('Comment')}</a>
                 @else:
-                <a href="@{url_for('mod.report_details', sub=report['sub'], type=report['type'], id=report['id'])}">@{_('Post')}</a>
+                <a href="@{url_for('mod.report_details', sub=report['sub'], report_type=report['type'], report_id=report['id'])}">@{_('Post')}</a>
                 @end
               </td>
               <td><div class="username"><a href="@{ url_for('user.view', user=report['reporter']) }">@{ report['reporter'] }</a></div></td>

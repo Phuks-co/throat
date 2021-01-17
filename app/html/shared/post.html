@@ -100,7 +100,7 @@
         <a data-ac="report" data-pid="@{post['pid']}" class="report-post">@{_('report')}</a>
         @end
         @if post['open_report_id']:
-          <li><a class="post-open-reports" href="@{url_for('mod.report_details', sub=post['sub'], type='post', id=post['open_report_id'])}">@{_('open reports (%(num)s)', num=post['open_reports'])}</a></li>
+          <li><a class="post-open-reports" href="@{url_for('mod.report_details', sub=post['sub'], report_type='post', report_id=post['open_report_id'])}">@{_('open reports (%(num)s)', num=post['open_reports'])}</a></li>
         @end
       </div>
     </div>
