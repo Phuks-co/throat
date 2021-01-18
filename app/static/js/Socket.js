@@ -355,4 +355,4 @@ socket.on('msg', function(data){
   }
 })
 
-module.exports = socket;
+export default socket;

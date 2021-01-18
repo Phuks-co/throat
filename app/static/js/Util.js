@@ -93,4 +93,4 @@ u.sub = function(query, event, fn){
   })
 }
 
-module.exports = u;
+export default u;

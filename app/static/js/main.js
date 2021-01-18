@@ -30,8 +30,9 @@ require('./Sub');
 require('./Poll');
 require('./Mod');
 require('./Badge');
+require('./Chat');
 
-var socket = require('./Socket');
+import socket from './Socket'
 
 function vote(obj, how, comment){
   // Check if we're logged in first

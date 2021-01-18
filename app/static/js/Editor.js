@@ -123,4 +123,4 @@ function setSelection(textarea, begin, end){
   }
 }
 
-module.exports = initializeEditor;
+export default initializeEditor;
