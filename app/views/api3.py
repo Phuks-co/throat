@@ -15,7 +15,7 @@ from ..socketio import socketio
 from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, captchas_required
 from ..models import Sub, User, SubPost, SubPostComment, SubMetadata, SubPostCommentVote, SubPostVote, SubSubscriber
 from ..models import SiteMetadata, UserMetadata, Message, SubRule, Notification, SubMod, InviteCode, UserStatus
-from ..models import SubPostMetadata
+from ..models import SubPostMetadata, UserIgnores
 from ..caching import cache
 from ..config import config
 from ..badges import badges
@@ -998,6 +998,91 @@ def get_notifications():
         Notification.update(read=datetime.datetime.utcnow())\
             .where((Notification.read.is_null(True)) & (Notification.target == uid)).execute()
     return jsonify(notifications=notification_list)
+
+
+@API.route('/notifications', methods=['DELETE'])
+@jwt_required
+def delete_notification():
+    uid = get_jwt_identity()
+    if not request.is_json:
+        return jsonify(msg="Missing JSON in request"), 400
+
+    notification_id = request.json.get('notificationId', None)
+    if not notification_id:
+        return jsonify(error="The notificationId parameter is required"), 400
+
+    try:
+        notification = Notification.get((Notification.id == notification_id) & (Notification.target == uid))
+    except Notification.DoesNotExist:
+        return jsonify(error="Notification does not exist"), 404
+
+    notification.delete_instance()
+    return jsonify(status="ok")
+
+
+@API.route('/notifications/ignore', methods=['GET'])
+@jwt_required
+def get_ignored():
+    """ Lists all the users the user has blocked. """
+    uid = get_jwt_identity()
+
+    ignores = UserIgnores.select(User.name).join(User, on=User.uid == UserIgnores.target)
+    ignores = ignores.where(UserIgnores.uid == uid).dicts()
+
+    return jsonify(ignores=list(ignores))
+
+
+@API.route('/notifications/ignore', methods=['POST'])
+@jwt_required
+def ignore_notifications():
+    """ Ignores all notifications coming from a certain user. """
+    uid = get_jwt_identity()
+    if not request.is_json:
+        return jsonify(msg="Missing JSON in request"), 400
+
+    user = request.json.get('user', None)
+    if not user:
+        return jsonify(error="The user parameter is required"), 400
+
+    try:
+        user = User.get(User.name == user)
+    except User.DoesNotExist:
+        return jsonify(error="The user provided does not exist"), 400
+
+    try:
+        UserIgnores.get((UserIgnores.uid == uid) & (UserIgnores.target == user.uid))
+        return jsonify(error="User is already blocked")
+    except UserIgnores.DoesNotExist:
+        pass
+
+    UserIgnores.create(uid=uid, target=user.uid)
+    return jsonify(status='ok')
+
+
+@API.route('/notifications/ignore', methods=['DELETE'])
+@jwt_required
+def unignore_notifications():
+    """ Removes an ignore. """
+    uid = get_jwt_identity()
+    if not request.is_json:
+        return jsonify(msg="Missing JSON in request"), 400
+
+    user = request.json.get('user', None)
+    if not user:
+        return jsonify(error="The user parameter is required"), 400
+
+    try:
+        user = User.get(User.name == user)
+    except User.DoesNotExist:
+        return jsonify(error="The user provided does not exist"), 400
+
+    try:
+        ignore = UserIgnores.get((UserIgnores.uid == uid) & (UserIgnores.target == user.uid))
+        ignore.delete_instance()
+    except UserIgnores.DoesNotExist:
+        return jsonify(error="User is not blocked")
+
+    return jsonify(status='ok')
 
 
 @API.route('/user/settings', methods=['GET'])
