@@ -29,14 +29,14 @@ u.addEventForChild = function(parent, eventName, childSelector, cb){
 };
 
 u.get = function(url, success, error){ //
-  var request = new XMLHttpRequest();
+  const request = new XMLHttpRequest();
   request.open('GET', url, true);
 
   request.onload = function() {
     if (this.status >= 200 && this.status < 400) {
       try{
-        var data = JSON.parse(this.response);
-        success(data);
+        const data = JSON.parse(this.response);
+        success(data, this);
       }catch(e){
         success(this.response);
       }

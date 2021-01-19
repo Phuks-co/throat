@@ -2,9 +2,11 @@
 from urllib.parse import urlparse
 from datetime import datetime
 import uuid
+import re
+import requests
 from peewee import fn
-from flask import Blueprint, request, redirect, abort, url_for, session, current_app, flash
-from flask_login import current_user, login_user
+from flask import Blueprint, request, redirect, abort, url_for, session, current_app, flash, jsonify
+from flask_login import current_user, login_user, login_required
 from flask_babel import _
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired, BadSignature
@@ -24,12 +26,16 @@ def sanitize_serv(serv):
     return serv.replace("%252F", "%2F")
 
 
-def handle_cas_ok(uid):
+def generate_cas_token(uid):
     # Create Session Ticket and store it in Redis
     token = str(uuid.uuid4())
     rconn.setex(name='cas-' + token, value=uid, time=30)
+    return token
+
+
+def handle_cas_ok(uid):
     # 2 - Send the ticket over to `service` with the ticket parameter
-    return redirect(sanitize_serv(request.args.get('service')) + '&ticket=' + token)
+    return redirect(sanitize_serv(request.args.get('service')) + '&ticket=' + generate_cas_token(uid))
 
 
 @bp.route("/proxyValidate", methods=['GET'])
@@ -257,3 +263,20 @@ def login():
             return engine.get_template('user/login.html').render(
                     {'error': _("Invalid username or password."), 'loginform': form})
     return engine.get_template('user/login.html').render({'error': misc.get_errors(form, True), 'loginform': form})
+
+
+@bp.route("/auth/matrix", methods=['POST'])
+@login_required
+def get_ticket():
+    """ Returns a CAS ticket for the current user """
+    token = generate_cas_token(current_user.uid)
+    # Not using safe_requests since we're supposed to trust this server.
+    resp = requests.get(
+        f"https://phuks.co/_matrix/client/r0/login/cas/ticket?redirectUrl=http%3A%2F%2Fexample.com%2F&ticket={token}",
+        allow_redirects=False)
+
+    if resp.status_code == 200:
+        matches = re.search(r"href=\".+/\?loginToken=(.+)\">", resp.text)
+        return jsonify(token=matches.groups()[0])
+
+    return jsonify(error="absolutely"), 400

@@ -333,3 +333,14 @@ logging:
 # notifications:
   # Firebase Cloud Messaging API key
   # fcm_api_key: ''
+
+# Optional: Replace the onsite chatbox with a Matrix client
+# The client is currently a work in progress and relies heavily on the server autojoining users to the desired channel
+# on registration AND on the CAS integration with Throat
+matrix:
+  # If True the chatbox becomes a Matrix client, if False it will use the regular chat over websockets
+  enabled: False
+  # Matrix homeserver we'll connect to
+  homeserver: 'https://phuks.co'
+  # Room ID of the room we'll show in the chatbox
+  default_room: '!RBQNbVLNepzbeBbkpz:phuks.co'

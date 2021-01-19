@@ -113,6 +113,9 @@ cfg_defaults = {  # key => default value
         },
         "notifications": {
             "fcm_api_key": None
+        },
+        "matrix": {
+            "enabled": False
         }
     }
 
