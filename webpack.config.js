@@ -24,9 +24,7 @@ module.exports = {
         exclude: /(node_modules|bower_components|ext)/,
         use: {
           loader: 'babel-loader',
-          options: {
-            plugins: ['transform-es2015-modules-commonjs']
-          }
+
         }
       },
       {

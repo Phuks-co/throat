@@ -1,6 +1,6 @@
 import u from './Util';
 import _ from './utils/I18n';
-var icon = require('./Icon');
+import icon from './Icon'
 
 u.ready(function(){
   u.each('.markdown-editor', function(el,i){
@@ -123,4 +123,4 @@ function setSelection(textarea, begin, end){
   }
 }
 
-module.exports = initializeEditor;
+export default initializeEditor;

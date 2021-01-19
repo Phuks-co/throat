@@ -72,25 +72,16 @@ class EscapeExtension(object):
     ]
 
 
-_engine = Engine(
+engine = Engine(
     loader=FileLoader([os.path.split(__file__)[0] + '/html']),
     extensions=[EscapeExtension(), CoreExtension()]
 )
-engine = _engine
 
 mail = Mail()
 
 babel = Babel()
 
 talisman = Talisman()
-
-
-def engine_init_app(app):
-    global engine
-    if app.debug:
-        engine = autoreload(_engine)
-    else:
-        engine = _engine
 
 
 class SiteUser(object):

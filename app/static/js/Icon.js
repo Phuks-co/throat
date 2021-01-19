@@ -78,4 +78,4 @@ u.ready(function(){
 
 // here we apply em.
 
-module.exports = Icons;
+export default Icons

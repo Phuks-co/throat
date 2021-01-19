@@ -32,7 +32,7 @@ from .views.messages import bp as messages
 from . import misc, forms, caching, storage
 from .notifications import notifications
 from .socketio import socketio
-from .misc import SiteAnon, engine, engine_init_app, re_amention, mail, talisman, limiter
+from .misc import SiteAnon, engine, re_amention, mail, talisman, limiter
 from .misc import logging_init_app, get_locale, babel
 
 # /!\ FOR DEBUGGING ONLY /!\
@@ -90,7 +90,6 @@ def create_app(config=None):
     rconn.init_app(app)
     db_init_app(app)
     re_amention.init_app(app)
-    engine_init_app(app)
     if 'MAIL_SERVER' in app.config:
         mail.init_app(app)
     storage.storage_init_app(app)

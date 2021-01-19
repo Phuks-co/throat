@@ -276,32 +276,8 @@ u.ready(function () {
   });
 })
 
-
-u.sub('#chtitle', 'click', function(e){
-  var hid = this.getAttribute('hid');
-  if(!hid){ // hid
-    this.parentNode.style.height = '1.65em';
-    this.parentNode.style.width = '25%';
-    document.getElementById('chbott').style.display='none';
-    this.setAttribute('hid', true);
-  }else{
-    this.parentNode.style.height = '50%';
-    this.parentNode.style.width = '50%';
-    document.getElementById('chbott').style.display='block';
-    this.removeAttribute('hid');
-    var x = document.getElementById('chcont');
-    x.scrollTop = x.scrollHeight
-  }
-})
-
-function isScrolledIntoView(el) {
-    var elemTop = el.getBoundingClientRect().top;
-    var elemBottom = el.getBoundingClientRect().bottom;
-    var isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
-    return isVisible;
-}
-
 u.sub('#chsend', 'keydown', function(e){
+  if(document.getElementById('matrix-chat')) return
   if(e.keyCode == 13){
     socket.emit('msg', {msg: this.value})
     this.value = '';
@@ -318,17 +294,8 @@ socket.on('rmannouncement', function(){
   }
 })
 
-socket.on('announcement', function(data){
-  if(window.oindex){
-    var elm = document.createElement('div');
-    elm.id = "announcement-post";
-    elm.innerHTML = data.cont;
-    document.getElementById('container').insertAdjacentElement('afterbegin', elm);
-    icon.rendericons();
-  }
-})
-
 socket.on('msg', function(data){
+  if(document.getElementById('matrix-chat')) return
   var cont = document.getElementById('chcont')
   if(!cont){return;}
   var uname = document.getElementById('unameb').innerHTML.toLowerCase();
@@ -356,4 +323,14 @@ socket.on('msg', function(data){
   }
 })
 
-module.exports = socket;
+socket.on('announcement', function(data){
+  if(window.oindex){
+    var elm = document.createElement('div');
+    elm.id = "announcement-post";
+    elm.innerHTML = data.cont;
+    document.getElementById('container').insertAdjacentElement('afterbegin', elm);
+    icon.rendericons();
+  }
+})
+
+export default socket;

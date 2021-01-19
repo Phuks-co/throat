@@ -181,9 +181,17 @@
       <div id="chpop" style="height: 1.65em">
         <div id="chtitle" hid="true"><span id="cht-text">@{_('Chat')}</span> <div class="glyphbutton"><a href="/chat"><span class="p-icon " data-icon="resize"></span></a></div></div>
         <div id="chcont"></div>
-        <div id="chbott" style="display: none"><input type="text" id="chsend" maxlength="250" placeholder="@{_('Type here')}"/></div>
+        <div id="chbott" style="display: none">
+          <div id="chstatus">&nbsp;</div>
+          <input type="text" id="chsend" maxlength="250" placeholder="@{_('Type here')}"/>
+        </div>
       </div>
       <label id="throat-chat" name="true" style="display: none;"></label>
+      @if config.matrix.enabled:
+        <label id="matrix-chat" data-value="" style="display: none;"></label>
+        <label id="matrix-roomId" data-value="@{config.matrix.default_room}" style="display: none;"></label>
+        <label id="matrix-homeserver" data-value="@{config.matrix.homeserver}" style="display: none;"></label>
+      @end
       @end
     @end
     @{chat()!!html}
