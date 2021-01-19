@@ -595,11 +595,11 @@ span#notification.fade {
 }
 
 .post .title {
-  color: #484646;
+  color: #000000;
   text-decoration: none;
   line-height: 1.2em;
   font-size: 1em;
-  font-weight: bold;
+ /* font-weight: bold; */
   word-wrap: break-word;
 }
 
@@ -1442,7 +1442,7 @@ input[type=search] {
 .wholepost .author {
   font-size: small;
   color: #5d5454;
-  margin-top: .3em;
+  margin-top: 0.3em;
 }
 
 .post-content-container, .poll-space {
