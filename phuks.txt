@@ -1,1 +1,6 @@
-["homepage tvojho internetu"]
+["homepage tvojho internetu",
+"zrušme slušne facebook",
+"celoplošné čekovanie",
+"made in slovakia",
+"made in argentina",
+"beta"]
