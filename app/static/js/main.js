@@ -21,7 +21,7 @@ window.Sortable = Sortable;
 require('../css/main.css');
 require('../css/dark.css');
 
-var icons = require('./Icon');
+import icons from './Icon';
 require('./Expando');
 require('./Post');
 require('./Editor');

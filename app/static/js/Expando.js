@@ -1,5 +1,5 @@
 import u from './Util'
-var icon = require('./Icon');
+import icon from './Icon';
 
 function get_hostname(url) {
   if(!url){return;}

@@ -317,7 +317,7 @@ socket.on('msg', function(data){
   cont.innerHTML = cont.innerHTML + '<div class="msg ' + xc + '"><span class="msguser">' + data.user + '&gt;</span><span class="damsg">' + anchorme(ircStylize(data.msg.replace(/  /g, '&#32;&nbsp;')), {emails: false, files: false, attributes: [{name:"target",value:"blank"}]}).replace(reg, "$1<a href='/u/$3'>$2$3</a>$4") + '</span></div>';
   var k = document.getElementsByClassName('msg')
   if(k.length > 3){
-    if(isScrolledIntoView(k[k.length-2])){
+    if(u.isScrolledIntoView(k[k.length-2])){
       k[k.length-2].scrollIntoView();
     }
   }

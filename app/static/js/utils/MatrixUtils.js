@@ -5,13 +5,6 @@ import anchorme from "anchorme";
 const sdk = require('matrix-js-sdk');
 
 
-function isScrolledIntoView(el) {
-  const elemTop = el.getBoundingClientRect().top;
-  const elemBottom = el.getBoundingClientRect().bottom;
-  return (elemTop >= 0) && (elemBottom <= window.innerHeight);
-}
-
-
 function escapeHtml(html) {
   const text = document.createTextNode(html);
   const p = document.createElement('p');
@@ -140,6 +133,8 @@ export function loadChat() {
       }
     })
 
+  }, () => {
+    document.getElementById('chstatus').innerText = "Could not fetch tokens :("
   })
 }
 
@@ -195,7 +190,7 @@ function addMessage(message, sender, toStartOfTimeline, grayed) {
 
   const k = document.getElementsByClassName('msg')
   if (k.length > 3) {
-    if (isScrolledIntoView(k[k.length - 2])) {
+    if (u.isScrolledIntoView(k[k.length - 2])) {
       k[k.length - 2].scrollIntoView();
     }
   }

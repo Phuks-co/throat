@@ -44,7 +44,9 @@ def sso_proxy_validate():
     if not request.args.get('ticket') or not request.args.get('service'):
         abort(400)
 
-    red_c = rconn.get('cas-' + request.args.get('ticket'))
+    with rconn.pipeline() as p:
+        red_c = p.get('cas-' + request.args.get('ticket'))
+        p.delete('cas-' + request.args.get('ticket'))
 
     if red_c:
         try:
@@ -281,7 +283,7 @@ def get_ticket():
     token = generate_cas_token(current_user.uid)
     # Not using safe_requests since we're supposed to trust this server.
     resp = requests.get(
-        f"https://phuks.co/_matrix/client/r0/login/cas/ticket?redirectUrl=http%3A%2F%2Fexample.com%2F&ticket={token}",
+        f"{config.matrix.homeserver}/_matrix/client/r0/login/cas/ticket?redirectUrl=http%3A%2F%2Fexample.com%2F&ticket={token}",
         allow_redirects=False)
 
     if resp.status_code == 200:
