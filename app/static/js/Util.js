@@ -93,4 +93,10 @@ u.sub = function(query, event, fn){
   })
 }
 
+u.isScrolledIntoView = function (el) {
+  const elemTop = el.getBoundingClientRect().top;
+  const elemBottom = el.getBoundingClientRect().bottom;
+  return (elemTop >= 0) && (elemBottom <= window.innerHeight);
+}
+
 export default u;
