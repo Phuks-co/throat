@@ -44,7 +44,9 @@ def sso_proxy_validate():
     if not request.args.get('ticket') or not request.args.get('service'):
         abort(400)
 
-    red_c = rconn.get('cas-' + request.args.get('ticket'))
+    with rconn.pipeline() as p:
+        red_c = p.get('cas-' + request.args.get('ticket'))
+        p.delete('cas-' + request.args.get('ticket'))
 
     if red_c:
         try:
