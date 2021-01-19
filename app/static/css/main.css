@@ -920,7 +920,7 @@ a.slink {
 .stickyposts {
   margin-bottom: .5em;
   padding-bottom: .5em;
-  border-bottom: 1px solid #bdbdbd;
+/*  border-bottom: 1px solid #bdbdbd; */
 }
 
 .styckyposts .post{
