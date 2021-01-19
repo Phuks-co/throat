@@ -568,7 +568,7 @@ span#notification.fade {
 
 .post {
   min-height: 70px;
-  padding: 0.4em;
+  padding: 0.6em 0.1em 0.6em 0.2em;
   border-radius: 8px 0 0 8px;
 }
 
@@ -597,7 +597,7 @@ span#notification.fade {
 .post .title {
   color: #000000;
   text-decoration: none;
-  line-height: 1.2em;
+  line-height: 1.6em;
   font-size: 1em;
  /* font-weight: bold; */
   word-wrap: break-word;
@@ -1251,10 +1251,10 @@ span.hasmail {
 /* SIDEBAR STYLES */
 
 .sidebar {
-  padding: 1em 5px 5px 5px;
-  overflow-wrap: break-word;
-  border-left: solid 1px #ccc;
-  border-right: dotted 1px #ccc;
+    padding: 1em 5px 5px 5px;
+    overflow-wrap: break-word;
+    border-left: solid 1px #e2e2e2;
+    border-right: dotted 1px #ccc;
 }
 
 .sidebar h4 {
@@ -1566,7 +1566,7 @@ article.comment .score{
 }
 
 .pmessage.post:nth-child(2n) {
-  background-color: #f7f7f7;
+  background-color: #ffffff;
   -webkit-box-shadow: -3px 2px 4px 0 rgba(0, 0, 0, .1);
   -moz-box-shadow: -3px 2px 4px 0 rgba(0, 0, 0, .1);
   box-shadow: -3px 2px 4px 0 rgba(0, 0, 0, .1);
