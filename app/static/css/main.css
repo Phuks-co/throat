@@ -918,9 +918,10 @@ a.slink {
 }
 
 .stickyposts {
+  margin-top: 1em;
   margin-bottom: .5em;
   padding-bottom: .5em;
-/*  border-bottom: 1px solid #bdbdbd; */
+  border-bottom: 1px solid #efefef;
 }
 
 .styckyposts .post{
