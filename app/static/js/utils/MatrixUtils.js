@@ -133,6 +133,8 @@ export function loadChat() {
       }
     })
 
+  }, () => {
+    document.getElementById('chstatus').innerText = "Could not fetch tokens :("
   })
 }
 
