@@ -44,13 +44,14 @@ def sso_proxy_validate():
     if not request.args.get('ticket') or not request.args.get('service'):
         abort(400)
 
-    with rconn.pipeline() as p:
-        red_c = p.get('cas-' + request.args.get('ticket'))
-        p.delete('cas-' + request.args.get('ticket'))
+    pipe = rconn.pipeline()
+    pipe.get('cas-' + request.args.get('ticket'))
+    pipe.delete('cas-' + request.args.get('ticket'))
+    red_c = pipe.execute()
 
     if red_c:
         try:
-            user = User.get((User.uid == red_c.decode()) & (User.status << (0, 100)))
+            user = User.get((User.uid == red_c[0].decode()) & (User.status << (0, 100)))
         except User.DoesNotExist:
             return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationFailure code=\"INVALID_TICKET\">" + _(
                 'User not found or invalid ticket') + "</cas:authenticationFailure></cas:serviceResponse>", 401
