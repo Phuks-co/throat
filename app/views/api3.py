@@ -1085,6 +1085,90 @@ def unignore_notifications():
     return jsonify(status='ok')
 
 
+@API.route('/messages', methods=['GET'])
+@jwt_required
+def get_messages():
+    """ Returns an array of received messages """
+    uid = get_jwt_identity()
+    page = request.args.get('page', default=1, type=int)
+    # autoMarkAsRead = request.args.get('autoMarkAsRead', default=True, type=bool)
+
+    msg = Message.select(Message.mid.alias('id'), User.name.alias('sender'), Message.subject, Message.content,
+                         Message.posted, Message.read, UserIgnores.id.alias("ignored")) \
+        .join(UserIgnores, JOIN.LEFT_OUTER, on=(UserIgnores.uid == uid) & (UserIgnores.target == Message.sentby))\
+        .join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby))\
+        .where(Message.mtype == 1)\
+        .where(Message.receivedby == uid)\
+        .order_by(Message.mid.desc())\
+        .paginate(page, 20).dicts()
+
+    msg = list(msg)
+
+    for i in msg:
+        i['content'] = misc.our_markdown(i['content'])
+
+    return jsonify(messages=list(msg))
+
+
+@API.route('/messages', methods=['DELETE'])
+@jwt_required
+def delete_message():
+    uid = get_jwt_identity()
+    if not request.is_json:
+        return jsonify(msg="Missing JSON in request"), 400
+
+    message_id = request.json.get('messageId', None)
+    if not message_id:
+        return jsonify(error="The messageId parameter is required"), 400
+
+    try:
+        message = Message.get((Message.mid == message_id) & (Message.receivedby == uid))
+    except Notification.DoesNotExist:
+        return jsonify(error="Message does not exist"), 404
+
+    message.delete_instance()
+    return jsonify(status="ok")
+
+
+@API.route('/messages', methods=['POST'])
+@jwt_required
+def send_message():
+    uid = get_jwt_identity()
+    if not request.is_json:
+        return jsonify(msg="Missing JSON in request"), 400
+
+    to = request.json.get('to', None)
+    if not to:
+        return jsonify(error="The to parameter is required"), 400
+
+    try:
+        message_to = User.get(User.name == to)
+    except User.DoesNotExist:
+        return jsonify(error="Recipient does not exist"), 404
+
+    subject = request.json.get('subject', None)
+    if not to:
+        return jsonify(error="The subject parameter is required"), 400
+
+    content = request.json.get('content', None)
+    if not to:
+        return jsonify(error="The content parameter is required"), 400
+
+    misc.create_message(
+        mfrom=uid,
+        to=message_to.uid,
+        subject=subject,
+        content=content,
+        link=None,
+        mtype=1 if uid not in misc.get_ignores(message_to.uid) else 41)
+
+    socketio.emit('notification',
+                  {'count': misc.get_notification_count(message_to.uid)},
+                  namespace='/snt',
+                  room='user' + message_to.uid)
+    return jsonify(status="ok")
+
+
 @API.route('/user/settings', methods=['GET'])
 @jwt_required
 def get_settings():
