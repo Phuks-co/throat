@@ -1250,7 +1250,7 @@ def read_pm(mid):
         message.read = datetime.datetime.utcnow()
         message.save()
         socketio.emit('notification',
-                      {'count': current_user.notifications},
+                      {'count': misc.get_notification_count(current_user.uid)},
                       namespace='/snt',
                       room='user' + current_user.uid)
         return jsonify(status='ok', mid=mid)
