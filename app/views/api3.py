@@ -1126,7 +1126,8 @@ def delete_message():
     except Notification.DoesNotExist:
         return jsonify(error="Message does not exist"), 404
 
-    message.delete_instance()
+    message.mtype = 6
+    message.save()
     return jsonify(status="ok")
 
 
@@ -1167,6 +1168,29 @@ def send_message():
                   namespace='/snt',
                   room='user' + message_to.uid)
     return jsonify(status="ok")
+
+
+@API.route('/messages/sent', methods=['GET'])
+@jwt_required
+def get_sent_messages():
+    """ Returns an array of sent messages """
+    uid = get_jwt_identity()
+    page = request.args.get('page', default=1, type=int)
+
+    msg = Message.select(Message.mid.alias('id'), User.name.alias('sender'), Message.subject, Message.content,
+                         Message.posted) \
+        .join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.receivedby))\
+        .where(Message.mtype << (1, 6, 9, 41))\
+        .where(Message.sentby == uid)\
+        .order_by(Message.mid.desc())\
+        .paginate(page, 20).dicts()
+
+    msg = list(msg)
+
+    for i in msg:
+        i['content'] = misc.our_markdown(i['content'])
+
+    return jsonify(messages=list(msg))
 
 
 @API.route('/messages/<int:mid>/read', methods=['POST'])
