@@ -961,14 +961,16 @@ def get_errors(form, first=False):
 
 # messages
 
-def getMessagesIndex(page):
+def getMessagesIndex(page, uid=None):
     """ Returns messages inbox """
+    if not uid:
+        uid = current_user.uid
     try:
         msg = Message.select(Message.mid, User.name.alias('username'), Message.sentby, Message.receivedby,
                              Message.subject, Message.content, Message.posted, Message.read, Message.mtype,
                              Message.mlink)
         msg = msg.join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby)).where(Message.mtype == 1).where(
-            Message.receivedby == current_user.uid).order_by(Message.mid.desc()).paginate(page, 20).dicts()
+            Message.receivedby == uid).order_by(Message.mid.desc()).paginate(page, 20).dicts()
     except Message.DoesNotExist:
         return False
     return msg
