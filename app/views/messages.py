@@ -1,13 +1,12 @@
 """ Messages endpoints """
 from datetime import datetime, timedelta
-from peewee import JOIN
 from flask import Blueprint, redirect, url_for, render_template, abort, jsonify
 from flask_login import login_required, current_user
 from .. import misc
 from ..notifications import Notifications
 from ..config import config
 from ..misc import engine, get_postmeta_dicts
-from ..models import Notification, Sub, SubPost, SubPostComment, User, SubPostCommentVote, UserIgnores
+from ..models import Notification
 
 bp = Blueprint('messages', __name__)
 
