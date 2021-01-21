@@ -1169,6 +1169,27 @@ def send_message():
     return jsonify(status="ok")
 
 
+@API.route('/messages/<int:mid>/read', methods=['POST'])
+@jwt_required
+def read_message(mid):
+    """ Marks a message as read """
+    uid = get_jwt_identity()
+    try:
+        message = Message.get((Message.mid == mid) & (Message.receivedby == uid))
+    except Message.DoesNotExist:
+        return jsonify(error="Message not found"), 404
+
+    message.read = datetime.datetime.utcnow()
+    message.save()
+
+    socketio.emit('notification',
+                  {'count': misc.get_notification_count(uid)},
+                  namespace='/snt',
+                  room='user' + uid)
+
+    return jsonify(status="ok")
+
+
 @API.route('/user/settings', methods=['GET'])
 @jwt_required
 def get_settings():
