@@ -1026,7 +1026,7 @@ def get_ignored():
     """ Lists all the users the user has blocked. """
     uid = get_jwt_identity()
 
-    ignores = UserIgnores.select(User.name).join(User, on=User.uid == UserIgnores.target)
+    ignores = UserIgnores.select(User.name, UserIgnores.date).join(User, on=User.uid == UserIgnores.target)
     ignores = ignores.where(UserIgnores.uid == uid).dicts()
 
     return jsonify(ignores=list(ignores))
