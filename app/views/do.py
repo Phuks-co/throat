@@ -1266,7 +1266,7 @@ def readall_msgs(boxid):
     q = Message.update(read=now).where(Message.read.is_null()).where(Message.receivedby == current_user.uid)
     q.where(Message.mtype == boxid).execute()
     socketio.emit('notification',
-                  {'count': current_user.notifications},
+                  {'count': misc.get_notif_count(current_user.uid)},
                   namespace='/snt',
                   room='user' + current_user.uid)
     return jsonify(status='ok')
