@@ -1,7 +1,10 @@
 from flask_socketio import SocketIO, join_room
 from flask_login import current_user
+from flask_jwt_extended import decode_token
+from flask_jwt_extended.utils import verify_token_claims, UserClaimsVerificationError
 from flask import request, current_app
 from .models import rconn
+from . import misc
 import json
 from wheezy.html.utils import escape_html
 import logging
@@ -87,3 +90,18 @@ def handle_subscription(data):
         return
     if not str(sub).startswith('user'):
         join_room(sub)
+
+
+@socketio.on('token-login', namespace='/snt')
+def token_login(data):
+    tokendata = decode_token(data['jwt'])
+    try:
+        verify_token_claims(tokendata)
+    except UserClaimsVerificationError:
+        return
+    join_room('user' + tokendata['identity'])
+
+    socketio.emit('notification',
+                  {'count': misc.get_notification_count(tokendata['identity'])},
+                  namespace='/snt',
+                  room='user' + tokendata['identity'])

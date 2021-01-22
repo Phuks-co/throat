@@ -1,5 +1,4 @@
 import u from "./Util";
-import socket from "./Socket";
 
 function loadChat() {
   document.getElementById('chstatus').innerText = "Loading.."

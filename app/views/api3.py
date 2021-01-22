@@ -968,11 +968,7 @@ def get_own_user():
     user = user.where(User.uid == uid).dicts().get()
     return jsonify({
         'user': None,  # TODO: send same stuff as get_user
-        'alerts': {
-            'notifications': user['notifications'],
-            'messages': user['messages'],
-            'modmail': 0  # TODO
-        }
+        'alerts': misc.get_notification_count(uid)
     })
 
 
@@ -1026,7 +1022,7 @@ def get_ignored():
     """ Lists all the users the user has blocked. """
     uid = get_jwt_identity()
 
-    ignores = UserIgnores.select(User.name).join(User, on=User.uid == UserIgnores.target)
+    ignores = UserIgnores.select(User.name, UserIgnores.date).join(User, on=User.uid == UserIgnores.target)
     ignores = ignores.where(UserIgnores.uid == uid).dicts()
 
     return jsonify(ignores=list(ignores))
@@ -1126,7 +1122,8 @@ def delete_message():
     except Notification.DoesNotExist:
         return jsonify(error="Message does not exist"), 404
 
-    message.delete_instance()
+    message.mtype = 6
+    message.save()
     return jsonify(status="ok")
 
 
@@ -1166,6 +1163,50 @@ def send_message():
                   {'count': misc.get_notification_count(message_to.uid)},
                   namespace='/snt',
                   room='user' + message_to.uid)
+    return jsonify(status="ok")
+
+
+@API.route('/messages/sent', methods=['GET'])
+@jwt_required
+def get_sent_messages():
+    """ Returns an array of sent messages """
+    uid = get_jwt_identity()
+    page = request.args.get('page', default=1, type=int)
+
+    msg = Message.select(Message.mid.alias('id'), User.name.alias('sender'), Message.subject, Message.content,
+                         Message.posted) \
+        .join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.receivedby))\
+        .where(Message.mtype << (1, 6, 9, 41))\
+        .where(Message.sentby == uid)\
+        .order_by(Message.mid.desc())\
+        .paginate(page, 20).dicts()
+
+    msg = list(msg)
+
+    for i in msg:
+        i['content'] = misc.our_markdown(i['content'])
+
+    return jsonify(messages=list(msg))
+
+
+@API.route('/messages/<int:mid>/read', methods=['POST'])
+@jwt_required
+def read_message(mid):
+    """ Marks a message as read """
+    uid = get_jwt_identity()
+    try:
+        message = Message.get((Message.mid == mid) & (Message.receivedby == uid))
+    except Message.DoesNotExist:
+        return jsonify(error="Message not found"), 404
+
+    message.read = datetime.datetime.utcnow()
+    message.save()
+
+    socketio.emit('notification',
+                  {'count': misc.get_notification_count(uid)},
+                  namespace='/snt',
+                  room='user' + uid)
+
     return jsonify(status="ok")
 
 

@@ -160,6 +160,7 @@ function addMessage(message, sender, toStartOfTimeline, grayed) {
       const imgLink = document.createElement('a');
       imgLink.href = homeServerUrl + '/_matrix/media/r0/download/' + message.content.url.replace('mxc://', '');
       imgLink.innerText = message.content.body
+      imgLink.target = '_blank'
       const imgDesc = document.createElement('span');
       imgDesc.innerText = ` (${message.content.info.w}x${message.content.info.h}) ${formatBytes(message.content.info.size)}`
       messageContent.appendChild(imgLink);

@@ -135,7 +135,7 @@ u.ready(function () {
 })
 
 socket.on('notification', function(d){
-  updateNotifications(d.count);
+  updateNotifications(d.count.messages + d.count.notifications);
   updateTitleNotifications();
 });
 
