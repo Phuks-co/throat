@@ -126,7 +126,7 @@ class Notifications(object):
                     'badge': config.site.icon_url,
                     'body': message_body
                 },
-                'notificationCount': int(notification_count)
+                'notificationCount': notification_count
             }
             self.push_service.topic_subscribers_data_message(topic_name=target, data_message=notification_data)
 

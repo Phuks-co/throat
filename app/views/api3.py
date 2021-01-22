@@ -968,11 +968,7 @@ def get_own_user():
     user = user.where(User.uid == uid).dicts().get()
     return jsonify({
         'user': None,  # TODO: send same stuff as get_user
-        'alerts': {
-            'notifications': user['notifications'],
-            'messages': user['messages'],
-            'modmail': 0  # TODO
-        }
+        'alerts': misc.get_notification_count(uid)
     })
 
 

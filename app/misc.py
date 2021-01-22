@@ -935,11 +935,28 @@ def get_locale_fallback():
     return request.accept_languages.best_match(config.app.languages, config.app.fallback_language)
 
 
+def get_modmail_count(uid):
+    post_report_count = SubPostReport.select()\
+        .join(SubPost).join(Sub).join(SubMod)\
+        .where((SubMod.user == uid) & SubPostReport.open).count()
+    comment_report_count = SubPostCommentReport.select()\
+        .join(SubPostComment).join(SubPost).join(Sub).join(SubMod)\
+        .where((SubMod.user == uid) & SubPostCommentReport.open).count()
+
+    return post_report_count + comment_report_count
+
+
 def get_notification_count(uid):
-    msg = Message.select().where(
-        (Message.receivedby == uid) & (Message.mtype == 1) & Message.read.is_null(True)).count()
-    notif = Notification.select().where((Notification.target == uid) & Notification.read.is_null(True)).count()
-    return msg + notif
+    notifications = Notification.select().where((Notification.target == uid) & Notification.read.is_null(True)).count()
+    messages = Message.select()\
+        .where((Message.mtype == 1) & (Message.receivedby == uid) & Message.read.is_null(True))\
+        .count()
+    modmail = get_modmail_count(uid)
+    return {
+        'notifications': notifications,
+        'messages': messages,
+        'modmail': modmail
+    }
 
 
 def get_errors(form, first=False):
@@ -1680,7 +1697,10 @@ def get_unread_count(mtype):
 
 @cache.memoize(1)
 def get_notif_count():
-    """ Temporary till we get rid of the old template """
+    """
+    Temporary till we get rid of the old template
+     @deprecated
+    """
     return Notification.select().where(
         (Notification.target == current_user.uid) & Notification.read.is_null(True)).count()
 
