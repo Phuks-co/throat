@@ -32,6 +32,7 @@ code, pre {
 
 pre {
   padding: .4em;
+  overflow-x: auto
 }
 
 code {

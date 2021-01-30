@@ -22,6 +22,17 @@ function formatBytes(bytes, decimals = 2) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
+function loadHistory(client, room) {
+  document.getElementById('chstatus').innerText = "Loading history......"
+  client.scrollback(room, 30, (_, room) => {
+    document.getElementById('chstatus').innerText = "";
+    console.log(room.timeline)
+    room.timeline.forEach((event) => {
+      addMessage(event.event, event.sender, false)
+    })
+  })
+}
+
 function startWithToken(access_token, user_id) {
   document.getElementById('chstatus').innerText = "Connecting....."
   const defaultRoom = document.getElementById('matrix-roomId').getAttribute('data-value')
@@ -38,17 +49,19 @@ function startWithToken(access_token, user_id) {
   client.once('sync', function (state) {
     if (state === 'PREPARED') {
       const rooms = client.getRooms()
-      document.getElementById('chstatus').innerText = "Loading history......"
+      let foundRoom = false
       rooms.forEach((room) => {
         if (room.roomId != defaultRoom) return;
-        client.scrollback(room, 30, (_, room) => {
-          document.getElementById('chstatus').innerText = "";
-          console.log(room.timeline)
-          room.timeline.forEach((event) => {
-            addMessage(event.event, event.sender, false)
-          })
-        })
+        foundRoom = room
       })
+      if(!foundRoom) {
+        document.getElementById('chstatus').innerText = "Making you join the chatroom >:("
+        client.joinRoom(this.props.roomId, {syncRoom: true}).then(() => {
+          loadHistory(client, foundRoom)
+        });
+      } else {
+        loadHistory(client, foundRoom)
+      }
       client.on("Room.timeline", function (event, room, toStartOfTimeline) {
         if (room.roomId != defaultRoom) return;
         if (toStartOfTimeline) return; // Handled by scrollback func

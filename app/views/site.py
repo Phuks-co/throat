@@ -13,6 +13,8 @@ bp = Blueprint('site', __name__)
 @bp.route('/chat')
 @login_required
 def chat():
+    if config.matrix.enabled:
+        return redirect(config.matrix.webchat_url)
     if config.site.enable_chat:
         return engine.get_template('chat.html').render(
             {'subOfTheDay': misc.getSubOfTheDay(),

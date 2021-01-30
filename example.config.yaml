@@ -344,3 +344,5 @@ matrix:
   homeserver: 'https://phuks.co'
   # Room ID of the room we'll show in the chatbox
   default_room: '!RBQNbVLNepzbeBbkpz:phuks.co'
+  # URL we will redirect users to when they try to use the bigger chat (/chat)
+  webchat_url: 'https://chat.phuks.co'
