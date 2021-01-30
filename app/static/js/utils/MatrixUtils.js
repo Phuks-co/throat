@@ -22,7 +22,7 @@ function formatBytes(bytes, decimals = 2) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-function loadHistory(room) {
+function loadHistory(client, room) {
   document.getElementById('chstatus').innerText = "Loading history......"
   client.scrollback(room, 30, (_, room) => {
     document.getElementById('chstatus').innerText = "";
@@ -56,11 +56,11 @@ function startWithToken(access_token, user_id) {
       })
       if(!foundRoom) {
         document.getElementById('chstatus').innerText = "Making you join the chatroom >:("
-        this.client.joinRoom(this.props.roomId, {syncRoom: true}).then(() => {
-          loadHistory(foundRoom)
+        client.joinRoom(this.props.roomId, {syncRoom: true}).then(() => {
+          loadHistory(client, foundRoom)
         });
       } else {
-        loadHistory(foundRoom)
+        loadHistory(client, foundRoom)
       }
       client.on("Room.timeline", function (event, room, toStartOfTimeline) {
         if (room.roomId != defaultRoom) return;
