@@ -1,6 +1,7 @@
 import sanitizeHtml from "sanitize-html";
 import u from "../Util";
 import anchorme from "anchorme";
+import _ from './I18n';
 
 const sdk = require('matrix-js-sdk');
 
@@ -163,38 +164,72 @@ function addMessage(message, sender, toStartOfTimeline, grayed) {
 
   const messageSender = document.createElement('span')
   messageSender.classList.add('msguser')
-  messageSender.innerHTML = sender.name + '>'
-  messageSender.title = sender.userId
-
   const messageContent = document.createElement('span')
   messageContent.classList.add('damsg')
-  switch (message.content.msgtype) {
-    case 'm.image':
-      const imgLink = document.createElement('a');
-      imgLink.href = homeServerUrl + '/_matrix/media/r0/download/' + message.content.url.replace('mxc://', '');
-      imgLink.innerText = message.content.body
-      imgLink.target = '_blank'
-      const imgDesc = document.createElement('span');
-      imgDesc.innerText = ` (${message.content.info.w}x${message.content.info.h}) ${formatBytes(message.content.info.size)}`
-      messageContent.appendChild(imgLink);
-      messageContent.appendChild(imgDesc);
+
+  switch(message.type) {
+    case 'm.room.message':
+      messageSender.innerHTML = sender.name + '>'
+      messageSender.title = sender.userId
+
+      switch (message.content.msgtype) {
+        case 'm.image':
+          const imgLink = document.createElement('a');
+          imgLink.href = homeServerUrl + '/_matrix/media/r0/download/' + message.content.url.replace('mxc://', '');
+          imgLink.innerText = message.content.body
+          imgLink.target = '_blank'
+          const imgDesc = document.createElement('span');
+          imgDesc.innerText = ` (${message.content.info.w}x${message.content.info.h}) ${formatBytes(message.content.info.size)}`
+          messageContent.appendChild(imgLink);
+          messageContent.appendChild(imgDesc);
+          break;
+        case 'm.emote':
+          messageSender.innerHTML = ' * ' + sender.name + ' ';
+          messageContent.innerText = message.content.body
+          break;
+        default:
+          messageContent.innerHTML = anchorme(escapeHtml(message.content.body), {
+            emails: false,
+            files: false,
+            attributes: [{name: "target", value: "blank"}]
+          })
+          if (message.content.format == 'org.matrix.custom.html') {
+            messageContent.innerHTML = bodyToHtml(message.content, {})
+          }
+      }
+      dMessage.appendChild(messageSender)
+      dMessage.appendChild(messageContent)
       break;
-    case 'm.emote':
+    case 'm.room.member':
       messageSender.innerHTML = ' * ' + sender.name + ' ';
-      messageContent.innerText = message.content.body
+      messageSender.title = sender.userId
+      switch (message.content.membership) {
+        case 'leave':
+          messageContent.innerText = _('left the room')
+          break;
+        case 'join':
+          messageContent.innerText = _('joined the room')
+          break;
+      }
+      dMessage.appendChild(messageSender)
+      dMessage.appendChild(messageContent)
+      break;
+    case 'm.room.redaction':
+      const deletedMessage = document.querySelector(`.msg[eventId="${message.redacts}"]`)
+      if(deletedMessage) {
+        deletedMessage.querySelector('.msguser').classList.add('gray')
+        deletedMessage.querySelector('.damsg').classList.add('gray')
+        deletedMessage.querySelector('.damsg').classList.add('irc-italic')
+        deletedMessage.querySelector('.damsg').innerHTML = _('message deleted')
+      }
       break;
     default:
-      messageContent.innerHTML = anchorme(escapeHtml(message.content.body), {
-        emails: false,
-        files: false,
-        attributes: [{name: "target", value: "blank"}]
-      })
-      if (message.content.format == 'org.matrix.custom.html') {
-        messageContent.innerHTML = bodyToHtml(message.content, {})
-      }
+      messageContent.innerText = '*Could not render this message*'
+      messageContent.classList.add('gray')
+      messageContent.classList.add('irc-italic')
+      dMessage.appendChild(messageContent)
+      console.warn("Could not render message:", message)
   }
-  dMessage.appendChild(messageSender)
-  dMessage.appendChild(messageContent)
 
   if (toStartOfTimeline) {
     cont.insertBefore(dMessage, cont.firstChild)
