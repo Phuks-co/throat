@@ -508,11 +508,11 @@ new Konami(function() {
   var d = new Date();
   d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); //365 days
   var expires = "expires=" + d.toGMTString();
-  document.getElementById('chpop').style.display='block'
-    document.cookie = "dayNight" + "=" + "dank" + "; " + expires + ";path=/";
-    document.getElementsByTagName('body')[0].classList.add('dark');
-    document.getElementsByTagName('body')[0].classList.add('dank');
-    document.querySelector('#toggledark span').innerHTML = icons.sun;
+  if(document.getElementById('chpop')) document.getElementById('chpop').style.display='block'
+  document.cookie = "dayNight" + "=" + "dank" + "; " + expires + ";path=/";
+  document.getElementsByTagName('body')[0].classList.add('dark');
+  document.getElementsByTagName('body')[0].classList.add('dank');
+  document.querySelector('#toggledark span').innerHTML = icons.sun;
 });
 
 u.ready(function () {
