@@ -87,44 +87,50 @@
           <div class="nsfw" alt="@{_('Not safe for work')}">@{_('NSFW')}</div>
         @end
 
-        @if post['flair']:
-          <span class="postflair">@{post['flair']!!e}</span>
-        @end
-
-        <span class="current history" data-id="0">
+        <div class="current history" data-id="0">
         @if post['link'] == None:
-          <h1><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}" class="title">
-            @if (post['visibility'] == ''):
-              @{post['title']}
-            @elif (post['visibility'] == 'admin-self-del'):
-              @{_('[Deleted by User]')} @{post['title']}
-            @elif (post['visibility'] == 'mod-self-del'):
-              @{_('[Deleted by User]')}
-            @elif (post['visibility'] == 'mod-del'):
-              @{_('[Deleted by Mod or Admin]')} @{post['title']}
-            @elif (post['visibility'] == 'none'):
-              @{_('[Deleted]')}
+          <h1>
+            @if post['flair']:
+              <span class="postflair">@{post['flair']!!e}</span>
             @end
-          </a></h1>
+            <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}" class="title">
+              @if (post['visibility'] == ''):
+                @{post['title']}
+              @elif (post['visibility'] == 'admin-self-del'):
+                @{_('[Deleted by User]')} @{post['title']}
+              @elif (post['visibility'] == 'mod-self-del'):
+                @{_('[Deleted by User]')}
+              @elif (post['visibility'] == 'mod-del'):
+                @{_('[Deleted by Mod or Admin]')} @{post['title']}
+              @elif (post['visibility'] == 'none'):
+                @{_('[Deleted]')}
+              @end
+            </a>
+          </h1>
         @else:
-          <h1><a rel="nofollow ugc @{(post['visibility'] == 'none') and 'noopener ' or ''}" href="@{(post['visibility'] != 'none') and post['link'] or '#'}" class="title">
-            @if (post['visibility'] == ''):
-              @{post['title']}
-            @elif (post['visibility'] == 'admin-self-del'):
-            @{_('[Deleted by User]')} @{post['title']}
-            @elif (post['visibility'] == 'mod-self-del'):
-              @{_('[Deleted by User]')}
-            @elif (post['visibility'] == 'mod-del'):
-              @{_('[Deleted by Mod or Admin]')} @{post['title']}
-            @elif (post['visibility'] == 'none'):
-              @{_('[Deleted]')}
+          <h1>
+            @if post['flair']:
+              <span class="postflair">@{post['flair']!!e}</span>
             @end
-          </a></h1>
+            <a rel="nofollow ugc @{(post['visibility'] == 'none') and 'noopener ' or ''}" href="@{(post['visibility'] != 'none') and post['link'] or '#'}" class="title">
+              @if (post['visibility'] == ''):
+                @{post['title']}
+              @elif (post['visibility'] == 'admin-self-del'):
+              @{_('[Deleted by User]')} @{post['title']}
+              @elif (post['visibility'] == 'mod-self-del'):
+                @{_('[Deleted by User]')}
+              @elif (post['visibility'] == 'mod-del'):
+                @{_('[Deleted by Mod or Admin]')} @{post['title']}
+              @elif (post['visibility'] == 'none'):
+                @{_('[Deleted]')}
+              @end
+            </a>
+          </h1>
           @if post['deleted'] == 0:
             <a href="/domain/@{func.getDomain(post['link'])}" class="domain">(@{func.getDomain(post['link'])})</a>
           @end
         @end
-        </span>
+        </div>
 
         @if title_history and (post['visibility'] != 'none' and  post['visibility'] != 'mod-self-del'):
             @for count, old_title in enumerate(title_history):
