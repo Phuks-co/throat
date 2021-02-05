@@ -1,4 +1,5 @@
 """ Store and serve uploads and thumbnails. """
+import io
 import os
 import tempfile
 import uuid
@@ -7,8 +8,9 @@ import pathlib
 import gevent
 import libcloud.storage.types
 import magic
+from PIL.Image import Exif
 from mutagen.mp4 import MP4
-from PIL import Image
+from PIL import Image, TiffImagePlugin
 from contextlib import ExitStack
 import hashlib
 import jinja2
@@ -130,7 +132,21 @@ def thumbnail_url(name):
 def clear_metadata(path: str, mime_type: str):
     if mime_type in ('image/jpeg', 'image/png'):
         image = Image.open(path)
-        image.save(path)
+        exifdata = Exif()
+        exifdata.load(image.info['exif'])
+        # XXX: We want to remove all EXIF data except orientation (tag 274) or people will start seeing
+        # rotated images...
+        # Also, Pillow can't encode EXIF data, so we have to do it manually
+        if exifdata.endian == "<":
+            head = b"II\x2A\x00\x08\x00\x00\x00"
+        else:
+            head = b"MM\x00\x2A\x00\x00\x00\x08"
+        ifd = TiffImagePlugin.ImageFileDirectory_v2(ifh=head)
+        for tag, value in exifdata.items():
+            if tag == 274:
+                ifd[tag] = value
+        newExif = b"Exif\x00\x00" + head + ifd.tobytes(8)
+        image.save(path, exif=newExif)
     elif mime_type == 'video/mp4':
         video = MP4(path)
         video.clear()
