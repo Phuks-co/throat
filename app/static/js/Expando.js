@@ -291,11 +291,3 @@ function confResizer(el, pnode, corner) {
     window.removeEventListener('mouseup', stopResize, false);
   }
 }
-
-/*
-panel.addEventListener("mousedown", function(e){
-  if (e.offsetX < BORDER_SIZE) {
-    m_pos = e.x;
-    document.addEventListener("mousemove", resize, false);
-  }
-}, false);*/

@@ -571,21 +571,6 @@ window.onbeforeunload = function (e) {
   }
 };
 
-u.addEventForChild(document, 'click', '#postcontent a,.commblock .content a', function(e, qelem){
-  var uri = qelem.getAttribute('href');
-  var m = qelem.parentNode.querySelector('img[src="' + uri + '"]');
-  if(uri.match(/\.(jpg|png|gif|jpeg)$/i)){
-    e.preventDefault();
-    if(!m){
-      var nn = document.createElement('img');
-      nn.src = uri;
-      nn.classList.add('alimg');
-      qelem.parentNode.insertBefore(nn, qelem.nextSibling);
-    }else{
-      m.parentNode.removeChild(m);
-    }
-  }
-})
 
 u.addEventForChild(document, 'click', 'img.alimg', function(e, qelem){
   qelem.parentNode.removeChild(qelem);
