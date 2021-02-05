@@ -930,7 +930,7 @@ a.slink {
   width: 82%;
 }
 
-#postflairs {
+.popup {
   width: 50%;
   position: absolute;
   top: 5em;
@@ -2613,4 +2613,12 @@ article.text-post.comment.deleted {
 
 .red {
   color: red
+}
+
+.small {
+  font-size: small
+}
+
+.smaller {
+  font-size: smaller
 }
