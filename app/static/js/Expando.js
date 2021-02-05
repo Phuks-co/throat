@@ -68,6 +68,31 @@ function close_expando( pid){
   document.querySelector('div.expando[data-pid="'+pid+'"] .expando-btn').innerHTML = icon[document.querySelector('div.expando[data-pid="'+pid+'"] .expando-btn').getAttribute('data-icon')];
 }
 
+function video_expando(link, expando) {
+  const vid = document.createElement( "video" );
+  vid.src = link;
+  vid.preload = 'auto';
+  vid.autoplay = true;
+  vid.loop = false;
+  vid.controls = true;
+  vid.innerHTML = document.createElement("source").src = link;
+  vid.style.width = "640px";
+  vid.style.height = "360px";
+
+  const handle = document.createElement('div');
+  handle.className = 'resize-handle';
+  handle.innerHTML = '<div class="i-icon" data-icon="resizeArrow"</div>';
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'expando-wrapper';
+  wrapper.appendChild(vid)
+  wrapper.appendChild(handle)
+  //wrapper.innerHTML = vid.outerHTML + handle.outerHTML;
+  expando.querySelector('.expandotxt').appendChild(wrapper);
+
+  resizer(expando.querySelector('.expandotxt video'), expando.querySelector('.expandotxt .resize-handle'), expando.querySelector('.expandotxt'))
+}
+
 u.addEventForChild(document, 'click', '.expando', function(e, ematch){
     var th=ematch;
 
@@ -134,49 +159,9 @@ u.addEventForChild(document, 'click', '.expando', function(e, ematch){
         confResizer(img, expando.querySelector('.expandotxt'));
         expando.querySelector('.expandotxt').appendChild(img);
       }else if (/\.(mp4|webm)$/i.test(link)) {
-        const vid = document.createElement( "video" );
-        vid.src = link;
-        vid.preload = 'auto';
-        vid.autoplay = true;
-        vid.loop = false;
-        vid.controls = true;
-        vid.innerHTML = document.createElement("source").src = link;
-        vid.style.width = "640px";
-        vid.style.height = "360px";
-
-        const handle = document.createElement('div');
-        handle.className = 'resize-handle';
-        handle.innerHTML = '<div class="i-icon" data-icon="resizeArrow"</div>';
-
-        const wrapper = document.createElement('div');
-        wrapper.className = 'expando-wrapper';
-        wrapper.appendChild(vid)
-        wrapper.appendChild(handle)
-        //wrapper.innerHTML = vid.outerHTML + handle.outerHTML;
-        expando.querySelector('.expandotxt').appendChild(wrapper);
-
-        resizer(expando.querySelector('.expandotxt video'), expando.querySelector('.expandotxt .resize-handle'), expando.querySelector('.expandotxt'))
+        video_expando(link, expando)
       }else if(domain == 'i.imgur.com' && /\.gifv$/i.test(link)){
-        const vidx = document.createElement( "video" );
-        vidx.src = 'https://i.imgur.com/' + imgurID(link) + '.mp4';
-        vidx.preload = 'auto';
-        vidx.autoplay = true;
-        vidx.loop = true;
-        vidx.controls = true;
-        vidx.innerHTML = document.createElement("source").src = 'https://i.imgur.com/' + imgurID(link) + '.mp4';
-        vidx.style.width = "640px";
-        vidx.style.height = "360px";
-
-        const handle = document.createElement('div');
-        handle.className = 'resize-handle';
-        handle.innerHTML = '<div class="i-icon" data-icon="resizeArrow"</div>';
-
-        const wrapper = document.createElement('div');
-        wrapper.className = 'expando-wrapper';
-        wrapper.innerHTML = vidx.outerHTML + handle.outerHTML;
-        expando.querySelector('.expandotxt').appendChild(wrapper);
-
-        resizer(expando.querySelector('.expandotxt video'), expando.querySelector('.expandotxt .resize-handle'), expando.querySelector('.expandotxt'))
+        video_expando('https://i.imgur.com/' + imgurID(link) + '.mp4', expando)
       }
     }
     th.querySelector('.expando-btn').innerHTML = icon.close;
