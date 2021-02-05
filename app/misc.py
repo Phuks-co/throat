@@ -384,7 +384,7 @@ class PhuksDown(m.SaferHtmlRenderer):
         if self.check_url(raw_url):
             url = self.rewrite_url(('mailto:' if is_email else '') + raw_url)
             url = m.escape_html(url)
-            return '<a href="%s" rel="noopener nofollow ugc">%s</a>' % (url, m.escape_html(raw_url))
+            return '<a href="%s" rel="noopener nofollow ugc" target="_blank">%s</a>' % (url, m.escape_html(raw_url))
         else:
             return m.escape_html('<%s>' % raw_url)
 
@@ -395,7 +395,7 @@ class PhuksDown(m.SaferHtmlRenderer):
             url = self.rewrite_url(raw_url)
             maybe_title = ' title="%s"' % m.escape_html(title) if title else ''
             url = m.escape_html(url)
-            return ('<a rel="noopener nofollow ugc" href="%s"%s>' % (url, maybe_title)) + content + '</a>'
+            return ('<a rel="noopener nofollow ugc" target="_blank" href="%s"%s>' % (url, maybe_title)) + content + '</a>'
         else:
             return m.escape_html("[%s](%s)" % (content, raw_url))
 
