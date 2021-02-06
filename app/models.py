@@ -705,6 +705,32 @@ class SubBan(BaseModel):
         table_name = "sub_ban"
 
 
+class SubUserFlairChoice(BaseModel):
+    """
+    Stores possible user flair choces for a sub
+    """
+    sub = ForeignKeyField(db_column='sid', model=Sub, field='sid')
+    flair = CharField(null=False, max_length=25)
+
+    class Meta:
+        table_name = "sub_user_flair_choice"
+
+
+class SubUserFlair(BaseModel):
+    """
+    Stores flairs assigned to users in a Sub
+    """
+    user = ForeignKeyField(db_column='uid', model=User, field='uid')
+    sub = ForeignKeyField(db_column='sid', model=Sub, field='sid')
+
+    flair = CharField(null=False, max_length=25)
+
+    flair_choice = ForeignKeyField(model=SubUserFlairChoice, null=True)
+
+    class Meta:
+        table_name = "sub_user_flair"
+
+
 class InviteCode(BaseModel):
     user = ForeignKeyField(db_column='uid', model=User, field='uid')
 

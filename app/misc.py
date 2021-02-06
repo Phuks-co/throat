@@ -1,5 +1,5 @@
 """ Misc helper function and classes. """
-from urllib.parse import urlparse, parse_qs, urljoin
+from urllib.parse import urlparse, parse_qs
 import json
 import math
 import base64
@@ -34,8 +34,8 @@ from .caching import cache
 from .socketio import socketio
 from .badges import badges
 
-from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata, SubRule
-from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db
+from .models import Sub, SubPost, User, SiteMetadata, SubSubscriber, Message, UserMetadata, SubRule, SubUserFlair
+from .models import SubPostVote, SubPostComment, SubPostCommentVote, SiteLog, SubLog, db, SubUserFlairChoice
 from .models import SubPostReport, SubPostCommentReport, PostReportLog, CommentReportLog, Notification
 from .models import SubMetadata, rconn, SubStylesheet, UserIgnores, SubUploads, SubFlair, InviteCode
 from .models import SubMod, SubBan, SubPostCommentHistory, SubPostMetadata
@@ -48,7 +48,7 @@ from werkzeug.local import LocalProxy
 
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
-from wheezy.template.loader import FileLoader, autoreload
+from wheezy.template.loader import FileLoader
 
 # Regex that matches VALID user and sub names
 allowedNames = re.compile("^[a-zA-ZÀ-ž0-9_-]+$")
@@ -754,21 +754,25 @@ def getSinglePost(pid):
         posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
                                SubPost.score, SubPost.upvotes, SubPost.downvotes, SubPost.distinguish,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
-                               SubPost.flair, SubPost.edited,
-                               SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'),
-                               SubPost.deleted, SubPost.ptype)
+                               SubPost.flair, SubPost.edited, SubPost.comments, SubPostVote.positive,
+                               User.uid, User.status.alias('userstatus'), SubPost.deleted, SubPost.ptype,
+                               SubUserFlair.flair.alias('user_flair'),
+                               SubUserFlair.flair_choice.alias('user_flair_id'))
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER,
-                           on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(
-            SubPost)
+                           on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid)))\
+            .switch(SubPost)
     else:
         posts = SubPost.select(SubPost.nsfw, SubPost.sid, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
                                SubPost.score, SubPost.upvotes, SubPost.downvotes, SubPost.distinguish,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.flair, SubPost.edited,
                                SubPost.comments, User.uid, User.status.alias('userstatus'), SubPost.deleted,
-                               SubPost.ptype)
-    posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER).where(
-        SubPost.pid == pid).dicts().get()
+                               SubPost.ptype, SubUserFlair.flair.alias('user_flair'),
+                               SubUserFlair.flair_choice.alias('user_flair_id'))
+    posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost)\
+        .join(Sub, JOIN.LEFT_OUTER) \
+        .join(SubUserFlair, JOIN.LEFT_OUTER, on=((SubUserFlair.sub == Sub.sid) & (SubUserFlair.user == SubPost.uid)))\
+        .where(SubPost.pid == pid).dicts().get()
     posts['slug'] = slugify(posts['title'])
     return posts
 
@@ -785,7 +789,9 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False,
                                SubPost.flair, SubPost.edited, Sub.sid,
                                SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'),
                                *extra, *([reports.c.open_report_id, reports.c.open_reports] if isSubMod else [
-                                          Value(None).alias('open_report_id'), Value(None).alias('open_reports')]))
+                                          Value(None).alias('open_report_id'), Value(None).alias('open_reports')]),
+                               SubUserFlair.flair.alias('user_flair'),
+                               SubUserFlair.flair_choice.alias('user_flair_id'))
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER,
                            on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid))).switch(
             SubPost)
@@ -798,8 +804,11 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.flair, SubPost.edited, Sub.sid,
                                SubPost.comments, User.uid, User.status.alias('userstatus'), *extra,
-                               Value(None).alias('open_report_id'), Value(None).alias('open_reports'))
-    posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
+                               Value(None).alias('open_report_id'), Value(None).alias('open_reports'),
+                               SubUserFlair.flair.alias('user_flair'),
+                               SubUserFlair.flair_choice.alias('user_flair_id'))
+    posts = posts.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)\
+        .join(SubUserFlair, JOIN.LEFT_OUTER, on=((SubUserFlair.sub == Sub.sid) & (SubUserFlair.user == SubPost.uid)))
     if not adminDetail:
         posts = posts.where(SubPost.deleted == 0)
     if not noAllFilter and not nofilter:
@@ -1598,8 +1607,12 @@ def get_comment_tree(pid, sid, comments, root=None, only_after=None, uid=None, p
                                      User.name.alias('user'),
                                      *([SubPostCommentVote.positive, SubPostComment.uid] if uid else [
                                          SubPostComment.uid]),  # silly hack
-                                     User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)
-    expcomms = expcomms.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
+                                     User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes,
+                                     SubUserFlair.flair.alias('user_flair'),
+                                     SubUserFlair.flair_choice.alias('user_flair_id'))
+    # TODO: Add a `sid` field to SubPostComment to simplify queries
+    expcomms = expcomms.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment).join(SubPost).join(Sub)\
+        .join(SubUserFlair, JOIN.LEFT_OUTER, on=(SubUserFlair.sub == Sub.sid) & (SubUserFlair.user == User.uid))
     if uid:
         expcomms = expcomms.join(SubPostCommentVote, JOIN.LEFT_OUTER,
                                  on=((SubPostCommentVote.uid == uid) & (SubPostCommentVote.cid == SubPostComment.cid)))
@@ -2110,3 +2123,19 @@ def recent_activity(sidebar=True):
 
 
 logger = LocalProxy(lambda: current_app.logger)
+
+
+@cache.memoize(60)
+def get_user_flair(sid, uid):
+    try:
+        user_flair = SubUserFlair.get((SubUserFlair.user == uid) & (SubUserFlair.sub == sid))
+        return user_flair.flair
+    except SubUserFlair.DoesNotExist:
+        return ''
+
+
+@cache.memoize(600)
+def get_sub_flair_choices(sid):
+    choices = SubUserFlairChoice.select(SubUserFlairChoice.id, SubUserFlairChoice.flair)\
+        .where(SubUserFlairChoice.sid == sid).dicts()
+    return list(choices)

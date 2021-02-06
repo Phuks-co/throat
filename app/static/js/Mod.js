@@ -84,3 +84,12 @@ u.addEventForChild(document, 'click', '.close-related-reports', function (e, qel
       });
   }
 });
+
+
+u.addEventForChild(document, 'change', '#flair_id', function (e, qelem) {
+  if(qelem.value == '-1') {
+    document.querySelector('#assign_flair_form #text').classList.remove('hide')
+  } else {
+    document.querySelector('#assign_flair_form #text').classList.add('hide')
+  }
+});

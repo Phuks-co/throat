@@ -31,18 +31,56 @@
 <div class="subs">@{_('%(subs)i subscribers', subs=sub['subscribers'])}</div>
 
 @if current_user.is_authenticated:
-    <div role="group" class="pure-button-group" data-sid="@{sub['sid']}">
-        @if current_user.has_subscribed(sub['name']):
-            <button data-ac="unsubscribe" class="sub button-secondary pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>@{_('Subscribed')}</button>
-        @else:
-            <button data-ac="subscribe" class="unsub button-secondary pure-button button-xsmall"><span class="sbm-icon" data-icon="add"></span>@{_('Subscribe')}</button>
+  <div class="flairsettings">
+    @{_("Your flair:")}
+    <a class="user" href="/u/@{current_user.name}">@{current_user.name}</a>
+    @if func.get_user_flair(sub['sid'], current_user.uid):
+      <span class="user_flair">@{func.get_user_flair(sub['sid'], current_user.uid)!!e}</span>
+    @end
+    @if subInfo.get('user_can_flair_self'):
+      <a href="#" id="change_user_flair" class="small">@{_("(change)")}</a>
+    @end
+  </div>
+
+  <div role="group" class="pure-button-group" data-sid="@{sub['sid']}">
+    @if current_user.has_subscribed(sub['name']):
+      <button data-ac="unsubscribe" class="sub button-secondary pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>@{_('Subscribed')}</button>
+    @else:
+      <button data-ac="subscribe" class="unsub button-secondary pure-button button-xsmall"><span class="sbm-icon" data-icon="add"></span>@{_('Subscribe')}</button>
+    @end
+    @if current_user.has_blocked(sub['sid']):
+      <button data-ac="unblock" class="blk button-warning pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>@{_('Blocked')}</button>
+    @else:
+      <button data-ac="block" class="unblk button-warning pure-button button-xsmall"><span class="sbm-icon" data-icon="close"></span>@{_('Block')}</button>
+    @end
+  </div>
+
+  @if subInfo.get('user_can_flair_self'):
+    <div style="display:none;" id="userflair" class="popup">
+      <span class="closemsg">×</span>
+      <h3>@{_("Set user flair")}</h3>
+      @if subInfo.get('freeform_user_flairs'):
+        <form method="POST" class="ajaxform pure-form" data-reload="true" action="@{url_for('do.set_user_flair_text', sub=sub['name'])}">
+          <div class="alert div-error"></div>
+          @{ form.SetOwnUserFlairForm().csrf_token() !!html}
+          <input type="text" name="flair" placeholder="Write down your flair here" maxlength="16" required />
+          <button class="pure-button">Change flair</button>
+        </form>
+      @end
+      @if func.get_sub_flair_choices(sub['sid']):
+        <hr/>
+        @if subInfo.get('freeform_user_flairs'):
+          <div>... or pick a pre-defined one</div>
         @end
-        @if current_user.has_blocked(sub['sid']):
-            <button data-ac="unblock" class="blk button-warning pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>@{_('Blocked')}</button>
-        @else:
-            <button data-ac="block" class="unblk button-warning pure-button button-xsmall"><span class="sbm-icon" data-icon="close"></span>@{_('Block')}</button>
+        @for ll in func.get_sub_flair_choices(sub['sid']):
+          <span class="selflair" data-sub="@{sub['name']}" data-flair="@{ll['id']}">@{ll['flair']!!e}</span>
         @end
+      @end
+      <form method="POST" class="ajaxform" data-reload="true" action="@{url_for('do.delete_user_own_flair', sub=sub['name'])}">
+        <button class="pure-button button-error body_admin">Delete my flair</button>
+      </form>
     </div>
+  @end
 @end
 <hr>
 @if sub['sidebar'] != '':

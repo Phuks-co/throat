@@ -552,7 +552,7 @@ span#notification.fade {
 
 /*  UPLOADER STYLES  */
 
-.hide, #upload-input, #pbar, #filetable {
+.hide, #upload-input, #pbar, #filetable, .pure-form input[type="text"].hide {
   display: none;
 }
 
@@ -982,6 +982,16 @@ a.slink {
   font-size: small;
 }
 
+.user_flair {
+  border: 1px solid #aaa;
+  border-radius: 2px;
+  background-color: #eee;
+  padding: 3px;
+  line-height: 1.4em;
+  white-space: nowrap;
+  color: #111;
+}
+
 .selflair:hover {
   background-color: #d5d5d5;
 }
@@ -1100,6 +1110,7 @@ a.slink {
 
 .button-error {
   background: rgb(202, 60, 60);
+  color: white;
   /* this is a maroon */
 }
 

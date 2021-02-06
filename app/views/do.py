@@ -24,12 +24,14 @@ from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountF
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost
 from ..forms import SearchForm, EditMod2Form, SetSubOfTheDayForm
-from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNote
+from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNote, SetOwnUserFlairForm, \
+    AssignSubUserFlair
 from ..forms import UseInviteCodeForm, SecurityQuestionForm, DistinguishForm
 from ..badges import badges
 from ..misc import cache, send_email, allowedNames, get_errors, engine, ensure_locale_loaded
 from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, is_domain_banned
-from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved
+from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved, SubUserFlair, \
+    SubUserFlairChoice
 from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
 from ..models import SubPostVote, SubPostCommentVote, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport, SubRule
@@ -365,6 +367,8 @@ def edit_sub(sub):
 
             sub.update_metadata('restricted', form.restricted.data)
             sub.update_metadata('ucf', form.usercanflair.data)
+            sub.update_metadata('user_can_flair_self', form.user_can_flair_self.data)
+            sub.update_metadata('freeform_user_flairs', form.freeform_user_flairs.data)
             sub.update_metadata('allow_text_posts', form.allow_text_posts.data)
             sub.update_metadata('allow_link_posts', form.allow_link_posts.data)
             sub.update_metadata('allow_upload_posts', form.allow_upload_posts.data)
@@ -386,6 +390,142 @@ def edit_sub(sub):
         return jsonify(status="error", error=get_errors(form))
     else:
         abort(403)
+
+
+@do.route("/do/mod_set_flair/<sub>", methods=['POST'])
+@login_required
+def mod_assign_flair(sub):
+    try:
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=[_("Sub does not exist")])
+
+    if not current_user.is_mod(sub.sid) and not current_user.is_admin():
+        return jsonify(status='error', error=[_("Not authorized")])
+
+    form = AssignSubUserFlair()
+    flairs = SubUserFlairChoice.select().where(SubUserFlairChoice.sub == sub.sid)
+    for flair in flairs:
+        form.flair_id.choices.append((flair.id, flair.flair))
+
+    if not form.validate():
+        return jsonify(status="error", error=get_errors(form))
+
+    if form.flair_id.data == '-1' and not form.text.data:
+        return jsonify(status='error', error=[_("No flair text")])
+
+    try:
+        user = User.get((User.name == form.user.data) & (User.status != 10))
+    except User.DoesNotExist:
+        return jsonify(status='error', error=[_("User does not exist")])
+
+    try:
+        user_flair = SubUserFlair.get((SubUserFlair.user == user.uid) & (SubUserFlair.sub == sub.sid))
+    except SubUserFlair.DoesNotExist:
+        if form.flair_id.data == '-2':
+            return jsonify(status='ok')
+        user_flair = SubUserFlair(sub=sub, user=user.uid)
+
+    if form.flair_id.data == '-2':
+        user_flair.delete_instance()
+    elif form.flair_id.data == '-1':
+        user_flair.flair = form.text.data
+        user_flair.flair_choice = None
+    else:
+        try:
+            flair_choice = SubUserFlairChoice.get(
+                (SubUserFlairChoice.sub == sub.sid) & (SubUserFlairChoice.id == form.flair_id.data))
+        except SubUserFlairChoice.DoesNotExist:
+            return jsonify(status='error', error=[_("Flair does not exist")])
+        user_flair.flair = flair_choice.flair
+        user_flair.flair_choice = flair_choice.id
+
+    user_flair.save()
+    cache.delete_memoized(misc.get_user_flair, sub.sid, current_user.uid)
+    return jsonify(status='ok')
+
+
+@do.route("/do/set_user_flair_text/<sub>", methods=['POST'])
+@login_required
+def set_user_flair_text(sub):
+    try:
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=[_("Sub does not exist")])
+
+    form = SetOwnUserFlairForm()
+
+    if not form.validate():
+        return jsonify(status="error", error=get_errors(form))
+
+    flair = form.flair.data.strip()
+    sub_info = misc.getSubData(sub.sid)
+
+    if not sub_info.get('freeform_user_flairs'):
+        return jsonify(status='error', error=[_("Free-form user flairs are disabled for this sub")])
+
+    try:
+        user_flair = SubUserFlair.get((SubUserFlair.user == current_user.uid) & (SubUserFlair.sub == sub.sid))
+    except SubUserFlair.DoesNotExist:
+        user_flair = SubUserFlair(sub=sub, user=current_user.uid)
+
+    user_flair.flair = flair
+    user_flair.flair_choice = None
+    user_flair.save()
+    cache.delete_memoized(misc.get_user_flair, sub.sid, current_user.uid)
+    return jsonify(status="ok")
+
+
+@do.route("/do/user_flair/<sub>/<flair_id>", methods=['POST'])
+@login_required
+def set_user_flair_choice(sub, flair_id):
+    try:
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=[_("Sub does not exist")])
+
+    sub_info = misc.getSubData(sub.sid)
+
+    if not sub_info.get('user_can_flair_self') and not current_user.is_mod(sub.sid):
+        return jsonify(status='error', error=[_("Not authorized")])
+
+    try:
+        flair_choice = SubUserFlairChoice.get((SubUserFlairChoice.sub == sub.sid) & (SubUserFlairChoice.id == flair_id))
+    except SubUserFlairChoice.DoesNotExist:
+        return jsonify(status='error', error=[_("Flair does not exist")])
+
+    try:
+        user_flair = SubUserFlair.get((SubUserFlair.user == current_user.uid) & (SubUserFlair.sub == sub.sid))
+    except SubUserFlair.DoesNotExist:
+        user_flair = SubUserFlair(sub=sub, user=current_user.uid)
+
+    user_flair.flair = flair_choice.flair
+    user_flair.flair_choice = flair_choice.id
+    user_flair.save()
+    cache.delete_memoized(misc.get_user_flair, sub.sid, current_user.uid)
+    return jsonify(status="ok")
+
+
+@do.route("/do/delete_user_flair/<sub>", methods=['POST'])
+@login_required
+def delete_user_own_flair(sub):
+    try:
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=[_("Sub does not exist")])
+
+    sub_info = misc.getSubData(sub.sid)
+
+    if not sub_info.get('freeform_user_flairs') and not sub_info.get('user_can_flair_self'):
+        return jsonify(status='error', error=[_("Not authorized")])
+
+    try:
+        user_flair = SubUserFlair.get((SubUserFlair.user == current_user.uid) & (SubUserFlair.sub == sub.sid))
+        user_flair.delete_instance()
+    except SubUserFlair.DoesNotExist:
+        pass
+    cache.delete_memoized(misc.get_user_flair, sub.sid, current_user.uid)
+    return jsonify(status="ok")
 
 
 @do.route("/do/flair/<sub>/<pid>/<fl>", methods=['POST'])
@@ -1749,6 +1889,52 @@ def toggle_wikipost(post):
 
         cache.delete_memoized(misc.getWikiPid, post.sid_id)
     return jsonify(status='ok')
+
+
+@do.route("/do/flair/<sub>/delete_user", methods=['POST'])
+@login_required
+def delete_user_flair(sub):
+    """ Removes a flair (from edit flair page) """
+    try:
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+    except Sub.DoesNotExist:
+        return jsonify(status='error', error=[_('Sub does not exist')])
+
+    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
+        abort(403)
+
+    form = DeleteSubFlair()
+    if form.validate():
+        try:
+            flair = SubUserFlairChoice.get(
+                (SubUserFlairChoice.sid == sub.sid) & (SubUserFlairChoice.id == form.flair.data))
+        except SubFlair.DoesNotExist:
+            return jsonify(status='error', error=[_('Flair does not exist')])
+
+        flair.delete_instance()
+        cache.delete_memoized(misc.get_sub_flair_choices, sub.sid)
+        return jsonify(status='ok')
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
+
+
+@do.route("/do/flair/<sub>/create_user", methods=['POST'])
+@login_required
+def create_user_flair(sub):
+    """ Creates a new flair (from edit flair page) """
+    try:
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+    except Sub.DoesNotExist:
+        abort(404)
+
+    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
+        abort(403)
+
+    form = CreateSubFlair()
+    if form.validate():
+        SubUserFlairChoice.create(sid=sub.sid, flair=form.text.data)
+        cache.delete_memoized(misc.get_sub_flair_choices, sub.sid)
+        return jsonify(status='ok')
+    return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 
 @do.route("/do/flair/<sub>/delete", methods=['POST'])
