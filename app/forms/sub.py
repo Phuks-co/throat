@@ -55,7 +55,20 @@ class CreateSubFlair(FlaskForm):
 class EditSubFlair(FlaskForm):
     """ Edits ONE flair from a sub """
     flair = HiddenField()
-    text = StringField(_l('Flair text'), validators=[DataRequired(), Length(max=22)])
+    text = StringField(_l('Flair text'), validators=[DataRequired(), Length(max=25)])
+
+
+class EditSubUserFlair(FlaskForm):
+    flair = HiddenField()
+    user = StringField(_l('Username'), validators=[DataRequired()])
+    text = StringField(_l('Flair text'), validators=[DataRequired(), Length(max=25)])
+
+
+class AssignSubUserFlair(FlaskForm):
+    flair = HiddenField()
+    user = StringField(_l('Username'), validators=[DataRequired()])
+    flair_id = SelectField(_l('Flair'), choices=[('', _l('Pick one')), (-1, _l('Custom')), (-2, _l('Remove flair'))], validators=[DataRequired()])
+    text = StringField(_l('Flair text'), validators=[Length(max=25)])
 
 
 class DeleteSubFlair(FlaskForm):
@@ -87,6 +100,8 @@ class EditSubForm(FlaskForm):
     nsfw = BooleanField(_l('Sub is NSFW'))
     restricted = BooleanField(_l('Only mods can post'))
     usercanflair = BooleanField(_l('Allow users to flair their own posts'))
+    user_can_flair_self = BooleanField(_l('Allow users to set their own user flairs'))
+    freeform_user_flairs = BooleanField(_l('Allow free-form user flairs (disables pre-defined flairs)'))
     allow_text_posts = BooleanField(_l('Enable text posts'))
     allow_link_posts = BooleanField(_l('Enable link posts'))
     allow_upload_posts = BooleanField(_l('Enable upload posts'))
@@ -98,6 +113,10 @@ class EditSubForm(FlaskForm):
     sidebar = TextAreaField(_l('Sidebar text'), validators=[Length(max=8000)])
     sublogprivate = BooleanField(_l('Make the sub log private'))
     subbannedusersprivate = BooleanField(_l('Make the list of banned users on this sub private'))
+
+
+class SetOwnUserFlairForm(FlaskForm):
+    flair = StringField(validators=[Length(min=1, max=25)])
 
 
 class EditMod2Form(FlaskForm):

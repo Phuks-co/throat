@@ -269,3 +269,23 @@ if(sa){
     emptyMsg: _('No subs found')
   });
 }
+
+u.sub('#change_user_flair', 'click', function(e) {
+  e.preventDefault()
+  document.getElementById('userflair').style.display = 'block';
+})
+
+u.sub('#userflair .selflair', 'click', function () {
+    const flair = this.getAttribute('data-flair');
+    const nsub = this.getAttribute('data-sub'), tg = this;
+    u.post('/do/user_flair/' + nsub + '/' + flair, {},
+        function (data) {
+            if (data.status != "ok") {
+                tg.parentNode.innerHTML = _('Error: %1', data.error);
+            } else {
+                tg.parentNode.innerHTML = _('Done!');
+                document.location.reload();
+            }
+        }
+    );
+});

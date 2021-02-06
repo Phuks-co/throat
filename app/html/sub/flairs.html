@@ -13,20 +13,19 @@
   @end
   <div id="center-container">
     <div class="content mw-75">
-      <h1>@{_('Editing flairs of <a href="%(url)s">%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), sub=config.site.sub_prefix + "/" + sub.name)!!html}</h1>
+      <h1>@{_('Editing post flairs of <a href="%(url)s">%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), sub=config.site.sub_prefix + "/" + sub.name)!!html}</h1>
       <div class="col-12 admin-page-form">
         <form  method="POST" class="ajaxform pure-form" action="@{url_for('do.create_flair', sub=sub.name)}" data-reload="true">
-          <h4>@{_('Create new flair')}</h4>
+          <h4>@{_('Create new post flair')}</h4>
           @{createflair.csrf_token()!!html}
-          @{createflair.text(placeholder=_("Flair text"))!!html}
+          @{createflair.text(placeholder=_("Flair text", maxlength="25"))!!html}
           <button type="submit" class="pure-button pure-button-primary" id="editsub-btnsubmit" data-prog="@{_('Saving...')}" data-success="@{_('Saved!')}">@{_('Add flair')}</button>
           <div class="alert div-error"></div>
         </form>
       </div>
 
       @if flairs:
-      <hr>
-      <h4>@{_('Flairs')}</h4>
+      <hr/>
       <div class="col-12 admin-page-form">
         <ul>
           @for flair in flairs:

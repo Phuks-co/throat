@@ -1,7 +1,8 @@
 @def render_sidebar(curr_endpoint, sub):
 <div class="row buttons inboxside">
   <div><a class="sbm-post pure-button @{curr_endpoint=='settings' and 'button-secondary' or ''}" href="@{ url_for('sub.edit_sub', sub=sub) }">@{_('Settings')}</a></div>
-  <div><a class="sbm-post pure-button @{curr_endpoint=='flairs' and 'button-secondary' or ''}" href="@{ url_for('sub.edit_sub_flairs', sub=sub) }">@{_('Flairs')}</a></div>
+  <div><a class="sbm-post pure-button @{curr_endpoint=='flairs' and 'button-secondary' or ''}" href="@{ url_for('sub.edit_sub_flairs', sub=sub) }">@{_('Post flairs')}</a></div>
+  <div><a class="sbm-post pure-button @{curr_endpoint=='user_flairs' and 'button-secondary' or ''}" href="@{ url_for('sub.edit_sub_user_flairs', sub=sub) }">@{_('User flairs')}</a></div>
   <div><a class="sbm-post pure-button @{curr_endpoint=='rules' and 'button-secondary' or ''}" href="@{ url_for('sub.edit_sub_rules', sub=sub) }">@{_('Rules')}</a></div>
   <div><a class="sbm-post pure-button @{curr_endpoint=='stylesheet' and 'button-secondary' or ''}" href="@{ url_for('sub.edit_sub_css', sub=sub) }">@{_('Stylesheet')}</a></div>
   <hr/>

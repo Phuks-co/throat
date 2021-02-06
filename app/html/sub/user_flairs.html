@@ -1,0 +1,58 @@
+@extends("shared/layout.html")
+@require(sub, flairs, createflair, assignflair)
+
+@import 'shared/sidebar/sub_mod.html' as sb
+@def sidebar():
+  @{sb.render_sidebar('user_flairs', sub=sub.name)!!html}
+@end
+
+@def main():
+  @#
+  @if not current_user.is_mod(sub.sid, 1) and current_user.is_admin():
+    <div class="important"><h3>@{_('Editing as Admin')}</h3></div>
+  @end
+  <div id="center-container">
+    <div class="content mw-75">
+      <h1>@{_('Editing user flairs of <a href="%(url)s">%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), sub=config.site.sub_prefix + "/" + sub.name)!!html}</h1>
+      <div class="col-12 admin-page-form">
+        <form method="POST" class="ajaxform pure-form" action="@{url_for('do.mod_assign_flair', sub=sub.name)}" data-reload="true" id="assign_flair_form">
+          <h4>Assign flair to user</h4>
+          <div class="alert div-error"></div>
+          @{assignflair.csrf_token()!!html}
+          @{assignflair.user(placeholder=_("User"))!!html}
+
+          @{assignflair.flair_id(placeholder=_("Flair"))!!html}
+          @{assignflair.text(placeholder=_("Flair text"), class_="hide", maxlength="25")!!html}
+
+          <button type="submit" class="pure-button pure-button-primary" id="editsub-btnsubmit" data-prog="@{_('Saving...')}" data-success="@{_('Saved!')}">@{_('Assign flair')}</button>
+        </form>
+      </div>
+      <div class="col-12 admin-page-form">
+        <form method="POST" class="ajaxform pure-form" action="@{url_for('do.create_user_flair', sub=sub.name)}" data-reload="true">
+          <h4>@{_('Create new user flair')}</h4>
+          @{createflair.csrf_token()!!html}
+          @{createflair.text(placeholder=_("Flair text", maxlength="25"))!!html}
+          <button type="submit" class="pure-button pure-button-primary" id="editsub-btnsubmit" data-prog="@{_('Saving...')}" data-success="@{_('Saved!')}">@{_('Add flair')}</button>
+          <div class="alert div-error"></div>
+        </form>
+      </div>
+
+      @if flairs:
+      <hr/>
+      <div class="col-12 admin-page-form">
+        <ul>
+          @for flair in flairs:
+            <li>
+              <span class="postflair">@{flair.text.data}</span>
+              <form  method="POST" data-reload="true" action="@{url_for('do.delete_user_flair', sub=sub.name)}" class="ajaxform st-flair">
+                @{flair.csrf_token()!!html}
+                @{flair.flair!!html}
+                <button type="submit" class="pure-button button-xsmall" id="editsub-btnsubmit" data-prog="@{_('Deleting...')}" data-success="@{_('Deleted!')}">@{_('Delete')}</button>
+              </form>
+          @end
+        </ul>
+      </div>
+    @end
+    </div>
+  </div>
+@end

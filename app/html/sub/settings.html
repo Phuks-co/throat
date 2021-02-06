@@ -44,6 +44,20 @@
         </div>
 
         <div class="pure-control-group">
+          <label for="user_can_flair_self" class="pure-checkbox">
+            @{editsubform.user_can_flair_self(checked=True if metadata.get('user_can_flair_self') else False)!!html}
+            @{editsubform.user_can_flair_self.label.text}
+          </label>
+        </div>
+
+        <div class="pure-control-group">
+          <label for="freeform_user_flairs" class="pure-checkbox">
+            @{editsubform.freeform_user_flairs(checked=True if metadata.get('freeform_user_flairs') else False)!!html}
+            @{editsubform.freeform_user_flairs.label.text}
+          </label>
+        </div>
+
+        <div class="pure-control-group">
           <label for="allow_text_posts" class="pure-checkbox">
             @{editsubform.allow_text_posts(checked=True if metadata.get('allow_text_posts') else False)!!html}
             @{editsubform.allow_text_posts.label.text}

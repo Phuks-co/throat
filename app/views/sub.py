@@ -7,11 +7,12 @@ from feedgen.feed import FeedGenerator
 from peewee import fn, JOIN
 from ..config import config
 from ..misc import engine
-from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption
+from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption, \
+    SubUserFlairChoice, SubUserFlair
 from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, UserSaved, SubMod, SubBan, SubRule
 from ..models import SubPostContentHistory, SubPostTitleHistory, SubPostReport
 from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditMod2Form, EditSubRule
-from ..forms import BanUserSubForm, CreateSubFlair, PostComment, CreateSubRule
+from ..forms import BanUserSubForm, CreateSubFlair, PostComment, CreateSubRule, EditSubUserFlair, AssignSubUserFlair
 from .. import misc
 
 
@@ -90,6 +91,38 @@ def edit_sub_flairs(sub):
         formflairs.append(EditSubFlair(flair=flair['xid'], text=flair['text']))
 
     return engine.get_template('sub/flairs.html').render({'sub': sub, 'flairs': formflairs, 'createflair': CreateSubFlair()})
+
+
+@blueprint.route("/<sub>/edit/user_flairs")
+@login_required
+def edit_sub_user_flairs(sub):
+    """ Here we manage user flairs """
+    try:
+        sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
+    except Sub.DoesNotExist:
+        abort(404)
+
+    if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
+        abort(403)
+
+    flairs = SubUserFlairChoice.select().where(SubUserFlairChoice.sub == sub.sid)
+    # assigned_flairs = SubUserFlair.select(SubUserFlair.flair_choice, SubUserFlair.flair, User.name)\
+    #     .join(User).where(SubUserFlair.sub == sub.sid).dicts()
+
+    assignflair = AssignSubUserFlair()
+
+    formflairs = []
+    for flair in flairs:
+        formflairs.append(EditSubFlair(flair=flair.id, text=flair.flair))
+        assignflair.flair_id.choices.append((flair.id, flair.flair))
+
+    # formuserflairs = []
+    # for flair in assigned_flairs:
+    #     formuserflairs.append(EditSubUserFlair(flair=flair['flair_choice'], text=flair['flair'], user=flair['name']))
+
+    return engine.get_template('sub/user_flairs.html').render(
+        {'sub': sub, 'flairs': formflairs, 'createflair': CreateSubFlair(),  # 'assigned_flairs': formuserflairs,
+         'assignflair': assignflair})
 
 
 @blueprint.route("/<sub>/edit/rules")
