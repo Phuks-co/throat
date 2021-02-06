@@ -441,6 +441,7 @@ def mod_assign_flair(sub):
         user_flair.flair_choice = flair_choice.id
 
     user_flair.save()
+    cache.delete_memoized(misc.get_user_flair, sub.sid, current_user.uid)
     return jsonify(status='ok')
 
 
