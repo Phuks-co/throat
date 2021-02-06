@@ -132,6 +132,8 @@ def thumbnail_url(name):
 def clear_metadata(path: str, mime_type: str):
     if mime_type in ('image/jpeg', 'image/png'):
         image = Image.open(path)
+        if not image.info.get('exif'):
+            return image.save(path)
         exifdata = Exif()
         exifdata.load(image.info['exif'])
         # XXX: We want to remove all EXIF data except orientation (tag 274) or people will start seeing
