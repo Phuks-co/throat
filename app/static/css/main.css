@@ -951,7 +951,7 @@ a.slink {
   width: 82%;
 }
 
-#postflairs {
+.popup {
   width: 50%;
   position: absolute;
   top: 5em;
@@ -2820,4 +2820,12 @@ input[name="captcha"] {
 
 .red {
   color: red
+}
+
+.small {
+  font-size: small
+}
+
+.smaller {
+  font-size: smaller
 }
