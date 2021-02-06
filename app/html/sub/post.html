@@ -39,7 +39,7 @@
 @def sidebar():
   <div class="author" style="padding:.5em;">
     @# Line's long but we gotta keep it like that :(
-    @{_('Posted %(timeago)s by %(user)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user=('<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + '</a>' + (' <span class="user_flair" data-flair-id="' + str(post['user_flair_id']) + '">' + e(post['user_flair']) + '</span>' if post['user_flair'] else '')) if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>')!!html}
+    @{_('Posted %(timeago)s by %(user)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user=('<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + '</a>') if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>')!!html}
     <br/>
     @if post['edited']:
       @{_('edited %(timeago)s', timeago='<time-ago datetime="' + post['edited'].isoformat() + 'Z"></time-ago>')!!html}<br/>
