@@ -52,6 +52,11 @@ body.dark .postflair {
   background-color: #000;
   border: 1px solid #1d1d1d;
 }
+body.dark .user_flair {
+  background-color: #0d0d0d;
+  border: 1px solid #1d1d1d;
+  color: #888;
+}
 /* Hot, Top, New, Domain */
 
 body.dark div#sortbuttons span {
