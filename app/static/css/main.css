@@ -1,5 +1,8 @@
-body{
-  background-color: #ffffff;
+@import "variables.css";
+
+
+body {
+  background-color: white;
   color: black;
  /* background: -moz-linear-gradient(top,  rgba(237,237,237,1) 0%, rgba(255,255,255,1) 100%);
   background: -webkit-linear-gradient(top,  rgba(237,237,237,1) 0%,rgba(255,255,255,1) 100%);
@@ -8,8 +11,6 @@ body{
 }
 
 * {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
 
@@ -84,17 +85,14 @@ blockquote {
   -webkit-font-smoothing: antialiased;
   height: 2.1em;
   overflow: hidden;
-  -webkit-transition: height 0.5s;
-  -moz-transition: height 0.5s;
-  -ms-transition: height 0.5s;
   transition: height 0.5s;
 }
 
 .th-navbar.open {
     height: 8em;
-/*    -webkit-box-shadow: 0 2px 3px 0 #ab4409;
-    -moz-box-shadow: 0 2px 3px 0 #ab4409;
-    box-shadow: 0 2px 3px 0 #ab4409; */
+/*    -webkit-box-shadow: 0 2px 3px 0 var(--primary-shadow);
+    -moz-box-shadow: 0 2px 3px 0 var(--primary-shadow);
+    box-shadow: 0 2px 3px 0 var(--primary-shadow); */
 }
 
 #th-uinfo {
@@ -114,18 +112,15 @@ blockquote {
 }
 
 .th-toggle .bar {
-    background-color: #fff;
-    display: block;
-    width: 20px;
-    height: 2px;
-    border-radius: 100px;
-    position: absolute;
-    top: 18px;
-    right: 7px;
-    -webkit-transition: all 0.5s;
-    -moz-transition: all 0.5s;
-    -ms-transition: all 0.5s;
-    transition: all 0.5s;
+  background-color: #fff;
+  display: block;
+  width: 20px;
+  height: 2px;
+  border-radius: 100px;
+  position: absolute;
+  top: 18px;
+  right: 7px;
+  transition: all 0.5s;
 }
 
 .th-toggle .bar:first-child {
@@ -160,9 +155,9 @@ blockquote {
     position: absolute;
     background-color: white;
     display: block;
-    -webkit-box-shadow: 0 3px 5px 0 #ab4409;
-    -moz-box-shadow: 0 3px 5px 0 #ab4409;
-    box-shadow: 0 3px 5px 0 #ab4409;
+    -webkit-box-shadow: 0 3px 5px 0 var(--primary-shadow);
+    -moz-box-shadow: 0 3px 5px 0 var(--primary-shadow);
+    box-shadow: 0 3px 5px 0 var(--primary-shadow);
   }
   div.sidebar.open {
     display: block;
@@ -268,14 +263,11 @@ a:hover {
 /* Header */
 
 .th-navbar {
-  background-color: #800000;
+  background-color: var(--primary-color);
   margin-bottom: 0;
   -webkit-font-smoothing: antialiased;
   padding: .4em 0 .4em .3em;
   overflow: hidden;
-  -webkit-transition: height 0.5s;
-  -moz-transition: height 0.5s;
-  -ms-transition: height 0.5s;
   transition: height 0.5s;
   -webkit-box-shadow: 0 3px 5px 0 rgba(0, 0, 0, .6);
   -moz-box-shadow: 0 3px 5px 0 rgba(0, 0, 0, .6);
@@ -386,9 +378,7 @@ a:hover {
   min-height: 32px;
   margin-right: 10px;
   cursor: pointer;
-  -webkit-box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
-  -moz-box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
-  box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.75);
   position: relative;
 }
 
@@ -465,7 +455,7 @@ span#notification.fade {
   border-top: 1px solid red;
   width: 45px;
   transform: rotate(45deg);
-  transform-origin: 0% 0%;
+  transform-origin: 0 0;
   left: 0;
 }
 
@@ -493,7 +483,7 @@ span#notification.fade {
 }
 
 .inboxside .p-icon {
-  margin-top: 0px;
+  margin-top: 0;
 }
 
 .i-icon {
@@ -520,7 +510,7 @@ span#notification.fade {
 }
 
 .content .hasmail path {
-  fill: #800000;
+  fill: var(--primary-color);
 }
 
 .sidebar .pure-button-primary {
@@ -533,13 +523,13 @@ span#notification.fade {
 }
 
 .pure-button-primary, a.pure-button-primary {
-    background-color: #800000;
-    color: #fff;
+  background-color: var(--primary-color);
+  color: #fff;
 }
 
 .pure-button-primary:hover {
-      background-color:#A50105;
-    color: #fff;
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-fg);
 }
 
 .center {
@@ -605,11 +595,11 @@ span#notification.fade {
 }
 
 .post .title:visited {
-	color: #848484;
+  color: var(--post-link-visited);
 }
 
 .post a.title:hover {
-	color: #820609;
+  color: var(--post-link-hover);
 }
 
 .misctainer {
@@ -635,7 +625,7 @@ span#notification.fade {
 }
 
 .p-icon[data-icon="exclaim"] path {
-    fill: #800000;
+  fill: var(--primary-color);
 }
 
 .expando {
@@ -648,7 +638,7 @@ span#notification.fade {
   line-height: 2em;
   color: #444;
   margin-right: .2em;
-  margin-left: 0px;
+  margin-left: 0;
   cursor: pointer;
   top: 8.5px;
   position: relative;
@@ -730,12 +720,12 @@ iframe {
   cursor: pointer;
 }
 
-.upvoted path{
-  fill: #7A0105;
+.upvoted path {
+  fill: var(--upvote-color);
 }
 
-.downvoted path{
-  fill: black;
+.downvoted path {
+  fill: var(--downvote-color);
 }
 
 .misctainer {
@@ -1104,24 +1094,24 @@ a.slink {
   font-size: 70%;
 }
 .button-success {
-  background: rgb(28, 184, 65);
+  background: var(--button-success-bg);
   /* this is a green */
 }
 
 .button-error {
-  background: rgb(202, 60, 60);
+  background: var(--button-error-bg);
   color: white;
   /* this is a maroon */
 }
 
 .button-warning {
-  background: rgb(200, 5, 17);
-  /* this is red */
+  background: var(--button-warning-bg);
+  /* this is an orange */
 }
 
 .button-secondary {
   color: #fff;
-  background: #101010;
+  background: var(--button-secondary-bg);
   /* this is a light black */
 }
 
@@ -1183,8 +1173,7 @@ span.hasmail {
   font-size: 14px;
   text-align: left;
   background-color: #fff;
-  border: 1px solid #ccc;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(204, 204, 204, 0.15);
   border-radius: 4px;
   -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
@@ -1215,7 +1204,7 @@ span.hasmail {
 }
 
 #hiddensubs li a {
-  color: #800000;
+  color: var(--primary-highlight);
   width: 100%;
   display: block;
 }
@@ -1585,8 +1574,8 @@ article.comment .score{
 }
 
 .pmessage p.container a:hover {
-    background: #ff6d15;
-    color: #ffffff;
+  background: var(--primary-color);
+  color: #ffffff;
 }
 
 .pmessage p.container a {
@@ -1632,8 +1621,6 @@ form#msg-form {
 
 #formpop {
   position: fixed;
-  top: 20px;
-  left: 15%;
   z-index: 100;
   padding-top: 108px;
   left: 0;
@@ -1747,7 +1734,7 @@ td.subsentry.blocked {
 
 .pblock.level .uprofile-level-box .fill {
   clip: rect(0px, 60px, 120px, 0px);
-  background-color: #800000;
+  background-color: var(--primary-color);
 }
 
 .pblock.level .inset {
@@ -1842,9 +1829,9 @@ li.habitentry {
 /* MISC */
 
 /* body::-webkit-scrollbar {
-   width: 4px;
-   background: #800000;
-   z-index: -1;
+  width: 4px;
+  background: var(--primary-color);
+  z-index: -1;
 }
 
 body::-webkit-scrollbar-thumb {
@@ -1856,9 +1843,9 @@ ul#th-menu ul.left li {
     margin-left: 4px;
 }
 
-.pure-menu a svg.logo {
-    height: 2.8em;
-    margin-top: 0px;
+.pure-menu a.logocont svg {
+  height: 2.8em;
+  margin-top: 0;
 }
 
 /* TABLE STYLES (from purecss) */
@@ -1872,16 +1859,14 @@ table {
 }
 
 table td, table th {
-    border-left: 1px solid #cbcbcb;
-    /*  inner column border */
-    border-width: 0 0 0 1px;
-    font-size: inherit;
-    margin: 0;
-    overflow: visible;
-    /*to make ths where the title is really long work*/
-    padding: 0.5em 1em;
-    /* cell padding */
-    text-align: center;
+  border-left: 1px solid #cbcbcb;
+  /*  inner column border */
+  font-size: inherit;
+  margin: 0;
+  overflow: visible;
+  /*to make ths where the title is really long work*/
+  padding: 0.5em 1em;
+  /* cell padding */
 }
 
 table thead {
@@ -1931,7 +1916,7 @@ table td {
 }
 
 #chtitle .glyphbutton {
-  top: 0px;
+  top: 0;
   float: right;
   margin-right: 1em;
 }
@@ -1953,10 +1938,8 @@ table td {
 }
 
 #chpop {
-  -webkit-box-shadow: 0px 0px 6px 1px rgba(0, 0, 0, 0.75);
-  -moz-box-shadow: 0px 0px 6px 1px rgba(0, 0, 0, 0.75);
-  box-shadow: 0px 0px 6px 1px rgba(0, 0, 0, 0.75);
-  border:none;
+  box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.75);
+  border: none;
   width: 25%;
   position: fixed;
   right: 1em;
@@ -1994,7 +1977,7 @@ table td {
   height: calc(100% - 5.5em);
 }
 #chtitle {
-  background: #800000;
+  background: var(--primary-color);
   font-size: smaller;
   height: 1.8em;
   padding-top: .2em;
@@ -2007,7 +1990,7 @@ table td {
 }
 
 #chtitle:hover {
-  background: #A50105;
+  background: var(--primary-highlight);
 }
 
 #chcont {
@@ -2019,7 +2002,7 @@ table td {
 
 .msguser {
   padding-right: 5px;
-  color: #b74500;
+  color: var(--primary-highlight);
 }
 
 #chcont::-webkit-scrollbar {
@@ -2206,11 +2189,11 @@ table td {
 }
 
 .poll-pbar.poll-voted>div {
-  background-color: #800000;
+  background-color: var(--primary-color);
 }
 
 .poll-pbar.poll-voted {
-  border-color: #ffa46f;
+  border-color: var(--primary-highlight);
 }
 
 /* user uploads page */
@@ -2327,7 +2310,7 @@ a[href="#toodamncool"] {
 .admin_alert {
   background-color: red;
   color: white;
-  top: 0px;
+  top: 0;
   position: fixed;
   width: 100%;
   display: block;
@@ -2347,12 +2330,12 @@ a[href="#toodamncool"] {
 }
 
 .btn_link {
-    background: none;
-    border: none;
-    padding: 0px;
-    color: #0f5386;
-    font: inherit;
-    text-decoration: underline;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #00419d;
+  font: inherit;
+  text-decoration: underline;
 }
 
 /* topbar settings page */
@@ -2561,7 +2544,7 @@ a.close-report {
 
 div.post.admin>div>div>a.authorlink {
   display: inline-block;
-  background-color: #d94f00;
+  background-color: var(--primary-color);
   color: #FDD8D4;
   border-radius: 2px;
   padding: .15em;
@@ -2577,7 +2560,7 @@ div.post.mod>div>div>a.authorlink {
 
 article.text-post.comment.admin>div>div>div>a.poster {
   display: inline-block;
-  background-color: #d94f00;
+  background-color: var(--primary-color);
   color: #FDD8D4;
   border-radius: 2px;
   padding: .15em;
@@ -2624,16 +2607,13 @@ article.text-post.comment.deleted {
 }
 
 .browse-history.disabled:focus {
-  outline-color: lightgray;
-  outline: none;
+  outline: lightgray none;
 }
 
 .browse-history {
   border-radius: 2px;
   cursor: pointer;
-  -webkit-box-shadow: -2px 1px 3px 0px rgba(0, 0, 0, 0.1);
-  -moz-box-shadow: -2px 1px 3px 0px rgba(0, 0, 0, 0.1);
-  box-shadow: -2px 1px 3px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: -2px 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 .browse-history.disabled {

@@ -116,13 +116,19 @@ def create_app(config=None):
 
     app.add_template_global(storage.file_url)
     app.add_template_global(storage.thumbnail_url)
+
+    # load the logo
+    logo_fp = open(config.site.logo, 'r')
+    THROAT_LOGO = logo_fp.read()
+    logo_fp.close()
     engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config, 'conf': app.config,
                                'url_for': url_for, 'asset_url_for': webpack.asset_url_for, 'func': misc,
                                'form': forms, 'hostname': socket.gethostname(), 'datetime': datetime,
                                'e': escape_html, 'markdown': misc.our_markdown, '_': _, 'get_locale': get_locale,
                                'BeautifulSoup': BeautifulSoup, 'thumbnail_url': storage.thumbnail_url,
                                'file_url': storage.file_url, 'get_flashed_messages': get_flashed_messages,
-                               'email_validation_is_required': email_validation_is_required})
+                               'email_validation_is_required': email_validation_is_required,
+                               'THROAT_LOGO': THROAT_LOGO})
 
     if config.site.trusted_proxy_count != 0:
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=config.site.trusted_proxy_count)
@@ -172,7 +178,8 @@ def create_app(config=None):
         return {'loginform': LoginForm(), 'logoutform': LogOutForm(), 'csubform': CreateSubForm(),
                 'markdown': misc.our_markdown, 'hostname': socket.gethostname(),
                 'config': config, 'form': forms, 'datetime': datetime,
-                'func': misc, 'time': time, 'conf': app.config, '_': _, 'locale': get_locale}
+                'func': misc, 'time': time, 'conf': app.config, '_': _, 'locale': get_locale,
+                'THROAT_LOGO': THROAT_LOGO}
 
     return app
 
