@@ -28,7 +28,7 @@
     /* These are used only for buttons */
     --button-success-bg: rgb(28, 184, 65); /* Green buttons. Currently unused */
     --button-error-bg: rgb(202, 60, 60); /* Red button. Menacing. */
-    --button-warning-bg: rgb(223, 117, 20); /* Orange button. Mostly known for being the "block" button on subs */
+    --button-warning-bg: rgb(200, 5, 17); /* Orange button. Mostly known for being the "block" button on subs */
 
     /* Used as the "active" form of some buttons (profile, PMs, settings, sub sort) */
     --button-secondary-bg: #101010;

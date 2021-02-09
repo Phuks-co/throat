@@ -1106,7 +1106,6 @@ a.slink {
 
 .button-warning {
   background: var(--button-warning-bg);
-  /* this is an orange */
 }
 
 .button-secondary {
