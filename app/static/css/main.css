@@ -1895,9 +1895,9 @@ table td {
   background-color: #fefefe;
   padding: 1em;
   margin-bottom: 2em;
-  -webkit-box-shadow: -3px 2px 4px 0 rgba(0, 0, 0, .1);
-  -moz-box-shadow: -3px 2px 4px 0 rgba(0, 0, 0, .1);
-  box-shadow: -3px 2px 4px 0 rgba(0, 0, 0, .1);
+  -webkit-box-shadow: -1px 3px 4px 0px rgb(0 0 0 / 10%);
+  -moz-box-shadow: -1px 3px 4px 0px rgb(0 0 0 / 10%);
+  box-shadow: -1px 3px 4px 0px rgb(0 0 0 / 10%);
 }
 
 /* /FORM STYLES */
