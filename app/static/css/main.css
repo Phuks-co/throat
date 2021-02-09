@@ -1843,7 +1843,7 @@ ul#th-menu ul.left li {
     margin-left: 4px;
 }
 
-.pure-menu a.logocont svg {
+.pure-menu a svg.logo {
   height: 2.8em;
   margin-top: 0;
 }
@@ -1860,13 +1860,15 @@ table {
 
 table td, table th {
   border-left: 1px solid #cbcbcb;
-  /*  inner column border */
-  font-size: inherit;
-  margin: 0;
-  overflow: visible;
-  /*to make ths where the title is really long work*/
-  padding: 0.5em 1em;
-  /* cell padding */
+    /*  inner column border */
+    border-width: 0 0 0 1px;
+    font-size: inherit;
+    margin: 0;
+    overflow: visible;
+    /*to make ths where the title is really long work*/
+    padding: 0.5em 1em;
+    /* cell padding */
+    text-align: center;
 }
 
 table thead {
@@ -1990,7 +1992,7 @@ table td {
 }
 
 #chtitle:hover {
-  background: var(--primary-highlight);
+  background: #A50105;
 }
 
 #chcont {
@@ -2333,7 +2335,7 @@ a[href="#toodamncool"] {
   background: none;
   border: none;
   padding: 0;
-  color: #00419d;
+  color: #0f5386;
   font: inherit;
   text-decoration: underline;
 }
