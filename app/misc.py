@@ -1292,12 +1292,14 @@ def create_message(mfrom, to, subject, content, link, mtype):
 
 
 try:
-    MOTTOS = json.loads(open('phuks.txt').read())
+    MOTTOS = json.loads(open('mottos.txt').read())
 except FileNotFoundError:
     MOTTOS = []
 
 
 def get_motto():
+    if not MOTTOS:
+        return ''
     return random.choice(MOTTOS)
 
 

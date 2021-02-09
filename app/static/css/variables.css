@@ -1,0 +1,63 @@
+:root {
+    /*
+    The site's primary color. Used for sidebars, buttons and some icons on light mode.
+    Phuks: #d94f00
+    */
+    --primary-color: #331b93;
+    /* Used as box-shadow color */
+    --primary-shadow: #ab4409;
+
+    /* Post link colors */
+    /*
+    Hover color for post links
+    Phuks: #ff6d15
+     */
+    --post-link-hover: #6183b6;
+    /**
+    Color for visited links.
+    Phuks: #d95204
+     */
+    --post-link-visited: #7193c6;
+
+    /*
+    Used only in the chatbox at the moment
+    Phuks: #b74500
+     */
+    --primary-highlight: #5029e9;
+
+    /* These are used only for buttons */
+    --button-success-bg: rgb(28, 184, 65); /* Green buttons. Currently unused */
+    --button-error-bg: rgb(202, 60, 60); /* Red button. Menacing. */
+    --button-warning-bg: rgb(223, 117, 20); /* Orange button. Mostly known for being the "block" button on subs */
+
+    /* Used as the "active" form of some buttons (profile, PMs, settings, sub sort) */
+    --button-secondary-bg: #101010;
+
+    /* Primary buttons used all over the site */
+    --button-primary-bg: #ff6d15;
+    --button-primary-fg: #fff;
+
+
+    /* Up/downvote colors */
+    --upvote-color: #ff6d15;
+    --downvote-color: red;
+
+    /** --- Dark mode --- */
+    /*
+    Primary dark-mode color. Mostly used for links hover color and the logo (if supported)
+    Phuks: #ff6d15
+     */
+    --dark-primary-color: #477ba8;
+    /**
+    Color for visited links
+    Phuks: #d95204
+    **/
+    --dark-links-visited: #7193c6;
+    /*
+    Secondary link color. Used for subs on post lists and for the sidebar
+    Phuks: #ab4409
+    */
+    --dark-links-a: #56758d;
+    /** Box-shadow in dark mode */
+    --dark-shadow: #aa4509;
+}

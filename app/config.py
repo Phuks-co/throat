@@ -67,7 +67,8 @@ cfg_defaults = {  # key => default value
                 "max_entries": 10
             },
 
-            'icon_url': None
+            'icon_url': None,
+            'logo': 'app/static/img/throat-logo.svg'
         },
         "auth": {
             "provider": 'LOCAL',

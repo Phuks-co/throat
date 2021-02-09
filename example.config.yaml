@@ -131,6 +131,9 @@ site:
   # URL of the icon to be used for push notifications
   icon_url: 'https://phuks.co/static/img/icon.png'
 
+  # Relative path to the logo. This MUST be a SVG file that will be embedded into the HTML of every page.
+  logo: 'app/static/img/throat-logo.svg'
+
 auth:
   # Set to LOCAL to store user authentication in database,
   # or KEYCLOAK to use a Keycloak server to authenticate users.

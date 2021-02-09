@@ -20,6 +20,7 @@ import _ from './utils/I18n';
 window.Sortable = Sortable;
 require('../css/main.css');
 require('../css/dark.css');
+require('../css/custom.css');
 
 import icons from './Icon';
 require('./Expando');
