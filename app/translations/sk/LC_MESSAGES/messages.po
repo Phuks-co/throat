@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-02-09 15:14-0300\n"
-"PO-Revision-Date: 2021-02-09 18:22\n"
+"PO-Revision-Date: 2021-02-10 00:21\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -347,15 +347,15 @@ msgstr "Tag"
 
 #: app/forms/sub.py:70
 msgid "Pick one"
-msgstr ""
+msgstr "Možnosti"
 
 #: app/forms/sub.py:70
 msgid "Custom"
-msgstr ""
+msgstr "Nový tag"
 
 #: app/forms/sub.py:70
 msgid "Remove flair"
-msgstr ""
+msgstr "Odstrániť tag"
 
 #: app/forms/sub.py:81 app/forms/sub.py:87 app/html/sub/rules.html:27
 msgid "Rule text"
@@ -375,11 +375,11 @@ msgstr "Členovia môžu tagovať vlastné príspevky"
 
 #: app/forms/sub.py:103
 msgid "Allow users to set their own user flairs"
-msgstr ""
+msgstr "Členovia si môžu sami nastaviť tag"
 
 #: app/forms/sub.py:104
 msgid "Allow free-form user flairs (disables pre-defined flairs)"
-msgstr ""
+msgstr "Povoliť ľubovoľný užívateľský tag (preddefinované tagy nebudú dostupné)"
 
 #: app/forms/sub.py:105
 msgid "Enable text posts"
@@ -1436,11 +1436,11 @@ msgstr "%(subs)i odberateľov"
 
 #: app/html/shared/sidebar/sub.html:35
 msgid "Your flair:"
-msgstr ""
+msgstr "Tvoj tag:"
 
 #: app/html/shared/sidebar/sub.html:41
 msgid "(change)"
-msgstr ""
+msgstr "(zmeniť)"
 
 #: app/html/shared/sidebar/sub.html:47
 msgid "Subscribed"
@@ -1460,7 +1460,7 @@ msgstr "Blokovať"
 
 #: app/html/shared/sidebar/sub.html:61
 msgid "Set user flair"
-msgstr ""
+msgstr "Nastav si tag"
 
 #: app/html/shared/sidebar/sub.html:92 app/html/shared/sidebar/sub.html:118
 #: app/html/shared/sidebar/sub_mod.html:9
@@ -1503,11 +1503,11 @@ msgstr "Záznamy skupiny"
 
 #: app/html/shared/sidebar/sub_mod.html:4
 msgid "Post flairs"
-msgstr ""
+msgstr "Tagy príspevkov"
 
 #: app/html/shared/sidebar/sub_mod.html:5
 msgid "User flairs"
-msgstr ""
+msgstr "Tagy používateľov"
 
 #: app/html/shared/sidebar/sub_mod.html:6 app/html/sub/rules.html:35
 msgid "Rules"
@@ -1921,11 +1921,11 @@ msgstr "%%mybackground%%"
 #: app/html/sub/flairs.html:16
 #, python-format
 msgid "Editing post flairs of <a href=\"%(url)s\">%(sub)s</a>"
-msgstr ""
+msgstr "Tagy príspevkov v skupine <a href=\"%(url)s\">%(sub)s</a>"
 
 #: app/html/sub/flairs.html:19
 msgid "Create new post flair"
-msgstr ""
+msgstr "Definuj nový tag"
 
 #: app/html/sub/flairs.html:22 app/html/sub/rules.html:28
 #: app/html/sub/settings.html:124 app/html/sub/user_flairs.html:27
@@ -2380,15 +2380,15 @@ msgstr "Uložiť zmeny"
 #: app/html/sub/user_flairs.html:16
 #, python-format
 msgid "Editing user flairs of <a href=\"%(url)s\">%(sub)s</a>"
-msgstr ""
+msgstr "Tagy užívateľov v skupine <a href=\"%(url)s\">%(sub)s</a>"
 
 #: app/html/sub/user_flairs.html:27
 msgid "Assign flair"
-msgstr ""
+msgstr "Uložiť tag"
 
 #: app/html/sub/user_flairs.html:32
 msgid "Create new user flair"
-msgstr ""
+msgstr "Definuj nový užívateľský tag"
 
 #: app/html/user/check-your-email.html:8
 msgid "Email sent!"
@@ -3063,15 +3063,15 @@ msgstr "Naozaj chceš odbanovať tohto používateľa?"
 
 #: app/static/js/utils/MatrixUtils.js:208
 msgid "left the room"
-msgstr ""
+msgstr "sa odpojil(a)"
 
 #: app/static/js/utils/MatrixUtils.js:211
 msgid "joined the room"
-msgstr ""
+msgstr "sa pripojil(a)"
 
 #: app/static/js/utils/MatrixUtils.js:223
 msgid "message deleted"
-msgstr ""
+msgstr "správa vymazaná"
 
 #: app/static/js/utils/TextConfirm.js:7
 msgid "Are you sure?"
@@ -3229,7 +3229,7 @@ msgstr "Povoľ aspoň jeden typ príspevkov"
 
 #: app/views/do.py:415
 msgid "No flair text"
-msgstr ""
+msgstr "Tag neobsahuje text"
 
 #: app/views/do.py:420 app/views/do.py:603 app/views/do.py:638
 #: app/views/do.py:664 app/views/do.py:1045 app/views/do.py:1077
@@ -3245,7 +3245,7 @@ msgstr "Tag neexistuje"
 
 #: app/views/do.py:465
 msgid "Free-form user flairs are disabled for this sub"
-msgstr ""
+msgstr "Ľubovoľné užívateľské tagy nie sú dostupné"
 
 #: app/views/do.py:577
 msgid "Post has no flair"
@@ -3286,7 +3286,7 @@ msgstr "Príspevok nenájdený"
 
 #: app/views/do.py:848
 msgid "Error"
-msgstr ""
+msgstr "Chyba"
 
 #: app/views/do.py:851
 msgid "Nothing to distinguish"
