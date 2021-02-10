@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-02-09 15:14-0300\n"
-"PO-Revision-Date: 2021-02-09 18:21\n"
+"PO-Revision-Date: 2021-02-10 00:21\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -1815,11 +1815,11 @@ msgstr ""
 
 #: app/html/sub/createpost.html:80
 msgid "Upload a file!"
-msgstr ""
+msgstr "Subir un archivo!"
 
 #: app/html/sub/createpost.html:85
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: app/html/sub/createpost.html:89 app/static/js/Post.js:557
 msgid "Grab title"
@@ -2797,7 +2797,7 @@ msgstr "Título (ctrl-shift-h)"
 
 #: app/static/js/Editor.js:30
 msgid "Spoiler"
-msgstr ""
+msgstr "Spoiler"
 
 #: app/static/js/Editor.js:37
 msgid "Insert hyperlink"
@@ -3181,7 +3181,7 @@ msgstr "SI"
 
 #: app/views/do.py:162
 msgid "Type \"YES\" in the box"
-msgstr ""
+msgstr "Escribe \"SI\" en el cuadro"
 
 #: app/views/do.py:181 app/views/do.py:325 app/views/do.py:354
 #: app/views/do.py:401 app/views/do.py:454 app/views/do.py:485
@@ -3217,11 +3217,11 @@ msgstr "El post no fue borrado"
 
 #: app/views/do.py:287
 msgid "Can not un-delete a self-deleted post"
-msgstr ""
+msgstr "No se puede restaurar un post borrado por el usuario"
 
 #: app/views/do.py:293
 msgid "Cannot un-delete without reason"
-msgstr ""
+msgstr "No se puede restaurar sin una razón"
 
 #: app/views/do.py:362
 msgid "At least one kind of post must be permitted"
