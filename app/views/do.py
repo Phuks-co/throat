@@ -1930,11 +1930,14 @@ def create_user_flair(sub):
         abort(403)
 
     form = CreateSubFlair()
+    if SubUserFlairChoice.select().where(SubUserFlairChoice.sub == sub.sid).count() > 100:
+        return jsonify(status="error", error="Can't have more than 100 flair presets per sub")
+
     if form.validate():
         SubUserFlairChoice.create(sid=sub.sid, flair=form.text.data)
         cache.delete_memoized(misc.get_sub_flair_choices, sub.sid)
         return jsonify(status='ok')
-    return json.dumps({'status': 'error', 'error': get_errors(form)})
+    return jsonify(status='error', error=get_errors(form))
 
 
 @do.route("/do/flair/<sub>/delete", methods=['POST'])
@@ -1972,6 +1975,9 @@ def create_flair(sub):
 
     if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
         abort(403)
+
+    if SubFlair.select().where(SubFlair.sid == sub.sid).count() > 100:
+        return jsonify(status="error", error="Can't have more than 100 flair presets per sub")
 
     form = CreateSubFlair()
     if form.validate():
