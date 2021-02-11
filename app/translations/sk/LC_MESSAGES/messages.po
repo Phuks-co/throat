@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-02-09 15:14-0300\n"
-"PO-Revision-Date: 2021-02-10 00:21\n"
+"PO-Revision-Date: 2021-02-10 07:21\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -379,7 +379,7 @@ msgstr "Členovia si môžu sami nastaviť tag"
 
 #: app/forms/sub.py:104
 msgid "Allow free-form user flairs (disables pre-defined flairs)"
-msgstr "Povoliť ľubovoľný užívateľský tag (preddefinované tagy nebudú dostupné)"
+msgstr "Povoliť ľubovoľný používateľský tag (preddefinované tagy nebudú dostupné)"
 
 #: app/forms/sub.py:105
 msgid "Enable text posts"
@@ -2386,7 +2386,7 @@ msgstr "Uložiť zmeny"
 #: app/html/sub/user_flairs.html:16
 #, python-format
 msgid "Editing user flairs of <a href=\"%(url)s\">%(sub)s</a>"
-msgstr "Tagy užívateľov v skupine <a href=\"%(url)s\">%(sub)s</a>"
+msgstr "Tagy používateľov v skupine <a href=\"%(url)s\">%(sub)s</a>"
 
 #: app/html/sub/user_flairs.html:27
 msgid "Assign flair"
@@ -2394,7 +2394,7 @@ msgstr "Uložiť tag"
 
 #: app/html/sub/user_flairs.html:32
 msgid "Create new user flair"
-msgstr "Definuj nový užívateľský tag"
+msgstr "Definuj nový používateľský tag"
 
 #: app/html/user/check-your-email.html:8
 msgid "Email sent!"
@@ -3061,7 +3061,7 @@ msgstr "Naozaj chceš zabanovať tohoto používateľa?"
 
 #: app/static/js/main.js:549
 msgid "Are you sure you want to remove all the votes issued by this user?"
-msgstr "Naozaj chceš odstrániť všetky hlasovania používateľa?"
+msgstr "Naozaj chceš odstrániť všetky hlasy používateľa?"
 
 #: app/static/js/main.js:554
 msgid "Are you sure you want to unban this user?"
@@ -3113,7 +3113,7 @@ msgstr "Neplatný alebo expirovaný token."
 
 #: app/views/auth.py:56 app/views/auth.py:62
 msgid "User not found or invalid ticket"
-msgstr "Používateľ sa nenašiel, alebo lístok je neplatný"
+msgstr "Používateľ sa nenašiel, alebo ticket je neplatný"
 
 #: app/views/auth.py:87 app/views/subs.py:97 app/views/user.py:222
 msgid "Invalid captcha."
@@ -3251,7 +3251,7 @@ msgstr "Tag neexistuje"
 
 #: app/views/do.py:465
 msgid "Free-form user flairs are disabled for this sub"
-msgstr "Ľubovoľné užívateľské tagy nie sú dostupné"
+msgstr "Ľubovoľné používateľské tagy nie sú dostupné"
 
 #: app/views/do.py:577
 msgid "Post has no flair"
