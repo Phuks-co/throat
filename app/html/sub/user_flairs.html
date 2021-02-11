@@ -21,7 +21,7 @@
           @{assignflair.csrf_token()!!html}
           @{assignflair.user(placeholder=_("User"))!!html}
 
-          @{assignflair.flair_id(placeholder=_("Flair"))!!html}
+          @{assignflair.flair_id(placeholder=_("Flair"), autocomplete="off")!!html}
           @{assignflair.text(placeholder=_("Flair text"), class_="hide", maxlength="25")!!html}
 
           <button type="submit" class="pure-button pure-button-primary" id="editsub-btnsubmit" data-prog="@{_('Saving...')}" data-success="@{_('Saved!')}">@{_('Assign flair')}</button>
