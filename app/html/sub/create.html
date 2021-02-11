@@ -9,7 +9,7 @@
     <div class="content createsub">
         <form id="csub-form" method="POST" data-redir="true" class="pure-form pure-form-aligned">
             @{csubform.csrf_token()!!html}
-            <h3>@{_('Create sub')}</h3>
+            <h2>@{_('Create sub')}</h2>
             <p>@{_('Create a sub for you, your friends, or for your favorite community')}</p>
 
             @if error:
