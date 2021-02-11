@@ -31,7 +31,7 @@
         <form method="POST" class="ajaxform pure-form" action="@{url_for('do.create_user_flair', sub=sub.name)}" data-reload="true">
           <h4>@{_('Create new user flair')}</h4>
           @{createflair.csrf_token()!!html}
-          @{createflair.text(placeholder=_("Flair text", maxlength="25"))!!html}
+          @{createflair.text(placeholder=_("Flair text"), maxlength="25")!!html}
           <button type="submit" class="pure-button pure-button-primary" id="editsub-btnsubmit" data-prog="@{_('Saving...')}" data-success="@{_('Saved!')}">@{_('Add flair')}</button>
           <div class="alert div-error"></div>
         </form>
