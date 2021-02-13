@@ -4,4 +4,4 @@
 "made in slovakia",
 "made in argentina",
 "beta",
-"tvoje motto už za 5€ !"]
+"vlastné motto už od 5€ !"]
