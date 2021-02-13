@@ -86,3 +86,4 @@ wheezy.template==3.0.3
 WTForms==2.3.3
 zope.event==4.5.0
 zope.interface==5.2.0
+Wheezy-extractor==1.0.1
