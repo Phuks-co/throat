@@ -5,5 +5,5 @@ pip install -r requirements.txt
 npm install
 npm run build
 ./scripts/genmo.sh
-./scripts/migrate.py
+./throat.py migration apply
 killall -HUP gunicorn

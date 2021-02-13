@@ -45,7 +45,7 @@ services:
       - redis
   migration:
     image: throat_throat
-    command: ["python3", "scripts/migrate.py"]
+    command: ["python3", "throat.py", "migration", "apply"]
     environment:
       DATABASE_ENGINE: PostgresqlDatabase
       DATABASE_HOST: db
