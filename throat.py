@@ -5,7 +5,7 @@ from gevent import monkey
 monkey.patch_all()
 import click
 from app import create_app, socketio  # noqa
-from app.cli import commands
+from cli import commands
 
 app = create_app()
 

@@ -1,11 +1,11 @@
 import click
 from flask.cli import AppGroup
-from .models import Sub, SubSubscriber
+from app.models import Sub, SubSubscriber
 
-recount = AppGroup('recount')
+recount = AppGroup('recount', help="Re-count various internal counters")
 
 
-@recount.command()
+@recount.command(help="Rebuilds all sub's subscriber counters")
 @click.option('--save/--dry-run', default=True,
               help='Use --save (the default) to fix the counts, or --dry-run to just print them.')
 def subscribers(save):
@@ -25,5 +25,3 @@ def subscribers(save):
                 (SubSubscriber.sid == sub.sid) & (SubSubscriber.status == 1)).count()).where(
                     Sub.sid == sub.sid).execute()
 
-
-commands = [recount]
