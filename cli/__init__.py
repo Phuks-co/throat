@@ -1,8 +1,9 @@
 from .recount import recount
 from .admin import admin
 from .default import default
-
+from .migration import migration
 commands = [
+    migration,
     recount,
     admin,
     default

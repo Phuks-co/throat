@@ -20,7 +20,7 @@ We recommend using a virtualenv or Pyenv
 2. Install Node dependencies with `npm install`
 3. Build the bundles with `npm run build`
 4. Copy `example.config.yaml` to `config.yaml` and edit it
-5. Set up the database by executing `./scripts/migrate.py`
+5. Set up the database by executing `./throat.py migration apply`
 6. Compile the translation files with `./scripts/genmo.sh`
 
 And you're done! You can run a test server by executing `./throat.py`. For production instances we recommend setting up `gunicorn`
@@ -97,13 +97,3 @@ local authentication), you may put configuration settings in
 ## Chat
 
 If you have any questions, you can reach us on #throat:phuks.co on [Matrix](https://chat.phoxy.win/#/login)
-
----
-
-You can manage default subs by using
-
- - $ ./scripts/defaults.py
-
-To add/remove administrators use
-
- - $ ./scripts/admins.py
