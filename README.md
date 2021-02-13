@@ -21,7 +21,7 @@ We recommend using a virtualenv or Pyenv
 3. Build the bundles with `npm run build`
 4. Copy `example.config.yaml` to `config.yaml` and edit it
 5. Set up the database by executing `./throat.py migration apply`
-6. Compile the translation files with `./scripts/genmo.sh`
+6. Compile the translation files with `./throat.py translations compile`
 
 And you're done! You can run a test server by executing `./throat.py`. For production instances we recommend setting up `gunicorn`
 
