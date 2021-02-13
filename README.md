@@ -25,6 +25,9 @@ We recommend using a virtualenv or Pyenv
 
 And you're done! You can run a test server by executing `./throat.py`. For production instances we recommend setting up `gunicorn`
 
+### Production deployments
+Please read [doc/gunicorn_deploy.md](doc/gunicorn_deploy.md) for instructions to deploy on gunicorn. 
+
 ## Develop on Docker
 If you prefer to develop on docker
  - The provided Docker resources only support Postgres
@@ -47,7 +50,7 @@ The default hot sort function is simple for speed, but it does not prioritize ne
 
 In addition to defining the function, you should also create an index on it to speed up the hot sort query.  Once that is done, custom functions will be faster than the default hot sort.  To implement Reddit's version of hot sort in Postgres, add the following SQL statements to your database using `psql`:
 
-```
+```sql
 create or replace function hot(score integer, date double precision) returns numeric as $$
   select round(cast(log(greatest(abs($1), 1)) * sign($1) + ($2 - 1134028003) / 45000.0 as numeric), 7)
 $$ language sql immutable;
@@ -78,6 +81,10 @@ as Keycloak clients with appropriate permissions.  See
 ## Deploying to AWS
 
 You can check out the [CDK Definition of Infrastructure](https://gitlab.com/feminist-conspiracy/infrastructure) maintained by Ovarit
+
+## Management commands
+ - `./throat.py admin` to list, add or remove administrators.
+ - `./throat.py default` to list, add or remove default subs.
 
 ## Tests
 
