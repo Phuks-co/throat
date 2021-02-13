@@ -3,4 +3,5 @@
 "celoplošné čekovanie",
 "made in slovakia",
 "made in argentina",
-"beta"]
+"beta",
+"tvoje motto už za 5€ !"]
