@@ -1007,9 +1007,8 @@ def create_comment(pid):
                        'comments': post.comments + 1},
                       namespace='/snt',
                       room=post.pid)
-        comment_res = misc.word_truncate(
-            ''.join(BeautifulSoup(misc.our_markdown(comment.content.decode())).findAll(text=True)).replace('\n', ' '),
-            250)
+        comment_text = BeautifulSoup(misc.our_markdown(comment.content.decode()), features='lxml').findAll(text=True)
+        comment_res = misc.word_truncate(''.join(comment_text).replace('\n', ' '), 250)
         defaults = [x.value for x in SiteMetadata.select().where(SiteMetadata.key == 'default')]
         socketio.emit('comment',
                       {'sub': sub.name,

@@ -39,7 +39,7 @@
       @for post in func.recent_activity(True):
         <li>
           @if post['type'] == 'comment':
-            @{_('%(user)s commented: %(text)s', user='<a href="/u/' + post['user'] + '">' + post['user'] + '</a>', text='<a class="title" href="' + url_for('sub.view_post', sub=post['sub'], pid=post['pid']) + '">' + e(func.word_truncate(''.join(BeautifulSoup(markdown(post['content'])).findAll(text=True)).replace('\n', ' '), 150)) + '</a>')!!html}
+            @{_('%(user)s commented: %(text)s', user='<a href="/u/' + post['user'] + '">' + post['user'] + '</a>', text='<a class="title" href="' + url_for('sub.view_post', sub=post['sub'], pid=post['pid']) + '">' + e(func.word_truncate(''.join(BeautifulSoup(markdown(post['content']), features='lxml').findAll(text=True)).replace('\n', ' '), 150)) + '</a>')!!html}
           @else:
             @{_('%(user)s posted: %(text)s', user='<a href="/u/' + post['user'] + '">' + post['user'] + '</a>', text='<a class="title" href="' + url_for('sub.view_post', sub=post['sub'], pid=post['pid']) + '">' + e(func.word_truncate(post['content'], 150)) + '</a>')!!html}
           @end

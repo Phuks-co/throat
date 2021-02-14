@@ -2116,7 +2116,7 @@ def recent_activity(sidebar=True):
 
     for rec in data:
         if rec['type'] != 'post':
-            parsed = BeautifulSoup(our_markdown(rec['content']))
+            parsed = BeautifulSoup(our_markdown(rec['content']), features="lxml")
             for spoiler in parsed.findAll('spoiler'):
                 spoiler.string.replace_with('█' * len(spoiler.string))
             stripped = parsed.findAll(text=True)
