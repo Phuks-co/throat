@@ -89,7 +89,7 @@ cfg_defaults = {  # key => default value
             "url": 'https://thumbnails.shitposting.space/',
         },
         "uploads": {
-            "path": './stor',
+            "path": './app/static/stor',
             "url": 'https://useruploads.shitposting.space/',
         },
         "sub_css_max_file_size": 2
