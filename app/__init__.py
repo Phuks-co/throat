@@ -13,7 +13,7 @@ from wheezy.html.utils import escape_html
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.wrappers import BaseResponse
 
-from .config import Config, config
+from .config import Config
 from .forms import LoginForm, LogOutForm, CreateSubForm
 from .models import db_init_app, rconn, User
 from .auth import auth_provider, email_validation_is_required
@@ -65,11 +65,10 @@ def create_app(config=None):
     app.config['REMEMBER_COOKIE_SECURE'] = not app.config['DEBUG']
 
     csp = {'default-src': ['\'self\''],
-           'child-src':   ['\'self\''] + [f'https://{url}'
-                                          for url in config.site.expando_sites],
-           'img-src':     ['\'self\'', 'data:', 'https:'],
-           'media-src':   ['\'self\'', 'https:'],
-           'style-src':   ['\'self\'', '\'unsafe-inline\''],
+           'child-src': ['\'self\''] + [f'https://{url}' for url in config.site.expando_sites],
+           'img-src': ['\'self\'', 'data:', 'https:'],
+           'media-src': ['\'self\'', 'https:'],
+           'style-src': ['\'self\'', '\'unsafe-inline\''],
            'connect-src': ['\'self\'']}
 
     server_name = config.site.get('server_name')
@@ -105,7 +104,7 @@ def create_app(config=None):
     app.register_blueprint(sub, url_prefix=f'/{config.site.sub_prefix}')
     app.register_blueprint(user)
     app.register_blueprint(auth)
-    app.register_blueprint(messages,  url_prefix='/messages')
+    app.register_blueprint(messages, url_prefix='/messages')
     app.register_blueprint(subs)
     app.register_blueprint(wiki)
     app.register_blueprint(do)
@@ -118,7 +117,7 @@ def create_app(config=None):
     app.add_template_global(storage.thumbnail_url)
 
     # load the logo
-    logo_fp = open(config.site.logo, 'r')
+    logo_fp = open(config.site.logo)
     THROAT_LOGO = logo_fp.read()
     logo_fp.close()
     engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config, 'conf': app.config,

@@ -29,7 +29,7 @@ def not_found(_):
 
 
 @bp.app_errorhandler(417)
-def forbidden_error(_):
+def teapot_error(_):
     """ 418 I'm a teapot """
     return render_error_template('errors/417.html'), 418
 

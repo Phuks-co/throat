@@ -3,7 +3,7 @@ from flask import url_for
 from peewee import fn
 from app import mail
 from app.auth import email_validation_is_required
-from app.models import User, UserStatus, UserMetadata
+from app.models import User, UserMetadata
 
 
 def csrf_token(data):
@@ -25,9 +25,7 @@ def pp(data):
 
 def recursively_update(dictionary, new_values):
     for elem in new_values.keys():
-        if (elem in dictionary.keys() and
-                isinstance(new_values[elem], dict) and
-                isinstance(dictionary[elem], dict)):
+        if elem in dictionary.keys() and isinstance(new_values[elem], dict) and isinstance(dictionary[elem], dict):
             recursively_update(dictionary[elem], new_values[elem])
         else:
             dictionary[elem] = new_values[elem]
@@ -60,8 +58,7 @@ def log_out_current_user(client, verify=True):
 def register_user(client, user_info):
     """Register a user with the client and leave them logged in."""
     rv = client.get(url_for('home.index'))
-    rv = client.post(url_for('do.logout'), data=dict(csrf_token=csrf_token(rv.data)),
-                     follow_redirects=True)
+    client.post(url_for('do.logout'), data=dict(csrf_token=csrf_token(rv.data)), follow_redirects=True)
     rv = client.get(url_for('auth.register'))
     with mail.record_messages() as outbox:
         data = dict(csrf_token=csrf_token(rv.data),
@@ -76,16 +73,13 @@ def register_user(client, user_info):
         else:
             data['email_optional'] = user_info['email']
 
-        rv = client.post(url_for('auth.register'),
-                         data=data,
-                         follow_redirects=True)
+        client.post(url_for('auth.register'), data=data, follow_redirects=True)
 
         if email_validation_is_required():
             message = outbox[-1]
             soup = BeautifulSoup(message.html, 'html.parser')
             token = soup.a['href'].split('/')[-1]
-            rv = client.get(url_for('auth.login_with_token', token=token),
-                            follow_redirects=True)
+            client.get(url_for('auth.login_with_token', token=token), follow_redirects=True)
 
 
 def promote_user_to_admin(client, user_info):

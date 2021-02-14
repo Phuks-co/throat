@@ -23,18 +23,17 @@ from ..forms import EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost
-from ..forms import SearchForm, EditMod2Form, SetSubOfTheDayForm
-from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNote, SetOwnUserFlairForm, \
-    AssignSubUserFlair
+from ..forms import SearchForm, EditMod2Form, SetSubOfTheDayForm, AssignSubUserFlair
+from ..forms import DeleteSubFlair, BanDomainForm, DeleteSubRule, CreateReportNote, SetOwnUserFlairForm
 from ..forms import UseInviteCodeForm, SecurityQuestionForm, DistinguishForm
 from ..badges import badges
 from ..misc import cache, send_email, allowedNames, get_errors, engine, ensure_locale_loaded
 from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, is_domain_banned
-from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved, SubUserFlair, \
-    SubUserFlairChoice
-from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory, SubPostTitleHistory
+from ..models import SubPost, SubPostComment, Sub, Message, User, UserIgnores, SubMetadata, UserSaved, SubUserFlair
+from ..models import SubMod, SubBan, SubPostCommentHistory, InviteCode, Notification, SubPostContentHistory
 from ..models import SubStylesheet, SubSubscriber, SubUploads, UserUploads, SiteMetadata, SubPostMetadata, SubPostReport
-from ..models import SubPostVote, SubPostCommentVote, SubFlair, SubPostPollOption, SubPostPollVote, SubPostCommentReport, SubRule
+from ..models import SubPostVote, SubPostCommentVote, SubFlair, SubPostPollOption, SubPostPollVote
+from ..models import SubPostTitleHistory, SubRule, SubPostCommentReport, SubUserFlairChoice
 from ..models import rconn, UserStatus
 from ..tasks import create_thumbnail
 from ..notifications import notifications
@@ -136,15 +135,17 @@ def send_email_confirmation_link_email(user, new_email):
                                salt="email-change")
     token = s.dumps({"uid": user.uid, "email": new_email})
     send_email(new_email, _("Confirm your email address for your %(site)s account", site=config.site.name),
-               text_content=engine.get_template("user/email/confirm-email-change.txt").render(dict(user=user, token=token)),
-               html_content=engine.get_template("user/email/confirm-email-change.html").render(dict(user=user, token=token)))
+               text_content=engine.get_template("user/email/confirm-email-change.txt").render(
+                   dict(user=user, token=token)),
+               html_content=engine.get_template("user/email/confirm-email-change.html").render(
+                   dict(user=user, token=token)))
 
 
 def info_from_email_confirmation_token(token):
     try:
         s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"],
                                    salt="email-change")
-        return s.loads(token, max_age=24*60*60)  # TODO in config?
+        return s.loads(token, max_age=24 * 60 * 60)  # TODO in config?
     except (SignatureExpired, BadSignature):
         return None
 
@@ -243,7 +244,8 @@ def delete_post():
 
         # check if the post is an announcement. Unannounce if it is.
         try:
-            ann = SiteMetadata.select().where(SiteMetadata.key == 'announcement').where(SiteMetadata.value == post.pid).get()
+            ann = SiteMetadata.select().where(SiteMetadata.key == 'announcement')\
+                .where(SiteMetadata.value == post.pid).get()
             ann.delete_instance()
             cache.delete_memoized(misc.getAnnouncementPid)
         except SiteMetadata.DoesNotExist:
@@ -251,8 +253,9 @@ def delete_post():
 
         # Check if the post is sticky.  Unstick if so.
         try:
-            is_sticky = SubMetadata.get((SubMetadata.sid == post.sid_id) & (SubMetadata.key == 'sticky') &
-                                        (SubMetadata.value == post.pid))
+            is_sticky = SubMetadata.get((SubMetadata.sid == post.sid_id)
+                                        & (SubMetadata.key == 'sticky')
+                                        & (SubMetadata.value == post.pid))
             is_sticky.delete_instance()
             misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_DEL, current_user.uid, post.sid,
                                link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
@@ -355,8 +358,10 @@ def edit_sub(sub):
     if current_user.is_mod(sub.sid, 1) or current_user.is_admin():
         form = EditSubForm()
         if form.validate():
-            if not (form.allow_text_posts.data or form.allow_link_posts.data or
-                    form.allow_upload_posts.data or form.allow_polls.data):
+            if not (form.allow_text_posts.data
+                    or form.allow_link_posts.data
+                    or form.allow_upload_posts.data
+                    or form.allow_polls.data):
                 return (json.dumps({
                     'status': 'error',
                     'error': [_('At least one kind of post must be permitted')]}))
@@ -490,7 +495,8 @@ def set_user_flair_choice(sub, flair_id):
         return jsonify(status='error', error=[_("Not authorized")])
 
     try:
-        flair_choice = SubUserFlairChoice.get((SubUserFlairChoice.sub == sub.sid) & (SubUserFlairChoice.id == flair_id))
+        flair_choice = SubUserFlairChoice.get((SubUserFlairChoice.sub == sub.sid)
+                                              & (SubUserFlairChoice.id == flair_id))
     except SubUserFlairChoice.DoesNotExist:
         return jsonify(status='error', error=[_("Flair does not exist")])
 
@@ -685,7 +691,9 @@ def subscribe_to_sub(sid):
     form = DummyForm()
     if form.validate():
         if current_user.has_blocked(sid):
-            ss = SubSubscriber.get((SubSubscriber.uid == current_user.uid) & (SubSubscriber.sid == sid) & (SubSubscriber.status == 2))
+            ss = SubSubscriber.get((SubSubscriber.uid == current_user.uid)
+                                   & (SubSubscriber.sid == sid)
+                                   & (SubSubscriber.status == 2))
             ss.delete_instance()
 
         SubSubscriber.create(time=datetime.datetime.utcnow(), uid=current_user.uid, sid=sid, status=1)
@@ -708,7 +716,9 @@ def unsubscribe_from_sub(sid):
 
     form = DummyForm()
     if form.validate():
-        ss = SubSubscriber.get((SubSubscriber.uid == current_user.uid) & (SubSubscriber.sid == sid) & (SubSubscriber.status == 1))
+        ss = SubSubscriber.get((SubSubscriber.uid == current_user.uid)
+                               & (SubSubscriber.sid == sid)
+                               & (SubSubscriber.status == 1))
         ss.delete_instance()
 
         Sub.update(subscribers=Sub.subscribers - 1).where(Sub.sid == sid).execute()
@@ -731,7 +741,9 @@ def block_sub(sid):
     form = DummyForm()
     if form.validate():
         if current_user.has_subscribed(sub.name):
-            ss = SubSubscriber.get((SubSubscriber.uid == current_user.uid) & (SubSubscriber.sid == sid) & (SubSubscriber.status == 1))
+            ss = SubSubscriber.get((SubSubscriber.uid == current_user.uid)
+                                   & (SubSubscriber.sid == sid)
+                                   & (SubSubscriber.status == 1))
             ss.delete_instance()
             Sub.update(subscribers=Sub.subscribers - 1).where(Sub.sid == sid).execute()
 
@@ -754,7 +766,9 @@ def unblock_sub(sid):
 
     form = DummyForm()
     if form.validate():
-        ss = SubSubscriber.get((SubSubscriber.uid == current_user.uid) & (SubSubscriber.sid == sub.sid) & (SubSubscriber.status == 2))
+        ss = SubSubscriber.get((SubSubscriber.uid == current_user.uid)
+                               & (SubSubscriber.sid == sub.sid)
+                               & (SubSubscriber.status == 2))
         ss.delete_instance()
         return jsonify(status='ok')
     return jsonify(status='error', error=get_errors(form))
@@ -793,7 +807,8 @@ def get_txtpost(pid):
         pollData = {'has_voted': False}
         postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
         # poll. grab options and votes.
-        options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text, fn.Count(SubPostPollVote.id).alias('votecount'))
+        options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text,
+                                           fn.Count(SubPostPollVote.id).alias('votecount'))
         options = options.join(SubPostPollVote, JOIN.LEFT_OUTER, on=(SubPostPollVote.vid == SubPostPollOption.id))
         options = options.where(SubPostPollOption.pid == pid).group_by(SubPostPollOption.id)
         pollData['options'] = options
@@ -818,7 +833,9 @@ def get_txtpost(pid):
             if int(postmeta['poll_closes_time']) < time.time():
                 pollData['poll_open'] = False
 
-        cont = engine.get_template('sub/postpoll.html').render({'post': post, 'pollData': pollData, 'postmeta': postmeta})
+        cont = engine.get_template('sub/postpoll.html').render({
+            'post': post, 'pollData': pollData, 'postmeta': postmeta
+        })
 
     return jsonify(status='ok', content=cont)
 
@@ -884,8 +901,8 @@ def toggle_lock_comments(post):
 
     if form.validate():
         try:
-            smd = SubPostMetadata.select().where((SubPostMetadata.key == 'lock-comments') &
-                                                 (SubPostMetadata.pid == post.pid)).get()
+            smd = SubPostMetadata.select().where((SubPostMetadata.key == 'lock-comments')
+                                                 & (SubPostMetadata.pid == post.pid)).get()
             smd.value = '0' if smd.value == '1' else '1'
             smd.save()
         except SubPostMetadata.DoesNotExist:
@@ -911,7 +928,7 @@ def edit_txtpost(pid):
         if current_user.is_subban(post.sid):
             return jsonify(status='error', error=[_('You are banned on this sub.')])
 
-        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
+        if post.is_archived():
             return jsonify(status='error', error=[_("Post is archived")])
 
         dt = datetime.datetime.utcnow()
@@ -954,7 +971,7 @@ def create_comment(pid):
         if post.deleted:
             return jsonify(status='error', error=[_('Post was deleted')]), 400
 
-        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
+        if post.is_archived():
             return jsonify(status='error', error=[_("Post is archived")]), 400
 
         postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
@@ -990,10 +1007,13 @@ def create_comment(pid):
                        'comments': post.comments + 1},
                       namespace='/snt',
                       room=post.pid)
-        comment_res = misc.word_truncate(''.join(BeautifulSoup(misc.our_markdown(comment.content.decode())).findAll(text=True)).replace('\n', ' '), 250)
+        comment_res = misc.word_truncate(
+            ''.join(BeautifulSoup(misc.our_markdown(comment.content.decode())).findAll(text=True)).replace('\n', ' '),
+            250)
         defaults = [x.value for x in SiteMetadata.select().where(SiteMetadata.key == 'default')]
         socketio.emit('comment',
-                      {'sub': sub.name, 'show_sidebar': (sub.sid in defaults or config.site.recent_activity.defaults_only),
+                      {'sub': sub.name,
+                       'show_sidebar': (sub.sid in defaults or config.site.recent_activity.defaults_only),
                        'user': current_user.name, 'pid': post.pid, 'sid': sub.sid, 'content': comment_res,
                        'post_url': url_for('sub.view_post', sub=sub.name, pid=post.pid),
                        'sub_url': url_for('sub.view_sub', sub=sub.name)},
@@ -1010,7 +1030,8 @@ def create_comment(pid):
             to = post.uid.uid
             ntype = 'POST_REPLY'
         if to != current_user.uid and current_user.uid not in misc.get_ignores(to):
-            notifications.send(ntype, sub=post.sid, post=post.pid, comment=comment.cid, sender=current_user.uid, target=to)
+            notifications.send(ntype, sub=post.sid, post=post.pid, comment=comment.cid, sender=current_user.uid,
+                               target=to)
 
         subMods = misc.getSubMods(sub.sid)
         include_history = current_user.is_mod(sub.sid, 1) or current_user.is_admin()
@@ -1020,7 +1041,8 @@ def create_comment(pid):
         renderedComment = engine.get_template('sub/postcomments.html').render({
             'post': misc.getSinglePost(post.pid),
             'postmeta': misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == post.pid)),
-            'comments': misc.get_comment_tree(post.pid, sub.sid, [{'cid': str(comment.cid), 'parentcid': None}], uid=current_user.uid, include_history=include_history),
+            'comments': misc.get_comment_tree(post.pid, sub.sid, [{'cid': str(comment.cid), 'parentcid': None}],
+                                              uid=current_user.uid, include_history=include_history),
             'subInfo': misc.getSubData(sub.sid),
             'subMods': subMods,
             'highlight': str(comment.cid),
@@ -1145,7 +1167,10 @@ def inv_mod(sub):
         return jsonify(status='error', error=[_('Sub does not exist')])
 
     try:
-        SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == current_user.uid) & (SubMod.power_level == 0) & (SubMod.invite == False))
+        SubMod.get((SubMod.sid == sub.sid)
+                   & (SubMod.uid == current_user.uid)
+                   & (SubMod.power_level == 0)
+                   & (~SubMod.invite))
         is_owner = True
     except SubMod.DoesNotExist:
         is_owner = False
@@ -1159,13 +1184,13 @@ def inv_mod(sub):
                 return jsonify(status='error', error=[_('User does not exist')])
 
             try:
-                SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.invite == False))
+                SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (~SubMod.invite))
                 return jsonify(status='error', error=[_('User is already a mod')])
             except SubMod.DoesNotExist:
                 pass
 
             try:
-                SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.invite == True))
+                SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & SubMod.invite)
                 return jsonify(status='error', error=[_('User has a pending invite')])
             except SubMod.DoesNotExist:
                 pass
@@ -1175,7 +1200,8 @@ def inv_mod(sub):
             else:
                 return jsonify(status='error', error=[_('Invalid power level')])
 
-            moddedCount = SubMod.select().where((SubMod.uid == user.uid) & (1 <= SubMod.power_level <= 2) & (SubMod.invite == False)).count()
+            moddedCount = SubMod.select().where(
+                (SubMod.uid == user.uid) & (1 <= SubMod.power_level <= 2) & (~SubMod.invite)).count()
             if moddedCount >= 20:
                 # TODO: Adjust by level
                 return jsonify(status='error', error=[_("User can't mod more than 20 subs")])
@@ -1212,10 +1238,10 @@ def remove_sub_ban(sub, user):
     if form.validate():
         if current_user.is_mod(sub.sid, 2) or current_user.is_admin():
             try:
-                sb = SubBan.get((SubBan.sid == sub.sid) &
-                                (SubBan.uid == user.uid) &
-                                ((SubBan.effective == True) & ((SubBan.expires.is_null(True)) | (
-                                            SubBan.expires > datetime.datetime.utcnow()))))
+                sb = SubBan.get((SubBan.sid == sub.sid)
+                                & (SubBan.uid == user.uid)
+                                & (SubBan.effective
+                                   & ((SubBan.expires.is_null(True)) | (SubBan.expires > datetime.datetime.utcnow()))))
             except SubBan.DoesNotExist:
                 return jsonify(status='error', error=[_('User is not banned')])
 
@@ -1270,7 +1296,10 @@ def remove_mod2(sub, user):
         isTopMod = current_user.is_mod(sub.sid, 0)
         if isTopMod or current_user.is_admin() or (current_user.uid == user.uid and current_user.is_mod(sub.sid)):
             try:
-                mod = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.power_level != 0) & (SubMod.invite == False))
+                mod = SubMod.get((SubMod.sid == sub.sid)
+                                 & (SubMod.uid == user.uid)
+                                 & (SubMod.power_level != 0)
+                                 & (~SubMod.invite))
             except SubMod.DoesNotExist:
                 return jsonify(status='error', error=[_('User is not mod')])
 
@@ -1303,7 +1332,7 @@ def revoke_mod2inv(sub, user):
         isTopMod = current_user.is_mod(sub.sid, 0)
         if isTopMod or current_user.is_admin():
             try:
-                x = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.invite == True))
+                x = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & SubMod.invite)
             except SubMetadata.DoesNotExist:
                 return jsonify(status='error', error=[_('User has not been invited to moderate the sub')])
             x.delete_instance()
@@ -1332,17 +1361,19 @@ def accept_modinv(sub, user):
     form = DummyForm()
     if form.validate():
         try:
-            modi = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & (SubMod.invite == True))
+            modi = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid) & SubMod.invite)
         except SubMod.DoesNotExist:
             return jsonify(status='error', error=_('You have not been invited to mod this sub'))
 
-        moddedCount = SubMod.select().where((SubMod.uid == user.uid) & (1 <= SubMod.power_level <= 2) & (SubMod.invite == False)).count()
+        moddedCount = SubMod.select().where(
+            (SubMod.uid == user.uid) & (1 <= SubMod.power_level <= 2) & (~SubMod.invite)).count()
         if moddedCount >= 20:
             return jsonify(status='error', error=[_("You can't mod more than 20 subs")])
 
         modi.invite = False
         modi.save()
-        SubMetadata.delete().where((SubMetadata.sid == sub.sid) & (SubMetadata.key == 'xmod2') & (SubMetadata.value == user.uid)).execute()
+        SubMetadata.delete().where(
+            (SubMetadata.sid == sub.sid) & (SubMetadata.key == 'xmod2') & (SubMetadata.value == user.uid)).execute()
 
         misc.create_sublog(misc.LOG_TYPE_SUB_MOD_ACCEPT, current_user.uid, sub.sid, target=user.uid)
 
@@ -1365,7 +1396,7 @@ def refuse_mod2inv(sub):
     form = DummyForm()
     if form.validate():
         try:
-            modi = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == current_user.uid) & (SubMod.invite == True))
+            modi = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == current_user.uid) & SubMod.invite)
         except SubMetadata.DoesNotExist:
             return jsonify(status='error', error=_('You have not been invited to mod this sub'))
 
@@ -1448,7 +1479,7 @@ def edit_title():
         if current_user.is_subban(sub):
             return jsonify(status='error', error=_('You are banned on this sub.'))
 
-        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(seconds=config.site.title_edit_timeout):
+        if post.is_title_editable():
             return jsonify(status="error", error=_("You cannot edit the post title anymore"))
 
         if post.uid.uid != current_user.uid:
@@ -1496,7 +1527,8 @@ def deleteannouncement():
         return redirect(url_for('admin.index'))
 
     ann.delete_instance()
-    misc.create_sitelog(misc.LOG_TYPE_UNANNOUNCE, uid=current_user.uid, link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
+    misc.create_sitelog(misc.LOG_TYPE_UNANNOUNCE, uid=current_user.uid,
+                        link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
 
     cache.delete_memoized(misc.getAnnouncementPid)
     socketio.emit('rmannouncement', {}, namespace='/snt')
@@ -1527,7 +1559,8 @@ def make_announcement():
 
         SiteMetadata.create(key='announcement', value=post.pid)
 
-        misc.create_sitelog(misc.LOG_TYPE_ANNOUNCEMENT, uid=current_user.uid, link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
+        misc.create_sitelog(misc.LOG_TYPE_ANNOUNCEMENT, uid=current_user.uid,
+                            link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
 
         cache.delete_memoized(misc.getAnnouncementPid)
         socketio.emit('announcement',
@@ -1776,12 +1809,14 @@ def toggle_sticky(post):
 
     if form.validate():
         try:
-            is_sticky = SubMetadata.get((SubMetadata.sid == post.sid_id) & (SubMetadata.key == 'sticky') & (SubMetadata.value == post.pid))
+            is_sticky = SubMetadata.get(
+                (SubMetadata.sid == post.sid_id) & (SubMetadata.key == 'sticky') & (SubMetadata.value == post.pid))
             is_sticky.delete_instance()
             misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_DEL, current_user.uid, post.sid,
                                link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
         except SubMetadata.DoesNotExist:
-            if SubMetadata.select().where((SubMetadata.sid == post.sid_id) & (SubMetadata.key == 'sticky')).count() >= 3:
+            stickies = SubMetadata.select().where((SubMetadata.sid == post.sid_id) & (SubMetadata.key == 'sticky'))
+            if stickies.count() >= 3:
                 return jsonify(status='error', error=_('This sub already has three sticky posts'))
             SubMetadata.create(sid=post.sid_id, key='sticky', value=post.pid)
             misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_ADD, current_user.uid, post.sid,
@@ -1809,7 +1844,8 @@ def set_sticky_comment(comment):
 
     if form.validate():
         try:
-            sticky = SubPostMetadata.get((SubPostMetadata.pid == comment['pid']) & (SubPostMetadata.key == 'sticky_cid'))
+            sticky = SubPostMetadata.get(
+                (SubPostMetadata.pid == comment['pid']) & (SubPostMetadata.key == 'sticky_cid'))
             if sticky.value == comment['cid']:
                 sticky.delete_instance()
             else:
@@ -1846,8 +1882,8 @@ def toggle_sort(post):
 
     if form.validate():
         try:
-            smd = SubPostMetadata.select().where((SubPostMetadata.key == 'sort') &
-                                                 (SubPostMetadata.pid == post.pid)).get()
+            smd = SubPostMetadata.select().where((SubPostMetadata.key == 'sort')
+                                                 & (SubPostMetadata.pid == post.pid)).get()
             smd.value = 'top' if smd.value == 'new' else 'new'
             smd.save()
         except SubPostMetadata.DoesNotExist:
@@ -1876,7 +1912,8 @@ def toggle_wikipost(post):
 
     if form.validate():
         try:
-            is_wiki = SubMetadata.get((SubMetadata.sid == post.sid_id) & (SubMetadata.key == 'wiki') & (SubMetadata.value == post.pid))
+            is_wiki = SubMetadata.get(
+                (SubMetadata.sid == post.sid_id) & (SubMetadata.key == 'wiki') & (SubMetadata.value == post.pid))
             is_wiki.delete_instance()
             #  TODO Log it
             # misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_DEL, current_user.uid, post.sid,
@@ -2109,7 +2146,7 @@ def edit_comment():
             return jsonify(status='error',
                            error=_("You can't edit a deleted comment"))
 
-        if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
+        if post.is_archived():
             return jsonify(status='error', error=_("Post is archived"))
 
         dt = datetime.datetime.utcnow()
@@ -2143,8 +2180,8 @@ def delete_comment():
                                comment=form.reason.data, link=url_for('site.view_post_inbox', pid=comment.pid),
                                admin=True if (not current_user.is_mod(post.sid) and current_user.is_admin()) else False)
             related_reports = SubPostCommentReport.select().where(SubPostCommentReport.cid == comment.cid)
-            for report in related_reports:
-                misc.create_reportlog(misc.LOG_TYPE_REPORT_COMMENT_DELETED, current_user.uid, report.id,
+            for rel_report in related_reports:
+                misc.create_reportlog(misc.LOG_TYPE_REPORT_COMMENT_DELETED, current_user.uid, rel_report.id,
                                       log_type='comment', desc=form.reason.data)
             comment.status = 2
         else:
@@ -2249,11 +2286,12 @@ def get_sibling(pid, cid, lim):
     include_history = current_user.is_mod(post['sid'], 1) or current_user.is_admin()
 
     if lim:
-        comment_tree = misc.get_comment_tree(pid, post['sid'], comments, cid if cid != '0' else None, lim, provide_context=False,
-                                             uid=current_user.uid, include_history=include_history, postmeta=postmeta)
-    elif cid != '0':
-        comment_tree = misc.get_comment_tree(pid, post['sid'], comments, cid, provide_context=False, uid=current_user.uid,
+        comment_tree = misc.get_comment_tree(pid, post['sid'], comments, cid if cid != '0' else None, lim,
+                                             provide_context=False, uid=current_user.uid,
                                              include_history=include_history, postmeta=postmeta)
+    elif cid != '0':
+        comment_tree = misc.get_comment_tree(pid, post['sid'], comments, cid, provide_context=False,
+                                             uid=current_user.uid, include_history=include_history, postmeta=postmeta)
     else:
         return engine.get_template('sub/postcomments.html').render(
             {'post': post, 'postmeta': postmeta,
@@ -2547,7 +2585,8 @@ def edit_top_bar():
     for k in data.get('sids'):
         i += 1
         try:
-            SubSubscriber.update(order=i).where((SubSubscriber.uid == current_user.uid) & (SubSubscriber.sid == k)).execute()
+            SubSubscriber.update(order=i).where((SubSubscriber.uid == current_user.uid) & (SubSubscriber.sid == k))\
+                .execute()
         except SubSubscriber.DoesNotExist:
             pass  # TODO: Add these as status=4 SubSubscriber (after implementing some way to delete those)
 
@@ -2777,7 +2816,8 @@ def report():
             return jsonify(status='error', error=_('You are banned from this sub.'))
 
         # do the reporting.
-        SubPostReport.create(pid=post['pid'], uid=current_user.uid, reason=form.reason.data, send_to_admin=form.send_to_admin.data)
+        SubPostReport.create(pid=post['pid'], uid=current_user.uid, reason=form.reason.data,
+                             send_to_admin=form.send_to_admin.data)
         misc.notify_mods(post['sid'])
         if callbacks_enabled:
             # callbacks!
@@ -2796,9 +2836,10 @@ def report_comment():
     if form.validate():
         try:
             comm = SubPostComment.select(SubPostComment.cid, SubPostComment.content, SubPostComment.lastedit,
-                                         SubPostComment.score, SubPostComment.status, SubPostComment.time, SubPostComment.pid,
-                                         SubPost.sid, User.name.alias('username'), SubPostComment.uid,
-                                         User.status.alias('userstatus'), SubPostComment.upvotes, SubPostComment.downvotes)
+                                         SubPostComment.score, SubPostComment.status, SubPostComment.time,
+                                         SubPostComment.pid, SubPost.sid, User.name.alias('username'),
+                                         SubPostComment.uid, User.status.alias('userstatus'), SubPostComment.upvotes,
+                                         SubPostComment.downvotes)
             comm = comm.join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment)
             comm = comm.join(SubPost)
             comm = comm.where(SubPostComment.cid == form.post.data)
@@ -2811,7 +2852,8 @@ def report_comment():
 
         # check if user already reported the post
         try:
-            SubPostCommentReport.get((SubPostCommentReport.cid == comm.cid) & (SubPostCommentReport.uid == current_user.uid))
+            SubPostCommentReport.get(
+                (SubPostCommentReport.cid == comm.cid) & (SubPostCommentReport.uid == current_user.uid))
             return jsonify(status='error', error=_('You have already reported this post'))
         except SubPostCommentReport.DoesNotExist:
             pass
@@ -2825,7 +2867,8 @@ def report_comment():
             return jsonify(status='error', error=_('You are banned from this sub.'))
 
         # do the reporting.
-        SubPostCommentReport.create(cid=comm.cid, uid=current_user.uid, reason=form.reason.data, send_to_admin=form.send_to_admin.data)
+        SubPostCommentReport.create(cid=comm.cid, uid=current_user.uid, reason=form.reason.data,
+                                    send_to_admin=form.send_to_admin.data)
         misc.notify_mods(comm.pid.sid.sid)
         # callbacks!
         if callbacks_enabled:
@@ -2856,16 +2899,16 @@ def close_post_report(pid, action):
     except Sub.DoesNotExist:
         return jsonify(status='error', error=_('Sub does not exist'))
 
-    if (action != 'close') and (action != 'reopen'):
+    if action != 'close' and action != 'reopen':
         return jsonify(status='error', error=[_('Invalid action')])
 
     if not current_user.is_mod(sub.sid) and not current_user.is_admin():
         return jsonify(status='error', error=[_('Not authorized')])
 
-    if action == 'close' and report.open == False:
+    if action == 'close' and not report.open:
         return jsonify(status='error', error=_('This report has already been closed'))
 
-    elif action == 'reopen' and report.open == True:
+    elif action == 'reopen' and report.open:
         return jsonify(status='error', error=_('This report is already open'))
 
     # change the report status
@@ -2878,20 +2921,12 @@ def close_post_report(pid, action):
 
     # check if it changed and return status
     updated_report = SubPostReport.select().where(SubPostReport.id == pid).get()
-    if (action == 'close') and (updated_report.open == False):
+    if action == 'close' and not updated_report.open:
         misc.create_reportlog(misc.LOG_TYPE_REPORT_CLOSE, current_user.uid, pid, log_type='post')
         return jsonify(status='ok')
-
-    elif (action == 'close') and (updated_report.open == True):
-        return jsonify(status='error', error=_('Failed to close report'))
-
-    elif (action == 'reopen') and (updated_report.open == True):
+    elif action == 'reopen' and updated_report.open:
         misc.create_reportlog(misc.LOG_TYPE_REPORT_REOPEN, current_user.uid, pid, log_type='post')
         return jsonify(status='ok')
-
-    elif (action == 'reopen') and (updated_report.open == False):
-        return jsonify(status='error', error=_('Failed to reopen report'))
-
     else:
         return jsonify(status='error', error=_('Failed to update report'))
 
@@ -2921,16 +2956,16 @@ def close_comment_report(cid, action):
     except Sub.DoesNotExist:
         return jsonify(status='error', error=_('Sub does not exist'))
 
-    if (action != 'close') and (action != 'reopen'):
+    if action != 'close' and action != 'reopen':
         return jsonify(status='error', error=[_('Invalid action')])
 
     if not current_user.is_mod(sub.sid) and not current_user.is_admin():
         return jsonify(status='error', error=[_('Not authorized')])
 
-    if action == 'close' and report.open == False:
+    if action == 'close' and not report.open:
         return jsonify(status='error', error=_('This report has already been closed'))
 
-    elif action == 'reopen' and report.open == True:
+    elif action == 'reopen' and report.open:
         return jsonify(status='error', error=_('This report is already open'))
 
     # change the report status
@@ -2942,20 +2977,12 @@ def close_comment_report(cid, action):
 
     # check if it changed and return status
     updated_report = SubPostCommentReport.select().where(SubPostCommentReport.id == cid).get()
-    if (action == 'close') and (updated_report.open == False):
+    if action == 'close' and not updated_report.open:
         misc.create_reportlog(misc.LOG_TYPE_REPORT_CLOSE, current_user.uid, cid, log_type='comment')
         return jsonify(status='ok')
-
-    elif (action == 'close') and (updated_report.open == True):
-        return jsonify(status='error', error=_('Failed to close report'))
-
-    elif (action == 'reopen') and (updated_report.open == True):
+    elif action == 'reopen' and updated_report.open:
         misc.create_reportlog(misc.LOG_TYPE_REPORT_REOPEN, current_user.uid, cid, log_type='comment')
         return jsonify(status='ok')
-
-    elif (action == 'reopen') and (updated_report.open == False):
-        return jsonify(status='error', error=_('Failed to reopen report'))
-
     else:
         return jsonify(status='error', error=_('Failed to update report'))
 
@@ -3067,7 +3094,7 @@ def create_report_note(report_type, report_id):
         misc.create_reportlog(misc.LOG_TYPE_REPORT_NOTE, current_user.uid, report.id, log_type=report_type,
                               desc=form.text.data)
         return jsonify(status='ok')
-        
+
     return json.dumps({'status': 'error', 'error': get_errors(form)})
 
 

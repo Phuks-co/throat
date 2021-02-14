@@ -11,14 +11,14 @@ bp = Blueprint('wiki', __name__)
 def welcome():
     """ Welcome page for new users """
     try:
-        Wiki.select().where(Wiki.slug == 'welcome').where(Wiki.is_global == True).get()
+        Wiki.select().where(Wiki.slug == 'welcome').where(Wiki.is_global).get()
         return redirect(url_for('wiki.view', slug='welcome'))
     except Wiki.DoesNotExist:
         return render_template('welcome.html')
 
 
 try:
-    th_license = open('LICENSE', 'r').read()
+    th_license = open('LICENSE').read()
 except FileNotFoundError:
     th_license = _l('License file was deleted :(')
 
@@ -32,7 +32,7 @@ def show_license():
 @bp.route("/wiki/<slug>")
 def view(slug):
     try:
-        page = Wiki.select().where(Wiki.slug == slug).where(Wiki.is_global == True).get()
+        page = Wiki.select().where(Wiki.slug == slug).where(Wiki.is_global).get()
     except Wiki.DoesNotExist:
         return abort(404)
 

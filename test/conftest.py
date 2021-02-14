@@ -4,8 +4,8 @@ import tempfile
 import pytest
 
 from app import create_app
-from app.config import Config, config
-from app.models import db, BaseModel, User, UserMetadata
+from app.config import Config
+from app.models import db, BaseModel, User
 from app.auth import auth_provider
 
 from test.utilities import recursively_update
@@ -15,6 +15,7 @@ from test.utilities import recursively_update
 def test_config():
     """Extra configuration values to be used in a test."""
     return {}
+
 
 # The fixture "client" is generated from this one by pytest-flask.
 @pytest.fixture
@@ -41,10 +42,10 @@ def app(test_config):
     config['mail']['port'] = 8025
     config['mail']['default_from'] = 'test@example.com'
     config['ratelimit']['enabled'] = False
-
     recursively_update(config, test_config)
 
-    app = create_app(config)
+    conf_obj = Config(config_dict=config)
+    app = create_app(conf_obj)
     app_context = app.app_context()
     app_context.push()
     db.create_tables(BaseModel.__subclasses__())
@@ -58,7 +59,6 @@ def app(test_config):
             except Exception as err:
                 print(f'Error trying to clean up {user.name} in Keycloak realm:', err)
                 raise err
-
 
     app_context.pop()
     os.close(db_fd)

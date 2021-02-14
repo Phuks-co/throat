@@ -24,9 +24,9 @@ class KeycloakAdmin(KeycloakAdmin_):
         try:
             self.token = self.keycloak_openid.refresh_token(refresh_token)
         except KeycloakGetError as e:
-            if e.response_code == 400 and (b'Refresh token expired' in e.response_body or
-                                           b'Token is not active' in e.response_body or
-                                           b'Session is not active' in e.response_body):
+            if e.response_code == 400 and (b'Refresh token expired' in e.response_body
+                                           or b'Token is not active' in e.response_body
+                                           or b'Session is not active' in e.response_body):
                 self.get_token()
             else:
                 raise
@@ -69,8 +69,8 @@ class AuthProvider:
             return User.get(fn.Lower(User.email) == email.lower())
         except User.DoesNotExist:
             try:
-                um = UserMetadata.get((UserMetadata.key == 'pending_email') &
-                                      (fn.Lower(UserMetadata.value) == email.lower()))
+                um = UserMetadata.get((UserMetadata.key == 'pending_email')
+                                      & (fn.Lower(UserMetadata.value) == email.lower()))
                 return User.get(User.uid == um.uid)
             except UserMetadata.DoesNotExist:
                 pass
@@ -109,8 +109,7 @@ class AuthProvider:
     @staticmethod
     def get_user_auth_source(user):
         try:
-            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
-                                   (UserMetadata.key == "auth_source"))
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == "auth_source"))
             return UserAuthSource(int(umd.value))
         except UserMetadata.DoesNotExist:
             return UserAuthSource.LOCAL
@@ -119,8 +118,7 @@ class AuthProvider:
     def set_user_auth_source(user, value):
         value = str(int(value))
         try:
-            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
-                                   (UserMetadata.key == "auth_source"))
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == "auth_source"))
             umd.value = value
             umd.save()
         except UserMetadata.DoesNotExist:
@@ -129,8 +127,7 @@ class AuthProvider:
     @staticmethod
     def get_user_remote_uid(user):
         try:
-            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
-                                   (UserMetadata.key == "remote_uid"))
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == "remote_uid"))
             return umd.value
         except UserMetadata.DoesNotExist:
             return user.uid
@@ -138,8 +135,7 @@ class AuthProvider:
     @staticmethod
     def set_user_remote_uid(user, remote_uid):
         try:
-            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
-                                   (UserMetadata.key == "remote_uid"))
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == "remote_uid"))
             umd.value = remote_uid
             umd.save()
         except UserMetadata.DoesNotExist:
@@ -199,8 +195,7 @@ class AuthProvider:
     @staticmethod
     def get_pending_email(user):
         try:
-            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
-                                   (UserMetadata.key == "pending_email"))
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == "pending_email"))
             return umd.value
         except UserMetadata.DoesNotExist:
             return None
@@ -208,8 +203,7 @@ class AuthProvider:
     @staticmethod
     def clear_pending_email(user):
         try:
-            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
-                                   (UserMetadata.key == "pending_email"))
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == "pending_email"))
             umd.delete_instance()
         except UserMetadata.DoesNotExist:
             return None
@@ -217,8 +211,7 @@ class AuthProvider:
     @staticmethod
     def set_pending_email(user, email):
         try:
-            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
-                                   (UserMetadata.key == "pending_email"))
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == "pending_email"))
             umd.value = email
             umd.save()
         except UserMetadata.DoesNotExist:
@@ -227,8 +220,7 @@ class AuthProvider:
     def confirm_pending_email(self, user, email):
         umd = None
         try:
-            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
-                                   (UserMetadata.key == "pending_email"))
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == "pending_email"))
         except UserMetadata.DoesNotExist:
             pass
         auth_source = self.get_user_auth_source(user)
@@ -252,8 +244,7 @@ class AuthProvider:
     @staticmethod
     def is_email_verified(user):
         try:
-            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
-                                   (UserMetadata.key == "email_verified"))
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == "email_verified"))
             return umd.value == '1'
         except UserMetadata.DoesNotExist:
             return False
@@ -278,8 +269,7 @@ class AuthProvider:
         """Set the UserMetadata email_verified flag. """
         value = '1' if value else '0'
         try:
-            umd = UserMetadata.get((UserMetadata.uid == user.uid) &
-                                   (UserMetadata.key == "email_verified"))
+            umd = UserMetadata.get((UserMetadata.uid == user.uid) & (UserMetadata.key == "email_verified"))
             umd.value = value
             umd.save()
         except UserMetadata.DoesNotExist:
@@ -302,9 +292,9 @@ class AuthProvider:
                     user.password = ''
                     user.save()
                 return True
-        elif (user.crypto == UserCrypto.REMOTE and
-              self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK and
-              self.provider == 'KEYCLOAK'):
+        elif (user.crypto == UserCrypto.REMOTE
+              and self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK
+              and self.provider == 'KEYCLOAK'):
             try:
                 # TODO do something with the token
                 self.keycloak_openid.token(username=user.name,
@@ -334,13 +324,11 @@ class AuthProvider:
         else:
             raise RuntimeError("Invalid user status")
 
-        if (new_status == 0 and email_validation_is_required() and
-                not self.is_email_verified(user)):
+        if new_status == 0 and email_validation_is_required() and not self.is_email_verified(user):
             new_status = 1
 
         if user.crypto == UserCrypto.REMOTE:
-            if (self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK and
-                    self.provider == 'KEYCLOAK'):
+            if self.get_user_auth_source(user) == UserAuthSource.KEYCLOAK and self.provider == 'KEYCLOAK':
                 self.keycloak_admin.update_user(user_id=self.get_user_remote_uid(user),
                                                 payload=payload)
 

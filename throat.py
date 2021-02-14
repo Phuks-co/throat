@@ -3,9 +3,9 @@
 from pathlib import Path
 from gevent import monkey
 monkey.patch_all()
-import click
+import click  # noqa
 from app import create_app, socketio  # noqa
-from cli import commands
+from cli import commands  # noqa
 
 app = create_app()
 

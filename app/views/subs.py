@@ -84,12 +84,14 @@ def create_post(ptype, sub):
         if not form.ptype.data:
             form.ptype.data = ptype
 
-        return engine.get_template('sub/createpost.html').render({'error': misc.get_errors(form, True), 'form': form, 'sub': sub, 'captcha': captcha}), 400
+        return engine.get_template('sub/createpost.html').render(
+            {'error': misc.get_errors(form, True), 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
     ptype_flag = misc.ptype_names.get(form.ptype.data, None)
     if ptype_flag is None or subdata.get(ptype_flag, '0') == '0':
         return engine.get_template('sub/createpost.html').render(
-            {'error': _('That post type is not allowed in this sub.'), 'form': form, 'sub': sub, 'captcha': captcha}), 400
+            {'error': _('That post type is not allowed in this sub.'), 'form': form, 'sub': sub,
+             'captcha': captcha}), 400
 
     if misc.get_user_level(current_user.uid)[0] <= 4:
         if not misc.validate_captcha(form.ctok.data, form.captcha.data):
@@ -158,7 +160,9 @@ def create_post(ptype, sub):
             monthago = datetime.utcnow() - timedelta(days=30)
             post = lx.where(SubPost.posted > monthago).get()
             return engine.get_template('sub/createpost.html').render(
-                {'error': _('This link was <a href="%(link)s">recently posted</a> on this sub.', link=url_for('sub.view_post', sub=sub.name, pid=post.pid)), 'form': form, 'sub': sub, 'captcha': captcha}), 400
+                {'error': _('This link was <a href="%(link)s">recently posted</a> on this sub.',
+                            link=url_for('sub.view_post', sub=sub.name, pid=post.pid)), 'form': form, 'sub': sub,
+                 'captcha': captcha}), 400
         except SubPost.DoesNotExist:
             pass
 
@@ -232,9 +236,11 @@ def create_post(ptype, sub):
     addr = url_for('sub.view_post', sub=sub.name, pid=post.pid)
     posts = misc.getPostList(misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), 'new', 1).dicts()
     defaults = [x.value for x in SiteMetadata.select().where(SiteMetadata.key == 'default')]
+    show_sidebar = (sub.sid in defaults or not config.site.recent_activity.defaults_only)
+    show_sidebar = show_sidebar and not config.site.recent_activity.comments_only
     socketio.emit('thread',
                   {'addr': addr, 'sub': sub.name, 'type': form.ptype.data,
-                   'show_sidebar': (sub.sid in defaults or not config.site.recent_activity.defaults_only) and not config.site.recent_activity.comments_only,
+                   'show_sidebar': show_sidebar,
                    'user': current_user.name, 'pid': post.pid, 'sid': sub.sid, 'title': post.title,
                    'post_url': url_for('sub.view_post', sub=sub.name, pid=post.pid),
                    'sub_url': url_for('sub.view_sub', sub=sub.name),
@@ -279,7 +285,6 @@ def random_sub():
 def create_sub():
     """ Here we can view the create sub form """
     form = CreateSubForm()
-    # return engine.get_template('sub/create.html').render({'csubform': createsub})
     if not form.validate():
         return engine.get_template('sub/create.html').render({'error': misc.get_errors(form, True), 'csubform': form})
 
@@ -299,7 +304,8 @@ def create_sub():
 
     if config.site.sub_creation_admin_only and not current_user.admin:
         return engine.get_template('sub/create.html').render(
-            {'error': _("Only Site Admins may create new subs. Please contact an administrator to request a new sub.", level=config.site.sub_creation_min_level),
+            {'error': _("Only Site Admins may create new subs. Please contact an administrator to request a new sub.",
+                        level=config.site.sub_creation_min_level),
              'csubform': form})
 
     level = misc.get_user_level(current_user.uid)[0]
@@ -310,7 +316,7 @@ def create_sub():
                  'csubform': form})
 
         owned = SubMod.select().where(SubMod.uid == current_user.uid).where(
-            (SubMod.power_level == 0) & (SubMod.invite == False)).count()
+            (SubMod.power_level == 0) & (~SubMod.invite)).count()
 
         if owned >= 20 and (not current_user.admin):
             return engine.get_template('sub/create.html').render(

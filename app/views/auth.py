@@ -10,7 +10,8 @@ from flask_login import current_user, login_user, login_required
 from flask_babel import _
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired, BadSignature
-from .. import misc, config
+from .. import misc
+from ..config import config
 from ..auth import auth_provider, registration_is_enabled, email_validation_is_required
 from ..auth import normalize_email, create_user
 from ..forms import LoginForm, RegistrationForm, ResendConfirmationForm
@@ -53,14 +54,17 @@ def sso_proxy_validate():
         try:
             user = User.get((User.uid == red_c[0].decode()) & (User.status << (0, 100)))
         except User.DoesNotExist:
-            return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationFailure code=\"INVALID_TICKET\">" + _(
-                'User not found or invalid ticket') + "</cas:authenticationFailure></cas:serviceResponse>", 401
+            return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>" \
+                   "<cas:authenticationFailure code=\"INVALID_TICKET\">" + _('User not found or invalid ticket') +\
+                   "</cas:authenticationFailure></cas:serviceResponse>", 401
 
-        return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationSuccess><cas:user>{0}</cas:user></cas:authenticationSuccess></cas:serviceResponse>".format(
-            user.name.lower()), 200
+        return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>" \
+               f"<cas:authenticationSuccess><cas:user>{user.name.lower()}</cas:user>" \
+               "</cas:authenticationSuccess></cas:serviceResponse>", 200
     else:
-        return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'><cas:authenticationFailure code=\"INVALID_TICKET\">" + _(
-            'User not found or invalid ticket') + "</cas:authenticationFailure></cas:serviceResponse>", 401
+        return "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>" \
+               "<cas:authenticationFailure code=\"INVALID_TICKET\">" + _('User not found or invalid ticket') + \
+               "</cas:authenticationFailure></cas:serviceResponse>", 401
 
 
 @bp.route("/register", methods=['GET', 'POST'])
@@ -96,11 +100,11 @@ def register():
         existing_user = User.get(fn.Lower(User.name) == form.username.data.lower())
         # Allow reregistering an existing user account which has never
         # fetched the verification link and is more than two days old.
-        if (existing_user.status != UserStatus.PROBATION or
-                (datetime.utcnow() - existing_user.joindate).days < 2):
-            return engine.get_template('user/register.html').render(
-                {'error': _("Username is not available."),
-                 'regform': form, 'captcha': captcha})
+        if existing_user.status != UserStatus.PROBATION or (datetime.utcnow() - existing_user.joindate).days < 2:
+            return engine.get_template('user/register.html').render({
+                'error': _("Username is not available."),
+                'regform': form, 'captcha': captcha
+            })
     except User.DoesNotExist:
         pass
 
@@ -157,7 +161,7 @@ def register():
         return redirect(url_for('auth.confirm_registration'))
     else:
         theuser = misc.load_user(user.uid)
-        login_user(theuser, remember=False)
+        login_user(theuser)
         theuser.update_prefs('nsfw', '1')
         session['remember_me'] = False
         return redirect(url_for('wiki.welcome'))
@@ -176,7 +180,7 @@ def send_login_link_email(user):
 def user_from_login_token(token):
     try:
         s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"], salt="login")
-        info = s.loads(token, max_age=8*60*60)  # TODO in config?
+        info = s.loads(token, max_age=8 * 60 * 60)  # TODO in config?
         return User.get((User.uid == info["uid"]) & (User.resets == info.get("resets", 0)))
     except (SignatureExpired, BadSignature, User.DoesNotExist):
         return None
@@ -204,7 +208,7 @@ def login_with_token(token):
         user.save()
         auth_provider.set_email_verified(user)
         theuser = misc.load_user(user.uid)
-        login_user(theuser, remember=False)
+        login_user(theuser)
         session['remember_me'] = False
     return redirect(url_for('wiki.welcome'))
 
@@ -214,22 +218,27 @@ def login_with_token(token):
 def resend_confirmation_email():
     if current_user.is_authenticated:
         return redirect(url_for('home.index'))
+
     form = ResendConfirmationForm()
     if not form.validate():
-        return engine.get_template('user/resend_confirmation.html').render(
-            {'form': form,
-             'error': misc.get_errors(form, True)})
+        return engine.get_template('user/resend_confirmation.html').render({
+            'form': form,
+            'error': misc.get_errors(form, True)
+        })
+
     try:
         email = normalize_email(form.email.data)
         user = User.get(fn.Lower(User.email) == email.lower())
-        if user.status == UserStatus.PROBATION:
-            send_login_link_email(user)
-            return redirect(url_for('auth.confirm_registration'))
-        elif user.status == UserStatus.OK:
-            flash(_("Your email is already confirmed."), 'message')
-            return redirect(url_for('auth.login'))
     except User.DoesNotExist:
-        pass
+        return redirect(url_for('user.recovery_email_sent'))
+
+    if user.status == UserStatus.PROBATION:
+        send_login_link_email(user)
+        return redirect(url_for('auth.confirm_registration'))
+    elif user.status == UserStatus.OK:
+        flash(_("Your email is already confirmed."))
+        return redirect(url_for('auth.login'))
+
     return redirect(url_for('user.recovery_email_sent'))
 
 
@@ -249,32 +258,33 @@ def login():
 
     if current_user.is_authenticated:
         return redirect(url_for('home.index'))
+
     form = LoginForm()
-    if form.validate_on_submit():
-        try:
-            user = User.get(fn.Lower(User.name) == form.username.data.lower())
-        except User.DoesNotExist:
-            return engine.get_template('user/login.html').render(
-                {'error': _("Invalid username or password."), 'loginform': form})
+    if not form.validate_on_submit():
+        return engine.get_template('user/login.html').render({'error': misc.get_errors(form, True), 'loginform': form})
+    try:
+        user = User.get(fn.Lower(User.name) == form.username.data.lower())
+    except User.DoesNotExist:
+        return engine.get_template('user/login.html').render(
+            {'error': _("Invalid username or password."), 'loginform': form})
 
-        if user.status != UserStatus.OK and user.status != UserStatus.PROBATION:
-            return engine.get_template('user/login.html').render(
-                {'error': _("Invalid username or password."), 'loginform': form})
+    if user.status not in (UserStatus.PROBATION, UserStatus.OK):
+        return engine.get_template('user/login.html').render(
+            {'error': _("Invalid username or password."), 'loginform': form})
 
-        if auth_provider.validate_password(user, form.password.data):
-            if user.status == UserStatus.PROBATION:
-                return redirect(url_for('auth.resend_confirmation_email'))
-            session['remember_me'] = form.remember.data
-            theuser = misc.load_user(user.uid)
-            login_user(theuser, remember=form.remember.data)
-            if request.args.get('service'):
-                return handle_cas_ok(uid=user.uid)
-            else:
-                return form.redirect('index')
-        else:
-            return engine.get_template('user/login.html').render(
-                    {'error': _("Invalid username or password."), 'loginform': form})
-    return engine.get_template('user/login.html').render({'error': misc.get_errors(form, True), 'loginform': form})
+    if not auth_provider.validate_password(user, form.password.data):
+        return engine.get_template('user/login.html').render(
+            {'error': _("Invalid username or password."), 'loginform': form})
+
+    if user.status == UserStatus.PROBATION:
+        return redirect(url_for('auth.resend_confirmation_email'))
+    session['remember_me'] = form.remember.data
+    theuser = misc.load_user(user.uid)
+    login_user(theuser, remember=form.remember.data)
+    if request.args.get('service'):
+        return handle_cas_ok(uid=user.uid)
+
+    return form.redirect('index')
 
 
 @bp.route("/auth/matrix", methods=['POST'])
@@ -283,9 +293,8 @@ def get_ticket():
     """ Returns a CAS ticket for the current user """
     token = generate_cas_token(current_user.uid)
     # Not using safe_requests since we're supposed to trust this server.
-    resp = requests.get(
-        f"{config.matrix.homeserver}/_matrix/client/r0/login/cas/ticket?redirectUrl=http%3A%2F%2Fexample.com%2F&ticket={token}",
-        allow_redirects=False)
+    uri = f"{config.matrix.homeserver}/_matrix/client/r0/login/cas/ticket?redirectUrl=phuks://&ticket={token}"
+    resp = requests.get(uri, allow_redirects=False)
 
     if resp.status_code == 200:
         matches = re.search(r"href=\".+/\?loginToken=(.+)\">", resp.text)

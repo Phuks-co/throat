@@ -36,7 +36,7 @@ def view_sitelog(page):
                         SiteLog.target)
     s2 = SubLog.select(SubLog.time, SubLog.action, SubLog.desc, SubLog.link, SubLog.uid, Sub.name.alias('sub'),
                        SubLog.target)
-    s2 = s2.join(Sub).where(SubLog.admin == True)
+    s2 = s2.join(Sub).where(SubLog.admin)
     logs = (s1 | s2)
     logs = logs.order_by(logs.c.time.desc()).paginate(page, 50)
 

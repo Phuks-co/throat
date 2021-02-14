@@ -67,7 +67,8 @@ class EditSubUserFlair(FlaskForm):
 class AssignSubUserFlair(FlaskForm):
     flair = HiddenField()
     user = StringField(_l('Username'), validators=[DataRequired()])
-    flair_id = SelectField(_l('Flair'), choices=[('', _l('Pick one')), (-1, _l('Custom')), (-2, _l('Remove flair'))], validators=[DataRequired()])
+    flair_id = SelectField(_l('Flair'), choices=[('', _l('Pick one')), (-1, _l('Custom')), (-2, _l('Remove flair'))],
+                           validators=[DataRequired()])
     text = StringField(_l('Flair text'), validators=[Length(max=25)])
 
 
@@ -131,7 +132,7 @@ class CreateSubPostForm(FlaskForm):
     sub = StringField(_l('Sub'), validators=[DataRequired(), Length(min=2, max=32)])
     title = StringField(_l('Post title'), validators=[DataRequired(), Length(min=3, max=255)])
     content = TextAreaField(_l('Post content'), validators=[Length(max=65535)])
-    link = StringField(_l('Post link'), validators=[Length(min=10, max=255), Optional(), URL(require_tld=True)])
+    link = StringField(_l('Post link'), validators=[Length(min=10, max=255), Optional(), URL()])
     ptype = RadioField(_l('Post type'),
                        choices=[('link', _l('Link post')), ('text', _l('Text post')),
                                 ('upload', _l('Upload file')), ('poll', _l('Poll'))],
@@ -183,6 +184,7 @@ class DistinguishForm(FlaskForm):
     cid = HiddenField()
     pid = HiddenField()
     as_admin = HiddenField()
+
 
 class DeletePost(FlaskForm):
     """ Post deletion form. """

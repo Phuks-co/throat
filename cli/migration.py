@@ -1,5 +1,3 @@
-import os
-import sys
 import logging
 import click
 from flask.cli import AppGroup
@@ -47,4 +45,3 @@ def list_admins():
     for m in all_migrations:
         sym = '✓' if m in applied_migrations else '✗'
         print(f"{sym} {m}")
-

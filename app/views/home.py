@@ -80,7 +80,8 @@ def all_more(sort, page, pid):
     """ Infinite scroll pagination for /all """
     # XXX: Our pagination is very slow
     if sort == 'new':
-        posts = misc.getPostList(misc.postListQueryBase(isSubMod=current_user.can_admin).where(SubPost.pid < pid), 'new', 1).dicts()
+        posts = misc.getPostList(misc.postListQueryBase(isSubMod=current_user.can_admin)
+                                 .where(SubPost.pid < pid), 'new', 1).dicts()
     elif sort == 'top':
         posts = misc.getPostList(misc.postListQueryBase(isSubMod=current_user.can_admin), 'top', page).dicts()
     elif sort == 'hot':

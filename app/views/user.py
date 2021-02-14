@@ -1,5 +1,4 @@
 """ Profile and settings endpoints """
-import time
 from peewee import fn, JOIN
 from flask import Blueprint, render_template, abort, redirect, url_for, flash
 from flask_login import login_required, current_user
@@ -31,7 +30,7 @@ def view(user):
         abort(404)
 
     modsquery = SubMod.select(Sub.name, SubMod.power_level).join(Sub).where(
-        (SubMod.uid == user.uid) & (SubMod.invite == False))
+        (SubMod.uid == user.uid) & (~SubMod.invite))
     owns = [x.sub.name for x in modsquery if x.power_level == 0]
     mods = [x.sub.name for x in modsquery if 1 <= x.power_level <= 2]
     invitecodeinfo = misc.getInviteCodeInfo(user.uid)
@@ -56,10 +55,12 @@ def view(user):
 
     givenScore = misc.getUserGivenScore(user.uid)
 
-    return engine.get_template('user/profile.html').render(
-        {'user': user, 'level': level, 'progress': progress, 'postCount': pcount, 'commentCount': ccount,
-         'givenScore': givenScore, 'invitecodeinfo': invitecodeinfo, 'badges': badges, 'owns': owns, 'mods': mods, 'habits': habit, 'target_user_is_admin': user_is_admin,
-         'msgform': CreateUserMessageForm()})
+    return engine.get_template('user/profile.html').render({
+        'user': user, 'level': level, 'progress': progress, 'postCount': pcount, 'commentCount': ccount,
+        'givenScore': givenScore, 'invitecodeinfo': invitecodeinfo, 'badges': badges, 'owns': owns, 'mods': mods,
+        'habits': habit, 'target_user_is_admin': user_is_admin,
+        'msgform': CreateUserMessageForm()
+    })
 
 
 @bp.route("/u/<user>/posts", defaults={'page': 1})
@@ -165,7 +166,9 @@ def edit_user():
     form.language.choices = []
     for i in languages:
         form.language.choices.append((i, Locale(*i.split("_")).display_name.capitalize()))
-    return engine.get_template('user/settings/preferences.html').render({'edituserform': form, 'user': User.get(User.uid == current_user.uid)})
+    return engine.get_template('user/settings/preferences.html').render({
+        'edituserform': form, 'user': User.get(User.uid == current_user.uid)
+    })
 
 
 @bp.route("/settings/account")
@@ -200,7 +203,9 @@ def confirm_email_change(token):
 @bp.route("/settings/delete")
 @login_required
 def delete_account():
-    return engine.get_template('user/settings/delete.html').render({'form': DeleteAccountForm(), 'user': User.get(User.uid == current_user.uid)})
+    return engine.get_template('user/settings/delete.html').render({
+        'form': DeleteAccountForm(), 'user': User.get(User.uid == current_user.uid)
+    })
 
 
 @bp.route("/recover", methods=['GET', 'POST'])

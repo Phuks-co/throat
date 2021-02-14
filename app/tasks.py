@@ -1,7 +1,6 @@
 import cgi
 import hashlib
 from io import BytesIO
-import json
 import math
 import re
 import time
@@ -208,7 +207,7 @@ def safe_request(url, receive_timeout=10, max_size=25000000, mimetypes=None,
     try:
         r = requests.get(url, stream=True, timeout=receive_timeout,
                          headers={'User-Agent': 'Throat/1 (Phuks)'})
-    except:
+    except:  # noqa
         raise ValueError('error fetching')
     r.raise_for_status()
 
