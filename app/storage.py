@@ -1,5 +1,4 @@
 """ Store and serve uploads and thumbnails. """
-import io
 import os
 import tempfile
 import uuid
@@ -49,8 +48,8 @@ class S3Storage:
         self.container = config.storage.container
         import boto3
         if "key" in config.storage.keys():
-            # Region? For the moment I'm just going to assume that a key has been set that will get the region right, the
-            # libcloud region set is going to be a pain to deal with, and eventually incomplete.
+            # Region? For the moment I'm just going to assume that a key has been set that will get the region right,
+            # the libcloud region set is going to be a pain to deal with, and eventually incomplete.
             session = boto3.Session(aws_access_key_id=config.storage.key, aws_secret_access_key=config.storage.secret)
             self.s3 = session.client("s3")
         else:
@@ -64,7 +63,8 @@ class S3Storage:
                 'size': head['ContentLength'],
                 'name': filename
             })
-        except:  # Except what?
+            # FIXME: broad except
+        except:  # noqa
             return None
 
     def delete(self, filename):
@@ -78,11 +78,11 @@ class S3Storage:
             kwargs['ContentType'] = kwargs['content_type']
             del kwargs['content_type']
         self.s3.upload_file(
-                    fullpath,
-                    Bucket=self.container,
-                    Key=name,
-                    ExtraArgs=kwargs
-                )
+            fullpath,
+            Bucket=self.container,
+            Key=name,
+            ExtraArgs=kwargs
+        )
         return Objectview({'name': name})
 
 
@@ -123,8 +123,7 @@ def file_url(name):
 def thumbnail_url(name):
     with ExitStack() as stack:
         stg = storage
-        if (config.storage.provider == 'LOCAL' and
-                config.storage.thumbnails.path != config.storage.uploads.path):
+        if config.storage.provider == 'LOCAL' and config.storage.thumbnails.path != config.storage.uploads.path:
             stg = stack.enter_context(storage.use(config.storage.thumbnails.path))
         return make_url(stg, config.storage.thumbnails, name)
 
@@ -208,9 +207,10 @@ def store_file(ufile, basename, mtype, remove_metadata=False):
     ufile.seek(0)
     with tempfile.TemporaryDirectory() as tempdir:
         fullpath = os.path.join(tempdir, filename)
-        try: 
+        try:
             ufile.save(fullpath)
-        except:
+            # FIXME: Broad except
+        except:  # noqa
             b = ufile.read()
             with open(fullpath, mode="w") as tf:
                 tf.write(b)
@@ -258,8 +258,7 @@ def store_thumbnail(im, basename):
     filename = basename + '.jpg'
     with ExitStack() as stack:
         stg = storage
-        if (config.storage.provider == 'LOCAL' and
-                config.storage.thumbnails.path != config.storage.uploads.path):
+        if config.storage.provider == 'LOCAL' and config.storage.thumbnails.path != config.storage.uploads.path:
             stg = stack.enter_context(storage.use(config.storage.thumbnails.path))
         return find_existing_or_store_new(stg, im, filename)
 

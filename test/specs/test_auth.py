@@ -1,24 +1,21 @@
+import pytest
 from datetime import timedelta
 import json
-import pytest
 from bs4 import BeautifulSoup
 from flask import url_for
 
 from app import mail
-from app.config import config
-from app.auth import auth_provider, email_validation_is_required
-from app.models import User, UserStatus
+from app.auth import email_validation_is_required, auth_provider
+from app.models import UserStatus, User
 
-from pytest_flask.fixtures import client
-from test.fixtures import *
-from test.utilities import csrf_token, pp, get_value
+from test.utilities import csrf_token, get_value
 from test.utilities import register_user, log_in_user, log_out_current_user
 from test.utilities import promote_user_to_admin
 
 
 @pytest.mark.parametrize('test_config', [{'auth': {'validate_emails': True}},
                                          {'auth': {'require_valid_emails': False}}])
-def test_registration_login(client):
+def test_registration_login(client, test_config):
     """The registration page logs a user in if they register correctly."""
     rv = client.get(url_for('auth.register'))
     with mail.record_messages() as outbox:
@@ -48,8 +45,10 @@ def test_registration_login(client):
 
 
 @pytest.mark.parametrize('test_config', [{'auth': {'require_valid_emails': True}}])
-def test_email_required_for_registration(client, user_info):
-    "If emails are required, trying to register without one will fail."
+def test_email_required_for_registration(client, user_info, test_config):
+    """
+    If emails are required, trying to register without one will fail.
+    """
     rv = client.get(url_for('auth.register'))
     with mail.record_messages() as outbox:
         data = dict(csrf_token=csrf_token(rv.data),
@@ -68,7 +67,7 @@ def test_email_required_for_registration(client, user_info):
 
 
 @pytest.mark.parametrize('test_config', [{'auth': {'require_valid_emails': True}}])
-def test_login_before_confirming_email(client, user_info):
+def test_login_before_confirming_email(client, user_info, test_config):
     """Registered users with unconfirmed emails can't log in."""
     rv = client.get(url_for('auth.register'))
     with mail.record_messages() as outbox:
@@ -142,7 +141,7 @@ def test_change_password(client, user_info):
 
 @pytest.mark.parametrize('test_config', [{'auth': {'require_valid_emails': True}},
                                          {'auth': {'require_valid_emails': False}}])
-def test_change_password_recovery_email(client, user_info):
+def test_change_password_recovery_email(client, user_info, test_config):
     """The user can change their password recovery email."""
     register_user(client, user_info)
     new_email = 'sock@example.com'
@@ -205,7 +204,7 @@ def test_change_password_recovery_email(client, user_info):
 
 
 @pytest.mark.parametrize('test_config', [{'auth': {'require_valid_emails': True}}])
-def test_password_required_to_change_recovery_email(client, user_info):
+def test_password_required_to_change_recovery_email(client, user_info, test_config):
     """Changing the password recovery requires the correct password."""
     register_user(client, user_info)
     wrong_password = 'mynewSuperSecret#123'
@@ -319,7 +318,7 @@ def test_delete_account(client, user_info):
 # same email but banned users should not
 
 @pytest.mark.parametrize('test_config', [{'auth': {'require_valid_emails': True}}])
-def test_reregister(client, user_info, user2_info):
+def test_reregister(client, user_info, user2_info, test_config):
     "A user account which is unconfirmed after two days can be re-registered."
     rv = client.get(url_for('auth.register'))
     data = dict(csrf_token=csrf_token(rv.data),
@@ -330,7 +329,7 @@ def test_reregister(client, user_info, user2_info):
                 accept_tos=True,
                 email_required=user_info['email'],
                 captcha='xyzzy')
-    rv = client.post(url_for('auth.register'), data=data, follow_redirects=True)
+    client.post(url_for('auth.register'), data=data, follow_redirects=True)
 
     new_user = User.get(User.name == user_info['username'])
     assert new_user.status == UserStatus.PROBATION
@@ -344,7 +343,7 @@ def test_reregister(client, user_info, user2_info):
                     password=user_info['password'],
                     confirm=user_info['password'],
                     invitecode='',
-                    email_required = user2_info['email'],
+                    email_required=user2_info['email'],
                     accept_tos=True,)
         rv = client.post(url_for('auth.register'), data=data,
                          follow_redirects=True)
@@ -358,12 +357,12 @@ def test_reregister(client, user_info, user2_info):
                         follow_redirects=True)
         assert b'Log out' in rv.data
 
-    assert auth_provider.get_user_by_email(user_info['email']) == None
-    assert (auth_provider.get_user_by_email(user2_info['email']).name ==
-            user_info['username'])
+    assert auth_provider.get_user_by_email(user_info['email']) is None
+    assert (auth_provider.get_user_by_email(user2_info['email']).name == user_info['username'])
+
 
 def test_invite_code_required_for_registration(client, user_info, user2_info):
-    "If invite codes are required, trying to register without one will fail."
+    """If invite codes are required, trying to register without one will fail."""
     register_user(client, user_info)
     promote_user_to_admin(client, user_info)
 
@@ -385,8 +384,7 @@ def test_invite_code_required_for_registration(client, user_info, user2_info):
                 code="abcde",
                 uses=10,
                 expires='')
-    rv = client.post(url_for('admin.invitecodes'), data=data,
-                     follow_redirects=True)
+    client.post(url_for('admin.invitecodes'), data=data, follow_redirects=True)
 
     log_out_current_user(client)
 

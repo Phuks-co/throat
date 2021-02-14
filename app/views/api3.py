@@ -211,13 +211,16 @@ def get_post_list(target):
         return jsonify(msg="Invalid page number"), 400
 
     uid = get_jwt_identity()
-    base_query = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score,
-                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
-                                SubPost.comments, SubPost.ptype, User.status.alias('userstatus'), User.uid, SubPost.upvotes, *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes]))
+    base_query = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
+                                SubPost.score, SubPost.thumbnail, SubPost.link, User.name.alias('user'),
+                                Sub.name.alias('sub'), SubPost.flair, SubPost.edited, SubPost.comments, SubPost.ptype,
+                                User.status.alias('userstatus'), User.uid, SubPost.upvotes,
+                                *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes]))
     blocked = []
     subscribed = []
     if uid:
-        base_query = base_query.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == uid))).switch(SubPost)
+        base_query = base_query.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid)
+                                                                       & (SubPostVote.uid == uid))).switch(SubPost)
         subs = SubSubscriber.select().where(SubSubscriber.uid == uid)
         subs = subs.order_by(SubSubscriber.order.asc())
         subscribed = [x.sid_id for x in subs if x.status == 1]
@@ -235,7 +238,8 @@ def get_post_list(target):
             return jsonify(msg="Invalid sort"), 400
 
         if not uid:
-            base_query = base_query.join(SiteMetadata, JOIN.LEFT_OUTER, on=(SiteMetadata.key == 'default')).where(SubPost.sid == SiteMetadata.value)
+            base_query = base_query.join(SiteMetadata, JOIN.LEFT_OUTER, on=(SiteMetadata.key == 'default'))\
+                .where(SubPost.sid == SiteMetadata.value)
         else:
             base_query = base_query.where(SubPost.sid << subscribed)
             base_query = base_query.where(SubPost.sid.not_in(blocked))
@@ -269,7 +273,8 @@ def get_post_list(target):
     for post in posts:
         if post['userstatus'] == 10:  # account deleted
             post['user'] = '[Deleted]'
-        post['archived'] = (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after)
+        post['archived'] = (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) > datetime.timedelta(
+            days=config.site.archive_post_after)
         del post['userstatus']
         del post['uid']
         post['content'] = misc.our_markdown(post['content']) if post['ptype'] != 1 else ''
@@ -283,12 +288,16 @@ def get_post_list(target):
 def get_post(sub, pid):
     """Returns information for a post """
     uid = get_jwt_identity()
-    base_query = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted, SubPost.score, SubPost.deleted,
-                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
-                                SubPost.comments, SubPost.ptype, User.status.alias('userstatus'), User.uid, SubPost.upvotes, *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes]))
+    base_query = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
+                                SubPost.score, SubPost.deleted, SubPost.thumbnail, SubPost.link,
+                                User.name.alias('user'), Sub.name.alias('sub'), SubPost.flair, SubPost.edited,
+                                SubPost.comments, SubPost.ptype, User.status.alias('userstatus'), User.uid,
+                                SubPost.upvotes,
+                                *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes]))
 
     if uid:
-        base_query = base_query.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == uid))).switch(SubPost)
+        base_query = base_query.join(SubPostVote, JOIN.LEFT_OUTER, on=((SubPostVote.pid == SubPost.pid)
+                                                                       & (SubPostVote.uid == uid))).switch(SubPost)
     base_query = base_query.join(User, JOIN.LEFT_OUTER).switch(SubPost).join(Sub, JOIN.LEFT_OUTER)
 
     post = base_query.where((SubPost.pid == pid) & (fn.Lower(Sub.name) == sub.lower())).dicts()
@@ -314,7 +323,8 @@ def get_post(sub, pid):
     if post['userstatus'] == 10:
         post['user'] = '[Deleted]'
 
-    post['archived'] = (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after)
+    post['archived'] = (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) > datetime.timedelta(
+        days=config.site.archive_post_after)
     if post['ptype'] == 0:
         post['type'] = 'text'
     elif post['ptype'] == 1:
@@ -356,7 +366,7 @@ def edit_post(sub, pid):
     if misc.is_sub_banned(sub, uid=uid):
         return jsonify(msg='You are banned on this sub.'), 403
 
-    if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
+    if post.is_archived():
         return jsonify(msg='Post is archived'), 403
 
     post.content = content
@@ -457,7 +467,9 @@ def get_post_comments(_sub, pid):
         return jsonify(msg="Post does not exist"), 404
 
     # 1 - Fetch all comments (only cid and parentcid)
-    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == post.pid).order_by(SubPostComment.score.desc()).dicts()
+    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)\
+        .where(SubPostComment.pid == post.pid)\
+        .order_by(SubPostComment.score.desc()).dicts()
     if not comments.count():
         return jsonify(comments=[])
 
@@ -491,7 +503,7 @@ def create_comment(sub, pid):
     if post.deleted:
         return jsonify(msg='Post was deleted'), 404
 
-    if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
+    if post.is_archived():
         return jsonify(msg="Post is archived"), 403
 
     postmeta = misc.metadata_to_dict(SubPostMetadata.select().where(SubPostMetadata.pid == pid))
@@ -530,7 +542,8 @@ def create_comment(sub, pid):
                   namespace='/snt', room=post.pid)
 
     defaults = [x.value for x in SiteMetadata.select().where(SiteMetadata.key == 'default')]
-    comment_res = misc.word_truncate(''.join(BeautifulSoup(misc.our_markdown(comment.content)).findAll(text=True)).replace('\n', ' '), 250)
+    comment_res = misc.word_truncate(
+        ''.join(BeautifulSoup(misc.our_markdown(comment.content)).findAll(text=True)).replace('\n', ' '), 250)
     sub = Sub.get(Sub.name == sub)
     socketio.emit('comment',
                   {'sub': sub.name, 'show_sidebar': (sub.sid in defaults or config.site.recent_activity.defaults_only),
@@ -562,8 +575,8 @@ def create_comment(sub, pid):
                                  User.name.alias('user'), SubPostCommentVote.positive, User.status.alias('userstatus'),
                                  SubPostComment.upvotes, SubPostComment.downvotes) \
         .join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment) \
-        .join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == uid) &
-                                                       (SubPostCommentVote.cid == SubPostComment.cid))) \
+        .join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == uid)
+                                                       & (SubPostCommentVote.cid == SubPostComment.cid))) \
         .where(SubPostComment.cid == comment.cid).dicts()[0]
     comm['source'] = comm['content']
     comm['content'] = misc.our_markdown(comm['content'])
@@ -582,6 +595,10 @@ def edit_comment(_sub, pid, cid):
     if not content:
         return jsonify(msg="Content parameter required"), 400
 
+    try:
+        post = SubPost.get(SubPost.pid == pid)
+    except SubPost.DoesNotExist:
+        return jsonify(msg="Post not found"), 404
     # Fetch the comment
     try:
         comment = SubPostComment.get((SubPostComment.pid == pid) & (SubPostComment.cid == cid))
@@ -591,7 +608,7 @@ def edit_comment(_sub, pid, cid):
     if comment.uid_id != uid:
         return jsonify(msg="Unauthorized"), 403
 
-    if (datetime.datetime.utcnow() - comment.pid.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
+    if post.is_archived():
         return jsonify(msg="Post is archived"), 400
 
     if len(content) > 16384:
@@ -606,8 +623,8 @@ def edit_comment(_sub, pid, cid):
                                  User.name.alias('user'), SubPostCommentVote.positive, User.status.alias('userstatus'),
                                  SubPostComment.upvotes, SubPostComment.downvotes) \
         .join(User, on=(User.uid == SubPostComment.uid)).switch(SubPostComment) \
-        .join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == uid) &
-                                                       (SubPostCommentVote.cid == SubPostComment.cid))) \
+        .join(SubPostCommentVote, JOIN.LEFT_OUTER, on=((SubPostCommentVote.uid == uid)
+                                                       & (SubPostCommentVote.cid == SubPostComment.cid))) \
         .where(SubPostComment.cid == comment.cid).dicts()[0]
     comm['source'] = comm['content']
     comm['content'] = misc.our_markdown(comm['content'])
@@ -619,6 +636,10 @@ def edit_comment(_sub, pid, cid):
 def delete_comment(_sub, pid, cid):
     uid = get_jwt_identity()
 
+    try:
+        post = SubPost.get(SubPost.pid == pid)
+    except SubPost.DoesNotExist:
+        return jsonify(msg="Post not found"), 404
     # Fetch the comment
     try:
         comment = SubPostComment.get((SubPostComment.pid == pid) & (SubPostComment.cid == cid))
@@ -628,7 +649,7 @@ def delete_comment(_sub, pid, cid):
     if comment.uid_id != uid:
         return jsonify(msg="Unauthorized"), 403
 
-    if (datetime.datetime.utcnow() - comment.pid.posted.replace(tzinfo=None)) > datetime.timedelta(days=config.site.archive_post_after):
+    if post.is_archived():
         return jsonify(msg="Post is archived"), 400
 
     comment.status = 1
@@ -676,7 +697,8 @@ def get_post_comment_children(_sub, pid, cid):
         except SubPostComment.DoesNotExist:
             return jsonify(msg='Post does not exist'), 404
 
-    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
+    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid)\
+        .order_by(SubPostComment.score.desc()).dicts()
     if not comments.count():
         return jsonify(comments=[])
 
@@ -775,7 +797,8 @@ def create_post():
     except Sub.DoesNotExist:
         return jsonify(msg="Sub does not exist"), 404
 
-    if sub.name.lower() in ('all', 'new', 'hot', 'top', 'admin', 'home'):  # TODO: Make this a blacklist setting in the config file?
+    # TODO: Make this a blacklist setting in the config file?
+    if sub.name.lower() in ('all', 'new', 'hot', 'top', 'admin', 'home'):
         return jsonify(msg="You can't post on this sub"), 403
 
     subdata = misc.getSubData(sub.sid, simple=True)
@@ -797,7 +820,8 @@ def create_post():
 
     if misc.get_user_level(uid)[0] < 7:
         today = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        lposts = SubPost.select().where(SubPost.uid == uid).where(SubPost.sid == sub.sid).where(SubPost.posted > today).count()
+        lposts = SubPost.select().where(SubPost.uid == uid).where(SubPost.sid == sub.sid).where(SubPost.posted > today)\
+            .count()
         tposts = SubPost.select().where(SubPost.uid == uid).where(SubPost.posted > today).count()
         if lposts > 10 or tposts > 25:
             return jsonify(msg="You have posted too much today"), 403
@@ -848,9 +872,10 @@ def create_post():
     posts = misc.getPostList(misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), 'new', 1).dicts()
 
     defaults = [x.value for x in SiteMetadata.select().where(SiteMetadata.key == 'default')]
+    ss_default = (sub.sid in defaults or not config.site.recent_activity.defaults_only)
     socketio.emit('thread',
                   {'addr': addr, 'sub': sub.name, 'type': post_type,
-                   'show_sidebar': (sub.sid in defaults or not config.site.recent_activity.defaults_only) and not config.site.recent_activity.comments_only,
+                   'show_sidebar': ss_default and not config.site.recent_activity.comments_only,
                    'user': user.name, 'pid': post.pid, 'sid': sub.sid, 'title': post.title,
                    'post_url': url_for('sub.view_post', sub=sub.name, pid=post.pid),
                    'sub_url': url_for('sub.view_sub', sub=sub.name),
@@ -934,8 +959,8 @@ def get_user(username, uid=False):
     pcount = SubPost.select().where(SubPost.uid == user.uid).count()
     ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()
 
-    modsquery = SubMod.select(Sub.name, SubMod.power_level).join(Sub).where(
-        (SubMod.uid == user.uid) & (SubMod.invite == False))
+    modsquery = SubMod.select(Sub.name, SubMod.power_level).join(Sub)\
+        .where((SubMod.uid == user.uid) & (~SubMod.invite))
     owns = [x.sub.name for x in modsquery if x.power_level == 0]
     mods = [x.sub.name for x in modsquery if 1 <= x.power_level <= 2]
     return jsonify(user={

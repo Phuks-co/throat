@@ -9,6 +9,7 @@ from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model, Data
 from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
 from werkzeug.local import LocalProxy
 from .storage import file_url
+from .config import config
 
 rconn = FlaskRedis()
 
@@ -298,6 +299,14 @@ class SubPost(BaseModel):
     def __repr__(self):
         return f'<SubPost "{self.title[:20]}">'
 
+    def is_archived(self):
+        delta = datetime.timedelta(days=config.site.archive_post_after)
+        return (datetime.datetime.utcnow() - self.posted.replace(tzinfo=None)) > delta  # noqa
+
+    def is_title_editable(self):
+        delta = datetime.timedelta(seconds=config.site.title_edit_timeout)
+        return (datetime.datetime.utcnow() - self.posted.replace(tzinfo=None)) > delta  # noqa
+
     class Meta:
         table_name = 'sub_post'
 
@@ -321,7 +330,7 @@ class SubPostPollVote(BaseModel):
     vid = ForeignKeyField(db_column='vid', model=SubPostPollOption, backref='votes')
 
     def __repr__(self):
-        return f'<SubPostPollVote>'
+        return '<SubPostPollVote>'
 
     class Meta:
         table_name = 'sub_post_poll_vote'

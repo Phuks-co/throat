@@ -5,120 +5,119 @@ from flask import current_app
 from werkzeug.local import LocalProxy
 import logging
 
-
 cfg_defaults = {  # key => default value
-        "site": {
-            "name": 'Throat',
-            "lema": 'Throat: Open discussion ;D',
-            "copyright": "Umbrella Corp",
-            "enable_totp": False,
-            "placeholder_account": "Site",
-            "sub_prefix": 's',
-            "enable_security_question": False,
-            "cas_authorized_hosts": [],
-            "allow_uploads": False,
-            "allow_video_uploads": True,
-            "upload_max_size": 16777216,
-            "upload_min_level": 0,
-            "enable_chat": True,
-            "sitelog_public": True,
-            "force_sublog_public": True,
-            "front_page_submit": True,
-            "block_anon_stalking": False,
+    "site": {
+        "name": 'Throat',
+        "lema": 'Throat: Open discussion ;D',
+        "copyright": "Umbrella Corp",
+        "enable_totp": False,
+        "placeholder_account": "Site",
+        "sub_prefix": 's',
+        "enable_security_question": False,
+        "cas_authorized_hosts": [],
+        "allow_uploads": False,
+        "allow_video_uploads": True,
+        "upload_max_size": 16777216,
+        "upload_min_level": 0,
+        "enable_chat": True,
+        "sitelog_public": True,
+        "force_sublog_public": True,
+        "front_page_submit": True,
+        "block_anon_stalking": False,
 
-            "changelog_sub": None,
-            "btc_address": None,
-            "xmr_address": None,
+        "changelog_sub": None,
+        "btc_address": None,
+        "xmr_address": None,
 
-            "title_edit_timeout": 300,
+        "title_edit_timeout": 300,
 
-            "sub_creation_min_level": 2,
-            "sub_creation_admin_only": False,
-            "sub_ownership_limit": 20,
-            "edit_history": False,
-            "anonymous_modding": False,
+        "sub_creation_min_level": 2,
+        "sub_creation_admin_only": False,
+        "sub_ownership_limit": 20,
+        "edit_history": False,
+        "anonymous_modding": False,
 
-            "send_pm_to_user_min_level": 3,
+        "send_pm_to_user_min_level": 3,
 
-            "daily_sub_posting_limit": 10,
-            "daily_site_posting_limit": 25,
+        "daily_sub_posting_limit": 10,
+        "daily_site_posting_limit": 25,
 
-            # Removing things from this list will work but adding will not.
-            # See Expando.js.
-            "expando_sites": ['hooktube.com', 'www.hooktube.com', 'youtube.com',
-                              'www.youtube.com', 'youtu.be', 'gfycat.com',
-                              'streamja.com', 'streamable.com', 'vimeo.com',
-                              'vine.co', 'instaud.io'],
+        # Removing things from this list will work but adding will not.
+        # See Expando.js.
+        "expando_sites": ['hooktube.com', 'www.hooktube.com', 'youtube.com',
+                          'www.youtube.com', 'youtu.be', 'gfycat.com',
+                          'streamja.com', 'streamable.com', 'vimeo.com',
+                          'vine.co', 'instaud.io'],
 
-            "footer": {
-                "links": {
-                    "ToS": "/wiki/tos",
-                    "Privacy": "/wiki/privacy"
-                }
-            },
-
-            "archive_post_after": 60,
-            "trusted_proxy_count": 0,
-            "custom_hot_sort": False,
-            "recent_activity": {
-                "enabled": True,
-                "defaults_only": False,
-                "comments_only": False,
-                "max_entries": 10
-            },
-
-            'icon_url': None,
-            'logo': 'app/static/img/throat-logo.svg'
+        "footer": {
+            "links": {
+                "ToS": "/wiki/tos",
+                "Privacy": "/wiki/privacy"
+            }
         },
-        "auth": {
-            "provider": 'LOCAL',
-            "require_valid_emails": False,
-            "keycloak": {}
+
+        "archive_post_after": 60,
+        "trusted_proxy_count": 0,
+        "custom_hot_sort": False,
+        "recent_activity": {
+            "enabled": True,
+            "defaults_only": False,
+            "comments_only": False,
+            "max_entries": 10
         },
-        "cache": {
-            "type": "null"
+
+        'icon_url': None,
+        'logo': 'app/static/img/throat-logo.svg'
+    },
+    "auth": {
+        "provider": 'LOCAL',
+        "require_valid_emails": False,
+        "keycloak": {}
+    },
+    "cache": {
+        "type": "null"
+    },
+    "mail": {},
+    "storage": {
+        "provider": 'LOCAL',
+        "acl": "private",
+        "server": False,
+        "server_url": '/files/',
+        "thumbnails": {
+            "path": './thumbs',
+            "url": 'https://thumbnails.shitposting.space/',
         },
-        "mail": {},
-        "storage": {
-            "provider": 'LOCAL',
-            "acl": "private",
-            "server": False,
-            "server_url": '/files/',
-            "thumbnails": {
-                "path": './thumbs',
-                "url": 'https://thumbnails.shitposting.space/',
-            },
-            "uploads": {
-                "path": './stor',
-                "url": 'https://useruploads.shitposting.space/',
-            },
-            "sub_css_max_file_size": 2
+        "uploads": {
+            "path": './stor',
+            "url": 'https://useruploads.shitposting.space/',
         },
-        "app": {
-            "redis_url": 'redis://127.0.0.1:6379',
-            "secret_key": 'yS\x1c\x88\xd7\xb5\xb0\xdc\t:kO\r\xf0D{"Y\x1f\xbc^\xad',
-            "force_https": False,
-            "debug": True,
-            "development": False,
-            "wtf_csrf_time_limit": None,
-            "max_content_length": 10485760,  # 10mb
-            "fallback_language": "en",
-            "testing": False
-        },
-        "aws": {},
-        "database": {
-            "autoconnect": False
-        },
-        "ratelimit": {
-            "default": "60/minute"
-        },
-        "notifications": {
-            "fcm_api_key": None
-        },
-        "matrix": {
-            "enabled": False
-        }
+        "sub_css_max_file_size": 2
+    },
+    "app": {
+        "redis_url": 'redis://127.0.0.1:6379',
+        "secret_key": 'yS\x1c\x88\xd7\xb5\xb0\xdc\t:kO\r\xf0D{"Y\x1f\xbc^\xad',
+        "force_https": False,
+        "debug": True,
+        "development": False,
+        "wtf_csrf_time_limit": None,
+        "max_content_length": 10485760,  # 10mb
+        "fallback_language": "en",
+        "testing": False
+    },
+    "aws": {},
+    "database": {
+        "autoconnect": False
+    },
+    "ratelimit": {
+        "default": "60/minute"
+    },
+    "notifications": {
+        "fcm_api_key": None
+    },
+    "matrix": {
+        "enabled": False
     }
+}
 
 
 class Map(dict):
@@ -146,7 +145,7 @@ class Map(dict):
             elif key not in self.keys():
                 self[key] = val
 
-       # Look for environment variables that override values or add additional values.
+        # Look for environment variables that override values or add additional values.
         if self.prefix != '' and use_environment:
             for var in os.environ.keys():
                 if var.startswith(self.prefix):
@@ -158,11 +157,13 @@ class Map(dict):
 
 class Config(Map):
     """ Main config object """
-    def __init__(self, config_filename=None, use_environment=True):
+    def __init__(self, config_filename=None, use_environment=True, config_dict=None):
         if config_filename is None:
             cfg = {}
+            if config_dict:
+                cfg = config_dict
         else:
-            with open(config_filename, 'r') as stream:
+            with open(config_filename) as stream:
                 cfg = yaml.safe_load(stream)
 
         super(Config, self).__init__(cfg, cfg_defaults, use_environment=use_environment)

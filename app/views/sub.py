@@ -7,12 +7,11 @@ from feedgen.feed import FeedGenerator
 from peewee import fn, JOIN
 from ..config import config
 from ..misc import engine
-from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption, \
-    SubUserFlairChoice, SubUserFlair
+from ..models import Sub, SubMetadata, SubStylesheet, SubUploads, SubPostComment, SubPost, SubPostPollOption
 from ..models import SubPostPollVote, SubPostMetadata, SubFlair, SubLog, User, UserSaved, SubMod, SubBan, SubRule
-from ..models import SubPostContentHistory, SubPostTitleHistory, SubPostReport
+from ..models import SubPostContentHistory, SubPostTitleHistory, SubPostReport, SubUserFlairChoice
 from ..forms import EditSubFlair, EditSubForm, EditSubCSSForm, EditMod2Form, EditSubRule
-from ..forms import BanUserSubForm, CreateSubFlair, PostComment, CreateSubRule, EditSubUserFlair, AssignSubUserFlair
+from ..forms import BanUserSubForm, CreateSubFlair, PostComment, CreateSubRule, AssignSubUserFlair
 from .. import misc
 
 
@@ -90,7 +89,9 @@ def edit_sub_flairs(sub):
     for flair in flairs:
         formflairs.append(EditSubFlair(flair=flair['xid'], text=flair['text']))
 
-    return engine.get_template('sub/flairs.html').render({'sub': sub, 'flairs': formflairs, 'createflair': CreateSubFlair()})
+    return engine.get_template('sub/flairs.html').render({
+        'sub': sub, 'flairs': formflairs, 'createflair': CreateSubFlair()
+    })
 
 
 @blueprint.route("/<sub>/edit/user_flairs")
@@ -199,8 +200,12 @@ def edit_sub_mods(sub):
     if current_user.is_mod(sub.sid, 2) or current_user.is_modinv(sub.sid) or current_user.is_admin():
         subdata = misc.getSubData(sub.sid, extra=True)
         subMods = misc.getSubMods(sub.sid)
-        modInvites = SubMod.select(User.name, SubMod.power_level).join(User).where((SubMod.sid == sub.sid) & (SubMod.invite == True))
-        return engine.get_template('sub/mods.html').render({'sub': sub, 'subdata': subdata, 'editmod2form': EditMod2Form(), 'subMods': subMods, 'subModInvites': modInvites})
+        modInvites = SubMod.select(User.name, SubMod.power_level).join(User)\
+            .where((SubMod.sid == sub.sid) & SubMod.invite)
+        return engine.get_template('sub/mods.html').render({
+            'sub': sub, 'subdata': subdata, 'editmod2form': EditMod2Form(), 'subMods': subMods,
+            'subModInvites': modInvites
+        })
     else:
         abort(403)
 
@@ -265,18 +270,23 @@ def view_sub_bans(sub):
     created_by = User.alias()
     banned = SubBan.select(user, created_by, SubBan.created, SubBan.reason, SubBan.expires)
     banned = banned.join(user, on=SubBan.uid).switch(SubBan).join(created_by, JOIN.LEFT_OUTER, on=SubBan.created_by_id)
-    banned = banned.where((SubBan.sid == sub.sid) & ((SubBan.effective == True) & ((SubBan.expires.is_null(True)) | (SubBan.expires > datetime.datetime.utcnow()))))
+    banned = banned.where(SubBan.sid == sub.sid).where(SubBan.effective)\
+        .where((SubBan.expires.is_null(True)) | (SubBan.expires > datetime.datetime.utcnow()))
     banned = banned.order_by(SubBan.created.is_null(True), SubBan.created.desc())
 
     xbans = SubBan.select(user, created_by, SubBan.created, SubBan.reason, SubBan.expires)
     xbans = xbans.join(user, on=SubBan.uid).switch(SubBan).join(created_by, JOIN.LEFT_OUTER, on=SubBan.created_by_id)
 
     xbans = xbans.where(SubBan.sid == sub.sid)
-    xbans = xbans.where((SubBan.effective == False) | ((SubBan.expires.is_null(False)) & (SubBan.expires < datetime.datetime.utcnow())))
+    xbans = xbans.where((~SubBan.effective) | ((SubBan.expires.is_null(False))
+                                               & (SubBan.expires < datetime.datetime.utcnow())))
     xbans = xbans.order_by(SubBan.created.is_null(True), SubBan.created.desc(), SubBan.expires.asc())
 
-    return engine.get_template('sub/bans.html').render({'sub': sub, 'banned': banned, 'xbans': xbans,
-                                                        'banuserform': BanUserSubForm(), 'submods': misc.getSubMods(sub.sid)})
+    return engine.get_template('sub/bans.html').render({
+        'sub': sub, 'banned': banned, 'xbans': xbans,
+        'banuserform': BanUserSubForm(),
+        'submods': misc.getSubMods(sub.sid)
+    })
 
 
 @blueprint.route("/<sub>/top", defaults={'page': 1})
@@ -355,7 +365,7 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
     include_history = current_user.is_mod(sub['sid'], 1) or current_user.is_admin()
 
     if current_user.is_mod(sub['sid'], 1) or current_user.is_admin():
-        open_reports = SubPostReport.select().where((SubPostReport.pid == pid) & SubPostReport.open == True).dicts()
+        open_reports = SubPostReport.select().where((SubPostReport.pid == pid) & SubPostReport.open).dicts()
     else:
         open_reports = False
 
@@ -366,7 +376,8 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
         is_saved = False
 
     if not comments:
-        comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == post['pid'])
+        comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(
+            SubPostComment.pid == post['pid'])
         if sort == "new":
             comments = comments.order_by(SubPostComment.time.desc()).dicts()
         elif sort == "top":
@@ -420,7 +431,8 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
     pollData = {'has_voted': False}
     if post['ptype'] == 3:
         # poll. grab options and votes.
-        options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text, fn.Count(SubPostPollVote.id).alias('votecount'))
+        options = SubPostPollOption.select(SubPostPollOption.id, SubPostPollOption.text, fn.Count(SubPostPollVote.id)
+                                           .alias('votecount'))
         options = options.join(SubPostPollVote, JOIN.LEFT_OUTER, on=(SubPostPollVote.vid == SubPostPollOption.id))
         options = options.where(SubPostPollOption.pid == pid).group_by(SubPostPollOption.id)
         pollData['options'] = options
@@ -467,6 +479,8 @@ def view_perm(sub, pid, slug, cid):
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     include_history = current_user.is_mod(sub['sid'], 1) or current_user.is_admin()
 
-    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
-    comment_tree = misc.get_comment_tree(pid, sub['sid'], comments, cid, uid=current_user.uid, include_history=include_history)
+    comments = SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid).where(
+        SubPostComment.pid == pid).order_by(SubPostComment.score.desc()).dicts()
+    comment_tree = misc.get_comment_tree(pid, sub['sid'], comments, cid, uid=current_user.uid,
+                                         include_history=include_history)
     return view_post(sub['name'], pid, slug, comment_tree, cid)

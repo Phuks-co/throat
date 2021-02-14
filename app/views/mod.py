@@ -41,7 +41,7 @@ def index():
             'closed_reports_count': closed_reports_count
         }
 
-        updated_subs = updated_subs + [updated_sub]
+        updated_subs += [updated_sub]
     return engine.get_template('mod/dashboard.html').render(
         {'subs': updated_subs, 'sub': None, 'subInfo': None, 'subMods': None})
 
@@ -57,7 +57,8 @@ def reports(page):
 
     reports = getReports('mod', 'open', page)
 
-    return engine.get_template('mod/reports.html').render({'reports': reports, 'page': page, 'sub': False, 'subInfo': False, 'subMods': False})
+    return engine.get_template('mod/reports.html').render(
+        {'reports': reports, 'page': page, 'sub': False, 'subInfo': False, 'subMods': False})
 
 
 @bp.route("/reports/closed", defaults={'page': 1})
@@ -71,7 +72,8 @@ def closed(page):
 
     reports = getReports('mod', 'closed', page)
 
-    return engine.get_template('mod/closed.html').render({'reports': reports, 'page': page, 'sub': False, 'subInfo': False, 'subMods': False})
+    return engine.get_template('mod/closed.html').render(
+        {'reports': reports, 'page': page, 'sub': False, 'subInfo': False, 'subMods': False})
 
 
 @bp.route("/reports/<sub>", defaults={'page': 1})
@@ -93,7 +95,8 @@ def reports_sub(sub, page):
 
     reports = getReports('mod', 'open', page, sid=sub.sid)
 
-    return engine.get_template('mod/sub_reports.html').render({'sub': sub, 'reports': reports, 'page': page, 'subInfo': subInfo, 'subMods': subMods})
+    return engine.get_template('mod/sub_reports.html').render(
+        {'sub': sub, 'reports': reports, 'page': page, 'subInfo': subInfo, 'subMods': subMods})
 
 
 @bp.route("/reports/closed/<sub>", defaults={'page': 1})
@@ -115,7 +118,8 @@ def reports_sub_closed(sub, page):
 
     reports = getReports('mod', 'closed', page, sid=sub.sid)
 
-    return engine.get_template('mod/sub_reports_closed.html').render({'sub': sub, 'reports': reports, 'page': page, 'subInfo': subInfo, 'subMods': subMods})
+    return engine.get_template('mod/sub_reports_closed.html').render(
+        {'sub': sub, 'reports': reports, 'page': page, 'subInfo': subInfo, 'subMods': subMods})
 
 
 @bp.route("/reports/details/<sub>/<report_type>/<report_id>")
@@ -149,7 +153,8 @@ def report_details(sub, report_type, report_id):
         try:
             comment = SubPostComment.select().where(SubPostComment.cid == report['cid']).dicts()[0]
             post = ""
-            logs = CommentReportLog.select().where(CommentReportLog.rid == report['id']).order_by(CommentReportLog.lid.desc())
+            logs = CommentReportLog.select().where(CommentReportLog.rid == report['id'])\
+                .order_by(CommentReportLog.lid.desc())
         except (SubPostComment.DoesNotExist, IndexError):
             return abort(404)
 

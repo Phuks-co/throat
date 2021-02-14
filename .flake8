@@ -1,0 +1,9 @@
+[flake8]
+exclude = .git,__pycache__,static,migrations
+max-complexity = 10
+max-line-length = 120
+ignore =
+    # XXX is too complex
+    C901,
+    # line break before binary operator
+    W503

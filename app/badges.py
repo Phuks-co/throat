@@ -24,8 +24,10 @@ class Badges:
         """
         Returns a list of all bagdes in the database.
         """
-        return (x for x in Badge.select(Badge.bid, Badge.name, Badge.alt, Badge.icon, Badge.score, Badge.trigger, Badge.rank)
-                .order_by(Badge.rank, Badge.name))
+        badge_query = Badge.select(Badge.bid, Badge.name, Badge.alt, Badge.icon, Badge.score, Badge.trigger,
+                                   Badge.rank)\
+            .order_by(Badge.rank, Badge.name)
+        return (x for x in badge_query)
 
     def __getitem__(self, bid):
         """
@@ -127,7 +129,7 @@ def mod(bid):
     """
     Auto assigns badges to mods.
     """
-    for user in SubMod.select().where((SubMod.invite == False)):
+    for user in SubMod.select().where((~SubMod.invite)):
         print("Giving ", bid, " to:", user.uid)
         badges.assign_userbadge(user.uid, bid)
 

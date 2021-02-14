@@ -1,7 +1,8 @@
 """ Uhh... Here we import stuff """
-from .user import *
-from .sub import *
-from .admin import *
+from .user import *  # noqa
+from .sub import *  # noqa
+from .admin import *  # noqa
+from flask_wtf import FlaskForm
 
 
 class DummyForm(FlaskForm):

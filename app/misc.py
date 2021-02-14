@@ -18,7 +18,6 @@ from captcha.image import ImageCaptcha
 from datetime import datetime, timedelta, timezone
 import misaka as m
 import sendgrid
-from sendgrid.helpers.mail import Mail
 from flask import current_app, _request_ctx_stack, has_request_context, has_app_context, g
 from flask import url_for, request, jsonify, session
 from flask_limiter import Limiter
@@ -196,7 +195,7 @@ class SiteUser(object):
     def is_modinv(self, sub):
         """ Returns True if the current user is invited to mod of 'sub' """
         try:
-            SubMod.get((SubMod.sid == sub) & (SubMod.uid == self.uid) & (SubMod.invite == True))
+            SubMod.get((SubMod.sid == sub) & (SubMod.uid == self.uid) & SubMod.invite)
             return True
         except SubMod.DoesNotExist:
             return False
@@ -359,8 +358,8 @@ class MentionRegex:
     # noinspection PyAttributeOutsideInit
     def init_app(self, app):
         prefix = app.config['THROAT_CONFIG'].site.sub_prefix
-        BARE = r'(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))((@|\/u\/|\/' + prefix + r'\/)([A-Za-z0-9\-\_]+))'
-        PRE0 = r'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))(?:(?:@|\/u\/|\/' + prefix + r'\/)(?:[A-Za-z0-9\-\_]+)))'
+        BARE = fr'(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))((@|\/u\/|\/{prefix}\/)([A-Za-z0-9\-\_]+))'
+        PRE0 = fr'(?:(?:\[.+?\]\(.+?\))|(?<=^|(?<=[^a-zA-Z0-9-_\.\/]))(?:(?:@|\/u\/|\/{prefix}\/)(?:[A-Za-z0-9\-\_]+)))'
         PRE1 = r'(?:(\[.+?\]\(.+?\))|' + BARE + r')'
         self.ESCAPED = re.compile(r"```.*{0}.*```|`.*?{0}.*?`|({1})".format(PRE0, PRE1),
                                   flags=re.MULTILINE + re.DOTALL)
@@ -384,7 +383,7 @@ class PhuksDown(m.SaferHtmlRenderer):
         if self.check_url(raw_url):
             url = self.rewrite_url(('mailto:' if is_email else '') + raw_url)
             url = m.escape_html(url)
-            return '<a href="%s" rel="noopener nofollow ugc" target="_blank">%s</a>' % (url, m.escape_html(raw_url))
+            return f'<a href="{url}" rel="noopener nofollow ugc" target="_blank">{m.escape_html(raw_url)}</a>'
         else:
             return m.escape_html('<%s>' % raw_url)
 
@@ -393,16 +392,15 @@ class PhuksDown(m.SaferHtmlRenderer):
             return f"<spoiler>{content}</spoiler>"
         if self.check_url(raw_url):
             url = self.rewrite_url(raw_url)
-            maybe_title = ' title="%s"' % m.escape_html(title) if title else ''
+            maybe_title = f' title="{m.escape_html(title)}"' if title else ''
             url = m.escape_html(url)
-            return ('<a rel="noopener nofollow ugc" target="_blank" href="%s"%s>' % (url, maybe_title)) + content + '</a>'
+            return f'<a rel="noopener nofollow ugc" target="_blank" href="{url}"{maybe_title}>{content}</a>'
         else:
             return m.escape_html("[%s](%s)" % (content, raw_url))
 
 
 md = m.Markdown(PhuksDown(sanitization_mode='escape'),
-                extensions=['tables', 'fenced-code', 'autolink', 'strikethrough',
-                            'superscript'])
+                extensions=['tables', 'fenced-code', 'autolink', 'strikethrough', 'superscript'])
 
 
 def our_markdown(text):
@@ -454,10 +452,9 @@ def is_sub_banned(sub, user=None, uid=None):
     if not uid:
         uid = user['uid']
     try:
-        SubBan.get((SubBan.sid == sid) &
-                   (SubBan.uid == uid) &
-                   ((SubBan.effective == True) & (
-                           (SubBan.expires.is_null(True)) | (SubBan.expires > datetime.utcnow()))))
+        SubBan.get((SubBan.sid == sid)
+                   & (SubBan.uid == uid)
+                   & (SubBan.effective & ((SubBan.expires.is_null(True)) | (SubBan.expires > datetime.utcnow()))))
         return True
     except SubBan.DoesNotExist:
         return False
@@ -611,8 +608,8 @@ def workWithMentions(data, receivedby, post, _sub, cid=None, c_user=current_user
         mts = list(set(mts))  # Removes dupes
         clean_mts = []
 
-        for m in mts:
-            t = [x for x in m if x != '']
+        for mtn in mts:
+            t = [x for x in mtn if x != '']
             if len(t) >= 3:
                 clean_mts.append(t)
 
@@ -779,8 +776,8 @@ def getSinglePost(pid):
 
 def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False, adminDetail=False, isSubMod=False):
     reports = SubPostReport.select(SubPostReport.pid, fn.Min(SubPostReport.id).alias("open_report_id"),
-                                   fn.Count(SubPostReport.id).alias('open_reports')).where(
-        SubPostReport.open == True).group_by(SubPostReport.pid).cte("reports")
+                                   fn.Count(SubPostReport.id).alias('open_reports'))\
+        .where(SubPostReport.open).group_by(SubPostReport.pid).cte("reports")
 
     if current_user.is_authenticated and not noDetail:
         posts = SubPost.select(SubPost.nsfw, SubPost.content, SubPost.pid, SubPost.title, SubPost.posted,
@@ -788,8 +785,9 @@ def postListQueryBase(*extra, nofilter=False, noAllFilter=False, noDetail=False,
                                SubPost.thumbnail, SubPost.link, User.name.alias('user'), Sub.name.alias('sub'),
                                SubPost.flair, SubPost.edited, Sub.sid,
                                SubPost.comments, SubPostVote.positive, User.uid, User.status.alias('userstatus'),
-                               *extra, *([reports.c.open_report_id, reports.c.open_reports] if isSubMod else [
-                                          Value(None).alias('open_report_id'), Value(None).alias('open_reports')]),
+                               *extra,
+                               *([reports.c.open_report_id, reports.c.open_reports] if isSubMod else
+                                 [Value(None).alias('open_report_id'), Value(None).alias('open_reports')]),
                                SubUserFlair.flair.alias('user_flair'),
                                SubUserFlair.flair_choice.alias('user_flair_id'))
         posts = posts.join(SubPostVote, JOIN.LEFT_OUTER,
@@ -883,8 +881,10 @@ def getStickyPid(sid):
 
 @cache.memoize(60)
 def getStickies(sid):
-    posts = postListQueryBase().join(SubMetadata, on=(SubPost.sid == SubMetadata.sid) & (
-            SubPost.pid == SubMetadata.value.cast("int")) & (SubMetadata.key == 'sticky'))
+    posts = postListQueryBase()\
+        .join(SubMetadata, on=((SubPost.sid == SubMetadata.sid)
+                               & (SubPost.pid == SubMetadata.value.cast("int"))
+                               & (SubMetadata.key == 'sticky')))
     posts = posts.where(SubPost.sid == sid)
     posts = posts.order_by(SubMetadata.xid.asc()).dicts()
     return list(posts)
@@ -913,8 +913,9 @@ def load_user(user_id):
         prefs = prefs.where((UserMetadata.value == '1') | (UserMetadata.key == 'subtheme')).dicts()
 
         try:
-            subs = SubSubscriber.select(SubSubscriber.sid, Sub.name, SubSubscriber.status).join(Sub, on=(
-                    Sub.sid == SubSubscriber.sid)).switch(SubSubscriber).where(SubSubscriber.uid == user_id)
+            subs = SubSubscriber.select(SubSubscriber.sid, Sub.name, SubSubscriber.status)\
+                .join(Sub, on=(Sub.sid == SubSubscriber.sid))\
+                .switch(SubSubscriber).where(SubSubscriber.uid == user_id)
             subs = subs.order_by(SubSubscriber.order.asc()).dicts()
             return SiteUser(user, subs, prefs)
         except User.DoesNotExist:
@@ -1114,7 +1115,7 @@ def getUserComments(uid, page):
 def getSubMods(sid):
     modsquery = SubMod.select(User.uid, User.name, SubMod.power_level).join(User, on=(User.uid == SubMod.uid)).where(
         SubMod.sid == sid)
-    modsquery = modsquery.where((User.status == 0) & (SubMod.invite == False))
+    modsquery = modsquery.where((User.status == 0) & (~SubMod.invite))
 
     owner, mods, janitors, owner_uids, janitor_uids, mod_uids = ({}, {}, {}, [], [], [])
     for i in modsquery:
@@ -1208,8 +1209,10 @@ def getSubData(sid, simple=False, extra=False):
 def getModSubs(uid, power_level):
     # returns all subs that the user can moderate
 
-    subs = SubMod.select(Sub, SubMod.power_level).join(Sub).where(
-        (SubMod.uid == uid) & (SubMod.power_level <= power_level) & (SubMod.invite == False))
+    subs = SubMod.select(Sub, SubMod.power_level).join(Sub) \
+        .where((SubMod.uid == uid)
+               & (SubMod.power_level <= power_level)
+               & (~SubMod.invite))
 
     return subs
 
@@ -1310,9 +1313,8 @@ def populate_feed(feed, posts):
         url = url_for('sub.view_post', sub=post['sub'], pid=post['pid'], _external=True)
 
         if post['thumbnail']:
-            content += '<td><a href=' + url + '"><img src="' + thumbnail_url(post[
-                                                                                 'thumbnail']) + '" alt="' + post[
-                           'title'] + '"/></a></td>'
+            content += '<td><a href=' + url + '">' \
+                       '<img src="' + thumbnail_url(post['thumbnail']) + '" alt="' + post['title'] + '"/></a></td>'
         content += '<td>Submitted by <a href=/u/' + post['user'] + '>' + post['user'] + '</a><br/>' + our_markdown(
             post['content'])
         if post['link']:
@@ -1431,13 +1433,13 @@ def create_sublog(action, uid, sid, comment='', link='', admin=False, target=Non
 
 # `id` is the report id
 def create_reportlog(action, uid, obj_id, log_type='', related=False, original_report='', desc=''):
-    if log_type == 'post' and related == False:
+    if log_type == 'post' and not related:
         PostReportLog.create(action=action, uid=uid, id=obj_id, desc=desc)
-    elif log_type == 'comment' and related == False:
+    elif log_type == 'comment' and not related:
         CommentReportLog.create(action=action, uid=uid, id=obj_id, desc=desc)
-    elif log_type == 'post' and related == True:
+    elif log_type == 'post' and related:
         PostReportLog.create(action=action, uid=uid, id=obj_id, desc=original_report)
-    elif log_type == 'comment' and related == True:
+    elif log_type == 'comment' and related:
         CommentReportLog.create(action=action, uid=uid, id=obj_id, desc=original_report)
 
 
@@ -1472,7 +1474,7 @@ def captchas_required():
 def create_captcha():
     """ Generates a captcha image.
     Returns a tuple with a token and the base64 encoded image """
-    if not captchas_required():
+    if not captchas_required() or config.app.testing:
         return None
     token = str(uuid.uuid4())
     captchagen = ImageCaptcha(width=250, height=70)
@@ -1522,8 +1524,8 @@ def get_comment_tree(pid, sid, comments, root=None, only_after=None, uid=None, p
     """
 
     if postmeta is None:
-        postmeta = metadata_to_dict(SubPostMetadata.select().where((SubPostMetadata.pid == pid) &
-                                                                   (SubPostMetadata.key == 'sticky_cid')))
+        postmeta = metadata_to_dict(SubPostMetadata.select().where((SubPostMetadata.pid == pid)
+                                                                   & (SubPostMetadata.key == 'sticky_cid')))
     sticky_cid = postmeta.get('sticky_cid')
 
     def build_tree(tuff, rootcid=None):
@@ -1852,8 +1854,7 @@ def cast_vote(uid, target_type, pcid, value):
 
 def is_sub_mod(uid, sid, power_level, can_admin=False):
     try:
-        SubMod.get((SubMod.sid == sid) & (SubMod.uid == uid) & (SubMod.power_level <= power_level) & (
-                SubMod.invite == False))
+        SubMod.get((SubMod.sid == sid) & (SubMod.uid == uid) & (SubMod.power_level <= power_level) & (~SubMod.invite))
         return True
     except SubMod.DoesNotExist:
         pass
@@ -1893,10 +1894,10 @@ def getReports(view, status, page, *_args, **kwargs):
 
     # filter by if Mod or Admin view and if filtering by sub, specific post, or related posts
     if view == 'admin' and not sid:
-        sub_post_reports = all_post_reports.where(SubPostReport.send_to_admin == True).join(SubPost).join(Sub).join(
+        sub_post_reports = all_post_reports.where(SubPostReport.send_to_admin).join(SubPost).join(Sub).join(
             SubMod)
     elif view == 'admin' and sid:
-        sub_post_reports = all_post_reports.where(SubPostReport.send_to_admin == True).join(SubPost).join(Sub).where(
+        sub_post_reports = all_post_reports.where(SubPostReport.send_to_admin).join(SubPost).join(Sub).where(
             Sub.sid == sid).join(SubMod)
     elif view == 'mod' and sid:
         sub_post_reports = all_post_reports.join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod).where(
@@ -1913,8 +1914,8 @@ def getReports(view, status, page, *_args, **kwargs):
     sub_post_reports = sub_post_reports.join(Reported, on=Reported.uid == SubPost.uid)
 
     # filter by requested status
-    open_sub_post_reports = sub_post_reports.where(SubPostReport.open == True)
-    closed_sub_post_reports = sub_post_reports.where(SubPostReport.open == False)
+    open_sub_post_reports = sub_post_reports.where(SubPostReport.open)
+    closed_sub_post_reports = sub_post_reports.where(~SubPostReport.open)
 
     # Do it all again for comments
     Reported = User.alias()
@@ -1934,10 +1935,10 @@ def getReports(view, status, page, *_args, **kwargs):
 
     # filter by if Mod or Admin view and if filtering by sub or specific post
     if view == 'admin' and not sid:
-        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.send_to_admin == True).join(
+        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.send_to_admin).join(
             SubPostComment).join(SubPost).join(Sub).join(SubMod)
     elif view == 'admin' and sid:
-        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.send_to_admin == True).join(
+        sub_comment_reports = all_comment_reports.where(SubPostCommentReport.send_to_admin).join(
             SubPostComment).join(SubPost).join(Sub).where(Sub.sid == sid).join(SubMod)
     elif view == 'mod' and sid:
         sub_comment_reports = all_comment_reports.join(SubPostComment).join(SubPost).join(Sub).where(
@@ -1956,8 +1957,8 @@ def getReports(view, status, page, *_args, **kwargs):
     sub_comment_reports = sub_comment_reports.join(Reported, on=Reported.uid == SubPostComment.uid)
 
     # filter by requested status
-    open_sub_comment_reports = sub_comment_reports.where(SubPostCommentReport.open == True)
-    closed_sub_comment_reports = sub_comment_reports.where(SubPostCommentReport.open == False)
+    open_sub_comment_reports = sub_comment_reports.where(SubPostCommentReport.open)
+    closed_sub_comment_reports = sub_comment_reports.where(~SubPostCommentReport.open)
 
     # Define open and closed queries and counts depending on whether query is for specific post
     if report_id and report_type == 'post':

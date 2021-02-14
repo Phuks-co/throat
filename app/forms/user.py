@@ -44,7 +44,7 @@ class LoginForm(RedirectForm):
     username = StringField(_l('Username'),
                            validators=[DataRequired(), Length(max=32)])
     password = PasswordField(_l('Password'), validators=[DataRequired(),
-                                                     Length(min=7, max=256)])
+                                                         Length(min=7, max=256)])
     remember = BooleanField(_l('Remember me'))
 
 
@@ -160,6 +160,7 @@ class PasswordResetForm(FlaskForm):
         Length(min=7, max=256)
     ])
     confirm = PasswordField(_l('Repeat Password'))
+
 
 class LogOutForm(FlaskForm):
     """ Logout form. This form has no fields.

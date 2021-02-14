@@ -231,8 +231,8 @@ def invitecodes(page):
 
     code_users = UserMetadata.select(User.name.alias('used_by'), User.status,
                                      UserMetadata.value.alias("code")).where(
-        (UserMetadata.key == 'invitecode') &
-        (UserMetadata.value << set([x['code'] for x in invite_codes]))).join(User).dicts()
+        (UserMetadata.key == 'invitecode')
+        & (UserMetadata.value << set([x['code'] for x in invite_codes]))).join(User).dicts()
 
     used_by = {}
     for user in code_users:
@@ -510,7 +510,7 @@ def wiki(page):
     if not current_user.is_admin():
         abort(404)
 
-    pages = Wiki.select().where(Wiki.is_global == True)
+    pages = Wiki.select().where(Wiki.is_global)
 
     return engine.get_template('admin/wiki.html').render({'wikis': pages, 'page': page})
 
@@ -538,13 +538,13 @@ def edit_wiki(slug):
 
     form = WikiForm()
     try:
-        wiki = Wiki.select().where(Wiki.slug == slug).where(Wiki.is_global == True).get()
+        wiki_page = Wiki.select().where(Wiki.slug == slug).where(Wiki.is_global).get()
     except Wiki.DoesNotExist:
         return abort(404)
 
-    form.slug.data = wiki.slug
-    form.content.data = wiki.content
-    form.title.data = wiki.title
+    form.slug.data = wiki_page.slug
+    form.content.data = wiki_page.content
+    form.title.data = wiki_page.title
 
     return engine.get_template('admin/createwiki.html').render({'form': form, 'error': misc.get_errors(form, True)})
 
@@ -557,16 +557,16 @@ def edit_wiki_save(slug):
 
     form = WikiForm()
     try:
-        wiki = Wiki.select().where(Wiki.slug == slug).where(Wiki.is_global == True).get()
+        wiki_page = Wiki.select().where(Wiki.slug == slug).where(Wiki.is_global).get()
     except Wiki.DoesNotExist:
         return abort(404)
 
     if form.validate_on_submit():
-        wiki.slug = form.slug.data
-        wiki.title = form.title.data
-        wiki.content = form.content.data
-        wiki.updated = datetime.datetime.utcnow()
-        wiki.save()
+        wiki_page.slug = form.slug.data
+        wiki_page.title = form.title.data
+        wiki_page.content = form.content.data
+        wiki_page.updated = datetime.datetime.utcnow()
+        wiki_page.save()
         return redirect(url_for('admin.wiki'))
 
     return engine.get_template('admin/createwiki.html').render({'form': form, 'error': misc.get_errors(form, True)})
@@ -580,9 +580,9 @@ def delete_wiki(slug):
 
     # XXX: This could be an ajax call
     try:
-        wiki = Wiki.select().where(Wiki.slug == slug).where(Wiki.is_global == True).get()
+        wiki_page = Wiki.select().where(Wiki.slug == slug).where(Wiki.is_global).get()
     except Wiki.DoesNotExist:
         return abort(404)
 
-    wiki.delete_instance()
+    wiki_page.delete_instance()
     return redirect(url_for('admin.wiki'))
