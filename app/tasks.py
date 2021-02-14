@@ -34,13 +34,18 @@ def create_thumbnail_external(link, store):
     socket server messages to anyone who might be waiting for that thumbnail.
     """
     if config.app.testing:
-        create_thumbnail_async(current_app, link, store)
+        create_thumbnail_async(link, store)
     else:
-        gevent.spawn(create_thumbnail_async, current_app._get_current_object(),
+        gevent.spawn(create_thumbnail_async_appctx, current_app._get_current_object(),
                      link, store)
 
 
-def create_thumbnail_async(app, link, store):
+def create_thumbnail_async_appctx(app, link, store):
+    with app.app_context():
+        create_thumbnail_async(link, store)
+
+
+def create_thumbnail_async(link, store):
     result = ''
     typ, dat = fetch_image_data(link)
     if dat is not None:
