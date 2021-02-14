@@ -82,6 +82,20 @@ def register_user(client, user_info):
             client.get(url_for('auth.login_with_token', token=token), follow_redirects=True)
 
 
+def create_sub(client, allow_polls=False):
+    rv = client.get(url_for('subs.create_sub'))
+    assert rv.status_code == 200
+
+    data = {
+        'csrf_token': csrf_token(rv.data),
+        'subname': 'test',
+        'title': 'Testing'
+    }
+
+    rv = client.post(url_for('subs.create_sub'), data=data, follow_redirects=True)
+    assert b'/s/test' in rv.data
+
+
 def promote_user_to_admin(client, user_info):
     """Assuming user_info is the info for the logged-in user, promote them
     to admin and leave them logged in.

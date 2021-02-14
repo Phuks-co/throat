@@ -1020,7 +1020,6 @@ def create_comment(pid):
                       room='/all/new')
 
         # 5 - send pm to parent
-        # TODO: Make this a translatable notification
         if form.parent.data != "0":
             parent = SubPostComment.get(SubPostComment.cid == form.parent.data)
             to = parent.uid.uid

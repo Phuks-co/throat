@@ -138,6 +138,7 @@ def create_post(ptype, sub):
 
     fileid = False
     img = ''
+    ptype = 0
     if form.ptype.data in ('link', 'upload'):
         # TODO: Make a different ptype for uploads?
         ptype = 1
@@ -200,9 +201,6 @@ def create_post(ptype, sub):
                     {'error': _("The closing time is in the past!"), 'form': form, 'sub': sub, 'captcha': captcha}), 400
     elif form.ptype.data == 'text':
         ptype = 0
-    else:
-        return engine.get_template('sub/createpost.html').render(
-            {'error': _("Invalid post type"), 'form': form, 'sub': sub, 'captcha': captcha}), 400
 
     post = SubPost.create(sid=sub.sid,
                           uid=current_user.uid,
@@ -309,24 +307,23 @@ def create_sub():
              'csubform': form})
 
     level = misc.get_user_level(current_user.uid)[0]
-    if not config.app.development and config.site.sub_creation_min_level != 0:
-        if (level <= 1) and (not current_user.admin):
+    if not config.app.development:
+        min_level = config.site.sub_creation_min_level
+        if min_level != 0 and level <= min_level and not current_user.admin:
             return engine.get_template('sub/create.html').render(
-                {'error': _("You must be at least level %(level)i.", level=config.site.sub_creation_min_level),
+                {'error': _("You must be at least level %(level)i.", level=min_level),
                  'csubform': form})
 
         owned = SubMod.select().where(SubMod.uid == current_user.uid).where(
             (SubMod.power_level == 0) & (~SubMod.invite)).count()
-
-        if owned >= 20 and (not current_user.admin):
+        if owned >= 20 and not current_user.admin:
             return engine.get_template('sub/create.html').render(
                 {'error': _('You cannot own more than %(max)i subs.', max=config.site.sub_ownership_limit),
                  'csubform': form})
 
-        if owned >= (level - 1) and (not current_user.admin):
+        if min_level != 0 and owned >= level - 1 and not current_user.admin:
             return engine.get_template('sub/create.html').render(
-                {'error': _('You cannot own more than %(max)i subs. Try leveling up your account.',
-                            max=config.site.sub_ownership_limit),
+                {'error': _('You cannot own more than %(max)i subs. Try leveling up your account.', max=level - 1),
                  'csubform': form})
 
     sub = Sub.create(sid=uuid.uuid4(), name=form.subname.data, title=form.title.data)

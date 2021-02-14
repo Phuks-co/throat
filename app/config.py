@@ -1,5 +1,6 @@
 """ Config manager """
 import os
+from pathlib import Path
 import yaml
 from flask import current_app
 from werkzeug.local import LocalProxy
@@ -86,11 +87,11 @@ cfg_defaults = {  # key => default value
         "server": False,
         "server_url": '/files/',
         "thumbnails": {
-            "path": './thumbs',
+            "path": './app/static/thumbs',
             "url": 'https://thumbnails.shitposting.space/',
         },
         "uploads": {
-            "path": './stor',
+            "path": './app/static/stor',
             "url": 'https://useruploads.shitposting.space/',
         },
         "sub_css_max_file_size": 2
@@ -178,8 +179,10 @@ class Config(Map):
         storage = self.storage
         if storage.provider == 'LOCAL':
             # Make sure our storage paths are absolute.
-            storage.thumbnails['path'] = os.path.abspath(storage.thumbnails['path'])
-            storage.uploads['path'] = os.path.abspath(storage.uploads['path'])
+            if not Path(storage.thumbnails['path']).is_absolute():
+                storage.thumbnails['path'] = f"{Path(__file__).parent.parent.absolute()}/{storage.thumbnails['path']}"
+            if not Path(storage.uploads['path']).is_absolute():
+                storage.uploads['path'] = f"{Path(__file__).parent.parent.absolute()}/{storage.uploads['path']}"
             storage['container'] = storage.uploads['path']
             if storage.server:
                 if storage.uploads.path != storage.thumbnails.path:
