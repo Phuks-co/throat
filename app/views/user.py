@@ -5,7 +5,8 @@ from flask_login import login_required, current_user
 from flask_babel import _, Locale
 from .do import send_password_recovery_email, uid_from_recovery_token
 from .do import info_from_email_confirmation_token
-from .. import misc, config
+from .. import misc
+from ..config import config
 from ..auth import auth_provider, AuthError, normalize_email
 from ..misc import engine
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
@@ -193,7 +194,7 @@ def confirm_email_change(token):
     if user.status == UserStatus.OK:
         try:
             auth_provider.confirm_pending_email(user, info['email'])
-            flash(_('Your password recovery email address is now confirmed!'), 'message')
+            flash(_('Your password recovery email address is now confirmed!'))
             return redirect(url_for('user.edit_account'))
         except AuthError:
             flash(_('Unable to confirm your new email address. Please try again later.'), 'error')
