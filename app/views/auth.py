@@ -19,7 +19,7 @@ from ..misc import engine, send_email, is_domain_banned
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
 from ..models import User, UserStatus, InviteCode, rconn
 
-bp = Blueprint('auth', __name__)    
+bp = Blueprint('auth', __name__)
 
 
 def sanitize_serv(serv):
@@ -150,7 +150,6 @@ def register():
 
     # Custom sendmail info for regs
     regdate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    referrer = request.referrer
     useragent = request.headers.get('User-Agent')
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     text_content = user.name + "\n" + ip + "\n" + regdate + "\n" + useragent
