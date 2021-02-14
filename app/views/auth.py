@@ -293,11 +293,11 @@ def get_ticket():
     """ Returns a CAS ticket for the current user """
     token = generate_cas_token(current_user.uid)
     # Not using safe_requests since we're supposed to trust this server.
-    uri = f"{config.matrix.homeserver}/_matrix/client/r0/login/cas/ticket?redirectUrl=phuks://&ticket={token}"
+    uri = f"{config.matrix.homeserver}/_matrix/client/r0/login/cas/ticket?redirectUrl=throat%3A%2F%2F&ticket={token}"
     resp = requests.get(uri, allow_redirects=False)
 
     if resp.status_code == 200:
-        matches = re.search(r"href=\".+/\?loginToken=(.+)\">", resp.text)
+        matches = re.search(r"href=\".+\?loginToken=(.+)\">", resp.text)
         return jsonify(token=matches.groups()[0])
 
     return jsonify(error="absolutely"), 400

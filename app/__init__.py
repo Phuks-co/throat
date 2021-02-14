@@ -4,6 +4,7 @@
 import time
 import socket
 import datetime
+from pathlib import Path
 from bs4 import BeautifulSoup
 from flask import Flask, url_for, g, request, get_flashed_messages
 from flask_login import LoginManager, current_user
@@ -117,7 +118,11 @@ def create_app(config=None):
     app.add_template_global(storage.thumbnail_url)
 
     # load the logo
-    logo_fp = open(config.site.logo)
+    if not Path(config.site.logo).is_absolute():
+        # If it's not an absolute path we assume it's relative to the root project path
+        logo_fp = open(f"{Path(__file__).parent.parent.absolute()}/{config.site.logo}")
+    else:
+        logo_fp = open(config.site.logo)
     THROAT_LOGO = logo_fp.read()
     logo_fp.close()
     engine.global_vars.update({'current_user': current_user, 'request': request, 'config': config, 'conf': app.config,
