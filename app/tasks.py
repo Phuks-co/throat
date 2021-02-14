@@ -41,24 +41,23 @@ def create_thumbnail_external(link, store):
 
 
 def create_thumbnail_async(app, link, store):
-    with app.app_context():
-        result = ''
-        typ, dat = fetch_image_data(link)
-        if dat is not None:
-            if typ == 'image':
-                img = Image.open(BytesIO(dat)).convert('RGB')
-            else:  # favicon
-                im = Image.open(BytesIO(dat))
-                n_im = Image.new("RGBA", im.size, "WHITE")
-                n_im.paste(im, (0, 0), im)
-                img = n_im.convert("RGB")
-            result = thumbnail_from_img(img)
-        for model, field, value in store:
-            model.update(thumbnail=result).where(getattr(model, field) == value).execute()
-            token = '-'.join([model.__name__, str(value)])
-            result_dict = {'target': token,
-                           'thumbnail': thumbnail_url(result) if result else ''}
-            send_deferred_event('thumbnail', token, result_dict)
+    result = ''
+    typ, dat = fetch_image_data(link)
+    if dat is not None:
+        if typ == 'image':
+            img = Image.open(BytesIO(dat)).convert('RGB')
+        else:  # favicon
+            im = Image.open(BytesIO(dat))
+            n_im = Image.new("RGBA", im.size, "WHITE")
+            n_im.paste(im, (0, 0), im)
+            img = n_im.convert("RGB")
+        result = thumbnail_from_img(img)
+    for model, field, value in store:
+        model.update(thumbnail=result).where(getattr(model, field) == value).execute()
+        token = '-'.join([model.__name__, str(value)])
+        result_dict = {'target': token,
+                       'thumbnail': thumbnail_url(result) if result else ''}
+        send_deferred_event('thumbnail', token, result_dict)
 
 
 def fetch_image_data(link):

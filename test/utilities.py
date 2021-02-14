@@ -1,3 +1,4 @@
+import pytest
 from bs4 import BeautifulSoup
 from flask import url_for
 from peewee import fn
@@ -80,6 +81,20 @@ def register_user(client, user_info):
             soup = BeautifulSoup(message.html, 'html.parser')
             token = soup.a['href'].split('/')[-1]
             client.get(url_for('auth.login_with_token', token=token), follow_redirects=True)
+
+
+def create_sub(client, allow_polls=False):
+    rv = client.get(url_for('subs.create_sub'))
+    assert rv.status_code == 200
+
+    data = {
+        'csrf_token': csrf_token(rv.data),
+        'subname': 'test',
+        'title': 'Testing'
+    }
+
+    rv = client.post(url_for('subs.create_sub'), data=data, follow_redirects=True)
+    assert b'/s/test' in rv.data
 
 
 def promote_user_to_admin(client, user_info):
