@@ -33,22 +33,22 @@
 
 @if config.site.recent_activity.enabled:
   <hr/>
-    <div class="sidebarlists">
-      <h4 class="center"><a href="/activity">@{_('Recent activity')}</a></h4>
-      <ul class="top5" id="activity_list_sidebar">
-        @for post in func.recent_activity(True):
-          <li>
-            @if post['type'] == 'comment':
-              @{_('%(user)s commented: %(text)s', user='<a href="/u/' + post['user'] + '">' + post['user'] + '</a>', text='<a class="title" href="' + url_for('sub.view_post', sub=post['sub'], pid=post['pid']) + '">' + e(func.word_truncate(''.join(BeautifulSoup(markdown(post['content'])).findAll(text=True)).replace('\n', ' '), 150)) + '</a>')!!html}
-            @else:
-              @{_('%(user)s posted: %(text)s', user='<a href="/u/' + post['user'] + '">' + post['user'] + '</a>', text='<a class="title" href="' + url_for('sub.view_post', sub=post['sub'], pid=post['pid']) + '">' + e(func.word_truncate(post['content'], 150)) + '</a>')!!html}
-            @end
-            <div class="sidelocale">
-              @{_("%(timeago)s in %(sub)s", timeago='<time-ago datetime="' + post['time'].isoformat() + 'Z"></time-ago>', sub='<a href="' + url_for('sub.view_sub', sub=post['sub']) + '">/' + config.site.sub_prefix + '/' + post['sub'] + '</a>') !!html}
-            </div>
-          </li>
-        @end
-      </ul>
+  <div class="sidebarlists">
+    <h4 class="center"><a href="/activity">@{_('Recent activity')}</a></h4>
+    <ul class="top5" id="activity_list_sidebar">
+      @for post in func.recent_activity(True):
+        <li>
+          @if post['type'] == 'comment':
+            @{_('%(user)s commented: %(text)s', user='<a href="/u/' + post['user'] + '">' + post['user'] + '</a>', text='<a class="title" href="' + url_for('sub.view_post', sub=post['sub'], pid=post['pid']) + '">' + e(func.word_truncate(''.join(BeautifulSoup(markdown(post['content']), features='lxml').findAll(text=True)).replace('\n', ' '), 150)) + '</a>')!!html}
+          @else:
+            @{_('%(user)s posted: %(text)s', user='<a href="/u/' + post['user'] + '">' + post['user'] + '</a>', text='<a class="title" href="' + url_for('sub.view_post', sub=post['sub'], pid=post['pid']) + '">' + e(func.word_truncate(post['content'], 150)) + '</a>')!!html}
+          @end
+          <div class="sidelocale">
+            @{_("%(timeago)s in %(sub)s", timeago='<time-ago datetime="' + post['time'].isoformat() + 'Z"></time-ago>', sub='<a href="' + url_for('sub.view_sub', sub=post['sub']) + '">/' + config.site.sub_prefix + '/' + post['sub'] + '</a>') !!html}
+          </div>
+        </li>
+      @end
+    </ul>
   </div>
 @end
 

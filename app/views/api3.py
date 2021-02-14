@@ -543,7 +543,8 @@ def create_comment(sub, pid):
 
     defaults = [x.value for x in SiteMetadata.select().where(SiteMetadata.key == 'default')]
     comment_res = misc.word_truncate(
-        ''.join(BeautifulSoup(misc.our_markdown(comment.content)).findAll(text=True)).replace('\n', ' '), 250)
+        ''.join(BeautifulSoup(misc.our_markdown(comment.content), features='lxml')
+                .findAll(text=True)).replace('\n', ' '), 250)
     sub = Sub.get(Sub.name == sub)
     socketio.emit('comment',
                   {'sub': sub.name, 'show_sidebar': (sub.sid in defaults or config.site.recent_activity.defaults_only),
