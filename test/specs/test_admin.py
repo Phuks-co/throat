@@ -17,8 +17,8 @@ def test_admin_can_ban_and_unban_user(client, user_info, user2_info):
 
     rv = client.get(url_for('user.view', user=username))
     client.post(url_for('do.ban_user', username=username),
-                     data=dict(csrf_token=csrf_token(rv.data)),
-                     follow_redirects=True)
+                data=dict(csrf_token=csrf_token(rv.data)),
+                follow_redirects=True)
 
     # For now, banning makes you unable to log in.
     log_out_current_user(client)
@@ -26,9 +26,9 @@ def test_admin_can_ban_and_unban_user(client, user_info, user2_info):
     log_in_user(client, user2_info)
 
     rv = client.get(url_for('user.view', user=username))
-    rv = client.post(url_for('do.unban_user', username=username),
-                     data=dict(csrf_token=csrf_token(rv.data)),
-                     follow_redirects=True)
+    client.post(url_for('do.unban_user', username=username),
+                data=dict(csrf_token=csrf_token(rv.data)),
+                follow_redirects=True)
 
     log_out_current_user(client)
     log_in_user(client, user_info)
