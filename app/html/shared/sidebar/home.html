@@ -22,7 +22,9 @@
     <h4 class="center">@{_('Top posts in the last 24 hours')}</h4>
     <ul class="top5">
       @for post in func.getTodaysTopPosts():
-        <li><a class="title" href="@{url_for('sub.view_post', sub=post['sub'], pid=post['pid'])}">@{post['title']}</a>
+        <li>
+          <a class="sidelocale">@{post['score']}</a>
+          <a class="title" href="@{url_for('sub.view_post', sub=post['sub'], pid=post['pid'])}">@{post['title']}</a>
           <div class="sidelocale">
             @{_("%(timeago)s in %(sub)s", timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', sub='<a href="' + url_for('sub.view_sub', sub=post['sub']) + '">/' + config.site.sub_prefix + '/' + post['sub'] + '</a>') !!html}
           </div></li>
