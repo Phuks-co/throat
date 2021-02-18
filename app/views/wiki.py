@@ -4,29 +4,29 @@ from flask_babel import lazy_gettext as _l
 from ..misc import engine
 from ..models import Wiki
 
-bp = Blueprint('wiki', __name__)
+bp = Blueprint("wiki", __name__)
 
 
 @bp.route("/welcome")
 def welcome():
     """ Welcome page for new users """
     try:
-        Wiki.select().where(Wiki.slug == 'welcome').where(Wiki.is_global).get()
-        return redirect(url_for('wiki.view', slug='welcome'))
+        Wiki.select().where(Wiki.slug == "welcome").where(Wiki.is_global).get()
+        return redirect(url_for("wiki.view", slug="welcome"))
     except Wiki.DoesNotExist:
-        return render_template('welcome.html')
+        return render_template("welcome.html")
 
 
 try:
-    th_license = open('LICENSE').read()
+    th_license = open("LICENSE").read()
 except FileNotFoundError:
-    th_license = _l('License file was deleted :(')
+    th_license = _l("License file was deleted :(")
 
 
 @bp.route("/license")
 def show_license():
     """ View API help page """
-    return engine.get_template('site/license.html').render({'license': th_license})
+    return engine.get_template("site/license.html").render({"license": th_license})
 
 
 @bp.route("/wiki/<slug>")
@@ -36,4 +36,4 @@ def view(slug):
     except Wiki.DoesNotExist:
         return abort(404)
 
-    return engine.get_template('site/wiki.html').render({'wiki': page})
+    return engine.get_template("site/wiki.html").render({"wiki": page})

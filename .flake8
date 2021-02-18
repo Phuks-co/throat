@@ -6,4 +6,6 @@ ignore =
     # XXX is too complex
     C901,
     # line break before binary operator
-    W503
+    W503,
+    # whitespace before ':'
+    E203

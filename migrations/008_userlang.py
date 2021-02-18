@@ -35,10 +35,12 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
-    migrator.add_fields(migrator.orm['user'], language=pw.CharField(column_name='language', null=True, max_length=11))
-
+    migrator.add_fields(
+        migrator.orm["user"],
+        language=pw.CharField(column_name="language", null=True, max_length=11),
+    )
 
 
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
-    migrator.remove_fields(migrator.orm['user'], 'language')
+    migrator.remove_fields(migrator.orm["user"], "language")

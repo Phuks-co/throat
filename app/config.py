@@ -8,12 +8,12 @@ import logging
 
 cfg_defaults = {  # key => default value
     "site": {
-        "name": 'Throat',
-        "lema": 'Throat: Open discussion ;D',
+        "name": "Throat",
+        "lema": "Throat: Open discussion ;D",
         "copyright": "Umbrella Corp",
         "enable_totp": False,
         "placeholder_account": "Site",
-        "sub_prefix": 's',
+        "sub_prefix": "s",
         "enable_security_question": False,
         "cas_authorized_hosts": [],
         "allow_uploads": False,
@@ -25,38 +25,34 @@ cfg_defaults = {  # key => default value
         "force_sublog_public": True,
         "front_page_submit": True,
         "block_anon_stalking": False,
-
         "changelog_sub": None,
         "btc_address": None,
         "xmr_address": None,
-
         "title_edit_timeout": 300,
-
         "sub_creation_min_level": 2,
         "sub_creation_admin_only": False,
         "sub_ownership_limit": 20,
         "edit_history": False,
         "anonymous_modding": False,
-
         "send_pm_to_user_min_level": 3,
-
         "daily_sub_posting_limit": 10,
         "daily_site_posting_limit": 25,
-
         # Removing things from this list will work but adding will not.
         # See Expando.js.
-        "expando_sites": ['hooktube.com', 'www.hooktube.com', 'youtube.com',
-                          'www.youtube.com', 'youtu.be', 'gfycat.com',
-                          'streamja.com', 'streamable.com', 'vimeo.com',
-                          'vine.co', 'instaud.io'],
-
-        "footer": {
-            "links": {
-                "ToS": "/wiki/tos",
-                "Privacy": "/wiki/privacy"
-            }
-        },
-
+        "expando_sites": [
+            "hooktube.com",
+            "www.hooktube.com",
+            "youtube.com",
+            "www.youtube.com",
+            "youtu.be",
+            "gfycat.com",
+            "streamja.com",
+            "streamable.com",
+            "vimeo.com",
+            "vine.co",
+            "instaud.io",
+        ],
+        "footer": {"links": {"ToS": "/wiki/tos", "Privacy": "/wiki/privacy"}},
         "archive_post_after": 60,
         "trusted_proxy_count": 0,
         "custom_hot_sort": False,
@@ -64,38 +60,31 @@ cfg_defaults = {  # key => default value
             "enabled": True,
             "defaults_only": False,
             "comments_only": False,
-            "max_entries": 10
+            "max_entries": 10,
         },
-
-        'icon_url': None,
-        'logo': 'app/static/img/throat-logo.svg'
+        "icon_url": None,
+        "logo": "app/static/img/throat-logo.svg",
     },
-    "auth": {
-        "provider": 'LOCAL',
-        "require_valid_emails": False,
-        "keycloak": {}
-    },
-    "cache": {
-        "type": "null"
-    },
+    "auth": {"provider": "LOCAL", "require_valid_emails": False, "keycloak": {}},
+    "cache": {"type": "null"},
     "mail": {},
     "storage": {
-        "provider": 'LOCAL',
+        "provider": "LOCAL",
         "acl": "private",
         "server": False,
-        "server_url": '/files/',
+        "server_url": "/files/",
         "thumbnails": {
-            "path": './app/static/thumbs',
-            "url": 'https://thumbnails.shitposting.space/',
+            "path": "./app/static/thumbs",
+            "url": "https://thumbnails.shitposting.space/",
         },
         "uploads": {
-            "path": './app/static/stor',
-            "url": 'https://useruploads.shitposting.space/',
+            "path": "./app/static/stor",
+            "url": "https://useruploads.shitposting.space/",
         },
-        "sub_css_max_file_size": 2
+        "sub_css_max_file_size": 2,
     },
     "app": {
-        "redis_url": 'redis://127.0.0.1:6379',
+        "redis_url": "redis://127.0.0.1:6379",
         "secret_key": 'yS\x1c\x88\xd7\xb5\xb0\xdc\t:kO\r\xf0D{"Y\x1f\xbc^\xad',
         "force_https": False,
         "debug": True,
@@ -103,27 +92,20 @@ cfg_defaults = {  # key => default value
         "wtf_csrf_time_limit": None,
         "max_content_length": 10485760,  # 10mb
         "fallback_language": "en",
-        "testing": False
+        "testing": False,
     },
     "aws": {},
-    "database": {
-        "autoconnect": False
-    },
-    "ratelimit": {
-        "default": "60/minute"
-    },
-    "notifications": {
-        "fcm_api_key": None
-    },
-    "matrix": {
-        "enabled": False
-    }
+    "database": {"autoconnect": False},
+    "ratelimit": {"default": "60/minute"},
+    "notifications": {"fcm_api_key": None},
+    "matrix": {"enabled": False},
 }
 
 
 class Map(dict):
     """ A dictionary object whose keys are accessable as attributes. """
-    def __init__(self, sdict, defaults, use_environment=True, prefix=''):
+
+    def __init__(self, sdict, defaults, use_environment=True, prefix=""):
         """Create a Map from the dictionary sdict, with missing values filled
         in from defaults. If a non-empty prefix string is supplied,
         and any environment variables exist beginning with that
@@ -131,7 +113,7 @@ class Map(dict):
         anything in sdict or default.
         """
         super(Map, self).__init__(dict(sdict))
-        self.prefix = ('' if prefix == '' else prefix + '_').upper()
+        self.prefix = ("" if prefix == "" else prefix + "_").upper()
 
         # If any values are missing, copy them from defaults.
         # Turn all subdictionaries into Maps as well.
@@ -141,16 +123,18 @@ class Map(dict):
                 if existing is None:
                     existing = {}
                 elif not isinstance(existing, dict):
-                    raise TypeError(f'Value found where dict expected at {prefix}{key} in config.yaml')
-                self[key] = Map(existing, val, use_environment, f'{self.prefix}{key}')
+                    raise TypeError(
+                        f"Value found where dict expected at {prefix}{key} in config.yaml"
+                    )
+                self[key] = Map(existing, val, use_environment, f"{self.prefix}{key}")
             elif key not in self.keys():
                 self[key] = val
 
         # Look for environment variables that override values or add additional values.
-        if self.prefix != '' and use_environment:
+        if self.prefix != "" and use_environment:
             for var in os.environ.keys():
                 if var.startswith(self.prefix):
-                    self[var[len(self.prefix):].lower()] = os.environ.get(var)
+                    self[var[len(self.prefix) :].lower()] = os.environ.get(var)
 
     def __getattr__(self, attr):
         return self[attr]
@@ -158,6 +142,7 @@ class Map(dict):
 
 class Config(Map):
     """ Main config object """
+
     def __init__(self, config_filename=None, use_environment=True, config_dict=None):
         if config_filename is None:
             cfg = {}
@@ -175,56 +160,62 @@ class Config(Map):
     def check_storage_config(self):
         """Adjust our storage config for compatibility with flask-cloudy."""
         storage = self.storage
-        if storage.provider == 'LOCAL':
+        if storage.provider == "LOCAL":
             # Make sure our storage paths are absolute.
-            if not Path(storage.thumbnails['path']).is_absolute():
-                storage.thumbnails['path'] = f"{Path(__file__).parent.parent.absolute()}/{storage.thumbnails['path']}"
-            if not Path(storage.uploads['path']).is_absolute():
-                storage.uploads['path'] = f"{Path(__file__).parent.parent.absolute()}/{storage.uploads['path']}"
-            storage['container'] = storage.uploads['path']
+            if not Path(storage.thumbnails["path"]).is_absolute():
+                storage.thumbnails[
+                    "path"
+                ] = f"{Path(__file__).parent.parent.absolute()}/{storage.thumbnails['path']}"
+            if not Path(storage.uploads["path"]).is_absolute():
+                storage.uploads[
+                    "path"
+                ] = f"{Path(__file__).parent.parent.absolute()}/{storage.uploads['path']}"
+            storage["container"] = storage.uploads["path"]
             if storage.server:
                 if storage.uploads.path != storage.thumbnails.path:
-                    logging.warning("Thumbnails will not be served by local server "
-                                    "because thumbnails and uploads paths differ")
-                if storage['server_url'][-1] == '/':
+                    logging.warning(
+                        "Thumbnails will not be served by local server "
+                        "because thumbnails and uploads paths differ"
+                    )
+                if storage["server_url"][-1] == "/":
                     # flask-cloudy does not want the trailing slash
-                    self.storage['server_url'] = self.storage['server_url'][:-1]
+                    self.storage["server_url"] = self.storage["server_url"][:-1]
 
-        storage.acl = '' if storage.acl is None else storage.acl
+        storage.acl = "" if storage.acl is None else storage.acl
 
         # This is not for flask-cloudy, just to make config more human-friendly
-        ensure_trailing_slash(storage.thumbnails, 'url')
-        ensure_trailing_slash(storage.uploads, 'url')
+        ensure_trailing_slash(storage.thumbnails, "url")
+        ensure_trailing_slash(storage.uploads, "url")
 
     def check_auth_config(self):
-        ensure_trailing_slash(self.auth.keycloak, 'server')
+        ensure_trailing_slash(self.auth.keycloak, "server")
 
     def check_ratelimit_config(self):
-        if 'storage_url' not in self.ratelimit:
-            self.ratelimit['storage_url'] = self.app.redis_url
+        if "storage_url" not in self.ratelimit:
+            self.ratelimit["storage_url"] = self.app.redis_url
 
     def get_flask_dict(self):
         flattened = {}
-        for cpk in ['cache', 'mail', 'sendgrid', 'app', 'ratelimit']:
+        for cpk in ["cache", "mail", "sendgrid", "app", "ratelimit"]:
             if cpk in self.keys():
                 for i in self[cpk]:
-                    if cpk == 'app':
+                    if cpk == "app":
                         key = i.upper()
                     else:
-                        key = '{}_{}'.format(cpk, i).upper()
+                        key = "{}_{}".format(cpk, i).upper()
                     flattened[key] = self[cpk][i]
 
         # These values are used by flask-cloudy.
-        for key in ['provider', 'key', 'secret', 'container', 'server', 'server_url']:
+        for key in ["provider", "key", "secret", "container", "server", "server_url"]:
             if key in self.storage:
-                flattened[f'STORAGE_{key}'.upper()] = self.storage[key]
+                flattened[f"STORAGE_{key}".upper()] = self.storage[key]
         return flattened
 
 
 def ensure_trailing_slash(d, key):
     """ Add a slash to the end of a dictionary entry if it doesn't already have one. """
-    if key in d and d[key] and d[key][-1] != '/':
-        d[key] = d[key] + '/'
+    if key in d and d[key] and d[key][-1] != "/":
+        d[key] = d[key] + "/"
 
 
-config = LocalProxy(lambda: current_app.config['THROAT_CONFIG'])
+config = LocalProxy(lambda: current_app.config["THROAT_CONFIG"])

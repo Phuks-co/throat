@@ -36,18 +36,14 @@ SQL = pw.SQL
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
 
-    migrator.add_fields(
-        'sub_post',
-        distinguish=pw.IntegerField(null=True))
+    migrator.add_fields("sub_post", distinguish=pw.IntegerField(null=True))
 
-    migrator.add_fields(
-        'sub_post_comment',
-        distinguish=pw.IntegerField(null=True))
+    migrator.add_fields("sub_post_comment", distinguish=pw.IntegerField(null=True))
 
 
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
 
-    migrator.remove_fields('sub_post_comment', 'distinguish')
+    migrator.remove_fields("sub_post_comment", "distinguish")
 
-    migrator.remove_fields('sub_post', 'distinguish')
+    migrator.remove_fields("sub_post", "distinguish")

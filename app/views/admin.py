@@ -9,46 +9,76 @@ from flask import Blueprint, abort, redirect, url_for, session, render_template,
 from flask_login import login_required, current_user
 from flask_babel import _
 from .. import misc
-from ..forms import TOTPForm, LogOutForm, UseInviteCodeForm, AssignUserBadgeForm, EditModForm, BanDomainForm, WikiForm
-from ..forms import CreateInviteCodeForm, UpdateInviteCodeForm, EditBadgeForm, NewBadgeForm, SetSubOfTheDayForm
-from ..models import UserMetadata, User, Sub, SubPost, SubPostComment, SubPostCommentVote, SubPostVote, SiteMetadata
+from ..forms import (
+    TOTPForm,
+    LogOutForm,
+    UseInviteCodeForm,
+    AssignUserBadgeForm,
+    EditModForm,
+    BanDomainForm,
+    WikiForm,
+)
+from ..forms import (
+    CreateInviteCodeForm,
+    UpdateInviteCodeForm,
+    EditBadgeForm,
+    NewBadgeForm,
+    SetSubOfTheDayForm,
+)
+from ..models import (
+    UserMetadata,
+    User,
+    Sub,
+    SubPost,
+    SubPostComment,
+    SubPostCommentVote,
+    SubPostVote,
+    SiteMetadata,
+)
 from ..models import UserUploads, InviteCode, Wiki
 from ..misc import engine, getReports
 from ..badges import badges
 
-bp = Blueprint('admin', __name__)
+bp = Blueprint("admin", __name__)
 
 
-@bp.route('/admin/auth', methods=['GET', 'POST'])
+@bp.route("/admin/auth", methods=["GET", "POST"])
 @login_required
 def auth():
     if not current_user.can_admin:
         abort(404)
     form = TOTPForm()
     try:
-        user_secret = UserMetadata.get((UserMetadata.uid == current_user.uid) & (UserMetadata.key == 'totp_secret'))
+        user_secret = UserMetadata.get(
+            (UserMetadata.uid == current_user.uid) & (UserMetadata.key == "totp_secret")
+        )
     except UserMetadata.DoesNotExist:
-        return engine.get_template('admin/totp.html').render({'authform': form, 'error': _('No TOTP secret found.')})
+        return engine.get_template("admin/totp.html").render(
+            {"authform": form, "error": _("No TOTP secret found.")}
+        )
     if form.validate_on_submit():
         totp = TOTP(user_secret.value)
         if totp.verify(form.totp.data):
-            session['apriv'] = time.time()
-            return redirect(url_for('admin.index'))
+            session["apriv"] = time.time()
+            return redirect(url_for("admin.index"))
         else:
-            return engine.get_template('admin/totp.html').render(
-                {'authform': form, 'error': _('Invalid or expired token.')})
-    return engine.get_template('admin/totp.html').render({'authform': form, 'error': None})
+            return engine.get_template("admin/totp.html").render(
+                {"authform": form, "error": _("Invalid or expired token.")}
+            )
+    return engine.get_template("admin/totp.html").render(
+        {"authform": form, "error": None}
+    )
 
 
-@bp.route('/logout', methods=['POST'])
+@bp.route("/logout", methods=["POST"])
 @login_required
 def logout():
     if not current_user.can_admin:
         abort(404)
     form = LogOutForm()
     if form.validate():
-        del session['apriv']
-    return redirect(url_for('admin.index'))
+        del session["apriv"]
+    return redirect(url_for("admin.index"))
 
 
 @bp.route("/")
@@ -59,7 +89,7 @@ def index():
         abort(404)
 
     if not current_user.admin:
-        return redirect(url_for('admin.auth'))
+        return redirect(url_for("admin.auth"))
 
     users = User.select().count()
     subs = Sub.select().count()
@@ -73,39 +103,59 @@ def index():
     invite = UseInviteCodeForm()
 
     try:
-        level = SiteMetadata.get(SiteMetadata.key == 'invite_level')
-        maxcodes = SiteMetadata.get(SiteMetadata.key == 'invite_max')
+        level = SiteMetadata.get(SiteMetadata.key == "invite_level")
+        maxcodes = SiteMetadata.get(SiteMetadata.key == "invite_max")
         invite.minlevel.data = level.value
         invite.maxcodes.data = maxcodes.value
     except SiteMetadata.DoesNotExist:
         pass
 
     try:
-        ep = 'True' if SiteMetadata.get(SiteMetadata.key == 'enable_posting').value == '1' else 'False'
+        ep = (
+            "True"
+            if SiteMetadata.get(SiteMetadata.key == "enable_posting").value == "1"
+            else "False"
+        )
     except SiteMetadata.DoesNotExist:
-        ep = 'True'
+        ep = "True"
 
     try:
-        er = 'True' if SiteMetadata.get(SiteMetadata.key == 'enable_registration').value == '1' else 'False'
+        er = (
+            "True"
+            if SiteMetadata.get(SiteMetadata.key == "enable_registration").value == "1"
+            else "False"
+        )
     except SiteMetadata.DoesNotExist:
-        er = 'True'
+        er = "True"
 
     try:
-        ec = 'True' if SiteMetadata.get(SiteMetadata.key == 'require_captchas').value == '1' else 'False'
+        ec = (
+            "True"
+            if SiteMetadata.get(SiteMetadata.key == "require_captchas").value == "1"
+            else "False"
+        )
     except SiteMetadata.DoesNotExist:
-        ec = 'True'
+        ec = "True"
 
     subOfTheDay = SetSubOfTheDayForm()
 
-    return render_template('admin/admin.html', subs=subs,
-                           posts=posts, ups=ups, downs=downs, users=users,
-                           comms=comms, subOfTheDay=subOfTheDay,
-                           useinvitecodeform=invite, enable_posting=(ep == 'True'),
-                           enable_registration=(er == 'True'),
-                           enable_captchas=(ec == 'True'))
+    return render_template(
+        "admin/admin.html",
+        subs=subs,
+        posts=posts,
+        ups=ups,
+        downs=downs,
+        users=users,
+        comms=comms,
+        subOfTheDay=subOfTheDay,
+        useinvitecodeform=invite,
+        enable_posting=(ep == "True"),
+        enable_registration=(er == "True"),
+        enable_captchas=(ec == "True"),
+    )
 
 
-@bp.route("/users", defaults={'page': 1})
+@bp.route("/users", defaults={"page": 1})
 @bp.route("/users/<int:page>")
 @login_required
 def users(page):
@@ -113,18 +163,33 @@ def users(page):
     if not current_user.is_admin():
         abort(404)
 
-    postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias(
-        'post_count')
-    commcount = SubPostComment.select(SubPostComment.uid, fn.Count(SubPostComment.cid).alias('comment_count')).group_by(
-        SubPostComment.uid).alias('j2')
+    postcount = (
+        SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias("post_count"))
+        .group_by(SubPost.uid)
+        .alias("post_count")
+    )
+    commcount = (
+        SubPostComment.select(
+            SubPostComment.uid, fn.Count(SubPostComment.cid).alias("comment_count")
+        )
+        .group_by(SubPostComment.uid)
+        .alias("j2")
+    )
 
-    users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count.alias('post_count'),
-                        commcount.c.comment_count)
+    users = User.select(
+        User.name,
+        User.status,
+        User.uid,
+        User.joindate,
+        postcount.c.post_count.alias("post_count"),
+        commcount.c.comment_count,
+    )
     users = users.join(postcount, JOIN.LEFT_OUTER, on=User.uid == postcount.c.uid)
     users = users.join(commcount, JOIN.LEFT_OUTER, on=User.uid == commcount.c.uid)
     users = users.order_by(User.joindate.desc()).paginate(page, 50).dicts()
-    return render_template('admin/users.html', users=users, page=page,
-                           admin_route='admin.users')
+    return render_template(
+        "admin/users.html", users=users, page=page, admin_route="admin.users"
+    )
 
 
 @bp.route("/userbadges")
@@ -136,13 +201,17 @@ def userbadges():
 
     form = AssignUserBadgeForm()
     form.badge.choices = [(badge.bid, badge.name) for badge in badges]
-    ct = UserMetadata.select().where(UserMetadata.key == 'badge').count()
-    return render_template('admin/userbadges.html', badges=badges,
-                           assignuserbadgeform=form,
-                           ct=ct, admin_route='admin.userbadges')
+    ct = UserMetadata.select().where(UserMetadata.key == "badge").count()
+    return render_template(
+        "admin/userbadges.html",
+        badges=badges,
+        assignuserbadgeform=form,
+        ct=ct,
+        admin_route="admin.userbadges",
+    )
 
 
-@bp.route("/userbadges/new", methods=['GET', 'POST'])
+@bp.route("/userbadges/new", methods=["GET", "POST"])
 @login_required
 def newbadge():
     """Edit badge information."""
@@ -150,16 +219,24 @@ def newbadge():
         abort(404)
 
     form = NewBadgeForm()
-    form.trigger.choices = [(None, "No Trigger")] + [(trigger, trigger) for trigger in badges.triggers()]
+    form.trigger.choices = [(None, "No Trigger")] + [
+        (trigger, trigger) for trigger in badges.triggers()
+    ]
     if form.validate_on_submit():
         icon = request.files.get(form.icon.name)
-        badges.new_badge(name=form.name.data, alt=form.alt.data, score=form.score.data,
-                         trigger=form.trigger.data, rank=form.rank.data, icon=icon)
-        return redirect(url_for('admin.userbadges'))
-    return render_template('admin/editbadge.html', form=form, badge=None, new=True)
+        badges.new_badge(
+            name=form.name.data,
+            alt=form.alt.data,
+            score=form.score.data,
+            trigger=form.trigger.data,
+            rank=form.rank.data,
+            icon=icon,
+        )
+        return redirect(url_for("admin.userbadges"))
+    return render_template("admin/editbadge.html", form=form, badge=None, new=True)
 
 
-@bp.route("/userbadges/edit/<int:badge>", methods=['GET', 'POST'])
+@bp.route("/userbadges/edit/<int:badge>", methods=["GET", "POST"])
 @login_required
 def editbadge(badge):
     """Edit badge information."""
@@ -169,21 +246,30 @@ def editbadge(badge):
     badge = badges[badge]
 
     form = EditBadgeForm()
-    form.trigger.choices = [(None, "No Trigger")] + [(trigger, trigger) for trigger in badges.triggers()]
+    form.trigger.choices = [(None, "No Trigger")] + [
+        (trigger, trigger) for trigger in badges.triggers()
+    ]
     if form.validate_on_submit():
         icon = request.files.get(form.icon.name)
-        badges.update_badge(bid=badge.bid, name=form.name.data, alt=form.alt.data, score=form.score.data,
-                            trigger=form.trigger.data, rank=form.rank.data, icon=icon)
-        return redirect(url_for('admin.userbadges'))
+        badges.update_badge(
+            bid=badge.bid,
+            name=form.name.data,
+            alt=form.alt.data,
+            score=form.score.data,
+            trigger=form.trigger.data,
+            rank=form.rank.data,
+            icon=icon,
+        )
+        return redirect(url_for("admin.userbadges"))
     form.name.data = badge.name
     form.alt.data = badge.alt
     form.score.data = badge.score
     form.trigger.data = badge.trigger
     form.rank.data = badge.rank
-    return render_template('admin/editbadge.html', form=form, badge=badge, new=False)
+    return render_template("admin/editbadge.html", form=form, badge=badge, new=False)
 
 
-@bp.route("/userbadges/delete/<int:badge>", methods=['POST'])
+@bp.route("/userbadges/delete/<int:badge>", methods=["POST"])
 @login_required
 def deletebadge(badge):
     """Edit badge information."""
@@ -191,11 +277,11 @@ def deletebadge(badge):
         abort(404)
 
     badges.delete_badge(badge)
-    return redirect(url_for('admin.userbadges'))
+    return redirect(url_for("admin.userbadges"))
 
 
-@bp.route("/invitecodes", defaults={'page': 1}, methods=['GET', 'POST'])
-@bp.route("/invitecodes/<int:page>", methods=['GET', 'POST'])
+@bp.route("/invitecodes", defaults={"page": 1}, methods=["GET", "POST"])
+@bp.route("/invitecodes/<int:page>", methods=["GET", "POST"])
 @login_required
 def invitecodes(page):
     """
@@ -203,12 +289,14 @@ def invitecodes(page):
     """
 
     def map_style(code):
-        if code['uses'] >= code['max_uses']:
-            return 'expired'
-        elif code['expires'] is not None and code['expires'] < datetime.datetime.utcnow():
-            return 'expired'
+        if code["uses"] >= code["max_uses"]:
+            return "expired"
+        elif (
+            code["expires"] is not None and code["expires"] < datetime.datetime.utcnow()
+        ):
+            return "expired"
         else:
-            return ''
+            return ""
 
     if not current_user.is_admin():
         abort(404)
@@ -216,42 +304,56 @@ def invitecodes(page):
     invite_settings = {
         meta.key: meta.value
         for meta in SiteMetadata.select().where(
-            SiteMetadata.key << ['useinvitecode', 'invite_level', 'invite_max'])
+            SiteMetadata.key << ["useinvitecode", "invite_level", "invite_max"]
+        )
     }
 
-    invite_codes = InviteCode.select(
-        InviteCode.id,
-        InviteCode.code,
-        User.name.alias('created_by'),
-        InviteCode.created,
-        InviteCode.expires,
-        InviteCode.uses,
-        InviteCode.max_uses,
-    ).join(User).order_by(InviteCode.uses.desc(), InviteCode.created.desc()).paginate(page, 50).dicts()
+    invite_codes = (
+        InviteCode.select(
+            InviteCode.id,
+            InviteCode.code,
+            User.name.alias("created_by"),
+            InviteCode.created,
+            InviteCode.expires,
+            InviteCode.uses,
+            InviteCode.max_uses,
+        )
+        .join(User)
+        .order_by(InviteCode.uses.desc(), InviteCode.created.desc())
+        .paginate(page, 50)
+        .dicts()
+    )
 
-    code_users = UserMetadata.select(User.name.alias('used_by'), User.status,
-                                     UserMetadata.value.alias("code")).where(
-        (UserMetadata.key == 'invitecode')
-        & (UserMetadata.value << set([x['code'] for x in invite_codes]))).join(User).dicts()
+    code_users = (
+        UserMetadata.select(
+            User.name.alias("used_by"), User.status, UserMetadata.value.alias("code")
+        )
+        .where(
+            (UserMetadata.key == "invitecode")
+            & (UserMetadata.value << set([x["code"] for x in invite_codes]))
+        )
+        .join(User)
+        .dicts()
+    )
 
     used_by = {}
     for user in code_users:
-        if not user['code'] in used_by:
-            used_by[user['code']] = []
-        used_by[user['code']].append((user['used_by'], user['status']))
+        if not user["code"] in used_by:
+            used_by[user["code"]] = []
+        used_by[user["code"]].append((user["used_by"], user["status"]))
 
     update_form = UpdateInviteCodeForm()
 
     for code in invite_codes:
-        code['style'] = map_style(code)
-        code['used_by'] = used_by.get(code['code'], [])
-        code['created'] = code['created'].strftime("%Y-%m-%dT%H:%M:%SZ")
-        if code['expires'] is not None:
-            code['expires'] = code['expires'].strftime("%Y-%m-%dT%H:%M:%SZ")
+        code["style"] = map_style(code)
+        code["used_by"] = used_by.get(code["code"], [])
+        code["created"] = code["created"].strftime("%Y-%m-%dT%H:%M:%SZ")
+        if code["expires"] is not None:
+            code["expires"] = code["expires"].strftime("%Y-%m-%dT%H:%M:%SZ")
 
     invite_form = UseInviteCodeForm()
-    invite_form.maxcodes.data = invite_settings.get('invite_max', 10)
-    invite_form.minlevel.data = invite_settings.get('invite_level', 3)
+    invite_form.maxcodes.data = invite_settings.get("invite_max", 10)
+    invite_form.minlevel.data = invite_settings.get("invite_level", 3)
 
     form = CreateInviteCodeForm()
 
@@ -261,38 +363,42 @@ def invitecodes(page):
         if form.code.data:
             invite.code = form.code.data
         else:
-            invite.code = ''.join(random.choice('abcdefghijklmnopqrstuvwxyz0123456789') for _ in range(32))
+            invite.code = "".join(
+                random.choice("abcdefghijklmnopqrstuvwxyz0123456789") for _ in range(32)
+            )
 
         if form.expires.data:
             invite.expires = form.expires.data
 
         invite.max_uses = form.uses.data
         invite.save()
-        return redirect(url_for('admin.invitecodes', page=page))
+        return redirect(url_for("admin.invitecodes", page=page))
 
     if update_form.validate_on_submit():
-        if update_form.etype.data == 'at' and update_form.expires.data is None:
-            update_form.etype.data = 'never'
-        ids = [invite_codes[int(code.id.split('-')[1])]['id'] for code in update_form.codes]
+        if update_form.etype.data == "at" and update_form.expires.data is None:
+            update_form.etype.data = "never"
+        ids = [
+            invite_codes[int(code.id.split("-")[1])]["id"] for code in update_form.codes
+        ]
         if ids:
-            if update_form.etype.data == 'now':
+            if update_form.etype.data == "now":
                 expires = datetime.datetime.utcnow()
-            elif update_form.etype.data == 'never' or update_form.expires.data is None:
+            elif update_form.etype.data == "never" or update_form.expires.data is None:
                 expires = None
             else:
                 expires = form.expires.data
             InviteCode.update(expires=expires).where(InviteCode.id << ids).execute()
-        return redirect(url_for('admin.invitecodes', page=page))
+        return redirect(url_for("admin.invitecodes", page=page))
 
     return render_template(
-        'admin/invitecodes.html',
+        "admin/invitecodes.html",
         useinvitecodeform=invite_form,
         invite_settings=invite_settings,
         invite_codes=invite_codes,
         page=page,
         error=misc.get_errors(form, True),
         form=form,
-        update_form=update_form
+        update_form=update_form,
     )
 
 
@@ -302,21 +408,38 @@ def view():
     """ WIP: View admins. """
     if not current_user.is_admin():
         abort(404)
-    admins = UserMetadata.select().where(UserMetadata.key == 'admin')
+    admins = UserMetadata.select().where(UserMetadata.key == "admin")
 
-    postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias(
-        'post_count')
-    commcount = SubPostComment.select(SubPostComment.uid,
-                                      fn.Count(SubPostComment.cid).alias('comment_count')).group_by(
-        SubPostComment.uid).alias('j2')
+    postcount = (
+        SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias("post_count"))
+        .group_by(SubPost.uid)
+        .alias("post_count")
+    )
+    commcount = (
+        SubPostComment.select(
+            SubPostComment.uid, fn.Count(SubPostComment.cid).alias("comment_count")
+        )
+        .group_by(SubPostComment.uid)
+        .alias("j2")
+    )
 
-    users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count.alias('post_count'),
-                        commcount.c.comment_count)
+    users = User.select(
+        User.name,
+        User.status,
+        User.uid,
+        User.joindate,
+        postcount.c.post_count.alias("post_count"),
+        commcount.c.comment_count,
+    )
     users = users.join(postcount, JOIN.LEFT_OUTER, on=User.uid == postcount.c.uid)
     users = users.join(commcount, JOIN.LEFT_OUTER, on=User.uid == commcount.c.uid)
-    users = users.where(User.uid << [x.uid for x in admins]).order_by(User.joindate.asc()).dicts()
+    users = (
+        users.where(User.uid << [x.uid for x in admins])
+        .order_by(User.joindate.asc())
+        .dicts()
+    )
 
-    return render_template('admin/users.html', users=users, admin_route='admin.view')
+    return render_template("admin/users.html", users=users, admin_route="admin.view")
 
 
 @bp.route("/usersearch/<term>")
@@ -325,25 +448,39 @@ def users_search(term):
     """ WIP: Search users. """
     if not current_user.is_admin():
         abort(404)
-    term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
+    term = re.sub(r"[^A-Za-z0-9.\-_]+", "", term)
 
-    postcount = SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias('post_count')).group_by(SubPost.uid).alias(
-        'post_count')
-    commcount = SubPostComment.select(SubPostComment.uid,
-                                      fn.Count(SubPostComment.cid).alias('comment_count')).group_by(
-        SubPostComment.uid).alias('j2')
+    postcount = (
+        SubPost.select(SubPost.uid, fn.Count(SubPost.pid).alias("post_count"))
+        .group_by(SubPost.uid)
+        .alias("post_count")
+    )
+    commcount = (
+        SubPostComment.select(
+            SubPostComment.uid, fn.Count(SubPostComment.cid).alias("comment_count")
+        )
+        .group_by(SubPostComment.uid)
+        .alias("j2")
+    )
 
-    users = User.select(User.name, User.status, User.uid, User.joindate, postcount.c.post_count,
-                        commcount.c.comment_count)
+    users = User.select(
+        User.name,
+        User.status,
+        User.uid,
+        User.joindate,
+        postcount.c.post_count,
+        commcount.c.comment_count,
+    )
     users = users.join(postcount, JOIN.LEFT_OUTER, on=User.uid == postcount.c.uid)
     users = users.join(commcount, JOIN.LEFT_OUTER, on=User.uid == commcount.c.uid)
     users = users.where(User.name.contains(term)).order_by(User.joindate.desc()).dicts()
 
-    return render_template('admin/users.html', users=users, term=term,
-                           admin_route='admin.users_search')
+    return render_template(
+        "admin/users.html", users=users, term=term, admin_route="admin.users_search"
+    )
 
 
-@bp.route("/subs", defaults={'page': 1})
+@bp.route("/subs", defaults={"page": 1})
 @bp.route("/subs/<int:page>")
 @login_required
 def subs(page):
@@ -351,7 +488,13 @@ def subs(page):
     if not current_user.is_admin():
         abort(404)
     subs = Sub.select().paginate(page, 50)
-    return render_template('admin/subs.html', subs=subs, page=page, admin_route='admin.subs', editmodform=EditModForm())
+    return render_template(
+        "admin/subs.html",
+        subs=subs,
+        page=page,
+        admin_route="admin.subs",
+        editmodform=EditModForm(),
+    )
 
 
 @bp.route("/subsearch/<term>")
@@ -360,24 +503,35 @@ def subs_search(term):
     """ WIP: Search for a sub. """
     if not current_user.is_admin():
         abort(404)
-    term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
+    term = re.sub(r"[^A-Za-z0-9.\-_]+", "", term)
     subs = Sub.select().where(Sub.name.contains(term))
-    return render_template('admin/subs.html', subs=subs, term=term, admin_route='admin.subs_search',
-                           editmodform=EditModForm())
+    return render_template(
+        "admin/subs.html",
+        subs=subs,
+        term=term,
+        admin_route="admin.subs_search",
+        editmodform=EditModForm(),
+    )
 
 
-@bp.route("/posts/all/", defaults={'page': 1})
+@bp.route("/posts/all/", defaults={"page": 1})
 @bp.route("/posts/all/<int:page>")
 @login_required
 def posts(page):
     """ WIP: View posts. """
     if not current_user.is_admin():
         abort(404)
-    posts = misc.getPostList(misc.postListQueryBase(adminDetail=True), 'new', page).paginate(page, 50).dicts()
-    return render_template('admin/posts.html', page=page, admin_route='admin.posts', posts=posts)
+    posts = (
+        misc.getPostList(misc.postListQueryBase(adminDetail=True), "new", page)
+        .paginate(page, 50)
+        .dicts()
+    )
+    return render_template(
+        "admin/posts.html", page=page, admin_route="admin.posts", posts=posts
+    )
 
 
-@bp.route("/postvoting/<term>", defaults={'page': 1})
+@bp.route("/postvoting/<term>", defaults={"page": 1})
 @bp.route("/postvoting/<term>/<int:page>")
 @login_required
 def post_voting(page, term):
@@ -387,21 +541,33 @@ def post_voting(page, term):
     try:
         user = User.get(fn.Lower(User.name) == term.lower())
         msg = []
-        votes = SubPostVote.select(SubPostVote.positive, SubPostVote.pid, User.name, SubPostVote.datetime,
-                                   SubPostVote.pid)
+        votes = SubPostVote.select(
+            SubPostVote.positive,
+            SubPostVote.pid,
+            User.name,
+            SubPostVote.datetime,
+            SubPostVote.pid,
+        )
         votes = votes.join(SubPost, JOIN.LEFT_OUTER, on=SubPost.pid == SubPostVote.pid)
-        votes = votes.switch(SubPost).join(User, JOIN.LEFT_OUTER, on=SubPost.uid == User.uid)
+        votes = votes.switch(SubPost).join(
+            User, JOIN.LEFT_OUTER, on=SubPost.uid == User.uid
+        )
         votes = votes.where(SubPostVote.uid == user.uid).dicts()
     except User.DoesNotExist:
         votes = []
-        msg = 'user not found'
+        msg = "user not found"
 
-    return render_template('admin/postvoting.html', page=page, msg=msg,
-                           admin_route='admin.post_voting',
-                           votes=votes, term=term)
+    return render_template(
+        "admin/postvoting.html",
+        page=page,
+        msg=msg,
+        admin_route="admin.post_voting",
+        votes=votes,
+        term=term,
+    )
 
 
-@bp.route("/commentvoting/<term>", defaults={'page': 1})
+@bp.route("/commentvoting/<term>", defaults={"page": 1})
 @bp.route("/commentvoting/<term>/<int:page>")
 @login_required
 def comment_voting(page, term):
@@ -411,20 +577,40 @@ def comment_voting(page, term):
     try:
         user = User.get(fn.Lower(User.name) == term.lower())
         msg = []
-        votes = SubPostCommentVote.select(SubPostCommentVote.positive, SubPostCommentVote.cid, SubPostComment.uid,
-                                          User.name, SubPostCommentVote.datetime, SubPost.pid,
-                                          Sub.name.alias('sub'))
-        votes = votes.join(SubPostComment, JOIN.LEFT_OUTER, on=SubPostComment.cid == SubPostCommentVote.cid).join(
-            SubPost).join(Sub)
-        votes = votes.switch(SubPostComment).join(User, JOIN.LEFT_OUTER, on=SubPostComment.uid == User.uid)
+        votes = SubPostCommentVote.select(
+            SubPostCommentVote.positive,
+            SubPostCommentVote.cid,
+            SubPostComment.uid,
+            User.name,
+            SubPostCommentVote.datetime,
+            SubPost.pid,
+            Sub.name.alias("sub"),
+        )
+        votes = (
+            votes.join(
+                SubPostComment,
+                JOIN.LEFT_OUTER,
+                on=SubPostComment.cid == SubPostCommentVote.cid,
+            )
+            .join(SubPost)
+            .join(Sub)
+        )
+        votes = votes.switch(SubPostComment).join(
+            User, JOIN.LEFT_OUTER, on=SubPostComment.uid == User.uid
+        )
         votes = votes.where(SubPostCommentVote.uid == user.uid).dicts()
     except User.DoesNotExist:
         votes = []
-        msg = 'user not found'
+        msg = "user not found"
 
-    return render_template('admin/commentvoting.html', page=page, msg=msg,
-                           admin_route='admin.comment_voting',
-                           votes=votes, term=term)
+    return render_template(
+        "admin/commentvoting.html",
+        page=page,
+        msg=msg,
+        admin_route="admin.comment_voting",
+        votes=votes,
+        term=term,
+    )
 
 
 @bp.route("/post/search/<term>")
@@ -433,29 +619,47 @@ def post_search(term):
     """ WIP: Post search result. """
     if not current_user.is_admin():
         abort(404)
-    term = re.sub(r'[^A-Za-z0-9.\-_]+', '', term)
+    term = re.sub(r"[^A-Za-z0-9.\-_]+", "", term)
     try:
         post = SubPost.get(SubPost.pid == term)
     except SubPost.DoesNotExist:
         return abort(404)
 
-    votes = SubPostVote.select(SubPostVote.positive, SubPostVote.datetime, User.name).join(User).where(
-        SubPostVote.pid == post.pid).dicts()
-    upcount = post.votes.where(SubPostVote.positive == '1').count()
-    downcount = post.votes.where(SubPostVote.positive == '0').count()
+    votes = (
+        SubPostVote.select(SubPostVote.positive, SubPostVote.datetime, User.name)
+        .join(User)
+        .where(SubPostVote.pid == post.pid)
+        .dicts()
+    )
+    upcount = post.votes.where(SubPostVote.positive == "1").count()
+    downcount = post.votes.where(SubPostVote.positive == "0").count()
 
     pcount = post.uid.posts.count()
     ccount = post.uid.comments.count()
-    comms = SubPostComment.select(SubPostComment.score, SubPostComment.content, SubPostComment.cid, User.name).join(
-        User).where(SubPostComment.pid == post.pid).dicts()
+    comms = (
+        SubPostComment.select(
+            SubPostComment.score, SubPostComment.content, SubPostComment.cid, User.name
+        )
+        .join(User)
+        .where(SubPostComment.pid == post.pid)
+        .dicts()
+    )
 
-    return render_template('admin/post.html', sub=post.sid, post=post,
-                           votes=votes, ccount=ccount, pcount=pcount,
-                           upcount=upcount, downcount=downcount,
-                           comms=comms, user=post.uid)
+    return render_template(
+        "admin/post.html",
+        sub=post.sid,
+        post=post,
+        votes=votes,
+        ccount=ccount,
+        pcount=pcount,
+        upcount=upcount,
+        downcount=downcount,
+        comms=comms,
+        user=post.uid,
+    )
 
 
-@bp.route("/domains/<domain_type>", defaults={'page': 1})
+@bp.route("/domains/<domain_type>", defaults={"page": 1})
 @bp.route("/domains/<domain_type>/<int:page>")
 @login_required
 def domains(domain_type, page):
@@ -463,22 +667,29 @@ def domains(domain_type, page):
     if not current_user.is_admin():
         abort(404)
     if domain_type == "email":
-        key = 'banned_email_domain'
-        title = _('Banned Email Domains')
-    elif domain_type == 'link':
-        key = 'banned_domain'
-        title = _('Banned Domains')
+        key = "banned_email_domain"
+        title = _("Banned Email Domains")
+    elif domain_type == "link":
+        key = "banned_domain"
+        title = _("Banned Domains")
     else:
         return abort(404)
-    domains = (SiteMetadata.select()
-               .where(SiteMetadata.key == key)
-               .order_by(SiteMetadata.value))
-    return render_template('admin/domains.html', domains=domains,
-                           title=title, domain_type=domain_type,
-                           page=page, bandomainform=BanDomainForm())
+    domains = (
+        SiteMetadata.select()
+        .where(SiteMetadata.key == key)
+        .order_by(SiteMetadata.value)
+    )
+    return render_template(
+        "admin/domains.html",
+        domains=domains,
+        title=title,
+        domain_type=domain_type,
+        page=page,
+        bandomainform=BanDomainForm(),
+    )
 
 
-@bp.route("/uploads", defaults={'page': 1})
+@bp.route("/uploads", defaults={"page": 1})
 @bp.route("/uploads/<int:page>")
 @login_required
 def user_uploads(page):
@@ -486,24 +697,35 @@ def user_uploads(page):
     if not current_user.is_admin():
         abort(404)
     uploads = UserUploads.select().order_by(UserUploads.pid.desc()).paginate(page, 30)
-    users = User.select(User.name).join(UserMetadata).where(UserMetadata.key == 'canupload')
-    return render_template('admin/uploads.html', page=page, uploads=uploads, users=users)
+    users = (
+        User.select(User.name).join(UserMetadata).where(UserMetadata.key == "canupload")
+    )
+    return render_template(
+        "admin/uploads.html", page=page, uploads=uploads, users=users
+    )
 
 
-@bp.route("/reports", defaults={'page': 1})
+@bp.route("/reports", defaults={"page": 1})
 @bp.route("/reports/<int:page>")
 @login_required
 def reports(page):
     if not current_user.is_admin():
         abort(404)
 
-    reports = getReports('admin', 'all', page)
+    reports = getReports("admin", "all", page)
 
-    return engine.get_template('admin/reports.html').render(
-        {'reports': reports, 'page': page, 'sub': False, 'subInfo': False, 'subMods': False})
+    return engine.get_template("admin/reports.html").render(
+        {
+            "reports": reports,
+            "page": page,
+            "sub": False,
+            "subInfo": False,
+            "subMods": False,
+        }
+    )
 
 
-@bp.route("/wiki", defaults={'page': 1})
+@bp.route("/wiki", defaults={"page": 1})
 @bp.route("/wiki/<int:page>")
 @login_required
 def wiki(page):
@@ -512,10 +734,10 @@ def wiki(page):
 
     pages = Wiki.select().where(Wiki.is_global)
 
-    return engine.get_template('admin/wiki.html').render({'wikis': pages, 'page': page})
+    return engine.get_template("admin/wiki.html").render({"wikis": pages, "page": page})
 
 
-@bp.route("/wiki/create", methods=['GET', 'POST'])
+@bp.route("/wiki/create", methods=["GET", "POST"])
 @login_required
 def create_wiki():
     if not current_user.is_admin():
@@ -524,13 +746,20 @@ def create_wiki():
     form = WikiForm()
 
     if form.validate_on_submit():
-        Wiki.create(slug=form.slug.data, title=form.title.data, content=form.content.data,
-                    is_global=True, sub=None)
-        return redirect(url_for('admin.wiki'))
-    return engine.get_template('admin/createwiki.html').render({'form': form, 'error': misc.get_errors(form, True)})
+        Wiki.create(
+            slug=form.slug.data,
+            title=form.title.data,
+            content=form.content.data,
+            is_global=True,
+            sub=None,
+        )
+        return redirect(url_for("admin.wiki"))
+    return engine.get_template("admin/createwiki.html").render(
+        {"form": form, "error": misc.get_errors(form, True)}
+    )
 
 
-@bp.route("/wiki/edit/<slug>", methods=['GET'])
+@bp.route("/wiki/edit/<slug>", methods=["GET"])
 @login_required
 def edit_wiki(slug):
     if not current_user.is_admin():
@@ -546,10 +775,12 @@ def edit_wiki(slug):
     form.content.data = wiki_page.content
     form.title.data = wiki_page.title
 
-    return engine.get_template('admin/createwiki.html').render({'form': form, 'error': misc.get_errors(form, True)})
+    return engine.get_template("admin/createwiki.html").render(
+        {"form": form, "error": misc.get_errors(form, True)}
+    )
 
 
-@bp.route("/wiki/edit/<slug>", methods=['POST'])
+@bp.route("/wiki/edit/<slug>", methods=["POST"])
 @login_required
 def edit_wiki_save(slug):
     if not current_user.is_admin():
@@ -567,12 +798,14 @@ def edit_wiki_save(slug):
         wiki_page.content = form.content.data
         wiki_page.updated = datetime.datetime.utcnow()
         wiki_page.save()
-        return redirect(url_for('admin.wiki'))
+        return redirect(url_for("admin.wiki"))
 
-    return engine.get_template('admin/createwiki.html').render({'form': form, 'error': misc.get_errors(form, True)})
+    return engine.get_template("admin/createwiki.html").render(
+        {"form": form, "error": misc.get_errors(form, True)}
+    )
 
 
-@bp.route("/wiki/delete/<slug>", methods=['GET'])
+@bp.route("/wiki/delete/<slug>", methods=["GET"])
 @login_required
 def delete_wiki(slug):
     if not current_user.is_admin():
@@ -585,4 +818,4 @@ def delete_wiki(slug):
         return abort(404)
 
     wiki_page.delete_instance()
-    return redirect(url_for('admin.wiki'))
+    return redirect(url_for("admin.wiki"))

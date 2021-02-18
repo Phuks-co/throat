@@ -35,11 +35,22 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
+
     @migrator.create_model
     class SubMod(pw.Model):
         id = pw.AutoField()
-        uid = pw.ForeignKeyField(backref='submod_set', column_name='uid', field='uid', model=migrator.orm['user'])
-        sid = pw.ForeignKeyField(backref='submod_set', column_name='sid', field='sid', model=migrator.orm['sub'])
+        uid = pw.ForeignKeyField(
+            backref="submod_set",
+            column_name="uid",
+            field="uid",
+            model=migrator.orm["user"],
+        )
+        sid = pw.ForeignKeyField(
+            backref="submod_set",
+            column_name="sid",
+            field="sid",
+            model=migrator.orm["sub"],
+        )
         power_level = pw.IntegerField()
 
         invite = pw.BooleanField(default=False)
@@ -51,17 +62,16 @@ def migrate(migrator, database, fake=False, **kwargs):
         SubMod._meta.database = migrator.database
         SubMod.create_table(True)
 
-        SubMetadata = migrator.orm['sub_metadata']
+        SubMetadata = migrator.orm["sub_metadata"]
 
-        for xm in SubMetadata.select().where(SubMetadata.key == 'mod1'):
+        for xm in SubMetadata.select().where(SubMetadata.key == "mod1"):
             SubMod.create(uid=xm.value, sid=xm.sid, power_level=0)
 
-        for xm in SubMetadata.select().where(SubMetadata.key == 'mod2'):
+        for xm in SubMetadata.select().where(SubMetadata.key == "mod2"):
             SubMod.create(uid=xm.value, sid=xm.sid, power_level=1)
-
 
 
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
 
-    migrator.remove_model('sub_mod')
+    migrator.remove_model("sub_mod")

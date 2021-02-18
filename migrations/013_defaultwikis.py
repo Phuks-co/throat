@@ -35,19 +35,47 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
-    Wiki = migrator.orm['wiki']
+    Wiki = migrator.orm["wiki"]
 
     if not fake:
-        tos = Wiki(is_global=True, slug="tos", title="Terms of Service", content="Put your terms of service here", created=dt.datetime.utcnow(), updated=dt.datetime.utcnow())
+        tos = Wiki(
+            is_global=True,
+            slug="tos",
+            title="Terms of Service",
+            content="Put your terms of service here",
+            created=dt.datetime.utcnow(),
+            updated=dt.datetime.utcnow(),
+        )
         tos.save()
 
-        privacy = Wiki(is_global=True, slug="privacy", title="Privacy Policy", content="Put your privacy policy here", created=dt.datetime.utcnow(), updated=dt.datetime.utcnow())
+        privacy = Wiki(
+            is_global=True,
+            slug="privacy",
+            title="Privacy Policy",
+            content="Put your privacy policy here",
+            created=dt.datetime.utcnow(),
+            updated=dt.datetime.utcnow(),
+        )
         privacy.save()
 
-        canary = Wiki(is_global=True, slug="canary", title="Warrant canary", content="Put your canary here", created=dt.datetime.utcnow(), updated=dt.datetime.utcnow())
+        canary = Wiki(
+            is_global=True,
+            slug="canary",
+            title="Warrant canary",
+            content="Put your canary here",
+            created=dt.datetime.utcnow(),
+            updated=dt.datetime.utcnow(),
+        )
         canary.save()
 
-        donate = Wiki(is_global=True, slug="donate", title="Donate", content="Donation info goes here!", created=dt.datetime.utcnow(), updated=dt.datetime.utcnow())
+        donate = Wiki(
+            is_global=True,
+            slug="donate",
+            title="Donate",
+            content="Donation info goes here!",
+            created=dt.datetime.utcnow(),
+            updated=dt.datetime.utcnow(),
+        )
         donate.save()
 
 

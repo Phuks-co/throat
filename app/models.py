@@ -17,7 +17,7 @@ dbp = Proxy()
 
 
 def get_db():
-    if 'db' not in g:
+    if "db" not in g:
         if dbp.is_closed():
             dbp.connect()
         g.db = dbp
@@ -28,18 +28,18 @@ db = LocalProxy(get_db)
 
 
 def db_init_app(app):
-    dbconnect = dict(app.config['THROAT_CONFIG'].database)
+    dbconnect = dict(app.config["THROAT_CONFIG"].database)
     # Taken from peewee's flask_utils
     try:
-        name = dbconnect.pop('name')
-        engine = dbconnect.pop('engine')
+        name = dbconnect.pop("name")
+        engine = dbconnect.pop("engine")
     except KeyError:
-        raise RuntimeError('DATABASE configuration must specify a `name` and `engine`.')
+        raise RuntimeError("DATABASE configuration must specify a `name` and `engine`.")
 
-    if '.' in engine:
-        path, class_name = engine.rsplit('.', 1)
+    if "." in engine:
+        path, class_name = engine.rsplit(".", 1)
     else:
-        path, class_name = 'peewee', engine
+        path, class_name = "peewee", engine
 
     try:
         __import__(path)
@@ -47,11 +47,13 @@ def db_init_app(app):
         database_class = getattr(module, class_name)
         assert issubclass(database_class, Database)
     except ImportError:
-        raise RuntimeError('Unable to import %s' % engine)
+        raise RuntimeError("Unable to import %s" % engine)
     except AttributeError:
-        raise RuntimeError('Database engine not found %s' % engine)
+        raise RuntimeError("Database engine not found %s" % engine)
     except AssertionError:
-        raise RuntimeError('Database engine not a subclass of peewee.Database: %s' % engine)
+        raise RuntimeError(
+            "Database engine not a subclass of peewee.Database: %s" % engine
+        )
 
     dbm = database_class(name, **dbconnect)
     dbm.execute = functools.partial(peewee_count_queries, dbm.execute)
@@ -59,7 +61,7 @@ def db_init_app(app):
 
     @app.teardown_appcontext
     def close_db(_):
-        dbp = g.pop('db', None)
+        dbp = g.pop("db", None)
         if dbp is not None:
             dbp.close()
 
@@ -67,7 +69,7 @@ def db_init_app(app):
 def peewee_count_queries(dex, *args, **kwargs):
     """ Used to count and display number of queries """
     try:
-        if not hasattr(g, 'pqc'):
+        if not hasattr(g, "pqc"):
             g.pqc = 0
         g.pqc += 1
     except RuntimeError:
@@ -82,15 +84,17 @@ class BaseModel(Model):
 
 class UserCrypto(IntEnum):
     """Password hash algorithm."""
+
     BCRYPT = 1
     REMOTE = 2  # password stored on remote auth server
 
 
 class UserStatus(IntEnum):
     """User's login capability status."""
+
     OK = 0
     PROBATION = 1  # New, with email not yet confirmed.
-    BANNED = 5     # site-ban
+    BANNED = 5  # site-ban
     DELETED = 10
 
 
@@ -111,42 +115,41 @@ class User(BaseModel):
     language = CharField(default=None, null=True, max_length=11)
 
     def __repr__(self):
-        return f'<User {self.name}>'
+        return f"<User {self.name}>"
 
     class Meta:
-        table_name = 'user'
+        table_name = "user"
 
 
 class Client(BaseModel):
     _default_scopes = TextField(null=True)
     _redirect_uris = TextField(null=True)
-    client = CharField(db_column='client_id', primary_key=True, max_length=40)
+    client = CharField(db_column="client_id", primary_key=True, max_length=40)
     client_secret = CharField(unique=True, max_length=55)
     is_confidential = BooleanField(null=True)
     name = CharField(null=True, max_length=40)
-    user = ForeignKeyField(db_column='user_id', null=True, model=User, field='uid')
+    user = ForeignKeyField(db_column="user_id", null=True, model=User, field="uid")
 
     def __repr__(self):
-        return f'<Client {self.name}>'
+        return f"<Client {self.name}>"
 
     class Meta:
-        table_name = 'client'
+        table_name = "client"
 
 
 class Grant(BaseModel):
     _scopes = TextField(null=True)
-    client = ForeignKeyField(db_column='client_id', model=Client, field='client')
+    client = ForeignKeyField(db_column="client_id", model=Client, field="client")
     code = CharField(index=True)
     expires = DateTimeField(null=True)
     redirect_uri = CharField(null=True)
-    user = ForeignKeyField(db_column='user_id', null=True, model=User,
-                           field='uid')
+    user = ForeignKeyField(db_column="user_id", null=True, model=User, field="uid")
 
     def __repr__(self):
-        return f'<Grant {self.code}>'
+        return f"<Grant {self.code}>"
 
     class Meta:
-        table_name = 'grant'
+        table_name = "grant"
 
 
 class SiteLog(BaseModel):
@@ -155,14 +158,14 @@ class SiteLog(BaseModel):
     lid = PrimaryKeyField()
     link = CharField(null=True)
     time = DateTimeField(default=datetime.datetime.utcnow)
-    uid = ForeignKeyField(db_column='uid', null=True, model=User, field='uid')
-    target = ForeignKeyField(db_column='target_uid', null=True, model=User, field='uid')
+    uid = ForeignKeyField(db_column="uid", null=True, model=User, field="uid")
+    target = ForeignKeyField(db_column="target_uid", null=True, model=User, field="uid")
 
     def __repr__(self):
-        return f'<SiteLog action={self.action}>'
+        return f"<SiteLog action={self.action}>"
 
     class Meta:
-        table_name = 'site_log'
+        table_name = "site_log"
 
 
 class SiteMetadata(BaseModel):
@@ -171,17 +174,17 @@ class SiteMetadata(BaseModel):
     xid = PrimaryKeyField()
 
     def __repr__(self):
-        return f'<SiteMetadata {self.key}>'
+        return f"<SiteMetadata {self.key}>"
 
     class Meta:
-        table_name = 'site_metadata'
+        table_name = "site_metadata"
 
 
 class Sub(BaseModel):
     name = CharField(null=True, unique=True, max_length=32)
     nsfw = BooleanField(default=False)
     sid = CharField(primary_key=True, max_length=40)
-    sidebar = TextField(default='')
+    sidebar = TextField(default="")
     status = IntegerField(null=True)
     title = CharField(null=True, max_length=50)
     sort = CharField(null=True, max_length=32)
@@ -190,16 +193,18 @@ class Sub(BaseModel):
     posts = IntegerField(default=0)
 
     def __repr__(self):
-        return f'<Sub {self.name}>'
+        return f"<Sub {self.name}>"
 
     class Meta:
-        table_name = 'sub'
+        table_name = "sub"
 
     def get_metadata(self, key):
-        """ Returns `key` for submetadata or `None` if it does not exist.
-        Only works for single keys """
+        """Returns `key` for submetadata or `None` if it does not exist.
+        Only works for single keys"""
         try:
-            m = SubMetadata.get((SubMetadata.sid == self.sid) & (SubMetadata.key == key))
+            m = SubMetadata.get(
+                (SubMetadata.sid == self.sid) & (SubMetadata.key == key)
+            )
             return m.value
         except SubMetadata.DoesNotExist:
             return None
@@ -207,9 +212,9 @@ class Sub(BaseModel):
     def update_metadata(self, key, value):
         """ Updates `key` for submetadata. Only works for single keys. """
         if value:
-            value = '1'
+            value = "1"
         elif not value:
-            value = '0'
+            value = "0"
         restr = SubMetadata.get_or_create(sid=self.sid, key=key)[0]
         if restr.value != value:
             restr.value = value
@@ -217,29 +222,27 @@ class Sub(BaseModel):
 
 
 class SubFlair(BaseModel):
-    sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
-                          field='sid')
+    sid = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
     text = CharField(null=True)
     xid = PrimaryKeyField()
 
     def __repr__(self):
-        return f'<SubFlair {self.text}>'
+        return f"<SubFlair {self.text}>"
 
     class Meta:
-        table_name = 'sub_flair'
+        table_name = "sub_flair"
 
 
 class SubRule(BaseModel):
-    sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
-                          field='sid')
+    sid = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
     text = CharField(null=True)
     rid = PrimaryKeyField()
 
     def __repr__(self):
-        return f'<SubRule {self.text}>'
+        return f"<SubRule {self.text}>"
 
     class Meta:
-        table_name = 'sub_rule'
+        table_name = "sub_rule"
 
 
 class SubLog(BaseModel):
@@ -247,31 +250,32 @@ class SubLog(BaseModel):
     desc = CharField(null=True)
     lid = PrimaryKeyField()
     link = CharField(null=True)
-    sid = ForeignKeyField(db_column='sid', null=True, model=Sub, field='sid')
-    uid = ForeignKeyField(db_column='uid', null=True, model=User, field='uid')
-    target = ForeignKeyField(db_column='target_uid', null=True, model=User, field='uid')
-    admin = BooleanField(default=False)  # True if action was performed by an admin override.
+    sid = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
+    uid = ForeignKeyField(db_column="uid", null=True, model=User, field="uid")
+    target = ForeignKeyField(db_column="target_uid", null=True, model=User, field="uid")
+    admin = BooleanField(
+        default=False
+    )  # True if action was performed by an admin override.
     time = DateTimeField(default=datetime.datetime.utcnow)
 
     def __repr__(self):
-        return f'<SubLog action={self.action}>'
+        return f"<SubLog action={self.action}>"
 
     class Meta:
-        table_name = 'sub_log'
+        table_name = "sub_log"
 
 
 class SubMetadata(BaseModel):
     key = CharField(null=True)
-    sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
-                          field='sid')
+    sid = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
     value = CharField(null=True)
     xid = PrimaryKeyField()
 
     def __repr__(self):
-        return f'<SubMetadata {self.key}>'
+        return f"<SubMetadata {self.key}>"
 
     class Meta:
-        table_name = 'sub_metadata'
+        table_name = "sub_metadata"
 
 
 class SubPost(BaseModel):
@@ -289,11 +293,13 @@ class SubPost(BaseModel):
     upvotes = IntegerField(default=0)
     downvotes = IntegerField(default=0)
 
-    sid = ForeignKeyField(db_column='sid', null=True, model=Sub, field='sid')
+    sid = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
     thumbnail = CharField(null=True)
     title = CharField(null=True)
     comments = IntegerField()
-    uid = ForeignKeyField(db_column='uid', null=True, model=User, field='uid', backref='posts')
+    uid = ForeignKeyField(
+        db_column="uid", null=True, model=User, field="uid", backref="posts"
+    )
     flair = CharField(null=True, max_length=25)
 
     def __repr__(self):
@@ -301,171 +307,175 @@ class SubPost(BaseModel):
 
     def is_archived(self):
         delta = datetime.timedelta(days=config.site.archive_post_after)
-        return (datetime.datetime.utcnow() - self.posted.replace(tzinfo=None)) > delta  # noqa
+        return (
+            datetime.datetime.utcnow() - self.posted.replace(tzinfo=None)
+        ) > delta  # noqa
 
     def is_title_editable(self):
         delta = datetime.timedelta(seconds=config.site.title_edit_timeout)
-        return (datetime.datetime.utcnow() - self.posted.replace(tzinfo=None)) > delta  # noqa
+        return (
+            datetime.datetime.utcnow() - self.posted.replace(tzinfo=None)
+        ) > delta  # noqa
 
     class Meta:
-        table_name = 'sub_post'
+        table_name = "sub_post"
 
 
 class SubPostPollOption(BaseModel):
     """ List of options for a poll """
-    pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
+
+    pid = ForeignKeyField(db_column="pid", model=SubPost, field="pid")
     text = CharField()
 
     def __repr__(self):
         return f'<SubPostPollOption "{self.text[:20]}">'
 
     class Meta:
-        table_name = 'sub_post_poll_option'
+        table_name = "sub_post_poll_option"
 
 
 class SubPostPollVote(BaseModel):
     """ List of options for a poll """
-    pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
-    uid = ForeignKeyField(db_column='uid', model=User)
-    vid = ForeignKeyField(db_column='vid', model=SubPostPollOption, backref='votes')
+
+    pid = ForeignKeyField(db_column="pid", model=SubPost, field="pid")
+    uid = ForeignKeyField(db_column="uid", model=User)
+    vid = ForeignKeyField(db_column="vid", model=SubPostPollOption, backref="votes")
 
     def __repr__(self):
-        return '<SubPostPollVote>'
+        return "<SubPostPollVote>"
 
     class Meta:
-        table_name = 'sub_post_poll_vote'
+        table_name = "sub_post_poll_vote"
 
 
 class SubPostComment(BaseModel):
     cid = CharField(primary_key=True, max_length=40)
     content = TextField(null=True)
     lastedit = DateTimeField(null=True)
-    parentcid = ForeignKeyField(db_column='parentcid', null=True,
-                                model='self', field='cid')
-    pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
-                          field='pid')
+    parentcid = ForeignKeyField(
+        db_column="parentcid", null=True, model="self", field="cid"
+    )
+    pid = ForeignKeyField(db_column="pid", null=True, model=SubPost, field="pid")
     score = IntegerField(null=True)
     upvotes = IntegerField(default=0)
     downvotes = IntegerField(default=0)
-    status = IntegerField(null=True)  # 1=self delete, 2=mod delete, 0 or null=not deleted
+    status = IntegerField(
+        null=True
+    )  # 1=self delete, 2=mod delete, 0 or null=not deleted
     distinguish = IntegerField(null=True)  # 1=mod, 2=admin, 0 or null = normal
     time = DateTimeField(null=True)
-    uid = ForeignKeyField(db_column='uid', null=True, model=User,
-                          field='uid', backref='comments')
+    uid = ForeignKeyField(
+        db_column="uid", null=True, model=User, field="uid", backref="comments"
+    )
 
     def __repr__(self):
         return f'<SubPostComment "{self.content[:20]}">'
 
     class Meta:
-        table_name = 'sub_post_comment'
+        table_name = "sub_post_comment"
 
 
 class SubPostCommentVote(BaseModel):
     datetime = DateTimeField(null=True, default=datetime.datetime.utcnow)
     cid = CharField(null=True)
     positive = IntegerField(null=True)
-    uid = ForeignKeyField(db_column='uid', null=True, model=User,
-                          field='uid')
+    uid = ForeignKeyField(db_column="uid", null=True, model=User, field="uid")
     xid = PrimaryKeyField()
 
     def __repr__(self):
-        return f'<SubPostCommentVote {self.cid}>'
+        return f"<SubPostCommentVote {self.cid}>"
 
     class Meta:
-        table_name = 'sub_post_comment_vote'
+        table_name = "sub_post_comment_vote"
 
 
 class SubPostMetadata(BaseModel):
     key = CharField(null=True)
-    pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
-                          field='pid')
+    pid = ForeignKeyField(db_column="pid", null=True, model=SubPost, field="pid")
     value = CharField(null=True)
     xid = PrimaryKeyField()
 
     def __repr__(self):
-        return f'<SubPostMetadata {self.key}>'
+        return f"<SubPostMetadata {self.key}>"
 
     class Meta:
-        table_name = 'sub_post_metadata'
+        table_name = "sub_post_metadata"
 
 
 class SubPostVote(BaseModel):
     datetime = DateTimeField(null=True, default=datetime.datetime.utcnow)
-    pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
-                          field='pid', backref='votes')
+    pid = ForeignKeyField(
+        db_column="pid", null=True, model=SubPost, field="pid", backref="votes"
+    )
     positive = IntegerField(null=True)
-    uid = ForeignKeyField(db_column='uid', null=True, model=User,
-                          field='uid')
+    uid = ForeignKeyField(db_column="uid", null=True, model=User, field="uid")
     xid = PrimaryKeyField()
 
     def __repr__(self):
-        return f'<SubPostVote {self.positive}>'
+        return f"<SubPostVote {self.positive}>"
 
     class Meta:
-        table_name = 'sub_post_vote'
+        table_name = "sub_post_vote"
 
 
 class SubStylesheet(BaseModel):
     content = TextField(null=True)
     source = TextField()
-    sid = ForeignKeyField(db_column='sid', null=True, model=Sub,
-                          field='sid')
+    sid = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
     xid = PrimaryKeyField()
 
     def __repr__(self):
         return f'<SubStylesheet "{self.source[:20]}">'
 
     class Meta:
-        table_name = 'sub_stylesheet'
+        table_name = "sub_stylesheet"
 
 
 class SubSubscriber(BaseModel):
     """ Stores subscribed and blocked subs """
+
     order = IntegerField(null=True)
-    sid = ForeignKeyField(db_column='sid', null=True, model=Sub, field='sid')
+    sid = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
     # status is 1 for subscribed, 2 for blocked and 4 for saved (displayed in the top bar)
     status = IntegerField(null=True)
     time = DateTimeField(default=datetime.datetime.utcnow)
-    uid = ForeignKeyField(db_column='uid', null=True, model=User, field='uid')
+    uid = ForeignKeyField(db_column="uid", null=True, model=User, field="uid")
     xid = PrimaryKeyField()
 
     def __repr__(self):
-        return f'<SubSubscriber {self.status}>'
+        return f"<SubSubscriber {self.status}>"
 
     class Meta:
-        table_name = 'sub_subscriber'
+        table_name = "sub_subscriber"
 
 
 class Token(BaseModel):
     _scopes = TextField(null=True)
     access_token = CharField(null=True, unique=True, max_length=100)
-    client = ForeignKeyField(db_column='client_id', model=Client,
-                             field='client')
+    client = ForeignKeyField(db_column="client_id", model=Client, field="client")
     expires = DateTimeField(null=True)
     refresh_token = CharField(null=True, unique=True, max_length=100)
     token_type = CharField(null=True, max_length=40)
-    user = ForeignKeyField(db_column='user_id', null=True, model=User,
-                           field='uid')
+    user = ForeignKeyField(db_column="user_id", null=True, model=User, field="uid")
 
     def __repr__(self):
-        return f'<Token {self.token_type}>'
+        return f"<Token {self.token_type}>"
 
     class Meta:
-        table_name = 'token'
+        table_name = "token"
 
 
 class UserMetadata(BaseModel):
     key = CharField(null=True)
-    uid = ForeignKeyField(db_column='uid', null=True, model=User,
-                          field='uid')
+    uid = ForeignKeyField(db_column="uid", null=True, model=User, field="uid")
     value = CharField(null=True)
     xid = PrimaryKeyField()
 
     def __repr__(self):
-        return f'<UserMetadata {self.key}>'
+        return f"<UserMetadata {self.key}>"
 
     class Meta:
-        table_name = 'user_metadata'
+        table_name = "user_metadata"
 
 
 class Badge(BaseModel):
@@ -480,7 +490,7 @@ class Badge(BaseModel):
 
     def __getitem__(self, key):
         tmp = self.__dict__.get(key)
-        if key == 'icon':
+        if key == "icon":
             tmp = file_url(tmp)
         return tmp
 
@@ -491,57 +501,55 @@ class Badge(BaseModel):
 class UserAuthSource(IntEnum):
     """Where authentication is done.  Value for the 'auth_source' key in
     UserMetadata."""
+
     LOCAL = 0
     KEYCLOAK = 1
 
 
 class UserSaved(BaseModel):
     pid = IntegerField(null=True)
-    uid = ForeignKeyField(db_column='uid', null=True, model=User,
-                          field='uid')
+    uid = ForeignKeyField(db_column="uid", null=True, model=User, field="uid")
     xid = PrimaryKeyField()
 
     def __repr__(self):
-        return f'<UserSaved {self.uid}>'
+        return f"<UserSaved {self.uid}>"
 
     class Meta:
-        table_name = 'user_saved'
+        table_name = "user_saved"
 
 
 class UserUploads(BaseModel):
     xid = PrimaryKeyField()
-    pid = ForeignKeyField(db_column='pid', null=True, model=SubPost,
-                          field='pid')
-    uid = ForeignKeyField(db_column='uid', null=True, model=User,
-                          field='uid')
+    pid = ForeignKeyField(db_column="pid", null=True, model=SubPost, field="pid")
+    uid = ForeignKeyField(db_column="uid", null=True, model=User, field="uid")
     fileid = CharField(null=True)
     thumbnail = CharField(null=True)
     status = IntegerField()
 
     def __repr__(self):
-        return f'<UserUploads {self.fileid}>'
+        return f"<UserUploads {self.fileid}>"
 
     class Meta:
-        table_name = 'user_uploads'
+        table_name = "user_uploads"
 
 
 class SubUploads(BaseModel):
-    sid = ForeignKeyField(db_column='sid', model=Sub, field='sid')
+    sid = ForeignKeyField(db_column="sid", model=Sub, field="sid")
     fileid = CharField()
     thumbnail = CharField()
     name = CharField()
     size = IntegerField()
 
     def __repr__(self):
-        return f'<SubUploads {self.fileid}>'
+        return f"<SubUploads {self.fileid}>"
 
     class Meta:
-        table_name = 'sub_uploads'
+        table_name = "sub_uploads"
 
 
 class SubPostReport(BaseModel):
-    pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
-    uid = ForeignKeyField(db_column='uid', model=User, field='uid')
+    pid = ForeignKeyField(db_column="pid", model=SubPost, field="pid")
+    uid = ForeignKeyField(db_column="uid", model=User, field="uid")
     datetime = DateTimeField(default=datetime.datetime.now)
     reason = CharField(max_length=128)
     open = BooleanField(default=True)
@@ -551,29 +559,29 @@ class SubPostReport(BaseModel):
         return f'<SubPostReport "{self.reason[:20]}">'
 
     class Meta:
-        table_name = 'sub_post_report'
+        table_name = "sub_post_report"
 
 
 class PostReportLog(BaseModel):
-    rid = ForeignKeyField(db_column='id', model=SubPostReport, field='id')
+    rid = ForeignKeyField(db_column="id", model=SubPostReport, field="id")
     action = IntegerField(null=True)
     desc = CharField(null=True)
     lid = PrimaryKeyField()
     link = CharField(null=True)
     time = DateTimeField(default=datetime.datetime.utcnow)
-    uid = ForeignKeyField(db_column='uid', null=True, model=User, field='uid')
-    target = ForeignKeyField(db_column='target_uid', null=True, model=User, field='uid')
+    uid = ForeignKeyField(db_column="uid", null=True, model=User, field="uid")
+    target = ForeignKeyField(db_column="target_uid", null=True, model=User, field="uid")
 
     def __repr__(self):
-        return f'<PostReportLog action={self.action}>'
+        return f"<PostReportLog action={self.action}>"
 
     class Meta:
-        table_name = 'post_report_log'
+        table_name = "post_report_log"
 
 
 class SubPostCommentReport(BaseModel):
-    cid = ForeignKeyField(db_column='cid', model=SubPostComment, field='cid')
-    uid = ForeignKeyField(db_column='uid', model=User, field='uid')
+    cid = ForeignKeyField(db_column="cid", model=SubPostComment, field="cid")
+    uid = ForeignKeyField(db_column="uid", model=User, field="uid")
     datetime = DateTimeField(default=datetime.datetime.now)
     reason = CharField(max_length=128)
     open = BooleanField(default=True)
@@ -583,28 +591,28 @@ class SubPostCommentReport(BaseModel):
         return f'<SubPostCommentReport "{self.reason[:20]}">'
 
     class Meta:
-        table_name = 'sub_post_comment_report'
+        table_name = "sub_post_comment_report"
 
 
 class CommentReportLog(BaseModel):
-    rid = ForeignKeyField(db_column='id', model=SubPostCommentReport, field='id')
+    rid = ForeignKeyField(db_column="id", model=SubPostCommentReport, field="id")
     action = IntegerField(null=True)
     desc = CharField(null=True)
     lid = PrimaryKeyField()
     link = CharField(null=True)
     time = DateTimeField(default=datetime.datetime.utcnow)
-    uid = ForeignKeyField(db_column='uid', null=True, model=User, field='uid')
-    target = ForeignKeyField(db_column='target_uid', null=True, model=User, field='uid')
+    uid = ForeignKeyField(db_column="uid", null=True, model=User, field="uid")
+    target = ForeignKeyField(db_column="target_uid", null=True, model=User, field="uid")
 
     def __repr__(self):
-        return f'<CommentReportLog action={self.action}>'
+        return f"<CommentReportLog action={self.action}>"
 
     class Meta:
-        table_name = 'comment_report_log'
+        table_name = "comment_report_log"
 
 
 class SubPostCommentHistory(BaseModel):
-    cid = ForeignKeyField(db_column='cid', model=SubPostComment, field='cid')
+    cid = ForeignKeyField(db_column="cid", model=SubPostComment, field="cid")
     datetime = DateTimeField(default=datetime.datetime.now)
     content = TextField(null=True)
 
@@ -616,7 +624,7 @@ class SubPostCommentHistory(BaseModel):
 
 
 class SubPostContentHistory(BaseModel):
-    pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
+    pid = ForeignKeyField(db_column="pid", model=SubPost, field="pid")
     datetime = DateTimeField(default=datetime.datetime.now)
     content = TextField(null=True)
 
@@ -628,7 +636,7 @@ class SubPostContentHistory(BaseModel):
 
 
 class SubPostTitleHistory(BaseModel):
-    pid = ForeignKeyField(db_column='pid', model=SubPost, field='pid')
+    pid = ForeignKeyField(db_column="pid", model=SubPost, field="pid")
     datetime = DateTimeField(default=datetime.datetime.now)
     title = TextField(null=True)
 
@@ -640,7 +648,7 @@ class SubPostTitleHistory(BaseModel):
 
 
 class UserIgnores(BaseModel):
-    uid = ForeignKeyField(db_column='uid', model=User, field='uid')
+    uid = ForeignKeyField(db_column="uid", model=User, field="uid")
     target = CharField(max_length=40)
     date = DateTimeField(default=datetime.datetime.now)
 
@@ -648,11 +656,11 @@ class UserIgnores(BaseModel):
         return f'<UserIgnores "{self.target}">'
 
     class Meta:
-        table_name = 'user_ignores'
+        table_name = "user_ignores"
 
 
 class APIToken(BaseModel):
-    user = ForeignKeyField(db_column='uid', model=User, field='uid')
+    user = ForeignKeyField(db_column="uid", model=User, field="uid")
     token = CharField(unique=True)
     can_post = BooleanField()
     can_mod = BooleanField()
@@ -662,50 +670,51 @@ class APIToken(BaseModel):
     is_ip_restricted = BooleanField(default=False)
 
     def __repr__(self):
-        return f'<APIToken {self.token}>'
+        return f"<APIToken {self.token}>"
 
     class Meta:
-        table_name = 'api_token'
+        table_name = "api_token"
 
 
 class APITokenSettings(BaseModel):
     """ API Token settings. Mainly used for IP whitelisting """
-    token = ForeignKeyField(model=APIToken, field='id')
+
+    token = ForeignKeyField(model=APIToken, field="id")
     key = CharField()
     value = CharField()
 
     def __repr__(self):
-        return f'<APITokenSettings {self.key}>'
+        return f"<APITokenSettings {self.key}>"
 
     class Meta:
-        table_name = 'api_token_settings'
+        table_name = "api_token_settings"
 
 
 class SubMod(BaseModel):
-    user = ForeignKeyField(db_column='uid', model=User, field='uid')
-    sub = ForeignKeyField(db_column='sid', model=Sub, field='sid')
+    user = ForeignKeyField(db_column="uid", model=User, field="uid")
+    sub = ForeignKeyField(db_column="sid", model=Sub, field="sid")
     # Power level: 0=owner, 1=mod, 2=janitor
     power_level = IntegerField()
 
     invite = BooleanField(default=False)  # if True, mod is invited and not effective
 
     def __repr__(self):
-        return f'<SubMod power_level={self.power_level}>'
+        return f"<SubMod power_level={self.power_level}>"
 
     class Meta:
         table_name = "sub_mod"
 
 
 class SubBan(BaseModel):
-    user = ForeignKeyField(db_column='uid', model=User, field='uid')
-    sub = ForeignKeyField(db_column='sid', model=Sub, field='sid')
+    user = ForeignKeyField(db_column="uid", model=User, field="uid")
+    sub = ForeignKeyField(db_column="sid", model=Sub, field="sid")
 
     created = DateTimeField(default=datetime.datetime.utcnow)
     reason = CharField(max_length=128)
     expires = DateTimeField(null=True)
     effective = BooleanField(default=True)
 
-    created_by = ForeignKeyField(db_column='created_by_id', model=User, field='uid')
+    created_by = ForeignKeyField(db_column="created_by_id", model=User, field="uid")
 
     def __repr__(self):
         return f'<SubBan "{self.reason[:20]}">'
@@ -718,7 +727,8 @@ class SubUserFlairChoice(BaseModel):
     """
     Stores possible user flair choces for a sub
     """
-    sub = ForeignKeyField(db_column='sid', model=Sub, field='sid')
+
+    sub = ForeignKeyField(db_column="sid", model=Sub, field="sid")
     flair = CharField(null=False, max_length=25)
 
     class Meta:
@@ -729,8 +739,9 @@ class SubUserFlair(BaseModel):
     """
     Stores flairs assigned to users in a Sub
     """
-    user = ForeignKeyField(db_column='uid', model=User, field='uid')
-    sub = ForeignKeyField(db_column='sid', model=Sub, field='sid')
+
+    user = ForeignKeyField(db_column="uid", model=User, field="uid")
+    sub = ForeignKeyField(db_column="sid", model=Sub, field="sid")
 
     flair = CharField(null=False, max_length=25)
 
@@ -741,7 +752,7 @@ class SubUserFlair(BaseModel):
 
 
 class InviteCode(BaseModel):
-    user = ForeignKeyField(db_column='uid', model=User, field='uid')
+    user = ForeignKeyField(db_column="uid", model=User, field="uid")
 
     code = CharField(max_length=64)
 
@@ -752,17 +763,23 @@ class InviteCode(BaseModel):
 
     @classmethod
     def get_valid(cls, invite_code):
-        """ Returns a valid invite code
+        """Returns a valid invite code
         @raise InviteCode.DoesNotExist
         """
 
-        return InviteCode.select()\
-            .where(InviteCode.code == invite_code)\
-            .where(InviteCode.expires.is_null() | (InviteCode.expires > datetime.datetime.utcnow()))\
-            .where(InviteCode.max_uses > InviteCode.uses).get()
+        return (
+            InviteCode.select()
+            .where(InviteCode.code == invite_code)
+            .where(
+                InviteCode.expires.is_null()
+                | (InviteCode.expires > datetime.datetime.utcnow())
+            )
+            .where(InviteCode.max_uses > InviteCode.uses)
+            .get()
+        )
 
     def __repr__(self):
-        return f'<InviteCode {self.code}>'
+        return f"<InviteCode {self.code}>"
 
     class Meta:
         table_name = "invite_code"
@@ -770,7 +787,7 @@ class InviteCode(BaseModel):
 
 class Wiki(BaseModel):
     is_global = BooleanField()
-    sub = ForeignKeyField(db_column='sid', model=Sub, field='sid', null=True)
+    sub = ForeignKeyField(db_column="sid", model=Sub, field="sid", null=True)
 
     slug = CharField(max_length=128)
     title = CharField(max_length=255)
@@ -782,6 +799,7 @@ class Wiki(BaseModel):
 
 class Notification(BaseModel):
     """ Holds user notifications. """
+
     # Notification type. Can be one of:
     # - POST_REPLY
     # - COMMENT_REPLY
@@ -789,15 +807,17 @@ class Notification(BaseModel):
     # - MOD_INVITE
     type = CharField()
 
-    sub = ForeignKeyField(db_column='sid', model=Sub, field='sid', null=True)
+    sub = ForeignKeyField(db_column="sid", model=Sub, field="sid", null=True)
     # Post the notification is referencing, if it applies
-    post = ForeignKeyField(db_column='pid', model=SubPost, field='pid', null=True)
+    post = ForeignKeyField(db_column="pid", model=SubPost, field="pid", null=True)
     # Comment the notification is referring, if it applies
-    comment = ForeignKeyField(db_column='cid', model=SubPostComment, field='cid', null=True)
+    comment = ForeignKeyField(
+        db_column="cid", model=SubPostComment, field="cid", null=True
+    )
     # User that triggered the action. If null the action is triggered by the system
-    sender = ForeignKeyField(db_column='sentby', model=User, field='uid', null=True)
+    sender = ForeignKeyField(db_column="sentby", model=User, field="uid", null=True)
 
-    target = ForeignKeyField(db_column='receivedby', model=User, field='uid', null=True)
+    target = ForeignKeyField(db_column="receivedby", model=User, field="uid", null=True)
     read = DateTimeField(null=True)
     # For future custom text notifications sent by admins (badge notifications?)015_notifications
     content = TextField(null=True)
@@ -819,14 +839,20 @@ class Message(BaseModel):
     mtype = IntegerField(null=True)
     posted = DateTimeField(null=True)
     read = DateTimeField(null=True)
-    receivedby = ForeignKeyField(db_column='receivedby', null=True,
-                                 model=User, field='uid')
-    sentby = ForeignKeyField(db_column='sentby', null=True, model=User,
-                             backref='user_sentby_set', field='uid')
+    receivedby = ForeignKeyField(
+        db_column="receivedby", null=True, model=User, field="uid"
+    )
+    sentby = ForeignKeyField(
+        db_column="sentby",
+        null=True,
+        model=User,
+        backref="user_sentby_set",
+        field="uid",
+    )
     subject = CharField(null=True)
 
     def __repr__(self):
         return f'<Message "{self.subject[:20]}"'
 
     class Meta:
-        table_name = 'message'
+        table_name = "message"

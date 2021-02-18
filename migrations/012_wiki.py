@@ -35,11 +35,18 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
+
     @migrator.create_model
     class Wiki(pw.Model):
         id = pw.AutoField()
         is_global = pw.BooleanField()
-        sub = pw.ForeignKeyField(backref='wiki_set', column_name='sid', field='sid', model=migrator.orm['sub'], null=True)
+        sub = pw.ForeignKeyField(
+            backref="wiki_set",
+            column_name="sid",
+            field="sid",
+            model=migrator.orm["sub"],
+            null=True,
+        )
         slug = pw.CharField(max_length=128)
         title = pw.CharField(max_length=255)
         content = pw.TextField()
@@ -52,4 +59,4 @@ def migrate(migrator, database, fake=False, **kwargs):
 
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
-    migrator.remove_model('wiki')
+    migrator.remove_model("wiki")

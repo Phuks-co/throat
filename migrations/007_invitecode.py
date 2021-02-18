@@ -36,9 +36,12 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
+
     @migrator.create_model
     class InviteCode(pw.Model):
-        user = pw.ForeignKeyField(db_column='uid', model=migrator.orm['user'], field='uid')
+        user = pw.ForeignKeyField(
+            db_column="uid", model=migrator.orm["user"], field="uid"
+        )
 
         created = pw.DateTimeField(default=datetime.datetime.utcnow)
         code = pw.CharField(max_length=64)
@@ -50,8 +53,6 @@ def migrate(migrator, database, fake=False, **kwargs):
             table_name = "invite_code"
 
 
-
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
-    migrator.remove_model('invitecode')
-
+    migrator.remove_model("invitecode")

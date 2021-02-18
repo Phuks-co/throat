@@ -12,7 +12,13 @@ def migrate(migrator, database, fake=False, **kwargs):
 
     @migrator.create_model
     class SubPostContentHistory(pw.Model):
-        pid = pw.ForeignKeyField(backref='SubPostContentHistory_set', column_name='pid', field='pid', model=migrator.orm['sub_post'], null=True)
+        pid = pw.ForeignKeyField(
+            backref="SubPostContentHistory_set",
+            column_name="pid",
+            field="pid",
+            model=migrator.orm["sub_post"],
+            null=True,
+        )
         content = pw.CharField(max_length=255, null=True)
         datetime = pw.DateTimeField()
 
@@ -21,7 +27,13 @@ def migrate(migrator, database, fake=False, **kwargs):
 
     @migrator.create_model
     class SubPostTitleHistory(pw.Model):
-        pid = pw.ForeignKeyField(backref='SubPostTitleHistory', column_name='pid', field='pid', model=migrator.orm['sub_post'], null=True)
+        pid = pw.ForeignKeyField(
+            backref="SubPostTitleHistory",
+            column_name="pid",
+            field="pid",
+            model=migrator.orm["sub_post"],
+            null=True,
+        )
         title = pw.CharField(max_length=255, null=True)
         datetime = pw.DateTimeField()
 
@@ -31,5 +43,5 @@ def migrate(migrator, database, fake=False, **kwargs):
 
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
-    migrator.remove_model('SubPostContentHistory')
-    migrator.remove_model('SubPostTitleHistory')
+    migrator.remove_model("SubPostContentHistory")
+    migrator.remove_model("SubPostTitleHistory")
