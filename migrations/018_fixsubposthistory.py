@@ -35,12 +35,21 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
-    migrator.change_fields(migrator.orm['sub_post_content_history'], content = pw.TextField(null=True))
-    migrator.change_fields(migrator.orm['sub_post_title_history'], title = pw.TextField(null=True))
-
+    migrator.change_fields(
+        migrator.orm["sub_post_content_history"], content=pw.TextField(null=True)
+    )
+    migrator.change_fields(
+        migrator.orm["sub_post_title_history"], title=pw.TextField(null=True)
+    )
 
 
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
-    migrator.change_fields(migrator.orm['sub_post_content_history'], content = pw.CharField(max_length=255, null=True))
-    migrator.change_fields(migrator.orm['sub_post_title_history'], title = pw.CharField(max_length=255, null=True))
+    migrator.change_fields(
+        migrator.orm["sub_post_content_history"],
+        content=pw.CharField(max_length=255, null=True),
+    )
+    migrator.change_fields(
+        migrator.orm["sub_post_title_history"],
+        title=pw.CharField(max_length=255, null=True),
+    )

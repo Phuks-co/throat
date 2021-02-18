@@ -7,4 +7,5 @@ from flask_wtf import FlaskForm
 
 class DummyForm(FlaskForm):
     """ This is here only for the csrf token. """
+
     pass

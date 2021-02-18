@@ -35,12 +35,11 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
-    SubMetadata = migrator.orm['sub_metadata']
-    Sub = migrator.orm['sub']
+    SubMetadata = migrator.orm["sub_metadata"]
+    Sub = migrator.orm["sub"]
 
-    for sm in SubMetadata.select().where(SubMetadata.key == 'creation'):
+    for sm in SubMetadata.select().where(SubMetadata.key == "creation"):
         sub = Sub.get(Sub.sid == sm.sid)
         sub.creation = sm.value
         sub.save()
         sm.delete_instance()
-

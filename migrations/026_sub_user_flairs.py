@@ -35,10 +35,16 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
+
     @migrator.create_model
     class SubUserFlairChoice(pw.Model):
         id = pw.AutoField()
-        sub = pw.ForeignKeyField(backref='subuserflairchoice_set', column_name='sid', field='sid', model=migrator.orm['sub'])
+        sub = pw.ForeignKeyField(
+            backref="subuserflairchoice_set",
+            column_name="sid",
+            field="sid",
+            model=migrator.orm["sub"],
+        )
         flair = pw.CharField(max_length=25)
 
         class Meta:
@@ -47,10 +53,26 @@ def migrate(migrator, database, fake=False, **kwargs):
     @migrator.create_model
     class SubUserFlair(pw.Model):
         id = pw.AutoField()
-        user = pw.ForeignKeyField(backref='subuserflair_set', column_name='uid', field='uid', model=migrator.orm['user'])
-        sub = pw.ForeignKeyField(backref='subuserflair_set', column_name='sid', field='sid', model=migrator.orm['sub'])
+        user = pw.ForeignKeyField(
+            backref="subuserflair_set",
+            column_name="uid",
+            field="uid",
+            model=migrator.orm["user"],
+        )
+        sub = pw.ForeignKeyField(
+            backref="subuserflair_set",
+            column_name="sid",
+            field="sid",
+            model=migrator.orm["sub"],
+        )
         flair = pw.CharField(max_length=25)
-        flair_choice = pw.ForeignKeyField(backref='subuserflair_set', column_name='flair_choice_id', field='id', model=migrator.orm['sub_user_flair_choice'], null=True)
+        flair_choice = pw.ForeignKeyField(
+            backref="subuserflair_set",
+            column_name="flair_choice_id",
+            field="id",
+            model=migrator.orm["sub_user_flair_choice"],
+            null=True,
+        )
 
         class Meta:
             table_name = "sub_user_flair"
@@ -59,6 +81,6 @@ def migrate(migrator, database, fake=False, **kwargs):
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
 
-    migrator.remove_model('sub_user_flair')
+    migrator.remove_model("sub_user_flair")
 
-    migrator.remove_model('sub_user_flair_choice')
+    migrator.remove_model("sub_user_flair_choice")

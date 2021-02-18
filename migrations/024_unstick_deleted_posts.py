@@ -18,14 +18,22 @@ SQL = pw.SQL
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
 
-    SubMetadata = migrator.orm['sub_metadata']
-    SubPost = migrator.orm['sub_post']
+    SubMetadata = migrator.orm["sub_metadata"]
+    SubPost = migrator.orm["sub_post"]
 
     if not fake:
-        sticky = (SubMetadata.select()
-                  .join(SubPost, pw.JOIN.LEFT_OUTER, on=(SubPost.pid == SubMetadata.value.cast('int')))
-                  .where((SubMetadata.key == 'sticky') & (SubPost.deleted != 0)))
-        SubMetadata.delete().where(SubMetadata.xid << [smd.xid for smd in sticky]).execute()
+        sticky = (
+            SubMetadata.select()
+            .join(
+                SubPost,
+                pw.JOIN.LEFT_OUTER,
+                on=(SubPost.pid == SubMetadata.value.cast("int")),
+            )
+            .where((SubMetadata.key == "sticky") & (SubPost.deleted != 0))
+        )
+        SubMetadata.delete().where(
+            SubMetadata.xid << [smd.xid for smd in sticky]
+        ).execute()
 
 
 def rollback(migrator, database, fake=False, **kwargs):

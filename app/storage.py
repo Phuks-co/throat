@@ -23,12 +23,13 @@ from .config import config
 
 class SizeLimitExceededError(Exception):
     """Exception raised for files larger than permitted by configuration."""
+
     pass
 
 
-FILE_NAMESPACE = uuid.UUID('acd2da84-91a2-4169-9fdb-054583b364c4')
+FILE_NAMESPACE = uuid.UUID("acd2da84-91a2-4169-9fdb-054583b364c4")
 
-ISO8601 = '%Y-%m-%dT%H:%M:%SZ'
+ISO8601 = "%Y-%m-%dT%H:%M:%SZ"
 
 
 class Objectview(object):
@@ -44,13 +45,17 @@ class S3Storage:
 
     def init_app(self, app):
         self.app = app
-        config = app.config['THROAT_CONFIG']
+        config = app.config["THROAT_CONFIG"]
         self.container = config.storage.container
         import boto3
+
         if "key" in config.storage.keys():
             # Region? For the moment I'm just going to assume that a key has been set that will get the region right,
             # the libcloud region set is going to be a pain to deal with, and eventually incomplete.
-            session = boto3.Session(aws_access_key_id=config.storage.key, aws_secret_access_key=config.storage.secret)
+            session = boto3.Session(
+                aws_access_key_id=config.storage.key,
+                aws_secret_access_key=config.storage.secret,
+            )
             self.s3 = session.client("s3")
         else:
             self.s3 = boto3.client("s3")
@@ -59,10 +64,7 @@ class S3Storage:
         # Using head here because we never use the object directly
         try:
             head = self.s3.head_object(Bucket=self.container, Key=filename)
-            return Objectview({
-                'size': head['ContentLength'],
-                'name': filename
-            })
+            return Objectview({"size": head["ContentLength"], "name": filename})
             # FIXME: broad except
         except:  # noqa
             return None
@@ -71,19 +73,14 @@ class S3Storage:
         self.s3.delete_object(Bucket=self.container, Key=filename)
 
     def upload(self, fullpath, name=None, **kwargs):
-        if 'acl' in kwargs:
-            kwargs['ACL'] = kwargs['acl']
-            del kwargs['acl']
-        if 'content_type' in kwargs:
-            kwargs['ContentType'] = kwargs['content_type']
-            del kwargs['content_type']
-        self.s3.upload_file(
-            fullpath,
-            Bucket=self.container,
-            Key=name,
-            ExtraArgs=kwargs
-        )
-        return Objectview({'name': name})
+        if "acl" in kwargs:
+            kwargs["ACL"] = kwargs["acl"]
+            del kwargs["acl"]
+        if "content_type" in kwargs:
+            kwargs["ContentType"] = kwargs["content_type"]
+            del kwargs["content_type"]
+        self.s3.upload_file(fullpath, Bucket=self.container, Key=name, ExtraArgs=kwargs)
+        return Objectview({"name": name})
 
 
 storage = None  # type: Storage
@@ -91,25 +88,27 @@ storage = None  # type: Storage
 
 def storage_init_app(app):
     global storage
-    if 'S3' in app.config['THROAT_CONFIG'].storage.provider:
+    if "S3" in app.config["THROAT_CONFIG"].storage.provider:
         storage = S3Storage()
     else:
         storage = Storage()
     # XXX: flask-cloudy has a tendency to mercilessly delete the container when it doesn't have anything inside of it
     # so, to prevent errors we attempt to re-create it at startup and when uploading files.
     # We don't do this in the thumbnails container because we never delete anything from there (for now)
-    if app.config['THROAT_CONFIG'].storage.provider == "LOCAL":
-        pathlib.Path(app.config['THROAT_CONFIG'].storage.uploads.path).mkdir(exist_ok=True)
+    if app.config["THROAT_CONFIG"].storage.provider == "LOCAL":
+        pathlib.Path(app.config["THROAT_CONFIG"].storage.uploads.path).mkdir(
+            exist_ok=True
+        )
     storage.init_app(app)
 
 
 def make_url(storage, cfg, name):
-    if name is None or name == '':
-        return url_for('static', filename='img/1x1.gif')
-    if config.storage.provider == 'LOCAL' and config.storage.server:
+    if name is None or name == "":
+        return url_for("static", filename="img/1x1.gif")
+    if config.storage.provider == "LOCAL" and config.storage.server:
         obj = storage.get(name)
         if obj is None:
-            return url_for('static', filename='img/1x1.gif')
+            return url_for("static", filename="img/1x1.gif")
         else:
             return obj.url
     else:
@@ -123,18 +122,21 @@ def file_url(name):
 def thumbnail_url(name):
     with ExitStack() as stack:
         stg = storage
-        if config.storage.provider == 'LOCAL' and config.storage.thumbnails.path != config.storage.uploads.path:
+        if (
+            config.storage.provider == "LOCAL"
+            and config.storage.thumbnails.path != config.storage.uploads.path
+        ):
             stg = stack.enter_context(storage.use(config.storage.thumbnails.path))
         return make_url(stg, config.storage.thumbnails, name)
 
 
 def clear_metadata(path: str, mime_type: str):
-    if mime_type in ('image/jpeg', 'image/png'):
+    if mime_type in ("image/jpeg", "image/png"):
         image = Image.open(path)
-        if not image.info.get('exif'):
+        if not image.info.get("exif"):
             return image.save(path)
         exifdata = Exif()
-        exifdata.load(image.info['exif'])
+        exifdata.load(image.info["exif"])
         # XXX: We want to remove all EXIF data except orientation (tag 274) or people will start seeing
         # rotated images...
         # Also, Pillow can't encode EXIF data, so we have to do it manually
@@ -148,11 +150,11 @@ def clear_metadata(path: str, mime_type: str):
                 ifd[tag] = value
         newExif = b"Exif\x00\x00" + head + ifd.tobytes(8)
         image.save(path, exif=newExif)
-    elif mime_type == 'video/mp4':
+    elif mime_type == "video/mp4":
         video = MP4(path)
         video.clear()
         video.save()
-    elif mime_type == 'video/webm':
+    elif mime_type == "video/webm":
         # XXX: Mutagen doesn't seem to support webm files
         pass
 
@@ -161,11 +163,11 @@ def upload_file():
     if not current_user.canupload:
         return False, False
 
-    if 'files' not in request.files:
+    if "files" not in request.files:
         return False, False
 
-    ufile = request.files.getlist('files')[0]
-    if ufile.filename == '':
+    ufile = request.files.getlist("files")[0]
+    if ufile.filename == "":
         return False, False
 
     mtype = mtype_from_file(ufile, allow_video_formats=config.site.allow_video_uploads)
@@ -175,21 +177,28 @@ def upload_file():
     try:
         fhash = calculate_file_hash(ufile, size_limit=config.site.upload_max_size)
     except SizeLimitExceededError:
-        return _("File size exceeds the maximum allowed size (%(size)s)",
-                 size=human_readable(config.site.upload_max_size)), False
+        return (
+            _(
+                "File size exceeds the maximum allowed size (%(size)s)",
+                size=human_readable(config.site.upload_max_size),
+            ),
+            False,
+        )
 
     basename = str(uuid.uuid5(FILE_NAMESPACE, fhash))
 
     return store_file(ufile, basename, mtype, remove_metadata=True), True
 
 
-EXTENSIONS = {'image/jpeg': '.jpg',
-              'image/png': '.png',
-              'image/gif': '.gif',
-              'image/svg+xml': '.svg',
-              'image/svg': '.svg',
-              'video/mp4': '.mp4',
-              'video/webm': '.webm'}
+EXTENSIONS = {
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/gif": ".gif",
+    "image/svg+xml": ".svg",
+    "image/svg": ".svg",
+    "video/mp4": ".mp4",
+    "video/webm": ".webm",
+}
 allowed_extensions = [ext[1:] for ext in EXTENSIONS.values()]
 
 
@@ -218,8 +227,9 @@ def store_file(ufile, basename, mtype, remove_metadata=False):
             clear_metadata(fullpath, mtype)
 
         # TODO probably there are errors that need handling
-        return storage.upload(fullpath, name=filename, acl=config.storage.acl,
-                              content_type=mtype).name
+        return storage.upload(
+            fullpath, name=filename, acl=config.storage.acl, content_type=mtype
+        ).name
 
 
 def get_stored_file_size(filename):
@@ -251,20 +261,26 @@ def store_thumbnail(im, basename):
             with tempfile.TemporaryDirectory() as tempdir:
                 fullpath = os.path.join(tempdir, filename)
                 im.save(fullpath, "JPEG", optimize=True, quality=85)
-                return storage.upload(fullpath, name=filename,
-                                      acl=config.storage.acl,
-                                      content_type='image/jpeg').name
+                return storage.upload(
+                    fullpath,
+                    name=filename,
+                    acl=config.storage.acl,
+                    content_type="image/jpeg",
+                ).name
 
-    filename = basename + '.jpg'
+    filename = basename + ".jpg"
     with ExitStack() as stack:
         stg = storage
-        if config.storage.provider == 'LOCAL' and config.storage.thumbnails.path != config.storage.uploads.path:
+        if (
+            config.storage.provider == "LOCAL"
+            and config.storage.thumbnails.path != config.storage.uploads.path
+        ):
             stg = stack.enter_context(storage.use(config.storage.thumbnails.path))
         return find_existing_or_store_new(stg, im, filename)
 
 
 def mtype_from_file(ufile, allow_video_formats=True):
-    """ Determine the file type from a file storage object and return the
+    """Determine the file type from a file storage object and return the
     MIME type, or None if the file type is not recognized.
     """
     ufile.seek(0)
@@ -295,4 +311,4 @@ def calculate_file_hash(ufile, size_limit=None):
 
 
 def human_readable(fbytes):
-    return jinja2.Template('{{ bytes|filesizeformat }}').render(bytes=fbytes)
+    return jinja2.Template("{{ bytes|filesizeformat }}").render(bytes=fbytes)

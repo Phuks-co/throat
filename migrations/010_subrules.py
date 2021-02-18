@@ -13,7 +13,13 @@ def migrate(migrator, database, fake=False, **kwargs):
     @migrator.create_model
     class Subrule(pw.Model):
         rid = pw.PrimaryKeyField()
-        sid = pw.ForeignKeyField(backref='subrule_set', column_name='sid', field='sid', model=migrator.orm['sub'], null=True)
+        sid = pw.ForeignKeyField(
+            backref="subrule_set",
+            column_name="sid",
+            field="sid",
+            model=migrator.orm["sub"],
+            null=True,
+        )
         text = pw.CharField(max_length=255, null=True)
 
         class Meta:

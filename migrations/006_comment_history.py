@@ -35,10 +35,16 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
+
     @migrator.create_model
     class SubPostCommentHistory(pw.Model):
         id = pw.AutoField()
-        cid = pw.ForeignKeyField(backref='subpostcommenthistory_set', column_name='cid', field='cid', model=migrator.orm['sub_post_comment'])
+        cid = pw.ForeignKeyField(
+            backref="subpostcommenthistory_set",
+            column_name="cid",
+            field="cid",
+            model=migrator.orm["sub_post_comment"],
+        )
         datetime = pw.DateTimeField()
         content = pw.TextField(null=True)
 
@@ -46,7 +52,6 @@ def migrate(migrator, database, fake=False, **kwargs):
             table_name = "sub_post_comment_history"
 
 
-
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
-    migrator.remove_model('subpostcommenthistory')
+    migrator.remove_model("subpostcommenthistory")

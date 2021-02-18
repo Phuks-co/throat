@@ -36,9 +36,9 @@ SQL = pw.SQL
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
 
-    migrator.change_fields('sub_ban', reason=pw.CharField(max_length=128))
+    migrator.change_fields("sub_ban", reason=pw.CharField(max_length=128))
 
 
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
-    migrator.change_fields('sub_ban', reason=pw.CharField(max_length=64))
+    migrator.change_fields("sub_ban", reason=pw.CharField(max_length=64))

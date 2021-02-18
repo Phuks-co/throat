@@ -23,30 +23,38 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
+
     @migrator.create_model
     class CommentReportLogSave(pw.Model):
-        rid = pw.ForeignKeyField(db_column='id', model=migrator.orm['sub_post_comment_report'], field='id')
+        rid = pw.ForeignKeyField(
+            db_column="id", model=migrator.orm["sub_post_comment_report"], field="id"
+        )
         action = pw.IntegerField(null=True)
         desc = pw.CharField(null=True)
         lid = pw.PrimaryKeyField()
         link = pw.CharField(null=True)
         time = pw.DateTimeField()
-        uid = pw.ForeignKeyField(db_column='uid', null=True, model=migrator.orm['user'], field='uid')
-        target = pw.ForeignKeyField(db_column='target_uid', null=True, model=migrator.orm['user'], field='uid')
+        uid = pw.ForeignKeyField(
+            db_column="uid", null=True, model=migrator.orm["user"], field="uid"
+        )
+        target = pw.ForeignKeyField(
+            db_column="target_uid", null=True, model=migrator.orm["user"], field="uid"
+        )
 
         def __repr__(self):
-            return f'<CommentReportLogSave action={self.action}>'
+            return f"<CommentReportLogSave action={self.action}>"
 
         class Meta:
-            table_name = 'comment_report_log_save'
+            table_name = "comment_report_log_save"
 
     if not fake:
-        CommentReportLog = migrator.orm['comment_report_log']
-        SubPostCommentReport = migrator.orm['sub_post_comment_report']
+        CommentReportLog = migrator.orm["comment_report_log"]
+        SubPostCommentReport = migrator.orm["sub_post_comment_report"]
         CommentReportLogSave.create_table(True)
         valid_ids = list((rep.id for rep in SubPostCommentReport.select()))
-        records = list(CommentReportLog.select().
-                       where(CommentReportLog.rid << valid_ids).dicts())
+        records = list(
+            CommentReportLog.select().where(CommentReportLog.rid << valid_ids).dicts()
+        )
         for r in records:
             r.pop("lid")
         CommentReportLogSave.insert_many(records).execute()

@@ -35,14 +35,13 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
-    migrator.add_index('invite_code', 'code', unique=False)
-    migrator.add_index('sub_post_comment_vote', 'cid', unique=False)
-    migrator.add_index('wiki', 'sid', 'slug', unique=True)
+    migrator.add_index("invite_code", "code", unique=False)
+    migrator.add_index("sub_post_comment_vote", "cid", unique=False)
+    migrator.add_index("wiki", "sid", "slug", unique=True)
 
 
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
-    migrator.drop_index('invite_code', 'code')
-    migrator.drop_index('sub_post_comment_vote', 'cid')
-    migrator.drop_index('wiki', 'sid', 'slug')
-
+    migrator.drop_index("invite_code", "code")
+    migrator.drop_index("sub_post_comment_vote", "cid")
+    migrator.drop_index("wiki", "sid", "slug")

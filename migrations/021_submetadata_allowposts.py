@@ -35,23 +35,20 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
-    Sub = migrator.orm['sub']
-    SubMetadata = migrator.orm['sub_metadata']
+    Sub = migrator.orm["sub"]
+    SubMetadata = migrator.orm["sub_metadata"]
 
     if not fake:
         for sub in Sub.select():
-            SubMetadata.create(key='allow_text_posts', value='1', sid=sub.sid)
-            SubMetadata.create(key='allow_link_posts', value='1', sid=sub.sid)
-            SubMetadata.create(key='allow_upload_posts', value='1', sid=sub.sid)
+            SubMetadata.create(key="allow_text_posts", value="1", sid=sub.sid)
+            SubMetadata.create(key="allow_link_posts", value="1", sid=sub.sid)
+            SubMetadata.create(key="allow_upload_posts", value="1", sid=sub.sid)
 
 
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
     if not fake:
-        SubMetadata = migrator.orm['sub_metadata']
-        SubMetadata.delete().where(
-            SubMetadata.key == 'allow_text_posts').execute()
-        SubMetadata.delete().where(
-            SubMetadata.key == 'allow_link_posts').execute()
-        SubMetadata.delete().where(
-            SubMetadata.key == 'allow_upload_posts').execute()
+        SubMetadata = migrator.orm["sub_metadata"]
+        SubMetadata.delete().where(SubMetadata.key == "allow_text_posts").execute()
+        SubMetadata.delete().where(SubMetadata.key == "allow_link_posts").execute()
+        SubMetadata.delete().where(SubMetadata.key == "allow_upload_posts").execute()

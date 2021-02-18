@@ -10,13 +10,19 @@ from ..config import config
 from ..auth import auth_provider, AuthError, normalize_email
 from ..misc import engine
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
-from ..forms import EditUserForm, CreateUserMessageForm, EditAccountForm, DeleteAccountForm, PasswordRecoveryForm
+from ..forms import (
+    EditUserForm,
+    CreateUserMessageForm,
+    EditAccountForm,
+    DeleteAccountForm,
+    PasswordRecoveryForm,
+)
 from ..forms import PasswordResetForm
 from ..models import User, UserStatus, UserUploads
 from ..models import Sub, SubMod, SubPost, SubPostComment, UserSaved, InviteCode
 from ..badges import badges as badges_module
 
-bp = Blueprint('user', __name__)
+bp = Blueprint("user", __name__)
 
 
 @bp.route("/u/<user>")
@@ -30,8 +36,11 @@ def view(user):
     if user.status == 10:
         abort(404)
 
-    modsquery = SubMod.select(Sub.name, SubMod.power_level).join(Sub).where(
-        (SubMod.uid == user.uid) & (~SubMod.invite))
+    modsquery = (
+        SubMod.select(Sub.name, SubMod.power_level)
+        .join(Sub)
+        .where((SubMod.uid == user.uid) & (~SubMod.invite))
+    )
     owns = [x.sub.name for x in modsquery if x.power_level == 0]
     mods = [x.sub.name for x in modsquery if 1 <= x.power_level <= 2]
     invitecodeinfo = misc.getInviteCodeInfo(user.uid)
@@ -39,9 +48,15 @@ def view(user):
     pcount = SubPost.select().where(SubPost.uid == user.uid).count()
     ccount = SubPostComment.select().where(SubPostComment.uid == user.uid).count()
     user_is_admin = misc.is_target_user_admin(user.uid)
-    habit = Sub.select(Sub.name, fn.Count(SubPost.pid).alias('count')).join(SubPost, JOIN.LEFT_OUTER,
-                                                                            on=(SubPost.sid == Sub.sid))
-    habit = habit.where(SubPost.uid == user.uid).group_by(Sub.sid).order_by(fn.Count(SubPost.pid).desc()).limit(10)
+    habit = Sub.select(Sub.name, fn.Count(SubPost.pid).alias("count")).join(
+        SubPost, JOIN.LEFT_OUTER, on=(SubPost.sid == Sub.sid)
+    )
+    habit = (
+        habit.where(SubPost.uid == user.uid)
+        .group_by(Sub.sid)
+        .order_by(fn.Count(SubPost.pid).desc())
+        .limit(10)
+    )
 
     level, xp = misc.get_user_level(user.uid)
 
@@ -56,15 +71,26 @@ def view(user):
 
     givenScore = misc.getUserGivenScore(user.uid)
 
-    return engine.get_template('user/profile.html').render({
-        'user': user, 'level': level, 'progress': progress, 'postCount': pcount, 'commentCount': ccount,
-        'givenScore': givenScore, 'invitecodeinfo': invitecodeinfo, 'badges': badges, 'owns': owns, 'mods': mods,
-        'habits': habit, 'target_user_is_admin': user_is_admin,
-        'msgform': CreateUserMessageForm()
-    })
+    return engine.get_template("user/profile.html").render(
+        {
+            "user": user,
+            "level": level,
+            "progress": progress,
+            "postCount": pcount,
+            "commentCount": ccount,
+            "givenScore": givenScore,
+            "invitecodeinfo": invitecodeinfo,
+            "badges": badges,
+            "owns": owns,
+            "mods": mods,
+            "habits": habit,
+            "target_user_is_admin": user_is_admin,
+            "msgform": CreateUserMessageForm(),
+        }
+    )
 
 
-@bp.route("/u/<user>/posts", defaults={'page': 1})
+@bp.route("/u/<user>/posts", defaults={"page": 1})
 @bp.route("/u/<user>/posts/<int:page>")
 def view_user_posts(user, page):
     """ WIP: View user's recent posts """
@@ -76,33 +102,51 @@ def view_user_posts(user, page):
         abort(404)
 
     if current_user.is_admin():
-        posts = misc.getPostList(misc.postListQueryBase(adminDetail=True).where(User.uid == user.uid),
-                                 'new', page).dicts()
+        posts = misc.getPostList(
+            misc.postListQueryBase(adminDetail=True).where(User.uid == user.uid),
+            "new",
+            page,
+        ).dicts()
     else:
-        posts = misc.getPostList(misc.postListQueryBase(noAllFilter=True).where(User.uid == user.uid),
-                                 'new', page).dicts()
-    return render_template('userposts.html', page=page, sort_type='user.view_user_posts',
-                           posts=posts, user=user)
+        posts = misc.getPostList(
+            misc.postListQueryBase(noAllFilter=True).where(User.uid == user.uid),
+            "new",
+            page,
+        ).dicts()
+    return render_template(
+        "userposts.html",
+        page=page,
+        sort_type="user.view_user_posts",
+        posts=posts,
+        user=user,
+    )
 
 
-@bp.route("/u/<user>/savedposts", defaults={'page': 1})
+@bp.route("/u/<user>/savedposts", defaults={"page": 1})
 @bp.route("/u/<user>/savedposts/<int:page>")
 @login_required
 def view_user_savedposts(user, page):
     """ WIP: View user's saved posts """
     if current_user.name.lower() == user.lower():
         posts = misc.getPostList(
-            misc.postListQueryBase(noAllFilter=True).join(UserSaved, on=(UserSaved.pid == SubPost.pid)).where(
-                UserSaved.uid == current_user.uid),
-            'new', page).dicts()
-        return render_template('userposts.html', page=page,
-                               sort_type='user.view_user_savedposts',
-                               posts=posts, user=current_user)
+            misc.postListQueryBase(noAllFilter=True)
+            .join(UserSaved, on=(UserSaved.pid == SubPost.pid))
+            .where(UserSaved.uid == current_user.uid),
+            "new",
+            page,
+        ).dicts()
+        return render_template(
+            "userposts.html",
+            page=page,
+            sort_type="user.view_user_savedposts",
+            posts=posts,
+            user=current_user,
+        )
     else:
         abort(403)
 
 
-@bp.route("/u/<user>/comments", defaults={'page': 1})
+@bp.route("/u/<user>/comments", defaults={"page": 1})
 @bp.route("/u/<user>/comments/<int:page>")
 def view_user_comments(user, page):
     """ WIP: View user's recent comments """
@@ -114,25 +158,30 @@ def view_user_comments(user, page):
         abort(404)
 
     comments = misc.getUserComments(user.uid, page)
-    postmeta = misc.get_postmeta_dicts((c['pid'] for c in comments))
-    return render_template('usercomments.html', user=user, page=page,
-                           comments=comments, postmeta=postmeta)
+    postmeta = misc.get_postmeta_dicts((c["pid"] for c in comments))
+    return render_template(
+        "usercomments.html", user=user, page=page, comments=comments, postmeta=postmeta
+    )
 
 
-@bp.route("/uploads", defaults={'page': 1})
+@bp.route("/uploads", defaults={"page": 1})
 @bp.route("/uploads/<int:page>")
 @login_required
 def view_user_uploads(page):
     """ View user uploads """
-    uploads = UserUploads.select().where(UserUploads.uid == current_user.uid).paginate(page, 30)
-    return render_template('uploads.html', page=page, uploads=uploads)
+    uploads = (
+        UserUploads.select()
+        .where(UserUploads.uid == current_user.uid)
+        .paginate(page, 30)
+    )
+    return render_template("uploads.html", page=page, uploads=uploads)
 
 
 @bp.route("/settings/invite")
 @login_required
 def invite_codes():
     if not misc.enableInviteCode():
-        return redirect('/settings')
+        return redirect("/settings")
 
     codes = InviteCode.select().where(InviteCode.user == current_user.uid)
     maxcodes = int(misc.getMaxCodes(current_user.uid))
@@ -140,93 +189,107 @@ def invite_codes():
     avail = 0
     if (maxcodes - created) >= 0:
         avail = maxcodes - created
-    return engine.get_template('user/settings/invitecode.html').render(
-        {'codes': codes, 'created': created, 'max': maxcodes, 'avail': avail,
-         'user': User.get(User.uid == current_user.uid)})
+    return engine.get_template("user/settings/invitecode.html").render(
+        {
+            "codes": codes,
+            "created": created,
+            "max": maxcodes,
+            "avail": avail,
+            "user": User.get(User.uid == current_user.uid),
+        }
+    )
 
 
-@bp.route('/settings/subs')
+@bp.route("/settings/subs")
 @login_required
 def edit_subs():
-    return engine.get_template('user/topbar.html').render({})
+    return engine.get_template("user/topbar.html").render({})
 
 
 @bp.route("/settings")
 @login_required
 def edit_user():
-    styles = 'nostyles' in current_user.prefs
-    nsfw = 'nsfw' in current_user.prefs
-    exp = 'labrat' in current_user.prefs
-    noscroll = 'noscroll' in current_user.prefs
-    nochat = 'nochat' in current_user.prefs
-    form = EditUserForm(show_nsfw=nsfw,
-                        disable_sub_style=styles, experimental=exp,
-                        noscroll=noscroll, nochat=nochat, subtheme=current_user.subtheme,
-                        language=current_user.language)
+    styles = "nostyles" in current_user.prefs
+    nsfw = "nsfw" in current_user.prefs
+    exp = "labrat" in current_user.prefs
+    noscroll = "noscroll" in current_user.prefs
+    nochat = "nochat" in current_user.prefs
+    form = EditUserForm(
+        show_nsfw=nsfw,
+        disable_sub_style=styles,
+        experimental=exp,
+        noscroll=noscroll,
+        nochat=nochat,
+        subtheme=current_user.subtheme,
+        language=current_user.language,
+    )
     languages = config.app.languages
     form.language.choices = []
     for i in languages:
-        form.language.choices.append((i, Locale(*i.split("_")).display_name.capitalize()))
-    return engine.get_template('user/settings/preferences.html').render({
-        'edituserform': form, 'user': User.get(User.uid == current_user.uid)
-    })
+        form.language.choices.append(
+            (i, Locale(*i.split("_")).display_name.capitalize())
+        )
+    return engine.get_template("user/settings/preferences.html").render(
+        {"edituserform": form, "user": User.get(User.uid == current_user.uid)}
+    )
 
 
 @bp.route("/settings/account")
 @login_required
 @ratelimit(AUTH_LIMIT)
 def edit_account():
-    return engine.get_template('user/settings/account.html').render(
-        {'form': EditAccountForm(),
-         'user': User.get(User.uid == current_user.uid)})
+    return engine.get_template("user/settings/account.html").render(
+        {"form": EditAccountForm(), "user": User.get(User.uid == current_user.uid)}
+    )
 
 
-@bp.route('/settings/account/confirm-email/<token>')
+@bp.route("/settings/account/confirm-email/<token>")
 @ratelimit(AUTH_LIMIT)
 def confirm_email_change(token):
     info = info_from_email_confirmation_token(token)
     try:
-        user = User.get(User.uid == info['uid'])
+        user = User.get(User.uid == info["uid"])
     except (TypeError, User.DoesNotExist):
-        flash(_('The link you used is invalid or has expired'), 'error')
-        return redirect(url_for('user.edit_account'))
+        flash(_("The link you used is invalid or has expired"), "error")
+        return redirect(url_for("user.edit_account"))
 
     if user.status == UserStatus.OK:
         try:
-            auth_provider.confirm_pending_email(user, info['email'])
-            flash(_('Your password recovery email address is now confirmed!'))
-            return redirect(url_for('user.edit_account'))
+            auth_provider.confirm_pending_email(user, info["email"])
+            flash(_("Your password recovery email address is now confirmed!"))
+            return redirect(url_for("user.edit_account"))
         except AuthError:
-            flash(_('Unable to confirm your new email address. Please try again later.'), 'error')
-    return redirect(url_for('home.index'))
+            flash(
+                _("Unable to confirm your new email address. Please try again later."),
+                "error",
+            )
+    return redirect(url_for("home.index"))
 
 
 @bp.route("/settings/delete")
 @login_required
 def delete_account():
-    return engine.get_template('user/settings/delete.html').render({
-        'form': DeleteAccountForm(), 'user': User.get(User.uid == current_user.uid)
-    })
+    return engine.get_template("user/settings/delete.html").render(
+        {"form": DeleteAccountForm(), "user": User.get(User.uid == current_user.uid)}
+    )
 
 
-@bp.route("/recover", methods=['GET', 'POST'])
+@bp.route("/recover", methods=["GET", "POST"])
 @ratelimit(SIGNUP_LIMIT)
 def password_recovery():
     """ Endpoint for the password recovery form """
     if current_user.is_authenticated:
-        return redirect(url_for('home.index'))
+        return redirect(url_for("home.index"))
     form = PasswordRecoveryForm()
     captcha = misc.create_captcha()
     if not form.validate():
-        return engine.get_template('user/password_recovery.html').render(
-            {'lpform': form,
-             'error': misc.get_errors(form, True),
-             'captcha': captcha})
+        return engine.get_template("user/password_recovery.html").render(
+            {"lpform": form, "error": misc.get_errors(form, True), "captcha": captcha}
+        )
     if not misc.validate_captcha(form.ctok.data, form.captcha.data):
-        return engine.get_template('user/password_recovery.html').render(
-            {'lpform': form,
-             'error': _("Invalid captcha."),
-             'captcha': captcha})
+        return engine.get_template("user/password_recovery.html").render(
+            {"lpform": form, "error": _("Invalid captcha."), "captcha": captcha}
+        )
     try:
         email = normalize_email(form.email.data)
         user = User.get(fn.Lower(User.email) == email.lower())
@@ -235,16 +298,17 @@ def password_recovery():
     except User.DoesNotExist:
         # Yield no information.
         pass
-    return redirect(url_for('user.recovery_email_sent'))
+    return redirect(url_for("user.recovery_email_sent"))
 
 
-@bp.route('/recovery/email-sent')
+@bp.route("/recovery/email-sent")
 def recovery_email_sent():
-    return engine.get_template('user/check-your-email.html').render(
-        {'reason': 'recovery'})
+    return engine.get_template("user/check-your-email.html").render(
+        {"reason": "recovery"}
+    )
 
 
-@bp.route('/reset/<token>')
+@bp.route("/reset/<token>")
 @ratelimit(SIGNUP_LIMIT)
 def password_reset(token):
     """ The page that actually resets the password """
@@ -254,11 +318,11 @@ def password_reset(token):
     except User.DoesNotExist:
         pass
     if not user or user.status != UserStatus.OK:
-        flash(_('Password reset link was invalid or expired'), 'error')
-        return redirect(url_for('user.password_recovery'))
+        flash(_("Password reset link was invalid or expired"), "error")
+        return redirect(url_for("user.password_recovery"))
 
     if current_user.is_authenticated:
-        return redirect(url_for('home.index'))
+        return redirect(url_for("home.index"))
 
     form = PasswordResetForm(key=token, user=user.uid)
-    return engine.get_template('user/password_reset.html').render({'lpform': form})
+    return engine.get_template("user/password_reset.html").render({"lpform": form})

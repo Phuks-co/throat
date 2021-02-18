@@ -35,18 +35,34 @@ SQL = pw.SQL
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
+
     @migrator.create_model
     class SubBan(pw.Model):
         id = pw.AutoField()
-        uid = pw.ForeignKeyField(backref='submod_set', column_name='uid', field='uid', model=migrator.orm['user'])
-        sid = pw.ForeignKeyField(backref='submod_set', column_name='sid', field='sid', model=migrator.orm['sub'])
-        
+        uid = pw.ForeignKeyField(
+            backref="submod_set",
+            column_name="uid",
+            field="uid",
+            model=migrator.orm["user"],
+        )
+        sid = pw.ForeignKeyField(
+            backref="submod_set",
+            column_name="sid",
+            field="sid",
+            model=migrator.orm["sub"],
+        )
+
         created = pw.DateTimeField(default=dt.datetime.utcnow, null=True)
         reason = pw.CharField(max_length=64)
         expires = pw.DateTimeField(null=True)
         effective = pw.BooleanField(default=True)
 
-        created_by = pw.ForeignKeyField(null=True, column_name='created_by_id', model=migrator.orm['user'], field='uid')
+        created_by = pw.ForeignKeyField(
+            null=True,
+            column_name="created_by_id",
+            model=migrator.orm["user"],
+            field="uid",
+        )
 
         class Meta:
             table_name = "sub_ban"
@@ -54,17 +70,21 @@ def migrate(migrator, database, fake=False, **kwargs):
     if not fake:
         migrator.run()
 
-        SubMetadata = migrator.orm['sub_metadata']
-        SubBan = migrator.orm['sub_ban']
+        SubMetadata = migrator.orm["sub_metadata"]
+        SubBan = migrator.orm["sub_ban"]
 
-        for xm in SubMetadata.select().where(SubMetadata.key == 'ban'):
-            SubBan.create(uid=xm.value, sid=xm.sid, effective=True, reason='', created=None)
+        for xm in SubMetadata.select().where(SubMetadata.key == "ban"):
+            SubBan.create(
+                uid=xm.value, sid=xm.sid, effective=True, reason="", created=None
+            )
 
-        for xm in SubMetadata.select().where(SubMetadata.key == 'xban'):
-            SubBan.create(uid=xm.value, sid=xm.sid, effective=False, reason='', created=None)
+        for xm in SubMetadata.select().where(SubMetadata.key == "xban"):
+            SubBan.create(
+                uid=xm.value, sid=xm.sid, effective=False, reason="", created=None
+            )
 
 
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
 
-    migrator.remove_model('sub_ban')
+    migrator.remove_model("sub_ban")

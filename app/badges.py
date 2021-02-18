@@ -24,9 +24,15 @@ class Badges:
         """
         Returns a list of all bagdes in the database.
         """
-        badge_query = Badge.select(Badge.bid, Badge.name, Badge.alt, Badge.icon, Badge.score, Badge.trigger,
-                                   Badge.rank)\
-            .order_by(Badge.rank, Badge.name)
+        badge_query = Badge.select(
+            Badge.bid,
+            Badge.name,
+            Badge.alt,
+            Badge.icon,
+            Badge.score,
+            Badge.trigger,
+            Badge.rank,
+        ).order_by(Badge.rank, Badge.name)
         return (x for x in badge_query)
 
     def __getitem__(self, bid):
@@ -47,8 +53,9 @@ class Badges:
         else:
             icon = self[bid].icon
 
-        Badge.update(name=name, alt=alt, icon=icon, score=score,
-                     rank=rank, trigger=trigger).where(Badge.bid == bid).execute()
+        Badge.update(
+            name=name, alt=alt, icon=icon, score=score, rank=rank, trigger=trigger
+        ).where(Badge.bid == bid).execute()
 
     @staticmethod
     def new_badge(name, alt, icon, score, rank, trigger=None):
@@ -56,8 +63,9 @@ class Badges:
         Creates a new badge with an optional trigger.
         """
         icon = gen_icon(icon)
-        Badge.create(name=name, alt=alt, icon=icon,
-                     score=score, rank=rank, trigger=trigger)
+        Badge.create(
+            name=name, alt=alt, icon=icon, score=score, rank=rank, trigger=trigger
+        )
 
     @staticmethod
     def delete_badge(bid):
@@ -65,8 +73,9 @@ class Badges:
         Deletes a badge by ID
         """
         Badge.delete().where(Badge.bid == bid).execute()
-        UserMetadata.delete().where((UserMetadata.key == 'badge')
-                                    & (UserMetadata.value == bid)).execute()
+        UserMetadata.delete().where(
+            (UserMetadata.key == "badge") & (UserMetadata.value == bid)
+        ).execute()
 
     @staticmethod
     def assign_userbadge(uid, bid):
@@ -80,8 +89,11 @@ class Badges:
         """
         Removes a badge from a user
         """
-        UserMetadata.delete().where((UserMetadata.key == "badge") & (
-            UserMetadata.uid == uid) & (UserMetadata.value == str(bid))).execute()
+        UserMetadata.delete().where(
+            (UserMetadata.key == "badge")
+            & (UserMetadata.uid == uid)
+            & (UserMetadata.value == str(bid))
+        ).execute()
 
     @staticmethod
     def triggers():
@@ -95,17 +107,24 @@ class Badges:
         """
         Returns a list of badges associated with a user.
         """
-        return Badge.select(Badge.bid, Badge.name, Badge.icon, Badge.score, Badge.alt, Badge.rank)\
-            .join(UserMetadata, JOIN.LEFT_OUTER, on=(UserMetadata.value.cast("int") == Badge.bid))\
-            .where((UserMetadata.uid == uid) & (UserMetadata.key == 'badge'))\
+        return (
+            Badge.select(
+                Badge.bid, Badge.name, Badge.icon, Badge.score, Badge.alt, Badge.rank
+            )
+            .join(
+                UserMetadata,
+                JOIN.LEFT_OUTER,
+                on=(UserMetadata.value.cast("int") == Badge.bid),
+            )
+            .where((UserMetadata.uid == uid) & (UserMetadata.key == "badge"))
             .order_by(Badge.rank, Badge.name)
+        )
 
 
 def gen_icon(icon):
     mtype = mtype_from_file(icon, allow_video_formats=False)
     if mtype is None:
-        raise Exception(
-            _l('Invalid file type. Only jpg, png and gif allowed.'))
+        raise Exception(_l("Invalid file type. Only jpg, png and gif allowed."))
 
     fhash = calculate_file_hash(icon)
     basename = str(uuid.uuid5(FILE_NAMESPACE, fhash))
@@ -120,7 +139,9 @@ def admin(bid):
     """
     Auto assigns badges to admins.
     """
-    for user in UserMetadata.select().where((UserMetadata.key == "admin") & (UserMetadata.value == '1')):
+    for user in UserMetadata.select().where(
+        (UserMetadata.key == "admin") & (UserMetadata.value == "1")
+    ):
         print("Giving ", bid, " to:", user.uid)
         badges.assign_userbadge(user.uid, bid)
 

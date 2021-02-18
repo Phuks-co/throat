@@ -2,6 +2,7 @@
 """ From here we start the app in debug mode. """
 from pathlib import Path
 from gevent import monkey
+
 monkey.patch_all()
 import click  # noqa
 from app import create_app, socketio  # noqa
@@ -15,8 +16,13 @@ app = create_app()
 def run(ctx):
     if ctx.invoked_subcommand is None:
         extra_files = list(Path("./app/html").rglob("*.html"))
-        extra_files.append('app/manifest.json')
-        socketio.run(app, debug=app.config.get('DEBUG'), host=app.config.get('HOST'), extra_files=extra_files)
+        extra_files.append("app/manifest.json")
+        socketio.run(
+            app,
+            debug=app.config.get("DEBUG"),
+            host=app.config.get("HOST"),
+            extra_files=extra_files,
+        )
 
 
 for command in commands:

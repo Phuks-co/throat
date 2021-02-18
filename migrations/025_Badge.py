@@ -53,6 +53,7 @@ def migrate(migrator, database, fake=False, **kwargs):
     if not fake:
         Badge.create_table(True)
 
+
 def rollback(migrator, database, fake=False, **kwargs):
     """Write your rollback migrations here."""
-    migrator.remove_model('badge')
+    migrator.remove_model("badge")
