@@ -134,6 +134,10 @@ site:
   # Relative path to the logo. This MUST be a SVG file that will be embedded into the HTML of every page.
   logo: 'app/static/img/throat-logo.svg'
 
+  # Enforces 2FA for administrators. This will remove _most_ privileges from administrators until they introduce
+  # a timed one-time password.
+  enable_totp: False
+
 auth:
   # Set to LOCAL to store user authentication in database,
   # or KEYCLOAK to use a Keycloak server to authenticate users.

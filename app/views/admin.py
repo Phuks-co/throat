@@ -3,12 +3,25 @@ import time
 import re
 import datetime
 import random
+from io import BytesIO
+
 from peewee import fn, JOIN
-from pyotp import TOTP
-from flask import Blueprint, abort, redirect, url_for, session, render_template, request
+import pyotp
+import qrcode
+from flask import (
+    Blueprint,
+    abort,
+    redirect,
+    url_for,
+    session,
+    render_template,
+    request,
+    send_file,
+)
 from flask_login import login_required, current_user
 from flask_babel import _
 from .. import misc
+from ..config import config
 from ..forms import (
     TOTPForm,
     LogOutForm,
@@ -53,21 +66,76 @@ def auth():
             (UserMetadata.uid == current_user.uid) & (UserMetadata.key == "totp_secret")
         )
     except UserMetadata.DoesNotExist:
-        return engine.get_template("admin/totp.html").render(
-            {"authform": form, "error": _("No TOTP secret found.")}
+        user_secret = UserMetadata.create(
+            uid=current_user.uid, key="totp_secret", value=pyotp.random_base32(64)
         )
+
+    template = "admin/totp_setup.html"
+    try:
+        UserMetadata.get(
+            (UserMetadata.uid == current_user.uid)
+            & (UserMetadata.key == "totp_setup_finished")
+        )
+        template = "admin/totp.html"
+    except UserMetadata.DoesNotExist:
+        pass
+
     if form.validate_on_submit():
-        totp = TOTP(user_secret.value)
+        totp = pyotp.TOTP(user_secret.value)
         if totp.verify(form.totp.data):
             session["apriv"] = time.time()
+            UserMetadata.create(
+                uid=current_user.uid, key="totp_setup_finished", value="1"
+            )
             return redirect(url_for("admin.index"))
         else:
-            return engine.get_template("admin/totp.html").render(
+            return engine.get_template(template).render(
                 {"authform": form, "error": _("Invalid or expired token.")}
             )
-    return engine.get_template("admin/totp.html").render(
-        {"authform": form, "error": None}
+
+    return engine.get_template(template).render({"authform": form, "error": None})
+
+
+@bp.route("/totp_image", methods=["GET"])
+@login_required
+def get_totp_image():
+    """
+    Returns a QR code used to set up TOTP
+    """
+    if not current_user.can_admin:
+        abort(404)
+
+    try:
+        user_secret = UserMetadata.get(
+            (UserMetadata.uid == current_user.uid) & (UserMetadata.key == "totp_secret")
+        )
+    except UserMetadata.DoesNotExist:
+        user_secret = UserMetadata.create(
+            uid=current_user.uid, key="totp_secret", value=pyotp.random_base32(64)
+        )
+
+    try:
+        UserMetadata.get(
+            (UserMetadata.uid == current_user.uid)
+            & (UserMetadata.key == "totp_setup_finished")
+        )
+        # TOTP setup already finished, we won't reveal the secret anymore
+        return abort(403)
+    except UserMetadata.DoesNotExist:
+        pass
+
+    uri = pyotp.totp.TOTP(user_secret.value).provisioning_uri(
+        name=current_user.name, issuer_name=config.site.name
     )
+    qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L)
+    qr.add_data(uri)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    img_io = BytesIO()
+    img.save(img_io, "PNG")
+    img_io.seek(0)
+    return send_file(img_io, mimetype="image/png")
 
 
 @bp.route("/logout", methods=["POST"])

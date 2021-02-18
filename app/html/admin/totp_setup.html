@@ -1,0 +1,34 @@
+@extends("shared/layout.html")
+@require(authform, error)
+@def title():
+  Admin |\
+@end
+
+@def main():
+<div id="center-container">
+  <div class="content">
+      <form method="POST" class="pure-form pure-form-aligned">
+        <h1>@{_('TOTP setup')}</h1> @{ authform.csrf_token() !!html}
+        <fieldset>
+          <div>
+            <ol>
+              <li>Install FreeOTP, Google Authenticator on your phone or use your favorite 2FA application</li>
+              <li>Scan the following image:<br/><img src="@{url_for('admin.get_totp_image')}" alt="QR code"/></li>
+              <li>Enter the TOTP code from the app:</li>
+            </ol>
+          </div>
+          <div class="pure-control-group">
+            <label for="username">@{_('One-time password')}</label>
+            @{authform.totp(required=True, autofocus=True)!!html}
+          </div>
+          <div class="pure-controls">
+            @if error:
+              <div class="error">@{error}</div>
+            @end
+            <button type="submit" class="pure-button pure-button-primary">@{_('Log in')}</button>
+          </div>
+        </fieldset>
+      </form>
+  </div>
+</div>
+@end
