@@ -266,7 +266,7 @@ def get_post_list(target):
         User.status.alias("userstatus"),
         User.uid,
         SubPost.upvotes,
-        *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes])
+        *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes]),
     )
     blocked = []
     subscribed = []
@@ -372,7 +372,7 @@ def get_post(sub, pid):
         User.status.alias("userstatus"),
         User.uid,
         SubPost.upvotes,
-        *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes])
+        *([SubPost.downvotes, SubPostVote.positive] if uid else [SubPost.downvotes]),
     )
 
     if uid:
