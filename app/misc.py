@@ -173,9 +173,7 @@ class SiteUser(object):
         except SubMod.DoesNotExist:
             self.is_a_mod = False
 
-        if (
-            time.time() - session.get("apriv", 0) < 7200
-        ) or not config.site.enable_totp:
+        if time.time() - session.get("apriv", 0) < 7200 or not config.site.enable_totp:
             self.admin = "admin" in self.prefs
         else:
             self.admin = False
