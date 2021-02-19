@@ -856,3 +856,10 @@ class Message(BaseModel):
 
     class Meta:
         table_name = "message"
+
+
+class RemoteSub(Sub):
+    """ Cache for remote subs. """
+
+    peer = CharField(null=False)
+    last_updated = DateTimeField(null=False)

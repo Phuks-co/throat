@@ -1,5 +1,6 @@
 """ Here we handle federating with remote servers """
 import base64
+import email.utils
 import json
 import logging
 import time
@@ -12,7 +13,10 @@ from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.backends import default_backend
+from playhouse.shortcuts import model_to_dict
+
 from .config import config
+from .models import RemoteSub
 
 
 class FederationClient:
@@ -98,9 +102,22 @@ class FederationClient:
             data=json_data,
             headers=headers,
         )
-
+        if not result.text:
+            self.logger.warning(f"Empty response received from {peer}!")
+            return {
+                "status": "error",
+                "error": "empty_response",
+                "msg": "Empty or invalid response received from remote peer",
+            }
         # Verify signature
         signature = result.headers.get("X-Throat-Signature")
+        if not signature:
+            self.logger.warning(f"No signature received in request to {peer}!")
+            return {
+                "status": "error",
+                "error": "empty_signature",
+                "msg": "Empty signature received from remote peer",
+            }
         if not self.verify_signature(peer, signature, result.text.encode()):
             return {
                 "status": "error",
@@ -166,6 +183,34 @@ class FederationClient:
         except InvalidSignature:
             return False
         return True
+
+    def get_sub(self, peer: str, sub_name: str):
+        """
+        Searches a sub in the cache, and schedules a re-fetch if it's past the TTL
+        """
+        sub_data = self._request(peer, "sub", {"name": sub_name.lower()})
+        if not sub_data.get("sid"):
+            return False
+        try:
+            # TODO: Invalidate this cache at some point
+            sub = (
+                RemoteSub.select()
+                .where((RemoteSub.peer == peer) & (RemoteSub.name == sub_name))
+                .dicts()
+                .get()
+            )
+        except RemoteSub.DoesNotExist:
+            # sigh
+            sub_data["creation"] = email.utils.parsedate_to_datetime(
+                sub_data["creation"]
+            )
+            sub_data["peer"] = peer
+            sub_data_db = {k: v for k, v in sub_data.items() if k in vars(RemoteSub)}
+            sub = RemoteSub.create(**sub_data_db)
+            sub = model_to_dict(sub)
+
+        # TODO: Cache everything else too
+        return sub, sub_data["metadata"], sub_data["mods"]
 
 
 federation = FederationClient()

@@ -12,7 +12,10 @@ Response format:
 """
 
 from flask import Blueprint, jsonify, request, Response
+from peewee import fn
 
+from .. import misc
+from ..models import Sub
 from ..config import config
 from ..federation import federation
 
@@ -63,3 +66,33 @@ def fed_sign(response: Response):
 @bp.route("/id", methods=["POST"])
 def id_me():
     return jsonify(status="ok")
+
+
+@bp.route("/sub", methods=["POST"])
+def get_sub():
+    sub_name = request.json.get("name")
+    if not sub_name:
+        return (
+            jsonify(
+                status="error", msg="name parameter required", error="client_error"
+            ),
+            400,
+        )
+
+    try:
+        sub_data = (
+            Sub.select().where(fn.Lower(Sub.name) == sub_name.lower()).dicts().get()
+        )
+    except Sub.DoesNotExist:
+        return (
+            jsonify(status="error", msg="Sub not found", error="object_not_found"),
+            404,
+        )
+
+    sub_data["metadata"] = misc.getSubData(sub_data["sid"])
+    sub_data["metadata"]["rules"] = list(sub_data["metadata"]["rules"].dicts())
+    sub_data["mods"] = misc.getSubMods(sub_data["sid"])
+    # To prevent sid clashes during local testing
+    if request.json.get("from") == "localhost":
+        sub_data["sid"] = "r" + sub_data["sid"][1:]
+    return jsonify(**sub_data)

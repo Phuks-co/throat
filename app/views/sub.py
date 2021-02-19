@@ -42,6 +42,7 @@ from ..forms import (
     AssignSubUserFlair,
 )
 from .. import misc
+from ..federation import federation
 
 
 blueprint = Blueprint("sub", __name__)
@@ -311,10 +312,19 @@ def view_sub_new(sub, page):
     if sub.lower() == "all":
         return redirect(url_for("home.all_new", page=1))
 
-    try:
-        sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
-    except Sub.DoesNotExist:
-        abort(404)
+    if ":" in sub:
+        peer, sub = sub.split(":")
+        sub = federation.get_sub(peer, sub)
+        if not sub:
+            abort(404)
+        sub, sub_data, sub_mods = sub
+    else:
+        try:
+            sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
+        except Sub.DoesNotExist:
+            abort(404)
+        sub_data = misc.getSubData(sub["sid"])
+        sub_mods = misc.getSubMods(sub["sid"])
 
     isSubMod = current_user.is_mod(sub["sid"], 1) or current_user.is_admin()
 
@@ -329,11 +339,11 @@ def view_sub_new(sub, page):
     return engine.get_template("sub.html").render(
         {
             "sub": sub,
-            "subInfo": misc.getSubData(sub["sid"]),
+            "subInfo": sub_data,
             "posts": posts,
             "page": page,
             "sort_type": "sub.view_sub_new",
-            "subMods": misc.getSubMods(sub["sid"]),
+            "subMods": sub_mods,
         }
     )
 
