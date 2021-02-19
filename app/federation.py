@@ -71,11 +71,11 @@ class FederationClient:
                         pubkey_file.read(), backend=None
                     )
                 ret = self._request(peer, "id")
-                self.logger.debug(f" - Response: {ret.text}")
-                if ret.json().get("status") == "ok":
+                self.logger.debug(f" - Response: {ret}")
+                if ret.get("status") == "ok":
                     self.peers[peer]["connected"] = True
                 else:
-                    self.peers[peer]["error"] = ret.json().get("msg")
+                    self.peers[peer]["error"] = ret.get("msg")
 
     def _request(self, peer, endpoint, data=None):
         if data is None:
@@ -88,24 +88,27 @@ class FederationClient:
 
         json_data = json.dumps(data)
 
-        signature = self.privkey.sign(
-            json_data.encode(),
-            padding.PSS(
-                mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH
-            ),
-            hashes.SHA256(),
-        )
-
         headers = {
-            "X-Throat-Signature": base64.b64encode(signature),
+            "X-Throat-Signature": self.sign_payload(json_data),
             "Content-type": "application/json",
         }
 
-        return requests.post(
+        result = requests.post(
             f"{config.federation.peers[peer]['address']}/api/f0/{endpoint}",
             data=json_data,
             headers=headers,
         )
+
+        # Verify signature
+        signature = result.headers.get("X-Throat-Signature")
+        if not self.verify_signature(peer, signature, result.text.encode()):
+            return {
+                "status": "error",
+                "error": "invalid_signature",
+                "msg": "Invalid signature received from remote server",
+            }
+
+        return result.json()
 
     def _gen_certs(self):
         private_key = rsa.generate_private_key(
@@ -136,7 +139,17 @@ class FederationClient:
         fd.write(pem.decode())
         fd.close()
 
-    def verify_signature(self, peer, signature, message):
+    def sign_payload(self, payload: str):
+        signature = self.privkey.sign(
+            payload.encode(),
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH
+            ),
+            hashes.SHA256(),
+        )
+        return base64.b64encode(signature)
+
+    def verify_signature(self, peer: str, signature: str, message: bytes):
         public_key = self.peers.get(peer, {}).get("pubkey")
         if not public_key:
             return False

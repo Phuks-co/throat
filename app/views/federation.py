@@ -11,7 +11,7 @@ Response format:
 }
 """
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, Response
 
 from ..config import config
 from ..federation import federation
@@ -50,6 +50,14 @@ def fed_authenticate():
             jsonify(status="error", msg="Invalid signature", error="invalid_signature"),
             400,
         )
+
+
+@bp.after_request
+def fed_sign(response: Response):
+    response.headers["X-Throat-Signature"] = federation.sign_payload(
+        response.data.decode()
+    )
+    return response
 
 
 @bp.route("/id", methods=["POST"])
