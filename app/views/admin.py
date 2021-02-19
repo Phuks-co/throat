@@ -51,6 +51,7 @@ from ..models import (
 from ..models import UserUploads, InviteCode, Wiki
 from ..misc import engine, getReports
 from ..badges import badges
+from ..federation import federation
 
 bp = Blueprint("admin", __name__)
 
@@ -887,3 +888,12 @@ def delete_wiki(slug):
 
     wiki_page.delete_instance()
     return redirect(url_for("admin.wiki"))
+
+
+@bp.route("/peers", methods=["GET"])
+@login_required
+def peers():
+    if not current_user.is_admin():
+        abort(404)
+
+    return engine.get_template("admin/peers.html").render({"federation": federation})

@@ -99,6 +99,7 @@ cfg_defaults = {  # key => default value
     "ratelimit": {"default": "60/minute"},
     "notifications": {"fcm_api_key": None},
     "matrix": {"enabled": False},
+    "federation": {"enabled": False, "peers": []},
 }
 
 

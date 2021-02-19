@@ -1,6 +1,5 @@
 # -*- coding: utf-8
 """ Here is where all the good stuff happens """
-
 import time
 import socket
 import datetime
@@ -15,6 +14,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.wrappers import BaseResponse
 
 from .config import Config
+from .federation import federation
 from .forms import LoginForm, LogOutForm, CreateSubForm
 from .models import db_init_app, rconn, User
 from .auth import auth_provider, email_validation_is_required
@@ -29,6 +29,7 @@ from .views.admin import bp as admin
 from .views.mod import bp as mod
 from .views.errors import bp as errors
 from .views.messages import bp as messages
+from .views.federation import bp as federation_bp
 
 from . import misc, forms, caching, storage
 from .notifications import notifications
@@ -106,6 +107,7 @@ def create_app(config=None):
     logging_init_app(app)
     limiter.init_app(app)
     notifications.init_app(app)
+    federation.init_app(app)
 
     # app.wsgi_app = ProfilerMiddleware(app.wsgi_app)
 
@@ -119,6 +121,7 @@ def create_app(config=None):
     app.register_blueprint(wiki)
     app.register_blueprint(do)
     app.register_blueprint(api3, url_prefix="/api/v3")
+    app.register_blueprint(federation_bp, url_prefix="/api/f0")
     app.register_blueprint(errors)
     app.register_blueprint(admin, url_prefix="/admin")
     app.register_blueprint(mod, url_prefix="/mod")
