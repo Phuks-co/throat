@@ -34,6 +34,9 @@
     </title>
 
     <link rel="stylesheet" type="text/css" href="@{asset_url_for('main.css') }">
+
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="https://cekni.to/all/new.rss">
+    
   </head>
 
 <body class="@{(config.site.enable_totp and current_user.admin) and 'body_admin' or ''} @{(request.cookies.get( "dayNight")=="dank") and 'dark dank' or ''} @{(request.cookies.get( "dayNight")=="dark") and 'dark' or ''}">
