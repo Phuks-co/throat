@@ -85,7 +85,7 @@ def all_new_rss():
     posts = misc.getPostList(misc.postListQueryBase(), "new", 1).dicts()
     fg = FeedGenerator()
     fg.id(request.url)
-    fg.title("All new posts")
+    fg.title("čekni.to")
     fg.link(href=request.url_root, rel="alternate")
     fg.link(href=request.url, rel="self")
 
