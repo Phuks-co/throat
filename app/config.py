@@ -52,7 +52,14 @@ cfg_defaults = {  # key => default value
             "vine.co",
             "instaud.io",
         ],
-        "footer": {"links": {"Podmienky používania": "/wiki/tos", "Ochrana osobných údajov": "/wiki/privacy", "Changelog": "/s/changelog", "Podporte nás": "/wiki/donate"}},
+        "footer": {
+            "links": {
+                "Podmienky používania": "/wiki/tos",
+                "Ochrana osobných údajov": "/wiki/privacy",
+                "Changelog": "/s/changelog",
+                "Podporte nás": "/wiki/donate",
+            }
+        },
         "archive_post_after": 60,
         "trusted_proxy_count": 0,
         "custom_hot_sort": False,

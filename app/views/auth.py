@@ -218,9 +218,9 @@ def register():
     )
 
     # Custom sendmail info for regs
-    regdate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    useragent = request.headers.get('User-Agent')
-    ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    regdate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    useragent = request.headers.get("User-Agent")
+    ip = request.environ.get("HTTP_X_REAL_IP", request.remote_addr)
     text_content = user.name + "\n" + ip + "\n" + regdate + "\n" + useragent
     send_email(config.mail.default_to, "New registration", text_content, "")
 
