@@ -1,5 +1,6 @@
 """ Here we handle federating with remote servers """
 import base64
+import datetime
 import email.utils
 import json
 import logging
@@ -13,10 +14,9 @@ from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.backends import default_backend
-from playhouse.shortcuts import model_to_dict
 
 from .config import config
-from .models import RemoteSub
+from .models import RemoteSub, rconn
 
 
 class FederationClient:
@@ -184,33 +184,49 @@ class FederationClient:
             return False
         return True
 
+    @classmethod
+    def _get_sub_from_cache(cls, peer, sub_name):
+        # TODO: Configurable TTL
+        return (
+            RemoteSub.select()
+            .where(RemoteSub.peer == peer)
+            .where(RemoteSub.name == sub_name)
+            .where(
+                RemoteSub.last_updated
+                > (datetime.datetime.utcnow() - datetime.timedelta(minutes=10))
+            )
+            .dicts()
+            .get()
+        )
+
     def get_sub(self, peer: str, sub_name: str):
         """
-        Searches a sub in the cache, and schedules a re-fetch if it's past the TTL
+        Searches a sub in the cache, and schedules a re-fetch if it's past the TTL or there's missing data
         """
-        sub_data = self._request(peer, "sub", {"name": sub_name.lower()})
-        if not sub_data.get("sid"):
-            return False
         try:
-            # TODO: Invalidate this cache at some point
-            sub = (
-                RemoteSub.select()
-                .where((RemoteSub.peer == peer) & (RemoteSub.name == sub_name))
-                .dicts()
-                .get()
-            )
+            sub = self._get_sub_from_cache(peer, sub_name)
+            metadata = json.loads(rconn.get(f"remote-{sub['sid']}-metadata"))
+            mods = json.loads(rconn.get(f"remote-{sub['sid']}-mods"))
         except RemoteSub.DoesNotExist:
+            sub_data = self._request(peer, "sub", {"name": sub_name.lower()})
+            if not sub_data.get("sid"):
+                return False
             # sigh
             sub_data["creation"] = email.utils.parsedate_to_datetime(
                 sub_data["creation"]
             )
             sub_data["peer"] = peer
+            sub_data["last_updated"] = datetime.datetime.utcnow()
             sub_data_db = {k: v for k, v in sub_data.items() if k in vars(RemoteSub)}
-            sub = RemoteSub.create(**sub_data_db)
-            sub = model_to_dict(sub)
+            RemoteSub.replace(**sub_data_db).execute()
+            sub = self._get_sub_from_cache(peer, sub_name)
 
-        # TODO: Cache everything else too
-        return sub, sub_data["metadata"], sub_data["mods"]
+            metadata = sub_data["metadata"]
+            mods = sub_data["mods"]
+            rconn.set(f"remote-{sub['sid']}-metadata", json.dumps(sub_data["metadata"]))
+            rconn.set(f"remote-{sub['sid']}-mods", json.dumps(sub_data["mods"]))
+
+        return sub, metadata, mods
 
 
 federation = FederationClient()
