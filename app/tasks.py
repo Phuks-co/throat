@@ -230,7 +230,7 @@ def safe_request(
             url,
             stream=True,
             timeout=receive_timeout,
-            headers={"User-Agent": "Throat/1 (Phuks)"},
+            headers={"User-Agent": "WhatsApp/2"},
         )
     except:  # noqa
         raise ValueError("error fetching")
