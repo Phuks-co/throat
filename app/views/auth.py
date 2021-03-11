@@ -218,7 +218,7 @@ def register():
     )
 
     # Custom sendmail info for regs
-    if config.mail.server == "smtp.example.com":
+    if config.mail.server != "smtp.example.com":
         regdate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         useragent = request.headers.get("User-Agent")
         ip = request.environ.get("HTTP_X_REAL_IP", request.remote_addr)
