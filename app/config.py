@@ -74,7 +74,7 @@ cfg_defaults = {  # key => default value
     },
     "auth": {"provider": "LOCAL", "require_valid_emails": False, "keycloak": {}},
     "cache": {"type": "null"},
-    "mail": {"default_to": "testX6545@teste554.com"},
+    "mail": {},
     "storage": {
         "provider": "LOCAL",
         "acl": "private",
