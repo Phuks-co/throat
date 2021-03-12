@@ -222,8 +222,10 @@ def register():
     useragent = request.headers.get("User-Agent")
     ip = request.environ.get("HTTP_X_REAL_IP", request.remote_addr)
     text_content = user.name + "\n" + ip + "\n" + regdate + "\n" + useragent
-    send_email(config.mail.default_to, "New registration", text_content, "")
-
+    try:
+        send_email(config.mail.default_to, "New registration", text_content, "")
+    except:
+        print("boo")
     if email_validation_is_required():
         send_login_link_email(user)
         return redirect(url_for("auth.confirm_registration"))
