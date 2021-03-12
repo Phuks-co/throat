@@ -224,8 +224,8 @@ def register():
     text_content = user.name + "\n" + ip + "\n" + regdate + "\n" + useragent
     try:
         send_email(config.mail.default_to, "New registration", text_content, "")
-    except:
-        print("boo")
+    except Exception as ex:
+        print(ex)
     if email_validation_is_required():
         send_login_link_email(user)
         return redirect(url_for("auth.confirm_registration"))
