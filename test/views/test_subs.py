@@ -16,7 +16,7 @@ def test_create_sub_error(client, user_info):
     rv = client.get(url_for("subs.create_sub"))
     assert rv.status_code == 200
 
-    data = {"csrf_token": csrf_token(rv.data), "subname": "ñññ", "title": "Testing"}
+    data = {"csrf_token": csrf_token(rv.data), "subname": "蛋糕", "title": "Testing"}
     rv = client.post(url_for("subs.create_sub"), data=data, follow_redirects=True)
     assert b"Sub name has invalid characters" in get_error(rv.data)
     data["subname"] = "home"
