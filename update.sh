@@ -7,4 +7,3 @@ npm run build
 ./throat.py translations compile
 ./throat.py migration apply
 killall -HUP gunicorn
-redis-cli flushall
