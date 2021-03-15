@@ -989,7 +989,7 @@ a.slink {
 .commenthead {
   font-size: smaller;
   color: #414141;
-  margin-top: 1em;
+/**  margin-top: 1em; **/
 }
 
 .c-downvote {
