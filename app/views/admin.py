@@ -590,7 +590,9 @@ def posts(page):
     if not current_user.is_admin():
         abort(404)
     posts = (
-        misc.getPostList(misc.postListQueryBase(adminDetail=True), "new", page)
+        misc.getPostList(
+            misc.postListQueryBase(include_deleted_posts=True), "new", page
+        )
         .paginate(page, 50)
         .dicts()
     )

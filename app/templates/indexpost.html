@@ -35,10 +35,25 @@
         {%endif%}
         {% if post.flair %}<span class="postflair">{{post.flair}}</span>{% endif %}
         {% if post.link == None %}
-          <a href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}" class="title">{{post.title}}</a>
+          <a href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}" class="title">
+          {% if post.deleted == 1 %}
+            {{_('[Deleted by User]')}}
+          {% elif post.deleted == 2 %}
+            {{_('[Deleted by Mod or Admin]')}}
+          {% endif %}
+          {{post.title}}
+        </a>
         {% else %}
           {% if post.link.startswith('http:') %}<span title="not https" class="p-icon" data-icon="exclaim"></span>{% endif %}
-          <a rel="noopener nofollow ugc" href="{{post.link}}" class="title">{{post.title}}</a> <a href="{{url_for('home.all_domain_new', domain=func.getDomain(post.link), page=1)}}" class="domain">({{func.getDomain(post.link)}})</a>
+          <a rel="noopener nofollow ugc" href="{{post.link}}" class="title">
+            {% if post.deleted == 1 %}
+              {{_('[Deleted by User]')}}
+            {% elif post.deleted == 2 %}
+              {{_('[Deleted by Mod or Admin]')}}
+            {% endif %}
+            {{post.title}}
+          </a>
+          <a href="{{url_for('home.all_domain_new', domain=func.getDomain(post.link), page=1)}}" class="domain">({{func.getDomain(post.link)}})</a>
         {% endif %}
       </div>
       <div class="author">

@@ -103,13 +103,17 @@ def view_user_posts(user, page):
 
     if current_user.is_admin():
         posts = misc.getPostList(
-            misc.postListQueryBase(adminDetail=True).where(User.uid == user.uid),
+            misc.postListQueryBase(include_deleted_posts=True).where(
+                User.uid == user.uid
+            ),
             "new",
             page,
         ).dicts()
     else:
         posts = misc.getPostList(
-            misc.postListQueryBase(noAllFilter=True).where(User.uid == user.uid),
+            misc.postListQueryBase(
+                include_deleted_posts=(user.uid == current_user.uid), noAllFilter=True
+            ).where(User.uid == user.uid),
             "new",
             page,
         ).dicts()
@@ -157,7 +161,9 @@ def view_user_comments(user, page):
     if user.status == 10:
         abort(404)
 
-    comments = misc.getUserComments(user.uid, page)
+    comments = misc.getUserComments(
+        user.uid, page, include_deleted_comments=(user.uid == current_user.uid)
+    )
     postmeta = misc.get_postmeta_dicts((c["pid"] for c in comments))
     return render_template(
         "usercomments.html", user=user, page=page, comments=comments, postmeta=postmeta

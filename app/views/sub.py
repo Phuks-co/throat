@@ -582,14 +582,20 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
 
     post["visibility"] = ""
     if post["deleted"] == 1:
-        if current_user.is_admin():
+        if current_user.uid == post["uid"]:
+            post["visibility"] = "user-self-del"
+        elif current_user.is_admin():
             post["visibility"] = "admin-self-del"
         elif current_user.is_mod(sub["sid"], 1):
             post["visibility"] = "mod-self-del"
         else:
             post["visibility"] = "none"
     elif post["deleted"] == 2:
-        if current_user.is_admin() or current_user.is_mod(sub["sid"], 1):
+        if (
+            current_user.is_admin()
+            or current_user.is_mod(sub["sid"], 1)
+            or current_user.uid == post["uid"]
+        ):
             post["visibility"] = "mod-del"
         else:
             post["visibility"] = "none"
