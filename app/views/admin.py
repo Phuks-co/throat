@@ -372,7 +372,13 @@ def invitecodes(page):
     invite_settings = {
         meta.key: meta.value
         for meta in SiteMetadata.select().where(
-            SiteMetadata.key << ["useinvitecode", "invite_level", "invite_max"]
+            SiteMetadata.key
+            << [
+                "useinvitecode",
+                "invitations_visible_to_users",
+                "invite_level",
+                "invite_max",
+            ]
         )
     }
 

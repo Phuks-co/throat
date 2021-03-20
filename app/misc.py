@@ -581,6 +581,16 @@ def enableInviteCode():
         return False
 
 
+@cache.memoize(600)
+def user_visible_invitations():
+    """ Returns True if users can see who they invited and who invited them. """
+    try:
+        xm = SiteMetadata.get(SiteMetadata.key == "invitations_visible_to_users")
+        return False if xm.value == "0" else True
+    except SiteMetadata.DoesNotExist:
+        return False
+
+
 @cache.memoize(30)
 def getMaxCodes(uid):
     """ Returns how many invite codes a user can create """
@@ -607,6 +617,12 @@ def getInviteCodeInfo(uid):
     Returns information about who invited a user and who they have invited.
     """
     info = {}
+
+    if not (
+        current_user.is_admin()
+        or (user_visible_invitations() and current_user.uid == uid)
+    ):
+        return info
 
     # The invite code that this user used to sign up
     try:

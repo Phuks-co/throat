@@ -62,6 +62,9 @@ class UseInviteCodeForm(FlaskForm):
     """ Enable/Use an invite code to register """
 
     enableinvitecode = BooleanField(_l("Enable invite code to register"))
+    invitations_visible_to_users = BooleanField(
+        _l("Allow users to see who they invited and who invited them")
+    )
     minlevel = IntegerField(_l("Minimum level to create invite codes"))
     maxcodes = IntegerField(_l("Max amount of invites per user"))
 
