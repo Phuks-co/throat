@@ -2256,6 +2256,16 @@ def use_invite_code():
             )
 
         try:
+            sm = SiteMetadata.get(SiteMetadata.key == "invitations_visible_to_users")
+            sm.value = "1" if form.invitations_visible_to_users.data else "0"
+            sm.save()
+        except SiteMetadata.DoesNotExist:
+            SiteMetadata.create(
+                key="invitations_visible_to_users",
+                value="1" if form.invitations_visible_to_users.data else "0",
+            )
+
+        try:
             sm = SiteMetadata.get(SiteMetadata.key == "invite_level")
             sm.value = form.minlevel.data
             sm.save()
@@ -2270,6 +2280,7 @@ def use_invite_code():
             SiteMetadata.create(key="invite_max", value=form.maxcodes.data)
 
         cache.delete_memoized(misc.enableInviteCode)
+        cache.delete_memoized(misc.user_visible_invitations)
         cache.delete_memoized(misc.getMaxCodes)
 
         if form.enableinvitecode.data:

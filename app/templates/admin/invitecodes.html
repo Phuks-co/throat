@@ -25,6 +25,9 @@
                 <label for="enableinvitecode" class="pure-checkbox">
                   {{useinvitecodeform.enableinvitecode(checked=func.enableInviteCode())}} {{useinvitecodeform.enableinvitecode.label.text}}
                 </label>
+                <label for="invitations_visible_to_users" class="pure-checkbox">
+                  {{useinvitecodeform.invitations_visible_to_users(checked=func.user_visible_invitations())}} {{useinvitecodeform.invitations_visible_to_users.label.text}}
+                </label>
                 <div class="pure-control-group">
                     <label for="confirm">{{useinvitecodeform.minlevel.label.text}}</label>
                     {{useinvitecodeform.minlevel(autocomplete="off", required=True)}}
