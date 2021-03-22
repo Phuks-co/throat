@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-02-09 15:14-0300\n"
-"PO-Revision-Date: 2021-02-10 01:21\n"
+"PO-Revision-Date: 2021-02-23 19:30\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -1519,7 +1519,7 @@ msgstr "Hoja de estilos"
 
 #: app/html/shared/sidebar/sub_mod.html:10
 msgid "Bans"
-msgstr ""
+msgstr "Baneos"
 
 #: app/html/shared/sidebar/user.html:6 app/html/sub/bans.html:22
 msgid "Ban user"

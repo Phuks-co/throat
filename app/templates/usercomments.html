@@ -30,9 +30,16 @@
             </p>
             {% else %}
             {% for comment in comments %}
-            <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="text-post no-padding comment usercomments">
+            <article id="{{comment.cid}}" data-cid="{{comment.cid}}" class="text-post no-padding comment usercomments {% if comment.status %}deletedcomment{% endif %}">
               <div class="commtitle">
-                <span class="title"><a href="{{ url_for('sub.view_post', sub=comment.sub, pid=comment.pid) }}">{{comment.title}}</a></span>
+                <span class="title"><a href="{{ url_for('sub.view_post', sub=comment.sub, pid=comment.pid) }}">
+                  {% if comment.status == 1 %}
+                    {{_('[Deleted by User]')}}
+                  {% elif comment.status == 2 %}
+                    {{_('[Deleted by Mod or Admin]')}}
+                  {% endif %}
+                  {{comment.title}}
+                </a></span>
                 in <a href="{{ url_for('sub.view_sub', sub=comment.sub) }}">{{comment.sub}}</a>
               </div>
               <div class="commentrow {%if comment.cid == highlight %}highlight{%endif%}" id="comment-{{comment.cid}}">

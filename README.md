@@ -10,7 +10,7 @@ A link and discussion aggregator with snek (python3)
  - Redis
  - Python >= 3.7
  - A recent node/npm
- - libmagic and gobject
+ - libmagic
 
 ## Setup:
 
@@ -90,7 +90,7 @@ You can check out the [CDK Definition of Infrastructure](https://gitlab.com/femi
 
 ### Python tests
 
-1. Python, redis, libmagic and gobject are required, but node and postgres are not.
+1. Python, redis, and libmagic are required, but node and postgres are not.
 2. Install dependencies with `pip install -r requirements.txt`
 3. Install the test dependencies with `pip install -r requirements-test.txt`
 4. Run the tests with `python -m pytest`
