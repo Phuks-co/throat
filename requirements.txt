@@ -38,7 +38,7 @@ greenlet==0.4.17
 gunicorn==20.0.4
 idna==2.10
 itsdangerous==1.1.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 jmespath==0.10.0
 limits==1.5.1
 lockfile==0.12.2
