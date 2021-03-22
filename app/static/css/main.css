@@ -2197,7 +2197,7 @@ table td {
 
 /* admin */
 
-tr.deletedrow, .deletedpost {
+tr.deletedrow, .deletedpost, .deletedcomment {
   background: hsla(0, 100%, 51%, 0.2)!important;
 }
 

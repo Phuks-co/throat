@@ -97,7 +97,7 @@
             <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}" class="title">
               @if (post['visibility'] == ''):
                 @{post['title']}
-              @elif (post['visibility'] == 'admin-self-del'):
+              @elif (post['visibility'] == 'admin-self-del') or (post['visibility'] == 'user-self-del'):
                 @{_('[Deleted by User]')} @{post['title']}
               @elif (post['visibility'] == 'mod-self-del'):
                 @{_('[Deleted by User]')}
@@ -116,8 +116,8 @@
             <a rel="nofollow ugc @{(post['visibility'] == 'none') and 'noopener ' or ''}" href="@{(post['visibility'] != 'none') and post['link'] or '#'}" class="title">
               @if (post['visibility'] == ''):
                 @{post['title']}
-              @elif (post['visibility'] == 'admin-self-del'):
-              @{_('[Deleted by User]')} @{post['title']}
+              @elif (post['visibility'] == 'admin-self-del') or (post['visibility'] == 'user-self-del'):
+                @{_('[Deleted by User]')} @{post['title']}
               @elif (post['visibility'] == 'mod-self-del'):
                 @{_('[Deleted by User]')}
               @elif (post['visibility'] == 'mod-del'):
@@ -273,7 +273,7 @@
     </div>
   @end
 
-  @if (post['ptype'] == 3) and (post['deleted'] == 0 or post['visibility'] == 'admin-self-del' or post['visibility'] == 'mod-del'):
+  @if (post['ptype'] == 3) and (post['deleted'] == 0 or post['visibility'] == 'admin-self-del' or post['visibility'] == 'mod-del' or post['visibility'] == 'user-self-del'):
     @{polls.renderPoll(pollData, postmeta, post)!!html}
   @end
   <div>
@@ -289,7 +289,7 @@
         <div id="postcontent" class="post-content-container @{(post['visibility'] == 'mod-self-del') and 'deleted ' or ''}">
           @{_('[deleted]')}
         </div>
-      @elif ((post['visibility'] == 'admin-self-del') or (post['visibility'] == 'mod-del')):
+      @elif ((post['visibility'] == 'admin-self-del') or (post['visibility'] == 'mod-del') or (post['visibility'] == 'user-self-del')):
         <span class="current history" data-id="0">
           <div id="postcontent" class="post-content-container deleted">@{markdown(post['content'])!!html}</div>
         </span>

@@ -985,7 +985,7 @@ def postListQueryBase(
     nofilter=False,
     noAllFilter=False,
     noDetail=False,
-    adminDetail=False,
+    include_deleted_posts=False,
     isSubMod=False,
 ):
     reports = (
@@ -1083,7 +1083,7 @@ def postListQueryBase(
             on=((SubUserFlair.sub == Sub.sid) & (SubUserFlair.user == SubPost.uid)),
         )
     )
-    if not adminDetail:
+    if not include_deleted_posts:
         posts = posts.where(SubPost.deleted == 0)
     if not noAllFilter and not nofilter:
         if current_user.is_authenticated and current_user.blocksid:
@@ -1567,35 +1567,33 @@ def getMsgPostReplies(page):
 # user comments
 
 
-def getUserComments(uid, page):
+def getUserComments(uid, page, include_deleted_comments=False):
     """ Returns comments for a user """
     try:
-        com = SubPostComment.select(
-            Sub.name.alias("sub"),
-            SubPost.title,
-            SubPostComment.cid,
-            SubPostComment.pid,
-            SubPostComment.uid,
-            SubPostComment.time,
-            SubPostComment.lastedit,
-            SubPostComment.content,
-            SubPostComment.status,
-            SubPostComment.score,
-            SubPostComment.parentcid,
-            SubPost.posted,
-        )
         com = (
-            com.join(SubPost)
+            SubPostComment.select(
+                Sub.name.alias("sub"),
+                SubPost.title,
+                SubPostComment.cid,
+                SubPostComment.pid,
+                SubPostComment.uid,
+                SubPostComment.time,
+                SubPostComment.lastedit,
+                SubPostComment.content,
+                SubPostComment.status,
+                SubPostComment.score,
+                SubPostComment.parentcid,
+                SubPost.posted,
+            )
+            .join(SubPost)
             .switch(SubPostComment)
             .join(Sub, on=(Sub.sid == SubPost.sid))
+            .where(SubPostComment.uid == uid)
         )
-        com = (
-            com.where(SubPostComment.uid == uid)
-            .where(SubPostComment.status.is_null())
-            .order_by(SubPostComment.time.desc())
-            .paginate(page, 20)
-            .dicts()
-        )
+        if not include_deleted_comments:
+            com = com.where(SubPostComment.status.is_null())
+
+        com = com.order_by(SubPostComment.time.desc()).paginate(page, 20).dicts()
     except SubPostComment.DoesNotExist:
         return False
 
