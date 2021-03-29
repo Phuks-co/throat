@@ -3,13 +3,15 @@
 ** To run the docker image:
 
 #+BEGIN_SRC sh
-docker run -p 8080:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin quay.io/keycloak/keycloak:10.0.2
+docker run -p 8080:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin quay.io/keycloak/keycloak:12.0.4
 #+END_SRC
 
  Or change the first port number if you need it to take a different
  port on localhost.
 
 ** Setting up Keycloak
+
+ These directions are current for Keycloak version 12.0.4.
 
  Open up the admin interface at http://localhost:8080
 
@@ -29,6 +31,10 @@ docker run -p 8080:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin quay.i
 
  Then go to "Service Account Roles", select "admin" from Available Roles,
  and then choose "assign selected".
+
+Switch back to "Settings" and scroll down to "OpenID Connect
+Compatibility Modes".  Open that section and turn on "Use Refresh
+Tokens For Client Credentials Grant".  Choose Save.
 
 So admin-cli is the client which can create users, but you need a client
 in the example realm you created above to log them in.  To create that
