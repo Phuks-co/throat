@@ -93,7 +93,7 @@ def sso_proxy_validate():
 
 
 @bp.route("/register", methods=["GET", "POST"])
-@ratelimit(SIGNUP_LIMIT)
+@ratelimit(SIGNUP_LIMIT, methods=["POST"])
 def register():
     """ Endpoint for the registration form """
     if current_user.is_authenticated:
