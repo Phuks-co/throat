@@ -57,7 +57,7 @@ cfg_defaults = {  # key => default value
         "trusted_proxy_count": 0,
         "custom_hot_sort": False,
         "recent_activity": {
-            "enabled": True,
+            "enabled": False,  # TODO: Address performance issues
             "defaults_only": False,
             "comments_only": False,
             "max_entries": 10,
