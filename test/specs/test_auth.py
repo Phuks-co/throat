@@ -14,8 +14,7 @@ from test.utilities import promote_user_to_admin
 
 
 @pytest.mark.parametrize(
-    "test_config",
-    [{"auth": {"validate_emails": True}}, {"auth": {"require_valid_emails": False}}],
+    "test_config", [{"auth": {"require_valid_emails": False}}],
 )
 def test_registration_login(client, test_config):
     """The registration page logs a user in if they register correctly."""
@@ -119,6 +118,168 @@ def test_login_before_confirming_email(client, user_info, test_config):
         )
 
         assert b"Log out" in rv.data
+
+
+@pytest.mark.parametrize("test_config", [{"auth": {"require_valid_emails": True}}])
+def test_resend_registration_email(client, user_info, test_config):
+    """Registered but unconfirmed users can resend the registration link."""
+    rv = client.get(url_for("auth.register"))
+    data = dict(
+        csrf_token=csrf_token(rv.data),
+        username=user_info["username"],
+        password=user_info["password"],
+        confirm=user_info["password"],
+        email_required=user_info["email"],
+        invitecode="",
+        accept_tos=True,
+        captcha="xyzzy",
+    )
+
+    rv = client.post(url_for("auth.register"), data=data, follow_redirects=True)
+    assert b"spam" in rv.data  # Telling user to go check it.
+
+    # Find the resend link.
+    soup = BeautifulSoup(rv.data, "html.parser")
+    links = soup.find_all(lambda tag: tag.name == "a" and tag.string == "Resend")
+    url = links[0]["href"]
+
+    # Request the resend form and verify the registered email is shown.
+    rv = client.get(url)
+    assert b"Resend account confirmation instructions" in rv.data
+    soup = BeautifulSoup(rv.data, "html.parser")
+    tag = soup.find_all(lambda tag: tag.get("name") == "email")[0]
+    assert tag["value"] == user_info["email"]
+
+    # Use the resend form and the resent link.
+    with mail.record_messages() as outbox:
+        rv = client.post(
+            url,
+            data=dict(csrf_token=csrf_token(rv.data), email=user_info["email"],),
+            follow_redirects=True,
+        )
+        assert b"spam" in rv.data  # Telling user to go check it.
+        message = outbox.pop()
+        soup = BeautifulSoup(message.html, "html.parser")
+        token = soup.a["href"].split("/")[-1]
+        rv = client.get(
+            url_for("auth.login_with_token", token=token), follow_redirects=True
+        )
+        assert b"Log out" in rv.data
+
+
+@pytest.mark.parametrize("test_config", [{"auth": {"require_valid_emails": True}}])
+def test_resend_registration_email_after_confirmation(client, user_info, test_config):
+    """Registration instructions cannot be resent after confirmation."""
+    with mail.record_messages() as outbox:
+        rv = client.get(url_for("auth.register"))
+        data = dict(
+            csrf_token=csrf_token(rv.data),
+            username=user_info["username"],
+            password=user_info["password"],
+            confirm=user_info["password"],
+            email_required=user_info["email"],
+            invitecode="",
+            accept_tos=True,
+            captcha="xyzzy",
+        )
+        rv = client.post(url_for("auth.register"), data=data, follow_redirects=True)
+        assert b"spam" in rv.data  # Telling user to go check it.
+
+        # Find the resend link.
+        soup = BeautifulSoup(rv.data, "html.parser")
+        link = soup.find_all(lambda tag: tag.name == "a" and tag.string == "Resend")[0]
+        url = link["href"]
+
+        # Find and use the confirmation link.
+        message = outbox[-1]
+        soup = BeautifulSoup(message.html, "html.parser")
+        token = soup.a["href"].split("/")[-1]
+        rv = client.get(
+            url_for("auth.login_with_token", token=token), follow_redirects=True
+        )
+
+    assert b"Log out" in rv.data
+    log_out_current_user(client, verify=True)
+
+    # Request the resend form and verify an error message is shown.
+    rv = client.get(url, follow_redirects=True)
+    assert b"The link you used is invalid or has expired" in rv.data
+    assert b"Log out" not in rv.data
+
+
+@pytest.mark.parametrize("test_config", [{"auth": {"require_valid_emails": True}}])
+def test_fix_registration_email(client, user_info, user2_info, test_config):
+    """Registered users can fix errors in their email addresses."""
+    rv = client.get(url_for("auth.register"))
+    data = dict(
+        csrf_token=csrf_token(rv.data),
+        username=user_info["username"],
+        password=user_info["password"],
+        confirm=user_info["password"],
+        email_required=user_info["email"],
+        invitecode="",
+        accept_tos=True,
+        captcha="xyzzy",
+    )
+
+    # Register and save the link from the first email.
+    with mail.record_messages() as outbox:
+        rv = client.post(url_for("auth.register"), data=data, follow_redirects=True)
+        assert b"spam" in rv.data  # Telling user to go check it.
+        message = outbox.pop()
+        soup = BeautifulSoup(message.html, "html.parser")
+        first_token = soup.a["href"].split("/")[-1]
+
+    # Find the resend link.
+    soup = BeautifulSoup(rv.data, "html.parser")
+    links = soup.find_all(lambda tag: tag.name == "a" and tag.string == "Resend")
+    url = links[0]["href"]
+
+    # Request the resend form and verify the registered email is shown.
+    rv = client.get(url)
+    assert b"Resend account confirmation instructions" in rv.data
+    soup = BeautifulSoup(rv.data, "html.parser")
+    tag = soup.find_all(lambda tag: tag.get("name") == "email")[0]
+    assert tag["value"] == user_info["email"]
+
+    # Ask for emails to be sent to a different address.
+    with mail.record_messages() as outbox:
+        rv = client.post(
+            url,
+            data=dict(csrf_token=csrf_token(rv.data), email=user2_info["email"]),
+            follow_redirects=True,
+        )
+        assert b"spam" in rv.data  # Telling user to go check it.
+        message = outbox.pop()
+        assert message.recipients == [user2_info["email"]]
+        soup = BeautifulSoup(message.html, "html.parser")
+        token = soup.a["href"].split("/")[-1]
+
+        # Use the confirmation link from the email.
+        rv = client.get(
+            url_for("auth.login_with_token", token=token), follow_redirects=True
+        )
+        assert b"Log out" in rv.data
+
+    # Verify that the user's confirmed email is the second one.
+    rv = client.get(url_for("user.edit_account"))
+    soup = BeautifulSoup(rv.data, "html.parser")
+    tag = soup.find_all(lambda tag: tag.get("name") == "email_required")[0]
+    assert tag["value"] == user2_info["email"]
+
+    log_out_current_user(client)
+
+    # Try to use the first token and verify that it is no longer valid.
+    rv = client.get(
+        url_for("auth.login_with_token", token=first_token), follow_redirects=True
+    )
+    assert b"The link you used is invalid or has expired" in rv.data
+    assert b"Log out" not in rv.data
+
+    # Try to use the resend form and verify that it no longer works.
+    rv = client.get(url, follow_redirects=True)
+    assert b"The link you used is invalid or has expired" in rv.data
+    assert b"Log out" not in rv.data
 
 
 def test_logout_and_login_again(client, user_info):

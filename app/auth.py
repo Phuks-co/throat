@@ -241,6 +241,20 @@ class AuthProvider:
         user.save()
         User.update(resets=User.resets + 1).where(User.uid == user.uid).execute()
 
+    def change_unconfirmed_user_email(self, user, new_email):
+        """Use this to change the email before the user confirms it.  To
+        change the email of a user with a confirmed email address, use
+        the pending email change functions below.
+        """
+        user.email = new_email
+        if self.provider == "KEYCLOAK":
+            self.keycloak_admin.update_user(
+                user_id=self.get_user_remote_uid(user),
+                payload={"email": new_email, "emailVerified": False},
+            )
+        user.save()
+        User.update(resets=User.resets + 1).where(User.uid == user.uid).execute()
+
     @staticmethod
     def get_pending_email(user):
         try:

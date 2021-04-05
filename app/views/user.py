@@ -310,7 +310,7 @@ def password_recovery():
 @bp.route("/recovery/email-sent")
 def recovery_email_sent():
     return engine.get_template("user/check-your-email.html").render(
-        {"reason": "recovery"}
+        {"reason": "recovery", "email": "", "show_resend_link": False}
     )
 
 
