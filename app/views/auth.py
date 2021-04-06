@@ -1,6 +1,6 @@
 """ Authentication endpoints and functions """
 from urllib.parse import urlparse
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 import re
 import requests
@@ -226,6 +226,11 @@ def register():
 
     if email_validation_is_required():
         send_login_link_email(user)
+        session["reg"] = {
+            "uid": user.uid,
+            "email": user.email,
+            "now": datetime.utcnow(),
+        }
         return redirect(url_for("auth.confirm_registration"))
     else:
         theuser = misc.load_user(user.uid)
@@ -265,8 +270,10 @@ def user_from_login_token(token):
 def confirm_registration():
     if current_user.is_authenticated:
         return redirect(url_for("home.index"))
+
+    email = session.get("reg", {}).get("email", "")
     return engine.get_template("user/check-your-email.html").render(
-        {"reason": "registration"}
+        {"reason": "registration", "email": email, "show_resend_link": email != ""}
     )
 
 
@@ -290,7 +297,64 @@ def login_with_token(token):
         theuser = misc.load_user(user.uid)
         login_user(theuser)
         session["remember_me"] = False
+        session.pop("reg", None)
     return redirect(url_for("wiki.welcome"))
+
+
+@bp.route("/register/fix-registration-email", methods=["GET", "POST"])
+@ratelimit(SIGNUP_LIMIT)
+def fix_registration_email():
+    if current_user.is_authenticated:
+        return redirect(url_for("home.index"))
+
+    user = None
+    reg = session.get("reg")
+    if reg is not None and datetime.utcnow() - reg["now"] < timedelta(hours=8):
+        try:
+            user = User.get(
+                (User.uid == reg["uid"])
+                & (User.email == reg["email"])
+                & (User.status == UserStatus.PROBATION)
+            )
+        except User.DoesNotExist:
+            pass
+
+    if user is None:
+        flash(_("The link you used is invalid or has expired."), "error")
+        return redirect(url_for("auth.register"))
+
+    form = ResendConfirmationForm()
+    if not form.validate_on_submit():
+        form.email.data = reg["email"]
+        return engine.get_template("user/fix_registration_email.html").render(
+            {"form": form, "error": misc.get_errors(form, True)}
+        )
+
+    email = normalize_email(form.email.data)
+    if is_domain_banned(email, domain_type="email"):
+        return engine.get_template("user/fix_registration_email.html").render(
+            {
+                "error": _("We do not accept emails from your email provider."),
+                "form": form,
+            }
+        )
+    user_by_email = auth_provider.get_user_by_email(email)
+    if user_by_email is not None and user_by_email != user:
+        return engine.get_template("user/fix_registration_email.html").render(
+            {"error": _("E-mail address is already in use."), "form": form}
+        )
+    elif user_by_email is None:
+        auth_provider.change_unconfirmed_user_email(user, email)
+        user = User.get(User.uid == user.uid)
+
+    send_login_link_email(user)
+    session["reg"] = {
+        "uid": user.uid,
+        "email": user.email,
+        "now": datetime.utcnow(),
+    }
+
+    return redirect(url_for("auth.confirm_registration"))
 
 
 @bp.route("/register/resend-confirmation", methods=["GET", "POST"])
@@ -313,12 +377,15 @@ def resend_confirmation_email():
 
     if user.status == UserStatus.PROBATION:
         send_login_link_email(user)
+        session.pop("reg", None)
         return redirect(url_for("auth.confirm_registration"))
     elif user.status == UserStatus.OK:
         flash(_("Your email is already confirmed."))
         return redirect(url_for("auth.login"))
 
-    return redirect(url_for("user.recovery_email_sent"))
+    return engine.get_template("user/check-your-email.html").render(
+        {"reason": "registration", "email": "", "show_resend_link": False}
+    )
 
 
 @bp.route("/login", methods=["GET", "POST"])
@@ -363,6 +430,7 @@ def login():
     if user.status == UserStatus.PROBATION:
         return redirect(url_for("auth.resend_confirmation_email"))
     session["remember_me"] = form.remember.data
+    session.pop("reg", None)
     theuser = misc.load_user(user.uid)
     login_user(theuser, remember=form.remember.data)
     if request.args.get("service"):
