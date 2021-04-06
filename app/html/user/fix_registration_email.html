@@ -1,0 +1,32 @@
+@extends("shared/layout.html")
+@require(form, error)
+@def title():
+Resend confirmation instructions |\
+@end
+
+@def main():
+<div id="center-container">
+  <div class="content">
+    <form  method="POST" id="login-form" class="pure-form pure-form-aligned">
+      <h1>@{_('Resend account confirmation instructions')}</h1> @{ form.csrf_token() !!html}
+      <p>Please verify that your email address is correct before resending.</p>
+      @if error:
+      <div class="error">@{ error }</div>
+      @end
+      <fieldset>
+        <div class="pure-control-group">
+          <label for="email">@{_('E-mail address')}</label>@{form.email(required=True)!!html}
+        </div>
+        <div class="pure-controls">
+          <button type="submit" style="margin-top: 4%" class="pure-button pure-button-primary">@{_('Send email')}</button>
+        </div>
+      </fieldset>
+      <ul class="loginlinklist">
+        <li><a href="@{url_for('auth.login')}">@{_('Log in')}</a></li>
+        <li><a href="@{url_for('auth.register')}">@{_('Sign up')}</a></li>
+        <li><a href="@{url_for('user.password_recovery')}">@{_('Forgot your password?')}</a></li>
+      </ul>
+    </form>
+  </div>
+</div>
+@end
