@@ -42,7 +42,7 @@ Jinja2==2.11.3
 jmespath==0.10.0
 limits==1.5.1
 lockfile==0.12.2
-lxml==4.6.2
+lxml==4.6.3
 MarkupSafe==1.1.1
 misaka==2.1.1
 mock==4.0.3
