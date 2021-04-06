@@ -14,7 +14,8 @@ from test.utilities import promote_user_to_admin
 
 
 @pytest.mark.parametrize(
-    "test_config", [{"auth": {"require_valid_emails": False}}],
+    "test_config",
+    [{"auth": {"require_valid_emails": False}}],
 )
 def test_registration_login(client, test_config):
     """The registration page logs a user in if they register correctly."""
@@ -154,7 +155,10 @@ def test_resend_registration_email(client, user_info, test_config):
     with mail.record_messages() as outbox:
         rv = client.post(
             url,
-            data=dict(csrf_token=csrf_token(rv.data), email=user_info["email"],),
+            data=dict(
+                csrf_token=csrf_token(rv.data),
+                email=user_info["email"],
+            ),
             follow_redirects=True,
         )
         assert b"spam" in rv.data  # Telling user to go check it.
