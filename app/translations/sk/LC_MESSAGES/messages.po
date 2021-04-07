@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-02-09 15:14-0300\n"
-"PO-Revision-Date: 2021-02-10 07:21\n"
+"PO-Revision-Date: 2021-04-07 00:31\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -538,7 +538,7 @@ msgstr "Neplatný email."
 
 #: app/forms/user.py:72 app/forms/user.py:97
 msgid "Email Address (required)"
-msgstr "Email (vyžaduje sa)"
+msgstr "Email"
 
 #: app/forms/user.py:76 app/forms/user.py:100 app/forms/user.py:159
 msgid "Passwords must match"
