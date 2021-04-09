@@ -34,7 +34,7 @@
                   <span class="user_flair" data-flair-id="@{str(post['user_flair_id'])}">@{comment['user_flair']!!e}</span>
                 @end
               @end
-              <b>@{_('<span class="cscore">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)', score=comment['score'], upvotes=comment['upvotes'], downvotes=comment['downvotes'])!!html}
+              <b>@{_('<span class="cscore">%(score)i</span> points</b>', score=comment['score'])!!html}
               <span class="time ">
                   <time-ago datetime="@{comment['time'].isoformat()}Z"></time-ago>
               </span>
