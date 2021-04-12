@@ -1,4 +1,5 @@
 """ Misc helper function and classes. """
+import hashlib
 from urllib.parse import urlparse, parse_qs
 import json
 import math
@@ -2396,6 +2397,25 @@ def get_notif_count():
     )
 
 
+def anti_double_post(func):
+    """ This decorator attempts to leverage Redis to prevent double-submissions to some endpoints. """
+
+    def wrapper(*args, **kwargs):
+        parms = str(args) + str(kwargs)
+        parms_hash = hashlib.sha256(parms.encode())
+        parms_hash = parms_hash.hexdigest()
+        if rconn.get(parms_hash):
+            return jsonify(msg=_("Already processing previous request.")), 400
+
+        rconn.setex(parms_hash, value=1, time=5)
+        val = func(*args, **kwargs)
+        rconn.delete(parms_hash)
+        return val
+
+    return wrapper
+
+
+@anti_double_post
 def cast_vote(uid, target_type, pcid, value):
     """Casts a vote in a post.
     `uid` is the id of the user casting the vote
@@ -2403,11 +2423,6 @@ def cast_vote(uid, target_type, pcid, value):
     `pcid` is either the pid or cid of the post/comment
     `value` is either `up` or `down`
     """
-    # Redis cookie to prevent double-posting
-    if rconn.get(f"{uid}{target_type}{pcid}"):
-        return jsonify(msg=_("Already processing previous request.")), 400
-
-    rconn.setex(f"{uid}{target_type}{pcid}", value=1, time=5)
     # XXX: This function returns api3 objects
     try:
         user = User.get(User.uid == uid)

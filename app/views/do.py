@@ -2370,17 +2370,13 @@ def set_sticky_comment(comment):
     """ Set or unset comment stickyness. """
     try:
         comment = (
-            SubPostComment.select(
-                SubPostComment.cid, SubPostComment.uid, SubPostComment.pid, SubPost.sid
-            )
-            .join(SubPost)
-            .where(SubPostComment.cid == comment)
-            .dicts()
+            SubPostComment.select().join(SubPost).where(SubPostComment.cid == comment)
         )[0]
     except IndexError:
         return jsonify(status="error", error=_("Comment does not exist"))
 
-    if not current_user.is_mod(comment["sid"]) or current_user.uid != comment["uid"]:
+    is_mod = current_user.is_mod(comment.pid.sid_id)
+    if (not is_mod and not current_user.admin) or current_user.uid != comment.uid_id:
         abort(403)
 
     form = DeletePost()
@@ -2388,30 +2384,22 @@ def set_sticky_comment(comment):
     if form.validate():
         try:
             sticky = SubPostMetadata.get(
-                (SubPostMetadata.pid == comment["pid"])
+                (SubPostMetadata.pid == comment.pid)
                 & (SubPostMetadata.key == "sticky_cid")
             )
-            if sticky.value == comment["cid"]:
+            if sticky.value == comment.cid:
                 sticky.delete_instance()
+                comment.distinguish = 0
             else:
-                sticky.value = comment["cid"]
+                sticky.value = comment.cid
                 sticky.save()
-                mod_distinguish(comment["cid"])
+                comment.distinguish = 1 if is_mod else 2
         except SubPostMetadata.DoesNotExist:
-            SubPostMetadata.create(
-                pid=comment["pid"], key="sticky_cid", value=comment["cid"]
-            )
-            mod_distinguish(comment["cid"])
+            SubPostMetadata.create(pid=comment.pid, key="sticky_cid", value=comment.cid)
+            comment.distinguish = 1 if is_mod else 2
+        comment.save()
 
     return jsonify(status="ok")
-
-
-def mod_distinguish(cid):
-    """ Set a comment as distinguished by mod, unless it already is. """
-    comment = SubPostComment.get(SubPostComment.cid == cid)
-    if comment.distinguish is None or comment.distinguish == 0:
-        comment.distinguish = 1
-        comment.save()
 
 
 @do.route("/do/sticky_sort/<int:post>", methods=["POST"])
