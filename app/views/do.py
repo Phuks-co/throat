@@ -635,7 +635,7 @@ def set_user_flair_text(sub):
     flair = form.flair.data.strip()
     sub_info = misc.getSubData(sub.sid)
 
-    if not sub_info.get("freeform_user_flairs"):
+    if not sub_info.get("freeform_user_flairs", 0) == "1":
         return jsonify(
             status="error", error=[_("Free-form user flairs are disabled for this sub")]
         )
@@ -664,7 +664,9 @@ def set_user_flair_choice(sub, flair_id):
 
     sub_info = misc.getSubData(sub.sid)
 
-    if not sub_info.get("user_can_flair_self") and not current_user.is_mod(sub.sid):
+    if not sub_info.get("user_can_flair_self", 0) == "1" and not current_user.is_mod(
+        sub.sid
+    ):
         return jsonify(status="error", error=[_("Not authorized")])
 
     try:
@@ -698,8 +700,9 @@ def delete_user_own_flair(sub):
 
     sub_info = misc.getSubData(sub.sid)
 
-    if not sub_info.get("freeform_user_flairs") and not sub_info.get(
-        "user_can_flair_self"
+    if (
+        not sub_info.get("freeform_user_flairs", 0) == "1"
+        or not sub_info.get("user_can_flair_self", 0) == "1"
     ):
         return jsonify(status="error", error=[_("Not authorized")])
 
@@ -2453,40 +2456,6 @@ def toggle_sort(post):
             ),
         )
     return jsonify(status="error", error=get_errors(form))
-
-
-@do.route("/do/wikipost/<int:post>", methods=["POST"])
-def toggle_wikipost(post):
-    """ Toggles post to the sub wiki page """
-    try:
-        post = SubPost.get(SubPost.pid == post)
-    except SubPost.DoesNotExist:
-        return jsonify(status="error", error=_("Post does not exist"))
-
-    if not current_user.is_mod(post.sid_id):
-        abort(403)
-
-    form = DeletePost()
-
-    if form.validate():
-        try:
-            is_wiki = SubMetadata.get(
-                (SubMetadata.sid == post.sid_id)
-                & (SubMetadata.key == "wiki")
-                & (SubMetadata.value == post.pid)
-            )
-            is_wiki.delete_instance()
-            #  TODO Log it
-            # misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_DEL, current_user.uid, post.sid,
-            #                   link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
-        except SubMetadata.DoesNotExist:
-            post.sid.update_metadata("wiki", post.pid)
-            #  TODO Log it
-            # misc.create_sublog(misc.LOG_TYPE_SUB_STICKY_ADD, current_user.uid, post.sid,
-            #        link=url_for('sub.view_post', sub=post.sid.name, pid=post.pid))
-
-        cache.delete_memoized(misc.getWikiPid, post.sid_id)
-    return jsonify(status="ok")
 
 
 @do.route("/do/flair/<sub>/delete_user", methods=["POST"])
