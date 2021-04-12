@@ -219,11 +219,6 @@
               <li><a class="stick-post">@{_('make sticky')}</a></li>
             @end
 
-            @if str(post['pid']) == subInfo['wiki']:
-              <li><a class="wiki-post">@{_('remove wiki')}</a></li>
-            @else:
-              <li><a class="wiki-post">@{_('make wiki')}</a></li>
-            @end
             @if post['sub'] == 'announcements' and current_user.is_admin():
               @if not func.getAnnouncement() or func.getAnnouncement()['pid'] != post['pid']:
                 <li><a class="announce-post">@{_('make announcement')}</a></li>

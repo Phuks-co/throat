@@ -213,22 +213,6 @@ u.addEventForChild(document, 'click', '.lock-comments', function (e, qelem) {
     });
 });
 
-// Wiki post
-u.addEventForChild(document, 'click', '.wiki-post', function (e, qelem) {
-    const pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg = e.currentTarget;
-    TextConfirm(qelem, function () {
-        u.post('/do/wikipost/' + pid, {post: document.getElementById('postinfo').getAttribute('pid')},
-            function (data) {
-                if (data.status != "ok") {
-                    tg.innerHTML = _('Error.');
-                } else {
-                    tg.innerHTML = _('Done');
-                    document.location.reload();
-                }
-            });
-    });
-});
-
 u.addEventForChild(document, 'click', '.announce-post', function (e, qelem) {
     const pid = qelem.parentNode.parentNode.getAttribute('data-pid'), tg = e.currentTarget;
     TextConfirm(qelem, function () {
