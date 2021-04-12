@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-04-07 15:40-0300\n"
-"PO-Revision-Date: 2021-04-07 18:42\n"
+"PO-Revision-Date: 2021-04-08 00:41\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -261,7 +261,7 @@ msgstr "Включить код приглашения для регистрац
 
 #: app/forms/admin.py:66
 msgid "Allow users to see who they invited and who invited them"
-msgstr ""
+msgstr "Разрешить пользователям видеть, кто они пригласили и кто пригласил их"
 
 #: app/forms/admin.py:68
 msgid "Minimum level to create invite codes"
@@ -786,7 +786,7 @@ msgstr "Войти"
 
 #: app/html/admin/totp_setup.html:11
 msgid "TOTP setup"
-msgstr ""
+msgstr "TOTP настройки"
 
 #: app/html/admin/wiki.html:15
 msgid "Site wiki"
@@ -2411,7 +2411,7 @@ msgstr "Нажмите на ссылку в e-mail письме, которое 
 
 #: app/html/user/check-your-email.html:14
 msgid "Check your email and click on the confirmation link. You may want to check your spam folder, just in case ;)"
-msgstr ""
+msgstr "Проверьте свою e-mail почту и нажмите ссылку для подтверждения. Вы можете на всякий случай проверить папку со спамом ;)"
 
 #: app/html/user/check-your-email.html:17
 #, python-format
@@ -2420,11 +2420,11 @@ msgstr "После того, как вы нажмете на ссылку, вы 
 
 #: app/html/user/check-your-email.html:20
 msgid "Resend"
-msgstr ""
+msgstr "Отправить"
 
 #: app/html/user/check-your-email.html:20
 msgid "Didn't get the email or made a mistake with your email address?"
-msgstr ""
+msgstr "Не получили письмо или ошиблись с адресом e-mail почты?"
 
 #: app/html/user/fix_registration_email.html:11
 #: app/html/user/resend_confirmation.html:11
