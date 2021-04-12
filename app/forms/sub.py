@@ -119,8 +119,10 @@ class EditSubForm(FlaskForm):
     nsfw = BooleanField(_l("Sub is NSFW"))
     restricted = BooleanField(_l("Only mods can post"))
     usercanflair = BooleanField(_l("Allow users to flair their own posts"))
-    user_can_flair_self = BooleanField(_l("Allow users to set their own user flairs"))
-    freeform_user_flairs = BooleanField(_l("Allow free-form user flairs"))
+    user_can_flair_self = BooleanField(
+        _l("Allow users to pick from moderator-created user flair options")
+    )
+    freeform_user_flairs = BooleanField(_l("Allow users to input their own user flair"))
     allow_text_posts = BooleanField(_l("Enable text posts"))
     allow_link_posts = BooleanField(_l("Enable link posts"))
     allow_upload_posts = BooleanField(_l("Enable upload posts"))
