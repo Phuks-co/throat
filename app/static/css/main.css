@@ -1794,16 +1794,6 @@ li.habitentry {
 
 /* MISC */
 
-body::-webkit-scrollbar {
-  width: 4px;
-  background: var(--primary-color);
-  z-index: -1;
-}
-
-body::-webkit-scrollbar-thumb {
-  background: rgb(16, 16, 16);
-}
-
 ul#th-menu ul.left li {
   display: inline-block;
   margin-left: 4px;
