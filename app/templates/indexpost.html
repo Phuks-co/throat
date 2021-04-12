@@ -44,7 +44,7 @@
           {{post.title}}
         </a>
         {% else %}
-          {% if post.link.startswith('http:') %}<span title="not https" class="p-icon" data-icon="exclaim"></span>{% endif %}
+        <!-- {% if post.link.startswith('http:') %}<span title="not https" class="p-icon" data-icon="exclaim"></span>{% endif %} -->
           <a rel="noopener nofollow ugc" href="{{post.link}}" class="title">
             {% if post.deleted == 1 %}
               {{_('[Deleted by User]')}}
