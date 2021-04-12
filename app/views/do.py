@@ -635,7 +635,7 @@ def set_user_flair_text(sub):
     flair = form.flair.data.strip()
     sub_info = misc.getSubData(sub.sid)
 
-    if not sub_info.get("freeform_user_flairs"):
+    if not sub_info.get("freeform_user_flairs", 0) == "1":
         return jsonify(
             status="error", error=[_("Free-form user flairs are disabled for this sub")]
         )
@@ -664,7 +664,9 @@ def set_user_flair_choice(sub, flair_id):
 
     sub_info = misc.getSubData(sub.sid)
 
-    if not sub_info.get("user_can_flair_self") and not current_user.is_mod(sub.sid):
+    if not sub_info.get("user_can_flair_self", 0) == "1" and not current_user.is_mod(
+        sub.sid
+    ):
         return jsonify(status="error", error=[_("Not authorized")])
 
     try:
@@ -698,8 +700,9 @@ def delete_user_own_flair(sub):
 
     sub_info = misc.getSubData(sub.sid)
 
-    if not sub_info.get("freeform_user_flairs") and not sub_info.get(
-        "user_can_flair_self"
+    if (
+        not sub_info.get("freeform_user_flairs", 0) == "1"
+        or not sub_info.get("user_can_flair_self", 0) == "1"
     ):
         return jsonify(status="error", error=[_("Not authorized")])
 

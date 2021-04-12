@@ -37,7 +37,8 @@
     @if func.get_user_flair(sub['sid'], current_user.uid):
       <span class="user_flair">@{func.get_user_flair(sub['sid'], current_user.uid)!!e}</span>
     @end
-    @if subInfo.get('user_can_flair_self'):
+    @{str(subInfo)}
+    @if subInfo.get('user_can_flair_self', 0) == '1':
       <a href="#" id="change_user_flair" class="small">@{_("(change)")}</a>
     @end
   </div>
@@ -55,11 +56,11 @@
     @end
   </div>
 
-  @if subInfo.get('user_can_flair_self'):
+  @if subInfo.get('user_can_flair_self', 0) == '1':
     <div style="display:none;" id="userflair" class="popup">
       <span class="closemsg">×</span>
       <h3>@{_("Set user flair")}</h3>
-      @if subInfo.get('freeform_user_flairs'):
+      @if subInfo.get('freeform_user_flairs', 0) == '1':
         <form method="POST" class="ajaxform pure-form" data-reload="true" action="@{url_for('do.set_user_flair_text', sub=sub['name'])}">
           <div class="alert div-error"></div>
           @{ form.SetOwnUserFlairForm().csrf_token() !!html}
@@ -69,7 +70,7 @@
       @end
       @if func.get_sub_flair_choices(sub['sid']):
         <hr/>
-        @if subInfo.get('freeform_user_flairs'):
+        @if subInfo.get('freeform_user_flairs', 0) == '1':
           <div>... or pick a pre-defined one</div>
         @end
         @for ll in func.get_sub_flair_choices(sub['sid']):
