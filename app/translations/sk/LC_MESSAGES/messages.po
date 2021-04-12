@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-04-07 15:40-0300\n"
-"PO-Revision-Date: 2021-04-07 18:42\n"
+"PO-Revision-Date: 2021-04-08 00:41\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -261,7 +261,7 @@ msgstr "Zapnúť registrácie cez pozvánky"
 
 #: app/forms/admin.py:66
 msgid "Allow users to see who they invited and who invited them"
-msgstr ""
+msgstr "Používatelia môžu vidieť koho pozvali, a kto pozval ich"
 
 #: app/forms/admin.py:68
 msgid "Minimum level to create invite codes"
@@ -786,7 +786,7 @@ msgstr "Prihlásiť"
 
 #: app/html/admin/totp_setup.html:11
 msgid "TOTP setup"
-msgstr ""
+msgstr "TOTP nastavenie"
 
 #: app/html/admin/wiki.html:15
 msgid "Site wiki"
@@ -2417,7 +2417,7 @@ msgstr "Použi link v maili, ktorý sme ti poslali. Pre istotu skontroluj aj mai
 
 #: app/html/user/check-your-email.html:14
 msgid "Check your email and click on the confirmation link. You may want to check your spam folder, just in case ;)"
-msgstr ""
+msgstr "Použi link v maili, ktorý sme ti poslali. Pre istotu skontroluj aj maily v Spame. ;)"
 
 #: app/html/user/check-your-email.html:17
 #, python-format
@@ -2426,11 +2426,11 @@ msgstr "Po kliknutí na link sa budeš môcť prihlásiť na %(site)s!"
 
 #: app/html/user/check-your-email.html:20
 msgid "Resend"
-msgstr ""
+msgstr "Poslať znovu"
 
 #: app/html/user/check-your-email.html:20
 msgid "Didn't get the email or made a mistake with your email address?"
-msgstr ""
+msgstr "Neobrdžal(a) si mail, alebo si nesprávne zadal(a) adresu?"
 
 #: app/html/user/fix_registration_email.html:11
 #: app/html/user/resend_confirmation.html:11
