@@ -209,12 +209,13 @@ class Sub(BaseModel):
         except SubMetadata.DoesNotExist:
             return None
 
-    def update_metadata(self, key, value):
+    def update_metadata(self, key, value, boolean=True):
         """ Updates `key` for submetadata. Only works for single keys. """
-        if value:
-            value = "1"
-        elif not value:
-            value = "0"
+        if boolean:
+            if value:
+                value = "1"
+            elif not value:
+                value = "0"
         restr = SubMetadata.get_or_create(sid=self.sid, key=key)[0]
         if restr.value != value:
             restr.value = value

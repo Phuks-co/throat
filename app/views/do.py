@@ -544,7 +544,7 @@ def edit_sub(sub):
             )
 
             if form.subsort.data != "None":
-                sub.update_metadata("sort", form.subsort.data)
+                sub.update_metadata("sort", form.subsort.data, boolean=False)
 
             misc.create_sublog(misc.LOG_TYPE_SUB_SETTINGS, current_user.uid, sub.sid)
 
