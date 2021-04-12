@@ -9,7 +9,7 @@ Resend confirmation instructions |\
   <div class="content">
     <form  method="POST" id="login-form" class="pure-form pure-form-aligned">
       <h1>@{_('Resend account confirmation instructions')}</h1> @{ form.csrf_token() !!html}
-      <p>Please verify that your email address is correct before resending.</p>
+      <p>@{_('Please verify that your email address is correct before resending.')}</p>
       @if error:
       <div class="error">@{ error }</div>
       @end
