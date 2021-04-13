@@ -27,18 +27,8 @@
 <div class="subs">@{_('%(subs)i subscribers', subs=sub['subscribers'])}</div>
 
 @if current_user.is_authenticated:
-  <div class="flairsettings">
-    @{_("Your flair:")}
-    <a class="user" href="/u/@{current_user.name}">@{current_user.name}</a>
-    @if func.get_user_flair(sub['sid'], current_user.uid):
-      <span class="user_flair">@{func.get_user_flair(sub['sid'], current_user.uid)!!e}</span>
-    @end
-    @if subInfo.get('user_can_flair_self', 0) == '1' or subInfo.get('freeform_user_flairs', 0) == '1':
-      <a href="#" id="change_user_flair" class="small">@{_("(change)")}</a>
-    @end
-  </div>
-
-  <div role="group" class="pure-button-group" data-sid="@{sub['sid']}">
+	<div class="subbuttonscentered">
+	  <div role="group" class="pure-button-group" data-sid="@{sub['sid']}">
     @if current_user.has_subscribed(sub['name']):
       <button data-ac="unsubscribe" class="sub button-secondary pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>@{_('Subscribed')}</button>
     @else:
@@ -48,6 +38,18 @@
       <button data-ac="unblock" class="blk button-warning pure-button button-xsmall pure-button-active"><span class="sbm-icon" data-icon="check"></span>@{_('Blocked')}</button>
     @else:
       <button data-ac="block" class="unblk button-warning pure-button button-xsmall"><span class="sbm-icon" data-icon="close"></span>@{_('Block')}</button>
+    @end
+	  </div>
+	</div>
+  
+  <div class="flairsettings">
+    @{_("Your flair:")}
+    <a class="user" href="/u/@{current_user.name}">@{current_user.name}</a>
+    @if func.get_user_flair(sub['sid'], current_user.uid):
+      <span class="user_flair">@{func.get_user_flair(sub['sid'], current_user.uid)!!e}</span>
+    @end
+    @if subInfo.get('user_can_flair_self', 0) == '1' or subInfo.get('freeform_user_flairs', 0) == '1':
+      <a href="#" id="change_user_flair" class="small">@{_("(change)")}</a>
     @end
   </div>
 

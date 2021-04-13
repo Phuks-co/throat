@@ -3,4 +3,12 @@
     font-size: 12px;
     color:#800000
   }
-  
+
+.flairsettings {
+    margin-top: 9px;
+    text-align: center;
+}
+
+.subbuttonscentered {
+  text-align: center;
+}
