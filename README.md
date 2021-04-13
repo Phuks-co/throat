@@ -103,6 +103,6 @@ local authentication), you may put configuration settings in
 
 ## Chat
 
-If you have any questions, you can reach us on [Discord](https://discord.gg/Z59XKVB)
+If you have any questions, you can reach us on [Discord](https://discord.gg/8HFrGrzEx2)
 
 ---
