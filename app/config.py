@@ -56,6 +56,7 @@ cfg_defaults = {  # key => default value
             "links": {
                 "Podmienky používania": "/wiki/tos",
                 "Ochrana osobných údajov": "/wiki/privacy",
+                "RSS": "/all/new.rss",
                 "Changelog": "/s/changelog",
                 "Podporte nás": "/wiki/donate",
             }
