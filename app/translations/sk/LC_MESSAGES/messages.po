@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-04-12 16:21-0300\n"
-"PO-Revision-Date: 2021-04-12 19:21\n"
+"PO-Revision-Date: 2021-04-13 01:21\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -58,7 +58,7 @@ msgstr "Neplatné CSS"
 
 #: app/misc.py:2408
 msgid "Already processing previous request."
-msgstr ""
+msgstr "Pracuje sa na predošlej požiadavke."
 
 #: app/misc.py:2415
 msgid "Unknown error. User disappeared"
@@ -382,11 +382,11 @@ msgstr "Členovia môžu tagovať vlastné príspevky"
 
 #: app/forms/sub.py:123
 msgid "Allow users to pick from moderator-created user flair options"
-msgstr ""
+msgstr "Používatelia si môžu zvoliť jeden z existujúcich tagov"
 
 #: app/forms/sub.py:125
 msgid "Allow users to input their own user flair"
-msgstr ""
+msgstr "Používatelia si môžu vytvoriť vlastný tag používateľa"
 
 #: app/forms/sub.py:126
 msgid "Enable text posts"
@@ -1473,7 +1473,7 @@ msgstr "Nastav si tag"
 
 #: app/html/shared/sidebar/sub.html:69
 msgid "... or pick a pre-defined one"
-msgstr ""
+msgstr "... alebo si vyber existujúci"
 
 #: app/html/shared/sidebar/sub.html:88 app/html/shared/sidebar/sub.html:114
 #: app/html/shared/sidebar/sub_mod.html:9
@@ -2407,7 +2407,7 @@ msgstr "Použi link v maili, ktorý sme ti poslali. Pre istotu skontroluj aj mai
 #: app/html/user/check-your-email.html:12
 #, python-format
 msgid "<p>We sent a confirmation email to:</p><p class=\"attention\">%(email)s</p>"
-msgstr ""
+msgstr "<p>Email s potvrdením sme poslali na: </p><p class=\"attention\">%(email)s</p>"
 
 #: app/html/user/check-your-email.html:13
 msgid "Check your email and click on the confirmation link. You may want to check your spam folder, just in case ;)"
@@ -2433,7 +2433,7 @@ msgstr "Znovu odoslať inštrukcie k registrácii konta"
 
 #: app/html/user/fix_registration_email.html:12
 msgid "Please verify that your email address is correct before resending."
-msgstr ""
+msgstr "Over si, či je tvoja emailová adresa zadaná správne."
 
 #: app/html/user/fix_registration_email.html:18
 #: app/html/user/password_recovery.html:17
