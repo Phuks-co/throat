@@ -231,7 +231,7 @@ def safe_request(
             stream=True,
             timeout=receive_timeout,
             headers={"User-Agent": "Yahoo! Slurp/Site Explorer"},
-            cookies={"CONSENT": "PENDING+999"}
+            cookies={"CONSENT": "PENDING+999"},
         )
     except:  # noqa
         raise ValueError("error fetching")
