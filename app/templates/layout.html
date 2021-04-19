@@ -120,7 +120,7 @@
         </div>
         <form method="POST" action="{{ url_for('do.logout') }}" id="logout">
           {{ logoutform.csrf_token }}
-          <button type="submit" class="pure-button button-secondary">Odhlásiť</button>
+          <button type="submit" class="pure-button button-secondary">Log out</button>
         </form>
         {%endif%}
         {{ logoutform.csrf_token }}
