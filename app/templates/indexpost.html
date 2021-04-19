@@ -68,19 +68,19 @@
           {% elif post.content != '' %}
           <div class="expando" data-pid="{{post.pid}}" data-t="txt" data-link="{{post.link}}"><div class="icon expando-btn" data-icon="text"></div></div>
           {% endif %}
-      posted <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> by
+      <time-ago datetime="{{post.posted.isoformat()}}Z"></time-ago> pridal(a)
       {% if post.userstatus != 10 %}
         <a class="authorlink" href="{{url_for('user.view', user=post.user)}}">{{post.user}}</a>
       {% endif %}
       {% if sub and post.pid in func.getStickyPid(sub.sid) %}
       - <span class="stick">sticky</span>
       {% endif %}
-      {% if not sub %} on
+      {% if not sub %} v skupine
       <a href="{{url_for('sub.view_sub', sub=post.sub)}}">{{post.sub}}</a>
       {%endif%}
     </div>
     <div class="links">
-      <a class="comments" href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}">comments {%if post.comments>0%}({{post.comments}}){%endif%}</a>
+      <a class="comments" href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}">komentáre {%if post.comments>0%}({{post.comments}}){%endif%}</a>
     </div>
   </div>
 </div>

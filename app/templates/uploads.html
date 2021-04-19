@@ -38,10 +38,10 @@
 </div>
 <div class="col-12">
   {% if page > 1 %}
-  <a href="{{url_for('user.view_user_uploads', page=(page-1))}}" class="pure-button">Staršie</a>
+  <a href="{{url_for('user.view_user_uploads', page=(page-1))}}" class="pure-button">Novšie</a>
   {% endif %}
   {% if subs|length == 30 %}
-  <a href="{{url_for('user.view_user_uploads', page=(page+1))}}" class="pure-button">Novšie</a>
+  <a href="{{url_for('user.view_user_uploads', page=(page+1))}}" class="pure-button">Staršie</a>
   {% endif %}
 </div>
 {% endblock %}

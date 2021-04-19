@@ -4,7 +4,7 @@
 {% block sidebar %}
 {{ super() }}
 <a href="{{url_for('user.view', user=user.name)}}" class="sbm-post pure-button">{{user.name}}</a>
-<a href="{{url_for('user.view_user_posts', user=user.name)}}" class="sbm-post pure-button">Moje príspevky/a>
+<a href="{{url_for('user.view_user_posts', user=user.name)}}" class="sbm-post pure-button">Moje príspevky</a>
 <a href="{{url_for('user.view_user_comments', user=user.name)}}" class="sbm-post pure-button">Moje komentáre</a>
 {% if user.uid == current_user.uid %}
   {% if current_user.canupload %}
