@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{func.get_locale()}}">
   <head>
     {% block head %}
     <meta charset="utf-8">
@@ -37,8 +37,8 @@
 
   <div class="th-subbar pure-u-1">
     <ul id="topbar">
-      <li><a href="/all">all</a></li>
-      <li><a href="/all/new">new</a></li>
+      <li><a href="/all">všetky</a></li>
+      <li><a href="/all/new">nové</a></li>
       {% if current_user.can_admin %}
         <li><a href="{{url_for('admin.index')}}">admin</a></li>
       {% endif %}
@@ -52,7 +52,7 @@
     </ul>
     <div id="subsdropdown">
       <div class="dropdown-toggle moremenu">
-        More
+        Ďalšie
       </div>
       <ul id="hiddensubs"></ul>
     </div>
@@ -87,8 +87,8 @@
         <div id="toggledark" class="glyphbutton">
           <span class="p-icon" data-icon="{%if request.cookies.get( "dayNight")=="dark" %}sun{%else%}moon{%endif%}"></span>
         </div>
-        <a href="{{url_for('auth.login', next=request.path)}}" class="pure-button pure-button-primary">Log in</a>
-        <a href="{{url_for('auth.register')}}" class="pure-button button-secondary">Register</a>
+        <a href="{{url_for('auth.login', next=request.path)}}" class="pure-button pure-button-primary">Prihlásiť</a>
+        <a href="{{url_for('auth.register')}}" class="pure-button button-secondary">Registrácia</a>
         {%else%}
         <a href="{{ url_for('user.view', user=current_user.name) }}" class="smallcaps">{{current_user.name}}</a>
         <span class="separator"></span>
@@ -120,7 +120,7 @@
         </div>
         <form method="POST" action="{{ url_for('do.logout') }}" id="logout">
           {{ logoutform.csrf_token }}
-          <button type="submit" class="pure-button button-secondary">Log out</button>
+          <button type="submit" class="pure-button button-secondary">Odhlásiť</button>
         </form>
         {%endif%}
         {{ logoutform.csrf_token }}
