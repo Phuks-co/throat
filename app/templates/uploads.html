@@ -4,10 +4,10 @@
 {% block sidebar %}
 {{ super() }}
 <a href="{{url_for('user.view', user=current_user.name)}}" class="sbm-post pure-button">{{current_user.name}}</a>
-<a href="{{url_for('user.view_user_posts', user=current_user.name)}}" class="sbm-post pure-button">Moje príspevky</a>
-<a href="{{url_for('user.view_user_comments', user=current_user.name)}}" class="sbm-post pure-button">Moje komentáre</a>
-<a href="{{url_for('user.view_user_uploads')}}" class="sbm-post pure-button">Moje uploady</a>
-<a href="{{url_for('user.view_user_savedposts', user=current_user.name)}}" class="sbm-post pure-button">Moje uložené príspevky</a>
+<a href="{{url_for('user.view_user_posts', user=current_user.name)}}" class="sbm-post pure-button">Príspevky používateľa</a>
+<a href="{{url_for('user.view_user_comments', user=current_user.name)}}" class="sbm-post pure-button">Komentáre používateľa</a>
+<a href="{{url_for('user.view_user_uploads')}}" class="sbm-post pure-button">Uploady používateľa</a>
+<a href="{{url_for('user.view_user_savedposts', user=current_user.name)}}" class="sbm-post pure-button">Uložené príspevky</a>
 {% endblock %}
 
 {% block content %}
