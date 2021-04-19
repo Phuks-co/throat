@@ -4,28 +4,28 @@
 {% block sidebar %}
 {{ super() }}
 <a href="{{url_for('user.view', user=user.name)}}" class="sbm-post pure-button">{{user.name}}</a>
-<a href="{{url_for('user.view_user_posts', user=user.name)}}" class="sbm-post pure-button">View posts</a>
-<a href="{{url_for('user.view_user_comments', user=user.name)}}" class="sbm-post pure-button">View comments</a>
+<a href="{{url_for('user.view_user_posts', user=user.name)}}" class="sbm-post pure-button">Moje príspevky/a>
+<a href="{{url_for('user.view_user_comments', user=user.name)}}" class="sbm-post pure-button">Moje komentáre</a>
 {% if user.uid == current_user.uid %}
   {% if current_user.canupload %}
-    <a href="{{url_for('user.view_user_uploads')}}" class="sbm-post pure-button">View uploads</a>
+    <a href="{{url_for('user.view_user_uploads')}}" class="sbm-post pure-button">Moje uploady</a>
   {% endif %}
-  <a href="{{url_for('user.view_user_savedposts', user=user.name)}}" class="sbm-post pure-button">View saved posts</a>
+  <a href="{{url_for('user.view_user_savedposts', user=user.name)}}" class="sbm-post pure-button">Moje uložené príspevky</a>
 {% endif %}
 {% endblock %}
 
 {% block content %}
 {{ super() }}
 {% if not current_user.is_authenticated and config.site.block_anon_stalking %}
-    <div>Please log in to see this user's posts.</div>
+    <div>Príspevky používateľa vidia iba prihlásení používatelia.</div>
 {% else %}
     {% if sort_type == 'user.view_user_posts' %}
-      <h3>Recent posts</h3>
+      <h3>Posledné príspevky</h3>
     {% else %}
-      <h3>Saved posts</h3>
+      <h3>Uložené príspevky</h3>
     {% endif %}
     {% if not posts %}
-      <h3>There are no posts here, yet.</h3>
+      <h3>Nenašli sa žiadne príspevky.</h3>
     {% endif %}
 
     <div class="alldaposts">
@@ -35,10 +35,10 @@
     </div>
 
     {% if page > 1 %}
-      <a href="{{url_for(sort_type, page=(page-1), user=user.name)}}" class="pure-button">prev</a>
+      <a href="{{url_for(sort_type, page=(page-1), user=user.name)}}" class="pure-button">Staršie</a>
     {% endif %}
     {% if posts|length == 25 %}
-      <a href="{{url_for(sort_type, page=(page+1), user=user.name)}}" class="pure-button">next</a>
+      <a href="{{url_for(sort_type, page=(page+1), user=user.name)}}" class="pure-button">Novšie</a>
     {% endif %}
 {% endif %}
 {% endblock %}

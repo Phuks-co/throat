@@ -5,28 +5,28 @@
 {% block sidebar %}
 {{ super() }}
 <a href="{{url_for('user.view', user=user.name)}}" class="sbm-post pure-button">{{user.name}}</a>
-<a href="{{url_for('user.view_user_posts', user=user.name)}}" class="sbm-post pure-button">View posts</a>
-<a href="{{url_for('user.view_user_comments', user=user.name)}}" class="sbm-post pure-button">View comments</a>
+<a href="{{url_for('user.view_user_posts', user=user.name)}}" class="sbm-post pure-button">Moje príspevky</a>
+<a href="{{url_for('user.view_user_comments', user=user.name)}}" class="sbm-post pure-button">Moje komentáre</a>
 {% if user.uid == current_user.uid %}
   {% if current_user.canupload %}
-    <a href="{{url_for('user.view_user_uploads')}}" class="sbm-post pure-button">View uploads</a>
+    <a href="{{url_for('user.view_user_uploads')}}" class="sbm-post pure-button">Moje uploady</a>
   {% endif %}
-  <a href="{{url_for('user.view_user_savedposts', user=user.name)}}" class="sbm-post pure-button">View saved posts</a>
+  <a href="{{url_for('user.view_user_savedposts', user=user.name)}}" class="sbm-post pure-button">Moje uložené príspevky</a>
 {% endif %}
 {% endblock %}
 
 {% block content %}
 {{ super() }}
 {% if not current_user.is_authenticated and config.site.block_anon_stalking %}
-    <div>Please log in to see this user's comments.</div>
+    <div>Komentáre používateľa vidia iba prihlásení používatelia.</div>
 {% else %}
     <div id="center-container">
       <div class="inbox content">
-        <h3>Recent comments</h3>
+        <h3>Posledné komentáre</h3>
         <div class="recent">
             {% if comments|length < 1 %}
             <p>
-              This user has not commented on anything, yet
+              Používateľ nemá žiadne komentáre
             </p>
             {% else %}
             {% for comment in comments %}
@@ -46,13 +46,13 @@
                 <div class="commblock">
                   <div class="commenthead">
                       <a href="{{ url_for('user.view', user=user.name) }}" class="poster">{{user.name}}</a> -
-                      <b><span class="cscore">{{comment.score}}</span> points</b>
+                      <b>skóre: <span class="cscore">{{comment.score}}</span></b>
                       <span class="time">
                          <time-ago datetime="{{comment.time.isoformat()}}Z"></time-ago>
                       </span>
                     {% if comment.lastedit %}
                       <span class="time edited">
-                        *(Edited <time-ago datetime="{{comment.lastedit.isoformat()}}Z"></time-ago>)
+                        *(upravené <time-ago datetime="{{comment.lastedit.isoformat()}}Z"></time-ago>)
                       </span>
                     {% endif %}
                   </div>
@@ -65,14 +65,14 @@
                     <li><a href="{{url_for('sub.view_perm', sub=comment.sub, pid=comment.pid, cid=comment.cid)}}">permalink</a></li>
                     {%if current_user.is_authenticated%}
                       {%if not postmeta[comment.pid].get('lock-comments') and not comment.archived %}
-                        <li><a class="reply-comment" data-pid="{{comment.pid}}" data-to="{{comment.cid}}">reply</a></li>
+                        <li><a class="reply-comment" data-pid="{{comment.pid}}" data-to="{{comment.cid}}">reagovať</a></li>
                       {%endif%}
                       {% if (comment.uid == session['user_id'] or current_user.is_admin()) %}
-                        <li><a class="edit-comment" data-cid="{{comment.cid}}">edit</a></li>
-                        <li><a class="delete-comment" data-cid="{{comment.cid}}">delete</a></li>
+                        <li><a class="edit-comment" data-cid="{{comment.cid}}">upraviť</a></li>
+                        <li><a class="delete-comment" data-cid="{{comment.cid}}">vymazať</a></li>
                       {% endif %}
                     {%endif%}
-                    <li><a class="comment-source" data-cid="{{comment.cid}}">source</a></li>
+                    <li><a class="comment-source" data-cid="{{comment.cid}}">formát</a></li>
                   </ul>
                 </div>
               </div>
@@ -82,10 +82,10 @@
         </div>
 
         {% if page > 1 %}
-        <a href="{{url_for('user.view_user_comments', user=user.name, page=(page-1))}}" class="pure-button">prev</a>
+        <a href="{{url_for('user.view_user_comments', user=user.name, page=(page-1))}}" class="pure-button">Staršie</a>
         {% endif %}
         {% if comments|length == 20 %}
-        <a href="{{url_for('user.view_user_comments', user=user.name, page=(page+1))}}" class="pure-button">next</a>
+        <a href="{{url_for('user.view_user_comments', user=user.name, page=(page+1))}}" class="pure-button">Novšie</a>
         {% endif %}
 
       </div>

@@ -4,15 +4,15 @@
 {% block sidebar %}
 {{ super() }}
 <a href="{{url_for('user.view', user=current_user.name)}}" class="sbm-post pure-button">{{current_user.name}}</a>
-<a href="{{url_for('user.view_user_posts', user=current_user.name)}}" class="sbm-post pure-button">View posts</a>
-<a href="{{url_for('user.view_user_comments', user=current_user.name)}}" class="sbm-post pure-button">View comments</a>
-<a href="{{url_for('user.view_user_uploads')}}" class="sbm-post pure-button">View uploads</a>
-<a href="{{url_for('user.view_user_savedposts', user=current_user.name)}}" class="sbm-post pure-button">View saved posts</a>
+<a href="{{url_for('user.view_user_posts', user=current_user.name)}}" class="sbm-post pure-button">Moje príspevky</a>
+<a href="{{url_for('user.view_user_comments', user=current_user.name)}}" class="sbm-post pure-button">Moje komentáre</a>
+<a href="{{url_for('user.view_user_uploads')}}" class="sbm-post pure-button">Moje uploady</a>
+<a href="{{url_for('user.view_user_savedposts', user=current_user.name)}}" class="sbm-post pure-button">Moje uložené príspevky</a>
 {% endblock %}
 
 {% block content %}
 {{ super() }}
-{% if not uploads %}<h3 class="noshit">There are no uploads, yet.</h3>{% endif %}
+{% if not uploads %}<h3 class="noshit">Nenašli sa žiadne uploady.</h3>{% endif %}
 <div id="center-container">
   <div class="uploads content">
       {% for item in uploads %}
@@ -29,8 +29,8 @@
             {% endif %}
           </div>
           <div class="uploadlinks">
-            <div class="uploadlink"><a href="{{url_for('site.view_post_inbox', pid=item.pid_id)}}">View Post</a></div>
-            <div class="uploadlink"><a href="{{file_url(item.fileid)}}">Direct Link</a></div>
+            <div class="uploadlink"><a href="{{url_for('site.view_post_inbox', pid=item.pid_id)}}">Príspevok</a></div>
+            <div class="uploadlink"><a href="{{file_url(item.fileid)}}">Link</a></div>
           </div>
         </div>
       {% endfor %}
@@ -38,10 +38,10 @@
 </div>
 <div class="col-12">
   {% if page > 1 %}
-  <a href="{{url_for('user.view_user_uploads', page=(page-1))}}" class="pure-button">prev</a>
+  <a href="{{url_for('user.view_user_uploads', page=(page-1))}}" class="pure-button">Staršie</a>
   {% endif %}
   {% if subs|length == 30 %}
-  <a href="{{url_for('user.view_user_uploads', page=(page+1))}}" class="pure-button">next</a>
+  <a href="{{url_for('user.view_user_uploads', page=(page+1))}}" class="pure-button">Novšie</a>
   {% endif %}
 </div>
 {% endblock %}
