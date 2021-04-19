@@ -35,10 +35,10 @@
     </div>
 
     {% if page > 1 %}
-      <a href="{{url_for(sort_type, page=(page-1), user=user.name)}}" class="pure-button">Staršie</a>
+      <a href="{{url_for(sort_type, page=(page-1), user=user.name)}}" class="pure-button">Novšie</a>
     {% endif %}
     {% if posts|length == 25 %}
-      <a href="{{url_for(sort_type, page=(page+1), user=user.name)}}" class="pure-button">Novšie</a>
+      <a href="{{url_for(sort_type, page=(page+1), user=user.name)}}" class="pure-button">Staršie</a>
     {% endif %}
 {% endif %}
 {% endblock %}

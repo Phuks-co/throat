@@ -82,10 +82,10 @@
         </div>
 
         {% if page > 1 %}
-        <a href="{{url_for('user.view_user_comments', user=user.name, page=(page-1))}}" class="pure-button">Staršie</a>
+        <a href="{{url_for('user.view_user_comments', user=user.name, page=(page-1))}}" class="pure-button">Novšie</a>
         {% endif %}
         {% if comments|length == 20 %}
-        <a href="{{url_for('user.view_user_comments', user=user.name, page=(page+1))}}" class="pure-button">Novšie</a>
+        <a href="{{url_for('user.view_user_comments', user=user.name, page=(page+1))}}" class="pure-button">Staršie</a>
         {% endif %}
 
       </div>
