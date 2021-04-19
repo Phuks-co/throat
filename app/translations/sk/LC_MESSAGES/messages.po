@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-04-12 16:21-0300\n"
-"PO-Revision-Date: 2021-04-13 01:21\n"
+"PO-Revision-Date: 2021-04-19 13:02\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -1577,7 +1577,7 @@ msgstr "Komentáre používateľa"
 
 #: app/html/shared/sidebar/user.html:38
 msgid "View uploads"
-msgstr "Nahraté súbory"
+msgstr "Uploady používateľa"
 
 #: app/html/shared/sidebar/user.html:40
 msgid "View saved posts"
