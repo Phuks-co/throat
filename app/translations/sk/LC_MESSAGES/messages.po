@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-04-12 16:21-0300\n"
-"PO-Revision-Date: 2021-04-19 13:02\n"
+"PO-Revision-Date: 2021-04-22 16:34\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -2450,7 +2450,7 @@ msgstr "Odoslať email"
 #: app/html/user/password_recovery.html:35
 #: app/html/user/resend_confirmation.html:25
 msgid "Sign up"
-msgstr "Registrovať"
+msgstr "Registrácia"
 
 #: app/html/user/fix_registration_email.html:27 app/html/user/login.html:31
 #: app/html/user/register.html:69 app/html/user/resend_confirmation.html:26
