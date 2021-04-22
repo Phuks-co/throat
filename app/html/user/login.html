@@ -20,9 +20,6 @@
             @{loginform.password(placeholder=loginform.password.label.text, required=True)!!html}
           </div>
           <div class="pure-controls">
-          <a href="/recover">@{_('Forgot your password?')}</a>
-          </div>
-          <div class="pure-controls">
             <label for="remember" class="pure-checkbox">
               @{loginform.remember()!!html} @{_('Remember me')}
             </label>
