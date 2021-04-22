@@ -61,8 +61,8 @@
         <form method="POST" class="ajaxform pure-form" data-reload="true" action="@{url_for('do.set_user_flair_text', sub=sub['name'])}">
           <div class="alert div-error"></div>
           @{ form.SetOwnUserFlairForm().csrf_token() !!html}
-          <input type="text" name="flair" placeholder="Write down your flair here" maxlength="16" required />
-          <button class="pure-button">Change flair</button>
+          <input type="text" name="flair" placeholder="Text tagu" maxlength="16" required />
+          <button class="pure-button">Nastaviť tag</button>
         </form>
       @end
       @if func.get_sub_flair_choices(sub['sid']) and subInfo.get('user_can_flair_self', 0) == '1':
@@ -75,7 +75,7 @@
         @end
       @end
       <form method="POST" class="ajaxform" data-reload="true" action="@{url_for('do.delete_user_own_flair', sub=sub['name'])}">
-        <button class="pure-button button-error body_admin">Delete my flair</button>
+        <button class="pure-button button-error body_admin">Zmazať môj tag</button>
       </form>
     </div>
   @end
