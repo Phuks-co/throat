@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-04-12 16:21-0300\n"
-"PO-Revision-Date: 2021-04-22 16:34\n"
+"PO-Revision-Date: 2021-04-22 22:31\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -2251,7 +2251,7 @@ msgstr "Zatiaľ bez komentára..."
 #: app/html/sub/post.html:346
 #, python-format
 msgid "%(comments)i comments"
-msgstr "komentáre (%(comments)i)"
+msgstr "všetky komentáre (%(comments)i)"
 
 #: app/html/sub/post.html:350
 #, python-format
