@@ -327,7 +327,7 @@ a:hover {
 .message {
   margin-top: 1em;
   padding: 5px;
-  background-color: #00d928;
+  background-color: #ff4040;
   color: white;
   margin-bottom: 15px;
   border-radius: 3px;
@@ -342,7 +342,7 @@ a:hover {
 }
 
 .alert.div-message {
-  background: #00d928;
+  background: #ff4040;
   color: #ffffff;
   margin: 6px;
   padding-top: .1em;
