@@ -289,7 +289,7 @@ def mtype_from_file(ufile, allow_video_formats=True):
     """
     ufile.seek(0)
     mtype = magic.from_buffer(ufile.read(1024), mime=True)
-    if mtype in EXTENSIONS and (allow_video_formats and mtype in VIDEO_EXTENSIONS):
+    if mtype in EXTENSIONS or (allow_video_formats and mtype in VIDEO_EXTENSIONS):
         return mtype
     return None
 
