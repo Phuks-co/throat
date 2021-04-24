@@ -196,10 +196,14 @@ EXTENSIONS = {
     "image/gif": ".gif",
     "image/svg+xml": ".svg",
     "image/svg": ".svg",
+}
+
+VIDEO_EXTENSIONS = {
     "video/mp4": ".mp4",
     "video/webm": ".webm",
 }
 allowed_extensions = [ext[1:] for ext in EXTENSIONS.values()]
+allowed_extensions += [ext[1:] for ext in VIDEO_EXTENSIONS.values()]
 
 
 def store_file(ufile, basename, mtype, remove_metadata=False):
@@ -285,7 +289,7 @@ def mtype_from_file(ufile, allow_video_formats=True):
     """
     ufile.seek(0)
     mtype = magic.from_buffer(ufile.read(1024), mime=True)
-    if mtype in EXTENSIONS:
+    if mtype in EXTENSIONS and (allow_video_formats and mtype in VIDEO_EXTENSIONS):
         return mtype
     return None
 

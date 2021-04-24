@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from flask import Flask, url_for, g, request, get_flashed_messages
 from flask_login import LoginManager, current_user
 from flask_webpack import Webpack
-from flask_babel import _
+from flask_babel import lazy_gettext as _l, _
 from wheezy.html.utils import escape_html
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.wrappers import BaseResponse
@@ -45,8 +45,8 @@ login_manager.anonymous_user = SiteAnon
 login_manager.login_view = "auth.login"
 
 # Allow translation of the messages shown by flask_login.
-login_manager.login_message = _("Please log in to access this page.")
-login_manager.needs_refresh_message = _("Please reauthenticate to access this page.")
+login_manager.login_message = _l("Please log in to access this page.")
+login_manager.needs_refresh_message = _l("Please reauthenticate to access this page.")
 
 
 def create_app(config=None):

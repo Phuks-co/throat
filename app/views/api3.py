@@ -1242,7 +1242,7 @@ def get_user(username, uid=False):
             "joindate": user.joindate,
             "level": level[0],
             "xp": level[1],
-            "badges": badges.badges_for_user(user.uid),
+            "badges": list(badges.badges_for_user(user.uid).dicts()),
             "posts": pcount,
             "comments": ccount,
             "subs": {"owns": owns, "mods": mods},
