@@ -202,9 +202,6 @@ app:
   # Fallback language when there is no accept-language header sent by the browser
   fallback_language: 'sk'
 
-  # Max video upload size 10MB
-  max_content_length: 10485760
-
 cache:
   # Caching strategy to use.
   # Recommended values:
