@@ -77,7 +77,7 @@
                 <div class="pure-control-group ulcont pure-u-sm-20-24" style="display:none">
                     @if current_user.canupload:
                     <label for="files">@{_('File')}</label><input type="file" name="files" class="requpload"
-                           data-max="@{ config.app.max_content_length }" placeholder="@{_('Upload a file!')}"/>
+                           data-max="@{ config.app.upload_max_size }" placeholder="@{_('Upload a file!')}"/>
                     @end
                 </div>
 
