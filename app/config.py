@@ -51,7 +51,7 @@ cfg_defaults = {  # key => default value
             "vimeo.com",
             "vine.co",
             "instaud.io",
-            "player.vimeo.com"
+            "player.vimeo.com",
         ],
         "footer": {
             "links": {
