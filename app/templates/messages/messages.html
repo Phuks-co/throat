@@ -29,7 +29,7 @@
               <a href="#" class="btn small">čekni.to</a>
               {%endif%}
               {% if message.read %}
-                <a class="read">read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
+                <a class="read">prečítané <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
               {% else %}
                 {% if message.mtype == 8 %}
                   <a class="" data-mid="{{message.mid}}">nové</a>

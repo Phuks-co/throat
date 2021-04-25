@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}My messages | {{config.site.lema}}{% endblock %}
+{% block title %}Moje správy | {{config.site.lema}}{% endblock %}
 
 {% block navbar %}
 {% endblock %}
@@ -14,7 +14,7 @@
 <div id="center-container">
   <div class="inbox content">
     <div class="user-activity col-12">
-      <h3><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> Saved Messages</h3>
+      <h3><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> Uložené správy</h3>
       {% for message in messages %}
         <article class="pmessage post{% if not message.read %} newmsg{% endif %}" data-replyto='{{message.sentby}}' data-replytitle='Re: {{message.subject}}'>
           <div class="main">
@@ -24,14 +24,14 @@
             <p class="container">
               <a href="{{url_for('user.view', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
               {% if message.read %}
-                <a class="read">read <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
+                <a class="read">prečítané <time-ago datetime="{{message.read.isoformat()}}Z"></time-ago></a>
               {% else %}
-                <a class="readmsg" data-mid="{{message.mid}}">mark as read</a>
+                <a class="readmsg" data-mid="{{message.mid}}">označiť ako prečítané</a>
               {% endif %}
-              <a href="#msg-form" data-mid="{{message.mid}}" data-replyto='{{message.username}}' data-replytitle='{{message.subject}}' class="replymsg">reply</a>
+              <a href="#msg-form" data-mid="{{message.mid}}" data-replyto='{{message.username}}' data-replytitle='{{message.subject}}' class="replymsg">reagovať</a>
               <!--<a class="btn small">forward</a>-->
               <!--<a class="unsave btn small btn-red" data-mid="{{message.mid}}">unsave</a>-->
-              <a class="deletemsg" data-mid="{{message.mid}}">delete</a>
+              <a class="deletemsg" data-mid="{{message.mid}}">vymazať</a>
             </p>
           </div>
           <div id="replyto{{message.mid}}"><div>
@@ -48,24 +48,24 @@
     <form data-reset="true" id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('messages.inbox_sort')}}" class="pure-form pure-form-aligned ajaxform">
       {% set msgform = form.CreateUserMessageForm()%}
       {{msgform.csrf_token}}
-      <h3>Send user message</h3>
+      <h3>Poslať správu</h3>
       <fieldset>
         <div class="pure-control-group">
-          <label for="to">User</label>
+          <label for="to">Používateľ</label>
           {{msgform.to(placeholder=msgform.to.label.text, required=True)}}
         </div>
         <div class="pure-control-group">
-          <label for="subject">Subject</label>
+          <label for="subject">Predmet</label>
           {{msgform.subject(placeholder=msgform.subject.label.text, required=True)}}
         </div>
         <div class="pure-control-group markdown-editor">
-          {{msgform.content(placeholder="Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}
+          {{msgform.content(placeholder="Formátovanie povolené.", rows="10", **{'data-provide' :"markdown"})}}
         </div>
         <div class="pure-controls">
           {% if error %}
             <div class="error">{{error}}</div>
           {%endif%}
-          <button type="submit" id="msg-btnsubmit" class="pure-button pure-button-primary" data-prog="Sending...">Send Message</button>
+          <button type="submit" id="msg-btnsubmit" class="pure-button pure-button-primary" data-prog="Sending...">Odoslať</button>
         </div>
       </fieldset>
     </form>

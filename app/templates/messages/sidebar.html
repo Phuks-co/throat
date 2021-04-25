@@ -10,7 +10,7 @@
   </div>
   <div>
     <a class="sbm-post pure-button" href="{{ url_for('messages.view_notifications') }}">
-      Notifications
+      Notifikácie
       {% if func.get_notif_count() > 0 %}
         <span class="newmsgcount"><span class="i-icon" data-icon="mail" style="display: inline-block;"></span> {{func.get_notif_count()}}</span>
       {% endif %}
@@ -18,12 +18,12 @@
   </div>
 <hr>
   <div>
-    <a class="sbm-post pure-button{% if box_route=='messages.view_messages_sent' %} button-secondary{% endif %}" href="{{ url_for('messages.view_messages_sent') }}">Sent Messages</a>
+    <a class="sbm-post pure-button{% if box_route=='messages.view_messages_sent' %} button-secondary{% endif %}" href="{{ url_for('messages.view_messages_sent') }}">Odoslané správy</a>
   </div>
   <div>
-    <a class="sbm-post pure-button{% if box_route=='messages.view_saved_messages' %} button-secondary{% endif %}"  href="{{ url_for('messages.view_saved_messages') }}">Saved Messages</a>
+    <a class="sbm-post pure-button{% if box_route=='messages.view_saved_messages' %} button-secondary{% endif %}"  href="{{ url_for('messages.view_saved_messages') }}">Uložené správy</a>
   </div>
   <div>
-    <a class="sbm-post pure-button"  href="{{ url_for('messages.view_ignores') }}">Blocked users</a>
+    <a class="sbm-post pure-button"  href="{{ url_for('messages.view_ignores') }}">Blokovaní používatelia</a>
   </div>
 </div>
