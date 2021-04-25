@@ -1250,6 +1250,63 @@ def get_user(username, uid=False):
     )
 
 
+@API.route("/user/<username>/overview", methods=["GET"])
+def user_overview(username):
+    """
+    Returns an overview of the user's activity (comments/posts)
+    """
+    try:
+        user = User.get(fn.Lower(User.name) == username.lower())
+    except User.DoesNotExist:
+        return jsonify(msg="User does not exist"), 404
+    page = request.args.get("page", default=1, type=int)
+    posts = (
+        SubPost.select(
+            SubPost.pid,
+            Sub.name.alias("sub"),
+            SubPost.title,
+            SubPost.posted,
+            SubPost.flair,
+            SubPost.nsfw,
+            SubPost.comments,
+            SubPost.ptype,
+            SubPost.link,
+            SubPost.content,
+            SubPost.thumbnail,
+            SubPost.upvotes,
+            SubPost.downvotes,
+        )
+        .join(Sub, on=Sub.sid == SubPost.sid)
+        .where(SubPost.uid == user.uid)
+        .where(SubPost.deleted == 0)
+        .paginate(page, 10)
+        .order_by(SubPost.pid.desc())
+        .dicts()
+    )
+
+    comments = (
+        SubPostComment.select(
+            SubPostComment.upvotes,
+            SubPostComment.downvotes,
+            SubPostComment.content,
+            SubPostComment.time,
+            SubPostComment.lastedit,
+            SubPost.pid,
+            SubPost.title.alias("post_title"),
+            Sub.name.alias("sub_name"),
+        )
+        .join(SubPost, on=SubPostComment.pid == SubPost.pid)
+        .join(Sub, on=Sub.sid == SubPost.sid)
+        .where(SubPostComment.uid == user.uid)
+        .where(SubPostComment.status.is_null())
+        .paginate(page, 10)
+        .order_by(SubPostComment.time.desc())
+        .dicts()
+    )
+
+    return jsonify(posts=list(posts), comments=list(comments))
+
+
 @API.route("/user", methods=["GET"])
 @jwt_required
 def get_own_user():
