@@ -441,7 +441,7 @@ def get_ticket():
     resp = requests.get(uri, allow_redirects=False)
 
     if resp.status_code == 200:
-        matches = re.search(r"href=\".+\?loginToken=(.+)\">", resp.text)
+        matches = re.search(r"href=\".+\?loginToken=(.+)\" class=.+?>", resp.text)
         return jsonify(token=matches.groups()[0])
 
     return jsonify(error="absolutely"), 400
