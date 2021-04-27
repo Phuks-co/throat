@@ -151,23 +151,18 @@ def create_post(ptype, sub):
             )
 
     # Put pre-posting checks here
-    if not current_user.is_admin():
-        try:
-            enable_posting = SiteMetadata.get(SiteMetadata.key == "enable_posting")
-            if enable_posting.value in ("False", "0"):
-                return (
-                    engine.get_template("sub/createpost.html").render(
-                        {
-                            "error": _("Posting has been temporarily disabled."),
-                            "form": form,
-                            "sub": sub,
-                            "captcha": captcha,
-                        }
-                    ),
-                    400,
-                )
-        except SiteMetadata.DoesNotExist:
-            pass
+    if not current_user.is_admin() and not config.site.enable_posting:
+        return (
+            engine.get_template("sub/createpost.html").render(
+                {
+                    "error": _("Posting has been temporarily disabled."),
+                    "form": form,
+                    "sub": sub,
+                    "captcha": captcha,
+                }
+            ),
+            400,
+        )
 
     if sub.name.lower() in ("all", "new", "hot", "top", "admin", "home"):
         return (

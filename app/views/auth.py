@@ -22,7 +22,7 @@ from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired, BadSignature
 from .. import misc
 from ..config import config
-from ..auth import auth_provider, registration_is_enabled, email_validation_is_required
+from ..auth import auth_provider, email_validation_is_required
 from ..auth import normalize_email, create_user
 from ..forms import LoginForm, RegistrationForm, ResendConfirmationForm
 from ..misc import engine, send_email, is_domain_banned
@@ -105,10 +105,8 @@ def register():
         del form.email_required
     captcha = misc.create_captcha()
 
-    if not registration_is_enabled():
-        return engine.get_template("user/registration_disabled.html").render(
-            {"test": "test"}
-        )
+    if not config.site.enable_registration:
+        return engine.get_template("user/registration_disabled.html").render({})
 
     if not form.validate():
         return engine.get_template("user/register.html").render(
@@ -184,7 +182,7 @@ def register():
                 }
             )
 
-    if misc.enableInviteCode():
+    if config.site.require_invite_code:
         if not form.invitecode.data:
             return engine.get_template("user/register.html").render(
                 {

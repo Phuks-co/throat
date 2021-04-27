@@ -1,97 +1,17 @@
 # Any value in this file can be overridden by an environment variable
 # named using the keys, in upper case, joined by underscores.  So for
-# example, if the environment variable $SITE_NAME is set, its value
-# will be used instead of the site name declared below.
+# example, if the environment variable $SITE_SERVER_NAME is set, its
+# value will be used instead of the server name declared below.
 
 site:
-  name: 'Throat'
-  # Lema shown in the page's title
-  lema: 'Throat: Open discussion ;D'
-  # Copyright line shown in the footer
-  copyright: 'Umbrella Corp'
-
-  # If False we won't show the "Submit a post" button in the frontpage
-  front_page_submit: True
-
   # Domain name at which the app is being served.  This must be
   # configured for websocket support (chat and push new posts) on
   # Safari and Apple WebKit.  For development, you can omit this.
   #server_name: "throat.example.com"
 
-  # Name shown when a sub is owned by a deleted account or abandoned
-  placeholder_account: 'Site'
-
-  # Blocks anonymous users from being able to look at a particular user's
-  # posts or comments (IE blocks /u/<user>/posts and /u/<user>/comments
-  block_anon_stalking: False
-
   # Prefix for subs (by default it's 's').
   # It can be anything EXCEPT 'u', 'c' or 'p'
   sub_prefix: 's'
-
-  # Allow everybody to upload files
-  # (by default it's only admins and users authorized through a metadata key)
-  allow_uploads: False
-
-  # Minimum level a user must have before being able to upload files.
-  # Set to zero to disable file upload level limits
-  upload_min_level: 0
-
-  # For those who are allowed to upload files, allow video uploads
-  # (.mp4 and .webm) as well.
-  allow_video_uploads: True
-
-  # Maximum size of an uploaded file, in bytes.
-  upload_max_size: 16777216
-
-  # Allow chat access for all users
-  # If True, each user will have the option of disabling chat for themselves
-  enable_chat: True
-
-  # Allow all users to view the site log
-  # If False, only Admin can view the sitelog
-  sitelog_public: True
-
-  # Forces all the sub logs and banned user lists to be public and removes the option to make them private.
-  force_sublog_public: True
-
-  # Amount of time in seconds the post author can edit a post's title after the post
-  # was created. Set to zero to disable title editing (default is 5 minutes)
-  title_edit_timeout: 300
-
-  # If True, enables setting security questions on the admin page.
-  # Users will be asked to answer one of these security questions before registering
-  enable_security_question: False
-
-  # Only allow Admins to create new subs
-  # If True, only admins can create new subs
-  sub_creation_admin_only: False
-
-  # Minimum level required for a user to be permitted to private message nonprivileged users.
-  # Set to zero to allow users of all levels to PM other users.
-  # Users of any level may PM site admins.
-  send_pm_to_user_min_level: 3
-
-  # Minimum level a user must have before being able to create a sub.
-  # Set to zero to disable sub creation level limits
-  sub_creation_min_level: 2
-
-  # Allows Sub Mods and Admins to view the edit history of posts
-  edit_history: False
-
-  # Removes the name of the Mod or Admin who took action on a post or user in notifications sent to user
-  anonymous_modding: False
-
-  # Maximum amount of subs a single user can own.
-  # The actual amount of subs a user may register scales with user level (user level minus one)
-  # so a level 0 or level 1 user cannot register any subs. This scaling is disabled if `sub_creation_min_level` is zero
-  sub_ownership_limit: 20
-
-  # Maximum amount of posts a user can create in a single sub in a day
-  daily_sub_posting_limit: 10
-
-  # Maximum amount of posts a user can create in a single day
-  daily_site_posting_limit: 25
 
   # List of links that will be shown in the footer.
   # Privacy and ToS links cannot be removed, and the license link can't be modified
@@ -103,9 +23,6 @@ site:
       Donate: '/wiki/donate'
       Bugs: 'https://github.com/Phuks-co/throat/issues'
 
-  # Time after which post will be archived
-  archive_post_after: 60
-
   # Number of trusted proxies which set the X-Forwarded-For header
   # ahead of the application.  If you run the application behind
   # a load balancer, this should be set to 1 or more.
@@ -116,17 +33,6 @@ site:
   # This requires additional database configuration; see README.md for
   # more information.
   custom_hot_sort: False
-
-  recent_activity:
-    # Enables or disables the recent activity sidebar and the page in /activity
-    enabled: True
-    # If true, only show recent activity from default subs in the sidebar (recent activity for all subs will be shown in
-    # /activity)
-    defaults_only: False
-    # If true, only show recent comments (and not posts) in the sidebar
-    comments_only: False
-    # Number of entries to display in the recenta activity sidebar
-    max_entries: 10
 
   # URL of the icon to be used for push notifications
   icon_url: 'https://phuks.co/static/img/icon.png'
@@ -264,9 +170,6 @@ storage:
     # Same rules as thumbnails
     path: './stor'
     url: 'https://usercontent.example.com/'
-
-  # Max storage for image uploads for subs' stylesheets (in MiB)
-  sub_css_max_file_size: 2
 
 database:
   # Database engine. Possible values:

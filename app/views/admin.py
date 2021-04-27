@@ -169,41 +169,8 @@ def index():
     downs += SubPostCommentVote.select().where(SubPostCommentVote.positive == 0).count()
 
     invite = UseInviteCodeForm()
-
-    try:
-        level = SiteMetadata.get(SiteMetadata.key == "invite_level")
-        maxcodes = SiteMetadata.get(SiteMetadata.key == "invite_max")
-        invite.minlevel.data = level.value
-        invite.maxcodes.data = maxcodes.value
-    except SiteMetadata.DoesNotExist:
-        pass
-
-    try:
-        ep = (
-            "True"
-            if SiteMetadata.get(SiteMetadata.key == "enable_posting").value == "1"
-            else "False"
-        )
-    except SiteMetadata.DoesNotExist:
-        ep = "True"
-
-    try:
-        er = (
-            "True"
-            if SiteMetadata.get(SiteMetadata.key == "enable_registration").value == "1"
-            else "False"
-        )
-    except SiteMetadata.DoesNotExist:
-        er = "True"
-
-    try:
-        ec = (
-            "True"
-            if SiteMetadata.get(SiteMetadata.key == "require_captchas").value == "1"
-            else "False"
-        )
-    except SiteMetadata.DoesNotExist:
-        ec = "True"
+    invite.minlevel.data = config.site.invite_level
+    invite.maxcodes.data = config.site.invite_max
 
     subOfTheDay = SetSubOfTheDayForm()
 
@@ -217,9 +184,6 @@ def index():
         comms=comms,
         subOfTheDay=subOfTheDay,
         useinvitecodeform=invite,
-        enable_posting=(ep == "True"),
-        enable_registration=(er == "True"),
-        enable_captchas=(ec == "True"),
     )
 
 
@@ -369,19 +333,6 @@ def invitecodes(page):
     if not current_user.is_admin():
         abort(404)
 
-    invite_settings = {
-        meta.key: meta.value
-        for meta in SiteMetadata.select().where(
-            SiteMetadata.key
-            << [
-                "useinvitecode",
-                "invitations_visible_to_users",
-                "invite_level",
-                "invite_max",
-            ]
-        )
-    }
-
     invite_codes = (
         InviteCode.select(
             InviteCode.id,
@@ -426,8 +377,8 @@ def invitecodes(page):
             code["expires"] = code["expires"].strftime("%Y-%m-%dT%H:%M:%SZ")
 
     invite_form = UseInviteCodeForm()
-    invite_form.maxcodes.data = invite_settings.get("invite_max", 10)
-    invite_form.minlevel.data = invite_settings.get("invite_level", 3)
+    invite_form.maxcodes.data = config.site.invite_max
+    invite_form.minlevel.data = config.site.invite_level
 
     form = CreateInviteCodeForm()
 
@@ -467,7 +418,6 @@ def invitecodes(page):
     return render_template(
         "admin/invitecodes.html",
         useinvitecodeform=invite_form,
-        invite_settings=invite_settings,
         invite_codes=invite_codes,
         page=page,
         error=misc.get_errors(form, True),
