@@ -210,7 +210,9 @@ def store_file(ufile, basename, mtype, remove_metadata=False):
     """Store a file. Setting remove_metadata will remove image format
     metadata before storing.
     """
-    filename = basename + EXTENSIONS[mtype]
+    _extensions = EXTENSIONS
+    _extensions.update(VIDEO_EXTENSIONS)
+    filename = basename + _extensions[mtype]
     try:
         if storage.get(filename) is not None:
             return filename
