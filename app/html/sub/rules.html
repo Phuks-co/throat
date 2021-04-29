@@ -13,7 +13,7 @@
   @end
   <div id="center-container">
     <div class="content mw-75">
-      <h1>@{_('Editing rules of <a href="%(url)s">%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), sub=config.site.sub_prefix + "/" + sub.name)!!html}</h1>
+      <h1>@{_('Editing rules of <a href="%(url)s">%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), sub="/" + config.site.sub_prefix + "/" + sub.name)!!html}</h1>
       <div class="col-12 admin-page-form">
       <form  method="POST" class="ajaxform pure-form" action="@{url_for('do.create_rule', sub=sub.name)}" data-reload="true">
         <h4>@{_('Create new rule')}</h4>

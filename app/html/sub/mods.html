@@ -14,7 +14,7 @@
   @end
   <div id="center-container">
     <div class="content mw-75">
-      <h1>@{_('Moderators for <a href="%(url)s">%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), sub=config.site.sub_prefix + "/" + sub.name)!!html}</h1>
+      <h1>@{_('Moderators for <a href="%(url)s">%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), sub="/" + config.site.sub_prefix + "/" + sub.name)!!html}</h1>
       @if current_user.is_modinv(sub.sid):
         <div class="mod2-inv">
           @{_('You currently have an invite for this sub pending.')}
