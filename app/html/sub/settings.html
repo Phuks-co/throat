@@ -13,7 +13,7 @@
   @end
 <div id="center-container">
   <div class="content mw-75">
-    <h1>@{_('Editing settings of <a href="%(url)s">%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), sub=config.site.sub_prefix + "/" + sub.name)!!html} </h1>
+    <h1>@{_('Editing settings of <a href="%(url)s">%(sub)s</a>', url=url_for('sub.view_sub', sub=sub.name), sub="/" + config.site.sub_prefix + "/" + sub.name)!!html} </h1>
     <form data-redir="true"  method="POST" id="edit-sub-form" action="@{url_for('do.edit_sub', sub=sub.name)}" class="pure-form ajaxform">
       @{editsubform.csrf_token()!!html}
       <fieldset>
