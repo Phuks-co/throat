@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-04-12 16:21-0300\n"
-"PO-Revision-Date: 2021-04-22 22:31\n"
+"PO-Revision-Date: 2021-04-30 04:08\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -1860,7 +1860,7 @@ msgstr "Náhľad príspevku"
 #: app/html/sub/css.html:17
 #, python-format
 msgid "Editing stylesheet for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
-msgstr "Editing stylesheet for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgstr "Úprava CSS pre skupinu <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
 
 #: app/html/sub/css.html:29 app/html/sub/flairs.html:22
 #: app/html/sub/rules.html:28 app/html/sub/settings.html:126
