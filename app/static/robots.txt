@@ -6,12 +6,3 @@ Disallow: /s/*/sublog
 Disallow: /submit/*
 Disallow: /oauth/*
 Allow: /
-
-User-agent: PetalBot*
-Disallow: /
-
-User-agent: SemrushBot*
-Disallow: /
-
-User-agent: MJ12bot*
-Disallow: /
