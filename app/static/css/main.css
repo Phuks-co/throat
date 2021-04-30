@@ -1256,6 +1256,7 @@ span.hasmail {
     overflow-wrap: break-word;
     border-left: solid 1px #e2e2e2;
     border-right: dotted 1px #ccc;
+    position: relative!important;
 }
 
 .sidebar h4 {
