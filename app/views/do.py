@@ -702,7 +702,7 @@ def delete_user_own_flair(sub):
 
     if (
         not sub_info.get("freeform_user_flairs", 0) == "1"
-        or not sub_info.get("user_can_flair_self", 0) == "1"
+        and not sub_info.get("user_can_flair_self", 0) == "1"
     ):
         return jsonify(status="error", error=[_("Not authorized")])
 
