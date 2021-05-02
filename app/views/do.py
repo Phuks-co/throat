@@ -29,14 +29,9 @@ from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountF
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost
 from ..forms import SearchForm, EditMod2Form, SetSubOfTheDayForm, AssignSubUserFlair
-from ..forms import (
-    DeleteSubFlair,
-    BanDomainForm,
-    DeleteSubRule,
-    CreateReportNote,
-    SetOwnUserFlairForm,
-)
+from ..forms import DeleteSubFlair, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm, DistinguishForm
+from ..forms import BanDomainForm, SetOwnUserFlairForm, ChangeConfigSettingForm
 from ..badges import badges
 from ..misc import (
     cache,
@@ -3921,4 +3916,49 @@ def set_suboftheday():
     rconn.delete("daysub")
     misc.set_sub_of_the_day(sub.sid)
     misc.cache.delete_memoized(misc.getSubOfTheDay)
+    return jsonify(status="ok")
+
+
+@do.route("/do/admin/config/toggle", methods=["POST"])
+@login_required
+def admin_toggle_config_setting():
+    if not current_user.is_admin():
+        return abort(403)
+
+    form = ChangeConfigSettingForm()
+    del form.value
+
+    if not form.validate():
+        return json.dumps({"status": "error", "error": get_errors(form)})
+
+    config.update_value(form.setting.data, not config.get_value(form.setting.data))
+    misc.create_sitelog(
+        misc.LOG_TYPE_ADMIN_CONFIG_CHANGE,
+        current_user.uid,
+        comment=f"{form.setting.data}/{config.get_value(form.setting.data)}",
+    )
+    return jsonify(status="ok")
+
+
+@do.route("/do/admin/config/set", methods=["POST"])
+@login_required
+def admin_modify_config_setting():
+    if not current_user.is_admin():
+        return abort(403)
+
+    form = ChangeConfigSettingForm()
+    if not form.validate():
+        return json.dumps({"status": "error", "error": get_errors(form)})
+
+    try:
+        config.update_value(form.setting.data, form.value.data)
+    except ValueError:
+        return json.dumps({"status": "error", "error": [_("Error: not a number")]})
+
+    misc.create_sitelog(
+        misc.LOG_TYPE_ADMIN_CONFIG_CHANGE,
+        current_user.uid,
+        comment=f"{form.setting.data}/{config.get_value(form.setting.data)}",
+    )
+
     return jsonify(status="ok")

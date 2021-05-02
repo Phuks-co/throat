@@ -30,13 +30,12 @@ from ..forms import (
     EditModForm,
     BanDomainForm,
     WikiForm,
-)
-from ..forms import (
     CreateInviteCodeForm,
     UpdateInviteCodeForm,
     EditBadgeForm,
     NewBadgeForm,
     SetSubOfTheDayForm,
+    ChangeConfigSettingForm,
 )
 from ..models import (
     UserMetadata,
@@ -748,6 +747,20 @@ def reports(page):
             "subInfo": False,
             "subMods": False,
         }
+    )
+
+
+@bp.route("/configuration")
+@login_required
+def configure():
+    if not current_user.is_admin():
+        abort(404)
+
+    form = ChangeConfigSettingForm()
+
+    config_data = sorted(config.get_mutable_items(), key=(lambda x: x["name"]))
+    return engine.get_template("admin/configuration.html").render(
+        {"form": form, "config_data": config_data}
     )
 
 
