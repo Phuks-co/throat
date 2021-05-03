@@ -1453,7 +1453,7 @@ input[type=search] {
   padding: .4em 1em;
   /* 1px margin on botton and top so it respects <p>'s margin */
   font-family: verdana,arial,sans-serif;
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1.3em;
 }
 
