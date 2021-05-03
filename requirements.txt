@@ -70,7 +70,7 @@ pytz==2020.5
 PyYAML==5.4
 redis==3.5.3
 requests==2.25.1
-rsa==4.6
+rsa==4.7
 s3transfer==0.3.3
 sendgrid==6.4.8
 six==1.15.0
