@@ -2632,6 +2632,7 @@ article.text-post.comment.deleted {
 .admin-config-doc-toggle {
   font-size: smallest;
   padding-right: 5px;
+  cursor: pointer;
 }
 
 .admin-config-edit-form input {
@@ -2642,6 +2643,7 @@ article.text-post.comment.deleted {
   fill:  #00419d;
   width: 16px;
   height: 16px;
+  cursor: pointer;
 }
 
 .admin-config-edit:hover {
