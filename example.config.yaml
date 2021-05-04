@@ -13,6 +13,9 @@ site:
   # It can be anything EXCEPT 'u', 'c' or 'p'
   sub_prefix: 's'
 
+  # Maximum size of an uploaded file, in bytes.
+  upload_max_size: 16777216
+
   # List of links that will be shown in the footer.
   # Privacy and ToS links cannot be removed, and the license link can't be modified
   footer:

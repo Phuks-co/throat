@@ -13,6 +13,7 @@ defaults = {  # key => default value
         "enable_totp": False,
         "sub_prefix": "s",
         "cas_authorized_hosts": [],
+        "upload_max_size": 16777216,
         "btc_address": None,
         "xmr_address": None,
         # Removing things from this list will work but adding will not.
@@ -124,11 +125,6 @@ configurable_defaults = {
                     "For those who are allowed to upload files, allow video uploads (.mp4 and .webm) as well."
                 ),
                 "value": True,
-            },
-            "upload_max_size": {
-                "type": "int",
-                "doc": _l("Maximum size of an uploaded file, in bytes."),
-                "value": 16777216,
             },
             "upload_min_level": {
                 "type": "int",

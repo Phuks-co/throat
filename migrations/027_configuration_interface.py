@@ -63,7 +63,6 @@ mutable_config_keys = [
     "site.sub_creation_min_level",
     "site.sub_ownership_limit",
     "site.title_edit_timeout",
-    "site.upload_max_size",
     "site.upload_min_level",
     "storage.sub_css_max_file_size",
 ]
