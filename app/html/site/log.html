@@ -80,6 +80,8 @@
                       @{_('Disabled captchas')}
                     @elif log.action == 72:
                       @{_('Enabled captchas')}
+                    @elif log.action == 75:
+		      @{_('Changed <code>%(setting)s</code> to <code>%(value)s<code>', setting=e(log.desc[:log.desc.find("/")]), value=e(log.desc[log.desc.find("/")+1:]))!!html}
                     @else:
                         <i>[Type @{log.action}]</i> @{log.desc}
                     @end

@@ -93,3 +93,74 @@ u.addEventForChild(document, 'change', '#flair_id', function (e, qelem) {
     document.querySelector('#assign_flair_form #text').classList.add('hide')
   }
 });
+
+
+// Admin site configuration page
+
+u.addEventForChild(document, 'click', '.admin-config-doc-toggle', function (e, qelem) {
+    let docElem = document.getElementById(qelem.id + "-doc");
+    if (docElem.classList.contains('hide')) {
+        docElem.classList.remove('hide');
+        qelem.innerHTML = "▿";
+    } else {
+        docElem.classList.add('hide')
+        qelem.innerHTML = "▹";
+    }
+});
+
+u.addEventForChild(document, 'click', '.admin-config-edit', function (e, qelem) {
+  let name = qelem.getAttribute('data-setting');
+  let valueElem = document.getElementById(name + '-value');
+  let value = valueElem.innerText;
+
+  const changeForm = document.querySelector('.admin-config-edit-form');
+  let parent = changeForm.parentElement;
+  let valueField = document.getElementById('value');
+  let changeButton = document.getElementById('admin-config-edit-submit');
+  const label = document.getElementById('bool-label');
+
+  document.querySelector('.error').classList.add('hide');
+  changeForm.querySelector('.div-error').style.display = 'none';
+
+  if (valueElem != parent) {
+    let oldValue = parent.getAttribute('data-old-value');
+    let type = qelem.getAttribute('data-type');
+    document.getElementById('setting').value = name;
+
+    if (type == 'bool') {
+      let isSet = value == _('Enabled');
+      changeButton.innerHTML = isSet ? _('Disable') : _('Enable');
+      valueField.value = isSet ? 'False' : 'True';
+      valueField.classList.add('hide');
+      label.classList.remove('hide');
+      label.innerHTML = value;
+    } else {
+      changeButton.innerHTML = _('Change');
+      valueField.value = value;
+      valueField.classList.remove('hide');
+      label.classList.add('hide');
+    }
+    valueElem.setAttribute('data-old-value', value);
+    changeForm.classList.remove('hide');
+    valueElem.innerHTML = "";
+    valueElem.appendChild(changeForm);
+    if (oldValue) {
+      parent.innerHTML = oldValue;
+    }
+  }
+});
+
+u.addEventForChild(document, 'click', '#admin-config-edit-cancel', function (e, qelem) {
+  const changeForm = document.querySelector('.admin-config-edit-form');
+  let parent = changeForm.parentElement;
+  let formContainer = document.getElementById('form-container');
+
+  if (formContainer != parent) {
+    let oldValue = parent.getAttribute('data-old-value');
+    formContainer.appendChild(changeForm);
+    changeForm.classList.add('hide')
+    if (oldValue) {
+      parent.innerHTML = oldValue;
+    }
+  }
+});

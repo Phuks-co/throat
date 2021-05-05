@@ -576,3 +576,11 @@ body.dark .selflair {
     color: #777;
     border-color: #222;
 }
+
+body.dark .admin-config-edit {
+    fill: #526a7d;
+}
+
+body.dark .admin-config-edit:hover {
+    fill: #d17262;
+}

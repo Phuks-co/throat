@@ -3,7 +3,7 @@ from flask import url_for
 from peewee import fn
 from app import mail
 from app.auth import email_validation_is_required
-from app.models import User, UserMetadata
+from app.models import User, UserMetadata, SiteMetadata
 
 
 def csrf_token(data):
@@ -33,6 +33,22 @@ def recursively_update(dictionary, new_values):
             recursively_update(dictionary[elem], new_values[elem])
         else:
             dictionary[elem] = new_values[elem]
+
+
+def add_config_to_site_metadata(config):
+    """Add config values to the database."""
+
+    def get_value(value, typ):
+        if typ == "bool":
+            return "1" if value else "0"
+        else:
+            return str(value)
+
+    new_records = [
+        {"key": key, "value": get_value(val, typ)}
+        for key, val, typ in config.mutable_item_configuration()
+    ]
+    SiteMetadata.insert_many(new_records).execute()
 
 
 def log_in_user(client, user_info, expect_success=True):

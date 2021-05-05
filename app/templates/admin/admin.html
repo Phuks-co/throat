@@ -10,10 +10,10 @@
 {{ super() }}
 <div id="center-container">
   <div class="content">
-    {% if not enable_posting %}
+    {% if not config.site.enable_posting %}
       <div class="error" style="margin-top: 2em;">Posting has been temporarily disabled</div>
     {% endif %}
-    {% if not enable_registration %}
+    {% if not config.site.enable_registration %}
       <div class="error" style="margin-top: 2em;">Registration has been temporarily disabled</div>
     {% endif %}
     <h1>Admin</h1>
@@ -60,7 +60,7 @@
       </div>
       <div class="col-12 admin-page-form">
         <div>
-          {% if enable_posting %}
+          {% if config.site.enable_posting %}
           <div>Disable posting for non-admin users</div>
           <a class="pure-button button-warning" href="{{url_for('do.enable_posting', value='False')}}">Disable Posting</a>
           {% else %}
@@ -74,7 +74,7 @@
       </div>
       <div class="col-12 admin-page-form">
         <div>
-          {% if enable_registration %}
+          {% if config.site.enable_registration %}
           <div>Disable registration for new users</div>
           <a class="pure-button button-warning" href="{{url_for('do.enable_registration', value='False')}}">Disable Registration</a>
           {% else %}
@@ -88,7 +88,7 @@
       </div>
       <div class="col-12 admin-page-form">
         <div>
-          {% if enable_captchas %}
+          {% if config.site.require_captchas %}
           <div>Disable captchas for registration, password recovery and post creation</div>
           <a class="pure-button button-error" href="{{url_for('do.enable_captchas', value='False')}}">Disable Captchas</a>
           {% else %}

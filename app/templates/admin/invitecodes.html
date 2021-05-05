@@ -20,13 +20,13 @@
         <div>
           <form id="useinvitecode" class="ajaxform nice-form pure-form pure-form-aligned" method="POST" action="{{url_for('do.use_invite_code')}}" data-reload="true">
             {{useinvitecodeform.csrf_token}}
-            <h2>Invite Code to register: {% if func.enableInviteCode() %}Enabled{% else %}Disabled{% endif %}</h2>
+            <h2>Invite Code to register: {% if config.site.require_invite_code %}Enabled{% else %}Disabled{% endif %}</h2>
             <fieldset>
                 <label for="enableinvitecode" class="pure-checkbox">
-                  {{useinvitecodeform.enableinvitecode(checked=func.enableInviteCode())}} {{useinvitecodeform.enableinvitecode.label.text}}
+                  {{useinvitecodeform.enableinvitecode(checked=config.site.require_invite_code)}} {{useinvitecodeform.enableinvitecode.label.text}}
                 </label>
                 <label for="invitations_visible_to_users" class="pure-checkbox">
-                  {{useinvitecodeform.invitations_visible_to_users(checked=func.user_visible_invitations())}} {{useinvitecodeform.invitations_visible_to_users.label.text}}
+                  {{useinvitecodeform.invitations_visible_to_users(checked=config.site.invitations_visible_to_users)}} {{useinvitecodeform.invitations_visible_to_users.label.text}}
                 </label>
                 <div class="pure-control-group">
                     <label for="confirm">{{useinvitecodeform.minlevel.label.text}}</label>

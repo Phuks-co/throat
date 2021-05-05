@@ -2611,3 +2611,41 @@ article.text-post.comment.deleted {
   font-weight: bold;
   text-align: center;
 }
+
+.admin-config {
+  table-layout: fixed;
+  width: 95%;
+}
+
+.admin-config-name {
+  width: 35%;
+}
+
+.admin-config-value {
+  width: 60%;
+}
+
+.admin-config-action {
+  width: 5%;
+}
+
+.admin-config-doc-toggle {
+  font-size: smallest;
+  padding-right: 5px;
+  cursor: pointer;
+}
+
+.admin-config-edit-form input {
+  width: 100%;
+}
+
+.admin-config-edit {
+  fill:  #00419d;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.admin-config-edit:hover {
+  fill: #64a6ca;
+}
