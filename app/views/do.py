@@ -3919,27 +3919,6 @@ def set_suboftheday():
     return jsonify(status="ok")
 
 
-@do.route("/do/admin/config/toggle", methods=["POST"])
-@login_required
-def admin_toggle_config_setting():
-    if not current_user.is_admin():
-        return abort(403)
-
-    form = ChangeConfigSettingForm()
-    del form.value
-
-    if not form.validate():
-        return json.dumps({"status": "error", "error": get_errors(form)})
-
-    config.update_value(form.setting.data, not config.get_value(form.setting.data))
-    misc.create_sitelog(
-        misc.LOG_TYPE_ADMIN_CONFIG_CHANGE,
-        current_user.uid,
-        comment=f"{form.setting.data}/{config.get_value(form.setting.data)}",
-    )
-    return jsonify(status="ok")
-
-
 @do.route("/do/admin/config/set", methods=["POST"])
 @login_required
 def admin_modify_config_setting():
@@ -3949,9 +3928,17 @@ def admin_modify_config_setting():
     form = ChangeConfigSettingForm()
     if not form.validate():
         return json.dumps({"status": "error", "error": get_errors(form)})
+    setting_info = next(
+        (c for c in config.get_mutable_items() if c["name"] == form.setting.data)
+    )
+
+    if setting_info["type"] == "bool":
+        value = form.value.data == "True"
+    else:
+        value = form.value.data
 
     try:
-        config.update_value(form.setting.data, form.value.data)
+        config.update_value(form.setting.data, value)
     except ValueError:
         return json.dumps({"status": "error", "error": [_("Error: not a number")]})
 

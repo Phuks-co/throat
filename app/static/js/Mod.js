@@ -109,44 +109,43 @@ u.addEventForChild(document, 'click', '.admin-config-doc-toggle', function (e, q
 });
 
 u.addEventForChild(document, 'click', '.admin-config-edit', function (e, qelem) {
-  const errorbox = document.querySelector('.error');
   let name = qelem.getAttribute('data-setting');
-  let type = qelem.getAttribute('data-type');
-  errorbox.classList.add('hide');
+  let valueElem = document.getElementById(name + '-value');
+  let value = valueElem.innerText;
 
-  if (type == 'bool') {
-    u.post('/do/admin/config/toggle', {setting: name},
-           function (data) {
-             if (data.status != 'ok') {
-               errorbox.classList.remove('hide');
-               errorbox.innerHTML = _('Error: %1', data.error);
-               errorbox.scrollIntoView();
-             } else {
-               window.location.reload();
-             }
-           }, function () {
-             errorbox.classList.remove('hide');
-             errorbox.innerHTML = _('Could not contact the server');
-             errorbox.scrollIntoView();
-           });
-  } else {
-    const changeForm = document.querySelector('.admin-config-edit-form');
-    let parent = changeForm.parentElement;
-    let valueElem = document.getElementById(name + '-value');
-    let value = valueElem.innerText;
+  const changeForm = document.querySelector('.admin-config-edit-form');
+  let parent = changeForm.parentElement;
+  let valueField = document.getElementById('value');
+  let changeButton = document.getElementById('admin-config-edit-submit');
+  const label = document.getElementById('bool-label');
 
-    if (valueElem != parent) {
-      let oldValue = parent.getAttribute('data-old-value');
-      document.getElementById('value').value = value;
-      document.getElementById('setting').value = name;
-      changeForm.querySelector('.div-error').style.display = 'none';
-      changeForm.classList.remove('hide')
-      valueElem.setAttribute('data-old-value', value);
-      valueElem.innerHTML = "";
-      valueElem.appendChild(changeForm);
-      if (oldValue) {
-        parent.innerHTML = oldValue;
-      }
+  document.querySelector('.error').classList.add('hide');
+  changeForm.querySelector('.div-error').style.display = 'none';
+
+  if (valueElem != parent) {
+    let oldValue = parent.getAttribute('data-old-value');
+    let type = qelem.getAttribute('data-type');
+    document.getElementById('setting').value = name;
+
+    if (type == 'bool') {
+      let isSet = value == _('Enabled');
+      changeButton.innerHTML = isSet ? _('Disable') : _('Enable');
+      valueField.value = isSet ? 'False' : 'True';
+      valueField.classList.add('hide');
+      label.classList.remove('hide');
+      label.innerHTML = value;
+    } else {
+      changeButton.innerHTML = _('Change');
+      valueField.value = value;
+      valueField.classList.remove('hide');
+      label.classList.add('hide');
+    }
+    valueElem.setAttribute('data-old-value', value);
+    changeForm.classList.remove('hide');
+    valueElem.innerHTML = "";
+    valueElem.appendChild(changeForm);
+    if (oldValue) {
+      parent.innerHTML = oldValue;
     }
   }
 });

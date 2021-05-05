@@ -22,25 +22,35 @@ Admin |\
               <tr>
                 <th class="admin-config-name">@{_('Setting Name')}</th>
                 <th class="admin-config-value">@{_('Current Value')}</th>
-		<th class="admin-config-action"></th>
+                <th class="admin-config-action"></th>
               </tr>
             </thead>
             <tbody>
               @for data in config_data:
               <tr>
                 <td><a class="admin-config-doc-toggle" id="@{data['name']}">▹</a>@{data['name']}</td>
-                <td id="@{data['name']}-value">@{data['value']}</td>
+                <td id="@{data['name']}-value">
+                @if data['type'] == 'bool':
+                  @if data['value']:
+                    @{_('Enabled')}
+                  @else:
+                    @{_('Disabled')}
+                  @end
+                @else:
+                  @{data['value']}
+                @end
+                </td>
                 <td>
                   @if data['type'] == 'bool':
                   <a class="admin-config-edit" data-type="bool" data-setting="@{data['name']}">⇆</a>
                   @else:
                   <a class="icon admin-config-edit" data-type="@{data['type']}" data-setting="@{data['name']}" data-icon="edit"></a>
-		  @end
-		</td>
+                  @end
+                </td>
               </tr>
-	      <tr class="admin-config-doc hide" id="@{data['name']}-doc">
-	        <td class="helper-text" colspan="3">@{data['doc']}</td>
-	      </tr>
+              <tr class="admin-config-doc hide" id="@{data['name']}-doc">
+                <td class="helper-text" colspan="3">@{data['doc']}</td>
+              </tr>
               @end
             </tbody>
           </table>
@@ -49,11 +59,12 @@ Admin |\
               <form method="POST" class="ajaxform pure-form" data-reload="true" action="@{url_for('do.admin_modify_config_setting')}">
                 @{form.csrf_token!!html}
                 <p>
-	          @{form.setting()!!html}
+                  <span id="bool-label"></span>
+                  @{form.setting()!!html}
                   @{form.value()!!html}
                 </p>
-	        <p>
-                  <button type="submit" name="change" class="pure-button" data-prog="@{_('Saving...')}">@{_("Change")}</button>
+                <p>
+                  <button type="submit" id="admin-config-edit-submit" name="change" class="pure-button" data-prog="@{_('Saving...')}"></button>
                   <button type="button" id="admin-config-edit-cancel" class="pure-button">@{_("Cancel")}</button>
                   <div class="alert div-error"></div>
                 </p>

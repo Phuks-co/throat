@@ -106,7 +106,7 @@ configurable_defaults = {
             "enable_security_question": {
                 "type": "bool",
                 "doc": _l(
-                    "If True, enables setting security questions on the admin page. Users will be "
+                    "Enables setting security questions on the admin page. Users will be "
                     "asked to answer one of these security questions before registering."
                 ),
                 "value": False,
@@ -145,7 +145,7 @@ configurable_defaults = {
             "sitelog_public": {
                 "type": "bool",
                 "doc": _l(
-                    "Allow all users to view the site log. If False, only admins can view the sitelog."
+                    "Allow all users to view the site log. When disabled, only admins can view the sitelog."
                 ),
                 "value": True,
             },
@@ -194,7 +194,8 @@ configurable_defaults = {
             "sub_creation_admin_only": {
                 "type": "bool",
                 "doc": _l(
-                    "Only allow Admins to create new subs. If True, only admins can create new subs."
+                    "When enabled, only admins can create new subs, otherwise "
+                    "`sub_creation_min_level` controls who can create a sub."
                 ),
                 "value": False,
             },
@@ -270,7 +271,7 @@ configurable_defaults = {
                     "comments_only": {
                         "type": "bool",
                         "doc": _l(
-                            "If true, only show recent comments (and not posts) in the sidebar."
+                            "If enabled, only show recent comments (and not posts) in the sidebar."
                         ),
                         "value": False,
                     },
