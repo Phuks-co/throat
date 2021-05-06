@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-05-05 18:54-0300\n"
-"PO-Revision-Date: 2021-05-06 03:21\n"
+"PO-Revision-Date: 2021-05-06 09:21\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -32,147 +32,147 @@ msgstr "Неверный тип файла. Разрешены только JPG,
 
 #: app/config.py:86
 msgid "Name of the site."
-msgstr ""
+msgstr "Название сайта."
 
 #: app/config.py:91
 msgid "Lema shown in the page's title."
-msgstr ""
+msgstr "Lema показана в заголовке страницы."
 
 #: app/config.py:96
 msgid "Copyright line shown in the footer."
-msgstr ""
+msgstr "Строка авторских прав отображается в нижнем колонтитуле."
 
 #: app/config.py:101
 msgid "Name shown when a sub is owned by a deleted account or abandoned."
-msgstr ""
+msgstr "Имя отображается, когда группа принадлежит удаленной учетной записи или заброшена."
 
 #: app/config.py:108
 msgid "Enables setting security questions on the admin page. Users will be asked to answer one of these security questions before registering."
-msgstr ""
+msgstr "Позволяет задавать контрольные вопросы на странице администратора. Перед регистрацией пользователям будет предложено ответить на один из этих вопросов безопасности."
 
 #: app/config.py:116
 msgid "Allow everybody to upload files (by default it's only admins and users authorized through a metadata key)."
-msgstr ""
+msgstr "Разрешить всем загружать файлы (по умолчанию это только администраторы и пользователи, авторизованные с помощью ключа метаданных)."
 
 #: app/config.py:124
 msgid "For those who are allowed to upload files, allow video uploads (.mp4 and .webm) as well."
-msgstr ""
+msgstr "Для тех, кому разрешено загружать файлы, также разрешите загрузку видео (.mp4 и .webm)."
 
 #: app/config.py:131
 msgid "Minimum level a user must have before being able to upload files. Set to zero to disable file upload level limits."
-msgstr ""
+msgstr "Минимальный уровень доверия, который должен быть у пользователя, прежде чем он сможет загружать файлы. Установите значение ноль, чтобы отключить ограничения уровня загрузки файлов."
 
 #: app/config.py:139
 msgid "Allow chat access for all users. If enabled, each user will have the option of disabling chat for themselves."
-msgstr ""
+msgstr "Разрешить доступ к чату для всех пользователей. Если этот параметр включен, каждый пользователь сможет отключить чат для себя."
 
 #: app/config.py:147
 msgid "Allow all users to view the site log. When disabled, only admins can view the sitelog."
-msgstr ""
+msgstr "Разрешить всем пользователям просматривать журнал сайта. Если этот параметр отключен, только администраторы могут просматривать журнал сайта."
 
 #: app/config.py:154
 msgid "Forces all the sub logs and banned user lists to be public and removes the option to make them private."
-msgstr ""
+msgstr "Принудительно делает все журналы групп и списки заблокированных пользователей общедоступными и удаляет возможность сделать их частными."
 
 #: app/config.py:162
 msgid "Show the \"Submit a post\" button on the frontpage."
-msgstr ""
+msgstr "Показать кнопку «Отправить сообщение» на главной странице."
 
 #: app/config.py:167
 msgid "Blocks anonymous users from being able to look at a particular user's posts or comments (IE blocks /u/<user>/posts and /u/<user>/comments)."
-msgstr ""
+msgstr "Запрещает анонимным пользователям просматривать посты или комментарии определенного пользователя (IE блокирует /u/<user>/posts и /u/<user>/comments)."
 
 #: app/config.py:175
 msgid "SID of the sub for changelog entries."
-msgstr ""
+msgstr "SID группы для записей журнала изменений."
 
 #: app/config.py:180
 msgid "Amount of time in seconds the post author can edit a post's title after the post was created. Set to zero to disable title editing (default is 5 minutes)."
-msgstr ""
+msgstr "Количество времени в секундах, в течение которого автор поста может редактировать заголовок поста после его создания. Установите значение ноль, чтобы отключить редактирование заголовка (по умолчанию-5 минут)."
 
 #: app/config.py:188
 msgid "Minimum level a user must have before being able to create a sub. Set to zero to disable sub creation level limits."
-msgstr ""
+msgstr "Минимальный уровень, который должен иметь пользователь, прежде чем сможет создать группу. Установите в ноль, чтобы отключить ограничения уровня подчиненного создания."
 
 #: app/config.py:196
 msgid "When enabled, only admins can create new subs, otherwise `sub_creation_min_level` controls who can create a sub."
-msgstr ""
+msgstr "Когда включено, только администраторы могут создавать новые группы, в противном случае управление `sub_creation_min_level` контролирует, кто может создавать группы."
 
 #: app/config.py:204
 msgid "Maximum amount of subs a single user can own. The actual amount of subs a user may register scales with user level (user level minus one) so a level 0 or level 1 user cannot register any subs. This scaling is disabled if `sub_creation_min_level` is zero."
-msgstr ""
+msgstr "Максимальное количество групп, которым может владеть один пользователь. Фактическое количество групп, которые пользователь может зарегистрировать, зависит от уровня пользователя (уровень пользователя минус один),  так что пользователь 0 или 1 уровня не может зарегистрировать ни одного. Это масштабирование отключено, если `sub_creation_min_level` равен нулю."
 
 #: app/config.py:214
 msgid "Allows Sub Mods and Admins to view the edit history of posts."
-msgstr ""
+msgstr "Позволяет модам и администраторам просматривать историю редактирования постов."
 
 #: app/config.py:221
 msgid "Removes the name of the Mod or Admin who took action on a post or user in notifications sent to user."
-msgstr ""
+msgstr "Удаляет имя мода или администратора, которые приняли меры к сообщению или пользователю в уведомлениях, отправленных пользователю."
 
 #: app/config.py:229
 msgid "Minimum level required for a user to be permitted to private message nonprivileged users. Set to zero to allow users of all levels to PM other users. Users of any level may PM site admins."
-msgstr ""
+msgstr "Минимальный уровень, необходимый для того, чтобы пользователю было разрешено сообщение непривилегированным пользователям. Значение 0 для разрешения пользователям всех уровней на ЛС других пользователей. Пользователи любого уровня могут использовать ЛС администраторов сайта."
 
 #: app/config.py:238
 msgid "Maximum amount of posts a user can create in a single sub in a day."
-msgstr ""
+msgstr "Максимальное количество записей, которые пользователь может создать в одном подразделе за день."
 
 #: app/config.py:245
 msgid "Maximum amount of posts a user can create in a single day."
-msgstr ""
+msgstr "Максимальное количество записей, которые пользователь может создать за один день."
 
 #: app/config.py:250
 msgid "Number of days after which posts will be archived."
-msgstr ""
+msgstr "Количество дней, по истечении которых посты будут заархивированы."
 
 #: app/config.py:258
 msgid "Enables or disables the recent activity sidebar and the page in /activity."
-msgstr ""
+msgstr "Включает или отключает боковую панель недавних действий и страницу в / activity."
 
 #: app/config.py:265
 msgid "Only show recent activity from default subs in the sidebar (recent activity for all subs will be shown in /activity)."
-msgstr ""
+msgstr "На боковой панели отображаются только последние действия из групп по умолчанию (последние действия для всех групп будут показаны в /activity)."
 
 #: app/config.py:273
 msgid "If enabled, only show recent comments (and not posts) in the sidebar."
-msgstr ""
+msgstr "Если этот параметр включен, на боковой панели отображаются только последние комментарии (а не посты)."
 
 #: app/config.py:280
 msgid "Number of entries to display in the recent activity sidebar."
-msgstr ""
+msgstr "Количество записей, отображаемых на боковой панели последних действий."
 
 #: app/config.py:289
 msgid "Allow users to make posts and comments."
-msgstr ""
+msgstr "Разрешить пользователям писать посты и комментарии."
 
 #: app/config.py:294
 msgid "Allow new users to register."
-msgstr ""
+msgstr "Разрешить новым пользователям регистрироваться."
 
 #: app/config.py:299
 msgid "Allow users to see the usernames of the people they invited or were invited by."
-msgstr ""
+msgstr "Разрешить пользователям видеть имена пользователей людей, которых они пригласили или были приглашены."
 
 #: app/config.py:306
 msgid "Level requirement before a user can generate invite codes."
-msgstr ""
+msgstr "Требование уровня доверия, прежде чем пользователь сможет генерировать коды приглашения."
 
 #: app/config.py:311
 msgid "The number of invite codes each user is allowed to generate (see also site.invite_level)."
-msgstr ""
+msgstr "Количество кодов приглашений, которые может генерировать каждый пользователь (см. также site.invite_level)."
 
 #: app/config.py:318
 msgid "Require the user to solve a captcha to register or post."
-msgstr ""
+msgstr "Требуйте, чтобы пользователь решил капчу для регистрации или публикации."
 
 #: app/config.py:323
 msgid "Require an invite code to register."
-msgstr ""
+msgstr "Для регистрации требуется инвайт-код."
 
 #: app/config.py:333
 msgid "Max storage for image uploads for subs' stylesheets (in MiB)."
-msgstr ""
+msgstr "Максимальное хранилище изображений для таблиц стилей subs (в MiB)."
 
 #: app/misc.py:1298
 #, python-format
@@ -812,28 +812,28 @@ msgstr "Далее"
 
 #: app/html/admin/configuration.html:15 app/html/shared/sidebar/admin.html:16
 msgid "Site configuration"
-msgstr ""
+msgstr "Конфигурация сайта"
 
 #: app/html/admin/configuration.html:16
 #, python-format
 msgid "See the <a href=\"%(url)s\">Site log</a> for the history of changes to configuration values."
-msgstr ""
+msgstr "Смотрите <a href=\"%(url)s\">журнал сайта</a> для истории изменений значений конфигурации."
 
 #: app/html/admin/configuration.html:23
 msgid "Setting Name"
-msgstr ""
+msgstr "Имя настройки"
 
 #: app/html/admin/configuration.html:24
 msgid "Current Value"
-msgstr ""
+msgstr "Текущее значение"
 
 #: app/html/admin/configuration.html:35 app/static/js/Mod.js:131
 msgid "Enabled"
-msgstr ""
+msgstr "Включено"
 
 #: app/html/admin/configuration.html:37
 msgid "Disabled"
-msgstr ""
+msgstr "Отключено"
 
 #: app/html/admin/configuration.html:67 app/html/sub/flairs.html:22
 #: app/html/sub/rules.html:28 app/html/sub/settings.html:126
@@ -1909,7 +1909,7 @@ msgstr "Включена капча"
 #: app/html/site/log.html:84
 #, python-format
 msgid "Changed <code>%(setting)s</code> to <code>%(value)s<code>"
-msgstr ""
+msgstr "Изменено <code>%(setting)s</code> на <code>%(value)s<code>"
 
 #: app/html/site/log.html:97 app/html/sub/createpost.html:85
 #: app/html/sub/log.html:75
@@ -3060,11 +3060,11 @@ msgstr "Не удалось связаться с сервером"
 
 #: app/static/js/Mod.js:132
 msgid "Enable"
-msgstr ""
+msgstr "Включить"
 
 #: app/static/js/Mod.js:138
 msgid "Change"
-msgstr ""
+msgstr "Изменить"
 
 #: app/static/js/Poll.js:75
 msgid "Voting..."
@@ -3786,7 +3786,7 @@ msgstr "Не удалось закрыть отчет"
 
 #: app/views/do.py:3943
 msgid "Error: not a number"
-msgstr ""
+msgstr "Ошибка: не число"
 
 #: app/views/subs.py:100
 msgid "Sub does not exist."
