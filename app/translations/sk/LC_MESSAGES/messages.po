@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-05-05 18:54-0300\n"
-"PO-Revision-Date: 2021-05-06 03:21\n"
+"PO-Revision-Date: 2021-05-06 09:21\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -32,147 +32,147 @@ msgstr "Neplatný typ súboru. Povolené sú len jpg, png a gif."
 
 #: app/config.py:86
 msgid "Name of the site."
-msgstr ""
+msgstr "Name of the site."
 
 #: app/config.py:91
 msgid "Lema shown in the page's title."
-msgstr ""
+msgstr "Lema shown in the page's title."
 
 #: app/config.py:96
 msgid "Copyright line shown in the footer."
-msgstr ""
+msgstr "Copyright line shown in the footer."
 
 #: app/config.py:101
 msgid "Name shown when a sub is owned by a deleted account or abandoned."
-msgstr ""
+msgstr "Name shown when a sub is owned by a deleted account or abandoned."
 
 #: app/config.py:108
 msgid "Enables setting security questions on the admin page. Users will be asked to answer one of these security questions before registering."
-msgstr ""
+msgstr "Enables setting security questions on the admin page. Users will be asked to answer one of these security questions before registering."
 
 #: app/config.py:116
 msgid "Allow everybody to upload files (by default it's only admins and users authorized through a metadata key)."
-msgstr ""
+msgstr "Allow everybody to upload files (by default it's only admins and users authorized through a metadata key)."
 
 #: app/config.py:124
 msgid "For those who are allowed to upload files, allow video uploads (.mp4 and .webm) as well."
-msgstr ""
+msgstr "For those who are allowed to upload files, allow video uploads (.mp4 and .webm) as well."
 
 #: app/config.py:131
 msgid "Minimum level a user must have before being able to upload files. Set to zero to disable file upload level limits."
-msgstr ""
+msgstr "Minimum level a user must have before being able to upload files. Set to zero to disable file upload level limits."
 
 #: app/config.py:139
 msgid "Allow chat access for all users. If enabled, each user will have the option of disabling chat for themselves."
-msgstr ""
+msgstr "Allow chat access for all users. If enabled, each user will have the option of disabling chat for themselves."
 
 #: app/config.py:147
 msgid "Allow all users to view the site log. When disabled, only admins can view the sitelog."
-msgstr ""
+msgstr "Allow all users to view the site log. When disabled, only admins can view the sitelog."
 
 #: app/config.py:154
 msgid "Forces all the sub logs and banned user lists to be public and removes the option to make them private."
-msgstr ""
+msgstr "Forces all the sub logs and banned user lists to be public and removes the option to make them private."
 
 #: app/config.py:162
 msgid "Show the \"Submit a post\" button on the frontpage."
-msgstr ""
+msgstr "Show the \"Submit a post\" button on the frontpage."
 
 #: app/config.py:167
 msgid "Blocks anonymous users from being able to look at a particular user's posts or comments (IE blocks /u/<user>/posts and /u/<user>/comments)."
-msgstr ""
+msgstr "Blocks anonymous users from being able to look at a particular user's posts or comments (IE blocks /u/<user>/posts and /u/<user>/comments)."
 
 #: app/config.py:175
 msgid "SID of the sub for changelog entries."
-msgstr ""
+msgstr "SID of the sub for changelog entries."
 
 #: app/config.py:180
 msgid "Amount of time in seconds the post author can edit a post's title after the post was created. Set to zero to disable title editing (default is 5 minutes)."
-msgstr ""
+msgstr "Amount of time in seconds the post author can edit a post's title after the post was created. Set to zero to disable title editing (default is 5 minutes)."
 
 #: app/config.py:188
 msgid "Minimum level a user must have before being able to create a sub. Set to zero to disable sub creation level limits."
-msgstr ""
+msgstr "Minimum level a user must have before being able to create a sub. Set to zero to disable sub creation level limits."
 
 #: app/config.py:196
 msgid "When enabled, only admins can create new subs, otherwise `sub_creation_min_level` controls who can create a sub."
-msgstr ""
+msgstr "When enabled, only admins can create new subs, otherwise `sub_creation_min_level` controls who can create a sub."
 
 #: app/config.py:204
 msgid "Maximum amount of subs a single user can own. The actual amount of subs a user may register scales with user level (user level minus one) so a level 0 or level 1 user cannot register any subs. This scaling is disabled if `sub_creation_min_level` is zero."
-msgstr ""
+msgstr "Maximum amount of subs a single user can own. The actual amount of subs a user may register scales with user level (user level minus one) so a level 0 or level 1 user cannot register any subs. This scaling is disabled if `sub_creation_min_level` is zero."
 
 #: app/config.py:214
 msgid "Allows Sub Mods and Admins to view the edit history of posts."
-msgstr ""
+msgstr "Allows Sub Mods and Admins to view the edit history of posts."
 
 #: app/config.py:221
 msgid "Removes the name of the Mod or Admin who took action on a post or user in notifications sent to user."
-msgstr ""
+msgstr "Removes the name of the Mod or Admin who took action on a post or user in notifications sent to user."
 
 #: app/config.py:229
 msgid "Minimum level required for a user to be permitted to private message nonprivileged users. Set to zero to allow users of all levels to PM other users. Users of any level may PM site admins."
-msgstr ""
+msgstr "Minimum level required for a user to be permitted to private message nonprivileged users. Set to zero to allow users of all levels to PM other users. Users of any level may PM site admins."
 
 #: app/config.py:238
 msgid "Maximum amount of posts a user can create in a single sub in a day."
-msgstr ""
+msgstr "Maximum amount of posts a user can create in a single sub in a day."
 
 #: app/config.py:245
 msgid "Maximum amount of posts a user can create in a single day."
-msgstr ""
+msgstr "Maximum amount of posts a user can create in a single day."
 
 #: app/config.py:250
 msgid "Number of days after which posts will be archived."
-msgstr ""
+msgstr "Number of days after which posts will be archived."
 
 #: app/config.py:258
 msgid "Enables or disables the recent activity sidebar and the page in /activity."
-msgstr ""
+msgstr "Enables or disables the recent activity sidebar and the page in /activity."
 
 #: app/config.py:265
 msgid "Only show recent activity from default subs in the sidebar (recent activity for all subs will be shown in /activity)."
-msgstr ""
+msgstr "Only show recent activity from default subs in the sidebar (recent activity for all subs will be shown in /activity)."
 
 #: app/config.py:273
 msgid "If enabled, only show recent comments (and not posts) in the sidebar."
-msgstr ""
+msgstr "If enabled, only show recent comments (and not posts) in the sidebar."
 
 #: app/config.py:280
 msgid "Number of entries to display in the recent activity sidebar."
-msgstr ""
+msgstr "Number of entries to display in the recent activity sidebar."
 
 #: app/config.py:289
 msgid "Allow users to make posts and comments."
-msgstr ""
+msgstr "Allow users to make posts and comments."
 
 #: app/config.py:294
 msgid "Allow new users to register."
-msgstr ""
+msgstr "Allow new users to register."
 
 #: app/config.py:299
 msgid "Allow users to see the usernames of the people they invited or were invited by."
-msgstr ""
+msgstr "Allow users to see the usernames of the people they invited or were invited by."
 
 #: app/config.py:306
 msgid "Level requirement before a user can generate invite codes."
-msgstr ""
+msgstr "Level requirement before a user can generate invite codes."
 
 #: app/config.py:311
 msgid "The number of invite codes each user is allowed to generate (see also site.invite_level)."
-msgstr ""
+msgstr "The number of invite codes each user is allowed to generate (see also site.invite_level)."
 
 #: app/config.py:318
 msgid "Require the user to solve a captcha to register or post."
-msgstr ""
+msgstr "Require the user to solve a captcha to register or post."
 
 #: app/config.py:323
 msgid "Require an invite code to register."
-msgstr ""
+msgstr "Require an invite code to register."
 
 #: app/config.py:333
 msgid "Max storage for image uploads for subs' stylesheets (in MiB)."
-msgstr ""
+msgstr "Max storage for image uploads for subs' stylesheets (in MiB)."
 
 #: app/misc.py:1298
 #, python-format
@@ -812,28 +812,28 @@ msgstr "Staršie príspevky"
 
 #: app/html/admin/configuration.html:15 app/html/shared/sidebar/admin.html:16
 msgid "Site configuration"
-msgstr ""
+msgstr "Site configuration"
 
 #: app/html/admin/configuration.html:16
 #, python-format
 msgid "See the <a href=\"%(url)s\">Site log</a> for the history of changes to configuration values."
-msgstr ""
+msgstr "See the <a href=\"%(url)s\">Site log</a> for the history of changes to configuration values."
 
 #: app/html/admin/configuration.html:23
 msgid "Setting Name"
-msgstr ""
+msgstr "Setting Name"
 
 #: app/html/admin/configuration.html:24
 msgid "Current Value"
-msgstr ""
+msgstr "Current Value"
 
 #: app/html/admin/configuration.html:35 app/static/js/Mod.js:131
 msgid "Enabled"
-msgstr ""
+msgstr "Enabled"
 
 #: app/html/admin/configuration.html:37
 msgid "Disabled"
-msgstr ""
+msgstr "Disabled"
 
 #: app/html/admin/configuration.html:67 app/html/sub/flairs.html:22
 #: app/html/sub/rules.html:28 app/html/sub/settings.html:126
@@ -1909,7 +1909,7 @@ msgstr "Zapnutá captcha"
 #: app/html/site/log.html:84
 #, python-format
 msgid "Changed <code>%(setting)s</code> to <code>%(value)s<code>"
-msgstr ""
+msgstr "Changed <code>%(setting)s</code> to <code>%(value)s<code>"
 
 #: app/html/site/log.html:97 app/html/sub/createpost.html:85
 #: app/html/sub/log.html:75
@@ -3060,11 +3060,11 @@ msgstr "Nepodarilo sa spojiť so serverom"
 
 #: app/static/js/Mod.js:132
 msgid "Enable"
-msgstr ""
+msgstr "Enable"
 
 #: app/static/js/Mod.js:138
 msgid "Change"
-msgstr ""
+msgstr "Change"
 
 #: app/static/js/Poll.js:75
 msgid "Voting..."
@@ -3785,7 +3785,7 @@ msgstr "Nepodarilo sa vyriešiť hlásenie"
 
 #: app/views/do.py:3943
 msgid "Error: not a number"
-msgstr ""
+msgstr "Error: not a number"
 
 #: app/views/subs.py:100
 msgid "Sub does not exist."
