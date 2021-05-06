@@ -16,7 +16,7 @@ from werkzeug.wrappers import BaseResponse
 
 from .config import Config
 from .forms import LoginForm, LogOutForm, CreateSubForm
-from .models import db_init_app, rconn, User
+from .models import db_init_app, rconn, User, SiteMetadata
 from .auth import auth_provider, email_validation_is_required
 from .views import do, subs as sub, api3, jwt
 from .views.auth import bp as auth
@@ -51,7 +51,7 @@ login_manager.needs_refresh_message = _l("Please reauthenticate to access this p
 
 def create_app(config=None):
     if config is None:
-        config = Config("config.yaml")
+        config = Config("config.yaml", model=SiteMetadata, cache=caching.cache)
     app = Flask(__name__)
     app.jinja_env.cache = {}
     app.config["THROAT_CONFIG"] = config
@@ -75,11 +75,10 @@ def create_app(config=None):
         "connect-src": ["'self'"],
     }
 
-    server_name = config.site.get("server_name")
-    if server_name is not None:
-        csp["connect-src"] += [f"wss://{server_name}"]
+    if "server_name" in config.site.keys():
+        csp["connect-src"] += [f"wss://{config.site.server_name}"]
         if not config.app.force_https:
-            csp["connect-src"] += [f"ws://{server_name}"]
+            csp["connect-src"] += [f"ws://{config.site.server_name}"]
 
     talisman.init_app(
         app, content_security_policy=csp, force_https=config.app.force_https

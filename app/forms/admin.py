@@ -3,6 +3,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, TextAreaField, FileField
 from wtforms import IntegerField, RadioField, FieldList, SelectField
+from wtforms import HiddenField
 from wtforms.validators import DataRequired, Length, Regexp
 from flask_babel import lazy_gettext as _l
 
@@ -112,3 +113,8 @@ class CreateInviteCodeForm(FlaskForm):
 
 class SetSubOfTheDayForm(FlaskForm):
     sub = StringField(_l("Sub"))
+
+
+class ChangeConfigSettingForm(FlaskForm):
+    setting = HiddenField()
+    value = StringField()

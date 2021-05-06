@@ -28,7 +28,7 @@ db = LocalProxy(get_db)
 
 
 def db_init_app(app):
-    dbconnect = dict(app.config["THROAT_CONFIG"].database)
+    dbconnect = app.config["THROAT_CONFIG"].database.as_dict()
     # Taken from peewee's flask_utils
     try:
         name = dbconnect.pop("name")

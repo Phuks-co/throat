@@ -29,14 +29,9 @@ from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountF
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost
 from ..forms import SearchForm, EditMod2Form, SetSubOfTheDayForm, AssignSubUserFlair
-from ..forms import (
-    DeleteSubFlair,
-    BanDomainForm,
-    DeleteSubRule,
-    CreateReportNote,
-    SetOwnUserFlairForm,
-)
+from ..forms import DeleteSubFlair, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm, DistinguishForm
+from ..forms import BanDomainForm, SetOwnUserFlairForm, ChangeConfigSettingForm
 from ..badges import badges
 from ..misc import (
     cache,
@@ -2136,25 +2131,16 @@ def enable_posting(value):
     """ Emergency Mode: disable posting """
     if not current_user.is_admin():
         abort(404)
-
-    if value == "True":
-        state = "1"
-    elif value == "False":
-        state = "0"
-    else:
+    if value not in ["True", "False"]:
         return abort(400)
+    state = value == "True"
 
-    try:
-        sm = SiteMetadata.get(SiteMetadata.key == "enable_posting")
-        sm.value = state
-        sm.save()
-    except SiteMetadata.DoesNotExist:
-        SiteMetadata.create(key="enable_posting", value=state)
-
-    if value == "True":
-        misc.create_sitelog(misc.LOG_TYPE_ENABLE_POSTING, current_user.uid)
-    else:
-        misc.create_sitelog(misc.LOG_TYPE_DISABLE_POSTING, current_user.uid)
+    config.update_value("site.enable_posting", state)
+    misc.create_sitelog(
+        misc.LOG_TYPE_ADMIN_CONFIG_CHANGE,
+        current_user.uid,
+        comment=f"site.enable_posting/{state}",
+    )
 
     return redirect(url_for("admin.index"))
 
@@ -2164,25 +2150,16 @@ def enable_registration(value):
     """ Isolation Mode: disable registration """
     if not current_user.is_admin():
         abort(404)
-
-    if value == "True":
-        state = "1"
-    elif value == "False":
-        state = "0"
-    else:
+    if value not in ["True", "False"]:
         return abort(400)
+    state = value == "True"
 
-    try:
-        sm = SiteMetadata.get(SiteMetadata.key == "enable_registration")
-        sm.value = state
-        sm.save()
-    except SiteMetadata.DoesNotExist:
-        SiteMetadata.create(key="enable_registration", value=state)
-
-    if value == "True":
-        misc.create_sitelog(misc.LOG_TYPE_ENABLE_REGISTRATION, current_user.uid)
-    else:
-        misc.create_sitelog(misc.LOG_TYPE_DISABLE_REGISTRATION, current_user.uid)
+    config.update_value("site.enable_registration", state)
+    misc.create_sitelog(
+        misc.LOG_TYPE_ADMIN_CONFIG_CHANGE,
+        current_user.uid,
+        comment=f"site.enable_registration/{state}",
+    )
 
     return redirect(url_for("admin.index"))
 
@@ -2192,26 +2169,16 @@ def enable_captchas(value):
     """ Enable or disable the captcha solving requirement. """
     if not current_user.is_admin():
         return abort(404)
-
-    if value == "True":
-        state = "1"
-    elif value == "False":
-        state = "0"
-    else:
+    if value not in ["True", "False"]:
         return abort(400)
+    state = value == "True"
 
-    try:
-        sm = SiteMetadata.get(SiteMetadata.key == "require_captchas")
-        sm.value = state
-        sm.save()
-    except SiteMetadata.DoesNotExist:
-        SiteMetadata.create(key="require_captchas", value=state)
-
-    if value == "True":
-        misc.create_sitelog(misc.LOG_TYPE_ENABLE_CAPTCHAS, current_user.uid)
-    else:
-        misc.create_sitelog(misc.LOG_TYPE_DISABLE_CAPTCHAS, current_user.uid)
-
+    config.update_value("site.require_captchas", state)
+    misc.create_sitelog(
+        misc.LOG_TYPE_ADMIN_CONFIG_CHANGE,
+        current_user.uid,
+        comment=f"site.require_captchas/{state}",
+    )
     return redirect(url_for("admin.index"))
 
 
@@ -2254,55 +2221,38 @@ def use_invite_code():
 
     form = UseInviteCodeForm()
 
+    old_values = {
+        key: config.get_value(key)
+        for key in [
+            "site.require_invite_code",
+            "site.invitations_visible_to_users",
+            "site.invite_level",
+            "site.invite_max",
+        ]
+    }
     if form.validate():
-        try:
-            sm = SiteMetadata.get(SiteMetadata.key == "useinvitecode")
-            sm.value = "1" if form.enableinvitecode.data else "0"
-            sm.save()
-        except SiteMetadata.DoesNotExist:
-            SiteMetadata.create(
-                key="useinvitecode", value="1" if form.enableinvitecode.data else "0"
+        config.update_value("site.require_invite_code", form.enableinvitecode.data)
+        config.update_value(
+            "site.invitations_visible_to_users", form.invitations_visible_to_users.data
+        )
+        config.update_value("site.invite_level", form.minlevel.data)
+        config.update_value("site.invite_max", form.maxcodes.data)
+
+    for key, old_value in old_values.items():
+        if old_value != config.get_value(key):
+            misc.create_sitelog(
+                misc.LOG_TYPE_ADMIN_CONFIG_CHANGE,
+                current_user.uid,
+                comment=f"{key}/{config.get_value(key)}",
             )
 
-        try:
-            sm = SiteMetadata.get(SiteMetadata.key == "invitations_visible_to_users")
-            sm.value = "1" if form.invitations_visible_to_users.data else "0"
-            sm.save()
-        except SiteMetadata.DoesNotExist:
-            SiteMetadata.create(
-                key="invitations_visible_to_users",
-                value="1" if form.invitations_visible_to_users.data else "0",
-            )
-
-        try:
-            sm = SiteMetadata.get(SiteMetadata.key == "invite_level")
-            sm.value = form.minlevel.data
-            sm.save()
-        except SiteMetadata.DoesNotExist:
-            SiteMetadata.create(key="invite_level", value=form.minlevel.data)
-
-        try:
-            sm = SiteMetadata.get(SiteMetadata.key == "invite_max")
-            sm.value = form.maxcodes.data
-            sm.save()
-        except SiteMetadata.DoesNotExist:
-            SiteMetadata.create(key="invite_max", value=form.maxcodes.data)
-
-        cache.delete_memoized(misc.enableInviteCode)
-        cache.delete_memoized(misc.user_visible_invitations)
-        cache.delete_memoized(misc.getMaxCodes)
-
-        if form.enableinvitecode.data:
-            misc.create_sitelog(misc.LOG_TYPE_ENABLE_INVITE, current_user.uid)
-        else:
-            misc.create_sitelog(misc.LOG_TYPE_DISABLE_INVITE, current_user.uid)
     return jsonify(status="ok")
 
 
 @do.route("/do/create_invite")
 @login_required
 def invite_codes():
-    if not misc.enableInviteCode():
+    if not config.site.require_invite_code:
         return redirect("/settings")
 
     created = InviteCode.select().where(InviteCode.user == current_user.uid).count()
@@ -3966,4 +3916,36 @@ def set_suboftheday():
     rconn.delete("daysub")
     misc.set_sub_of_the_day(sub.sid)
     misc.cache.delete_memoized(misc.getSubOfTheDay)
+    return jsonify(status="ok")
+
+
+@do.route("/do/admin/config/set", methods=["POST"])
+@login_required
+def admin_modify_config_setting():
+    if not current_user.is_admin():
+        return abort(403)
+
+    form = ChangeConfigSettingForm()
+    if not form.validate():
+        return json.dumps({"status": "error", "error": get_errors(form)})
+    setting_info = next(
+        (c for c in config.get_mutable_items() if c["name"] == form.setting.data)
+    )
+
+    if setting_info["type"] == "bool":
+        value = form.value.data == "True"
+    else:
+        value = form.value.data
+
+    try:
+        config.update_value(form.setting.data, value)
+    except ValueError:
+        return json.dumps({"status": "error", "error": [_("Error: not a number")]})
+
+    misc.create_sitelog(
+        misc.LOG_TYPE_ADMIN_CONFIG_CHANGE,
+        current_user.uid,
+        comment=f"{form.setting.data}/{config.get_value(form.setting.data)}",
+    )
+
     return jsonify(status="ok")

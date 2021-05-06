@@ -186,7 +186,7 @@ def view_user_uploads(page):
 @bp.route("/settings/invite")
 @login_required
 def invite_codes():
-    if not misc.enableInviteCode():
+    if not config.site.require_invite_code:
         return redirect("/settings")
 
     codes = InviteCode.select().where(InviteCode.user == current_user.uid)

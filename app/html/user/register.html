@@ -14,7 +14,7 @@
         <form method="POST" id="login-form" class="pure-form pure-form-aligned">@{ regform.csrf_token()!!html }
             <h1>@{_('Register')}</h1>
             <fieldset>
-                @if func.enableInviteCode():
+                @if config.site.require_invite_code:
                 <div class="pure-control-group">
                     <label for="invitecode">@{regform.invitecode.label.text}</label>
                     @{regform.invitecode(autocomplete="off", required=True)!!html}

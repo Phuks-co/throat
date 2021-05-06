@@ -621,6 +621,14 @@ body.dark .selflair {
   border-color: #222;
 }
 
+body.dark .admin-config-edit {
+  fill: #526a7d;
+}
+
+body.dark .admin-config-edit:hover {
+  fill: #d17262;
+}
+
 body.dark .stickyposts {
     border-bottom: 1px solid #40444b;
 }

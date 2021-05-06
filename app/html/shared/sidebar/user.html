@@ -24,7 +24,7 @@
     @if request.path == url_for('user.edit_account'):
     <a href="@{url_for('user.delete_account')}" class="sbm-post pure-button @{(request.path == url_for('user.delete_account')) and 'pure-button-primary' or ''}">@{_('Delete account')}</a>
     @end
-    @if func.enableInviteCode():
+    @if config.site.require_invite_code:
         <hr/>
         <a href="@{url_for('user.invite_codes')}" class="sbm-post pure-button @{(request.path == url_for('user.invite_codes')) and 'pure-button-primary' or ''}">@{_('Invite codes')}</a>
     @end

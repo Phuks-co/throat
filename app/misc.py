@@ -572,26 +572,6 @@ def getDefaultSubs_list(ext=False):
     return defaults
 
 
-@cache.memoize(600)
-def enableInviteCode():
-    """ Returns true if invite code is required to register """
-    try:
-        xm = SiteMetadata.get(SiteMetadata.key == "useinvitecode")
-        return False if xm.value == "0" else True
-    except SiteMetadata.DoesNotExist:
-        return False
-
-
-@cache.memoize(600)
-def user_visible_invitations():
-    """ Returns True if users can see who they invited and who invited them. """
-    try:
-        xm = SiteMetadata.get(SiteMetadata.key == "invitations_visible_to_users")
-        return False if xm.value == "0" else True
-    except SiteMetadata.DoesNotExist:
-        return False
-
-
 @cache.memoize(30)
 def getMaxCodes(uid):
     """ Returns how many invite codes a user can create """
@@ -601,15 +581,11 @@ def getMaxCodes(uid):
         )
         return amt.value
     except UserMetadata.DoesNotExist:
-        try:
-            # If there's no setting for the user, use the global setting, but checkk the user's level first
-            minlevel = SiteMetadata.get(SiteMetadata.key == "invite_level")
-            if get_user_level(uid)[0] >= int(minlevel.value):
-                amt = SiteMetadata.get(SiteMetadata.key == "invite_max")
-                return amt.value
-        except SiteMetadata.DoesNotExist:
+        # If there's no setting for the user, use the global setting, but checkk the user's level first
+        if get_user_level(uid)[0] >= config.site.invite_level:
+            return config.site.invite_max
+        else:
             return 0
-    return 0
 
 
 @cache.memoize(30)
@@ -621,7 +597,7 @@ def getInviteCodeInfo(uid):
 
     if not (
         current_user.is_admin()
-        or (user_visible_invitations() and current_user.uid == uid)
+        or (config.invitations_visible_to_users and current_user.uid == uid)
     ):
         return info
 
@@ -1943,7 +1919,6 @@ def get_postmeta_dicts(pids):
 # Log types
 LOG_TYPE_USER = 10
 LOG_TYPE_USER_BAN = 19
-LOG_TYPE_USER_UNBAN = 54
 
 LOG_TYPE_SUB_CREATE = 20
 LOG_TYPE_SUB_SETTINGS = 21
@@ -1955,12 +1930,6 @@ LOG_TYPE_SUB_MOD_REMOVE = 26
 LOG_TYPE_SUB_MOD_INV_CANCEL = 27
 LOG_TYPE_SUB_MOD_INV_REJECT = 28
 LOG_TYPE_SUB_CSS_CHANGE = 29
-LOG_TYPE_SUB_STICKY_ADD = 50
-LOG_TYPE_SUB_STICKY_DEL = 51
-LOG_TYPE_SUB_DELETE_POST = 52
-LOG_TYPE_SUB_DELETE_COMMENT = 53
-LOG_TYPE_SUB_UNDELETE_POST = 58
-LOG_TYPE_SUB_UNDELETE_COMMENT = 59
 
 LOG_TYPE_SUB_TRANSFER = 30
 
@@ -1968,16 +1937,22 @@ LOG_TYPE_ANNOUNCEMENT = 41
 LOG_TYPE_DOMAIN_BAN = 42
 LOG_TYPE_DOMAIN_UNBAN = 43
 LOG_TYPE_UNANNOUNCE = 44
-LOG_TYPE_DISABLE_POSTING = 45
-LOG_TYPE_ENABLE_POSTING = 46
-LOG_TYPE_ENABLE_INVITE = 47
-LOG_TYPE_DISABLE_INVITE = 48
-LOG_TYPE_DISABLE_REGISTRATION = 49
-LOG_TYPE_ENABLE_REGISTRATION = 50
-
+LOG_TYPE_DISABLE_POSTING = 45  # Use LOG_TYPE_ADMIN_CONFIG_CHANGE instead
+LOG_TYPE_ENABLE_POSTING = 46  # Use LOG_TYPE_ADMIN_CONFIG_CHANGE instead
+LOG_TYPE_ENABLE_INVITE = 47  # Use LOG_TYPE_ADMIN_CONFIG_CHANGE instead
+LOG_TYPE_DISABLE_INVITE = 48  # Use LOG_TYPE_ADMIN_CONFIG_CHANGE instead
+LOG_TYPE_DISABLE_REGISTRATION = 49  # Use LOG_TYPE_ADMIN_CONFIG_CHANGE instead
+LOG_TYPE_ENABLE_REGISTRATION = 50  # Use LOG_TYPE_ADMIN_CONFIG_CHANGE instead
+LOG_TYPE_SUB_STICKY_ADD = 50
+LOG_TYPE_SUB_STICKY_DEL = 51
+LOG_TYPE_SUB_DELETE_POST = 52
+LOG_TYPE_SUB_DELETE_COMMENT = 53
+LOG_TYPE_USER_UNBAN = 54
 LOG_TYPE_REPORT_CLOSE = 55
 LOG_TYPE_REPORT_REOPEN = 56
 LOG_TYPE_REPORT_CLOSE_RELATED = 57
+LOG_TYPE_SUB_UNDELETE_POST = 58
+LOG_TYPE_SUB_UNDELETE_COMMENT = 59
 LOG_TYPE_REPORT_POST_DELETED = 60
 LOG_TYPE_REPORT_POST_UNDELETED = 61
 LOG_TYPE_REPORT_COMMENT_DELETED = 62
@@ -1989,10 +1964,11 @@ LOG_TYPE_REPORT_USER_SUB_UNBANNED = 67
 LOG_TYPE_REPORT_NOTE = 68
 LOG_TYPE_EMAIL_DOMAIN_BAN = 69
 LOG_TYPE_EMAIL_DOMAIN_UNBAN = 70
-LOG_TYPE_DISABLE_CAPTCHAS = 71
-LOG_TYPE_ENABLE_CAPTCHAS = 72
+LOG_TYPE_DISABLE_CAPTCHAS = 71  # Use LOG_TYPE_ADMIN_CONFIG_CHANGE instead
+LOG_TYPE_ENABLE_CAPTCHAS = 72  # Use LOG_TYPE_ADMIN_CONFIG_CHANGE instead
 LOG_TYPE_STICKY_SORT_NEW = 73
 LOG_TYPE_STICKY_SORT_TOP = 74
+LOG_TYPE_ADMIN_CONFIG_CHANGE = 75
 
 
 def create_sitelog(action, uid, comment="", link=""):
@@ -2047,17 +2023,10 @@ def is_domain_banned(addr, domain_type):
     return False
 
 
-def captchas_required():
-    try:
-        return SiteMetadata.get(SiteMetadata.key == "require_captchas").value == "1"
-    except SiteMetadata.DoesNotExist:
-        return True
-
-
 def create_captcha():
     """Generates a captcha image.
     Returns a tuple with a token and the base64 encoded image"""
-    if not captchas_required() or config.app.testing:
+    if not config.site.require_captchas or config.app.testing:
         return None
     token = str(uuid.uuid4())
     captchagen = ImageCaptcha(width=250, height=70)
@@ -2108,7 +2077,7 @@ def create_captcha():
 
 
 def validate_captcha(token, response):
-    if config.app.testing or config.app.development or not captchas_required():
+    if config.app.testing or config.app.development or not config.site.require_captchas:
         return True
     cap = rconn.get("cap-" + token)
     if cap:
@@ -2848,8 +2817,8 @@ def slugify(text):
 def logging_init_app(app):
     config = app.config["THROAT_CONFIG"]
     if "logging" in config:
-        logging.config.dictConfig(config.logging)
-        add_context_to_log_records(config.logging)
+        logging.config.dictConfig(config.logging.as_dict())
+        add_context_to_log_records(config.logging.as_dict())
     elif config.app.development or config.app.testing:
         logging.basicConfig(level=logging.DEBUG)
         logging.getLogger(app.logger.name + ".socketio").setLevel(logging.WARNING)

@@ -17,7 +17,6 @@ from .models import (
     UserAuthSource,
     UserCrypto,
     UserStatus,
-    SiteMetadata,
     Sub,
     SubSubscriber,
 )
@@ -434,18 +433,6 @@ class AuthProvider:
 auth_provider = AuthProvider()
 
 
-def registration_is_enabled():
-    try:
-        enable_registration = SiteMetadata.get(
-            SiteMetadata.key == "enable_registration"
-        )
-        if enable_registration.value in ("False", "0"):
-            return False
-    except SiteMetadata.DoesNotExist:
-        pass
-    return True
-
-
 # Someday config.auth.require_valid_emails may move to site metadata.
 def email_validation_is_required():
     return config.auth.require_valid_emails
@@ -481,7 +468,7 @@ def create_user(username, password, email, invite_code, existing_user):
             verified_email=False,
             status=status,
         )
-    if misc.enableInviteCode():
+    if config.site.require_invite_code:
         UserMetadata.create(uid=user.uid, key="invitecode", value=invite_code)
 
     defaults = misc.getDefaultSubs()

@@ -18,13 +18,12 @@ from .. import misc
 from .. import tasks
 from ..auth import (
     auth_provider,
-    registration_is_enabled,
     email_validation_is_required,
     create_user,
     normalize_email,
 )
 from ..socketio import socketio
-from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, captchas_required
+from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT
 from ..models import (
     Sub,
     User,
@@ -103,10 +102,10 @@ def login():
 @API.route("/register", methods=["GET"])
 def register_params():
     return {
-        "enabled": registration_is_enabled(),
+        "enabled": config.site.enable_registration,
         "mandatory": {
             "email": email_validation_is_required(),
-            "invite_code": misc.enableInviteCode(),
+            "invite_code": config.site.require_invite_code,
         },
     }
 
@@ -142,7 +141,7 @@ def register():
     if len(password) < 6:
         return jsonify(msg="Password too short"), 403
 
-    if not registration_is_enabled():
+    if not config.site.enable_registration:
         return jsonify(msg="Registration disabled"), 403
 
     if email_validation_is_required() and email is None:
@@ -173,7 +172,7 @@ def register():
     if len(username) < 2:
         return jsonify(msg="Username too short"), 401
 
-    if misc.enableInviteCode():
+    if config.site.require_invite_code:
         if invite_code is None:
             return jsonify(msg="E-mail is mandatory"), 401
         try:
@@ -945,7 +944,7 @@ def chall_wrong(_error):
 def check_challenge():
     if config.app.development:
         return True
-    if captchas_required():
+    if config.site.require_captchas:
         challenge_token = request.json.get("challengeToken")
         challenge_response = request.json.get("challengeResponse")
 
@@ -994,12 +993,9 @@ def create_post():
     except User.DoesNotExist:
         return jsonify(msg="Unknown error. User disappeared"), 403
 
-    try:  # TODO: Exception for admins
-        enable_posting = SiteMetadata.get(SiteMetadata.key == "enable_posting")
-        if enable_posting.value in ("False", "0"):
-            return jsonify(msg="Posting has been temporarily disabled"), 400
-    except SiteMetadata.DoesNotExist:
-        pass
+    # TODO: Exception for admins
+    if not config.site.enable_posting:
+        return jsonify(msg="Posting has been temporarily disabled"), 400
 
     try:
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
