@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2021-04-12 16:21-0300\n"
-"PO-Revision-Date: 2021-04-22 22:31\n"
+"POT-Creation-Date: 2021-05-05 18:54-0300\n"
+"PO-Revision-Date: 2021-05-06 09:21\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -26,11 +26,155 @@ msgstr "Je nutné sa prihlásiť."
 msgid "Please reauthenticate to access this page."
 msgstr "Je nutné sa znovu prihlásiť."
 
-#: app/badges.py:127 app/views/do.py:3085
+#: app/badges.py:127 app/views/do.py:3023
 msgid "Invalid file type. Only jpg, png and gif allowed."
 msgstr "Neplatný typ súboru. Povolené sú len jpg, png a gif."
 
-#: app/misc.py:1321
+#: app/config.py:86
+msgid "Name of the site."
+msgstr "Name of the site."
+
+#: app/config.py:91
+msgid "Lema shown in the page's title."
+msgstr "Lema shown in the page's title."
+
+#: app/config.py:96
+msgid "Copyright line shown in the footer."
+msgstr "Copyright line shown in the footer."
+
+#: app/config.py:101
+msgid "Name shown when a sub is owned by a deleted account or abandoned."
+msgstr "Name shown when a sub is owned by a deleted account or abandoned."
+
+#: app/config.py:108
+msgid "Enables setting security questions on the admin page. Users will be asked to answer one of these security questions before registering."
+msgstr "Enables setting security questions on the admin page. Users will be asked to answer one of these security questions before registering."
+
+#: app/config.py:116
+msgid "Allow everybody to upload files (by default it's only admins and users authorized through a metadata key)."
+msgstr "Allow everybody to upload files (by default it's only admins and users authorized through a metadata key)."
+
+#: app/config.py:124
+msgid "For those who are allowed to upload files, allow video uploads (.mp4 and .webm) as well."
+msgstr "For those who are allowed to upload files, allow video uploads (.mp4 and .webm) as well."
+
+#: app/config.py:131
+msgid "Minimum level a user must have before being able to upload files. Set to zero to disable file upload level limits."
+msgstr "Minimum level a user must have before being able to upload files. Set to zero to disable file upload level limits."
+
+#: app/config.py:139
+msgid "Allow chat access for all users. If enabled, each user will have the option of disabling chat for themselves."
+msgstr "Allow chat access for all users. If enabled, each user will have the option of disabling chat for themselves."
+
+#: app/config.py:147
+msgid "Allow all users to view the site log. When disabled, only admins can view the sitelog."
+msgstr "Allow all users to view the site log. When disabled, only admins can view the sitelog."
+
+#: app/config.py:154
+msgid "Forces all the sub logs and banned user lists to be public and removes the option to make them private."
+msgstr "Forces all the sub logs and banned user lists to be public and removes the option to make them private."
+
+#: app/config.py:162
+msgid "Show the \"Submit a post\" button on the frontpage."
+msgstr "Show the \"Submit a post\" button on the frontpage."
+
+#: app/config.py:167
+msgid "Blocks anonymous users from being able to look at a particular user's posts or comments (IE blocks /u/<user>/posts and /u/<user>/comments)."
+msgstr "Blocks anonymous users from being able to look at a particular user's posts or comments (IE blocks /u/<user>/posts and /u/<user>/comments)."
+
+#: app/config.py:175
+msgid "SID of the sub for changelog entries."
+msgstr "SID of the sub for changelog entries."
+
+#: app/config.py:180
+msgid "Amount of time in seconds the post author can edit a post's title after the post was created. Set to zero to disable title editing (default is 5 minutes)."
+msgstr "Amount of time in seconds the post author can edit a post's title after the post was created. Set to zero to disable title editing (default is 5 minutes)."
+
+#: app/config.py:188
+msgid "Minimum level a user must have before being able to create a sub. Set to zero to disable sub creation level limits."
+msgstr "Minimum level a user must have before being able to create a sub. Set to zero to disable sub creation level limits."
+
+#: app/config.py:196
+msgid "When enabled, only admins can create new subs, otherwise `sub_creation_min_level` controls who can create a sub."
+msgstr "When enabled, only admins can create new subs, otherwise `sub_creation_min_level` controls who can create a sub."
+
+#: app/config.py:204
+msgid "Maximum amount of subs a single user can own. The actual amount of subs a user may register scales with user level (user level minus one) so a level 0 or level 1 user cannot register any subs. This scaling is disabled if `sub_creation_min_level` is zero."
+msgstr "Maximum amount of subs a single user can own. The actual amount of subs a user may register scales with user level (user level minus one) so a level 0 or level 1 user cannot register any subs. This scaling is disabled if `sub_creation_min_level` is zero."
+
+#: app/config.py:214
+msgid "Allows Sub Mods and Admins to view the edit history of posts."
+msgstr "Allows Sub Mods and Admins to view the edit history of posts."
+
+#: app/config.py:221
+msgid "Removes the name of the Mod or Admin who took action on a post or user in notifications sent to user."
+msgstr "Removes the name of the Mod or Admin who took action on a post or user in notifications sent to user."
+
+#: app/config.py:229
+msgid "Minimum level required for a user to be permitted to private message nonprivileged users. Set to zero to allow users of all levels to PM other users. Users of any level may PM site admins."
+msgstr "Minimum level required for a user to be permitted to private message nonprivileged users. Set to zero to allow users of all levels to PM other users. Users of any level may PM site admins."
+
+#: app/config.py:238
+msgid "Maximum amount of posts a user can create in a single sub in a day."
+msgstr "Maximum amount of posts a user can create in a single sub in a day."
+
+#: app/config.py:245
+msgid "Maximum amount of posts a user can create in a single day."
+msgstr "Maximum amount of posts a user can create in a single day."
+
+#: app/config.py:250
+msgid "Number of days after which posts will be archived."
+msgstr "Number of days after which posts will be archived."
+
+#: app/config.py:258
+msgid "Enables or disables the recent activity sidebar and the page in /activity."
+msgstr "Enables or disables the recent activity sidebar and the page in /activity."
+
+#: app/config.py:265
+msgid "Only show recent activity from default subs in the sidebar (recent activity for all subs will be shown in /activity)."
+msgstr "Only show recent activity from default subs in the sidebar (recent activity for all subs will be shown in /activity)."
+
+#: app/config.py:273
+msgid "If enabled, only show recent comments (and not posts) in the sidebar."
+msgstr "If enabled, only show recent comments (and not posts) in the sidebar."
+
+#: app/config.py:280
+msgid "Number of entries to display in the recent activity sidebar."
+msgstr "Number of entries to display in the recent activity sidebar."
+
+#: app/config.py:289
+msgid "Allow users to make posts and comments."
+msgstr "Allow users to make posts and comments."
+
+#: app/config.py:294
+msgid "Allow new users to register."
+msgstr "Allow new users to register."
+
+#: app/config.py:299
+msgid "Allow users to see the usernames of the people they invited or were invited by."
+msgstr "Allow users to see the usernames of the people they invited or were invited by."
+
+#: app/config.py:306
+msgid "Level requirement before a user can generate invite codes."
+msgstr "Level requirement before a user can generate invite codes."
+
+#: app/config.py:311
+msgid "The number of invite codes each user is allowed to generate (see also site.invite_level)."
+msgstr "The number of invite codes each user is allowed to generate (see also site.invite_level)."
+
+#: app/config.py:318
+msgid "Require the user to solve a captcha to register or post."
+msgstr "Require the user to solve a captcha to register or post."
+
+#: app/config.py:323
+msgid "Require an invite code to register."
+msgstr "Require an invite code to register."
+
+#: app/config.py:333
+msgid "Max storage for image uploads for subs' stylesheets (in MiB)."
+msgstr "Max storage for image uploads for subs' stylesheets (in MiB)."
+
+#: app/misc.py:1298
 #, python-format
 msgid "Error in the '%(field)s' field - %(error)s"
 msgstr "Došlo k chybe v poli '%(field)s' - %(error)s"
@@ -39,82 +183,82 @@ msgstr "Došlo k chybe v poli '%(field)s' - %(error)s"
 #: app/html/site/log.html:28 app/html/sub/log.html:28 app/html/sub/post.html:43
 #: app/html/sub/post.html:107 app/html/sub/post.html:126
 #: app/html/sub/post.html:172 app/html/sub/postcomments.html:22
-#: app/html/sub/postcomments.html:54 app/misc.py:1714 app/misc.py:2303
-#: app/misc.py:2312 app/misc.py:2319
+#: app/html/sub/postcomments.html:54 app/misc.py:1691 app/misc.py:2273
+#: app/misc.py:2282 app/misc.py:2289
 msgid "[Deleted]"
 msgstr "[vymazané]"
 
-#: app/misc.py:1790
+#: app/misc.py:1767
 msgid "URLs not allowed, uploaded files only"
 msgstr "URL nie sú povolené, iba súbory"
 
-#: app/misc.py:1810
+#: app/misc.py:1787
 msgid "@import token not allowed"
 msgstr "@import token nie je povolený"
 
-#: app/misc.py:1822
+#: app/misc.py:1799
 msgid "Invalid CSS"
 msgstr "Neplatné CSS"
 
-#: app/misc.py:2408
+#: app/misc.py:2377
 msgid "Already processing previous request."
 msgstr "Pracuje sa na predošlej požiadavke."
 
-#: app/misc.py:2415
+#: app/misc.py:2399
 msgid "Unknown error. User disappeared"
 msgstr "Neznáma chyba. Používateľ sa stratil"
 
-#: app/misc.py:2422
+#: app/misc.py:2406
 msgid "Score balance is negative"
 msgstr "Negatívna karma"
 
-#: app/misc.py:2424
+#: app/misc.py:2408
 msgid "Invalid vote value"
 msgstr "Neplatná hodnota hlasu"
 
-#: app/misc.py:2440 app/views/do.py:304 app/views/do.py:416 app/views/do.py:732
-#: app/views/do.py:764 app/views/do.py:1121 app/views/do.py:1204
-#: app/views/do.py:1963 app/views/do.py:2053 app/views/do.py:2224
-#: app/views/do.py:2239 app/views/do.py:2326 app/views/do.py:2423
-#: app/views/do.py:2962 app/views/do.py:3400 app/views/do.py:3463
-#: app/views/do.py:3508 app/views/do.py:3558 app/views/do.py:3688
-#: app/views/do.py:3749 app/views/do.py:3815 app/views/do.py:3873
+#: app/misc.py:2424 app/views/do.py:299 app/views/do.py:411 app/views/do.py:727
+#: app/views/do.py:759 app/views/do.py:1116 app/views/do.py:1199
+#: app/views/do.py:1958 app/views/do.py:2048 app/views/do.py:2191
+#: app/views/do.py:2206 app/views/do.py:2276 app/views/do.py:2361
+#: app/views/do.py:2900 app/views/do.py:3338 app/views/do.py:3401
+#: app/views/do.py:3446 app/views/do.py:3496 app/views/do.py:3626
+#: app/views/do.py:3687 app/views/do.py:3753 app/views/do.py:3811
 msgid "Post does not exist"
 msgstr "Príspevok neexistuje"
 
-#: app/misc.py:2443
+#: app/misc.py:2427
 msgid "You can't vote on deleted posts"
 msgstr "Na vymazaných príspevkoch nejde hlasovať"
 
-#: app/misc.py:2475 app/views/do.py:2381 app/views/do.py:2686
-#: app/views/do.py:2725 app/views/do.py:2778 app/views/do.py:3631
-#: app/views/do.py:3744 app/views/do.py:3868
+#: app/misc.py:2459 app/views/do.py:2326 app/views/do.py:2624
+#: app/views/do.py:2663 app/views/do.py:2716 app/views/do.py:3569
+#: app/views/do.py:3682 app/views/do.py:3806
 msgid "Comment does not exist"
 msgstr "Komentár neexistuje"
 
-#: app/misc.py:2478
+#: app/misc.py:2462
 msgid "You can't vote on your own comments"
 msgstr "Nemožno hlasovať na vlastných komentároch"
 
-#: app/misc.py:2480
+#: app/misc.py:2464
 msgid "You can't vote on deleted comments"
 msgstr "Nemožno hlasovať na vymazaných komentároch"
 
-#: app/misc.py:2492
+#: app/misc.py:2476
 msgid "Invalid target"
 msgstr "Neplatný cieľ"
 
-#: app/misc.py:2495 app/views/do.py:1161 app/views/do.py:1966
-#: app/views/do.py:2694
+#: app/misc.py:2479 app/views/do.py:1156 app/views/do.py:1961
+#: app/views/do.py:2632
 msgid "You are banned on this sub."
 msgstr "V tejto skupine si zabanovaný(á)."
 
-#: app/misc.py:2500 app/views/do.py:1164 app/views/do.py:1209
-#: app/views/do.py:2700
+#: app/misc.py:2484 app/views/do.py:1159 app/views/do.py:1204
+#: app/views/do.py:2638
 msgid "Post is archived"
 msgstr "Príspevok bol archivovaný"
 
-#: app/misc.py:2815
+#: app/misc.py:2799
 msgid "Invalid status request"
 msgstr "Invalid status request"
 
@@ -205,116 +349,116 @@ msgstr "Nepovolený typ súboru"
 msgid "File size exceeds the maximum allowed size (%(size)s)"
 msgstr "Súbor je väčší ako povolený limit (%(size)s)"
 
-#: app/forms/admin.py:13
+#: app/forms/admin.py:14
 msgid "Question"
 msgstr "Otázka"
 
-#: app/forms/admin.py:20 app/forms/admin.py:114 app/forms/sub.py:162
+#: app/forms/admin.py:21 app/forms/admin.py:115 app/forms/sub.py:162
 #: app/html/admin/reports.html:24 app/html/mod/closed.html:26
 #: app/html/mod/reportdetails.html:60 app/html/mod/reports.html:26
 #: app/html/mod/sub_reports.html:27 app/html/mod/sub_reports_closed.html:28
 msgid "Sub"
 msgstr "Skupina"
 
-#: app/forms/admin.py:22
+#: app/forms/admin.py:23
 msgid "New owner username"
 msgstr "Meno nového vlastníka"
 
-#: app/forms/admin.py:29
+#: app/forms/admin.py:30
 msgid "Badge"
 msgstr "Odznak"
 
-#: app/forms/admin.py:31 app/forms/sub.py:72 app/forms/sub.py:78
+#: app/forms/admin.py:32 app/forms/sub.py:72 app/forms/sub.py:78
 #: app/forms/user.py:45 app/forms/user.py:71 app/html/user/login.html:15
 #: app/static/js/main.js:54 app/static/js/main.js:55
 msgid "Username"
 msgstr "Meno"
 
-#: app/forms/admin.py:36 app/forms/admin.py:47
+#: app/forms/admin.py:37 app/forms/admin.py:48
 msgid "Badge Icon"
 msgstr "Ikona odznaku"
 
-#: app/forms/admin.py:38 app/forms/admin.py:48
+#: app/forms/admin.py:39 app/forms/admin.py:49
 msgid "Badge Name"
 msgstr "Názov odznaku"
 
-#: app/forms/admin.py:40 app/forms/admin.py:49
+#: app/forms/admin.py:41 app/forms/admin.py:50
 msgid "Badge Description"
 msgstr "Popis odznaku"
 
-#: app/forms/admin.py:41 app/forms/admin.py:50
+#: app/forms/admin.py:42 app/forms/admin.py:51
 msgid "Score Adjustment"
 msgstr "Nárast karmy"
 
-#: app/forms/admin.py:42 app/forms/admin.py:51
+#: app/forms/admin.py:43 app/forms/admin.py:52
 msgid "Sort"
 msgstr "Zoradenie"
 
-#: app/forms/admin.py:43 app/forms/admin.py:52
+#: app/forms/admin.py:44 app/forms/admin.py:53
 msgid "Trigger"
 msgstr "Spúšťač"
 
-#: app/forms/admin.py:58
+#: app/forms/admin.py:59
 msgid "Enter Domain"
 msgstr "Zadaj doménu"
 
-#: app/forms/admin.py:64
+#: app/forms/admin.py:65
 msgid "Enable invite code to register"
 msgstr "Zapnúť registrácie cez pozvánky"
 
-#: app/forms/admin.py:66
+#: app/forms/admin.py:67
 msgid "Allow users to see who they invited and who invited them"
 msgstr "Používatelia môžu vidieť koho pozvali, a kto pozval ich"
 
-#: app/forms/admin.py:68
+#: app/forms/admin.py:69
 msgid "Minimum level to create invite codes"
 msgstr "Minimálny level na vytváranie pozvánok"
 
-#: app/forms/admin.py:69
+#: app/forms/admin.py:70
 msgid "Max amount of invites per user"
 msgstr "Maximálny počet pozvánok na používateľa"
 
-#: app/forms/admin.py:77
+#: app/forms/admin.py:78
 msgid "Change selected codes to expire:"
 msgstr "Zmeniť expiráciu zvolených kódov:"
 
-#: app/forms/admin.py:78 app/html/sub/bans.html:91 app/static/js/main.js:500
+#: app/forms/admin.py:79 app/html/sub/bans.html:91 app/static/js/main.js:500
 msgid "Never"
 msgstr "Nikdy"
 
-#: app/forms/admin.py:78
+#: app/forms/admin.py:79
 msgid "Now"
 msgstr "Teraz"
 
-#: app/forms/admin.py:78
+#: app/forms/admin.py:79
 msgid "At:"
 msgstr "Kedy:"
 
-#: app/forms/admin.py:82 app/forms/admin.py:110
+#: app/forms/admin.py:83 app/forms/admin.py:111
 msgid "Expiration date"
 msgstr "Dátum expirácie"
 
-#: app/forms/admin.py:88
+#: app/forms/admin.py:89
 msgid "Enter one-time password"
 msgstr "Zadaj jednorázové heslo"
 
-#: app/forms/admin.py:95
+#: app/forms/admin.py:96
 msgid "Slug (URL)"
 msgstr "Slug (URL)"
 
-#: app/forms/admin.py:99
+#: app/forms/admin.py:100
 msgid "Page title"
 msgstr "Názov stránky"
 
-#: app/forms/admin.py:103
+#: app/forms/admin.py:104
 msgid "Content"
 msgstr "Obsah"
 
-#: app/forms/admin.py:108
+#: app/forms/admin.py:109
 msgid "Code (empty to generate random)"
 msgstr "Kód (prázdne pole vygeneruje náhodný)"
 
-#: app/forms/admin.py:109 app/html/user/settings/invitecode.html:24
+#: app/forms/admin.py:110 app/html/user/settings/invitecode.html:24
 msgid "Uses"
 msgstr "Použití"
 
@@ -653,7 +797,7 @@ msgstr "Zatiaľ tu nemáme príspevky."
 #: app/html/admin/reports.html:60 app/html/admin/wiki.html:48
 #: app/html/index.html:60 app/html/mod/closed.html:58
 #: app/html/mod/reports.html:58 app/html/mod/sub_reports.html:59
-#: app/html/mod/sub_reports_closed.html:60 app/html/site/log.html:103
+#: app/html/mod/sub_reports_closed.html:60 app/html/site/log.html:105
 #: app/html/sub.html:42 app/html/sub/log.html:83
 msgid "Previous page"
 msgstr "Novšie príspevky"
@@ -661,10 +805,47 @@ msgstr "Novšie príspevky"
 #: app/html/admin/reports.html:63 app/html/admin/wiki.html:51
 #: app/html/index.html:63 app/html/mod/closed.html:61
 #: app/html/mod/reports.html:61 app/html/mod/sub_reports.html:62
-#: app/html/mod/sub_reports_closed.html:63 app/html/site/log.html:107
+#: app/html/mod/sub_reports_closed.html:63 app/html/site/log.html:109
 #: app/html/sub.html:45 app/html/sub/log.html:87
 msgid "Next page"
 msgstr "Staršie príspevky"
+
+#: app/html/admin/configuration.html:15 app/html/shared/sidebar/admin.html:16
+msgid "Site configuration"
+msgstr "Site configuration"
+
+#: app/html/admin/configuration.html:16
+#, python-format
+msgid "See the <a href=\"%(url)s\">Site log</a> for the history of changes to configuration values."
+msgstr "See the <a href=\"%(url)s\">Site log</a> for the history of changes to configuration values."
+
+#: app/html/admin/configuration.html:23
+msgid "Setting Name"
+msgstr "Setting Name"
+
+#: app/html/admin/configuration.html:24
+msgid "Current Value"
+msgstr "Current Value"
+
+#: app/html/admin/configuration.html:35 app/static/js/Mod.js:131
+msgid "Enabled"
+msgstr "Enabled"
+
+#: app/html/admin/configuration.html:37
+msgid "Disabled"
+msgstr "Disabled"
+
+#: app/html/admin/configuration.html:67 app/html/sub/flairs.html:22
+#: app/html/sub/rules.html:28 app/html/sub/settings.html:126
+#: app/html/sub/user_flairs.html:27 app/html/sub/user_flairs.html:35
+#: app/static/js/main.js:168
+msgid "Saving..."
+msgstr "Ukladám..."
+
+#: app/html/admin/configuration.html:68 app/static/js/Post.js:344
+#: app/static/js/Post.js:399 app/static/js/Post.js:694
+msgid "Cancel"
+msgstr "Zrušiť"
 
 #: app/html/admin/createwiki.html:19
 msgid "Create wiki"
@@ -854,11 +1035,11 @@ msgstr "Príliš mnoho požiadaviek"
 msgid "Too much, too fast!"
 msgstr "Príliš rýchlo, príliš veľa!"
 
-#: app/html/errors/429.html:12 app/views/do.py:106
+#: app/html/errors/429.html:12 app/views/do.py:101
 msgid "Whoa, calm down and wait a bit, then try again."
 msgstr "Počkať! Trochu sa krotiť s tým prispievaním."
 
-#: app/html/errors/500.html:4 app/html/errors/500.html:10 app/views/do.py:1223
+#: app/html/errors/500.html:4 app/html/errors/500.html:10 app/views/do.py:1218
 msgid "Internal error"
 msgstr "Internal error"
 
@@ -1158,7 +1339,7 @@ msgstr "Obsahuje všetky vyriešené hlásenia pre túto skupinu."
 msgid "Admin mode is currently enabled."
 msgstr "Admin mode is currently enabled."
 
-#: app/html/shared/layout.html:44
+#: app/html/shared/layout.html:44 app/static/js/Mod.js:132
 msgid "Disable"
 msgstr "Disable"
 
@@ -1176,8 +1357,8 @@ msgstr "ďalšie"
 
 #: app/html/shared/layout.html:96 app/html/user/register.html:5
 #: app/html/user/register.html:16 app/html/user/register.html:64
-#: app/html/user/registration_disabled.html:5
-#: app/html/user/registration_disabled.html:11
+#: app/html/user/registration_disabled.html:4
+#: app/html/user/registration_disabled.html:10
 msgid "Register"
 msgstr "Registrácia"
 
@@ -1328,15 +1509,15 @@ msgstr "Uploads"
 msgid "Wikis"
 msgstr "Wiki stránky"
 
-#: app/html/shared/sidebar/admin.html:13 app/views/admin.py:750
+#: app/html/shared/sidebar/admin.html:13 app/views/admin.py:699
 msgid "Banned Domains"
 msgstr "Zabanované domény"
 
-#: app/html/shared/sidebar/admin.html:14 app/views/admin.py:747
+#: app/html/shared/sidebar/admin.html:14 app/views/admin.py:696
 msgid "Banned Email Domains"
 msgstr "Zabanované emailové domény"
 
-#: app/html/shared/sidebar/admin.html:16
+#: app/html/shared/sidebar/admin.html:17
 msgid "Site log"
 msgstr "Záznamy"
 
@@ -1725,7 +1906,12 @@ msgstr "Vypnutá captcha"
 msgid "Enabled captchas"
 msgstr "Zapnutá captcha"
 
-#: app/html/site/log.html:95 app/html/sub/createpost.html:85
+#: app/html/site/log.html:84
+#, python-format
+msgid "Changed <code>%(setting)s</code> to <code>%(value)s<code>"
+msgstr "Changed <code>%(setting)s</code> to <code>%(value)s<code>"
+
+#: app/html/site/log.html:97 app/html/sub/createpost.html:85
 #: app/html/sub/log.html:75
 msgid "Link"
 msgstr "Link"
@@ -1860,7 +2046,7 @@ msgstr "Náhľad príspevku"
 #: app/html/sub/css.html:17
 #, python-format
 msgid "Editing stylesheet for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
-msgstr "Editing stylesheet for <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
+msgstr "Úprava CSS pre skupinu <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
 
 #: app/html/sub/css.html:29 app/html/sub/flairs.html:22
 #: app/html/sub/rules.html:28 app/html/sub/settings.html:126
@@ -1936,12 +2122,6 @@ msgstr "Tagy príspevkov v skupine <a href=\"%(url)s\">%(sub)s</a>"
 #: app/html/sub/flairs.html:19
 msgid "Create new post flair"
 msgstr "Definuj nový tag"
-
-#: app/html/sub/flairs.html:22 app/html/sub/rules.html:28
-#: app/html/sub/settings.html:126 app/html/sub/user_flairs.html:27
-#: app/html/sub/user_flairs.html:35 app/static/js/main.js:168
-msgid "Saving..."
-msgstr "Ukladám..."
 
 #: app/html/sub/flairs.html:22 app/html/sub/user_flairs.html:35
 msgid "Add flair"
@@ -2569,7 +2749,7 @@ msgstr "Poslať správu"
 msgid "I accept the <a href=\"/wiki/tos\">Terms of Use</a>"
 msgstr "Prijímam <a href=\"/wiki/tos\">Podmienky používania</a>"
 
-#: app/html/user/registration_disabled.html:12
+#: app/html/user/registration_disabled.html:11
 msgid "Registration has been temporarily disabled. Please check back later. We apologize for any inconvience."
 msgstr "Nové registrácie momentálne nefungujú. Skús to neskôr prosím."
 
@@ -2878,6 +3058,14 @@ msgstr "Chyba: %1"
 msgid "Could not contact the server"
 msgstr "Nepodarilo sa spojiť so serverom"
 
+#: app/static/js/Mod.js:132
+msgid "Enable"
+msgstr "Enable"
+
+#: app/static/js/Mod.js:138
+msgid "Change"
+msgstr "Change"
+
 #: app/static/js/Poll.js:75
 msgid "Voting..."
 msgstr "Hlasujem..."
@@ -2928,11 +3116,6 @@ msgstr "Hotovo"
 #: app/static/js/Post.js:276 app/static/js/Post.js:291 app/static/js/Sub.js:286
 msgid "Done!"
 msgstr "Hotovo!"
-
-#: app/static/js/Post.js:344 app/static/js/Post.js:399
-#: app/static/js/Post.js:694
-msgid "Cancel"
-msgstr "Zrušiť"
 
 #: app/static/js/Post.js:417 app/static/js/Post.js:438
 msgid "There was an error while editing: %1"
@@ -3123,7 +3306,7 @@ msgstr "Čakajúce"
 msgid "Banned"
 msgstr "Zabanované"
 
-#: app/views/admin.py:93
+#: app/views/admin.py:92
 msgid "Invalid or expired token."
 msgstr "Neplatný alebo expirovaný token."
 
@@ -3131,474 +3314,478 @@ msgstr "Neplatný alebo expirovaný token."
 msgid "User not found or invalid ticket"
 msgstr "Používateľ sa nenašiel, alebo ticket je neplatný"
 
-#: app/views/auth.py:120 app/views/subs.py:144 app/views/user.py:297
+#: app/views/auth.py:118 app/views/subs.py:144 app/views/user.py:297
 msgid "Invalid captcha."
 msgstr "Neplatná captcha."
 
-#: app/views/auth.py:126
+#: app/views/auth.py:124
 msgid "Username has invalid characters."
 msgstr "Prihlasovacie meno obsahuje neplatné znaky."
 
-#: app/views/auth.py:143
+#: app/views/auth.py:141
 msgid "Username is not available."
 msgstr "Prihlasovacie meno je nedostupné."
 
-#: app/views/auth.py:162 app/views/auth.py:329 app/views/do.py:169
+#: app/views/auth.py:160 app/views/auth.py:327 app/views/do.py:164
 msgid "We do not accept emails from your email provider."
 msgstr "Emailové adresy od tohto providera neakceptujeme."
 
-#: app/views/auth.py:171 app/views/auth.py:336 app/views/do.py:178
+#: app/views/auth.py:169 app/views/auth.py:334 app/views/do.py:173
 msgid "E-mail address is already in use."
 msgstr "Tento email je už použitý."
 
-#: app/views/auth.py:181
+#: app/views/auth.py:179
 msgid "Incorrect answer for security question."
 msgstr "Nesprávna odpoveď na bezpečnostnú otázku."
 
-#: app/views/auth.py:191 app/views/auth.py:202
+#: app/views/auth.py:189 app/views/auth.py:200
 msgid "Invalid invite code."
 msgstr "Neplatný pozvánkový kód."
 
-#: app/views/auth.py:240
+#: app/views/auth.py:238
 #, python-format
 msgid "Confirm your new account on %(site)s"
 msgstr "Potvrď svoje konto na %(site)s"
 
-#: app/views/auth.py:283 app/views/auth.py:315
+#: app/views/auth.py:281 app/views/auth.py:313
 msgid "The link you used is invalid or has expired."
 msgstr "Neplatný, alebo starý link."
 
-#: app/views/auth.py:375
+#: app/views/auth.py:373
 msgid "Your email is already confirmed."
 msgstr "Emailová adresa je už overená."
 
-#: app/views/auth.py:409 app/views/auth.py:414 app/views/auth.py:419
+#: app/views/auth.py:407 app/views/auth.py:412 app/views/auth.py:417
 msgid "Invalid username or password."
 msgstr "Neplatné meno alebo heslo."
 
-#: app/views/do.py:183
+#: app/views/do.py:178
 msgid "Incorrect password"
 msgstr "Nesprávne heslo"
 
-#: app/views/do.py:197
+#: app/views/do.py:192
 msgid "Password change failed. Please try again later"
 msgstr "Zmena hesla sa nepodarila. Skús to neskôr"
 
-#: app/views/do.py:209
+#: app/views/do.py:204
 msgid "To confirm, click the link in the email we sent to you. You may want to check your spam folder, just in case ;)"
 msgstr "Použi link v maili, ktorý sme ti poslali. Pre istotu skontroluj aj maily v Spame. ;)"
 
-#: app/views/do.py:223
+#: app/views/do.py:218
 #, python-format
 msgid "Confirm your email address for your %(site)s account"
 msgstr "Potvrď emailovú adresu tvojho konta na %(site)s"
 
-#: app/views/do.py:253
+#: app/views/do.py:248
 msgid "Wrong password"
 msgstr "Nesprávne heslo"
 
-#: app/views/do.py:255
+#: app/views/do.py:250
 msgid "YES"
 msgstr "ANO"
 
-#: app/views/do.py:256
+#: app/views/do.py:251
 msgid "Type \"YES\" in the box"
 msgstr "Napíš sem \"ANO\""
 
-#: app/views/do.py:275 app/views/do.py:479 app/views/do.py:512
-#: app/views/do.py:571 app/views/do.py:628 app/views/do.py:663
-#: app/views/do.py:699 app/views/do.py:727 app/views/do.py:759
-#: app/views/do.py:791 app/views/do.py:1389 app/views/do.py:1521
-#: app/views/do.py:1616 app/views/do.py:1719 app/views/do.py:1768
-#: app/views/do.py:1809 app/views/do.py:1861 app/views/do.py:2468
-#: app/views/do.py:2524 app/views/do.py:2574 app/views/do.py:3693
-#: app/views/do.py:3754 app/views/do.py:3820 app/views/do.py:3878
+#: app/views/do.py:270 app/views/do.py:474 app/views/do.py:507
+#: app/views/do.py:566 app/views/do.py:623 app/views/do.py:658
+#: app/views/do.py:694 app/views/do.py:722 app/views/do.py:754
+#: app/views/do.py:786 app/views/do.py:1384 app/views/do.py:1516
+#: app/views/do.py:1611 app/views/do.py:1714 app/views/do.py:1763
+#: app/views/do.py:1804 app/views/do.py:1856 app/views/do.py:2406
+#: app/views/do.py:2462 app/views/do.py:2512 app/views/do.py:3631
+#: app/views/do.py:3692 app/views/do.py:3758 app/views/do.py:3816
 msgid "Sub does not exist"
 msgstr "Skupina neexistuje"
 
-#: app/views/do.py:307
+#: app/views/do.py:302
 msgid "Post was already deleted"
 msgstr "Príspevok už bol vymazaný"
 
-#: app/views/do.py:316 app/views/do.py:427 app/views/do.py:482
-#: app/views/do.py:574 app/views/do.py:670 app/views/do.py:707
-#: app/views/do.py:749 app/views/do.py:1392 app/views/do.py:2689
-#: app/views/do.py:2731 app/views/do.py:2783 app/views/do.py:2973
-#: app/views/do.py:3699 app/views/do.py:3760 app/views/do.py:3823
-#: app/views/do.py:3881
+#: app/views/do.py:311 app/views/do.py:422 app/views/do.py:477
+#: app/views/do.py:569 app/views/do.py:665 app/views/do.py:702
+#: app/views/do.py:744 app/views/do.py:1387 app/views/do.py:2627
+#: app/views/do.py:2669 app/views/do.py:2721 app/views/do.py:2911
+#: app/views/do.py:3637 app/views/do.py:3698 app/views/do.py:3761
+#: app/views/do.py:3819
 msgid "Not authorized"
 msgstr "Nemáš oprávnenia"
 
-#: app/views/do.py:323
+#: app/views/do.py:318
 msgid "Cannot delete without reason"
 msgstr "Musíš udať dôvod"
 
-#: app/views/do.py:419
+#: app/views/do.py:414
 msgid "Post is not deleted"
 msgstr "Príspevok nie je vymazaný"
 
-#: app/views/do.py:423
+#: app/views/do.py:418
 msgid "Can not un-delete a self-deleted post"
 msgstr "Samo-vymazaný príspevok sa nedá obnoviť"
 
-#: app/views/do.py:430
+#: app/views/do.py:425
 msgid "Cannot un-delete without reason"
 msgstr "Pre obnovenie je nutné zadať dôvod"
 
-#: app/views/do.py:525
+#: app/views/do.py:520
 msgid "At least one kind of post must be permitted"
 msgstr "Povoľ aspoň jeden typ príspevkov"
 
-#: app/views/do.py:585
+#: app/views/do.py:580
 msgid "No flair text"
 msgstr "Tag neobsahuje text"
 
-#: app/views/do.py:590 app/views/do.py:796 app/views/do.py:836
-#: app/views/do.py:862 app/views/do.py:1363 app/views/do.py:1398
-#: app/views/do.py:1540 app/views/do.py:1612 app/views/do.py:1715
-#: app/views/do.py:1764 app/views/do.py:1805
+#: app/views/do.py:585 app/views/do.py:791 app/views/do.py:831
+#: app/views/do.py:857 app/views/do.py:1358 app/views/do.py:1393
+#: app/views/do.py:1535 app/views/do.py:1607 app/views/do.py:1710
+#: app/views/do.py:1759 app/views/do.py:1800
 msgid "User does not exist"
 msgstr "Používateľ neexistuje"
 
-#: app/views/do.py:613 app/views/do.py:677 app/views/do.py:742
-#: app/views/do.py:2481 app/views/do.py:2536
+#: app/views/do.py:608 app/views/do.py:672 app/views/do.py:737
+#: app/views/do.py:2419 app/views/do.py:2474
 msgid "Flair does not exist"
 msgstr "Tag neexistuje"
 
-#: app/views/do.py:640
+#: app/views/do.py:635
 msgid "Free-form user flairs are disabled for this sub"
 msgstr "Ľubovoľné používateľské tagy nie sú dostupné"
 
-#: app/views/do.py:770
+#: app/views/do.py:765
 msgid "Post has no flair"
 msgstr "Príspevok nemá nastavený tag"
 
-#: app/views/do.py:831 app/views/do.py:857
+#: app/views/do.py:826 app/views/do.py:852
 msgid "Badge does not exist"
 msgstr "Odznak neexistuje"
 
-#: app/views/do.py:878 app/views/do.py:908 app/views/do.py:934
-#: app/views/do.py:964
+#: app/views/do.py:873 app/views/do.py:903 app/views/do.py:929
+#: app/views/do.py:959
 msgid "sub not found"
 msgstr "skupina sa nenašla"
 
-#: app/views/do.py:881
+#: app/views/do.py:876
 msgid "already subscribed"
 msgstr "už odoberáš"
 
-#: app/views/do.py:911
+#: app/views/do.py:906
 msgid "not subscribed"
 msgstr "neodoberáš"
 
-#: app/views/do.py:937
+#: app/views/do.py:932
 msgid "already blocked"
 msgstr "už blokuješ"
 
-#: app/views/do.py:967
+#: app/views/do.py:962
 msgid "sub not blocked"
 msgstr "neblokuješ"
 
-#: app/views/do.py:1083
+#: app/views/do.py:1078
 msgid "Post/Comment not found"
 msgstr "Príspevok/komentár neexistuje"
 
-#: app/views/do.py:1089 app/views/do.py:1155
+#: app/views/do.py:1084 app/views/do.py:1150
 msgid "Post not found"
 msgstr "Príspevok nenájdený"
 
-#: app/views/do.py:1091
+#: app/views/do.py:1086
 msgid "Error"
 msgstr "Chyba"
 
-#: app/views/do.py:1094
+#: app/views/do.py:1089
 msgid "Nothing to distinguish"
 msgstr "Nejde prízvukovať"
 
-#: app/views/do.py:1097
+#: app/views/do.py:1092
 msgid "You are not the author of the item"
 msgstr "NIe si autorom"
 
-#: app/views/do.py:1101
+#: app/views/do.py:1096
 msgid "You must be a mod or admin"
 msgstr "Musíš byť moderátor alebo admin"
 
-#: app/views/do.py:1158 app/views/do.py:1206
+#: app/views/do.py:1153 app/views/do.py:1201
 msgid "Post was deleted"
 msgstr "Príspevok bol vymazaný"
 
-#: app/views/do.py:1216
+#: app/views/do.py:1211
 msgid "Comments are closed on this post."
 msgstr "Komentáre k tomuto príspevku sú vypnuté."
 
-#: app/views/do.py:1228
+#: app/views/do.py:1223
 msgid "You are currently banned from commenting"
 msgstr "Momentálne máš ban na komentáre"
 
-#: app/views/do.py:1238 app/views/do.py:1247
+#: app/views/do.py:1233 app/views/do.py:1242
 msgid "Parent comment does not exist"
 msgstr "Nadradený komentár neexistuje"
 
-#: app/views/do.py:1418
+#: app/views/do.py:1413
 msgid "Expiration time too far into the future"
 msgstr "Termín vypršania je príliš ďaleko v budúcnosti"
 
-#: app/views/do.py:1421
+#: app/views/do.py:1416
 msgid "Invalid expiration time"
 msgstr "Neplatný termín vypršania"
 
-#: app/views/do.py:1425
+#: app/views/do.py:1420
 msgid "Expiration date is in the past"
 msgstr "Termín vypršania je v minulosti"
 
-#: app/views/do.py:1431
+#: app/views/do.py:1426
 msgid "Janitors may only create temporary bans"
 msgstr "Ako čistič môžeš vydávať iba dočasné bany"
 
-#: app/views/do.py:1435
+#: app/views/do.py:1430
 msgid "Already banned"
 msgstr "Už zabanovaný"
 
-#: app/views/do.py:1484
+#: app/views/do.py:1479
 #, python-format
 msgid "banned for: %(reason)s, until %(expires)s"
 msgstr "ban z dôvodu: %(reason)s, platný do %(expires)s"
 
-#: app/views/do.py:1490
+#: app/views/do.py:1485
 #, python-format
 msgid "banned for: %(reason)s, permanent"
 msgstr "ban z dôvodu: %(reason)s, permanentný"
 
-#: app/views/do.py:1548
+#: app/views/do.py:1543
 msgid "User is already a mod"
 msgstr "Používateľ už je moderátorom"
 
-#: app/views/do.py:1556
+#: app/views/do.py:1551
 msgid "User has a pending invite"
 msgstr "Používateľ už bol pozvaný"
 
-#: app/views/do.py:1563
+#: app/views/do.py:1558
 msgid "Invalid power level"
 msgstr "Neplatný level"
 
-#: app/views/do.py:1577
+#: app/views/do.py:1572
 msgid "User can't mod more than 20 subs"
 msgstr "Používateľ nesmie moderovať viac ako 20 skupín"
 
-#: app/views/do.py:1633 app/views/do.py:3252
+#: app/views/do.py:1628 app/views/do.py:3190
 msgid "User is not banned"
 msgstr "Používateľ nie je zabanovaný"
 
-#: app/views/do.py:1641
+#: app/views/do.py:1636
 msgid "Janitors may only remove bans placed by themselves"
 msgstr "Ako čistič môžeš rušiť iba tie bany, ktoré si vydal(a) ty"
 
-#: app/views/do.py:1702
+#: app/views/do.py:1697
 msgid "Ban removed"
 msgstr "Ban zrušený"
 
-#: app/views/do.py:1736
+#: app/views/do.py:1731
 msgid "User is not mod"
 msgstr "Používateľ nie je moderátor"
 
-#: app/views/do.py:1753 app/views/do.py:1794
+#: app/views/do.py:1748 app/views/do.py:1789
 msgid "Access denied"
 msgstr "Prístup zamietnutý"
 
-#: app/views/do.py:1780
+#: app/views/do.py:1775
 msgid "User has not been invited to moderate the sub"
 msgstr "Používateľ nebol pozvaný moderovať túto skupinu"
 
-#: app/views/do.py:1818 app/views/do.py:1873
+#: app/views/do.py:1813 app/views/do.py:1868
 msgid "You have not been invited to mod this sub"
 msgstr "Nebol(a) si pozvaný(á) moderovať túto skupinu"
 
-#: app/views/do.py:1831
+#: app/views/do.py:1826
 msgid "You can't mod more than 20 subs"
 msgstr "Nemôžeš moderovať viac ako 20 skupín"
 
-#: app/views/do.py:1894
+#: app/views/do.py:1889
 msgid "Message not found"
 msgstr "Správa sa nenašla"
 
-#: app/views/do.py:1939 app/views/do.py:1945 app/views/do.py:1999
-#: app/views/do.py:2005
+#: app/views/do.py:1934 app/views/do.py:1940 app/views/do.py:1994
+#: app/views/do.py:2000
 msgid "Message does not exist"
 msgstr "Správa neexistuje"
 
-#: app/views/do.py:1955
+#: app/views/do.py:1950
 msgid "Missing title"
 msgstr "Chýbajúci názov"
 
-#: app/views/do.py:1958
+#: app/views/do.py:1953
 msgid "Title too short."
 msgstr "Názov je príliš krátky."
 
-#: app/views/do.py:1970
+#: app/views/do.py:1965
 msgid "You cannot edit the post title anymore"
 msgstr "Názov už nemôžeš meniť"
 
-#: app/views/do.py:1974
+#: app/views/do.py:1969
 msgid "You did not post this!"
 msgstr "Toto nie je tvoj príspevok!"
 
-#: app/views/do.py:1989
+#: app/views/do.py:1984
 msgid "Bork bork"
 msgstr "Grrr grrr"
 
-#: app/views/do.py:2045
+#: app/views/do.py:2040
 msgid "Post already announced"
 msgstr "Príspevok už je oznámený"
 
-#: app/views/do.py:2098
+#: app/views/do.py:2093
 msgid "Domain is already banned"
 msgstr "Doména už je zabanovaná"
 
-#: app/views/do.py:2127
+#: app/views/do.py:2122
 msgid "Domain is not banned"
 msgstr "Doména nie je zabanovaná"
 
-#: app/views/do.py:2227
+#: app/views/do.py:2194
 msgid "Already saved"
 msgstr "Už uložené"
 
-#: app/views/do.py:2246
+#: app/views/do.py:2213
 msgid "Post was not saved"
 msgstr "Príspevok nebol uložený"
 
-#: app/views/do.py:2353
+#: app/views/do.py:2303
 msgid "This sub already has three sticky posts"
 msgstr "Táto skupina už má 3 sticky príspevky"
 
-#: app/views/do.py:2586
+#: app/views/do.py:2524
 msgid "Rule does not exist"
 msgstr "Pravidlo neexistuje"
 
-#: app/views/do.py:2608
+#: app/views/do.py:2546
 msgid "Rule has invalid characters"
 msgstr "Pravidlo obsahuje neplatné znaky"
 
-#: app/views/do.py:2621
+#: app/views/do.py:2559
 #, python-format
 msgid "Set a new password on %(site)s"
 msgstr "Nastaviť nové heslo na %(site)s"
 
-#: app/views/do.py:2652 app/views/do.py:2655 app/views/do.py:2661
+#: app/views/do.py:2590 app/views/do.py:2593 app/views/do.py:2599
 msgid "Password recovery link expired"
 msgstr "Link pre obnovu hesla už neplatí"
 
-#: app/views/do.py:2669
+#: app/views/do.py:2607
 msgid "Password change failed. Please try again later."
 msgstr "Zmena hesla sa nepodarila. Skús to neskôr."
 
-#: app/views/do.py:2697
+#: app/views/do.py:2635
 msgid "You can't edit a deleted comment"
 msgstr "Vymazaný komentár nejde upraviť"
 
-#: app/views/do.py:2820 app/views/do.py:2833
+#: app/views/do.py:2758 app/views/do.py:2771
 msgid "Not authenticated"
 msgstr "Nie si overený(á)"
 
-#: app/views/do.py:2948
+#: app/views/do.py:2886
 msgid "Missing text"
 msgstr "Chýbajúci text"
 
-#: app/views/do.py:2983
+#: app/views/do.py:2921
 msgid "User not found"
 msgstr "Používateľ sa nenašiel"
 
-#: app/views/do.py:3027
+#: app/views/do.py:2965
 msgid "File name too long."
 msgstr "Názov súboru je príliš dlhý."
 
-#: app/views/do.py:3041
+#: app/views/do.py:2979
 msgid "File name too short or missing."
 msgstr "Názov súboru je príliš krátky, alebo nebol zadaný."
 
-#: app/views/do.py:3055
+#: app/views/do.py:2993
 msgid "Invalid file name."
 msgstr "Neplatný názov súboru."
 
-#: app/views/do.py:3070
+#: app/views/do.py:3008
 msgid "Please select a file to upload."
 msgstr "Prosím vyber súbor na nahratie."
 
-#: app/views/do.py:3101
+#: app/views/do.py:3039
 msgid "Not enough available space to upload file."
 msgstr "Nedostatok miesta na nahratie súboru."
 
-#: app/views/do.py:3403 app/views/do.py:3466
+#: app/views/do.py:3341 app/views/do.py:3404
 msgid "Post is not a poll"
 msgstr "Príspevok nie je anketou"
 
-#: app/views/do.py:3410
+#: app/views/do.py:3348
 msgid "Poll option does not exist"
 msgstr "Táto možnosť hlasovania neexistuje"
 
-#: app/views/do.py:3417
+#: app/views/do.py:3355
 msgid "Already voted"
 msgstr "Už si hlasoval(a)"
 
-#: app/views/do.py:3426 app/views/do.py:3436 app/views/do.py:3473
-#: app/views/do.py:3483
+#: app/views/do.py:3364 app/views/do.py:3374 app/views/do.py:3411
+#: app/views/do.py:3421
 msgid "Poll is closed"
 msgstr "Hlasovanie bolo ukončené"
 
-#: app/views/do.py:3446
+#: app/views/do.py:3384
 msgid "Insufficient user level"
 msgstr "Nedostatočný level používateľa"
 
-#: app/views/do.py:3524 app/views/do.py:3530
+#: app/views/do.py:3462 app/views/do.py:3468
 msgid "Poll already closed."
 msgstr "Hlasovanie už bolo ukončené."
 
-#: app/views/do.py:3561
+#: app/views/do.py:3499
 msgid "Post was removed"
 msgstr "Príspevok bol odstránený"
 
-#: app/views/do.py:3570 app/views/do.py:3643
+#: app/views/do.py:3508 app/views/do.py:3581
 msgid "You have already reported this post"
 msgstr "Tento príspevok si už nahlásil(a)"
 
-#: app/views/do.py:3576 app/views/do.py:3649
+#: app/views/do.py:3514 app/views/do.py:3587
 msgid "Report reason too short."
 msgstr "Zadaný dôvod je príliš stručný."
 
-#: app/views/do.py:3578 app/views/do.py:3651
+#: app/views/do.py:3516 app/views/do.py:3589
 msgid "Report reason too long."
 msgstr "Dôvod reportu presahuje povolenú dĺžku."
 
-#: app/views/do.py:3583 app/views/do.py:3656
+#: app/views/do.py:3521 app/views/do.py:3594
 msgid "You are banned from this sub."
 msgstr "V tejto skupine máš ban."
 
-#: app/views/do.py:3634
+#: app/views/do.py:3572
 msgid "Comment was removed"
 msgstr "Komentár bol odstránený"
 
-#: app/views/do.py:3683 app/views/do.py:3739 app/views/do.py:3810
-#: app/views/do.py:3863
+#: app/views/do.py:3621 app/views/do.py:3677 app/views/do.py:3748
+#: app/views/do.py:3801
 msgid "Report does not exist"
 msgstr "Hlásenie neexistuje"
 
-#: app/views/do.py:3696 app/views/do.py:3757
+#: app/views/do.py:3634 app/views/do.py:3695
 msgid "Invalid action"
 msgstr "Neplatná akcia"
 
-#: app/views/do.py:3702 app/views/do.py:3763
+#: app/views/do.py:3640 app/views/do.py:3701
 msgid "This report has already been closed"
 msgstr "Toto hlásenie už bolo vyriešené"
 
-#: app/views/do.py:3705 app/views/do.py:3766
+#: app/views/do.py:3643 app/views/do.py:3704
 msgid "This report is already open"
 msgstr "Toto hlásenie sa už rieši"
 
-#: app/views/do.py:3728 app/views/do.py:3794 app/views/do.py:3845
+#: app/views/do.py:3666 app/views/do.py:3732 app/views/do.py:3783
 msgid "Failed to update report"
 msgstr "Nepodarilo sa updatovať hlásenie"
 
-#: app/views/do.py:3905
+#: app/views/do.py:3843
 msgid "Failed to close report"
 msgstr "Nepodarilo sa vyriešiť hlásenie"
+
+#: app/views/do.py:3943
+msgid "Error: not a number"
+msgstr "Error: not a number"
 
 #: app/views/subs.py:100
 msgid "Sub does not exist."
@@ -3608,90 +3795,90 @@ msgstr "Skupina neexistuje."
 msgid "That post type is not allowed in this sub."
 msgstr "Tento typ príspevku nie je v tejto skupine povolený."
 
-#: app/views/subs.py:161
+#: app/views/subs.py:158
 msgid "Posting has been temporarily disabled."
 msgstr "Prispievať teraz nie je možné."
 
-#: app/views/subs.py:176
+#: app/views/subs.py:171
 msgid "You cannot post in this sub."
 msgstr "V tejto skupine nemôžeš prispievať."
 
-#: app/views/subs.py:189
+#: app/views/subs.py:184
 msgid "You're banned from posting on this sub."
 msgstr "V tejto skupine si zabanovaný(á)."
 
-#: app/views/subs.py:203
+#: app/views/subs.py:198
 msgid "Only mods can post on this sub."
 msgstr "V tejto skupine môžu prispievať iba moderátori."
 
-#: app/views/subs.py:234
+#: app/views/subs.py:229
 msgid "You have posted too much today."
 msgstr "Na dnes už máš príliš veľa príspevkov."
 
-#: app/views/subs.py:247
+#: app/views/subs.py:242
 msgid "Title is too short and/or contains whitespace characters."
 msgstr "Názov je príliš krátky, alebo obsahuje medzery."
 
-#: app/views/subs.py:281
+#: app/views/subs.py:276
 msgid "No link provided."
 msgstr "Nezadal(a) si link."
 
-#: app/views/subs.py:300
+#: app/views/subs.py:295
 #, python-format
 msgid "This link was <a href=\"%(link)s\">recently posted</a> on this sub."
 msgstr "Tento link tu už <a href=\"%(link)s\">máme</a>."
 
-#: app/views/subs.py:316
+#: app/views/subs.py:311
 msgid "This domain is banned."
 msgstr "Linky z tejto domény tu nie sú povolené."
 
-#: app/views/subs.py:336
+#: app/views/subs.py:331
 msgid "Not enough poll options provided."
 msgstr "Nedostatočný počet hlasovacích možností."
 
-#: app/views/subs.py:350
+#: app/views/subs.py:345
 msgid "Poll option text is too long."
 msgstr "Príliš dlhý text."
 
-#: app/views/subs.py:368
+#: app/views/subs.py:363
 msgid "Poll closing time is too far in the future."
 msgstr "Termín ukončenia hlasovania je príliš ďaleko v budúcnosti."
 
-#: app/views/subs.py:382
+#: app/views/subs.py:377
 msgid "Invalid closing time."
 msgstr "Neplatný termín ukončenia."
 
-#: app/views/subs.py:395
+#: app/views/subs.py:390
 msgid "The closing time is in the past!"
 msgstr "Termín ukončenia je v minulosti!"
 
-#: app/views/subs.py:525
+#: app/views/subs.py:520
 msgid "Sub name has invalid characters"
 msgstr "Názov skupiny obsahuje neplatné znaky"
 
-#: app/views/subs.py:530
+#: app/views/subs.py:525
 msgid "Invalid sub name"
 msgstr "Neplatný názov skupiny"
 
-#: app/views/subs.py:536
+#: app/views/subs.py:531
 msgid "Sub is already registered"
 msgstr "Táto skupina už existuje"
 
-#: app/views/subs.py:544
+#: app/views/subs.py:539
 msgid "Only Site Admins may create new subs. Please contact an administrator to request a new sub."
 msgstr "Nové skupiny môže vytvárať len Admin. Ak chceš vytvoriť skupinu, prosím kontaktuj admina."
 
-#: app/views/subs.py:558
+#: app/views/subs.py:553
 #, python-format
 msgid "You must be at least level %(level)i."
 msgstr "Musíš mať aspoň level %(level)i."
 
-#: app/views/subs.py:574
+#: app/views/subs.py:569
 #, python-format
 msgid "You cannot own more than %(max)i subs."
 msgstr "Nemôžeš vlastniť viac ako %(max)i skupín."
 
-#: app/views/subs.py:585
+#: app/views/subs.py:580
 #, python-format
 msgid "You cannot own more than %(max)i subs. Try leveling up your account."
 msgstr "Nemôžeš vlastniť viac ako %(max)i skupín. Musíš najskôr zvýšiť leveling svojho účtu."
