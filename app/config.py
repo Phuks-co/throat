@@ -365,7 +365,7 @@ def add_values_to_config(defaults, values, source):
     new dict, structured like cfg_defaults.  Every node will have at least
     'type', 'source' and 'value' keys."""
     result = {}
-    for key in set(list(defaults.keys()) + list(values.keys())):
+    for key in list(defaults.keys()) + list(values.keys()):
         value = values.get(key)
         default = defaults.get(key)
         if key not in defaults:
