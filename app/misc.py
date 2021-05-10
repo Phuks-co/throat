@@ -597,7 +597,7 @@ def getInviteCodeInfo(uid):
 
     if not (
         current_user.is_admin()
-        or (config.invitations_visible_to_users and current_user.uid == uid)
+        or (config.site.invitations_visible_to_users and current_user.uid == uid)
     ):
         return info
 
