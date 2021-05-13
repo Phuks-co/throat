@@ -1448,8 +1448,16 @@ input[type=search] {
   margin-top: 0.3em;
 }
 
-.post-content-container, .poll-space {
-  /*background-color: #eee;*/
+.post-content-container {
+  background-color: #eee;
+  padding: .4em 1em;
+  /* 1px margin on botton and top so it respects <p>'s margin */
+  font-family: verdana,arial,sans-serif;
+  font-size: 15px;
+  line-height: 1.3em;
+}
+
+.poll-space {
   padding: .4em 1em;
   /* 1px margin on botton and top so it respects <p>'s margin */
   font-family: verdana,arial,sans-serif;
