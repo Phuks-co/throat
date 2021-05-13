@@ -268,9 +268,6 @@
     </div>
   @end
 
-  @if (post['ptype'] == 3) and (post['deleted'] == 0 or post['visibility'] == 'admin-self-del' or post['visibility'] == 'mod-del' or post['visibility'] == 'user-self-del'):
-    @{polls.renderPoll(pollData, postmeta, post)!!html}
-  @end
   <div>
   @if post['content']:
   <div>
@@ -295,6 +292,10 @@
   @elif not post['link']:
     <div id="postcontent" class="post-content-container"></div>
     <div id="post-source" class="post-content-container"></div>
+  @end
+
+  @if (post['ptype'] == 3) and (post['deleted'] == 0 or post['visibility'] == 'admin-self-del' or post['visibility'] == 'mod-del' or post['visibility'] == 'user-self-del'):
+  @{polls.renderPoll(pollData, postmeta, post)!!html}
   @end
 
   @if content_history and post['content'] and  (post['visibility'] != 'none' and  post['visibility'] != 'mod-self-del'):

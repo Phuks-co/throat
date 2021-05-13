@@ -1449,7 +1449,12 @@ input[type=search] {
 }
 
 .post-content-container {
-  background-color: #eee;
+  background-color: #f1f1f1;
+  border: solid;
+  border-width: thin;
+  border-color: #888888;
+  margin-left: 1em;
+  margin-right: 1.1em;
   padding: .4em 1em;
   /* 1px margin on botton and top so it respects <p>'s margin */
   font-family: verdana,arial,sans-serif;
@@ -1459,7 +1464,9 @@ input[type=search] {
 
 .poll-space {
   padding: .4em 1em;
-  /* 1px margin on botton and top so it respects <p>'s margin */
+  margin-left: 1em;
+  margin-right: 1.1em;
+  margin-top: 1.1em;
   font-family: verdana,arial,sans-serif;
   font-size: 15px;
   line-height: 1.3em;
