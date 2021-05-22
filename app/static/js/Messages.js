@@ -63,19 +63,26 @@ u.sub('.deletenotif', 'click', function(e){
   });
 });
 
-// Toggle message reply
+// Show message reply
 u.sub('.pmessage .replymsg', 'click', function(e){
   e.preventDefault();
   var replyto = this.getAttribute('data-replyto')
   var title = this.getAttribute('data-replytitle')
   var mid = this.getAttribute('data-mid')
   document.querySelector('#msg-form #to').setAttribute('value', replyto);
-  if(document.querySelector('#msg-form #lto')){
-    document.querySelector('#msg-form #lto').style.display = 'none';
-  }
   document.querySelector('#msg-form #subject').setAttribute('value', 'Re:' + title);
   var modal = document.getElementById('msgpop');
-  document.querySelector('#replyto'+mid).appendChild(document.getElementById('msgpop'));
+  var existingParent = modal.parentNode;
+  var newParent = document.querySelector('#replyto'+mid);
+  if (existingParent != newParent) {
+    var markdownEditor = document.querySelector('#msg-form #content')
+    var existingContent = markdownEditor.value;
+    var newContent = newParent.getAttribute('data-content');
+    existingParent.setAttribute('data-content', existingContent);
+    newParent.appendChild(modal);
+    markdownEditor.value = newContent ? newContent : '';
+    document.querySelector('.cmpreview').style.display = 'none';
+  }
   modal.style.display = "block";
 });
 

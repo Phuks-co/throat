@@ -54,34 +54,5 @@
     {% include 'messages/nav.html' %}
   </div>
 </div>
-
-<div id="msgpop" style="display:none;">
-  <span class="closemsg">&times;</span>
-  <div class="modal-content">
-    <form data-reset="true" id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('messages.inbox_sort')}}" class="pure-form pure-form-aligned ajaxform">
-      {% set msgform = form.CreateUserMessageForm()%}
-      {{msgform.csrf_token}}
-      <h3>Send user message</h3>
-      <fieldset>
-        <div id="lto" class="pure-control-group">
-          <label for="to">User</label>
-          {{msgform.to(placeholder=msgform.to.label.text, required=True)}}
-        </div>
-        <div class="pure-control-group">
-          <label for="subject">Subject</label>
-          {{msgform.subject(placeholder=msgform.subject.label.text, required=True)}}
-        </div>
-        <div class="pure-control-group markdown-editor">
-          {{msgform.content(placeholder="Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}
-        </div>
-        <div class="pure-controls">
-          {% if error %}
-            <div class="error">{{error}}</div>
-          {%endif%}
-          <button type="submit" id="msg-btnsubmit" class="pure-button pure-button-primary" data-prog="Sending...">Send Message</button>
-        </div>
-      </fieldset>
-    </form>
-  </div>
-</div>
+{% include 'messages/reply.html' %}
 {% endblock %}
