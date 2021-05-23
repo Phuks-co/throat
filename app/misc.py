@@ -51,8 +51,11 @@ from .models import (
     SubRule,
     SubUserFlair,
 )
-from .models import MessageType, MessageMailbox, UserUnreadMessage, UserMessageMailbox
 from .models import (
+    MessageType,
+    MessageMailbox,
+    UserUnreadMessage,
+    UserMessageMailbox,
     SubPostVote,
     SubPostComment,
     SubPostCommentVote,
@@ -1367,8 +1370,11 @@ def get_errors(form, first=False):
 # messages
 
 
-def get_messages_inbox(page):
-    """ Returns current user's messages inbox as dictionary. """
+def get_messages_inbox(page, uid=None):
+    """ Returns user's messages inbox as dictionary. """
+    if uid is None:
+        uid = current_user.uid
+    Conversation = Message.alias()
     msgs = (
         Message.select(
             Message.mid,
@@ -1376,17 +1382,21 @@ def get_messages_inbox(page):
             Sub.name.alias("sub"),
             Message.sentby,
             Message.receivedby,
+            Message.reply_to,
             Message.subject,
+            Conversation.subject.alias("thread"),
             Message.content,
             Message.posted,
             Message.mtype,
             UserUnreadMessage.id.alias("unread_id"),
+            UserIgnores.id.alias("ignored"),
         )
+        .join(Conversation, JOIN.LEFT_OUTER, on=(Conversation.mid == Message.reply_to))
         .join(
             UserIgnores,
             JOIN.LEFT_OUTER,
             on=(
-                (UserIgnores.uid == current_user.uid)
+                (UserIgnores.uid == Message.receivedby)
                 & (UserIgnores.target == Message.sentby)
             ),
         )
@@ -1396,7 +1406,7 @@ def get_messages_inbox(page):
             UserUnreadMessage,
             JOIN.LEFT_OUTER,
             on=(
-                (UserUnreadMessage.uid == current_user.uid)
+                (UserUnreadMessage.uid == Message.receivedby)
                 & (UserUnreadMessage.mid == Message.mid)
             ),
         )
@@ -1404,12 +1414,12 @@ def get_messages_inbox(page):
             UserMessageMailbox,
             JOIN.LEFT_OUTER,
             on=(
-                (UserMessageMailbox.uid == current_user.uid)
+                (UserMessageMailbox.uid == Message.receivedby)
                 & (UserMessageMailbox.mid == Message.mid)
             ),
         )
         .where(
-            (Message.receivedby == current_user.uid)
+            (Message.receivedby == uid)
             & (UserMessageMailbox.mailbox == MessageMailbox.INBOX)
             & (UserIgnores.uid.is_null() | (Message.mtype != MessageType.USER_TO_USER))
         )
@@ -1417,39 +1427,40 @@ def get_messages_inbox(page):
         .paginate(page, 20)
         .dicts()
     )
-    for msg in msgs:
-        if msg["mtype"] == MessageType.MOD_TO_USER_AS_MOD:
-            msg["username"] = None
-            msg["sentby"] = None
-        msg["read"] = msg["unread_id"] is None
-    return msgs
+    return process_msgs(msgs)
 
 
-def get_messages_sent(page):
+def get_messages_sent(page, uid=None):
     """ Returns messages sent """
-    return (
+    if uid is None:
+        uid = current_user.uid
+    Conversation = Message.alias()
+    return process_msgs(
         Message.select(
             Message.mid,
             Message.sentby,
+            Message.reply_to,
             User.name.alias("username"),
             Sub.name.alias("sub"),
             Message.subject,
+            Conversation.subject.alias("thread"),
             Message.content,
             Message.posted,
             Message.mtype,
         )
+        .join(Conversation, JOIN.LEFT_OUTER, on=(Conversation.mid == Message.reply_to))
         .join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.receivedby))
         .join(Sub, JOIN.LEFT_OUTER, on=(Sub.sid == Message.sub))
         .join(
             UserMessageMailbox,
             JOIN.LEFT_OUTER,
             on=(
-                (UserMessageMailbox.uid == current_user.uid)
+                (UserMessageMailbox.uid == uid)
                 & (UserMessageMailbox.mid == Message.mid)
             ),
         )
         .where(
-            (Message.sentby == current_user.uid)
+            (Message.sentby == uid)
             & (UserMessageMailbox.mailbox == MessageMailbox.SENT)
         )
         .order_by(Message.mid.desc())
@@ -1458,27 +1469,33 @@ def get_messages_sent(page):
     )
 
 
-def get_messages_saved(page):
+def get_messages_saved(page, uid=None):
     """ Returns saved messages """
+    if uid is None:
+        uid = current_user.uid
+    Conversation = Message.alias()
     msgs = (
         Message.select(
             Message.mid,
             User.name.alias("username"),
             Sub.name.alias("sub"),
             Message.receivedby,
+            Message.reply_to,
             Message.subject,
+            Conversation.subject.alias("thread"),
             Message.content,
             Message.posted,
             Message.mtype,
             UserUnreadMessage.id.alias("unread_id"),
         )
+        .join(Conversation, JOIN.LEFT_OUTER, on=(Conversation.mid == Message.reply_to))
         .join(User, on=(User.uid == Message.sentby))
         .join(Sub, JOIN.LEFT_OUTER, on=(Sub.sid == Message.sub))
         .join(
             UserUnreadMessage,
             JOIN.LEFT_OUTER,
             on=(
-                (UserUnreadMessage.uid == current_user.uid)
+                (UserUnreadMessage.uid == Message.receivedby)
                 & (UserUnreadMessage.mid == Message.mid)
             ),
         )
@@ -1486,24 +1503,34 @@ def get_messages_saved(page):
             UserMessageMailbox,
             JOIN.LEFT_OUTER,
             on=(
-                (UserMessageMailbox.uid == current_user.uid)
+                (UserMessageMailbox.uid == Message.receivedby)
                 & (UserMessageMailbox.mid == Message.mid)
             ),
         )
         .where(
             (UserMessageMailbox.mailbox == MessageMailbox.SAVED)
-            & (Message.receivedby == current_user.uid)
+            & (Message.receivedby == uid)
         )
         .order_by(Message.mid.desc())
         .paginate(page, 20)
         .dicts()
     )
-    for msg in msgs:
+    return process_msgs(msgs)
+
+
+def process_msgs(msgs):
+    """Prepare message dictionaries for use in templates."""
+
+    def process_msg(msg):
         if msg["mtype"] == MessageType.MOD_TO_USER_AS_MOD:
             msg["username"] = None
             msg["sentby"] = None
-        msg["read"] = msg["unread_id"] is None
-    return msgs
+        if msg["thread"] is not None:
+            msg["subject"] = _("Re: %(subject)s", subject=msg["thread"])
+        msg["read"] = msg.get("unread_id") is None
+        return msg
+
+    return [process_msg(msg) for msg in msgs]
 
 
 # user comments
@@ -1793,8 +1820,66 @@ def create_message(mfrom, to, subject, content, mtype):
         mtype=mtype,
     )
     UserUnreadMessage.create(uid=to, mid=msg.mid)
+    socketio.emit(
+        "notification",
+        {"count": get_notification_count(to)},
+        namespace="/snt",
+        room="user" + to,
+    )
     UserMessageMailbox.create(uid=to, mid=msg.mid, mailbox=MessageMailbox.INBOX)
     UserMessageMailbox.create(uid=mfrom, mid=msg.mid, mailbox=MessageMailbox.SENT)
+    return msg
+
+
+def create_message_reply(message, content):
+    """ Creates a reply to a message. """
+    posted = datetime.utcnow()
+    sender = message.receivedby.uid
+    if message.mtype == MessageType.USER_TO_USER:
+        mtype = MessageType.USER_TO_USER
+        recipient = message.sentby.uid
+    else:
+        mtype = MessageType.USER_TO_MODS
+        recipient = None
+
+    reply_to = (
+        message.reply_to.get_id() if message.reply_to is not None else message.mid
+    )
+
+    msg = Message.create(
+        sentby=sender,
+        receivedby=recipient,
+        subject="",
+        content=content,
+        posted=posted,
+        reply_to=reply_to,
+        mtype=mtype,
+        sub=message.sub,
+    )
+    Message.update(replies=Message.replies + 1).where(Message.mid == reply_to).execute()
+    UserMessageMailbox.create(uid=sender, mid=msg.mid, mailbox=MessageMailbox.SENT)
+
+    if message.sub is None:
+        UserUnreadMessage.create(uid=recipient, mid=msg.mid)
+        socketio.emit(
+            "notification",
+            {"count": get_notification_count(recipient)},
+            namespace="/snt",
+            room="user" + recipient,
+        )
+        UserMessageMailbox.create(
+            uid=recipient, mid=msg.mid, mailbox=MessageMailbox.INBOX
+        )
+    else:
+        for mod_uid in getSubMods(message.sub)["all"]:
+            UserUnreadMessage.create(uid=mod_uid, mid=msg.mid)
+            socketio.emit(
+                "notification",
+                {"count": get_notification_count(mod_uid)},
+                namespace="/snt",
+                room="user" + mod_uid,
+            )
+
     return msg
 
 

@@ -13,7 +13,7 @@
             @if target_user_is_admin or current_user.can_pm_users() or current_user.is_admin():
                 <hr>
                 <div class="pmessage">
-                    <a href="#msg-form" data-replyto='@{user.name}' data-replytitle='' class="formpopmsg sbm-post pure-button">@{_('Send a message')}</a>
+                    <a href="#msg-form" data-replyto='@{user.name}' class="formpopmsg sbm-post pure-button">@{_('Send a message')}</a>
                 </div>
             @end
         @end

@@ -16,7 +16,7 @@
     <div class="user-activity col-12">
       <h3><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> Saved Messages</h3>
       {% for message in messages %}
-        <article class="pmessage post{% if not message.read %} newmsg{% endif %}" data-replyto='{{message.sentby}}' data-replytitle='Re: {{message.subject}}'>
+        <article class="pmessage post{% if not message.read %} newmsg{% endif %}">
           <div class="main">
             <p class="title">{{message.subject}}</p>
             <p class="container">{{markdown(message.content)|safe}}</p>
@@ -33,7 +33,7 @@
 	    </p>
             <p class="container">
               {% if message.username or message.sub %}
-                <a href="#msg-form" data-mid="{{message.mid}}" data-replyto='{{message.username}}' data-replytitle='{{message.subject}}' class="replymsg">reply</a>
+                <a href="#msg-form" data-mid="{{message.mid}}" class="replymsg">reply</a>
               {% endif %}
               {% if not message.read %}
                 <a class="readmsg" data-mid="{{message.mid}}">mark as read</a>

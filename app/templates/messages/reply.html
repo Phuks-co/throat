@@ -1,13 +1,10 @@
 <div id="msgpop" style="display:none;">
   <span class="closemsg">&times;</span>
   <div class="modal-content">
-    <form data-reset="true" id="msg-form" action="{{url_for('do.create_sendmsg')}}" data-redir="{{url_for('messages.inbox_sort')}}" class="pure-form pure-form-aligned ajaxform">
-      {% set msgform = form.CreateUserMessageForm()%}
+    <form data-reset="true" id="msg-form" action="{{url_for('do.create_replymsg')}}" data-reload="true" class="pure-form pure-form-aligned ajaxform">
+      {% set msgform = form.CreateUserMessageReplyForm()%}
       {{msgform.csrf_token}}
-      <div class="hide">
-        {{msgform.to(placeholder=msgform.to.label.text, required=True)}}
-        {{msgform.subject(placeholder=msgform.subject.label.text, required=True)}}
-      </div>
+      {{msgform.mid(required=True)}}
       <div class="pure-control-group markdown-editor" id="msge">
         {{msgform.content(placeholder="Type your reply here. Styling with Markdown format is supported.", rows="10", **{'data-provide' :"markdown"})}}
       </div>
@@ -15,6 +12,7 @@
         {% if error %}
         <div class="error">{{error}}</div>
         {%endif%}
+        <div class="alert div-error"></div>
         <button type="submit" id="msg-btnsubmit" class="pure-button pure-button-primary" data-prog="Sending...">Send Reply</button>
         <button data-pvid="msge" class="pure-button btn-preview">Preview</button>
         <div class="cmpreview canclose" style="display:none;">

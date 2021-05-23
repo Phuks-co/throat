@@ -27,7 +27,8 @@ from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
 from ..forms import EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
-from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost
+from ..forms import PostComment, CreateUserMessageForm, CreateUserMessageReplyForm
+from ..forms import DeletePost, UndeletePost
 from ..forms import SearchForm, EditMod2Form, SetSubOfTheDayForm, AssignSubUserFlair
 from ..forms import DeleteSubFlair, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm, DistinguishForm
@@ -1368,13 +1369,29 @@ def create_sendmsg():
             content=form.content.data,
             mtype=MessageType.USER_TO_USER,
         )
-        socketio.emit(
-            "notification",
-            {"count": misc.get_notification_count(user.uid)},
-            namespace="/snt",
-            room="user" + user.uid,
-        )
         return json.dumps({"status": "ok", "sentby": current_user.get_id()})
+    return json.dumps({"status": "error", "error": get_errors(form)})
+
+
+@do.route("/do/replymsg", methods=["POST"])
+@ratelimit(POSTING_LIMIT)
+@login_required
+def create_replymsg():
+    """ User PM message reply creation endpoint """
+    form = CreateUserMessageReplyForm()
+    if form.validate():
+        try:
+            message = Message.get(Message.mid == int(form.mid.data))
+        except (ValueError, Message.DoesNotExist):
+            return json.dumps(
+                {"status": "error", "error": [_("Message does not exist")]}
+            )
+        if message.receivedby.uid != current_user.uid:
+            return json.dumps({"status": "error", "error": [_("Invalid message")]})
+
+        misc.create_message_reply(message=message, content=form.content.data)
+        return json.dumps({"status": "ok", "sentby": current_user.uid})
+
     return json.dumps({"status": "error", "error": get_errors(form)})
 
 

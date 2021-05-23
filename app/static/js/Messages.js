@@ -66,11 +66,8 @@ u.sub('.deletenotif', 'click', function(e){
 // Show message reply
 u.sub('.pmessage .replymsg', 'click', function(e){
   e.preventDefault();
-  var replyto = this.getAttribute('data-replyto')
-  var title = this.getAttribute('data-replytitle')
   var mid = this.getAttribute('data-mid')
-  document.querySelector('#msg-form #to').setAttribute('value', replyto);
-  document.querySelector('#msg-form #subject').setAttribute('value', 'Re:' + title);
+  document.querySelector('#msg-form #mid').setAttribute('value', mid);
   var modal = document.getElementById('msgpop');
   var existingParent = modal.parentNode;
   var newParent = document.querySelector('#replyto'+mid);
