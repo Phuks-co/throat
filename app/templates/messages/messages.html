@@ -42,9 +42,11 @@
                 <a class="readmsg" data-mid="{{message.mid}}">mark as read</a>
               {% endif %}
               <!--<a class="btn small">forward</a>-->
+              {% if message.username and not message.sub %}
+                <a class="block" data-uid="{{message.sentby}}">{{_("block sender") if message.sentby not in func.get_ignores(current_user.uid) else _("unblock sender")}}</a>
+              {% endif %}
               <a class="savemsg" data-mid="{{message.mid}}">save</a>
               <a class="deletemsg" data-mid="{{message.mid}}">delete</a>
-              <a class="block" data-uid="{{message.sentby}}">{% if message.sentby not in func.get_ignores(current_user.uid) %}block{%else%}unblock{%endif%}</a>
             </p>
           </div>
           <div id="replyto{{message.mid}}"></div>

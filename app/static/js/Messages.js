@@ -105,10 +105,10 @@ u.sub('.block', 'click', function(e){
   u.post('/do/toggle_ignore/'+uid, {},
   function(data){
     if (data.status == "ok") {
-      if(obj.innerHTML.trim() == _('block')){
-        u.each('a[data-uid="' + uid + '"]', function(el,i){el.innerHTML = _('unblock');});
+      if(obj.innerHTML.trim() == _('block sender')){
+        u.each('a[data-uid="' + uid + '"]', function(el,i){el.innerHTML = _('unblock sender');});
       }else{
-        u.each('a[data-uid="' + uid + '"]', function(el,i){el.innerHTML = _('block');});
+        u.each('a[data-uid="' + uid + '"]', function(el,i){el.innerHTML = _('block sender');});
       }
     }
   });
