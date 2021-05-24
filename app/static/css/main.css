@@ -1460,6 +1460,7 @@ input[type=search] {
   font-family: verdana,arial,sans-serif;
   font-size: 15px;
   line-height: 1.3em;
+  width: 90%;
 }
 
 .poll-space {
