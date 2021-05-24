@@ -2393,7 +2393,7 @@ a[href="#toodamncool"] {
 /* narrower all posts and post layout */
 
 .new-g {
-  max-width: 1400px;
+/* max-width: 1400px; */
   margin-left: auto;
   margin-right: auto;
 }
