@@ -843,8 +843,7 @@ class MessageType(IntEnum):
 
 
 class MessageMailbox(IntEnum):
-    """Mailboxes for private messages.
-    Used in UserMessageMailbox and ModMessageMailbox."""
+    """Mailboxes for private messages."""
 
     INBOX = 200
     SENT = 201
