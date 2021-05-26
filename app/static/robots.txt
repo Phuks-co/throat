@@ -1,8 +1,14 @@
-User-Agent: *
-Disallow: /*.rss
-Disallow: /register
-Disallow: /login
-Disallow: /s/*/sublog
-Disallow: /submit/*
-Disallow: /oauth/*
-Allow: /
+User-agent: PetalBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MauiBot
+Disallow: /
