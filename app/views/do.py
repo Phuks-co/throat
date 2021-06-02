@@ -2661,24 +2661,35 @@ def delete_comment():
             comment = SubPostComment.get(SubPostComment.cid == form.cid.data)
         except SubPostComment.DoesNotExist:
             return jsonify(status="error", error=_("Comment does not exist"))
-        post = SubPost.get(SubPost.pid == comment.pid)
+        sub = (
+            Sub.select(Sub.sid, Sub.name)
+            .join(SubPost)
+            .where(SubPost.pid == comment.pid)
+            .get()
+        )
 
         if comment.uid_id != current_user.uid and not (
-            current_user.is_admin() or current_user.is_mod(post.sid)
+            current_user.is_admin() or current_user.is_mod(sub.sid)
         ):
             return jsonify(status="error", error=_("Not authorized"))
 
         if comment.uid_id != current_user.uid and (
-            current_user.is_admin() or current_user.is_mod(post.sid)
+            current_user.is_admin() or current_user.is_mod(sub.sid)
         ):
             misc.create_sublog(
                 misc.LOG_TYPE_SUB_DELETE_COMMENT,
                 current_user.uid,
-                post.sid,
+                sub.sid,
                 comment=form.reason.data,
-                link=url_for("site.view_post_inbox", pid=comment.pid),
+                link=url_for(
+                    "sub.view_perm",
+                    sub=sub.name,
+                    pid=comment.pid.get_id(),
+                    cid=comment.cid,
+                    slug="_",
+                ),
                 admin=True
-                if (not current_user.is_mod(post.sid) and current_user.is_admin())
+                if (not current_user.is_mod(sub.sid) and current_user.is_admin())
                 else False,
             )
             related_reports = SubPostCommentReport.select().where(
@@ -2715,7 +2726,12 @@ def undelete_comment():
         except SubPostComment.DoesNotExist:
             return jsonify(status="error", error=_("Comment does not exist"))
 
-        post = SubPost.get(SubPost.pid == comment.pid)
+        sub = (
+            Sub.select(Sub.sid, Sub.name)
+            .join(SubPost)
+            .where(SubPost.pid == comment.pid)
+            .get()
+        )
 
         if not current_user.is_admin():
             return jsonify(status="error", error=_("Not authorized"))
@@ -2723,11 +2739,17 @@ def undelete_comment():
         misc.create_sublog(
             misc.LOG_TYPE_SUB_UNDELETE_COMMENT,
             current_user.uid,
-            post.sid,
+            sub.sid,
             comment=form.reason.data,
-            link=url_for("site.view_post_inbox", pid=comment.pid),
+            link=url_for(
+                "sub.view_perm",
+                sub=sub.name,
+                pid=comment.pid.get_id(),
+                cid=comment.cid,
+                slug="_",
+            ),
             admin=True
-            if (not current_user.is_mod(post.sid) and current_user.is_admin())
+            if (not current_user.is_mod(sub.sid) and current_user.is_admin())
             else False,
         )
         related_reports = SubPostCommentReport.select().where(
