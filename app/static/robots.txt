@@ -12,3 +12,6 @@ Disallow: /
 
 User-agent: MauiBot
 Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
