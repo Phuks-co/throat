@@ -2623,7 +2623,7 @@ def edit_comment():
         except SubPostComment.DoesNotExist:
             return jsonify(status="error", error=[_("Comment does not exist")])
 
-        if comment.uid_id != current_user.uid and not current_user.is_admin():
+        if comment.uid_id != current_user.uid:
             return jsonify(status="error", error=[_("Not authorized")])
 
         post = SubPost.get(SubPost.pid == comment.pid)
@@ -2631,8 +2631,13 @@ def edit_comment():
         if current_user.is_subban(sub):
             return jsonify(status="error", error=[_("You are banned on this sub.")])
 
-        if comment.status == "1":
+        if comment.status in [1, 2]:
             return jsonify(status="error", error=_("You can't edit a deleted comment"))
+
+        if post.deleted in [1, 2]:
+            return jsonify(
+                status="error", error=_("You can't edit a comment on a deleted post")
+            )
 
         if post.is_archived():
             return jsonify(status="error", error=_("Post is archived"))

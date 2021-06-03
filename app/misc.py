@@ -954,6 +954,10 @@ def getSinglePost(pid):
         .get()
     )
     posts["slug"] = slugify(posts["title"])
+    posts["is_archived"] = (
+        datetime.utcnow() - posts["posted"].replace(tzinfo=None)
+    ) > timedelta(days=config.site.archive_post_after)
+
     return posts
 
 
@@ -1561,6 +1565,7 @@ def getUserComments(uid, page, include_deleted_comments=False):
                 SubPostComment.score,
                 SubPostComment.parentcid,
                 SubPost.posted,
+                SubPost.deleted.alias("post_deleted"),
             )
             .join(SubPost)
             .switch(SubPostComment)
