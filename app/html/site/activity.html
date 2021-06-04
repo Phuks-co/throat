@@ -14,13 +14,17 @@
     @for it in activity:
       <li>
         @if it['type'] == 'post':
-        @{_('%(user)s posted "%(title)s" to %(sub)s %(timeago)s', user='<a href="/u/' + it['user'] + '">' + it['user'] + '</a>', title='<a href="' + url_for('sub.view_post', sub=it['sub'], pid=it['pid']) + '">' + e(it['content']) + '</a>', sub='<a href="' + url_for('sub.view_sub', sub=it['sub']) + '">' + config.site.sub_prefix + '/' + it['sub'] + '</a>', timeago='<time-ago datetime="' + it['time'].isoformat() + 'Z" class="sidebarlists"></time-ago>')!!html}
+        @{_('%(user)s posted "%(title)s"%(nsfw)s to %(sub)s %(timeago)s', user='<a href="/u/' + it['user'] + '">' + it['user'] + '</a>', title='<a class="' + it['blur'] + '" href="' + url_for('sub.view_post', sub=it['sub'], pid=it['pid']) + '">' + e(it['content']) + '</a>', sub='<a href="' + url_for('sub.view_sub', sub=it['sub']) + '">' + config.site.sub_prefix + '/' + it['sub'] + '</a>', timeago='<time-ago datetime="' + it['time'].isoformat() + 'Z" class="sidebarlists"></time-ago>', nsfw=('<span class="nsfw" alt="Not safe for work">' + _('NSFW') + '</span>') if it['nsfw'] or it['sub_nsfw'] else '')!!html}
         @else:
-        @{_('%(user)s commented "%(comment)s" in %(sub)s %(timeago)s', user='<a href="/u/' + it['user'] + '">' + it['user'] + '</a>', comment='<a href="' + url_for('sub.view_post', sub=it['sub'], pid=it['pid']) + '">' + e(it['content']).replace('\n', ' ') + '</a>', sub='<a href="' + url_for('sub.view_sub', sub=it['sub']) + '">' + config.site.sub_prefix + '/' + it['sub'] + '</a>', timeago='<time-ago datetime="' + it['time'].isoformat() + 'Z" class="sidebarlists"></time-ago>')!!html}
+        @{_('%(user)s commented "%(comment)s"%(nsfw)s in %(sub)s %(timeago)s', user='<a href="/u/' + it['user'] + '">' + it['user'] + '</a>', comment='<a class="' + it['blur'] + '" href="' + url_for('sub.view_post', sub=it['sub'], pid=it['pid']) + '">' + e(it['content']).replace('\n', ' ') + '</a>', sub='<a href="' + url_for('sub.view_sub', sub=it['sub']) + '">' + config.site.sub_prefix + '/' + it['sub'] + '</a>', timeago='<time-ago datetime="' + it['time'].isoformat() + 'Z" class="sidebarlists"></time-ago>', nsfw=('<span class="nsfw" alt="Not safe for work">' + _('NSFW') + '</span>') if it['nsfw'] or it['sub_nsfw'] else '')!!html}
         @end
       </li>
     @end
     </ul>
   </div>
 </div>
+@end
+
+@def pagefoot():
+<label id="pagefoot-nsfw" data-value="@{'nsfw' in current_user.prefs}" class="hide"></label>
 @end

@@ -700,6 +700,7 @@ def create_comment(sub, pid):
             "user": user.name,
             "pid": post.pid,
             "sid": sub.sid,
+            "nsfw": post.nsfw or sub.nsfw,
             "content": comment_res,
             "post_url": url_for("sub.view_post", sub=sub.name, pid=post.pid),
             "sub_url": url_for("sub.view_sub", sub=sub.name),
@@ -1119,6 +1120,7 @@ def create_post():
             "pid": post.pid,
             "sid": sub.sid,
             "title": post.title,
+            "nsfw": post.nsfw,
             "post_url": url_for("sub.view_post", sub=sub.name, pid=post.pid),
             "sub_url": url_for("sub.view_sub", sub=sub.name),
             "html": misc.engine.get_template("shared/post.html").render(

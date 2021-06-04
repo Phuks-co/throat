@@ -650,6 +650,11 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
             if int(postmeta["poll_closes_time"]) < time.time():
                 pollData["poll_open"] = False
 
+    if (post["nsfw"] or sub["nsfw"]) and "nsfw" not in current_user.prefs:
+        post["blur"] = "nsfw-blur"
+    else:
+        post["blur"] = ""
+
     return engine.get_template("sub/post.html").render(
         {
             "post": post,

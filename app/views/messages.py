@@ -38,6 +38,7 @@ def view_notifications(page):
         n["archived"] = (
             n["posted"] is not None and (now - n["posted"].replace(tzinfo=None)) > limit
         )
+        misc.add_blur(n)
 
     Notification.update(read=datetime.utcnow()).where(
         (Notification.read.is_null(True)) & (Notification.target == current_user.uid)

@@ -576,3 +576,9 @@ window.onbeforeunload = function (e) {
 u.addEventForChild(document, 'click', 'img.alimg', function(e, qelem){
   qelem.parentNode.removeChild(qelem);
 })
+
+
+u.addEventForChild(document, 'click', '.nsfw-blur', function(e, qelem){
+  e.preventDefault();
+  qelem.classList.remove('nsfw-blur');
+})

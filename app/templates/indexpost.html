@@ -14,10 +14,10 @@
               {% if post.thumbnail == '' %}
                 <span class="placeholder" data-icon="link"></span>
               {% elif post.thumbnail == 'deferred' %}
-                <span class="placeholder deferred" data-icon="link"
+                <span class="placeholder deferred {{ post.blur }}" data-icon="link"
                       data-deferred="SubPost-{{ post.pid }}"></span>
               {% else %}
-                <img class="lazy" src="{{ url_for('static', filename='img/1x1.gif') }}"
+                <img class="lazy {{ post.blur }}" src="{{ url_for('static', filename='img/1x1.gif') }}"
                      data-src="{{ thumbnail_url(post.thumbnail) }}"/>
               {%endif %}
             {%else%}
@@ -31,7 +31,7 @@
     <div class="pbody">
       <div class="post-heading">
         {% if post.nsfw %}
-        <div class="nsfw" alt="Not safe for work">NSFW</div>
+        <div class="nsfw" alt="Not safe for work">{{_('NSFW')}}</div>
         {%endif%}
         {% if post.flair %}<span class="postflair">{{post.flair}}</span>{% endif %}
         {% if post.link == None %}
@@ -41,7 +41,7 @@
           {% elif post.deleted == 2 %}
             {{_('[Deleted by Mod or Admin]')}}
           {% endif %}
-          {{post.title}}
+          <span class="{{ post.blur }}">{{post.title}}</span>
         </a>
         {% else %}
           {% if post.link.startswith('http:') %}<span title="not https" class="p-icon" data-icon="exclaim"></span>{% endif %}
@@ -51,7 +51,7 @@
             {% elif post.deleted == 2 %}
               {{_('[Deleted by Mod or Admin]')}}
             {% endif %}
-            {{post.title}}
+            <span class="{{ post.blur }}">{{post.title}}</span>
           </a>
           <a href="{{url_for('home.all_domain_new', domain=func.getDomain(post.link), page=1)}}" class="domain">({{func.getDomain(post.link)}})</a>
         {% endif %}

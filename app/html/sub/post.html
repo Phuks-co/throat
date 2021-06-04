@@ -71,9 +71,9 @@
               @if post['thumbnail'] == '':
                 <span class="placeholder" data-icon="link"></span>
               @elif post['thumbnail'] == 'deferred':
-                <span class="placeholder deferred" data-icon="link" data-deferred="SubPost-@{post['pid']}"></span>
+                <span class="placeholder deferred @{post['blur']}" data-icon="link" data-deferred="SubPost-@{post['pid']}"></span>
               @else:
-                <img class="lazy" src="@{url_for('static', filename='img/1x1.gif')}" data-src="@{thumbnail_url(post['thumbnail'])}"/>
+                <img class="lazy @{post['blur']}" src="@{url_for('static', filename='img/1x1.gif')}" data-src="@{thumbnail_url(post['thumbnail'])}"/>
               @end
             @else:
               <span class="placeholder" data-icon="chat"></span>
@@ -96,13 +96,13 @@
             @end
             <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}" class="title">
               @if (post['visibility'] == ''):
-                @{post['title']}
+                <span class="@{post['blur']}">@{post['title']}</span>
               @elif (post['visibility'] == 'admin-self-del') or (post['visibility'] == 'user-self-del'):
-                @{_('[Deleted by User]')} @{post['title']}
+                @{_('[Deleted by User]')} <span class="@{post['blur']}">@{post['title']}</span>
               @elif (post['visibility'] == 'mod-self-del'):
                 @{_('[Deleted by User]')}
               @elif (post['visibility'] == 'mod-del'):
-                @{_('[Deleted by Mod or Admin]')} @{post['title']}
+                @{_('[Deleted by Mod or Admin]')} <span class="@{post['blur']}">@{post['title']}</span>
               @elif (post['visibility'] == 'none'):
                 @{_('[Deleted]')}
               @end
@@ -113,15 +113,15 @@
             @if post['flair']:
               <span class="postflair">@{post['flair']!!e}</span>
             @end
-            <a rel="nofollow ugc @{(post['visibility'] == 'none') and 'noopener ' or ''}" href="@{(post['visibility'] != 'none') and post['link'] or '#'}" class="title">
+            <a rel="nofollow ugc @{(post['visibility'] == 'none') and 'noopener ' or ''}" href="@{((post['visibility'] != 'none') and post['link']) or '#'}" class="title">
               @if (post['visibility'] == ''):
-                @{post['title']}
+                <span class="@{post['blur']}">@{post['title']}</span>
               @elif (post['visibility'] == 'admin-self-del') or (post['visibility'] == 'user-self-del'):
-                @{_('[Deleted by User]')} @{post['title']}
+                @{_('[Deleted by User]')} <span class="@{post['blur']}">@{post['title']}</span>
               @elif (post['visibility'] == 'mod-self-del'):
                 @{_('[Deleted by User]')}
               @elif (post['visibility'] == 'mod-del'):
-                @{_('[Deleted by Mod or Admin]')} @{post['title']}
+                @{_('[Deleted by Mod or Admin]')} <span class="@{post['blur']}">@{post['title']}</span>
               @elif (post['visibility'] == 'none'):
                 @{_('[Deleted]')}
               @end
@@ -269,14 +269,14 @@
   @end
 
   @if (post['ptype'] == 3) and (post['deleted'] == 0 or post['visibility'] == 'admin-self-del' or post['visibility'] == 'mod-del' or post['visibility'] == 'user-self-del'):
-    @{polls.renderPoll(pollData, postmeta, post)!!html}
+    <span class="@{post['blur']}">@{polls.renderPoll(pollData, postmeta, post)!!html}</span>
   @end
   <div>
   @if post['content']:
   <div>
     @if post['deleted'] == 0:
       <span class="current history" data-id="0">
-        <div id="postcontent" class="post-content-container">@{markdown(post['content'])!!html}</div>
+        <div id="postcontent" class="post-content-container @{post['blur']}">@{markdown(post['content'])!!html}</div>
       </span>
       <div id="post-source">@{post['content']}</div>
     @else:
