@@ -1081,11 +1081,11 @@ def postListQueryHome(noDetail=False, nofilter=False):
         )
 
 
-def getPostList(baseQuery, sort, page):
+def getPostList(baseQuery, sort, page, page_size=25):
     if sort == "top":
-        posts = baseQuery.order_by(SubPost.score.desc()).paginate(page, 25)
+        posts = baseQuery.order_by(SubPost.score.desc()).paginate(page, page_size)
     elif sort == "new":
-        posts = baseQuery.order_by(SubPost.pid.desc()).paginate(page, 25)
+        posts = baseQuery.order_by(SubPost.pid.desc()).paginate(page, page_size)
     else:
         if "Postgresql" in config.database.engine:
             posted = fn.EXTRACT(NodeList((SQL("EPOCH FROM"), SubPost.posted)))
@@ -1098,8 +1098,8 @@ def getPostList(baseQuery, sort, page):
             hot = fn.HOT(SubPost.score, posted)
         else:
             hot = SubPost.score * 20 + (posted - 1134028003) / 1500
-        posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, 25)
-    return posts
+        posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, page_size)
+    return posts.dicts()
 
 
 @cache.memoize(600)

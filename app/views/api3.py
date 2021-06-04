@@ -331,7 +331,7 @@ def get_post_list(target):
         base_query = base_query.where(Sub.sid == sub.sid)
 
     base_query = base_query.where(SubPost.deleted == 0)
-    posts = misc.getPostList(base_query, sort, page).dicts()
+    posts = misc.getPostList(base_query, sort, page)
 
     cnt = base_query.count() - page * 25
     postList = []
@@ -1101,7 +1101,7 @@ def create_post():
     addr = url_for("sub.view_post", sub=sub.name, pid=post.pid)
     posts = misc.getPostList(
         misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), "new", 1
-    ).dicts()
+    )
 
     defaults = [
         x.value for x in SiteMetadata.select().where(SiteMetadata.key == "default")

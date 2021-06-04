@@ -437,7 +437,7 @@ def create_post(ptype, sub):
     addr = url_for("sub.view_post", sub=sub.name, pid=post.pid)
     posts = misc.getPostList(
         misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), "new", 1
-    ).dicts()
+    )
     defaults = [
         x.value for x in SiteMetadata.select().where(SiteMetadata.key == "default")
     ]
