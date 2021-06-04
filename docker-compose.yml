@@ -11,6 +11,7 @@ services:
       POSTGRES_USER: throat
       POSTGRES_PASSWORD: dev
       POSTGRES_DATABASE: throat
+      PGUSER: throat  # Needed for pg_isready; POSTGRES_* are docker-specific.
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
