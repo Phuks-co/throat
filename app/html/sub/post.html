@@ -55,7 +55,7 @@
     <div class="postbar post @{((post['visibility'] != '') and (post['visibility'] != 'none')) and 'deleted ' or ''} @{(post['distinguish'] == 1 and 'mod' or '')} @{(post['distinguish'] == 2 and 'admin' or '')} " pid="@{post['pid']}">
     <div class="misctainer">
       <div class="votebuttons">
-        @if post['userstatus'] != 10 and (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(days=config.site.archive_post_after):
+        @if post['userstatus'] != 10 and not post['is_archived']:
           <div title="@{_('Upvote')}" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{post['pid']}" data-icon="upvote"></div>
           <div class="score">@{post['score']}</div>
           <div title="@{_('Downvote')}" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']}" data-icon="downvote"></div>
@@ -317,7 +317,7 @@
   @end
   </div>
 
-  @if current_user.is_authenticated and post['deleted'] == 0 and not current_user.is_subban(sub) and not postmeta.get('lock-comments'):
+  @if current_user.is_authenticated and post['deleted'] == 0 and not current_user.is_subban(sub) and not postmeta.get('lock-comments') and not post['is_archived']:
   <form data-reset="true" data-redir="true" action="@{url_for('do.create_comment', pid=post['pid'])}" id="rcomm-0" class="comment-form ajaxform static pure-form">
     @{commentform.csrf_token()!!html}
     @{commentform.post(value=post['pid'])!!html}
@@ -336,7 +336,11 @@
   </form>
   @elif current_user.is_authenticated and post['deleted'] == 0 and postmeta.get('lock-comments'):
   <div class="comments-locked">
-    <h4>@{_('This post is closed to new comments.')}</h4>
+    <h4>@{_('This post is closed to new comments.  It has been locked by the moderators.')}</h4>
+  </div>
+  @elif current_user.is_authenticated and post['deleted'] == 0 and post['is_archived']:
+  <div class="comments-locked">
+    <h4>@{_('This post is closed to new comments.  It has been automatically archived.')}</h4>
   </div>
   @end
 

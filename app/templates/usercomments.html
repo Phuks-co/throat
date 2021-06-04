@@ -64,11 +64,13 @@
                     <!-- TODO needs peewee <li><a href="{# url_for('sub.view_perm', sub=sub.name, cid=comment.cid, pid=post.pid) #}">permalink</a></li>-->
                     <li><a href="{{url_for('sub.view_perm', sub=comment.sub, pid=comment.pid, cid=comment.cid)}}">permalink</a></li>
                     {%if current_user.is_authenticated%}
-                      {%if not postmeta[comment.pid].get('lock-comments') and not comment.archived %}
+                      {%if not postmeta[comment.pid].get('lock-comments') and not comment.archived and comment.status not in [1, 2] and comment.post_deleted == 0%}
                         <li><a class="reply-comment" data-pid="{{comment.pid}}" data-to="{{comment.cid}}">reagovať</a></li>
+                        {% if comment.uid == current_user.uid %}
+                          <li><a class="edit-comment" data-cid="{{comment.cid}}">upraviť</a></li>
+                        {% endif %}
                       {%endif%}
-                      {% if (comment.uid == session['user_id'] or current_user.is_admin()) %}
-                        <li><a class="edit-comment" data-cid="{{comment.cid}}">upraviť</a></li>
+                      {% if comment.uid == current_user.uid or current_user.is_admin() and comment.status not in [1, 2] %}
                         <li><a class="delete-comment" data-cid="{{comment.cid}}">vymazať</a></li>
                       {% endif %}
                     {%endif%}
