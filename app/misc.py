@@ -2885,7 +2885,7 @@ def word_truncate(content, max_length, suffix="..."):
 
 def recent_activity(sidebar=True):
     if not config.site.recent_activity.enabled:
-        return False
+        return []
 
     # XXX: The queries below don't work on sqlite
     # TODO: Make em work?
