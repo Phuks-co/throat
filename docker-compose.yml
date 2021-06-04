@@ -57,7 +57,6 @@ services:
       DATABASE_NAME: throat
       DATABASE_AUTOCOMMIT: "true"
     volumes:
-      - ./config.yaml:/throat/config.yaml
       - ./migrations:/throat/migrations
     depends_on:
       - db

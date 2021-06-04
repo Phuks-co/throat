@@ -8,6 +8,7 @@
 !scripts
 
 !babel.cfg
+!config.yaml
 !package.json
 !package-lock.json
 !requirements.txt
