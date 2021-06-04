@@ -25,6 +25,12 @@ RUN npm ci && rm package.json && rm package-lock.json
 
 COPY . /throat
 WORKDIR /throat
+
+# Compile the translations
+# This is done before `npm run build` so the .mo files
+# are available to webpack.
+RUN python3 throat.py translations compile
+
 RUN \
   mv ../node_modules node_modules \
   && npm run build \
