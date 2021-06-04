@@ -48,6 +48,7 @@ services:
     image: throat_throat
     command: ["python3", "throat.py", "migration", "apply"]
     environment:
+      CACHE_TYPE: "null"
       DATABASE_ENGINE: PostgresqlDatabase
       DATABASE_HOST: db
       DATABASE_PORT: 5432
