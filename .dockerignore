@@ -3,6 +3,7 @@
 
 # Whitelist files and folders that should be in the container
 !app
+!cli
 !migrations
 !scripts
 
