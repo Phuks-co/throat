@@ -1001,7 +1001,7 @@ def get_txtpost(pid):
         if (
             current_user.is_admin()
             or current_user.is_mod(post["sid"], 1)
-            or current_user.uid == post[""]
+            or current_user.uid == post["uid"]
         ):
             post["visibility"] = "mod-del"
         else:
