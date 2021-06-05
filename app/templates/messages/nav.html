@@ -1,8 +1,8 @@
 <div class="msgnav">
   {% if page > 1 %}
-    <a href="{{url_for(box_route, page=(page-1))}}" class="pure-button">prev</a>
+    <a href="{{url_for(box_route, page=(page-1))}}" class="pure-button">novšie</a>
   {% endif %}
   {% if messages|length == 20 %}
-    <a href="{{url_for(box_route, page=(page+1))}}" class="pure-button">next</a>
+    <a href="{{url_for(box_route, page=(page+1))}}" class="pure-button">staršie</a>
   {% endif %}
 </div>
