@@ -13,7 +13,7 @@
             @if target_user_is_admin or current_user.can_pm_users() or current_user.is_admin():
                 <hr>
                 <div class="pmessage">
-                    <a href="#msg-form" data-replyto='@{user.name}' data-replytitle='' class="formpopmsg sbm-post pure-button">@{_('Send a message')}</a>
+                    <a href="#msg-form" data-replyto='@{user.name}' class="formpopmsg sbm-post pure-button">@{_('Send a message')}</a>
                 </div>
             @end
         @end
@@ -146,15 +146,21 @@
                                     <label for="to">@{_('User')}</label>
                                     @{msgform.to(placeholder=msgform.to.label.text, required=True, value=user.name)!!html}
                                 </div>
-                                <div class="pure-control-group">
+                                <div>
                                     <label for="subject">@{_('Subject')}</label>
                                     @{msgform.subject(placeholder=msgform.subject.label.text, required=True)!!html}
                                 </div>
-                                <div class="pure-control-group markdown-editor">
-                                    @{msgform.content(placeholder=_('Styling with Markdown format is supported.'), rows="10", id="cntnt")!!html}
+                                <div class="pure-control-group markdown-editor" id="msge">
+                                  @{msgform.content(placeholder=_('Styling with Markdown format is supported.'), rows="10", id="cntnt")!!html}
                                 </div>
-                                <div class="pure-controls">
-                                    <button type="submit" id="msg-btnsubmit" class="pure-button pure-button-primary" data-prog="@{_('Sending...')}">@{_('Send Message')}</button>
+                                <div>
+                                  <button type="submit" id="msg-btnsubmit" class="pure-button pure-button-primary" data-prog="@{_('Sending...')}">@{_('Send Message')}</button>
+                                  <button data-pvid="msge" class="pure-button btn-preview">@{_('Preview')}</button>
+                                  <div class="cmpreview canclose" style="display:none;">
+                                    <h4>@{_('Message preview')}</h4>
+                                    <span class="closemsg">×</span>
+                                    <div class="cpreview-content"></div>
+                                  </div>
                                 </div>
                             </fieldset>
                         </form>

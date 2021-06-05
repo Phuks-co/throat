@@ -27,7 +27,8 @@ from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
 from ..forms import EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
-from ..forms import PostComment, CreateUserMessageForm, DeletePost, UndeletePost
+from ..forms import PostComment, CreateUserMessageForm, CreateUserMessageReplyForm
+from ..forms import DeletePost, UndeletePost
 from ..forms import SearchForm, EditMod2Form, SetSubOfTheDayForm, AssignSubUserFlair
 from ..forms import DeleteSubFlair, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm, DistinguishForm
@@ -76,14 +77,19 @@ from ..models import (
     SubFlair,
     SubPostPollOption,
     SubPostPollVote,
-)
-from ..models import (
     SubPostTitleHistory,
     SubRule,
     SubPostCommentReport,
     SubUserFlairChoice,
 )
-from ..models import rconn, UserStatus
+from ..models import (
+    rconn,
+    UserStatus,
+    MessageType,
+    MessageMailbox,
+    UserUnreadMessage,
+    UserMessageMailbox,
+)
 from ..tasks import create_thumbnail
 from ..notifications import notifications
 from peewee import fn, JOIN
@@ -1361,16 +1367,31 @@ def create_sendmsg():
             to=user.uid,
             subject=form.subject.data,
             content=form.content.data,
-            link=None,
-            mtype=1 if current_user.uid not in misc.get_ignores(user.uid) else 41,
-        )
-        socketio.emit(
-            "notification",
-            {"count": misc.get_notification_count(user.uid)},
-            namespace="/snt",
-            room="user" + user.uid,
+            mtype=MessageType.USER_TO_USER,
         )
         return json.dumps({"status": "ok", "sentby": current_user.get_id()})
+    return json.dumps({"status": "error", "error": get_errors(form)})
+
+
+@do.route("/do/replymsg", methods=["POST"])
+@ratelimit(POSTING_LIMIT)
+@login_required
+def create_replymsg():
+    """ User PM message reply creation endpoint """
+    form = CreateUserMessageReplyForm()
+    if form.validate():
+        try:
+            message = Message.get(Message.mid == int(form.mid.data))
+        except (ValueError, Message.DoesNotExist):
+            return json.dumps(
+                {"status": "error", "error": [_("Message does not exist")]}
+            )
+        if message.receivedby.uid != current_user.uid:
+            return json.dumps({"status": "error", "error": [_("Invalid message")]})
+
+        misc.create_message_reply(message=message, content=form.content.data)
+        return json.dumps({"status": "ok", "sentby": current_user.uid})
+
     return json.dumps({"status": "error", "error": get_errors(form)})
 
 
@@ -1884,40 +1905,39 @@ def refuse_mod2inv(sub):
 def read_pm(mid):
     """ Mark PM as read """
     try:
-        message = Message.get(Message.mid == mid)
+        Message.get(Message.mid == mid)
     except Message.DoesNotExist:
         return jsonify(status="error", error=[_("Message not found")])
 
-    if current_user.uid == message.receivedby_id:
-        if message.read is not None:
-            return jsonify(status="ok")
-        message.read = datetime.datetime.utcnow()
-        message.save()
-        socketio.emit(
-            "notification",
-            {"count": misc.get_notification_count(current_user.uid)},
-            namespace="/snt",
-            room="user" + current_user.uid,
+    try:
+        um = UserUnreadMessage.get(
+            (UserUnreadMessage.uid == current_user.uid) & (UserUnreadMessage.mid == mid)
         )
-        return jsonify(status="ok", mid=mid)
-    else:
-        return jsonify(status="error")
+    except UserUnreadMessage.DoesNotExist:
+        return jsonify(status="ok")
 
-
-@do.route("/do/readall_msgs/<boxid>", methods=["POST"])
-@login_required
-def readall_msgs(boxid):
-    """ Mark all messages in a box as read """
-    now = datetime.datetime.utcnow()
-    q = (
-        Message.update(read=now)
-        .where(Message.read.is_null())
-        .where(Message.receivedby == current_user.uid)
-    )
-    q.where(Message.mtype == boxid).execute()
+    um.delete_instance()
     socketio.emit(
         "notification",
-        {"count": misc.get_notif_count(current_user.uid)},
+        {"count": misc.get_notification_count(current_user.uid)},
+        namespace="/snt",
+        room="user" + current_user.uid,
+    )
+    return jsonify(status="ok", mid=mid)
+
+
+@do.route("/do/readall_msgs", methods=["POST"])
+@login_required
+def readall_msgs():
+    """ Mark all messages in the inbox as read """
+    unreads = misc.select_unread_messages(current_user.uid, UserUnreadMessage.id)
+    UserUnreadMessage.delete().where(
+        UserUnreadMessage.id << [u["id"] for u in unreads.dicts()]
+    ).execute()
+
+    socketio.emit(
+        "notification",
+        {"count": misc.get_notification_count(current_user.uid)},
         namespace="/snt",
         room="user" + current_user.uid,
     )
@@ -1933,8 +1953,14 @@ def delete_pm(mid):
         if message.receivedby_id != current_user.uid:
             return jsonify(status="error", error=_("Message does not exist"))
 
-        message.mtype = 6
-        message.save()
+        UserUnreadMessage.delete().where(
+            (UserUnreadMessage.uid == current_user.uid) & (UserUnreadMessage.mid == mid)
+        ).execute()
+        UserMessageMailbox.update(mailbox=MessageMailbox.DELETED).where(
+            (UserMessageMailbox.uid == current_user.uid)
+            & (UserMessageMailbox.mid == mid)
+        ).execute()
+
         return jsonify(status="ok")
     except Message.DoesNotExist:
         return jsonify(status="error", error=_("Message does not exist"))
@@ -1993,8 +2019,13 @@ def save_pm(mid):
         if message.receivedby_id != current_user.uid:
             return jsonify(status="error", error=_("Message does not exist"))
 
-        message.mtype = 9
-        message.save()
+        (
+            UserMessageMailbox.update(mailbox=MessageMailbox.SAVED).where(
+                (UserMessageMailbox.uid == current_user.uid)
+                & (UserMessageMailbox.mid == mid)
+            )
+        ).execute()
+
         return jsonify(status="ok")
     except Message.DoesNotExist:
         return jsonify(status="error", error=_("Message does not exist"))
@@ -2713,9 +2744,6 @@ def delete_comment():
             comment.status = 1
 
         comment.save()
-
-        q = Message.delete().where(Message.mlink == form.cid.data)
-        q.execute()
         return jsonify(status="ok")
     return json.dumps({"status": "error", "error": get_errors(form)})
 

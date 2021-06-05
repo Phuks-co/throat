@@ -15,7 +15,7 @@ bp = Blueprint("messages", __name__)
 @login_required
 def inbox_sort():
     """ Go to inbox with the new message """
-    if misc.get_unread_count(misc.MESSAGE_TYPE_PM) > 0:
+    if misc.get_unread_count() > 0:
         return redirect(url_for("messages.view_messages"))
     elif misc.get_notif_count():
         return redirect(url_for("messages.view_notifications"))
@@ -65,13 +65,12 @@ def delete_notification(mid):
 @login_required
 def view_messages(page):
     """ View user's messages """
-    msgs = misc.getMessagesIndex(page)
+    msgs = misc.get_messages_inbox(page)
     return render_template(
         "messages/messages.html",
         page=page,
         messages=msgs,
         box_name="Inbox",
-        boxID="1",
         box_route="messages.view_messages",
     )
 
@@ -81,7 +80,7 @@ def view_messages(page):
 @login_required
 def view_messages_sent(page):
     """ View user's messages sent """
-    msgs = misc.getMessagesSent(page)
+    msgs = misc.get_messages_sent(page)
     return render_template(
         "messages/sent.html",
         messages=msgs,
@@ -103,7 +102,7 @@ def view_ignores():
 @login_required
 def view_saved_messages(page):
     """ WIP: View user's saved messages """
-    msgs = misc.getMessagesSaved(page)
+    msgs = misc.get_messages_saved(page)
     return render_template(
         "messages/saved.html",
         messages=msgs,

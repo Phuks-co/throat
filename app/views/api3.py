@@ -38,6 +38,10 @@ from ..models import (
     SiteMetadata,
     UserMetadata,
     Message,
+    MessageType,
+    MessageMailbox,
+    UserUnreadMessage,
+    UserMessageMailbox,
     SubRule,
     Notification,
     SubMod,
@@ -857,8 +861,6 @@ def delete_comment(_sub, pid, cid):
     comment.status = 1
     comment.save()
 
-    q = Message.delete().where(Message.mlink == cid)
-    q.execute()
     return jsonify(), 200
 
 
@@ -1458,35 +1460,9 @@ def get_messages():
     page = request.args.get("page", default=1, type=int)
     # autoMarkAsRead = request.args.get('autoMarkAsRead', default=True, type=bool)
 
-    msg = (
-        Message.select(
-            Message.mid.alias("id"),
-            User.name.alias("sender"),
-            Message.subject,
-            Message.content,
-            Message.posted,
-            Message.read,
-            UserIgnores.id.alias("ignored"),
-        )
-        .join(
-            UserIgnores,
-            JOIN.LEFT_OUTER,
-            on=(UserIgnores.uid == uid) & (UserIgnores.target == Message.sentby),
-        )
-        .join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby))
-        .where(Message.mtype == 1)
-        .where(Message.receivedby == uid)
-        .order_by(Message.mid.desc())
-        .paginate(page, 20)
-        .dicts()
-    )
+    msg = misc.get_messages_inbox(page, uid=uid)
 
-    msg = list(msg)
-
-    for i in msg:
-        i["content"] = misc.our_markdown(i["content"])
-
-    return jsonify(messages=list(msg))
+    return jsonify(messages=[message_fields_for_api(m) for m in msg])
 
 
 @API.route("/messages", methods=["DELETE"])
@@ -1501,12 +1477,17 @@ def delete_message():
         return jsonify(error="The messageId parameter is required"), 400
 
     try:
-        message = Message.get((Message.mid == message_id) & (Message.receivedby == uid))
-    except Notification.DoesNotExist:
+        Message.get((Message.mid == message_id) & (Message.receivedby == uid))
+    except Message.DoesNotExist:
         return jsonify(error="Message does not exist"), 404
 
-    message.mtype = 6
-    message.save()
+    UserUnreadMessage.delete().where(
+        (UserUnreadMessage.uid == uid) & (UserUnreadMessage.mid == message_id)
+    ).execute()
+    UserMessageMailbox.update(mailbox=MessageMailbox.DELETED).where(
+        (UserMessageMailbox.uid == uid) & (UserMessageMailbox.mid == message_id)
+    ).execute()
+
     return jsonify(status="ok")
 
 
@@ -1539,15 +1520,7 @@ def send_message():
         to=message_to.uid,
         subject=subject,
         content=content,
-        link=None,
-        mtype=1 if uid not in misc.get_ignores(message_to.uid) else 41,
-    )
-
-    socketio.emit(
-        "notification",
-        {"count": misc.get_notification_count(message_to.uid)},
-        namespace="/snt",
-        room="user" + message_to.uid,
+        mtype=MessageType.USER_TO_USER,
     )
     return jsonify(status="ok")
 
@@ -1558,29 +1531,9 @@ def get_sent_messages():
     """ Returns an array of sent messages """
     uid = get_jwt_identity()
     page = request.args.get("page", default=1, type=int)
+    msg = misc.get_messages_sent(page, uid)
 
-    msg = (
-        Message.select(
-            Message.mid.alias("id"),
-            User.name.alias("sender"),
-            Message.subject,
-            Message.content,
-            Message.posted,
-        )
-        .join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.receivedby))
-        .where(Message.mtype << (1, 6, 9, 41))
-        .where(Message.sentby == uid)
-        .order_by(Message.mid.desc())
-        .paginate(page, 20)
-        .dicts()
-    )
-
-    msg = list(msg)
-
-    for i in msg:
-        i["content"] = misc.our_markdown(i["content"])
-
-    return jsonify(messages=list(msg))
+    return jsonify(messages=[message_fields_for_api(m) for m in msg])
 
 
 @API.route("/messages/<int:mid>/read", methods=["POST"])
@@ -1589,13 +1542,18 @@ def read_message(mid):
     """ Marks a message as read """
     uid = get_jwt_identity()
     try:
-        message = Message.get((Message.mid == mid) & (Message.receivedby == uid))
+        Message.get((Message.mid == mid) & (Message.receivedby == uid))
     except Message.DoesNotExist:
         return jsonify(error="Message not found"), 404
 
-    message.read = datetime.datetime.utcnow()
-    message.save()
+    try:
+        um = UserUnreadMessage.get(
+            (UserUnreadMessage.uid == uid) & (UserUnreadMessage.mid == mid)
+        )
+    except UserUnreadMessage.DoesNotExist:
+        return jsonify(status="ok")
 
+    um.delete_instance()
     socketio.emit(
         "notification",
         {"count": misc.get_notification_count(uid)},
@@ -1604,6 +1562,23 @@ def read_message(mid):
     )
 
     return jsonify(status="ok")
+
+
+def message_fields_for_api(m):
+    result = {k: v for k, v in m.items() if k in ["subject", "content", "posted"]}
+    if "read" in m:
+        result["read"] = m["read"]
+    if "ignored" in m:
+        result["ignored"] = m["ignored"]
+
+    result.update(
+        {
+            "id": m["mid"],
+            "sender": m["username"],
+            "content": misc.our_markdown(m["content"]),
+        }
+    )
+    return result
 
 
 @API.route("/user/settings", methods=["GET"])

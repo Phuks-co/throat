@@ -829,20 +829,42 @@ class Notification(BaseModel):
         return f'<Notification target="{self.user}" type="{self.type}" >'
 
 
+class MessageType(IntEnum):
+    """Types of private messages.
+    Value of the 'mtype' field in Message."""
+
+    USER_TO_USER = 100
+    USER_TO_MODS = 101
+    MOD_TO_USER_AS_USER = 102
+    MOD_TO_USER_AS_MOD = 103
+    MOD_DISCUSSION = 104
+    USER_BAN_APPEAL = 105
+    MOD_NOTIFICATION = 106
+
+
+class MessageMailbox(IntEnum):
+    """Mailboxes for private messages."""
+
+    INBOX = 200
+    SENT = 201
+    SAVED = 202
+    ARCHIVED = 203  # Modmail only.
+    TRASH = 204
+    DELETED = 205
+
+
 class Message(BaseModel):
     mid = PrimaryKeyField()
     content = TextField(null=True)
-    mlink = CharField(null=True)
-    # mtype values:
-    # 1: sent, 4: post replies, 5: comment replies, 8: mentions, 9: saved message
-    # 6: deleted, 41: ignored messages  => won't display anywhere
-    # 2 (mod invite), 7 (ban notification), 11 (deletion): modmail
     mtype = IntegerField(null=True)
     posted = DateTimeField(null=True)
-    read = DateTimeField(null=True)
+
+    # Relevant for messages to individual users, otherwise NULL.
     receivedby = ForeignKeyField(
         db_column="receivedby", null=True, model=User, field="uid"
     )
+
+    # The user who created the message, even for modmails.
     sentby = ForeignKeyField(
         db_column="sentby",
         null=True,
@@ -850,10 +872,40 @@ class Message(BaseModel):
         backref="user_sentby_set",
         field="uid",
     )
+    reply_to = ForeignKeyField(
+        db_column="reply_to", null=True, model="self", field="mid"
+    )
+    replies = IntegerField(default=0)
     subject = CharField(null=True)
 
+    # Relevant for modmail messages, otherwise NULL.
+    sub = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
+
     def __repr__(self):
-        return f'<Message "{self.subject[:20]}"'
+        return f'<Message "{self.mid}"'
 
     class Meta:
         table_name = "message"
+
+
+class UserUnreadMessage(BaseModel):
+    uid = ForeignKeyField(db_column="uid", model=User, field="uid")
+    mid = ForeignKeyField(db_column="mid", model=Message, field="mid")
+
+    def __repr__(self):
+        return f'<UserUnreadMessage "{self.uid}/{self.mid}"'
+
+    class Meta:
+        table_name = "user_unread_message"
+
+
+class UserMessageMailbox(BaseModel):
+    uid = ForeignKeyField(db_column="uid", model=User, field="uid")
+    mid = ForeignKeyField(db_column="mid", model=Message, field="mid")
+    mailbox = IntegerField(default=MessageMailbox.INBOX)
+
+    def __repr__(self):
+        return f'<UserMessageMailbox "{self.uid}/{self.mid}"'
+
+    class Meta:
+        table_name = "user_message_mailbox"
