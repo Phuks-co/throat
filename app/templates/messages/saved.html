@@ -23,7 +23,7 @@
             <p class="author">&#10148;
               Odoslané <time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago>
               {% if message.username %}
-                by <a href="{{url_for('user.view', user=message.username)}}">{{message.username}}</a>
+                používateľom <a href="{{url_for('user.view', user=message.username)}}">{{message.username}}</a>
                 {% if message.sub %}
                   [ako moderátor skupiny <a href="{{url_for('sub.view_sub', sub=message.sub)}}">{{config.site.sub_prefix}}/{{message.sub}}</a>]
                 {% endif %}
