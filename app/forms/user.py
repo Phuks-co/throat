@@ -170,6 +170,15 @@ class CreateUserMessageForm(FlaskForm):
     )
 
 
+class CreateUserMessageReplyForm(FlaskForm):
+    """ Form for replies to private messages. """
+
+    mid = HiddenField()
+    content = TextAreaField(
+        _l("message"), validators=[DataRequired(), Length(min=1, max=16384)]
+    )
+
+
 class PasswordRecoveryForm(FlaskForm):
     """ the 'forgot your password?' form """
 

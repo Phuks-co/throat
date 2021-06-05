@@ -10,17 +10,14 @@ u.sub('.readmsg', 'click', function(e){
   u.post('/do/read_pm/'+mid, {},
   function(data){
     if (data.status == "ok") {
-      obj.innerHTML = _('read');
-      obj.classList.remove('readmsg');
-      obj.classList.add('read');
       obj.parentNode.parentNode.parentNode.classList.remove('newmsg');
+      obj.remove();
     }
   });
 });
 
 u.sub('.markall', 'click', function(e){
-  var bid = this.getAttribute('data-bid'),obj=this;
-  u.post('/do/readall_msgs/'+bid, {},
+  u.post('/do/readall_msgs', {},
   function(data){
     if (data.status == "ok") {
       document.location.reload();
@@ -66,19 +63,23 @@ u.sub('.deletenotif', 'click', function(e){
   });
 });
 
-// Toggle message reply
+// Show message reply
 u.sub('.pmessage .replymsg', 'click', function(e){
   e.preventDefault();
-  var replyto = this.getAttribute('data-replyto')
-  var title = this.getAttribute('data-replytitle')
   var mid = this.getAttribute('data-mid')
-  document.querySelector('#msg-form #to').setAttribute('value', replyto);
-  if(document.querySelector('#msg-form #lto')){
-    document.querySelector('#msg-form #lto').style.display = 'none';
-  }
-  document.querySelector('#msg-form #subject').setAttribute('value', 'Re:' + title);
+  document.querySelector('#msg-form #mid').setAttribute('value', mid);
   var modal = document.getElementById('msgpop');
-  document.querySelector('#replyto'+mid).appendChild(document.getElementById('msgpop'));
+  var existingParent = modal.parentNode;
+  var newParent = document.querySelector('#replyto'+mid);
+  if (existingParent != newParent) {
+    var markdownEditor = document.querySelector('#msg-form #content')
+    var existingContent = markdownEditor.value;
+    var newContent = newParent.getAttribute('data-content');
+    existingParent.setAttribute('data-content', existingContent);
+    newParent.appendChild(modal);
+    markdownEditor.value = newContent ? newContent : '';
+    document.querySelector('.cmpreview').style.display = 'none';
+  }
   modal.style.display = "block";
 });
 
@@ -87,22 +88,6 @@ u.sub('.pmessage .formpopmsg', 'click', function(e){
   var replyto = this.getAttribute('data-replyto')
   document.querySelector('#msg-form #to').setAttribute('value', replyto);
   var modal = document.getElementById('formpop');
-  modal.style.display = "block";
-});
-
-u.sub('.pmessage .replycom', 'click', function(e){
-  var replyto = this.getAttribute('data-replyto')
-  var post = this.getAttribute('data-post')
-  var sub = this.getAttribute('data-sub')
-  var parentid = this.getAttribute('data-parentid')
-  var mid = this.getAttribute('data-mid')
-  document.querySelector('#comment-form #from').innerHTML = replyto;
-  document.querySelector('#comment-form #sub').innerHTML = sub;
-  document.querySelector('#comment-form #post').setAttribute('value', post);
-  document.querySelector('#comment-form #sub').setAttribute('value', sub);
-  document.querySelector('#comment-form #parent').setAttribute('value', parentid);
-  var modal = document.getElementById('msgpop');
-  document.querySelector('#replyto'+mid).appendChild(document.getElementById('msgpop'));
   modal.style.display = "block";
 });
 
@@ -120,10 +105,10 @@ u.sub('.block', 'click', function(e){
   u.post('/do/toggle_ignore/'+uid, {},
   function(data){
     if (data.status == "ok") {
-      if(obj.innerHTML.trim() == _('block')){
-        u.each('a[data-uid="' + uid + '"]', function(el,i){el.innerHTML = _('unblock');});
+      if(obj.innerHTML.trim() == _('block sender')){
+        u.each('a[data-uid="' + uid + '"]', function(el,i){el.innerHTML = _('unblock sender');});
       }else{
-        u.each('a[data-uid="' + uid + '"]', function(el,i){el.innerHTML = _('block');});
+        u.each('a[data-uid="' + uid + '"]', function(el,i){el.innerHTML = _('block sender');});
       }
     }
   });

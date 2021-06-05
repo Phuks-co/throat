@@ -3,8 +3,8 @@
   <div>
     <a class="sbm-post pure-button" href="@{ url_for('messages.view_messages') }">
       @{_('Inbox')}
-      @if func.get_unread_count(func.MESSAGE_TYPE_PM) > 0:
-        <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> @{func.get_unread_count(func.MESSAGE_TYPE_PM)}</span>
+      @if func.get_unread_count() > 0:
+        <span class="newmsgcount"><span class="p-icon" data-icon="mail" style="display: inline-block;"></span> @{func.get_unread_count()}</span>
       @end
     </a>
   </div>
