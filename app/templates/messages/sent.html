@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}My messages | {{config.site.lema}}{% endblock %}
+{% block title %}Moje správy | {{config.site.lema}}{% endblock %}
 
 {% block navbar %}
 {% endblock %}
@@ -24,7 +24,7 @@
               {% if message.username %}
                 <a href="{{url_for('user.view', user=message.username)}}" class="btn small">/u/{{message.username}}</a>
               {% else %}
-                the mods of <a href="{{url_for('sub.view_sub', sub=message.sub)}}" class="btn small">/{{config.site.sub_prefix}}/{{message.sub}}</a>
+                moderátori skupiny <a href="{{url_for('sub.view_sub', sub=message.sub)}}" class="btn small">/{{config.site.sub_prefix}}/{{message.sub}}</a>
               {% endif %}
               <time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago>
             </p>

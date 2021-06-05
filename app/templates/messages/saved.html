@@ -21,14 +21,14 @@
             <p class="title">{{message.subject}}</p>
             <p class="container">{{markdown(message.content)|safe}}</p>
             <p class="author">&#10148;
-              Sent <time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago>
+              Odoslané <time-ago datetime="{{message.posted.isoformat()}}Z"></time-ago>
               {% if message.username %}
                 by <a href="{{url_for('user.view', user=message.username)}}">{{message.username}}</a>
                 {% if message.sub %}
-                  [as mod of <a href="{{url_for('sub.view_sub', sub=message.sub)}}">{{config.site.sub_prefix}}/{{message.sub}}</a>]
+                  [ako moderátor skupiny <a href="{{url_for('sub.view_sub', sub=message.sub)}}">{{config.site.sub_prefix}}/{{message.sub}}</a>]
                 {% endif %}
               {% elif message.sub %}
-                by the mods of <a href="{{url_for('sub.view_sub', sub=message.sub)}}">{{config.site.sub_prefix}}/{{message.sub}}</a>
+                moderátormi skupiny <a href="{{url_for('sub.view_sub', sub=message.sub)}}">{{config.site.sub_prefix}}/{{message.sub}}</a>
               {% endif %}
 	    </p>
             <p class="container">
