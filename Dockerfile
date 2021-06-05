@@ -9,7 +9,7 @@ RUN pybabel compile --directory=translations
 
 FROM node:14-buster-slim as webpack
 # Install our npm requirements
-COPY package.json package-lock.json .
+COPY package.json package-lock.json /
 RUN npm ci
 # Build our static assets with webpack.
 COPY webpack.config.js .
