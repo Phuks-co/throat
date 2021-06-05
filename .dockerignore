@@ -14,3 +14,9 @@
 !requirements.txt
 !throat.py
 !webpack.config.js
+
+# Disallow Python cache files
+**/__pycache__
+**/*.pyc
+**/*.pyd
+**/*.pyo
