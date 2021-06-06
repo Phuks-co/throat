@@ -32,11 +32,10 @@ Please read [doc/gunicorn_deploy.md](doc/gunicorn_deploy.md) for instructions to
 If you prefer to develop on docker
  - The provided Docker resources only support Postgres
  - You still must copy `example.config.yaml` to `config.yaml` and make any changes you want
- - Create an initial manifest.json by using `NPM_CMD="run build" make docker-npm`
  - In addition, configs are overridden by environment variables set in docker-compose.yml
    which reference the redis and postgres services created by docker-compose.
 
-`make up` will bring the containerized site up and mount your current working directory
+`make up` will bring the containerized site up and mount the app/html and app/template directories
 inside the container for dev. It also runs the migrations on start-up. `make down` will spin down the containerized services.
 
 To add an admin user to a running docker-compose application:
