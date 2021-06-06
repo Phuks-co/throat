@@ -26,7 +26,7 @@ We recommend using a virtualenv or Pyenv
 And you're done! You can run a test server by executing `./throat.py`. For production instances we recommend setting up `gunicorn`
 
 ### Production deployments
-Please read [doc/gunicorn_deploy.md](doc/gunicorn_deploy.md) for instructions to deploy on gunicorn. 
+Please read [doc/gunicorn_deploy.md](doc/gunicorn_deploy.md) for instructions to deploy on gunicorn.
 
 ## Develop on Docker
 If you prefer to develop on docker
@@ -100,6 +100,12 @@ authentication servers (instead of the defaults, which are sqlite and
 local authentication), you may put configuration settings in
 `test_config.yaml` and run the tests with
 `TEST_CONFIG=test_config.yaml python -m pytest`
+
+### Testing under Docker
+
+You can run pytest in a Docker container via docker-compose with `make test`.
+
+To pass arguments to pytest, invoke make like so: `make test ARGS="-x -k my_test"`
 
 ## Chat
 
