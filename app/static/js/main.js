@@ -195,7 +195,8 @@ u.ready(function() {
   // TODO: Get rid of this.
   u.addEventForChild(document, 'submit', '.ajaxform', function(e, target){
     e.preventDefault();
-    var button = e.submitter;
+    // The SubmitEvent API isn’t supported in Safari, so work around it.
+    var button = e.submitter || target.querySelector("[type=submit]");
     var btnorm = button.innerHTML;
     var data = new FormData(target);
 
@@ -204,8 +205,8 @@ u.ready(function() {
       button.innerHTML = button.getAttribute('data-prog');
     }
     let action = target.getAttribute('action')
-    if(e.submitter.getAttribute("formaction")) {
-        action = e.submitter.getAttribute("formaction");
+    if (e.submitter && e.submitter.getAttribute("formaction")) {
+      action = e.submitter.getAttribute("formaction");
     }
     u.rawpost(action, data,
       function(data){ // success
