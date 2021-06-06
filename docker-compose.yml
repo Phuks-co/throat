@@ -26,7 +26,8 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - .:/throat
+      - app/html:/throat/app/html
+      - app/templates:/throat/app/templates
     environment:
       # Configs set here will override your config.yaml
       APP_HOST: 0.0.0.0
