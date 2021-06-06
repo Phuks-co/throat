@@ -27,3 +27,16 @@ down:
 docker-shell: docker-compose-build
 	docker-compose run --rm throat /bin/bash
 	@$(DONE)
+
+.PHONY: test
+test:
+	docker-compose up --detach redis
+	docker-compose run \
+		--name=throat_tests \
+		--rm \
+		--no-deps \
+		--volume $(CUR_DIR)/test:/throat/test \
+		-e TEST_CONFIG=/throat/test/test_config_docker_compose.yaml \
+		throat \
+		pytest $(ARGS)
+	@$(DONE)

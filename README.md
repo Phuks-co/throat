@@ -99,6 +99,12 @@ local authentication), you may put configuration settings in
 `test_config.yaml` and run the tests with
 `TEST_CONFIG=test_config.yaml python -m pytest`
 
+### Testing under Docker
+
+You can run pytest in a Docker container via docker-compose with `make test`.
+
+To pass arguments to pytest, invoke make like so: `make test ARGS="-x -k my_test"`
+
 ## Chat
 
 If you have any questions, you can reach us on #throat:phuks.co on [Matrix](https://chat.phoxy.win/#/login)
