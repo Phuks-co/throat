@@ -26,7 +26,7 @@ We recommend using a virtualenv or Pyenv
 And you're done! You can run a test server by executing `./throat.py`. For production instances we recommend setting up `gunicorn`
 
 ### Production deployments
-Please read [doc/gunicorn_deploy.md](doc/gunicorn_deploy.md) for instructions to deploy on gunicorn. 
+Please read [doc/gunicorn_deploy.md](doc/gunicorn_deploy.md) for instructions to deploy on gunicorn.
 
 ## Develop on Docker
 If you prefer to develop on docker
@@ -92,9 +92,8 @@ You can check out the [CDK Definition of Infrastructure](https://gitlab.com/femi
 
 1. Python, redis, and libmagic are required, but node and postgres are not.
 2. Install dependencies with `pip install -r requirements.txt`
-3. Install the test dependencies with `pip install -r requirements-test.txt`
-4. Run the tests with `python -m pytest`
-5. The tests are not affected by your configuration in `config.yaml`.
+3. Run the tests with `python -m pytest`
+4. The tests are not affected by your configuration in `config.yaml`.
 If you wish to run the tests against production database or
 authentication servers (instead of the defaults, which are sqlite and
 local authentication), you may put configuration settings in

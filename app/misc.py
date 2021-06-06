@@ -949,6 +949,8 @@ def postListQueryBase(
     nofilter=False,
     noAllFilter=False,
     noDetail=False,
+    # include_deleted_posts is either True, False or a list of
+    # subs to include deleted posts from.
     include_deleted_posts=False,
     isSubMod=False,
 ):
@@ -1047,8 +1049,14 @@ def postListQueryBase(
             on=((SubUserFlair.sub == Sub.sid) & (SubUserFlair.user == SubPost.uid)),
         )
     )
-    if not include_deleted_posts:
+    if include_deleted_posts:
+        if isinstance(include_deleted_posts, list):
+            posts = posts.where(
+                (SubPost.deleted == 0) | (Sub.sid << include_deleted_posts)
+            )
+    else:
         posts = posts.where(SubPost.deleted == 0)
+
     if not noAllFilter and not nofilter:
         if current_user.is_authenticated and current_user.blocksid:
             posts = posts.where(SubPost.sid.not_in(current_user.blocksid))
@@ -1541,7 +1549,9 @@ def process_msgs(msgs):
 
 
 def getUserComments(uid, page, include_deleted_comments=False):
-    """ Returns comments for a user """
+    """Returns comments for a user.  'include_deleted_comments' may be
+    True, False or a list of subs, in which case deleted comments from
+    those subs will be included in the result."""
     try:
         com = (
             SubPostComment.select(
@@ -1564,7 +1574,13 @@ def getUserComments(uid, page, include_deleted_comments=False):
             .join(Sub, on=(Sub.sid == SubPost.sid))
             .where(SubPostComment.uid == uid)
         )
-        if not include_deleted_comments:
+        if include_deleted_comments:
+            if isinstance(include_deleted_comments, list):
+                com = com.where(
+                    SubPostComment.status.is_null()
+                    | (Sub.sid << include_deleted_comments)
+                )
+        else:
             com = com.where(SubPostComment.status.is_null())
 
         com = com.order_by(SubPostComment.time.desc()).paginate(page, 20).dicts()
