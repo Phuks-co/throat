@@ -43,6 +43,7 @@ WORKDIR /throat
 
 # Pull in the compiled translations and static files.
 COPY --from=translations --chown=app:app /translations /throat/app/translations
+COPY --from=webpack --chown=app:app /app/manifest.json /throat/app/manifest.json
 COPY --from=webpack --chown=app:app /app/static/gen /throat/app/static/gen
 
 USER app
