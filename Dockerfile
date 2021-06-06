@@ -1,12 +1,30 @@
-FROM node:14-buster-slim
+# Compile the translations.
+# This is done in its own step as the translations are used by both
+# webpack and Flask.
+FROM python:3-slim-buster AS translations
+RUN pip install Babel
+COPY app/translations /translations
+RUN pybabel compile --directory=translations
 
-RUN useradd -ms /bin/bash app
 
+FROM node:14-buster-slim as webpack
+# Install our npm requirements
+COPY package.json package-lock.json /
+RUN npm ci
+# Build our static assets with webpack.
+COPY webpack.config.js .
+RUN mkdir /app
+COPY app/static /app/static
+COPY --from=translations /translations /app/translations
+RUN npm run build
+
+
+FROM python:3-slim-buster
+
+# Install system packages.
 RUN \
   apt-get update && apt-get install -yqq \
      build-essential \
-     python3-dev \
-     python3-pip \
      libgirepository1.0-dev \
      libcairo2-dev \
      libgexiv2-dev \
@@ -14,21 +32,19 @@ RUN \
      postgresql-client \
   && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /requirements.txt
 # Install our python requirements
-RUN pip3 install -r requirements.txt && rm requirements.txt 
+COPY requirements.txt /requirements.txt
+RUN pip3 install -r requirements.txt && rm requirements.txt
 
-COPY package.json /package.json
-COPY package-lock.json /package-lock.json
-# Install our npm requirements
-RUN npm ci && rm package.json && rm package-lock.json 
-
-COPY . /throat
+# Create the app user and the application directory.
+RUN useradd -ms /bin/bash app
+COPY --chown=app:app . /throat
 WORKDIR /throat
-RUN \
-  mv ../node_modules node_modules \
-  && npm run build \
-  && chown -R app:app .
+
+# Pull in the compiled translations and static files.
+COPY --from=translations --chown=app:app /translations /throat/app/translations
+COPY --from=webpack --chown=app:app /app/manifest.json /throat/app/manifest.json
+COPY --from=webpack --chown=app:app /app/static/gen /throat/app/static/gen
 
 USER app
 EXPOSE 5000
