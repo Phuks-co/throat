@@ -1,0 +1,5 @@
+app:
+    redis_url: redis://redis:6379
+
+cache:
+    redis_url: redis://redis:6379
