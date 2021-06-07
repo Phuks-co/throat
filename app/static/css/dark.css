@@ -234,7 +234,7 @@ body.dark .expando {
 
 body.dark .post .expandotxt,
 body.dark .post:nth-child(2n) .expandotxt {
-/*    background-color: #202225; */
+    background-color: #202225;
     color: #aaa;
 }
 
