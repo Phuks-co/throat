@@ -1448,6 +1448,10 @@ div.comments {
   padding-right: 8px;
 }
 
+.show-post-comments {
+    margin-left: 15px;
+}
+
 .pchild {
   margin-left: 15px;
   border-left: 1px dotted #cecece;

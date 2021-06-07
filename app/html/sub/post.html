@@ -346,7 +346,10 @@
   @if len(comments) == 0:
     <div class="comments"><h3 id="cmnts" data-cnt="0">@{_('No comments, yet...')}</h3></div>
   @else:
-    <div class="comments">
+    @if post['nsfw'] or sub['nsfw'] and 'nsfw' not in current_user.prefs:
+      <h3><a class="show-post-comments">@{_('Show comments')}</a></h3>
+    @end
+    <div id="post-comments" class="comments @{'hide' if post['nsfw'] or sub['nsfw'] and 'nsfw' not in current_user.prefs else ''}">
       <h2 id="cmnts" data-cnt="@{post['comments']}"><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{_('%(comments)i comments', comments=post['comments'])}</a></h2>
       <div class="pure-menu pure-menu-horizontal">
         <ul class="pure-menu-list">
