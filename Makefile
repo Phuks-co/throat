@@ -29,7 +29,7 @@ docker-shell: docker-compose-build
 	@$(DONE)
 
 .PHONY: test
-test:
+test: docker-compose-build
 	docker-compose up --detach redis
 	docker-compose run \
 		--name=throat_tests \
