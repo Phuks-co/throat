@@ -296,7 +296,7 @@ def sub_new_rss(sub):
 
     posts = misc.getPostList(
         misc.postListQueryBase(noAllFilter=True).where(Sub.sid == sub.sid), "new", 1
-    ).dicts()
+    )
 
     return Response(
         misc.populate_feed(fg, posts).atom_str(pretty=True),
@@ -324,7 +324,7 @@ def view_sub_new(sub, page):
         ),
         "new",
         page,
-    ).dicts()
+    )
 
     return engine.get_template("sub.html").render(
         {
@@ -427,7 +427,7 @@ def view_sub_top(sub, page):
         ),
         "top",
         page,
-    ).dicts()
+    )
 
     return engine.get_template("sub.html").render(
         {
@@ -460,7 +460,7 @@ def view_sub_hot(sub, page):
         ),
         "hot",
         page,
-    ).dicts()
+    )
 
     return engine.get_template("sub.html").render(
         {
@@ -649,6 +649,11 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
             ).isoformat()
             if int(postmeta["poll_closes_time"]) < time.time():
                 pollData["poll_open"] = False
+
+    if (post["nsfw"] or sub["nsfw"]) and "nsfw" not in current_user.prefs:
+        post["blur"] = "nsfw-blur"
+    else:
+        post["blur"] = ""
 
     return engine.get_template("sub/post.html").render(
         {

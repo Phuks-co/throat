@@ -38,7 +38,10 @@
                   {% elif comment.status == 2 %}
                     {{_('[Deleted by Mod or Admin]')}}
                   {% endif %}
-                  {{comment.title}}
+                  <span class="{{comment.blur}}">{{comment.title}}</span>
+                  {% if comment.sub_nsfw or comment.nsfw %}
+                    <div class="nsfw" alt="Not safe for work">{{_('NSFW')}}</div>
+                  {%endif%}
                 </a></span>
                 in <a href="{{ url_for('sub.view_sub', sub=comment.sub) }}">{{comment.sub}}</a>
               </div>
@@ -56,7 +59,7 @@
                       </span>
                     {% endif %}
                   </div>
-                  <div class="content" id="content-{{comment.cid}}">
+                  <div class="content {{comment.blur}}" id="content-{{comment.cid}}">
                     {{markdown(comment.content)|safe}}
                   </div>
                     <div hidden id="sauce-{{comment.cid}}">{{comment.content}}</div>

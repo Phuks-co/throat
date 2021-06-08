@@ -86,4 +86,5 @@
       <label id="pagefoot-moreuri" data-value="@{url_for('home.home_more', sort=sort_type.replace('home.', ''))}" class="hide"></label>
     @end
   @end
+  <label id="pagefoot-nsfw" data-value="@{'nsfw' in current_user.prefs}" class="hide"></label>
 @end

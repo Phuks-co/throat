@@ -22,10 +22,14 @@
     <h4 class="center">@{_('Top posts in the last 24 hours')}</h4>
     <ul class="top5">
       @for post in func.getTodaysTopPosts():
-        <li><a class="title" href="@{url_for('sub.view_post', sub=post['sub'], pid=post['pid'])}">@{post['title']}</a>
+        <li><a class="title @{post['blur']}" href="@{url_for('sub.view_post', sub=post['sub'], pid=post['pid'])}">@{post['title']}</a>
+          @if post['nsfw'] or post['sub_nsfw']:
+            <span class="nsfw" alt="Not safe for work">@{_('NSFW')}</span>
+          @endif
           <div class="sidelocale">
             @{_("%(timeago)s in %(sub)s", timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', sub='<a href="' + url_for('sub.view_sub', sub=post['sub']) + '">/' + config.site.sub_prefix + '/' + post['sub'] + '</a>') !!html}
-          </div></li>
+          </div>
+        </li>
       @end
     </ul>
   </div>
@@ -39,10 +43,13 @@
       @for post in func.recent_activity(True):
         <li>
           @if post['type'] == 'comment':
-            @{_('%(user)s commented: %(text)s', user='<a href="/u/' + post['user'] + '">' + post['user'] + '</a>', text='<a class="title" href="' + url_for('sub.view_post', sub=post['sub'], pid=post['pid']) + '">' + e(func.word_truncate(''.join(BeautifulSoup(markdown(post['content']), features='lxml').findAll(text=True)).replace('\n', ' '), 150)) + '</a>')!!html}
+            @{_('%(user)s commented: %(text)s', user='<a href="/u/' + post['user'] + '">' + post['user'] + '</a>', text='<a class="title ' + post['blur'] + '" href="' + url_for('sub.view_post', sub=post['sub'], pid=post['pid']) + '">' + e(func.word_truncate(''.join(BeautifulSoup(markdown(post['content']), features='lxml').findAll(text=True)).replace('\n', ' '), 150)) + '</a>')!!html}
           @else:
-            @{_('%(user)s posted: %(text)s', user='<a href="/u/' + post['user'] + '">' + post['user'] + '</a>', text='<a class="title" href="' + url_for('sub.view_post', sub=post['sub'], pid=post['pid']) + '">' + e(func.word_truncate(post['content'], 150)) + '</a>')!!html}
+            @{_('%(user)s posted: %(text)s', user='<a href="/u/' + post['user'] + '">' + post['user'] + '</a>', text='<a class="title ' + post['blur'] + '" href="' + url_for('sub.view_post', sub=post['sub'], pid=post['pid']) + '">' + e(func.word_truncate(post['content'], 150)) + '</a>')!!html}
           @end
+          @if post['nsfw'] or post['sub_nsfw']:
+            <span class="nsfw smaller" alt="Not safe for work">@{_('NSFW')}</span>
+          @endif
           <div class="sidelocale">
             @{_("%(timeago)s in %(sub)s", timeago='<time-ago datetime="' + post['time'].isoformat() + 'Z"></time-ago>', sub='<a href="' + url_for('sub.view_sub', sub=post['sub']) + '">/' + config.site.sub_prefix + '/' + post['sub'] + '</a>') !!html}
           </div>

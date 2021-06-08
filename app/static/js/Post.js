@@ -950,3 +950,9 @@ u.addEventForChild(document, 'click', 'a.unblk', function (e, qelem) {
             });
     });
 });
+
+// Show the comments on a NSFW post when clicked.
+u.addEventForChild(document, 'click', '.show-post-comments', function(e, qelem) {
+    document.getElementById('post-comments').classList.remove('hide');
+    qelem.classList.add('hide');
+})

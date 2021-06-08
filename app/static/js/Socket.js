@@ -83,14 +83,14 @@ u.ready(function () {
 // it where it belongs.
 
 function loadLazy() {
-  var lazy = document.getElementsByClassName('lazy');
+  var lazy = document.querySelectorAll('.lazy');;
   for (var i = 0; i < lazy.length; i++) {
     var data_src = lazy[i].getAttribute('data-src');
     if (data_src) {
       lazy[i].src = data_src;
       lazy[i].removeAttribute('data-src');
     }
-    lazy[i].classList.remove('lazy;')
+    lazy[i].classList.remove('lazy');
   }
 }
 
@@ -98,7 +98,7 @@ socket.loadLazy = loadLazy;
 
 
 function subscribeDeferred() {
-  var deferred = document.getElementsByClassName('deferred');
+  var deferred = document.querySelectorAll('.deferred');
 
   // Set up the callback for a thumbnail event.
   socket.on('thumbnail', function(data) {
@@ -112,6 +112,9 @@ function subscribeDeferred() {
           elem.removeAttribute('data-deferred');
         } else {
           var img = document.createElement('img');
+          if (elem.classList.contains('nsfw-blur')) {
+            img.classList.add('nsfw-blur');
+          }
           img.src = data.thumbnail;
           elem.parentNode.replaceChild(img, elem);
         }
@@ -174,9 +177,16 @@ socket.on('deletion', function(data){
 socket.on('comment', function(data){
   const recentActivity = document.getElementById('activity_list');
   if(recentActivity){
-    const content = data.title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    const showNSFW = document.getElementById('pagefoot-nsfw').getAttribute('data-value') == 'True';
+    const nsfwClass = (data.nsfw && !showNSFW) ? 'nsfw-blur' : '';
+    const nsfwElem = data.nsfw ? ('<span class="nsfw smaller" alt="Not safe for work">' + _('NSFW') + '</span>') : '';
+    const content = data.content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     const elem = document.createElement('li');
-    elem.innerHTML = _('%1 commented "%2" in %3 %4', '<a href="/u/' + data.user + '">' + data.user + '</a>', '<a href="' + data.post_url + '">' + content + '</a>', '<a href="' + data.sub_url + '">' + data.sub_url + '</a>', '<time-ago datetime="' + new Date().toISOString() + '" class="sidebarlists"></time-ago>')
+    elem.innerHTML = _('%1 commented "%2" in %3 %4',
+                        '<a href="/u/' + data.user + '">' + data.user + '</a>',
+                        '<a class="' + nsfwClass + '" href="' + data.post_url + '">' + content + '</a>' + nsfwElem,
+                        '<a href="' + data.sub_url + '">' + data.sub_url + '</a>',
+                        '<time-ago datetime="' + new Date().toISOString() + '" class="sidebarlists"></time-ago>');
     recentActivity.prepend(elem);
   }
 });
@@ -185,18 +195,27 @@ socket.on('thread', function(data){
   if(window.blocked){
     if(window.blocked.indexOf(data.sid) >= 0){return;}
   }
+  const showNSFW = document.getElementById('pagefoot-nsfw').getAttribute('data-value') == 'True';
+  const nsfwClass = (data.nsfw && !showNSFW) ? 'nsfw-blur' : '';
+  const nsfwElem = data.nsfw ? ('<span class="nsfw smaller" alt="Not safe for work">' + _('NSFW') + '</span>') : '';
   const recentActivity = document.getElementById('activity_list');
   const title = data.title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   if(recentActivity){
     const elem = document.createElement('li');
-    elem.innerHTML = _('%1 posted "%2" to %3 %4', '<a href="/u/' + data.user + '">' + data.user + '</a>', '<a href="' + data.post_url + '">' + title + '</a>', '<a href="' + data.sub_url + '">' + data.sub_url + '</a>', '<time-ago datetime="' + new Date().toISOString() + '" class="sidebarlists"></time-ago>')
+    elem.innerHTML = _('%1 posted "%2" to %3 %4',
+                       '<a href="/u/' + data.user + '">' + data.user + '</a>',
+                       '<a class="' + nsfwClass +  '" href="' + data.post_url + '">' + title + '</a>' + nsfwElem,
+                       '<a href="' + data.sub_url + '">' + data.sub_url + '</a>',
+                       '<time-ago datetime="' + new Date().toISOString() + '" class="sidebarlists"></time-ago>')
     recentActivity.prepend(elem);
     return;
   }
   const recentActivitySidebar = document.getElementById('activity_list_sidebar');
   if(recentActivitySidebar && data.show_sidebar){
     const elem = document.createElement('li');
-    let html = _('%1 posted: %2', '<a href="/u/' + data.user + '">' + data.user + '</a>', '<a class="title" href="' + data.post_url + '">' + title + '</a>');
+    let html = _('%1 posted: %2',
+                 '<a href="/u/' + data.user + '">' + data.user + '</a>',
+                 '<a class="title ' + nsfwClass + '" href="' + data.post_url + '">' + title + '</a>' + nsfwElem);
     html += '<div class="sidelocale">' +
               _("%1 in %2", '<time-ago datetime="' + new Date().toISOString() + '"></time-ago>', '<a href="' + data.sub_url + '">' + data.sub_url + '</a>') +
             '</div>';
@@ -219,6 +238,15 @@ socket.on('thread', function(data){
     }
 
   }
+
+  const blurredElems = document.querySelectorAll('.placeholder-nsfw-blur');
+  for (var i = 0; i < blurredElems.length; i++) {
+    blurredElems[i].classList.remove('placeholder-nsfw-blur');
+    if (!showNSFW) {
+      blurredElems[i].classList.add('nsfw-blur');
+    }
+  }
+
   loadLazy();
   subscribeDeferred();
   icon.rendericons();

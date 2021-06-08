@@ -114,7 +114,7 @@ def view_user_posts(user, page):
         ).where(User.uid == user.uid),
         "new",
         page,
-    ).dicts()
+    )
 
     return render_template(
         "userposts.html",
@@ -137,7 +137,7 @@ def view_user_savedposts(user, page):
             .where(UserSaved.uid == current_user.uid),
             "new",
             page,
-        ).dicts()
+        )
         return render_template(
             "userposts.html",
             page=page,

@@ -92,7 +92,7 @@ def view_multisub_new(sublist, page=1):
 
     posts = misc.getPostList(
         misc.postListQueryBase().where(Sub.sid << sids), "new", page
-    ).dicts()
+    )
     return render_template(
         "indexmulti.html",
         page=page,

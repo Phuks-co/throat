@@ -544,12 +544,8 @@ def posts(page):
     """ WIP: View posts. """
     if not current_user.is_admin():
         abort(404)
-    posts = (
-        misc.getPostList(
-            misc.postListQueryBase(include_deleted_posts=True), "new", page
-        )
-        .paginate(page, 50)
-        .dicts()
+    posts = misc.getPostList(
+        misc.postListQueryBase(include_deleted_posts=True), "new", page, page_size=50
     )
     return render_template(
         "admin/posts.html", page=page, admin_route="admin.posts", posts=posts
