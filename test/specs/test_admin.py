@@ -2,7 +2,7 @@ from app.models import SiteMetadata, Sub, SubPost, User
 import json
 import pytest
 
-from flask import url_for
+from flask import g, url_for
 from app import mail
 from app.misc import getAnnouncementPid
 
@@ -135,11 +135,7 @@ def test_admin_can_make_announcement(client, a_logged_in_admin, a_post):
     # Given an existing post and a logged-in admin user.
 
     # When the admin marks the post as an announcement.
-    post_page_response = client.get(
-        url_for("sub.view_post", sub=a_post.sid.name, pid=a_post.pid),
-        follow_redirects=True,
-    )
-    csrf = csrf_token(post_page_response.data)
+    csrf = g.csrf_token
     announcement_response = client.post(
         url_for("do.make_announcement"), data={"csrf_token": csrf, "post": a_post.pid}
     )
