@@ -3,6 +3,7 @@ import datetime
 from enum import IntEnum
 import functools
 import sys
+import uuid
 from flask import g
 from flask_redis import FlaskRedis
 from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model, Database
@@ -187,7 +188,8 @@ class Sub(BaseModel):
     #     link=url_for("sub.view_post", sub=post.sid.name, pid=post.pid),
     # causes an error in the Flask URL construction process when name is None.
     nsfw = BooleanField(default=False)
-    sid = CharField(primary_key=True, max_length=40)
+    sid = CharField(primary_key=True, max_length=40, default=uuid.uuid4)
+    # Default for sid taken from subs.create_sub.
     sidebar = TextField(default="")
     status = IntegerField(null=True)
     title = CharField(null=True, max_length=50)
