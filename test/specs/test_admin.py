@@ -171,6 +171,29 @@ def test_announcing_an_announcement_gives_an_error_response(
     assert current_announcement_pid() == announced_post.pid
 
 
+def test_announcing_a_post_replaces_an_existing_announcement(
+    client, a_logged_in_admin: None
+) -> None:
+    # Given an existing post marked as an announcement.
+    existing_announcement: SubPost = AnnouncedPostFactory.create()
+    # Sanity check.
+    assert current_announcement_pid() == existing_announcement.pid
+    # And a new post.
+    new_post: SubPost = PostFactory.create()
+
+    # When the admin marks the new post as an announcement.
+    announcement_response = client.post(
+        url_for("do.make_announcement"),
+        data={"csrf_token": g.csrf_token, "post": new_post.pid},
+    )
+
+    # Then the request succeeds.
+    assert http_status_ok(announcement_response)
+    assert json_status_ok(announcement_response)
+    # And the announced post is unchanged.
+    assert current_announcement_pid() == new_post.pid
+
+
 def test_admin_can_delete_announcement(client, a_logged_in_admin: None):
     # Given a logged-in admin user.
     # And an announced post.
