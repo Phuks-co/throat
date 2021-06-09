@@ -950,7 +950,7 @@ img.nsfw-blur {
 
 .postinfo {
   display: inline-block;
-  width: 82%;
+/*  width: 82%; */
 }
 
 .popup {
@@ -1092,7 +1092,8 @@ img.nsfw-blur {
 .commblock{
   display: inline-block;
   width: calc(100% - 2em);
-  margin-bottom: 1.1em;
+  max-width: 60em;
+  padding-right: 500px;
   font-family: verdana,arial,sans-serif;
   font-size: 14px;
   line-height: 1.3em;
@@ -2609,7 +2610,7 @@ article.text-post.comment.mod>div>div>div>a.poster {
 }
 
 article.text-post.comment.deleted {
-  background-color: #f1f1f1;
+/*  background-color: #f1f1f1; */
 }
 
 .post-content-container.deleted {
