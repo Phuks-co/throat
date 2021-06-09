@@ -1093,7 +1093,6 @@ img.nsfw-blur {
   display: inline-block;
   width: calc(100% - 2em);
   max-width: 60em;
-  padding-right: 500px;
   font-family: verdana,arial,sans-serif;
   font-size: 14px;
   line-height: 1.3em;
