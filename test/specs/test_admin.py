@@ -2,7 +2,11 @@ from app.models import SiteMetadata, SubPost
 import json
 import pytest
 
+# g is imported so we can easily grab the csrf_token, but note that if
+# no request has been made (ie, in the test or one of its fixtures) then
+# g.csrf_token can fail with an exception.
 from flask import g, url_for
+
 from app import mail
 from app.misc import getAnnouncementPid
 
