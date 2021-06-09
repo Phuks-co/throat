@@ -2,6 +2,7 @@ from app.models import SiteMetadata, Sub, SubPost, User
 import json
 import pytest
 
+from faker import Faker
 from flask import g, url_for
 from app import mail
 from app.misc import getAnnouncementPid
@@ -75,29 +76,29 @@ def test_admin_can_ban_email_domain(client, user_info, test_config):
 
 
 @pytest.fixture
-def null_user() -> User:
+def a_user(faker: Faker) -> User:
     """Create a bare-bones user."""
     return User.create(
-        uid="dummy-user",
-        name="abc",
+        uid=faker.pystr(),
+        name=faker.user_name(),
         crypto=0,
     )
 
 
 @pytest.fixture
-def a_sub(app) -> Sub:
+def a_sub(app, faker: Faker) -> Sub:
     """Create a bare-bones sub."""
-    return Sub.create(name="someSub")
+    return Sub.create(name=faker.word())
 
 
 @pytest.fixture
-def a_post(a_sub, null_user) -> SubPost:
+def a_post(a_sub: Sub, a_user: User, faker: Faker) -> SubPost:
     """Create a bare-bones post."""
     return SubPost.create(
         sid=a_sub,
-        title="A new post.",
+        title=faker.sentence(),
         comments=0,  # Required for some reason.
-        uid=null_user,
+        uid=a_user,
     )
 
 
