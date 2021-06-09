@@ -1,12 +1,12 @@
-from app.models import SiteMetadata, Sub, SubPost, User
+from app.models import SiteMetadata, SubPost
 import json
 import pytest
 
-from faker import Faker
 from flask import g, url_for
 from app import mail
 from app.misc import getAnnouncementPid
 
+from test.factories import AnnouncedPostFactory, PostFactory
 from test.utilities import csrf_token, promote_user_to_admin
 from test.utilities import register_user, log_in_user, log_out_current_user
 
@@ -76,40 +76,6 @@ def test_admin_can_ban_email_domain(client, user_info, test_config):
 
 
 @pytest.fixture
-def a_user(faker: Faker) -> User:
-    """Create a bare-bones user."""
-    return User.create(
-        uid=faker.pystr(),
-        name=faker.user_name(),
-        crypto=0,
-    )
-
-
-@pytest.fixture
-def a_sub(app, faker: Faker) -> Sub:
-    """Create a bare-bones sub."""
-    return Sub.create(name=faker.word())
-
-
-@pytest.fixture
-def a_post(a_sub: Sub, a_user: User, faker: Faker) -> SubPost:
-    """Create a bare-bones post."""
-    return SubPost.create(
-        sid=a_sub,
-        title=faker.sentence(),
-        comments=0,  # Required for some reason.
-        uid=a_user,
-    )
-
-
-@pytest.fixture
-def an_announced_post(a_post: SubPost) -> SubPost:
-    """Return a post marked as an announcement."""
-    SiteMetadata.create(key="announcement", value=a_post.pid)
-    return a_post
-
-
-@pytest.fixture
 def a_logged_in_user(client, user2_info) -> None:
     register_user(client, user2_info)
 
@@ -151,8 +117,9 @@ def current_announcement_pid() -> int:
     return int(getAnnouncementPid().value)
 
 
-def test_admin_can_make_announcement(client, a_logged_in_admin: None, a_post: SubPost):
+def test_admin_can_make_announcement(client, a_logged_in_admin: None):
     # Given an existing post and a logged-in admin user.
+    a_post: SubPost = PostFactory.create()
 
     # When the admin marks the post as an announcement.
     announcement_response = client.post(
@@ -182,29 +149,30 @@ def test_anonymous_users_are_redirected_from_make_announcement_route(client) -> 
 
 
 def test_announcing_an_announcement_gives_an_error_response(
-    client, an_announced_post: SubPost, a_logged_in_admin: None
+    client, a_logged_in_admin: None
 ) -> None:
     # Given an existing announcement and a logged-in admin user.
+    announced_post: SubPost = AnnouncedPostFactory.create()
 
     # When the admin marks the announced post as an announcement.
     announcement_response = client.post(
         url_for("do.make_announcement"),
-        data={"csrf_token": g.csrf_token, "post": an_announced_post.pid},
+        data={"csrf_token": g.csrf_token, "post": announced_post.pid},
     )
 
     # Then the request returns HTTP 200 but the JSON response notes an error.
     assert http_status_ok(announcement_response)
     assert json_status_error(announcement_response)
     # And the announced post is unchanged.
-    assert current_announcement_pid() == an_announced_post.pid
+    assert current_announcement_pid() == announced_post.pid
 
 
-def test_admin_can_delete_announcement(
-    client, a_logged_in_admin: None, an_announced_post: SubPost
-):
-    # Given an announced post. (This is a sanity check.)
-    assert current_announcement_pid() == an_announced_post.pid
-    # And a logged-in admin user.
+def test_admin_can_delete_announcement(client, a_logged_in_admin: None):
+    # Given a logged-in admin user.
+    # And an announced post.
+    announced_post: SubPost = AnnouncedPostFactory.create()
+    # (This is a sanity check.)
+    assert current_announcement_pid() == announced_post.pid
 
     # When the admin deletes the announced post with a GET request.
     client.get(url_for("do.deleteannouncement"))
