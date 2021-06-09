@@ -76,6 +76,7 @@ def test_admin_can_ban_email_domain(client, user_info, test_config):
 
 @pytest.fixture
 def null_user() -> User:
+    """Create a bare-bones user."""
     return User.create(
         uid="dummy-user",
         name="abc",
@@ -85,11 +86,13 @@ def null_user() -> User:
 
 @pytest.fixture
 def a_sub(app) -> Sub:
+    """Create a bare-bones sub."""
     return Sub.create(name="someSub")
 
 
 @pytest.fixture
 def a_post(a_sub, null_user):
+    """Create a bare-bones post."""
     return SubPost.create(
         sid=a_sub,
         title="A new post.",
@@ -100,15 +103,36 @@ def a_post(a_sub, null_user):
 
 @pytest.fixture
 def an_announced_post(a_post):
+    """Return a post marked as an announcement."""
     SiteMetadata.create(key="announcement", value=a_post.pid)
     return a_post
 
 
-def test_admin_can_make_announcement(client, user2_info, a_post):
-    # Given an existing post (a_post).
-    # And a logged-in admin user.
+@pytest.fixture
+def a_logged_in_admin(client, user2_info):
+    """Register a new admin user, which is left logged-in."""
     register_user(client, user2_info)
     promote_user_to_admin(client, user2_info)
+
+
+def http_status_ok(response) -> bool:
+    """Test if response HTTP status was 200 OK."""
+    return response.status == "200 OK"
+
+
+def json_status_ok(response) -> bool:
+    """Test if the JSON body in the response has a status of 'ok'."""
+    json_data = json.loads(response.data.decode("utf-8"))
+    return json_data["status"] == "ok"
+
+
+def current_announcement_pid() -> int:
+    """Get the pid of the currently announced post as an integer."""
+    return int(getAnnouncementPid().value)
+
+
+def test_admin_can_make_announcement(client, a_logged_in_admin, a_post):
+    # Given an existing post and a logged-in admin user.
 
     # When the admin marks the post as an announcement.
     post_page_response = client.get(
@@ -116,24 +140,21 @@ def test_admin_can_make_announcement(client, user2_info, a_post):
         follow_redirects=True,
     )
     csrf = csrf_token(post_page_response.data)
-    response = client.post(
+    announcement_response = client.post(
         url_for("do.make_announcement"), data={"csrf_token": csrf, "post": a_post.pid}
     )
 
     # Then the request succeeds.
-    assert response.status == "200 OK"
-    json_response = json.loads(response.data.decode("utf-8"))
-    assert json_response["status"] == "ok", json_response
+    assert http_status_ok(announcement_response)
+    assert json_status_ok(announcement_response)
     # And the ID of the post is stored as the announcement post ID.
-    assert int(getAnnouncementPid().value) == a_post.pid
+    assert current_announcement_pid() == a_post.pid
 
 
-def test_admin_can_delete_announcement(client, user2_info, an_announced_post):
+def test_admin_can_delete_announcement(client, a_logged_in_admin, an_announced_post):
     # Given an announced post. (This is a sanity check.)
-    assert int(getAnnouncementPid().value) == an_announced_post.pid
-    # And a logged-in admin.
-    register_user(client, user2_info)
-    promote_user_to_admin(client, user2_info)
+    assert current_announcement_pid() == an_announced_post.pid
+    # And a logged-in admin user.
 
     # When the admin deletes the announced post with a GET request.
     client.get(url_for("do.deleteannouncement"))
