@@ -194,6 +194,28 @@ def test_announcing_a_post_replaces_an_existing_announcement(
     assert current_announcement_pid() == new_post.pid
 
 
+def test_announcing_a_nonexistent_post_gives_an_error_response(
+    client, a_logged_in_admin: None
+) -> None:
+    # Given there is no announced post.
+    with pytest.raises(SiteMetadata.DoesNotExist):
+        current_announcement_pid()
+
+    # When the admin marks the non-existent post as an announcement.
+    announcement_response = client.post(
+        url_for("do.make_announcement"),
+        data={"csrf_token": g.csrf_token, "post": 0},
+    )
+
+    # Then the request returns HTTP 200 but the JSON response notes an error.
+    assert http_status_ok(announcement_response)
+    assert json_status_error(announcement_response)
+
+    # And there remains no announced post.
+    with pytest.raises(SiteMetadata.DoesNotExist):
+        current_announcement_pid()
+
+
 def test_admin_can_delete_announcement(client, a_logged_in_admin: None):
     # Given a logged-in admin user.
     # And an announced post.
