@@ -33,6 +33,7 @@ from ..forms import SearchForm, EditMod2Form, SetSubOfTheDayForm, AssignSubUserF
 from ..forms import DeleteSubFlair, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm, DistinguishForm
 from ..forms import BanDomainForm, SetOwnUserFlairForm, ChangeConfigSettingForm
+from ..forms import AnnouncePostForm
 from ..badges import badges
 from ..misc import (
     cache,
@@ -2070,12 +2071,12 @@ def make_announcement():
     if not current_user.is_admin():
         abort(403)
 
-    form = DeletePost()
+    form = AnnouncePostForm()
 
     if form.validate():
         try:
             curr_ann = SiteMetadata.get(SiteMetadata.key == "announcement")
-            if curr_ann.value == form.post.data:
+            if int(curr_ann.value) == form.post.data:
                 return jsonify(status="error", error=_("Post already announced"))
             deleteannouncement()
         except SiteMetadata.DoesNotExist:

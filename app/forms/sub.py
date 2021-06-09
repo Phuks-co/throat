@@ -1,7 +1,7 @@
 """ Sub-related forms """
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, BooleanField, HiddenField
+from wtforms import StringField, TextAreaField, BooleanField, HiddenField, IntegerField
 from wtforms import RadioField, SelectField, FieldList
 from wtforms.validators import DataRequired, Length, URL
 from wtforms.validators import Optional
@@ -253,6 +253,12 @@ class UndeletePost(FlaskForm):
 
     post = HiddenField()
     reason = StringField()
+
+
+class AnnouncePostForm(FlaskForm):
+    """Form to mark a post as an announcement."""
+
+    post = IntegerField(validators=[DataRequired()])
 
 
 class VoteForm(FlaskForm):
