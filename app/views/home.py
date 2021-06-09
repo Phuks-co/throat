@@ -29,7 +29,7 @@ def index():
 @bp.route("/hot/<int:page>")
 def hot(page):
     """ /hot for subscriptions """
-    posts = list(misc.getPostList(misc.postListQueryHome(), "hot", page).dicts())
+    posts = misc.getPostList(misc.postListQueryHome(), "hot", page)
     return engine.get_template("index.html").render(
         {
             "posts": posts,
@@ -47,7 +47,7 @@ def hot(page):
 @bp.route("/new/<int:page>")
 def new(page):
     """ /new for subscriptions """
-    posts = misc.getPostList(misc.postListQueryHome(), "new", page).dicts()
+    posts = misc.getPostList(misc.postListQueryHome(), "new", page)
     return engine.get_template("index.html").render(
         {
             "posts": posts,
@@ -65,7 +65,7 @@ def new(page):
 @bp.route("/top/<int:page>")
 def top(page):
     """ /top for subscriptions """
-    posts = misc.getPostList(misc.postListQueryHome(), "top", page).dicts()
+    posts = misc.getPostList(misc.postListQueryHome(), "top", page)
     return engine.get_template("index.html").render(
         {
             "posts": posts,
@@ -82,7 +82,7 @@ def top(page):
 @bp.route("/all/new.rss")
 def all_new_rss():
     """ RSS feed for /all/new """
-    posts = misc.getPostList(misc.postListQueryBase(), "new", 1).dicts()
+    posts = misc.getPostList(misc.postListQueryBase(), "new", 1)
     fg = FeedGenerator()
     fg.id(request.url)
     fg.title("čekni.to")
@@ -99,10 +99,8 @@ def all_new_rss():
 @bp.route("/all/new/<int:page>")
 def all_new(page):
     """ The index page, all posts sorted as most recent posted first """
-    posts = list(
-        misc.getPostList(
-            misc.postListQueryBase(isSubMod=current_user.can_admin), "new", page
-        ).dicts()
+    posts = misc.getPostList(
+        misc.postListQueryBase(isSubMod=current_user.can_admin), "new", page
     )
     return engine.get_template("index.html").render(
         {
@@ -129,15 +127,15 @@ def all_more(sort, page, pid):
             ),
             "new",
             1,
-        ).dicts()
+        )
     elif sort == "top":
         posts = misc.getPostList(
             misc.postListQueryBase(isSubMod=current_user.can_admin), "top", page
-        ).dicts()
+        )
     elif sort == "hot":
         posts = misc.getPostList(
             misc.postListQueryBase(isSubMod=current_user.can_admin), "hot", page
-        ).dicts()
+        )
     else:
         return abort(404)
 
@@ -154,11 +152,11 @@ def home_more(sort, page, pid):
     if sort == "new":
         posts = misc.getPostList(
             misc.postListQueryHome().where(SubPost.pid < pid), "new", 1
-        ).dicts()
+        )
     elif sort == "top":
-        posts = misc.getPostList(misc.postListQueryHome(), "top", page).dicts()
+        posts = misc.getPostList(misc.postListQueryHome(), "top", page)
     elif sort == "hot":
-        posts = misc.getPostList(misc.postListQueryHome(), "hot", page).dicts()
+        posts = misc.getPostList(misc.postListQueryHome(), "hot", page)
     else:
         return abort(404)
 
@@ -178,7 +176,7 @@ def all_domain_new(domain, page):
         ),
         "new",
         page,
-    ).dicts()
+    )
     return engine.get_template("index.html").render(
         {
             "posts": posts,
@@ -200,7 +198,7 @@ def search(page, term):
     term = re.sub(r'[^A-Za-z0-9.,\-_\'" ]+', "", term)
     posts = misc.getPostList(
         misc.postListQueryBase().where(SubPost.title ** ("%" + term + "%")), "new", page
-    ).dicts()
+    )
     return engine.get_template("index.html").render(
         {
             "posts": posts,
@@ -220,7 +218,7 @@ def all_top(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = misc.getPostList(
         misc.postListQueryBase(isSubMod=current_user.can_admin), "top", page
-    ).dicts()
+    )
     return engine.get_template("index.html").render(
         {
             "posts": posts,
@@ -241,7 +239,7 @@ def all_hot(page):
     """ The index page, all posts sorted as most recent posted first """
     posts = misc.getPostList(
         misc.postListQueryBase(isSubMod=current_user.can_admin), "hot", page
-    ).dicts()
+    )
 
     return engine.get_template("index.html").render(
         {

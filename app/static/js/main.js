@@ -636,3 +636,8 @@ for(var i = 0;i<childs.length;i++){
         }
     }
 }
+
+u.addEventForChild(document, 'click', '.nsfw-blur', function(e, qelem){
+  e.preventDefault();
+  qelem.classList.remove('nsfw-blur');
+})

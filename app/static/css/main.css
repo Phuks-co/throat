@@ -909,6 +909,17 @@ a.slink {
   border: 1px solid #e22;
 }
 
+.nsfw-blur {
+  filter: blur(4px);
+  -webkit-filter: blur(4px);
+  cursor: pointer;
+}
+
+img.nsfw-blur {
+  filter: blur(8px);
+  -webkit-filter: blur(8px);
+}
+
 .stickyposts {
   margin-top: 1em;
   margin-bottom: .5em;
@@ -1486,6 +1497,10 @@ input[type=search] {
 
 div.comments {
   padding-right: 8px;
+}
+
+.show-post-comments {
+    margin-left: 15px;
 }
 
 .pchild {

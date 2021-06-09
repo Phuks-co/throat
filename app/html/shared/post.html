@@ -22,9 +22,9 @@
               @if post['thumbnail'] == '':
                 <span class="placeholder" data-icon="link"></span>
               @elif post['thumbnail'] == 'deferred':
-                <span class="placeholder deferred" data-icon="link" data-deferred="SubPost-@{post['pid']}"/>
+                <span class="placeholder deferred @{post['blur']}" data-icon="link" data-deferred="SubPost-@{post['pid']}"/>
               @else:
-                <img alt="@{_('Thumbnail')}" class="lazy" src="@{url_for('static', filename='img/1x1.gif')}" data-src="@{thumbnail_url(post['thumbnail'])}"/>
+                <img alt="@{_('Thumbnail')}" class="lazy @{post['blur']}" src="@{url_for('static', filename='img/1x1.gif')}" data-src="@{thumbnail_url(post['thumbnail'])}"/>
               @end
             @else:
               <span class="placeholder" data-icon="chat"></span>
@@ -62,12 +62,12 @@
         <span class="postflair">@{post['flair']!!e}</span> \
         @end
         @if post['link'] == None:
-          <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']}/@{func.slugify(post['title'])}" class="title">@{post['title']}</a> \
+          <a href="/@{config.site.sub_prefix}/@{post['sub']}/@{post['pid']}/@{func.slugify(post['title'])}" class="title @{post['blur']}">@{post['title']}</a> \
         @else:
           @if post['link'].startswith('http:'):
           <!--  <span title="@{_('not https')}" class="p-icon" data-icon="exclaim"></span> \ -->
           @end
-          <a target="_blank" rel="noopener nofollow ugc" href="@{post['link']}" class="title">@{post['title']}</a> <a href="/domain/@{func.getDomain(post['link'])}" class="domain">(@{func.getDomain(post['link'])})</a>
+          <a target="_blank" rel="noopener nofollow ugc" href="@{post['link']}" class="title @{post['blur']}">@{post['title']}</a> <a href="/domain/@{func.getDomain(post['link'])}" class="domain">(@{func.getDomain(post['link'])})</a>
         @end
       </div>
 	  

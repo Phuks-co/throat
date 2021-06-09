@@ -437,7 +437,12 @@ def create_post(ptype, sub):
     addr = url_for("sub.view_post", sub=sub.name, pid=post.pid)
     posts = misc.getPostList(
         misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), "new", 1
-    ).dicts()
+    )
+
+    # Set it up so socketio recipient can use their own NSFW setting on NSFW content.
+    if posts[0]["nsfw"]:
+        posts[0]["blur"] = "placeholder-nsfw-blur"
+
     defaults = [
         x.value for x in SiteMetadata.select().where(SiteMetadata.key == "default")
     ]
@@ -454,6 +459,7 @@ def create_post(ptype, sub):
             "pid": post.pid,
             "sid": sub.sid,
             "title": post.title,
+            "nsfw": post.nsfw,
             "post_url": url_for("sub.view_post", sub=sub.name, pid=post.pid),
             "sub_url": url_for("sub.view_sub", sub=sub.name),
             "html": engine.get_template("shared/post.html").render(

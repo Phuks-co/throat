@@ -331,7 +331,7 @@ def get_post_list(target):
         base_query = base_query.where(Sub.sid == sub.sid)
 
     base_query = base_query.where(SubPost.deleted == 0)
-    posts = misc.getPostList(base_query, sort, page).dicts()
+    posts = misc.getPostList(base_query, sort, page)
 
     cnt = base_query.count() - page * 25
     postList = []
@@ -700,6 +700,7 @@ def create_comment(sub, pid):
             "user": user.name,
             "pid": post.pid,
             "sid": sub.sid,
+            "nsfw": post.nsfw or sub.nsfw,
             "content": comment_res,
             "post_url": url_for("sub.view_post", sub=sub.name, pid=post.pid),
             "sub_url": url_for("sub.view_sub", sub=sub.name),
@@ -1101,7 +1102,7 @@ def create_post():
     addr = url_for("sub.view_post", sub=sub.name, pid=post.pid)
     posts = misc.getPostList(
         misc.postListQueryBase(nofilter=True).where(SubPost.pid == post.pid), "new", 1
-    ).dicts()
+    )
 
     defaults = [
         x.value for x in SiteMetadata.select().where(SiteMetadata.key == "default")
@@ -1119,6 +1120,7 @@ def create_post():
             "pid": post.pid,
             "sid": sub.sid,
             "title": post.title,
+            "nsfw": post.nsfw,
             "post_url": url_for("sub.view_post", sub=sub.name, pid=post.pid),
             "sub_url": url_for("sub.view_sub", sub=sub.name),
             "html": misc.engine.get_template("shared/post.html").render(

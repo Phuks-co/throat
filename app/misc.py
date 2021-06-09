@@ -786,16 +786,18 @@ def get_user_level(uid, score=None):
 
 
 @cache.memoize(300)
-def getTodaysTopPosts():
+def fetchTodaysTopPosts():
     """ Returns top posts in the last 24 hours """
     td = datetime.utcnow() - timedelta(days=1)
-    posts = (
+    return list(
         SubPost.select(
             SubPost.pid,
             Sub.name.alias("sub"),
             SubPost.title,
             SubPost.posted,
             SubPost.score,
+            Sub.nsfw.alias("sub_nsfw"),
+            SubPost.nsfw,
         )
         .where(SubPost.posted > td)
         .where(SubPost.deleted == 0)
@@ -804,10 +806,11 @@ def getTodaysTopPosts():
         .join(Sub, JOIN.LEFT_OUTER)
         .dicts()
     )
-    top_posts = []
-    for p in posts:
-        top_posts.append(p)
-    return top_posts
+
+
+def getTodaysTopPosts():
+    top_posts = fetchTodaysTopPosts()
+    return [add_blur(p) for p in top_posts]
 
 
 def set_sub_of_the_day(sid):
@@ -983,6 +986,7 @@ def postListQueryBase(
             SubPost.flair,
             SubPost.edited,
             Sub.sid,
+            Sub.nsfw.alias("sub_nsfw"),
             SubPost.comments,
             SubPostVote.positive,
             User.uid,
@@ -1030,6 +1034,7 @@ def postListQueryBase(
             SubPost.flair,
             SubPost.edited,
             Sub.sid,
+            Sub.nsfw.alias("sub_nsfw"),
             SubPost.comments,
             User.uid,
             User.status.alias("userstatus"),
@@ -1060,9 +1065,7 @@ def postListQueryBase(
     if not noAllFilter and not nofilter:
         if current_user.is_authenticated and current_user.blocksid:
             posts = posts.where(SubPost.sid.not_in(current_user.blocksid))
-    if (not nofilter) and (
-        (not current_user.is_authenticated) or ("nsfw" not in current_user.prefs)
-    ):
+    if (not nofilter) and (not current_user.is_authenticated):
         posts = posts.where(SubPost.nsfw == 0)
 
     return posts
@@ -1081,11 +1084,11 @@ def postListQueryHome(noDetail=False, nofilter=False):
         )
 
 
-def getPostList(baseQuery, sort, page):
+def getPostList(baseQuery, sort, page, page_size=25):
     if sort == "top":
-        posts = baseQuery.order_by(SubPost.score.desc()).paginate(page, 25)
+        posts = baseQuery.order_by(SubPost.score.desc()).paginate(page, page_size)
     elif sort == "new":
-        posts = baseQuery.order_by(SubPost.pid.desc()).paginate(page, 25)
+        posts = baseQuery.order_by(SubPost.pid.desc()).paginate(page, page_size)
     else:
         if "Postgresql" in config.database.engine:
             posted = fn.EXTRACT(NodeList((SQL("EPOCH FROM"), SubPost.posted)))
@@ -1098,8 +1101,15 @@ def getPostList(baseQuery, sort, page):
             hot = fn.HOT(SubPost.score, posted)
         else:
             hot = SubPost.score * 20 + (posted - 1134028003) / 1500
-        posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, 25)
-    return posts
+        posts = baseQuery.order_by(hot.desc()).limit(100).paginate(page, page_size)
+    return [add_blur(p) for p in posts.dicts()]
+
+
+def add_blur(post):
+    post["blur"] = ""
+    if "nsfw" not in current_user.prefs and (post["nsfw"] or post["sub_nsfw"]):
+        post["blur"] = "nsfw-blur"
+    return post
 
 
 @cache.memoize(600)
@@ -1113,7 +1123,7 @@ def getAnnouncement():
         ann = getAnnouncementPid()
         if not ann.value:
             return False
-        return (
+        return add_blur(
             postListQueryBase(nofilter=True)
             .where(SubPost.pid == ann.value)
             .dicts()
@@ -1159,7 +1169,7 @@ def getStickies(sid):
     )
     posts = posts.where(SubPost.sid == sid)
     posts = posts.order_by(SubMetadata.xid.asc()).dicts()
-    return list(posts)
+    return [add_blur(p) for p in posts]
 
 
 def load_user(user_id):
@@ -1568,6 +1578,8 @@ def getUserComments(uid, page, include_deleted_comments=False):
                 SubPostComment.parentcid,
                 SubPost.posted,
                 SubPost.deleted.alias("post_deleted"),
+                SubPost.nsfw.alias("nsfw"),
+                Sub.nsfw.alias("sub_nsfw"),
             )
             .join(SubPost)
             .switch(SubPostComment)
@@ -1587,10 +1599,12 @@ def getUserComments(uid, page, include_deleted_comments=False):
     except SubPostComment.DoesNotExist:
         return False
 
+    com = list(com)
     now = datetime.utcnow()
     limit = timedelta(days=config.site.archive_post_after)
     for c in com:
         c["archived"] = now - c["posted"].replace(tzinfo=None) > limit
+        c = add_blur(c)
     return com
 
 
@@ -2952,6 +2966,7 @@ def recent_activity(sidebar=True):
         SubPost.posted.alias("time"),
         SubPost.pid,
         SubPost.sid,
+        SubPost.nsfw,
     )
     post_activity = post_activity.join(User).switch(SubPost)
     post_activity = (
@@ -2965,6 +2980,7 @@ def recent_activity(sidebar=True):
         SubPostComment.time.alias("time"),
         SubPost.pid,
         SubPost.sid,
+        SubPost.nsfw,
     )
     comment_activity = comment_activity.join(User).switch(SubPostComment).join(SubPost)
     comment_activity = (
@@ -2990,7 +3006,9 @@ def recent_activity(sidebar=True):
         activity.c.time,
         activity.c.pid,
         activity.c.sid,
+        activity.c.nsfw,
         Sub.name.alias("sub"),
+        Sub.nsfw.alias("sub_nsfw"),
     )
     data = data.join(Sub, on=Sub.sid == activity.c.sid)
     if sidebar and config.site.recent_activity.comments_only:
@@ -3006,6 +3024,7 @@ def recent_activity(sidebar=True):
                 spoiler.string.replace_with("█" * len(spoiler.string))
             stripped = parsed.findAll(text=True)
             rec["content"] = word_truncate("".join(stripped).replace("\n", " "), 350)
+        add_blur(rec)
 
     return data
 
