@@ -110,6 +110,11 @@ def an_announced_post(a_post: SubPost) -> SubPost:
 
 
 @pytest.fixture
+def a_logged_in_user(client, user2_info) -> None:
+    register_user(client, user2_info)
+
+
+@pytest.fixture
 def a_logged_in_admin(client, user2_info) -> None:
     """Register a new admin user, which is left logged-in."""
     register_user(client, user2_info)
@@ -121,10 +126,24 @@ def http_status_ok(response) -> bool:
     return response.status == "200 OK"
 
 
+def parse_json_response_body(response) -> dict:
+    return json.loads(response.data.decode("utf-8"))
+
+
+def check_json_status(response, expected_status: str) -> bool:
+    """Check the status field in the JSON contains the expected string."""
+    json_data = parse_json_response_body(response)
+    return json_data["status"] == expected_status
+
+
 def json_status_ok(response) -> bool:
     """Test if the JSON body in the response has a status of 'ok'."""
-    json_data = json.loads(response.data.decode("utf-8"))
-    return json_data["status"] == "ok"
+    return check_json_status(response, "ok")
+
+
+def json_status_error(response) -> bool:
+    """Test if the JSON body in the response has a status of 'error'."""
+    return check_json_status(response, "error")
 
 
 def current_announcement_pid() -> int:
@@ -148,6 +167,38 @@ def test_admin_can_make_announcement(client, a_logged_in_admin: None, a_post: Su
     assert current_announcement_pid() == a_post.pid
 
 
+def test_normal_user_cant_access_make_announcement_route(
+    client, a_logged_in_user: None
+) -> None:
+    response = client.post(url_for("do.make_announcement"))
+    assert response.status_code == 403
+
+
+def test_anonymous_users_are_redirected_from_make_announcement_route(client) -> None:
+    """Ensure that only logged-in users trigger the view at all."""
+    response = client.post(url_for("do.make_announcement"))
+    assert response.status_code == 302
+    assert response.headers["location"].startswith(url_for("auth.login"))
+
+
+def test_announcing_an_announcement_gives_an_error_response(
+    client, an_announced_post: SubPost, a_logged_in_admin: None
+) -> None:
+    # Given an existing announcement and a logged-in admin user.
+
+    # When the admin marks the announced post as an announcement.
+    announcement_response = client.post(
+        url_for("do.make_announcement"),
+        data={"csrf_token": g.csrf_token, "post": an_announced_post.pid},
+    )
+
+    # Then the request returns HTTP 200 but the JSON response notes an error.
+    assert http_status_ok(announcement_response)
+    assert json_status_error(announcement_response)
+    # And the announced post is unchanged.
+    assert current_announcement_pid() == an_announced_post.pid
+
+
 def test_admin_can_delete_announcement(
     client, a_logged_in_admin: None, an_announced_post: SubPost
 ):
@@ -161,3 +212,18 @@ def test_admin_can_delete_announcement(
     # Then attempting to get the announcement post ID raises an exception.
     with pytest.raises(SiteMetadata.DoesNotExist):
         current_announcement_pid()
+
+
+def test_delete_announcement_redirects_if_there_is_no_announcement(
+    client, a_logged_in_admin: None
+) -> None:
+    response = client.get(url_for("do.deleteannouncement"))
+    assert response.status_code == 302
+    assert response.headers["location"] == url_for("admin.index")
+
+
+def test_normal_user_cant_access_delete_announcement_route(
+    client, a_logged_in_user: None
+) -> None:
+    response = client.get(url_for("do.deleteannouncement"))
+    assert response.status_code == 403

@@ -2064,6 +2064,7 @@ def deleteannouncement():
 
 
 @do.route("/do/makeannouncement", methods=["POST"])
+@login_required
 def make_announcement():
     """ Flagging post as announcement - not api """
     if not current_user.is_admin():
