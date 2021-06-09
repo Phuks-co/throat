@@ -1,8 +1,10 @@
+from app.models import SiteMetadata, Sub, SubPost, User
 import json
 import pytest
 
 from flask import url_for
 from app import mail
+from app.misc import getAnnouncementPid
 
 from test.utilities import csrf_token, promote_user_to_admin
 from test.utilities import register_user, log_in_user, log_out_current_user
@@ -70,3 +72,72 @@ def test_admin_can_ban_email_domain(client, user_info, test_config):
         assert b"do not accept emails" in rv.data
         assert b"Register" in rv.data
         assert b"Log out" not in rv.data
+
+
+@pytest.fixture
+def null_user() -> User:
+    return User.create(
+        uid="dummy-user",
+        name="abc",
+        crypto=0,
+    )
+
+
+@pytest.fixture
+def a_sub(app) -> Sub:
+    return Sub.create(name="someSub")
+
+
+@pytest.fixture
+def a_post(a_sub, null_user):
+    return SubPost.create(
+        sid=a_sub,
+        title="A new post.",
+        comments=0,  # Required for some reason.
+        uid=null_user,
+    )
+
+
+@pytest.fixture
+def an_announced_post(a_post):
+    SiteMetadata.create(key="announcement", value=a_post.pid)
+    return a_post
+
+
+def test_admin_can_make_announcement(client, user2_info, a_post):
+    # Given an existing post (a_post).
+    # And a logged-in admin user.
+    register_user(client, user2_info)
+    promote_user_to_admin(client, user2_info)
+
+    # When the admin marks the post as an announcement.
+    post_page_response = client.get(
+        url_for("sub.view_post", sub=a_post.sid.name, pid=a_post.pid),
+        follow_redirects=True,
+    )
+    csrf = csrf_token(post_page_response.data)
+    response = client.post(
+        url_for("do.make_announcement"), data={"csrf_token": csrf, "post": a_post.pid}
+    )
+
+    # Then the request succeeds.
+    assert response.status == "200 OK"
+    json_response = json.loads(response.data.decode("utf-8"))
+    assert json_response["status"] == "ok", json_response
+    # And the ID of the post is stored as the announcement post ID.
+    assert int(getAnnouncementPid().value) == a_post.pid
+
+
+def test_admin_can_delete_announcement(client, user2_info, an_announced_post):
+    # Given an announced post. (This is a sanity check.)
+    assert int(getAnnouncementPid().value) == an_announced_post.pid
+    # And a logged-in admin.
+    register_user(client, user2_info)
+    promote_user_to_admin(client, user2_info)
+
+    # When the admin deletes the announced post with a GET request.
+    client.get(url_for("do.deleteannouncement"))
+
+    # Then attempting to get the announcement post ID raises an exception.
+    with pytest.raises(SiteMetadata.DoesNotExist):
+        getAnnouncementPid()
