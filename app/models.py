@@ -181,7 +181,11 @@ class SiteMetadata(BaseModel):
 
 
 class Sub(BaseModel):
-    name = CharField(null=True, unique=True, max_length=32)
+    name = CharField(unique=True, max_length=32)
+    # name can't actually be NULL.
+    # For instance this code (in `deleteannouncement` in app/views/do):
+    #     link=url_for("sub.view_post", sub=post.sid.name, pid=post.pid),
+    # causes an error in the Flask URL construction process when name is None.
     nsfw = BooleanField(default=False)
     sid = CharField(primary_key=True, max_length=40)
     sidebar = TextField(default="")
@@ -281,26 +285,31 @@ class SubMetadata(BaseModel):
 
 class SubPost(BaseModel):
     content = TextField(null=True)
-    deleted = IntegerField(null=True)  # 1=self delete, 2=mod delete, 0=not deleted
+    deleted = IntegerField(default=0)  # 1=self delete, 2=mod delete, 0=not deleted
+    # deleted can't be NULL because it causes app.misc.postListQuery to
+    # find no posts and throw a SubPostDoesNotExist exception.
     distinguish = IntegerField(null=True)  # 1=mod, 2=admin, 0 or null = normal
     link = CharField(null=True)
     nsfw = BooleanField(null=True)
     pid = PrimaryKeyField()
-    posted = DateTimeField(null=True)
+    posted = DateTimeField(default=datetime.datetime.utcnow)
+    # posted can't be NULL, as get_single_post calls .replace on it.
     edited = DateTimeField(null=True)
     ptype = IntegerField(null=True)  # 1=text, 2=link, 3=poll
 
-    score = IntegerField(null=True)  # XXX: Deprecated
+    score = IntegerField(default=1)  # XXX: Deprecated
+    # As of 2021-06-09, score is still in use and if NULL causes gettext
+    # in babel to throw. Default score of 1 taken from api3.py
     upvotes = IntegerField(default=0)
     downvotes = IntegerField(default=0)
 
-    sid = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
+    sid = ForeignKeyField(db_column="sid", model=Sub, field="sid")
+    # sid can't be NULL as the application assumes posts belong to a sub.
     thumbnail = CharField(null=True)
-    title = CharField(null=True)
+    title = CharField()  # Can't be NULL because repr tries to slice it.
     comments = IntegerField()
-    uid = ForeignKeyField(
-        db_column="uid", null=True, model=User, field="uid", backref="posts"
-    )
+    uid = ForeignKeyField(db_column="uid", model=User, field="uid", backref="posts")
+    # uid can't be null as (for instance) the templates expect a user to be attached.
     flair = CharField(null=True, max_length=25)
 
     def __repr__(self):
