@@ -91,7 +91,7 @@ def a_sub(app) -> Sub:
 
 
 @pytest.fixture
-def a_post(a_sub, null_user):
+def a_post(a_sub, null_user) -> SubPost:
     """Create a bare-bones post."""
     return SubPost.create(
         sid=a_sub,
@@ -102,14 +102,14 @@ def a_post(a_sub, null_user):
 
 
 @pytest.fixture
-def an_announced_post(a_post):
+def an_announced_post(a_post: SubPost) -> SubPost:
     """Return a post marked as an announcement."""
     SiteMetadata.create(key="announcement", value=a_post.pid)
     return a_post
 
 
 @pytest.fixture
-def a_logged_in_admin(client, user2_info):
+def a_logged_in_admin(client, user2_info) -> None:
     """Register a new admin user, which is left logged-in."""
     register_user(client, user2_info)
     promote_user_to_admin(client, user2_info)
@@ -131,13 +131,13 @@ def current_announcement_pid() -> int:
     return int(getAnnouncementPid().value)
 
 
-def test_admin_can_make_announcement(client, a_logged_in_admin, a_post):
+def test_admin_can_make_announcement(client, a_logged_in_admin: None, a_post: SubPost):
     # Given an existing post and a logged-in admin user.
 
     # When the admin marks the post as an announcement.
-    csrf = g.csrf_token
     announcement_response = client.post(
-        url_for("do.make_announcement"), data={"csrf_token": csrf, "post": a_post.pid}
+        url_for("do.make_announcement"),
+        data={"csrf_token": g.csrf_token, "post": a_post.pid},
     )
 
     # Then the request succeeds.
@@ -147,7 +147,9 @@ def test_admin_can_make_announcement(client, a_logged_in_admin, a_post):
     assert current_announcement_pid() == a_post.pid
 
 
-def test_admin_can_delete_announcement(client, a_logged_in_admin, an_announced_post):
+def test_admin_can_delete_announcement(
+    client, a_logged_in_admin: None, an_announced_post: SubPost
+):
     # Given an announced post. (This is a sanity check.)
     assert current_announcement_pid() == an_announced_post.pid
     # And a logged-in admin user.
@@ -157,4 +159,4 @@ def test_admin_can_delete_announcement(client, a_logged_in_admin, an_announced_p
 
     # Then attempting to get the announcement post ID raises an exception.
     with pytest.raises(SiteMetadata.DoesNotExist):
-        getAnnouncementPid()
+        current_announcement_pid()
