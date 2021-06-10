@@ -266,3 +266,19 @@ def test_normal_user_cant_access_delete_announcement_route(
 ) -> None:
     response = client.get(url_for("do.deleteannouncement"))
     assert response.status_code == 403
+
+
+@pytest.mark.parametrize(
+    "view_name",
+    [
+        "do.enable_captchas",
+        "do.enable_registration",
+        "do.enable_posting",
+    ],
+)
+def test_admin_config_toggle_routes_redirects_anonymous_users(
+    view_name: str, client
+) -> None:
+    response = client.get(url_for(view_name, value="True"))
+    assert response.status_code == 302
+    assert response.headers["location"].startswith(url_for("auth.login"))
