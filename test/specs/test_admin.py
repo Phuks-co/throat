@@ -107,14 +107,32 @@ def check_json_status(response, expected_status: str) -> bool:
     return json_data["status"] == expected_status
 
 
+def check_json_errors(response, *expected_error_messages: str) -> bool:
+    """Check that the expected error messages appear in the JSON."""
+    json_data = parse_json_response_body(response)
+    expected_errors = set(expected_error_messages)
+
+    error_data = json_data["error"]
+    if isinstance(error_data, list):
+        received_errors = set(error_data)
+    elif isinstance(error_data, str):
+        received_errors = {error_data}
+    else:
+        raise ValueError(f"Unexpected type for 'error': {type(error_data)}.")
+
+    return expected_errors.issubset(received_errors)
+
+
 def json_status_ok(response) -> bool:
     """Test if the JSON body in the response has a status of 'ok'."""
     return check_json_status(response, "ok")
 
 
-def json_status_error(response) -> bool:
+def json_status_error(response, *expected_errors: str) -> bool:
     """Test if the JSON body in the response has a status of 'error'."""
-    return check_json_status(response, "error")
+    return check_json_status(response, "error") and check_json_errors(
+        response, *expected_errors
+    )
 
 
 def current_announcement_pid() -> int:
@@ -167,7 +185,7 @@ def test_announcing_an_announcement_gives_an_error_response(
 
     # Then the request returns HTTP 200 but the JSON response notes an error.
     assert http_status_ok(announcement_response)
-    assert json_status_error(announcement_response)
+    assert json_status_error(announcement_response, "Post already announced")
     # And the announced post is unchanged.
     assert current_announcement_pid() == announced_post.pid
 
@@ -210,7 +228,7 @@ def test_announcing_a_nonexistent_post_gives_an_error_response(
 
     # Then the request returns HTTP 200 but the JSON response notes an error.
     assert http_status_ok(announcement_response)
-    assert json_status_error(announcement_response)
+    assert json_status_error(announcement_response, "Post does not exist")
 
     # And there remains no announced post.
     with pytest.raises(SiteMetadata.DoesNotExist):
