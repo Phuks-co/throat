@@ -205,7 +205,7 @@ def test_announcing_a_nonexistent_post_gives_an_error_response(
     # When the admin marks the non-existent post as an announcement.
     announcement_response = client.post(
         url_for("do.make_announcement"),
-        data={"csrf_token": g.csrf_token, "post": 0},
+        data={"csrf_token": g.csrf_token, "post": 42},
     )
 
     # Then the request returns HTTP 200 but the JSON response notes an error.
