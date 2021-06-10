@@ -9,6 +9,7 @@ from flask import g, url_for
 
 from app import mail
 from app.misc import getAnnouncementPid
+from app.config import config
 
 from test.factories import AnnouncedPostFactory, PostFactory
 from test.utilities import csrf_token, promote_user_to_admin
@@ -282,3 +283,70 @@ def test_admin_config_toggle_routes_redirects_anonymous_users(
     response = client.get(url_for(view_name, value="True"))
     assert response.status_code == 302
     assert response.headers["location"].startswith(url_for("auth.login"))
+
+
+@pytest.mark.parametrize(
+    "view_name",
+    [
+        "do.enable_captchas",
+        "do.enable_registration",
+        "do.enable_posting",
+    ],
+)
+def test_admin_config_toggle_routes_deny_normal_users(
+    view_name: str, client, a_logged_in_user: None
+) -> None:
+    response = client.get(url_for(view_name, value="True"))
+    # Check for 404 not found here for characterisation,
+    # but it should perhaps be 403 forbidden.
+    assert response.status_code == 404
+
+
+@pytest.mark.parametrize(
+    "view_name",
+    [
+        "do.enable_captchas",
+        "do.enable_registration",
+        "do.enable_posting",
+    ],
+)
+@pytest.mark.parametrize(
+    "invalid_value",
+    [
+        "None",
+        "on",
+        "off",
+        "yes",
+        "no",
+        "1",
+        "0",
+    ],
+)
+def test_admin_config_toggle_routes_reject_invalid_values(
+    view_name: str, invalid_value: str, client, a_logged_in_admin: None
+) -> None:
+    response = client.get(url_for(view_name, value=invalid_value))
+    assert response.status_code == 400
+
+
+@pytest.mark.parametrize(
+    "view_name,config_key",
+    [
+        ("do.enable_captchas", "site.require_captchas"),
+        ("do.enable_registration", "site.enable_registration"),
+        ("do.enable_posting", "site.enable_posting"),
+    ],
+)
+@pytest.mark.parametrize("value", [True, False])
+def test_admin_config_toggle_routes_set_expected_values(
+    view_name: str, config_key: str, value: bool, client, a_logged_in_admin: None
+) -> None:
+    # Given a logged-in admin.
+    # When the admin hits the URL.
+    response = client.get(url_for(view_name, value=value))
+
+    # Then the config contains the expected value.
+    assert config.get_value(config_key) == value
+    # And the response redirects the user to the admin index.
+    assert response.status_code == 302
+    assert response.location == url_for("admin.index")
