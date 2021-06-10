@@ -26,7 +26,7 @@ We recommend using a virtualenv or Pyenv
 And you're done! You can run a test server by executing `./throat.py`. For production instances we recommend setting up `gunicorn`
 
 ### Production deployments
-Please read [doc/gunicorn_deploy.md](doc/gunicorn_deploy.md) for instructions to deploy on gunicorn.
+Please read [doc/deploy.md](doc/deploy.md) for instructions to deploy on gunicorn or using docker.
 
 ## Develop on Docker
 If you prefer to develop on docker
