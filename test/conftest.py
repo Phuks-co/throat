@@ -1,6 +1,8 @@
 import bcrypt
+from functools import lru_cache, wraps
 import os
 import pytest
+from pyrsistent import freeze, thaw
 import yaml
 
 from app import create_app
@@ -16,6 +18,40 @@ from test.utilities import recursively_update, add_config_to_site_metadata
 def test_config():
     """Extra configuration values to be used in a test."""
     return {}
+
+
+def _make_config(config_dict) -> Config:
+    """Create a standard testing Config from the given dictionary."""
+    return Config(
+        config_dict=config_dict,
+        use_environment=False,
+        model=SiteMetadata,
+        cache=cache,
+    )
+
+
+def _freeze_dict_arg(func):
+    """Freeze the argument of a function that takes a single dictionary.
+
+    This decorator exists purely to get a hashable dictionary that can
+    be cached with lru_cache, so func should be a function wrapped with
+    the lru_cache decorator.
+    """
+
+    @wraps(func)
+    def inner(arg: dict):
+        return func(freeze(arg))
+
+    return inner
+
+
+@_freeze_dict_arg
+@lru_cache
+def get_app(frozen_config_dict):
+    """Create the Flask application, cached by config dictionary."""
+    config = _make_config(thaw(frozen_config_dict))
+    app = create_app(config)
+    return app, config
 
 
 # The fixture "client" is generated from this one by pytest-flask.
@@ -53,13 +89,7 @@ def app(test_config):
     recursively_update(config, test_defaults)
     recursively_update(config, test_config)
 
-    conf_obj = Config(
-        config_dict=config,
-        use_environment=False,
-        model=SiteMetadata,
-        cache=cache,
-    )
-    app = create_app(conf_obj)
+    app, conf_obj = get_app(config)
     app_context = app.app_context()
     app_context.push()
     cache.clear()
