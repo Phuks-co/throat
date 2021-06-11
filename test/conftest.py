@@ -1,6 +1,5 @@
 import bcrypt
 import os
-import tempfile
 import pytest
 import yaml
 
@@ -23,7 +22,7 @@ def test_config():
 @pytest.fixture
 def app(test_config):
     """Create the Flask app."""
-    db_fd, db_name = tempfile.mkstemp()
+    db_name = ":memory:"
 
     config_filename = os.environ.get("TEST_CONFIG", None)
     if config_filename is None:
@@ -77,9 +76,8 @@ def app(test_config):
                 print(f"Error trying to clean up {user.name} in Keycloak realm:", err)
                 raise err
 
+    db.detach(db_name)
     app_context.pop()
-    os.close(db_fd)
-    os.unlink(db_name)
 
 
 @pytest.fixture(autouse=True)
