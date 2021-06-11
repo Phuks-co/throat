@@ -46,7 +46,7 @@ def _freeze_dict_arg(func):
 
 
 @_freeze_dict_arg
-@lru_cache
+@lru_cache()
 def get_app(frozen_config_dict):
     """Create the Flask application, cached by config dictionary."""
     config = _make_config(thaw(frozen_config_dict))
