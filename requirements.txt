@@ -92,3 +92,4 @@ pytest-flask
 pre-commit==2.10.1
 black==20.8b1
 qrcode==6.1
+pyrsistent==0.17.3
