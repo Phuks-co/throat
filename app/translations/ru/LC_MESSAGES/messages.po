@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-06-12 13:52-0300\n"
-"PO-Revision-Date: 2021-06-12 21:59\n"
+"PO-Revision-Date: 2021-06-13 04:59\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -2445,7 +2445,7 @@ msgstr "Пока никаких комментариев..."
 
 #: app/html/sub/post.html:350
 msgid "Show comments"
-msgstr ""
+msgstr "Показать комментарии"
 
 #: app/html/sub/post.html:353
 #, python-format
