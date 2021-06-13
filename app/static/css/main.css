@@ -1607,7 +1607,7 @@ form#msg-form {
   background-color: rgba(244, 194, 10, 0.35);
 }
 
-#formpop, #blockpop {
+#modpop, #formpop, #blockpop {
   position: fixed;
   z-index: 100;
   padding-top: 108px;
@@ -1620,7 +1620,7 @@ form#msg-form {
   background-color: rgba(0, 0, 0, 0.4);
 }
 
-#formpop .modal-content, #blockpop .modal-content {
+#formpop .modal-content, #modpop .modal-content, #blockpop .modal-content {
   background-color: #fefefe;
   margin: auto;
   padding: 20px;

@@ -9,11 +9,11 @@
 
     @if user.status != 10:
         @include('shared/sidebar/user.html')
-        @if current_user.is_authenticated and current_user.uid != user.uid: 
-            @if target_user_is_admin or current_user.can_pm_users() or current_user.is_admin():
+        @if current_user.is_authenticated and current_user.uid != user.uid:
+            @if target_user_is_admin or len(owns + mods) > 0 or current_user.can_pm_users() or current_user.is_admin():
                 <hr>
                 <div class="pmessage">
-                    <a href="#msg-form" data-replyto='@{user.name}' class="formpopmsg sbm-post pure-button">@{_('Send a message')}</a>
+                    <a href="#msg-form" data-replyto='@{user.name}' class="@{'modpopmsg' if config.site.enable_modmail and len(owns + mods) > 0 else 'formpopmsg'} sbm-post pure-button">@{_('Send a message')}</a>
                 </div>
             @end
             @if not target_user_is_admin and not current_user.can_admin:
@@ -144,6 +144,26 @@
                         </div>
                     @end
                 </div>
+
+                @if config.site.enable_modmail and len(owns + mods) > 0:
+                <div id="modpop" style="display:none;">
+                    <div class="modal-content">
+                        <span class="closepopmsg">&times;</span>
+                        <h3>@{_('Send a message')}</h3>
+                        <p>@{_('Please send all sub-related messages to the moderators of that sub.')}</p>
+                        <div>
+                            <ul>
+                                @for mod in sorted(owns + mods, key=str.lower):
+                                    <li><a href="/@{config.site.sub_prefix}/@{mod}/contact_mods">@{_('Contact the mods of %(mod)s', mod=mod)}</a></li>
+                                @end
+                                @if target_user_is_admin or current_user.can_pm_users() or current_user.is_admin():
+                                    <li><a href="#msg-form" class="formpopmsg" data-replyto="@{user.name}">@{_('Send a private message to %(name)s', name=user.name)}</a></li>
+                                @end
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                @end
 
                 <div id="formpop" style="display:none;">
                     <div class="modal-content">
