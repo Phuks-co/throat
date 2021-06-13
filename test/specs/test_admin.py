@@ -1,11 +1,9 @@
+from flask.globals import session
 from app.models import SiteMetadata, SubPost
 import json
 import pytest
 
-# g is imported so we can easily grab the csrf_token, but note that if
-# no request has been made (ie, in the test or one of its fixtures) then
-# g.csrf_token can fail with an exception.
-from flask import g, url_for
+from flask import url_for
 
 from app import mail
 from app.misc import getAnnouncementPid
@@ -80,18 +78,6 @@ def test_admin_can_ban_email_domain(client, user_info, test_config):
         assert b"Log out" not in rv.data
 
 
-@pytest.fixture
-def a_logged_in_user(client, user2_info) -> None:
-    register_user(client, user2_info)
-
-
-@pytest.fixture
-def a_logged_in_admin(client, user2_info) -> None:
-    """Register a new admin user, which is left logged-in."""
-    register_user(client, user2_info)
-    promote_user_to_admin(client, user2_info)
-
-
 def http_status_ok(response) -> bool:
     """Test if response HTTP status was 200 OK."""
     return response.status == "200 OK"
@@ -140,26 +126,24 @@ def current_announcement_pid() -> int:
     return int(getAnnouncementPid().value)
 
 
-def test_admin_can_make_announcement(client, a_logged_in_admin: None):
+def test_admin_can_make_announcement(client, an_admin, csrf_token):
     # Given an existing post and a logged-in admin user.
     a_post: SubPost = PostFactory.create()
 
     # When the admin marks the post as an announcement.
     announcement_response = client.post(
         url_for("do.make_announcement"),
-        data={"csrf_token": g.csrf_token, "post": a_post.pid},
+        data={"csrf_token": csrf_token, "post": a_post.pid},
     )
 
     # Then the request succeeds.
     assert http_status_ok(announcement_response)
-    assert json_status_ok(announcement_response)
+    assert json_status_ok(announcement_response), session
     # And the ID of the post is stored as the announcement post ID.
     assert current_announcement_pid() == a_post.pid
 
 
-def test_normal_user_cant_access_make_announcement_route(
-    client, a_logged_in_user: None
-) -> None:
+def test_normal_user_cant_access_make_announcement_route(client, a_user) -> None:
     response = client.post(url_for("do.make_announcement"))
     assert response.status_code == 403
 
@@ -172,7 +156,7 @@ def test_anonymous_users_are_redirected_from_make_announcement_route(client) -> 
 
 
 def test_announcing_an_announcement_gives_an_error_response(
-    client, a_logged_in_admin: None
+    client, an_admin, csrf_token
 ) -> None:
     # Given an existing announcement and a logged-in admin user.
     announced_post: SubPost = AnnouncedPostFactory.create()
@@ -180,7 +164,7 @@ def test_announcing_an_announcement_gives_an_error_response(
     # When the admin marks the announced post as an announcement.
     announcement_response = client.post(
         url_for("do.make_announcement"),
-        data={"csrf_token": g.csrf_token, "post": announced_post.pid},
+        data={"csrf_token": csrf_token, "post": announced_post.pid},
     )
 
     # Then the request returns HTTP 200 but the JSON response notes an error.
@@ -191,7 +175,7 @@ def test_announcing_an_announcement_gives_an_error_response(
 
 
 def test_announcing_a_post_replaces_an_existing_announcement(
-    client, a_logged_in_admin: None
+    client, an_admin, csrf_token
 ) -> None:
     # Given an existing post marked as an announcement.
     existing_announcement: SubPost = AnnouncedPostFactory.create()
@@ -203,7 +187,7 @@ def test_announcing_a_post_replaces_an_existing_announcement(
     # When the admin marks the new post as an announcement.
     announcement_response = client.post(
         url_for("do.make_announcement"),
-        data={"csrf_token": g.csrf_token, "post": new_post.pid},
+        data={"csrf_token": csrf_token, "post": new_post.pid},
     )
 
     # Then the request succeeds.
@@ -214,7 +198,7 @@ def test_announcing_a_post_replaces_an_existing_announcement(
 
 
 def test_announcing_a_nonexistent_post_gives_an_error_response(
-    client, a_logged_in_admin: None
+    client, an_admin, csrf_token
 ) -> None:
     # Given there is no announced post.
     with pytest.raises(SiteMetadata.DoesNotExist):
@@ -223,7 +207,7 @@ def test_announcing_a_nonexistent_post_gives_an_error_response(
     # When the admin marks the non-existent post as an announcement.
     announcement_response = client.post(
         url_for("do.make_announcement"),
-        data={"csrf_token": g.csrf_token, "post": 42},
+        data={"csrf_token": csrf_token, "post": 42},
     )
 
     # Then the request returns HTTP 200 but the JSON response notes an error.
@@ -236,7 +220,7 @@ def test_announcing_a_nonexistent_post_gives_an_error_response(
 
 
 def test_make_announcement_gives_error_response_for_invalid_form(
-    client, a_logged_in_admin
+    client, an_admin, csrf_token
 ) -> None:
     # Given there is no announced post.
     with pytest.raises(SiteMetadata.DoesNotExist):
@@ -245,7 +229,7 @@ def test_make_announcement_gives_error_response_for_invalid_form(
     # When the admin submits an invalid form.
     announcement_response = client.post(
         url_for("do.make_announcement"),
-        data={"csrf_token": g.csrf_token, "post": None},
+        data={"csrf_token": csrf_token, "post": None},
     )
 
     # Then the request returns HTTP 200 but the JSON response notes an error.
@@ -257,7 +241,7 @@ def test_make_announcement_gives_error_response_for_invalid_form(
         current_announcement_pid()
 
 
-def test_admin_can_delete_announcement(client, a_logged_in_admin: None):
+def test_admin_can_delete_announcement(client, an_admin):
     # Given a logged-in admin user.
     # And an announced post.
     announced_post: SubPost = AnnouncedPostFactory.create()
@@ -273,16 +257,14 @@ def test_admin_can_delete_announcement(client, a_logged_in_admin: None):
 
 
 def test_delete_announcement_redirects_if_there_is_no_announcement(
-    client, a_logged_in_admin: None
+    client, an_admin
 ) -> None:
     response = client.get(url_for("do.deleteannouncement"))
     assert response.status_code == 302
     assert response.headers["location"] == url_for("admin.index")
 
 
-def test_normal_user_cant_access_delete_announcement_route(
-    client, a_logged_in_user: None
-) -> None:
+def test_normal_user_cant_access_delete_announcement_route(client, a_user) -> None:
     response = client.get(url_for("do.deleteannouncement"))
     assert response.status_code == 403
 
@@ -312,7 +294,7 @@ def test_admin_config_toggle_routes_redirects_anonymous_users(
     ],
 )
 def test_admin_config_toggle_routes_deny_normal_users(
-    view_name: str, client, a_logged_in_user: None
+    view_name: str, client, a_user
 ) -> None:
     response = client.get(url_for(view_name, value="True"))
     # Check for 404 not found here for characterisation,
@@ -341,7 +323,7 @@ def test_admin_config_toggle_routes_deny_normal_users(
     ],
 )
 def test_admin_config_toggle_routes_reject_invalid_values(
-    view_name: str, invalid_value: str, client, a_logged_in_admin: None
+    view_name: str, invalid_value: str, client, an_admin
 ) -> None:
     response = client.get(url_for(view_name, value=invalid_value))
     assert response.status_code == 400
@@ -357,7 +339,7 @@ def test_admin_config_toggle_routes_reject_invalid_values(
 )
 @pytest.mark.parametrize("value", [True, False])
 def test_admin_config_toggle_routes_set_expected_values(
-    view_name: str, config_key: str, value: bool, client, a_logged_in_admin: None
+    view_name: str, config_key: str, value: bool, client, an_admin
 ) -> None:
     # Given a logged-in admin.
     # When the admin hits the URL.

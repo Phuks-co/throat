@@ -1,4 +1,4 @@
-from app.models import SiteMetadata, Sub, SubPost, User
+from app.models import SiteMetadata, Sub, SubPost, User, UserMetadata
 
 import factory
 
@@ -26,6 +26,21 @@ class UserFactory(PeeweeBaseFactory):
     uid = factory.Faker("uuid4")
     name = factory.Faker("user_name")
     crypto = 0
+
+
+def promote_user_to_admin(user: User):
+    UserMetadata.create(uid=user.uid, key="admin", value="1")
+
+
+class AdminFactory(UserFactory):
+    class Meta:
+        model = User
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        user = super()._create(model_class, *args, **kwargs)
+        promote_user_to_admin(user)
+        return user
 
 
 class PostFactory(PeeweeBaseFactory):

@@ -135,3 +135,8 @@ def promote_user_to_admin(client, user_info):
     admin = User.get(fn.Lower(User.name) == user_info["username"])
     UserMetadata.create(uid=admin.uid, key="admin", value="1")
     log_in_user(client, user_info)
+
+
+def force_log_in(user: User, client) -> None:
+    with client.session_transaction() as session:
+        session["_user_id"] = user.uid
