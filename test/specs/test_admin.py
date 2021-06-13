@@ -241,31 +241,22 @@ def test_make_announcement_gives_error_response_for_invalid_form(
         current_announcement_pid()
 
 
-def test_admin_can_delete_announcement(client, an_admin):
-    # Given a logged-in admin user.
-    # And an announced post.
-    announced_post: SubPost = AnnouncedPostFactory.create()
-    # (This is a sanity check.)
-    assert current_announcement_pid() == announced_post.pid
-
-    # When the admin deletes the announced post with a GET request.
-    client.get(url_for("do.deleteannouncement"))
-
-    # Then attempting to get the announcement post ID raises an exception.
-    with pytest.raises(SiteMetadata.DoesNotExist):
-        current_announcement_pid()
-
-
 def test_delete_announcement_redirects_if_there_is_no_announcement(
-    client, an_admin
+    client, an_admin, csrf_token
 ) -> None:
-    response = client.get(url_for("do.deleteannouncement"))
+    response = client.post(
+        url_for("do.deleteannouncement"), data={"csrf_token": csrf_token}
+    )
     assert response.status_code == 302
     assert response.headers["location"] == url_for("admin.index")
 
 
-def test_normal_user_cant_access_delete_announcement_route(client, a_user) -> None:
-    response = client.get(url_for("do.deleteannouncement"))
+def test_normal_user_cant_access_delete_announcement_route(
+    client, a_user, csrf_token
+) -> None:
+    response = client.post(
+        url_for("do.deleteannouncement"), data={"csrf_token": csrf_token}
+    )
     assert response.status_code == 403
 
 
@@ -350,3 +341,56 @@ def test_admin_config_toggle_routes_set_expected_values(
     # And the response redirects the user to the admin index.
     assert response.status_code == 302
     assert response.location == url_for("admin.index")
+
+
+class TestCloseCSRFHole:
+    # 2034:@do.route("/do/admin/deleteannouncement")
+    # 2160:@do.route("/do/admin/enable_posting/<value>")
+    # 2179:@do.route("/do/admin/enable_registration/<value>")
+    # 2198:@do.route("/do/admin/require_captchas/<value>")
+    # 2283:@do.route("/do/create_invite")
+
+    def test_admin_can_delete_announcement(self, client, an_admin, csrf_token):
+        # Given a logged-in admin user.
+        # And an announced post.
+        announced_post: SubPost = AnnouncedPostFactory.create()
+        # (This is a sanity check.)
+        assert current_announcement_pid() == announced_post.pid
+
+        # When the admin deletes the announced post with a POST request.
+        response = client.post(
+            url_for("do.deleteannouncement"), data={"csrf_token": csrf_token}
+        )
+
+        # Then attempting to get the announcement post ID raises an exception.
+        with pytest.raises(SiteMetadata.DoesNotExist):
+            current_announcement_pid()
+        # And the response redirects to the admin index.
+        assert response == 302
+        assert response.location == url_for("admin.index")
+
+    def test_delete_announcement_fails_without_csrf_token(self, client, an_admin):
+        # Given a logged-in admin user.
+        # And an announced post.
+        announced_post: SubPost = AnnouncedPostFactory.create()
+        # (This is a sanity check.)
+        assert current_announcement_pid() == announced_post.pid
+
+        # When the admin attempts to delete the announced post.
+        response = client.post(url_for("do.deleteannouncement"))
+
+        # The announced post does not change.
+        assert current_announcement_pid() == announced_post.pid
+        # And the response indicates a bad request.
+        assert response == 400
+
+    def test_delete_announcement_rejects_get_requets(self, client, an_admin):
+        # Given a logged-in admin user.
+        # And an announced post.
+        _ = AnnouncedPostFactory.create()
+
+        # When the admin attempts to delete the announced post via GET.
+        response = client.get(url_for("do.deleteannouncement"))
+
+        # Then the response indicates the GET method is disallowed.
+        assert response == 405

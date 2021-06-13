@@ -47,8 +47,11 @@
           {%if not ann %}<h4>No active announcements</h4>
           {%else%}
           <div class="post">
-            <a href="{{url_for('do.deleteannouncement')}}" class="btn btn-red">Nuke!</a> |
-            <a href="{{url_for('site.view_post_inbox', pid=ann.pid)}}">{{ann.title}}</a> by {{ann.user}}, <relative-time datetime="{{ann.posted.isoformat()}}Z"></relative-time>
+            <form method="POST" id="deleteannouncement" action="{{ url_for('do.deleteannouncement') }}">
+              {{ deleteAnnouncementForm.csrf_token() }}
+              <input id="deleteannouncement-button" type="submit" value="Nuke!" class="pure-button">
+              <a href="{{url_for('site.view_post_inbox', pid=ann.pid)}}">{{ann.title}}</a> by {{ann.user}}, <relative-time datetime="{{ann.posted.isoformat()}}Z"></relative-time>
+            </form>
           </div>
 
           {%endif%}
