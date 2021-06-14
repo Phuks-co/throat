@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
-"POT-Creation-Date: 2021-06-06 13:27-0300\n"
-"PO-Revision-Date: 2021-06-06 21:29\n"
+"POT-Creation-Date: 2021-06-12 13:52-0300\n"
+"PO-Revision-Date: 2021-06-12 21:59\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -26,7 +26,7 @@ msgstr "Inicie sesión para acceder a esta página."
 msgid "Please reauthenticate to access this page."
 msgstr "Por favor, vuelva a autenticarse para acceder a esta página."
 
-#: app/badges.py:127 app/views/do.py:3078
+#: app/badges.py:127 app/views/do.py:3079
 msgid "Invalid file type. Only jpg, png and gif allowed."
 msgstr "Tipo de archivo inválido. Solo se permiten jpg, png y gif."
 
@@ -174,12 +174,12 @@ msgstr ""
 msgid "Max storage for image uploads for subs' stylesheets (in MiB)."
 msgstr ""
 
-#: app/misc.py:1370
+#: app/misc.py:1380
 #, python-format
 msgid "Error in the '%(field)s' field - %(error)s"
 msgstr "Error en el campo '%(field)s' - %(error)s"
 
-#: app/misc.py:1541
+#: app/misc.py:1551
 #, python-format
 msgid "Re: %(subject)s"
 msgstr ""
@@ -188,159 +188,159 @@ msgstr ""
 #: app/html/site/log.html:28 app/html/sub/log.html:28 app/html/sub/post.html:43
 #: app/html/sub/post.html:107 app/html/sub/post.html:126
 #: app/html/sub/post.html:172 app/html/sub/postcomments.html:22
-#: app/html/sub/postcomments.html:54 app/misc.py:1704 app/misc.py:2347
-#: app/misc.py:2356 app/misc.py:2363
+#: app/html/sub/postcomments.html:54 app/misc.py:1718 app/misc.py:2361
+#: app/misc.py:2370 app/misc.py:2377
 msgid "[Deleted]"
 msgstr "[Borrado]"
 
-#: app/misc.py:1780
+#: app/misc.py:1794
 msgid "URLs not allowed, uploaded files only"
 msgstr "No se permiten URLs, solo archivos subidos"
 
-#: app/misc.py:1800
+#: app/misc.py:1814
 msgid "@import token not allowed"
 msgstr "token @import no permitido"
 
-#: app/misc.py:1812
+#: app/misc.py:1826
 msgid "Invalid CSS"
 msgstr "CSS inválido"
 
-#: app/misc.py:2429
+#: app/misc.py:2443
 msgid "Already processing previous request."
 msgstr ""
 
-#: app/misc.py:2451
+#: app/misc.py:2465
 msgid "Unknown error. User disappeared"
 msgstr "Error desconocido. El usuario desapareció"
 
-#: app/misc.py:2458
+#: app/misc.py:2472
 msgid "Score balance is negative"
 msgstr "Balance de puntaje negativo"
 
-#: app/misc.py:2460
+#: app/misc.py:2474
 msgid "Invalid vote value"
 msgstr "Valor inválido para el voto"
 
-#: app/misc.py:2476 app/views/do.py:305 app/views/do.py:417 app/views/do.py:733
+#: app/misc.py:2490 app/views/do.py:305 app/views/do.py:417 app/views/do.py:733
 #: app/views/do.py:765 app/views/do.py:1122 app/views/do.py:1205
-#: app/views/do.py:1984 app/views/do.py:2079 app/views/do.py:2222
-#: app/views/do.py:2237 app/views/do.py:2307 app/views/do.py:2392
-#: app/views/do.py:2955 app/views/do.py:3393 app/views/do.py:3456
-#: app/views/do.py:3501 app/views/do.py:3551 app/views/do.py:3681
-#: app/views/do.py:3742 app/views/do.py:3808 app/views/do.py:3866
+#: app/views/do.py:1985 app/views/do.py:2080 app/views/do.py:2223
+#: app/views/do.py:2238 app/views/do.py:2308 app/views/do.py:2393
+#: app/views/do.py:2956 app/views/do.py:3394 app/views/do.py:3457
+#: app/views/do.py:3502 app/views/do.py:3552 app/views/do.py:3682
+#: app/views/do.py:3743 app/views/do.py:3809 app/views/do.py:3867
 msgid "Post does not exist"
 msgstr "El post no existe"
 
-#: app/misc.py:2479
+#: app/misc.py:2493
 msgid "You can't vote on deleted posts"
 msgstr "No puedes votar en posts borrados"
 
-#: app/misc.py:2511 app/views/do.py:2357 app/views/do.py:2655
-#: app/views/do.py:2699 app/views/do.py:2760 app/views/do.py:3624
-#: app/views/do.py:3737 app/views/do.py:3861
+#: app/misc.py:2525 app/views/do.py:2358 app/views/do.py:2656
+#: app/views/do.py:2700 app/views/do.py:2761 app/views/do.py:3625
+#: app/views/do.py:3738 app/views/do.py:3862
 msgid "Comment does not exist"
 msgstr "El comentario no existe"
 
-#: app/misc.py:2514
+#: app/misc.py:2528
 msgid "You can't vote on your own comments"
 msgstr "No puedes votar en tus propios comentarios"
 
-#: app/misc.py:2516
+#: app/misc.py:2530
 msgid "You can't vote on deleted comments"
 msgstr "No puedes votar en comentarios borrados"
 
-#: app/misc.py:2528
+#: app/misc.py:2542
 msgid "Invalid target"
 msgstr "Target inválido"
 
-#: app/misc.py:2531 app/views/do.py:1162 app/views/do.py:1987
-#: app/views/do.py:2663
+#: app/misc.py:2545 app/views/do.py:1162 app/views/do.py:1988
+#: app/views/do.py:2664
 msgid "You are banned on this sub."
 msgstr "Estás baneado en este sub."
 
-#: app/misc.py:2536 app/views/do.py:1165 app/views/do.py:1210
-#: app/views/do.py:2674
+#: app/misc.py:2550 app/views/do.py:1165 app/views/do.py:1210
+#: app/views/do.py:2675
 msgid "Post is archived"
 msgstr "El post está archivado"
 
-#: app/misc.py:2851
+#: app/misc.py:2865
 msgid "Invalid status request"
 msgstr "Estado inválido"
 
-#: app/notifications.py:157
+#: app/notifications.py:159
 msgid "Looks like nobody bothered to code the message for this notification :("
 msgstr "Oww, auch. No deberías poder ver este mensaje :("
 
-#: app/notifications.py:160
+#: app/notifications.py:162
 msgid "New notification."
 msgstr "Nueva notificación."
 
-#: app/notifications.py:162
+#: app/notifications.py:164
 #, python-format
 msgid "Post reply in %(prefix)s/%(sub)s"
 msgstr "Respuesta a tu post en %(prefix)s/%(sub)s"
 
-#: app/notifications.py:167
+#: app/notifications.py:169
 #, python-format
 msgid "%(name)s replied to your post titled %(title)s"
 msgstr "%(name)s respondió a tu comentario en el post titulado %(title)s"
 
-#: app/notifications.py:173
+#: app/notifications.py:175
 #, python-format
 msgid "Comment reply in %(prefix)s/%(sub)s"
 msgstr "Respuesta a un comentario en %(prefix)s/%(sub)s"
 
-#: app/notifications.py:178
+#: app/notifications.py:180
 #, python-format
 msgid "%(name)s replied to your comment in the post titled %(title)s"
 msgstr "%(name)s respondió a tu comentario en el post titulado %(title)s"
 
-#: app/notifications.py:184
+#: app/notifications.py:186
 #, python-format
 msgid "You were mentioned in %(prefix)s/%(sub)s"
 msgstr "Has sido mencionado en %(prefix)s/%(sub)s"
 
-#: app/notifications.py:189
+#: app/notifications.py:191
 #, python-format
 msgid "%(name)s mentioned you in the post titled %(title)s"
 msgstr "%(name)s mencionó su nombre en el post titulado %(title)s"
 
-#: app/notifications.py:195
+#: app/notifications.py:197
 #, python-format
 msgid "Your post in %(prefix)s/%(sub)s was deleted"
 msgstr "Tu publicación en %(prefix)s/%(sub)s ha sido eliminada"
 
-#: app/notifications.py:200
+#: app/notifications.py:202
 #, python-format
 msgid "%(name)s deleted your post titled %(title)s. %(comment)s"
 msgstr "%(name)s eliminó tu publicación titulada %(title)s. %(comment)s"
 
-#: app/notifications.py:207
+#: app/notifications.py:209
 #, python-format
 msgid "You have been banned from %(prefix)s/%(sub)s"
 msgstr "Has sido baneado de %(prefix)s/%(sub)s"
 
-#: app/notifications.py:212
+#: app/notifications.py:214
 #, python-format
 msgid "%(name)s banned you with reason: %(content)s"
 msgstr "%(name)s te ha baneado por el motivo: %(content)s"
 
-#: app/notifications.py:218
+#: app/notifications.py:220
 #, python-format
 msgid "You have been unbanned from %(prefix)s/%(sub)s"
 msgstr "Has sido desbaneado de %(prefix)s/%(sub)s"
 
-#: app/notifications.py:223
+#: app/notifications.py:225
 #, python-format
 msgid "%(name)s unbanned you."
 msgstr "%(name)s te ha desbaneado."
 
-#: app/notifications.py:225
+#: app/notifications.py:227
 #, python-format
 msgid "You have been invited to moderate %(prefix)s/%(sub)s"
 msgstr "Has sido invitado a moderar %(prefix)s/%(sub)s"
 
-#: app/notifications.py:230
+#: app/notifications.py:232
 #, python-format
 msgid "%(name)s invited you to the sub's mod team"
 msgstr "%(name)s te invitó al equipo de mod del sub"
@@ -563,12 +563,12 @@ msgid "Hot"
 msgstr "Activo"
 
 #: app/forms/sub.py:132 app/html/index.html:10 app/html/index.html:14
-#: app/html/sub.html:16 app/html/sub/post.html:373
+#: app/html/sub.html:16 app/html/sub/post.html:376
 msgid "New"
 msgstr "Nuevo"
 
 #: app/forms/sub.py:132 app/html/index.html:9 app/html/index.html:13
-#: app/html/sub.html:15 app/html/sub/post.html:363
+#: app/html/sub.html:15 app/html/sub/post.html:366
 msgid "Top"
 msgstr "Popular"
 
@@ -1057,7 +1057,7 @@ msgid "all"
 msgstr "todo"
 
 #: app/html/errors/layout.html:40 app/html/shared/layout.html:51
-#: app/html/sub/post.html:354
+#: app/html/sub/post.html:357
 msgid "new"
 msgstr "nuevo"
 
@@ -1403,8 +1403,13 @@ msgstr "Anuncio"
 msgid "Not safe for work"
 msgstr ""
 
-#: app/html/shared/post.html:45 app/html/shared/sidebar/sub.html:23
-#: app/html/sub/post.html:88
+#: app/html/shared/post.html:45 app/html/shared/sidebar/home.html:27
+#: app/html/shared/sidebar/home.html:51 app/html/shared/sidebar/sub.html:23
+#: app/html/site/activity.html:17 app/html/site/activity.html:19
+#: app/html/sub/post.html:88 app/html/user/messages/notifications.html:26
+#: app/html/user/messages/notifications.html:31
+#: app/html/user/messages/notifications.html:36 app/static/js/Socket.js:182
+#: app/templates/indexpost.html:34 app/templates/usercomments.html:43
 msgid "NSFW"
 msgstr "NSFW"
 
@@ -1514,11 +1519,11 @@ msgstr ""
 msgid "Wikis"
 msgstr "Wikis"
 
-#: app/html/shared/sidebar/admin.html:13 app/views/admin.py:699
+#: app/html/shared/sidebar/admin.html:13 app/views/admin.py:695
 msgid "Banned Domains"
 msgstr "Dominios bloqueados"
 
-#: app/html/shared/sidebar/admin.html:14 app/views/admin.py:696
+#: app/html/shared/sidebar/admin.html:14 app/views/admin.py:692
 msgid "Banned Email Domains"
 msgstr "Dominios de Email Bloqueados"
 
@@ -1551,31 +1556,31 @@ msgstr "Crea un sub"
 msgid "Top posts in the last 24 hours"
 msgstr "Posts más votados en las últimas 24 horas"
 
-#: app/html/shared/sidebar/home.html:27 app/html/shared/sidebar/home.html:47
-#: app/html/shared/sidebar/home.html:71
+#: app/html/shared/sidebar/home.html:30 app/html/shared/sidebar/home.html:54
+#: app/html/shared/sidebar/home.html:78
 #, python-format
 msgid "%(timeago)s in %(sub)s"
 msgstr "%(timeago)s en %(sub)s"
 
-#: app/html/shared/sidebar/home.html:37 app/html/site/activity.html:11
+#: app/html/shared/sidebar/home.html:41 app/html/site/activity.html:11
 msgid "Recent activity"
 msgstr "Actividad reciente"
 
-#: app/html/shared/sidebar/home.html:42
+#: app/html/shared/sidebar/home.html:46
 #, python-format
 msgid "%(user)s commented: %(text)s"
 msgstr "%(user)s comentó: %(text)s"
 
-#: app/html/shared/sidebar/home.html:44
+#: app/html/shared/sidebar/home.html:48
 #, python-format
 msgid "%(user)s posted: %(text)s"
 msgstr "%(user)s publicó: %(text)s"
 
-#: app/html/shared/sidebar/home.html:58
+#: app/html/shared/sidebar/home.html:65
 msgid "Sub of the day"
 msgstr "Sub del día"
 
-#: app/html/shared/sidebar/home.html:78 app/html/site/log.html:7
+#: app/html/shared/sidebar/home.html:85 app/html/site/log.html:7
 msgid "Site logs"
 msgstr "Logs del sitio"
 
@@ -1775,13 +1780,13 @@ msgstr ""
 
 #: app/html/site/activity.html:17
 #, python-format
-msgid "%(user)s posted \"%(title)s\" to %(sub)s %(timeago)s"
-msgstr "%(user)s publicó \"%(title)s\" en %(sub)s %(timeago)s"
+msgid "%(user)s posted \"%(title)s\"%(nsfw)s to %(sub)s %(timeago)s"
+msgstr ""
 
 #: app/html/site/activity.html:19
 #, python-format
-msgid "%(user)s commented \"%(comment)s\" in %(sub)s %(timeago)s"
-msgstr "%(user)s comentó \"%(comment)s\" en %(sub)s %(timeago)s"
+msgid "%(user)s commented \"%(comment)s\"%(nsfw)s in %(sub)s %(timeago)s"
+msgstr ""
 
 #: app/html/site/license.html:9
 msgid "This website is powered by <a href=\"https://github.com/Phuks-co/throat\">Throat</a>, released under the MIT license."
@@ -2439,16 +2444,20 @@ msgid "No comments, yet..."
 msgstr "No hay comentarios, todavía..."
 
 #: app/html/sub/post.html:350
+msgid "Show comments"
+msgstr ""
+
+#: app/html/sub/post.html:353
 #, python-format
 msgid "%(comments)i comments"
 msgstr "%(comments)i comentarios"
 
-#: app/html/sub/post.html:354
+#: app/html/sub/post.html:357
 #, python-format
 msgid "Sort by: <b>%(currsort)s</b>"
 msgstr ""
 
-#: app/html/sub/post.html:354
+#: app/html/sub/post.html:357
 msgid "top"
 msgstr ""
 
@@ -2467,15 +2476,15 @@ msgid "Edited %(timeago)s"
 msgstr "Editado %(timeago)s"
 
 #: app/html/sub/postcomments.html:90
-#: app/html/user/messages/notifications.html:96
-#: app/html/user/messages/notifications.html:116 app/static/js/Post.js:669
+#: app/html/user/messages/notifications.html:105
+#: app/html/user/messages/notifications.html:125 app/static/js/Post.js:669
 #: app/static/js/Post.js:672
 msgid "reply"
 msgstr "responder"
 
 #: app/html/sub/postcomments.html:92
-#: app/html/user/messages/notifications.html:94
-#: app/html/user/messages/notifications.html:114
+#: app/html/user/messages/notifications.html:103
+#: app/html/user/messages/notifications.html:123
 msgid "permalink"
 msgstr "permalink"
 
@@ -2828,118 +2837,118 @@ msgstr ""
 
 #: app/html/user/messages/notifications.html:24
 #, python-format
-msgid "<a href=\"/u/%(user)s\">%(user)s</a> replied to your post <a href=\"%(link)s\">%(title)s</a>"
+msgid "<a href=\"/u/%(user)s\">%(user)s</a> replied to your post <a class=\"%(cls)s\" href=\"%(link)s\">%(title)s</a>"
 msgstr ""
 
-#: app/html/user/messages/notifications.html:26
+#: app/html/user/messages/notifications.html:29
 #, python-format
-msgid "<a href=\"/u/%(user)s\">%(user)s</a> replied to your comment in <a href=\"%(link)s\">%(title)s</a>"
+msgid "<a href=\"/u/%(user)s\">%(user)s</a> replied to your comment in <a class=\"%(cls)s\" href=\"%(link)s\">%(title)s</a>"
 msgstr ""
 
-#: app/html/user/messages/notifications.html:28
+#: app/html/user/messages/notifications.html:34
 #, python-format
-msgid "<a href=\"/u/%(user)s\">%(user)s</a> mentioned you in <a href=\"%(link)s\">%(title)s</a>"
+msgid "<a href=\"/u/%(user)s\">%(user)s</a> mentioned you in <a class=\"%(cls)s\" href=\"%(link)s\">%(title)s</a>"
 msgstr ""
 
-#: app/html/user/messages/notifications.html:31
+#: app/html/user/messages/notifications.html:40
 #, python-format
 msgid "You have been banned from <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr ""
 
-#: app/html/user/messages/notifications.html:33
+#: app/html/user/messages/notifications.html:42
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> banned you from <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr ""
 
-#: app/html/user/messages/notifications.html:37
+#: app/html/user/messages/notifications.html:46
 #, python-format
 msgid "You have been unbanned from <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr ""
 
-#: app/html/user/messages/notifications.html:39
+#: app/html/user/messages/notifications.html:48
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> unbanned you from <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr ""
 
-#: app/html/user/messages/notifications.html:42
+#: app/html/user/messages/notifications.html:51
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> invited you to moderate <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr ""
 
-#: app/html/user/messages/notifications.html:46
+#: app/html/user/messages/notifications.html:55
 #, python-format
 msgid "Your post <a href=\"%(link)s\">%(title)s</a> has been deleted"
 msgstr ""
 
-#: app/html/user/messages/notifications.html:48
+#: app/html/user/messages/notifications.html:57
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> deleted your post <a href=\"%(link)s\">%(title)s</a>"
 msgstr ""
 
-#: app/html/user/messages/notifications.html:52
+#: app/html/user/messages/notifications.html:61
 #, python-format
 msgid "One of your posts in <a href=\"%(sub)s\">%(sub)s</a> has been deleted"
 msgstr "Una de tus publicaciones en <a href=\"%(sub)s\">%(sub)s</a> ha sido eliminada"
 
-#: app/html/user/messages/notifications.html:54
+#: app/html/user/messages/notifications.html:63
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> deleted one of your posts in <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr ""
 
-#: app/html/user/messages/notifications.html:60
+#: app/html/user/messages/notifications.html:69
 #, python-format
 msgid "Your post <a href=\"%(link)s\">%(title)s</a> has been un-deleted"
 msgstr "Tu publicación <a href=\"%(link)s\">%(title)s</a> ha sido restaurada"
 
-#: app/html/user/messages/notifications.html:62
+#: app/html/user/messages/notifications.html:71
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> un-deleted your post <a href=\"%(link)s\">%(title)s</a>"
 msgstr "<a href=\"/u/%(user)s\">%(user)s</a> restauró tu publicación <a href=\"%(link)s\">%(title)s</a>"
 
-#: app/html/user/messages/notifications.html:66
+#: app/html/user/messages/notifications.html:75
 #, python-format
 msgid "One of your posts in <a href=\"%(sub)s\">%(sub)s</a> has been un-deleted"
 msgstr "Una de tus publicaciones en <a href=\"%(sub)s\">%(sub)s</a> ha sido restaurada"
 
-#: app/html/user/messages/notifications.html:68
+#: app/html/user/messages/notifications.html:77
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> un-deleted one of your posts in <a href=\"%(sub)s\">%(sub)s</a>"
 msgstr "<a href=\"/u/%(user)s\">%(user)s</a> restauró una de tus publicaciones en <a href=\"%(sub)s\">%(sub)s</a>"
 
-#: app/html/user/messages/notifications.html:77
+#: app/html/user/messages/notifications.html:86
 #, python-format
 msgid "Your comment. Posted %(timeago)s. <b>%(score)i</b> points."
 msgstr "Tu comentario. Publicado %(timeago)s. <b>%(score)i</b> puntos."
 
-#: app/html/user/messages/notifications.html:87
+#: app/html/user/messages/notifications.html:96
 #, python-format
 msgid "Posted %(timeago)s. <b>%(score)s</b> points. Read %(timeagoread)s"
 msgstr ""
 
-#: app/html/user/messages/notifications.html:89
+#: app/html/user/messages/notifications.html:98
 #, python-format
 msgid "Posted %(timeago)s. <b>%(score)s</b> points."
 msgstr ""
 
-#: app/html/user/messages/notifications.html:98
-#: app/html/user/messages/notifications.html:118
-#: app/html/user/messages/notifications.html:135
+#: app/html/user/messages/notifications.html:107
+#: app/html/user/messages/notifications.html:127
+#: app/html/user/messages/notifications.html:144
 msgid "delete notification"
 msgstr "eliminar notificación"
 
-#: app/html/user/messages/notifications.html:101
-#: app/html/user/messages/notifications.html:121
-#: app/html/user/messages/notifications.html:138
+#: app/html/user/messages/notifications.html:110
+#: app/html/user/messages/notifications.html:130
+#: app/html/user/messages/notifications.html:147
 msgid "unblock"
 msgstr "desbloquear"
 
-#: app/html/user/messages/notifications.html:103
-#: app/html/user/messages/notifications.html:123
-#: app/html/user/messages/notifications.html:140
+#: app/html/user/messages/notifications.html:112
+#: app/html/user/messages/notifications.html:132
+#: app/html/user/messages/notifications.html:149
 msgid "block"
 msgstr "bloquear"
 
-#: app/html/user/messages/notifications.html:132
+#: app/html/user/messages/notifications.html:141
 #, python-format
 msgid "Please visit %(link)s to accept or reject the invitation"
 msgstr ""
@@ -3409,11 +3418,11 @@ msgstr "Escribe \"SI\" en el cuadro"
 #: app/views/do.py:276 app/views/do.py:480 app/views/do.py:513
 #: app/views/do.py:572 app/views/do.py:629 app/views/do.py:664
 #: app/views/do.py:700 app/views/do.py:728 app/views/do.py:760
-#: app/views/do.py:792 app/views/do.py:1405 app/views/do.py:1537
-#: app/views/do.py:1632 app/views/do.py:1735 app/views/do.py:1784
-#: app/views/do.py:1825 app/views/do.py:1877 app/views/do.py:2437
-#: app/views/do.py:2493 app/views/do.py:2543 app/views/do.py:3686
-#: app/views/do.py:3747 app/views/do.py:3813 app/views/do.py:3871
+#: app/views/do.py:792 app/views/do.py:1406 app/views/do.py:1538
+#: app/views/do.py:1633 app/views/do.py:1736 app/views/do.py:1785
+#: app/views/do.py:1826 app/views/do.py:1878 app/views/do.py:2438
+#: app/views/do.py:2494 app/views/do.py:2544 app/views/do.py:3687
+#: app/views/do.py:3748 app/views/do.py:3814 app/views/do.py:3872
 msgid "Sub does not exist"
 msgstr "El sub no existe"
 
@@ -3423,10 +3432,10 @@ msgstr "El post ya fue borrado"
 
 #: app/views/do.py:317 app/views/do.py:428 app/views/do.py:483
 #: app/views/do.py:575 app/views/do.py:671 app/views/do.py:708
-#: app/views/do.py:750 app/views/do.py:1408 app/views/do.py:2658
-#: app/views/do.py:2710 app/views/do.py:2770 app/views/do.py:2966
-#: app/views/do.py:3692 app/views/do.py:3753 app/views/do.py:3816
-#: app/views/do.py:3874
+#: app/views/do.py:750 app/views/do.py:1409 app/views/do.py:2659
+#: app/views/do.py:2711 app/views/do.py:2771 app/views/do.py:2967
+#: app/views/do.py:3693 app/views/do.py:3754 app/views/do.py:3817
+#: app/views/do.py:3875
 msgid "Not authorized"
 msgstr "No autorizado"
 
@@ -3455,14 +3464,14 @@ msgid "No flair text"
 msgstr ""
 
 #: app/views/do.py:591 app/views/do.py:797 app/views/do.py:837
-#: app/views/do.py:863 app/views/do.py:1364 app/views/do.py:1414
-#: app/views/do.py:1556 app/views/do.py:1628 app/views/do.py:1731
-#: app/views/do.py:1780 app/views/do.py:1821
+#: app/views/do.py:863 app/views/do.py:1365 app/views/do.py:1415
+#: app/views/do.py:1557 app/views/do.py:1629 app/views/do.py:1732
+#: app/views/do.py:1781 app/views/do.py:1822
 msgid "User does not exist"
 msgstr "El usuario no existe"
 
 #: app/views/do.py:614 app/views/do.py:678 app/views/do.py:743
-#: app/views/do.py:2450 app/views/do.py:2505
+#: app/views/do.py:2451 app/views/do.py:2506
 msgid "Flair does not exist"
 msgstr ""
 
@@ -3539,277 +3548,277 @@ msgstr ""
 msgid "Parent comment does not exist"
 msgstr "El comentario padre no existe"
 
-#: app/views/do.py:1387 app/views/do.py:1954 app/views/do.py:1966
-#: app/views/do.py:2020 app/views/do.py:2031
+#: app/views/do.py:1388 app/views/do.py:1955 app/views/do.py:1967
+#: app/views/do.py:2021 app/views/do.py:2032
 msgid "Message does not exist"
 msgstr "El mensaje no existe"
 
-#: app/views/do.py:1390
+#: app/views/do.py:1391
 msgid "Invalid message"
 msgstr ""
 
-#: app/views/do.py:1434
+#: app/views/do.py:1435
 msgid "Expiration time too far into the future"
 msgstr "Tiempo de caducidad demasiado lejos en el futuro"
 
-#: app/views/do.py:1437
+#: app/views/do.py:1438
 msgid "Invalid expiration time"
 msgstr ""
 
-#: app/views/do.py:1441
+#: app/views/do.py:1442
 msgid "Expiration date is in the past"
 msgstr ""
 
-#: app/views/do.py:1447
+#: app/views/do.py:1448
 msgid "Janitors may only create temporary bans"
 msgstr ""
 
-#: app/views/do.py:1451
+#: app/views/do.py:1452
 msgid "Already banned"
 msgstr ""
 
-#: app/views/do.py:1500
+#: app/views/do.py:1501
 #, python-format
 msgid "banned for: %(reason)s, until %(expires)s"
 msgstr "baneado por: %(reason)s, hasta %(expires)s"
 
-#: app/views/do.py:1506
+#: app/views/do.py:1507
 #, python-format
 msgid "banned for: %(reason)s, permanent"
 msgstr "baneado por: %(reason)s, permanente"
 
-#: app/views/do.py:1564
+#: app/views/do.py:1565
 msgid "User is already a mod"
 msgstr "El usuario ya es un mod"
 
-#: app/views/do.py:1572
+#: app/views/do.py:1573
 msgid "User has a pending invite"
 msgstr "El usuario tiene una invitación pendiente"
 
-#: app/views/do.py:1579
+#: app/views/do.py:1580
 msgid "Invalid power level"
 msgstr ""
 
-#: app/views/do.py:1593
+#: app/views/do.py:1594
 msgid "User can't mod more than 20 subs"
 msgstr "El usuario no puede moderar más de 20 subs"
 
-#: app/views/do.py:1649 app/views/do.py:3245
+#: app/views/do.py:1650 app/views/do.py:3246
 msgid "User is not banned"
 msgstr ""
 
-#: app/views/do.py:1657
+#: app/views/do.py:1658
 msgid "Janitors may only remove bans placed by themselves"
 msgstr ""
 
-#: app/views/do.py:1718
+#: app/views/do.py:1719
 msgid "Ban removed"
 msgstr "Ban eliminado"
 
-#: app/views/do.py:1752
+#: app/views/do.py:1753
 msgid "User is not mod"
 msgstr "El usuario no es un mod"
 
-#: app/views/do.py:1769 app/views/do.py:1810
+#: app/views/do.py:1770 app/views/do.py:1811
 msgid "Access denied"
 msgstr "Acceso denegado"
 
-#: app/views/do.py:1796
+#: app/views/do.py:1797
 msgid "User has not been invited to moderate the sub"
 msgstr ""
 
-#: app/views/do.py:1834 app/views/do.py:1889
+#: app/views/do.py:1835 app/views/do.py:1890
 msgid "You have not been invited to mod this sub"
 msgstr "No has sido invitado a moderar este sub"
 
-#: app/views/do.py:1847
+#: app/views/do.py:1848
 msgid "You can't mod more than 20 subs"
 msgstr "No puedes moderar mas de 20 subs"
 
-#: app/views/do.py:1910
+#: app/views/do.py:1911
 msgid "Message not found"
 msgstr "Mensaje no encontrado"
 
-#: app/views/do.py:1976
+#: app/views/do.py:1977
 msgid "Missing title"
 msgstr "Falta el título"
 
-#: app/views/do.py:1979
+#: app/views/do.py:1980
 msgid "Title too short."
 msgstr "El título es muy corto."
 
-#: app/views/do.py:1991
+#: app/views/do.py:1992
 msgid "You cannot edit the post title anymore"
 msgstr "Ya no puedes editar el título del post"
 
-#: app/views/do.py:1995
+#: app/views/do.py:1996
 msgid "You did not post this!"
 msgstr "¡No has publicado esto!"
 
-#: app/views/do.py:2010
+#: app/views/do.py:2011
 msgid "Bork bork"
 msgstr "Ñaca ñaca"
 
-#: app/views/do.py:2071
+#: app/views/do.py:2072
 msgid "Post already announced"
 msgstr ""
 
-#: app/views/do.py:2124
+#: app/views/do.py:2125
 msgid "Domain is already banned"
 msgstr "El dominio ya está baneado"
 
-#: app/views/do.py:2153
+#: app/views/do.py:2154
 msgid "Domain is not banned"
 msgstr "El dominio no está baneado"
 
-#: app/views/do.py:2225
+#: app/views/do.py:2226
 msgid "Already saved"
 msgstr ""
 
-#: app/views/do.py:2244
+#: app/views/do.py:2245
 msgid "Post was not saved"
 msgstr ""
 
-#: app/views/do.py:2334
+#: app/views/do.py:2335
 msgid "This sub already has three sticky posts"
 msgstr ""
 
-#: app/views/do.py:2555
+#: app/views/do.py:2556
 msgid "Rule does not exist"
 msgstr "La regla no existe"
 
-#: app/views/do.py:2577
+#: app/views/do.py:2578
 msgid "Rule has invalid characters"
 msgstr ""
 
-#: app/views/do.py:2590
+#: app/views/do.py:2591
 #, python-format
 msgid "Set a new password on %(site)s"
 msgstr ""
 
-#: app/views/do.py:2621 app/views/do.py:2624 app/views/do.py:2630
+#: app/views/do.py:2622 app/views/do.py:2625 app/views/do.py:2631
 msgid "Password recovery link expired"
 msgstr ""
 
-#: app/views/do.py:2638
+#: app/views/do.py:2639
 msgid "Password change failed. Please try again later."
 msgstr ""
 
-#: app/views/do.py:2666
+#: app/views/do.py:2667
 msgid "You can't edit a deleted comment"
 msgstr "No puedes editar un comentario borrado"
 
-#: app/views/do.py:2670
+#: app/views/do.py:2671
 msgid "You can't edit a comment on a deleted post"
 msgstr ""
 
-#: app/views/do.py:2813 app/views/do.py:2826
+#: app/views/do.py:2814 app/views/do.py:2827
 msgid "Not authenticated"
 msgstr "No autenticado"
 
-#: app/views/do.py:2941
+#: app/views/do.py:2942
 msgid "Missing text"
 msgstr "Falta el texto"
 
-#: app/views/do.py:2976
+#: app/views/do.py:2977
 msgid "User not found"
 msgstr "Usuario no encontrado"
 
-#: app/views/do.py:3020
+#: app/views/do.py:3021
 msgid "File name too long."
 msgstr "El nombre del archivo es muy largo."
 
-#: app/views/do.py:3034
+#: app/views/do.py:3035
 msgid "File name too short or missing."
 msgstr "El nombre del archivo es muy corto o no fue enviado."
 
-#: app/views/do.py:3048
+#: app/views/do.py:3049
 msgid "Invalid file name."
 msgstr "Nombre de archivo inválido."
 
-#: app/views/do.py:3063
+#: app/views/do.py:3064
 msgid "Please select a file to upload."
 msgstr "Por favor seleccione un archivo a subir."
 
-#: app/views/do.py:3094
+#: app/views/do.py:3095
 msgid "Not enough available space to upload file."
 msgstr "No tienes suficiente espacio disponible para subir este archivo."
 
-#: app/views/do.py:3396 app/views/do.py:3459
+#: app/views/do.py:3397 app/views/do.py:3460
 msgid "Post is not a poll"
 msgstr "El post no es una encuesta"
 
-#: app/views/do.py:3403
+#: app/views/do.py:3404
 msgid "Poll option does not exist"
 msgstr ""
 
-#: app/views/do.py:3410
+#: app/views/do.py:3411
 msgid "Already voted"
 msgstr "Ya has votado"
 
-#: app/views/do.py:3419 app/views/do.py:3429 app/views/do.py:3466
-#: app/views/do.py:3476
+#: app/views/do.py:3420 app/views/do.py:3430 app/views/do.py:3467
+#: app/views/do.py:3477
 msgid "Poll is closed"
 msgstr "Encuesta cerrada"
 
-#: app/views/do.py:3439
+#: app/views/do.py:3440
 msgid "Insufficient user level"
 msgstr "Nivel insuficiente"
 
-#: app/views/do.py:3517 app/views/do.py:3523
+#: app/views/do.py:3518 app/views/do.py:3524
 msgid "Poll already closed."
 msgstr "Encuesta ya cerrada."
 
-#: app/views/do.py:3554
+#: app/views/do.py:3555
 msgid "Post was removed"
 msgstr "El post fue eliminado"
 
-#: app/views/do.py:3563 app/views/do.py:3636
+#: app/views/do.py:3564 app/views/do.py:3637
 msgid "You have already reported this post"
 msgstr "Ya has reportado este post"
 
-#: app/views/do.py:3569 app/views/do.py:3642
+#: app/views/do.py:3570 app/views/do.py:3643
 msgid "Report reason too short."
 msgstr ""
 
-#: app/views/do.py:3571 app/views/do.py:3644
+#: app/views/do.py:3572 app/views/do.py:3645
 msgid "Report reason too long."
 msgstr ""
 
-#: app/views/do.py:3576 app/views/do.py:3649
+#: app/views/do.py:3577 app/views/do.py:3650
 msgid "You are banned from this sub."
 msgstr "Estás baneado de este sub."
 
-#: app/views/do.py:3627
+#: app/views/do.py:3628
 msgid "Comment was removed"
 msgstr "El comentario fue eliminado"
 
-#: app/views/do.py:3676 app/views/do.py:3732 app/views/do.py:3803
-#: app/views/do.py:3856
+#: app/views/do.py:3677 app/views/do.py:3733 app/views/do.py:3804
+#: app/views/do.py:3857
 msgid "Report does not exist"
 msgstr "El informe no existe"
 
-#: app/views/do.py:3689 app/views/do.py:3750
+#: app/views/do.py:3690 app/views/do.py:3751
 msgid "Invalid action"
 msgstr "Acción inválida"
 
-#: app/views/do.py:3695 app/views/do.py:3756
+#: app/views/do.py:3696 app/views/do.py:3757
 msgid "This report has already been closed"
 msgstr ""
 
-#: app/views/do.py:3698 app/views/do.py:3759
+#: app/views/do.py:3699 app/views/do.py:3760
 msgid "This report is already open"
 msgstr ""
 
-#: app/views/do.py:3721 app/views/do.py:3787 app/views/do.py:3838
+#: app/views/do.py:3722 app/views/do.py:3788 app/views/do.py:3839
 msgid "Failed to update report"
 msgstr "Error al actualizar el reporte"
 
-#: app/views/do.py:3898
+#: app/views/do.py:3899
 msgid "Failed to close report"
 msgstr ""
 
-#: app/views/do.py:3998
+#: app/views/do.py:3999
 msgid "Error: not a number"
 msgstr ""
 
@@ -3878,33 +3887,33 @@ msgstr "Hora de cierre inválida."
 msgid "The closing time is in the past!"
 msgstr "¡La hora de cierre está en el pasado!"
 
-#: app/views/subs.py:520
+#: app/views/subs.py:526
 msgid "Sub name has invalid characters"
 msgstr "El nombre del sub tiene caracteres inválidos"
 
-#: app/views/subs.py:525
+#: app/views/subs.py:531
 msgid "Invalid sub name"
 msgstr "Nombre inválido"
 
-#: app/views/subs.py:531
+#: app/views/subs.py:537
 msgid "Sub is already registered"
 msgstr "Este sub ya se encuentra registrado"
 
-#: app/views/subs.py:539
+#: app/views/subs.py:545
 msgid "Only Site Admins may create new subs. Please contact an administrator to request a new sub."
 msgstr "Sólo los administradores del sitio pueden crear nuevos subs. Póngase en contacto con un administrador para solicitar un nuevo sub."
 
-#: app/views/subs.py:553
+#: app/views/subs.py:559
 #, python-format
 msgid "You must be at least level %(level)i."
 msgstr "Debes ser por lo menos nivel %(level)i."
 
-#: app/views/subs.py:569
+#: app/views/subs.py:575
 #, python-format
 msgid "You cannot own more than %(max)i subs."
 msgstr "No puedes poseer más de %(max)i subs."
 
-#: app/views/subs.py:580
+#: app/views/subs.py:586
 #, python-format
 msgid "You cannot own more than %(max)i subs. Try leveling up your account."
 msgstr "No puedes poseer más de %(max)i subs. Intenta subir de nivel tu cuenta."
