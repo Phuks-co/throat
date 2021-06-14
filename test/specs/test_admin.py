@@ -260,95 +260,8 @@ def test_normal_user_cant_access_delete_announcement_route(
     assert response.status_code == 403
 
 
-@pytest.mark.parametrize(
-    "view_name",
-    [
-        "do.enable_captchas",
-        "do.enable_registration",
-        "do.enable_posting",
-    ],
-)
-def test_admin_config_toggle_routes_redirects_anonymous_users(
-    view_name: str, client
-) -> None:
-    response = client.get(url_for(view_name, value="True"))
-    assert response.status_code == 302
-    assert response.headers["location"].startswith(url_for("auth.login"))
-
-
-@pytest.mark.parametrize(
-    "view_name",
-    [
-        "do.enable_captchas",
-        "do.enable_registration",
-        "do.enable_posting",
-    ],
-)
-def test_admin_config_toggle_routes_deny_normal_users(
-    view_name: str, client, a_user
-) -> None:
-    response = client.get(url_for(view_name, value="True"))
-    # Check for 404 not found here for characterisation,
-    # but it should perhaps be 403 forbidden.
-    assert response.status_code == 404
-
-
-@pytest.mark.parametrize(
-    "view_name",
-    [
-        "do.enable_captchas",
-        "do.enable_registration",
-        "do.enable_posting",
-    ],
-)
-@pytest.mark.parametrize(
-    "invalid_value",
-    [
-        "None",
-        "on",
-        "off",
-        "yes",
-        "no",
-        "1",
-        "0",
-    ],
-)
-def test_admin_config_toggle_routes_reject_invalid_values(
-    view_name: str, invalid_value: str, client, an_admin
-) -> None:
-    response = client.get(url_for(view_name, value=invalid_value))
-    assert response.status_code == 400
-
-
-@pytest.mark.parametrize(
-    "view_name,config_key",
-    [
-        ("do.enable_captchas", "site.require_captchas"),
-        ("do.enable_registration", "site.enable_registration"),
-        ("do.enable_posting", "site.enable_posting"),
-    ],
-)
-@pytest.mark.parametrize("value", [True, False])
-def test_admin_config_toggle_routes_set_expected_values(
-    view_name: str, config_key: str, value: bool, client, an_admin
-) -> None:
-    # Given a logged-in admin.
-    # When the admin hits the URL.
-    response = client.get(url_for(view_name, value=value))
-
-    # Then the config contains the expected value.
-    assert config.get_value(config_key) == value
-    # And the response redirects the user to the admin index.
-    assert response.status_code == 302
-    assert response.location == url_for("admin.index")
-
-
 class TestCloseCSRFHole:
-    # 2034:@do.route("/do/admin/deleteannouncement")
-    # 2160:@do.route("/do/admin/enable_posting/<value>")
-    # 2179:@do.route("/do/admin/enable_registration/<value>")
-    # 2198:@do.route("/do/admin/require_captchas/<value>")
-    # 2283:@do.route("/do/create_invite")
+    # TODO: 2283:@do.route("/do/create_invite")
 
     def test_admin_can_delete_announcement(self, client, an_admin, csrf_token):
         # Given a logged-in admin user.
@@ -384,7 +297,7 @@ class TestCloseCSRFHole:
         # And the response indicates a bad request.
         assert response == 400
 
-    def test_delete_announcement_rejects_get_requets(self, client, an_admin):
+    def test_delete_announcement_rejects_get_request(self, client, an_admin):
         # Given a logged-in admin user.
         # And an announced post.
         _ = AnnouncedPostFactory.create()
@@ -394,3 +307,90 @@ class TestCloseCSRFHole:
 
         # Then the response indicates the GET method is disallowed.
         assert response == 405
+
+    @pytest.mark.parametrize(
+        "view_name",
+        [
+            "do.enable_captchas",
+            "do.enable_registration",
+            "do.enable_posting",
+        ],
+    )
+    def test_admin_config_toggle_routes_redirects_anonymous_users(
+        self, view_name: str, client, csrf_token
+    ) -> None:
+        response = client.post(
+            url_for(view_name), data={"csrf_token": csrf_token, "value": "True"}
+        )
+        assert response.status_code == 302
+        assert response.headers["location"].startswith(url_for("auth.login"))
+
+    @pytest.mark.parametrize(
+        "view_name",
+        [
+            "do.enable_captchas",
+            "do.enable_registration",
+            "do.enable_posting",
+        ],
+    )
+    def test_admin_config_toggle_routes_deny_normal_users(
+        self, view_name: str, client, a_user, csrf_token
+    ) -> None:
+        response = client.post(
+            url_for(view_name), data={"csrf_token": csrf_token, "value": "True"}
+        )
+        # Check for 404 not found here for characterisation,
+        # but it should perhaps be 403 forbidden.
+        assert response.status_code == 404
+
+    @pytest.mark.parametrize(
+        "view_name",
+        [
+            "do.enable_captchas",
+            "do.enable_registration",
+            "do.enable_posting",
+        ],
+    )
+    @pytest.mark.parametrize(
+        "invalid_value",
+        [
+            "None",
+            "on",
+            "off",
+            "yes",
+            "no",
+            "1",
+            "0",
+        ],
+    )
+    def test_admin_config_toggle_routes_reject_invalid_values(
+        self, view_name: str, invalid_value: str, client, an_admin, csrf_token
+    ) -> None:
+        response = client.post(
+            url_for(view_name), data={"csrf_token": csrf_token, "value": invalid_value}
+        )
+        assert response.status_code == 400, response.location
+
+    @pytest.mark.parametrize(
+        "view_name,config_key",
+        [
+            ("do.enable_captchas", "site.require_captchas"),
+            ("do.enable_registration", "site.enable_registration"),
+            ("do.enable_posting", "site.enable_posting"),
+        ],
+    )
+    @pytest.mark.parametrize("value", [True, False])
+    def test_admin_config_toggle_routes_set_expected_values(
+        self, view_name: str, config_key: str, value: bool, client, an_admin, csrf_token
+    ) -> None:
+        # Given a logged-in admin.
+        # When the admin hits the URL.
+        response = client.post(
+            url_for(view_name), data={"csrf_token": csrf_token, "value": value}
+        )
+
+        # Then the config contains the expected value.
+        assert config.get_value(config_key) == value
+        # And the response redirects the user to the admin index.
+        assert response.status_code == 302
+        assert response.location == url_for("admin.index")
