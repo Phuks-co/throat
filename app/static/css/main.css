@@ -1347,6 +1347,8 @@ input[type=search] {
   margin: 5px;
 }
 .search {
+  width: 91%;
+  margin-left: 23px;
   position: relative;
   color: #000;
   font-size: 16px;
