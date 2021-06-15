@@ -1,6 +1,11 @@
-from app.models import SiteMetadata, Sub, SubPost, User, UserMetadata
+from typing import Type, TypeVar
 
 import factory
+from peewee import Model
+
+from app.models import SiteMetadata, Sub, SubPost, User, UserMetadata
+
+T = TypeVar("T", bound=Model)
 
 
 class PeeweeBaseFactory(factory.Factory):
@@ -8,7 +13,7 @@ class PeeweeBaseFactory(factory.Factory):
         abstract = True
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class: Type[T], *args, **kwargs) -> T:
         return model_class.create(*args, **kwargs)
 
 
@@ -28,7 +33,7 @@ class UserFactory(PeeweeBaseFactory):
     crypto = 0
 
 
-def promote_user_to_admin(user: User):
+def promote_user_to_admin(user: User) -> None:
     UserMetadata.create(uid=user.uid, key="admin", value="1")
 
 
@@ -37,7 +42,7 @@ class AdminFactory(UserFactory):
         model = User
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class: Type[User], *args, **kwargs) -> User:
         user = super()._create(model_class, *args, **kwargs)
         promote_user_to_admin(user)
         return user
@@ -55,7 +60,7 @@ class PostFactory(PeeweeBaseFactory):
 
 class AnnouncedPostFactory(PostFactory):
     @classmethod
-    def _create(cls, model_class, *args, **kwargs) -> SubPost:
+    def _create(cls, model_class: Type[SubPost], *args, **kwargs) -> SubPost:
         post = super()._create(model_class, *args, **kwargs)
         SiteMetadata.create(key="announcement", value=post.pid)
         return post
