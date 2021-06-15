@@ -23,7 +23,7 @@ from flask_babel import _
 from .. import misc
 from ..config import config
 from ..forms import (
-    DummyForm,
+    CsrfTokenOnlyForm,
     TOTPForm,
     LogOutForm,
     UseInviteCodeForm,
@@ -184,7 +184,7 @@ def index():
         comms=comms,
         subOfTheDay=subOfTheDay,
         useinvitecodeform=invite,
-        csrf_form=DummyForm(),
+        csrf_form=CsrfTokenOnlyForm(),
     )
 
 
