@@ -7,7 +7,7 @@ from flask_login import login_required, current_user
 from flask_babel import _
 from .. import misc
 from ..config import config
-from ..misc import engine, ratelimit, POSTING_LIMIT
+from ..misc import engine, ratelimit, POSTING_LIMIT, gevent_required
 from ..socketio import socketio
 from ..models import (
     Sub,
@@ -71,6 +71,7 @@ def submit(ptype, sub):
 
 @bp.route("/submit/<ptype>", defaults={"sub": ""}, methods=["POST"])
 @bp.route("/submit/<ptype>/<sub>", methods=["POST"])
+@gevent_required  # Starts async task (thumbnail).
 @login_required
 @ratelimit(POSTING_LIMIT)
 def create_post(ptype, sub):

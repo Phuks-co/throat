@@ -25,7 +25,7 @@ from ..config import config
 from ..auth import auth_provider, email_validation_is_required
 from ..auth import normalize_email, create_user
 from ..forms import LoginForm, RegistrationForm, ResendConfirmationForm
-from ..misc import engine, send_email, is_domain_banned
+from ..misc import engine, send_email, is_domain_banned, gevent_required
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
 from ..models import User, UserStatus, InviteCode, rconn
 
@@ -93,6 +93,7 @@ def sso_proxy_validate():
 
 
 @bp.route("/register", methods=["GET", "POST"])
+@gevent_required  # Contacts Keycloak if configured, does async task (email).
 @ratelimit(SIGNUP_LIMIT, methods=["POST"])
 def register():
     """ Endpoint for the registration form """
@@ -276,6 +277,7 @@ def confirm_registration():
 
 
 @bp.route("/login/with-token/<token>")
+@gevent_required  # Contacts Keycloak if configured.
 @ratelimit(SIGNUP_LIMIT)
 def login_with_token(token):
     if current_user.is_authenticated:
@@ -300,6 +302,7 @@ def login_with_token(token):
 
 
 @bp.route("/register/fix-registration-email", methods=["GET", "POST"])
+@gevent_required  # Contacts Keycloak, launches an async task (email).
 @ratelimit(SIGNUP_LIMIT)
 def fix_registration_email():
     if current_user.is_authenticated:
@@ -356,6 +359,7 @@ def fix_registration_email():
 
 
 @bp.route("/register/resend-confirmation", methods=["GET", "POST"])
+@gevent_required  # Starts an async task (email).
 @ratelimit(SIGNUP_LIMIT)
 def resend_confirmation_email():
     if current_user.is_authenticated:
@@ -387,6 +391,7 @@ def resend_confirmation_email():
 
 
 @bp.route("/login", methods=["GET", "POST"])
+@gevent_required  # Contacts Keycloak if configured.
 @ratelimit(AUTH_LIMIT)
 def login():
     """ Endpoint for the login form """
@@ -438,6 +443,7 @@ def login():
 
 
 @bp.route("/auth/matrix", methods=["POST"])
+@gevent_required  # Makes request from Matrix server.
 @login_required
 def get_ticket():
     """ Returns a CAS ticket for the current user """

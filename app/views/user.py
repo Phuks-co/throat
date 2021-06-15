@@ -8,7 +8,7 @@ from .do import info_from_email_confirmation_token
 from .. import misc
 from ..config import config
 from ..auth import auth_provider, AuthError, normalize_email
-from ..misc import engine
+from ..misc import engine, gevent_required
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
 from ..forms import (
     EditUserForm,
@@ -255,6 +255,7 @@ def edit_account():
 
 
 @bp.route("/settings/account/confirm-email/<token>")
+@gevent_required  # Contacts Keycloak if configured.
 @ratelimit(AUTH_LIMIT)
 def confirm_email_change(token):
     info = info_from_email_confirmation_token(token)
@@ -286,6 +287,7 @@ def delete_account():
 
 
 @bp.route("/recover", methods=["GET", "POST"])
+@gevent_required  # Starts an async task (email).
 @ratelimit(SIGNUP_LIMIT)
 def password_recovery():
     """ Endpoint for the password recovery form """

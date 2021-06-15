@@ -23,7 +23,7 @@ from ..auth import (
     normalize_email,
 )
 from ..socketio import socketio
-from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT
+from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, gevent_required
 from ..models import (
     Sub,
     User,
@@ -65,6 +65,7 @@ def ratelimit_handler(_):
 
 
 @API.route("/login", methods=["POST"])
+@gevent_required  # Uses Keycloak if configured.
 @ratelimit(AUTH_LIMIT)
 def login():
     """Logs the user in.
@@ -115,6 +116,7 @@ def register_params():
 
 
 @API.route("/register", methods=["POST"])
+@gevent_required  # Uses Keycloak if configured.
 @ratelimit(AUTH_LIMIT)
 def register():
     """Creates a new account.
@@ -214,6 +216,7 @@ def refresh():
 
 
 @API.route("/fresh-login", methods=["POST"])
+@gevent_required  # Uses Keycloak service if configured.
 @ratelimit(AUTH_LIMIT)
 def fresh_login():
     """ Returns a fresh access token. Requires username and password """
@@ -967,6 +970,7 @@ def get_challenge():
 
 
 @API.route("/post", methods=["POST"])
+@gevent_required  # Starts async task (thumbnail).
 @jwt_required
 @ratelimit(POSTING_LIMIT)
 def create_post():
@@ -1642,6 +1646,7 @@ def set_settings():
 
 
 @API.route("/grabtitle", methods=["GET"])
+@gevent_required  # Starts async task (external HTTP request).
 @ratelimit(POSTING_LIMIT)
 @jwt_required
 def grab_title():
@@ -1652,6 +1657,7 @@ def grab_title():
 
 
 @API.route("/push", methods=["POST"])
+@gevent_required  # Uses notification service if configured.
 @jwt_required
 def inform_push_token():
     """ Informs a new push token """

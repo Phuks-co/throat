@@ -10,8 +10,10 @@ import time
 import os
 import re
 import gevent
+from gevent import monkey
 import ipaddress
 from collections import defaultdict
+from functools import wraps
 
 from bs4 import BeautifulSoup
 import tinycss2
@@ -3051,3 +3053,20 @@ def get_sub_flair_choices(sid):
         .dicts()
     )
     return list(choices)
+
+
+def gevent_required(f):
+    """Decorator to enforce that a route should only be run when gevent
+    monkey-patching has been done.  Rather than run code that might do
+    something broken without gevent, raise an error."""
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not config.app.testing and not monkey.is_module_patched("os"):
+            raise RuntimeError(
+                "Load balancer misconfiguration: this route cannot be handled by a sync worker"
+            )
+        return f(*args, **kwargs)
+
+    decorated_function.gevent_required = True
+    return decorated_function

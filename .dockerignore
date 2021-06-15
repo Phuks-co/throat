@@ -4,7 +4,8 @@
 # Whitelist files and folders that should be in the container
 !app
 !cli
-!migrations
+!configs
+!*migrations
 !scripts
 
 !babel.cfg
@@ -12,7 +13,9 @@
 !package.json
 !package-lock.json
 !requirements.txt
+!start_all.sh
 !throat.py
+!throat_prod.py
 !webpack.config.js
 
 # Disallow Python cache files
@@ -20,3 +23,6 @@
 **/*.pyc
 **/*.pyd
 **/*.pyo
+
+# Disallow results of non-Docker builds
+app/static/gen
