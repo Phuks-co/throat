@@ -11,7 +11,7 @@ from ..auth import auth_provider, AuthError, normalize_email
 from ..misc import engine, gevent_required
 from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
 from ..forms import (
-    DummyForm,
+    CsrfTokenOnlyForm,
     EditUserForm,
     CreateUserMessageForm,
     EditAccountForm,
@@ -208,7 +208,7 @@ def invite_codes():
             "max": maxcodes,
             "avail": avail,
             "user": User.get(User.uid == current_user.uid),
-            "csrf_form": DummyForm(),
+            "csrf_form": CsrfTokenOnlyForm(),
         }
     )
 
