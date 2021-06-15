@@ -132,7 +132,6 @@ class LiteralBooleanField(SelectField):
 
     @staticmethod
     def _literally_true_or_false(value: str) -> bool:
-        print(repr(value))
         if value == "True":
             return True
         elif value == "False":
