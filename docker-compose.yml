@@ -29,6 +29,7 @@ services:
       - ./app/html:/throat/app/html
       - ./app/templates:/throat/app/templates
     environment:
+      WORKER_TYPE: local
       # Configs set here will override your config.yaml
       APP_HOST: 0.0.0.0
       APP_REDIS_URL: redis://redis:6379

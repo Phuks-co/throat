@@ -51,6 +51,7 @@ peewee==3.14.0
 peewee-migrate==1.1.6
 pep8==1.7.1
 Pillow==8.2.0
+psycogreen==1.0.2
 psycopg2==2.8.6
 pyasn1==0.4.8
 pycparser==2.20

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-""" From here we start the app in debug mode. """
-from pathlib import Path
+""" From here we start the app in debug mode with the command line interface. """
 from gevent import monkey
 
 monkey.patch_all()
+
 import click  # noqa
+from pathlib import Path  # noqa
 from app import create_app, socketio  # noqa
 from cli import commands  # noqa
 
@@ -27,7 +28,6 @@ def run(ctx):
 
 for command in commands:
     run.add_command(command)
-
 
 if __name__ == "__main__":
     run()

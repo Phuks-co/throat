@@ -41,8 +41,12 @@ from ..misc import (
     get_errors,
     engine,
     ensure_locale_loaded,
+    ratelimit,
+    POSTING_LIMIT,
+    AUTH_LIMIT,
+    is_domain_banned,
+    gevent_required,
 )
-from ..misc import ratelimit, POSTING_LIMIT, AUTH_LIMIT, is_domain_banned
 from ..models import (
     SubPost,
     SubPostComment,
@@ -145,6 +149,7 @@ def search(stype):
 
 
 @do.route("/do/edit_account", methods=["POST"])
+@gevent_required  # Contacts Keycloak if configured, does async task (email).
 @login_required
 def edit_account():
     form = EditAccountForm()
@@ -1179,6 +1184,7 @@ def edit_txtpost(pid):
 
 
 @do.route("/do/grabtitle", methods=["POST"])
+@gevent_required  # Makes external HTTP request.
 @login_required
 @ratelimit(POSTING_LIMIT)
 def grab_title():
@@ -2608,6 +2614,7 @@ def delete_recovery_token(token):
 
 
 @do.route("/do/reset", methods=["POST"])
+@gevent_required  # Contacts Keycloak if configured.
 @ratelimit(AUTH_LIMIT)
 def reset():
     """ Password reset. Takes key and uid and changes password """
@@ -2988,6 +2995,7 @@ def ignore_user(uid):
 
 
 @do.route("/do/upload/<sub>", methods=["POST"])
+@gevent_required  # Launches an async task (thumbnail creation).
 @login_required
 def sub_upload(sub):
     try:

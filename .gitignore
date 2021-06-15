@@ -78,6 +78,9 @@ node_modules
 # pyenv configs
 .python-version
 
+# deployment configs
+configs
+
 .pytest_cache
 stor
 

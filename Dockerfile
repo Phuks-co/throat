@@ -25,9 +25,6 @@ FROM python:3.7-slim-buster
 RUN \
   apt-get update && apt-get install -yqq \
      build-essential \
-     libgirepository1.0-dev \
-     libcairo2-dev \
-     libgexiv2-dev \
      libpq-dev \
      postgresql-client \
   && rm -rf /var/lib/apt/lists/*
@@ -49,4 +46,4 @@ COPY --from=webpack --chown=app:app /app/static/gen /throat/app/static/gen
 USER app
 EXPOSE 5000
 
-CMD ["./throat.py"]
+CMD ["./start_all.sh"]
