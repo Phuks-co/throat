@@ -261,27 +261,6 @@ def test_normal_user_cant_access_delete_announcement_route(
     assert response.status_code == 403
 
 
-def test_create_invite_redirects_anonymous_users_to_login(client) -> None:
-    # Given the user is not logged in.
-    # When they attempt to create an invite code.
-    response = client.get(url_for("do.invite_codes"))
-    # They are redirected to the login page.
-    assert response.status_code == 302
-    assert response.headers["location"].startswith(url_for("auth.login"))
-
-
-@pytest.mark.parametrize("test_config", [{"site": {"require_invite_code": False}}])
-def test_create_invite_redirects_to_settings_when_invites_are_diabled(
-    client, a_user
-) -> None:
-    # Given invite codes are not required.
-    # When the user attempts to create a code.
-    response = client.get(url_for("do.invite_codes"))
-    # Then they are directed to their settings page.
-    assert response.status_code == 302
-    assert response.headers["location"].startswith(url_for("user.edit_user"))
-
-
 def number_of_invite_codes_created_by_user(user: User) -> int:
     created = InviteCode.select().where(InviteCode.user == user.uid).count()  # type: ignore
     return created
@@ -297,47 +276,9 @@ def user_has_invite_codes_remaining(user: User) -> bool:
     return available_invite_codes_for_user(user) > 0
 
 
-@pytest.mark.parametrize(
-    "test_config", [{"site": {"require_invite_code": True, "invite_level": 0}}]
-)
-def test_create_invite_code_successfully(client, a_user):
-    # Given that invite codes are required.
-    # And the user has created no codes.
-    assert number_of_invite_codes_created_by_user(a_user) == 0
-    # And the user can create more codes.
-    assert user_has_invite_codes_remaining(a_user)
-
-    # When the user attempts to create a code.
-    response = client.get(url_for("do.invite_codes"))
-
-    # Then a new invite code is created.
-    assert number_of_invite_codes_created_by_user(a_user) == 1
-    # And the user is redirected to the invite settings page.
-    assert response.status_code == 302
-    assert response.headers["location"].startswith(url_for("user.invite_codes"))
-
-
 def user_level(user: User) -> int:
     level, _ = misc.get_user_level(user.uid)
     return level
-
-
-@pytest.mark.parametrize(
-    "test_config", [{"site": {"require_invite_code": True, "invite_level": 1}}]
-)
-def test_create_invite_code_fails_when_level_is_too_low(client, a_user):
-    # Given that invite codes are required.
-    # And the user has too low a level to create codes.
-    assert config.site.invite_level > user_level(a_user)
-
-    # When the user attempts to create a code.
-    response = client.get(url_for("do.invite_codes"))
-
-    # Then no invite code is created.
-    assert number_of_invite_codes_created_by_user(a_user) == 0
-    # And the user is redirected to the invite settings page.
-    assert response.status_code == 302
-    assert response.headers["location"].startswith(url_for("user.invite_codes"))
 
 
 class TestCloseCSRFHole:
@@ -474,3 +415,94 @@ class TestCloseCSRFHole:
         # And the response redirects the user to the admin index.
         assert response.status_code == 302
         assert response.location == url_for("admin.index")
+
+
+class TestCreateInvitePost:
+    @pytest.mark.parametrize(
+        "test_config", [{"site": {"require_invite_code": True, "invite_level": 0}}]
+    )
+    def test_create_invite_code_successfully(self, client, a_user, csrf_token):
+        # Given that invite codes are required.
+        # And the user has created no codes.
+        assert number_of_invite_codes_created_by_user(a_user) == 0
+        # And the user can create more codes.
+        assert user_has_invite_codes_remaining(a_user)
+
+        # When the user attempts to create a code.
+        response = client.post(
+            url_for("do.invite_codes"), data={"csrf_token": csrf_token}
+        )
+
+        # Then a new invite code is created.
+        assert number_of_invite_codes_created_by_user(a_user) == 1
+        # And the user is redirected to the invite settings page.
+        assert response == 302
+        assert response.location.startswith(url_for("user.invite_codes"))
+
+    @pytest.mark.parametrize(
+        "test_config", [{"site": {"require_invite_code": True, "invite_level": 0}}]
+    )
+    def test_create_invite_code_rejects_requests_without_csrf_token(
+        self, client, a_user
+    ):
+        # Given that invite codes are required.
+        # And the user has created no codes.
+        assert number_of_invite_codes_created_by_user(a_user) == 0
+        # And the user can create more codes.
+        assert user_has_invite_codes_remaining(a_user)
+
+        # When the user attempts to create a code.
+        response = client.post(
+            url_for("do.invite_codes"), data={"csrf_token": csrf_token}
+        )
+
+        # Then no new invite code is created.
+        assert number_of_invite_codes_created_by_user(a_user) == 0
+        # And the response is a 400 error.
+        assert response == 400
+
+    @pytest.mark.parametrize("test_config", [{"site": {"require_invite_code": False}}])
+    def test_create_invite_redirects_to_settings_when_invites_are_disabled(
+        self, client, a_user, csrf_token
+    ) -> None:
+        # Given invite codes are not required.
+        # When the user attempts to create a code.
+        response = client.post(
+            url_for("do.invite_codes"), data={"csrf_token": csrf_token}
+        )
+        # Then they are directed to their settings page.
+        assert response == 302
+        assert response.location.startswith(url_for("user.edit_user"))
+
+    def test_create_invite_redirects_anonymous_users_to_login(
+        self, client, csrf_token
+    ) -> None:
+        # Given the user is not logged in.
+        # When they attempt to create an invite code.
+        response = client.post(
+            url_for("do.invite_codes"), data={"csrf_token": csrf_token}
+        )
+        # They are redirected to the login page.
+        assert response == 302
+        assert response.location.startswith(url_for("auth.login"))
+
+    @pytest.mark.parametrize(
+        "test_config", [{"site": {"require_invite_code": True, "invite_level": 1}}]
+    )
+    def test_create_invite_code_fails_when_level_is_too_low(
+        self, client, a_user, csrf_token
+    ):
+        # Given that invite codes are required.
+        # And the user has too low a level to create codes.
+        assert config.site.invite_level > user_level(a_user)
+
+        # When the user attempts to create a code.
+        response = client.post(
+            url_for("do.invite_codes"), data={"csrf_token": csrf_token}
+        )
+
+        # Then no invite code is created.
+        assert number_of_invite_codes_created_by_user(a_user) == 0
+        # And the user is redirected to the invite settings page.
+        assert response.status_code == 302
+        assert response.headers["location"].startswith(url_for("user.invite_codes"))

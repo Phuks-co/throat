@@ -2302,11 +2302,14 @@ def use_invite_code():
     return jsonify(status="ok")
 
 
-@do.route("/do/create_invite")
+@do.route("/do/create_invite", methods=["POST"])
 @login_required
 def invite_codes():
     if not config.site.require_invite_code:
         return redirect("/settings")
+
+    if not DummyForm().validate():
+        abort(400)
 
     created = InviteCode.select().where(InviteCode.user == current_user.uid).count()
     maxcodes = int(misc.getMaxCodes(current_user.uid))
