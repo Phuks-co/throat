@@ -250,7 +250,7 @@ class SubLog(BaseModel):
     action = IntegerField(null=True)
     desc = CharField(null=True)
     lid = PrimaryKeyField()
-    link = CharField(null=True)
+    link = CharField(null=True)  # link or extra description depending on action
     sid = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
     uid = ForeignKeyField(db_column="uid", null=True, model=User, field="uid")
     target = ForeignKeyField(db_column="target_uid", null=True, model=User, field="uid")
