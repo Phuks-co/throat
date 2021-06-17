@@ -8,7 +8,7 @@ import uuid
 import random
 from collections import defaultdict
 from flask import Blueprint, redirect, url_for, session, abort, jsonify, current_app
-from flask import request
+from flask import request, flash, Markup
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_babel import _
 from itsdangerous import URLSafeTimedSerializer
@@ -2056,6 +2056,7 @@ def deleteannouncement():
     except SiteMetadata.DoesNotExist:
         return redirect(url_for("admin.index"))
 
+    flash(_("Removed announcement") + f": {Markup.escape(post.title)}")
     ann.delete_instance()
     misc.create_sitelog(
         misc.LOG_TYPE_UNANNOUNCE,
