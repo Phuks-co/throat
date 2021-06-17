@@ -2039,12 +2039,16 @@ def save_pm(mid):
         return jsonify(status="error", error=_("Message does not exist"))
 
 
-@do.route("/do/admin/deleteannouncement")
+@do.route("/do/admin/deleteannouncement", methods=["POST"])
 @login_required
 def deleteannouncement():
     """ Removes the current announcement """
     if not current_user.is_admin():
         abort(403)
+
+    form = DummyForm()
+    if not form.validate():
+        abort(400)
 
     try:
         ann = SiteMetadata.get(SiteMetadata.key == "announcement")

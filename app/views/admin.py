@@ -23,6 +23,7 @@ from flask_babel import _
 from .. import misc
 from ..config import config
 from ..forms import (
+    DummyForm,
     TOTPForm,
     LogOutForm,
     UseInviteCodeForm,
@@ -183,6 +184,7 @@ def index():
         comms=comms,
         subOfTheDay=subOfTheDay,
         useinvitecodeform=invite,
+        deleteAnnouncementForm=DummyForm(),
     )
 
 
