@@ -132,14 +132,14 @@
       {% with errors = get_flashed_messages(category_filter=["error"]) %}
         {% if errors %}
           {% for err in errors %}
-            <div class="error" style="margin-top: 2em;">@{ err }</div>
+            <div class="error" style="margin-top: 2em;">{{ err }}</div>
           {% endfor %}
         {% endif %}
       {% endwith %}
       {% with messages = get_flashed_messages(category_filter=["message"]) %}
         {% if messages %}
           {% for msg in messages %}
-            <div class="message" style="margin-top: 2em;">@{ msg }</div>
+            <div class="message" style="margin-top: 2em;">{{ msg }}</div>
           {% endfor %}
         {% endif %}
       {% endwith %}
