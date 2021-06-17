@@ -6,4 +6,5 @@
 "beta",
 "vlastné motto už od 5€ !",
 "sloboda je vakcína",
-"vybrali.cekni.to"]
+"vybrali.cekni.to",
+"normálne už bolo"]
