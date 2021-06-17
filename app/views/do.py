@@ -2064,6 +2064,7 @@ def deleteannouncement():
 
 
 @do.route("/do/makeannouncement", methods=["POST"])
+@login_required
 def make_announcement():
     """ Flagging post as announcement - not api """
     if not current_user.is_admin():
@@ -2165,6 +2166,7 @@ def remove_banned_domain(domain_type, domain):
 
 
 @do.route("/do/admin/enable_posting/<value>")
+@login_required
 def enable_posting(value):
     """ Emergency Mode: disable posting """
     if not current_user.is_admin():
@@ -2184,6 +2186,7 @@ def enable_posting(value):
 
 
 @do.route("/do/admin/enable_registration/<value>")
+@login_required
 def enable_registration(value):
     """ Isolation Mode: disable registration """
     if not current_user.is_admin():
@@ -2203,6 +2206,7 @@ def enable_registration(value):
 
 
 @do.route("/do/admin/require_captchas/<value>")
+@login_required
 def enable_captchas(value):
     """ Enable or disable the captcha solving requirement. """
     if not current_user.is_admin():
