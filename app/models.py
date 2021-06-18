@@ -181,7 +181,7 @@ class SiteMetadata(BaseModel):
 
 
 class Sub(BaseModel):
-    name = CharField(null=True, unique=True, max_length=32)
+    name = CharField(unique=True, max_length=32)
     nsfw = BooleanField(default=False)
     sid = CharField(primary_key=True, max_length=40)
     sidebar = TextField(default="")
@@ -281,26 +281,24 @@ class SubMetadata(BaseModel):
 
 class SubPost(BaseModel):
     content = TextField(null=True)
-    deleted = IntegerField(null=True)  # 1=self delete, 2=mod delete, 0=not deleted
+    deleted = IntegerField(default=0)  # 1=self delete, 2=mod delete, 0=not deleted
     distinguish = IntegerField(null=True)  # 1=mod, 2=admin, 0 or null = normal
     link = CharField(null=True)
     nsfw = BooleanField(null=True)
     pid = PrimaryKeyField()
-    posted = DateTimeField(null=True)
+    posted = DateTimeField(default=datetime.datetime.utcnow)
     edited = DateTimeField(null=True)
     ptype = IntegerField(null=True)  # 1=text, 2=link, 3=poll
 
-    score = IntegerField(null=True)  # XXX: Deprecated
+    score = IntegerField(default=1)  # XXX: Deprecated
     upvotes = IntegerField(default=0)
     downvotes = IntegerField(default=0)
 
-    sid = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
+    sid = ForeignKeyField(db_column="sid", model=Sub, field="sid")
     thumbnail = CharField(null=True)
-    title = CharField(null=True)
+    title = CharField()
     comments = IntegerField()
-    uid = ForeignKeyField(
-        db_column="uid", null=True, model=User, field="uid", backref="posts"
-    )
+    uid = ForeignKeyField(db_column="uid", model=User, field="uid", backref="posts")
     flair = CharField(null=True, max_length=25)
 
     def __repr__(self):
