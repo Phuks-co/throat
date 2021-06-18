@@ -1,6 +1,8 @@
 import datetime
 import re
 import pytest
+import mock
+import requests.exceptions
 from flask import url_for
 from test.utilities import register_user, csrf_token, create_sub
 from app.models import Sub, SubMetadata
@@ -103,40 +105,41 @@ def test_submit_text_post(client, user_info, test_config):
 
 @pytest.mark.parametrize("test_config", [{"site": {"sub_creation_min_level": 0}}])
 def test_submit_link_post(client, user_info, test_config):
-    register_user(client, user_info)
-    create_sub(client)
-    rv = client.get(url_for("subs.submit", ptype="text", sub="test"))
-    data = {
-        "csrf_token": csrf_token(rv.data),
-        "title": "Testing link!",
-        "ptype": "link",
-    }
+    with mock.patch("requests.get", side_effect=requests.exceptions.HTTPError):
+        register_user(client, user_info)
+        create_sub(client)
+        rv = client.get(url_for("subs.submit", ptype="text", sub="test"))
+        data = {
+            "csrf_token": csrf_token(rv.data),
+            "title": "Testing link!",
+            "ptype": "link",
+        }
 
-    rv = client.post(
-        url_for("subs.submit", ptype="link", sub="test"),
-        data=data,
-        follow_redirects=False,
-    )
-    assert get_error(rv.data) == b"No link provided."
-    data["link"] = "https://google.com"
-    rv = client.post(
-        url_for("subs.submit", ptype="link", sub="test"),
-        data=data,
-        follow_redirects=False,
-    )
-    assert rv.status_code == 302
-    assert "/s/test/1" == rv.location
+        rv = client.post(
+            url_for("subs.submit", ptype="link", sub="test"),
+            data=data,
+            follow_redirects=False,
+        )
+        assert get_error(rv.data) == b"No link provided."
+        data["link"] = "https://google.com"
+        rv = client.post(
+            url_for("subs.submit", ptype="link", sub="test"),
+            data=data,
+            follow_redirects=False,
+        )
+        assert rv.status_code == 302
+        assert "/s/test/1" == rv.location
 
-    # Test anti-repost
-    rv = client.post(
-        url_for("subs.submit", ptype="link", sub="test"),
-        data=data,
-        follow_redirects=False,
-    )
-    assert (
-        get_error(rv.data)
-        == b'This link was <a href="/s/test/1">recently posted</a> on this sub.'
-    )
+        # Test anti-repost
+        rv = client.post(
+            url_for("subs.submit", ptype="link", sub="test"),
+            data=data,
+            follow_redirects=False,
+        )
+        assert (
+            get_error(rv.data)
+            == b'This link was <a href="/s/test/1">recently posted</a> on this sub.'
+        )
 
 
 @pytest.mark.parametrize("test_config", [{"site": {"sub_creation_min_level": 0}}])

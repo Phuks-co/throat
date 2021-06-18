@@ -9,8 +9,9 @@
             <thead>
             <tr>
                 <th>@{_('Time')}</th>
-                <th>@{_('User')}</th>
+                <th>@{_('Moderator')}</th>
                 <th>@{_('Action')}</th>
+                <th>@{_('User')}</th>
                 <th></th>
             </tr>
             </thead>
@@ -35,7 +36,11 @@
                     @elif log.action == 21:
                         @{_('Changed sub settings')}
                     @elif log.action == 22:
-                        @{_('Banned <a href="/u/%(username)s">%(username)s</a> with reason <code>%(reason)s</code>', username=log.target.name, reason=e(log.desc))!!html}
+                        @if log.link:
+                            @{_('Temporarily banned <a href="/u/%(username)s">%(username)s</a> %(days)s with reason <code>%(reason)s</code>', username=log.target.name, days=_('for 1 day') if log.link == '1' else _('for %(num)s days', num=log.link), reason=e(log.desc))!!html}
+                        @else:
+                            @{_('Banned <a href="/u/%(username)s">%(username)s</a> with reason <code>%(reason)s</code>', username=log.target.name, reason=e(log.desc))!!html}
+                        @end
                     @elif log.action == 23:
                         @{_('Unbanned <a href="/u/%(username)s">%(username)s</a>', username=log.target.name)!!html}
                     @elif log.action == 24:
@@ -71,7 +76,12 @@
                     @end
                 </td>
                 <td>
-                    @if log.link:
+                    @if log.action in [22, 23, 24, 26, 27, 28]:
+                        <a href="/u/@{log.target.name}">@{log.target.name}</a>
+                    @end
+                </td>
+                <td>
+                    @if log.link and log.action != 22:
                         <a href="@{log.link}">@{_('Link')}</a> \
                     @end
                 </td>

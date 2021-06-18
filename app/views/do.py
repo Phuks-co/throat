@@ -1428,18 +1428,20 @@ def ban_user_sub(sub):
         #    pass
 
         expires = None
+        days = ""
         if form.expires.data:
             try:
                 expires = datetime.datetime.strptime(
                     form.expires.data, "%Y-%m-%dT%H:%M:%S.%fZ"
                 )
-                if (expires - datetime.datetime.utcnow()) > datetime.timedelta(
-                    days=365
-                ):
+                seconds = (expires - datetime.datetime.utcnow()).total_seconds()
+                days = int(round(seconds / (60 * 60 * 24), 0))
+                if days > 365:
                     return jsonify(
                         status="error",
                         error=[_("Expiration time too far into the future")],
                     )
+                days = str(days)
             except ValueError:
                 return jsonify(status="error", error=[_("Invalid expiration time")])
 
@@ -1485,6 +1487,7 @@ def ban_user_sub(sub):
             sub.sid,
             target=user.uid,
             comment=form.reason.data,
+            link=days,
         )
 
         related_post_reports = (
