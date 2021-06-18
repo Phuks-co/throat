@@ -1,9 +1,11 @@
 from bs4 import BeautifulSoup
 from flask import url_for
+import json
 from peewee import fn
-from app import mail
+
+from app import mail, misc
 from app.auth import email_validation_is_required
-from app.models import User, UserMetadata, SiteMetadata
+from app.models import InviteCode, User, UserMetadata, SiteMetadata
 
 
 def csrf_token(data):
@@ -135,3 +137,76 @@ def promote_user_to_admin(client, user_info):
     admin = User.get(fn.Lower(User.name) == user_info["username"])
     UserMetadata.create(uid=admin.uid, key="admin", value="1")
     log_in_user(client, user_info)
+
+
+def force_log_in(user: User, client) -> None:
+    with client.session_transaction() as session:
+        session["_user_id"] = user.uid
+
+
+def number_of_invite_codes_created_by_user(user: User) -> int:
+    created = InviteCode.select().where(InviteCode.user == user.uid).count()  # type: ignore
+    return created
+
+
+def available_invite_codes_for_user(user: User) -> int:
+    created = number_of_invite_codes_created_by_user(user)
+    maxcodes = int(misc.getMaxCodes(user.uid))
+    return maxcodes - created
+
+
+def user_has_invite_codes_remaining(user: User) -> bool:
+    return available_invite_codes_for_user(user) > 0
+
+
+def user_level(user: User) -> int:
+    level, _ = misc.get_user_level(user.uid)
+    return level
+
+
+def http_status_ok(response) -> bool:
+    """Test if response HTTP status was 200 OK."""
+    return response.status == "200 OK"
+
+
+def parse_json_response_body(response) -> dict:
+    return json.loads(response.data.decode("utf-8"))
+
+
+def check_json_status(response, expected_status: str) -> bool:
+    """Check the status field in the JSON contains the expected string."""
+    json_data = parse_json_response_body(response)
+    return json_data["status"] == expected_status
+
+
+def check_json_errors(response, *expected_error_messages: str) -> bool:
+    """Check that the expected error messages appear in the JSON."""
+    json_data = parse_json_response_body(response)
+    expected_errors = set(expected_error_messages)
+
+    error_data = json_data["error"]
+    if isinstance(error_data, list):
+        received_errors = set(error_data)
+    elif isinstance(error_data, str):
+        received_errors = {error_data}
+    else:
+        raise ValueError(f"Unexpected type for 'error': {type(error_data)}.")
+
+    return expected_errors.issubset(received_errors)
+
+
+def json_status_ok(response) -> bool:
+    """Test if the JSON body in the response has a status of 'ok'."""
+    return check_json_status(response, "ok")
+
+
+def json_status_error(response, *expected_errors: str) -> bool:
+    """Test if the JSON body in the response has a status of 'error'."""
+    return check_json_status(response, "error") and check_json_errors(
+        response, *expected_errors
+    )
+
+
+def current_announcement_pid() -> int:
+    """Get the pid of the currently announced post as an integer."""
+    return int(misc.getAnnouncementPid().value)

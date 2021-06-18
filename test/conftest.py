@@ -1,8 +1,10 @@
 import bcrypt
+from flask_wtf.csrf import generate_csrf
 from functools import lru_cache, wraps
 import os
 import pytest
 from pyrsistent import freeze, thaw
+import unittest.mock as mock
 import yaml
 
 from app import create_app
@@ -11,7 +13,12 @@ from app.models import db, BaseModel, User, SiteMetadata
 from app.caching import cache
 from app.auth import auth_provider
 
-from test.utilities import recursively_update, add_config_to_site_metadata
+from test.factories import AdminFactory, UserFactory
+from test.utilities import (
+    force_log_in,
+    recursively_update,
+    add_config_to_site_metadata,
+)
 
 
 @pytest.fixture
@@ -134,3 +141,28 @@ def user2_info():
     return dict(
         username="administrator", email="admin@example.com", password="999aaaAAA###"
     )
+
+
+@pytest.fixture
+def a_user(client):
+    user = UserFactory.create()
+    force_log_in(user, client)
+    return user
+
+
+@pytest.fixture
+def an_admin(client):
+    user = AdminFactory.create()
+    force_log_in(user, client)
+    return user
+
+
+@pytest.fixture
+def csrf_token(client):
+    """Returns a valid CSRF token that is stored in the session."""
+    # Grab a handle to the session to be used by the client.
+    with client.session_transaction() as session:
+        # Patch out flask_wtf's session with one we control.
+        with mock.patch("flask_wtf.csrf.session", new=session):
+            # flask_wtf places the CSRF token into our session.
+            return generate_csrf()
