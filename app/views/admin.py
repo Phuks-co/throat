@@ -184,7 +184,7 @@ def index():
         comms=comms,
         subOfTheDay=subOfTheDay,
         useinvitecodeform=invite,
-        deleteAnnouncementForm=DummyForm(),
+        csrf_form=DummyForm(),
     )
 
 

@@ -33,7 +33,7 @@ from ..forms import SearchForm, EditMod2Form, SetSubOfTheDayForm, AssignSubUserF
 from ..forms import DeleteSubFlair, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm, DistinguishForm
 from ..forms import BanDomainForm, SetOwnUserFlairForm, ChangeConfigSettingForm
-from ..forms import AnnouncePostForm
+from ..forms import AnnouncePostForm, LiteralBooleanForm
 from ..badges import badges
 from ..misc import (
     cache,
@@ -2171,15 +2171,17 @@ def remove_banned_domain(domain_type, domain):
     return json.dumps({"status": "ok"})
 
 
-@do.route("/do/admin/enable_posting/<value>")
+@do.route("/do/admin/enable_posting", methods=["POST"])
 @login_required
-def enable_posting(value):
+def enable_posting():
     """ Emergency Mode: disable posting """
     if not current_user.is_admin():
         abort(404)
-    if value not in ["True", "False"]:
-        return abort(400)
-    state = value == "True"
+
+    form = LiteralBooleanForm()
+    if not form.validate():
+        abort(400)
+    state = form.value.data
 
     config.update_value("site.enable_posting", state)
     misc.create_sitelog(
@@ -2191,15 +2193,17 @@ def enable_posting(value):
     return redirect(url_for("admin.index"))
 
 
-@do.route("/do/admin/enable_registration/<value>")
+@do.route("/do/admin/enable_registration", methods=["POST"])
 @login_required
-def enable_registration(value):
+def enable_registration():
     """ Isolation Mode: disable registration """
     if not current_user.is_admin():
         abort(404)
-    if value not in ["True", "False"]:
-        return abort(400)
-    state = value == "True"
+
+    form = LiteralBooleanForm()
+    if not form.validate():
+        abort(400)
+    state = form.value.data
 
     config.update_value("site.enable_registration", state)
     misc.create_sitelog(
@@ -2211,15 +2215,17 @@ def enable_registration(value):
     return redirect(url_for("admin.index"))
 
 
-@do.route("/do/admin/require_captchas/<value>")
+@do.route("/do/admin/require_captchas", methods=["POST"])
 @login_required
-def enable_captchas(value):
+def enable_captchas():
     """ Enable or disable the captcha solving requirement. """
     if not current_user.is_admin():
-        return abort(404)
-    if value not in ["True", "False"]:
-        return abort(400)
-    state = value == "True"
+        abort(404)
+
+    form = LiteralBooleanForm()
+    if not form.validate():
+        abort(400)
+    state = form.value.data
 
     config.update_value("site.require_captchas", state)
     misc.create_sitelog(
