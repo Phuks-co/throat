@@ -8,7 +8,7 @@ import uuid
 import random
 from collections import defaultdict
 from flask import Blueprint, redirect, url_for, session, abort, jsonify, current_app
-from flask import request
+from flask import request, flash, Markup
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_babel import _
 from itsdangerous import URLSafeTimedSerializer
@@ -23,7 +23,7 @@ from ..auth import (
     AuthError,
     normalize_email,
 )
-from ..forms import LogOutForm, CreateSubFlair, DummyForm, CreateSubRule
+from ..forms import LogOutForm, CreateSubFlair, CsrfTokenOnlyForm, CreateSubRule
 from ..forms import EditSubForm, EditUserForm, EditSubCSSForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
@@ -33,6 +33,7 @@ from ..forms import SearchForm, EditMod2Form, SetSubOfTheDayForm, AssignSubUserF
 from ..forms import DeleteSubFlair, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm, DistinguishForm
 from ..forms import BanDomainForm, SetOwnUserFlairForm, ChangeConfigSettingForm
+from ..forms import AnnouncePostForm, LiteralBooleanForm
 from ..badges import badges
 from ..misc import (
     cache,
@@ -737,7 +738,7 @@ def assign_post_flair(sub, pid, fl):
     except SubPost.DoesNotExist:
         return jsonify(status="error", error=[_("Post does not exist")])
 
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if form.validate():
         if current_user.is_mod(sub.sid) or (
             post.uid_id == current_user.uid and sub.get_metadata("ucf")
@@ -886,7 +887,7 @@ def subscribe_to_sub(sid):
     if current_user.has_subscribed(sid):
         return jsonify(status="ok", message=_("already subscribed"))
 
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if form.validate():
         if current_user.has_blocked(sid):
             ss = SubSubscriber.get(
@@ -916,7 +917,7 @@ def unsubscribe_from_sub(sid):
     if not current_user.has_subscribed(sid):
         return jsonify(status="ok", message=_("not subscribed"))
 
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if form.validate():
         ss = SubSubscriber.get(
             (SubSubscriber.uid == current_user.uid)
@@ -942,7 +943,7 @@ def block_sub(sid):
     if current_user.has_blocked(sid):
         return jsonify(status="ok", message=_("already blocked"))
 
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if form.validate():
         if current_user.has_subscribed(sub.name):
             ss = SubSubscriber.get(
@@ -972,7 +973,7 @@ def unblock_sub(sid):
     if not current_user.has_blocked(sid):
         return jsonify(status="ok", message=_("sub not blocked"))
 
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if form.validate():
         ss = SubSubscriber.get(
             (SubSubscriber.uid == current_user.uid)
@@ -1640,7 +1641,7 @@ def remove_sub_ban(sub, user):
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if form.validate():
         if current_user.is_mod(sub.sid, 2) or current_user.is_admin():
             try:
@@ -1743,7 +1744,7 @@ def remove_mod2(sub, user):
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if form.validate():
         isTopMod = current_user.is_mod(sub.sid, 0)
         if (
@@ -1792,7 +1793,7 @@ def revoke_mod2inv(sub, user):
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if form.validate():
         isTopMod = current_user.is_mod(sub.sid, 0)
         if isTopMod or current_user.is_admin():
@@ -1833,7 +1834,7 @@ def accept_modinv(sub, user):
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if form.validate():
         try:
             modi = SubMod.get(
@@ -1886,7 +1887,7 @@ def refuse_mod2inv(sub):
     except Sub.DoesNotExist:
         return jsonify(status="error", error=[_("Sub does not exist")])
 
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if form.validate():
         try:
             modi = SubMod.get(
@@ -2041,12 +2042,16 @@ def save_pm(mid):
         return jsonify(status="error", error=_("Message does not exist"))
 
 
-@do.route("/do/admin/deleteannouncement")
+@do.route("/do/admin/deleteannouncement", methods=["POST"])
 @login_required
 def deleteannouncement():
     """ Removes the current announcement """
     if not current_user.is_admin():
         abort(403)
+
+    form = CsrfTokenOnlyForm()
+    if not form.validate():
+        abort(400)
 
     try:
         ann = SiteMetadata.get(SiteMetadata.key == "announcement")
@@ -2054,6 +2059,7 @@ def deleteannouncement():
     except SiteMetadata.DoesNotExist:
         return redirect(url_for("admin.index"))
 
+    flash(_("Removed announcement") + f": {Markup.escape(post.title)}")
     ann.delete_instance()
     misc.create_sitelog(
         misc.LOG_TYPE_UNANNOUNCE,
@@ -2067,17 +2073,18 @@ def deleteannouncement():
 
 
 @do.route("/do/makeannouncement", methods=["POST"])
+@login_required
 def make_announcement():
     """ Flagging post as announcement - not api """
     if not current_user.is_admin():
         abort(403)
 
-    form = DeletePost()
+    form = AnnouncePostForm()
 
     if form.validate():
         try:
             curr_ann = SiteMetadata.get(SiteMetadata.key == "announcement")
-            if curr_ann.value == form.post.data:
+            if int(curr_ann.value) == form.post.data:
                 return jsonify(status="error", error=_("Post already announced"))
             deleteannouncement()
         except SiteMetadata.DoesNotExist:
@@ -2167,14 +2174,17 @@ def remove_banned_domain(domain_type, domain):
     return json.dumps({"status": "ok"})
 
 
-@do.route("/do/admin/enable_posting/<value>")
-def enable_posting(value):
+@do.route("/do/admin/enable_posting", methods=["POST"])
+@login_required
+def enable_posting():
     """ Emergency Mode: disable posting """
     if not current_user.is_admin():
         abort(404)
-    if value not in ["True", "False"]:
-        return abort(400)
-    state = value == "True"
+
+    form = LiteralBooleanForm()
+    if not form.validate():
+        abort(400)
+    state = form.value.data
 
     config.update_value("site.enable_posting", state)
     misc.create_sitelog(
@@ -2186,14 +2196,17 @@ def enable_posting(value):
     return redirect(url_for("admin.index"))
 
 
-@do.route("/do/admin/enable_registration/<value>")
-def enable_registration(value):
+@do.route("/do/admin/enable_registration", methods=["POST"])
+@login_required
+def enable_registration():
     """ Isolation Mode: disable registration """
     if not current_user.is_admin():
         abort(404)
-    if value not in ["True", "False"]:
-        return abort(400)
-    state = value == "True"
+
+    form = LiteralBooleanForm()
+    if not form.validate():
+        abort(400)
+    state = form.value.data
 
     config.update_value("site.enable_registration", state)
     misc.create_sitelog(
@@ -2205,14 +2218,17 @@ def enable_registration(value):
     return redirect(url_for("admin.index"))
 
 
-@do.route("/do/admin/require_captchas/<value>")
-def enable_captchas(value):
+@do.route("/do/admin/require_captchas", methods=["POST"])
+@login_required
+def enable_captchas():
     """ Enable or disable the captcha solving requirement. """
     if not current_user.is_admin():
-        return abort(404)
-    if value not in ["True", "False"]:
-        return abort(400)
-    state = value == "True"
+        abort(404)
+
+    form = LiteralBooleanForm()
+    if not form.validate():
+        abort(400)
+    state = form.value.data
 
     config.update_value("site.require_captchas", state)
     misc.create_sitelog(
@@ -2290,11 +2306,14 @@ def use_invite_code():
     return jsonify(status="ok")
 
 
-@do.route("/do/create_invite")
+@do.route("/do/create_invite", methods=["POST"])
 @login_required
 def invite_codes():
     if not config.site.require_invite_code:
         return redirect("/settings")
+
+    if not CsrfTokenOnlyForm().validate():
+        abort(400)
 
     created = InviteCode.select().where(InviteCode.user == current_user.uid).count()
     maxcodes = int(misc.getMaxCodes(current_user.uid))
@@ -2817,7 +2836,7 @@ def undelete_comment():
 @do.route("/do/vote/<pid>/<value>", methods=["POST"])
 def upvote(pid, value):
     """ Logs an upvote to a post. """
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if not form.validate():
         return json.dumps({"status": "error", "error": get_errors(form)}), 400
     if not current_user.is_authenticated:
@@ -2829,7 +2848,7 @@ def upvote(pid, value):
 @do.route("/do/votecomment/<cid>/<value>", methods=["POST"])
 def upvotecomment(cid, value):
     """ Logs an upvote to a post. """
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if not form.validate():
         return json.dumps({"status": "error", "error": get_errors(form)})
 
@@ -2942,7 +2961,7 @@ def get_sibling(pid, cid, lim):
 @login_required
 def preview():
     """ Returns parsed markdown. Used for post and comment previews. """
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if form.validate():
         if request.json.get("text"):
             return jsonify(
@@ -3129,7 +3148,7 @@ def sub_upload_delete(sub, name):
         sub = Sub.get(fn.Lower(Sub.name) == sub.lower())
     except Sub.DoesNotExist:
         jsonify(status="error")  # descriptive errors where?
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if not form.validate():
         return redirect(url_for("sub.edit_sub_css", sub=sub.name))
     if not current_user.is_mod(sub.sid, 1) and not current_user.is_admin():
@@ -3178,7 +3197,7 @@ def delete_question(xid):
     if not current_user.is_admin():
         abort(403)
 
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if not form.validate():
         return jsonify(status="error")
     try:
@@ -3197,7 +3216,7 @@ def ban_user(username):
     if not current_user.is_admin():
         return abort(403)
 
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if not form.validate():
         return abort(403)
 
@@ -3244,7 +3263,7 @@ def unban_user(username):
     if not current_user.is_admin():
         return abort(403)
 
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if not form.validate():
         return abort(403)
 
@@ -3290,7 +3309,7 @@ def unban_user(username):
 @do.route("/do/edit_top_bar", methods=["POST"])
 @login_required
 def edit_top_bar():
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if not form.validate():
         return jsonify(status="error", error="no CSRF")
 
@@ -3330,7 +3349,7 @@ def admin_undo_votes(uid):
     except User.DoesNotExist:
         return abort(404)
 
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if not form.validate():
         return redirect(url_for("user.view", user=user.name))
 
@@ -3397,7 +3416,7 @@ def admin_undo_votes(uid):
 @do.route("/do/cast_vote/<pid>/<oid>", methods=["POST"])
 @login_required
 def cast_vote(pid, oid):
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if form.validate():
         try:
             post = misc.getSinglePost(pid)
@@ -3460,7 +3479,7 @@ def cast_vote(pid, oid):
 @do.route("/do/remove_vote/<pid>", methods=["POST"])
 @login_required
 def remove_vote(pid):
-    form = DummyForm()
+    form = CsrfTokenOnlyForm()
     if form.validate():
         try:
             post = misc.getSinglePost(pid)

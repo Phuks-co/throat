@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(codes, avail)
+@require(codes, avail, csrf_form)
 @def sidebar():
   @include('shared/sidebar/user.html')
 @end
@@ -8,8 +8,11 @@
 <div id="container">
   <h2>@{_('Invite codes')}</h2>
   @if avail > 0:
-    @{_('You can create <b>%(num)i</b> invite codes.', num=avail)!!html}
-    <a href="/do/create_invite" class="pure-button pure-button-primary">@{_('Create new')}</a>
+    <form action="@{ url_for('do.invite_codes') }" method="post" id="createinvite">
+      @{_('You can create <b>%(num)i</b> invite codes.', num=avail)!!html}
+      @{ csrf_form.csrf_token()!!html }
+      <input type="submit" name="createinvite-button" class="pure-button pure-button-primary" value="@{_('Create new')}">
+    </form>
   @else:
     @{_('You cannot create invite codes.')}
   @end
@@ -40,7 +43,7 @@
           @else:
             @{_('N/A')}
           @end
-         
+
         </td>
         <td>
           @{code.uses}
