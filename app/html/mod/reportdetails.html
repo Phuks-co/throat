@@ -96,7 +96,7 @@ Mod |\
             @end
             @if current_user.is_admin() and reported_user.status != 5:
                 <form method="POST" data-reload="true" id="banuser" action="@{url_for('do.ban_user', username=report['reported'])}">
-                    @{form.DummyForm().csrf_token()!!html}
+                    @{form.CsrfTokenOnlyForm().csrf_token()!!html}
                   <a id="banuser-button" class="sbm-post pure-button button-secondary" >@{_('Ban %(reported)s from %(site)s', reported=report['reported'], site=config.site.name)}</a>
                 </form>
             @end

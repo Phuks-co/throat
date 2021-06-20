@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, TextAreaField, FileField
 from wtforms import IntegerField, RadioField, FieldList, SelectField
 from wtforms import HiddenField
-from wtforms.validators import DataRequired, Length, Regexp
+from wtforms.validators import DataRequired, InputRequired, Length, Regexp
 from flask_babel import lazy_gettext as _l
 
 
@@ -118,3 +118,26 @@ class SetSubOfTheDayForm(FlaskForm):
 class ChangeConfigSettingForm(FlaskForm):
     setting = HiddenField()
     value = StringField()
+
+
+class LiteralBooleanField(SelectField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            *args,
+            choices=["True", "False"],
+            coerce=self._literally_true_or_false,
+            validators=[InputRequired()],
+            **kwargs,
+        )
+
+    @staticmethod
+    def _literally_true_or_false(value: str) -> bool:
+        if value == "True":
+            return True
+        elif value == "False":
+            return False
+        raise ValueError("Value is not either 'True' or 'False'.")
+
+
+class LiteralBooleanForm(FlaskForm):
+    value = LiteralBooleanField()
