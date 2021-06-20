@@ -55,13 +55,17 @@ def create_thumbnail_async(link, store):
     typ, dat = fetch_image_data(link)
     if dat is not None:
         if typ == "image":
+            logger.debug("Generating thumbnail for %s", link)
             img = Image.open(BytesIO(dat)).convert("RGB")
         else:  # favicon
+            logger.debug("Generating thumbnail from favicon at %s", link)
             im = Image.open(BytesIO(dat))
             n_im = Image.new("RGBA", im.size, "WHITE")
             n_im.paste(im, (0, 0), im)
             img = n_im.convert("RGB")
         result = thumbnail_from_img(img)
+    else:
+        logger.debug("No image data found at %s", link)
     for model, field, value in store:
         model.update(thumbnail=result).where(getattr(model, field) == value).execute()
         token = "-".join([model.__name__, str(value)])
@@ -76,8 +80,11 @@ def fetch_image_data(link):
     """ Try to fetch image data from a URL , and return it, or None. """
     # 1 - Check if it's an image
     try:
-        resp, data = safe_request(link)
-    except (requests.exceptions.RequestException, ValueError):
+        resp, data = safe_request(link, receive_timeout=60)
+    except (requests.exceptions.RequestException, ValueError) as err:
+        logger.debug(
+            "Thumbnail task failed to fetch image data from %s: %s", link, str(err)
+        )
         return None, None
     ctype = resp.headers.get("content-type", "").split(";")[0].lower()
     if ctype in ["image/gif", "image/jpeg", "image/png"]:
@@ -110,13 +117,13 @@ def fetch_image_data(link):
             return None, None
         try:
             img = urljoin(link, og("meta", {"property": "og:image"})[0].get("content"))
-            _, image = safe_request(img)
+            _, image = safe_request(img, receive_timeout=60)
             return "image", image
         except (OSError, ValueError, IndexError):
             # no image, try fetching just the favicon then
             try:
                 img = urljoin(link, og("link", {"rel": "icon"})[0].get("href"))
-                _, icon = safe_request(img)
+                _, icon = safe_request(img, receive_timeout=60)
                 return "favicon", icon
             except (OSError, ValueError, IndexError):
                 return None, None

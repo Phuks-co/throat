@@ -1,6 +1,4 @@
 """ Store and serve uploads and thumbnails. """
-import os
-import tempfile
 import uuid
 import pathlib
 
@@ -13,8 +11,9 @@ from PIL import Image, TiffImagePlugin
 from contextlib import ExitStack
 import hashlib
 import jinja2
+from werkzeug.datastructures import FileStorage
 
-from flask import request, url_for
+from flask import current_app, request, url_for
 from flask_babel import _
 from flask_login import current_user
 from flask_cloudy import Storage
@@ -72,14 +71,16 @@ class S3Storage:
     def delete(self, filename):
         self.s3.delete_object(Bucket=self.container, Key=filename)
 
-    def upload(self, fullpath, name=None, **kwargs):
+    def upload(self, fileobj, name=None, **kwargs):
         if "acl" in kwargs:
             kwargs["ACL"] = kwargs["acl"]
             del kwargs["acl"]
         if "content_type" in kwargs:
             kwargs["ContentType"] = kwargs["content_type"]
             del kwargs["content_type"]
-        self.s3.upload_file(fullpath, Bucket=self.container, Key=name, ExtraArgs=kwargs)
+        self.s3.upload_fileobj(
+            fileobj, Bucket=self.container, Key=name, ExtraArgs=kwargs
+        )
         return Objectview({"name": name})
 
 
@@ -130,11 +131,13 @@ def thumbnail_url(name):
         return make_url(stg, config.storage.thumbnails, name)
 
 
-def clear_metadata(path: str, mime_type: str):
+def clear_metadata(fileobj: FileStorage, mime_type: str):
+    resultIO = FileStorage()
+    fileobj.seek(0)
     if mime_type in ("image/jpeg", "image/png"):
-        image = Image.open(path)
+        image = Image.open(fileobj)
         if not image.info.get("exif"):
-            return image.save(path)
+            return fileobj
         exifdata = Exif()
         exifdata.load(image.info["exif"])
         # XXX: We want to remove all EXIF data except orientation (tag 274) or people will start seeing
@@ -149,14 +152,16 @@ def clear_metadata(path: str, mime_type: str):
             if tag == 274:
                 ifd[tag] = value
         newExif = b"Exif\x00\x00" + head + ifd.tobytes(8)
-        image.save(path, exif=newExif)
+        image.save(resultIO, exif=newExif)
+        return resultIO
     elif mime_type == "video/mp4":
-        video = MP4(path)
+        video = MP4(fileobj)
         video.clear()
-        video.save()
+        video.save(resultIO)
+        return resultIO
     elif mime_type == "video/webm":
         # XXX: Mutagen doesn't seem to support webm files
-        pass
+        return fileobj
 
 
 def upload_file():
@@ -215,27 +220,19 @@ def store_file(ufile, basename, mtype, remove_metadata=False):
     filename = basename + _extensions[mtype]
     try:
         if storage.get(filename) is not None:
+            current_app.logger.debug("Found in stored files: %s", filename)
             return filename
     except libcloud.storage.types.ContainerDoesNotExistError:
         pathlib.Path(config.storage.uploads.path).mkdir(exist_ok=True)
 
+    if remove_metadata:
+        ufile = clear_metadata(ufile, mtype)
     ufile.seek(0)
-    with tempfile.TemporaryDirectory() as tempdir:
-        fullpath = os.path.join(tempdir, filename)
-        try:
-            ufile.save(fullpath)
-            # FIXME: Broad except
-        except:  # noqa
-            b = ufile.read()
-            with open(fullpath, mode="w") as tf:
-                tf.write(b)
-        if remove_metadata:
-            clear_metadata(fullpath, mtype)
-
-        # TODO probably there are errors that need handling
-        return storage.upload(
-            fullpath, name=filename, acl=config.storage.acl, content_type=mtype
-        ).name
+    ufile.filename = filename
+    current_app.logger.debug("Adding %s to stored files", filename)
+    return storage.upload(
+        ufile, name=filename, acl=config.storage.acl, content_type=mtype
+    ).name
 
 
 def get_stored_file_size(filename):
@@ -249,6 +246,7 @@ def get_stored_file_size(filename):
 
 
 def remove_file(filename):
+    current_app.logger.debug("Removing %s from stored files", filename)
     if isinstance(storage, S3Storage):
         storage.delete(filename)
     else:
@@ -262,17 +260,19 @@ def store_thumbnail(im, basename):
     def find_existing_or_store_new(storage, im, filename):
         obj = storage.get(filename)
         if obj is not None:
+            current_app.logger.debug("Found in stored thumbnails: %s", filename)
             return obj.name
         else:
-            with tempfile.TemporaryDirectory() as tempdir:
-                fullpath = os.path.join(tempdir, filename)
-                im.save(fullpath, "JPEG", optimize=True, quality=85)
-                return storage.upload(
-                    fullpath,
-                    name=filename,
-                    acl=config.storage.acl,
-                    content_type="image/jpeg",
-                ).name
+            tempIO = FileStorage(filename=filename)
+            im.save(tempIO, "JPEG", optimize=True, quality=85)
+            tempIO.seek(0)
+            current_app.logger.debug("Adding %s to stored thumbnails", filename)
+            return storage.upload(
+                tempIO,
+                name=filename,
+                acl=config.storage.acl,
+                content_type="image/jpeg",
+            ).name
 
     filename = basename + ".jpg"
     with ExitStack() as stack:
