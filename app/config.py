@@ -323,6 +323,14 @@ configurable_defaults = {
                 "doc": _l("Require an invite code to register."),
                 "value": False,
             },
+            "notifications_on_icon": {
+                "type": "bool",
+                "doc": _l(
+                    "If enabled, show the notification count on the page title icon.  "
+                    "Otherwise, show the notification count in parentheses in the page title."
+                ),
+                "value": True,
+            },
         },
     },
     "storage": {
