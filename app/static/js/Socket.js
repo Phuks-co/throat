@@ -8,14 +8,18 @@ RegExp.escape= function(s) {
     return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 };
 
-Tinycon.setOptions({
-    height: 11,
-	font: '10px arial',
-	color: '#ffffff',
-	background: '#000000',
-	fallback: true
-});
+function setupTinycon () {
+  const valueElem = document.getElementById("pagefoot-notifications-icon");
+  const onIcon = !valueElem || (valueElem.getAttribute("data-value") == "True");
 
+  Tinycon.setOptions({
+    height: 11,
+    font: '10px arial',
+    color: '#ffffff',
+    background: '#000000',
+    fallback: onIcon ? true : "force"
+  });
+}
 
 const socket = io('///snt', {transports: ['websocket'], upgrade: false});
 
@@ -57,6 +61,7 @@ function updateTitleNotifications() {
     count += Number(modcount.innerHTML);
   }
 
+  setupTinycon();
   Tinycon.setBubble(count)
 }
 
