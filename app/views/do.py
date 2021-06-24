@@ -1206,6 +1206,14 @@ def create_comment(pid):
         if pid == "0":
             pid = form.post.data
 
+        if not current_user.is_admin() and not config.site.enable_posting:
+            return (
+                jsonify(
+                    status="error", error=[_("Posting has been temporarily disabled")]
+                ),
+                400,
+            )
+
         try:
             post = SubPost.get(SubPost.pid == pid)
         except SubPost.DoesNotExist:
