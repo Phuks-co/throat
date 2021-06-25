@@ -68,14 +68,14 @@
             {{ csrf_form.csrf_token() }}
             <input type="hidden" name="value" value="False">
             <div><label for="disableposting-button">Disable posting for non-admin users</label></div>
-            <input type="submit" name="disableposting-button" class="pure-button button-warning" value="Disable Posting">
+            <input type="submit" id="disableposting-button" class="pure-button button-warning" value="Disable Posting">
           </form>
           {% else %}
           <form method="POST" id="enableposting" action="{{ url_for('do.enable_posting') }}">
             {{ csrf_form.csrf_token() }}
             <input type="hidden" name="value" value="True">
             <div><label for="enableposting-button">Enable posting for non-admin users</label></div>
-            <input type="submit" name="enableposting-button" class="pure-button button-warning" value="Enable Posting">
+            <input type="submit" id="enableposting-button" class="pure-button button-error" value="Enable Posting">
           </form>
           {% endif %}
         </div>
@@ -90,14 +90,14 @@
             {{ csrf_form.csrf_token() }}
             <input type="hidden" name="value" value="False">
             <div><label for="disableregistration-button">Disable registration for new users</label></div>
-            <input type="submit" name="disableregistration-button" class="pure-button button-warning" value="Disable Registration">
+            <input type="submit" id="disableregistration-button" class="pure-button button-warning" value="Disable Registration">
           </form>
           {% else %}
           <form method="POST" id="enableregistration" action="{{ url_for('do.enable_registration') }}">
             {{ csrf_form.csrf_token() }}
             <input type="hidden" name="value" value="True">
             <div><label for="enableregistration-button">Enable registration for new users</label></div>
-            <input type="submit" id="enableregistration-button" class="pure-button button-warning" value="Enable Registration">
+            <input type="submit" id="enableregistration-button" class="pure-button button-error" value="Enable Registration">
           </form>
           {% endif %}
         </div>
@@ -112,14 +112,14 @@
             {{ csrf_form.csrf_token() }}
             <input type="hidden" name="value" value="False">
             <div><label for="disablecaptchas-button">Disable captchas for registration, password recovery and post creation</label></div>
-            <input type="submit" name="disablecaptchas-button" class="pure-button button-error" value="Disable Captchas">
+            <input type="submit" id="disablecaptchas-button" class="pure-button button-error" value="Disable Captchas">
           </form>
           {% else %}
           <form method="POST" id="enablecaptchas" action="{{ url_for('do.enable_captchas') }}">
             {{ csrf_form.csrf_token() }}
             <input type="hidden" name="value" value="True">
             <div><label for="enablecaptchas-button">Enable captchas for registration, password recovery and post creation</label></div>
-            <input type="submit" name="disablecaptchas-button" class="pure-button button-error" value="Enable Captchas">
+            <input type="submit" id="disablecaptchas-button" class="pure-button button-warning" value="Enable Captchas">
           </form>
           {% endif %}
         </div>
