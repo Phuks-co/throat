@@ -268,9 +268,7 @@
     </div>
   @end
 
-  @if (post['ptype'] == 3) and (post['deleted'] == 0 or post['visibility'] == 'admin-self-del' or post['visibility'] == 'mod-del' or post['visibility'] == 'user-self-del'):
-    <span class="@{post['blur']}">@{polls.renderPoll(pollData, postmeta, post)!!html}</span>
-  @end
+
   <div>
   @if post['content']:
   <div>
@@ -298,7 +296,7 @@
   @end
 
   @if (post['ptype'] == 3) and (post['deleted'] == 0 or post['visibility'] == 'admin-self-del' or post['visibility'] == 'mod-del' or post['visibility'] == 'user-self-del'):
-  @{polls.renderPoll(pollData, postmeta, post)!!html}
+    <span class="@{post['blur']}">@{polls.renderPoll(pollData, postmeta, post)!!html}</span>
   @end
 
   @if content_history and post['content'] and  (post['visibility'] != 'none' and  post['visibility'] != 'mod-self-del'):
