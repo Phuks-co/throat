@@ -80,7 +80,7 @@
           </div>
         @end
 
-        <h4>Post flairs</h4>
+        <h4>Tagy príspevkov</h4>
         <div class="pure-control-group">
           <label for="usercanflair" class="pure-checkbox">
             @{editsubform.usercanflair(checked=True if metadata.get('ucf') else False)!!html}
@@ -88,7 +88,7 @@
           </label>
         </div>
 
-        <h4>User flairs</h4>
+        <h4>Tagy používateľov</h4>
         <div class="pure-control-group">
           <label for="user_can_flair_self" class="pure-checkbox">
             @{editsubform.user_can_flair_self(checked=True if metadata.get('user_can_flair_self') else False)!!html}
