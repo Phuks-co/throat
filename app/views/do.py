@@ -1167,7 +1167,7 @@ def edit_txtpost(pid):
         if current_user.is_subban(post.sid):
             return jsonify(status="error", error=[_("You are banned on this sub.")])
 
-        if post.is_archived():
+        if misc.is_archived(post):
             return jsonify(status="error", error=[_("Post is archived")])
 
         dt = datetime.datetime.utcnow()
@@ -1221,7 +1221,7 @@ def create_comment(pid):
         if post.deleted:
             return jsonify(status="error", error=[_("Post was deleted")]), 400
 
-        if post.is_archived():
+        if misc.is_archived(post):
             return jsonify(status="error", error=[_("Post is archived")]), 400
 
         postmeta = misc.metadata_to_dict(
@@ -2708,7 +2708,7 @@ def edit_comment():
                 status="error", error=_("You can't edit a comment on a deleted post")
             )
 
-        if post.is_archived():
+        if misc.is_archived(post):
             return jsonify(status="error", error=_("Post is archived"))
 
         dt = datetime.datetime.utcnow()

@@ -250,6 +250,14 @@ configurable_defaults = {
                 "doc": _l("Number of days after which posts will be archived."),
                 "value": 60,
             },
+            "archive_sticky_posts": {
+                "type": "bool",
+                "doc": _l(
+                    "When enabled, archive sticky posts after 'archive_post_after' days, "
+                    "the same as regular posts. When disabled, sticky posts will not be archived."
+                ),
+                "value": True,
+            },
             "recent_activity": {
                 "type": "map",
                 "value": {

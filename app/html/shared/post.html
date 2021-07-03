@@ -3,7 +3,7 @@
 <div pid="@{post['pid']}" class="post @{(post['distinguish'] == 1 and 'mod' or '')} @{(post['distinguish'] == 2 and 'admin' or '')}">
     <div class="misctainer">
       <div class="votebuttons">
-        @if post['userstatus'] != 10 and (datetime.datetime.utcnow() - post['posted'].replace(tzinfo=None)) < datetime.timedelta(days=config.site.archive_post_after):
+        @if post['userstatus'] != 10 and not func.is_archived(post):
         <div title="@{_('Upvote')}" class="upvote @{(post.get('positive') == 1) and 'upvoted' or ''}" data-pid="@{post['pid']}" data-icon="upvote"></div>
         <div class="score">@{post['score']}</div>
         <div title="@{_('Downvote')}" class="downvote @{(post.get('positive') == 0) and 'downvoted' or ''}" data-pid="@{post['pid']}" data-icon="downvote"></div>
