@@ -90,14 +90,23 @@ You can check out the [CDK Definition of Infrastructure](https://gitlab.com/femi
 ### Python tests
 
 1. Python, redis, and libmagic are required, but node and postgres are not.
+
 2. Install dependencies with `pip install -r requirements.txt`
+
 3. Run the tests with `python -m pytest`
+
 4. The tests are not affected by your configuration in `config.yaml`.
 If you wish to run the tests against production database or
 authentication servers (instead of the defaults, which are sqlite and
 local authentication), you may put configuration settings in
 `test_config.yaml` and run the tests with
-`TEST_CONFIG=test_config.yaml python -m pytest`
+`TEST_CONFIG=test_config.yaml python -m pytest`.  The tests *will
+erase* the database supplied in the test configuration.  You can also
+supply a logging configuration in `test_config.yaml` and then `pytest`
+will show you the logs from failing tests.
+
+Note: The tests currently work with Postgres and Sqlite.  Testing with
+MySQL is not yet supported.
 
 ### Testing under Docker
 

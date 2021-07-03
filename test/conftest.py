@@ -54,18 +54,17 @@ def get_app(frozen_config_dict):
     return app, config
 
 
-# The fixture "client" is generated from this one by pytest-flask.
 @pytest.fixture
-def app(test_config):
-    """Create the Flask app."""
+def app_before_init_db(test_config):
+    """Create the Flask app with an uninitialized database."""
     db_name = ":memory:"
 
     config_filename = os.environ.get("TEST_CONFIG", None)
     if config_filename is None:
-        config = {}
+        custom_config = {}
     else:
         with open(config_filename) as stream:
-            config = yaml.safe_load(stream)
+            custom_config = yaml.safe_load(stream)
 
     # Set some things that make sense for testing.
     test_defaults = {
@@ -86,13 +85,32 @@ def app(test_config):
         "ratelimit": {"enabled": False},
     }
 
+    config = {}
     recursively_update(config, test_defaults)
+    recursively_update(config, custom_config)
     recursively_update(config, test_config)
 
     app, conf_obj = get_app(config)
     app_context = app.app_context()
     app_context.push()
+
+    yield app, conf_obj
+
+    app_context.pop()
+
+
+# The fixture "client" is generated from this one by pytest-flask.
+@pytest.fixture
+def app(app_before_init_db):
+    """Create the Flask app with an intialized database."""
+    app, conf_obj = app_before_init_db
     cache.clear()
+
+    if conf_obj.database.engine == "PostgresqlDatabase":
+        db.execute_sql("DROP SCHEMA public CASCADE;")
+        db.execute_sql("CREATE SCHEMA public;")
+        db.execute_sql("GRANT ALL ON SCHEMA public TO public;")
+
     db.create_tables(BaseModel.__subclasses__())
     add_config_to_site_metadata(conf_obj)
 
@@ -106,8 +124,8 @@ def app(test_config):
                 print(f"Error trying to clean up {user.name} in Keycloak realm:", err)
                 raise err
 
-    db.detach(db_name)
-    app_context.pop()
+    if conf_obj.database.engine == "Sqlitedatabase":
+        db.detach(conf_obj.database.name)
 
 
 @pytest.fixture(autouse=True)
