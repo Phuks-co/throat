@@ -518,6 +518,7 @@ def delete_post(sub, pid):
             comment=reason,
             link=url_for("site.view_post_inbox", pid=post.pid),
             admin=False,
+            target=post.uid,
         )
 
     if (datetime.datetime.utcnow() - post.posted.replace(tzinfo=None)).seconds < 86400:
