@@ -331,6 +331,51 @@ configurable_defaults = {
                 ),
                 "value": True,
             },
+            "nsfw": {
+                "type": "map",
+                "value": {
+                    "anon": {
+                        "type": "map",
+                        "value": {
+                            "show": {
+                                "type": "bool",
+                                "doc": _l(
+                                    "If enabled, show NSFW content to anonymous users."
+                                ),
+                                "value": True,
+                            },
+                            "blur": {
+                                "type": "bool",
+                                "doc": _l(
+                                    "If enabled, and 'site.nsfw.anon.show' is also enabled, blur NSFW content "
+                                    "when it is shown to anonymous users."
+                                ),
+                                "value": True,
+                            },
+                        },
+                    },
+                    "new_user_default": {
+                        "type": "map",
+                        "value": {
+                            "show": {
+                                "type": "bool",
+                                "doc": _l(
+                                    "If enabled, set the NSFW preference of new users to show NSFW content."
+                                ),
+                                "value": True,
+                            },
+                            "blur": {
+                                "type": "bool",
+                                "doc": _l(
+                                    "If enabled, and 'site.nsfw.new_user_default.show' is also enabled, "
+                                    "set the NSFW preference of new users to blur NSFW content."
+                                ),
+                                "value": True,
+                            },
+                        },
+                    },
+                },
+            },
         },
     },
     "storage": {

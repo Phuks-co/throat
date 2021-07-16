@@ -468,8 +468,16 @@ def create_user(username, password, email, invite_code, existing_user):
             verified_email=False,
             status=status,
         )
+
+    prefs = []
     if config.site.require_invite_code:
-        UserMetadata.create(uid=user.uid, key="invitecode", value=invite_code)
+        prefs.append(dict(uid=user.uid, key="invitecode", value=invite_code))
+    if config.site.nsfw.new_user_default.show:
+        prefs.append(dict(uid=user.uid, key="nsfw", value="1"))
+    if config.site.nsfw.new_user_default.blur:
+        prefs.append(dict(uid=user.uid, key="nsfw_blur", value="1"))
+    if prefs:
+        UserMetadata.insert(prefs).execute()
 
     defaults = misc.getDefaultSubs()
     subs = [
