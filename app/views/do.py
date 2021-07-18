@@ -349,6 +349,7 @@ def delete_post():
                 admin=True
                 if (not current_user.is_mod(post.sid) and current_user.is_admin())
                 else False,
+                target=post.uid,
             )
 
             related_reports = SubPostReport.select().where(
@@ -455,6 +456,7 @@ def undelete_post():
             admin=True
             if (not current_user.is_mod(post.sid) and current_user.is_admin())
             else False,
+            target=post.uid,
         )
 
         related_reports = SubPostReport.select().where(SubPostReport.pid == post.pid)
@@ -2765,6 +2767,7 @@ def delete_comment():
                 admin=True
                 if (not current_user.is_mod(sub.sid) and current_user.is_admin())
                 else False,
+                target=comment.uid,
             )
             related_reports = SubPostCommentReport.select().where(
                 SubPostCommentReport.cid == comment.cid
@@ -2822,6 +2825,7 @@ def undelete_comment():
             admin=True
             if (not current_user.is_mod(sub.sid) and current_user.is_admin())
             else False,
+            target=comment.uid,
         )
         related_reports = SubPostCommentReport.select().where(
             SubPostCommentReport.cid == comment.cid
