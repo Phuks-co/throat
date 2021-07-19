@@ -258,6 +258,14 @@ configurable_defaults = {
                 "doc": _l("Number of days after which posts will be archived."),
                 "value": 60,
             },
+            "archive_sticky_posts": {
+                "type": "bool",
+                "doc": _l(
+                    "When enabled, archive sticky posts after 'archive_post_after' days, "
+                    "the same as regular posts. When disabled, sticky posts will not be archived."
+                ),
+                "value": True,
+            },
             "recent_activity": {
                 "type": "map",
                 "value": {
@@ -338,6 +346,51 @@ configurable_defaults = {
                     "Otherwise, show the notification count in parentheses in the page title."
                 ),
                 "value": True,
+            },
+            "nsfw": {
+                "type": "map",
+                "value": {
+                    "anon": {
+                        "type": "map",
+                        "value": {
+                            "show": {
+                                "type": "bool",
+                                "doc": _l(
+                                    "If enabled, show NSFW content to anonymous users."
+                                ),
+                                "value": True,
+                            },
+                            "blur": {
+                                "type": "bool",
+                                "doc": _l(
+                                    "If enabled, and 'site.nsfw.anon.show' is also enabled, blur NSFW content "
+                                    "when it is shown to anonymous users."
+                                ),
+                                "value": True,
+                            },
+                        },
+                    },
+                    "new_user_default": {
+                        "type": "map",
+                        "value": {
+                            "show": {
+                                "type": "bool",
+                                "doc": _l(
+                                    "If enabled, set the NSFW preference of new users to show NSFW content."
+                                ),
+                                "value": True,
+                            },
+                            "blur": {
+                                "type": "bool",
+                                "doc": _l(
+                                    "If enabled, and 'site.nsfw.new_user_default.show' is also enabled, "
+                                    "set the NSFW preference of new users to blur NSFW content."
+                                ),
+                                "value": True,
+                            },
+                        },
+                    },
+                },
             },
         },
     },

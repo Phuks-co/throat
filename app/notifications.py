@@ -38,6 +38,7 @@ class Notifications(object):
                 Notification.type,
                 Notification.read,
                 Notification.created,
+                Sub.sid,
                 Sub.name.alias("sub_name"),
                 Sub.nsfw.alias("sub_nsfw"),
                 Notification.post.alias("pid"),

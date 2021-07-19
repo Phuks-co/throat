@@ -223,12 +223,17 @@ def edit_subs():
 @login_required
 def edit_user():
     styles = "nostyles" in current_user.prefs
-    nsfw = "nsfw" in current_user.prefs
+    if "nsfw" not in current_user.prefs:
+        nsfw_option = "hide"
+    elif "nsfw_blur" in current_user.prefs:
+        nsfw_option = "blur"
+    else:
+        nsfw_option = "show"
     exp = "labrat" in current_user.prefs
     noscroll = "noscroll" in current_user.prefs
     nochat = "nochat" in current_user.prefs
     form = EditUserForm(
-        show_nsfw=nsfw,
+        show_nsfw=nsfw_option,
         disable_sub_style=styles,
         experimental=exp,
         noscroll=noscroll,

@@ -183,7 +183,11 @@ socket.on('comment', function(data){
   const recentActivity = document.getElementById('activity_list');
   if(recentActivity){
     const showNSFW = document.getElementById('pagefoot-nsfw').getAttribute('data-value') == 'True';
-    const nsfwClass = (data.nsfw && !showNSFW) ? 'nsfw-blur' : '';
+    if (data.nsfw && !showNSFW) {
+      return;
+    }
+    const showNSFWBlur = document.getElementById('pagefoot-nsfw-blur').getAttribute('data-value') == 'True';
+    const nsfwClass = (data.nsfw && showNSFWBlur) ? 'nsfw-blur' : '';
     const nsfwElem = data.nsfw ? ('<span class="nsfw smaller" alt="Not safe for work">' + _('NSFW') + '</span>') : '';
     const content = data.content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     const elem = document.createElement('li');
@@ -201,7 +205,11 @@ socket.on('thread', function(data){
     if(window.blocked.indexOf(data.sid) >= 0){return;}
   }
   const showNSFW = document.getElementById('pagefoot-nsfw').getAttribute('data-value') == 'True';
-  const nsfwClass = (data.nsfw && !showNSFW) ? 'nsfw-blur' : '';
+  if (data.nsfw && !showNSFW) {
+    return;
+  }
+  const showNSFWBlur = document.getElementById('pagefoot-nsfw-blur').getAttribute('data-value') == 'True';
+  const nsfwClass = (data.nsfw && showNSFWBlur) ? 'nsfw-blur' : '';
   const nsfwElem = data.nsfw ? ('<span class="nsfw smaller" alt="Not safe for work">' + _('NSFW') + '</span>') : '';
   const recentActivity = document.getElementById('activity_list');
   const title = data.title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -247,7 +255,7 @@ socket.on('thread', function(data){
   const blurredElems = document.querySelectorAll('.placeholder-nsfw-blur');
   for (var i = 0; i < blurredElems.length; i++) {
     blurredElems[i].classList.remove('placeholder-nsfw-blur');
-    if (!showNSFW) {
+    if (showNSFWBlur) {
       blurredElems[i].classList.add('nsfw-blur');
     }
   }

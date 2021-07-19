@@ -287,7 +287,8 @@ def edit_user():
         usr.save()
         current_user.update_prefs("labrat", form.experimental.data)
         current_user.update_prefs("nostyles", form.disable_sub_style.data)
-        current_user.update_prefs("nsfw", form.show_nsfw.data)
+        current_user.update_prefs("nsfw", form.show_nsfw.data != "hide")
+        current_user.update_prefs("nsfw_blur", form.show_nsfw.data == "blur")
         current_user.update_prefs("noscroll", form.noscroll.data)
         current_user.update_prefs("nochat", form.nochat.data)
         current_user.update_prefs("subtheme", form.subtheme.data, False)
@@ -1169,7 +1170,7 @@ def edit_txtpost(pid):
         if current_user.is_subban(post.sid):
             return jsonify(status="error", error=[_("You are banned on this sub.")])
 
-        if post.is_archived():
+        if misc.is_archived(post):
             return jsonify(status="error", error=[_("Post is archived")])
 
         dt = datetime.datetime.utcnow()
@@ -1223,7 +1224,7 @@ def create_comment(pid):
         if post.deleted:
             return jsonify(status="error", error=[_("Post was deleted")]), 400
 
-        if post.is_archived():
+        if misc.is_archived(post):
             return jsonify(status="error", error=[_("Post is archived")]), 400
 
         postmeta = misc.metadata_to_dict(
@@ -2710,7 +2711,7 @@ def edit_comment():
                 status="error", error=_("You can't edit a comment on a deleted post")
             )
 
-        if post.is_archived():
+        if misc.is_archived(post):
             return jsonify(status="error", error=_("Post is archived"))
 
         dt = datetime.datetime.utcnow()

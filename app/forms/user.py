@@ -146,8 +146,14 @@ class EditUserForm(FlaskForm):
 
     # username = StringField('Username', [Length(min=2, max=32)])
     disable_sub_style = BooleanField(_l("Disable custom sub styles"))
-    show_nsfw = BooleanField(_l("Show NSFW content"))
-
+    show_nsfw = SelectField(
+        _l("NSFW content"),
+        choices=[
+            ("hide", _l("Hide from lists")),
+            ("show", _l("Show without blur")),
+            ("blur", _l("Blur until clicked")),
+        ],
+    )
     experimental = BooleanField(_l("Enable experimental features"))
     noscroll = BooleanField(_l("Disable infinite scroll"))
     nochat = BooleanField(_l("Disable chat"))
