@@ -304,12 +304,6 @@ class SubPost(BaseModel):
     def __repr__(self):
         return f'<SubPost "{self.title[:20]}">'
 
-    def is_archived(self):
-        delta = datetime.timedelta(days=config.site.archive_post_after)
-        return (
-            datetime.datetime.utcnow() - self.posted.replace(tzinfo=None)
-        ) > delta  # noqa
-
     def is_title_editable(self):
         delta = datetime.timedelta(seconds=config.site.title_edit_timeout)
         return (

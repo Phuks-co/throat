@@ -950,10 +950,7 @@ def getSinglePost(pid):
         .get()
     )
     posts["slug"] = slugify(posts["title"])
-    posts["is_archived"] = (
-        datetime.utcnow() - posts["posted"].replace(tzinfo=None)
-    ) > timedelta(days=config.site.archive_post_after)
-
+    posts["is_archived"] = is_archived(posts)
     return posts
 
 
@@ -1180,6 +1177,19 @@ def getStickies(sid):
     posts = posts.where(SubPost.sid == sid)
     posts = posts.order_by(SubMetadata.xid.asc()).dicts()
     return [add_blur(p) for p in posts]
+
+
+def is_archived(post):
+    delta = timedelta(days=config.site.archive_post_after)
+    if isinstance(post, dict):
+        posted, pid, sid = post["posted"], post["pid"], post["sid"]
+    else:
+        posted, pid, sid = post.posted, post.pid, post.sid
+    return (
+        datetime.utcnow() - posted.replace(tzinfo=None) > delta
+        and str(pid) != getAnnouncementPid().value
+        and (config.site.archive_sticky_posts or pid not in getStickyPid(sid))
+    )
 
 
 def load_user(user_id):

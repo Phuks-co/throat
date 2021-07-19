@@ -1,10 +1,9 @@
 """ Messages endpoints """
-from datetime import datetime, timedelta
+from datetime import datetime
 from flask import Blueprint, redirect, url_for, render_template, abort, jsonify
 from flask_login import login_required, current_user
 from .. import misc
 from ..notifications import Notifications
-from ..config import config
 from ..misc import engine, get_postmeta_dicts
 from ..models import Notification
 
@@ -32,12 +31,8 @@ def view_notifications(page):
         (n["pid"] for n in notifications if n["pid"] is not None)
     )
 
-    now = datetime.utcnow()
-    limit = timedelta(days=config.site.archive_post_after)
     for n in notifications:
-        n["archived"] = (
-            n["posted"] is not None and (now - n["posted"].replace(tzinfo=None)) > limit
-        )
+        n["archived"] = misc.is_archived(n)
         misc.add_blur(n)
 
     Notification.update(read=datetime.utcnow()).where(
