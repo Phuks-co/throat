@@ -319,7 +319,6 @@ class SiteAnon(AnonymousUserMixin):
     subsid = []
     subscriptions = []
     blocksid = []
-    prefs = []
     admin = False
     canupload = False
     language = None
@@ -329,6 +328,15 @@ class SiteAnon(AnonymousUserMixin):
 
     def get_id(self):
         return False
+
+    @property
+    def prefs(self):
+        result = []
+        if config.site.nsfw.anon.show:
+            result.append("nsfw")
+        if config.site.nsfw.anon.blur:
+            result.append("nsfw_blur")
+        return result
 
     @classmethod
     def is_mod(cls, _sub, _power_level):
@@ -788,10 +796,10 @@ def get_user_level(uid, score=None):
 
 
 @cache.memoize(300)
-def fetchTodaysTopPosts():
+def fetchTodaysTopPosts(include_nsfw):
     """ Returns top posts in the last 24 hours """
     td = datetime.utcnow() - timedelta(days=1)
-    return list(
+    query = (
         SubPost.select(
             SubPost.pid,
             Sub.name.alias("sub"),
@@ -801,17 +809,17 @@ def fetchTodaysTopPosts():
             Sub.nsfw.alias("sub_nsfw"),
             SubPost.nsfw,
         )
+        .join(Sub, JOIN.LEFT_OUTER)
         .where(SubPost.posted > td)
         .where(SubPost.deleted == 0)
-        .order_by(SubPost.score.desc())
-        .limit(5)
-        .join(Sub, JOIN.LEFT_OUTER)
-        .dicts()
     )
+    if not include_nsfw:
+        query = query.where(SubPost.nsfw == 0)
+    return list(query.order_by(SubPost.score.desc()).limit(5).dicts())
 
 
 def getTodaysTopPosts():
-    top_posts = fetchTodaysTopPosts()
+    top_posts = fetchTodaysTopPosts("nsfw" in current_user.prefs)
     return [add_blur(p) for p in top_posts]
 
 
@@ -1067,7 +1075,7 @@ def postListQueryBase(
     if not noAllFilter and not nofilter:
         if current_user.is_authenticated and current_user.blocksid:
             posts = posts.where(SubPost.sid.not_in(current_user.blocksid))
-    if (not nofilter) and (not current_user.is_authenticated):
+    if not nofilter and "nsfw" not in current_user.prefs:
         posts = posts.where(SubPost.nsfw == 0)
 
     return posts
@@ -1109,7 +1117,7 @@ def getPostList(baseQuery, sort, page, page_size=25):
 
 def add_blur(post):
     post["blur"] = ""
-    if "nsfw" not in current_user.prefs and (post["nsfw"] or post["sub_nsfw"]):
+    if "nsfw_blur" in current_user.prefs and (post["nsfw"] or post["sub_nsfw"]):
         post["blur"] = "nsfw-blur"
     return post
 
@@ -1596,6 +1604,9 @@ def getUserComments(uid, page, include_deleted_comments=False):
                 )
         else:
             com = com.where(SubPostComment.status.is_null())
+
+        if "nsfw" not in current_user.prefs:
+            com = com.where(SubPost.nsfw == 0)
 
         com = com.order_by(SubPostComment.time.desc()).paginate(page, 20).dicts()
     except SubPostComment.DoesNotExist:
@@ -2971,6 +2982,8 @@ def recent_activity(sidebar=True):
         SubPost.nsfw,
     )
     post_activity = post_activity.join(User).switch(SubPost)
+    if "nsfw" not in current_user.prefs:
+        post_activity = post_activity.where(SubPost.nsfw == 0)
     post_activity = (
         post_activity.where(SubPost.deleted == 0).order_by(SubPost.pid.desc()).limit(50)
     )
@@ -2985,6 +2998,8 @@ def recent_activity(sidebar=True):
         SubPost.nsfw,
     )
     comment_activity = comment_activity.join(User).switch(SubPostComment).join(SubPost)
+    if "nsfw" not in current_user.prefs:
+        comment_activity = comment_activity.where(SubPost.nsfw == 0)
     comment_activity = (
         comment_activity.where(SubPostComment.status.is_null(True))
         .order_by(SubPostComment.time.desc())

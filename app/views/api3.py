@@ -1594,13 +1594,16 @@ def get_settings():
     """ Returns account settings """
     uid = get_jwt_identity()
     prefs = UserMetadata.select().where(UserMetadata.uid == uid)
-    prefs = prefs.where(UserMetadata.key << ("labrat", "nostyles", "nsfw", "nochat"))
+    prefs = prefs.where(
+        UserMetadata.key << ("labrat", "nostyles", "nsfw", "nsfw_blur", "nochat")
+    )
     prefs = {x.key: x.value for x in prefs}
     return jsonify(
         settings={
             "labrat": True if prefs.get("labrat", False) == "1" else False,
             "nostyles": True if prefs.get("nostyles", False) == "1" else False,
             "nsfw": True if prefs.get("nsfw", False) == "1" else False,
+            "nsfw_blur": True if prefs.get("nsfw_blur", False) == "1" else False,
             "nochat": True if prefs.get("nochat", False) == "1" else False,
         }
     )
@@ -1623,7 +1626,9 @@ def set_settings():
         return jsonify(msg="Missing parameters"), 400
 
     if [
-        x for x in settings.keys() if x not in ["labrat", "nostyles", "nsfw", "nochat"]
+        x
+        for x in settings.keys()
+        if x not in ["labrat", "nostyles", "nsfw", "nsfw_blur", "nochat"]
     ]:
         return jsonify(msg="Invalid setting options sent"), 400
 
@@ -1631,7 +1636,7 @@ def set_settings():
     qrys = []
     for sett in settings:
         value = settings[sett]
-        if sett in ["labrat", "nostyles", "nsfw", "nochat"]:
+        if sett in ["labrat", "nostyles", "nsfw", "nsfw_blur", "nochat"]:
             if not isinstance(settings[sett], bool):
                 return jsonify(msg="Invalid type for setting"), 400
             value = "1" if value else "0"
