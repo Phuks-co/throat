@@ -117,7 +117,7 @@
             @if msg['comment_context']:
             </div> <!-- div.pchild -->
             @end
-          @elif msg['pid'] and msg['type'] != 'POST_DELETE':
+          @elif msg['pid'] and msg['type'] not in ('POST_DELETE', 'POST_UNDELETE'):
             <div class="container">@{markdown(msg['post_content'])!!html}</div>
             <ul class="bottombar links">
               <li><a href="@{url_for('sub.view_post', sub=msg['sub_name'], pid=msg['pid'])}">@{_('permalink')}</a></li>
@@ -142,13 +142,15 @@
             @end
             <ul class="bottombar links">
               <li><a class="deletenotif" data-mid="@{msg['id']}">@{_('delete notification')}</a></li>
-              <li><a class="block" data-uid="@{msg['senderuid']}">
-                @if msg['ignored']:
-                  @{_('unblock')} \
-                @else:
-                  @{_('block')} \
-                @end
-              </a></li>
+              @if msg['type'] not in ('POST_DELETE', 'POST_UNDELETE', 'SUB_BAN', 'SUB_UNBAN'):
+                <li><a class="block" data-uid="@{msg['senderuid']}">
+                  @if msg['ignored']:
+                    @{_('unblock')} \
+                  @else:
+                    @{_('block')} \
+                  @end
+                </a></li>
+              @end
             </ul>
           @end
         </div>
