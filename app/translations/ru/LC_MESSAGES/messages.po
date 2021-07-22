@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-07-21 16:48-0300\n"
-"PO-Revision-Date: 2021-07-21 19:51\n"
+"PO-Revision-Date: 2021-07-22 01:51\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -128,7 +128,7 @@ msgstr "Количество дней, по истечении которых п
 
 #: app/config.py:255
 msgid "When enabled, archive sticky posts after 'archive_post_after' days, the same as regular posts. When disabled, sticky posts will not be archived."
-msgstr ""
+msgstr "Если включено, архивируйте липкие сообщения после дней 'archive_post_after' то же самое, что и обычные посты. Если отключено, липкие сообщения не будут архивированы."
 
 #: app/config.py:266
 msgid "Enables or disables the recent activity sidebar and the page in /activity."
@@ -176,23 +176,23 @@ msgstr "Для регистрации требуется инвайт-код."
 
 #: app/config.py:336
 msgid "If enabled, show the notification count on the page title icon.  Otherwise, show the notification count in parentheses in the page title."
-msgstr ""
+msgstr "Если включено, показывать количество уведомлений на значке заголовка страницы. В противном случае показывайте количество уведомлений в скобках в заголовке страницы."
 
 #: app/config.py:350
 msgid "If enabled, show NSFW content to anonymous users."
-msgstr ""
+msgstr "Если включено, показывать контент NSFW анонимным пользователям."
 
 #: app/config.py:357
 msgid "If enabled, and 'site.nsfw.anon.show' is also enabled, blur NSFW content when it is shown to anonymous users."
-msgstr ""
+msgstr "Если этот параметр включен, и параметр 'site.nsfw.anon.show' включен, размывать NSFW содержимое, когда оно показывается анонимным пользователям."
 
 #: app/config.py:370
 msgid "If enabled, set the NSFW preference of new users to show NSFW content."
-msgstr ""
+msgstr "Если включено, установите NSFW предпочтение новым пользователям показывать NSFW содержимое."
 
 #: app/config.py:377
 msgid "If enabled, and 'site.nsfw.new_user_default.show' is also enabled, set the NSFW preference of new users to blur NSFW content."
-msgstr ""
+msgstr "Если этот параметр включен, и параметр 'site.nsfw.new_user_default.show' также включен, установите NSFW предпочтение новым пользователям размытия контента NSFW."
 
 #: app/config.py:394
 msgid "Max storage for image uploads for subs' stylesheets (in MiB)."
@@ -766,19 +766,19 @@ msgstr "Отключить стили группы"
 
 #: app/forms/user.py:150
 msgid "NSFW content"
-msgstr ""
+msgstr "NSFW контент"
 
 #: app/forms/user.py:152
 msgid "Hide from lists"
-msgstr ""
+msgstr "Скрыть из списков"
 
 #: app/forms/user.py:153
 msgid "Show without blur"
-msgstr ""
+msgstr "Показать без размытия"
 
 #: app/forms/user.py:154
 msgid "Blur until clicked"
-msgstr ""
+msgstr "Размытие до щелчка"
 
 #: app/forms/user.py:157
 msgid "Enable experimental features"
@@ -2190,12 +2190,12 @@ msgstr "Изменил настройки"
 #: app/html/sub/log.html:40
 #, python-format
 msgid "Temporarily banned <a href=\"/u/%(username)s\">%(username)s</a> %(days)s with reason <code>%(reason)s</code>"
-msgstr ""
+msgstr "Временно забанен <a href=\"/u/%(username)s\">%(username)s</a> %(days)s по причине <code>%(reason)s</code>"
 
 #: app/html/sub/log.html:40
 #, python-format
 msgid "for %(num)s days"
-msgstr ""
+msgstr "на %(num)s дня"
 
 #: app/html/sub/log.html:42
 #, python-format
@@ -3585,7 +3585,7 @@ msgstr "Пост удален"
 
 #: app/views/do.py:1215
 msgid "Posting has been temporarily disabled"
-msgstr ""
+msgstr "Публикация была временно отключена"
 
 #: app/views/do.py:1235
 msgid "Comments are closed on this post."
@@ -3712,7 +3712,7 @@ msgstr "Борк Борк"
 
 #: app/views/do.py:2073
 msgid "Removed announcement"
-msgstr ""
+msgstr "Удалено объявление"
 
 #: app/views/do.py:2099
 msgid "Post already announced"
