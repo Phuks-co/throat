@@ -12,8 +12,10 @@ from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     get_jwt_identity,
+    verify_jwt_in_request,
+    jwt_refresh_token_required,
+    jwt_optional,
 )
-from flask_jwt_extended import jwt_refresh_token_required, jwt_optional
 from .. import misc
 from .. import tasks
 from ..auth import (
@@ -1257,6 +1259,8 @@ def user_overview(username):
     """
     Returns an overview of the user's activity (comments/posts)
     """
+    if config.site.block_anon_stalking:
+        verify_jwt_in_request()
     try:
         user = User.get(fn.Lower(User.name) == username.lower())
     except User.DoesNotExist:
