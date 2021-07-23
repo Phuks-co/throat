@@ -32,8 +32,10 @@ def view_notifications(page):
     )
 
     for n in notifications:
-        n["archived"] = misc.is_archived(n)
-        misc.add_blur(n)
+        n["archived"] = False
+        if n["cid"] or (n["pid"] and n["type"] not in ("POST_DELETE", "POST_UNDELETE")):
+            n["archived"] = misc.is_archived(n)
+            misc.add_blur(n)
 
     Notification.update(read=datetime.utcnow()).where(
         (Notification.read.is_null(True)) & (Notification.target == current_user.uid)
