@@ -50,7 +50,7 @@ def test_send_and_receive_pm(client, user_info, user2_info):
     # User has one new message.
     rv = client.get(url_for("home.index"), follow_redirects=True)
     assert rv.status == "200 OK"
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     link = soup.find(href=url_for("messages.inbox_sort"))
     assert link.get_text().strip() == "1"
 
@@ -62,7 +62,7 @@ def test_send_and_receive_pm(client, user_info, user2_info):
     )
 
     # User marks the message as read.
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     tag = soup.find(lambda tag: tag.has_attr("data-mid"))
     mid = tag.attrs["data-mid"]
 
@@ -74,7 +74,7 @@ def test_send_and_receive_pm(client, user_info, user2_info):
     # User returns to home page; notifications count now 0.
     rv = client.get(url_for("home.index"), follow_redirects=True)
     assert rv.status == "200 OK"
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     link = soup.find(href=url_for("messages.inbox_sort"))
     assert link.get_text().strip() == "0"
 
@@ -112,7 +112,7 @@ def test_block_pm(client, user_info, user2_info):
     # User doesn't have a notification for blocked message.
     rv = client.get(url_for("home.index"), follow_redirects=True)
     assert rv.status == "200 OK"
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     link = soup.find(href=url_for("messages.inbox_sort"))
     assert link.get_text().strip() == "0"
 
@@ -137,7 +137,7 @@ def test_block_pm(client, user_info, user2_info):
     # User now has a notification for message.
     rv = client.get(url_for("home.index"), follow_redirects=True)
     assert rv.status == "200 OK"
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     link = soup.find(href=url_for("messages.inbox_sort"))
     assert link.get_text().strip() == "1"
 
@@ -186,7 +186,7 @@ def test_save_and_delete_pm(client, user_info, user2_info):
     )
 
     # User saves the message.
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     tag = soup.find(lambda tag: tag.has_attr("data-mid"))
     mid = tag.attrs["data-mid"]
     rv = client.post(
@@ -265,7 +265,7 @@ def test_exchange_pm(client, user_info, user2_info):
     )
 
     # User replies to the message.
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     tag = soup.find(lambda tag: tag.has_attr("data-mid"))
     mid = tag.attrs["data-mid"]
 
@@ -290,7 +290,7 @@ def test_exchange_pm(client, user_info, user2_info):
     # User2 has one new message.
     rv = client.get(url_for("home.index"), follow_redirects=True)
     assert rv.status == "200 OK"
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     link = soup.find(href=url_for("messages.inbox_sort"))
     assert link.get_text().strip() == "1"
 
@@ -302,7 +302,7 @@ def test_exchange_pm(client, user_info, user2_info):
     )
 
     # User2 replies to the reply.
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     tag = soup.find(lambda tag: tag.has_attr("data-mid"))
     mid = tag.attrs["data-mid"]
     rv = client.post(
@@ -327,7 +327,7 @@ def test_exchange_pm(client, user_info, user2_info):
     # User now has two new messages.
     rv = client.get(url_for("home.index"), follow_redirects=True)
     assert rv.status == "200 OK"
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     link = soup.find(href=url_for("messages.inbox_sort"))
     assert link.get_text().strip() == "2"
 
@@ -343,6 +343,6 @@ def test_exchange_pm(client, user_info, user2_info):
     # User now has no new messages.
     rv = client.get(url_for("home.index"), follow_redirects=True)
     assert rv.status == "200 OK"
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     link = soup.find(href=url_for("messages.inbox_sort"))
     assert link.get_text().strip() == "0"

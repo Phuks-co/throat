@@ -7,20 +7,20 @@ from app.models import User, UserMetadata, SiteMetadata
 
 
 def csrf_token(data):
-    soup = BeautifulSoup(data, "html.parser")
+    soup = BeautifulSoup(data, "html.parser", from_encoding="utf-8")
     # print(soup.prettify())
     return soup.find(id="csrf_token")["value"]
 
 
 def get_value(data, key):
-    soup = BeautifulSoup(data, "html.parser")
+    soup = BeautifulSoup(data, "html.parser", from_encoding="utf-8")
     # print(soup.prettify())
     return soup.find(id=key)["value"]
 
 
 # pretty-print for debugging purposes
 def pp(data):
-    print(BeautifulSoup(data, "html.parser").prettify())
+    print(BeautifulSoup(data, "html.parser", from_encoding="utf-8").prettify())
 
 
 def recursively_update(dictionary, new_values):
