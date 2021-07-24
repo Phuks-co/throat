@@ -39,7 +39,7 @@ def test_registration_login(client, test_config):
         if email_validation_is_required():
             assert b"spam" in rv.data  # Telling user to go check it.
             message = outbox[-1]
-            soup = BeautifulSoup(message.html, "html.parser")
+            soup = BeautifulSoup(message.html, "html.parser", from_encoding="utf-8")
             token = soup.a["href"].split("/")[-1]
             rv = client.get(
                 url_for("auth.login_with_token", token=token), follow_redirects=True
@@ -140,14 +140,14 @@ def test_resend_registration_email(client, user_info, test_config):
     assert b"spam" in rv.data  # Telling user to go check it.
 
     # Find the resend link.
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     links = soup.find_all(lambda tag: tag.name == "a" and tag.string == "Resend")
     url = links[0]["href"]
 
     # Request the resend form and verify the registered email is shown.
     rv = client.get(url)
     assert b"Resend account confirmation instructions" in rv.data
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     tag = soup.find_all(lambda tag: tag.get("name") == "email")[0]
     assert tag["value"] == user_info["email"]
 
@@ -190,7 +190,7 @@ def test_resend_registration_email_after_confirmation(client, user_info, test_co
         assert b"spam" in rv.data  # Telling user to go check it.
 
         # Find the resend link.
-        soup = BeautifulSoup(rv.data, "html.parser")
+        soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
         link = soup.find_all(lambda tag: tag.name == "a" and tag.string == "Resend")[0]
         url = link["href"]
 
@@ -235,14 +235,14 @@ def test_fix_registration_email(client, user_info, user2_info, test_config):
         first_token = soup.a["href"].split("/")[-1]
 
     # Find the resend link.
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     links = soup.find_all(lambda tag: tag.name == "a" and tag.string == "Resend")
     url = links[0]["href"]
 
     # Request the resend form and verify the registered email is shown.
     rv = client.get(url)
     assert b"Resend account confirmation instructions" in rv.data
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     tag = soup.find_all(lambda tag: tag.get("name") == "email")[0]
     assert tag["value"] == user_info["email"]
 
@@ -267,7 +267,7 @@ def test_fix_registration_email(client, user_info, user2_info, test_config):
 
     # Verify that the user's confirmed email is the second one.
     rv = client.get(url_for("user.edit_account"))
-    soup = BeautifulSoup(rv.data, "html.parser")
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
     tag = soup.find_all(lambda tag: tag.get("name") == "email_required")[0]
     assert tag["value"] == user2_info["email"]
 
