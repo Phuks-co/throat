@@ -1,3 +1,4 @@
+import re
 from bs4 import BeautifulSoup
 from flask import url_for
 from peewee import fn
@@ -7,9 +8,8 @@ from app.models import User, UserMetadata, SiteMetadata
 
 
 def csrf_token(data):
-    soup = BeautifulSoup(data, "html.parser", from_encoding="utf-8")
-    # print(soup.prettify())
-    return soup.find(id="csrf_token")["value"]
+    f = re.search(rb'name="csrf_token" type="hidden" value="(.+?)"', data)
+    return f.group(1).decode("utf-8")
 
 
 def get_value(data, key):
