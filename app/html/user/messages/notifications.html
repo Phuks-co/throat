@@ -105,14 +105,6 @@
                 <li><a class="reply-comment" data-pid="@{msg['pid']}" data-to="@{msg['cid']}">@{_('reply')}</a></li>
               @end
               <li><a class="deletenotif" data-mid="@{msg['id']}">@{_('delete notification')}</a></li>
-              <li><a class="block" data-uid="@{msg['senderuid']}">
-                @if msg['ignored']:
-                  @{_('unblock')} \
-                @else:
-                  @{_('block')} \
-                @end
-              </a></li>
-
             </ul>
             @if msg['comment_context']:
             </div> <!-- div.pchild -->
@@ -125,13 +117,6 @@
                 <li><a class="reply-comment" data-pid="@{msg['pid']}" data-to="-@{msg['pid']}">@{_('reply')}</a></li>
               @end
               <li><a class="deletenotif" data-mid="@{msg['id']}">@{_('delete notification')}</a></li>
-              <li><a class="block" data-uid="@{msg['senderuid']}">
-                @if msg['ignored']:
-                  @{_('unblock')} \
-                @else:
-                  @{_('block')} \
-                @end
-              </a></li>
             </ul>
           @else:
             @if msg['content']:
@@ -142,15 +127,6 @@
             @end
             <ul class="bottombar links">
               <li><a class="deletenotif" data-mid="@{msg['id']}">@{_('delete notification')}</a></li>
-              @if msg['type'] not in ('POST_DELETE', 'POST_UNDELETE', 'SUB_BAN', 'SUB_UNBAN'):
-                <li><a class="block" data-uid="@{msg['senderuid']}">
-                  @if msg['ignored']:
-                    @{_('unblock')} \
-                  @else:
-                    @{_('block')} \
-                  @end
-                </a></li>
-              @end
             </ul>
           @end
         </div>

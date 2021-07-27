@@ -24,7 +24,7 @@ from ..auth import (
     normalize_email,
 )
 from ..forms import LogOutForm, CreateSubFlair, CsrfTokenOnlyForm, CreateSubRule
-from ..forms import EditSubForm, EditUserForm, EditSubCSSForm
+from ..forms import EditSubForm, EditUserForm, EditIgnoreForm, EditSubCSSForm
 from ..forms import EditModForm, BanUserSubForm, DeleteAccountForm, EditAccountForm
 from ..forms import EditSubTextPostForm, AssignUserBadgeForm
 from ..forms import PostComment, CreateUserMessageForm, CreateUserMessageReplyForm
@@ -54,7 +54,10 @@ from ..models import (
     Sub,
     Message,
     User,
-    UserIgnores,
+    UserMessageBlock,
+    UserContentBlock,
+    UserContentBlockMethod,
+    UserMetadata,
     SubMetadata,
     UserSaved,
     SubUserFlair,
@@ -1322,7 +1325,7 @@ def create_comment(pid):
         else:
             to = post.uid.uid
             ntype = "POST_REPLY"
-        if to != current_user.uid and current_user.uid not in misc.get_ignores(to):
+        if to != current_user.uid:
             notifications.send(
                 ntype,
                 sub=post.sid,
@@ -3013,20 +3016,96 @@ def toggle_nsfw():
 @do.route("/do/toggle_ignore/<uid>", methods=["POST"])
 @login_required
 def ignore_user(uid):
+    form = CsrfTokenOnlyForm()
+    if not form.validate():
+        return json.dumps({"status": "error", "error": get_errors(form)})
+
     try:
-        user = User.get(User.uid == uid)
+        user = (
+            User.select(UserMetadata.value)
+            .join(
+                UserMetadata,
+                JOIN.LEFT_OUTER,
+                on=((UserMetadata.uid == User.uid) & (UserMetadata.key == "admin")),
+            )
+            .where(User.uid == uid)
+            .dicts()
+            .get()
+        )
     except User.DoesNotExist:
         return jsonify(status="error", error=_("User not found"))
 
+    if user["value"] == "1":
+        return jsonify(status="error", error=_("Site administrators cannot be blocked"))
+
     try:
-        uig = UserIgnores.get(
-            (UserIgnores.uid == current_user.uid) & (UserIgnores.target == uid)
+        umb = UserMessageBlock.get(
+            (UserMessageBlock.uid == current_user.uid)
+            & (UserMessageBlock.target == uid)
         )
-        uig.delete_instance()
-        return jsonify(status="ok", action="delete")
-    except UserIgnores.DoesNotExist:
-        UserIgnores.create(uid=current_user.uid, target=user.uid)
-        return jsonify(status="ok", action="ignore")
+        umb.delete_instance()
+    except UserMessageBlock.DoesNotExist:
+        UserMessageBlock.create(uid=current_user.uid, target=uid)
+
+    return jsonify(status="ok")
+
+
+@do.route("/do/edit_ignore/<uid>", methods=["POST"])
+@login_required
+def edit_ignore(uid):
+    if current_user.can_admin:
+        abort(404)
+
+    try:
+        user = (
+            User.select(User.uid, UserMetadata.value)
+            .join(
+                UserMetadata,
+                JOIN.LEFT_OUTER,
+                on=((UserMetadata.uid == User.uid) & (UserMetadata.key == "admin")),
+            )
+            .where(User.uid == uid)
+            .dicts()
+            .get()
+        )
+    except User.DoesNotExist:
+        return jsonify(status="error", error=_("User not found"))
+    if user["value"] == "1":
+        return jsonify(status="error", error=_("Site administrators cannot be blocked"))
+
+    form = EditIgnoreForm()
+    if form.validate():
+        try:
+            umb = UserMessageBlock.get(
+                (UserMessageBlock.uid == current_user.uid)
+                & (UserMessageBlock.target == uid)
+            )
+            if form.view_messages.data == "show":
+                umb.delete_instance()
+        except UserMessageBlock.DoesNotExist:
+            if form.view_messages.data == "hide":
+                UserMessageBlock.create(uid=current_user.uid, target=uid)
+
+        method = {
+            "hide": UserContentBlockMethod.HIDE,
+            "blur": UserContentBlockMethod.BLUR,
+            "show": None,
+        }[form.view_content.data]
+        try:
+            ucb = UserContentBlock.get(
+                (UserContentBlock.uid == current_user.uid)
+                & (UserContentBlock.target == uid)
+            )
+            if form.view_content.data == "show":
+                ucb.delete_instance()
+            else:
+                ucb.method = method
+                ucb.save()
+        except UserContentBlock.DoesNotExist:
+            if method is not None:
+                UserContentBlock.create(uid=current_user.uid, target=uid, method=method)
+        return jsonify(status="ok")
+    return jsonify(status="error", error=get_errors(form))
 
 
 @do.route("/do/upload/<sub>", methods=["POST"])
