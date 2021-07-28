@@ -2323,6 +2323,18 @@ def validate_captcha(token, response):
     return False
 
 
+def get_comment_query(pid, sort="top"):
+    comments = SubPostComment.select(
+        SubPostComment.cid, SubPostComment.parentcid
+    ).where(SubPostComment.pid == pid)
+    if sort == "new":
+        comments = comments.order_by(SubPostComment.time.desc())
+    elif sort == "top":
+        comments = comments.order_by(SubPostComment.score.desc())
+    comments = comments.dicts()
+    return comments
+
+
 def get_comment_tree(
     pid,
     sid,

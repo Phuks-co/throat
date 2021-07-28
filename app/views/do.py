@@ -2895,16 +2895,10 @@ def get_sibling(pid, cid, lim):
         except SubPostComment.DoesNotExist:
             return jsonify(status="ok", posts=[])
 
-    comments = SubPostComment.select(
-        SubPostComment.cid, SubPostComment.parentcid
-    ).where(SubPostComment.pid == pid)
     postmeta = misc.metadata_to_dict(
         SubPostMetadata.select().where(SubPostMetadata.pid == pid)
     )
-    if sort == "new":
-        comments = comments.order_by(SubPostComment.time.desc()).dicts()
-    elif sort == "top":
-        comments = comments.order_by(SubPostComment.score.desc()).dicts()
+    comments = misc.get_comment_query(pid, sort=sort)
 
     if not comments.count():
         return engine.get_template("sub/postcomments.html").render(

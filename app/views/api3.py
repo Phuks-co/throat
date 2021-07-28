@@ -591,12 +591,7 @@ def get_post_comments(_sub, pid):
         return jsonify(msg="Post does not exist"), 404
 
     # 1 - Fetch all comments (only cid and parentcid)
-    comments = (
-        SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
-        .where(SubPostComment.pid == post.pid)
-        .order_by(SubPostComment.score.desc())
-        .dicts()
-    )
+    comments = misc.get_comment_query(post.pid, sort="top")
     if not comments.count():
         return jsonify(comments=[])
 
@@ -917,12 +912,7 @@ def get_post_comment_children(_sub, pid, cid):
         except SubPostComment.DoesNotExist:
             return jsonify(msg="Post does not exist"), 404
 
-    comments = (
-        SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
-        .where(SubPostComment.pid == pid)
-        .order_by(SubPostComment.score.desc())
-        .dicts()
-    )
+    comments = misc.get_comment_query(pid, sort="top")
     if not comments.count():
         return jsonify(comments=[])
 
