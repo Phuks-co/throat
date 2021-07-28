@@ -155,8 +155,12 @@ def register():
     if email_validation_is_required() and email is None:
         return jsonify(msg="E-mail is mandatory"), 401
 
-    if not misc.allowedNames.match(username):
+    if (
+        not misc.allowedNames.match(username)
+        or len(username) > config.site.username_max_length
+    ):
         return jsonify(msg="Invalid username"), 401
+
     if email:
         try:
             email = normalize_email(email)
