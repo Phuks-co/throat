@@ -21,9 +21,9 @@
                 </div>
                 @end
                 <div class="pure-control-group">
-                    <label for="username">@{regform.username.label.text}</label>@{regform.username(required=True, pattern="[a-zA-Z0-9_-]+", title=_('Alphanumeric characters plus \'-\' and \'_\'; between 2 and %(num)d characters long', num=config.site.username_max_length))!!html}
+                    <label for="username">@{regform.username.label.text}</label>@{regform.username(required=True, maxlength=config.site.username_max_length, pattern="[a-zA-Z0-9_-]+", title=_('Alphanumeric characters plus \'-\' and \'_\'; between 2 and %(num)d characters long', num=config.site.username_max_length))!!html}
                 </div>
-                
+
                 <div class="pure-control-group">
                     <label for="password">@{regform.password.label.text}</label>@{regform.password(autocomplete="off", required=True)!!html}
                 </div>
