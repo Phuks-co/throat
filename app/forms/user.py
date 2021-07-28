@@ -5,9 +5,10 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextAreaField
 from wtforms import BooleanField, HiddenField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
-from wtforms.validators import Optional, Regexp
+from wtforms.validators import Optional, Regexp, ValidationError
 from wtforms.fields.html5 import EmailField
 from flask_babel import lazy_gettext as _l
+from app.config import config
 
 
 def is_safe_url(target):
@@ -64,11 +65,31 @@ class OptionalIfFieldIsEmpty(Optional):
             super(OptionalIfFieldIsEmpty, self).__call__(form, field)
 
 
+class UsernameLength:
+    def __call__(self, form, field):
+        min = 2
+        max = config.site.username_max_length
+        length = field.data and len(field.data) or 0
+        if length < min or length > max:
+            if min == max:
+                message = field.ngettext(
+                    "Field must be exactly %(max)d character long.",
+                    "Field must be exactly %(max)d characters long.",
+                    max,
+                )
+            else:
+                message = field.gettext(
+                    "Field must be between %(min)d and %(max)d characters long."
+                )
+
+            raise ValidationError(message % dict(min=min, max=max, length=length))
+
+
 class RegistrationForm(FlaskForm):
     """ Registration form. """
 
     username = StringField(
-        _l("Username"), [Length(min=2, max=32), Regexp(r"[a-zA-Z0-9_-]+")]
+        _l("Username"), [UsernameLength(), Regexp(r"[a-zA-Z0-9_-]+")]
     )
     email_optional = EmailField(
         _l("Email Address (optional)"),
