@@ -1187,9 +1187,15 @@ def is_archived(post):
         posted, pid, sid = post["posted"], post["pid"], post["sid"]
     else:
         posted, pid, sid = post.posted, post.pid, post.sid
+
+    announcement_pid = None
+    try:
+        announcement_pid = getAnnouncementPid().value
+    except SiteMetadata.DoesNotExist:
+        pass
     return (
         datetime.utcnow() - posted.replace(tzinfo=None) > delta
-        and str(pid) != getAnnouncementPid().value
+        and str(pid) != announcement_pid
         and (config.site.archive_sticky_posts or pid not in getStickyPid(sid))
     )
 
