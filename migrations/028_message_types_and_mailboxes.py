@@ -9,12 +9,6 @@ implentation of modmail.
 import datetime as dt
 from enum import IntEnum
 import peewee as pw
-from decimal import ROUND_HALF_EVEN
-
-try:
-    import playhouse.postgres_ext as pw_pext
-except ImportError:
-    pass
 
 SQL = pw.SQL
 
@@ -86,9 +80,10 @@ def migrate(migrator, database, fake=False, **kwargs):
             else:
                 mailbox = MessageMailbox.INBOX
             UserMessageMailbox.create(mid=msg.mid, uid=msg.receivedby, mailbox=mailbox)
-            UserMessageMailbox.create(
-                mid=msg.mid, uid=msg.sentby, mailbox=MessageMailbox.SENT
-            )
+            if msg.sentby:
+                UserMessageMailbox.create(
+                    mid=msg.mid, uid=msg.sentby, mailbox=MessageMailbox.SENT
+                )
 
     migrator.add_fields(
         "message",
