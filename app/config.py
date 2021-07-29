@@ -347,6 +347,14 @@ configurable_defaults = {
                 ),
                 "value": True,
             },
+            "username_max_length": {
+                "type": "int",
+                "doc": _l(
+                    "The maximum length of a user name, applied to new registrations. "
+                    "This should be set to a number between 2 and 64."
+                ),
+                "value": 32,
+            },
             "nsfw": {
                 "type": "map",
                 "value": {

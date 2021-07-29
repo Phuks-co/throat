@@ -127,6 +127,7 @@ def register():
                 "captcha": captcha,
             }
         )
+
     # check if user or email are in use
     existing_user = None
     try:
