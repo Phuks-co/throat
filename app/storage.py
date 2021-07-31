@@ -152,7 +152,9 @@ def clear_metadata(fileobj: FileStorage, mime_type: str):
             if tag == 274:
                 ifd[tag] = value
         newExif = b"Exif\x00\x00" + head + ifd.tobytes(8)
-        image.save(resultIO, exif=newExif)
+        image.save(
+            resultIO, format=Image.EXTENSION[EXTENSIONS[mime_type]], exif=newExif
+        )
         return resultIO
     elif mime_type == "video/mp4":
         video = MP4(fileobj)
