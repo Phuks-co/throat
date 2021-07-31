@@ -113,7 +113,7 @@
             @if post['flair']:
               <span class="postflair">@{post['flair']!!e}</span>
             @end
-            <a rel="nofollow ugc @{(post['visibility'] == 'none') and 'noopener ' or ''}" href="@{((post['visibility'] != 'none') and post['link']) or '#'}" class="title">
+            <a rel="noopener nofollow ugc" href="@{((post['visibility'] != 'none') and post['link']) or '#'}" target="@{((post['visibility'] != 'none') and '_blank') or '_self'}" class="title">
               @if (post['visibility'] == ''):
                 <span class="@{post['blur']}">@{post['title']}</span>
               @elif (post['visibility'] == 'admin-self-del') or (post['visibility'] == 'user-self-del'):
@@ -141,7 +141,7 @@
                       @{old_title['title']}
                   </a></h1>
                 @else:
-                <h1><a rel="nofollow ugc @{(post['visibility'] == 'none') and 'noopener ' or ''}" href="@{(post['visibility'] != 'none') and post['link'] or '#'}" class="title">
+                <h1><a rel="noopener nofollow ugc" href="@{(post['visibility'] != 'none') and post['link'] or '#'}" target="@{((post['visibility'] != 'none') and '_blank') or '_self'}" class="title">
                   @{old_title['title']}
                 </a></h1>
                 @end
