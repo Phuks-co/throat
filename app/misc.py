@@ -1620,6 +1620,10 @@ def getUserComments(uid, page, include_deleted_comments=False):
                     SubPostComment.status.is_null()
                     | (Sub.sid << include_deleted_comments)
                 )
+            elif not current_user.is_admin():
+                com = com.where(
+                    SubPostComment.status.is_null() | (SubPostComment.status << [0, 2])
+                )
         else:
             com = com.where(SubPostComment.status.is_null())
 
