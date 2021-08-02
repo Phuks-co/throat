@@ -112,7 +112,7 @@
             @if post['flair']:
               <span class="postflair">@{post['flair']!!e}</span>
             @end
-            <a rel="nofollow ugc @{(post['visibility'] == 'none') and 'noopener ' or ''}" href="@{((post['visibility'] != 'none') and post['link']) or '#'}" class="title" target="_blank">
+            <a rel="noopener nofollow ugc" href="@{((post['visibility'] != 'none') and post['link']) or '#'}" target="@{((post['visibility'] != 'none') and '_blank') or '_self'}" class="title">
               @if (post['visibility'] == ''):
                 <span class="@{post['blur']}">@{post['title']}</span>
               @elif (post['visibility'] == 'admin-self-del') or (post['visibility'] == 'user-self-del'):
@@ -140,7 +140,7 @@
                       @{old_title['title']}
                   </a></h1>
                 @else:
-                <h1><a rel="nofollow ugc @{(post['visibility'] == 'none') and 'noopener ' or ''}" href="@{(post['visibility'] != 'none') and post['link'] or '#'}" class="title">
+                <h1><a rel="noopener nofollow ugc" href="@{(post['visibility'] != 'none') and post['link'] or '#'}" target="@{((post['visibility'] != 'none') and '_blank') or '_self'}" class="title">
                   @{old_title['title']}
                 </a></h1>
                 @end
@@ -348,11 +348,11 @@
   @if len(comments) == 0:
     <div class="comments"><p id="cmnts" data-cnt="0">@{_('No comments, yet...')}</div>
   @else:
-    @if post['nsfw'] or sub['nsfw'] and 'nsfw' not in current_user.prefs:
+    @if post['blur'] == 'nsfw-blur':
       <h3><a class="show-post-comments">@{_('Show comments')}</a></h3>
     @end
-    <div id="post-comments" class="comments @{'hide' if post['nsfw'] or sub['nsfw'] and 'nsfw' not in current_user.prefs else ''}">
-      <p id="cmnts" data-cnt="@{post['comments']}"><b><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{_('%(comments)i comments', comments=post['comments'])}</a></b>
+    <div id="post-comments" class="comments @{'hide' if post['blur'] == 'nsfw-blur' else ''}">
+      <p id="cmnts" data-cnt="@{post['comments']}"><b>><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{_('%(comments)i comments', comments=post['comments'])}</a></b>
       <div class="pure-menu pure-menu-horizontal">
         <ul class="pure-menu-list">
           <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
