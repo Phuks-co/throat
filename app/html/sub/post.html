@@ -352,7 +352,7 @@
       <h3><a class="show-post-comments">@{_('Show comments')}</a></h3>
     @end
     <div id="post-comments" class="comments @{'hide' if post['blur'] == 'nsfw-blur' else ''}">
-      <p id="cmnts" data-cnt="@{post['comments']}"><b>><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{_('%(comments)i comments', comments=post['comments'])}</a></b>
+      <p id="cmnts" data-cnt="@{post['comments']}"><b><a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}">@{_('%(comments)i comments', comments=post['comments'])}</a></b>
       <div class="pure-menu pure-menu-horizontal">
         <ul class="pure-menu-list">
           <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
