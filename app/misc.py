@@ -92,6 +92,7 @@ from werkzeug.local import LocalProxy
 
 from wheezy.template.engine import Engine
 from wheezy.template.ext.core import CoreExtension
+from wheezy.template.ext.code import CodeExtension
 from wheezy.template.loader import FileLoader
 
 # Regex that matches VALID user and sub names
@@ -118,7 +119,7 @@ class EscapeExtension(object):
 
 engine = Engine(
     loader=FileLoader([os.path.split(__file__)[0] + "/html"]),
-    extensions=[EscapeExtension(), CoreExtension()],
+    extensions=[EscapeExtension(), CoreExtension(), CodeExtension()],
 )
 
 mail = Mail()
