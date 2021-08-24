@@ -9,7 +9,7 @@ services:
     image: postgres
     environment:
       POSTGRES_USER: throat
-      POSTGRES_PASSWORD: dev
+      POSTGRES_PASSWORD: dev 
       POSTGRES_DATABASE: throat
       PGUSER: throat  # Needed for pg_isready; POSTGRES_* are docker-specific.
     volumes:
@@ -42,7 +42,7 @@ services:
       DATABASE_NAME: throat
       DATABASE_AUTOCOMMIT: "true"
     ports:
-      - "5000:5000"
+      - "5000:5000" # This sets the port
     depends_on:
       - db
       - redis
