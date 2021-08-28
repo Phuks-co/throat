@@ -467,7 +467,12 @@ def get_environment_values(config, prefix=""):
         for var in os.environ.keys():
             if var.startswith(prefix):
                 env_key = var[len(prefix) :].lower()
-                new_items[env_key] = os.environ.get(var)
+                env_value = os.environ.get(var)
+                existing = config.get(env_key)
+                if existing is not None and type(existing["value"]) == int:
+                    new_items[env_key] = int(env_value)
+                else:
+                    new_items[env_key] = env_value
     for key, val in config.items():
         if val["type"] == "map":
             env_vals = get_environment_values(val["value"], prefix + key.upper() + "_")
