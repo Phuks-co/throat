@@ -838,7 +838,8 @@ def fetchTodaysTopPosts(uid, include_nsfw):
                 JOIN.LEFT_OUTER,
                 on=((SubMod.uid == uid) & (SubMod.sid == SubPost.sid) & ~SubMod.invite),
             ).where(
-                (UserContentBlock.method != UserContentBlockMethod.HIDE)
+                UserContentBlock.method.is_null(True)
+                | (UserContentBlock.method != UserContentBlockMethod.HIDE)
                 | SubMod.id.is_null(False)
             )
         )
