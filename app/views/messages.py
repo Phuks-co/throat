@@ -87,14 +87,6 @@ def view_messages_sent(page):
     )
 
 
-@bp.route("/ignore")
-@login_required
-def view_ignores():
-    """ View user's messages sent """
-    igns = misc.get_ignores(current_user.uid)
-    return render_template("messages/ignores.html", igns=igns)
-
-
 @bp.route("/saved", defaults={"page": 1})
 @bp.route("/saved/<int:page>")
 @login_required

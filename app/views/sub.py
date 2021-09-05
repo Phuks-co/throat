@@ -526,14 +526,7 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
         is_saved = False
 
     if not comments:
-        comments = SubPostComment.select(
-            SubPostComment.cid, SubPostComment.parentcid
-        ).where(SubPostComment.pid == post["pid"])
-        if sort == "new":
-            comments = comments.order_by(SubPostComment.time.desc()).dicts()
-        elif sort == "top":
-            comments = comments.order_by(SubPostComment.score.desc()).dicts()
-        comments = comments.dicts()
+        comments = misc.get_comment_query(post["pid"], sort=sort)
 
         if not comments.count():
             comments = []
@@ -702,12 +695,7 @@ def view_perm(sub, pid, slug, cid):
     sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     include_history = current_user.is_mod(sub["sid"], 1) or current_user.is_admin()
 
-    comments = (
-        SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
-        .where(SubPostComment.pid == pid)
-        .order_by(SubPostComment.score.desc())
-        .dicts()
-    )
+    comments = misc.get_comment_query(pid, sort="top")
     comment_tree = misc.get_comment_tree(
         pid,
         sub["sid"],

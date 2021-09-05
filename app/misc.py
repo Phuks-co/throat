@@ -77,7 +77,9 @@ from .models import (
     SubMetadata,
     rconn,
     SubStylesheet,
-    UserIgnores,
+    UserContentBlock,
+    UserContentBlockMethod,
+    UserMessageBlock,
     SubUploads,
     SubFlair,
     InviteCode,
@@ -175,11 +177,13 @@ class SiteUser(object):
         # True if the user is an admin, even without authing with TOTP
         self.can_admin = "admin" in self.prefs
 
-        try:
-            SubMod.select().where(SubMod.user == self.uid).get()
-            self.is_a_mod = True
-        except SubMod.DoesNotExist:
-            self.is_a_mod = False
+        self.subs_modded = [
+            s.sid
+            for s in Sub.select(Sub.sid)
+            .join(SubMod)
+            .where((SubMod.user == self.uid) & ~SubMod.invite)
+        ]
+        self.is_a_mod = len(self.subs_modded) > 0
 
         if time.time() - session.get("apriv", 0) < 7200 or not config.site.enable_totp:
             self.admin = "admin" in self.prefs
@@ -324,6 +328,7 @@ class SiteAnon(AnonymousUserMixin):
     canupload = False
     language = None
     score = 0
+    subs_modded = []
     is_a_mod = False
     can_admin = False
 
@@ -747,11 +752,6 @@ def workWithMentions(data, receivedby, post, _sub, cid=None, c_user=current_user
                 )
 
 
-def getUser(uid):
-    """ Returns user from uid, db proxy now """
-    return User.select().where(User.uid == uid).dicts().get()
-
-
 @cache.memoize(5)
 def getDomain(link):
     """ Gets Domain from url """
@@ -797,30 +797,59 @@ def get_user_level(uid, score=None):
 
 
 @cache.memoize(300)
-def fetchTodaysTopPosts(include_nsfw):
+def fetchTodaysTopPosts(uid, include_nsfw):
     """ Returns top posts in the last 24 hours """
     td = datetime.utcnow() - timedelta(days=1)
-    query = (
-        SubPost.select(
-            SubPost.pid,
-            Sub.name.alias("sub"),
-            SubPost.title,
-            SubPost.posted,
-            SubPost.score,
-            Sub.nsfw.alias("sub_nsfw"),
-            SubPost.nsfw,
+    query = SubPost.select(
+        SubPost.pid,
+        Sub.name.alias("sub"),
+        Sub.sid,
+        SubPost.title,
+        SubPost.posted,
+        SubPost.score,
+        Sub.nsfw.alias("sub_nsfw"),
+        SubPost.nsfw,
+        *(
+            [
+                (UserContentBlock.method == UserContentBlockMethod.BLUR).alias(
+                    "blur_content"
+                )
+            ]
+            if uid
+            else [Value(None).alias("blur_content")]
+        ),
+    ).join(Sub, JOIN.LEFT_OUTER)
+    if uid:
+        query = (
+            query.join(
+                UserContentBlock,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (UserContentBlock.uid == uid)
+                    & (UserContentBlock.target == SubPost.uid)
+                ),
+            )
+            # Show mods the top posts in their own subs, even if they have the user
+            # blocked.  But if a user has a mod blocked, don't include top posts from
+            # that mod, even if they are in the mod's own sub.  The user will see them
+            # if they go look at the mod's sub.
+            .join(
+                SubMod,
+                JOIN.LEFT_OUTER,
+                on=((SubMod.uid == uid) & (SubMod.sid == SubPost.sid) & ~SubMod.invite),
+            ).where(
+                (UserContentBlock.method != UserContentBlockMethod.HIDE)
+                | SubMod.id.is_null(False)
+            )
         )
-        .join(Sub, JOIN.LEFT_OUTER)
-        .where(SubPost.posted > td)
-        .where(SubPost.deleted == 0)
-    )
+    query = query.where(SubPost.posted > td).where(SubPost.deleted == 0)
     if not include_nsfw:
         query = query.where(SubPost.nsfw == 0)
     return list(query.order_by(SubPost.score.desc()).limit(5).dicts())
 
 
 def getTodaysTopPosts():
-    top_posts = fetchTodaysTopPosts("nsfw" in current_user.prefs)
+    top_posts = fetchTodaysTopPosts(current_user.uid, "nsfw" in current_user.prefs)
     return [add_blur(p) for p in top_posts]
 
 
@@ -877,32 +906,35 @@ def getChangelog():
 
 
 def getSinglePost(pid):
+    fields = [
+        SubPost.nsfw,
+        SubPost.sid,
+        SubPost.content,
+        SubPost.pid,
+        SubPost.title,
+        SubPost.posted,
+        SubPost.score,
+        SubPost.upvotes,
+        SubPost.downvotes,
+        SubPost.distinguish,
+        SubPost.thumbnail,
+        SubPost.link,
+        User.name.alias("user"),
+        Sub.name.alias("sub"),
+        SubPost.flair,
+        SubPost.edited,
+        SubPost.comments,
+        User.uid,
+        User.status.alias("userstatus"),
+        SubPost.deleted,
+        SubPost.ptype,
+        SubUserFlair.flair.alias("user_flair"),
+        SubUserFlair.flair_choice.alias("user_flair_id"),
+    ]
     if current_user.is_authenticated:
         posts = SubPost.select(
-            SubPost.nsfw,
-            SubPost.sid,
-            SubPost.content,
-            SubPost.pid,
-            SubPost.title,
-            SubPost.posted,
-            SubPost.score,
-            SubPost.upvotes,
-            SubPost.downvotes,
-            SubPost.distinguish,
-            SubPost.thumbnail,
-            SubPost.link,
-            User.name.alias("user"),
-            Sub.name.alias("sub"),
-            SubPost.flair,
-            SubPost.edited,
-            SubPost.comments,
+            *fields,
             SubPostVote.positive,
-            User.uid,
-            User.status.alias("userstatus"),
-            SubPost.deleted,
-            SubPost.ptype,
-            SubUserFlair.flair.alias("user_flair"),
-            SubUserFlair.flair_choice.alias("user_flair_id"),
         )
         posts = posts.join(
             SubPostVote,
@@ -913,29 +945,7 @@ def getSinglePost(pid):
         ).switch(SubPost)
     else:
         posts = SubPost.select(
-            SubPost.nsfw,
-            SubPost.sid,
-            SubPost.content,
-            SubPost.pid,
-            SubPost.title,
-            SubPost.posted,
-            SubPost.score,
-            SubPost.upvotes,
-            SubPost.downvotes,
-            SubPost.distinguish,
-            SubPost.thumbnail,
-            SubPost.link,
-            User.name.alias("user"),
-            Sub.name.alias("sub"),
-            SubPost.flair,
-            SubPost.edited,
-            SubPost.comments,
-            User.uid,
-            User.status.alias("userstatus"),
-            SubPost.deleted,
-            SubPost.ptype,
-            SubUserFlair.flair.alias("user_flair"),
-            SubUserFlair.flair_choice.alias("user_flair_id"),
+            *fields,
         )
     posts = (
         posts.join(User, JOIN.LEFT_OUTER)
@@ -959,65 +969,85 @@ def postListQueryBase(
     *extra,
     nofilter=False,
     noAllFilter=False,
+    noUserFilter=False,
     noDetail=False,
     # include_deleted_posts is either True, False or a list of
     # subs to include deleted posts from.
     include_deleted_posts=False,
     isSubMod=False,
 ):
-    reports = (
-        SubPostReport.select(
-            SubPostReport.pid,
-            fn.Min(SubPostReport.id).alias("open_report_id"),
-            fn.Count(SubPostReport.id).alias("open_reports"),
-        )
-        .where(SubPostReport.open)
-        .group_by(SubPostReport.pid)
-        .cte("reports")
-    )
+    fields = [
+        SubPost.nsfw,
+        SubPost.content,
+        SubPost.pid,
+        SubPost.title,
+        SubPost.posted,
+        SubPost.deleted,
+        SubPost.score,
+        SubPost.ptype,
+        SubPost.distinguish,
+        SubPost.thumbnail,
+        SubPost.link,
+        User.name.alias("user"),
+        Sub.name.alias("sub"),
+        SubPost.flair,
+        SubPost.edited,
+        Sub.sid,
+        Sub.nsfw.alias("sub_nsfw"),
+        SubPost.comments,
+        User.uid,
+        User.status.alias("userstatus"),
+        SubUserFlair.flair.alias("user_flair"),
+        SubUserFlair.flair_choice.alias("user_flair_id"),
+    ]
+    if current_user.is_authenticated and not noUserFilter:
+        fields += [
+            (UserContentBlock.method == UserContentBlockMethod.BLUR).alias(
+                "blur_content"
+            ),
+            SubMod.id.alias("author_is_mod"),
+        ]
+    else:
+        fields += [
+            Value(None).alias("blur_content"),
+            Value(None).alias("author_is_mod"),
+        ]
 
     if current_user.is_authenticated and not noDetail:
-        posts = SubPost.select(
-            SubPost.nsfw,
-            SubPost.content,
-            SubPost.pid,
-            SubPost.title,
-            SubPost.posted,
-            SubPost.deleted,
-            SubPost.score,
-            SubPost.ptype,
-            SubPost.distinguish,
-            SubPost.thumbnail,
-            SubPost.link,
-            User.name.alias("user"),
-            Sub.name.alias("sub"),
-            SubPost.flair,
-            SubPost.edited,
-            Sub.sid,
-            Sub.nsfw.alias("sub_nsfw"),
-            SubPost.comments,
-            SubPostVote.positive,
-            User.uid,
-            User.status.alias("userstatus"),
-            *extra,
-            *(
-                [reports.c.open_report_id, reports.c.open_reports]
-                if isSubMod
-                else [
-                    Value(None).alias("open_report_id"),
-                    Value(None).alias("open_reports"),
-                ]
-            ),
-            SubUserFlair.flair.alias("user_flair"),
-            SubUserFlair.flair_choice.alias("user_flair_id"),
+        if isSubMod:
+            reports = (
+                SubPostReport.select(
+                    SubPostReport.pid,
+                    fn.Min(SubPostReport.id).alias("open_report_id"),
+                    fn.Count(SubPostReport.id).alias("open_reports"),
+                )
+                .where(SubPostReport.open)
+                .group_by(SubPostReport.pid)
+                .cte("reports")
+            )
+            fields += [reports.c.open_report_id, reports.c.open_reports]
+        else:
+            fields += [
+                Value(None).alias("open_report_id"),
+                Value(None).alias("open_reports"),
+            ]
+
+        posts = (
+            SubPost.select(
+                *fields,
+                *extra,
+                SubPostVote.positive,
+            )
+            .join(
+                SubPostVote,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (SubPostVote.pid == SubPost.pid)
+                    & (SubPostVote.uid == current_user.uid)
+                ),
+            )
+            .switch(SubPost)
         )
-        posts = posts.join(
-            SubPostVote,
-            JOIN.LEFT_OUTER,
-            on=(
-                (SubPostVote.pid == SubPost.pid) & (SubPostVote.uid == current_user.uid)
-            ),
-        ).switch(SubPost)
         if isSubMod:
             posts = (
                 posts.join(reports, JOIN.LEFT_OUTER, on=(reports.c.pid == SubPost.pid))
@@ -1026,31 +1056,10 @@ def postListQueryBase(
             )
     else:
         posts = SubPost.select(
-            SubPost.nsfw,
-            SubPost.content,
-            SubPost.pid,
-            SubPost.title,
-            SubPost.posted,
-            SubPost.deleted,
-            SubPost.score,
-            SubPost.ptype,
-            SubPost.distinguish,
-            SubPost.thumbnail,
-            SubPost.link,
-            User.name.alias("user"),
-            Sub.name.alias("sub"),
-            SubPost.flair,
-            SubPost.edited,
-            Sub.sid,
-            Sub.nsfw.alias("sub_nsfw"),
-            SubPost.comments,
-            User.uid,
-            User.status.alias("userstatus"),
+            *fields,
             *extra,
             Value(None).alias("open_report_id"),
             Value(None).alias("open_reports"),
-            SubUserFlair.flair.alias("user_flair"),
-            SubUserFlair.flair_choice.alias("user_flair_id"),
         )
     posts = (
         posts.join(User, JOIN.LEFT_OUTER)
@@ -1062,6 +1071,46 @@ def postListQueryBase(
             on=((SubUserFlair.sub == Sub.sid) & (SubUserFlair.user == SubPost.uid)),
         )
     )
+
+    if current_user.is_authenticated and not noUserFilter:
+        posts = posts.join(
+            UserContentBlock,
+            JOIN.LEFT_OUTER,
+            on=(
+                (UserContentBlock.uid == current_user.uid)
+                & (UserContentBlock.target == SubPost.uid)
+            ),
+        ).join(
+            SubMod,
+            JOIN.LEFT_OUTER,
+            on=(
+                (SubMod.user == SubPost.uid) & (SubMod.sub == Sub.sid) & ~SubMod.invite
+            ),
+        )
+        if isSubMod:
+            CurrentUserSubMod = SubMod.alias()
+            posts = posts.join(
+                CurrentUserSubMod,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (CurrentUserSubMod.user == current_user.uid)
+                    & (CurrentUserSubMod.sub == Sub.sid)
+                    & ~CurrentUserSubMod.invite
+                ),
+            )
+            posts = posts.where(
+                UserContentBlock.id.is_null()
+                | (UserContentBlock.method != UserContentBlockMethod.HIDE)
+                | CurrentUserSubMod.id.is_null(False)
+                | SubMod.id.is_null(False)
+            )
+        else:
+            posts = posts.where(
+                UserContentBlock.id.is_null()
+                | (UserContentBlock.method != UserContentBlockMethod.HIDE)
+                | SubMod.id.is_null(False)
+            )
+
     if include_deleted_posts:
         if isinstance(include_deleted_posts, list):
             posts = posts.where(
@@ -1117,7 +1166,13 @@ def getPostList(baseQuery, sort, page, page_size=25):
 
 def add_blur(post):
     post["blur"] = ""
-    if "nsfw_blur" in current_user.prefs and (post["nsfw"] or post["sub_nsfw"]):
+    if (
+        post.get("blur_content")
+        and not post.get("author_is_mod")
+        and post["sid"] not in current_user.subs_modded
+    ):
+        post["blur"] = "block-blur"
+    elif "nsfw_blur" in current_user.prefs and (post["nsfw"] or post["sub_nsfw"]):
         post["blur"] = "nsfw-blur"
     return post
 
@@ -1203,9 +1258,7 @@ def is_archived(post):
 
 def load_user(user_id):
     mcount = select_unread_messages(user_id, fn.Count(Message.mid))
-    ncount = Notification.select(fn.Count(Notification.id)).where(
-        (Notification.target == user_id) & Notification.read.is_null(True)
-    )
+    ncount = notification_count_query(user_id)
     user = User.select(
         mcount.alias("messages"),
         ncount.alias("notifications"),
@@ -1350,13 +1403,61 @@ def get_mod_notification_counts(uid):
     return post_report_counts, comment_report_counts, unread_modmail_counts
 
 
+def notification_count_query(uid):
+    SubModCurrentUser = SubMod.alias()
+    return (
+        Notification.select(fn.Count(Notification.id).alias("count"))
+        .join(SubPostComment, JOIN.LEFT_OUTER)
+        .join(
+            UserContentBlock,
+            JOIN.LEFT_OUTER,
+            on=(
+                (UserContentBlock.uid == uid)
+                & (UserContentBlock.target == Notification.sender)
+            ),
+        )
+        .join(
+            SubMod,
+            JOIN.LEFT_OUTER,
+            on=(
+                (SubMod.user == Notification.sender)
+                & (SubMod.sub == Notification.sub)
+                & ~SubMod.invite
+            ),
+        )
+        .join(
+            SubModCurrentUser,
+            JOIN.LEFT_OUTER,
+            on=(
+                (SubModCurrentUser.user == uid)
+                & (SubModCurrentUser.sub == Notification.sub)
+                & ~SubModCurrentUser.invite
+            ),
+        )
+        .where(
+            (Notification.target == uid)
+            & Notification.read.is_null(True)
+            & (
+                UserContentBlock.id.is_null()
+                | ~(
+                    Notification.type
+                    << [
+                        "POST_REPLY",
+                        "COMMENT_REPLY",
+                        "POST_MENTION",
+                        "COMMENT_MENTION",
+                    ]
+                )
+                | SubMod.power_level.is_null(False)
+                | SubModCurrentUser.power_level.is_null(False)
+            )
+        )
+    )
+
+
 def get_notification_count(uid):
     messages = select_unread_messages(uid).count()
-    notifications = (
-        Notification.select()
-        .where((Notification.target == uid) & Notification.read.is_null(True))
-        .count()
-    )
+    notifications = notification_count_query(uid).dicts().get()["count"]
     modmail = get_modmail_count(uid)
     return {"notifications": notifications, "messages": messages, "modmail": modmail}
 
@@ -1366,9 +1467,12 @@ def select_unread_messages(user_id, *args):
     return (
         Message.select(*args)
         .join(
-            UserIgnores,
+            UserMessageBlock,
             JOIN.LEFT_OUTER,
-            on=((UserIgnores.uid == user_id) & (UserIgnores.target == Message.sentby)),
+            on=(
+                (UserMessageBlock.uid == user_id)
+                & (UserMessageBlock.target == Message.sentby)
+            ),
         )
         .join(
             UserUnreadMessage,
@@ -1386,7 +1490,10 @@ def select_unread_messages(user_id, *args):
         )
         .where(
             (UserMessageMailbox.mailbox == MessageMailbox.INBOX)
-            & (UserIgnores.uid.is_null() | (Message.mtype != MessageType.USER_TO_USER))
+            & (
+                UserMessageBlock.id.is_null()
+                | (Message.mtype != MessageType.USER_TO_USER)
+            )
         )
     )
 
@@ -1440,15 +1547,15 @@ def get_messages_inbox(page, uid=None):
             Message.posted,
             Message.mtype,
             UserUnreadMessage.id.alias("unread_id"),
-            UserIgnores.id.alias("ignored"),
+            UserMetadata.value.alias("sender_can_admin"),
         )
         .join(Conversation, JOIN.LEFT_OUTER, on=(Conversation.mid == Message.reply_to))
         .join(
-            UserIgnores,
+            UserMessageBlock,
             JOIN.LEFT_OUTER,
             on=(
-                (UserIgnores.uid == Message.receivedby)
-                & (UserIgnores.target == Message.sentby)
+                (UserMessageBlock.uid == Message.receivedby)
+                & (UserMessageBlock.target == Message.sentby)
             ),
         )
         .join(User, JOIN.LEFT_OUTER, on=(User.uid == Message.sentby))
@@ -1469,10 +1576,22 @@ def get_messages_inbox(page, uid=None):
                 & (UserMessageMailbox.mid == Message.mid)
             ),
         )
+        .join(
+            UserMetadata,
+            JOIN.LEFT_OUTER,
+            on=(
+                (UserMetadata.uid == Message.sentby)
+                & (UserMetadata.key == "admin")
+                & (UserMetadata.value == "1")
+            ),
+        )
         .where(
             (Message.receivedby == uid)
             & (UserMessageMailbox.mailbox == MessageMailbox.INBOX)
-            & (UserIgnores.uid.is_null() | (Message.mtype != MessageType.USER_TO_USER))
+            & (
+                UserMessageBlock.id.is_null()
+                | (Message.mtype != MessageType.USER_TO_USER)
+            )
         )
         .order_by(Message.mid.desc())
         .paginate(page, 20)
@@ -1809,13 +1928,6 @@ def getUserGivenScore(uid):
     )
 
     return pos + cpos, neg + cneg, (pos + cpos) - (neg + cneg)
-
-
-# Note for future self:
-#  We keep constantly switching from camelCase to snake_case for function names.
-#  For fucks sake make your mind.
-def get_ignores(uid):
-    return [x.target for x in UserIgnores.select().where(UserIgnores.uid == uid)]
 
 
 def iter_validate_css(obj, uris):
@@ -2212,6 +2324,18 @@ def validate_captcha(token, response):
     return False
 
 
+def get_comment_query(pid, sort="top"):
+    comments = SubPostComment.select(
+        SubPostComment.cid, SubPostComment.parentcid
+    ).where(SubPostComment.pid == pid)
+    if sort == "new":
+        comments = comments.order_by(SubPostComment.time.desc())
+    elif sort == "top":
+        comments = comments.order_by(SubPostComment.score.desc())
+    comments = comments.dicts()
+    return comments
+
+
 def get_comment_tree(
     pid,
     sid,
@@ -2334,7 +2458,7 @@ def get_comment_tree(
     comment_tree = recursive_check(comment_tree, trimmedtree=trimmed)
 
     # 4 - Populate the tree (get all the data and cram it into the tree)
-    expcomms = SubPostComment.select(
+    fields = [
         SubPostComment.cid,
         SubPostComment.content,
         SubPostComment.lastedit,
@@ -2345,18 +2469,31 @@ def get_comment_tree(
         SubPostComment.distinguish,
         SubPostComment.parentcid,
         User.name.alias("user"),
-        *(
-            [SubPostCommentVote.positive, SubPostComment.uid]
-            if uid
-            else [SubPostComment.uid]
-        ),  # silly hack
+        SubPostComment.uid,
         User.status.alias("userstatus"),
         SubPostComment.upvotes,
         SubPostComment.downvotes,
         SubUserFlair.flair.alias("user_flair"),
         SubUserFlair.flair_choice.alias("user_flair_id"),
-    )
-    # TODO: Add a `sid` field to SubPostComment to simplify queries
+    ]
+    if uid:
+        fields += [
+            SubPostCommentVote.positive,
+            (UserContentBlock.method == UserContentBlockMethod.HIDE).alias(
+                "hide_content"
+            ),
+            (UserContentBlock.method == UserContentBlockMethod.BLUR).alias(
+                "blur_content"
+            ),
+            SubMod.sid.alias("user_is_mod"),
+        ]
+    else:
+        fields += [
+            Value(None).alias("hide_content"),
+            Value(None).alias("blur_content"),
+            Value(None).alias("user_is_mod"),
+        ]
+    expcomms = SubPostComment.select(*fields)
     expcomms = (
         expcomms.join(User, on=(User.uid == SubPostComment.uid))
         .switch(SubPostComment)
@@ -2369,23 +2506,55 @@ def get_comment_tree(
         )
     )
     if uid:
-        expcomms = expcomms.join(
-            SubPostCommentVote,
-            JOIN.LEFT_OUTER,
-            on=(
-                (SubPostCommentVote.uid == uid)
-                & (SubPostCommentVote.cid == SubPostComment.cid)
-            ),
+        expcomms = (
+            expcomms.join(
+                SubPostCommentVote,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (SubPostCommentVote.uid == uid)
+                    & (SubPostCommentVote.cid == SubPostComment.cid)
+                ),
+            )
+            .join(
+                SubMod,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (SubMod.uid == User.uid) & (SubMod.sid == Sub.sid) & ~SubMod.invite
+                ),
+            )
+            .join(
+                UserContentBlock,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (UserContentBlock.uid == uid)
+                    & (UserContentBlock.target == User.uid)
+                ),
+            )
         )
     expcomms = expcomms.where(SubPostComment.cid << cid_list).dicts()
 
     commdata = {}
     is_admin = current_user.is_admin()
     is_mod = current_user.is_mod(sid, 1)
+    remove_content = {
+        "uid": None,
+        "content": "",
+        "lastedit": None,
+        "visibility": "none",
+    }
     for comm in expcomms:
         comm["history"] = []
         comm["visibility"] = ""
         comm["sticky"] = comm["cid"] == sticky_cid
+
+        if not (not uid or is_mod or comm["user_is_mod"] or comm["status"]):
+            if comm["hide_content"]:
+                comm["blocked_user"] = comm["user"]
+                comm["user"] = _("[Blocked]")
+                comm.update(remove_content)
+                comm["visibility"] = "hide-block"
+            elif comm["blur_content"]:
+                comm["visibility"] = "blur-block"
 
         if comm["status"]:
             if comm["status"] == 1:
@@ -2395,27 +2564,19 @@ def get_comment_tree(
                     comm["visibility"] = "mod-self-del"
                 else:
                     comm["user"] = _("[Deleted]")
-                    comm["uid"] = None
-                    comm["content"] = ""
-                    comm["lastedit"] = None
-                    comm["visibility"] = "none"
+                    comm.update(remove_content)
             elif comm["status"] == 2:
                 if is_admin or is_mod:
                     comm["visibility"] = "mod-del"
                 else:
                     comm["user"] = _("[Deleted]")
-                    comm["uid"] = None
-                    comm["content"] = ""
-                    comm["lastedit"] = None
-                    comm["visibility"] = "none"
+                    comm.update(remove_content)
 
         if comm["userstatus"] == 10:
             comm["user"] = _("[Deleted]")
             comm["uid"] = None
             if comm["status"] == 1:
-                comm["content"] = ""
-                comm["lastedit"] = None
-                comm["visibility"] = "none"
+                comm.update(remove_content)
         # del comm['userstatus']
         commdata[comm["cid"]] = comm
 
@@ -2459,13 +2620,7 @@ def get_notif_count():
     Temporary till we get rid of the old template
      @deprecated
     """
-    return (
-        Notification.select()
-        .where(
-            (Notification.target == current_user.uid) & Notification.read.is_null(True)
-        )
-        .count()
-    )
+    return notification_count_query(current_user.uid).dicts().get()["count"]
 
 
 def anti_double_post(func):
@@ -2985,6 +3140,33 @@ def word_truncate(content, max_length, suffix="..."):
     )
 
 
+def where_user_not_blocked(query, model):
+    return (
+        query.join(
+            SubMod,
+            JOIN.LEFT_OUTER,
+            on=(
+                (SubMod.user == model.uid)
+                & (SubMod.sub == SubPost.sid)
+                & ~SubMod.invite
+            ),
+        )
+        .join(
+            UserContentBlock,
+            JOIN.LEFT_OUTER,
+            on=(
+                (UserContentBlock.uid == current_user.uid)
+                & (UserContentBlock.target == model.uid)
+            ),
+        )
+        .where(
+            UserContentBlock.id.is_null()
+            | SubMod.id.is_null(False)
+            | (SubPost.sid << current_user.subs_modded)
+        )
+    )
+
+
 def recent_activity(sidebar=True):
     if not config.site.recent_activity.enabled:
         return []
@@ -3035,6 +3217,10 @@ def recent_activity(sidebar=True):
         ]
         post_activity = post_activity.where(SubPost.sid << defaults)
         comment_activity = comment_activity.where(SubPost.sid << defaults)
+
+    if current_user.is_authenticated:
+        post_activity = where_user_not_blocked(post_activity, SubPost)
+        comment_activity = where_user_not_blocked(comment_activity, SubPostComment)
 
     activity = comment_activity | post_activity
     activity = activity.alias("subquery")

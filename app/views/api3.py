@@ -49,8 +49,11 @@ from ..models import (
     SubMod,
     InviteCode,
     UserStatus,
+    SubPostMetadata,
+    UserMessageBlock,
+    UserContentBlock,
+    UserContentBlockMethod,
 )
-from ..models import SubPostMetadata, UserIgnores
 from ..caching import cache
 from ..config import config
 from ..badges import badges
@@ -588,12 +591,7 @@ def get_post_comments(_sub, pid):
         return jsonify(msg="Post does not exist"), 404
 
     # 1 - Fetch all comments (only cid and parentcid)
-    comments = (
-        SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
-        .where(SubPostComment.pid == post.pid)
-        .order_by(SubPostComment.score.desc())
-        .dicts()
-    )
+    comments = misc.get_comment_query(post.pid, sort="top")
     if not comments.count():
         return jsonify(comments=[])
 
@@ -725,15 +723,20 @@ def create_comment(sub, pid):
         notif_to = post.uid_id
         ntype = "POST_REPLY"
 
-    if notif_to != uid and uid not in misc.get_ignores(notif_to):
-        notifications.send(
-            ntype,
-            sub=post.sid,
-            post=post.pid,
-            comment=comment.cid,
-            sender=uid,
-            target=notif_to,
-        )
+    if notif_to != uid:
+        try:
+            UserContentBlock.get(
+                (UserContentBlock.uid == notif_to) & (UserContentBlock.target == uid)
+            )
+        except UserContentBlock.DoesNotExist:
+            notifications.send(
+                ntype,
+                sub=post.sid,
+                post=post.pid,
+                comment=comment.cid,
+                sender=uid,
+                target=notif_to,
+            )
 
     # 6 - Process mentions
     sub = Sub.get_by_id(post.sid)
@@ -909,12 +912,7 @@ def get_post_comment_children(_sub, pid, cid):
         except SubPostComment.DoesNotExist:
             return jsonify(msg="Post does not exist"), 404
 
-    comments = (
-        SubPostComment.select(SubPostComment.cid, SubPostComment.parentcid)
-        .where(SubPostComment.pid == pid)
-        .order_by(SubPostComment.score.desc())
-        .dicts()
-    )
+    comments = misc.get_comment_query(pid, sort="top")
     if not comments.count():
         return jsonify(comments=[])
 
@@ -1401,11 +1399,12 @@ def get_ignored():
     """ Lists all the users the user has blocked. """
     uid = get_jwt_identity()
 
-    ignores = UserIgnores.select(User.name, UserIgnores.date).join(
-        User, on=User.uid == UserIgnores.target
+    ignores = (
+        User.select(User.name, UserMessageBlock.date)
+        .join(UserMessageBlock, on=(User.uid == UserMessageBlock.target))
+        .where(UserMessageBlock.uid == uid)
+        .dicts()
     )
-    ignores = ignores.where(UserIgnores.uid == uid).dicts()
-
     return jsonify(ignores=list(ignores))
 
 
@@ -1422,17 +1421,55 @@ def ignore_notifications():
         return jsonify(error="The user parameter is required"), 400
 
     try:
-        user = User.get(User.name == user)
+        user = (
+            User.select(User.uid, UserMetadata.value)
+            .join(
+                UserMetadata,
+                JOIN.LEFT_OUTER,
+                on=((UserMetadata.uid == User.uid) & (UserMetadata.key == "admin")),
+            )
+            .where(User.name == user)
+            .dicts()
+            .get()
+        )
     except User.DoesNotExist:
         return jsonify(error="The user provided does not exist"), 400
 
-    try:
-        UserIgnores.get((UserIgnores.uid == uid) & (UserIgnores.target == user.uid))
-        return jsonify(error="User is already blocked")
-    except UserIgnores.DoesNotExist:
-        pass
+    if user["value"] == "1":
+        return jsonify(
+            status="error", error="The user provided is a site administrator"
+        )
 
-    UserIgnores.create(uid=uid, target=user.uid)
+    try:
+        umb = UserMessageBlock.get(
+            (UserMessageBlock.uid == uid) & (UserMessageBlock.target == user["uid"])
+        )
+    except UserMessageBlock.DoesNotExist:
+        umb = None
+
+    try:
+        ucb = UserContentBlock.get(
+            (UserContentBlock.uid == uid) & (UserContentBlock.target == user["uid"])
+        )
+    except UserContentBlock.DoesNotExist:
+        ucb = None
+
+    if (
+        umb is not None
+        and ucb is not None
+        and ucb.method == UserContentBlockMethod.HIDE
+    ):
+        return jsonify(error="User is already blocked")
+
+    if umb is None:
+        UserMessageBlock.create(uid=uid, target=user["uid"])
+    if ucb is None:
+        UserContentBlock.create(
+            uid=uid, target=user["uid"], method=UserContentBlockMethod.HIDE
+        )
+    else:
+        ucb.method = UserContentBlockMethod.HIDE
+        ucb.save()
     return jsonify(status="ok")
 
 
@@ -1454,13 +1491,26 @@ def unignore_notifications():
         return jsonify(error="The user provided does not exist"), 400
 
     try:
-        ignore = UserIgnores.get(
-            (UserIgnores.uid == uid) & (UserIgnores.target == user.uid)
+        umb = UserMessageBlock.get(
+            (UserMessageBlock.uid == uid) & (UserMessageBlock.target == user.uid)
         )
-        ignore.delete_instance()
-    except UserIgnores.DoesNotExist:
+    except UserMessageBlock.DoesNotExist:
+        umb = None
+
+    try:
+        ucb = UserContentBlock.get(
+            (UserContentBlock.uid == uid) & (UserContentBlock.target == user.uid)
+        )
+    except UserContentBlock.DoesNotExist:
+        ucb = None
+
+    if umb is None and ucb is None:
         return jsonify(error="User is not blocked")
 
+    if umb is not None:
+        umb.delete_instance()
+    if ucb is not None:
+        ucb.delete_instance()
     return jsonify(status="ok")
 
 

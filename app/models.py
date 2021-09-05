@@ -640,16 +640,37 @@ class SubPostTitleHistory(BaseModel):
         table_name = "sub_post_title_history"
 
 
-class UserIgnores(BaseModel):
+class UserMessageBlock(BaseModel):
     uid = ForeignKeyField(db_column="uid", model=User, field="uid")
     target = CharField(max_length=40)
     date = DateTimeField(default=datetime.datetime.now)
 
     def __repr__(self):
-        return f'<UserIgnores "{self.target}">'
+        return f'<UserMessageBlock "{self.id}">'
 
     class Meta:
-        table_name = "user_ignores"
+        table_name = "user_message_block"
+
+
+class UserContentBlockMethod(IntEnum):
+    """Ways to block content for users.
+    Value of the 'method' field in UserContentBlock."""
+
+    HIDE = 0
+    BLUR = 1
+
+
+class UserContentBlock(BaseModel):
+    uid = ForeignKeyField(db_column="uid", model=User, field="uid")
+    target = CharField(max_length=40)
+    date = DateTimeField(default=datetime.datetime.now)
+    method = IntegerField()  # 0=hide, 1=blur
+
+    def __repr__(self):
+        return f'<UserContentBlock "{self.id}">'
+
+    class Meta:
+        table_name = "user_content_block"
 
 
 class APIToken(BaseModel):
@@ -794,10 +815,11 @@ class Notification(BaseModel):
     """ Holds user notifications. """
 
     # Notification type. Can be one of:
-    # - POST_REPLY
-    # - COMMENT_REPLY
-    # - MENTION
-    # - MOD_INVITE
+    # - POST_REPLY, COMMENT_REPLY
+    # - POST_MENTION, COMMENT_MENTION
+    # - SUB_BAN, SUB_UNBAN
+    # - MOD_INVITE, MOD_INVITE_JANITOR, MOD_INVITE_OWNER
+    # - POST_DELETE, POST_UNDELETE
     type = CharField()
 
     sub = ForeignKeyField(db_column="sid", model=Sub, field="sid", null=True)

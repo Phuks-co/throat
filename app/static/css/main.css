@@ -542,7 +542,7 @@ span#notification.fade {
 
 /*  UPLOADER STYLES  */
 
-.hide, #upload-input, #pbar, #filetable, .pure-form input[type="text"].hide {
+.hide, #upload-input, #pbar, #filetable, .pure-form input[type="text"].hide, .pure-form select.hide {
   display: none;
 }
 
@@ -915,7 +915,14 @@ a.slink {
   cursor: pointer;
 }
 
-img.nsfw-blur {
+.block-blur, .block-blur.title, a.block-blur.title:visited {
+  color: #a61515;
+  filter: blur(4px);
+  -webkit-filter: blur(4px);
+  cursor: pointer;
+}
+
+img.nsfw-blur, img.block-blur {
   filter: blur(8px);
   -webkit-filter: blur(8px);
 }
@@ -1653,7 +1660,7 @@ form#msg-form {
   background-color: rgba(84, 73, 73, 0.16);
 }
 
-#formpop {
+#formpop, #blockpop {
   position: fixed;
   z-index: 100;
   padding-top: 108px;
@@ -1666,7 +1673,7 @@ form#msg-form {
   background-color: rgba(0, 0, 0, 0.4);
 }
 
-#formpop .modal-content {
+#formpop .modal-content, #blockpop .modal-content {
   background-color: #fefefe;
   margin: auto;
   padding: 20px;
@@ -2900,4 +2907,17 @@ input[name="captcha"] {
 
 .admin-config-edit:hover {
   fill: #64a6ca;
+}
+
+.ignore-form {
+    max-width: 100%;
+    display: inline-block;
+    margin-left: 1em;
+}
+
+.ignore-form-select {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: normal;
+    text-overflow: ellipsis;
 }

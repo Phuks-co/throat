@@ -18,6 +18,12 @@ def get_value(data, key):
     return soup.find(id=key)["value"]
 
 
+def get_error_text(data):
+    soup = BeautifulSoup(data, "html.parser")
+    error = soup.find(class_="error")
+    return error.get_text() if error is not None else ""
+
+
 # pretty-print for debugging purposes
 def pp(data):
     print(BeautifulSoup(data, "html.parser", from_encoding="utf-8").prettify())
@@ -72,6 +78,7 @@ def log_in_user(client, user_info, expect_success=True):
 
 def log_out_current_user(client, verify=True):
     """Log out the user who is logged in."""
+
     rv = client.get(url_for("home.index"))
     rv = client.post(
         url_for("do.logout"),
@@ -117,11 +124,11 @@ def register_user(client, user_info):
             )
 
 
-def create_sub(client, allow_polls=False):
+def create_sub(client, name="test", allow_polls=False):
     rv = client.get(url_for("subs.create_sub"))
     assert rv.status_code == 200
 
-    data = {"csrf_token": csrf_token(rv.data), "subname": "test", "title": "Testing"}
+    data = {"csrf_token": csrf_token(rv.data), "subname": name, "title": "Testing"}
 
     rv = client.post(url_for("subs.create_sub"), data=data, follow_redirects=True)
     assert b"/s/test" in rv.data

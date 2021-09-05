@@ -3,14 +3,14 @@
   @#ignore
   @for comment in comments:
     @if comment['cid']:
-      <article id="@{comment['cid']}" data-cid="@{comment['cid']}" class="commentrow @{(comment['cid'] == highlight) and 'highlight ' or ''}@{(comment.get('hl')) and 'active' or ''}@{((comment['visibility'] != '') and (comment['visibility'] != 'none')) and 'deleted ' or ''} text-post no-padding comment @{(comment['distinguish'] == 1) and 'mod' or ''} @{(comment['distinguish'] == 2) and 'admin' or ''}">
+      <article id="@{comment['cid']}" data-cid="@{comment['cid']}" class="commentrow @{(comment['cid'] == highlight) and 'highlight ' or ''}@{(comment.get('hl')) and 'active' or ''}@{((comment['visibility'] != '') and (comment['visibility'] != 'none') and (comment['visibility'] not in ['blur-block', 'hide-block'])) and 'deleted ' or ''} text-post no-padding comment @{(comment['distinguish'] == 1) and 'mod' or ''} @{(comment['distinguish'] == 2) and 'admin' or ''}">
         <div id="comment-@{comment['cid']}">
           @if comment['userstatus'] != 10:
             <div class="pull left votecomment">
-                @if comment['visibility'] == '':
-                <div title="@{_('Upvote')}" class="c-upvote @{(comment.get('positive') == True) and 'upvoted' or ''}" data-pid="@{post['pid']}" data-icon="upvote"></div>
-                <div title="@{_('Downvote')}" class="c-downvote @{(comment.get('positive') == False) and 'downvoted' or ''}" data-pid="@{post['pid']}" data-icon="downvote"></div>
-                @end
+              @if comment['visibility'] in ['', 'blur-block']:
+                <div title="@{_('Upvote')}" class="c-upvote @{(comment.get('positive') == True) and 'upvoted' or ''} @{(comment['visibility'] == 'blur-block') and 'hidden' or ''}" data-pid="@{post['pid']}" data-icon="upvote"></div>
+                <div title="@{_('Downvote')}" class="c-downvote @{(comment.get('positive') == False) and 'downvoted' or ''} @{(comment['visibility'] == 'blur-block') and 'hidden' or ''}" data-pid="@{post['pid']}" data-icon="downvote"></div>
+              @end
             </div>
           @end
           <div class="commblock">
@@ -19,7 +19,7 @@
                 @{(comment['visibility'] != '') and '[+]' or '[–]'} \
               </a>
               @if comment['visibility'] == 'none':
-                  <a class="poster deleted">@{_('[Deleted]')}</a>
+                <a class="poster deleted">@{comment['user']}</a>
               @else:
                 <a href="/u/@{comment['user']}" class="poster">
                   @{comment['user']}
@@ -32,6 +32,9 @@
                 </a>
                 @if comment['user_flair']:
                   <span class="user_flair" data-flair-id="@{str(post['user_flair_id'])}">@{comment['user_flair']!!e}</span>
+                @end
+                @if comment['visibility'] == 'blur-block':
+                  <span class="helper-text">@{_('[Blocked]')}</span>
                 @end
               @end
               <b>@{_('<span class="cscore">%(score)i</span> points</b>', score=comment['score'])!!html}
@@ -54,7 +57,7 @@
 
             <div class="content  @{(comment['visibility'] != '') and 'hidden' or ''}" id="content-@{comment['cid']}">
               @if comment['visibility'] == 'none':
-                @{_('[Deleted]')} \
+                @{comment['user']} \
               @elif comment['visibility'] == 'admin-self-del':
                 <p class="helper-text">@{_('[post deleted by user]')}</p>
                 <span class="current history" data-id="0">@{comment['content']!!html}</span>
@@ -63,7 +66,9 @@
               @elif comment['visibility'] == 'mod-del':
                 <p class="helper-text">@{_('[post deleted by mod or admin]')}</p>
                 <span class="current history" data-id="0">@{comment['content']!!html}</span>
-              @else:
+              @elif comment['visibility'] == 'hide-block' and comment['userstatus'] != 10:
+                <p class="helper-text">@{_('[You have blocked <a href="%(link)s">%(name)s</a>]', link=url_for('user.view', user=comment['blocked_user']), name=comment['blocked_user'])!!html}</p>
+              @elif comment['visibility'] != 'hide-block':
                 <span class="current history" data-id="0">@{comment['content']!!html}</span>
               @end
               @if comment['history'] and (comment['visibility'] != 'none' and  comment['visibility'] != 'mod-self-del'):
@@ -89,20 +94,23 @@
               <div hidden id="sauce-@{comment['cid']}">@{comment['source']}</div>
             @end
             <ul class="bottombar links @{(comment['visibility'] != '') and 'hidden' or ''}">
-              @if current_user.is_authenticated and comment['visibility'] == '' and not current_user.is_subban(post['sid']) and not postmeta.get('lock-comments') and post['deleted'] == 0 and not post['is_archived']:
+              @if comment['visibility'] in ['blur-block', 'hide-block'] and comment['userstatus'] != 10:
+                <li><a href="@{url_for('user.view_ignores', menu='user')}">@{_('blocked users')}</a></li>
+              @end
+              @if current_user.is_authenticated and comment['visibility'] in ['', 'blur-block'] and not current_user.is_subban(post['sid']) and not postmeta.get('lock-comments') and post['deleted'] == 0 and not post['is_archived']:
                 <li><a class="reply-comment" data-pid="@{comment['pid']}" data-to="@{comment['cid']}">@{_('reply')}</a></li>
               @end
               <li><a href="@{url_for('sub.view_perm', sub=post['sub'], cid=comment['cid'], pid=post['pid'], slug=post['slug'])}#comment-@{comment['cid']}">@{_('permalink')}</a></li>
-              @if comment['visibility'] == '':
+              @if comment['visibility'] in ['', 'blur-block']:
                 <li><a class="comment-source" data-cid="@{comment['cid']}">@{_('source')}</a></li>
               @end
-              @if current_user.is_authenticated and comment['visibility'] == '' and comment['visibility'] == '' and comment['uid'] != current_user.uid:
-                <a data-ac="report" data-pid="@{comment['pid']}" cid="@{comment['cid']}" class="report-comment">@{_('report')}</a>
+              @if current_user.is_authenticated and comment['visibility'] in ['', 'blur-block'] and comment['uid'] != current_user.uid:
+                <li><a data-ac="report" data-pid="@{comment['pid']}" cid="@{comment['cid']}" class="report-comment">@{_('report')}</a></li>
               @end
-              @if current_user.is_authenticated and comment['visibility'] == '' and comment['uid'] == current_user.uid and comment['visibility'] == '':
+              @if current_user.is_authenticated and comment['visibility'] in ['', 'blur-block'] and comment['uid'] == current_user.uid:
                 <li><a class="edit-comment" data-cid="@{comment['cid']}">@{_('edit')}</a></li>
               @end
-              @if current_user.is_authenticated and comment['visibility'] == '' and (comment['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in subMods['all']) and comment['visibility'] == '':
+              @if current_user.is_authenticated and comment['visibility'] == '' and (comment['uid'] == current_user.uid or current_user.is_admin() or current_user.uid in subMods['all']):
                 <li><a @{(comment['uid'] == current_user.uid) and 'selfdel="true"' or ''!!html} class="delete-comment" data-cid="@{comment['cid']}">@{_('delete')}</a></li>
               @end
               @if (current_user.is_admin() and comment['status'] == 2):

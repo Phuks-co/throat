@@ -1,6 +1,6 @@
 """ Profile and settings endpoints """
 from peewee import fn, JOIN
-from flask import Blueprint, render_template, abort, redirect, url_for, flash
+from flask import Blueprint, render_template, abort, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from flask_babel import _, Locale
 from .do import send_password_recovery_email, uid_from_recovery_token
@@ -13,14 +13,27 @@ from ..misc import ratelimit, AUTH_LIMIT, SIGNUP_LIMIT
 from ..forms import (
     CsrfTokenOnlyForm,
     EditUserForm,
+    EditIgnoreForm,
     CreateUserMessageForm,
     EditAccountForm,
     DeleteAccountForm,
     PasswordRecoveryForm,
 )
 from ..forms import PasswordResetForm
-from ..models import User, UserStatus, UserUploads
-from ..models import Sub, SubMod, SubPost, SubPostComment, UserSaved, InviteCode
+from ..models import (
+    User,
+    UserStatus,
+    UserUploads,
+    UserMessageBlock,
+    UserContentBlock,
+    UserContentBlockMethod,
+    Sub,
+    SubMod,
+    SubPost,
+    SubPostComment,
+    UserSaved,
+    InviteCode,
+)
 from ..badges import badges as badges_module
 
 bp = Blueprint("user", __name__)
@@ -72,6 +85,49 @@ def view(user):
 
     givenScore = misc.getUserGivenScore(user.uid)
 
+    messages = content = "show"
+    if (
+        current_user.uid != user.uid
+        and not user_is_admin
+        and not current_user.can_admin
+    ):
+        blocked = (
+            User.select(
+                UserMessageBlock.id.is_null(False).alias("hide_messages"),
+                UserContentBlock.method,
+            )
+            .join(
+                UserMessageBlock,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (UserMessageBlock.uid == current_user.uid)
+                    & (UserMessageBlock.target == user.uid)
+                ),
+            )
+            .join(
+                UserContentBlock,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (UserContentBlock.uid == current_user.uid)
+                    & (UserContentBlock.target == user.uid)
+                ),
+            )
+            .dicts()
+            .get()
+        )
+
+        if blocked["hide_messages"]:
+            messages = "hide"
+        else:
+            messages = "show"
+        if blocked["method"] is None:
+            content = "show"
+        elif blocked["method"] == UserContentBlockMethod.BLUR:
+            content = "blur"
+        else:
+            content = "hide"
+    ignform = EditIgnoreForm(view_messages=messages, view_content=content)
+
     return engine.get_template("user/profile.html").render(
         {
             "user": user,
@@ -87,6 +143,7 @@ def view(user):
             "habits": habit,
             "target_user_is_admin": user_is_admin,
             "msgform": CreateUserMessageForm(),
+            "ignform": ignform,
         }
     )
 
@@ -112,6 +169,7 @@ def view_user_posts(user, page):
         misc.postListQueryBase(
             include_deleted_posts=include_deleted_posts,
             noAllFilter=not current_user.is_admin(),
+            noUserFilter=True,
         ).where(User.uid == user.uid),
         "new",
         page,
@@ -133,7 +191,7 @@ def view_user_savedposts(user, page):
     """ WIP: View user's saved posts """
     if current_user.name.lower() == user.lower():
         posts = misc.getPostList(
-            misc.postListQueryBase(noAllFilter=True)
+            misc.postListQueryBase(noAllFilter=True, noUserFilter=True)
             .join(UserSaved, on=(UserSaved.pid == SubPost.pid))
             .where(UserSaved.uid == current_user.uid),
             "new",
@@ -346,3 +404,66 @@ def password_reset(token):
 
     form = PasswordResetForm(key=token, user=user.uid)
     return engine.get_template("user/password_reset.html").render({"lpform": form})
+
+
+@bp.route("/settings/blocks", defaults={"page": 1})
+@bp.route("/settings/blocks/<int:page>")
+@login_required
+def view_ignores(page):
+    """ View user's blocked users. """
+    if current_user.can_admin:
+        abort(404)
+    menu = request.args.get("menu", "user")
+
+    def add_form(ig):
+        messages = "hide" if ig["hide_messages"] else "show"
+        if ig["method"] is None:
+            content = "show"
+        elif ig["method"] == UserContentBlockMethod.HIDE:
+            content = "hide"
+        else:
+            content = "blur"
+        ig["form"] = EditIgnoreForm(view_messages=messages, view_content=content)
+        return ig
+
+    query = (
+        User.select(
+            User.name,
+            User.uid.alias("target"),
+            UserMessageBlock.id.is_null(False).alias("hide_messages"),
+            UserContentBlock.method,
+        )
+        .join(
+            UserMessageBlock,
+            JOIN.LEFT_OUTER,
+            on=(
+                (UserMessageBlock.uid == current_user.uid)
+                & (UserMessageBlock.target == User.uid)
+            ),
+        )
+        .join(
+            UserContentBlock,
+            JOIN.LEFT_OUTER,
+            on=(
+                (UserContentBlock.uid == current_user.uid)
+                & (UserContentBlock.target == User.uid)
+            ),
+        )
+        .where(
+            (User.status == UserStatus.OK)
+            & (UserContentBlock.id.is_null(False) | UserMessageBlock.id.is_null(False))
+        )
+        .order_by(fn.lower(User.name))
+        .paginate(page, 25)
+        .dicts()
+    )
+    igns = [add_form(ig) for ig in query]
+
+    return engine.get_template("user/ignores.html").render(
+        {
+            "igns": igns,
+            "user": User.get(User.uid == current_user.uid),
+            "page": page,
+            "menu": menu,
+        }
+    )

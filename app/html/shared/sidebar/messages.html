@@ -23,8 +23,10 @@
   <div>
     <a class="sbm-post pure-button"  href="@{ url_for('messages.view_saved_messages') }">@{_('Saved Messages')}</a>
   </div>
-  <div>
-    <a class="sbm-post pure-button"  href="@{ url_for('messages.view_ignores') }">@{_('Blocked users')}</a>
-  </div>
+  @if not current_user.can_admin:
+    <div>
+      <a class="sbm-post pure-button @{curr_endpoint=='blocks' and 'button-secondary' or ''}"  href="@{ url_for('user.view_ignores', menu='message') }">@{_('Blocked users')}</a>
+    </div>
+  @end
 </div>
 @end

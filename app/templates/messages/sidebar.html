@@ -23,7 +23,9 @@
   <div>
     <a class="sbm-post pure-button{% if box_route=='messages.view_saved_messages' %} button-secondary{% endif %}"  href="{{ url_for('messages.view_saved_messages') }}">Uložené správy</a>
   </div>
-  <div>
-    <a class="sbm-post pure-button"  href="{{ url_for('messages.view_ignores') }}">Blokovaní používatelia</a>
-  </div>
+  {% if not current_user.can_admin %}
+    <div>
+      <a class="sbm-post pure-button"  href="{{ url_for('user.view_ignores', menu='message') }}">Blokovaní používatelia</a>
+    </div>
+  {% endif %}
 </div>
