@@ -583,3 +583,19 @@ u.addEventForChild(document, 'click', '.nsfw-blur', function(e, qelem){
   e.preventDefault();
   qelem.classList.remove('nsfw-blur');
 })
+
+
+u.addEventForChild(document, 'click', '.block-blur', function(e, qelem){
+  e.preventDefault();
+  qelem.classList.remove('block-blur');
+})
+
+
+// User blocks and ignores.
+// Show the Save changes button when any change is made to the select inputs.
+u.addEventForChild(document, 'input', '.ignore-form-select', function(e, qelem){
+  const uid = qelem.id.substring("ign-msg-".length);
+  const saveButton = document.getElementById('submit-ignore-' + uid);
+  saveButton.classList.remove('hide');
+  saveButton.innerHTML = _('Save changes')
+})

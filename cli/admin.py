@@ -1,7 +1,7 @@
 import click
 from flask.cli import AppGroup
 from peewee import fn
-from app.models import User, UserMetadata
+from app.models import User, UserMetadata, UserMessageBlock, UserContentBlock
 
 admin = AppGroup("admin", help="Manages admin users")
 
@@ -15,6 +15,12 @@ def add(username):
         print("Error: User does not exist")
         return
     UserMetadata.create(uid=user.uid, key="admin", value="1")
+    UserMessageBlock.delete().where(
+        ((UserMessageBlock.uid == user.uid) | (UserMessageBlock.target == user.uid))
+    ).execute()
+    UserContentBlock.delete().where(
+        ((UserContentBlock.uid == user.uid) | (UserContentBlock.target == user.uid))
+    ).execute()
     print("Done.")
 
 

@@ -1,0 +1,58 @@
+@extends("shared/layout.html")
+@require(igns, menu, page)
+@import 'shared/sidebar/messages.html' as sb
+
+@def title():
+@{_('Blocked Users')} | @{config.site.lema}
+@end
+
+@def sidebar():
+  @# Without a comment here, the menu is not rendered.
+  @if menu == 'message':
+      @{sb.render_sidebar('blocks')!!html}
+  @else:
+      @include('shared/sidebar/user.html')
+  @end
+@end
+
+@def main():
+<div id="container">
+  <div class="inbox content">
+    <h3 style="display: inline-block;">@{_('Blocked Users')}</h3>
+    @if igns:
+      <p class="helper-text">@{_('You can use this page to manage the users you have blocked. You can choose to hide or show private messages from blocked users, and you can choose to hide, blur or show posts and comments by blocked users. To add users to this list, use the “block” link on their user profile or the “block sender” link on their messages.')}</p>
+      <p class="helper-text">@{_('Blocking other users does not prevent them from seeing the content that you post.')}</p>
+      @if current_user.is_a_mod:
+        <p class="helper-text">@{_('Posts and comments from blocked users will be shown normally in the subs which you moderate, and if you block someone who is a moderator, the content they post in the subs which they moderate will always be shown.')}</p>
+      @else:
+        <p class="helper-text">@{_('Posts and comments from blocked users who are moderators will be shown normally in the subs which they moderate.')}</p>
+      @end
+      <table class="pure-table">
+      @for ig in igns:
+        <tr id="ign-@{ig['target']}">
+          <td><a href="@{url_for('user.view', user=ig['name'])}">@{ig['name']}</a></td>
+          <td>
+            <form id="ignore-form-@{ig['target']}" method="POST" action="@{url_for('do.edit_ignore', uid=ig['target'])}" class="pure-form pure-form-stacked ajaxform ignore-form">
+              @{ig['form'].csrf_token()!!html}
+              @{ig['form'].view_messages(id='ign-msg-' + ig['target'], class_='ignore-form-select')!!html}
+              @{ig['form'].view_content(id='ign-con-' + ig['target'], class_='ignore-form-select')!!html}
+              <button id="submit-ignore-@{ig['target']}" type="submit" class="hide pure-button button-xsmall" data-label="@{_('Save changes')}" data-prog="@{_('Saving...')}" data-success="@{_('Saved!')}">@{_('Save changes')}</button>
+              <div class="alert div-error"></div>
+            </form>
+          </td>
+        </tr>
+      @end
+      </table>
+    @else:
+      <h4>@{_("You haven't blocked anybody")}</h4>
+      <p class="helper-text">@{_('You can block users from the “block” link on their user profile or the “block sender” link on their messages.')}</p>
+    @endif
+  </div>
+  @if page > 1:
+    <a href="@{url_for("user.view_ignores", menu=menu, page=(page-1))}" class="pure-button">@{_('Previous page')}</a>
+  @end
+  @if len(igns) == 25:
+    <a href="@{url_for("user.view_ignores", menu=menu, page=(page+1))}" class="pure-button">@{_('Next page')}</a>
+  @end
+</div>
+@end

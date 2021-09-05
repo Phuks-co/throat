@@ -1,5 +1,5 @@
 @extends("shared/layout.html")
-@require(user, level, progress, postCount, commentCount, givenScore, invitecodeinfo, badges, owns, mods, habits, msgform, target_user_is_admin)
+@require(user, level, progress, postCount, commentCount, givenScore, invitecodeinfo, badges, owns, mods, habits, msgform, target_user_is_admin, ignform)
 
 @def title():
 /u/@{user.name} |\
@@ -14,6 +14,11 @@
                 <hr>
                 <div class="pmessage">
                     <a href="#msg-form" data-replyto='@{user.name}' class="formpopmsg sbm-post pure-button">@{_('Send a message')}</a>
+                </div>
+            @end
+            @if not target_user_is_admin and not current_user.can_admin:
+                <div class="pmessage">
+                  <a href="#block-form" data-replyto='@{user.uid}' class="blockpopmsg sbm-post pure-button">@{_('Block')}</a>
                 </div>
             @end
         @end
@@ -163,6 +168,25 @@
                                   </div>
                                 </div>
                             </fieldset>
+                        </form>
+                    </div>
+                </div>
+                <div id="blockpop" style="display:none;">
+                    <div class="modal-content">
+                        <span class="closepopmsg">&times;</span>
+                        <h3>@{_('Block %(user)s', user=user.name)}</h3>
+                        @if current_user.is_a_mod:
+                          <p class="helper-text">@{_('Posts and comments from blocked users will be shown normally in the subs which you moderate, and if you block someone who is a moderator, the content they post in the subs which they moderate will always be shown.')}</p>
+                        @elif len(owns + mods) > 0:
+                          <p class="helper-text">@{_('Posts and comments by %(user)s will be shown normally in the subs which they moderate.', user=user.name)}</p>
+                        @end
+                        <p class="helper-text">@{_('Blocking other users does not prevent them from seeing the content that you post.')}</p>
+                        <form id="ignore_form" method="POST" data-reload="true" action="@{url_for('do.edit_ignore', uid=user.uid)}" class="pure-form pure-form-stacked ajaxform ignore-form">
+                          @{ignform.csrf_token()!!html}
+                          @{ignform.view_messages(id='ign-msg-' + user.uid, class_='ignore-form-select')!!html}
+                          @{ignform.view_content(id='ign-con-' + user.uid, class_='ignore-form-select')!!html}
+                           <button id="submit-ignore-@{user.uid}" type="submit" class="hide pure-button button-xsmall" data-label="@{_('Save changes')}" data-prog="@{_('Saving...')}" data-success="@{_('Saved!')}">@{_('Save changes')}</button>
+                           <div class="alert div-error"></div>
                         </form>
                     </div>
                 </div>

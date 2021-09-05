@@ -184,6 +184,22 @@ class EditUserForm(FlaskForm):
     language = SelectField(_l("Language"), validate_choice=False)
 
 
+class EditIgnoreForm(FlaskForm):
+    """ Edit User blocks form. """
+
+    view_messages = SelectField(
+        "", choices=[("hide", _l("Hide messages")), ("show", _l("Show messages"))]
+    )
+    view_content = SelectField(
+        "",
+        choices=[
+            ("hide", _l("Hide posts and comments")),
+            ("blur", _l("Blur posts and collapse comments")),
+            ("show", _l("Show posts and comments")),
+        ],
+    )
+
+
 class CreateUserMessageForm(FlaskForm):
     """ CreateUserMessage form. """
 

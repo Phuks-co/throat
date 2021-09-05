@@ -152,3 +152,10 @@ def user2_info():
     return dict(
         username="administrator", email="admin@example.com", password="999aaaAAA###"
     )
+
+
+@pytest.fixture
+def user3_info():
+    return dict(
+        username="moderator", email="moderator@example.com", password="999aaaJJJ###"
+    )

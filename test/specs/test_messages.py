@@ -124,7 +124,7 @@ def test_block_pm(client, user_info, user2_info):
     )
 
     # User2 shows up on User's ignore page.
-    rv = client.get(url_for("messages.view_ignores"))
+    rv = client.get(url_for("user.view_ignores"))
     assert rv.status == "200 OK"
     assert user2_info["username"].encode("utf-8") in rv.data
 
@@ -147,11 +147,6 @@ def test_block_pm(client, user_info, user2_info):
     assert substrings_present(
         rv.data, [user2_info["username"], "Testing", "Test Content"]
     )
-
-    # User2 does not show up on User's ignore page.
-    rv = client.get(url_for("messages.view_ignores"))
-    assert rv.status == "200 OK"
-    assert user2_info["username"].encode("utf-8") not in rv.data
 
 
 def test_save_and_delete_pm(client, user_info, user2_info):

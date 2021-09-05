@@ -91,6 +91,12 @@ u.sub('.pmessage .formpopmsg', 'click', function(e){
   modal.style.display = "block";
 });
 
+u.sub('.pmessage .blockpopmsg', 'click', function(e){
+  e.preventDefault();
+  var modal = document.getElementById('blockpop');
+  modal.style.display = "block";
+});
+
 u.addEventForChild(document, 'click', '.closemsg', function(e, qelem){
   e.preventDefault();
   qelem.parentNode.style.display = 'none';
@@ -100,7 +106,7 @@ u.addEventForChild(document, 'click', '.closepopmsg', function(e, qelem){
   qelem.parentNode.parentNode.style.display = 'none';
 });
 
-u.sub('.block', 'click', function(e){
+u.sub('.block-msg', 'click', function(e){
   const uid = this.getAttribute('data-uid'),obj=this;
   u.post('/do/toggle_ignore/'+uid, {},
   function(data){

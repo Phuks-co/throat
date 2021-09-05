@@ -7,11 +7,12 @@ from .config import config
 from .models import (
     Notification,
     User,
+    UserContentBlock,
     Sub,
+    SubMod,
     SubPost,
     SubPostComment,
     SubPostCommentVote,
-    UserIgnores,
     SubPostVote,
 )
 from .socketio import socketio
@@ -32,6 +33,7 @@ class Notifications(object):
     @staticmethod
     def get_notifications(uid, page):
         ParentComment = SubPostComment.alias()
+        SubModCurrentUser = SubMod.alias()
         notifications = (
             Notification.select(
                 Notification.id,
@@ -56,7 +58,6 @@ class Notifications(object):
                 SubPostVote.positive.alias("post_positive"),
                 SubPost.score.alias("post_score"),
                 SubPost.link.alias("post_link"),
-                UserIgnores.id.alias("ignored"),
                 ParentComment.content.alias("comment_context"),
                 ParentComment.time.alias("comment_context_posted"),
                 ParentComment.score.alias("comment_context_score"),
@@ -84,16 +85,54 @@ class Notifications(object):
             .switch(Notification)
             .join(User, JOIN.LEFT_OUTER, on=Notification.sender == User.uid)
             .join(
-                UserIgnores,
+                UserContentBlock,
                 JOIN.LEFT_OUTER,
-                on=(UserIgnores.uid == uid) & (UserIgnores.target == User.uid),
+                on=(
+                    (UserContentBlock.uid == uid)
+                    & (UserContentBlock.target == User.uid)
+                ),
+            )
+            .join(
+                SubMod,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (SubMod.user == User.uid)
+                    & (SubMod.sub == Notification.sub)
+                    & ~SubMod.invite
+                ),
+            )
+            .join(
+                SubModCurrentUser,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (SubModCurrentUser.user == uid)
+                    & (SubModCurrentUser.sub == Notification.sub)
+                    & ~SubModCurrentUser.invite
+                ),
             )
             .join(
                 ParentComment,
                 JOIN.LEFT_OUTER,
                 on=(SubPostComment.parentcid == ParentComment.cid),
             )
-            .where((Notification.target == uid) & (SubPostComment.status.is_null(True)))
+            .where(
+                (Notification.target == uid)
+                & (SubPostComment.status.is_null(True))
+                & (
+                    UserContentBlock.id.is_null(True)
+                    | ~(
+                        Notification.type
+                        << [
+                            "POST_REPLY",
+                            "COMMENT_REPLY",
+                            "POST_MENTION",
+                            "COMMENT_MENTION",
+                        ]
+                    )
+                    | SubMod.sid.is_null(False)
+                    | SubModCurrentUser.sid.is_null(False)
+                )
+            )
             .order_by(Notification.created.desc())
             .paginate(page, 50)
             .dicts()
@@ -139,6 +178,48 @@ class Notifications(object):
             post=post,
             content=content,
         )
+
+        ignore = None
+        if notification_type in [
+            "POST_REPLY",
+            "COMMENT_REPLY",
+            "POST_MENTION",
+            "COMMENT_MENTION",
+        ]:
+            try:
+                TargetSubMod = SubMod.alias()
+                ignore = (
+                    UserContentBlock.select()
+                    .join(
+                        SubMod,
+                        JOIN.LEFT_OUTER,
+                        on=(
+                            (SubMod.uid == UserContentBlock.uid)
+                            & (SubMod.sub == sub)
+                            & ~SubMod.invite
+                        ),
+                    )
+                    .join(
+                        TargetSubMod,
+                        JOIN.LEFT_OUTER,
+                        on=(
+                            (TargetSubMod.uid == UserContentBlock.target)
+                            & (TargetSubMod.sub == sub)
+                            & ~TargetSubMod.invite
+                        ),
+                    )
+                    .where(
+                        (UserContentBlock.target == sender)
+                        & (UserContentBlock.uid == target)
+                        & SubMod.uid.is_null()
+                        & TargetSubMod.uid.is_null()
+                    )
+                ).get()
+            except UserContentBlock.DoesNotExist:
+                pass
+
+        if ignore is not None:
+            return
 
         notification_count = get_notification_count(target)
         socketio.emit(
