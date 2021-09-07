@@ -110,6 +110,8 @@ def make_url(storage, cfg, name):
         obj = storage.get(name)
         if obj is None:
             return url_for("static", filename="img/1x1.gif")
+        elif "server_name" in config.site and config.storage.server:
+            return f"http://{config.site.server_name}{config.storage.server_url}/{name}"
         else:
             return obj.url
     else:
