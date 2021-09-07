@@ -21,3 +21,6 @@ Disallow: /
 
 User-agent: Barkrowler
 Disallow: /
+
+User-agent: VelenPublicWebCrawler
+Disallow: /
