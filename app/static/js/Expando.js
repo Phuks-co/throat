@@ -2,7 +2,7 @@ import u from './Util'
 import icon from './Icon';
 
 function get_hostname(url) {
-  if(!url){return;}
+  if(!url || url.charAt(0) == "/"){return;}
   var matches = url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
   return matches[1];
 }

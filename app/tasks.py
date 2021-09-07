@@ -232,6 +232,8 @@ def safe_request(
     the first max_size bytes, otherwise it will raise an error if
     max_size is exceeded."""
     # Returns (Response, File)
+    if url[0] == "/" and config.storage.server and "server_name" in config.site:
+        url = f"http://{config.site.server_name}{url}"
     try:
         r = requests.get(
             url,
