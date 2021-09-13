@@ -629,6 +629,25 @@ body.dark .admin-config-edit:hover {
   fill: #d17262;
 }
 
+body.dark .mod-table .header {
+  border-color: #4e4e4e;
+  background-color: #5c5c5c;
+}
+
+body.dark .mod-table,
+body.dark .mod-table .header,
+body.dark .mod-table .elem,
+body.dark .mod-table .close-elem,
+body.dark .mod-table .last-elem {
+  border-color: #4e4e4e;
+}
+
+body.dark .mod-table .elem,
+body.dark .mod-table .close-elem,
+body.dark .mod-table .last-elem {
+  background-color: #222;
+}
+
 body.dark .stickyposts {
     border-bottom: 1px solid #40444b;
 }
