@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-09-13 18:04-0300\n"
-"PO-Revision-Date: 2021-09-13 21:14\n"
+"PO-Revision-Date: 2021-09-14 03:13\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -180,7 +180,7 @@ msgstr "If enabled, show the notification count on the page title icon.  Otherwi
 
 #: app/config.py:344
 msgid "The maximum length of a user name, applied to new registrations. This should be set to a number between 2 and 64."
-msgstr ""
+msgstr "The maximum length of a user name, applied to new registrations. This should be set to a number between 2 and 64."
 
 #: app/config.py:358
 msgid "If enabled, show NSFW content to anonymous users."
@@ -234,7 +234,7 @@ msgstr "Neplatné CSS"
 
 #: app/html/sub/postcomments.html:37 app/misc.py:2554
 msgid "[Blocked]"
-msgstr ""
+msgstr "[Blokované]"
 
 #: app/misc.py:2635
 msgid "Already processing previous request."
@@ -718,15 +718,15 @@ msgstr "Pamätaj si ma"
 #, python-format
 msgid "Field must be exactly %(max)d character long."
 msgid_plural "Field must be exactly %(max)d characters long."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "Field must be exactly %(max)d character long."
+msgstr[1] "Field must be exactly %(max)d characters long."
+msgstr[2] "Field must be exactly %(max)d characters long."
+msgstr[3] "Field must be exactly %(max)d characters long."
 
 #: app/forms/user.py:81
 #, python-format
 msgid "Field must be between %(min)d and %(max)d characters long."
-msgstr ""
+msgstr "Field must be between %(min)d and %(max)d characters long."
 
 #: app/forms/user.py:95 app/forms/user.py:130
 msgid "Email Address (optional)"
@@ -823,23 +823,23 @@ msgstr "Jazyk"
 
 #: app/forms/user.py:191
 msgid "Hide messages"
-msgstr ""
+msgstr "Skryť správy"
 
 #: app/forms/user.py:191
 msgid "Show messages"
-msgstr ""
+msgstr "Zobraziť správy"
 
 #: app/forms/user.py:196
 msgid "Hide posts and comments"
-msgstr ""
+msgstr "Skryť príspevky a komentáre"
 
 #: app/forms/user.py:197
 msgid "Blur posts and collapse comments"
-msgstr ""
+msgstr "Rozmazať príspevky a komentáre"
 
 #: app/forms/user.py:198
 msgid "Show posts and comments"
-msgstr ""
+msgstr "Zobraziť príspevky a komentáre"
 
 #: app/forms/user.py:206
 msgid "to"
@@ -1170,36 +1170,36 @@ msgstr "Znovu otvoriť"
 #: app/html/mod/closed.html:35 app/html/mod/reports.html:34
 #: app/html/mod/sub_reports.html:35 app/html/mod/sub_reports_closed.html:37
 msgid "Sub:"
-msgstr ""
+msgstr "Skupina:"
 
 #: app/html/mod/closed.html:36 app/html/mod/reports.html:35
 #: app/html/mod/sub_reports.html:36 app/html/mod/sub_reports_closed.html:38
 msgid "Type:"
-msgstr ""
+msgstr "Typ:"
 
 #: app/html/mod/closed.html:43 app/html/mod/reports.html:42
 #: app/html/mod/sub_reports.html:43 app/html/mod/sub_reports_closed.html:45
 msgid "Reported by:"
-msgstr ""
+msgstr "Nahlásil(a):"
 
 #: app/html/mod/closed.html:46 app/html/mod/reportdetails.html:323
 #: app/html/mod/reports.html:45 app/html/mod/sub_reports.html:46
 #: app/html/mod/sub_reports_closed.html:48 app/html/sub/bans.html:84
 #: app/html/sub/bans.html:136
 msgid "Reason:"
-msgstr ""
+msgstr "Dôvod banu:"
 
 #: app/html/mod/closed.html:47 app/html/mod/reports.html:46
 #: app/html/mod/sub_reports.html:47 app/html/mod/sub_reports_closed.html:49
 msgid "User reported:"
-msgstr ""
+msgstr "Nahlásený užívateľ:"
 
 #: app/html/mod/closed.html:50 app/html/mod/reportdetails.html:244
 #: app/html/mod/reportdetails.html:315 app/html/mod/reports.html:49
 #: app/html/mod/sub_reports.html:50 app/html/mod/sub_reports_closed.html:52
 #: app/html/sub/log.html:22
 msgid "Time:"
-msgstr ""
+msgstr "Čas:"
 
 #: app/html/mod/dashboard.html:5 app/html/mod/dashboard.html:15
 msgid "Mod dashboard"
@@ -1367,7 +1367,7 @@ msgstr "Poznámky"
 
 #: app/html/mod/reportdetails.html:247
 msgid "Action Taken:"
-msgstr ""
+msgstr "Akcia:"
 
 #: app/html/mod/reportdetails.html:249
 msgid "Report closed"
@@ -1416,11 +1416,11 @@ msgstr "Poznámka zatvorená"
 #: app/html/mod/reportdetails.html:274 app/html/sub/bans.html:66
 #: app/html/sub/bans.html:120
 msgid "By:"
-msgstr ""
+msgstr "Kým:"
 
 #: app/html/mod/reportdetails.html:281
 msgid "Details:"
-msgstr ""
+msgstr "Poznámky:"
 
 #: app/html/mod/reportdetails.html:283
 msgid "Closed all reports related to: "
@@ -1445,11 +1445,11 @@ msgstr "Tento príspevok nemá iné hlásenia"
 
 #: app/html/mod/reportdetails.html:322
 msgid "Reporter:"
-msgstr ""
+msgstr "Nahlásil(a):"
 
 #: app/html/mod/reportdetails.html:324
 msgid "Status:"
-msgstr ""
+msgstr "Stav:"
 
 #: app/html/mod/reports.html:15
 msgid "Includes all open reports for subs you can moderate."
@@ -1466,7 +1466,7 @@ msgstr "Nevyriešené hlásenia pre "
 
 #: app/html/mod/sub_reports.html:16
 msgid "Includes all open reports for this sub."
-msgstr ""
+msgstr "Obsahuje všetky nevyriešené hlásenia pre túto skupinu."
 
 #: app/html/mod/sub_reports_closed.html:16
 msgid "Closed Reports for "
@@ -1474,7 +1474,7 @@ msgstr "Vyriešené hlásenia pre "
 
 #: app/html/mod/sub_reports_closed.html:17
 msgid "Includes all closed reports for this sub."
-msgstr ""
+msgstr "Obsahuje všetky vyriešené hlásenia pre túto skupinu."
 
 #: app/html/shared/layout.html:41
 msgid "Admin mode is currently enabled."
@@ -1590,7 +1590,7 @@ msgstr " [admin]"
 
 #: app/html/shared/post.html:75 app/html/shared/post.html:77
 msgid " [Blocked]"
-msgstr ""
+msgstr " [Blokované]"
 
 #: app/html/shared/post.html:77
 #, python-format
@@ -2109,20 +2109,20 @@ msgstr "N/A"
 
 #: app/html/sub/bans.html:73 app/html/sub/bans.html:127
 msgid "Created:"
-msgstr ""
+msgstr "Vydaný:"
 
 #: app/html/sub/bans.html:81 app/html/sub/bans.html:135
 #: app/html/sub/log.html:79
 msgid "User:"
-msgstr ""
+msgstr "Používateľ:"
 
 #: app/html/sub/bans.html:85
 msgid "Expires:"
-msgstr ""
+msgstr "Vyprší:"
 
 #: app/html/sub/bans.html:92
 msgid "Actions:"
-msgstr ""
+msgstr "Akcie:"
 
 #: app/html/sub/bans.html:94
 msgid "unban"
@@ -2138,7 +2138,7 @@ msgstr "Odstránený"
 
 #: app/html/sub/bans.html:137
 msgid "Removed:"
-msgstr ""
+msgstr "Odstránené:"
 
 #: app/html/sub/create.html:4 app/html/sub/create.html:12
 #: app/html/sub/create.html:27
@@ -2309,11 +2309,11 @@ msgstr "Záznam skupiny <a href=\"%(url)s\">/%(prefix)s/%(sub)s</a>"
 
 #: app/html/sub/log.html:25
 msgid "Moderator:"
-msgstr ""
+msgstr "Moderátor:"
 
 #: app/html/sub/log.html:34
 msgid "Action:"
-msgstr ""
+msgstr "Akcia:"
 
 #: app/html/sub/log.html:36
 msgid "Created the sub"
@@ -2660,11 +2660,11 @@ msgstr "(upravené %(timeago)s)"
 #: app/html/sub/postcomments.html:67
 #, python-format
 msgid "[You have blocked <a href=\"%(link)s\">%(name)s</a>]"
-msgstr ""
+msgstr "[Blokuješ používateľa <a href=\"%(link)s\">%(name)s</a>]"
 
 #: app/html/sub/postcomments.html:95
 msgid "blocked users"
-msgstr ""
+msgstr "blokovaní používatelia"
 
 #: app/html/sub/postcomments.html:98
 #: app/html/user/messages/notifications.html:105
@@ -2851,31 +2851,31 @@ msgstr "Zabudnuté heslo?"
 
 #: app/html/user/ignores.html:6 app/html/user/ignores.html:21
 msgid "Blocked Users"
-msgstr ""
+msgstr "Blokovaní používatelia"
 
 #: app/html/user/ignores.html:23
 msgid "You can use this page to manage the users you have blocked. You can choose to hide or show private messages from blocked users, and you can choose to hide, blur or show posts and comments by blocked users. To add users to this list, use the “block” link on their user profile or the “block sender” link on their messages."
-msgstr ""
+msgstr "Túto stránku môžeš použiť na správu používateľov, ktorých si zablokoval(a). Môžeš sa rozhodnúť skryť alebo zobrazovať súkromné správy od zablokovaných používateľov, prípadne skryť, rozmazávať alebo zobrazovať príspevky a komentáre zablokovaných používateľov. Ak chceš pridať používateľov do tohto zoznamu, použi odkaz „blokovať“ v ich užívateľskom profile, alebo odkaz „blokovať odosielateľa“ v ich správach."
 
 #: app/html/user/ignores.html:24 app/html/user/profile.html:183
 msgid "Blocking other users does not prevent them from seeing the content that you post."
-msgstr ""
+msgstr "Blokovaní používatelia môžu stále vidieť tvoje príspevky a komentáre."
 
 #: app/html/user/ignores.html:26 app/html/user/profile.html:179
 msgid "Posts and comments from blocked users will be shown normally in the subs which you moderate, and if you block someone who is a moderator, the content they post in the subs which they moderate will always be shown."
-msgstr ""
+msgstr "Príspevky a komentáre od zablokovaných používateľov sa budú normálne zobrazovať v skupinách, ktoré moderuješ. Ak zablokuješ niekoho, kto je moderátorom, vždy sa ti v jeho skupine zobrazí obsah, ktorý v nej uverejnia."
 
 #: app/html/user/ignores.html:28
 msgid "Posts and comments from blocked users who are moderators will be shown normally in the subs which they moderate."
-msgstr ""
+msgstr "Príspevky a komentáre od zablokovaných používateľov sa budú normálne zobrazovať v skupinách, ktoré moderujú."
 
 #: app/html/user/ignores.html:47
 msgid "You haven't blocked anybody"
-msgstr ""
+msgstr "Nikoho neblokuješ"
 
 #: app/html/user/ignores.html:48
 msgid "You can block users from the “block” link on their user profile or the “block sender” link on their messages."
-msgstr ""
+msgstr "Na blokovanie používateľov použi odkaz „blokovať“ v ich užívateľskom profile, alebo odkaz „blokovať odosielateľa“ v ich správach."
 
 #: app/html/user/login.html:12
 msgid "Login"
@@ -2990,17 +2990,17 @@ msgstr "Náhľad"
 #: app/html/user/profile.html:177
 #, python-format
 msgid "Block %(user)s"
-msgstr ""
+msgstr "Blokovať %(user)s"
 
 #: app/html/user/profile.html:181
 #, python-format
 msgid "Posts and comments by %(user)s will be shown normally in the subs which they moderate."
-msgstr ""
+msgstr "Príspevky a komentáre od %(user)s sa budú normálne zobrazovať v skupinách, ktoré moderuje."
 
 #: app/html/user/register.html:24
 #, python-format
 msgid "Alphanumeric characters plus '-' and '_'; between 2 and %(num)d characters long"
-msgstr ""
+msgstr "Alfanumerické znaky plus '-' and '_'; minimálna dĺžka 2 a maximálna dĺžka %(num)d znakov"
 
 #: app/html/user/register.html:62
 msgid "I accept the <a href=\"/wiki/tos\">Terms of Use</a>"
@@ -3956,7 +3956,7 @@ msgstr "Používateľ sa nenašiel"
 
 #: app/views/do.py:3033 app/views/do.py:3068
 msgid "Site administrators cannot be blocked"
-msgstr ""
+msgstr "Administrátorov nejde blokovať"
 
 #: app/views/do.py:3137
 msgid "File name too long."
