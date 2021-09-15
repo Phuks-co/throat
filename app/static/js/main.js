@@ -68,7 +68,7 @@ function vote(obj, how, comment){
         </form> \
       </div> \
       <div class="pure-u-1-1 pure-u-lg-1-2"> \
-      <h3>Register</h3> \
+      <h3>Registrácia</h3> \
       <p>' + _('Don\'t have an account?') + '</p> \
       <a class="pure-button pure-button-primary" href="/register">' + _('Register now!') + '</a>\
       </div> \
