@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-09-15 12:22-0300\n"
-"PO-Revision-Date: 2021-09-15 15:29\n"
+"PO-Revision-Date: 2021-09-15 21:26\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -3803,16 +3803,16 @@ msgstr "Janitors могут создавать только временные �
 #: app/views/do.py:1472
 #, python-format
 msgid "You have been permanently banned. Reason: %(reason)s"
-msgstr ""
+msgstr "Вы были заблокированы навсегда. Причина: %(reason)s"
 
 #: app/views/do.py:1477
 #, python-format
 msgid "You have been banned for %(num)d day. Reason: %(reason)s"
 msgid_plural "You have been banned for %(num)d days. Reason: %(reason)s"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "Вы были заблокированы на %(num)d день. Причина: %(reason)s"
+msgstr[1] "Вы были заблокированы на %(num)d день. Причина: %(reason)s"
+msgstr[2] "Вы были заблокированы на %(num)d дней. Причина: %(reason)s"
+msgstr[3] "Вы были заблокированы на %(num)d дней. Причина: %(reason)s"
 
 #: app/views/do.py:1485
 msgid "Already banned"
