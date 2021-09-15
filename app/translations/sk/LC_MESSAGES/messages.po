@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-09-13 18:04-0300\n"
-"PO-Revision-Date: 2021-09-14 03:13\n"
+"PO-Revision-Date: 2021-09-15 08:26\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -3173,7 +3173,7 @@ msgstr "vymazať notifikáciu"
 #: app/html/user/messages/notifications.html:126
 #, python-format
 msgid "Please visit %(link)s to accept or reject the invitation"
-msgstr "Pozvanie môžeš odmietnuť alebo prijať na %(link)s"
+msgstr "Pozvanie môžeš odmietnuť alebo prijať %(link)s"
 
 #: app/html/user/settings/account.html:9
 #, python-format
