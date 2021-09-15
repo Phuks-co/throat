@@ -2933,7 +2933,7 @@ li.mod-table-header {
     display: none;
 }
 
-.mod-table .elem::before {
+.mod-table .elem::before, .mod-table .last-elem::before {
     font-weight: bold;
     padding: 0.5em;
     content: attr(data-name);
@@ -2958,7 +2958,7 @@ li.mod-table-header {
         display: block;
     }
 
-    .mod-table .elem::before {
+    .mod-table .elem::before, .mod-table .last-elem::before {
         padding: 0em;
         content: "";
     }

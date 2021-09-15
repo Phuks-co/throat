@@ -10,7 +10,7 @@ from collections import defaultdict
 from flask import Blueprint, redirect, url_for, session, abort, jsonify, current_app
 from flask import request, flash, Markup
 from flask_login import login_user, login_required, logout_user, current_user
-from flask_babel import _
+from flask_babel import _, ngettext
 from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.exc import SignatureExpired, BadSignature
 from bs4 import BeautifulSoup
@@ -1456,7 +1456,6 @@ def ban_user_sub(sub):
                         status="error",
                         error=[_("Expiration time too far into the future")],
                     )
-                days = str(days)
             except ValueError:
                 return jsonify(status="error", error=[_("Invalid expiration time")])
 
@@ -1470,6 +1469,17 @@ def ban_user_sub(sub):
                 return jsonify(
                     status="error", error=[_("Janitors may only create temporary bans")]
                 )
+            content = _(
+                "You have been permanently banned. Reason: %(reason)s",
+                reason=form.reason.data,
+            )
+        else:
+            content = ngettext(
+                "You have been banned for %(num)d day. Reason: %(reason)s",
+                "You have been banned for %(num)d days. Reason: %(reason)s",
+                days,
+                reason=form.reason.data,
+            )
 
         if misc.is_sub_banned(sub, uid=user.uid):
             return jsonify(status="error", error=[_("Already banned")])
@@ -1478,7 +1488,7 @@ def ban_user_sub(sub):
             type="SUB_BAN",
             sub=sub.sid,
             sender=current_user.uid,
-            content="Dôvod: " + form.reason.data,
+            content=content,
             target=user.uid,
         )
         socketio.emit(
@@ -1502,7 +1512,7 @@ def ban_user_sub(sub):
             sub.sid,
             target=user.uid,
             comment=form.reason.data,
-            link=days,
+            link=str(days),
         )
 
         related_post_reports = (
