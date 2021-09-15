@@ -38,50 +38,46 @@ import socket from './Socket'
 function vote(obj, how, comment){
   // Check if we're logged in first
   if(!document.getElementById('logout')){
-    // Show popover
-    var modal = new Tingle.modal({
-    });
+    // Show modal offering login or registration.
+    var modal = new Tingle.modal({});
 
-    // set content
     modal.setContent('<h1>' + _('Log in or register to continue') + '</h1>\
     <div class="pure-g"> \
-      <div class="pure-u-1-2">\
+      <div class="pure-u-1-1 pure-u-lg-1-2">\
         <h3> Log in </h3> \
-        <form method="POST" action="/login?next="' + encodeURI(window.location.pathname) + ' class="pure-form pure-form-aligned">\
+        <form method="POST" action="/login?next=' + encodeURI(window.location.pathname) + '" class="pure-form pure-form-aligned">\
           <input type="hidden" name="csrf_token" value="' + document.getElementById('csrf_token').value + '"/> \
           <fieldset> \
             <div class="pure-control-group"> \
-              <label for="username">' + _('Username') + '</label> \
               <input id="username" name="username" pattern="[a-zA-Z0-9_-]+" placeholder="' + _('Username') + '" required="" title="' + _('Alphanumeric characters plus \'-\' and \'_\'') + '" type="text"> \
             </div> \
             <div class="pure-control-group"> \
-              <label for="password">' + _('Password') + '</label>\
               <input id="password" name="password" placeholder="' + _('Password') + '" required type="password"> \
             </div> \
-            <a href="/recover">' + _('Forgot your password?') + '</a>\
             <div class="pure-controls">\
               <label for="remember" class="pure-checkbox">\
               <input id="remember" name="remember" type="checkbox" value="y"> ' + _('Remember me') + ' \
               </label> \
               <button type="submit" class="pure-button pure-button-primary">' + _('Log in') + '</button> \
             </div> \
+            <br/> \
+            <div> \
+              <a href="/recover">' + _('Forgot your password?') + '</a>\
+            </div> \
           </fieldset> \
         </form> \
       </div> \
-      <div class="pure-u-1-2"> \
+      <div class="pure-u-1-1 pure-u-lg-1-2"> \
       <h3>Register</h3> \
       <p>' + _('Don\'t have an account?') + '</p> \
-      <a class="pure-button" href="/register">' + _('Register now!') + '</a>\
+      <a class="pure-button pure-button-primary" href="/register">' + _('Register now!') + '</a>\
       </div> \
     </div> \
     ');
-
-
-    // open modal
     modal.open();
-
     return;
   }
+
   if(comment){
     var kl = 'votecomment';
     var unid = obj.parentNode.parentNode.parentNode.getAttribute('data-cid');
