@@ -93,11 +93,11 @@
             @{_('comment')} \
           @end
         </a>
-        @if not sub and not announcement and not current_user.is_anonymous:
+        @if current_user.uid and not sub and not announcement:
           <span><a data-ac="block" class="unblk">@{_('block sub')}</a></span>
         @end
-        @if not current_user.is_anonymous and post['uid'] != current_user.uid:
-        <a data-ac="report" data-pid="@{post['pid']}" class="report-post">@{_('report')}</a>
+        @if current_user.uid and post['uid'] != current_user.uid:
+          <a data-ac="report" data-pid="@{post['pid']}" class="report-post">@{_('report')}</a>
         @end
         @if post['open_report_id']:
           <li><a class="post-open-reports" href="@{url_for('mod.report_details', sub=post['sub'], report_type='post', report_id=post['open_report_id'])}">@{_('open reports (%(num)s)', num=post['open_reports'])}</a></li>
