@@ -40,7 +40,7 @@
     "flatpickr": "^4.5.2",
     "irc-style-parser": "^0.2.5",
     "jquery": "^3.2.1",
-    "matrix-js-sdk": "^9.5.0",
+    "matrix-js-sdk": "^12.4.1",
     "messageformat": "^2.3.0",
     "messageformat-po-loader": "^0.3.0",
     "purecss": "^2.0.1",
