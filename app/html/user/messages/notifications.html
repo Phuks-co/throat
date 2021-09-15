@@ -123,7 +123,7 @@
               @{msg['content']}
             @end
             @if msg['type'] in ('MOD_INVITE', 'MOD_INVITE_JANITOR', 'MOD_INVITE_OWNER'):
-              <p>@{_("Please visit %(link)s to accept or reject the invitation", link='<a href="' + url_for('sub.edit_sub_mods', sub=msg['sub_name']) +'">here</a>')!!html}<p>
+              <p>@{_("Please visit %(link)s to accept or reject the invitation", link='<a href="' + url_for('sub.edit_sub_mods', sub=msg['sub_name']) +'">tu</a>')!!html}<p>
             @end
             <ul class="bottombar links">
               <li><a class="deletenotif" data-mid="@{msg['id']}">@{_('delete notification')}</a></li>
