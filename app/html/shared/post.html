@@ -70,11 +70,29 @@
         @elif post['content'] != '':
           <div class="expando" data-pid="@{post['pid']}" data-t="txt" title="@{_('Show post content')}" data-link="None"><div data-icon="text" class="icon expando-btn"></div></div>
         @end
-        @#{Crappy as shit}
+        @(
+        timeago = '<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>'
+        flairspan = (' <span class="user_flair" data-flair-id="' + str(post['user_flair_id']) + '">' + e(post['user_flair']) + '</span>' if post['user_flair'] else '')
+        if post['distinguish'] == 1:
+            distinguish_text = _(' [speaking as mod]')
+        elif post['distinguish'] == 2:
+            distingush_text = _(' [speaking as admin]')
+        else:
+            distinguish_text = ''
+        blocked_text = _(' [Blocked]') if post['blur'] == 'block-blur' else ''
+        deleted_if_admin_view = ' ' + _('[Deleted]') if post['userstatus'] == 10 and current_user.is_admin() else ''
+
+        userlink = '<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + deleted_if_admin_view + distinguish_text + blocked_text + '</a>' + flairspan
+        if post['userstatus'] != 10 or current_user.is_admin():
+            user_html = userlink
+        else:
+            user_html = '<a class="authorlink deleted">' + _('[Deleted]') + '</a>'
+        sublink = '<a href="/' + config.site.sub_prefix + '/' + post['sub'] + '">' + post['sub'] + '</a>'
+        )
         @if not sub:
-          @{_('posted %(timeago)s by %(user)s on %(sub)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user='<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + (post['distinguish'] == 1 and _(' [speaking as mod]') or '') + (post['distinguish'] == 2 and _(' [speaking as admin]') or '') +(post['blur'] == 'block-blur' and _(' [Blocked]') or '') + '</a>' + (' <span class="user_flair" data-flair-id="' + str(post['user_flair_id']) + '">' + e(post['user_flair']) + '</span>' if post['user_flair'] else '') if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>', sub='<a href="/' + config.site.sub_prefix + '/' + post['sub'] + '">' + post['sub'] + '</a>')!!html}
+          @{_('posted %(timeago)s by %(user)s on %(sub)s', timeago=timeago, user=user_html, sub=sublink)!!html}
         @else:
-          @{_('posted %(timeago)s by %(user)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user='<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + (post['distinguish'] == 1 and _(' [speaking as mod]') or '') + (post['distinguish'] == 2 and _(' [speaking as admin]') or '') + (post['blur'] == 'block-blur' and _(' [Blocked]') or '') + '</a>' + (' <span class="user_flair" data-flair-id="' + str(post['user_flair_id']) + '">' + e(post['user_flair']) + '</span>' if post['user_flair'] else '') if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>')!!html}
+          @{_('posted %(timeago)s by %(user)s', timeago=timeago, user=user_html)!!html}
         @end
 
         @if sub and post['pid'] in func.getStickyPid(sub['sid']):

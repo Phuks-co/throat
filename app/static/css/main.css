@@ -1688,6 +1688,10 @@ td.subsentry.blocked {
   text-align: center;
 }
 
+.deleted-user {
+  background-color: #FDD8D4;
+}
+
 .uprofile-top .score {
   font-weight: bold;
 }
