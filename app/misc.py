@@ -2574,7 +2574,8 @@ def get_comment_tree(
                     comm.update(remove_content)
 
         if comm["userstatus"] == 10:
-            comm["user"] = _("[Deleted]")
+            if not current_user.is_admin():
+                comm["user"] = _("[Deleted]")
             comm["uid"] = None
             if comm["status"] == 1:
                 comm.update(remove_content)

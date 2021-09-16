@@ -26,7 +26,7 @@
     @end
 
     <meta property="og:site_name" content="@{config.site.lema}">
-    <meta property="og:description" content="@{_('Posted in %(prefix)s/%(sub)s by %(username)s', prefix=config.site.sub_prefix, sub=sub['name'], username=post['user'])}">
+    <meta property="og:description" content="@{_('Posted in %(prefix)s/%(sub)s by %(username)s', prefix=config.site.sub_prefix, sub=sub['name'], username=post['user'] if post['userstatus'] != 10 else _('[Deleted]'))}">
     <meta property="og:title" content="@{post['title']}">
     @if post['thumbnail'] != '' and post['thumbnail'] != 'deferred' and post['link'] != None:
     <meta property="og:image" content="@{thumbnail_url(post['thumbnail'])}">
@@ -39,8 +39,18 @@
 @def sidebar():
 <hr>
   <div class="author" style="padding:.5em;">
-    @# Line's long but we gotta keep it like that :(
-    @{_('Posted %(timeago)s by %(user)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user=('<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + '</a>' + (' <span class="user_flair" data-flair-id="' + str(post['user_flair_id']) + '">' + e(post['user_flair']) + '</span>' if post['user_flair'] else '')) if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>')!!html}
+    @(
+    timeago = '<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>'
+    deleted_if_admin_view = (' ' + _('[Deleted]' if post['userstatus'] == 10 and current_user.is_admin() else ''))
+    flair = ' <span class="user_flair" data-flair-id="' + str(post['user_flair_id']) + '">' + e(post['user_flair']) + '</span>' if post['user_flair'] else ''
+    deleted_link = '<a class="authorlink deleted">' + _('[Deleted]') + '</a>'
+    user_link = ('<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + deleted_if_admin_view + '</a>' + flair)
+    if post['userstatus'] != 10 or current_user.is_admin():
+        user_html = user_link
+    else:
+        user_html = deleted_link
+    )
+    @{_('Posted %(timeago)s by %(user)s', timeago=timeago, user=user_html)!!html}
     <br/>
     @if post['edited']:
       @{_('edited %(timeago)s', timeago='<time-ago datetime="' + post['edited'].isoformat() + 'Z"></time-ago>')!!html}<br/>
@@ -169,7 +179,22 @@
             <div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="play"></div></div>
           @end
         @end
-        @{_('posted %(timeago)s by %(user)s on %(sub)s', timeago='<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>', user='<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + (post['distinguish'] == 1 and _(' [speaking as mod]') or '') + (post['distinguish'] == 2 and _(' [speaking as admin]') or '') + '</a>' + (' <span class="user_flair" data-flair-id="' + str(post['user_flair_id']) + '">' + e(post['user_flair']) + '</span>' if post['user_flair'] else '') if post['userstatus'] != 10 else '<a class="authorlink deleted">' + _('[Deleted]') + '</a>', sub='<a href="/' + config.site.sub_prefix + '/' + post['sub'] + '">' + post['sub'] + '</a>')!!html}
+        @(
+        timeago = '<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>'
+        deleted_if_admin_view = ' ' + _('[Deleted]') if post['userstatus'] == 10 and current_user.is_admin() else ''
+        if post['distinguish'] == 1:
+            distinguish_text = _(' [speaking as mod]')
+        elif post['distinguish'] == 2:
+            distingush_text = _(' [speaking as admin]')
+        else:
+            distinguish_text = ''
+        flair = ' <span class="user_flair" data-flair-id="' + str(post['user_flair_id']) + '">' + e(post['user_flair']) + '</span>' if post['user_flair'] else ''
+        user_link = '<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + deleted_if_admin_view + distinguish_text + '</a>' + flair
+        deleted_link = '<a class="authorlink deleted">' + _('[Deleted]') + '</a>'
+        user_html = user_link if (post['userstatus'] != 10 or current_user.is_admin()) else deleted_link
+        sublink = '<a href="/' + config.site.sub_prefix + '/' + post['sub'] + '">' + post['sub'] + '</a>'
+        )
+        @{_('posted %(timeago)s by %(user)s on %(sub)s', timeago=timeago, user=user_html, sub=sublink)!!html}
       </div>
       <ul class="links" data-pid="@{post['pid']}">
         @if current_user.is_authenticated and post['deleted'] == 0:
@@ -358,21 +383,21 @@
             <ul class="pure-menu-children">
               <li class="pure-menu-item">
                 <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'], sort='top')}" class="pure-menu-link">
-		  @if sort == 'top':
-		    ✓
-		  @else:
-		    &nbsp;&nbsp;
-		  @end
-		  @{_('Top')}
+                  @if sort == 'top':
+                    ✓
+                  @else:
+                    &nbsp;&nbsp;
+                  @end
+                  @{_('Top')}
                 </a>
               </li>
               <li class="pure-menu-item">
                 <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'], sort='new')}" class="pure-menu-link">
-		  @if sort == 'new':
-		    ✓
-		  @else:
-		    &nbsp;&nbsp;
-		  @end
+                  @if sort == 'new':
+                    ✓
+                  @else:
+                    &nbsp;&nbsp;
+                  @end
                   @{_('New')}
                 </a>
               </li>
