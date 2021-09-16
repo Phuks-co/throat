@@ -80,7 +80,7 @@
         else:
             distinguish_text = ''
         blocked_text = _(' [Blocked]') if post['blur'] == 'block-blur' else ''
-        deleted_if_admin_view = (' ' + _('[Deleted]' if post['userstatus'] == 10 and current_user.is_admin() else ''))
+        deleted_if_admin_view = ' ' + _('[Deleted]') if post['userstatus'] == 10 and current_user.is_admin() else ''
 
         userlink = '<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + deleted_if_admin_view + distinguish_text + blocked_text + '</a>' + flairspan
         if post['userstatus'] != 10 or current_user.is_admin():
