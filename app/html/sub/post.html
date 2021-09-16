@@ -41,7 +41,7 @@
     @(
     timeago = '<time-ago datetime="' + post['posted'].isoformat() + 'Z"></time-ago>'
     deleted_if_admin_view = ' ' + _('[Deleted]') if post['userstatus'] == 10 and current_user.is_admin() else ''
-<!--  flair = ' <span class="user_flair" data-flair-id="' + str(post['user_flair_id']) + '">' + e(post['user_flair']) + '</span>' if post['user_flair'] else '' -->
+    flair = ' <span class="user_flair" data-flair-id="' + str(post['user_flair_id']) + '">' + e(post['user_flair']) + '</span>' if post['user_flair'] else ''
     deleted_link = '<a class="authorlink deleted">' + _('[Deleted]') + '</a>'
     user_link = ('<a class="authorlink" href="/u/' + post['user'] + '">' + post['user'] + deleted_if_admin_view + '</a>' + flair)
     if post['userstatus'] != 10 or current_user.is_admin():
