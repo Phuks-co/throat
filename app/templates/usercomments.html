@@ -23,6 +23,9 @@
     <div id="center-container">
       <div class="inbox content">
         <h3>Posledné komentáre</h3>
+        {% if user.status == 10 %}
+          <div class="helper-text deleted-user">{{_("%(user)s has deleted their account.", user=user.name)}}</div>
+        {% endif %}
         <div class="recent">
             {% if comments|length < 1 %}
             <p>

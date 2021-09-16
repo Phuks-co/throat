@@ -21,6 +21,9 @@
 {% else %}
     {% if sort_type == 'user.view_user_posts' %}
       <h3>Posledné príspevky</h3>
+      {% if user.status == 10 %}
+        <div class="helper-text deleted-user">{{_("%(user)s has deleted their account.", user=user.name)}}</div>
+      {% endif %}
     {% else %}
       <h3>Uložené príspevky</h3>
     {% endif %}

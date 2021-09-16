@@ -27,46 +27,51 @@
 @def main():
     <div id="center-container">
         <div class="content">
-            @if user.status != 10:
-                <div class="uprofile-top">
-                    <h1 style="margin-right: 0; margin-left:0" class="noshit">@{user.name}</h1>
-                        <div class="pblock level">
-                            <div class="uprofile-level-box">
-                                <div class="mask left" style="transform: rotate(@{progress*1.8}deg)">
-                                    <div class="fill" style="transform: rotate(@{progress*1.8}deg)"></div>
-                                </div>
-                                <div class="mask right">
-                                    <div class="fill" style="transform: rotate(@{progress*1.8}deg)"></div>
-                                    <div class="fill fix" style="transform: rotate(@{progress*2.8}deg)"></div>
-                                </div>
-                                <div class="inset">
-                                    <div class="lv" style="line-height: 133%; padding-top: 0.4em">@{_('Level')}</div>
-                                    <div class="levelNo">@{level}</div>
-                                </div>
+            <div class="uprofile-top">
+                <h1 style="margin-right: 0; margin-left:0" class="noshit@{' deleted-user' if user.status == 10 else ''}">@{user.name}</h1>
+                @if user.status == 10:
+                    <div>@{_("This user account has been deleted.")}</div>
+                @end
+                @if user.status != 10 or current_user.is_admin():
+                    <div class="pblock level">
+                        <div class="uprofile-level-box">
+                            <div class="mask left" style="transform: rotate(@{progress*1.8}deg)">
+                                <div class="fill" style="transform: rotate(@{progress*1.8}deg)"></div>
+                            </div>
+                            <div class="mask right">
+                                <div class="fill" style="transform: rotate(@{progress*1.8}deg)"></div>
+                                <div class="fill fix" style="transform: rotate(@{progress*2.8}deg)"></div>
+                            </div>
+                            <div class="inset">
+                                <div class="lv" style="line-height: 133%; padding-top: 0.4em">@{_('Level')}</div>
+                                <div class="levelNo">@{level}</div>
                             </div>
                         </div>
-                        <div class="pblock">
-                            <div class="statdiv">
-                                <div class="ucount"><a href="@{url_for('user.view_user_posts', user=user.name)}">@{postCount}</a></div>
-                                <div>@{_('posts')}</div>
-                            </div>
-                            <div class="statdiv">
-                                <div class="ucount"><a href="@{url_for('user.view_user_comments', user=user.name)}">@{commentCount}</a></div>
-                                <div>@{_('comments')}</div>
-                            </div>
-                        </div>
-                        <div class="pblock">
-                            <div class="statdiv">
-                                <abbr class="ucount" title="+@{givenScore[0]}, -@{givenScore[1]}}">@{givenScore[2]}</abbr>
-                                <div>@{_('Phuks given')}</div>
-                            </div>
-                            <div class="statdiv">
-                                <div class="ucount">@{user.score}</div>
-                                <div>@{_('Total score')}</div>
-                            </div>
-                        </div>
-                        <p>@{_('Registered %(timeago)s', timeago='<time-ago datetime="'+ user.joindate.isoformat() + 'Z"></time-ago>')!!html}</p>
                     </div>
+                    <div class="pblock">
+                        <div class="statdiv">
+                            <div class="ucount"><a href="@{url_for('user.view_user_posts', user=user.name)}">@{postCount}</a></div>
+                            <div>@{_('posts')}</div>
+                        </div>
+                        <div class="statdiv">
+                            <div class="ucount"><a href="@{url_for('user.view_user_comments', user=user.name)}">@{commentCount}</a></div>
+                            <div>@{_('comments')}</div>
+                        </div>
+                    </div>
+                    <div class="pblock">
+                        <div class="statdiv">
+                            <abbr class="ucount" title="+@{givenScore[0]}, -@{givenScore[1]}}">@{givenScore[2]}</abbr>
+                            <div>@{_('Phuks given')}</div>
+                        </div>
+                        <div class="statdiv">
+                            <div class="ucount">@{user.score}</div>
+                            <div>@{_('Total score')}</div>
+                        </div>
+                    </div>
+                    <p>@{_('Registered %(timeago)s', timeago='<time-ago datetime="'+ user.joindate.isoformat() + 'Z"></time-ago>')!!html}</p>
+                @end
+            </div>
+            @if user.status != 10 or current_user.is_admin():
                 <div>
                     @if len(badges) > 0:
                         <div class="userrow">

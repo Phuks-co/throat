@@ -39,6 +39,27 @@ from ..badges import badges as badges_module
 bp = Blueprint("user", __name__)
 
 
+def view_deleted_user(user):
+    return engine.get_template("user/profile.html").render(
+        {
+            "user": user,
+            "level": None,
+            "progress": None,
+            "postCount": None,
+            "commentCount": None,
+            "givenScore": None,
+            "invitecodeinfo": None,
+            "badges": None,
+            "owns": None,
+            "mods": None,
+            "habits": None,
+            "target_user_is_admin": None,
+            "msgform": None,
+            "ignform": None,
+        }
+    )
+
+
 @bp.route("/u/<user>")
 def view(user):
     """ WIP: View user's profile, posts, comments, badges, etc """
@@ -47,8 +68,8 @@ def view(user):
     except User.DoesNotExist:
         abort(404)
 
-    if user.status == 10:
-        abort(404)
+    if user.status == 10 and not current_user.is_admin():
+        return view_deleted_user(user)
 
     modsquery = (
         SubMod.select(Sub.name, SubMod.power_level)
@@ -156,8 +177,8 @@ def view_user_posts(user, page):
         user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
         abort(404)
-    if user.status == 10:
-        abort(404)
+    if user.status == 10 and not current_user.is_admin():
+        return view_deleted_user(user)
 
     include_deleted_posts = user.uid == current_user.uid or current_user.is_admin()
     if not include_deleted_posts and current_user.is_a_mod:
@@ -216,8 +237,8 @@ def view_user_comments(user, page):
         user = User.get(fn.Lower(User.name) == user.lower())
     except User.DoesNotExist:
         abort(404)
-    if user.status == 10:
-        abort(404)
+    if user.status == 10 and not current_user.is_admin():
+        return view_deleted_user(user)
 
     include_deleted_comments = user.uid == current_user.uid or current_user.is_admin()
     if not include_deleted_comments and current_user.is_a_mod:

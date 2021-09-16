@@ -21,8 +21,11 @@
               @if comment['visibility'] == 'none':
                 <a class="poster deleted">@{comment['user']}</a>
               @else:
-                <a href="/u/@{comment['user']}" class="poster">
+                <a href="@{'/u/' + comment['user'] if current_user.is_admin() or comment['userstatus'] != 10 else '#'}" class="poster">
                   @{comment['user']}
+                  @if current_user.is_admin() and comment['userstatus'] == 10:
+                     @{_('[Deleted]')}
+                  @end
                   @if comment['distinguish']:
                     <span class="speaking-tag">@{(comment['distinguish'] == 1) and _(' [speaking as mod]') or ''} @{(comment['distinguish'] == 2) and _(' [speaking as admin]') or ''}</span>
                   @end
