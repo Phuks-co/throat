@@ -3,6 +3,7 @@ import re
 import pytest
 import mock
 import requests.exceptions
+from bs4 import BeautifulSoup
 from flask import url_for
 from test.utilities import register_user, csrf_token, create_sub
 from app.models import Sub, SubMetadata
@@ -213,6 +214,13 @@ def test_submit_poll_post(client, user_info, test_config):
     )
     assert get_error(rv.data) == b""
     assert "/s/test/1" == rv.location
+
+    rv = client.get(url_for("sub.view_post", sub="test", pid=1), follow_redirects=True)
+    soup = BeautifulSoup(rv.data, "html.parser", from_encoding="utf-8")
+    options = [
+        s.string.strip() for s in soup.find_all("span", class_="poll-option-text")
+    ]
+    assert options == ["Test 1", "Test 2", "Test 3"]
 
 
 @pytest.mark.parametrize("test_config", [{"site": {"sub_creation_min_level": 0}}])
