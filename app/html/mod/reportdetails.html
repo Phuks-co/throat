@@ -278,7 +278,7 @@ Mod |\
                   --
                   @end
                 </div>
-                <div data-name="@{_('Details:')}" class="elem sub pure-u-1 pure-u-md-10-24">
+                <div data-name="@{_('Details:')}" class="last-elem sub pure-u-1 pure-u-md-10-24">
                   @if log.action == 57:
                   @{_('Closed all reports related to: ')}<a href="@{url_for('mod.report_details', sub=report['sub'], report_type=report['type'], report_id=log.desc)}">
                   @{report['type']} @{_('report')} @{log.desc}</a>
@@ -298,9 +298,13 @@ Mod |\
             @else:
               <h3>@{_('Other reports on this post:')}</h3>
             @end
+            @#{ 1 instead of 0 because it includes the current report, which should always exist }
             @if len(related_reports['query']) == 1:
-            <!-- 1 instead of 0 because it includes the current report, which should always exist -->
-              <p class="helper-text">@{_('There are no other reports on this post')}</p>
+              @if report['type'] == 'comment':
+                <p class="helper-text">@{_('There are no other reports on this comment')}</p>
+              @else:
+                <p class="helper-text">@{_('There are no other reports on this post')}</p>
+              @end
             @else:
               <ol class="mod-table">
                 <li class="mod-table-header pure-g">
@@ -321,7 +325,7 @@ Mod |\
                   </div>
                   <div data-name="@{_('Reporter:')}" class="elem sub pure-u-1 pure-u-md-4-24"><a href="@{ url_for('user.view', user=related_report['reporter']) }">@{ related_report['reporter'] }</a></div>
                   <div data-name="@{_('Reason:')}" class="elem sub pure-u-1 pure-u-md-12-24">@{related_report['reason']!!e}</div>
-                  <div data-name="@{_('Status:')}" class="elem sub pure-u-1 pure-u-md-4-24">
+                  <div data-name="@{_('Status:')}" class="last-elem sub pure-u-1 pure-u-md-4-24">
                     @if related_report['open'] == True:
                     @{_('Open')}
                     @else:

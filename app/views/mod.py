@@ -178,6 +178,7 @@ def report_details(sub, report_type, report_id):
     related_reports = getReports(
         "mod", "all", 1, type=report_type, report_id=report_id, related=True
     )
+    related_report_ids = [rep["id"] for rep in related_reports["query"]]
 
     if report["type"] == "post":
         try:
@@ -215,7 +216,7 @@ def report_details(sub, report_type, report_id):
             "report": report,
             "reported_user": reported_user,
             "related_reports": related_reports,
-            "related_reports_json": json.dumps(related_reports["query"], default=str),
+            "related_reports_json": json.dumps(related_report_ids, default=str),
             "banuserform": BanUserSubForm(),
             "is_sub_banned": is_sub_banned,
             "post": post,

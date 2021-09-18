@@ -3922,49 +3922,53 @@ def close_comment_report(cid, action):
 )
 @login_required
 def close_post_related_reports(related_reports, original_report):
-    related_reports = json.loads(related_reports)
-    original_report = original_report
-    # ensure user is mod or admin and report, post, and sub exist
-    for related_report in related_reports:
-        try:
-            report = SubPostReport.get(SubPostReport.id == related_report["id"])
-        except SubPostReport.DoesNotExist:
-            return jsonify(status="error", error=_("Report does not exist"))
+    if not (current_user.is_a_mod or current_user.is_admin()):
+        abort(403)
 
-        try:
-            post = SubPost.get(SubPost.pid == report.pid)
-        except SubPost.DoesNotExist:
-            return jsonify(status="error", error=_("Post does not exist"))
+    related_report_ids = json.loads(related_reports)
+    OriginalSubPostReport = SubPostReport.alias()
 
-        try:
-            sub = Sub.get(Sub.sid == post.sid)
-        except Sub.DoesNotExist:
-            return jsonify(status="error", error=_("Sub does not exist"))
-
-        if not current_user.is_mod(sub.sid) and not current_user.is_admin():
-            return jsonify(status="error", error=_("Not authorized"))
-
-        SubPostReport.update(open=False).where(
-            SubPostReport.id == related_report["id"]
-        ).execute()
-        misc.notify_mods(sub.sid)
-
-        # check if report is closed and return status
-        updated_report = (
-            SubPostReport.select().where(SubPostReport.id == related_report["id"]).get()
+    # Select only the reports that are related and still need closing.
+    related_reports = (
+        SubPostReport.select(SubPostReport.id, SubPost.sid)
+        .join(SubPost)
+        .join(
+            OriginalSubPostReport,
+            JOIN.LEFT_OUTER,
+            on=(OriginalSubPostReport.pid == SubPostReport.pid),
         )
-        if not updated_report.open:
-            misc.create_reportlog(
-                misc.LOG_TYPE_REPORT_CLOSE_RELATED,
-                current_user.uid,
-                updated_report.id,
-                log_type="post",
-                related=True,
-                original_report=original_report,
-            )
-            return jsonify(status="ok")
-        # How?
-        return jsonify(status="error", error=_("Failed to update report"))
+        .where(
+            SubPostReport.open
+            & (SubPostReport.id << related_report_ids)
+            & (OriginalSubPostReport.id == original_report)
+        )
+    )
+    # Ensure user is mod or admin.
+    if not current_user.is_admin():
+        related_reports = related_reports.join(
+            SubMod, on=((SubMod.sid == SubPost.sid) & (~SubMod.invite))
+        ).where(SubMod.uid == current_user.uid)
+    related_reports = list(related_reports.dicts())
+
+    if len(related_reports) == 0:
+        return jsonify(status="error", error=_("No related reports to close"))
+
+    SubPostReport.update(open=False).where(
+        SubPostReport.id << [rep["id"] for rep in related_reports]
+    ).execute()
+    misc.notify_mods(related_reports[0]["sid"])
+
+    for rep in related_reports:
+        misc.create_reportlog(
+            misc.LOG_TYPE_REPORT_CLOSE_RELATED,
+            current_user.uid,
+            rep["id"],
+            log_type="post",
+            related=True,
+            original_report=original_report,
+        )
+
+    return jsonify(status="ok")
 
 
 @do.route(
@@ -3973,58 +3977,53 @@ def close_post_related_reports(related_reports, original_report):
 )
 @login_required
 def close_comment_related_reports(related_reports, original_report):
-    related_reports = json.loads(related_reports)
-    original_report = original_report
-    # ensure user is mod or admin and report, post, and sub exist
-    for related_report in related_reports:
-        try:
-            report = SubPostCommentReport.get(
-                SubPostCommentReport.id == related_report["id"]
-            )
-        except SubPostCommentReport.DoesNotExist:
-            return jsonify(status="error", error=_("Report does not exist"))
+    if not (current_user.is_a_mod or current_user.is_admin()):
+        abort(403)
 
-        try:
-            comment = SubPostComment.get(SubPostComment.cid == report.cid)
-        except SubPostCommentReport.DoesNotExist:
-            return jsonify(status="error", error=_("Comment does not exist"))
+    related_report_ids = json.loads(related_reports)
+    OriginalSubPostCommentReport = SubPostCommentReport.alias()
 
-        try:
-            post = SubPost.get(SubPost.pid == comment.pid)
-        except SubPost.DoesNotExist:
-            return jsonify(status="error", error=_("Post does not exist"))
-
-        try:
-            sub = Sub.get(Sub.sid == post.sid)
-        except Sub.DoesNotExist:
-            return jsonify(status="error", error=_("Sub does not exist"))
-
-        if not current_user.is_mod(sub.sid) and not current_user.is_admin():
-            return jsonify(status="error", error=_("Not authorized"))
-
-        SubPostCommentReport.update(open=False).where(
-            SubPostCommentReport.id == related_report["id"]
-        ).execute()
-        misc.notify_mods(sub.sid)
-
-        # check if report is closed and return status
-        updated_report = (
-            SubPostCommentReport.select()
-            .where(SubPostCommentReport.id == related_report["id"])
-            .get()
+    # Select only the reports that are related and still need closing.
+    related_reports = (
+        SubPostCommentReport.select(SubPostCommentReport.id, SubPost.sid)
+        .join(SubPostComment)
+        .join(SubPost)
+        .join(
+            OriginalSubPostCommentReport,
+            JOIN.LEFT_OUTER,
+            on=(OriginalSubPostCommentReport.cid == SubPostCommentReport.cid),
         )
-        if not updated_report.open:
-            misc.create_reportlog(
-                misc.LOG_TYPE_REPORT_CLOSE_RELATED,
-                current_user.uid,
-                updated_report.id,
-                log_type="comment",
-                related=True,
-                original_report=original_report,
-            )
-            return jsonify(status="ok")
-        # How?
-        return jsonify(status="error", error=_("Failed to close report"))
+        .where(
+            SubPostCommentReport.open
+            & (SubPostCommentReport.id << related_report_ids)
+            & (OriginalSubPostCommentReport.id == original_report)
+        )
+    )
+    # Ensure user is mod or admin.
+    if not current_user.is_admin():
+        related_reports = related_reports.join(
+            SubMod, on=((SubMod.sid == SubPost.sid) & (~SubMod.invite))
+        ).where(SubMod.uid == current_user.uid)
+    related_reports = list(related_reports.dicts())
+
+    if len(related_reports) == 0:
+        return jsonify(status="error", error=_("No related reports to close"))
+
+    SubPostCommentReport.update(open=False).where(
+        SubPostCommentReport.id << [rep["id"] for rep in related_reports]
+    ).execute()
+    misc.notify_mods(related_reports[0]["sid"])
+
+    for rep in related_reports:
+        misc.create_reportlog(
+            misc.LOG_TYPE_REPORT_CLOSE_RELATED,
+            current_user.uid,
+            rep["id"],
+            log_type="comment",
+            related=True,
+            original_report=original_report,
+        )
+    return jsonify(status="ok")
 
 
 @do.route("/do/create_report_note/<report_type>/<report_id>", methods=["POST"])
