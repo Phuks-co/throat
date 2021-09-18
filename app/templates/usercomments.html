@@ -77,7 +77,7 @@
                         {% endif %}
                       {%endif%}
                       {% if comment.uid == current_user.uid or current_user.is_admin() and comment.status not in [1, 2] %}
-                        <li><a class="delete-comment" data-cid="{{comment.cid}}">vymazať</a></li>
+                        <li><a {{ ((comment['uid'] == current_user.uid) and 'selfdel="true"' or '')|safe }} class="delete-comment" data-cid="{{comment.cid}}">vymazať</a></li>
                       {% endif %}
                     {%endif%}
                     <li><a class="comment-source" data-cid="{{comment.cid}}">formát</a></li>

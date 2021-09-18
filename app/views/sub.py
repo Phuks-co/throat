@@ -604,18 +604,20 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
     pollData = {"has_voted": False}
     if post["ptype"] == 3:
         # poll. grab options and votes.
-        options = SubPostPollOption.select(
-            SubPostPollOption.id,
-            SubPostPollOption.text,
-            fn.Count(SubPostPollVote.id).alias("votecount"),
-        )
-        options = options.join(
-            SubPostPollVote,
-            JOIN.LEFT_OUTER,
-            on=(SubPostPollVote.vid == SubPostPollOption.id),
-        )
-        options = options.where(SubPostPollOption.pid == pid).group_by(
-            SubPostPollOption.id
+        options = (
+            SubPostPollOption.select(
+                SubPostPollOption.id,
+                SubPostPollOption.text,
+                fn.Count(SubPostPollVote.id).alias("votecount"),
+            )
+            .join(
+                SubPostPollVote,
+                JOIN.LEFT_OUTER,
+                on=(SubPostPollVote.vid == SubPostPollOption.id),
+            )
+            .where(SubPostPollOption.pid == pid)
+            .group_by(SubPostPollOption.id)
+            .order_by(SubPostPollOption.id)
         )
         pollData["options"] = options
         total_votes = SubPostPollVote.select().where(SubPostPollVote.pid == pid).count()
