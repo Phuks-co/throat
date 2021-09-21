@@ -87,6 +87,7 @@ def create_app(config=None):
     babel.init_app(app)
     jwt.init_app(app)
     webpack.init_app(app)
+    rconn.init_app(app)
     socketio.init_app(
         app,
         message_queue=config.app.redis_url,
@@ -95,7 +96,6 @@ def create_app(config=None):
     )
     caching.cache.init_app(app)
     login_manager.init_app(app)
-    rconn.init_app(app)
     db_init_app(app)
     re_amention.init_app(app)
     if "MAIL_SERVER" in app.config:
