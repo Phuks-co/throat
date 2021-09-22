@@ -58,7 +58,7 @@
               <br/>
             </div>
 
-            <div class="content  @{(comment['visibility'] != '') and 'hidden' or ''}" id="content-@{comment['cid']}">
+            <div class="content  @{(comment['visibility'] != '' and comment['visibility'] != 'mod-del' ) and 'hidden' or ''}" id="content-@{comment['cid']}">
               @if comment['visibility'] == 'none':
                 @{comment['user']} \
               @elif comment['visibility'] == 'admin-self-del':
