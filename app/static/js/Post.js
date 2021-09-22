@@ -491,7 +491,7 @@ u.addEventForChild(document, 'click', '.btn-preview', function (e, qelem) {
 // Delete comment
 u.addEventForChild(document, 'click', '.delete-comment', function (e, qelem) {
     // confirmation
-    const cid = qelem.getAttribute('data-cid'), tg = qelem;
+    const cid = qelem.getAttribute('data-cid'), tg = qelem.parentNode.parentNode;
     TextConfirm(qelem, function () {
         let reason = '';
         if (qelem.getAttribute('selfdel') != "true") {
@@ -503,10 +503,10 @@ u.addEventForChild(document, 'click', '.delete-comment', function (e, qelem) {
         u.post('/do/delete_comment', {cid: cid, 'reason': reason},
             function (data) {
                 if (data.status != "ok") {
-                    tg.parentNode.innerHTML = _('Error: %1', data.error);
+                    tg.innerHTML = _('Error: %1', data.error);
                 } else {
-                    tg.parentNode.innerHTML = _('comment removed');
-                    document.location.reload();
+                    document.getElementById(cid).classList.add('deleted');
+                    tg.innerHTML = '<span class="helper-text">' + _('comment removed') + '</span>';
                 }
             });
     });
