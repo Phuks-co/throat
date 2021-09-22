@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-09-22 12:17-0300\n"
-"PO-Revision-Date: 2021-09-22 15:19\n"
+"PO-Revision-Date: 2021-09-22 21:19\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -1442,7 +1442,7 @@ msgstr "Другие сообщения на этот пост:"
 
 #: app/html/mod/reportdetails.html:304
 msgid "There are no other reports on this comment"
-msgstr ""
+msgstr "Других отчетов по этому комментарию нет"
 
 #: app/html/mod/reportdetails.html:306
 msgid "There are no other reports on this post"
@@ -2925,7 +2925,7 @@ msgstr "Отправить сообщение"
 
 #: app/html/user/profile.html:33
 msgid "This user account has been deleted."
-msgstr ""
+msgstr "Эта учетная запись пользователя была удалена."
 
 #: app/html/user/profile.html:46
 msgid "Level"
@@ -3555,7 +3555,7 @@ msgstr "нет"
 #: app/templates/usercomments.html:27 app/templates/userposts.html:25
 #, python-format
 msgid "%(user)s has deleted their account."
-msgstr ""
+msgstr "%(user)s удалил свою учетную запись."
 
 #: app/templates/admin/invitecodes.html:100
 msgid "Deleted"
@@ -4077,7 +4077,7 @@ msgstr "Не удалось обновить отчет"
 
 #: app/views/do.py:3954 app/views/do.py:4010
 msgid "No related reports to close"
-msgstr ""
+msgstr "Нет связанных отчетов для закрытия"
 
 #: app/views/do.py:4126
 msgid "Error: not a number"
