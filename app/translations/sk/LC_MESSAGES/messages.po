@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-09-22 12:17-0300\n"
-"PO-Revision-Date: 2021-09-22 15:19\n"
+"PO-Revision-Date: 2021-09-22 21:19\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -1442,7 +1442,7 @@ msgstr "Iné hlásenia tohto príspevku:"
 
 #: app/html/mod/reportdetails.html:304
 msgid "There are no other reports on this comment"
-msgstr ""
+msgstr "Tento komentár nemá ďalšie nahlásenia"
 
 #: app/html/mod/reportdetails.html:306
 msgid "There are no other reports on this post"
@@ -2925,7 +2925,7 @@ msgstr "Poslať správu používateľovi"
 
 #: app/html/user/profile.html:33
 msgid "This user account has been deleted."
-msgstr ""
+msgstr "Toto konto bolo vymazané."
 
 #: app/html/user/profile.html:46
 msgid "Level"
@@ -3555,7 +3555,7 @@ msgstr "nie"
 #: app/templates/usercomments.html:27 app/templates/userposts.html:25
 #, python-format
 msgid "%(user)s has deleted their account."
-msgstr ""
+msgstr "%(user)s vymazal(a) svoje konto."
 
 #: app/templates/admin/invitecodes.html:100
 msgid "Deleted"
@@ -4076,7 +4076,7 @@ msgstr "Nepodarilo sa updatovať hlásenie"
 
 #: app/views/do.py:3954 app/views/do.py:4010
 msgid "No related reports to close"
-msgstr ""
+msgstr "Všetky súvisiace hlásenia sú už vyriešené"
 
 #: app/views/do.py:4126
 msgid "Error: not a number"
