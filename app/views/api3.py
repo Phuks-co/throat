@@ -540,6 +540,7 @@ def delete_post(sub, pid):
         )
         ann.delete_instance()
         cache.delete_memoized(misc.getAnnouncementPid)
+        cache.delete_memoized(misc.getAnnouncement)
     except SiteMetadata.DoesNotExist:
         pass
     post.save()
