@@ -1180,23 +1180,24 @@ def add_blur(post):
 
 @cache.memoize(600)
 def getAnnouncementPid():
-    return SiteMetadata.select().where(SiteMetadata.key == "announcement").get()
+    try:
+        announcement = (
+            SiteMetadata.select().where(SiteMetadata.key == "announcement").get()
+        )
+        return announcement.value
+    except SiteMetadata.DoesNotExist:
+        return 0
 
 
+@cache.memoize(600)
 def getAnnouncement():
     """ Returns sitewide announcement post or False """
-    try:
-        ann = getAnnouncementPid()
-        if not ann.value:
-            return False
-        return add_blur(
-            postListQueryBase(nofilter=True)
-            .where(SubPost.pid == ann.value)
-            .dicts()
-            .get()
-        )
-    except SiteMetadata.DoesNotExist:
+    ann = getAnnouncementPid()
+    if not ann:
         return False
+    return add_blur(
+        postListQueryBase(nofilter=True).where(SubPost.pid == ann).dicts().get()
+    )
 
 
 @cache.memoize(5)
@@ -1245,11 +1246,7 @@ def is_archived(post):
     else:
         posted, pid, sid = post.posted, post.pid, post.sid
 
-    announcement_pid = None
-    try:
-        announcement_pid = getAnnouncementPid().value
-    except SiteMetadata.DoesNotExist:
-        pass
+    announcement_pid = getAnnouncementPid()
     return (
         datetime.utcnow() - posted.replace(tzinfo=None) > delta
         and str(pid) != announcement_pid

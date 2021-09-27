@@ -386,6 +386,7 @@ def delete_post():
             )
             ann.delete_instance()
             cache.delete_memoized(misc.getAnnouncementPid)
+            cache.delete_memoized(misc.getAnnouncement)
         except SiteMetadata.DoesNotExist:
             pass
 
@@ -2094,6 +2095,7 @@ def deleteannouncement():
     )
 
     cache.delete_memoized(misc.getAnnouncementPid)
+    cache.delete_memoized(misc.getAnnouncement)
     socketio.emit("rmannouncement", {}, namespace="/snt")
     return redirect(url_for("admin.index"))
 
@@ -2130,6 +2132,7 @@ def make_announcement():
         )
 
         cache.delete_memoized(misc.getAnnouncementPid)
+        cache.delete_memoized(misc.getAnnouncement)
         socketio.emit(
             "announcement",
             {
