@@ -1349,48 +1349,51 @@ def get_mod_notification_counts(uid):
         .group_by(Sub.sid)
         .dicts()
     )
-    # Count modmail conversations where the newest message in the
-    # thread is unread.
-    MessageAlias1 = Message.alias()
-    conversation = MessageAlias1.select(
-        Case(
-            None,
-            [(MessageAlias1.reply_to.is_null(), MessageAlias1.mid)],
-            MessageAlias1.reply_to,
-        ).alias("convo_mid"),
-    )
-    MessageAlias2 = Message.alias()
-    conversation_newest = (
-        MessageAlias2.select(
-            conversation.c.convo_mid, fn.MAX(MessageAlias2.posted).alias("maxtime")
+    if not config.site.enable_modmail:
+        unread_modmail_counts = {}
+    else:
+        # Count modmail conversations where the newest message in the
+        # thread is unread.
+        MessageAlias1 = Message.alias()
+        conversation = MessageAlias1.select(
+            Case(
+                None,
+                [(MessageAlias1.reply_to.is_null(), MessageAlias1.mid)],
+                MessageAlias1.reply_to,
+            ).alias("convo_mid"),
         )
-        .join(
-            conversation,
-            on=(conversation.c.convo_mid == MessageAlias2.mid)
-            | (conversation.c.convo_mid == MessageAlias2.reply_to),
+        MessageAlias2 = Message.alias()
+        conversation_newest = (
+            MessageAlias2.select(
+                conversation.c.convo_mid, fn.MAX(MessageAlias2.posted).alias("maxtime")
+            )
+            .join(
+                conversation,
+                on=(conversation.c.convo_mid == MessageAlias2.mid)
+                | (conversation.c.convo_mid == MessageAlias2.reply_to),
+            )
+            .group_by(conversation.c.convo_mid)
         )
-        .group_by(conversation.c.convo_mid)
-    )
-    unread_modmail_counts = dictify(
-        Message.select(Sub.sid, fn.COUNT(Message.mid).alias("count"))
-        .join(Sub)
-        .join(SubMod)
-        .join(
-            conversation_newest,
-            on=(
-                (
-                    (conversation_newest.c.convo_mid == Message.mid)
-                    | (conversation_newest.c.convo_mid == Message.reply_to)
-                )
-                & (conversation_newest.c.maxtime == Message.posted)
-            ),
+        unread_modmail_counts = dictify(
+            Message.select(Sub.sid, fn.COUNT(Message.mid).alias("count"))
+            .join(Sub)
+            .join(SubMod)
+            .join(
+                conversation_newest,
+                on=(
+                    (
+                        (conversation_newest.c.convo_mid == Message.mid)
+                        | (conversation_newest.c.convo_mid == Message.reply_to)
+                    )
+                    & (conversation_newest.c.maxtime == Message.posted)
+                ),
+            )
+            .switch(Message)
+            .join(UserUnreadMessage)
+            .where((SubMod.user == uid) & (UserUnreadMessage.uid == uid))
+            .group_by(Sub.sid)
+            .dicts()
         )
-        .switch(Message)
-        .join(UserUnreadMessage)
-        .where((SubMod.user == uid) & (UserUnreadMessage.uid == uid))
-        .group_by(Sub.sid)
-        .dicts()
-    )
     return post_report_counts, comment_report_counts, unread_modmail_counts
 
 
