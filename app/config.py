@@ -298,7 +298,7 @@ configurable_defaults = {
                     "Show the 'Contact the Mods' button in sub sidebars, which provides "
                     "a link to the modmail server."
                 ),
-                "value": True,
+                "value": False,
             },
             "enable_posting": {
                 "type": "bool",
