@@ -12,7 +12,7 @@
 
 {% block content %}
 {{ super() }}
-{% if not uploads %}<h3 class="noshit">There are no uploads, yet.</h3>{% endif %}
+{% if not uploads %}<h3 class="noshit">You haven't uploaded anything, yet.</h3>{% endif %}
 <div id="center-container">
   <div class="uploads content">
       {% for item in uploads %}
@@ -38,10 +38,10 @@
 </div>
 <div class="col-12">
   {% if page > 1 %}
-  <a href="{{url_for('user.view_user_uploads', page=(page-1))}}" class="pure-button">prev</a>
+    <a href="{{url_for('user.view_user_uploads', page=(page-1))}}" class="pure-button">prev</a>
   {% endif %}
-  {% if subs|length == 30 %}
-  <a href="{{url_for('user.view_user_uploads', page=(page+1))}}" class="pure-button">next</a>
+  {% if uploads|length == 30 %}
+    <a href="{{url_for('user.view_user_uploads', page=(page+1))}}" class="pure-button">next</a>
   {% endif %}
 </div>
 {% endblock %}

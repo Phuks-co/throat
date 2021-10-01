@@ -518,6 +518,11 @@ body.dark .poll-space.deleted {
   border: 1px solid red;
 }
 
+body.dark .uploaditem.deleted {
+  background-color: #171717;
+  border: 1px solid red;
+}
+
 body.dark .deleted-user {
   background-color: #171717;
   border: 1px solid red;

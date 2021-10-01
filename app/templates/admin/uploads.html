@@ -4,11 +4,13 @@
 {% block sidebar %}
 {{ super() }}
   {% include 'admin/sidebar.html' %}
-  <hr>
-  <h3 class="center">Allowed to upload</h3>
-  {% for user in users %}
-    <div>• {{user.name}}</div>
-  {% endfor %}
+  {% if users %}
+    <hr>
+    <h3 class="center">Allowed to upload</h3>
+    {% for user in users %}
+      <div>• {{user.name}}</div>
+    {% endfor %}
+  {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -17,7 +19,7 @@
 <div id="center-container">
   <div class="uploads content">
       {% for item in uploads %}
-        <div class="uploaditem">
+        <div class="uploaditem {{'deleted' if item.deleted != 0 else '' }}">
           <div class="uploadthumb">
             {% if item.thumbnail == '' %}
               <span class="placeholder" data-icon="link"></span>
@@ -39,10 +41,10 @@
 </div>
 <div class="col-12">
   {% if page > 1 %}
-  <a href="{{url_for('admin.user_uploads', page=(page-1))}}" class="pure-button">prev</a>
+    <a href="{{url_for('admin.user_uploads', page=(page-1))}}" class="pure-button">prev</a>
   {% endif %}
-  {% if subs|length == 30 %}
-  <a href="{{url_for('admin.user_uploads', page=(page+1))}}" class="pure-button">next</a>
+  {% if uploads|length == 60 %}
+    <a href="{{url_for('admin.user_uploads', page=(page+1))}}" class="pure-button">next</a>
   {% endif %}
 </div>
 {% endblock %}
