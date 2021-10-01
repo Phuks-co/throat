@@ -28,7 +28,7 @@
     <meta property="og:site_name" content="@{config.site.lema}">
     <meta property="og:description" content="@{_('Posted in %(prefix)s/%(sub)s by %(username)s', prefix=config.site.sub_prefix, sub=sub['name'], username=post['user'] if post['userstatus'] != 10 else _('[Deleted]'))}">
     <meta property="og:title" content="@{post['title']}">
-    @if post['thumbnail'] != '' and post['thumbnail'] != 'deferred' and post['link'] != None:
+    @if post['thumbnail'] != '' and post['thumbnail'] != 'deferred' and post['link'] != None and post['visibility'] != 'none':
     <meta property="og:image" content="@{thumbnail_url(post['thumbnail'])}">
     <meta property="og:ttl" content="600">
     <meta property="og:image:height" content="70">
@@ -77,7 +77,7 @@
         <a class="title">
           <div class="thumbnail">
             @if post['link'] != None:
-              @if post['thumbnail'] == '':
+              @if post['thumbnail'] == '' or post['visibility'] == 'none' or post['visibility'] == 'user-self-del':
                 <span class="placeholder" data-icon="link"></span>
               @elif post['thumbnail'] == 'deferred':
                 <span class="placeholder deferred @{post['blur']}" data-icon="link" data-deferred="SubPost-@{post['pid']}"></span>
@@ -169,13 +169,15 @@
         @end
       </div>
       <div class="author" data-pid="@{post['pid']}">
-        @if post['link']:
-          @if func.getDomain(post['link']) in config.site.expando_sites:
-            <div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="play"></div></div>
-          @elif post['link'].lower().endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
-            <div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="image"></div></div>
-          @elif post['link'].lower().endswith(('.mp4', '.webm', '.gifv')):
-            <div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="play"></div></div>
+        @if post['visibility'] != 'none' and post['visibility'] != 'user-self-del':
+          @if post['link']:
+            @if func.getDomain(post['link']) in config.site.expando_sites:
+              <div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="play"></div></div>
+            @elif post['link'].lower().endswith(('.png', '.jpg', '.gif', '.tiff', '.bmp', '.jpeg')):
+              <div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="image"></div></div>
+            @elif post['link'].lower().endswith(('.mp4', '.webm', '.gifv')):
+              <div class="expando" data-pid="@{post['pid']}" data-t="lnk" data-link="@{post['link']}"><div class="icon expando-btn" data-icon="play"></div></div>
+            @end
           @end
         @end
         @(
