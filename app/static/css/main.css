@@ -2493,6 +2493,10 @@ article.text-post.comment.deleted {
   background-color: #FDD8D4;
 }
 
+.uploaditem.deleted {
+  background-color: #FDD8D4;
+}
+
 .post-history-controls {
   margin: 1em 1em 0 1em;
 }

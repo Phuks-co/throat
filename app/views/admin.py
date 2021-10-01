@@ -719,7 +719,19 @@ def user_uploads(page):
     """ View user uploads """
     if not current_user.is_admin():
         abort(404)
-    uploads = UserUploads.select().order_by(UserUploads.pid.desc()).paginate(page, 30)
+    uploads = (
+        UserUploads.select(
+            UserUploads.thumbnail,
+            UserUploads.xid,
+            UserUploads.pid,
+            UserUploads.fileid,
+            SubPost.deleted,
+        )
+        .join(SubPost)
+        .order_by(UserUploads.pid.desc())
+        .paginate(page, 30)
+        .dicts()
+    )
     users = (
         User.select(User.name).join(UserMetadata).where(UserMetadata.key == "canupload")
     )
