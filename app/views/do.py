@@ -1998,7 +1998,12 @@ def delete_pm(mid):
             (UserMessageMailbox.uid == current_user.uid)
             & (UserMessageMailbox.mid == mid)
         ).execute()
-
+        socketio.emit(
+            "notification",
+            {"count": misc.get_notification_count(current_user.uid)},
+            namespace="/snt",
+            room="user" + current_user.uid,
+        )
         return jsonify(status="ok")
     except Message.DoesNotExist:
         return jsonify(status="error", error=_("Message does not exist"))

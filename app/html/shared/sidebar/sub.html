@@ -99,6 +99,10 @@
     <li><a href="@{url_for('user.view', user=subMods['janitors'][janitor])}">@{subMods['janitors'][janitor]}</a></li>
   @end
   </ul>
+  @if config.site.enable_modmail and current_user.is_authenticated and not (current_user.uid in (subMods['all'])):
+  <a href="/@{config.site.sub_prefix}/@{sub['name']}/contact_mods" class="sbm-post pure-button">@{_('Message the Mods')}</a>
+  @endif
+
 </div>
 <div class="createdby">
   @{_('Created by <a href="/u/%(name)s">%(name)s</a>', name=subInfo['creator']['name'])!!html}

@@ -300,6 +300,14 @@ configurable_defaults = {
                     },
                 },
             },
+            "enable_modmail": {
+                "type": "bool",
+                "doc": _l(
+                    "Show the 'Contact the Mods' button in sub sidebars, which provides "
+                    "a link to the modmail server."
+                ),
+                "value": False,
+            },
             "enable_posting": {
                 "type": "bool",
                 "doc": _l("Allow users to make posts and comments."),
