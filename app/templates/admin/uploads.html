@@ -43,7 +43,7 @@
   {% if page > 1 %}
     <a href="{{url_for('admin.user_uploads', page=(page-1))}}" class="pure-button">prev</a>
   {% endif %}
-  {% if uploads|length == 30 %}
+  {% if uploads|length == 60 %}
     <a href="{{url_for('admin.user_uploads', page=(page+1))}}" class="pure-button">next</a>
   {% endif %}
 </div>

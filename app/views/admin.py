@@ -729,7 +729,7 @@ def user_uploads(page):
         )
         .join(SubPost)
         .order_by(UserUploads.pid.desc())
-        .paginate(page, 30)
+        .paginate(page, 60)
         .dicts()
     )
     users = (
