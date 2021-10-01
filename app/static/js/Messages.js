@@ -83,11 +83,21 @@ u.sub('.pmessage .replymsg', 'click', function(e){
   modal.style.display = "block";
 });
 
-u.sub('.pmessage .formpopmsg', 'click', function(e){
+u.sub('.pmessage .formpopmsg, #modpop .formpopmsg', 'click', function(e){
   e.preventDefault();
   var replyto = this.getAttribute('data-replyto')
   document.querySelector('#msg-form #to').setAttribute('value', replyto);
   var modal = document.getElementById('formpop');
+  modal.style.display = "block";
+  var modmodal = document.getElementById('modpop');
+  if (modmodal) {
+    modmodal.style.display = "none";
+  }
+});
+
+u.sub('.pmessage .modpopmsg', 'click', function(e){
+  e.preventDefault();
+  var modal = document.getElementById('modpop');
   modal.style.display = "block";
 });
 

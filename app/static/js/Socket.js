@@ -37,8 +37,10 @@ function updateModNotifications(notifications) {
   const modElem = document.getElementById('modcount');
   if (modElem) {
     let sum = 0;
-    for (let i=0; i < notifications.length; i++) {
-      sum = sum + notifications[i][1];
+    for (let m in notifications) {
+      for (let s in notifications[m]) {
+        sum += notifications[m][s];
+      }
     }
     if (sum == 0) {
       modElem.innerHTML = '';
@@ -144,20 +146,17 @@ u.ready(function () {
 
 socket.on('notification', function(d){
   updateNotifications(d.count.messages + d.count.notifications);
+  for (let sub in d.modmail) {
+    modData["messages"][sub] = d.modmail[sub];
+  }
+  updateModNotifications();
   updateTitleNotifications();
 });
 
 socket.on('mod-notification', function(d) {
-  var found = false;
-  for (var i=0; i < modData.length; i++) {
-    if (modData[i][0] == d.update[0]) {
-      modData[i][1] = d.update[1];
-      found = true;
-    }
-  }
-  if (!found){
-    modData.push(d.update);
-  }
+  const sub = d.update[0];
+  modData["reports"][sub] = d.update[1];
+  modData["comments"][sub] = d.update[2];
   updateModNotifications(modData);
   updateTitleNotifications();
 })

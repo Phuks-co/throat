@@ -220,14 +220,8 @@ class SiteUser(object):
     @cache.memoize(1)
     def mod_notifications(self):
         if self.is_mod:
-            notification_counts = get_mod_notification_counts(self.uid)
-
-            counts = defaultdict(int)
-            for count in notification_counts:
-                for item in count:
-                    counts[item["sid"]] += item["count"]
-
-            return [[sid, count] for sid, count in counts.items()]
+            reports, comments, messages = get_mod_notification_counts(self.uid)
+            return {"reports": reports, "comments": comments, "messages": messages}
         else:
             return []
 
@@ -1326,16 +1320,15 @@ def get_locale_fallback():
 
 
 def get_modmail_count(uid):
-    counts = get_mod_notification_counts(uid)
-    result = 0
-    for count in counts:
-        for item in count:
-            result += item["count"]
-    return result
+    _, _, messages = get_mod_notification_counts(uid)
+    return messages
 
 
 def get_mod_notification_counts(uid):
-    post_report_counts = list(
+    def dictify(result):
+        return {r["sid"]: r["count"] for r in result}
+
+    post_report_counts = dictify(
         SubPostReport.select(Sub.sid, fn.COUNT(SubPostReport.id).alias("count"))
         .join(SubPost)
         .join(Sub)
@@ -1344,7 +1337,7 @@ def get_mod_notification_counts(uid):
         .group_by(Sub.sid)
         .dicts()
     )
-    comment_report_counts = list(
+    comment_report_counts = dictify(
         SubPostCommentReport.select(
             Sub.sid, fn.COUNT(SubPostCommentReport.id).alias("count")
         )
@@ -1356,48 +1349,51 @@ def get_mod_notification_counts(uid):
         .group_by(Sub.sid)
         .dicts()
     )
-    # Count modmail conversations where the newest message in the
-    # thread is unread.
-    MessageAlias1 = Message.alias()
-    conversation = MessageAlias1.select(
-        Case(
-            None,
-            [(MessageAlias1.reply_to.is_null(), MessageAlias1.mid)],
-            MessageAlias1.reply_to,
-        ).alias("convo_mid"),
-    )
-    MessageAlias2 = Message.alias()
-    conversation_newest = (
-        MessageAlias2.select(
-            conversation.c.convo_mid, fn.MAX(MessageAlias2.posted).alias("maxtime")
+    if not config.site.enable_modmail:
+        unread_modmail_counts = {}
+    else:
+        # Count modmail conversations where the newest message in the
+        # thread is unread.
+        MessageAlias1 = Message.alias()
+        conversation = MessageAlias1.select(
+            Case(
+                None,
+                [(MessageAlias1.reply_to.is_null(), MessageAlias1.mid)],
+                MessageAlias1.reply_to,
+            ).alias("convo_mid"),
         )
-        .join(
-            conversation,
-            on=(conversation.c.convo_mid == MessageAlias2.mid)
-            | (conversation.c.convo_mid == MessageAlias2.reply_to),
+        MessageAlias2 = Message.alias()
+        conversation_newest = (
+            MessageAlias2.select(
+                conversation.c.convo_mid, fn.MAX(MessageAlias2.posted).alias("maxtime")
+            )
+            .join(
+                conversation,
+                on=(conversation.c.convo_mid == MessageAlias2.mid)
+                | (conversation.c.convo_mid == MessageAlias2.reply_to),
+            )
+            .group_by(conversation.c.convo_mid)
         )
-        .group_by(conversation.c.convo_mid)
-    )
-    unread_modmail_counts = list(
-        Message.select(Sub.sid, fn.COUNT(Message.mid).alias("count"))
-        .join(Sub)
-        .join(SubMod)
-        .join(
-            conversation_newest,
-            on=(
-                (
-                    (conversation_newest.c.convo_mid == Message.mid)
-                    | (conversation_newest.c.convo_mid == Message.reply_to)
-                )
-                & (conversation_newest.c.maxtime == Message.posted)
-            ),
+        unread_modmail_counts = dictify(
+            Message.select(Sub.sid, fn.COUNT(Message.mid).alias("count"))
+            .join(Sub)
+            .join(SubMod)
+            .join(
+                conversation_newest,
+                on=(
+                    (
+                        (conversation_newest.c.convo_mid == Message.mid)
+                        | (conversation_newest.c.convo_mid == Message.reply_to)
+                    )
+                    & (conversation_newest.c.maxtime == Message.posted)
+                ),
+            )
+            .switch(Message)
+            .join(UserUnreadMessage)
+            .where((SubMod.user == uid) & (UserUnreadMessage.uid == uid))
+            .group_by(Sub.sid)
+            .dicts()
         )
-        .switch(Message)
-        .join(UserUnreadMessage)
-        .where((SubMod.user == uid) & (UserUnreadMessage.uid == uid))
-        .group_by(Sub.sid)
-        .dicts()
-    )
     return post_report_counts, comment_report_counts, unread_modmail_counts
 
 
@@ -1811,7 +1807,7 @@ def notify_mods(sid):
     for mod in mods:
         socketio.emit(
             "mod-notification",
-            {"update": [sid, mod.reports + mod.comments]},
+            {"update": [sid, mod.reports, mod.comments]},
             namespace="/snt",
             room="user" + mod.uid,
         )
@@ -2001,14 +1997,14 @@ def create_message(mfrom, to, subject, content, mtype):
         mtype=mtype,
     )
     UserUnreadMessage.create(uid=to, mid=msg.mid)
+    UserMessageMailbox.create(uid=to, mid=msg.mid, mailbox=MessageMailbox.INBOX)
+    UserMessageMailbox.create(uid=mfrom, mid=msg.mid, mailbox=MessageMailbox.SENT)
     socketio.emit(
         "notification",
         {"count": get_notification_count(to)},
         namespace="/snt",
         room="user" + to,
     )
-    UserMessageMailbox.create(uid=to, mid=msg.mid, mailbox=MessageMailbox.INBOX)
-    UserMessageMailbox.create(uid=mfrom, mid=msg.mid, mailbox=MessageMailbox.SENT)
     return msg
 
 
@@ -2042,14 +2038,14 @@ def create_message_reply(message, content):
 
     if message.sub is None:
         UserUnreadMessage.create(uid=recipient, mid=msg.mid)
+        UserMessageMailbox.create(
+            uid=recipient, mid=msg.mid, mailbox=MessageMailbox.INBOX
+        )
         socketio.emit(
             "notification",
             {"count": get_notification_count(recipient)},
             namespace="/snt",
             room="user" + recipient,
-        )
-        UserMessageMailbox.create(
-            uid=recipient, mid=msg.mid, mailbox=MessageMailbox.INBOX
         )
     else:
         for mod_uid in getSubMods(message.sub)["all"]:
