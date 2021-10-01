@@ -262,7 +262,8 @@ def view_user_uploads(page):
     """ View user uploads """
     uploads = (
         UserUploads.select()
-        .where(UserUploads.uid == current_user.uid)
+        .join(SubPost)
+        .where((UserUploads.uid == current_user.uid) & (SubPost.deleted != 1))
         .paginate(page, 30)
     )
     return render_template("uploads.html", page=page, uploads=uploads)
