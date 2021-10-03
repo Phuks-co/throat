@@ -29,6 +29,7 @@ from flask import (
     g,
 )
 from flask import url_for, request, jsonify, session
+from flask.signals import before_render_template, template_rendered
 from flask_limiter import Limiter
 from flask_mail import Mail
 from flask_mail import Message as EmailMessage
@@ -92,7 +93,7 @@ import logging
 import logging.config
 from werkzeug.local import LocalProxy
 
-from wheezy.template.engine import Engine
+from wheezy.template.engine import Engine, Template
 from wheezy.template.ext.core import CoreExtension
 from wheezy.template.ext.code import CodeExtension
 from wheezy.template.loader import FileLoader
@@ -119,10 +120,39 @@ class EscapeExtension(object):
     builder_rules = [("var", build_var)]
 
 
+class TemplateWithLogging(Template):
+    def render(self, ctx):
+        start = time.time()
+        result = super(TemplateWithLogging, self).render(ctx)
+        logger.debug(
+            "wheezy_template rendered %s in %s ms",
+            self.name,
+            int((time.time() - start) * 1000),
+        )
+        return result
+
+
 engine = Engine(
     loader=FileLoader([os.path.split(__file__)[0] + "/html"]),
     extensions=[EscapeExtension(), CoreExtension(), CodeExtension()],
+    template_class=TemplateWithLogging,
 )
+
+
+def j2_log_before(*args, **kwargs):
+    g.jinja2_start = time.time()
+
+
+def j2_log_after(*args, **kwargs):
+    logger.debug(
+        "jinja2 rendered %s in %s ms",
+        kwargs["template"].filename,
+        int((time.time() - g.jinja2_start) * 1000),
+    )
+
+
+before_render_template.connect(j2_log_before)
+template_rendered.connect(j2_log_after)
 
 mail = Mail()
 
