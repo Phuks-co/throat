@@ -51,6 +51,7 @@ defaults = {  # key => default value
     "mail": {"default_to": "example@shitpost8x8.com"},
     "storage": {
         "provider": "LOCAL",
+        "endpoint_url": None,
         "acl": "private",
         "server": False,
         "server_url": "/files/",

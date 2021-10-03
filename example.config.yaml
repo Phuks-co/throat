@@ -226,12 +226,13 @@ logging:
     socketio.server:
       level: WARNING
     peewee:
-      handlers:
-        - console
-    flask.app:
-      level: DEBUG
-    flask.app.socketio:
       level: WARNING
+    app:
+      level: DEBUG
+    app.socketio:
+      level: WARNING
+    app.sql_timing:      # Logs SQL like the peewee logger, but with execution timing.
+      level: DEBUG
     flask-limiter:
       level: WARNING
       handlers:

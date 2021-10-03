@@ -1,5 +1,7 @@
 """ Database and storage related functions and classes """
 import datetime
+import time
+import logging
 from enum import IntEnum
 import functools
 import sys
@@ -56,7 +58,7 @@ def db_init_app(app):
         )
 
     dbm = database_class(name, **dbconnect)
-    dbm.execute = functools.partial(peewee_count_queries, dbm.execute)
+    dbm.execute_sql = functools.partial(peewee_count_queries, dbm.execute_sql)
     dbp.initialize(dbm)
 
     @app.teardown_appcontext
@@ -66,7 +68,10 @@ def db_init_app(app):
             dbp.close()
 
 
-def peewee_count_queries(dex, *args, **kwargs):
+timing_logger = logging.getLogger("app.sql_timing")
+
+
+def peewee_count_queries(dex, sql, *args, **kwargs):
     """ Used to count and display number of queries """
     try:
         if not hasattr(g, "pqc"):
@@ -74,7 +79,17 @@ def peewee_count_queries(dex, *args, **kwargs):
         g.pqc += 1
     except RuntimeError:
         pass
-    return dex(*args, **kwargs)
+    starttime = time.time()
+    try:
+        result = dex(sql, *args, **kwargs)
+    finally:
+        timing_logger.debug(
+            "(%s, %s) (executed in %s ms)",
+            sql,
+            args[0] if len(args) > 0 else kwargs.get("params"),
+            int((time.time() - starttime) * 1000),
+        )
+    return result
 
 
 class BaseModel(Model):
