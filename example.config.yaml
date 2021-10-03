@@ -152,6 +152,10 @@ storage:
   # "private", or blank for no access control.
   # acl: private
 
+  # If you use a S3-like service, you may use the S3 provider and set
+  # the endpoint URL here.
+  #endpoint_url: '...'
+
   # If the provider is local, and you want Throat to serve the files
   # instead of setting up nginx or another web server to do so,
   # uncomment these.  The server_url is the relative endpoint for the
@@ -162,6 +166,9 @@ storage:
   #server_url: '/files'
 
   thumbnails:
+    # If you use a cloud provider, you may set a filename prefix here
+    #filename_prefix: '...'
+
     # If provider is LOCAL, path where thumbnails will be stored (app
     # MUST have write access)
     path: './thumbs'

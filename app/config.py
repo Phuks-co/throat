@@ -48,10 +48,12 @@ defaults = {  # key => default value
         "server": False,
         "server_url": "/files/",
         "thumbnails": {
+            "filename_prefix": "",
             "path": "./app/static/thumbs",
             "url": "https://thumbnails.shitposting.space/",
         },
         "uploads": {
+            "filename_prefix": "",
             "path": "./app/static/stor",
             "url": "https://useruploads.shitposting.space/",
         },
