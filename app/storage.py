@@ -71,15 +71,18 @@ class S3Storage:
     def delete(self, filename):
         self.s3.delete_object(Bucket=self.container, Key=filename)
 
-    def upload(self, fileobj, name=None, **kwargs):
+    def upload(self, fileobj, name=None, prefix=None, **kwargs):
         if "acl" in kwargs:
             kwargs["ACL"] = kwargs["acl"]
             del kwargs["acl"]
         if "content_type" in kwargs:
             kwargs["ContentType"] = kwargs["content_type"]
             del kwargs["content_type"]
+        file_key = name
+        if prefix:
+            file_key = prefix.lstrip("/") + name
         self.s3.upload_fileobj(
-            fileobj, Bucket=self.container, Key=name, ExtraArgs=kwargs
+            fileobj, Bucket=self.container, Key=file_key, ExtraArgs=kwargs
         )
         return Objectview({"name": name})
 
@@ -235,7 +238,11 @@ def store_file(ufile, basename, mtype, remove_metadata=False):
     ufile.filename = filename
     current_app.logger.debug("Adding %s to stored files", filename)
     return storage.upload(
-        ufile, name=filename, acl=config.storage.acl, content_type=mtype
+        ufile,
+        prefix=config.storage.uploads.filename_prefix,
+        name=filename,
+        acl=config.storage.acl,
+        content_type=mtype,
     ).name
 
 
@@ -274,6 +281,7 @@ def store_thumbnail(im, basename):
             return storage.upload(
                 tempIO,
                 name=filename,
+                prefix=config.storage.thumbnails.filename_prefix,
                 acl=config.storage.acl,
                 content_type="image/jpeg",
             ).name
