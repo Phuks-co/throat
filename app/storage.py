@@ -55,7 +55,7 @@ class S3Storage:
                 aws_access_key_id=config.storage.key,
                 aws_secret_access_key=config.storage.secret,
             )
-            self.s3 = session.client("s3")
+            self.s3 = session.client("s3", endpoint_url=config.storage.endpoint_url)
         else:
             self.s3 = boto3.client("s3")
 
