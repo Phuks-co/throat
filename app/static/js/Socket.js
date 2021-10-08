@@ -149,7 +149,7 @@ socket.on('notification', function(d){
   for (let sub in d.modmail) {
     modData["messages"][sub] = d.modmail[sub];
   }
-  updateModNotifications();
+  updateModNotifications(modData);
   updateTitleNotifications();
 });
 
