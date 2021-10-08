@@ -40,7 +40,11 @@
                   <span class="helper-text">@{_('[Blocked]')}</span>
                 @end
               @end
-              <b>@{_('<span class="cscore">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)', score=comment['score'], upvotes=comment['upvotes'], downvotes=comment['downvotes'])!!html}
+              @if config.site.show_votes or current_user.is_admin() or current_user.uid in subMods['all']:
+                <b>@{_('<span class="cscore">%(score)i</span> points</b> (+<b>%(upvotes)i</b>|-<b>%(downvotes)i</b>)', score=comment['score'], upvotes=comment['upvotes'], downvotes=comment['downvotes'])!!html}
+              @else:
+                <b>@{_('<span class="cscore">%(score)i</span> points</b>', score=comment['score'])!!html}
+              @endif
               <span class="time ">
                   <time-ago datetime="@{comment['time'].isoformat()}Z"></time-ago>
               </span>
