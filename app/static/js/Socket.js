@@ -146,8 +146,8 @@ u.ready(function () {
 
 socket.on('notification', function(d){
   updateNotifications(d.count.messages + d.count.notifications);
-  for (let sub in d.modmail) {
-    modData["messages"][sub] = d.modmail[sub];
+  for (let sub in d.count.modmail) {
+    modData["messages"][sub] = d.count.modmail[sub];
   }
   updateModNotifications(modData);
   updateTitleNotifications();
