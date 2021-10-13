@@ -55,7 +55,11 @@
     @if post['edited']:
       @{_('edited %(timeago)s', timeago='<time-ago datetime="' + post['edited'].isoformat() + 'Z"></time-ago>')!!html}<br/>
     @end
-    @{_('Score: %(score)i <b>(+%(upvotes)i|-%(downvotes)i)</b>', score=post['score'], upvotes=post['upvotes'], downvotes=post['downvotes'])!!html}
+    @if config.site.show_votes or current_user.is_admin() or current_user.uid in subMods['all']:
+      @{_('Score: %(score)i <b>(+%(upvotes)i|-%(downvotes)i)</b>', score=post['score'], upvotes=post['upvotes'], downvotes=post['downvotes'])!!html}
+    @else:
+      @{_('Score: %(score)i', score=post['score'])!!html}
+    @endif
   </div>
 <hr>
   @include('shared/sidebar/sub.html')
