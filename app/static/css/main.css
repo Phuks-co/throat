@@ -1311,6 +1311,11 @@ hr {
   font-size: 12px;
 }
 
+.sidescore {
+    font-size: 12px;
+    color: var(--primary-color);
+}
+
 input[type=search] {
   box-sizing: border-box;
   border: solid lightgray 1px;
