@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-10-13 09:56-0300\n"
-"PO-Revision-Date: 2021-10-13 13:03\n"
+"PO-Revision-Date: 2021-10-13 18:59\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -148,7 +148,7 @@ msgstr "Number of entries to display in the recent activity sidebar."
 
 #: app/config.py:300
 msgid "Show the 'Contact the Mods' button in sub sidebars, which provides a link to the modmail server."
-msgstr ""
+msgstr "Show the 'Contact the Mods' button in sub sidebars, which provides a link to the modmail server."
 
 #: app/config.py:308
 msgid "Allow users to make posts and comments."
@@ -204,7 +204,7 @@ msgstr "If enabled, and 'site.nsfw.new_user_default.show' is also enabled, set t
 
 #: app/config.py:408
 msgid "If enabled, show upvotes and downvotes in addition to total score. Otherwise, only show upvotes and downloads to admins and mods in their own subs."
-msgstr ""
+msgstr "If enabled, show upvotes and downvotes in addition to total score. Otherwise, only show upvotes and downloads to admins and mods in their own subs."
 
 #: app/config.py:421
 msgid "Max storage for image uploads for subs' stylesheets (in MiB)."
@@ -1832,7 +1832,7 @@ msgstr "Vlastník"
 
 #: app/html/shared/sidebar/sub.html:101
 msgid "Message the Mods"
-msgstr ""
+msgstr "Poslať správu moderátorom"
 
 #: app/html/shared/sidebar/sub.html:106
 #, python-format
@@ -2501,12 +2501,12 @@ msgstr "upravené %(timeago)s"
 #: app/html/sub/post.html:59
 #, python-format
 msgid "Score: %(score)i <b>(+%(upvotes)i|-%(downvotes)i)</b>"
-msgstr "Skóre: %(score)i <b>(+%(upvotes)i|-%(downvotes)i)</b>"
+msgstr "skóre: %(score)i <b>(+%(upvotes)i|-%(downvotes)i)</b>"
 
 #: app/html/sub/post.html:61
 #, python-format
 msgid "Score: %(score)i"
-msgstr ""
+msgstr "skóre: %(score)i"
 
 #: app/html/sub/post.html:115 app/html/sub/post.html:117
 #: app/html/sub/post.html:134 app/html/sub/post.html:136
@@ -2677,7 +2677,7 @@ msgstr "<span class=\"cscore\">skóre: <span class=\"cscore\">%(score)i</span></
 #: app/html/sub/postcomments.html:46
 #, python-format
 msgid "<span class=\"cscore\">%(score)i</span> points</b>"
-msgstr ""
+msgstr "<span class=\"cscore\">%(score)i</span> bodov</b>"
 
 #: app/html/sub/postcomments.html:53
 #, python-format
@@ -2996,17 +2996,17 @@ msgstr "Info k pozvánke"
 
 #: app/html/user/profile.html:153
 msgid "Please send all sub-related messages to the moderators of that sub."
-msgstr ""
+msgstr "Správy týkajúce sa skupiny prosíme poslať príslušným moderátorom."
 
 #: app/html/user/profile.html:157
 #, python-format
 msgid "Contact the mods of %(mod)s"
-msgstr ""
+msgstr "Kontaktovať moderátorov %(mod)s"
 
 #: app/html/user/profile.html:160
 #, python-format
 msgid "Send a private message to %(name)s"
-msgstr ""
+msgstr "Poslať súkromnú správu používateľovi %(name)s"
 
 #: app/html/user/profile.html:173
 msgid "Send message"
