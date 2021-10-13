@@ -291,3 +291,14 @@ function confResizer(el, pnode, corner) {
     window.removeEventListener('mouseup', stopResize, false);
   }
 }
+
+// expand expando posts by default
+window.onload = function(){
+  var postPageElement = document.querySelector("div.postbar.post");
+  if(typeof(postPageElement) != 'undefined' && postPageElement != null){
+      var expandoButtons = document.querySelectorAll(".expando");
+      for(var i= 0;i<expandoButtons.length;i++){
+          expandoButtons[i].click();
+      }            
+  }
+}
