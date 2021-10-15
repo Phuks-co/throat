@@ -1,5 +1,5 @@
 @require(post, postmeta, comments, subInfo, subMods, highlight, sort)
-@def renderComments(post, postmeta, subInfo, subMods, comments, highlight='', sort='top'):
+@def renderComments(post, postmeta, subInfo, subMods, comments, highlight='', sort='best'):
   @#ignore
   @for comment in comments:
     @if comment['cid']:

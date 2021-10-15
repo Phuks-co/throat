@@ -501,7 +501,7 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
         SubPostMetadata.select().where(SubPostMetadata.pid == pid)
     )
 
-    sticky_sort = "top"
+    sticky_sort = "best"
     if str(pid) in subInfo["sticky"]:
         sticky_sort = postmeta.get("sort", sticky_sort)
 

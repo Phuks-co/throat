@@ -2473,7 +2473,7 @@ def toggle_sort(post):
                 )
                 .get()
             )
-            smd.value = "top" if smd.value == "new" else "new"
+            smd.value = "best" if smd.value == "new" else "new"
             smd.save()
         except SubPostMetadata.DoesNotExist:
             smd = SubPostMetadata.create(pid=post.pid, key="sort", value="new")
@@ -2481,7 +2481,7 @@ def toggle_sort(post):
         misc.create_sublog(
             misc.LOG_TYPE_STICKY_SORT_NEW
             if smd.value == "new"
-            else misc.LOG_TYPE_STICKY_SORT_TOP,
+            else misc.LOG_TYPE_STICKY_SORT_BEST,
             current_user.uid,
             post.sid,
             link=url_for("sub.view_post", sub=post.sid.name, pid=post.pid),
@@ -2921,7 +2921,7 @@ def upvotecomment(cid, value):
 @do.route("/do/get_children/<int:pid>/<cid>", methods=["post"], defaults={"lim": ""})
 def get_sibling(pid, cid, lim):
     """ Gets children comments for <cid> """
-    sort = request.args.get("sort", default="top", type=str)
+    sort = request.args.get("sort", default="best", type=str)
 
     try:
         post = misc.getSinglePost(pid)

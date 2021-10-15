@@ -2227,7 +2227,7 @@ LOG_TYPE_EMAIL_DOMAIN_UNBAN = 70
 LOG_TYPE_DISABLE_CAPTCHAS = 71  # Use LOG_TYPE_ADMIN_CONFIG_CHANGE instead
 LOG_TYPE_ENABLE_CAPTCHAS = 72  # Use LOG_TYPE_ADMIN_CONFIG_CHANGE instead
 LOG_TYPE_STICKY_SORT_NEW = 73
-LOG_TYPE_STICKY_SORT_TOP = 74
+LOG_TYPE_STICKY_SORT_BEST = 74
 LOG_TYPE_ADMIN_CONFIG_CHANGE = 75
 
 
@@ -2348,13 +2348,13 @@ def validate_captcha(token, response):
     return False
 
 
-def get_comment_query(pid, sort="top"):
+def get_comment_query(pid, sort="best"):
     comments = SubPostComment.select(
         SubPostComment.cid, SubPostComment.parentcid
     ).where(SubPostComment.pid == pid)
     if sort == "new":
         comments = comments.order_by(SubPostComment.time.desc())
-    elif sort == "top":
+    elif sort == "top" or sort == "best":  # for now
         comments = comments.order_by(SubPostComment.score.desc())
     comments = comments.dicts()
     return comments
