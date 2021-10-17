@@ -134,7 +134,7 @@
         </div>
         <div id="child-@{comment['cid']}" class="pchild@{(comment['visibility'] != '') and ' hidden' or ''}">
           @if comment['children']:
-            @{renderComments(post, postmeta, subInfo, subMods, comment['children'], highlight)!!html}
+            @{renderComments(post, postmeta, subInfo, subMods, comment['children'], highlight, sort)!!html}
           @end
         </div>
       </article>
@@ -150,4 +150,4 @@
   @end
 @end
 
-@{renderComments(post, postmeta, subInfo, subMods, comments, highlight)!!html}
+@{renderComments(post, postmeta, subInfo, subMods, comments, highlight, sort)!!html}
