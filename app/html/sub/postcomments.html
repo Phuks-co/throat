@@ -58,8 +58,12 @@
               @end
               <br/>
             </div>
-
-            <div class="content  @{(comment['visibility'] != '' and comment['visibility'] != 'mod-del' and comment['visibility'] != 'admin-del') and 'hidden' or ''}" id="content-@{comment['cid']}">
+            @(
+              unseen = ''
+              if comment['userstatus'] != 10 and comment['uid'] != current_user.uid and comment['visibility'] in ['', 'blur-block'] and not post['is_archived']:
+                unseen = 'unseen-comment'
+            )
+            <div class="content @{unseen} @{(comment['visibility'] not in ['', 'mod-del', 'admin-del']) and 'hidden' or ''}" id="content-@{comment['cid']}">
               @if comment['visibility'] == 'none':
                 @{comment['user']} \
               @elif comment['visibility'] in ['admin-self-del', 'mod-self-del']:

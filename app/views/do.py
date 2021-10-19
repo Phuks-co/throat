@@ -33,7 +33,7 @@ from ..forms import SearchForm, EditMod2Form, SetSubOfTheDayForm, AssignSubUserF
 from ..forms import DeleteSubFlair, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm, DistinguishForm
 from ..forms import BanDomainForm, SetOwnUserFlairForm, ChangeConfigSettingForm
-from ..forms import AnnouncePostForm, LiteralBooleanForm
+from ..forms import AnnouncePostForm, LiteralBooleanForm, ViewCommentsForm
 from ..badges import badges
 from ..misc import (
     cache,
@@ -82,6 +82,7 @@ from ..models import (
 from ..models import (
     SubPostVote,
     SubPostCommentVote,
+    SubPostCommentView,
     SubFlair,
     SubPostPollOption,
     SubPostPollVote,
@@ -1285,6 +1286,7 @@ def create_comment(pid):
             parentcid=form.parent.data if form.parent.data != "0" else None,
             time=datetime.datetime.utcnow(),
             cid=uuid.uuid4(),
+            best_score=misc.best_score(0, 0, 0),
             score=0,
             upvotes=0,
             downvotes=0,
@@ -3515,7 +3517,11 @@ def admin_undo_votes(uid):
         try:
             comm = (
                 SubPostComment.select(
-                    SubPostComment.cid, SubPostComment.score, SubPostComment.uid
+                    SubPostComment.cid,
+                    SubPostComment.score,
+                    SubPostComment.uid,
+                    SubPostComment.upvotes,
+                    SubPostComment.views,
                 )
                 .where(SubPostComment.cid == v.cid)
                 .get()
@@ -3645,6 +3651,61 @@ def remove_vote(pid):
             vote.delete_instance()
         except SubPostPollVote.DoesNotExist:
             pass
+    return jsonify(status="ok")
+
+
+@do.route("/do/mark_viewed", methods=["POST"])
+@login_required
+def mark_comments_viewed():
+    """ Mark comments as seen by the user. """
+    form = ViewCommentsForm()
+    if form.validate():
+        cids = json.loads(form.cids.data)
+        comments = (
+            SubPostComment.select(
+                SubPostComment.cid,
+                SubPostComment.pid,
+                SubPostComment.upvotes,
+                SubPostComment.downvotes,
+                SubPostComment.views,
+                SubPost.posted,
+                SubPost.sid,
+            )
+            .join(SubPost)
+            .switch(SubPostComment)
+            .join(User)
+            .join(
+                SubPostCommentView,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (SubPostCommentView.cid == SubPostComment.cid)
+                    & (SubPostCommentView.uid == current_user.uid)
+                ),
+            )
+            .where(
+                SubPostCommentView.id.is_null(True)
+                & (SubPostComment.status.is_null(True))
+                & (SubPostComment.cid << cids)
+                & (SubPostComment.uid != current_user.uid)
+                & (User.status != UserStatus.DELETED)
+            )
+        ).dicts()
+
+        comments = list(comments)
+        if comments and not misc.is_archived(comments[0]):
+            for comment in comments:
+                best_score = misc.best_score(
+                    comment["upvotes"], comment["downvotes"], comment["views"] + 1
+                )
+                SubPostComment.update(
+                    views=SubPostComment.views + 1, best_score=best_score
+                ).where(SubPostComment.cid == comment["cid"]).execute()
+
+            view_records = [
+                {"uid": current_user.uid, "cid": comment["cid"]} for comment in comments
+            ]
+            SubPostCommentView.insert_many(view_records).execute()
+
     return jsonify(status="ok")
 
 
