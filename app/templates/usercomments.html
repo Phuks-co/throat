@@ -46,7 +46,7 @@
                     <div class="nsfw" alt="Not safe for work">{{_('NSFW')}}</div>
                   {%endif%}
                 </a></span>
-                in <a href="{{ url_for('sub.view_sub', sub=comment.sub) }}">{{comment.sub}}</a>
+                v skupine <a href="{{ url_for('sub.view_sub', sub=comment.sub) }}">{{comment.sub}}</a>
               </div>
               <div class="commentrow {%if comment.cid == highlight %}highlight{%endif%}" id="comment-{{comment.cid}}">
                 <div class="commblock">
