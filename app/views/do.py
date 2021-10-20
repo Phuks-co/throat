@@ -2476,6 +2476,11 @@ def toggle_sort(post):
                 .get()
             )
             smd.value = "best" if smd.value == "new" else "new"
+            if (
+                smd.value == "best"
+                and post.posted < misc.get_best_comment_sort_init_date()
+            ):
+                smd.value = "top"
             smd.save()
         except SubPostMetadata.DoesNotExist:
             smd = SubPostMetadata.create(pid=post.pid, key="sort", value="new")
@@ -2483,7 +2488,7 @@ def toggle_sort(post):
         misc.create_sublog(
             misc.LOG_TYPE_STICKY_SORT_NEW
             if smd.value == "new"
-            else misc.LOG_TYPE_STICKY_SORT_BEST,
+            else misc.LOG_TYPE_STICKY_SORT_TOP_OR_BEST,
             current_user.uid,
             post.sid,
             link=url_for("sub.view_post", sub=post.sid.name, pid=post.pid),
@@ -2923,12 +2928,13 @@ def upvotecomment(cid, value):
 @do.route("/do/get_children/<int:pid>/<cid>", methods=["post"], defaults={"lim": ""})
 def get_sibling(pid, cid, lim):
     """ Gets children comments for <cid> """
-    sort = request.args.get("sort", default="best", type=str)
-
     try:
         post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
         return jsonify(status="ok", posts=[])
+
+    default_sort = "best" if post["best_sort_enabled"] else "top"
+    sort = request.args.get("sort", default=default_sort, type=str)
 
     if cid == "null":
         cid = "0"

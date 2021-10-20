@@ -1,5 +1,9 @@
 @require(post, postmeta, comments, subInfo, subMods, highlight, sort)
 @def renderComments(post, postmeta, subInfo, subMods, comments, highlight='', sort='best'):
+  @(
+    if sort == 'best' and not post['best_sort_enabled']:
+      sort = 'top'
+  )
   @#ignore
   @for comment in comments:
     @if comment['cid']:
@@ -60,7 +64,8 @@
             </div>
             @(
               unseen = ''
-              if comment['userstatus'] != 10 and comment['uid'] != current_user.uid and comment['visibility'] in ['', 'blur-block'] and not post['is_archived']:
+              if (comment['userstatus'] != 10 and current_user.is_authenticated and comment['uid'] != current_user.uid and not comment['already_viewed']
+                  and comment['visibility'] in ['', 'blur-block'] and post['best_sort_enabled'] and not post['is_archived']):
                 unseen = 'unseen-comment'
             )
             <div class="content @{unseen} @{(comment['visibility'] not in ['', 'mod-del', 'admin-del']) and 'hidden' or ''}" id="content-@{comment['cid']}">

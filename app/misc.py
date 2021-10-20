@@ -2229,7 +2229,7 @@ LOG_TYPE_EMAIL_DOMAIN_UNBAN = 70
 LOG_TYPE_DISABLE_CAPTCHAS = 71  # Use LOG_TYPE_ADMIN_CONFIG_CHANGE instead
 LOG_TYPE_ENABLE_CAPTCHAS = 72  # Use LOG_TYPE_ADMIN_CONFIG_CHANGE instead
 LOG_TYPE_STICKY_SORT_NEW = 73
-LOG_TYPE_STICKY_SORT_BEST = 74
+LOG_TYPE_STICKY_SORT_TOP_OR_BEST = 74
 LOG_TYPE_ADMIN_CONFIG_CHANGE = 75
 
 
@@ -2350,13 +2350,15 @@ def validate_captcha(token, response):
     return False
 
 
-def get_comment_query(pid, sort="best"):
+def get_comment_query(pid, sort):
     comments = SubPostComment.select(
         SubPostComment.cid, SubPostComment.parentcid
     ).where(SubPostComment.pid == pid)
     if sort == "new":
         comments = comments.order_by(SubPostComment.time.desc())
-    elif sort == "top" or sort == "best":  # for now
+    elif sort == "best":
+        comments = comments.order_by(SubPostComment.best_score.desc())
+    elif sort == "top":
         comments = comments.order_by(SubPostComment.score.desc())
     comments = comments.dicts()
     return comments
@@ -3367,6 +3369,13 @@ def get_sub_flair_choices(sid):
         .dicts()
     )
     return list(choices)
+
+
+@cache.memoize(3600)
+def get_best_comment_sort_init_date():
+    """Posts created before this date can only sort comments by top and new."""
+    smd = SiteMetadata.get(SiteMetadata.key == "best_comment_sort_init")
+    return datetime.strptime(smd.value, "%Y-%m-%UdT%H:%M:%SZ")
 
 
 def gevent_required(f):

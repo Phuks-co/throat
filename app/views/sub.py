@@ -501,12 +501,14 @@ def view_post(sub, pid, slug=None, comments=False, highlight=None):
         SubPostMetadata.select().where(SubPostMetadata.pid == pid)
     )
 
-    sticky_sort = "best"
+    sticky_sort = "best" if post["best_sort_enabled"] else "top"
     if str(pid) in subInfo["sticky"]:
         sticky_sort = postmeta.get("sort", sticky_sort)
 
     if sort is None:
         sort = sticky_sort
+    if sort == "best" and not post["best_sort_enabled"]:
+        sort = "top"
 
     subMods = misc.getSubMods(sub["sid"])
     include_history = current_user.is_mod(sub["sid"], 1) or current_user.is_admin()
@@ -678,31 +680,49 @@ def view_perm(sub, pid, slug, cid):
     """ Permalink to comment """
     # We get the comment...
     try:
-        comment = SubPostComment.select().where(SubPostComment.cid == cid).get()
-    except SubPostComment.DoesNotExist:
+        post = (
+            SubPost.select(
+                SubPost.pid,
+                SubPost.sid,
+                SubPost.posted,
+                SubPost.title,
+                Sub.name,
+            )
+            .join(SubPostComment)
+            .switch(SubPost)
+            .join(Sub)
+            .where(
+                (SubPostComment.cid == cid)
+                & (SubPost.pid == pid)
+                & (fn.Lower(Sub.name) == sub.lower())
+            )
+            .dicts()
+            .get()
+        )
+    except SubPost.DoesNotExist:
         return abort(404)
-    if slug != misc.slugify(comment.pid.title):
+
+    if slug != misc.slugify(post["title"]):
         return redirect(
             url_for(
                 "sub.view_perm",
                 sub=sub,
                 pid=pid,
-                slug=misc.slugify(comment.pid.title),
+                slug=misc.slugify(post["title"]),
                 cid=cid,
             ),
             301,
         )
 
-    sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
-    include_history = current_user.is_mod(sub["sid"], 1) or current_user.is_admin()
-
-    comments = misc.get_comment_query(pid, sort="top")
+    include_history = current_user.is_mod(post["sid"], 1) or current_user.is_admin()
+    sort = "best" if post["posted"] > misc.get_best_comment_sort_init_date() else "top"
+    comments = misc.get_comment_query(pid, sort=sort)
     comment_tree = misc.get_comment_tree(
         pid,
-        sub["sid"],
+        post["sid"],
         comments,
         cid,
         uid=current_user.uid,
         include_history=include_history,
     )
-    return view_post(sub["name"], pid, slug, comment_tree, cid)
+    return view_post(post["name"], pid, slug, comment_tree, cid)
