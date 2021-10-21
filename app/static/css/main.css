@@ -1313,7 +1313,9 @@ hr {
 
 .sidescore {
     font-size: 12px;
-    color: var(--primary-color);
+    font-weight: bold;
+	margin-right: 4px;
+    color: var(--upvote-color);
 }
 
 input[type=search] {
