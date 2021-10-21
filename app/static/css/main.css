@@ -1312,10 +1312,10 @@ hr {
 }
 
 .sidescore {
-    font-size: 12px;
-    font-weight: bold;
-	margin-right: 4px;
-    color: var(--upvote-color);
+  font-size: 12px;
+  font-weight: bold;
+  margin-right: 4px;
+  color: var(--upvote-color);
 }
 
 input[type=search] {
