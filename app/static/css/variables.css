@@ -60,4 +60,7 @@
     --dark-links-a: #56758d;
     /** Box-shadow in dark mode */
     --dark-shadow: #aa4509;
+
+    /** Active sub color in top bar */
+    --active-sub-color: #c90511;
 }

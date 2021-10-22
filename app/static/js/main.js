@@ -595,3 +595,19 @@ u.addEventForChild(document, 'input', '.ignore-form-select', function(e, qelem){
   saveButton.classList.remove('hide');
   saveButton.innerHTML = _('Save changes')
 })
+
+//topbar active page link indication
+var activePage = window.location.pathname.split("/").slice(0,3).join("/");
+if("/all/hot" == activePage)
+   activePage = "/all";   
+var childs = document.getElementById("topbar").children;
+for(var i = 0;i<childs.length;i++){
+    if( childs[i].firstElementChild){
+        if(childs[i].firstElementChild.nodeName == "A"){
+            var nodeLink = childs[i].firstElementChild.getAttribute("href").split("/").slice(0,3).join("/");
+            if(nodeLink == activePage){
+                 childs[i].firstElementChild.style.color = 'var(--active-sub-color)';
+            }
+        }
+    }
+}
