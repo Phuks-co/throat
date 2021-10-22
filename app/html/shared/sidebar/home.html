@@ -22,7 +22,7 @@
     <h4 class="center">@{_('Top posts in the last 24 hours')}</h4>
     <ul class="top5">
       @for post in func.getTodaysTopPosts():
-        <li><a class="title @{post['blur']}" href="@{url_for('sub.view_post', sub=post['sub'], pid=post['pid'])}">@{post['title']}</a>
+        <li><span class="sidescore">@{post['score']} </span><a class="title @{post['blur']}" href="@{url_for('sub.view_post', sub=post['sub'], pid=post['pid'])}">@{post['title']}</a>
           @if post['nsfw'] or post['sub_nsfw']:
             <span class="nsfw" alt="Not safe for work">@{_('NSFW')}</span>
           @endif

@@ -1311,6 +1311,13 @@ hr {
   font-size: 12px;
 }
 
+.sidescore {
+  font-size: 12px;
+  font-weight: bold;
+  margin-right: 4px;
+  color: var(--upvote-color);
+}
+
 input[type=search] {
   box-sizing: border-box;
   border: solid lightgray 1px;
