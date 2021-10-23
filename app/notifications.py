@@ -13,6 +13,7 @@ from .models import (
     SubPost,
     SubPostComment,
     SubPostCommentVote,
+    SubPostCommentView,
     SubPostVote,
 )
 from .socketio import socketio
@@ -54,6 +55,7 @@ class Notifications(object):
                 SubPostComment.content.alias("comment_content"),
                 SubPostComment.score.alias("comment_score"),
                 SubPostComment.content.alias("post_comment"),
+                SubPostCommentView.id.alias("already_viewed"),
                 SubPost.score.alias("post_score"),
                 SubPost.link.alias("post_link"),
                 ParentComment.content.alias("comment_context"),
@@ -67,6 +69,14 @@ class Notifications(object):
             .join(SubPost, JOIN.LEFT_OUTER)
             .switch(Notification)
             .join(SubPostComment, JOIN.LEFT_OUTER)
+            .join(
+                SubPostCommentView,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (SubPostCommentView.cid == SubPostComment.cid)
+                    & (SubPostCommentView.uid == uid)
+                ),
+            )
             .switch(Notification)
             .join(User, JOIN.LEFT_OUTER, on=Notification.sender == User.uid)
             .join(

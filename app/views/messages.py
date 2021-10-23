@@ -36,6 +36,15 @@ def view_notifications(page):
         if n["cid"] or (n["pid"] and n["type"] not in ("POST_DELETE", "POST_UNDELETE")):
             n["archived"] = misc.is_archived(n)
             misc.add_blur(n)
+        if (
+            n["cid"]
+            and n["already_viewed"] is not None
+            and n["posted"] > misc.get_best_comment_sort_init_date()
+            and not n["archived"]
+        ):
+            n["unseen"] = "unseen-comment"
+        else:
+            n["unseen"] = ""
 
     Notification.update(read=datetime.utcnow()).where(
         (Notification.read.is_null(True)) & (Notification.target == current_user.uid)
