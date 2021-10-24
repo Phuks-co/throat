@@ -546,6 +546,7 @@ def edit_sub(sub):
 
             sub.update_metadata("restricted", form.restricted.data)
             sub.update_metadata("ucf", form.usercanflair.data)
+            sub.update_metadata("umf", form.usermustflair.data)
             sub.update_metadata("user_can_flair_self", form.user_can_flair_self.data)
             sub.update_metadata("freeform_user_flairs", form.freeform_user_flairs.data)
             sub.update_metadata("allow_text_posts", form.allow_text_posts.data)

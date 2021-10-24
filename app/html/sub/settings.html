@@ -88,6 +88,13 @@
           </label>
         </div>
 
+        <div class="pure-control-group">
+          <label for="usermustflair" class="pure-checkbox">
+            @{editsubform.usermustflair(checked=True if metadata.get('umf') else False)!!html}
+            @{editsubform.usermustflair.label.text}
+          </label>
+        </div>
+
         <h4>User flairs</h4>
         <div class="pure-control-group">
           <label for="user_can_flair_self" class="pure-checkbox">
