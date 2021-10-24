@@ -749,7 +749,8 @@ def assign_post_flair(sub, pid, fl):
     form = CsrfTokenOnlyForm()
     if form.validate():
         if current_user.is_mod(sub.sid) or (
-            post.uid_id == current_user.uid and sub.get_metadata("ucf")
+            post.uid_id == current_user.uid
+            and (sub.get_metadata("ucf") != "1" or sub.get_metadata("umf") != "1")
         ):
             try:
                 flair = SubFlair.get((SubFlair.xid == fl) & (SubFlair.sid == sub.sid))
@@ -779,7 +780,7 @@ def remove_post_flair(sub, pid):
         return jsonify(status="error", error=[_("Post does not exist")])
 
     if current_user.is_mod(sub.sid) or (
-        post.uid_id == current_user.uid and sub.get_metadata("ucf")
+        post.uid_id == current_user.uid and sub.get_metadata("ucf") == "1" and sub.get_metadata("umf") != "1"
     ):
         if not post.flair:
             return jsonify(status="error", error=_("Post has no flair"))
