@@ -178,6 +178,7 @@ class CreateSubPostForm(FlaskForm):
         ],
         validators=[DataRequired()],
     )
+    flair = HiddenField(_l("Flair"))
     nsfw = BooleanField(_l("NSFW?"))
     # for polls.
     options = FieldList(StringField(_l("Option")), max_entries=6)

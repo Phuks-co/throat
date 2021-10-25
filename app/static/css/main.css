@@ -949,7 +949,7 @@ img.nsfw-blur, img.block-blur {
   z-index: 100;
 }
 
-.postflair, .selflair {
+.postflair, .selflair, .submitflair {
   border: 1px solid #aaa;
   border-radius: 2px;
   background-color: #eee;
@@ -957,6 +957,34 @@ img.nsfw-blur, img.block-blur {
   line-height: 2em;
   white-space: nowrap;
   cursor: pointer;
+}
+
+.submitflair {
+    margin-right: .3em;
+    margin-bottom: .3em;
+    line-height: 1em;
+}
+
+.submitflair.selected {
+  color: #fff;
+  background-color: #101010;
+}
+
+.submitflair.selected:hover {
+  background-color: #808080;
+}
+
+#flair-container {
+  float: right;
+  width: calc(100% - 11em);
+  display: flex;
+  flex-wrap: wrap;
+}
+
+@media only screen and (max-width : 480px) {
+    #flair-container {
+        width: 100%;
+    }
 }
 
 .pollflair {
@@ -977,7 +1005,7 @@ img.nsfw-blur, img.block-blur {
   color: #111;
 }
 
-.selflair:hover {
+.selflair:hover, .submitflair:hover {
   background-color: #d5d5d5;
 }
 
