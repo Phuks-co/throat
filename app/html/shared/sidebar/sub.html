@@ -5,6 +5,10 @@
   <input aria-label="Search" name="term" placeholder="@{_('Title search...')}" type="search" class="pure-u-1">
 </form>
 
+@if not current_user.is_authenticated:
+	<a href="@{url_for('subs.submit', ptype='link', sub=sub['name'])}" class="sbm-post pure-button">@{_('Submit a post')}</a>
+@end
+
 @if current_user.is_authenticated:
   @if subInfo.get('restricted', 0) == '1' and not (current_user.uid in (subMods['all'])):
     <div>@{_('Only mods can post.')}</div>
