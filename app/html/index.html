@@ -36,7 +36,7 @@
 @def main():
 <div id="container">
   @if sort_type.startswith('home.') or sort_type.startswith('home.all_'):
-    @if ann:
+    @if ann and sort_type not in ('home.search', 'home.all_domain_new'):
       <div id="announcement-post">
       @{ipost.singlePost(ann, False, announcement=True)!!html}
       <hr/>
@@ -46,6 +46,9 @@
 
   @if not posts:
     <h2 class="noshit">@{_('There are no posts here, yet.')}</h2>
+  @end
+  @if sort_type in ('home.all_domain_new'):
+    <h4>Všetky príspevky z domény <a href="https://@{kw['domain']}" target="_blank">@{kw['domain']}<a>:</h4>
   @end
   <div class="alldaposts">
     @for post in posts:
