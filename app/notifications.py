@@ -54,8 +54,6 @@ class Notifications(object):
                 SubPostComment.content.alias("comment_content"),
                 SubPostComment.score.alias("comment_score"),
                 SubPostComment.content.alias("post_comment"),
-                SubPostCommentVote.positive.alias("comment_positive"),
-                SubPostVote.positive.alias("post_positive"),
                 SubPost.score.alias("post_score"),
                 SubPost.link.alias("post_link"),
                 ParentComment.content.alias("comment_context"),
@@ -67,21 +65,8 @@ class Notifications(object):
             .join(Sub, JOIN.LEFT_OUTER)
             .switch(Notification)
             .join(SubPost, JOIN.LEFT_OUTER)
-            .join(
-                SubPostVote,
-                JOIN.LEFT_OUTER,
-                on=(SubPostVote.uid == uid) & (SubPostVote.pid == SubPost.pid),
-            )
             .switch(Notification)
             .join(SubPostComment, JOIN.LEFT_OUTER)
-            .join(
-                SubPostCommentVote,
-                JOIN.LEFT_OUTER,
-                on=(
-                    (SubPostCommentVote.uid == uid)
-                    & (SubPostCommentVote.cid == SubPostComment.cid)
-                ),
-            )
             .switch(Notification)
             .join(User, JOIN.LEFT_OUTER, on=Notification.sender == User.uid)
             .join(
@@ -137,7 +122,40 @@ class Notifications(object):
             .paginate(page, 50)
             .dicts()
         )
-        return list(notifications)
+        notifications = list(notifications)
+        # Fetch the votes for only the 50 notifications on the page.
+        # Joining the vote tables in the query above was causing Postgres
+        # to do a lot of extra work for users with many notifications and
+        # votes.
+        votes = (
+            Notification.select(
+                Notification.id,
+                SubPostCommentVote.positive.alias("comment_positive"),
+                SubPostVote.positive.alias("post_positive"),
+            )
+            .join(SubPost, JOIN.LEFT_OUTER)
+            .join(
+                SubPostVote,
+                JOIN.LEFT_OUTER,
+                on=(SubPostVote.uid == uid) & (SubPostVote.pid == SubPost.pid),
+            )
+            .switch(Notification)
+            .join(SubPostComment, JOIN.LEFT_OUTER)
+            .join(
+                SubPostCommentVote,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (SubPostCommentVote.uid == uid)
+                    & (SubPostCommentVote.cid == SubPostComment.cid)
+                ),
+            )
+            .where(Notification.id << [n["id"] for n in notifications])
+        ).dicts()
+        votes_by_id = {v["id"]: v for v in votes}
+        for n in notifications:
+            n["comment_positive"] = votes_by_id[n["id"]]["comment_positive"]
+            n["post_positive"] = votes_by_id[n["id"]]["post_positive"]
+        return notifications
 
     def send(
         self,
