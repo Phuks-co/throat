@@ -24,3 +24,6 @@ Disallow: /
 
 User-agent: VelenPublicWebCrawler
 Disallow: /
+
+User-agent: dotbot
+Disallow: /
