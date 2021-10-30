@@ -2726,7 +2726,7 @@ def edit_comment():
         if current_user.is_subban(sub):
             return jsonify(status="error", error=[_("You are banned on this sub.")])
 
-        if comment.status in [1, 2]:
+        if comment.status:
             return jsonify(status="error", error=_("You can't edit a deleted comment"))
 
         if post.deleted in [1, 2]:
@@ -2761,6 +2761,10 @@ def delete_comment():
             comment = SubPostComment.get(SubPostComment.cid == form.cid.data)
         except SubPostComment.DoesNotExist:
             return jsonify(status="error", error=_("Comment does not exist"))
+
+        if comment.status:
+            return jsonify(status="error", error=_("Comment is already deleted"))
+
         sub = (
             Sub.select(Sub.sid, Sub.name)
             .join(SubPost)
@@ -2804,7 +2808,10 @@ def delete_comment():
                     log_type="comment",
                     desc=form.reason.data,
                 )
-            comment.status = 2
+            if current_user.is_mod(sub.sid):
+                comment.status = 2
+            else:
+                comment.status = 3
         else:
             comment.status = 1
 
@@ -2831,7 +2838,10 @@ def undelete_comment():
             .get()
         )
 
-        if not current_user.is_admin():
+        if not (
+            current_user.is_admin()
+            or (comment.status == 2 and current_user.is_mod(sub.sid))
+        ):
             return jsonify(status="error", error=_("Not authorized"))
 
         misc.create_sublog(

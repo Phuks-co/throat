@@ -164,12 +164,14 @@ Mod |\
 
             @else:
             <h3>@{_('Comment Preview:')}</h3>
-              <div class="preview-text-container @{((comment['status'] == 1) or (comment['status'] == 2)) and 'deleted ' or ''}">
+              <div class="preview-text-container @{(comment['status'] in [1, 2, 3]) and 'deleted ' or ''}">
                 <div class="preview-text">
                   @if comment['status'] != 1:
                     @if comment['status'] == 2:
-                      <p class="helper=text">@{_('[comment deleted by mod or admin]')}</p>
-                    @end
+                      <p class="helper=text">@{_('[comment deleted by mod]')}</p>
+                    @elif comment['status'] == 3:
+                      <p class="helper=text">@{_('[comment deleted by admin]')}</p>
+		    @end
                     <div id="commentcontent">@{comment['content']}</div>
                   @elif current_user.is_admin():
                     <p class="helper=text">@{_('[comment deleted by user]')}</p>
@@ -199,7 +201,7 @@ Mod |\
                   </div>
                   <div class="pure-u-1-2 pure-u-md-1-6">
                     @if report['type'] == 'comment':
-                      @if (comment['status'] != 1) and (comment['status'] != 2):
+                      @if (comment['status'] not in [1, 2, 3]):
                         <button class="pure-button pure-button-primary button-small btn-editpost delete-comment" data-cid="@{report['cid']}">
                           @{_('Delete Comment')}
                         </button>

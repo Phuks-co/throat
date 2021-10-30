@@ -367,9 +367,13 @@ class SubPostComment(BaseModel):
     score = IntegerField(null=True)
     upvotes = IntegerField(default=0)
     downvotes = IntegerField(default=0)
-    status = IntegerField(
-        null=True
-    )  # 1=self delete, 2=mod delete, 0 or null=not deleted
+
+    # status:
+    #   null or 0: Either not deleted, or reinstated.
+    #   1:         The user removed it themselves; still visible to mods, admins.
+    #   2:         A mod removed it; still visible to mods, admins and the user.
+    #   3:         An admin removed it; still visible to mods, admins and the user.
+    status = IntegerField(null=True)
     distinguish = IntegerField(null=True)  # 1=mod, 2=admin, 0 or null = normal
     time = DateTimeField(null=True)
     uid = ForeignKeyField(
