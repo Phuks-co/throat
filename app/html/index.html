@@ -37,7 +37,7 @@
 <div id="container">
   @if sort_type.startswith('home.') or sort_type.startswith('home.all_'):
     @if ann and sort_type not in ('home.search', 'home.all_domain_new'):
-      <div id="announcement-post">
+      <div id="announcement-post" class="alldaposts">
       @{ipost.singlePost(ann, False, announcement=True)!!html}
       <hr/>
       </div>
