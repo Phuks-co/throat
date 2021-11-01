@@ -934,8 +934,8 @@ img.nsfw-blur, img.block-blur {
   border-bottom: 1px solid #efefef;
 }
 
-.styckyposts .post{
-  border: 1px solid #d9d8d6;
+.stickyposts .links a.comments {
+  color: #0f5387;
 }
 
 .stick {
