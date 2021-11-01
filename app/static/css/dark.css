@@ -514,6 +514,13 @@ body.dark .alldaposts .links a{
   color: #797979;
 }
 
+body.dark .stickyposts .links a{
+  color: #797979;
+}
+
+body.dark .stickyposts .links a.comments{
+    color: #526a7d;
+}
 
 /* poll */
 body.dark .poll-pbar {
