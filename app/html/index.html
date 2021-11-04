@@ -45,10 +45,10 @@
   @end
 
   @if not posts:
-    <h2 class="noshit">@{_('There are no posts here, yet.')}</h2>
+    <h4 class="noshit">@{_('There are no posts here, yet.')}</h4>
   @end
   @if sort_type in ('home.all_domain_new'):
-    <h4>Všetky príspevky z domény <a href="https://@{kw['domain']}" target="_blank">@{kw['domain']}<a>:</h4>
+    <h4 class="noshit">Všetky príspevky z domény <a href="https://@{kw['domain']}" target="_blank">@{kw['domain']}<a>:</h4>
   @end
   <div class="alldaposts">
     @for post in posts:
