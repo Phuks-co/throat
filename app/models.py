@@ -296,7 +296,9 @@ class SubMetadata(BaseModel):
 
 class SubPost(BaseModel):
     content = TextField(null=True)
-    deleted = IntegerField(default=0)  # 1=self delete, 2=mod delete, 0=not deleted
+    deleted = IntegerField(
+        default=0
+    )  # 1=self delete, 2=mod delete, 3=admin delete, 0=not deleted
     distinguish = IntegerField(null=True)  # 1=mod, 2=admin, 0 or null = normal
     link = CharField(null=True)
     nsfw = BooleanField(null=True)

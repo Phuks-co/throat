@@ -1142,7 +1142,7 @@ def postListQueryBase(
                 (SubPost.deleted == 0) | (Sub.sid << include_deleted_posts)
             )
         elif not current_user.is_admin():
-            posts = posts.where(SubPost.deleted << [0, 2])
+            posts = posts.where(SubPost.deleted << [0, 2, 3])
     else:
         posts = posts.where(SubPost.deleted == 0)
 

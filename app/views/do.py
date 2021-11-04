@@ -317,10 +317,8 @@ def delete_post():
         if post.deleted != 0:
             return jsonify(status="error", error=[_("Post was already deleted")])
 
-        sub = Sub.get(Sub.sid == post.sid)
-
         if (
-            not current_user.is_mod(sub.sid)
+            not current_user.is_mod(post.sid)
             and not current_user.is_admin()
             and not post.uid_id == current_user.uid
         ):
@@ -333,7 +331,7 @@ def delete_post():
                 return jsonify(
                     status="error", error=[_("Cannot delete without reason")]
                 )
-            deletion = 2
+            deletion = 2 if current_user.is_mod(post.sid) else 3
             # notify user.
             Notification.create(
                 type="POST_DELETE",
@@ -436,7 +434,10 @@ def undelete_post():
                 status="error", error=[_("Can not un-delete a self-deleted post")]
             )
 
-        if not current_user.is_admin():
+        if not (
+            current_user.is_admin()
+            or (current_user.is_mod(post.sid) and post.deleted == 2)
+        ):
             return jsonify(status="error", error=[_("Not authorized")])
 
         if not form.reason.data:
@@ -2837,6 +2838,14 @@ def undelete_comment():
             .where(SubPost.pid == comment.pid)
             .get()
         )
+
+        if not comment.status:
+            return jsonify(status="error", error=_("Comment is not deleted"))
+
+        if comment.status == 1:
+            return jsonify(
+                status="error", error=_("Can not un-delete a self-deleted comment")
+            )
 
         if not (
             current_user.is_admin()

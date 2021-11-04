@@ -139,8 +139,10 @@ Mod |\
                 <div class="preview-text">
                   <div class="postinfo" id="postinfo" pid="@{report['pid']!!s}">
                     @if post['deleted'] != 1 or current_user.is_admin():
-                      @if post['deleted'] == 2:
-                        <p class="helper-text">@{_('[post deleted by mod or admin]')}</p>
+                      @if post['deleted'] == 3:
+                        <p class="helper-text">@{_('[post deleted by admin]')}</p>
+                      @elif post['deleted'] == 2:
+                        <p class="helper-text">@{_('[post deleted by mod]')}</p>
                       @elif post['deleted'] == 1:
                         <p class="helper-text">@{_('[post deleted by user]')}</p>
                       @end
