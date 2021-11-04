@@ -15,7 +15,7 @@
 
 {% block content %}
 {{ super() }}
-{% if not uploads %}<h3 class="noshit">There are no uploads, yet.</h3>{% endif %}
+{% if not uploads %}<h3 class="notfound">There are no uploads, yet.</h3>{% endif %}
 <div id="center-container">
   <div class="uploads content">
       {% for item in uploads %}
