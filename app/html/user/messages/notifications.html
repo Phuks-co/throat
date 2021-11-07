@@ -21,12 +21,12 @@
           @end
           <p class="title">
             @if msg['type'] == 'POST_REPLY':
-              @{_('<a href="/u/%(user)s">%(user)s</a> replied to your post <a class="%(cls)s" href="%(link)s">%(title)s</a>', user=msg['sender'], link=url_for("sub.view_post", sub=msg['sub_name'], pid=msg['pid']), cls=msg['blur'], title=e(msg['post_title'])) !!html}
+              @{_('<a href="/u/%(user)s">%(user)s</a> replied to your post <a class="%(cls)s" href="%(link)s">%(title)s</a> in <a href="%(sublink)s">%(sub)s</a>', sublink=url_for("sub.view_sub", sub=msg['sub_name']), sub=msg['sub_name'], user=msg['sender'], link=url_for("sub.view_post", sub=msg['sub_name'], pid=msg['pid']), cls=msg['blur'], title=e(msg['post_title'])) !!html}
               @if msg['nsfw'] or msg['sub_nsfw']:
                 <span class="nsfw" alt="Not safe for work">@{_('NSFW')}</span>
               @endif
             @elif msg['type'] == 'COMMENT_REPLY':
-              @{_('<a href="/u/%(user)s">%(user)s</a> replied to your comment in <a class="%(cls)s" href="%(link)s">%(title)s</a>', user=msg['sender'], link=url_for("sub.view_post", sub=msg['sub_name'], pid=msg['pid']), cls=msg['blur'], title=e(msg['post_title'])) !!html}
+              @{_('<a href="/u/%(user)s">%(user)s</a> replied to your comment in the post titled <a class="%(cls)s" href="%(link)s">%(title)s</a> in <a href="%(sublink)s">%(sub)s</a>', sublink=url_for("sub.view_sub", sub=msg['sub_name']), sub=msg['sub_name'], user=msg['sender'], link=url_for("sub.view_post", sub=msg['sub_name'], pid=msg['pid']), cls=msg['blur'], title=e(msg['post_title'])) !!html}
               @if msg['nsfw'] or msg['sub_nsfw']:
                 <span class="nsfw" alt="Not safe for work">@{_('NSFW')}</span>
               @endif
