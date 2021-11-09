@@ -104,6 +104,11 @@
                     @{form.nsfw.label()!!html}@{form.nsfw()!!html}
                 </div>
                 @end
+                <div id="flair-control" class="pure-control-group">
+                  @{form.flair.label()!!html}
+                  @{form.flair()!!html}
+                  <span id="flair-container"></span>
+                </div>
 
                 @if captcha:
                 <input type="hidden" name="ctok" value="@{captcha[0]}"/>

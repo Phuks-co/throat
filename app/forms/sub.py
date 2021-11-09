@@ -119,6 +119,7 @@ class EditSubForm(FlaskForm):
     nsfw = BooleanField(_l("Sub is NSFW"))
     restricted = BooleanField(_l("Only mods can post"))
     usercanflair = BooleanField(_l("Allow users to flair their own posts"))
+    usermustflair = BooleanField(_l("Require users to flair their own posts"))
     user_can_flair_self = BooleanField(
         _l("Allow users to pick from moderator-created user flair options")
     )
@@ -177,6 +178,7 @@ class CreateSubPostForm(FlaskForm):
         ],
         validators=[DataRequired()],
     )
+    flair = HiddenField(_l("Flair"))
     nsfw = BooleanField(_l("NSFW?"))
     # for polls.
     options = FieldList(StringField(_l("Option")), max_entries=6)

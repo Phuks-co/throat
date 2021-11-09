@@ -317,10 +317,8 @@ def delete_post():
         if post.deleted != 0:
             return jsonify(status="error", error=[_("Post was already deleted")])
 
-        sub = Sub.get(Sub.sid == post.sid)
-
         if (
-            not current_user.is_mod(sub.sid)
+            not current_user.is_mod(post.sid)
             and not current_user.is_admin()
             and not post.uid_id == current_user.uid
         ):
@@ -333,7 +331,7 @@ def delete_post():
                 return jsonify(
                     status="error", error=[_("Cannot delete without reason")]
                 )
-            deletion = 2
+            deletion = 2 if current_user.is_mod(post.sid) else 3
             # notify user.
             Notification.create(
                 type="POST_DELETE",
@@ -436,7 +434,10 @@ def undelete_post():
                 status="error", error=[_("Can not un-delete a self-deleted post")]
             )
 
-        if not current_user.is_admin():
+        if not (
+            current_user.is_admin()
+            or (current_user.is_mod(post.sid) and post.deleted == 2)
+        ):
             return jsonify(status="error", error=[_("Not authorized")])
 
         if not form.reason.data:
@@ -546,6 +547,7 @@ def edit_sub(sub):
 
             sub.update_metadata("restricted", form.restricted.data)
             sub.update_metadata("ucf", form.usercanflair.data)
+            sub.update_metadata("umf", form.usermustflair.data)
             sub.update_metadata("user_can_flair_self", form.user_can_flair_self.data)
             sub.update_metadata("freeform_user_flairs", form.freeform_user_flairs.data)
             sub.update_metadata("allow_text_posts", form.allow_text_posts.data)
@@ -748,7 +750,8 @@ def assign_post_flair(sub, pid, fl):
     form = CsrfTokenOnlyForm()
     if form.validate():
         if current_user.is_mod(sub.sid) or (
-            post.uid_id == current_user.uid and sub.get_metadata("ucf")
+            post.uid_id == current_user.uid
+            and (sub.get_metadata("ucf") != "1" or sub.get_metadata("umf") != "1")
         ):
             try:
                 flair = SubFlair.get((SubFlair.xid == fl) & (SubFlair.sid == sub.sid))
@@ -778,7 +781,9 @@ def remove_post_flair(sub, pid):
         return jsonify(status="error", error=[_("Post does not exist")])
 
     if current_user.is_mod(sub.sid) or (
-        post.uid_id == current_user.uid and sub.get_metadata("ucf")
+        post.uid_id == current_user.uid
+        and sub.get_metadata("ucf") == "1"
+        and sub.get_metadata("umf") != "1"
     ):
         if not post.flair:
             return jsonify(status="error", error=_("Post has no flair"))
@@ -2726,7 +2731,7 @@ def edit_comment():
         if current_user.is_subban(sub):
             return jsonify(status="error", error=[_("You are banned on this sub.")])
 
-        if comment.status in [1, 2]:
+        if comment.status:
             return jsonify(status="error", error=_("You can't edit a deleted comment"))
 
         if post.deleted in [1, 2]:
@@ -2761,6 +2766,10 @@ def delete_comment():
             comment = SubPostComment.get(SubPostComment.cid == form.cid.data)
         except SubPostComment.DoesNotExist:
             return jsonify(status="error", error=_("Comment does not exist"))
+
+        if comment.status:
+            return jsonify(status="error", error=_("Comment is already deleted"))
+
         sub = (
             Sub.select(Sub.sid, Sub.name)
             .join(SubPost)
@@ -2804,7 +2813,10 @@ def delete_comment():
                     log_type="comment",
                     desc=form.reason.data,
                 )
-            comment.status = 2
+            if current_user.is_mod(sub.sid):
+                comment.status = 2
+            else:
+                comment.status = 3
         else:
             comment.status = 1
 
@@ -2831,7 +2843,18 @@ def undelete_comment():
             .get()
         )
 
-        if not current_user.is_admin():
+        if not comment.status:
+            return jsonify(status="error", error=_("Comment is not deleted"))
+
+        if comment.status == 1:
+            return jsonify(
+                status="error", error=_("Can not un-delete a self-deleted comment")
+            )
+
+        if not (
+            current_user.is_admin()
+            or (comment.status == 2 and current_user.is_mod(sub.sid))
+        ):
             return jsonify(status="error", error=_("Not authorized"))
 
         misc.create_sublog(

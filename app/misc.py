@@ -1142,7 +1142,7 @@ def postListQueryBase(
                 (SubPost.deleted == 0) | (Sub.sid << include_deleted_posts)
             )
         elif not current_user.is_admin():
-            posts = posts.where(SubPost.deleted << [0, 2])
+            posts = posts.where(SubPost.deleted << [0, 2, 3])
     else:
         posts = posts.where(SubPost.deleted == 0)
 
@@ -2592,6 +2592,12 @@ def get_comment_tree(
             elif comm["status"] == 2:
                 if is_admin or is_mod:
                     comm["visibility"] = "mod-del"
+                else:
+                    comm["user"] = _("[Deleted]")
+                    comm.update(remove_content)
+            elif comm["status"] == 3:
+                if is_admin or is_mod:
+                    comm["visibility"] = "admin-del"
                 else:
                     comm["user"] = _("[Deleted]")
                     comm.update(remove_content)

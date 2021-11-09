@@ -1186,6 +1186,11 @@ def get_sub(name):
     ptype_mapping = {i: j for j, i in misc.ptype_names.items()}
     for ptype in post_types:
         allowed_post_types[ptype_mapping[ptype.key]] = True
+    sub_data = misc.getSubData(sub.sid, simple=True)
+    if sub_data.get("umf") == "1" or sub_data.get("ucf") == "1":
+        flairs = misc.getSubFlairs(sub.sid)
+    else:
+        flairs = []
 
     return jsonify(
         {
@@ -1195,6 +1200,7 @@ def get_sub(name):
             "subscribers": sub.subscribers,
             "posts": sub.posts,
             "postTypes": allowed_post_types,
+            "flairs": [{"id": f.xid, "text": f.text} for f in flairs],
         }
     )
 
