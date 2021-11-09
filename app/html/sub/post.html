@@ -213,7 +213,7 @@
           @else:
             <li><a class="savepost" data-pid="@{post['pid']}">@{_('save')}</a></li>
           @end
-          @if (subInfo.get('ucf', 0) == '1' and current_user.uid == post['uid']) or current_user.uid in subMods['all']:
+          @if ((subInfo.get('ucf', 0) == '1' or subInfo.get('umf', 0) == '1') and current_user.uid == post['uid']) or current_user.uid in subMods['all']:
             @if len(func.getSubFlairs(post['sid'])) != 0:
             <li><a class="editflair">@{_('flair')!!e}</a></li>
             @end
@@ -286,11 +286,16 @@
     </div>
   </div>
 
-  @if (subInfo.get('ucf', 0) == '1' and current_user.uid == post['uid']) or current_user.uid in subMods['all']:
+  @if ((subInfo.get('ucf', 0) == '1' or subInfo.get('umf', 0) == '1') and current_user.uid == post['uid']) or current_user.uid in subMods['all']:
     <div style="display:none;" id="postflairs" class="popup">
       <span class="closemsg">×</span>
       @if post['flair']:
-        <div>@{_('Current flair: <span class="postflair">%(flair)s</span>.', flair=e(post['flair']))!!html} <a data-sub="@{post['sub']}" data-pid="@{post['pid']}" href="#" id="remove-flair">@{_('Remove')}</a>.</div>
+        <div>
+	  @{_('Current flair: <span class="postflair">%(flair)s</span>', flair=e(post['flair']))!!html}
+	  @if not subInfo.get('umf') == '1' or current_user.uid in subMods['all']:
+	    <a data-sub="@{post['sub']}" data-pid="@{post['pid']}" href="#" id="remove-flair">@{_('Remove')}</a>
+	  @end
+	</div>
       @end
       <h4>@{_('Select a new flair')}</h4>
       @for ll in func.getSubFlairs(post['sid']):

@@ -581,10 +581,20 @@ body.dark .popup {
     border-color: #0f0f0f;
 }
 
-body.dark .selflair {
+body.dark .selflair, body.dark .submitflair {
     background-color: #333;
     color: #777;
     border-color: #222;
+}
+
+body.dark .submitflair.selected {
+    color:#ddd;
+    background-color: #161616;
+    border-color: #666;
+}
+
+body.dark .submitflair:hover {
+    background-color: #aaa;
 }
 
 body.dark .admin-config-edit {
