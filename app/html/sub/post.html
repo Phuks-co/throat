@@ -19,7 +19,7 @@
 
 @def meta_description():
 
-    @if post['content']:
+    @if post['content'] and post['deleted'] == 0:
         <meta name="description" content="@{func.word_truncate(''.join(BeautifulSoup(markdown(post['content']), features='lxml').findAll(text=True)).replace('\n', ' '), 250)}"/>
     @else:
         <meta name="description" content="@{sub['title']}" />
@@ -111,12 +111,12 @@
             <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'])}" class="title">
               @if (post['visibility'] == ''):
                 <span class="@{post['blur']}">@{post['title']}</span>
-              @elif (post['visibility'] == 'admin-self-del') or (post['visibility'] == 'user-self-del'):
+              @elif post['visibility'] in ['admin-self-del', 'mod-self-del', 'user-self-del']:
                 @{_('[Deleted by User]')} <span class="@{post['blur']}">@{post['title']}</span>
-              @elif (post['visibility'] == 'mod-self-del'):
-                @{_('[Deleted by User]')}
-              @elif (post['visibility'] == 'mod-del'):
-                @{_('[Deleted by Mod or Admin]')} <span class="@{post['blur']}">@{post['title']}</span>
+              @elif (post['visibility'] in ['mod-del', 'user-mod-del']):
+                @{_('[Deleted by Mod]')} <span class="@{post['blur']}">@{post['title']}</span>
+              @elif (post['visibility'] == 'admin-del'):
+                @{_('[Deleted by Admin]')} <span class="@{post['blur']}">@{post['title']}</span>
               @elif (post['visibility'] == 'none'):
                 @{_('[Deleted]')}
               @end
@@ -130,12 +130,12 @@
             <a rel="noopener nofollow ugc" href="@{((post['visibility'] != 'none') and post['link']) or '#'}" target="@{((post['visibility'] != 'none') and '_blank') or '_self'}" class="title">
               @if (post['visibility'] == ''):
                 <span class="@{post['blur']}">@{post['title']}</span>
-              @elif (post['visibility'] == 'admin-self-del') or (post['visibility'] == 'user-self-del'):
+              @elif post['visibility'] in ['admin-self-del', 'mod-self-del', 'user-self-del']:
                 @{_('[Deleted by User]')} <span class="@{post['blur']}">@{post['title']}</span>
-              @elif (post['visibility'] == 'mod-self-del'):
-                @{_('[Deleted by User]')}
-              @elif (post['visibility'] == 'mod-del'):
-                @{_('[Deleted by Mod or Admin]')} <span class="@{post['blur']}">@{post['title']}</span>
+              @elif (post['visibility'] in ['mod-del', 'user-mod-del']):
+                @{_('[Deleted by Mod]')} <span class="@{post['blur']}">@{post['title']}</span>
+              @elif (post['visibility'] == 'admin-del'):
+                @{_('[Deleted by Admin]')} <span class="@{post['blur']}">@{post['title']}</span>
               @elif (post['visibility'] == 'none'):
                 @{_('[Deleted]')}
               @end
@@ -147,7 +147,7 @@
         @end
         </div>
 
-        @if title_history and (post['visibility'] != 'none' and  post['visibility'] != 'mod-self-del'):
+        @if title_history and post['visibility'] != 'none':
             @for count, old_title in enumerate(title_history):
               <span style="display:none;" class="old history" data-id="@{(count + 1)!!s}">
                 @if post['link'] == None:
@@ -275,7 +275,7 @@
             <li><a class="post-open-reports" href="@{url_for('mod.report_details', sub=sub['name'], report_type='post', report_id=list(open_reports)[0]['id'])}">@{_('open reports (%(num)s)', num=len(open_reports))}</a></li>
           @end
         @end
-        @if current_user.is_admin() and post['deleted'] == 2:
+        @if (current_user.is_admin() and post['deleted'] in [2, 3]) or (current_user.uid in subMods['all'] and post['deleted'] == 2):
           <li id="delpostli"><a class="undelete-post"> @{_('un-delete')} </a></li>
         @end
         @if (current_user.uid == post['uid'] and (current_user.is_admin() or current_user.uid in subMods['all'])) and post['deleted'] == 0:
@@ -304,7 +304,7 @@
     </div>
   @end
 
-  @if (post['ptype'] == 3) and (post['deleted'] == 0 or post['visibility'] == 'admin-self-del' or post['visibility'] == 'mod-del' or post['visibility'] == 'user-self-del'):
+  @if (post['ptype'] == 3) and (post['deleted'] == 0 or post['visibility'] in ['admin-self-del', 'mod-self-del', 'mod-del', 'user-mod-del']):
     <span class="@{post['blur']}">@{polls.renderPoll(pollData, postmeta, post)!!html}</span>
   @end
   <div>
@@ -316,11 +316,11 @@
       </span>
       <div id="post-source">@{post['content']}</div>
     @else:
-      @if ((post['visibility'] == 'none') or (post['visibility'] == 'mod-self-del')):
-        <div id="postcontent" class="post-content-container @{(post['visibility'] == 'mod-self-del') and 'deleted ' or ''}">
+      @if post['visibility'] in ['none', 'user-self-del']:
+        <div id="postcontent" class="post-content-container @{(post['visibility'] == 'user-self-del') and 'deleted ' or ''}">
           @{_('[deleted]')}
         </div>
-      @elif ((post['visibility'] == 'admin-self-del') or (post['visibility'] == 'mod-del') or (post['visibility'] == 'user-self-del')):
+      @elif post['visibility'] in ['admin-self-del', 'mod-self-del', 'mod-del', 'admin-del', 'user-mod-del']:
         <span class="current history" data-id="0">
           <div id="postcontent" class="post-content-container deleted">@{markdown(post['content'])!!html}</div>
         </span>
@@ -333,7 +333,7 @@
     <div id="post-source" class="post-content-container"></div>
   @end
 
-  @if content_history and post['content'] and  (post['visibility'] != 'none' and  post['visibility'] != 'mod-self-del'):
+  @if content_history and post['content'] and  (post['visibility'] not in ['none', 'user-self-del']):
       @for count, old_version in enumerate(content_history):
         <span style="display:none;" class="old history" data-id="@{(count + 1)!!s}">
           <div class="post-content-container @{(post['visibility'] != '') and 'deleted ' or ''}">@{markdown(old_version['content'])!!html}</div>
