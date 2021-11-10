@@ -3708,7 +3708,8 @@ def mark_comments_viewed():
                 ).where(SubPostComment.cid == comment["cid"]).execute()
 
             view_records = [
-                {"uid": current_user.uid, "cid": comment["cid"]} for comment in comments
+                {"uid": current_user.uid, "cid": comment["cid"], "pid": comment["pid"]}
+                for comment in comments
             ]
             SubPostCommentView.insert_many(view_records).execute()
 

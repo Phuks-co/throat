@@ -407,7 +407,8 @@ class SubPostCommentVote(BaseModel):
 
 class SubPostCommentView(BaseModel):
     cid = ForeignKeyField(db_column="cid", model=SubPostComment, field="cid")
-    uid = ForeignKeyField(db_column="uid", null=True, model=User, field="uid")
+    uid = ForeignKeyField(db_column="uid", model=User, field="uid")
+    pid = ForeignKeyField(db_column="pid", model=SubPost, field="pid")
 
     def __repr__(self):
         return f'<SubPostCommentView "{self.cid}">'

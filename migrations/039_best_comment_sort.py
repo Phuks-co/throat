@@ -12,13 +12,15 @@ SQL = pw.SQL
 
 
 def migrate(migrator, database, fake=False, **kwargs):
+    SubPost = migrator.orm["sub_post"]
     SubPostComment = migrator.orm["sub_post_comment"]
     User = migrator.orm["user"]
 
     @migrator.create_model
     class SubPostCommentView(pw.Model):
         cid = pw.ForeignKeyField(db_column="cid", model=SubPostComment, field="cid")
-        uid = pw.ForeignKeyField(db_column="uid", null=True, model=User, field="uid")
+        uid = pw.ForeignKeyField(db_column="uid", model=User, field="uid")
+        pid = pw.ForeignKeyField(db_column="pid", model=SubPost, field="pid")
 
         class Meta:
             table_name = "sub_post_comment_view"
@@ -51,3 +53,9 @@ def migrate(migrator, database, fake=False, **kwargs):
 def rollback(migrator, database, fake=False, **kwargs):
     migrator.remove_model("sub_post_comment_view")
     migrator.remove_fields("sub_post_comment", "views", "best_score")
+
+    if not fake:
+        SiteMetadata = migrator.orm["site_metadata"]
+        SiteMetadata.delete().where(
+            SiteMetadata.key == "best_comment_sort_init"
+        ).execute()
