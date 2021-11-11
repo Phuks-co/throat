@@ -470,8 +470,8 @@ re_amention = MentionRegex()
 class PhuksDown(m.SaferHtmlRenderer):
     _allowed_url_re = re.compile(r"^(https?:|gopher:|gemini:|ftp:|magnet:|/|#)", re.I)
 
-    def image(self, raw_url, title="", alt=""):
-        return False
+#    def image(self, raw_url, title="", alt=""):
+#        return False
 
     def check_url(self, url, is_image_src=False):
         return bool(self._allowed_url_re.match(url))
