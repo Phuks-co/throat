@@ -1372,9 +1372,7 @@ def get_notifications():
             ntf["sender"] = None
 
     if autoMarkAsRead:
-        Notification.update(read=datetime.datetime.utcnow()).where(
-            (Notification.read.is_null(True)) & (Notification.target == uid)
-        ).execute()
+        notifications.mark_read(uid, notification_list)
     return jsonify(notifications=notification_list)
 
 

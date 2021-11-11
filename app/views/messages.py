@@ -1,5 +1,4 @@
 """ Messages endpoints """
-from datetime import datetime
 from flask import Blueprint, redirect, url_for, render_template, abort, jsonify
 from flask_login import login_required, current_user
 from .. import misc
@@ -46,9 +45,7 @@ def view_notifications(page):
         else:
             n["unseen"] = ""
 
-    Notification.update(read=datetime.utcnow()).where(
-        (Notification.read.is_null(True)) & (Notification.target == current_user.uid)
-    ).execute()
+    Notifications.mark_read(current_user.uid, notifications)
     return engine.get_template("user/messages/notifications.html").render(
         {"notifications": notifications, "postmeta": postmeta}
     )

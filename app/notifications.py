@@ -1,5 +1,5 @@
 """ Manages notifications """
-
+from datetime import datetime, timedelta
 from peewee import JOIN
 from flask_babel import _
 from pyfcm import FCMNotification
@@ -166,6 +166,21 @@ class Notifications(object):
             n["comment_positive"] = votes_by_id[n["id"]]["comment_positive"]
             n["post_positive"] = votes_by_id[n["id"]]["post_positive"]
         return notifications
+
+    @staticmethod
+    def mark_read(uid, notifs=None):
+        if notifs:
+            # Help the users who can't be bothered to delete their
+            # notifications by removing anything over a month old
+            # unless it appears on the first page of notifications.
+            Notification.delete().where(
+                (Notification.target == uid)
+                & (Notification.created < datetime.utcnow() - timedelta(days=30))
+                & ~(Notification.id << [n["id"] for n in notifs])
+            ).execute()
+        Notification.update(read=datetime.utcnow()).where(
+            (Notification.read.is_null(True)) & (Notification.target == uid)
+        ).execute()
 
     def send(
         self,
