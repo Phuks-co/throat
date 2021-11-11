@@ -37,18 +37,18 @@
               @endif
             @elif msg['type'] == 'SUB_BAN':
               @if config.site.anonymous_modding:
-                @{_('You have been banned from <a href="%(sub)s">%(sub)s</a>', sub=url_for("sub.view_sub", sub=msg['sub_name'])) !!html}
+                @{_('You have been banned from <a href="%(sublink)s">%(sub)s</a>', sub=msg['sub_name'], sublink=url_for("sub.view_sub", sub=msg['sub_name'])) !!html}
               @else:
-                @{_('<a href="/u/%(user)s">%(user)s</a> banned you from <a href="%(sub)s">%(sub)s</a>', user=msg['sender'], sub=url_for("sub.view_sub", sub=msg['sub_name'])) !!html}
+                @{_('<a href="/u/%(user)s">%(user)s</a> banned you from <a href="%(sublink)s">%(sub)s</a>', sub=msg['sub_name'], user=msg['sender'], sublink=url_for("sub.view_sub", sub=msg['sub_name'])) !!html}
               @end
             @elif msg['type'] == 'SUB_UNBAN':
               @if config.site.anonymous_modding:
-                @{_('You have been unbanned from <a href="%(sub)s">%(sub)s</a>', sub=url_for("sub.view_sub", sub=msg['sub_name'])) !!html}
+                @{_('You have been unbanned from <a href="%(sublink)s">%(sub)s</a>', sub=msg['sub_name'], sublink=url_for("sub.view_sub", sub=msg['sub_name'])) !!html}
               @else:
-                @{_('<a href="/u/%(user)s">%(user)s</a> unbanned you from <a href="%(sub)s">%(sub)s</a>', user=msg['sender'], sub=url_for("sub.view_sub", sub=msg['sub_name'])) !!html}
+                @{_('<a href="/u/%(user)s">%(user)s</a> unbanned you from <a href="%(sublink)s">%(sub)s</a>', sub=msg['sub_name'], user=msg['sender'], sublink=url_for("sub.view_sub", sub=msg['sub_name'])) !!html}
               @end
             @elif msg['type'] in ('MOD_INVITE', 'MOD_INVITE_JANITOR', 'MOD_INVITE_OWNER'):
-              @{_('<a href="/u/%(user)s">%(user)s</a> invited you to moderate <a href="%(sub)s">%(sub)s</a>', user=msg['sender'], sub=url_for("sub.view_sub", sub=msg['sub_name'])) !!html}
+              @{_('<a href="/u/%(user)s">%(user)s</a> invited you to moderate <a href="%(sublink)s">%(sub)s</a>', sub=msg['sub_name'], user=msg['sender'], sublink=url_for("sub.view_sub", sub=msg['sub_name'])) !!html}
             @elif msg['type'] == 'POST_DELETE':
               @if msg['pid']:
                 @if config.site.anonymous_modding:
@@ -58,9 +58,9 @@
                 @end
               @else:
                 @if config.site.anonymous_modding:
-                  @{_('One of your posts in <a href="%(sub)s">%(sub)s</a> has been deleted', sub=url_for("sub.view_sub", sub=msg['sub_name']), title=e(msg['post_title'])) !!html}
+                  @{_('One of your posts in <a href="%(sublink)s">%(sub)s</a> has been deleted', sub=msg['sub_name'], sublink=url_for("sub.view_sub", sub=msg['sub_name']), title=e(msg['post_title'])) !!html}
                 @else:
-                  @{_('<a href="/u/%(user)s">%(user)s</a> deleted one of your posts in <a href="%(sub)s">%(sub)s</a>', user=msg['sender'], sub=url_for("sub.view_sub", sub=msg['sub_name']), title=e(msg['post_title'])) !!html}
+                  @{_('<a href="/u/%(user)s">%(user)s</a> deleted one of your posts in <a href="%(sublink)s">%(sub)s</a>', sub=msg['sub_name'], user=msg['sender'], sublink=url_for("sub.view_sub", sub=msg['sub_name']), title=e(msg['post_title'])) !!html}
                 @end
               @end
             @elif msg['type'] == 'POST_UNDELETE':
@@ -72,9 +72,9 @@
                 @end
               @else:
                 @if config.site.anonymous_modding:
-                  @{_('One of your posts in <a href="%(sub)s">%(sub)s</a> has been un-deleted', sub=url_for("sub.view_sub", sub=msg['sub_name']), title=e(msg['post_title'])) !!html}
+                  @{_('One of your posts in <a href="%(sublink)s">%(sub)s</a> has been un-deleted', sub=msg['sub_name'], sublink=url_for("sub.view_sub", sub=msg['sub_name']), title=e(msg['post_title'])) !!html}
                 @else:
-                  @{_('<a href="/u/%(user)s">%(user)s</a> un-deleted one of your posts in <a href="%(sub)s">%(sub)s</a>', user=msg['sender'], sub=url_for("sub.view_sub", sub=msg['sub_name']), title=e(msg['post_title'])) !!html}
+                  @{_('<a href="/u/%(user)s">%(user)s</a> un-deleted one of your posts in <a href="%(sublink)s">%(sub)s</a>', sub=msg['sub_name'], user=msg['sender'], sublink=url_for("sub.view_sub", sub=msg['sub_name']), title=e(msg['post_title'])) !!html}
                 @end
               @end
             @else:
