@@ -269,6 +269,12 @@ class VoteForm(FlaskForm):
     post = HiddenField()  # Post PID
 
 
+class ViewCommentsForm(FlaskForm):
+    """ Form for marking comments viewed. """
+
+    cids = HiddenField()  # List of comment cids, as JSON
+
+
 class CreateReportNote(FlaskForm):
     """ Logs a note on a report """
 

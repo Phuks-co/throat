@@ -62,6 +62,7 @@ from .models import (
     SubPostVote,
     SubPostComment,
     SubPostCommentVote,
+    SubPostCommentView,
     SiteLog,
     SubLog,
     db,
@@ -987,6 +988,7 @@ def getSinglePost(pid):
     )
     posts["slug"] = slugify(posts["title"])
     posts["is_archived"] = is_archived(posts)
+    posts["best_sort_enabled"] = posts["posted"] > get_best_comment_sort_init_date()
     return posts
 
 
@@ -2227,7 +2229,7 @@ LOG_TYPE_EMAIL_DOMAIN_UNBAN = 70
 LOG_TYPE_DISABLE_CAPTCHAS = 71  # Use LOG_TYPE_ADMIN_CONFIG_CHANGE instead
 LOG_TYPE_ENABLE_CAPTCHAS = 72  # Use LOG_TYPE_ADMIN_CONFIG_CHANGE instead
 LOG_TYPE_STICKY_SORT_NEW = 73
-LOG_TYPE_STICKY_SORT_TOP = 74
+LOG_TYPE_STICKY_SORT_TOP_OR_BEST = 74
 LOG_TYPE_ADMIN_CONFIG_CHANGE = 75
 
 
@@ -2348,12 +2350,14 @@ def validate_captcha(token, response):
     return False
 
 
-def get_comment_query(pid, sort="top"):
+def get_comment_query(pid, sort):
     comments = SubPostComment.select(
         SubPostComment.cid, SubPostComment.parentcid
     ).where(SubPostComment.pid == pid)
     if sort == "new":
         comments = comments.order_by(SubPostComment.time.desc())
+    elif sort == "best":
+        comments = comments.order_by(SubPostComment.best_score.desc())
     elif sort == "top":
         comments = comments.order_by(SubPostComment.score.desc())
     comments = comments.dicts()
@@ -2510,6 +2514,7 @@ def get_comment_tree(
                 "blur_content"
             ),
             SubMod.sid.alias("user_is_mod"),
+            SubPostCommentView.id.alias("already_viewed"),
         ]
     else:
         fields += [
@@ -2552,6 +2557,14 @@ def get_comment_tree(
                 on=(
                     (UserContentBlock.uid == uid)
                     & (UserContentBlock.target == User.uid)
+                ),
+            )
+            .join(
+                SubPostCommentView,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (SubPostCommentView.cid == SubPostComment.cid)
+                    & (SubPostCommentView.uid == uid)
                 ),
             )
         )
@@ -2734,6 +2747,7 @@ def cast_vote(uid, target_type, pcid, value):
                 SubPostComment.score,
                 SubPostComment.upvotes,
                 SubPostComment.downvotes,
+                SubPostComment.views,
                 SubPostComment.cid.alias("id"),
                 SubPostComment.time.alias("posted"),
             )
@@ -2773,20 +2787,30 @@ def cast_vote(uid, target_type, pcid, value):
 
     positive = True if voteValue == 1 else False
     undone = False
+    kwargs = {}
 
     if qvote is not False:
         if bool(qvote.positive) == (True if voteValue == 1 else False):
             qvote.delete_instance()
 
+            if target_type == "comment" and target_model.views > 0:
+                kwargs["best_score"] = best_score(
+                    target.upvotes - (1 if positive else 0),
+                    target.downvotes - (0 if positive else 1),
+                    target.views,
+                )
+
             if positive:
                 upd_q = target_model.update(
                     score=target_model.score - voteValue,
                     upvotes=target_model.upvotes - 1,
+                    **kwargs,
                 )
             else:
                 upd_q = target_model.update(
                     score=target_model.score - voteValue,
                     downvotes=target_model.downvotes - 1,
+                    **kwargs,
                 )
             new_score = -voteValue
             undone = True
@@ -2798,17 +2822,26 @@ def cast_vote(uid, target_type, pcid, value):
             qvote.positive = positive
             qvote.save()
 
+            if target_type == "comment" and target_model.views > 0:
+                kwargs["best_score"] = best_score(
+                    target.upvotes + (1 if positive else -1),
+                    target.downvotes + (-1 if positive else 1),
+                    target.views,
+                )
+
             if positive:
                 upd_q = target_model.update(
                     score=target_model.score + (voteValue * 2),
                     upvotes=target_model.upvotes + 1,
                     downvotes=target_model.downvotes - 1,
+                    **kwargs,
                 )
             else:
                 upd_q = target_model.update(
                     score=target_model.score + (voteValue * 2),
                     upvotes=target_model.upvotes - 1,
                     downvotes=target_model.downvotes + 1,
+                    **kwargs,
                 )
             new_score = voteValue * 2
             User.update(score=User.score + (voteValue * 2)).where(
@@ -2823,15 +2856,24 @@ def cast_vote(uid, target_type, pcid, value):
             SubPostCommentVote.create(
                 cid=pcid, uid=uid, positive=positive, datetime=now
             )
+            if target_model.views > 0:
+                kwargs["best_score"] = best_score(
+                    target.upvotes + (1 if positive else 0),
+                    target.downvotes + (0 if positive else 1),
+                    target.views,
+                )
 
         if positive:
             upd_q = target_model.update(
-                score=target_model.score + voteValue, upvotes=target_model.upvotes + 1
+                score=target_model.score + voteValue,
+                upvotes=target_model.upvotes + 1,
+                **kwargs,
             )
         else:
             upd_q = target_model.update(
                 score=target_model.score + voteValue,
                 downvotes=target_model.downvotes + 1,
+                **kwargs,
             )
         new_score = voteValue
         User.update(score=User.score + voteValue).where(
@@ -2869,6 +2911,25 @@ def cast_vote(uid, target_type, pcid, value):
     )
 
     return jsonify(score=target.score + new_score, rm=undone)
+
+
+def best_score(upvotes, downvotes, views):
+    """Calculate the lower bound of the Wilson score confidence
+    interval for a Bernoulli parameter."""
+    n = max(views, 1)
+    # Add 1 to keep new comments from sorting at the bottom of the list.
+    score = upvotes - downvotes + 1
+    phat = min(abs(score), n) / n
+    z = 1.96  # 95% confidence
+    return math.copysign(
+        (
+            phat
+            + z * z / (2 * n)
+            - z * math.sqrt((phat * (1 - phat) + z * z / (4 * n)) / n)
+        )
+        / (1 + z * z / n),
+        score,
+    )
 
 
 def is_sub_mod(uid, sid, power_level, can_admin=False):
@@ -3308,6 +3369,13 @@ def get_sub_flair_choices(sid):
         .dicts()
     )
     return list(choices)
+
+
+@cache.memoize(3600)
+def get_best_comment_sort_init_date():
+    """Posts created before this date can only sort comments by top and new."""
+    smd = SiteMetadata.get(SiteMetadata.key == "best_comment_sort_init")
+    return datetime.strptime(smd.value, "%Y-%m-%UdT%H:%M:%SZ")
 
 
 def gevent_required(f):

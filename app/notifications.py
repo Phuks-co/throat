@@ -1,5 +1,5 @@
 """ Manages notifications """
-
+from datetime import datetime, timedelta
 from peewee import JOIN
 from flask_babel import _
 from pyfcm import FCMNotification
@@ -13,6 +13,7 @@ from .models import (
     SubPost,
     SubPostComment,
     SubPostCommentVote,
+    SubPostCommentView,
     SubPostVote,
 )
 from .socketio import socketio
@@ -54,6 +55,7 @@ class Notifications(object):
                 SubPostComment.content.alias("comment_content"),
                 SubPostComment.score.alias("comment_score"),
                 SubPostComment.content.alias("post_comment"),
+                SubPostCommentView.id.alias("already_viewed"),
                 SubPost.score.alias("post_score"),
                 SubPost.link.alias("post_link"),
                 ParentComment.content.alias("comment_context"),
@@ -67,6 +69,14 @@ class Notifications(object):
             .join(SubPost, JOIN.LEFT_OUTER)
             .switch(Notification)
             .join(SubPostComment, JOIN.LEFT_OUTER)
+            .join(
+                SubPostCommentView,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (SubPostCommentView.cid == SubPostComment.cid)
+                    & (SubPostCommentView.uid == uid)
+                ),
+            )
             .switch(Notification)
             .join(User, JOIN.LEFT_OUTER, on=Notification.sender == User.uid)
             .join(
@@ -156,6 +166,21 @@ class Notifications(object):
             n["comment_positive"] = votes_by_id[n["id"]]["comment_positive"]
             n["post_positive"] = votes_by_id[n["id"]]["post_positive"]
         return notifications
+
+    @staticmethod
+    def mark_read(uid, notifs=None):
+        if notifs:
+            # Help the users who can't be bothered to delete their
+            # notifications by removing anything over a month old
+            # unless it appears on the first page of notifications.
+            Notification.delete().where(
+                (Notification.target == uid)
+                & (Notification.created < datetime.utcnow() - timedelta(days=30))
+                & ~(Notification.id << [n["id"] for n in notifs])
+            ).execute()
+        Notification.update(read=datetime.utcnow()).where(
+            (Notification.read.is_null(True)) & (Notification.target == uid)
+        ).execute()
 
     def send(
         self,
