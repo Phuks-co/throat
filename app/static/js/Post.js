@@ -794,6 +794,7 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
                     document.querySelector('.reply-comment[data-to="' + cid + '"] s').click();
                     document.getElementById('child-' + cid).prepend(div.firstChild);
                 }
+                Icons.rendericons();
             }
         }, function (e) {
             qelem.parentNode.querySelector('.error').style.display = 'block';

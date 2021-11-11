@@ -258,6 +258,7 @@ def create_post(ptype, sub):
     elif form.ptype.data == "text":
         ptype = 0
 
+    self_vote = 1 if config.site.self_voting.posts else 0
     post = SubPost.create(
         sid=sub.sid,
         uid=current_user.uid,
@@ -265,8 +266,8 @@ def create_post(ptype, sub):
         content=form.content.data if ptype != 1 else "",
         link=form.link.data if ptype == 1 else None,
         posted=datetime.utcnow(),
-        score=1,
-        upvotes=1,
+        score=self_vote,
+        upvotes=self_vote,
         downvotes=0,
         deleted=0,
         comments=0,
@@ -333,15 +334,16 @@ def create_post(ptype, sub):
 
     # XXX: The auto-upvote is placed *after* broadcasting the post via socketio so that the upvote arrow
     # does not appear highlighted to everybody.
-    SubPostVote.create(uid=current_user.uid, pid=post.pid, positive=True)
-    User.update(given=User.given + 1).where(User.uid == current_user.uid).execute()
-    # We send a yourvote message so that the upvote arrow *does* appear highlighted to the creator.
-    socketio.emit(
-        "yourvote",
-        {"pid": post.pid, "status": 1, "score": post.score},
-        namespace="/snt",
-        room="user" + current_user.uid,
-    )
+    if config.site.self_voting.posts:
+        SubPostVote.create(uid=current_user.uid, pid=post.pid, positive=True)
+        User.update(given=User.given + 1).where(User.uid == current_user.uid).execute()
+        # We send a yourvote message so that the upvote arrow *does* appear highlighted to the creator.
+        socketio.emit(
+            "yourvote",
+            {"pid": post.pid, "status": 1, "score": post.score},
+            namespace="/snt",
+            room="user" + current_user.uid,
+        )
 
     if fileid:
         upload = UserUploads.create(
