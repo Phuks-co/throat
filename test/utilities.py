@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import re
 from bs4 import BeautifulSoup
 from flask import url_for
@@ -55,6 +56,12 @@ def add_config_to_site_metadata(config):
         for key, val, typ in config.mutable_item_configuration()
     ]
     SiteMetadata.insert_many(new_records).execute()
+    SiteMetadata.create(
+        key="best_comment_sort_init",
+        value=(datetime.utcnow() - timedelta(seconds=1)).strftime(
+            "%Y-%m-%UdT%H:%M:%SZ"
+        ),
+    )
 
 
 def log_in_user(client, user_info, expect_success=True):

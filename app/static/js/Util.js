@@ -99,4 +99,34 @@ u.isScrolledIntoView = function (el) {
   return (elemTop >= 0) && (elemBottom <= window.innerHeight);
 }
 
+u.bottomInViewport = function (el) {
+  const elemBottom = el.getBoundingClientRect().bottom;
+  return (elemBottom >= 0 &&
+          elemBottom <= window.innerHeight);
+};
+
+// Return a wrapper function that will call the wrapped
+// function `fn` after the wrapper function has not been called
+// for `wait` milliseconds.  If `callImmediately` is true,
+// the function will be called before the wait instead of
+// after.
+u.debounce = function (fn, wait, callImmediately) {
+  var timeout;
+  return function() {
+    var context = this, args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!callImmediately) {
+        fn.apply(context, args);
+      }
+    };
+    var callNow = callImmediately && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) {
+      fn.apply(context, args);
+    }
+  };
+};
+
 export default u;

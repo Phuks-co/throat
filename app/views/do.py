@@ -33,7 +33,7 @@ from ..forms import SearchForm, EditMod2Form, SetSubOfTheDayForm, AssignSubUserF
 from ..forms import DeleteSubFlair, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm, DistinguishForm
 from ..forms import BanDomainForm, SetOwnUserFlairForm, ChangeConfigSettingForm
-from ..forms import AnnouncePostForm, LiteralBooleanForm
+from ..forms import AnnouncePostForm, LiteralBooleanForm, ViewCommentsForm
 from ..badges import badges
 from ..misc import (
     cache,
@@ -82,6 +82,7 @@ from ..models import (
 from ..models import (
     SubPostVote,
     SubPostCommentVote,
+    SubPostCommentView,
     SubFlair,
     SubPostPollOption,
     SubPostPollVote,
@@ -1285,6 +1286,7 @@ def create_comment(pid):
             parentcid=form.parent.data if form.parent.data != "0" else None,
             time=datetime.datetime.utcnow(),
             cid=uuid.uuid4(),
+            best_score=misc.best_score(0, 0, 0),
             score=0,
             upvotes=0,
             downvotes=0,
@@ -2473,7 +2475,12 @@ def toggle_sort(post):
                 )
                 .get()
             )
-            smd.value = "top" if smd.value == "new" else "new"
+            smd.value = "best" if smd.value == "new" else "new"
+            if (
+                smd.value == "best"
+                and post.posted < misc.get_best_comment_sort_init_date()
+            ):
+                smd.value = "top"
             smd.save()
         except SubPostMetadata.DoesNotExist:
             smd = SubPostMetadata.create(pid=post.pid, key="sort", value="new")
@@ -2481,7 +2488,7 @@ def toggle_sort(post):
         misc.create_sublog(
             misc.LOG_TYPE_STICKY_SORT_NEW
             if smd.value == "new"
-            else misc.LOG_TYPE_STICKY_SORT_TOP,
+            else misc.LOG_TYPE_STICKY_SORT_TOP_OR_BEST,
             current_user.uid,
             post.sid,
             link=url_for("sub.view_post", sub=post.sid.name, pid=post.pid),
@@ -2921,12 +2928,13 @@ def upvotecomment(cid, value):
 @do.route("/do/get_children/<int:pid>/<cid>", methods=["post"], defaults={"lim": ""})
 def get_sibling(pid, cid, lim):
     """ Gets children comments for <cid> """
-    sort = request.args.get("sort", default="top", type=str)
-
     try:
         post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
         return jsonify(status="ok", posts=[])
+
+    default_sort = "best" if post["best_sort_enabled"] else "top"
+    sort = request.args.get("sort", default=default_sort, type=str)
 
     if cid == "null":
         cid = "0"
@@ -3515,7 +3523,11 @@ def admin_undo_votes(uid):
         try:
             comm = (
                 SubPostComment.select(
-                    SubPostComment.cid, SubPostComment.score, SubPostComment.uid
+                    SubPostComment.cid,
+                    SubPostComment.score,
+                    SubPostComment.uid,
+                    SubPostComment.upvotes,
+                    SubPostComment.views,
                 )
                 .where(SubPostComment.cid == v.cid)
                 .get()
@@ -3645,6 +3657,62 @@ def remove_vote(pid):
             vote.delete_instance()
         except SubPostPollVote.DoesNotExist:
             pass
+    return jsonify(status="ok")
+
+
+@do.route("/do/mark_viewed", methods=["POST"])
+@login_required
+def mark_comments_viewed():
+    """ Mark comments as seen by the user. """
+    form = ViewCommentsForm()
+    if form.validate():
+        cids = json.loads(form.cids.data)
+        comments = (
+            SubPostComment.select(
+                SubPostComment.cid,
+                SubPostComment.pid,
+                SubPostComment.upvotes,
+                SubPostComment.downvotes,
+                SubPostComment.views,
+                SubPost.posted,
+                SubPost.sid,
+            )
+            .join(SubPost)
+            .switch(SubPostComment)
+            .join(User)
+            .join(
+                SubPostCommentView,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (SubPostCommentView.cid == SubPostComment.cid)
+                    & (SubPostCommentView.uid == current_user.uid)
+                ),
+            )
+            .where(
+                SubPostCommentView.id.is_null(True)
+                & (SubPostComment.status.is_null(True))
+                & (SubPostComment.cid << cids)
+                & (SubPostComment.uid != current_user.uid)
+                & (User.status != UserStatus.DELETED)
+            )
+        ).dicts()
+
+        comments = list(comments)
+        if comments and not misc.is_archived(comments[0]):
+            for comment in comments:
+                best_score = misc.best_score(
+                    comment["upvotes"], comment["downvotes"], comment["views"] + 1
+                )
+                SubPostComment.update(
+                    views=SubPostComment.views + 1, best_score=best_score
+                ).where(SubPostComment.cid == comment["cid"]).execute()
+
+            view_records = [
+                {"uid": current_user.uid, "cid": comment["cid"], "pid": comment["pid"]}
+                for comment in comments
+            ]
+            SubPostCommentView.insert_many(view_records).execute()
+
     return jsonify(status="ok")
 
 

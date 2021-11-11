@@ -8,7 +8,7 @@ import sys
 from flask import g
 from flask_redis import FlaskRedis
 from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model, Database
-from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
+from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField, FloatField
 from werkzeug.local import LocalProxy
 from .storage import file_url
 from .config import config
@@ -369,6 +369,8 @@ class SubPostComment(BaseModel):
     score = IntegerField(null=True)
     upvotes = IntegerField(default=0)
     downvotes = IntegerField(default=0)
+    best_score = FloatField(null=True)
+    views = IntegerField(default=0)
 
     # status:
     #   null or 0: Either not deleted, or reinstated.
@@ -401,6 +403,18 @@ class SubPostCommentVote(BaseModel):
 
     class Meta:
         table_name = "sub_post_comment_vote"
+
+
+class SubPostCommentView(BaseModel):
+    cid = ForeignKeyField(db_column="cid", model=SubPostComment, field="cid")
+    uid = ForeignKeyField(db_column="uid", model=User, field="uid")
+    pid = ForeignKeyField(db_column="pid", model=SubPost, field="pid")
+
+    def __repr__(self):
+        return f'<SubPostCommentView "{self.cid}">'
+
+    class Meta:
+        table_name = "sub_post_comment_view"
 
 
 class SubPostMetadata(BaseModel):

@@ -256,8 +256,10 @@
               @end
             @end
             @if str(post['pid']) in subInfo['sticky']:
-              @if sticky_sort == 'new':
-                <li><a class="sort-comments">@{_('sort by top')}</a></li>
+              @if sticky_sort == 'new' and post['best_sort_enabled']:
+                  <li><a class="sort-comments">@{_('sort by best')}</a></li>
+              @elif sticky_sort == 'new':
+                  <li><a class="sort-comments">@{_('sort by top')}</a></li>
               @else:
                 <li><a class="sort-comments">@{_('sort by new')}</a></li>
               @end
@@ -390,8 +392,28 @@
       <div class="pure-menu pure-menu-horizontal">
         <ul class="pure-menu-list">
           <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
-            <span id="sortby" class="pure-menu-link">@{_('Sort by: <b>%(currsort)s</b>', currsort=_("top") if sort == 'top' else _('new'))!!html}</span>
+            @(
+            sorts = {'top': _('top'),
+                     'new': _('new')}
+            default_sort = sorts['top']
+            if post['best_sort_enabled']:
+              default_sort = sorts['best'] = _('best')
+            currsort = sorts.get(sort, default_sort)
+            )
+            <span id="sortby" class="pure-menu-link">@{_('Sort by: <b>%(currsort)s</b>', currsort=currsort)!!html}</span>
             <ul class="pure-menu-children">
+              @if post['best_sort_enabled']:
+                <li class="pure-menu-item">
+                  <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'], sort='best')}" class="pure-menu-link">
+                    @if sort == 'best':
+                      ✓
+                    @else:
+                      &nbsp;&nbsp;
+                    @end
+                    @{_('Best')}
+                  </a>
+                </li>
+              @end
               <li class="pure-menu-item">
                 <a href="@{url_for('sub.view_post', sub=sub['name'], pid=post['pid'], sort='top')}" class="pure-menu-link">
                   @if sort == 'top':
