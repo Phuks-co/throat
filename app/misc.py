@@ -1002,6 +1002,7 @@ def postListQueryBase(
     # subs to include deleted posts from.
     include_deleted_posts=False,
     isSubMod=False,
+    flair=None,  # if set, return only posts with this flair.
 ):
     fields = [
         SubPost.nsfw,
@@ -1137,6 +1138,9 @@ def postListQueryBase(
                 | (UserContentBlock.method != UserContentBlockMethod.HIDE)
                 | SubMod.id.is_null(False)
             )
+
+    if flair:
+        posts = posts.where(SubPost.flair == flair)
 
     if include_deleted_posts:
         if isinstance(include_deleted_posts, list):
@@ -1898,6 +1902,13 @@ def getSubData(sid, simple=False, extra=False):
             if creator.get("status", None) == 0
             else {"uid": "0", "name": _("[Deleted]")}
         )
+
+        data["flairs"] = [
+            sf.text
+            for sf in SubFlair.select(SubFlair.text)
+            .where(SubFlair.sid == sid)
+            .order_by(SubFlair.text)
+        ]
 
         try:
             data["stylesheet"] = SubStylesheet.get(SubStylesheet.sid == sid).content

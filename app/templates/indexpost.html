@@ -33,7 +33,9 @@
         {% if post.nsfw %}
         <div class="nsfw" alt="Not safe for work">{{_('NSFW')}}</div>
         {%endif%}
-        {% if post.flair %}<span class="postflair">{{post.flair}}</span>{% endif %}
+        {% if post.flair %}
+          <a class="postflair" href="{{url_for('sub.view_sub_hot', sub=post.sub, flair=post.flair)}}">{{post.flair}}</a>
+        {% endif %}
         {% if post.link == None %}
           <a href="{{url_for('sub.view_post', sub=post.sub, pid=post.pid)}}" class="title">
           {% if post.deleted == 1 %}

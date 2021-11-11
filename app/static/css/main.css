@@ -952,11 +952,22 @@ img.nsfw-blur, img.block-blur {
 .postflair, .selflair, .submitflair {
   border: 1px solid #aaa;
   border-radius: 2px;
+  color: black;
   background-color: #eee;
   padding: 5px;
   line-height: 2em;
   white-space: nowrap;
   cursor: pointer;
+}
+
+#flair {
+    text-align: center;
+    padding-bottom: .2em;
+}
+
+#flair a {
+    font-size: small;
+    white-space: pre;
 }
 
 .submitflair {
@@ -1374,6 +1385,17 @@ input[type=search] {
 
 .search .icon path {
   fill: darkgray;
+}
+
+.flairpicker select {
+  box-sizing: border-box;
+  border: solid lightgray 1px;
+  border-radius: 4px;
+  font-size: .9em;
+  background-color: white;
+  -webkit-transition: width .4s ease-in-out;
+  transition: width .4s ease-in-out;
+  margin: 10px 5px 5px 5px;
 }
 
 /* /SIDEBAR STYLES */
