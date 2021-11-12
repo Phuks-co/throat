@@ -13,6 +13,7 @@
   margin-left: 1.1em;
 }
 
+/* apple show poll results button */
 .poll-show-results {
   background-image: linear-gradient(#42A1EC, #0070C9);
   border: 1px solid #0077CC;
@@ -58,4 +59,10 @@
 .poll-show-results:focus {
   box-shadow: rgba(131, 192, 253, 0.5) 0 0 0 3px;
   outline: none;
+}
+
+/* center sidebar img */
+img[src*='#center'] { 
+  display: block;
+  margin: auto;
 }
