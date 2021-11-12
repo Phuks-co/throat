@@ -434,6 +434,19 @@ configurable_defaults = {
                     },
                 },
             },
+            "top_posts": {
+                "type": "map",
+                "value": {
+                    "show_score": {
+                        "type": "bool",
+                        "doc": _l(
+                            "If enabled, show the post score next to its title in the list "
+                            "of top posts in the last 24 hours."
+                        ),
+                        "value": True,
+                    },
+                },
+            },
         },
     },
     "storage": {
