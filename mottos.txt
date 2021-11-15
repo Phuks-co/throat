@@ -7,4 +7,5 @@
 "vlastné motto už od 5€ !",
 "sloboda je vakcína",
 "vybrali.cekni.to",
-"normálne už bolo"]
+"normálne už bolo",
+"kočkovanie s registráciou"]
