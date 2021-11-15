@@ -419,6 +419,29 @@ configurable_defaults = {
                 ),
                 "value": True,
             },
+            "self_voting": {
+                "type": "map",
+                "value": {
+                    "posts": {
+                        "type": "bool",
+                        "doc": _l(
+                            "If enabled, users will automatically upvote their own posts, "
+                            "and are allowed to change their vote.  If disabled, users "
+                            "cannot upvote or downvote their own posts."
+                        ),
+                        "value": True,
+                    },
+                    "comments": {
+                        "type": "bool",
+                        "doc": _l(
+                            "If enabled, users will automatically upvote their own comments, "
+                            "and are allowed to change their vote.  If disabled, users "
+                            "cannot upvote or downvote their own comments."
+                        ),
+                        "value": False,
+                    },
+                },
+            },
         },
     },
     "storage": {

@@ -661,6 +661,7 @@ def create_comment(sub, pid):
     else:
         parentcid = None
 
+    self_vote = 1 if config.site.self_voting.comments else 0
     comment = SubPostComment.create(
         pid=pid,
         uid=uid,
@@ -668,14 +669,19 @@ def create_comment(sub, pid):
         parentcid=parentcid,
         time=datetime.datetime.utcnow(),
         cid=uuid.uuid4(),
-        score=0,
-        upvotes=0,
+        best_score=misc.best_score(self_vote, self_vote, self_vote),
+        score=self_vote,
+        upvotes=self_vote,
         downvotes=0,
     )
 
     SubPost.update(comments=SubPost.comments + 1).where(
         SubPost.pid == post.pid
     ).execute()
+
+    if config.site.self_voting.comments:
+        SubPostCommentVote.create(cid=comment.cid, uid=uid, positive=True)
+        User.update(given=User.given + 1).where(User.uid == uid).execute()
 
     socketio.emit(
         "threadcomments",
@@ -1086,6 +1092,7 @@ def create_post():
     if misc.get_user_level(user.uid)[0] <= 4:
         check_challenge()
 
+    self_vote = 1 if config.site.self_voting.posts else 0
     post = SubPost.create(
         sid=sub.sid,
         uid=uid,
@@ -1093,8 +1100,8 @@ def create_post():
         content=content,
         link=link if ptype == "link" else None,
         posted=datetime.datetime.utcnow(),
-        score=1,
-        upvotes=1,
+        score=self_vote,
+        upvotes=self_vote,
         downvotes=0,
         deleted=0,
         comments=0,
@@ -1138,8 +1145,9 @@ def create_post():
         room="/all/new",
     )
 
-    SubPostVote.create(uid=uid, pid=post.pid, positive=True)
-    User.update(given=User.given + 1).where(User.uid == uid).execute()
+    if config.site.self_voting.posts:
+        SubPostVote.create(uid=uid, pid=post.pid, positive=True)
+        User.update(given=User.given + 1).where(User.uid == uid).execute()
 
     misc.workWithMentions(content, None, post, sub, c_user=user)
     misc.workWithMentions(title, None, post, sub, c_user=user)
