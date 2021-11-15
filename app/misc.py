@@ -2724,6 +2724,8 @@ def cast_vote(uid, target_type, pcid, value):
         except SubPost.DoesNotExist:
             return jsonify(msg=_("Post does not exist")), 404
 
+        if target.uid_id == user.uid and not config.site.self_voting.posts:
+            return jsonify(msg=_("You can't vote on your own posts")), 400
         if target.deleted:
             return jsonify(msg=_("You can't vote on deleted posts")), 400
 
@@ -2760,7 +2762,7 @@ def cast_vote(uid, target_type, pcid, value):
         except SubPostComment.DoesNotExist:
             return jsonify(msg=_("Comment does not exist")), 404
 
-        if target.uid_id == user.uid:
+        if target.uid_id == user.uid and not config.site.self_voting.comments:
             return jsonify(msg=_("You can't vote on your own comments")), 400
         if target.status:
             return jsonify(msg=_("You can't vote on deleted comments")), 400

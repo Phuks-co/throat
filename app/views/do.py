@@ -1279,6 +1279,7 @@ def create_comment(pid):
                     400,
                 )
 
+        self_vote = 1 if config.site.self_voting.comments else 0
         comment = SubPostComment.create(
             pid=pid,
             uid=current_user.uid,
@@ -1286,14 +1287,22 @@ def create_comment(pid):
             parentcid=form.parent.data if form.parent.data != "0" else None,
             time=datetime.datetime.utcnow(),
             cid=uuid.uuid4(),
-            best_score=misc.best_score(0, 0, 0),
-            score=0,
-            upvotes=0,
+            best_score=misc.best_score(self_vote, self_vote, self_vote),
+            score=self_vote,
+            upvotes=self_vote,
             downvotes=0,
         )
         SubPost.update(comments=SubPost.comments + 1).where(
             SubPost.pid == post.pid
         ).execute()
+
+        if config.site.self_voting.comments:
+            SubPostCommentVote.create(
+                cid=comment.cid, uid=current_user.uid, positive=True
+            )
+            User.update(given=User.given + 1).where(
+                User.uid == current_user.uid
+            ).execute()
 
         socketio.emit(
             "threadcomments",
