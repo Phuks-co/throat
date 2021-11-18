@@ -7,6 +7,7 @@ from .config import config
 from .models import (
     Notification,
     User,
+    UserMetadata,
     UserContentBlock,
     Sub,
     SubMod,
