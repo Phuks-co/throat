@@ -1,8 +1,7 @@
 """ Manages notifications """
 from datetime import datetime, timedelta
 from peewee import JOIN
-from flask_babel import _
-from flask.ext.babel import gettext
+from flask_babel import _ ,gettext
 from pyfcm import FCMNotification
 from .config import config
 from .models import (
