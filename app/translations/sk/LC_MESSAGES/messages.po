@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-11-11 19:23-0300\n"
-"PO-Revision-Date: 2021-11-12 04:19\n"
+"PO-Revision-Date: 2021-11-18 20:05\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -745,7 +745,7 @@ msgstr "Field must be between %(min)d and %(max)d characters long."
 
 #: app/forms/user.py:95 app/forms/user.py:130
 msgid "Email Address (optional)"
-msgstr "Email (nepovinný)"
+msgstr "Email (nepovinný, slúži na notifikácie)"
 
 #: app/forms/user.py:98 app/forms/user.py:102 app/forms/user.py:124
 #: app/forms/user.py:133 app/forms/user.py:137 app/forms/user.py:229
