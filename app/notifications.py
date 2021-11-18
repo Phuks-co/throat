@@ -18,6 +18,7 @@ from .models import (
 )
 from .socketio import socketio
 from .misc import get_notification_count
+from flask import url_for
 
 
 class Notifications(object):
@@ -181,6 +182,47 @@ class Notifications(object):
         Notification.update(read=datetime.utcnow()).where(
             (Notification.read.is_null(True)) & (Notification.target == uid)
         ).execute()
+    
+    @staticmethod
+    def email_template(notification_type, user, post, sub):
+        user_url = url_for("user.view",user=user.name)
+        post_url = url_for("sub.view_post", sub=sub.name, pid=post.pid)
+        sub_url = url_for("sub.view_sub", sub=sub.name)
+        
+        if notification_type == 'POST_REPLY':
+            return f'<a href="{user_url}">{user.name}</a> replied to your post' \
+                   f' <a href="{post_url}">{post.title}</a>' \
+                   f' in <a href="{sub_url}">{sub.name}</a>"'
+        elif notification_type == 'COMMENT_REPLY':
+            return f'<a href="{user_url}">{user.name}' \
+                   f'</a> replied to your comment in the post titled' \
+                   f' <a href="{post_url}">{post.title}"></a>' \
+                   f' in <a href="{sub_url}">{sub.title}</a>'
+        elif notification_type in ('POST_MENTION', 'COMMENT_MENTION'):
+            return f'<a href="{user_url}">{user.name}</a>' \
+                   f' mentioned you in <a href="{post_url}">{post.title}</a>'
+        elif notification_type == 'SUB_BAN':
+            if config.site.anonymous_modding:
+                return f'You have been banned from <a href="{sub_url}">{sub.name}</a>'
+            else:
+                return f'<a href="{user_url}">{user.name}</a> banned you from <a href="{sub_url}">{sub.name}</a>'
+        elif notification_type == 'SUB_UNBAN':
+            if config.site.anonymous_modding:
+                return f'You have been unbanned from <a href="{sub_url}">{sub.name}</a>'
+            else:
+                return f'<a href="{user_url}">{user.name}</a> unbanned you from <a href="{sub_url}">{sub.name}</a>'
+        elif notification_type in ('MOD_INVITE', 'MOD_INVITE_JANITOR', 'MOD_INVITE_OWNER'):
+            return f'<a href="{user_url}">{user.name}</a> invited you to moderate <a href="{sub_url}">{sub.name}</a>'
+        elif notification_type == 'POST_DELETE':
+            if config.site.anonymous_modding:
+                return f'Your post <a href="{post_url}">{post.title}</a> has been deleted'
+            else: 
+                return f'<a href="{user_url}">{user.name}</a>deleted one of your posts in <a href="{sub_url}">{sub.name}</a>'
+        elif notification_type == 'POST_UNDELETE':
+            if config.site.anonymous_modding:
+                return f'Your post <a href="{post_url}">{post.title}</a> has been un-deleted'
+            else:
+                return f'<a href="{user_url}">{user.name}</a> un-deleted one of your posts in <a href="{sub_url}">{sub.name}</a>'
 
     def send(
         self,
@@ -223,6 +265,11 @@ class Notifications(object):
         )
 
         ignore = None
+        target_email_notify = UserMetadata.select(UserMetadata.value).where(UserMetadata.uid == target.uid) == "1"
+        if target_email_notify:
+            email = self.email_template(notification_type,target,post,sub)
+            send_email(target, f'New Notification',email)
+            
         if notification_type in [
             "POST_REPLY",
             "COMMENT_REPLY",
