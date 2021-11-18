@@ -2,6 +2,7 @@
 from datetime import datetime, timedelta
 from peewee import JOIN
 from flask_babel import _
+from flask.ext.babel import gettext
 from pyfcm import FCMNotification
 from .config import config
 from .models import (
@@ -190,39 +191,39 @@ class Notifications(object):
         sub_url = url_for("sub.view_sub", sub=sub.name)
         
         if notification_type == 'POST_REPLY':
-            return f'<a href="{user_url}">{user.name}</a> replied to your post' \
-                   f' <a href="{post_url}">{post.title}</a>' \
-                   f' in <a href="{sub_url}">{sub.name}</a>"'
+            return gettext(f'<a href="{user_url}">{user.name}</a> replied to your post'
+                           f' <a href="{post_url}">{post.title}</a>'
+                           f' in <a href="{sub_url}">{sub.name}</a>"')
         elif notification_type == 'COMMENT_REPLY':
-            return f'<a href="{user_url}">{user.name}' \
-                   f'</a> replied to your comment in the post titled' \
-                   f' <a href="{post_url}">{post.title}"></a>' \
-                   f' in <a href="{sub_url}">{sub.title}</a>'
+            return gettext(f'<a href="{user_url}">{user.name}'
+                           f'</a> replied to your comment in the post titled'
+                           f' <a href="{post_url}">{post.title}"></a>'
+                           f' in <a href="{sub_url}">{sub.title}</a>')
         elif notification_type in ('POST_MENTION', 'COMMENT_MENTION'):
-            return f'<a href="{user_url}">{user.name}</a>' \
-                   f' mentioned you in <a href="{post_url}">{post.title}</a>'
+            return gettext(f'<a href="{user_url}">{user.name}</a>'
+                           f' mentioned you in <a href="{post_url}">{post.title}</a>')
         elif notification_type == 'SUB_BAN':
             if config.site.anonymous_modding:
-                return f'You have been banned from <a href="{sub_url}">{sub.name}</a>'
+                return gettext(f'You have been banned from <a href="{sub_url}">{sub.name}</a>')
             else:
-                return f'<a href="{user_url}">{user.name}</a> banned you from <a href="{sub_url}">{sub.name}</a>'
+                return gettext(f'<a href="{user_url}">{user.name}</a> banned you from <a href="{sub_url}">{sub.name}</a>')
         elif notification_type == 'SUB_UNBAN':
             if config.site.anonymous_modding:
-                return f'You have been unbanned from <a href="{sub_url}">{sub.name}</a>'
+                return gettext(f'You have been unbanned from <a href="{sub_url}">{sub.name}</a>')
             else:
-                return f'<a href="{user_url}">{user.name}</a> unbanned you from <a href="{sub_url}">{sub.name}</a>'
+                return gettext(f'<a href="{user_url}">{user.name}</a> unbanned you from <a href="{sub_url}">{sub.name}</a>')
         elif notification_type in ('MOD_INVITE', 'MOD_INVITE_JANITOR', 'MOD_INVITE_OWNER'):
-            return f'<a href="{user_url}">{user.name}</a> invited you to moderate <a href="{sub_url}">{sub.name}</a>'
+            return gettext(f'<a href="{user_url}">{user.name}</a> invited you to moderate <a href="{sub_url}">{sub.name}</a>')
         elif notification_type == 'POST_DELETE':
             if config.site.anonymous_modding:
-                return f'Your post <a href="{post_url}">{post.title}</a> has been deleted'
+                return gettext(f'Your post <a href="{post_url}">{post.title}</a> has been deleted')
             else: 
-                return f'<a href="{user_url}">{user.name}</a>deleted one of your posts in <a href="{sub_url}">{sub.name}</a>'
+                return gettext(f'<a href="{user_url}">{user.name}</a>deleted one of your posts in <a href="{sub_url}">{sub.name}</a>')
         elif notification_type == 'POST_UNDELETE':
             if config.site.anonymous_modding:
-                return f'Your post <a href="{post_url}">{post.title}</a> has been un-deleted'
+                return gettext(f'Your post <a href="{post_url}">{post.title}</a> has been un-deleted')
             else:
-                return f'<a href="{user_url}">{user.name}</a> un-deleted one of your posts in <a href="{sub_url}">{sub.name}</a>'
+                return gettext(f'<a href="{user_url}">{user.name}</a> un-deleted one of your posts in <a href="{sub_url}">{sub.name}</a>')
 
     def send(
         self,
