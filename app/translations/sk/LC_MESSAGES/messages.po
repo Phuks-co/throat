@@ -832,6 +832,10 @@ msgstr "Vypnúť chat"
 msgid "Global stylesheet (select a sub)"
 msgstr "Globálny štýl (prevziať z)"
 
+#: app/forms/user.py:186
+msgid "Send email notifications"
+msgstr "Emailové notifikácie"
+
 #: app/forms/user.py:184
 msgid "Language"
 msgstr "Jazyk"

@@ -882,6 +882,10 @@ msgstr ""
 msgid "Global stylesheet (select a sub)"
 msgstr ""
 
+#: app/forms/user.py:186
+msgid "Send email notifications"
+msgstr ""
+
 #: app/forms/user.py:184
 msgid "Language"
 msgstr ""
