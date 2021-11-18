@@ -312,6 +312,8 @@ def view_sub_new(sub, page):
     if sub.lower() == "all":
         return redirect(url_for("home.all_new", page=1))
 
+    flair = request.args.get("flair")
+
     try:
         sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     except Sub.DoesNotExist:
@@ -320,7 +322,7 @@ def view_sub_new(sub, page):
     isSubMod = current_user.is_mod(sub["sid"], 1) or current_user.is_admin()
 
     posts = misc.getPostList(
-        misc.postListQueryBase(noAllFilter=True, isSubMod=isSubMod).where(
+        misc.postListQueryBase(noAllFilter=True, isSubMod=isSubMod, flair=flair).where(
             Sub.sid == sub["sid"]
         ),
         "new",
@@ -335,6 +337,7 @@ def view_sub_new(sub, page):
             "page": page,
             "sort_type": "sub.view_sub_new",
             "subMods": misc.getSubMods(sub["sid"]),
+            "flair": flair,
         }
     )
 
@@ -415,6 +418,8 @@ def view_sub_top(sub, page):
     if sub.lower() == "all":
         return redirect(url_for("home.all_top", page=1))
 
+    flair = request.args.get("flair")
+
     try:
         sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     except Sub.DoesNotExist:
@@ -423,7 +428,7 @@ def view_sub_top(sub, page):
     isSubMod = current_user.is_mod(sub["sid"], 1) or current_user.is_admin()
 
     posts = misc.getPostList(
-        misc.postListQueryBase(noAllFilter=True, isSubMod=isSubMod).where(
+        misc.postListQueryBase(noAllFilter=True, isSubMod=isSubMod, flair=flair).where(
             Sub.sid == sub["sid"]
         ),
         "top",
@@ -438,6 +443,7 @@ def view_sub_top(sub, page):
             "page": page,
             "sort_type": "sub.view_sub_top",
             "subMods": misc.getSubMods(sub["sid"]),
+            "flair": flair,
         }
     )
 
@@ -448,6 +454,9 @@ def view_sub_hot(sub, page):
     """ The index page, /hot sorting """
     if sub.lower() == "all":
         return redirect(url_for("home.all_hot", page=1))
+
+    flair = request.args.get("flair")
+
     try:
         sub = Sub.select().where(fn.Lower(Sub.name) == sub.lower()).dicts().get()
     except Sub.DoesNotExist:
@@ -456,7 +465,7 @@ def view_sub_hot(sub, page):
     isSubMod = current_user.is_mod(sub["sid"], 1) or current_user.is_admin()
 
     posts = misc.getPostList(
-        misc.postListQueryBase(noAllFilter=True, isSubMod=isSubMod).where(
+        misc.postListQueryBase(noAllFilter=True, isSubMod=isSubMod, flair=flair).where(
             Sub.sid == sub["sid"]
         ),
         "hot",
@@ -471,6 +480,7 @@ def view_sub_hot(sub, page):
             "page": page,
             "sort_type": "sub.view_sub_hot",
             "subMods": misc.getSubMods(sub["sid"]),
+            "flair": flair,
         }
     )
 

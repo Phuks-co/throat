@@ -48,6 +48,7 @@ body.dark #toggledark i {
 }
 body.dark .postflair {
   background-color: #000;
+  color: #7d7d7d;
   border: 1px solid #1d1d1d;
 }
 body.dark .user_flair {
@@ -260,6 +261,12 @@ body.dark .sidebar h4 {
 }
 
 body.dark input[type="search"] {
+  background-color: #000;
+  color: #fff;
+  border-color: black;
+}
+
+body.dark .flairpicker select {
   background-color: #000;
   color: #fff;
   border-color: black;

@@ -980,4 +980,10 @@ u.addEventForChild(document, 'click', 'a.unblk', function (e, qelem) {
 u.addEventForChild(document, 'click', '.show-post-comments', function(e, qelem) {
     document.getElementById('post-comments').classList.remove('hide');
     qelem.classList.add('hide');
-})
+});
+
+u.addEventForChild(document, 'change', '#flairpicker', function(e, qelem) {
+    if (qelem.selectedIndex !== 0) {
+        window.location.href = qelem.value;
+    }
+});
