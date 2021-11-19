@@ -267,7 +267,7 @@ class Notifications(object):
         target_email_notify = (UserMetadata.select(UserMetadata.value)
                                .where((UserMetadata.uid == target & UserMetadata.key == 'email_notify')) == "1")
         if target_email_notify:
-            email = self.email_template(notification_type, target, post, sub)
+            email = self.email_template(notification_type, User.get_by_id(pk=target), SubPost.get_by_id(pk=post), Sub.get_by_id(pk=sub))
             send_email(target, subject='New Notification', text_content='', html_content=email)
 
         if notification_type in [
