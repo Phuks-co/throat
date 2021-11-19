@@ -7,6 +7,7 @@ from .config import config
 from .models import (
     Notification,
     User,
+    UserMetadata,
     UserContentBlock,
     Sub,
     SubMod,
@@ -17,9 +18,8 @@ from .models import (
     SubPostVote,
 )
 from .socketio import socketio
-from .misc import get_notification_count
+from .misc import get_notification_count, send_email
 from flask import url_for
-
 
 class Notifications(object):
     def __init__(self):
@@ -188,7 +188,6 @@ class Notifications(object):
         user_url = url_for("user.view",user=user.name)
         post_url = url_for("sub.view_post", sub=sub.name, pid=post.pid)
         sub_url = url_for("sub.view_sub", sub=sub.name)
-        
         if notification_type == 'POST_REPLY':
             return gettext(f'<a href="{user_url}">{user.name}</a> replied to your post'
                            f' <a href="{post_url}">{post.title}</a>'
@@ -265,11 +264,12 @@ class Notifications(object):
         )
 
         ignore = None
-        target_email_notify = UserMetadata.select(UserMetadata.value).where(UserMetadata.uid == target.uid) == "1"
+        target_email_notify = (UserMetadata.select(UserMetadata.value)
+                               .where((UserMetadata.uid == target.uid & UserMetadata.key == 'email_notify')) == "1")
         if target_email_notify:
-            email = self.email_template(notification_type,target,post,sub)
-            send_email(target, f'New Notification',email)
-            
+            email = self.email_template(notification_type, target, post, sub)
+            send_email(target, subject='New Notification', text_content='', html_content=email)
+
         if notification_type in [
             "POST_REPLY",
             "COMMENT_REPLY",
