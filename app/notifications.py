@@ -21,6 +21,7 @@ from .socketio import socketio
 from .misc import get_notification_count, send_email
 from flask import url_for
 
+
 class Notifications(object):
     def __init__(self):
         self.push_service = None
@@ -182,46 +183,100 @@ class Notifications(object):
         Notification.update(read=datetime.utcnow()).where(
             (Notification.read.is_null(True)) & (Notification.target == uid)
         ).execute()
-    
+
     @staticmethod
     def email_template(notification_type, user, post, sub):
-        user_url = url_for("user.view", user=user.name, _scheme='https',_external=True)
-        post_url = url_for("sub.view_post", sub=sub.name, pid=post.pid,_scheme='https',_external=True)
-        sub_url = url_for("sub.view_sub", sub=sub.name, _scheme='https',_external=True)
-        if notification_type == 'POST_REPLY':
-            return _('<a href="{}">{}</a> replied to your post'
-                           '<a href="{}">{}</a>'
-                           ' in <a href="{}">{}</a>'.format(user_url, user.name, post_url, post.title, sub_url, sub.name))
-        elif notification_type == 'COMMENT_REPLY':
-            return _('<a href="{}">{}'
-                           '</a> replied to your comment in the post titled'
-                           ' <a href="{}">{}"></a>'
-                           ' in <a href="{}">{}</a>'.format(user_url, user.name, post_url, post.title, sub_url, sub.title))
-        elif notification_type in ('POST_MENTION', 'COMMENT_MENTION'):
-            return _('<a href="{}">{}</a>'
-                           ' mentioned you in <a href="{}">{}</a>'.format(user_url, user.name, post_url, post.title))
-        elif notification_type == 'SUB_BAN':
+        user_url = url_for("user.view", user=user.name, _scheme="https", _external=True)
+        post_url = url_for(
+            "sub.view_post", sub=sub.name, pid=post.pid, _scheme="https", _external=True
+        )
+        sub_url = url_for("sub.view_sub", sub=sub.name, _scheme="https", _external=True)
+        if notification_type == "POST_REPLY":
+            return _(
+                '<a href="{}">{}</a> replied to your post'
+                '<a href="{}">{}</a>'
+                ' in <a href="{}">{}</a>'.format(
+                    user_url, user.name, post_url, post.title, sub_url, sub.name
+                )
+            )
+        elif notification_type == "COMMENT_REPLY":
+            return _(
+                '<a href="{}">{}'
+                "</a> replied to your comment in the post titled"
+                ' <a href="{}">{}"></a>'
+                ' in <a href="{}">{}</a>'.format(
+                    user_url, user.name, post_url, post.title, sub_url, sub.title
+                )
+            )
+        elif notification_type in ("POST_MENTION", "COMMENT_MENTION"):
+            return _(
+                '<a href="{}">{}</a>'
+                ' mentioned you in <a href="{}">{}</a>'.format(
+                    user_url, user.name, post_url, post.title
+                )
+            )
+        elif notification_type == "SUB_BAN":
             if config.site.anonymous_modding:
-                return _('You have been banned from <a href="{}">{}</a>'.format(sub_url, sub.name))
+                return _(
+                    'You have been banned from <a href="{}">{}</a>'.format(
+                        sub_url, sub.name
+                    )
+                )
             else:
-                return _('<a href="{}">{}</a> banned you from <a href="{}">{}</a>'.format(user_url, user.name, sub_url, sub.name))
-        elif notification_type == 'SUB_UNBAN':
+                return _(
+                    '<a href="{}">{}</a> banned you from <a href="{}">{}</a>'.format(
+                        user_url, user.name, sub_url, sub.name
+                    )
+                )
+        elif notification_type == "SUB_UNBAN":
             if config.site.anonymous_modding:
-                return _('You have been unbanned from <a href="{}">{}</a>'.format(sub_url,sub.name))
+                return _(
+                    'You have been unbanned from <a href="{}">{}</a>'.format(
+                        sub_url, sub.name
+                    )
+                )
             else:
-                return _('<a href="{}">{}</a> unbanned you from <a href="{}">{}</a>'.format(user_url, user.name, sub_url, sub.name))
-        elif notification_type in ('MOD_INVITE', 'MOD_INVITE_JANITOR', 'MOD_INVITE_OWNER'):
-            return _('<a href="{}">{}</a> invited you to moderate <a href="{}">{}</a>'.format(user_url, user.name, sub_url, sub.name))
-        elif notification_type == 'POST_DELETE':
+                return _(
+                    '<a href="{}">{}</a> unbanned you from <a href="{}">{}</a>'.format(
+                        user_url, user.name, sub_url, sub.name
+                    )
+                )
+        elif notification_type in (
+            "MOD_INVITE",
+            "MOD_INVITE_JANITOR",
+            "MOD_INVITE_OWNER",
+        ):
+            return _(
+                '<a href="{}">{}</a> invited you to moderate <a href="{}">{}</a>'.format(
+                    user_url, user.name, sub_url, sub.name
+                )
+            )
+        elif notification_type == "POST_DELETE":
             if config.site.anonymous_modding:
-                return _('Your post <a href="{}">{}</a> has been deleted'.format(post_url, post.title))
-            else: 
-                return _('<a href="{}">{}</a>deleted one of your posts in <a href="{}">{}</a>'.format(user_url, user.name, sub_url, sub.name))
-        elif notification_type == 'POST_UNDELETE':
-            if config.site.anonymous_modding:
-                return _('Your post <a href="{}">{}</a> has been un-deleted'.format(post_url, post.title))
+                return _(
+                    'Your post <a href="{}">{}</a> has been deleted'.format(
+                        post_url, post.title
+                    )
+                )
             else:
-                return _('<a href="{}">{}</a> un-deleted one of your posts in <a href="{}">{}</a>'.format(user_url, user.name, sub_url, sub.name))
+                return _(
+                    '<a href="{}">{}</a>deleted one of your posts in <a href="{}">{}</a>'.format(
+                        user_url, user.name, sub_url, sub.name
+                    )
+                )
+        elif notification_type == "POST_UNDELETE":
+            if config.site.anonymous_modding:
+                return _(
+                    'Your post <a href="{}">{}</a> has been un-deleted'.format(
+                        post_url, post.title
+                    )
+                )
+            else:
+                return _(
+                    '<a href="{}">{}</a> un-deleted one of your posts in <a href="{}">{}</a>'.format(
+                        user_url, user.name, sub_url, sub.name
+                    )
+                )
 
     def send(
         self,
@@ -264,11 +319,25 @@ class Notifications(object):
         )
 
         ignore = None
-        target_email_notify = (UserMetadata.select(UserMetadata.value)
-                               .where((UserMetadata.uid == target & UserMetadata.key == 'email_notify')) == "1")
+        target_email_notify = (
+            UserMetadata.select(UserMetadata.value).where(
+                (UserMetadata.uid == target & UserMetadata.key == "email_notify")
+            )
+            == "1"
+        )
         if target_email_notify:
-            email = self.email_template(notification_type, User.get_by_id(pk=target), SubPost.get_by_id(pk=post), Sub.get_by_id(pk=sub))
-            send_email(User.get_by_id(pk=target).email, subject =_('New Notification'), text_content='', html_content=email)
+            email = self.email_template(
+                notification_type,
+                User.get_by_id(pk=target),
+                SubPost.get_by_id(pk=post),
+                Sub.get_by_id(pk=sub),
+            )
+            send_email(
+                User.get_by_id(pk=target).email,
+                subject=_("New notification."),
+                text_content="",
+                html_content=email,
+            )
 
         if notification_type in [
             "POST_REPLY",
