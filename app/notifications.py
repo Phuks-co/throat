@@ -1,7 +1,7 @@
 """ Manages notifications """
 from datetime import datetime, timedelta
 from peewee import JOIN
-from flask_babel import _ ,gettext
+from flask_babel import _
 from pyfcm import FCMNotification
 from .config import config
 from .models import (
@@ -185,43 +185,43 @@ class Notifications(object):
     
     @staticmethod
     def email_template(notification_type, user, post, sub):
-        user_url = url_for("user.view",user=user.name)
-        post_url = url_for("sub.view_post", sub=sub.name, pid=post.pid)
-        sub_url = url_for("sub.view_sub", sub=sub.name)
+        user_url = url_for("user.view", user=user.name, _scheme='https')
+        post_url = url_for("sub.view_post", sub=sub.name, pid=post.pid,_scheme='https')
+        sub_url = url_for("sub.view_sub", sub=sub.name, _scheme='https')
         if notification_type == 'POST_REPLY':
-            return gettext(f'<a href="{user_url}">{user.name}</a> replied to your post'
-                           f' <a href="{post_url}">{post.title}</a>'
-                           f' in <a href="{sub_url}">{sub.name}</a>"')
+            return _('<a href="{}">{}</a> replied to your post'
+                           '<a href="{}">{}</a>'
+                           ' in <a href="{}">{}</a>'.format(user_url, user.name, post_url, post.title, sub_url, sub.name))
         elif notification_type == 'COMMENT_REPLY':
-            return gettext(f'<a href="{user_url}">{user.name}'
-                           f'</a> replied to your comment in the post titled'
-                           f' <a href="{post_url}">{post.title}"></a>'
-                           f' in <a href="{sub_url}">{sub.title}</a>')
+            return _('<a href="{}">{}'
+                           '</a> replied to your comment in the post titled'
+                           ' <a href="{}">{}"></a>'
+                           ' in <a href="{}">{}</a>'.format(user_url, user.name, post_url, post.title, sub_url, sub.title))
         elif notification_type in ('POST_MENTION', 'COMMENT_MENTION'):
-            return gettext(f'<a href="{user_url}">{user.name}</a>'
-                           f' mentioned you in <a href="{post_url}">{post.title}</a>')
+            return _('<a href="{}">{}</a>'
+                           ' mentioned you in <a href="{}">{}</a>'.format(user_url, user.name, post_url, post.title))
         elif notification_type == 'SUB_BAN':
             if config.site.anonymous_modding:
-                return gettext(f'You have been banned from <a href="{sub_url}">{sub.name}</a>')
+                return _('You have been banned from <a href="{}">{}</a>'.format(sub_url, sub.name))
             else:
-                return gettext(f'<a href="{user_url}">{user.name}</a> banned you from <a href="{sub_url}">{sub.name}</a>')
+                return _('<a href="{}">{}</a> banned you from <a href="{}">{}</a>'.format(user_url, user.name, sub_url, sub.name))
         elif notification_type == 'SUB_UNBAN':
             if config.site.anonymous_modding:
-                return gettext(f'You have been unbanned from <a href="{sub_url}">{sub.name}</a>')
+                return _('You have been unbanned from <a href="{}">{}</a>'.format(sub_url,sub.name))
             else:
-                return gettext(f'<a href="{user_url}">{user.name}</a> unbanned you from <a href="{sub_url}">{sub.name}</a>')
+                return _('<a href="{}">{}</a> unbanned you from <a href="{}">{}</a>'.format(user_url, user.name, sub_url, sub.name))
         elif notification_type in ('MOD_INVITE', 'MOD_INVITE_JANITOR', 'MOD_INVITE_OWNER'):
-            return gettext(f'<a href="{user_url}">{user.name}</a> invited you to moderate <a href="{sub_url}">{sub.name}</a>')
+            return _('<a href="{}">{}</a> invited you to moderate <a href="{}">{}</a>'.format(user_url, user.name, sub_url, sub.name))
         elif notification_type == 'POST_DELETE':
             if config.site.anonymous_modding:
-                return gettext(f'Your post <a href="{post_url}">{post.title}</a> has been deleted')
+                return _('Your post <a href="{}">{}</a> has been deleted'.format(post_url, post.title))
             else: 
-                return gettext(f'<a href="{user_url}">{user.name}</a>deleted one of your posts in <a href="{sub_url}">{sub.name}</a>')
+                return _('<a href="{}">{}</a>deleted one of your posts in <a href="{}">{}</a>'.format(user_url, user.name, sub_url, sub.name))
         elif notification_type == 'POST_UNDELETE':
             if config.site.anonymous_modding:
-                return gettext(f'Your post <a href="{post_url}">{post.title}</a> has been un-deleted')
+                return _('Your post <a href="{}">{}</a> has been un-deleted'.format(post_url, post.title))
             else:
-                return gettext(f'<a href="{user_url}">{user.name}</a> un-deleted one of your posts in <a href="{sub_url}">{sub.name}</a>')
+                return _('<a href="{}">{}</a> un-deleted one of your posts in <a href="{}">{}</a>'.format(user_url, user.name, sub_url, sub.name))
 
     def send(
         self,
@@ -268,7 +268,7 @@ class Notifications(object):
                                .where((UserMetadata.uid == target & UserMetadata.key == 'email_notify')) == "1")
         if target_email_notify:
             email = self.email_template(notification_type, User.get_by_id(pk=target), SubPost.get_by_id(pk=post), Sub.get_by_id(pk=sub))
-            send_email(User.get_by_id(pk=target).email, subject='New Notification', text_content='', html_content=email)
+            send_email(User.get_by_id(pk=target).email, subject =_('New Notification'), text_content='', html_content=email)
 
         if notification_type in [
             "POST_REPLY",
