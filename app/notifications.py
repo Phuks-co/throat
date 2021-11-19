@@ -265,7 +265,7 @@ class Notifications(object):
 
         ignore = None
         target_email_notify = (UserMetadata.select(UserMetadata.value)
-                               .where((UserMetadata.uid == target.uid & UserMetadata.key == 'email_notify')) == "1")
+                               .where((UserMetadata.uid == target & UserMetadata.key == 'email_notify')) == "1")
         if target_email_notify:
             email = self.email_template(notification_type, target, post, sub)
             send_email(target, subject='New Notification', text_content='', html_content=email)
