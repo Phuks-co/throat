@@ -185,9 +185,9 @@ class Notifications(object):
     
     @staticmethod
     def email_template(notification_type, user, post, sub):
-        user_url = url_for("user.view", user=user.name, _scheme='https')
-        post_url = url_for("sub.view_post", sub=sub.name, pid=post.pid,_scheme='https')
-        sub_url = url_for("sub.view_sub", sub=sub.name, _scheme='https')
+        user_url = url_for("user.view", user=user.name, _scheme='https',_external=True)
+        post_url = url_for("sub.view_post", sub=sub.name, pid=post.pid,_scheme='https',_external=True)
+        sub_url = url_for("sub.view_sub", sub=sub.name, _scheme='https',_external=True)
         if notification_type == 'POST_REPLY':
             return _('<a href="{}">{}</a> replied to your post'
                            '<a href="{}">{}</a>'
