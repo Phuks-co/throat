@@ -197,38 +197,38 @@ class Notifications(object):
         sub_url = generate_external_url(url_for("sub.view_sub", sub=sub.name, _scheme="https", _external=True))
         if notification_type == "POST_REPLY":
             return _(
-                ' <a clicktracking=off href="{}">{}</a> replied to your post'
-                '  <a clicktracking=off href="{}">{}</a>'
-                ' in  <a clicktracking=off href="{}">{}</a>'.format(
+                '<a clicktracking=off href="{}">{}</a> replied to your post'
+                ' <a clicktracking=off href="{}">{}</a>'
+                ' in <a clicktracking=off href="{}">{}</a>'.format(
                     user_url, user.name, post_url, post.title, sub_url, sub.name
                 )
             )
         elif notification_type == "COMMENT_REPLY":
             return _(
-                ' <a clicktracking=off href="{}">{}'
+                '<a clicktracking=off href="{}">{}'
                 "</a> replied to your comment in the post titled"
-                '  <a clicktracking=off href="{}">{}></a>'
-                ' in  <a clicktracking=off href="{}">{}</a>'.format(
+                ' <a clicktracking=off href="{}">{}</a>'
+                ' in <a clicktracking=off href="{}">{}</a>'.format(
                     user_url, user.name, post_url, post.title, sub_url, sub.title
                 )
             )
         elif notification_type in ("POST_MENTION", "COMMENT_MENTION"):
             return _(
-                ' <a clicktracking=off href="{}">{}</a>'
-                ' mentioned you in  <a clicktracking=off href="{}">{}</a>'.format(
+                '<a clicktracking=off href="{}">{}</a>'
+                ' mentioned you in <a clicktracking=off href="{}">{}</a>'.format(
                     user_url, user.name, post_url, post.title
                 )
             )
         elif notification_type == "SUB_BAN":
             if config.site.anonymous_modding:
                 return _(
-                    'You have been banned from  <a clicktracking=off href="{}">{}</a>'.format(
+                    'You have been banned from <a clicktracking=off href="{}">{}</a>'.format(
                         sub_url, sub.name
                     )
                 )
             else:
                 return _(
-                    ' <a clicktracking=off href="{}">{}</a> banned you from  <a clicktracking=off href="{}">{}</a>'.format(
+                    '<a clicktracking=off href="{}">{}</a> banned you from  <a clicktracking=off href="{}">{}</a>'.format(
                         user_url, user.name, sub_url, sub.name
                     )
                 )
@@ -241,7 +241,7 @@ class Notifications(object):
                 )
             else:
                 return _(
-                    ' <a clicktracking=off href="{}">{}</a> unbanned you from  <a clicktracking=off href="{}">{}</a>'.format(
+                    '<a clicktracking=off href="{}">{}</a> unbanned you from  <a clicktracking=off href="{}">{}</a>'.format(
                         user_url, user.name, sub_url, sub.name
                     )
                 )
@@ -251,33 +251,33 @@ class Notifications(object):
             "MOD_INVITE_OWNER",
         ):
             return _(
-                ' <a clicktracking=off href="{}">{}</a> invited you to moderate  <a clicktracking=off href="{}">{}</a>'.format(
+                '<a clicktracking=off href="{}">{}</a> invited you to moderate  <a clicktracking=off href="{}">{}</a>'.format(
                     user_url, user.name, sub_url, sub.name
                 )
             )
         elif notification_type == "POST_DELETE":
             if config.site.anonymous_modding:
                 return _(
-                    'Your post  <a clicktracking=off href="{}">{}</a> has been deleted'.format(
+                    'Your post <a clicktracking=off href="{}">{}</a> has been deleted'.format(
                         post_url, post.title
                     )
                 )
             else:
                 return _(
-                    ' <a clicktracking=off href="{}">{}</a>deleted one of your posts in  <a clicktracking=off href="{}">{}</a>'.format(
+                    '<a clicktracking=off href="{}">{}</a>deleted one of your posts in  <a clicktracking=off href="{}">{}</a>'.format(
                         user_url, user.name, sub_url, sub.name
                     )
                 )
         elif notification_type == "POST_UNDELETE":
             if config.site.anonymous_modding:
                 return _(
-                    'Your post  <a clicktracking=off href="{}">{}</a> has been un-deleted'.format(
+                    'Your post <a clicktracking=off href="{}">{}</a> has been un-deleted'.format(
                         post_url, post.title
                     )
                 )
             else:
                 return _(
-                    ' <a clicktracking=off href="{}">{}</a> un-deleted one of your posts in  <a clicktracking=off href="{}">{}</a>'.format(
+                    '<a clicktracking=off href="{}">{}</a> un-deleted one of your posts in  <a clicktracking=off href="{}">{}</a>'.format(
                         user_url, user.name, sub_url, sub.name
                     )
                 )
