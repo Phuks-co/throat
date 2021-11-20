@@ -206,7 +206,7 @@ class Notifications(object):
         elif notification_type == "COMMENT_REPLY":
             return _(
                 '<a clicktracking=off href="{}">{}'
-                "</a> replied to your comment in the post titled"
+                '</a> replied to your comment in the post titled"'
                 ' <a clicktracking=off href="{}">{}</a>'
                 ' in <a clicktracking=off href="{}">{}</a>'.format(
                     user_url, user.name, post_url, post.title, sub_url, sub.title
