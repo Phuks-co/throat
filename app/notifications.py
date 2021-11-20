@@ -189,7 +189,7 @@ class Notifications(object):
         server_name = config.site.server_name
         def generate_external_url(url):
             return '/'.join(('https:/',server_name,*url.split("/")[-2:]))
-        
+
         user_url = generate_external_url(url_for("user.view", user=user.name, _scheme="https", _external=True))
         post_url = generate_external_url(url_for(
             "sub.view_post", sub=sub.name, pid=post.pid, _scheme="https", _external=True
@@ -197,51 +197,51 @@ class Notifications(object):
         sub_url = generate_external_url(url_for("sub.view_sub", sub=sub.name, _scheme="https", _external=True))
         if notification_type == "POST_REPLY":
             return _(
-                '<a href="{}">{}</a> replied to your post'
-                '<a href="{}">{}</a>'
-                ' in <a href="{}">{}</a>'.format(
+                ' <a clicktracking=off href="{}">{}</a> replied to your post'
+                '  <a clicktracking=off href="{}">{}</a>'
+                ' in  <a clicktracking=off href="{}">{}</a>'.format(
                     user_url, user.name, post_url, post.title, sub_url, sub.name
                 )
             )
         elif notification_type == "COMMENT_REPLY":
             return _(
-                '<a href="{}">{}'
+                ' <a clicktracking=off href="{}">{}'
                 "</a> replied to your comment in the post titled"
-                ' <a href="{}">{}></a>'
-                ' in <a href="{}">{}</a>'.format(
+                '  <a clicktracking=off href="{}">{}></a>'
+                ' in  <a clicktracking=off href="{}">{}</a>'.format(
                     user_url, user.name, post_url, post.title, sub_url, sub.title
                 )
             )
         elif notification_type in ("POST_MENTION", "COMMENT_MENTION"):
             return _(
-                '<a href="{}">{}</a>'
-                ' mentioned you in <a href="{}">{}</a>'.format(
+                ' <a clicktracking=off href="{}">{}</a>'
+                ' mentioned you in  <a clicktracking=off href="{}">{}</a>'.format(
                     user_url, user.name, post_url, post.title
                 )
             )
         elif notification_type == "SUB_BAN":
             if config.site.anonymous_modding:
                 return _(
-                    'You have been banned from <a href="{}">{}</a>'.format(
+                    'You have been banned from  <a clicktracking=off href="{}">{}</a>'.format(
                         sub_url, sub.name
                     )
                 )
             else:
                 return _(
-                    '<a href="{}">{}</a> banned you from <a href="{}">{}</a>'.format(
+                    ' <a clicktracking=off href="{}">{}</a> banned you from  <a clicktracking=off href="{}">{}</a>'.format(
                         user_url, user.name, sub_url, sub.name
                     )
                 )
         elif notification_type == "SUB_UNBAN":
             if config.site.anonymous_modding:
                 return _(
-                    'You have been unbanned from <a href="{}">{}</a>'.format(
+                    'You have been unbanned from  <a clicktracking=off href="{}">{}</a>'.format(
                         sub_url, sub.name
                     )
                 )
             else:
                 return _(
-                    '<a href="{}">{}</a> unbanned you from <a href="{}">{}</a>'.format(
+                    ' <a clicktracking=off href="{}">{}</a> unbanned you from  <a clicktracking=off href="{}">{}</a>'.format(
                         user_url, user.name, sub_url, sub.name
                     )
                 )
@@ -251,33 +251,33 @@ class Notifications(object):
             "MOD_INVITE_OWNER",
         ):
             return _(
-                '<a href="{}">{}</a> invited you to moderate <a href="{}">{}</a>'.format(
+                ' <a clicktracking=off href="{}">{}</a> invited you to moderate  <a clicktracking=off href="{}">{}</a>'.format(
                     user_url, user.name, sub_url, sub.name
                 )
             )
         elif notification_type == "POST_DELETE":
             if config.site.anonymous_modding:
                 return _(
-                    'Your post <a href="{}">{}</a> has been deleted'.format(
+                    'Your post  <a clicktracking=off href="{}">{}</a> has been deleted'.format(
                         post_url, post.title
                     )
                 )
             else:
                 return _(
-                    '<a href="{}">{}</a>deleted one of your posts in <a href="{}">{}</a>'.format(
+                    ' <a clicktracking=off href="{}">{}</a>deleted one of your posts in  <a clicktracking=off href="{}">{}</a>'.format(
                         user_url, user.name, sub_url, sub.name
                     )
                 )
         elif notification_type == "POST_UNDELETE":
             if config.site.anonymous_modding:
                 return _(
-                    'Your post <a href="{}">{}</a> has been un-deleted'.format(
+                    'Your post  <a clicktracking=off href="{}">{}</a> has been un-deleted'.format(
                         post_url, post.title
                     )
                 )
             else:
                 return _(
-                    '<a href="{}">{}</a> un-deleted one of your posts in <a href="{}">{}</a>'.format(
+                    ' <a clicktracking=off href="{}">{}</a> un-deleted one of your posts in  <a clicktracking=off href="{}">{}</a>'.format(
                         user_url, user.name, sub_url, sub.name
                     )
                 )
