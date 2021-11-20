@@ -186,11 +186,15 @@ class Notifications(object):
 
     @staticmethod
     def email_template(notification_type, user, post, sub):
-        user_url = url_for("user.view", user=user.name, _scheme="https", _external=True)
-        post_url = url_for(
+        server_name = config.site.server_name
+        def generate_external_url(url):
+            return '/'.join(('https:/',server_name,*url.split("/")[-2:]))
+        
+        user_url = generate_external_url(url_for("user.view", user=user.name, _scheme="https", _external=True))
+        post_url = generate_external_url(url_for(
             "sub.view_post", sub=sub.name, pid=post.pid, _scheme="https", _external=True
-        )
-        sub_url = url_for("sub.view_sub", sub=sub.name, _scheme="https", _external=True)
+        ))
+        sub_url = generate_external_url(url_for("sub.view_sub", sub=sub.name, _scheme="https", _external=True))
         if notification_type == "POST_REPLY":
             return _(
                 '<a href="{}">{}</a> replied to your post'
@@ -203,7 +207,7 @@ class Notifications(object):
             return _(
                 '<a href="{}">{}'
                 "</a> replied to your comment in the post titled"
-                ' <a href="{}">{}"></a>'
+                ' <a href="{}">{}></a>'
                 ' in <a href="{}">{}</a>'.format(
                     user_url, user.name, post_url, post.title, sub_url, sub.title
                 )
