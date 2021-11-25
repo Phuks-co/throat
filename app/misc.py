@@ -2998,10 +2998,7 @@ def getReports(view, status, page, *_args, **kwargs):
     # filter by if Mod or Admin view and if filtering by sub, specific post, or related posts
     if view == "admin" and not sid:
         sub_post_reports = (
-            all_post_reports.where(SubPostReport.send_to_admin)
-            .join(SubPost)
-            .join(Sub)
-            .join(SubMod)
+            all_post_reports.where(SubPostReport.send_to_admin).join(SubPost).join(Sub)
         )
     elif view == "admin" and sid:
         sub_post_reports = (
@@ -3009,22 +3006,20 @@ def getReports(view, status, page, *_args, **kwargs):
             .join(SubPost)
             .join(Sub)
             .where(Sub.sid == sid)
-            .join(SubMod)
         )
     elif view == "mod" and sid:
         sub_post_reports = (
-            all_post_reports.join(SubPost)
-            .join(Sub)
-            .where(Sub.sid == sid)
-            .join(SubMod)
-            .where(SubMod.user == current_user.uid)
+            all_post_reports.join(SubPost).join(Sub).where(Sub.sid == sid)
         )
+        if not current_user.is_admin():
+            sub_post_reports = sub_post_reports.join(SubMod).where(
+                SubMod.user == current_user.uid
+            )
     elif report_id and report_type == "post" and not related:
         sub_post_reports = (
             all_post_reports.where(SubPostReport.id == report_id)
             .join(SubPost)
             .join(Sub)
-            .join(SubMod)
         )
     elif report_id and report_type == "post" and related:
         base_report = getReports(
@@ -3034,7 +3029,6 @@ def getReports(view, status, page, *_args, **kwargs):
             all_post_reports.where(SubPostReport.pid == base_report["pid"])
             .join(SubPost)
             .join(Sub)
-            .join(SubMod)
         )
     else:
         sub_post_reports = (
@@ -3076,7 +3070,6 @@ def getReports(view, status, page, *_args, **kwargs):
             .join(SubPostComment)
             .join(SubPost)
             .join(Sub)
-            .join(SubMod)
         )
     elif view == "admin" and sid:
         sub_comment_reports = (
@@ -3085,7 +3078,6 @@ def getReports(view, status, page, *_args, **kwargs):
             .join(SubPost)
             .join(Sub)
             .where(Sub.sid == sid)
-            .join(SubMod)
         )
     elif view == "mod" and sid:
         sub_comment_reports = (
@@ -3093,16 +3085,17 @@ def getReports(view, status, page, *_args, **kwargs):
             .join(SubPost)
             .join(Sub)
             .where(Sub.sid == sid)
-            .join(SubMod)
-            .where(SubMod.user == current_user.uid)
         )
+        if not current_user.is_admin():
+            sub_comment_reports = sub_comment_reports.join(SubMod).where(
+                SubMod.user == current_user.uid
+            )
     elif report_id and report_type == "comment" and not related:
         sub_comment_reports = (
             all_comment_reports.where(SubPostCommentReport.id == report_id)
             .join(SubPostComment)
             .join(SubPost)
             .join(Sub)
-            .join(SubMod)
         )
     elif report_id and report_type == "comment" and related:
         base_report = getReports(
@@ -3113,7 +3106,6 @@ def getReports(view, status, page, *_args, **kwargs):
             .join(SubPostComment)
             .join(SubPost)
             .join(Sub)
-            .join(SubMod)
         )
     else:
         sub_comment_reports = (
