@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-11-11 19:23-0300\n"
-"PO-Revision-Date: 2021-11-12 04:19\n"
+"PO-Revision-Date: 2021-11-23 01:03\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -573,7 +573,7 @@ msgstr "Разрешить пользователям создавать сво�
 
 #: app/forms/sub.py:122
 msgid "Require users to flair their own posts"
-msgstr ""
+msgstr "Разрешить пользователям создавать свои собственные флаеры на посты"
 
 #: app/forms/sub.py:124
 msgid "Allow users to pick from moderator-created user flair options"
@@ -1312,11 +1312,11 @@ msgstr "Предпросмотр Поста:"
 
 #: app/html/mod/reportdetails.html:143 app/html/sub/postcomments.html:81
 msgid "[post deleted by admin]"
-msgstr ""
+msgstr "[пост удален админом]"
 
 #: app/html/mod/reportdetails.html:145 app/html/sub/postcomments.html:78
 msgid "[post deleted by mod]"
-msgstr ""
+msgstr "[пост удален модератором]"
 
 #: app/html/mod/reportdetails.html:147 app/html/mod/reportdetails.html:160
 #: app/html/sub/postcomments.html:75
@@ -1333,11 +1333,11 @@ msgstr "Предпросмотр комментария:"
 
 #: app/html/mod/reportdetails.html:173
 msgid "[comment deleted by mod]"
-msgstr ""
+msgstr "[комментарий удален модератором]"
 
 #: app/html/mod/reportdetails.html:175
 msgid "[comment deleted by admin]"
-msgstr ""
+msgstr "[комментарий удален админом]"
 
 #: app/html/mod/reportdetails.html:179 app/html/mod/reportdetails.html:182
 msgid "[comment deleted by user]"
@@ -2530,11 +2530,11 @@ msgstr "[Удалено Пользователем]"
 
 #: app/html/sub/post.html:117 app/html/sub/post.html:136
 msgid "[Deleted by Mod]"
-msgstr ""
+msgstr "[Удалено модератором]"
 
 #: app/html/sub/post.html:119 app/html/sub/post.html:138
 msgid "[Deleted by Admin]"
-msgstr ""
+msgstr "[Удалено админом]"
 
 #: app/html/sub/post.html:168
 msgid "Viewing title history:"
@@ -2592,7 +2592,7 @@ msgstr "сделать объявление"
 
 #: app/html/sub/post.html:260
 msgid "sort by best"
-msgstr ""
+msgstr "сортировать по лучшему"
 
 #: app/html/sub/post.html:262
 msgid "sort by top"
@@ -2626,7 +2626,7 @@ msgstr "выделить"
 #: app/html/sub/post.html:296
 #, python-format
 msgid "Current flair: <span class=\"postflair\">%(flair)s</span>"
-msgstr ""
+msgstr "Текущий флаер: <span class=\"postflair\">%(flair)s</span>"
 
 #: app/html/sub/post.html:298
 msgid "Remove"
@@ -2681,7 +2681,7 @@ msgstr "top"
 
 #: app/html/sub/post.html:400
 msgid "best"
-msgstr ""
+msgstr "лучший"
 
 #: app/html/sub/post.html:403
 #, python-format
@@ -2690,7 +2690,7 @@ msgstr "Сортировка по: <b>%(currsort)s</b>"
 
 #: app/html/sub/post.html:413
 msgid "Best"
-msgstr ""
+msgstr "Лучший"
 
 #: app/html/sub/postcomments.html:37
 msgid "[OP]"
@@ -3144,12 +3144,12 @@ msgstr "Продолжать, "
 #: app/html/user/messages/notifications.html:24
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> replied to your post <a class=\"%(cls)s\" href=\"%(link)s\">%(title)s</a> in <a href=\"%(sublink)s\">%(sub)s</a>"
-msgstr ""
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> ответил на ваш пост <a class=\"%(cls)s\" href=\"%(link)s\">%(title)s</a> в <a href=\"%(sublink)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:29
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> replied to your comment in the post titled <a class=\"%(cls)s\" href=\"%(link)s\">%(title)s</a> in <a href=\"%(sublink)s\">%(sub)s</a>"
-msgstr ""
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> ответил на ваш комментарий в посте под названием <a class=\"%(cls)s\" href=\"%(link)s\">%(title)s</a> в <a href=\"%(sublink)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:34
 #, python-format
@@ -3159,27 +3159,27 @@ msgstr "<a href=\"/u/%(user)s\">%(user)s</a> упомянул вас в <a class
 #: app/html/user/messages/notifications.html:40
 #, python-format
 msgid "You have been banned from <a href=\"%(sublink)s\">%(sub)s</a>"
-msgstr ""
+msgstr "Вы были забенены в <a href=\"%(sublink)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:42
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> banned you from <a href=\"%(sublink)s\">%(sub)s</a>"
-msgstr ""
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> забанил вас в <a href=\"%(sublink)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:46
 #, python-format
 msgid "You have been unbanned from <a href=\"%(sublink)s\">%(sub)s</a>"
-msgstr ""
+msgstr "Вы были разблокированы в <a href=\"%(sublink)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:48
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> unbanned you from <a href=\"%(sublink)s\">%(sub)s</a>"
-msgstr ""
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> разблокировал вас в <a href=\"%(sublink)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:51
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> invited you to moderate <a href=\"%(sublink)s\">%(sub)s</a>"
-msgstr ""
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> пригласил вас модерировать <a href=\"%(sublink)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:55
 #, python-format
@@ -3194,12 +3194,12 @@ msgstr "<a href=\"/u/%(user)s\">%(user)s</a> удалил ваш пост <a hre
 #: app/html/user/messages/notifications.html:61
 #, python-format
 msgid "One of your posts in <a href=\"%(sublink)s\">%(sub)s</a> has been deleted"
-msgstr ""
+msgstr "Один из ваших постов в <a href=\"%(sublink)s\">%(sub)s</a> был удален"
 
 #: app/html/user/messages/notifications.html:63
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> deleted one of your posts in <a href=\"%(sublink)s\">%(sub)s</a>"
-msgstr ""
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> удалил один из ваших постов в <a href=\"%(sublink)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:69
 #, python-format
@@ -3214,12 +3214,12 @@ msgstr "<a href=\"/u/%(user)s\">%(user)s</a> восстановил ваш по�
 #: app/html/user/messages/notifications.html:75
 #, python-format
 msgid "One of your posts in <a href=\"%(sublink)s\">%(sub)s</a> has been un-deleted"
-msgstr ""
+msgstr "Один из ваших постов <a href=\"%(sublink)s\">%(sub)s</a> был восстановлен"
 
 #: app/html/user/messages/notifications.html:77
 #, python-format
 msgid "<a href=\"/u/%(user)s\">%(user)s</a> un-deleted one of your posts in <a href=\"%(sublink)s\">%(sub)s</a>"
-msgstr ""
+msgstr "<a href=\"/u/%(user)s\">%(user)s</a> отменил удаление одного из ваших постов в <a href=\"%(sublink)s\">%(sub)s</a>"
 
 #: app/html/user/messages/notifications.html:86
 #, python-format
@@ -4040,15 +4040,15 @@ msgstr "Вы не можете редактировать комментарий
 
 #: app/views/do.py:2778
 msgid "Comment is already deleted"
-msgstr ""
+msgstr "Комментарий уже удален"
 
 #: app/views/do.py:2854
 msgid "Comment is not deleted"
-msgstr ""
+msgstr "Комментарий не удален"
 
 #: app/views/do.py:2858
 msgid "Can not un-delete a self-deleted comment"
-msgstr ""
+msgstr "Не удается восстановить самостоятельно удаленный комментарий"
 
 #: app/views/do.py:2909 app/views/do.py:2922
 msgid "Not authenticated"
@@ -4169,11 +4169,11 @@ msgstr "Группы не существует."
 
 #: app/views/subs.py:134
 msgid "Please select a flair for your post."
-msgstr ""
+msgstr "Пожалуйста, выберите флаер для своего поста."
 
 #: app/views/subs.py:140
 msgid "Invalid flair."
-msgstr ""
+msgstr "Неверный флайр."
 
 #: app/views/subs.py:145
 msgid "That post type is not allowed in this sub."

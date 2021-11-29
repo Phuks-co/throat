@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-11-11 19:23-0300\n"
-"PO-Revision-Date: 2021-11-18 20:05\n"
+"PO-Revision-Date: 2021-11-19 22:27\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -314,7 +314,7 @@ msgstr "Zdá sa, že táto notifikácia ešte nie je hotová. :("
 
 #: app/notifications.py:287
 msgid "New notification."
-msgstr "Nová notifikácia."
+msgstr "Nová notifikácia z čekni.to"
 
 #: app/notifications.py:289
 #, python-format
