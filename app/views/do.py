@@ -816,6 +816,15 @@ def edit_mod():
         return jsonify(status="error", error=[_("User does not exist")])
 
     if form.validate():
+        # Get the previous owner
+        try:
+            sm = SubMod.get((SubMod.sid == sub.sid) & (SubMod.power_level == 0))
+            # Reduce em to regular mod.
+            sm.power_level = 1
+            sm.save()
+        except SubMod.DoesNotExist:
+            pass
+
         try:
             sm = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid))
             sm.power_level = 0
