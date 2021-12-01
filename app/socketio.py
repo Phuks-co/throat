@@ -12,6 +12,7 @@ import random
 import re
 from wheezy.html.utils import escape_html
 import logging
+import time
 
 # Time in seconds for the expiration of the Redis keys used to decide
 # which instance should do the socketio.emit for messages received via
@@ -99,7 +100,11 @@ socketio = SocketIOWithLogging()
 @socketio.on("msg", namespace="/snt")
 def chat_message(g):
     if g.get("msg") and current_user.is_authenticated:
-        message = {"user": current_user.name, "msg": escape_html(g.get("msg")[:250])}
+        message = {
+            "time": time.time(),
+            "user": current_user.name,
+            "msg": escape_html(g.get("msg")[:250]),
+        }
         rconn.lpush("chathistory", json.dumps(message))
         rconn.ltrim("chathistory", 0, 20)
         socketio.emit("msg", message, namespace="/snt", room="chat")
