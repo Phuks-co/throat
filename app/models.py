@@ -8,7 +8,7 @@ import sys
 from flask import g
 from flask_redis import FlaskRedis
 from peewee import IntegerField, DateTimeField, BooleanField, Proxy, Model, Database
-from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField
+from peewee import CharField, ForeignKeyField, TextField, PrimaryKeyField, FloatField
 from werkzeug.local import LocalProxy
 from .storage import file_url
 from .config import config
@@ -296,7 +296,9 @@ class SubMetadata(BaseModel):
 
 class SubPost(BaseModel):
     content = TextField(null=True)
-    deleted = IntegerField(default=0)  # 1=self delete, 2=mod delete, 0=not deleted
+    deleted = IntegerField(
+        default=0
+    )  # 1=self delete, 2=mod delete, 3=admin delete, 0=not deleted
     distinguish = IntegerField(null=True)  # 1=mod, 2=admin, 0 or null = normal
     link = CharField(null=True)
     nsfw = BooleanField(null=True)
@@ -367,9 +369,15 @@ class SubPostComment(BaseModel):
     score = IntegerField(null=True)
     upvotes = IntegerField(default=0)
     downvotes = IntegerField(default=0)
-    status = IntegerField(
-        null=True
-    )  # 1=self delete, 2=mod delete, 0 or null=not deleted
+    best_score = FloatField(null=True)
+    views = IntegerField(default=0)
+
+    # status:
+    #   null or 0: Either not deleted, or reinstated.
+    #   1:         The user removed it themselves; still visible to mods, admins.
+    #   2:         A mod removed it; still visible to mods, admins and the user.
+    #   3:         An admin removed it; still visible to mods, admins and the user.
+    status = IntegerField(null=True)
     distinguish = IntegerField(null=True)  # 1=mod, 2=admin, 0 or null = normal
     time = DateTimeField(null=True)
     uid = ForeignKeyField(
@@ -395,6 +403,18 @@ class SubPostCommentVote(BaseModel):
 
     class Meta:
         table_name = "sub_post_comment_vote"
+
+
+class SubPostCommentView(BaseModel):
+    cid = ForeignKeyField(db_column="cid", model=SubPostComment, field="cid")
+    uid = ForeignKeyField(db_column="uid", model=User, field="uid")
+    pid = ForeignKeyField(db_column="pid", model=SubPost, field="pid")
+
+    def __repr__(self):
+        return f'<SubPostCommentView "{self.cid}">'
+
+    class Meta:
+        table_name = "sub_post_comment_view"
 
 
 class SubPostMetadata(BaseModel):

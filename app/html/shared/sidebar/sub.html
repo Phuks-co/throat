@@ -31,7 +31,7 @@
     @{_("Your flair:")}
     <a class="user" href="/u/@{current_user.name}">@{current_user.name}</a>
     @if func.get_user_flair(sub['sid'], current_user.uid):
-      <span class="user_flair">@{func.get_user_flair(sub['sid'], current_user.uid)!!e}</span>
+      <span class="user_flair">@{func.get_user_flair(sub['sid'], current_user.uid)}</span>
     @end
     @if subInfo.get('user_can_flair_self', 0) == '1' or subInfo.get('freeform_user_flairs', 0) == '1':
       <a href="#" id="change_user_flair" class="small">@{_("(change)")}</a>
@@ -69,7 +69,7 @@
           <div>@{_('... or pick a pre-defined one')}</div>
         @end
         @for ll in func.get_sub_flair_choices(sub['sid']):
-          <span class="selflair" data-sub="@{sub['name']}" data-flair="@{ll['id']}">@{ll['flair']!!e}</span>
+          <span class="selflair" data-sub="@{sub['name']}" data-flair="@{ll['id']}">@{ll['flair']}</span>
         @end
       @end
       <form method="POST" class="ajaxform" data-reload="true" action="@{url_for('do.delete_user_own_flair', sub=sub['name'])}">
@@ -78,6 +78,18 @@
     </div>
   @end
 @end
+
+@if subInfo.get('flairs'):
+  <form class="pure-form pure-g flairpicker">
+    <select id="flairpicker" class="pure-u-1">
+      <option value="" disabled selected>@{_('Show posts with flair...')}</option>
+      @for flair in subInfo.get('flairs'):
+        <option value="@{url_for('sub.view_sub_hot', sub=sub['name'], flair=flair)}">@{flair}</option>
+      @end
+    </select>
+  </form>
+@end
+
 <hr>
 @if sub['sidebar'] != '':
   @{func.our_markdown(sub['sidebar'])!!html}

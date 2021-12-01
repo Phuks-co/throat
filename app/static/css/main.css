@@ -949,14 +949,53 @@ img.nsfw-blur, img.block-blur {
   z-index: 100;
 }
 
-.postflair, .selflair {
+.postflair, .selflair, .submitflair {
   border: 1px solid #aaa;
   border-radius: 2px;
+  color: black;
   background-color: #eee;
   padding: 5px;
   line-height: 2em;
   white-space: nowrap;
   cursor: pointer;
+}
+
+#flair {
+    text-align: center;
+    padding-bottom: .2em;
+}
+
+#flair a {
+    font-size: small;
+    white-space: pre;
+}
+
+.submitflair {
+    margin-right: .3em;
+    margin-bottom: .3em;
+    line-height: 1em;
+}
+
+.submitflair.selected {
+  color: #fff;
+  background-color: #101010;
+}
+
+.submitflair.selected:hover {
+  background-color: #808080;
+}
+
+#flair-container {
+  float: right;
+  width: calc(100% - 11em);
+  display: flex;
+  flex-wrap: wrap;
+}
+
+@media only screen and (max-width : 480px) {
+    #flair-container {
+        width: 100%;
+    }
 }
 
 .pollflair {
@@ -977,7 +1016,7 @@ img.nsfw-blur, img.block-blur {
   color: #111;
 }
 
-.selflair:hover {
+.selflair:hover, .submitflair:hover {
   background-color: #d5d5d5;
 }
 
@@ -1311,6 +1350,13 @@ hr {
   font-size: 12px;
 }
 
+.sidescore {
+  font-size: 12px;
+  font-weight: bold;
+  margin-right: 4px;
+  color: var(--upvote-color);
+}
+
 input[type=search] {
   box-sizing: border-box;
   border: solid lightgray 1px;
@@ -1339,6 +1385,17 @@ input[type=search] {
 
 .search .icon path {
   fill: darkgray;
+}
+
+.flairpicker select {
+  box-sizing: border-box;
+  border: solid lightgray 1px;
+  border-radius: 4px;
+  font-size: .9em;
+  background-color: white;
+  -webkit-transition: width .4s ease-in-out;
+  transition: width .4s ease-in-out;
+  margin: 10px 5px 5px 5px;
 }
 
 /* /SIDEBAR STYLES */

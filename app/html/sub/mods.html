@@ -31,8 +31,8 @@
       @else:
         @{_('Owners:')}
         <ul>
-          @for owner in subMods.owners:
-            <li><i class="fa fa-star" title="@{_('Owner')}"></i> <a href="@{url_for('user.view', user=owner.name)}">@{owner.name}</a></li>
+          @for owner in subMods['owners'].values():
+            <li><i class="fa fa-star" title="@{_('Owner')}"></i> <a href="@{url_for('user.view', user=owner)}">@{owner}</a></li>
           @end
         </ul>
       @end

@@ -91,119 +91,75 @@ def create_post(ptype, sub):
     if not form.sub.data and sub != "":
         form.sub.data = sub
 
-    try:
-        sub = Sub.get(fn.Lower(Sub.name) == form.sub.data.lower())
-        subdata = misc.getSubData(sub.sid)
-    except Sub.DoesNotExist:
+    flairs = []
+    subdata = {}
+
+    def error_response(msg):
         return (
             engine.get_template("sub/createpost.html").render(
                 {
-                    "error": _("Sub does not exist."),
+                    "error": msg,
                     "form": form,
-                    "sub": "",
+                    "sub": sub,
+                    "flairs": flairs,
+                    "sub_data": subdata,
                     "captcha": captcha,
                 }
             ),
             400,
         )
+
+    try:
+        sub = Sub.get(fn.Lower(Sub.name) == form.sub.data.lower())
+        subdata = misc.getSubData(sub.sid)
+        user_can_flair = subdata.get("ucf") == "1"
+        user_must_flair = subdata.get("umf") == "1"
+        if user_can_flair or user_must_flair:
+            flairs = misc.getSubFlairs(sub.sid)
+    except Sub.DoesNotExist:
+        sub = ""
+        return error_response(_("Sub does not exist."))
 
     if not form.validate():
         if not form.ptype.data:
             form.ptype.data = ptype
+        return error_response(misc.get_errors(form, True))
 
-        return (
-            engine.get_template("sub/createpost.html").render(
-                {
-                    "error": misc.get_errors(form, True),
-                    "form": form,
-                    "sub": sub,
-                    "captcha": captcha,
-                }
-            ),
-            400,
-        )
+    submods = misc.getSubMods(sub.sid)
+    if (
+        user_must_flair
+        and form.flair.data == ""
+        and current_user.uid not in submods["all"]
+    ):
+        return error_response(_("Please select a flair for your post."))
+
+    flair = None
+    if form.flair.data != "":
+        flair = [f.text for f in flairs if str(f.xid) == form.flair.data]
+        if (user_must_flair or user_can_flair) and not flair:
+            return error_response(_("Invalid flair."))
+        flair = flair[0]
 
     ptype_flag = misc.ptype_names.get(form.ptype.data, None)
     if ptype_flag is None or subdata.get(ptype_flag, "0") == "0":
-        return (
-            engine.get_template("sub/createpost.html").render(
-                {
-                    "error": _("That post type is not allowed in this sub."),
-                    "form": form,
-                    "sub": sub,
-                    "captcha": captcha,
-                }
-            ),
-            400,
-        )
+        return error_response(_("That post type is not allowed in this sub."))
 
     if misc.get_user_level(current_user.uid)[0] <= 4:
         if not misc.validate_captcha(form.ctok.data, form.captcha.data):
-            return (
-                engine.get_template("sub/createpost.html").render(
-                    {
-                        "error": _("Invalid captcha."),
-                        "form": form,
-                        "sub": sub,
-                        "captcha": captcha,
-                    }
-                ),
-                400,
-            )
+            return error_response(_("Invalid captcha."))
 
     # Put pre-posting checks here
     if not current_user.is_admin() and not config.site.enable_posting:
-        return (
-            engine.get_template("sub/createpost.html").render(
-                {
-                    "error": _("Posting has been temporarily disabled."),
-                    "form": form,
-                    "sub": sub,
-                    "captcha": captcha,
-                }
-            ),
-            400,
-        )
+        return error_response(_("Posting has been temporarily disabled."))
 
     if sub.name.lower() in ("all", "new", "hot", "top", "admin", "home"):
-        return (
-            engine.get_template("sub/createpost.html").render(
-                {
-                    "error": _("You cannot post in this sub."),
-                    "form": form,
-                    "sub": sub,
-                    "captcha": captcha,
-                }
-            ),
-            400,
-        )
+        return error_response(_("You cannot post in this sub."))
 
     if current_user.is_subban(sub):
-        return (
-            engine.get_template("sub/createpost.html").render(
-                {
-                    "error": _("You're banned from posting on this sub."),
-                    "form": form,
-                    "sub": sub,
-                    "captcha": captcha,
-                }
-            ),
-            400,
-        )
+        return error_response(_("You're banned from posting on this sub."))
 
-    submods = misc.getSubMods(sub.sid)
     if subdata.get("restricted", 0) == "1" and not (current_user.uid in submods["all"]):
-        return (
-            engine.get_template("sub/createpost.html").render(
-                {
-                    "error": _("Only mods can post on this sub."),
-                    "form": form,
-                    "sub": sub,
-                    "captcha": captcha,
-                }
-            ),
-            400,
-        )
+        return error_response(_("Only mods can post on this sub."))
 
     if misc.get_user_level(current_user.uid)[0] < 7:
         today = datetime.utcnow() - timedelta(days=1)
@@ -224,31 +180,11 @@ def create_post(ptype, sub):
             lposts > config.site.daily_sub_posting_limit
             or tposts > config.site.daily_site_posting_limit
         ):
-            return (
-                engine.get_template("sub/createpost.html").render(
-                    {
-                        "error": _("You have posted too much today."),
-                        "form": form,
-                        "sub": sub,
-                        "captcha": captcha,
-                    }
-                ),
-                400,
-            )
+            return error_response(_("You have posted too much today."))
 
     if len(form.title.data.strip(misc.WHITESPACE)) < 3:
-        return (
-            engine.get_template("sub/createpost.html").render(
-                {
-                    "error": _(
-                        "Title is too short and/or contains whitespace characters."
-                    ),
-                    "form": form,
-                    "sub": sub,
-                    "captcha": captcha,
-                }
-            ),
-            400,
+        return error_response(
+            _("Title is too short and/or contains whitespace characters.")
         )
 
     fileid = False
@@ -271,52 +207,25 @@ def create_post(ptype, sub):
             fileid = fupload[0]
 
         if not form.link.data:
-            return (
-                engine.get_template("sub/createpost.html").render(
-                    {
-                        "error": _("No link provided."),
-                        "form": form,
-                        "sub": sub,
-                        "captcha": captcha,
-                    }
-                ),
-                400,
-            )
+            return error_response(_("No link provided."))
 
         try:
             lx = SubPost.select(SubPost.pid).where(SubPost.sid == sub.sid)
             lx = lx.where(SubPost.link == form.link.data).where(SubPost.deleted == 0)
             monthago = datetime.utcnow() - timedelta(days=30)
             post = lx.where(SubPost.posted > monthago).get()
-            return (
-                engine.get_template("sub/createpost.html").render(
-                    {
-                        "error": _(
-                            'This link was <a href="%(link)s">recently posted</a> on this sub.',
-                            link=url_for("sub.view_post", sub=sub.name, pid=post.pid),
-                        ),
-                        "form": form,
-                        "sub": sub,
-                        "captcha": captcha,
-                    }
-                ),
-                400,
+            return error_response(
+                _(
+                    'This link was <a href="%(link)s">recently posted</a> on this sub.',
+                    link=url_for("sub.view_post", sub=sub.name, pid=post.pid),
+                )
             )
         except SubPost.DoesNotExist:
             pass
 
         if misc.is_domain_banned(form.link.data.lower(), domain_type="link"):
-            return (
-                engine.get_template("sub/createpost.html").render(
-                    {
-                        "error": _("This domain is banned."),
-                        "form": form,
-                        "sub": sub,
-                        "captcha": captcha,
-                    }
-                ),
-                400,
-            )
+            return error_response(_("This domain is banned."))
+
         img = "deferred"
     elif form.ptype.data == "poll":
         ptype = 3
@@ -326,31 +235,11 @@ def create_post(ptype, sub):
             x for x in options if len(x.strip(misc.WHITESPACE)) > 0
         ]  # Remove empty strings
         if len(options) < 2:
-            return (
-                engine.get_template("sub/createpost.html").render(
-                    {
-                        "error": _("Not enough poll options provided."),
-                        "form": form,
-                        "sub": sub,
-                        "captcha": captcha,
-                    }
-                ),
-                400,
-            )
+            return error_response(_("Not enough poll options provided."))
 
         for p in options:
             if len(p) > 128:
-                return (
-                    engine.get_template("sub/createpost.html").render(
-                        {
-                            "error": _("Poll option text is too long."),
-                            "form": form,
-                            "sub": sub,
-                            "captcha": captcha,
-                        }
-                    ),
-                    400,
-                )
+                return error_response(_("Poll option text is too long."))
 
         if form.closetime.data:
             try:
@@ -358,47 +247,18 @@ def create_post(ptype, sub):
                     form.closetime.data, "%Y-%m-%dT%H:%M:%S.%fZ"
                 )
                 if (closetime - datetime.utcnow()) > timedelta(days=60):
-                    return (
-                        engine.get_template("sub/createpost.html").render(
-                            {
-                                "error": _(
-                                    "Poll closing time is too far in the future."
-                                ),
-                                "form": form,
-                                "sub": sub,
-                                "captcha": captcha,
-                            }
-                        ),
-                        400,
+                    return error_response(
+                        _("Poll closing time is too far in the future.")
                     )
             except ValueError:
-                return (
-                    engine.get_template("sub/createpost.html").render(
-                        {
-                            "error": _("Invalid closing time."),
-                            "form": form,
-                            "sub": sub,
-                            "captcha": captcha,
-                        }
-                    ),
-                    400,
-                )
+                return error_response(_("Invalid closing time."))
 
             if datetime.utcnow() > closetime:
-                return (
-                    engine.get_template("sub/createpost.html").render(
-                        {
-                            "error": _("The closing time is in the past!"),
-                            "form": form,
-                            "sub": sub,
-                            "captcha": captcha,
-                        }
-                    ),
-                    400,
-                )
+                return error_response(_("The closing time is in the past!"))
     elif form.ptype.data == "text":
         ptype = 0
 
+    self_vote = 1 if config.site.self_voting.posts else 0
     post = SubPost.create(
         sid=sub.sid,
         uid=current_user.uid,
@@ -406,14 +266,15 @@ def create_post(ptype, sub):
         content=form.content.data if ptype != 1 else "",
         link=form.link.data if ptype == 1 else None,
         posted=datetime.utcnow(),
-        score=1,
-        upvotes=1,
+        score=self_vote,
+        upvotes=self_vote,
         downvotes=0,
         deleted=0,
         comments=0,
         ptype=ptype,
         nsfw=form.nsfw.data if not sub.nsfw else 1,
         thumbnail=img,
+        flair=flair,
     )
     thumbnail_store = [(SubPost, "pid", post.pid)]
 
@@ -473,15 +334,16 @@ def create_post(ptype, sub):
 
     # XXX: The auto-upvote is placed *after* broadcasting the post via socketio so that the upvote arrow
     # does not appear highlighted to everybody.
-    SubPostVote.create(uid=current_user.uid, pid=post.pid, positive=True)
-    User.update(given=User.given + 1).where(User.uid == current_user.uid).execute()
-    # We send a yourvote message so that the upvote arrow *does* appear highlighted to the creator.
-    socketio.emit(
-        "yourvote",
-        {"pid": post.pid, "status": 1, "score": post.score},
-        namespace="/snt",
-        room="user" + current_user.uid,
-    )
+    if config.site.self_voting.posts:
+        SubPostVote.create(uid=current_user.uid, pid=post.pid, positive=True)
+        User.update(given=User.given + 1).where(User.uid == current_user.uid).execute()
+        # We send a yourvote message so that the upvote arrow *does* appear highlighted to the creator.
+        socketio.emit(
+            "yourvote",
+            {"pid": post.pid, "status": 1, "score": post.score},
+            namespace="/snt",
+            room="user" + current_user.uid,
+        )
 
     if fileid:
         upload = UserUploads.create(

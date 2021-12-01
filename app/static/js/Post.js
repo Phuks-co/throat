@@ -587,6 +587,28 @@ u.sub('#graburl', 'click', function (e) {
 });
 
 
+// Tell server which comments have been shown to the user.
+const markCommentsSeen = u.debounce(function () {
+    const unseenComments = [...document.getElementsByClassName('unseen-comment')];
+    let cids = []
+    for (let i = 0; i < unseenComments.length; i++) {
+        let elem = unseenComments[i];
+        if (u.bottomInViewport(elem)) {
+            let cid = elem.id.substring("content-".length);
+            cids.push(cid);
+            elem.classList.remove('unseen-comment');
+        }
+    }
+    if (cids.length > 0) {
+        u.post('/do/mark_viewed', {'cids': JSON.stringify(cids)}, function (data) {});
+    }
+}, false, 250);
+
+window.addEventListener('load', markCommentsSeen);
+window.addEventListener('scroll', markCommentsSeen);
+window.addEventListener('resize', markCommentsSeen);
+
+
 // Load children
 u.addEventForChild(document, 'click', '.loadchildren', function (e, qelem) {
     qelem.textContent = _("Loading...");
@@ -595,6 +617,7 @@ u.addEventForChild(document, 'click', '.loadchildren', function (e, qelem) {
         function (data) {
             qelem.parentNode.innerHTML = data;
             Icons.rendericons();
+            markCommentsSeen();
         }, function () {
             qelem.textContent = _("Error.");
         });
@@ -622,6 +645,7 @@ u.addEventForChild(document, 'click', '.loadsibling', function (e, qelem) {
             window.loading = false;
             qelem.outerHTML = data;
             Icons.rendericons();
+            markCommentsSeen();
         }, function () {
             qelem.textContent = _("Error.");
         });
@@ -770,6 +794,7 @@ u.addEventForChild(document, 'click', '.btn-postcomment', function (e, qelem) {
                     document.querySelector('.reply-comment[data-to="' + cid + '"] s').click();
                     document.getElementById('child-' + cid).prepend(div.firstChild);
                 }
+                Icons.rendericons();
             }
         }, function (e) {
             qelem.parentNode.querySelector('.error').style.display = 'block';
@@ -955,4 +980,10 @@ u.addEventForChild(document, 'click', 'a.unblk', function (e, qelem) {
 u.addEventForChild(document, 'click', '.show-post-comments', function(e, qelem) {
     document.getElementById('post-comments').classList.remove('hide');
     qelem.classList.add('hide');
-})
+});
+
+u.addEventForChild(document, 'change', '#flairpicker', function(e, qelem) {
+    if (qelem.selectedIndex !== 0) {
+        window.location.href = qelem.value;
+    }
+});

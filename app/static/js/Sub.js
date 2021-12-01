@@ -206,6 +206,54 @@ function updateSubmitPostForm(ptypes) {
   }
 }
 
+// Change the selected flair, and update the form input.
+function onSubmitFlairClick(elem) {
+  const fid = this.getAttribute('data-id');
+  const flairInput = document.getElementById('flair');
+  const flairElems = document.querySelectorAll('.submitflair');
+  const removeFlair = document.querySelector('.removeflair');
+  for (let i=0; i < flairElems.length; i++) {
+    let elem = flairElems[i];
+    if (elem.getAttribute('data-id') == fid) {
+      flairInput.value = elem.classList.contains('selected') ? '' : fid;
+      elem.classList.toggle('selected');
+    } else {
+      elem.classList.remove('selected');
+    }
+  }
+}
+
+// Show the list of flairs in Submit a Post, if there are any.
+function updateSubmitPostFormFlairs(flairs) {
+  const flairControl = document.getElementById('flair-control');
+  const flairInput = document.getElementById('flair');
+  const flairContainer = document.getElementById('flair-container');
+  if (flairs.length == 0) {
+    flairInput.value = '';
+    flairContainer.innerHTML = '';
+    flairControl.classList.add('hide');
+  } else {
+    let found = false;
+    flairContainer.innerHTML = '';
+    for (let i=0; i < flairs.length; i++) {
+      let span = document.createElement('span');
+      span.setAttribute('data-id', flairs[i].id);
+      span.classList.add('submitflair');
+      if (flairs[i].id == flairInput.value) {
+        found = true;
+        span.classList.add('selected');
+      }
+      span.innerHTML = flairs[i].text;
+      span.addEventListener('click', onSubmitFlairClick);
+      flairContainer.appendChild(span);
+    }
+    if (!found) {
+      flairInput.value = '';
+    }
+    flairControl.classList.remove('hide');
+  }
+}
+
 // When the sub name in Submit a Post is changed, get the types of
 // posts permitted and update which radio buttons are visible
 // accordingly.
@@ -223,9 +271,11 @@ function onSubmitPostSubChange(e) {
     if (e.value == '') {
       // No sub given, so show the defaults.
       updateSubmitPostForm(defaults);
+      updateSubmitPostFormFlairs([], false, false);
     } else {
       u.get('/api/v3/sub/' + name, function(data) {
-          updateSubmitPostForm(data.postTypes)
+        updateSubmitPostForm(data.postTypes);
+        updateSubmitPostFormFlairs(data.flairs);
       });
     }
   }

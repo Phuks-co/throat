@@ -33,7 +33,7 @@ from ..forms import SearchForm, EditMod2Form, SetSubOfTheDayForm, AssignSubUserF
 from ..forms import DeleteSubFlair, DeleteSubRule, CreateReportNote
 from ..forms import UseInviteCodeForm, SecurityQuestionForm, DistinguishForm
 from ..forms import BanDomainForm, SetOwnUserFlairForm, ChangeConfigSettingForm
-from ..forms import AnnouncePostForm, LiteralBooleanForm
+from ..forms import AnnouncePostForm, LiteralBooleanForm, ViewCommentsForm
 from ..badges import badges
 from ..misc import (
     cache,
@@ -82,6 +82,7 @@ from ..models import (
 from ..models import (
     SubPostVote,
     SubPostCommentVote,
+    SubPostCommentView,
     SubFlair,
     SubPostPollOption,
     SubPostPollVote,
@@ -317,10 +318,8 @@ def delete_post():
         if post.deleted != 0:
             return jsonify(status="error", error=[_("Post was already deleted")])
 
-        sub = Sub.get(Sub.sid == post.sid)
-
         if (
-            not current_user.is_mod(sub.sid)
+            not current_user.is_mod(post.sid)
             and not current_user.is_admin()
             and not post.uid_id == current_user.uid
         ):
@@ -333,7 +332,7 @@ def delete_post():
                 return jsonify(
                     status="error", error=[_("Cannot delete without reason")]
                 )
-            deletion = 2
+            deletion = 2 if current_user.is_mod(post.sid) else 3
             # notify user.
             Notification.create(
                 type="POST_DELETE",
@@ -436,7 +435,10 @@ def undelete_post():
                 status="error", error=[_("Can not un-delete a self-deleted post")]
             )
 
-        if not current_user.is_admin():
+        if not (
+            current_user.is_admin()
+            or (current_user.is_mod(post.sid) and post.deleted == 2)
+        ):
             return jsonify(status="error", error=[_("Not authorized")])
 
         if not form.reason.data:
@@ -546,6 +548,7 @@ def edit_sub(sub):
 
             sub.update_metadata("restricted", form.restricted.data)
             sub.update_metadata("ucf", form.usercanflair.data)
+            sub.update_metadata("umf", form.usermustflair.data)
             sub.update_metadata("user_can_flair_self", form.user_can_flair_self.data)
             sub.update_metadata("freeform_user_flairs", form.freeform_user_flairs.data)
             sub.update_metadata("allow_text_posts", form.allow_text_posts.data)
@@ -748,7 +751,8 @@ def assign_post_flair(sub, pid, fl):
     form = CsrfTokenOnlyForm()
     if form.validate():
         if current_user.is_mod(sub.sid) or (
-            post.uid_id == current_user.uid and sub.get_metadata("ucf")
+            post.uid_id == current_user.uid
+            and (sub.get_metadata("ucf") != "1" or sub.get_metadata("umf") != "1")
         ):
             try:
                 flair = SubFlair.get((SubFlair.xid == fl) & (SubFlair.sid == sub.sid))
@@ -778,7 +782,9 @@ def remove_post_flair(sub, pid):
         return jsonify(status="error", error=[_("Post does not exist")])
 
     if current_user.is_mod(sub.sid) or (
-        post.uid_id == current_user.uid and sub.get_metadata("ucf")
+        post.uid_id == current_user.uid
+        and sub.get_metadata("ucf") == "1"
+        and sub.get_metadata("umf") != "1"
     ):
         if not post.flair:
             return jsonify(status="error", error=_("Post has no flair"))
@@ -810,6 +816,15 @@ def edit_mod():
         return jsonify(status="error", error=[_("User does not exist")])
 
     if form.validate():
+        # Get the previous owner
+        try:
+            sm = SubMod.get((SubMod.sid == sub.sid) & (SubMod.power_level == 0))
+            # Reduce em to regular mod.
+            sm.power_level = 1
+            sm.save()
+        except SubMod.DoesNotExist:
+            pass
+
         try:
             sm = SubMod.get((SubMod.sid == sub.sid) & (SubMod.uid == user.uid))
             sm.power_level = 0
@@ -1273,6 +1288,7 @@ def create_comment(pid):
                     400,
                 )
 
+        self_vote = 1 if config.site.self_voting.comments else 0
         comment = SubPostComment.create(
             pid=pid,
             uid=current_user.uid,
@@ -1280,13 +1296,22 @@ def create_comment(pid):
             parentcid=form.parent.data if form.parent.data != "0" else None,
             time=datetime.datetime.utcnow(),
             cid=uuid.uuid4(),
-            score=0,
-            upvotes=0,
+            best_score=misc.best_score(self_vote, self_vote, self_vote),
+            score=self_vote,
+            upvotes=self_vote,
             downvotes=0,
         )
         SubPost.update(comments=SubPost.comments + 1).where(
             SubPost.pid == post.pid
         ).execute()
+
+        if config.site.self_voting.comments:
+            SubPostCommentVote.create(
+                cid=comment.cid, uid=current_user.uid, positive=True
+            )
+            User.update(given=User.given + 1).where(
+                User.uid == current_user.uid
+            ).execute()
 
         socketio.emit(
             "threadcomments",
@@ -2468,7 +2493,12 @@ def toggle_sort(post):
                 )
                 .get()
             )
-            smd.value = "top" if smd.value == "new" else "new"
+            smd.value = "best" if smd.value == "new" else "new"
+            if (
+                smd.value == "best"
+                and post.posted < misc.get_best_comment_sort_init_date()
+            ):
+                smd.value = "top"
             smd.save()
         except SubPostMetadata.DoesNotExist:
             smd = SubPostMetadata.create(pid=post.pid, key="sort", value="new")
@@ -2476,7 +2506,7 @@ def toggle_sort(post):
         misc.create_sublog(
             misc.LOG_TYPE_STICKY_SORT_NEW
             if smd.value == "new"
-            else misc.LOG_TYPE_STICKY_SORT_TOP,
+            else misc.LOG_TYPE_STICKY_SORT_TOP_OR_BEST,
             current_user.uid,
             post.sid,
             link=url_for("sub.view_post", sub=post.sid.name, pid=post.pid),
@@ -2726,7 +2756,7 @@ def edit_comment():
         if current_user.is_subban(sub):
             return jsonify(status="error", error=[_("You are banned on this sub.")])
 
-        if comment.status in [1, 2]:
+        if comment.status:
             return jsonify(status="error", error=_("You can't edit a deleted comment"))
 
         if post.deleted in [1, 2]:
@@ -2761,6 +2791,10 @@ def delete_comment():
             comment = SubPostComment.get(SubPostComment.cid == form.cid.data)
         except SubPostComment.DoesNotExist:
             return jsonify(status="error", error=_("Comment does not exist"))
+
+        if comment.status:
+            return jsonify(status="error", error=_("Comment is already deleted"))
+
         sub = (
             Sub.select(Sub.sid, Sub.name)
             .join(SubPost)
@@ -2804,7 +2838,10 @@ def delete_comment():
                     log_type="comment",
                     desc=form.reason.data,
                 )
-            comment.status = 2
+            if current_user.is_mod(sub.sid):
+                comment.status = 2
+            else:
+                comment.status = 3
         else:
             comment.status = 1
 
@@ -2831,7 +2868,18 @@ def undelete_comment():
             .get()
         )
 
-        if not current_user.is_admin():
+        if not comment.status:
+            return jsonify(status="error", error=_("Comment is not deleted"))
+
+        if comment.status == 1:
+            return jsonify(
+                status="error", error=_("Can not un-delete a self-deleted comment")
+            )
+
+        if not (
+            current_user.is_admin()
+            or (comment.status == 2 and current_user.is_mod(sub.sid))
+        ):
             return jsonify(status="error", error=_("Not authorized"))
 
         misc.create_sublog(
@@ -2898,12 +2946,13 @@ def upvotecomment(cid, value):
 @do.route("/do/get_children/<int:pid>/<cid>", methods=["post"], defaults={"lim": ""})
 def get_sibling(pid, cid, lim):
     """ Gets children comments for <cid> """
-    sort = request.args.get("sort", default="top", type=str)
-
     try:
         post = misc.getSinglePost(pid)
     except SubPost.DoesNotExist:
         return jsonify(status="ok", posts=[])
+
+    default_sort = "best" if post["best_sort_enabled"] else "top"
+    sort = request.args.get("sort", default=default_sort, type=str)
 
     if cid == "null":
         cid = "0"
@@ -3492,7 +3541,11 @@ def admin_undo_votes(uid):
         try:
             comm = (
                 SubPostComment.select(
-                    SubPostComment.cid, SubPostComment.score, SubPostComment.uid
+                    SubPostComment.cid,
+                    SubPostComment.score,
+                    SubPostComment.uid,
+                    SubPostComment.upvotes,
+                    SubPostComment.views,
                 )
                 .where(SubPostComment.cid == v.cid)
                 .get()
@@ -3622,6 +3675,62 @@ def remove_vote(pid):
             vote.delete_instance()
         except SubPostPollVote.DoesNotExist:
             pass
+    return jsonify(status="ok")
+
+
+@do.route("/do/mark_viewed", methods=["POST"])
+@login_required
+def mark_comments_viewed():
+    """ Mark comments as seen by the user. """
+    form = ViewCommentsForm()
+    if form.validate():
+        cids = json.loads(form.cids.data)
+        comments = (
+            SubPostComment.select(
+                SubPostComment.cid,
+                SubPostComment.pid,
+                SubPostComment.upvotes,
+                SubPostComment.downvotes,
+                SubPostComment.views,
+                SubPost.posted,
+                SubPost.sid,
+            )
+            .join(SubPost)
+            .switch(SubPostComment)
+            .join(User)
+            .join(
+                SubPostCommentView,
+                JOIN.LEFT_OUTER,
+                on=(
+                    (SubPostCommentView.cid == SubPostComment.cid)
+                    & (SubPostCommentView.uid == current_user.uid)
+                ),
+            )
+            .where(
+                SubPostCommentView.id.is_null(True)
+                & (SubPostComment.status.is_null(True))
+                & (SubPostComment.cid << cids)
+                & (SubPostComment.uid != current_user.uid)
+                & (User.status != UserStatus.DELETED)
+            )
+        ).dicts()
+
+        comments = list(comments)
+        if comments and not misc.is_archived(comments[0]):
+            for comment in comments:
+                best_score = misc.best_score(
+                    comment["upvotes"], comment["downvotes"], comment["views"] + 1
+                )
+                SubPostComment.update(
+                    views=SubPostComment.views + 1, best_score=best_score
+                ).where(SubPostComment.cid == comment["cid"]).execute()
+
+            view_records = [
+                {"uid": current_user.uid, "cid": comment["cid"], "pid": comment["pid"]}
+                for comment in comments
+            ]
+            SubPostCommentView.insert_many(view_records).execute()
+
     return jsonify(status="ok")
 
 

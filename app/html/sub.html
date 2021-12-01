@@ -1,6 +1,6 @@
 @extends("shared/layout.html")
 @import "shared/post.html" as ipost
-@require(sub, posts, page, sort_type, subInfo)
+@require(sub, posts, page, sort_type, subInfo, flair)
 
 
 @def title():
@@ -9,11 +9,17 @@
 
 @def sidebar():
 
+<div id="flair">
+  @if flair:
+    <span class="postflair">@{flair}</span>
+    <a href="@{url_for('sub.view_sub_hot', sub=sub['name'])}">@{_('(show all)')}</a>
+  @end
+</div>
 <div id="sortbuttons" role="group" class="pure-button-group">
   <div class="pure-g">
-    <a href="@{url_for('sub.view_sub_hot', sub=sub['name'])}" class="sbm-post pure-button button-xsmall @{(sort_type == 'sub.view_sub_hot') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Hot')}</a>
-    <a href="@{url_for('sub.view_sub_top', sub=sub['name'])}" class="sbm-post pure-button button-xsmall @{(sort_type == 'sub.view_sub_top') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Top')}</a>
-    <a href="@{url_for('sub.view_sub_new', sub=sub['name'])}" class="sbm-post pure-button button-xsmall @{(sort_type == 'sub.view_sub_new') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('New')}</a>
+    <a href="@{url_for('sub.view_sub_hot', sub=sub['name'], flair=flair)}" class="sbm-post pure-button button-xsmall @{(sort_type == 'sub.view_sub_hot') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Hot')}</a>
+    <a href="@{url_for('sub.view_sub_top', sub=sub['name'], flair=flair)}" class="sbm-post pure-button button-xsmall @{(sort_type == 'sub.view_sub_top') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('Top')}</a>
+    <a href="@{url_for('sub.view_sub_new', sub=sub['name'], flair=flair)}" class="sbm-post pure-button button-xsmall @{(sort_type == 'sub.view_sub_new') and 'pure-button-primary' or ''} pure-u-md-7-24">@{_('New')}</a>
   </div>
 </div>
 @include('shared/sidebar/sub.html')
@@ -24,7 +30,9 @@
   @if func.getStickyPid:
     <div class="stickyposts">
       @for post in func.getStickies(sub['sid']):
-        @{ipost.singlePost(post, sub)!!html}
+        @if flair is None or post['flair'] == flair:
+          @{ipost.singlePost(post, sub)!!html}
+        @end
       @end
     </div>
   @end

@@ -68,7 +68,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for comment in comms if not comment.status == 1 %}
+            {% for comment in comms if not comment.status %}
             <tr>
               <td>{{comment.score}}</td>
               <td>
@@ -93,7 +93,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for comment in comms if comment.status == 1 %}
+            {% for comment in comms if comment.status %}
             <tr>
               <td>{{comment.score}}</td>
               <td>
