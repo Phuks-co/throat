@@ -34,6 +34,14 @@ from flask_limiter import Limiter
 from flask_mail import Mail
 from flask_mail import Message as EmailMessage
 from slugify import slugify as s_slugify
+from tinycss2.ast import (
+    StringToken,
+    URLToken,
+    CurlyBracketsBlock,
+    QualifiedRule,
+    SquareBracketsBlock,
+    AtRule,
+)
 
 from .config import config
 from flask_login import AnonymousUserMixin, current_user
@@ -1969,7 +1977,7 @@ def getUserGivenScore(uid):
 
 def iter_validate_css(obj, uris):
     for x in obj:
-        if x.__class__.__name__ == "URLToken":
+        if isinstance(x, URLToken):
             if x.value.startswith("%%") and x.value.endswith("%%"):
                 token = x.value.replace("%%", "").strip()
                 if uris.get(token):
@@ -1980,8 +1988,17 @@ def iter_validate_css(obj, uris):
                     x.source_column,
                     x.source_line,
                 )
-        elif x.__class__.__name__ == "CurlyBracketsBlock":
+        elif isinstance(x, CurlyBracketsBlock):
             return iter_validate_css(x.content, {})
+        elif isinstance(x, SquareBracketsBlock):
+            return iter_validate_css(x.content, {})
+        elif isinstance(x, StringToken):
+            if ">" in x.value or "<" in x.value:
+                return (
+                    _("Invalid characters in string."),
+                    x.source_column,
+                    x.source_line,
+                )
     return True
 
 
@@ -1993,14 +2010,18 @@ def validate_css(css, sid):
     for su in SubUploads.select().where(SubUploads.sid == sid):
         uris[su.name] = file_url(su.fileid)
     for x in st:
-        if x.__class__.__name__ == "AtRule":
+        if isinstance(x, AtRule):
             if x.at_keyword.lower() == "import":
                 return (
                     _("@import token not allowed"),
                     x.source_column,
                     x.source_line,
                 )  # we do not allow @import
-        elif x.__class__.__name__ == "QualifiedRule":  # down the hole we go.
+        elif isinstance(x, QualifiedRule):  # down the hole we go.
+            validation = iter_validate_css(x.prelude, uris)
+            if validation is not True:
+                return validation
+
             validation = iter_validate_css(x.content, uris)
             if validation is not True:
                 return validation
