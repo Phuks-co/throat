@@ -353,7 +353,11 @@ socket.on('msg', function(data){
     data.user = "*";
     xc=xc + " msg-ac";
   }
-  cont.innerHTML = cont.innerHTML + '<div class="msg ' + xc + '"><span class="msguser">' + data.user + '&gt;</span><span class="damsg">' + anchorme(ircStylize(data.msg.replace(/  /g, '&#32;&nbsp;')), {emails: false, files: false, attributes: [{name:"target",value:"blank"}]}).replace(reg, "$1<a href='/u/$3'>$2$3</a>$4") + '</span></div>';
+  var d = new Date(data.time * 1000);
+  var hours = String(d.getHours()).padStart(2, '0');
+  var minutes = String(d.getMinutes()).padStart(2, '0');
+  var seconds = String(d.getSeconds()).padStart(2, '0');
+  cont.innerHTML = cont.innerHTML + '<div class="msg ' + xc + '"><span class="msgtime">(' + hours + ':' + minutes + ':' + seconds + ') </span><span class="msguser">' + data.user + '&gt;</span><span class="damsg">' + anchorme(ircStylize(data.msg.replace(/  /g, '&#32;&nbsp;')), { emails: false, files: false, attributes: [{ name: "target", value: "blank" }] }).replace(reg, "$1<a href='/u/$3'>$2$3</a>$4") + '</span></div>';
   var k = document.getElementsByClassName('msg')
   if(k.length > 3){
     if(u.isScrolledIntoView(k[k.length-2])){
