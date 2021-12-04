@@ -4,19 +4,19 @@ For most instances we recommend having two `gunicorn` workers:
 
 - One to handle websocket traffic:
 ```
-gunicorn -w 1 throat_gevent:app --worker-class geventwebsocket.gunicorn.workers.GeventWebSocketWorker --worker-connections 40 --bind ...
+gunicorn -w 1 throat_prod:app --worker-class geventwebsocket.gunicorn.workers.GeventWebSocketWorker --worker-connections 40 --bind ...
 ```
 
 - And one for the regular HTTP requests:
 ```
-gunicorn -w 1 throat_gevent:app --worker-class gevent --worker-connections 40 --bind ...
+gunicorn -w 1 throat_prod:app --worker-class gevent --worker-connections 40 --bind ...
 ```
 
 Only a few routes require the async capabilities of `gevent`.  So you may also run `gunicorn`  sync workers, and
 use `nginx` or a load balancer to direct the routes requiring async handling to the `geventwebsocket` or `gevent` workers:
 
 ```
-gunicorn -w 4 throat_sync:app --bind ...
+gunicorn -w 4 throat_prod:app --bind ...
 ```
 
 *Note: See the `gunicorn` documentation for suggestions on how to tweak the `-w` parameter (number of workers) for your needs.  The number of workers for the `geventwebsocket` worker must always be 1.*
