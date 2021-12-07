@@ -447,6 +447,18 @@ configurable_defaults = {
                     },
                 },
             },
+            "email_notify": {
+                "type": "map",
+                "value": {
+                    "default": {
+                        "type": "bool",
+                        "doc": _l(
+                            "If enabled, new users have email notifications enabled by default."
+                        ),
+                        "value": False,
+                    },
+                },
+            },
         },
     },
     "storage": {
