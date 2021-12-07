@@ -36,15 +36,19 @@
             @end
 
             <div class="pure-control-group">
-                <label for="nochat" class="pure-checkbox">@{edituserform.subtheme.label.text}</label>
+                <label for="subtheme" class="pure-checkbox">@{edituserform.subtheme.label.text}</label>
                 @{edituserform.subtheme(class_="sub_autocomplete")!!html}
             </div>
 
             <div class="pure-control-group">
-                <label for="nochat" class="pure-checkbox">@{edituserform.language.label.text}</label>
+                <label for="language" class="pure-checkbox">@{edituserform.language.label.text}</label>
                 @{edituserform.language(autocomplete="off")!!html}
             </div>
 
+			<div class="new-form-one">
+                <label for="email_notify" class="new-form-one">@{edituserform.email_notify.label.text}</label>
+                @{edituserform.email_notify()!!html}
+            </div>
 
             <div class="alert div-error"></div>
 
