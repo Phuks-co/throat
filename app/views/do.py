@@ -2665,7 +2665,7 @@ def create_rule(sub):
 
     form = CreateSubRule()
     if form.validate():
-        allowed_rules = re.compile("^[a-zA-Z0-9._ -]+$")
+        allowed_rules = re.compile("^[a-zA-Z0-9.,_ -/'?!:;()~]+$")
         if not allowed_rules.match(form.text.data):
             return jsonify(status="error", error=[_("Rule has invalid characters")])
 
