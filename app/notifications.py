@@ -18,7 +18,7 @@ from .models import (
     SubPostVote,
 )
 from .socketio import socketio
-from .misc import get_notification_count
+from .misc import get_notification_count, send_email
 from flask import url_for
 
 
@@ -183,7 +183,7 @@ class Notifications(object):
         Notification.update(read=datetime.utcnow()).where(
             (Notification.read.is_null(True)) & (Notification.target == uid)
         ).execute()
-    
+
     @staticmethod
     def email_template(notification_type, user, post, sub):
 
@@ -207,7 +207,7 @@ class Notifications(object):
             )
         else:
             return None
-            
+
     def send(
         self,
         notification_type,
