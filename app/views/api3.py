@@ -4,7 +4,7 @@ import datetime
 import uuid
 from bs4 import BeautifulSoup
 from email_validator import EmailNotValidError
-from flask import Blueprint, jsonify, request, url_for
+from flask import Blueprint, jsonify, request, url_for, Markup
 from peewee import JOIN, fn
 from flask_jwt_extended import (
     JWTManager,
@@ -1208,7 +1208,9 @@ def get_sub(name):
             "subscribers": sub.subscribers,
             "posts": sub.posts,
             "postTypes": allowed_post_types,
-            "flairs": [{"id": f.xid, "text": f.text} for f in flairs],
+            "flairs": [
+                {"id": f.xid, "text": f"{Markup.escape(f.text)}"} for f in flairs
+            ],
         }
     )
 
