@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2021-11-11 19:23-0300\n"
-"PO-Revision-Date: 2021-11-19 22:27\n"
+"PO-Revision-Date: 2022-01-06 20:21\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -2646,7 +2646,7 @@ msgstr "História úprav:"
 
 #: app/html/sub/post.html:366
 msgid "Submit comment"
-msgstr "Pridať komentár"
+msgstr "Odoslať komentár"
 
 #: app/html/sub/post.html:369 app/static/js/Post.js:345
 #: app/static/js/Post.js:400 app/static/js/Post.js:719
