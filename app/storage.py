@@ -169,6 +169,9 @@ def clear_metadata(fileobj: FileStorage, mime_type: str):
     elif mime_type == "video/webm":
         # XXX: Mutagen doesn't seem to support webm files
         return fileobj
+    else:
+        # In the case that we don't know how to clean up the file, just return it.
+        return fileobj
 
 
 def upload_file():
@@ -222,7 +225,7 @@ def store_file(ufile, basename, mtype, remove_metadata=False):
     """Store a file. Setting remove_metadata will remove image format
     metadata before storing.
     """
-    _extensions = EXTENSIONS
+    _extensions = dict(EXTENSIONS)
     _extensions.update(VIDEO_EXTENSIONS)
     filename = basename + _extensions[mtype]
     try:
