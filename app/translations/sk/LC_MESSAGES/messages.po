@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2022-01-15 21:19-0300\n"
-"PO-Revision-Date: 2022-01-16 00:26\n"
+"PO-Revision-Date: 2022-01-16 06:26\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -208,15 +208,15 @@ msgstr "If enabled, show upvotes and downvotes in addition to total score. Other
 
 #: app/config.py:419
 msgid "If enabled, users will automatically upvote their own posts, and are allowed to change their vote.  If disabled, users cannot upvote or downvote their own posts."
-msgstr ""
+msgstr "If enabled, users will automatically upvote their own posts, and are allowed to change their vote.  If disabled, users cannot upvote or downvote their own posts."
 
 #: app/config.py:428
 msgid "If enabled, users will automatically upvote their own comments, and are allowed to change their vote.  If disabled, users cannot upvote or downvote their own comments."
-msgstr ""
+msgstr "If enabled, users will automatically upvote their own comments, and are allowed to change their vote.  If disabled, users cannot upvote or downvote their own comments."
 
 #: app/config.py:442
 msgid "If enabled, show the post score next to its title in the list of top posts in the last 24 hours."
-msgstr ""
+msgstr "If enabled, show the post score next to its title in the list of top posts in the last 24 hours."
 
 #: app/config.py:457
 msgid "Max storage for image uploads for subs' stylesheets (in MiB)."
@@ -248,7 +248,7 @@ msgstr "URL nie sú povolené, iba súbory"
 
 #: app/misc.py:1998
 msgid "Invalid characters in string."
-msgstr ""
+msgstr "Neplatné znaky v reťazci."
 
 #: app/misc.py:2016
 msgid "@import token not allowed"
@@ -290,7 +290,7 @@ msgstr "Príspevok neexistuje"
 
 #: app/misc.py:2760
 msgid "You can't vote on your own posts"
-msgstr ""
+msgstr "Nemôžeš hlasovať na vlastných príspevkoch"
 
 #: app/misc.py:2762
 msgid "You can't vote on deleted posts"
@@ -929,7 +929,7 @@ msgstr "Staršie príspevky"
 
 #: app/html/sub.html:15
 msgid "(show all)"
-msgstr ""
+msgstr "(všetky príspevky)"
 
 #: app/html/admin/configuration.html:15 app/html/shared/sidebar/admin.html:16
 msgid "Site configuration"
@@ -1860,7 +1860,7 @@ msgstr "... alebo si vyber existujúci"
 
 #: app/html/shared/sidebar/sub.html:85
 msgid "Show posts with flair..."
-msgstr ""
+msgstr "Príspevky s tagom..."
 
 #: app/html/shared/sidebar/sub.html:100 app/html/shared/sidebar/sub.html:130
 #: app/html/shared/sidebar/sub_mod.html:9
