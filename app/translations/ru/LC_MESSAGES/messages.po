@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2022-01-15 21:19-0300\n"
-"PO-Revision-Date: 2022-01-16 00:26\n"
+"PO-Revision-Date: 2022-01-17 19:21\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -208,15 +208,15 @@ msgstr "Если включено, показывайте голоса «за» 
 
 #: app/config.py:419
 msgid "If enabled, users will automatically upvote their own posts, and are allowed to change their vote.  If disabled, users cannot upvote or downvote their own posts."
-msgstr ""
+msgstr "Если этот параметр включен, пользователи будут автоматически голосовать за свои посты и могут изменить свой голос. Если этот параметр отключен, пользователи не могут голосовать за или против своих постов."
 
 #: app/config.py:428
 msgid "If enabled, users will automatically upvote their own comments, and are allowed to change their vote.  If disabled, users cannot upvote or downvote their own comments."
-msgstr ""
+msgstr "Если этот параметр включен, пользователи будут автоматически голосовать за свои собственные комментарии и могут изменить свой голос. Если этот параметр отключен, пользователи не могут голосовать за или против своих собственных комментариев."
 
 #: app/config.py:442
 msgid "If enabled, show the post score next to its title in the list of top posts in the last 24 hours."
-msgstr ""
+msgstr "Если включено, показывать оценку сообщения рядом с его заголовком в списке лучших сообщений за последние 24 часа."
 
 #: app/config.py:457
 msgid "Max storage for image uploads for subs' stylesheets (in MiB)."
@@ -248,7 +248,7 @@ msgstr "URL не разрешены, только загруженные фай�
 
 #: app/misc.py:1998
 msgid "Invalid characters in string."
-msgstr ""
+msgstr "Недопустимые символы в строке."
 
 #: app/misc.py:2016
 msgid "@import token not allowed"
@@ -290,7 +290,7 @@ msgstr "Пост не существует"
 
 #: app/misc.py:2760
 msgid "You can't vote on your own posts"
-msgstr ""
+msgstr "Вы не можете голосовать за свои посты"
 
 #: app/misc.py:2762
 msgid "You can't vote on deleted posts"
@@ -929,7 +929,7 @@ msgstr "Далее"
 
 #: app/html/sub.html:15
 msgid "(show all)"
-msgstr ""
+msgstr "(показать все)"
 
 #: app/html/admin/configuration.html:15 app/html/shared/sidebar/admin.html:16
 msgid "Site configuration"
@@ -1860,7 +1860,7 @@ msgstr "... или выберите заранее определенный"
 
 #: app/html/shared/sidebar/sub.html:85
 msgid "Show posts with flair..."
-msgstr ""
+msgstr "Показывайте посты с флаером..."
 
 #: app/html/shared/sidebar/sub.html:100 app/html/shared/sidebar/sub.html:130
 #: app/html/shared/sidebar/sub_mod.html:9
