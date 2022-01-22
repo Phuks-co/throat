@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2022-01-15 21:19-0300\n"
-"PO-Revision-Date: 2022-01-16 06:26\n"
+"PO-Revision-Date: 2022-01-22 10:09\n"
 "Last-Translator: \n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
@@ -240,7 +240,7 @@ msgstr "Re: %(subject)s"
 #: app/misc.py:1911 app/misc.py:2635 app/misc.py:2641 app/misc.py:2647
 #: app/misc.py:2652
 msgid "[Deleted]"
-msgstr "[vymazané]"
+msgstr "[zrušené konto]"
 
 #: app/misc.py:1987
 msgid "URLs not allowed, uploaded files only"
@@ -260,7 +260,7 @@ msgstr "Neplatné CSS"
 
 #: app/html/sub/postcomments.html:44 app/misc.py:2622
 msgid "[Blocked]"
-msgstr "[Blokované]"
+msgstr "[blokované]"
 
 #: app/misc.py:2710
 msgid "Already processing previous request."
@@ -1636,7 +1636,7 @@ msgstr " [admin]"
 
 #: app/html/shared/post.html:82
 msgid " [Blocked]"
-msgstr " [Blokované]"
+msgstr " [blokované]"
 
 #: app/html/shared/post.html:93 app/html/sub/post.html:203
 #, python-format
