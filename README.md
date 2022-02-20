@@ -11,6 +11,7 @@ A phoxy link and discussion aggregator with snek (python3)
  - Python >= 3.7
  - A recent node/npm
  - libmagic
+ - libpq-dev
 
 ## Setup:
 
