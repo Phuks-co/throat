@@ -416,7 +416,7 @@ def create_sub():
     level = misc.get_user_level(current_user.uid)[0]
     if not config.app.development:
         min_level = config.site.sub_creation_min_level
-        if min_level != 0 and level <= min_level and not current_user.admin:
+        if min_level != 0 and level < min_level and not current_user.admin:
             return engine.get_template("sub/create.html").render(
                 {
                     "error": _(
