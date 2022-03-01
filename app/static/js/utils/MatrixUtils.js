@@ -25,13 +25,17 @@ function formatBytes(bytes, decimals = 2) {
 
 function loadHistory(client, room) {
   document.getElementById('chstatus').innerText = "Loading history......"
-  client.scrollback(room, 30, (_, room) => {
-    document.getElementById('chstatus').innerText = "";
-    console.log(room.timeline)
-    room.timeline.forEach((event) => {
-      addMessage(event.event, event.sender, false)
+  try {
+    client.scrollback(room, 30, (_, room) => {
+      document.getElementById('chstatus').innerText = "";
+      console.log(room.timeline)
+      room.timeline.forEach((event) => {
+        addMessage(event.event, event.sender, false)
+      })
     })
-  })
+  } catch (err) {
+    document.getElementById('chstatus').innerText = "";
+  }
 }
 
 function startWithToken(access_token, user_id) {
@@ -57,7 +61,7 @@ function startWithToken(access_token, user_id) {
       })
       if(!foundRoom) {
         document.getElementById('chstatus').innerText = "Making you join the chatroom >:("
-        client.joinRoom(this.props.roomId, {syncRoom: true}).then(() => {
+        client.joinRoom(defaultRoom, {syncRoom: true}).then(() => {
           loadHistory(client, foundRoom)
         });
       } else {
