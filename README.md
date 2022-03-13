@@ -40,7 +40,7 @@ If you prefer to develop on docker
 inside the container for dev. It also runs the migrations on start-up. `make down` will spin down the containerized services.
 
 To add an admin user to a running docker-compose application:
-`docker exec throat_throat_1 python3 scripts/admins.py --add {{username}}`
+`docker exec throat_throat_1 ./throat.py admin add {{username}}`
 
 If Wheezy templates are not automatically reloading in docker between changes, try `docker restart throat_throat_1`.
 
