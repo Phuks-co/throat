@@ -40,16 +40,6 @@ class RedirectForm(FlaskForm):
         return redirect(target or url_for(endpoint, **values))
 
 
-class LoginForm(RedirectForm):
-    """ Login form. """
-
-    username = StringField(_l("Username"), validators=[DataRequired(), Length(max=32)])
-    password = PasswordField(
-        _l("Password"), validators=[DataRequired(), Length(min=7, max=256)]
-    )
-    remember = BooleanField(_l("Remember me"))
-
-
 class OptionalIfFieldIsEmpty(Optional):
     """ A custom field validator. """
 
@@ -83,6 +73,16 @@ class UsernameLength:
                 )
 
             raise ValidationError(message % dict(min=min, max=max, length=length))
+
+
+class LoginForm(RedirectForm):
+    """ Login form. """
+
+    username = StringField(_l("Username"), validators=[UsernameLength()])
+    password = PasswordField(
+        _l("Password"), validators=[DataRequired(), Length(min=7, max=256)]
+    )
+    remember = BooleanField(_l("Remember me"))
 
 
 class RegistrationForm(FlaskForm):
