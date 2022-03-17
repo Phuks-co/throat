@@ -173,7 +173,7 @@ function addMessage(message, sender, toStartOfTimeline, grayed) {
 
   switch(message.type) {
     case 'm.room.message':
-      messageSender.innerHTML = sender.name + '>'
+      messageSender.innerHTML = '<' + sender.name + '>'
       messageSender.title = sender.userId
 
       switch (message.content.msgtype) {
