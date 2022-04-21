@@ -818,10 +818,14 @@ class InviteCode(BaseModel):
 
         return (
             InviteCode.select()
+            .join(User)
             .where(InviteCode.code == invite_code)
             .where(
-                InviteCode.expires.is_null()
-                | (InviteCode.expires > datetime.datetime.utcnow())
+                (
+                    InviteCode.expires.is_null()
+                    | (InviteCode.expires > datetime.datetime.utcnow())
+                )
+                & (User.status == UserStatus.OK)
             )
             .where(InviteCode.max_uses > InviteCode.uses)
             .get()
