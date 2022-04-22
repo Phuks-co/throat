@@ -72,12 +72,16 @@
             @{_('Un-deleted a comment with reason <code>%(desc)s</code>', desc=e(log.desc))!!html}
           @elif log.action == 73 or log.action == 74:
             @{_('Changed the comment sort order of a sticky post')}
+          @elif log.action == 76 and log.desc == "1":
+              @{_('Locked comments on a post')}
+          @elif log.action == 76:
+              @{_('Unlocked comments on a post')}
           @else:
             <i>@{_('[Type %(type)i]', type=log.action)!!html}</i> @{log.desc}
           @end
         </div>
         <div data-name="@{_('User:')}" class="elem sub pure-u-1 pure-u-md-4-24">
-          @if log.action in [22, 23, 24, 26, 27, 28, 52, 53, 58, 59] and log.target is not None:
+          @if log.action in [22, 23, 24, 26, 27, 28, 52, 53, 58, 59, 76] and log.target is not None:
           <a href="/u/@{log.target.name}">@{log.target.name}</a>
               @end
         </div>
