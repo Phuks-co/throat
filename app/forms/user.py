@@ -78,7 +78,7 @@ class UsernameLength:
 class LoginForm(RedirectForm):
     """ Login form. """
 
-    username = StringField(_l("Username"), validators=[UsernameLength()])
+    username = StringField(_l("Username"), validators=[Length(max=256)])
     password = PasswordField(
         _l("Password"), validators=[DataRequired(), Length(min=7, max=256)]
     )
