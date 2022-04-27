@@ -906,11 +906,30 @@ class MessageMailbox(IntEnum):
     DELETED = 205
 
 
+class MessageThread(BaseModel):
+    """Fields shared by all messages in a private message thread."""
+
+    mtid = PrimaryKeyField()
+    replies = IntegerField(default=0)
+    subject = CharField()
+    # Relevant for modmail messages, otherwise NULL.
+    sub = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
+
+    def __repr__(self):
+        return f'<MessageThread "{self.mtid}"'
+
+    class Meta:
+        table_name = "message_thread"
+
+
 class Message(BaseModel):
     mid = PrimaryKeyField()
+    thread = ForeignKeyField(db_column="mtid", model=MessageThread, field="mtid")
     content = TextField(null=True)
     mtype = IntegerField(null=True)
     posted = DateTimeField(null=True)
+    # True if this message is the first in its thread.
+    first = BooleanField(default=False)
 
     # Relevant for messages to individual users, otherwise NULL.
     receivedby = ForeignKeyField(
@@ -925,14 +944,6 @@ class Message(BaseModel):
         backref="user_sentby_set",
         field="uid",
     )
-    reply_to = ForeignKeyField(
-        db_column="reply_to", null=True, model="self", field="mid"
-    )
-    replies = IntegerField(default=0)
-    subject = CharField(null=True)
-
-    # Relevant for modmail messages, otherwise NULL.
-    sub = ForeignKeyField(db_column="sid", null=True, model=Sub, field="sid")
 
     def __repr__(self):
         return f'<Message "{self.mid}"'
@@ -962,3 +973,34 @@ class UserMessageMailbox(BaseModel):
 
     class Meta:
         table_name = "user_message_mailbox"
+
+
+class SubMessageMailbox(BaseModel):
+    thread = ForeignKeyField(db_column="mtid", model=MessageThread, field="mtid")
+    mailbox = IntegerField(default=MessageMailbox.INBOX)
+    highlighted = BooleanField(default=False)
+
+    def __repr__(self):
+        return f'<SubMessageMailbox "{self.id}"'
+
+    class Meta:
+        table_name = "sub_message_mailbox"
+
+
+class SubMessageLogAction(IntEnum):
+    CHANGE_MAILBOX = 1
+    HIGHLIGHT = 2
+
+
+class SubMessageLog(BaseModel):
+    action = IntegerField(default=SubMessageLogAction.CHANGE_MAILBOX)
+    thread = ForeignKeyField(db_column="mtid", model=MessageThread, field="mtid")
+    uid = ForeignKeyField(db_column="uid", model=User, field="uid")
+    desc = CharField(null=True)
+    updated = DateTimeField(default=datetime.datetime.utcnow)
+
+    def __repr__(self):
+        return f'<SubMessageLog "{self.id}"'
+
+    class Meta:
+        table_name = "sub_message_log"
