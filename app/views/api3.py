@@ -1337,8 +1337,25 @@ def user_overview(username):
 def get_own_user():
     """ Return user info and notifications count for the current user """
     uid = get_jwt_identity()
-    mcount = Message.select(fn.Count(Message.mid)).where(
-        (Message.receivedby == uid) & (Message.mtype == 1) & Message.read.is_null(True)
+    mcount = (
+        Message.select(fn.Count(Message.mid))
+        .join(
+            UserUnreadMessage,
+            on=(
+                (UserUnreadMessage.uid == uid) & (UserUnreadMessage.mid == Message.mid)
+            ),
+        )
+        .where(
+            (Message.receivedby == uid)
+            & (
+                Message.mtype
+                << (
+                    MessageType.USER_TO_USER,
+                    MessageType.MOD_TO_USER_AS_MOD,
+                    MessageType.MOD_TO_USER_AS_USER,
+                )
+            )
+        )
     )
     ncount = Notification.select(fn.Count(Notification.id)).where(
         (Notification.target == uid) & Notification.read.is_null(True)
