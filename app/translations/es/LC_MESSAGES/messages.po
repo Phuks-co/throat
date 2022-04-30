@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2022-01-15 21:19-0300\n"
-"PO-Revision-Date: 2022-04-30 13:56\n"
+"PO-Revision-Date: 2022-04-30 19:56\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -36,7 +36,7 @@ msgstr "Nombre del sitio."
 
 #: app/config.py:94
 msgid "Lema shown in the page's title."
-msgstr ""
+msgstr "Lema mostrado en el título de la página."
 
 #: app/config.py:99
 msgid "Copyright line shown in the footer."
@@ -856,11 +856,11 @@ msgstr "Idioma"
 
 #: app/forms/user.py:191
 msgid "Hide messages"
-msgstr ""
+msgstr "Ocultar mensajes"
 
 #: app/forms/user.py:191
 msgid "Show messages"
-msgstr ""
+msgstr "Mostrar mensajes"
 
 #: app/forms/user.py:196
 msgid "Hide posts and comments"
@@ -1334,11 +1334,11 @@ msgstr "Vista previa:"
 
 #: app/html/mod/reportdetails.html:143 app/html/sub/postcomments.html:81
 msgid "[post deleted by admin]"
-msgstr ""
+msgstr "[eliminado por administrador]"
 
 #: app/html/mod/reportdetails.html:145 app/html/sub/postcomments.html:78
 msgid "[post deleted by mod]"
-msgstr ""
+msgstr "[eliminado por moderador]"
 
 #: app/html/mod/reportdetails.html:147 app/html/mod/reportdetails.html:160
 #: app/html/sub/postcomments.html:75
@@ -1355,11 +1355,11 @@ msgstr "Vista previa del comentario:"
 
 #: app/html/mod/reportdetails.html:173
 msgid "[comment deleted by mod]"
-msgstr ""
+msgstr "[comentario eliminado por moderador]"
 
 #: app/html/mod/reportdetails.html:175
 msgid "[comment deleted by admin]"
-msgstr ""
+msgstr "[comentario eliminado por administrador]"
 
 #: app/html/mod/reportdetails.html:179 app/html/mod/reportdetails.html:182
 msgid "[comment deleted by user]"
@@ -1367,7 +1367,7 @@ msgstr "[comentario eliminado por el usuario]"
 
 #: app/html/mod/reportdetails.html:191 app/html/mod/reportdetails.html:193
 msgid "Posted"
-msgstr ""
+msgstr "Publicado"
 
 #: app/html/mod/reportdetails.html:199
 msgid "Go to comment"
@@ -1395,7 +1395,7 @@ msgstr ""
 
 #: app/html/mod/reportdetails.html:237
 msgid "No logs have been made yet on this report"
-msgstr ""
+msgstr "Aún no se han realizado registros en este reporte"
 
 #: app/html/mod/reportdetails.html:242
 msgid "Action Taken"
@@ -1412,15 +1412,15 @@ msgstr "Detalles"
 
 #: app/html/mod/reportdetails.html:251
 msgid "Action Taken:"
-msgstr ""
+msgstr "Acción tomada:"
 
 #: app/html/mod/reportdetails.html:253
 msgid "Report closed"
-msgstr ""
+msgstr "Reporte cerrado"
 
 #: app/html/mod/reportdetails.html:255
 msgid "Report reopened"
-msgstr ""
+msgstr "Reporte reabierto"
 
 #: app/html/mod/reportdetails.html:257
 msgid "Post deleted"
@@ -1461,15 +1461,15 @@ msgstr "Ha dejado una nota"
 #: app/html/mod/reportdetails.html:278 app/html/sub/bans.html:66
 #: app/html/sub/bans.html:125
 msgid "By:"
-msgstr ""
+msgstr "Por:"
 
 #: app/html/mod/reportdetails.html:285
 msgid "Details:"
-msgstr ""
+msgstr "Detalles:"
 
 #: app/html/mod/reportdetails.html:287
 msgid "Closed all reports related to: "
-msgstr ""
+msgstr "Cerrados todos los informes relacionados a: "
 
 #: app/html/mod/reportdetails.html:288 app/html/shared/post.html:117
 #: app/html/sub/post.html:274 app/html/sub/postcomments.html:122
@@ -1478,7 +1478,7 @@ msgstr "reportar"
 
 #: app/html/mod/reportdetails.html:301
 msgid "Other reports on this comment:"
-msgstr ""
+msgstr "Otros reportes para este comentario:"
 
 #: app/html/mod/reportdetails.html:303
 msgid "Other reports on this post:"
@@ -1486,7 +1486,7 @@ msgstr "Otros reportes para este post:"
 
 #: app/html/mod/reportdetails.html:308
 msgid "There are no other reports on this comment"
-msgstr ""
+msgstr "No hay ningún otro reporte para este comentario"
 
 #: app/html/mod/reportdetails.html:310
 msgid "There are no other reports on this post"
@@ -1494,11 +1494,11 @@ msgstr "No hay ningún otro reporte para este post"
 
 #: app/html/mod/reportdetails.html:330
 msgid "Reporter:"
-msgstr ""
+msgstr "Reportado por:"
 
 #: app/html/mod/reportdetails.html:332
 msgid "Status:"
-msgstr ""
+msgstr "Estado:"
 
 #: app/html/mod/reports.html:15
 msgid "Includes all open reports for subs you can moderate."
@@ -1515,7 +1515,7 @@ msgstr "Reportes abiertos para "
 
 #: app/html/mod/sub_reports.html:16
 msgid "Includes all open reports for this sub."
-msgstr ""
+msgstr "Incluye todos los reportes abiertos para este sub."
 
 #: app/html/mod/sub_reports_closed.html:16
 msgid "Closed Reports for "
@@ -2108,16 +2108,16 @@ msgstr ""
 
 #: app/html/site/log.html:80
 msgid "Disabled captchas"
-msgstr ""
+msgstr "Captchas desactivados"
 
 #: app/html/site/log.html:82
 msgid "Enabled captchas"
-msgstr ""
+msgstr "Captchas activados"
 
 #: app/html/site/log.html:84
 #, python-format
 msgid "Changed <code>%(setting)s</code> to <code>%(value)s<code>"
-msgstr ""
+msgstr "Cambió <code>%(setting)s</code> a <code>%(value)s<code>"
 
 #: app/html/site/log.html:97 app/html/sub/createpost.html:85
 #: app/html/sub/log.html:86
@@ -2200,11 +2200,11 @@ msgstr ""
 #: app/html/sub/create.html:4 app/html/sub/create.html:12
 #: app/html/sub/create.html:27
 msgid "Create sub"
-msgstr ""
+msgstr "Crea un sub"
 
 #: app/html/sub/create.html:13
 msgid "Create a sub for you, your friends, or for your favorite community"
-msgstr ""
+msgstr "Crea un sub para ti, tus amigos, o para tu comunidad favorita"
 
 #: app/html/sub/create.html:20
 msgid "Alphanumeric characters"
@@ -2556,15 +2556,15 @@ msgstr "[Eliminado por el usuario]"
 
 #: app/html/sub/post.html:117 app/html/sub/post.html:136
 msgid "[Deleted by Mod]"
-msgstr ""
+msgstr "[Eliminado por un moderador]"
 
 #: app/html/sub/post.html:119 app/html/sub/post.html:138
 msgid "[Deleted by Admin]"
-msgstr ""
+msgstr "[Eliminado por un administrador]"
 
 #: app/html/sub/post.html:168
 msgid "Viewing title history:"
-msgstr ""
+msgstr "Viendo historial de títulos:"
 
 #: app/html/sub/post.html:212
 msgid "unsave"
@@ -2682,11 +2682,11 @@ msgstr "Vista previa del comentario"
 
 #: app/html/sub/post.html:376
 msgid "This post is closed to new comments.  It has been locked by the moderators."
-msgstr ""
+msgstr "Este post está cerrado a nuevos comentarios. Ha sido bloqueado por los moderadores."
 
 #: app/html/sub/post.html:380
 msgid "This post is closed to new comments.  It has been automatically archived."
-msgstr ""
+msgstr "Este post está cerrado a nuevos comentarios. Se ha archivado automáticamente."
 
 #: app/html/sub/post.html:385
 msgid "No comments, yet..."
@@ -2694,7 +2694,7 @@ msgstr "No hay comentarios, todavía..."
 
 #: app/html/sub/post.html:388
 msgid "Show comments"
-msgstr ""
+msgstr "Mostrar comentarios"
 
 #: app/html/sub/post.html:391
 #, python-format
@@ -2712,7 +2712,7 @@ msgstr ""
 #: app/html/sub/post.html:403
 #, python-format
 msgid "Sort by: <b>%(currsort)s</b>"
-msgstr ""
+msgstr "Ordenar por: <b>%(currsort)s</b>"
 
 #: app/html/sub/post.html:413
 msgid "Best"
@@ -2730,7 +2730,7 @@ msgstr "<span class=\"cscore\">%(score)i</span> puntos</b> (+<b>%(upvotes)i</b>|
 #: app/html/sub/postcomments.html:50
 #, python-format
 msgid "<span class=\"cscore\">%(score)i</span> points</b>"
-msgstr ""
+msgstr "<span class=\"cscore\">%(score)i</span> puntos</b>"
 
 #: app/html/sub/postcomments.html:57
 #, python-format
@@ -2740,11 +2740,11 @@ msgstr "Editado %(timeago)s"
 #: app/html/sub/postcomments.html:84
 #, python-format
 msgid "[You have blocked <a href=\"%(link)s\">%(name)s</a>]"
-msgstr ""
+msgstr "[Has bloqueado a <a href=\"%(link)s\">%(name)s</a>]"
 
 #: app/html/sub/postcomments.html:112
 msgid "blocked users"
-msgstr ""
+msgstr "usuarios bloqueados"
 
 #: app/html/sub/postcomments.html:115
 #: app/html/user/messages/notifications.html:105
@@ -2931,7 +2931,7 @@ msgstr "Olvidaste tu contraseña?"
 
 #: app/html/user/ignores.html:6 app/html/user/ignores.html:21
 msgid "Blocked Users"
-msgstr ""
+msgstr "Usuarios bloqueados"
 
 #: app/html/user/ignores.html:23
 msgid "You can use this page to manage the users you have blocked. You can choose to hide or show private messages from blocked users, and you can choose to hide, blur or show posts and comments by blocked users. To add users to this list, use the “block” link on their user profile or the “block sender” link on their messages."
@@ -3083,12 +3083,12 @@ msgstr "Enviar mensaje"
 
 #: app/html/user/profile.html:190
 msgid "Message preview"
-msgstr ""
+msgstr "Vista previa del mensaje"
 
 #: app/html/user/profile.html:202
 #, python-format
 msgid "Block %(user)s"
-msgstr ""
+msgstr "Bloquear a %(user)s"
 
 #: app/html/user/profile.html:206
 #, python-format
@@ -3121,51 +3121,51 @@ msgstr ""
 #: app/html/user/email/password-recovery.html:2
 #, python-format
 msgid "Hi %(name)s,"
-msgstr ""
+msgstr "Hola %(name)s,"
 
 #: app/html/user/email/confirm-email-change.html:4
 #, python-format
 msgid "To confirm this email address for your account on %(site)s"
-msgstr ""
+msgstr "Para confirmar esta dirección de correo electrónico para tu cuenta en %(site)s"
 
 #: app/html/user/email/confirm-email-change.html:6
 #: app/html/user/email/login-link.html:6
 #: app/html/user/email/password-recovery.html:7
 msgid "click here."
-msgstr ""
+msgstr "haz clic aquí."
 
 #: app/html/user/email/confirm-email-change.html:9
 #: app/html/user/email/login-link.html:9
 #: app/html/user/email/password-recovery.html:10
 msgid "Or you can paste the following link in your browser's address bar:"
-msgstr ""
+msgstr "O puedes pegar el siguiente enlace en la barra de direcciones de tu navegador:"
 
 #: app/html/user/email/confirm-email-change.html:11
 #: app/html/user/email/login-link.html:11
 #: app/html/user/email/password-recovery.html:12
 msgid "Thanks,"
-msgstr ""
+msgstr "Gracias,"
 
 #: app/html/user/email/confirm-email-change.html:11
 #: app/html/user/email/login-link.html:11
 #: app/html/user/email/password-recovery.html:12
 #, python-format
 msgid "The %(site)s Team"
-msgstr ""
+msgstr "El equipo de %(site)s"
 
 #: app/html/user/email/login-link.html:4
 #, python-format
 msgid "Thank you for registering on %(site)s! To confirm your account and log in,"
-msgstr ""
+msgstr "¡Gracias por registrarte en %(site)s! Para confirmar tu cuenta e iniciar sesión,"
 
 #: app/html/user/email/password-recovery.html:4
 #, python-format
 msgid "Somebody (most likely you) has requested a password reset for your account on %(site)s."
-msgstr ""
+msgstr "Alguien (probablemente tú) ha solicitado un restablecimiento de contraseña para tu cuenta en %(site)s."
 
 #: app/html/user/email/password-recovery.html:5
 msgid "To proceed, "
-msgstr ""
+msgstr "Para continuar, "
 
 #: app/html/user/messages/notifications.html:24
 #, python-format
@@ -3407,11 +3407,11 @@ msgstr "No se pudo contactar al servidor"
 
 #: app/static/js/Mod.js:132
 msgid "Enable"
-msgstr ""
+msgstr "Activar"
 
 #: app/static/js/Mod.js:138
 msgid "Change"
-msgstr ""
+msgstr "Cambiar"
 
 #: app/static/js/Poll.js:75
 msgid "Voting..."
@@ -4063,11 +4063,11 @@ msgstr ""
 
 #: app/views/do.py:2796
 msgid "Comment is already deleted"
-msgstr ""
+msgstr "El comentario ya ha sido eliminado"
 
 #: app/views/do.py:2872
 msgid "Comment is not deleted"
-msgstr ""
+msgstr "El comentario no se ha eliminado"
 
 #: app/views/do.py:2876
 msgid "Can not un-delete a self-deleted comment"
@@ -4184,7 +4184,7 @@ msgstr ""
 
 #: app/views/do.py:4243
 msgid "Error: not a number"
-msgstr ""
+msgstr "Error: no es un número"
 
 #: app/views/subs.py:121
 msgid "Sub does not exist."
@@ -4192,15 +4192,15 @@ msgstr "El sub no existe."
 
 #: app/views/subs.py:134
 msgid "Please select a flair for your post."
-msgstr ""
+msgstr "Por favor, selecciona un adorno para tu publicación."
 
 #: app/views/subs.py:140
 msgid "Invalid flair."
-msgstr ""
+msgstr "Adorno inválido."
 
 #: app/views/subs.py:145
 msgid "That post type is not allowed in this sub."
-msgstr ""
+msgstr "Ese tipo de post no está permitido en este sub."
 
 #: app/views/subs.py:153
 msgid "Posting has been temporarily disabled."
@@ -4228,7 +4228,7 @@ msgstr "El título es demasiado corto y/o contiene espacios en blanco."
 
 #: app/views/subs.py:210
 msgid "No link provided."
-msgstr ""
+msgstr "No se ha proporcionado ningún enlace."
 
 #: app/views/subs.py:220
 #, python-format
@@ -4241,11 +4241,11 @@ msgstr "Este dominio está bloqueado."
 
 #: app/views/subs.py:238
 msgid "Not enough poll options provided."
-msgstr ""
+msgstr "No se han proporcionado suficientes opciones para la encuesta."
 
 #: app/views/subs.py:242
 msgid "Poll option text is too long."
-msgstr ""
+msgstr "El texto de la opción de la encuesta es demasiado largo."
 
 #: app/views/subs.py:251
 msgid "Poll closing time is too far in the future."
