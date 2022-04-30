@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2022-01-15 21:19-0300\n"
-"PO-Revision-Date: 2022-01-16 00:26\n"
+"PO-Revision-Date: 2022-04-30 13:56\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -32,7 +32,7 @@ msgstr "Tipo de archivo inválido. Solo se permiten jpg, png y gif."
 
 #: app/config.py:89
 msgid "Name of the site."
-msgstr ""
+msgstr "Nombre del sitio."
 
 #: app/config.py:94
 msgid "Lema shown in the page's title."
@@ -40,15 +40,15 @@ msgstr ""
 
 #: app/config.py:99
 msgid "Copyright line shown in the footer."
-msgstr ""
+msgstr "Línea de derechos de autor que se muestra en el pie de página."
 
 #: app/config.py:104
 msgid "Name shown when a sub is owned by a deleted account or abandoned."
-msgstr ""
+msgstr "Nombre mostrado cuando un sub es propiedad de una cuenta borrada o abandonada."
 
 #: app/config.py:111
 msgid "Enables setting security questions on the admin page. Users will be asked to answer one of these security questions before registering."
-msgstr ""
+msgstr "Permite configurar preguntas de seguridad en la página de administración. Se pedirá a los usuarios que respondan a una de estas preguntas de seguridad antes de registrarse."
 
 #: app/config.py:119
 msgid "Allow everybody to upload files (by default it's only admins and users authorized through a metadata key)."
@@ -56,7 +56,7 @@ msgstr ""
 
 #: app/config.py:127
 msgid "For those who are allowed to upload files, allow video uploads (.mp4 and .webm) as well."
-msgstr ""
+msgstr "Para aquellos a los que se les permite subir archivos, permitir la subida de videos (.mp4 y .webm) también."
 
 #: app/config.py:134
 msgid "Minimum level a user must have before being able to upload files. Set to zero to disable file upload level limits."
@@ -64,7 +64,7 @@ msgstr ""
 
 #: app/config.py:142
 msgid "Allow chat access for all users. If enabled, each user will have the option of disabling chat for themselves."
-msgstr ""
+msgstr "Permitir el acceso al chat para todos los usuarios. Si está activado, cada usuario tendrá la opción de desactivar el chat para sí mismo."
 
 #: app/config.py:150
 msgid "Allow all users to view the site log. When disabled, only admins can view the sitelog."
@@ -76,11 +76,11 @@ msgstr ""
 
 #: app/config.py:165
 msgid "Show the \"Submit a post\" button on the frontpage."
-msgstr ""
+msgstr "Mostrar el botón \"Enviar un post\" en la página principal."
 
 #: app/config.py:170
 msgid "Blocks anonymous users from being able to look at a particular user's posts or comments (IE blocks /u/<user>/posts and /u/<user>/comments)."
-msgstr ""
+msgstr "Bloquea que los usuarios anónimos puedan ver las publicaciones o comentarios de un usuario en particular (bloquea /u/<user>/posts y /u/<user>/comments)."
 
 #: app/config.py:178
 msgid "SID of the sub for changelog entries."
@@ -116,15 +116,15 @@ msgstr ""
 
 #: app/config.py:241
 msgid "Maximum amount of posts a user can create in a single sub in a day."
-msgstr ""
+msgstr "Cantidad máxima de posts que un usuario puede crear en un solo sub en un día."
 
 #: app/config.py:248
 msgid "Maximum amount of posts a user can create in a single day."
-msgstr ""
+msgstr "Cantidad máxima de posts que un usuario puede crear en un solo día."
 
 #: app/config.py:253
 msgid "Number of days after which posts will be archived."
-msgstr ""
+msgstr "Número de días después de los cuales se archivarán los posts."
 
 #: app/config.py:258
 msgid "When enabled, archive sticky posts after 'archive_post_after' days, the same as regular posts. When disabled, sticky posts will not be archived."
@@ -144,7 +144,7 @@ msgstr ""
 
 #: app/config.py:291
 msgid "Number of entries to display in the recent activity sidebar."
-msgstr ""
+msgstr "Número de entradas a mostrar en la barra lateral de actividad reciente."
 
 #: app/config.py:300
 msgid "Show the 'Contact the Mods' button in sub sidebars, which provides a link to the modmail server."
@@ -152,11 +152,11 @@ msgstr ""
 
 #: app/config.py:308
 msgid "Allow users to make posts and comments."
-msgstr ""
+msgstr "Permitir a los usuarios crear posts y comentarios."
 
 #: app/config.py:313
 msgid "Allow new users to register."
-msgstr ""
+msgstr "Permitir a nuevos usuarios registrarse."
 
 #: app/config.py:318
 msgid "Allow users to see the usernames of the people they invited or were invited by."
@@ -168,15 +168,15 @@ msgstr ""
 
 #: app/config.py:330
 msgid "The number of invite codes each user is allowed to generate (see also site.invite_level)."
-msgstr ""
+msgstr "El número de códigos de invitación que puede generar cada usuario (ver también site.invite_level)."
 
 #: app/config.py:337
 msgid "Require the user to solve a captcha to register or post."
-msgstr ""
+msgstr "Requerir que el usuario resuelva un captcha para registrarse o postear."
 
 #: app/config.py:342
 msgid "Require an invite code to register."
-msgstr ""
+msgstr "Activar código de invitación para registrarse."
 
 #: app/config.py:347
 msgid "If enabled, show the notification count on the page title icon.  Otherwise, show the notification count in parentheses in the page title."
@@ -230,7 +230,7 @@ msgstr "Error en el campo '%(field)s' - %(error)s"
 #: app/misc.py:1737
 #, python-format
 msgid "Re: %(subject)s"
-msgstr ""
+msgstr "Re: %(subject)s"
 
 #: app/html/shared/post.html:83 app/html/shared/post.html:89
 #: app/html/site/log.html:28 app/html/sub/log.html:30 app/html/sub/post.html:44
@@ -872,7 +872,7 @@ msgstr ""
 
 #: app/forms/user.py:198
 msgid "Show posts and comments"
-msgstr ""
+msgstr "Mostrar posts y comentarios"
 
 #: app/forms/user.py:206
 msgid "to"
@@ -927,32 +927,32 @@ msgstr "Página siguiente"
 
 #: app/html/sub.html:15
 msgid "(show all)"
-msgstr ""
+msgstr "(mostrar todo)"
 
 #: app/html/admin/configuration.html:15 app/html/shared/sidebar/admin.html:16
 msgid "Site configuration"
-msgstr ""
+msgstr "Configuración del sitio"
 
 #: app/html/admin/configuration.html:16
 #, python-format
 msgid "See the <a href=\"%(url)s\">Site log</a> for the history of changes to configuration values."
-msgstr ""
+msgstr "Consulte el <a href=\"%(url)s\">log del sitio</a> para ver el historial de cambios en los valores de configuración."
 
 #: app/html/admin/configuration.html:23
 msgid "Setting Name"
-msgstr ""
+msgstr "Nombre"
 
 #: app/html/admin/configuration.html:24
 msgid "Current Value"
-msgstr ""
+msgstr "Valor actual"
 
 #: app/html/admin/configuration.html:35 app/static/js/Mod.js:131
 msgid "Enabled"
-msgstr ""
+msgstr "Activado"
 
 #: app/html/admin/configuration.html:37
 msgid "Disabled"
-msgstr ""
+msgstr "Desactivado"
 
 #: app/html/admin/configuration.html:67 app/html/sub/flairs.html:22
 #: app/html/sub/rules.html:28 app/html/sub/settings.html:133
@@ -1207,36 +1207,36 @@ msgstr "Reabrir"
 #: app/html/mod/closed.html:35 app/html/mod/reports.html:34
 #: app/html/mod/sub_reports.html:35 app/html/mod/sub_reports_closed.html:37
 msgid "Sub:"
-msgstr ""
+msgstr "Sub:"
 
 #: app/html/mod/closed.html:36 app/html/mod/reports.html:35
 #: app/html/mod/sub_reports.html:36 app/html/mod/sub_reports_closed.html:38
 msgid "Type:"
-msgstr ""
+msgstr "Tipo:"
 
 #: app/html/mod/closed.html:43 app/html/mod/reports.html:42
 #: app/html/mod/sub_reports.html:43 app/html/mod/sub_reports_closed.html:45
 msgid "Reported by:"
-msgstr ""
+msgstr "Reportado por:"
 
 #: app/html/mod/closed.html:46 app/html/mod/reportdetails.html:331
 #: app/html/mod/reports.html:45 app/html/mod/sub_reports.html:46
 #: app/html/mod/sub_reports_closed.html:48 app/html/sub/bans.html:84
 #: app/html/sub/bans.html:141
 msgid "Reason:"
-msgstr ""
+msgstr "Razón:"
 
 #: app/html/mod/closed.html:47 app/html/mod/reports.html:46
 #: app/html/mod/sub_reports.html:47 app/html/mod/sub_reports_closed.html:49
 msgid "User reported:"
-msgstr ""
+msgstr "Usuario reportado:"
 
 #: app/html/mod/closed.html:50 app/html/mod/reportdetails.html:248
 #: app/html/mod/reportdetails.html:323 app/html/mod/reports.html:49
 #: app/html/mod/sub_reports.html:50 app/html/mod/sub_reports_closed.html:52
 #: app/html/sub/log.html:22
 msgid "Time:"
-msgstr ""
+msgstr "Fecha/Hora:"
 
 #: app/html/mod/dashboard.html:5 app/html/mod/dashboard.html:15
 msgid "Mod dashboard"
@@ -1277,15 +1277,15 @@ msgstr ""
 
 #: app/html/mod/reportdetails.html:39
 msgid "All related reports are closed"
-msgstr ""
+msgstr "Todos los reportes relacionados están cerrados"
 
 #: app/html/mod/reportdetails.html:43
 msgid "Close All Reports for this Comment"
-msgstr ""
+msgstr "Cerrar todos los reportes para este comentario"
 
 #: app/html/mod/reportdetails.html:47
 msgid "Close All Reports for this Post"
-msgstr ""
+msgstr "Cerrar todos los reportes de este post"
 
 #: app/html/mod/reportdetails.html:65
 msgid "Reported User"
