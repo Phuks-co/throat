@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2022-01-15 21:19-0300\n"
-"PO-Revision-Date: 2022-04-30 13:56\n"
+"PO-Revision-Date: 2022-05-01 07:29\n"
 "Last-Translator: \n"
 "Language-Team: Czech\n"
 "MIME-Version: 1.0\n"
@@ -20,43 +20,43 @@ msgstr ""
 
 #: app/__init__.py:48
 msgid "Please log in to access this page."
-msgstr "Je nutné sa prihlásiť."
+msgstr "Pro přístup k této stránce se prosím přihlaste."
 
 #: app/__init__.py:49
 msgid "Please reauthenticate to access this page."
-msgstr "Je nutné sa znovu prihlásiť."
+msgstr "Pro přístup na tuto stránku prosím opakujte ověření."
 
 #: app/badges.py:127 app/views/do.py:3264
 msgid "Invalid file type. Only jpg, png and gif allowed."
-msgstr "Neplatný typ súboru. Povolené sú len jpg, png a gif."
+msgstr "Neplatný typ souboru. Povolen pouze jpg, png a gif."
 
 #: app/config.py:89
 msgid "Name of the site."
-msgstr ""
+msgstr "Name of the site."
 
 #: app/config.py:94
 msgid "Lema shown in the page's title."
-msgstr ""
+msgstr "Lema shown in the page's title."
 
 #: app/config.py:99
 msgid "Copyright line shown in the footer."
-msgstr ""
+msgstr "Copyright line shown in the footer."
 
 #: app/config.py:104
 msgid "Name shown when a sub is owned by a deleted account or abandoned."
-msgstr ""
+msgstr "Name shown when a sub is owned by a deleted account or abandoned."
 
 #: app/config.py:111
 msgid "Enables setting security questions on the admin page. Users will be asked to answer one of these security questions before registering."
-msgstr ""
+msgstr "Enables setting security questions on the admin page. Users will be asked to answer one of these security questions before registering."
 
 #: app/config.py:119
 msgid "Allow everybody to upload files (by default it's only admins and users authorized through a metadata key)."
-msgstr ""
+msgstr "Allow everybody to upload files (by default it's only admins and users authorized through a metadata key)."
 
 #: app/config.py:127
 msgid "For those who are allowed to upload files, allow video uploads (.mp4 and .webm) as well."
-msgstr ""
+msgstr "For those who are allowed to upload files, allow video uploads (.mp4 and .webm) as well."
 
 #: app/config.py:134
 msgid "Minimum level a user must have before being able to upload files. Set to zero to disable file upload level limits."
