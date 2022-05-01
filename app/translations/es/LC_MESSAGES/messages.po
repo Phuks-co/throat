@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 2f2b2a8565bfc5253af48bfe43b8fae4\n"
 "Report-Msgid-Bugs-To: polsaker@phuks.co\n"
 "POT-Creation-Date: 2022-01-15 21:19-0300\n"
-"PO-Revision-Date: 2022-04-30 19:56\n"
+"PO-Revision-Date: 2022-05-01 13:29\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -88,23 +88,23 @@ msgstr ""
 
 #: app/config.py:183
 msgid "Amount of time in seconds the post author can edit a post's title after the post was created. Set to zero to disable title editing (default is 5 minutes)."
-msgstr ""
+msgstr "Cantidad de tiempo en segundos que el autor del post tiene para poder editar el título de un post después de que el post fue creado. Establecer en cero para desactivar la edición de títulos (el valor predeterminado es de 5 minutos)."
 
 #: app/config.py:191
 msgid "Minimum level a user must have before being able to create a sub. Set to zero to disable sub creation level limits."
-msgstr ""
+msgstr "Nivel mínimo que debe tener un usuario antes de poder crear un sub. Establecer a cero para desactivar los límites."
 
 #: app/config.py:199
 msgid "When enabled, only admins can create new subs, otherwise `sub_creation_min_level` controls who can create a sub."
-msgstr ""
+msgstr "Cuando está habilitado, sólo los administradores pueden crear subs nuevos, de lo contrario `sub_creation_min_level` controla quién puede crear un sub."
 
 #: app/config.py:207
 msgid "Maximum amount of subs a single user can own. The actual amount of subs a user may register scales with user level (user level minus one) so a level 0 or level 1 user cannot register any subs. This scaling is disabled if `sub_creation_min_level` is zero."
-msgstr ""
+msgstr "Cantidad máxima de subs que un solo usuario puede poseer. La cantidad real de subs que un usuario puede registrar escala con el nivel de usuario (nivel de usuario menos uno) por lo que un usuario de nivel 0 o nivel 1 no puede registrar subs. Esta escala está desactivada si `sub_creation_min_level` es cero."
 
 #: app/config.py:217
 msgid "Allows Sub Mods and Admins to view the edit history of posts."
-msgstr ""
+msgstr "Permite a moderadores y administradores ver el historial de edición de los posts."
 
 #: app/config.py:224
 msgid "Removes the name of the Mod or Admin who took action on a post or user in notifications sent to user."
@@ -260,11 +260,11 @@ msgstr "CSS inválido"
 
 #: app/html/sub/postcomments.html:44 app/misc.py:2622
 msgid "[Blocked]"
-msgstr ""
+msgstr "[Bloqueado]"
 
 #: app/misc.py:2710
 msgid "Already processing previous request."
-msgstr ""
+msgstr "Ya está procesando la solicitud anterior."
 
 #: app/misc.py:2732
 msgid "Unknown error. User disappeared"
@@ -290,7 +290,7 @@ msgstr "El post no existe"
 
 #: app/misc.py:2760
 msgid "You can't vote on your own posts"
-msgstr ""
+msgstr "No puedes votar en tus propios posts"
 
 #: app/misc.py:2762
 msgid "You can't vote on deleted posts"
