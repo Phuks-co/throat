@@ -1392,46 +1392,78 @@ def get_mod_notification_counts(uid):
         .group_by(Sub.sid)
         .dicts()
     )
+    # Count modmail conversations where the newest message in the
+    # thread is unread.
     if not config.site.enable_modmail:
         unread_modmail_counts = []
     else:
-        # Count modmail conversations where the newest message in the
-        # thread is unread.
-        MessageAlias = Message.alias()
-        MessageThreadAlias = MessageThread.alias()
-        SubAlias = Sub.alias()
-        conversation_newest = (
-            MessageAlias.select(
-                MessageAlias.thread.alias("mtid"),
-                fn.MAX(MessageAlias.posted).alias("maxtime"),
+        # Use Postgres's lateral join capability for a more efficient
+        # query.
+        if "Postgresql" in config.database.engine:
+            thread_newest = (
+                Message.select()
+                .where(Message.mtid == MessageThread.mtid)
+                .order_by(Message.posted.desc())
+                .limit(1)
             )
-            .join(MessageThreadAlias)
-            .join(SubAlias)
-            .join(SubMod)
-            .where(SubMod.user == uid)
-            .group_by(MessageAlias.thread)
-        )
-        unread_modmail_counts = dictify(
-            Message.select(Sub.sid, fn.COUNT(Message.mid).alias("count"))
-            .join(
-                conversation_newest,
-                on=(
-                    (conversation_newest.c.mtid == Message.thread)
-                    & (conversation_newest.c.maxtime == Message.posted)
-                ),
+            unread_modmail_query = (
+                MessageThread.select(
+                    MessageThread.sub.alias("sid"),
+                    fn.COUNT(thread_newest.c.mid).alias("count"),
+                )
+                .join(thread_newest, JOIN.LEFT_LATERAL)
+                .join(
+                    UserUnreadMessage, on=(thread_newest.c.mid == UserUnreadMessage.mid)
+                )
             )
-            .join(MessageThread, on=(MessageThread.mtid == conversation_newest.c.mtid))
-            .join(SubMessageMailbox, on=(SubMessageMailbox.thread == Message.thread))
-            .join(Sub, on=(Sub.sid == MessageThread.sid))
-            .switch(Message)
-            .join(UserUnreadMessage)
+        else:
+            MessageAlias = Message.alias()
+            MessageThreadAlias = MessageThread.alias()
+            SubModAlias = SubMod.alias()
+            thread_newest = (
+                MessageAlias.select(
+                    MessageAlias.thread.alias("mtid"),
+                    fn.MAX(MessageAlias.posted).alias("maxtime"),
+                )
+                .join(MessageThreadAlias)
+                .join(SubModAlias, on=(SubModAlias.sid == MessageThreadAlias.sid))
+                .where((SubModAlias.user == uid) & ~SubModAlias.invite)
+                .group_by(MessageAlias.thread)
+            )
+            unread_modmail_query = (
+                MessageThread.select(
+                    MessageThread.sub.alias("sid"), fn.COUNT(Message.mid).alias("count")
+                )
+                .join(
+                    thread_newest,
+                    on=(thread_newest.c.mtid == MessageThread.mtid),
+                )
+                .join(
+                    Message,
+                    on=(
+                        (Message.mtid == thread_newest.c.mtid)
+                        & (Message.posted == thread_newest.c.maxtime)
+                    ),
+                )
+                .join(UserUnreadMessage, on=(Message.mid == UserUnreadMessage.mid))
+            )
+        unread_modmail_query = (
+            unread_modmail_query.join(
+                SubMessageMailbox,
+                on=(SubMessageMailbox.thread == MessageThread.mtid),
+            )
+            .join(SubMod, on=(SubMod.sid == MessageThread.sid))
             .where(
-                (UserUnreadMessage.uid == uid)
+                MessageThread.sid.is_null(False)
+                & (SubMod.user == uid)
+                & ~SubMod.invite
+                & (UserUnreadMessage.uid == uid)
                 & (SubMessageMailbox.mailbox == MessageMailbox.INBOX)
             )
-            .group_by(Sub.sid)
+            .group_by(MessageThread.sid)
             .dicts()
         )
+        unread_modmail_counts = dictify(unread_modmail_query)
     return post_report_counts, comment_report_counts, unread_modmail_counts
 
 
