@@ -257,11 +257,11 @@ class SiteUser(object):
 
     @cache.memoize(1)
     def mod_notifications(self):
-        if self.is_mod:
+        if self.is_a_mod:
             reports, comments, messages = get_mod_notification_counts(self.uid)
             return {"reports": reports, "comments": comments, "messages": messages}
         else:
-            return []
+            return {}
 
     def mod_notifications_json(self):
         return json.dumps(self.mod_notifications())
@@ -1376,7 +1376,7 @@ def get_mod_notification_counts(uid):
         .join(SubPost)
         .join(Sub)
         .join(SubMod)
-        .where((SubMod.user == uid) & SubPostReport.open)
+        .where((SubMod.user == uid) & SubPostReport.open & ~SubMod.invite)
         .group_by(Sub.sid)
         .dicts()
     )
@@ -1388,7 +1388,7 @@ def get_mod_notification_counts(uid):
         .join(SubPost)
         .join(Sub)
         .join(SubMod)
-        .where((SubMod.user == uid) & SubPostCommentReport.open)
+        .where((SubMod.user == uid) & SubPostCommentReport.open & ~SubMod.invite)
         .group_by(Sub.sid)
         .dicts()
     )
@@ -1426,8 +1426,14 @@ def get_mod_notification_counts(uid):
                     fn.MAX(MessageAlias.posted).alias("maxtime"),
                 )
                 .join(MessageThreadAlias)
-                .join(SubModAlias, on=(SubModAlias.sid == MessageThreadAlias.sid))
-                .where((SubModAlias.user == uid) & ~SubModAlias.invite)
+                .join(
+                    SubModAlias,
+                    on=(
+                        (SubModAlias.sid == MessageThreadAlias.sid)
+                        & (SubModAlias.user == uid)
+                        & ~SubModAlias.invite
+                    ),
+                )
                 .group_by(MessageAlias.thread)
             )
             unread_modmail_query = (
@@ -1452,11 +1458,16 @@ def get_mod_notification_counts(uid):
                 SubMessageMailbox,
                 on=(SubMessageMailbox.thread == MessageThread.mtid),
             )
-            .join(SubMod, on=(SubMod.sid == MessageThread.sid))
+            .join(
+                SubMod,
+                on=(
+                    (SubMod.sid == MessageThread.sid)
+                    & (SubMod.user == uid)
+                    & ~SubMod.invite
+                ),
+            )
             .where(
                 MessageThread.sid.is_null(False)
-                & (SubMod.user == uid)
-                & ~SubMod.invite
                 & (UserUnreadMessage.uid == uid)
                 & (SubMessageMailbox.mailbox == MessageMailbox.INBOX)
             )
