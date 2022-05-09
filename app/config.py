@@ -447,6 +447,17 @@ configurable_defaults = {
                     },
                 },
             },
+            "admin_sub": {
+                "type": "string",
+                "doc": _l(
+                    "If set, and site.enable_modmail is also set, "
+                    "when an admin removes a user's content, a reply by the "
+                    "user to the notification message will be sent to the modmail of "
+                    "this sub. If this is left empty, replies will go to the modmail "
+                    "of the sub in which the removed content was posted."
+                ),
+                "value": "",
+            },
         },
     },
     "storage": {
