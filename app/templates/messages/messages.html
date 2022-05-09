@@ -26,10 +26,10 @@
               {% if message.username %}
                 by <a href="{{url_for('user.view', user=message.username)}}">{{message.username}}</a>
                 {% if message.sub %}
-                  [as mod of <a href="{{url_for('sub.view_sub', sub=message.sub)}}">{{config.site.sub_prefix}}/{{message.sub}}</a>]
+                  [as mod of <a href="{{url_for('sub.view_sub', sub=message.sub)}}">/{{config.site.sub_prefix}}/{{message.sub}}</a>]
                 {% endif %}
               {% elif message.sub %}
-                by the mods of <a href="{{url_for('sub.view_sub', sub=message.sub)}}">{{config.site.sub_prefix}}/{{message.sub}}</a>
+                by the mods of <a href="{{url_for('sub.view_sub', sub=message.sub)}}">/{{config.site.sub_prefix}}/{{message.sub}}</a>
               {% else %}
                 by <a href="#">{{config.site.name}}</a>
               {% endif %}
